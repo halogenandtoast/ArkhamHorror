@@ -9,9 +9,11 @@ import qualified Arkham.Location.Cards as Cards (dunwichVillage_242)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Exception
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -29,22 +31,20 @@ dunwichVillage_242 = location
   Circle
   [Triangle, Square, Diamond]
 
-ability :: LocationAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (FastAbility Free)
-    & (abilityLimitL .~ GroupLimit PerGame 1)
-
-instance ActionRunner env => HasAbilities env DunwichVillage_242 where
-  getAbilities iid window (DunwichVillage_242 attrs) | locationRevealed attrs =
-    withResignAction iid window attrs $ do
-      investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
-      anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
-      pure
-        [ locationAbility (ability attrs)
-        | investigatorsWithClues && anyAbominations
-        ]
+instance HasAbilities env DunwichVillage_242 where
   getAbilities iid window (DunwichVillage_242 attrs) =
-    getAbilities iid window attrs
+    withResignAction iid window attrs $ pure
+      [ restrictedAbility
+            attrs
+            1
+            (Here
+            <> InvestigatorExists (You <> InvestigatorWithAnyClues)
+            <> EnemyCriteria (EnemyExists $ EnemyWithTrait Abomination)
+            )
+            (FastAbility Free)
+          & (abilityLimitL .~ GroupLimit PerGame 1)
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env DunwichVillage_242 where
   runMessage msg l@(DunwichVillage_242 attrs) = case msg of

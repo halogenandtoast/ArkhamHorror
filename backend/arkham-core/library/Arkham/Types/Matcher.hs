@@ -35,6 +35,11 @@ pattern InvestigatorWithAnyHorror <-
   InvestigatorWithHorror (GreaterThan (Static 0)) where
   InvestigatorWithAnyHorror = InvestigatorWithHorror (GreaterThan (Static 0))
 
+pattern InvestigatorWithAnyClues :: InvestigatorMatcher
+pattern InvestigatorWithAnyClues <-
+  InvestigatorWithClues (GreaterThan (Static 0)) where
+  InvestigatorWithAnyClues = InvestigatorWithClues (GreaterThan (Static 0))
+
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | You
@@ -48,6 +53,7 @@ data InvestigatorMatcher
   | DiscardWith CardListMatcher
   | InvestigatorWithoutModifier ModifierType
   | InvestigatorEngagedWith EnemyMatcher
+  | InvestigatorWithClues ValueMatcher
   | InvestigatorWithDamage ValueMatcher
   | InvestigatorWithHorror ValueMatcher
   | InvestigatorWithResources ValueMatcher
@@ -352,6 +358,7 @@ instance Semigroup CardMatcher where
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
   | DeckHasNoCards Timing Who
+  | ChosenRandomLocation Timing LocationMatcher
   | EnemyWouldBeDefeated Timing EnemyMatcher
   | EnemyWouldReady Timing EnemyMatcher
   | EnemyEnters Timing Where EnemyMatcher

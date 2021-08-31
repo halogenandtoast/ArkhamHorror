@@ -9,41 +9,44 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyDefeated)
-import Arkham.Types.Query
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype ServantOfManyMouths = ServantOfManyMouths EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 servantOfManyMouths :: EnemyCard ServantOfManyMouths
-servantOfManyMouths =
-  enemy ServantOfManyMouths Cards.servantOfManyMouths (3, Static 2, 1) (2, 0)
+servantOfManyMouths = enemyWith
+  ServantOfManyMouths
+  Cards.servantOfManyMouths
+  (3, Static 2, 1)
+  (2, 0)
+  (spawnAtL ?~ EmptyLocation)
 
-ability :: EnemyAttrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (LegacyReactionAbility Free)
-
-instance ActionRunner env => HasAbilities env ServantOfManyMouths where
-  getAbilities iid (Window Timing.After (EnemyDefeated who eid)) (ServantOfManyMouths attrs)
-    | eid == toId attrs && iid == who
-    = pure [ability attrs]
-  getAbilities i window (ServantOfManyMouths attrs) =
-    getAbilities i window attrs
+instance HasAbilities env ServantOfManyMouths where
+  getAbilities iid window (ServantOfManyMouths attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility
+          attrs
+          1
+          (LocationExists LocationWithAnyClues <> CanDiscoverClues)
+          (ReactionAbility
+            (EnemyDefeated Timing.After You $ EnemyWithId $ toId attrs)
+            Free
+          )
+      ]
 
 instance EnemyRunner env => RunMessage env ServantOfManyMouths where
-  runMessage msg e@(ServantOfManyMouths attrs@EnemyAttrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
-      e <$ spawnAtEmptyLocation iid eid
+  runMessage msg e@(ServantOfManyMouths attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationIds <- getSetList ()
-      locationsWithClues <- filterM
-        (fmap ((> 0) . unClueCount) . getCount)
-        locationIds
+      locationsWithClues <- selectList LocationWithAnyClues
       e <$ unless
         (null locationsWithClues)
         (push

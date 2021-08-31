@@ -6,6 +6,7 @@ module Arkham.Types.Agenda.Cards.BidingItsTime
 import Arkham.Prelude
 
 import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
@@ -14,22 +15,28 @@ import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (ChosenRandomLocation)
 import Arkham.Types.Message
+import Arkham.Types.Phase
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype BidingItsTime = BidingItsTime AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAgenda, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bidingItsTime :: AgendaCard BidingItsTime
 bidingItsTime = agenda (2, A) BidingItsTime Cards.bidingItsTime (Static 6)
 
+instance HasAbilities env BidingItsTime where
+  getAbilities _ _ (BidingItsTime x) = pure
+    [mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase]
+
 instance AgendaRunner env => RunMessage env BidingItsTime where
   runMessage msg a@(BidingItsTime attrs) = case msg of
-    EndEnemy -> do
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId
       broodOfYogSothoth <- map EnemyTarget
         <$> getSetList (EnemyWithTitle "Brood of Yog-Sothoth")

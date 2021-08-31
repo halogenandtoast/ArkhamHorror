@@ -552,6 +552,11 @@ getInvestigatorsMatching = \case
     filterM
       (\i -> notElem CannotMove <$> getModifiers (toSource i) (toTarget i))
       investigators
+  InvestigatorWithClues gameValueMatcher -> do
+    allInvestigators' <- toList . view investigatorsL <$> getGame
+    filterM
+      ((`gameValueMatches` gameValueMatcher) . unClueCount <=< getCount)
+      allInvestigators'
   InvestigatorWithDamage gameValueMatcher -> do
     allInvestigators' <- toList . view investigatorsL <$> getGame
     filterM

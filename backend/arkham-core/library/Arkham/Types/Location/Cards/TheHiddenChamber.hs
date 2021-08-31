@@ -19,7 +19,7 @@ import Arkham.Types.Name
 
 newtype TheHiddenChamber = TheHiddenChamber LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 theHiddenChamber :: LocationCard TheHiddenChamber
 theHiddenChamber =
@@ -36,10 +36,6 @@ instance Query AssetMatcher env => HasModifiersFor env TheHiddenChamber where
         _ -> [Blocked]
       )
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env TheHiddenChamber where
-  getAbilities iid window (TheHiddenChamber attrs) =
-    getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env TheHiddenChamber where
   runMessage msg (TheHiddenChamber attrs) = case msg of

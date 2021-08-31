@@ -9,14 +9,12 @@ import qualified Arkham.Location.Cards as Cards (osbornsGeneralStore_207)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype OsbornsGeneralStore_207 = OsbornsGeneralStore_207 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -31,25 +29,15 @@ osbornsGeneralStore_207 = location
   Circle
   [Moon, Square]
 
-ability :: LocationAttrs -> Ability
-ability attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 1])
-
 instance HasAbilities env OsbornsGeneralStore_207 where
-  getAbilities iid window@(Window Timing.When NonFast) (OsbornsGeneralStore_207 attrs)
-    | locationRevealed attrs
-    = withBaseAbilities iid window attrs
-      $ pure [locationAbility (ability attrs)]
-  getAbilities iid window@(Window Timing.When FastPlayerWindow) (OsbornsGeneralStore_207 attrs)
-    | locationRevealed attrs
-    = withBaseAbilities iid window attrs $ pure
-      [ drawCardUnderneathAction attrs
-      | iid `on` attrs && locationClues attrs == 0
-      ]
-  getAbilities iid window (OsbornsGeneralStore_207 attrs) =
-    getAbilities iid window attrs
+  getAbilities iid window (OsbornsGeneralStore_207 attrs) = do
+    rest <- withDrawCardUnderneathAction iid window attrs
+    pure
+      $ [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
+            [ActionCost 1, ResourceCost 1]
+        | locationRevealed attrs
+        ]
+      <> rest
 
 instance LocationRunner env => RunMessage env OsbornsGeneralStore_207 where
   runMessage msg l@(OsbornsGeneralStore_207 attrs) = case msg of

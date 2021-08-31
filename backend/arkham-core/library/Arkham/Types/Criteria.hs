@@ -2,12 +2,12 @@
 
 module Arkham.Types.Criteria where
 
-import           Arkham.Prelude
+import Arkham.Prelude
 
-import           Arkham.Types.GameValue
-import           Arkham.Types.Matcher
-import           Arkham.Types.Modifier
-import           Arkham.Types.Trait
+import Arkham.Types.GameValue
+import Arkham.Types.Matcher
+import Arkham.Types.Modifier
+import Arkham.Types.Trait
 
 data DiscardSignifier = AnyPlayerDiscard
   deriving stock (Show, Eq, Generic)
@@ -18,16 +18,16 @@ pattern AnyHorrorOnThis <- HorrorOnThis (GreaterThan (Static 0)) where
   AnyHorrorOnThis = HorrorOnThis (GreaterThan (Static 0))
 
 pattern CanGainResources :: Criterion
-pattern CanGainResources <-
-  InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotGainResources]) where
-  CanGainResources = InvestigatorExists
-    (InvestigatorMatches [You, InvestigatorWithoutModifier CannotGainResources])
+pattern CanGainResources <- Negate (SelfHasModifier CannotGainResources) where
+  CanGainResources = Negate (SelfHasModifier CannotGainResources)
+
+pattern CanDiscoverClues :: Criterion
+pattern CanDiscoverClues <- Negate (SelfHasModifier CannotDiscoverClues) where
+  CanDiscoverClues = Negate (SelfHasModifier CannotDiscoverClues)
 
 pattern CanDrawCards :: Criterion
-pattern CanDrawCards <-
-  InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotDrawCards]) where
-  CanDrawCards = InvestigatorExists
-    (InvestigatorMatches [You, InvestigatorWithoutModifier CannotDrawCards])
+pattern CanDrawCards <- Negate (SelfHasModifier CannotDrawCards) where
+  CanDrawCards = Negate (SelfHasModifier CannotDrawCards)
 
 data Criterion
   = AssetExists AssetMatcher
@@ -74,14 +74,14 @@ data Criterion
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup Criterion where
-  Never <> _                 = Never
-  _ <> Never                 = Never
-  NoRestriction <> x         = x
-  x <> NoRestriction         = x
+  Never <> _ = Never
+  _ <> Never = Never
+  NoRestriction <> x = x
+  x <> NoRestriction = x
   Criteria xs <> Criteria ys = Criteria $ xs <> ys
-  Criteria xs <> x           = Criteria $ x : xs
-  x <> Criteria xs           = Criteria $ x : xs
-  x <> y                     = Criteria [x, y]
+  Criteria xs <> x = Criteria $ x : xs
+  x <> Criteria xs = Criteria $ x : xs
+  x <> y = Criteria [x, y]
 
 instance Monoid Criterion where
   mempty = NoRestriction

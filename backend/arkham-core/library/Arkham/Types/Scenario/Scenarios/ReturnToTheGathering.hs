@@ -71,7 +71,7 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
           , PlaceLocation bedroomId Locations.bedroom
           , PlaceLocation bathroomId Locations.bathroom
           , RevealLocation Nothing studyId
-          , MoveAllTo studyId
+          , MoveAllTo (toSource attrs) studyId
           , AskMap
           . mapFromList
           $ [ (iid, ChooseOne [Run [Continue "Continue", theGatheringIntro]])

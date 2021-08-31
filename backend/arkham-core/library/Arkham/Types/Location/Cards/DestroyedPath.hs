@@ -10,15 +10,15 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.Game.Helpers
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
-import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window hiding (SuccessfulInvestigation)
 
 newtype DestroyedPath = DestroyedPath LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -36,25 +36,20 @@ destroyedPath = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Equals])
   )
 
-forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
-
-investigateAbility :: LocationAttrs -> Ability
-investigateAbility a = mkAbility
-  (toSource a)
-  2
-  (ActionAbility (Just Action.Investigate) (ActionCost 1))
-
-instance ActionRunner env => HasAbilities env DestroyedPath where
-  getAbilities iid window@(Window Timing.When NonFast) (DestroyedPath attrs) =
-    withBaseAbilities iid window attrs
-      $ pure [locationAbility (investigateAbility attrs)]
-  getAbilities iid (Window Timing.After (RevealLocation who _)) (DestroyedPath attrs)
-    | iid == who
-    = do
-      actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure [ locationAbility (forcedAbility attrs) | actionRemainingCount == 0 ]
-  getAbilities iid window (DestroyedPath attrs) = getAbilities iid window attrs
+instance HasAbilities env DestroyedPath where
+  getAbilities iid window (DestroyedPath attrs) =
+    withBaseAbilities iid window attrs $ pure $ if locationRevealed attrs
+      then
+        [ mkAbility attrs 1
+        $ ForcedAbility
+        $ RevealLocation Timing.After You
+        $ LocationWithId
+        $ toId attrs
+        , restrictedAbility attrs 2 Here
+        $ ActionAbility (Just Action.Investigate)
+        $ ActionCost 1
+        ]
+      else []
 
 instance LocationRunner env => RunMessage env DestroyedPath where
   runMessage msg l@(DestroyedPath attrs) = case msg of

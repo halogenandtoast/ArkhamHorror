@@ -45,6 +45,7 @@ data WindowType
   | DrawingStartingHand InvestigatorId
   | DuringTurn InvestigatorId
   | EndTurn InvestigatorId
+  | InvestigatorDefeated Source InvestigatorId
   | InvestigatorEliminated InvestigatorId
   | AssetDefeated AssetId
   | TookControlOfAsset InvestigatorId AssetId
@@ -68,6 +69,7 @@ data WindowType
   | Leaving InvestigatorId LocationId
   | LeavePlay Target
   | MoveFromHunter EnemyId
+  | MovedBy Source LocationId InvestigatorId
   | NonFast
   | PassSkillTest (Maybe Action) Source InvestigatorId Int
   | PassInvestigationSkillTest InvestigatorId LocationId Int

@@ -137,11 +137,14 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
       let
         startingLocationMessages = if houseBurnedDown
-          then [RevealLocation Nothing rivertownId, MoveAllTo rivertownId]
+          then
+            [ RevealLocation Nothing rivertownId
+            , MoveAllTo (toSource attrs) rivertownId
+            ]
           else
             [ PlaceLocation yourHouseId Locations.yourHouse
             , RevealLocation Nothing yourHouseId
-            , MoveAllTo yourHouseId
+            , MoveAllTo (toSource attrs) yourHouseId
             ]
         ghoulPriestMessages =
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]

@@ -48,12 +48,9 @@ instance LocationRunner env => RunMessage env YourHouse where
           isSpawnMsg = \case
             EnemySpawn _ _ eid' -> eid == eid'
             After (EnemySpawn _ _ eid') -> eid == eid'
-            RunWindow _ windows -> flip
-              any
-              windows
-              \case
-                Window _ (Window.EnemySpawns eid' _) -> eid' == eid
-                _ -> False
+            RunWindow _ xs -> flip any xs $ \case
+              Window _ (Window.EnemySpawns eid' _) -> eid' == eid
+              _ -> False
             _ -> False
         withQueue_ $ filter (not . isSpawnMsg)
         l <$ pushAll

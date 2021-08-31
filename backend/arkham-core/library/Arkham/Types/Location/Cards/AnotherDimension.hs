@@ -55,10 +55,7 @@ instance (HasSet UnengagedEnemyId env LocationId, LocationRunner env) => RunMess
         investigatorIds <- getSetList @InvestigatorId lid
         enemyIds <- map unUnengagedEnemyId <$> getSetList lid
         l <$ pushAll
-          (concat
-              [ [MoveTo iid (toId attrs), MovedBy iid (toSource attrs)]
-              | iid <- investigatorIds
-              ]
+          ([ MoveTo (toSource attrs) iid (toId attrs) | iid <- investigatorIds ]
           <> [ EnemyMove eid lid (toId attrs) | eid <- enemyIds ]
           )
     _ -> AnotherDimension <$> runMessage msg attrs

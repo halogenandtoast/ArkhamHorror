@@ -26,7 +26,7 @@ instance AgendaRunner env => RunMessage env OutOfTime where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 5 B -> do
       investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
       a <$ pushAll
-        ([ InvestigatorDefeated iid | iid <- investigatorIds ]
+        ([ InvestigatorDefeated (toSource attrs) iid | iid <- investigatorIds ]
         <> [ SufferTrauma iid 0 1 | iid <- investigatorIds ]
         <> [ScenarioResolution $ Resolution 2]
         )

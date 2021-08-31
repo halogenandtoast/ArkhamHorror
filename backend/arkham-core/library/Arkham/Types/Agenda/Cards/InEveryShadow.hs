@@ -16,7 +16,7 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (InvestigatorDefeated)
 import Arkham.Types.Message
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
@@ -52,7 +52,9 @@ instance AgendaRunner env => RunMessage env InEveryShadow where
       iids <- map unInScenarioInvestigatorId <$> getSetList ()
       a <$ pushAll
         (concatMap
-          (\iid -> [SufferTrauma iid 1 0, InvestigatorDefeated iid])
+          (\iid ->
+            [SufferTrauma iid 1 0, InvestigatorDefeated (toSource attrs) iid]
+          )
           iids
         )
     _ -> InEveryShadow <$> runMessage msg attrs

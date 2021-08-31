@@ -96,11 +96,14 @@ instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
         cultistDeck' <- drop 3 <$> shuffleM cultistCards
         let
           startingLocationMessages = if houseBurnedDown
-            then [RevealLocation Nothing rivertownId, MoveAllTo rivertownId]
+            then
+              [ RevealLocation Nothing rivertownId
+              , MoveAllTo (toSource attrs) rivertownId
+              ]
             else
               [ PlaceLocation yourHouseId Locations.yourHouse
               , RevealLocation Nothing yourHouseId
-              , MoveAllTo yourHouseId
+              , MoveAllTo (toSource attrs) yourHouseId
               ]
           ghoulPriestMessages =
             [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]

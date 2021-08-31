@@ -841,8 +841,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Resign iid | iid == investigatorId -> do
     pushAll $ resolve $ InvestigatorResigned iid
     pure $ a & resignedL .~ True
-  InvestigatorDefeated iid | iid == investigatorId ->
-    a <$ push (InvestigatorWhenEliminated (toSource a) iid)
+  InvestigatorDefeated source iid | iid == investigatorId -> do
+    windowMsgs <- checkWindows
+      ((`Window` Window.InvestigatorDefeated source iid)
+      <$> [Timing.When, Timing.After]
+      )
+    a <$ pushAll (windowMsgs <> [InvestigatorWhenEliminated (toSource a) iid])
   InvestigatorResigned iid | iid == investigatorId ->
     a <$ push (InvestigatorWhenEliminated (toSource a) iid)
   -- InvestigatorWhenEliminated is handled by the scenario
@@ -1075,13 +1079,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAction iid lid cost True | iid == investigatorId -> a <$ pushAll
     [TakeAction iid (Just Action.Move) cost, MoveAction iid lid cost False]
   MoveAction iid lid _cost False | iid == investigatorId ->
-    a <$ pushAll (resolve $ Move iid investigatorLocation lid)
-  Move iid fromLocationId toLocationId | iid == investigatorId -> a <$ pushAll
-    [ Will (MoveFrom iid fromLocationId)
-    , Will (MoveTo iid toLocationId)
-    , MoveFrom iid fromLocationId
-    , MoveTo iid toLocationId
-    ]
+    a <$ pushAll (resolve $ Move (toSource a) iid investigatorLocation lid)
+  Move source iid fromLocationId toLocationId | iid == investigatorId ->
+    a <$ pushAll
+      [ Will (MoveFrom source iid fromLocationId)
+      , Will (MoveTo source iid toLocationId)
+      , MoveFrom source iid fromLocationId
+      , MoveTo source iid toLocationId
+      ]
   Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _ _)
     | iid == iid' && iid == investigatorId -> do
       windows <- checkWindows
@@ -1546,21 +1551,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ if cannotHealHorror
       then a
       else a & sanityDamageL %~ max 0 . subtract amount
-  InvestigatorWhenDefeated _source iid | iid == investigatorId -> do
-    push (InvestigatorDefeated iid)
+  InvestigatorWhenDefeated source iid | iid == investigatorId -> do
+    push (InvestigatorDefeated source iid)
     pure $ a & defeatedL .~ True & endedTurnL .~ True
-  InvestigatorKilled iid | iid == investigatorId -> do
-    unless investigatorDefeated $ push (InvestigatorDefeated iid)
+  InvestigatorKilled source iid | iid == investigatorId -> do
+    unless investigatorDefeated $ push (InvestigatorDefeated source iid)
     pure $ a & defeatedL .~ True & endedTurnL .~ True
-  MoveAllTo lid | not (a ^. defeatedL || a ^. resignedL) ->
-    a <$ push (MoveTo investigatorId lid)
-  MoveTo iid lid | iid == investigatorId -> do
+  MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) ->
+    a <$ push (MoveTo source investigatorId lid)
+  MoveTo source iid lid | iid == investigatorId -> do
     connectedLocations <- mapSet unConnectedLocationId <$> getSet lid
+    movedByWindows <- windows [Window.MovedBy source lid iid]
     pushAll
-      [ WhenWillEnterLocation iid lid
-      , WhenEnterLocation iid lid
-      , AfterEnterLocation iid lid
-      ]
+      $ movedByWindows
+      <> [ WhenWillEnterLocation iid lid
+         , WhenEnterLocation iid lid
+         , AfterEnterLocation iid lid
+         ]
     pure $ a & locationL .~ lid & connectedLocationsL .~ connectedLocations
   SetLocationAsIf iid lid | iid == investigatorId ->
     -- In the as if situation we want to avoid callbacks

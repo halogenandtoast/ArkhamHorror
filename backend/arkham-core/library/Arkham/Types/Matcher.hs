@@ -19,11 +19,24 @@ import qualified Arkham.Types.Keyword as Keyword
 import {-# SOURCE #-} Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.SkillType
+import {-# SOURCE #-} Arkham.Types.Source
 import Arkham.Types.Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 
 type Who = InvestigatorMatcher
+
+pattern InvestigatorWithoutActionsRemaining :: InvestigatorMatcher
+pattern InvestigatorWithoutActionsRemaining <-
+  InvestigatorWithActionsRemaining (EqualTo (Static 0)) where
+  InvestigatorWithoutActionsRemaining =
+    InvestigatorWithActionsRemaining (EqualTo (Static 0))
+
+pattern InvestigatorWithAnyActionsRemaining :: InvestigatorMatcher
+pattern InvestigatorWithAnyActionsRemaining <-
+  InvestigatorWithActionsRemaining (GreaterThan (Static 0)) where
+  InvestigatorWithAnyActionsRemaining =
+    InvestigatorWithActionsRemaining (EqualTo (Static 0))
 
 pattern InvestigatorWithAnyDamage :: InvestigatorMatcher
 pattern InvestigatorWithAnyDamage <-
@@ -53,6 +66,7 @@ data InvestigatorMatcher
   | DiscardWith CardListMatcher
   | InvestigatorWithoutModifier ModifierType
   | InvestigatorEngagedWith EnemyMatcher
+  | InvestigatorWithActionsRemaining ValueMatcher
   | InvestigatorWithClues ValueMatcher
   | InvestigatorWithDamage ValueMatcher
   | InvestigatorWithHorror ValueMatcher
@@ -229,6 +243,7 @@ data LocationMatcher
   | UnrevealedLocation
   | InvestigatableLocation
   | FarthestLocationFromYou LocationMatcher
+  | NearestLocationToYou LocationMatcher
   | LocationWithTrait Trait
   | LocationInDirection Direction LocationMatcher
   | LocationWithoutTreacheryWithCardCode CardCode
@@ -357,7 +372,9 @@ instance Semigroup CardMatcher where
 
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
+  | InvestigatorDefeated Timing SourceMatcher Who
   | DeckHasNoCards Timing Who
+  | MovedBy Timing Who SourceMatcher
   | ChosenRandomLocation Timing LocationMatcher
   | EnemyWouldBeDefeated Timing EnemyMatcher
   | EnemyWouldReady Timing EnemyMatcher
@@ -424,7 +441,7 @@ data SkillTestMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-newtype SourceMatcher = SourceWithTrait Trait
+data SourceMatcher = SourceWithTrait Trait | SourceIs Source | EncounterCardSource
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

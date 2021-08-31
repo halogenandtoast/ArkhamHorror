@@ -6,6 +6,7 @@ module Arkham.Types.Agenda.Cards.PastPresentAndFuture
 import Arkham.Prelude
 
 import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.CampaignLogKey
@@ -17,17 +18,28 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype PastPresentAndFuture = PastPresentAndFuture AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAgenda, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pastPresentAndFuture :: AgendaCard PastPresentAndFuture
 pastPresentAndFuture =
   agenda (2, A) PastPresentAndFuture Cards.pastPresentAndFuture (Static 4)
 
+instance HasAbilities env PastPresentAndFuture where
+  getAbilities _ _ (PastPresentAndFuture x) = pure
+    [ mkAbility x 1 $ ForcedAbility $ MovedBy
+        Timing.After
+        You
+        EncounterCardSource
+    ]
+
 instance (HasRecord env, AgendaRunner env) => RunMessage env PastPresentAndFuture where
   runMessage msg a@(PastPresentAndFuture attrs@AgendaAttrs {..}) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       sacrificedToYogSothoth <- getRecordCount SacrificedToYogSothoth
       investigatorIds <- getInvestigatorIds

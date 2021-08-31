@@ -11,10 +11,10 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Matcher hiding (RevealLocation)
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype DimensionalGap = DimensionalGap LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -32,15 +32,16 @@ dimensionalGap = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
   )
 
-forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
-
 instance HasAbilities env DimensionalGap where
-  getAbilities iid (Window Timing.After (RevealLocation who _)) (DimensionalGap attrs)
-    | iid == who
-    = pure [locationAbility (forcedAbility attrs)]
   getAbilities iid window (DimensionalGap attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ RevealLocation Timing.After You
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env DimensionalGap where
   runMessage msg l@(DimensionalGap attrs) = case msg of

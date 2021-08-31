@@ -282,7 +282,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
                  locationCardPairs
                ]
           <> [ RevealLocation Nothing villageCommonsId
-             , MoveAllTo villageCommonsId
+             , MoveAllTo (toSource attrs) villageCommonsId
              ]
 
         let

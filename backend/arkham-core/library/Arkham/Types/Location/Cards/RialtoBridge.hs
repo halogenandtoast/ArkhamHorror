@@ -33,6 +33,6 @@ instance HasAbilities env RialtoBridge where
 
 instance LocationRunner env => RunMessage env RialtoBridge where
   runMessage msg l@(RialtoBridge attrs) = case msg of
-    MoveFrom iid lid | lid == toId attrs ->
+    MoveFrom _ iid lid | lid == toId attrs ->
       l <$ push (LoseActions iid (toSource attrs) 1)
     _ -> RialtoBridge <$> runMessage msg attrs

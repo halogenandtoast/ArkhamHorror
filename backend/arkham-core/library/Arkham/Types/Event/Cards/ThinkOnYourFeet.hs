@@ -32,7 +32,9 @@ instance
       e <$ pushAll
         [ chooseOne
           iid
-          [ TargetLabel (LocationTarget lid') [Move iid lid lid']
+          [ TargetLabel
+              (LocationTarget lid')
+              [Move (toSource attrs) iid lid lid']
           | lid' <- connectedLocationIds
           ]
         , Discard (toTarget attrs)

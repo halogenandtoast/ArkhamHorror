@@ -97,7 +97,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         , PlaceLocation cloverClubBarId Locations.cloverClubBar
         , PlaceLocation cloverClubCardroomId Locations.cloverClubCardroom
         , RevealLocation Nothing laBellaLunaId
-        , MoveAllTo laBellaLunaId
+        , MoveAllTo (toSource attrs) laBellaLunaId
         , CreateEnemyAt cloverClubPitBoss cloverClubLoungeId Nothing
         , AskMap
         . mapFromList

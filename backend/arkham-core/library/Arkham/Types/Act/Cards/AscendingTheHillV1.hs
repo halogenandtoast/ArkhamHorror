@@ -6,15 +6,17 @@ module Arkham.Types.Act.Cards.AscendingTheHillV1
 import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
-import Arkham.Types.ActId
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
-import Arkham.Types.LocationId
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 
 newtype AscendingTheHillV1 = AscendingTheHillV1 ActAttrs
@@ -32,22 +34,15 @@ instance HasSet Trait env LocationId => HasModifiersFor env AscendingTheHillV1 w
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities env AscendingTheHillV1 where
-  getAbilities i window (AscendingTheHillV1 x) = getAbilities i window x
+  getAbilities _ _ (AscendingTheHillV1 x) = pure
+    [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ LocationWithTitle
+        "Sentinel Peak"
+    ]
 
-instance (HasName env LocationId, ActRunner env) => RunMessage env AscendingTheHillV1 where
-  runMessage msg a@(AscendingTheHillV1 attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
-      pure
-        . AscendingTheHillV1
-        $ attrs
-        & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
-    AdvanceAct aid _ | aid == actId && onSide B attrs ->
-      a <$ push (NextAct actId "02281")
-    WhenEnterLocation _ lid -> do
-      name <- getName lid
-      a <$ when
-        (name == "Sentinel Peak")
-        (push $ AdvanceAct actId (toSource attrs))
+instance ActRunner env => RunMessage env AscendingTheHillV1 where
+  runMessage msg a@(AscendingTheHillV1 attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId attrs) source)
+    AdvanceAct aid _ | aid == toId attrs && onSide B attrs ->
+      a <$ push (NextAct (toId attrs) "02281")
     _ -> AscendingTheHillV1 <$> runMessage msg attrs

@@ -104,7 +104,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
           administrationBuildingId
           Locations.administrationBuilding
         , RevealLocation Nothing miskatonicQuadId
-        , MoveAllTo miskatonicQuadId
+        , MoveAllTo (toSource attrs) miskatonicQuadId
         , AskMap
         . mapFromList
         $ [ ( iid

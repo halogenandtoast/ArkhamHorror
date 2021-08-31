@@ -22,7 +22,7 @@ instance TreacheryRunner env => RunMessage env DraggedUnder where
   runMessage msg t@(DraggedUnder attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillAgility 3)
-    MoveFrom iid _ | treacheryOnInvestigator iid attrs -> t <$ pushAll
+    MoveFrom _ iid _ | treacheryOnInvestigator iid attrs -> t <$ pushAll
       [ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 2 0
       , Discard (TreacheryTarget treacheryId)
       ]

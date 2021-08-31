@@ -229,7 +229,7 @@ instance
            ]
         <> [ CreateStoryAssetAt abbess sanMarcoBasilicaId
            , RevealLocation Nothing sanMarcoBasilicaId
-           , MoveAllTo sanMarcoBasilicaId
+           , MoveAllTo (toSource attrs) sanMarcoBasilicaId
            , AskMap
            . mapFromList
            $ [ ( iid

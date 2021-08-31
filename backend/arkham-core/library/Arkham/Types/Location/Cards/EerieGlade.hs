@@ -8,12 +8,14 @@ import Arkham.Prelude
 import qualified Arkham.Location.Cards as Cards (eerieGlade)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.Query
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype EerieGlade = EerieGlade LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -31,16 +33,19 @@ eerieGlade = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Plus])
   )
 
-forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
-
-instance ActionRunner env => HasAbilities env EerieGlade where
-  getAbilities iid (Window Timing.After (RevealLocation who _)) (EerieGlade attrs)
-    | iid == who
-    = do
-      actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure [ locationAbility (forcedAbility attrs) | actionRemainingCount > 0 ]
-  getAbilities iid window (EerieGlade attrs) = getAbilities iid window attrs
+instance HasAbilities env EerieGlade where
+  getAbilities iid window (EerieGlade attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility
+          attrs
+          1
+          (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
+        $ ForcedAbility
+        $ RevealLocation Timing.After You
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env EerieGlade where
   runMessage msg l@(EerieGlade attrs) = case msg of

@@ -35,7 +35,7 @@ instance (EventRunner env) => RunMessage env Barricade3 where
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       lid <- getId iid
       e <$ push (AttachEvent eid (LocationTarget lid))
-    MoveFrom _ lid | LocationTarget lid `elem` eventAttachedTarget ->
+    MoveFrom _ _ lid | LocationTarget lid `elem` eventAttachedTarget ->
       e <$ push (Discard (EventTarget eventId))
     AttachEvent eid target | eid == eventId ->
       pure . Barricade3 $ attrs & attachedTargetL ?~ target

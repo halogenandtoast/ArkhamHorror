@@ -52,9 +52,7 @@ instance LocationRunner env => RunMessage env NorthsideTrainStation where
       l <$ push
         (chooseOne
           iid
-          [ TargetLabel
-              (LocationTarget lid)
-              [MoveTo iid lid, MovedBy iid (toSource attrs)]
+          [ TargetLabel (LocationTarget lid) [MoveTo (toSource attrs) iid lid]
           | lid <- locationIds
           ]
         )

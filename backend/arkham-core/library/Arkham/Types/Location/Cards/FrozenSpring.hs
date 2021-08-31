@@ -10,9 +10,10 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype FrozenSpring = FrozenSpring LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -30,14 +31,16 @@ frozenSpring = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
   )
 
-forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
-
 instance HasAbilities env FrozenSpring where
-  getAbilities iid (Window Timing.After (RevealLocation who _)) (FrozenSpring attrs)
-    | iid == who
-    = pure [locationAbility (forcedAbility attrs)]
-  getAbilities iid window (FrozenSpring attrs) = getAbilities iid window attrs
+  getAbilities iid window (FrozenSpring attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ RevealLocation Timing.After You
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env FrozenSpring where
   runMessage msg l@(FrozenSpring attrs) = case msg of

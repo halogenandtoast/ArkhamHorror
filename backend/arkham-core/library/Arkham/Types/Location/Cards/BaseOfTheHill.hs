@@ -19,8 +19,6 @@ import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window hiding (SuccessfulInvestigation)
 
 newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -36,16 +34,16 @@ baseOfTheHill = location
   [Square, Plus, Squiggle, Hourglass]
 
 instance HasAbilities env BaseOfTheHill where
-  getAbilities iid window@(Window Timing.When NonFast) (BaseOfTheHill attrs)
-    | locationRevealed attrs = withResignAction iid window attrs $ pure
+  getAbilities iid window (BaseOfTheHill attrs) =
+    withResignAction iid window attrs $ pure
       [ restrictedAbility
             attrs
             1
             Here
             (ActionAbility (Just Action.Investigate) (ActionCost 1))
           & (abilityLimitL .~ PlayerLimit PerRound 1)
+      | locationRevealed attrs
       ]
-  getAbilities iid window (BaseOfTheHill attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env BaseOfTheHill where
   runMessage msg l@(BaseOfTheHill attrs) = case msg of

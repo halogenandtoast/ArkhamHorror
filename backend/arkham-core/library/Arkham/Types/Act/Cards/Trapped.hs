@@ -38,7 +38,7 @@ instance ActRunner env => RunMessage env Trapped where
          ]
         <> map (Discard . EnemyTarget) enemyIds
         <> [ RevealLocation Nothing hallwayId
-           , MoveAllTo hallwayId
+           , MoveAllTo (toSource attrs) hallwayId
            , RemoveLocation studyId
            , NextAct aid "01109"
            ]

@@ -26,7 +26,7 @@ instance TreacheryRunner env => RunMessage env UmordhothsHunger where
       msgs <- for investigatorIds $ \iid -> do
         handCount <- unCardCount <$> getCount iid
         pure $ if handCount == 0
-          then InvestigatorKilled iid
+          then InvestigatorKilled source iid
           else RandomDiscard iid
       enemyIds <- getSetList @EnemyId ()
       t <$ pushAll

@@ -33,7 +33,7 @@ instance TreacheryRunner env => RunMessage env LostInVenice where
             [InvestigatorAssignDamage iid source DamageAny 2 0]
           , Label
             "Move to the location across from you"
-            [Move iid lid acrossLocationId]
+            [Move source iid lid acrossLocationId]
           ]
         , Discard (toTarget attrs)
         ]

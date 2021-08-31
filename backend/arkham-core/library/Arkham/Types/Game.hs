@@ -49,9 +49,11 @@ import Arkham.Types.Matcher hiding
   ( AssetDefeated
   , Discarded
   , DuringTurn
+  , EncounterCardSource
   , EnemyAttacks
   , EnemyDefeated
   , FastPlayerWindow
+  , InvestigatorDefeated
   , InvestigatorEliminated
   , PlayCard
   , RevealLocation
@@ -557,6 +559,14 @@ getInvestigatorsMatching = \case
     filterM
       ((`gameValueMatches` gameValueMatcher) . unClueCount <=< getCount)
       allInvestigators'
+  InvestigatorWithActionsRemaining gameValueMatcher -> do
+    allInvestigators' <- toList . view investigatorsL <$> getGame
+    filterM
+      ((`gameValueMatches` gameValueMatcher)
+      . unActionRemainingCount
+      <=< getCount
+      )
+      allInvestigators'
   InvestigatorWithDamage gameValueMatcher -> do
     allInvestigators' <- toList . view investigatorsL <$> getGame
     filterM
@@ -711,6 +721,13 @@ getLocationsMatching = \case
   FarthestLocationFromYou matcher -> guardYourLocation $ \start -> do
     matchingLocationIds <- map toId <$> getLocationsMatching matcher
     matches <- getLongestPath start (pure . (`elem` matchingLocationIds))
+    filter ((`elem` matches) . toId) . toList . view locationsL <$> getGame
+  NearestLocationToYou matcher -> guardYourLocation $ \start -> do
+    matchingLocationIds <- map toId <$> getLocationsMatching matcher
+    matches <- getShortestPath
+      start
+      (pure . (`elem` matchingLocationIds))
+      mempty
     filter ((`elem` matches) . toId) . toList . view locationsL <$> getGame
   AccessibleLocation -> guardYourLocation $ \yourLocation -> do
     accessibleLocations <- getSet yourLocation
@@ -1721,6 +1738,7 @@ instance HasGame env => HasSet Trait env Source where
     EventSource eid -> toTraits <$> getEvent eid
     EffectSource eid -> getSet =<< getEffect eid
     EnemySource eid -> toTraits <$> getEnemy eid
+    AttackSource source -> getSet source
     ScenarioSource _ -> pure mempty
     InvestigatorSource iid -> toTraits <$> getInvestigator iid
     CardCodeSource _ -> pure mempty
@@ -2625,10 +2643,10 @@ runGameMessage msg g = case msg of
   InvestigatorsMulligan ->
     g <$ pushAll [ InvestigatorMulligan iid | iid <- g ^. playerOrderL ]
   InvestigatorMulligan iid -> pure $ g & activeInvestigatorIdL .~ iid
-  Will (MoveFrom iid lid) -> do
+  Will (MoveFrom _ iid lid) -> do
     msgs <- checkWindows [Window Timing.When (Window.Leaving iid lid)]
     g <$ pushAll msgs
-  After (MoveFrom iid lid) -> do
+  After (MoveFrom _ iid lid) -> do
     msgs <- checkWindows [Window Timing.After (Window.Leaving iid lid)]
     g <$ pushAll msgs
   AfterEnterLocation iid lid -> do
@@ -2648,16 +2666,16 @@ runGameMessage msg g = case msg of
         target
       )
     pure $ g & effectsL %~ insertMap effectId effect
-  CreatePayAbilityCostEffect ability source target windows -> do
+  CreatePayAbilityCostEffect ability source target windows' -> do
     (effectId, effect) <- createPayForAbilityEffect
       ability
       source
       target
-      windows
+      windows'
     push
       (CreatedEffect
         effectId
-        (Just $ EffectAbility (ability, windows))
+        (Just $ EffectAbility (ability, windows'))
         source
         target
       )
@@ -2768,9 +2786,9 @@ runGameMessage msg g = case msg of
   SetEncounterDeck encounterDeck -> pure $ g & encounterDeckL .~ encounterDeck
   RemoveEnemy eid -> pure $ g & enemiesL %~ deleteMap eid
   When (RemoveLocation lid) -> do
-    windows <- checkWindows
+    windows' <- checkWindows
       [Window Timing.When (Window.LeavePlay $ LocationTarget lid)]
-    g <$ pushAll windows
+    g <$ pushAll windows'
   RemoveLocation lid -> do
     treacheryIds <- getSetList lid
     pushAll $ concatMap (resolve . Discard . TreacheryTarget) treacheryIds
@@ -2781,7 +2799,9 @@ runGameMessage msg g = case msg of
     assetIds <- selectList (AssetAt $ LocationWithId lid)
     pushAll $ concatMap (resolve . Discard . AssetTarget) assetIds
     investigatorIds <- getSetList lid
-    pushAll $ concatMap (resolve . InvestigatorDefeated) investigatorIds
+    pushAll $ concatMap
+      (resolve . InvestigatorDefeated (LocationSource lid))
+      investigatorIds
     pure $ g & locationsL %~ deleteMap lid
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
@@ -2948,9 +2968,9 @@ runGameMessage msg g = case msg of
     case find ((== cardId) . toCardId) (playableCards <> handOf investigator) of
       Nothing -> pure g -- card was discarded before playing
       Just card -> runGameMessage (PutCardIntoPlay iid card mtarget) g
-  PlayFastEvent iid cardId mtarget windows -> do
+  PlayFastEvent iid cardId mtarget windows' -> do
     investigator <- getInvestigator iid
-    playableCards <- getPlayableCards (toAttrs investigator) windows
+    playableCards <- getPlayableCards (toAttrs investigator) windows'
     case find ((== cardId) . toCardId) (playableCards <> handOf investigator) of
       Nothing -> pure g -- card was discarded before playing
       Just card -> do
@@ -2961,7 +2981,7 @@ runGameMessage msg g = case msg of
         pushAll
           [ PayCardCost iid (toCardId card)
           , PlayedCard iid card
-          , InvestigatorPlayEvent iid eid mtarget windows
+          , InvestigatorPlayEvent iid eid mtarget windows'
           ]
         pure $ g & eventsL %~ insertMap eid event
   PutCardIntoPlay iid card mtarget -> do

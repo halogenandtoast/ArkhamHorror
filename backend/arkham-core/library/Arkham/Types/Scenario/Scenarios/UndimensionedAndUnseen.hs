@@ -283,7 +283,9 @@ instance
         <> [ PlaceLocation locationId cardDef
            | (locationId, cardDef) <- locations
            ]
-        <> [RevealLocation Nothing dunwichVillageId, MoveAllTo dunwichVillageId]
+        <> [ RevealLocation Nothing dunwichVillageId
+           , MoveAllTo (toSource attrs) dunwichVillageId
+           ]
         <> [ chooseOne
                iid
                [ Label

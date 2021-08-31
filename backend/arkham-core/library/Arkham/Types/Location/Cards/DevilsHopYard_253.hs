@@ -9,15 +9,15 @@ import qualified Arkham.Location.Cards as Cards (devilsHopYard_253)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype DevilsHopYard_253 = DevilsHopYard_253 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -32,22 +32,26 @@ devilsHopYard_253 = location
   Hourglass
   [Square, Plus]
 
-ability :: LocationAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (FastAbility Free)
-    & (abilityLimitL .~ GroupLimit PerGame 1)
-
-instance ActionRunner env => HasAbilities env DevilsHopYard_253 where
-  getAbilities iid window@(Window Timing.When FastPlayerWindow) (DevilsHopYard_253 attrs)
-    = withBaseAbilities iid window attrs $ do
-      investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
-      anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
-      pure
-        [ locationAbility (ability attrs)
-        | investigatorsWithClues && anyAbominations
-        ]
+instance HasAbilities env DevilsHopYard_253 where
   getAbilities iid window (DevilsHopYard_253 attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ do
+      pure
+        [ restrictedAbility
+              attrs
+              1
+              (Here
+              <> InvestigatorExists
+                   (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+              <> EnemyCriteria
+                   (EnemyExists
+                   $ EnemyAt YourLocation
+                   <> EnemyWithTrait Abomination
+                   )
+              )
+              (FastAbility Free)
+            & (abilityLimitL .~ GroupLimit PerGame 1)
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env DevilsHopYard_253 where
   runMessage msg l@(DevilsHopYard_253 attrs) = case msg of

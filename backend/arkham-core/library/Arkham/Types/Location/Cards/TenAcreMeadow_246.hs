@@ -39,8 +39,12 @@ instance HasAbilities env TenAcreMeadow_246 where
         [ restrictedAbility
               attrs
               1
-              (Here <> EnemyCriteria
-                (EnemyExists $ EnemyWithTitle "Brood of Yog-Sothoth")
+              (Here
+              <> EnemyCriteria
+                   (EnemyExists
+                   $ EnemyAt YourLocation
+                   <> EnemyWithTrait Abomination
+                   )
               )
               (FastAbility Free)
             & (abilityLimitL .~ GroupLimit PerGame 1)

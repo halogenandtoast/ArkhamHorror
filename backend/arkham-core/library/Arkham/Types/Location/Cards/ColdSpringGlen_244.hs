@@ -49,7 +49,11 @@ instance HasAbilities env ColdSpringGlen_244 where
             1
             (Here
             <> InvestigatorExists (You <> InvestigatorWithAnyClues)
-            <> EnemyCriteria (EnemyExists $ EnemyWithTrait Abomination)
+            <> EnemyCriteria
+                 (EnemyExists
+                 $ EnemyAt YourLocation
+                 <> EnemyWithTrait Abomination
+                 )
             )
             (FastAbility Free)
           & (abilityLimitL .~ GroupLimit PerGame 1)

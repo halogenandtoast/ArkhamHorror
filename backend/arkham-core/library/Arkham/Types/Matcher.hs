@@ -11,6 +11,7 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardType
 import Arkham.Types.Card.Id
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Keyword (Keyword)
@@ -222,6 +223,7 @@ data LocationMatcher
   | InvestigatableLocation
   | FarthestLocationFromYou LocationMatcher
   | LocationWithTrait Trait
+  | LocationInDirection Direction LocationMatcher
   | LocationWithoutTreacheryWithCardCode CardCode
   | LocationMatchAll [LocationMatcher]
   | LocationMatchAny [LocationMatcher]

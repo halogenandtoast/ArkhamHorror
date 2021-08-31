@@ -697,6 +697,10 @@ getLocationsMatching = \case
       . toList
       . view locationsL
       =<< getGame
+  LocationInDirection direction matcher -> do
+    starts <- getLocationsMatching matcher
+    matches <- catMaybes <$> traverse (getId . (direction, ) . toId) starts
+    filter ((`elem` matches) . toId) . toList . view locationsL <$> getGame
   FarthestLocationFromYou matcher -> guardYourLocation $ \start -> do
     matchingLocationIds <- map toId <$> getLocationsMatching matcher
     matches <- getLongestPath start (pure . (`elem` matchingLocationIds))

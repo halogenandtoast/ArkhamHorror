@@ -17,8 +17,6 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype ParlorCar = ParlorCar LocationAttrs
   deriving anyclass IsLocation
@@ -47,17 +45,13 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env ParlorCar wher
       Nothing -> pure $ toModifiers l [CannotInvestigate]
   getModifiersFor _ _ _ = pure []
 
-ability :: LocationAttrs -> Ability
-ability attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 3])
-
 instance HasAbilities env ParlorCar where
-  getAbilities iid window@(Window Timing.When NonFast) (ParlorCar attrs)
-    | locationRevealed attrs = withBaseAbilities iid window attrs
-    $ pure [locationAbility (ability attrs)]
-  getAbilities iid window (ParlorCar attrs) = getAbilities iid window attrs
+  getAbilities iid window (ParlorCar attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1 $ ActionAbility Nothing $ Costs
+          [ActionCost 1, ResourceCost 3]
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env ParlorCar where
   runMessage msg l@(ParlorCar attrs@LocationAttrs {..}) = case msg of

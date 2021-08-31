@@ -10,23 +10,24 @@ import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Types.Matcher
 
 newtype EmergentMonstrosity = EmergentMonstrosity EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 emergentMonstrosity :: EnemyCard EmergentMonstrosity
-emergentMonstrosity =
-  enemy EmergentMonstrosity Cards.emergentMonstrosity (4, Static 5, 3) (2, 2)
+emergentMonstrosity = enemyWith
+  EmergentMonstrosity
+  Cards.emergentMonstrosity
+  (4, Static 5, 3)
+  (2, 2)
+  ((spawnAtL
+   ?~ FirstLocation [LocationInDirection RightOf YourLocation, YourLocation]
+   )
+  . (exhaustedL .~ True)
+  )
 
 instance EnemyRunner env => RunMessage env EmergentMonstrosity where
-  runMessage msg (EmergentMonstrosity attrs@EnemyAttrs {..}) = case msg of
-
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      lid <- getId @LocationId iid
-      spawnLocation <- fromMaybe lid <$> getId (RightOf, lid)
-      push (EnemySpawn (Just iid) spawnLocation enemyId)
-      pure . EmergentMonstrosity $ attrs & exhaustedL .~ True
-    _ -> EmergentMonstrosity <$> runMessage msg attrs
+  runMessage msg (EmergentMonstrosity attrs) =
+    EmergentMonstrosity <$> runMessage msg attrs

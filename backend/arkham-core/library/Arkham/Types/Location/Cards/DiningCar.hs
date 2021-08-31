@@ -6,16 +6,19 @@ module Arkham.Types.Location.Cards.DiningCar
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (diningCar)
+import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
-import Arkham.Types.Matcher hiding (RevealLocation)
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.Modifier
 import Arkham.Types.Query
+import qualified Arkham.Types.Timing as Timing
 
 newtype DiningCar = DiningCar LocationAttrs
   deriving anyclass IsLocation
@@ -41,11 +44,18 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env DiningCar wher
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities env DiningCar where
-  getAbilities iid window (DiningCar attrs) = getAbilities iid window attrs
+  getAbilities i window (DiningCar x) = withBaseAbilities i window x $ pure
+    [ restrictedAbility x 1 Here
+      $ ForcedAbility
+      $ RevealLocation Timing.After You
+      $ LocationWithId
+      $ toId x
+    | locationRevealed x
+    ]
 
 instance LocationRunner env => RunMessage env DiningCar where
-  runMessage msg (DiningCar attrs) = case msg of
-    RevealLocation (Just iid) lid | lid == locationId attrs -> do
-      push (FindAndDrawEncounterCard iid (CardWithCardCode "02182"))
-      DiningCar <$> runMessage msg attrs
+  runMessage msg l@(DiningCar attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      l <$ push
+        (FindAndDrawEncounterCard iid (CardWithTitle "Grappling Horror"))
     _ -> DiningCar <$> runMessage msg attrs

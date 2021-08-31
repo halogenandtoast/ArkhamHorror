@@ -696,6 +696,12 @@ getLocationsMatching = \case
       . toList
       . view locationsL
       =<< getGame
+  LocationWithInvestigator whoMatcher -> do
+    investigators <- select whoMatcher
+    filterM (fmap (notNull . intersection investigators) . getSet . toId)
+      . toList
+      . view locationsL
+      =<< getGame
   RevealedLocation -> filter isRevealed . toList . view locationsL <$> getGame
   UnrevealedLocation ->
     filter (not . isRevealed) . toList . view locationsL <$> getGame

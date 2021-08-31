@@ -17,8 +17,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype CloseTheRift = CloseTheRift ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
@@ -35,13 +33,14 @@ closeTheRift = act
   )
 
 instance HasAbilities env CloseTheRift where
-  getAbilities iid window@(Window Timing.When NonFast) (CloseTheRift x) =
+  getAbilities iid window (CloseTheRift x) =
     withBaseAbilities iid window x $ do
-      pure [mkAbility (toSource x) 1 (ActionAbility Nothing $ ActionCost 1)]
-  getAbilities iid window (CloseTheRift x) = getAbilities iid window x
+      pure [mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1]
 
 instance ActRunner env => RunMessage env CloseTheRift where
   runMessage msg a@(CloseTheRift attrs@ActAttrs {..}) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       theEdgeOfTheUniverseId <- getJustLocationIdByName
         "The Edge of the Universe"
@@ -52,8 +51,6 @@ instance ActRunner env => RunMessage env CloseTheRift where
            , NextAct actId "02319"
            ]
         )
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
       let locationCards = filterLocations cards
       a <$ unless

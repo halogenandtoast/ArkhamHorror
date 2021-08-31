@@ -28,10 +28,8 @@ tearThroughTime = location
   [Circle, Plus, Squiggle]
 
 instance HasAbilities env TearThroughTime where
-  getAbilities iid window@(Window Timing.When NonFast) (TearThroughTime attrs)
-    = withBaseAbilities iid window attrs $ pure [resignAction attrs]
   getAbilities iid window (TearThroughTime attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure [resignAction attrs]
 
 instance LocationRunner env => RunMessage env TearThroughTime where
   runMessage msg (TearThroughTime attrs) =

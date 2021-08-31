@@ -544,8 +544,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       | lid /= locationId && iid `elem` locationInvestigators
       -> pure $ a & investigatorsL %~ deleteSet iid -- TODO: should we broadcast leaving the location
     WhenEnterLocation iid lid | lid == locationId -> do
-      pushAll =<< checkWindows
-        ((`Window` Window.Entering iid lid) <$> [Timing.When, Timing.After])
+      pushAll =<< checkWindows [Window Timing.When $ Window.Entering iid lid]
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure $ a & investigatorsL %~ insertSet iid
     SetLocationAsIf iid lid | lid == locationId -> do

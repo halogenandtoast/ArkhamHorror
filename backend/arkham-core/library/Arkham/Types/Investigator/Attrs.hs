@@ -15,7 +15,8 @@ import Arkham.Types.CommitRestriction
 import Arkham.Types.Cost
 import Arkham.Types.Deck
 import Arkham.Types.EntityInstance
-import Arkham.Types.Game.Helpers
+import Arkham.Types.Game.Helpers hiding (windows)
+import qualified Arkham.Types.Game.Helpers as Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Runner
@@ -1561,7 +1562,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ push (MoveTo source investigatorId lid)
   MoveTo source iid lid | iid == investigatorId -> do
     connectedLocations <- mapSet unConnectedLocationId <$> getSet lid
-    movedByWindows <- windows [Window.MovedBy source lid iid]
+    movedByWindows <- Helpers.windows [Window.MovedBy source lid iid]
     pushAll
       $ movedByWindows
       <> [ WhenWillEnterLocation iid lid

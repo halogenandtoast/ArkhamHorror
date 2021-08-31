@@ -33,7 +33,7 @@ instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
                  iid
                  [ TargetLabel
                      (LocationTarget lid)
-                     [MoveTo iid lid, MovedBy iid (toSource attrs)]
+                     [MoveTo (toSource attrs) iid lid]
                  | lid <- centralLocations
                  ]
              ]

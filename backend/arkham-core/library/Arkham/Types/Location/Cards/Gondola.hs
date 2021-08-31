@@ -41,7 +41,7 @@ instance LocationRunner env => RunMessage env Gondola where
       locationIds <-
         setToList . deleteSet (toId attrs) <$> getSet @LocationId ()
       l <$ pushAll
-        (MoveAllTo (toId attrs) : [ RemoveLocation lid | lid <- locationIds ])
+        (MoveAllTo (toSource attrs) (toId attrs) : [ RemoveLocation lid | lid <- locationIds ])
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       l <$ push
         (chooseOne

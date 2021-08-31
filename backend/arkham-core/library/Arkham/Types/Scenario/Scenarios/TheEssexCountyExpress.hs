@@ -259,7 +259,7 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
                (ScenarioSource scenarioId)
                (LocationTarget start)
              , RevealLocation Nothing start
-             , MoveAllTo start
+             , MoveAllTo (toSource attrs) start
              ]
 
         let locations' = locationNameMap (engineCar : map snd trainCars)

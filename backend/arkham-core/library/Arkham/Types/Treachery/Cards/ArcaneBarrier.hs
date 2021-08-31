@@ -27,7 +27,7 @@ instance TreacheryRunner env => RunMessage env ArcaneBarrier where
     Revelation iid source | isSource attrs source -> do
       lid <- getId iid
       t <$ push (AttachTreachery (toId attrs) (LocationTarget lid))
-    Will (MoveTo iid lid) -> do
+    Will (MoveTo _ iid lid) -> do
       investigatorLocation <- getId iid
       when
           (treacheryOnLocation lid attrs

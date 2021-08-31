@@ -29,7 +29,9 @@ instance EventRunner env => RunMessage env Elusive where
 
       e <$ pushAll
         ([ DisengageEnemy iid enemyId | enemyId <- enemyIds ]
-        <> [ chooseOne iid [ MoveTo iid lid | lid <- candidateLocations ]
+        <> [ chooseOne
+               iid
+               [ MoveTo (toSource attrs) iid lid | lid <- candidateLocations ]
            | notNull candidateLocations
            ]
         <> map EnemyCheckEngagement enemyIds

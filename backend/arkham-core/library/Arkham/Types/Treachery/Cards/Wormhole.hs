@@ -37,7 +37,6 @@ instance TreacheryRunner env => RunMessage env Wormhole where
           let locationId = LocationId $ toCardId card
           pushAll
             [ InvestigatorDrewEncounterCard iid card
-            , MoveTo iid locationId
-            , MovedBy iid (toSource attrs)
+            , MoveTo (toSource attrs) iid locationId
             ]
     _ -> Wormhole <$> runMessage msg attrs

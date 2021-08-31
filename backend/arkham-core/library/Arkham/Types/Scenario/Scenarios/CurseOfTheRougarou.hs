@@ -125,7 +125,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
              | (locationId, (label, cardDef)) <- startingLocationsWithLabel
              ]
         <> [ RevealLocation Nothing bayouId
-           , MoveAllTo bayouId
+           , MoveAllTo (toSource attrs) bayouId
            , AskMap
            . mapFromList
            $ [ ( iid

@@ -6,32 +6,39 @@ module Arkham.Types.Enemy.Cards.CrazedShoggoth
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
-import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (InvestigatorDefeated)
+import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 
 newtype CrazedShoggoth = CrazedShoggoth EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crazedShoggoth :: EnemyCard CrazedShoggoth
-crazedShoggoth =
-  enemy CrazedShoggoth Cards.crazedShoggoth (3, Static 6, 4) (2, 2)
+crazedShoggoth = enemyWith
+  CrazedShoggoth
+  Cards.crazedShoggoth
+  (3, Static 6, 4)
+  (2, 2)
+  (spawnAtL ?~ NearestLocationToYou (LocationWithTrait Altered))
 
-instance
-  ( HasSet ClosestLocationId env (LocationId , [Trait])
-  , EnemyAttrsRunMessage env
-  )
-  => RunMessage env CrazedShoggoth where
+instance HasAbilities env CrazedShoggoth where
+  getAbilities iid window (CrazedShoggoth attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1 $ ForcedAbility $ InvestigatorDefeated
+          Timing.When
+          (SourceIs $ AttackSource $ toId attrs)
+          You
+      ]
+
+instance EnemyAttrsRunMessage env => RunMessage env CrazedShoggoth where
   runMessage msg e@(CrazedShoggoth attrs) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId attrs -> do
-      lid <- getId @LocationId iid
-      closestAlteredLocationIds <- map unClosestLocationId
-        <$> getSetList (lid, [Altered])
-      e <$ spawnAtOneOf iid eid closestAlteredLocationIds
-    InvestigatorWhenDefeated source iid | isSource attrs source ->
-      e <$ push (InvestigatorKilled iid)
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      e <$ push (InvestigatorKilled source iid)
     _ -> CrazedShoggoth <$> runMessage msg attrs

@@ -322,7 +322,7 @@ data Message
     | InvestigatorDamage InvestigatorId Source Int Int
     | InvestigatorDamageEnemy InvestigatorId EnemyId
     | InvestigatorDamageInvestigator InvestigatorId InvestigatorId
-    | InvestigatorDefeated InvestigatorId
+    | InvestigatorDefeated Source InvestigatorId
     | InvestigatorDirectDamage InvestigatorId Source Int Int
     | InvestigatorDiscardAllClues InvestigatorId
     | InvestigatorDiscoverClues InvestigatorId LocationId Int (Maybe Action)
@@ -335,7 +335,7 @@ data Message
     | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
     | InvestigatorDrewPlayerCard InvestigatorId PlayerCard
     | InvestigatorEliminated InvestigatorId
-    | InvestigatorKilled InvestigatorId
+    | InvestigatorKilled Source InvestigatorId
     | InvestigatorMulligan InvestigatorId
     | InvestigatorsMulligan
     | -- | This message exists in case the number of clues will change
@@ -360,16 +360,15 @@ data Message
     | LoseResources InvestigatorId Int
     | LoseAllResources InvestigatorId
     | SpendActions InvestigatorId Source Int
-    | Move InvestigatorId LocationId LocationId
+    | Move Source InvestigatorId LocationId LocationId
     | MoveAction InvestigatorId LocationId Cost Bool
     | MoveAllCluesTo Target
-    | MoveAllTo LocationId
-    | MoveFrom InvestigatorId LocationId
-    | MoveTo InvestigatorId LocationId
+    | MoveAllTo Source LocationId
+    | MoveFrom Source InvestigatorId LocationId
+    | MoveTo Source InvestigatorId LocationId
     | MoveToward Target LocationMatcher
     | MoveTopOfDeckToBottom Source DeckSignifier Int
     | MoveUntil LocationId Target
-    | MovedBy InvestigatorId Source
     | NextAct ActId ActId
     | NextAdvanceActStep ActId Int
     | NextAgenda AgendaId AgendaId

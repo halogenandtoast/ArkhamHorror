@@ -6,6 +6,7 @@ module Arkham.Types.Agenda.Cards.AllIsOne
 import Arkham.Prelude
 
 import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.CampaignLogKey
@@ -15,27 +16,27 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 
 newtype AllIsOne = AllIsOne AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAgenda, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 allIsOne :: AgendaCard AllIsOne
 allIsOne = agenda (1, A) AllIsOne Cards.allIsOne (Static 4)
 
-isEncounterCardSource :: Source -> Bool
-isEncounterCardSource = \case
-  ActSource _ -> True
-  AgendaSource _ -> True
-  EnemySource _ -> True
-  LocationSource _ -> True
-  ScenarioSource _ -> True
-  TreacherySource _ -> True
-  _ -> False
+instance HasAbilities env AllIsOne where
+  getAbilities _ _ (AllIsOne x) = pure
+    [ mkAbility x 1 $ ForcedAbility $ MovedBy
+        Timing.After
+        You
+        EncounterCardSource
+    ]
 
 instance (HasRecord env, AgendaRunner env) => RunMessage env AllIsOne where
   runMessage msg a@(AllIsOne attrs@AgendaAttrs {..}) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       failedToSaveStudents <- getHasRecord
         TheInvestigatorsFailedToSaveTheStudents
@@ -55,6 +56,4 @@ instance (HasRecord env, AgendaRunner env) => RunMessage env AllIsOne where
     RequestedEncounterCard source (Just card) | isSource attrs source -> do
       leadInvestigator <- getLeadInvestigatorId
       a <$ push (InvestigatorDrewEncounterCard leadInvestigator card)
-    MovedBy iid source | isEncounterCardSource source ->
-      a <$ push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1)
     _ -> AllIsOne <$> runMessage msg attrs

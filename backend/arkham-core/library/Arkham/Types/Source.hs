@@ -45,6 +45,7 @@ data Source
   | ActDeckSource
   | AgendaDeckSource
   | YouSource
+  | AttackSource EnemyId
   | AssetMatcherSource AssetMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

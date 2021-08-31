@@ -50,7 +50,7 @@ instance LocationRunner env => RunMessage env Graveyard where
               [InvestigatorAssignDamage iid source DamageAny 0 2]
             , Label
               "Move to Rivertown"
-              [MoveTo iid rivertownId, MovedBy iid (toSource attrs)]
+              [MoveTo (toSource attrs) iid rivertownId]
             ]
           )
     _ -> Graveyard <$> runMessage msg attrs

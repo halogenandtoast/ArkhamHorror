@@ -139,7 +139,9 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
         <> [ SetLocationLabel locationId label
            | (label, (locationId, _)) <- zip woodsLabels woodsLocations
            ]
-        <> [RevealLocation Nothing mainPathId, MoveAllTo mainPathId]
+        <> [ RevealLocation Nothing mainPathId
+           , MoveAllTo (toSource attrs) mainPathId
+           ]
         <> ghoulPriestMessages
         <> cultistsWhoGotAwayMessages
         <> pastMidnightMessages

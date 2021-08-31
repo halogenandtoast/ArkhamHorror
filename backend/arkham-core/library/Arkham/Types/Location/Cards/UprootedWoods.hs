@@ -8,12 +8,13 @@ import Arkham.Prelude
 import qualified Arkham.Location.Cards as Cards (uprootedWoods)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
-import Arkham.Types.Query
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype UprootedWoods = UprootedWoods LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -31,16 +32,19 @@ uprootedWoods = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Square, T])
   )
 
-forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
-
-instance ActionRunner env => HasAbilities env UprootedWoods where
-  getAbilities iid (Window Timing.After (RevealLocation who _)) (UprootedWoods attrs)
-    | iid == who
-    = do
-      actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      pure [ locationAbility (forcedAbility attrs) | actionRemainingCount == 0 ]
-  getAbilities iid window (UprootedWoods attrs) = getAbilities iid window attrs
+instance HasAbilities env UprootedWoods where
+  getAbilities iid window (UprootedWoods attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility
+          attrs
+          1
+          (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
+        $ ForcedAbility
+        $ RevealLocation Timing.After You
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env UprootedWoods where
   runMessage msg l@(UprootedWoods attrs) = case msg of

@@ -41,12 +41,9 @@ instance (GetCardDef env LocationId, TreacheryRunner env) => RunMessage env Spac
             . map unConnectedLocationId
             <$> getSetList nonSentinelHillLocation
           pure
-            $ concat
-                [ [ MoveTo iid connectedSentinelHillLocation
-                  , MovedBy iid (toSource attrs)
-                  ]
-                | iid <- investigatorIds
-                ]
+            $ [ MoveTo (toSource attrs) iid connectedSentinelHillLocation
+              | iid <- investigatorIds
+              ]
             <> [ EnemyMove
                    eid
                    nonSentinelHillLocation

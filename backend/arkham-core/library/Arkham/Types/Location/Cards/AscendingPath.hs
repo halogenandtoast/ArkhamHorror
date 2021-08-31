@@ -11,6 +11,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Id
@@ -20,8 +21,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window hiding (SuccessfulInvestigation)
 
 newtype AscendingPath = AscendingPath LocationAttrs
   deriving anyclass IsLocation
@@ -42,19 +41,17 @@ instance HasModifiersFor env AscendingPath where
     $ toModifiers l [ Blocked | not locationRevealed ]
   getModifiersFor _ _ _ = pure []
 
-ability :: LocationAttrs -> Ability
-ability attrs =
-  mkAbility
-      (toSource attrs)
-      1
-      (ActionAbility (Just Action.Investigate) (ActionCost 1))
-    & (abilityLimitL .~ PlayerLimit PerRound 1)
-
 instance HasAbilities env AscendingPath where
-  getAbilities iid window@(Window Timing.When NonFast) (AscendingPath attrs) =
-    withBaseAbilities iid window attrs
-      $ pure [ locationAbility (ability attrs) | locationRevealed attrs ]
-  getAbilities iid window (AscendingPath attrs) = getAbilities iid window attrs
+  getAbilities iid window (AscendingPath attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility
+            attrs
+            1
+            Here
+            (ActionAbility (Just Action.Investigate) (ActionCost 1))
+          & (abilityLimitL .~ PlayerLimit PerRound 1)
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env AscendingPath where
   runMessage msg l@(AscendingPath attrs) = case msg of

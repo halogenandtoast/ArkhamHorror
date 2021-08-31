@@ -28,5 +28,5 @@ accademiaBridge = locationWith
 
 instance LocationRunner env => RunMessage env AccademiaBridge where
   runMessage msg l@(AccademiaBridge attrs) = case msg of
-    MoveFrom iid lid | lid == toId attrs -> l <$ push (LoseResources iid 2)
+    MoveFrom _ iid lid | lid == toId attrs -> l <$ push (LoseResources iid 2)
     _ -> AccademiaBridge <$> runMessage msg attrs

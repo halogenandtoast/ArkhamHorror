@@ -53,6 +53,17 @@ checkWindows windows = do
   iids <- getInvestigatorIds
   pure $ [ CheckWindow iid windows | iid <- iids ]
 
+windows
+  :: (MonadReader env m, HasSet InvestigatorId env ())
+  => [Window.WindowType]
+  -> m [Message]
+windows windows = do
+  iids <- getInvestigatorIds
+  pure $ do
+    timing <- [Timing.When, Timing.After]
+    iid <- iids
+    [CheckWindow iid $ map (Window timing) windows]
+
 cancelToken :: (HasQueue env, MonadIO m, MonadReader env m) => Token -> m ()
 cancelToken token = withQueue $ \queue ->
   ( filter
@@ -850,6 +861,7 @@ type CanCheckPlayable env
     , HasCount ClueCount env ActId
     , HasCount ClueCount env InvestigatorId
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+    , HasCount ActionRemainingCount env InvestigatorId
     , HasSet InvestigatorId env LocationId
     , HasSet EnemyId env LocationId
     , HasSet EnemyId env Matcher.EnemyMatcher
@@ -1630,6 +1642,8 @@ matchWho you who = \case
   Matcher.InvestigatorCanMove -> do
     notElem CannotMove
       <$> getModifiers (InvestigatorSource who) (InvestigatorTarget who)
+  Matcher.InvestigatorWithActionsRemaining valueMatcher ->
+    (`gameValueMatches` valueMatcher) . unActionRemainingCount =<< getCount who
   Matcher.InvestigatorWithClues valueMatcher ->
     (`gameValueMatches` valueMatcher) . unClueCount =<< getCount who
   Matcher.InvestigatorWithDamage valueMatcher ->
@@ -1660,7 +1674,17 @@ sourceMatches
   => Source
   -> Matcher.SourceMatcher
   -> m Bool
-sourceMatches s (Matcher.SourceWithTrait t) = elem t <$> getSet s
+sourceMatches s = \case
+  Matcher.SourceWithTrait t -> elem t <$> getSet s
+  Matcher.SourceIs s' -> pure $ s == s'
+  Matcher.EncounterCardSource -> pure $ case s of
+    ActSource _ -> True
+    AgendaSource _ -> True
+    EnemySource _ -> True
+    LocationSource _ -> True
+    ScenarioSource _ -> True
+    TreacherySource _ -> True
+    _ -> False
 
 enemyMatches
   :: (MonadReader env m, CanCheckPlayable env)

@@ -47,10 +47,10 @@ instance LocationRunner env => RunMessage env ArkhamWoodsTwistingPaths where
   runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       moveFrom <- popMessageMatching \case
-        MoveFrom iid' lid' -> iid' == iid && toId l == lid'
+        MoveFrom _ iid' lid' -> iid' == iid && toId l == lid'
         _ -> False
       moveTo <- popMessageMatching \case
-        MoveTo iid' _ -> iid == iid' -- we don't know where they are going for the cancel
+        MoveTo _ iid' _ -> iid == iid' -- we don't know where they are going for the cancel
         _ -> False
       let
         target = InvestigatorTarget iid

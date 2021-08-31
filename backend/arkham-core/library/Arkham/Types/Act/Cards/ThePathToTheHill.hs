@@ -15,7 +15,6 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype ThePathToTheHill = ThePathToTheHill ActAttrs
@@ -23,19 +22,14 @@ newtype ThePathToTheHill = ThePathToTheHill ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePathToTheHill :: ActCard ThePathToTheHill
-thePathToTheHill = act
-  (1, A)
-  ThePathToTheHill
-  Cards.thePathToTheHill
-  (Just $ GroupClueCost (PerPlayer 2) Anywhere)
+thePathToTheHill = act (1, A) ThePathToTheHill Cards.thePathToTheHill Nothing
 
-instance ActionRunner env => HasAbilities env ThePathToTheHill where
-  getAbilities i window (ThePathToTheHill x) = do
-    clueCount <- unSpendableClueCount <$> getCount ()
-    requiredClueCount <- getPlayerCountValue (PerPlayer 2)
-    if clueCount >= requiredClueCount
-      then pure [mkAbility x 1 LegacyForcedAbility]
-      else getAbilities i window x
+instance HasAbilities env ThePathToTheHill where
+  getAbilities _ _ (ThePathToTheHill x) = pure
+    [ mkAbility x 1 $ Objective $ ForcedAbilityWithCost
+        AnyWindow
+        (GroupClueCost (PerPlayer 2) Anywhere)
+    ]
 
 instance ActRunner env => RunMessage env ThePathToTheHill where
   runMessage msg a@(ThePathToTheHill attrs@ActAttrs {..}) = case msg of

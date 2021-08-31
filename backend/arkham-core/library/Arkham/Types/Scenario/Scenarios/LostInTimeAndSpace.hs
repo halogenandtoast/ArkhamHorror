@@ -128,8 +128,9 @@ investigatorDefeat
      , HasSet DefeatedInvestigatorId env ()
      , HasId LeadInvestigatorId env ()
      )
-  => m [Message]
-investigatorDefeat = do
+  => ScenarioAttrs
+  -> m [Message]
+investigatorDefeat a = do
   leadInvestigatorId <- getLeadInvestigatorId
   defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
   if null defeatedInvestigatorIds
@@ -153,7 +154,9 @@ investigatorDefeat = do
                 ]
             ]
         ]
-      <> [ InvestigatorKilled iid | iid <- defeatedInvestigatorIds ]
+      <> [ InvestigatorKilled (toSource a) iid
+         | iid <- defeatedInvestigatorIds
+         ]
 
 instance
   ( HasSet DefeatedInvestigatorId env ()
@@ -186,7 +189,7 @@ instance
         , AddAct "02316"
         , PlaceLocation anotherDimensionId Locations.anotherDimension
         , RevealLocation Nothing anotherDimensionId
-        , MoveAllTo anotherDimensionId
+        , MoveAllTo (toSource attrs) anotherDimensionId
         ]
 
       let
@@ -244,15 +247,14 @@ instance
         Nothing -> pure ()
         Just card -> pushAll
           [ PlaceLocation (LocationId $ toCardId card) (toCardDef card)
-          , MoveTo iid (LocationId $ toCardId card)
-          , MovedBy iid (toSource attrs)
+          , MoveTo (toSource attrs) iid (LocationId $ toCardId card)
           ]
     ScenarioResolution NoResolution -> do
       step <- unActStep <$> getStep ()
       push (ScenarioResolution . Resolution $ if step == 4 then 2 else 4)
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 1) -> do
-      msgs <- investigatorDefeat
+      msgs <- investigatorDefeat attrs
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
@@ -288,7 +290,7 @@ instance
         )
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 2) -> do
-      msgs <- investigatorDefeat
+      msgs <- investigatorDefeat attrs
       leadInvestigatorId <- getLeadInvestigatorId
       pushAll
         (msgs
@@ -323,7 +325,7 @@ instance
         )
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 3) -> do
-      msgs <- investigatorDefeat
+      msgs <- investigatorDefeat attrs
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       pushAll
@@ -347,12 +349,14 @@ instance
              ]
            , Record YogSothothHasFledToAnotherDimension
            ]
-        <> [ InvestigatorKilled iid | iid <- investigatorIds ]
+        <> [ InvestigatorKilled (toSource attrs) iid
+           | iid <- investigatorIds
+           ]
         <> [EndOfGame]
         )
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 4) -> do
-      msgs <- investigatorDefeat
+      msgs <- investigatorDefeat attrs
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       pushAll

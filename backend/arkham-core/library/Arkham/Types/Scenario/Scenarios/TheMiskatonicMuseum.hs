@@ -211,7 +211,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         , PlaceLocation museumEntranceId Locations.museumEntrance
         , PlaceLocation museumHallsId Locations.museumHalls
         , RevealLocation Nothing museumEntranceId
-        , MoveAllTo museumEntranceId
+        , MoveAllTo (toSource attrs) museumEntranceId
         ]
 
       let

@@ -14,7 +14,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Location as X
 import Arkham.Types.Matcher hiding
-  (ChosenRandomLocation, InvestigatorEliminated)
+  (ChosenRandomLocation, InvestigatorDefeated, InvestigatorEliminated)
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
@@ -258,7 +258,7 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
     Discard (ActTarget _) -> pure $ a & actStackL .~ []
     -- See: Vengeance Awaits / The Devourer Below - right now the assumption
     -- is that the act deck has been replaced.
-    InvestigatorDefeated _ -> do
+    InvestigatorDefeated _ _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
       if null investigatorIds && not scenarioInResolution
         then do

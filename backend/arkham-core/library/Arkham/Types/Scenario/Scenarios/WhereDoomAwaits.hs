@@ -258,7 +258,9 @@ instance
            | (locationId, cardDef) <- inPlayLocations
            ]
         <> silasMsgs
-        <> [RevealLocation Nothing baseOfTheHillId, MoveAllTo baseOfTheHillId]
+        <> [ RevealLocation Nothing baseOfTheHillId
+           , MoveAllTo (toSource attrs) baseOfTheHillId
+           ]
 
       WhereDoomAwaits <$> runMessage
         msg

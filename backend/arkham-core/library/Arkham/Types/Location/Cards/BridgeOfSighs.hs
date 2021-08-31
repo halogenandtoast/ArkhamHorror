@@ -33,6 +33,6 @@ instance HasAbilities env BridgeOfSighs where
 
 instance LocationRunner env => RunMessage env BridgeOfSighs where
   runMessage msg l@(BridgeOfSighs attrs) = case msg of
-    MoveFrom iid lid | lid == toId attrs ->
+    MoveFrom _ iid lid | lid == toId attrs ->
       l <$ push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1)
     _ -> BridgeOfSighs <$> runMessage msg attrs

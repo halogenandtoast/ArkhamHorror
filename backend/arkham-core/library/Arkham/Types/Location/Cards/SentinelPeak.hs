@@ -15,8 +15,8 @@ import Arkham.Types.Message
 import Arkham.Types.Trait
 
 newtype SentinelPeak = SentinelPeak LocationAttrs
-  deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 sentinelPeak :: LocationCard SentinelPeak
 sentinelPeak = locationWith
@@ -29,11 +29,6 @@ sentinelPeak = locationWith
   (costToEnterUnrevealedL
   .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Anywhere]
   )
-
-instance HasModifiersFor env SentinelPeak
-
-instance HasAbilities env SentinelPeak where
-  getAbilities iid window (SentinelPeak attrs) = getAbilities iid window attrs
 
 instance LocationRunner env => RunMessage env SentinelPeak where
   runMessage msg l@(SentinelPeak attrs) = case msg of

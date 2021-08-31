@@ -9,18 +9,18 @@ import qualified Arkham.Location.Cards as Cards (whateleyRuins_250)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype WhateleyRuins_250 = WhateleyRuins_250 LocationAttrs
   deriving anyclass IsLocation
@@ -42,22 +42,25 @@ instance HasModifiersFor env WhateleyRuins_250 where
       [ SkillModifier SkillWillpower (-1) | iid `on` attrs ]
   getModifiersFor _ _ _ = pure []
 
-ability :: LocationAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (FastAbility Free)
-    & (abilityLimitL .~ GroupLimit PerGame 1)
-
-instance ActionRunner env => HasAbilities env WhateleyRuins_250 where
-  getAbilities iid window@(Window Timing.When FastPlayerWindow) (WhateleyRuins_250 attrs)
-    = withBaseAbilities iid window attrs $ do
-      investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
-      anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
-      pure
-        [ locationAbility (ability attrs)
-        | investigatorsWithClues && anyAbominations
-        ]
+instance HasAbilities env WhateleyRuins_250 where
   getAbilities iid window (WhateleyRuins_250 attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility
+            attrs
+            1
+            (Here
+            <> InvestigatorExists
+                 (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+            <> EnemyCriteria
+                 (EnemyExists
+                 $ EnemyAt YourLocation
+                 <> EnemyWithTrait Abomination
+                 )
+            )
+            (FastAbility Free)
+          & (abilityLimitL .~ GroupLimit PerGame 1)
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env WhateleyRuins_250 where
   runMessage msg l@(WhateleyRuins_250 attrs) = case msg of

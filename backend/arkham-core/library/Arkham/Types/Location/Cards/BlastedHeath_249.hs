@@ -6,13 +6,18 @@ module Arkham.Types.Location.Cards.BlastedHeath_249
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (blastedHeath_249)
+import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 
 newtype BlastedHeath_249 = BlastedHeath_249 LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blastedHeath_249 :: LocationCard BlastedHeath_249
@@ -24,13 +29,17 @@ blastedHeath_249 = location
   Square
   [Circle, Hourglass]
 
-instance HasModifiersFor env BlastedHeath_249
-
 instance HasAbilities env BlastedHeath_249 where
-  getAbilities iid window (BlastedHeath_249 attrs) = getAbilities iid window attrs
+  getAbilities iid window (BlastedHeath_249 attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds
+          Timing.When
+          You
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env BlastedHeath_249 where
   runMessage msg l@(BlastedHeath_249 attrs) = case msg of
-    EndTurn iid | iid `on` attrs ->
-      l <$ push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0)
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      l <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
     _ -> BlastedHeath_249 <$> runMessage msg attrs

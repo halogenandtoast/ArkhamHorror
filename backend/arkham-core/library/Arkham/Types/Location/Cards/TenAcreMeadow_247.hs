@@ -9,15 +9,15 @@ import qualified Arkham.Location.Cards as Cards (tenAcreMeadow_247)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype TenAcreMeadow_247 = TenAcreMeadow_247 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -32,22 +32,26 @@ tenAcreMeadow_247 = location
   Diamond
   [Circle, Triangle, Plus]
 
-ability :: LocationAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (FastAbility Free)
-    & (abilityLimitL .~ GroupLimit PerGame 1)
-
-instance ActionRunner env => HasAbilities env TenAcreMeadow_247 where
-  getAbilities iid window@(Window Timing.When FastPlayerWindow) (TenAcreMeadow_247 attrs)
-    = withBaseAbilities iid window attrs $ do
-      investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
-      anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
-      pure
-        [ locationAbility (ability attrs)
-        | investigatorsWithClues && anyAbominations
-        ]
+instance HasAbilities env TenAcreMeadow_247 where
   getAbilities iid window (TenAcreMeadow_247 attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ do
+      pure
+        [ restrictedAbility
+              attrs
+              1
+              (Here
+              <> InvestigatorExists
+                   (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+              <> EnemyCriteria
+                   (EnemyExists
+                   $ EnemyAt YourLocation
+                   <> EnemyWithTrait Abomination
+                   )
+              )
+              (FastAbility Free)
+            & (abilityLimitL .~ GroupLimit PerGame 1)
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env TenAcreMeadow_247 where
   runMessage msg l@(TenAcreMeadow_247 attrs) = case msg of

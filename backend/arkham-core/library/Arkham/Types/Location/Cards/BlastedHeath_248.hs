@@ -9,16 +9,16 @@ import qualified Arkham.Location.Cards as Cards (blastedHeath_248)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Exception
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype BlastedHeath_248 = BlastedHeath_248 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -33,22 +33,25 @@ blastedHeath_248 = location
   Square
   [Circle, Hourglass]
 
-ability :: LocationAttrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (FastAbility Free)
-    & (abilityLimitL .~ GroupLimit PerGame 1)
-
-instance ActionRunner env => HasAbilities env BlastedHeath_248 where
-  getAbilities iid window@(Window Timing.When FastPlayerWindow) (BlastedHeath_248 attrs)
-    = withBaseAbilities iid window attrs $ do
-      investigatorsWithClues <- notNull <$> locationInvestigatorsWithClues attrs
-      anyAbominations <- notNull <$> locationEnemiesWithTrait attrs Abomination
-      pure
-        [ locationAbility (ability attrs)
-        | investigatorsWithClues && anyAbominations
-        ]
+instance HasAbilities env BlastedHeath_248 where
   getAbilities iid window (BlastedHeath_248 attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility
+            attrs
+            1
+            (Here
+            <> InvestigatorExists
+                 (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+            <> EnemyCriteria
+                 (EnemyExists
+                 $ EnemyAt YourLocation
+                 <> EnemyWithTrait Abomination
+                 )
+            )
+            (FastAbility Free)
+          & (abilityLimitL .~ GroupLimit PerGame 1)
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env BlastedHeath_248 where
   runMessage msg l@(BlastedHeath_248 attrs) = case msg of

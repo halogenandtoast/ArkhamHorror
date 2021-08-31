@@ -16,7 +16,6 @@ import Arkham.Types.Matcher hiding (DiscoverClues)
 import Arkham.Types.Message hiding (DiscoverClues)
 import Arkham.Types.Name
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 import Control.Monad.Extra (findM)
 
 newtype PrismaticCascade = PrismaticCascade LocationAttrs
@@ -32,20 +31,16 @@ prismaticCascade = location
   Diamond
   [Square, Plus]
 
-forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
-
-instance ActionRunner env => HasAbilities env PrismaticCascade where
-  getAbilities iid (Window Timing.After (DiscoverClues who lid _)) (PrismaticCascade attrs)
-    | iid == who && lid == toId attrs
-    = do
-      leadInvestigator <- getLeadInvestigatorId
-      pure
-        [ locationAbility (forcedAbility attrs)
-        | locationClues attrs == 0 && leadInvestigator == iid
-        ]
+instance HasAbilities env PrismaticCascade where
   getAbilities iid window (PrismaticCascade attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ DiscoveringLastClue Timing.After Anyone
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env PrismaticCascade where
   runMessage msg l@(PrismaticCascade attrs) = case msg of

@@ -683,16 +683,29 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           skillType
           enemyEvade'
         )
-    PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ _
+    PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ n
       | isTarget a target
-      -> a <$ push (EnemyEvaded iid enemyId)
-    FailedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ _
+      -> do
+        whenWindows <- checkWindows
+          [Window Timing.When (Window.SuccessfulEvadeEnemy iid enemyId n)]
+        afterWindows <- checkWindows
+          [Window Timing.After (Window.SuccessfulEvadeEnemy iid enemyId n)]
+        a <$ pushAll (whenWindows <> afterWindows <> [EnemyEvaded iid enemyId])
+    FailedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ n
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a
-        a <$ when
-          (Keyword.Alert `elem` keywords)
-          (push $ EnemyAttack iid enemyId DamageAny)
+        whenWindows <- checkWindows
+          [Window Timing.When (Window.FailEvadeEnemy iid enemyId n)]
+        afterWindows <- checkWindows
+          [Window Timing.After (Window.FailEvadeEnemy iid enemyId n)]
+        a <$ pushAll
+          (whenWindows
+          <> afterWindows
+          <> [ EnemyAttack iid enemyId DamageAny
+             | Keyword.Alert `elem` keywords
+             ]
+          )
     EnemyAttack iid eid damageStrategy | eid == enemyId -> a <$ pushAll
       [ PerformEnemyAttack iid eid damageStrategy
       , After (PerformEnemyAttack iid eid damageStrategy)

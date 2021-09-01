@@ -4,16 +4,17 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (arkhamWoodsLakeside)
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 
 newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsLakeside :: LocationCard ArkhamWoodsLakeside
@@ -27,21 +28,22 @@ arkhamWoodsLakeside = locationWithRevealedSideConnections
   Star
   [Squiggle, Heart]
 
-instance HasModifiersFor env ArkhamWoodsLakeside
-
 instance HasAbilities env ArkhamWoodsLakeside where
-  getAbilities i window (ArkhamWoodsLakeside attrs) = getAbilities i window attrs
+  getAbilities i window (ArkhamWoodsLakeside attrs) =
+    withBaseAbilities i window attrs $ pure
+      [ restrictedAbility
+          attrs
+          1
+          (Here <> DuringSkillTest
+            (WhileInvestigating $ LocationWithId $ toId attrs)
+          )
+        $ ForcedAbility
+        $ RevealChaosToken Timing.After You AnyToken
+      | locationRevealed attrs
+      ]
 
-instance (LocationRunner env) => RunMessage env ArkhamWoodsLakeside where
-  runMessage msg l@(ArkhamWoodsLakeside attrs@LocationAttrs {..}) = case msg of
-    RevealToken (SkillTestSource _ _ source _ (Just Action.Investigate)) iid _
-      | isSource attrs source && iid `elem` locationInvestigators -> do
-        let
-          ability = (mkAbility (toSource attrs) 0 LegacyForcedAbility)
-            { abilityLimit = PlayerLimit PerRound 1
-            }
-        unused <- getGroupIsUnused ability
-        l <$ when
-          unused
-          (pushAll [UseLimitedAbility iid ability, DrawAnotherToken iid])
+instance LocationRunner env => RunMessage env ArkhamWoodsLakeside where
+  runMessage msg l@(ArkhamWoodsLakeside attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      l <$ push (DrawAnotherToken iid)
     _ -> ArkhamWoodsLakeside <$> runMessage msg attrs

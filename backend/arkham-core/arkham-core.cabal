@@ -342,6 +342,7 @@ library
       Arkham.Types.Effect.Effects.AChanceEncounter
       Arkham.Types.Effect.Effects.AlchemicalTransmutation
       Arkham.Types.Effect.Effects.ArcaneBarrier
+      Arkham.Types.Effect.Effects.ArkhamWoodsGreatWillow
       Arkham.Types.Effect.Effects.ArkhamWoodsTwistingPaths
       Arkham.Types.Effect.Effects.BaseballBat
       Arkham.Types.Effect.Effects.BindMonster2

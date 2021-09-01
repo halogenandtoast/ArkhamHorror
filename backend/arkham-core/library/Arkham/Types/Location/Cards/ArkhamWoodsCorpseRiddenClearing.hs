@@ -13,7 +13,7 @@ import Arkham.Types.Target
 
 newtype ArkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 arkhamWoodsCorpseRiddenClearing :: LocationCard ArkhamWoodsCorpseRiddenClearing
 arkhamWoodsCorpseRiddenClearing = locationWith
@@ -33,10 +33,6 @@ instance HasModifiersFor env ArkhamWoodsCorpseRiddenClearing where
       attrs
       [ MaxDamageTaken 1 | eid `elem` locationEnemies attrs ]
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env ArkhamWoodsCorpseRiddenClearing where
-  getAbilities i window (ArkhamWoodsCorpseRiddenClearing attrs) =
-    getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsCorpseRiddenClearing where
   runMessage msg (ArkhamWoodsCorpseRiddenClearing attrs) =

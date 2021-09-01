@@ -22,13 +22,13 @@ playEvent :: Investigator -> Event -> Message
 playEvent i e = InvestigatorPlayEvent (toId i) (toId e) Nothing []
 
 moveTo :: Investigator -> Location -> Message
-moveTo i l = MoveTo (toId i) (toId l)
+moveTo i l = MoveTo (toSource i) (toId i) (toId l)
 
 moveFrom :: Investigator -> Location -> Message
-moveFrom i l = MoveFrom (toId i) (toId l)
+moveFrom i l = MoveFrom (toSource i) (toId i) (toId l)
 
 moveAllTo :: Location -> Message
-moveAllTo = MoveAllTo . toId
+moveAllTo = MoveAllTo GameSource . toId
 
 enemySpawn :: Location -> Enemy -> Message
 enemySpawn l e = EnemySpawn Nothing (toId l) (toId e)

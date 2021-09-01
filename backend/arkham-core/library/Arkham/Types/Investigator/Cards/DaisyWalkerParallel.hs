@@ -80,7 +80,7 @@ instance EntityInstanceRunner env => HasAbilities env DaisyWalkerParallel where
 instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs@InvestigatorAttrs {..}) =
     case msg of
-      UseCardAbility iid (InvestigatorSource iid') windows 1 _
+      UseCardAbility iid (InvestigatorSource iid') windows' 1 _
         | investigatorId == iid' -> do
           tomeAssets <- filterM
             ((elem Tome <$>) . getSet)
@@ -100,7 +100,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
                   (AssetTarget tome)
                   [ Run
                       [ chooseOne iid
-                          $ map (($ windows) . UseAbility iid) actions
+                          $ map (($ windows') . UseAbility iid) actions
                       ]
                   ]
                 )

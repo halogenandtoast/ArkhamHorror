@@ -100,7 +100,6 @@ instance SourceEntity Enemy where
 instance
     ( EnemyRunner env
     , HasName env AssetId
-    , HasCount DiscardCount env InvestigatorId
     , HasSet EnemyId env ()
     , HasId (Maybe StoryEnemyId) env CardCode
     ) =>

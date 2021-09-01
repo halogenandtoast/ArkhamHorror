@@ -11,12 +11,12 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Source
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -31,24 +31,23 @@ studyAberrantGateway = location
   Circle
   [T]
 
-instance ActionRunner env => HasAbilities env StudyAberrantGateway where
-  getAbilities iid window@(Window Timing.When NonFast) (StudyAberrantGateway attrs)
-    = withBaseAbilities iid window attrs $ do
-      leadInvestigatorId <- getLeadInvestigatorId
-      pure
-        [ locationAbility
-            (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 2)
-        | leadInvestigatorId == iid
-        ]
+instance HasAbilities env StudyAberrantGateway where
   getAbilities iid window (StudyAberrantGateway attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ do
+      pure
+        [ mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 2
+        , mkAbility attrs 2 $ ForcedAbility $ EnemyAttemptsToSpawnAt
+          Timing.When
+          AnyEnemy
+          LocationNotInPlay
+        ]
 
 instance LocationRunner env => RunMessage env StudyAberrantGateway where
-  runMessage msg l@(StudyAberrantGateway attrs@LocationAttrs {..}) =
-    case msg of
-      UseCardAbility iid (LocationSource lid) _ 1 _ | lid == locationId ->
-        l <$ push (DrawCards iid 3 False)
-      When (EnemySpawnAtLocationMatching _ locationMatcher _) -> do
-        inPlay <- isJust <$> getId @(Maybe LocationId) locationMatcher
-        l <$ unless inPlay (push (PlaceLocationMatching locationMatcher))
-      _ -> StudyAberrantGateway <$> runMessage msg attrs
+  runMessage msg l@(StudyAberrantGateway attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      l <$ push (DrawCards iid 3 False)
+    UseCardAbility _ source [Window _ (Window.EnemyAttemptsToSpawnAt _ locationMatcher)] 2 _
+      | isSource attrs source
+      -> do
+        l <$ push (PlaceLocationMatching locationMatcher)
+    _ -> StudyAberrantGateway <$> runMessage msg attrs

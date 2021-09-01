@@ -59,7 +59,7 @@ skillTypes =
 
 instance AssetRunner env => RunMessage env TheRedGlovedMan5 where
   runMessage msg a@(TheRedGlovedMan5 (attrs `With` metadata)) = case msg of
-    UseCardAbility iid source windows 1 p | isSource attrs source -> a <$ push
+    UseCardAbility iid source windows' 1 p | isSource attrs source -> a <$ push
       (chooseOne
         iid
         [ Label
@@ -67,7 +67,7 @@ instance AssetRunner env => RunMessage env TheRedGlovedMan5 where
             [ UseCardAbilityChoice
                 iid
                 source
-                windows
+                windows'
                 1
                 p
                 (SkillChoiceMetadata s)
@@ -75,7 +75,7 @@ instance AssetRunner env => RunMessage env TheRedGlovedMan5 where
         | (label, s) <- skillTypes
         ]
       )
-    UseCardAbilityChoice iid source windows 1 p (SkillChoiceMetadata c)
+    UseCardAbilityChoice iid source windows' 1 p (SkillChoiceMetadata c)
       | isSource attrs source -> case metadata of
         Metadata [] -> do
           push
@@ -86,7 +86,7 @@ instance AssetRunner env => RunMessage env TheRedGlovedMan5 where
                   [ UseCardAbilityChoice
                       iid
                       source
-                      windows
+                      windows'
                       1
                       p
                       (SkillChoiceMetadata s)

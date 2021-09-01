@@ -68,7 +68,7 @@ instance AssetRunner env => RunMessage env Duke where
   runMessage msg a@(Duke attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push (ChooseFightEnemy iid source SkillCombat mempty False)
-    UseCardAbility iid source windows 2 _ | isSource attrs source -> do
+    UseCardAbility iid source windows' 2 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
       investigateAbilities :: [Ability] <-
         filterM
@@ -81,7 +81,7 @@ instance AssetRunner env => RunMessage env Duke where
           =<< selectList (ActionOnLocation lid)
       let
         investigateActions :: [Message] = map
-          (($ windows)
+          (($ windows')
           . UseAbility iid
           . (\a' -> a'
               { abilityDoesNotProvokeAttacksOfOpportunity = True

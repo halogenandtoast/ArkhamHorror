@@ -676,6 +676,7 @@ getLocationsMatching = \case
       <$> getGame
   LocationWithId locationId ->
     filter ((== locationId) . toId) . toList . view locationsL <$> getGame
+  LocationNotInPlay -> pure [] -- TODO: Should this check out of play locations
   Anywhere -> toList . view locationsL <$> getGame
   Unblocked -> do
     filterM (\l -> notElem Blocked <$> getModifiers (toSource l) (toTarget l))
@@ -1713,6 +1714,30 @@ instance HasGame env => HasSet Keyword env TreacheryId where
       . union addedKeywords
       . toKeywords
       <$> getTreachery tid
+
+instance HasGame env => HasSet Keyword env LocationId where
+  getSet lid = do
+    modifiers' <- liftA2
+      (<>)
+      (getModifiers GameSource (LocationTarget lid))
+      (getModifiers GameSource (CardIdTarget $ unLocationId lid))
+    let
+      addedKeywords = setFromList $ mapMaybe
+        (\case
+          AddKeyword keyword -> Just keyword
+          _ -> Nothing
+        )
+        modifiers'
+      removedKeywords = setFromList $ mapMaybe
+        (\case
+          RemoveKeyword keyword -> Just keyword
+          _ -> Nothing
+        )
+        modifiers'
+    (`difference` removedKeywords)
+      . union addedKeywords
+      . toKeywords
+      <$> getLocation lid
 
 instance HasGame env => HasList UnderneathCard env LocationId where
   getList = getList <=< getLocation
@@ -3782,21 +3807,17 @@ runGameMessage msg g = case msg of
         asset = createAsset card
         assetId = toId asset
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
-      pushAll
-        $ Revelation iid (AssetSource assetId)
-        : [ Surge iid (AssetSource assetId)
-          | Keyword.Surge `member` toKeywords card
-          ]
+      push $ Revelation iid (AssetSource assetId)
       pure $ g & (assetsL . at assetId ?~ asset)
     LocationType -> do
       let
         location = createLocation card
         locationId = toId location
       pushAll
-        [ PlacedLocation (toName location) (toCardCode card) locationId
-        , RevealLocation (Just iid) locationId
-        , Revelation iid (LocationSource locationId)
-        ]
+        $ [ PlacedLocation (toName location) (toCardCode card) locationId
+          , RevealLocation (Just iid) locationId
+          ]
+        <> resolve (Revelation iid (LocationSource locationId))
       pure $ g & (locationsL . at locationId ?~ location)
     _ ->
       error
@@ -3804,6 +3825,14 @@ runGameMessage msg g = case msg of
         <> show (toCardType card)
         <> ": "
         <> show card
+  After (Revelation iid source) -> do
+    keywords' <- case source of
+      AssetSource _ -> pure mempty
+      EnemySource eid -> getSet @Keyword eid
+      TreacherySource tid -> getSet @Keyword tid
+      LocationSource lid -> getSet @Keyword lid
+      _ -> error "oh, missed a source for after revelation"
+    g <$ pushAll [ Surge iid source | Keyword.Surge `member` keywords' ]
   DrewTreachery iid (EncounterCard card) -> do
     let
       treachery = createTreachery card iid
@@ -3821,7 +3850,6 @@ runGameMessage msg g = case msg of
       & (phaseHistoryL %~ HashMap.insertWith (<>) iid historyItem)
   ResolveTreachery iid treacheryId -> do
     treachery <- getTreachery treacheryId
-    keywords <- getSet treacheryId
     checkWindowMessages <- checkWindows
       [ Window
           Timing.When
@@ -3829,12 +3857,8 @@ runGameMessage msg g = case msg of
       ]
     g <$ pushAll
       (checkWindowMessages
-      <> [ Revelation iid (TreacherySource treacheryId)
-         , AfterRevelation iid treacheryId
-         ]
-      <> [ Surge iid (TreacherySource treacheryId)
-         | Keyword.Surge `member` keywords
-         ]
+      <> resolve (Revelation iid (TreacherySource treacheryId))
+      <> [AfterRevelation iid treacheryId]
       )
   DrewTreachery iid (PlayerCard card) -> do
     let
@@ -3845,10 +3869,8 @@ runGameMessage msg g = case msg of
       $ [ RemoveCardFromHand iid (toCardId card)
         | cdRevelation (toCardDef card)
         ]
-      <> [ Revelation iid (TreacherySource treacheryId)
-         , AfterRevelation iid treacheryId
-         , UnsetActiveCard
-         ]
+      <> resolve (Revelation iid (TreacherySource treacheryId))
+      <> [AfterRevelation iid treacheryId, UnsetActiveCard]
 
     let
       historyItem = mempty { historyTreacheriesDrawn = [toCardCode treachery] }

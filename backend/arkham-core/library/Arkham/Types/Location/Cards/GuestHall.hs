@@ -13,7 +13,7 @@ import Arkham.Types.Target
 
 newtype GuestHall = GuestHall LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 guestHall :: LocationCard GuestHall
 guestHall = location
@@ -32,9 +32,6 @@ instance HasModifiersFor env GuestHall where
       | iid `elem` locationInvestigators attrs
       ]
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env GuestHall where
-  getAbilities i window (GuestHall attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env GuestHall where
   runMessage msg (GuestHall attrs) = GuestHall <$> runMessage msg attrs

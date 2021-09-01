@@ -9,13 +9,15 @@ import qualified Arkham.Location.Cards as Cards (dimensionalDoorway)
 import Arkham.Types.Ability
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EndTurn)
 import Arkham.Types.Query
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype DimensionalDoorway = DimensionalDoorway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -31,11 +33,13 @@ dimensionalDoorway = location
   [Triangle, Moon]
 
 instance HasAbilities env DimensionalDoorway where
-  getAbilities iid (Window Timing.After (EndTurn who)) (DimensionalDoorway attrs)
-    | iid == who
-    = pure [locationAbility (mkAbility (toSource attrs) 1 LegacyForcedAbility)]
   getAbilities iid window (DimensionalDoorway attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds
+          Timing.When
+          You
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env DimensionalDoorway where
   runMessage msg l@(DimensionalDoorway attrs) = case msg of

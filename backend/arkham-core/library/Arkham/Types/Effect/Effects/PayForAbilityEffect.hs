@@ -33,13 +33,13 @@ newtype PayForAbilityEffect = PayForAbilityEffect (EffectAttrs `With` Payment)
 
 payForAbilityEffect
   :: EffectId -> Ability -> Source -> Target -> [Window] -> PayForAbilityEffect
-payForAbilityEffect eid ability source target windows =
+payForAbilityEffect eid ability source target windows' =
   PayForAbilityEffect $ (`with` NoPayment) $ EffectAttrs
     { effectId = eid
     , effectSource = source
     , effectTarget = target
     , effectCardCode = Nothing
-    , effectMetadata = Just (EffectAbility (ability, windows))
+    , effectMetadata = Just (EffectAbility (ability, windows'))
     , effectTraits = mempty
     , effectWindow = Nothing
     }
@@ -236,13 +236,13 @@ instance
           push (DiscardCard iid (toCardId card))
           withPayment $ DiscardCardPayment [card]
         DiscardDrawnCardCost -> case effectMetadata attrs of
-          Just (EffectAbility (_, windows)) -> do
+          Just (EffectAbility (_, windows')) -> do
             let
               getDrawnCard [] = error "can not find drawn card in windows"
               getDrawnCard (x : xs) = case x of
                 Window _ (Window.DrawCard _ c _) -> c
                 _ -> getDrawnCard xs
-              card = getDrawnCard windows
+              card = getDrawnCard windows'
             push (DiscardCard iid (toCardId card))
             withPayment $ DiscardCardPayment [card]
           _ -> error "invalid metadata for ability"
@@ -407,9 +407,9 @@ instance
       pure $ PayForAbilityEffect (attrs `with` (payments <> payment))
     PayAbilityCostFinished eid source iid | eid == toId attrs ->
       case effectMetadata attrs of
-        Just (EffectAbility (Ability {..}, windows)) -> e <$ pushAll
+        Just (EffectAbility (Ability {..}, windows')) -> e <$ pushAll
           [ DisableEffect $ toId attrs
-          , UseCardAbility iid source windows abilityIndex payments
+          , UseCardAbility iid source windows' abilityIndex payments
           ]
         _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> PayForAbilityEffect . (`with` payments) <$> runMessage msg attrs

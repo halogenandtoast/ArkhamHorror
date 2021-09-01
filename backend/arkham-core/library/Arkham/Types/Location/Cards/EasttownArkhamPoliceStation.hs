@@ -16,11 +16,9 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 easttownArkhamPoliceStation :: LocationCard EasttownArkhamPoliceStation
@@ -32,21 +30,13 @@ easttownArkhamPoliceStation = location
   Moon
   [Circle, Triangle]
 
-instance HasModifiersFor env EasttownArkhamPoliceStation where
-  getModifiersFor _ _ _ = pure []
-
-ability :: LocationAttrs -> Ability
-ability attrs =
-  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityLimit = PlayerLimit PerGame 1
-    }
-
 instance HasAbilities env EasttownArkhamPoliceStation where
-  getAbilities iid window@(Window Timing.When NonFast) (EasttownArkhamPoliceStation attrs)
-    | locationRevealed attrs
-    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (EasttownArkhamPoliceStation attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1)
+          & (abilityLimitL .~ PlayerLimit PerGame 1)
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env EasttownArkhamPoliceStation where
   runMessage msg l@(EasttownArkhamPoliceStation attrs) = case msg of

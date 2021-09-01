@@ -5,6 +5,7 @@ module Arkham.Types.Treachery.Cards.OnTheProwl
 
 import Arkham.Prelude
 
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -12,9 +13,7 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype OnTheProwl = OnTheProwl TreacheryAttrs
@@ -23,19 +22,6 @@ newtype OnTheProwl = OnTheProwl TreacheryAttrs
 
 onTheProwl :: TreacheryCard OnTheProwl
 onTheProwl = treachery OnTheProwl Cards.onTheProwl
-
-bayouLocations
-  :: (MonadReader env m, HasSet LocationId env [Trait])
-  => m (HashSet LocationId)
-bayouLocations = getSet [Bayou]
-
-nonBayouLocations
-  :: ( MonadReader env m
-     , HasSet LocationId env ()
-     , HasSet LocationId env [Trait]
-     )
-  => m (HashSet LocationId)
-nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance TreacheryRunner env => RunMessage env OnTheProwl where
   runMessage msg t@(OnTheProwl attrs@TreacheryAttrs {..}) = case msg of

@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Target
 
-data HistoryType = PhaseHistory | RoundHistory
+data HistoryType = PhaseHistory | RoundHistory | TurnHistory
 
 data History = History
   { historyTreacheriesDrawn :: [CardCode]

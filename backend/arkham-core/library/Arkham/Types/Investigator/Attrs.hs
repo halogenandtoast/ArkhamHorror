@@ -894,6 +894,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     (chooseOne iid
     $ [ DiscardCard iid (toCardId card) | card <- discardableCards a ]
     )
+  Discard (CardIdTarget cardId)
+    | isJust (find ((== cardId) . toCardId) investigatorHand) -> a
+    <$ push (DiscardCard investigatorId cardId)
   DiscardCard iid cardId | iid == investigatorId -> do
     let
       card = fromJustNote "must be in hand"

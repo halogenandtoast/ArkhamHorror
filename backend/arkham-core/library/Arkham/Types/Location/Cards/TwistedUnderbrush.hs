@@ -9,12 +9,11 @@ import qualified Arkham.Location.Cards as Cards (twistedUnderbrush)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype TwistedUnderbrush = TwistedUnderbrush LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -30,13 +29,11 @@ twistedUnderbrush = location
   [Diamond, Moon]
 
 instance HasAbilities env TwistedUnderbrush where
-  getAbilities iid window@(Window Timing.When NonFast) (TwistedUnderbrush attrs@LocationAttrs {..})
-    | locationRevealed
-    = withBaseAbilities iid window attrs $ pure
-      [ locationAbility
-          (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
+  getAbilities iid window (TwistedUnderbrush attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
+      | locationRevealed attrs
       ]
-  getAbilities i window (TwistedUnderbrush attrs) = getAbilities i window attrs
 
 instance (LocationRunner env) => RunMessage env TwistedUnderbrush where
   runMessage msg l@(TwistedUnderbrush attrs) = case msg of

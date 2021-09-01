@@ -10,11 +10,10 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 
 newtype SwampLeech = SwampLeech EnemyAttrs
@@ -22,21 +21,28 @@ newtype SwampLeech = SwampLeech EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 swampLeech :: EnemyCard SwampLeech
-swampLeech = enemy SwampLeech Cards.swampLeech (4, Static 1, 0) (1, 0)
+swampLeech = enemyWith
+  SwampLeech
+  Cards.swampLeech
+  (4, Static 1, 0)
+  (1, 0)
+  (spawnAtL ?~ LocationWithTrait Bayou)
 
 instance HasAbilities env SwampLeech where
   getAbilities i window (SwampLeech attrs) = do
     actions' <- getAbilities i window attrs
-    pure $ filter (not . (`abilityIs` Action.Evade)) actions'
+    let base = filter (not . (`abilityIs` Action.Evade)) actions'
+    pure
+      $ base
+      <> [ mkAbility attrs 1
+           $ ForcedAbility
+           $ EnemyEnters Timing.When (LocationWithoutTrait Bayou)
+           $ EnemyWithId
+           $ toId attrs
+         ]
 
 instance EnemyRunner env => RunMessage env SwampLeech where
-  runMessage msg e@(SwampLeech attrs@EnemyAttrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      bayouLocations <- getSetList @LocationId [Bayou]
-      e <$ spawnAtOneOf iid enemyId bayouLocations
-    EnemyEntered eid lid | eid == enemyId -> do
-      bayouLocations <- getSetList @LocationId [Bayou]
-      e <$ when
-        (lid `notElem` bayouLocations)
-        (push $ Discard (EnemyTarget enemyId))
+  runMessage msg e@(SwampLeech attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      e <$ push (Discard $ toTarget attrs)
     _ -> SwampLeech <$> runMessage msg attrs

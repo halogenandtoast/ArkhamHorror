@@ -25,8 +25,6 @@ instance ActionRunner env => HasAbilities env Act where
 instance
   ( HasName env LocationId
   , ActRunner env
-  , HasList UnderneathCard env ActDeck
-  , HasList UnderneathCard env AgendaDeck
   , HasId LocationId env InvestigatorId
   , HasCount ResourceCount env LocationId
   , HasModifiersFor env ()

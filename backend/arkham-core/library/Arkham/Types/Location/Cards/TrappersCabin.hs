@@ -12,6 +12,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard (genPlayerCard)
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -20,8 +21,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype TrappersCabin = TrappersCabin LocationAttrs
   deriving anyclass IsLocation
@@ -38,21 +37,19 @@ instance HasModifiersFor env TrappersCabin where
       [ CannotGainResources | iid `member` locationInvestigators attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env TrappersCabin where
-  getAbilities iid window@(Window Timing.When NonFast) (TrappersCabin attrs@LocationAttrs {..})
-    | locationRevealed
-    = withBaseAbilities iid window attrs $ do
-      assetNotTaken <- isNothing <$> selectOne (assetIs Assets.bearTrap)
-      pure
-        [ locationAbility
-            (mkAbility attrs 1 $ ActionAbility Nothing $ Costs
-              [ActionCost 1, ResourceCost 5]
-            )
-        | assetNotTaken
-        ]
-  getAbilities i window (TrappersCabin attrs) = getAbilities i window attrs
+instance HasAbilities env TrappersCabin where
+  getAbilities iid window (TrappersCabin attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility
+          attrs
+          1
+          (Here <> Negate (AssetExists $ assetIs Assets.bearTrap))
+        $ ActionAbility Nothing
+        $ Costs [ActionCost 1, ResourceCost 5]
+      | locationRevealed attrs
+      ]
 
-instance (LocationRunner env) => RunMessage env TrappersCabin where
+instance LocationRunner env => RunMessage env TrappersCabin where
   runMessage msg l@(TrappersCabin attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 3)

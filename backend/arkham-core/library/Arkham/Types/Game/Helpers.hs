@@ -17,10 +17,12 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria (Criterion)
 import qualified Arkham.Types.Criteria as Criteria
 import Arkham.Types.Deck
+import Arkham.Types.Decks
 import Arkham.Types.Direction
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.GameValue
+import Arkham.Types.History
 import Arkham.Types.Id
 import Arkham.Types.Keyword
 import qualified Arkham.Types.Keyword as Keyword
@@ -313,6 +315,18 @@ getCanAffordCost iid source mAction windows' = \case
   ResourceCost n -> do
     resources <- unResourceCount <$> getCount iid
     pure $ resources >= n
+  DiscardFromCost n zone cardMatcher -> do
+    -- We need to check that n valid candidates exist across all zones
+    -- the logic is that we'll grab all card defs from each zone and then
+    -- filter
+    let
+      getCards = \case
+        FromHandOf whoMatcher -> selectList
+          (Matcher.InHandOf whoMatcher <> Matcher.BasicCardMatch cardMatcher)
+        FromPlayAreaOf whoMatcher ->
+          map unInPlayCard <$> (selectList whoMatcher >>= concatMapM getList)
+        Zones zs -> concatMapM getCards zs
+    (> n) . length <$> getCards zone
   DiscardCost _ -> pure True -- TODO: Make better
   DiscardCardCost _ -> pure True -- TODO: Make better
   DiscardDrawnCardCost -> pure True -- TODO: Make better
@@ -833,7 +847,11 @@ hasInvestigateActions _ window = notNull <$> select
 
 type CanCheckPlayable env
   = ( HasModifiersFor env ()
+    , HasCostPayment env
+    , HasHistory env
     , HasStep ActStep env ()
+    , HasList UnderneathCard env ActDeck
+    , HasList UnderneathCard env AgendaDeck
     , HasSet VictoryDisplayCard env ()
     , HasId (Maybe LocationId) env (Direction, LocationId)
     , HasId (Maybe LocationId) env TreacheryId
@@ -992,6 +1010,15 @@ passesCriteria iid source windows' = \case
   Criteria.Self -> case source of
     InvestigatorSource iid' -> pure $ iid == iid'
     _ -> pure False
+  Criteria.ValueIs val valueMatcher -> gameValueMatches val valueMatcher
+  Criteria.UnderneathCardCount valueMatcher zone cardMatcher -> do
+    let
+      getCards = \case
+        Criteria.UnderAgendaDeck -> map unUnderneathCard <$> getList AgendaDeck
+        Criteria.UnderActDeck -> map unUnderneathCard <$> getList ActDeck
+        Criteria.UnderZones zs -> concatMapM getCards zs
+    cardCount <- length . filter (`cardMatch` cardMatcher) <$> getCards zone
+    gameValueMatches cardCount valueMatcher
   Criteria.SelfHasModifier modifier -> case source of
     InvestigatorSource iid' ->
       elem modifier <$> getModifiers source (InvestigatorTarget iid')
@@ -1342,6 +1369,14 @@ windowMatches iid source window' = \case
           (matchWho iid iid' whoMatcher)
           (gameValueMatches n valueMatcher)
       _ -> pure False
+  Matcher.PlacedCounterOnLocation whenMatcher whereMatcher counterMatcher valueMatcher
+    -> case window' of
+      Window t (Window.PlacedClues (LocationTarget locationId) n)
+        | t == whenMatcher && counterMatcher == Matcher.ClueCounter -> liftA2
+          (&&)
+          (locationMatches iid source window' locationId whereMatcher)
+          (gameValueMatches n valueMatcher)
+      _ -> pure False
   Matcher.RevealLocation timingMatcher whoMatcher locationMatcher ->
     case window' of
       Window t (Window.RevealLocation who locationId) | t == timingMatcher ->
@@ -1671,6 +1706,8 @@ matchWho you who = \case
   Matcher.You -> pure $ who == you
   Matcher.NotYou -> pure $ who /= you
   Matcher.UnengagedInvestigator -> null <$> getSet @EnemyId who
+  Matcher.NoDamageDealtThisTurn ->
+    null . historyDealtDamageTo <$> getHistory TurnHistory who
   Matcher.TurnInvestigator -> do
     mTurn <- selectOne Matcher.TurnInvestigator
     pure $ Just who == mTurn
@@ -1828,6 +1865,7 @@ locationMatches investigatorId source window locationId = \case
   Matcher.NearestLocationToYou matcher' ->
     member (ClosestLocationId locationId) <$> getSet (investigatorId, matcher')
   Matcher.LocationWithTrait t -> member t <$> getSet locationId
+  Matcher.LocationWithoutTrait t -> notMember t <$> getSet locationId
   Matcher.LocationMatchAll ms ->
     allM (locationMatches investigatorId source window locationId) ms
   Matcher.LocationMatchAny ms ->

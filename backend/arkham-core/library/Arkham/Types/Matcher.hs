@@ -75,6 +75,7 @@ data InvestigatorMatcher
   | InvestigatorMatches [InvestigatorMatcher]
   | AnyInvestigator [InvestigatorMatcher]
   | TurnInvestigator
+  | NoDamageDealtThisTurn
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -98,9 +99,11 @@ data AssetMatcher
   | AssetNonStory
   | AssetReady
   | AssetExhausted
+  | AssetWithoutModifier ModifierType
   | AssetWithUseType UseType
   | AssetWithUses UseType
   | AssetIs CardCode
+  | AssetCardMatch CardMatcher
   | AnyAsset
   | EnemyAsset EnemyId
   | AssetAt LocationMatcher
@@ -247,6 +250,7 @@ data LocationMatcher
   | FarthestLocationFromYou LocationMatcher
   | NearestLocationToYou LocationMatcher
   | LocationWithTrait Trait
+  | LocationWithoutTrait Trait
   | LocationInDirection Direction LocationMatcher
   | LocationWithoutTreacheryWithCardCode CardCode
   | LocationMatchAll [LocationMatcher]
@@ -405,6 +409,7 @@ data WindowMatcher
   | Discarded Timing Who CardMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | PlacedCounter Timing Who CounterMatcher ValueMatcher
+  | PlacedCounterOnLocation Timing Where CounterMatcher ValueMatcher
   | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemySpawns Timing Where EnemyMatcher
@@ -507,7 +512,7 @@ data WindowMythosStepMatcher = WhenAllDrawEncounterCard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data CounterMatcher = HorrorCounter | DamageCounter
+data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

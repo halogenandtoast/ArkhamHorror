@@ -64,6 +64,8 @@ data Criterion
   | SetAsideCardExists CardMatcher
   | Unowned
   | SelfHasModifier ModifierType
+  | ValueIs Int ValueMatcher
+  | UnderneathCardCount ValueMatcher UnderZone CardMatcher
   -- Special Criterion
   | Criteria [Criterion]
   | AnyCriterion [Criterion]
@@ -101,3 +103,13 @@ instance Semigroup EnemyCriterion where
   EnemyMatchesCriteria xs <> x = EnemyMatchesCriteria $ x : xs
   x <> EnemyMatchesCriteria xs = EnemyMatchesCriteria $ x : xs
   x <> y = EnemyMatchesCriteria [x, y]
+
+data UnderZone = UnderActDeck | UnderAgendaDeck | UnderZones [UnderZone]
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup UnderZone where
+  UnderZones xs <> UnderZones ys = UnderZones $ xs <> ys
+  UnderZones xs <> y = UnderZones $ xs <> [y]
+  x <> UnderZones ys = UnderZones $ x : ys
+  x <> y = UnderZones [x, y]

@@ -10,20 +10,22 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Id
-import Arkham.Types.Matcher (LocationMatcher(..))
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype TheRougarouMetadata = TheRougarouMetadata { damagePerPhase :: Int }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TheRougarou = TheRougarou (EnemyAttrs `With` TheRougarouMetadata)
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRougarou :: EnemyCard TheRougarou
@@ -33,60 +35,66 @@ theRougarou = enemy
   (3, PerPlayer 5, 3)
   (2, 2)
 
-instance HasModifiersFor env TheRougarou
-
 isEngage :: Ability -> Bool
 isEngage ability = case abilityType ability of
   ActionAbility (Just Action.Engage) _ -> True
   _ -> False
 
-instance ActionRunner env => HasAbilities env TheRougarou where
-  getAbilities iid window (TheRougarou (attrs `With` _)) = do
+instance HasAbilities env TheRougarou where
+  getAbilities iid window (TheRougarou (attrs `With` meta)) = do
     actions' <- getAbilities iid window attrs
+    let
+      forcedAbility =
+        restrictedAbility
+            attrs
+            1
+            (ValueIs (damagePerPhase meta) (EqualTo $ PerPlayer 1))
+            (ForcedAbility $ EnemyDealtDamage Timing.After $ EnemyWithId $ toId
+              attrs
+            )
+          & (abilityLimitL .~ NoLimit)
     if any isEngage actions'
       then do
-        playerCount <- getPlayerCount
         let
-          requiredClues = if playerCount > 2 then 2 else 1
-          -- 102 is the magic number for engage...
           engageAction =
             mkAbility attrs 102
               $ ActionAbility (Just Action.Engage)
-              $ GroupClueCost (Static requiredClues) Anywhere
+              $ GroupClueCost (ByPlayerCount 1 1 2 2) Anywhere
               <> ActionCost 1
-        pure $ filter (not . isEngage) actions' <> [engageAction]
-      else pure actions'
+        pure
+          $ forcedAbility
+          : filter (not . isEngage) actions'
+          <> [engageAction]
+      else pure $ forcedAbility : actions'
 
 instance EnemyRunner env => RunMessage env TheRougarou where
   runMessage msg (TheRougarou (attrs@EnemyAttrs {..} `With` metadata)) =
     case msg of
+      UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+        damageThreshold <- getPlayerCountValue (PerPlayer 1)
+        investigatorIds <- getInvestigatorIds
+        leadInvestigatorId <- getLeadInvestigatorId
+        farthestLocationIds <- case investigatorIds of
+          [iid] -> map unFarthestLocationId <$> getSetList iid
+          iids -> map unFarthestLocationId <$> getSetList iids
+        case farthestLocationIds of
+          [] -> error "can't happen"
+          [x] -> push (MoveUntil x (EnemyTarget enemyId))
+          xs -> push
+            (chooseOne
+              leadInvestigatorId
+              [ MoveUntil x (EnemyTarget enemyId) | x <- xs ]
+            )
+
+        TheRougarou
+          . (`with` TheRougarouMetadata
+              (damagePerPhase metadata `mod` damageThreshold)
+            )
+          <$> runMessage msg attrs
       EndPhase ->
         TheRougarou . (`with` TheRougarouMetadata 0) <$> runMessage msg attrs
-      EnemyDamage eid _ _ n | eid == enemyId -> do
-        let damage' = damagePerPhase metadata
-        damageThreshold <- getPlayerCountValue (PerPlayer 1)
-        if (damage' + n) > damageThreshold
-          then do
-            investigatorIds <- getInvestigatorIds
-            leadInvestigatorId <- getLeadInvestigatorId
-            farthestLocationIds <- case investigatorIds of
-              [iid] -> map unFarthestLocationId <$> getSetList iid
-              iids -> map unFarthestLocationId <$> getSetList iids
-            case farthestLocationIds of
-              [] -> error "can't happen"
-              [x] -> push (MoveUntil x (EnemyTarget enemyId))
-              xs -> push
-                (chooseOne
-                  leadInvestigatorId
-                  [ MoveUntil x (EnemyTarget enemyId) | x <- xs ]
-                )
-            TheRougarou
-              . (`with` TheRougarouMetadata
-                  ((damage' + n) `mod` damageThreshold)
-                )
-              <$> runMessage msg attrs
-          else
-            TheRougarou
-            . (`with` TheRougarouMetadata (damage' + n))
-            <$> runMessage msg attrs
+      EnemyDamage eid _ _ n | eid == enemyId ->
+        TheRougarou
+          . (`with` TheRougarouMetadata (damagePerPhase metadata + n))
+          <$> runMessage msg attrs
       _ -> TheRougarou . (`with` metadata) <$> runMessage msg attrs

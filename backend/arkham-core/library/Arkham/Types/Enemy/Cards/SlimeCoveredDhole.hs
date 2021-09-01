@@ -6,18 +6,21 @@ module Arkham.Types.Enemy.Cards.SlimeCoveredDhole
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Prey
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 
 newtype SlimeCoveredDhole = SlimeCoveredDhole EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 slimeCoveredDhole :: EnemyCard SlimeCoveredDhole
 slimeCoveredDhole = enemyWith
@@ -25,30 +28,25 @@ slimeCoveredDhole = enemyWith
   Cards.slimeCoveredDhole
   (2, Static 3, 3)
   (1, 1)
-  (preyL .~ LowestRemainingHealth)
+  ((preyL .~ LowestRemainingHealth) . (spawnAtL ?~ LocationWithoutTrait Bayou))
 
-bayouLocations
-  :: (MonadReader env m, HasSet LocationId env [Trait])
-  => m (HashSet LocationId)
-bayouLocations = getSet [Bayou]
+instance HasAbilities env SlimeCoveredDhole where
+  getAbilities iid window (SlimeCoveredDhole attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ EnemyEnters Timing.When (LocationWithInvestigator Anyone)
+        $ EnemyWithId
+        $ toId attrs
+      ]
 
-nonBayouLocations
-  :: ( MonadReader env m
-     , HasSet LocationId env ()
-     , HasSet LocationId env [Trait]
-     )
-  => m (HashSet LocationId)
-nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
-
-instance (EnemyRunner env) => RunMessage env SlimeCoveredDhole where
-  runMessage msg e@(SlimeCoveredDhole attrs@EnemyAttrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      spawnLocations <- setToList <$> nonBayouLocations
-      e <$ spawnAtOneOf iid enemyId spawnLocations
-    EnemyMove eid _ lid | eid == enemyId -> do
-      investigatorIds <- getSetList @InvestigatorId lid
+instance EnemyRunner env => RunMessage env SlimeCoveredDhole where
+  runMessage msg e@(SlimeCoveredDhole attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      investigatorIds <-
+        selectList $ InvestigatorAt $ LocationWithId $ enemyLocation attrs
       e <$ pushAll
-        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+        [ InvestigatorAssignDamage iid source DamageAny 0 1
         | iid <- investigatorIds
         ]
     _ -> SlimeCoveredDhole <$> runMessage msg attrs

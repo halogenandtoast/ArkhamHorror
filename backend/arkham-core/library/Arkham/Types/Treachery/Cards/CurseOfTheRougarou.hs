@@ -11,7 +11,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs

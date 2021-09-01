@@ -994,6 +994,11 @@ passesCriteria iid source windows' = \case
     not <$> passesCriteria iid source windows' restriction
   Criteria.AllUndefeatedInvestigatorsResigned ->
     null <$> select Matcher.UneliminatedInvestigator
+  Criteria.EachUndefeatedInvestigator investigatorMatcher -> do
+    liftA2
+      (==)
+      (select Matcher.UneliminatedInvestigator)
+      (select investigatorMatcher)
   Criteria.Never -> pure False
   Criteria.InThreatAreaOf who -> do
     investigators <- selectList who

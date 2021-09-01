@@ -51,6 +51,7 @@ data Criterion
   | InvestigatorsHaveSpendableClues ValueMatcher
   | LocationExists LocationMatcher
   | AllUndefeatedInvestigatorsResigned
+  | EachUndefeatedInvestigator InvestigatorMatcher
   | OnLocation LocationMatcher
   | OnSameLocation
   | OwnCardWithDoom

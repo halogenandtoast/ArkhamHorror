@@ -434,6 +434,7 @@ data WindowMatcher
 data SkillTestMatcher
   = WhileInvestigating LocationMatcher
   | WhileAttackingAnEnemy EnemyMatcher
+  | WhileEvadingAnEnemy EnemyMatcher
   | SkillTestWithSkill SkillMatcher
   | SkillTestWithSkillType SkillType
   | AnySkillTest

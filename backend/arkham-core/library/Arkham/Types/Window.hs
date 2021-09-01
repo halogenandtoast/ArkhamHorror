@@ -62,6 +62,7 @@ data WindowType
   | EnterPlay Target
   | Entering InvestigatorId LocationId
   | FailAttackEnemy InvestigatorId EnemyId Int
+  | FailEvadeEnemy InvestigatorId EnemyId Int
   | FailInvestigationSkillTest InvestigatorId LocationId Int
   | FailSkillTest InvestigatorId Int
   | FailSkillTestAtOrLess InvestigatorId Int
@@ -86,6 +87,7 @@ data WindowType
   | RevealTokenWithNegativeModifier InvestigatorId Token
   | SkillTest SkillType
   | SuccessfulAttackEnemy InvestigatorId EnemyId Int
+  | SuccessfulEvadeEnemy InvestigatorId EnemyId Int
   | SuccessfulInvestigation InvestigatorId LocationId
   | TurnBegins InvestigatorId
   | TurnEnds InvestigatorId

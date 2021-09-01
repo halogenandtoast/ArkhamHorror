@@ -115,6 +115,7 @@ data Effect
   | AlchemicalTransmutation' AlchemicalTransmutation
   | Overzealous' Overzealous
   | MindWipe3' MindWipe3
+  | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
   | JeremiahPierce' JeremiahPierce
   | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
   | CursedShores' CursedShores
@@ -223,6 +224,7 @@ allEffects = mapFromList
   , ("03032", AlchemicalTransmutation' . alchemicalTransmutation)
   , ("03040", Overzealous' . overzealous)
   , ("50008", MindWipe3' . mindWipe3)
+  , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)
   , ("50044", JeremiahPierce' . jeremiahPierce)
   , ("81001", CurseOfTheRougarouTabletToken' . curseOfTheRougarouTabletToken)
   , ("81007", CursedShores' . cursedShores)

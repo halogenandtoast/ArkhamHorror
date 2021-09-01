@@ -1434,6 +1434,14 @@ windowMatches iid source window' = \case
               , enemyMatches enemyId enemyMatcher
               ]
             _ -> pure False
+        Window t (Window.FailEvadeEnemy who enemyId n) | whenMatcher == t ->
+          case skillMatcher of
+            Matcher.WhileEvadingAnEnemy enemyMatcher -> andM
+              [ matchWho iid who whoMatcher
+              , gameValueMatches n gameValueMatcher
+              , enemyMatches enemyId enemyMatcher
+              ]
+            _ -> pure False
         Window t (Window.FailSkillTest who n)
           | whenMatcher == t && skillMatcher == Matcher.AnySkillTest -> liftA2
             (&&)
@@ -1452,6 +1460,14 @@ windowMatches iid source window' = \case
         Window t (Window.SuccessfulAttackEnemy who enemyId n)
           | whenMatcher == t -> case skillMatcher of
             Matcher.WhileAttackingAnEnemy enemyMatcher -> andM
+              [ matchWho iid who whoMatcher
+              , gameValueMatches n gameValueMatcher
+              , enemyMatches enemyId enemyMatcher
+              ]
+            _ -> pure False
+        Window t (Window.SuccessfulEvadeEnemy who enemyId n)
+          | whenMatcher == t -> case skillMatcher of
+            Matcher.WhileEvadingAnEnemy enemyMatcher -> andM
               [ matchWho iid who whoMatcher
               , gameValueMatches n gameValueMatcher
               , enemyMatches enemyId enemyMatcher
@@ -1850,6 +1866,11 @@ skillTestMatches iid source st = \case
     _ -> pure False
   Matcher.WhileAttackingAnEnemy enemyMatcher -> case skillTestAction st of
     Just Action.Fight -> case skillTestTarget st of
+      EnemyTarget eid -> member eid <$> select enemyMatcher
+      _ -> pure False
+    _ -> pure False
+  Matcher.WhileEvadingAnEnemy enemyMatcher -> case skillTestAction st of
+    Just Action.Evade -> case skillTestTarget st of
       EnemyTarget eid -> member eid <$> select enemyMatcher
       _ -> pure False
     _ -> pure False

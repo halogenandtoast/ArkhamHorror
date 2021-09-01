@@ -12,11 +12,13 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Query
+import Arkham.Types.SkillTest
 import Arkham.Types.Source
 import Arkham.Types.Trait
 
 type LocationRunner env
   = ( HasQueue env
+    , HasSkillTest env
     , Query AssetMatcher env
     , Query LocationMatcher env
     , HasCostPayment env

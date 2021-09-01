@@ -4,16 +4,17 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (arkhamWoodsWoodenBridge)
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Source
+import qualified Arkham.Types.Timing as Timing
 
 newtype ArkhamWoodsWoodenBridge = ArkhamWoodsWoodenBridge LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsWoodenBridge :: LocationCard ArkhamWoodsWoodenBridge
@@ -28,23 +29,20 @@ arkhamWoodsWoodenBridge = locationWith
   . (revealedSymbolL .~ Circle)
   )
 
-instance HasModifiersFor env ArkhamWoodsWoodenBridge
-
 instance HasAbilities env ArkhamWoodsWoodenBridge where
   getAbilities i window (ArkhamWoodsWoodenBridge attrs) =
-    getAbilities i window attrs
+    withBaseAbilities i window attrs $ pure
+      [ restrictedAbility
+          attrs
+          1
+          (Here <> DuringSkillTest (WhileEvadingAnEnemy AnyEnemy))
+        $ ForcedAbility
+        $ RevealChaosToken Timing.When You AnyToken
+      | locationRevealed attrs
+      ]
 
-instance (LocationRunner env) => RunMessage env ArkhamWoodsWoodenBridge where
-  runMessage msg l@(ArkhamWoodsWoodenBridge attrs@LocationAttrs {..}) =
-    case msg of
-      RevealToken (SkillTestSource _ _ _ _ (Just Action.Evade)) iid _
-        | iid `elem` locationInvestigators -> do
-          let
-            ability = (mkAbility (toSource attrs) 0 LegacyForcedAbility)
-              { abilityLimit = PlayerLimit PerTestOrAbility 1
-              }
-          unused <- getIsUnused' iid ability
-          l <$ when
-            unused
-            (pushAll [UseLimitedAbility iid ability, DrawAnotherToken iid])
-      _ -> ArkhamWoodsWoodenBridge <$> runMessage msg attrs
+instance LocationRunner env => RunMessage env ArkhamWoodsWoodenBridge where
+  runMessage msg l@(ArkhamWoodsWoodenBridge attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      l <$ push (DrawAnotherToken iid)
+    _ -> ArkhamWoodsWoodenBridge <$> runMessage msg attrs

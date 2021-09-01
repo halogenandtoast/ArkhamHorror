@@ -6,13 +6,17 @@ module Arkham.Types.Location.Cards.ReturnToCellar
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Message
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (RevealLocation)
+import qualified Arkham.Types.Timing as Timing
 
 newtype ReturnToCellar = ReturnToCellar LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToCellar :: LocationCard ReturnToCellar
@@ -24,15 +28,20 @@ returnToCellar = location
   Plus
   [Square, Squiggle]
 
-instance HasModifiersFor env ReturnToCellar
-
 instance HasAbilities env ReturnToCellar where
-  getAbilities i window (ReturnToCellar attrs) = getAbilities i window attrs
+  getAbilities i window (ReturnToCellar attrs) =
+    withBaseAbilities i window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ RevealLocation Timing.After You
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance (LocationRunner env) => RunMessage env ReturnToCellar where
-  runMessage msg (ReturnToCellar attrs) = case msg of
-    RevealLocation _ lid | lid == locationId attrs -> do
+  runMessage msg l@(ReturnToCellar attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       deepBelowYourHouseId <- getRandom
-      push (PlaceLocation deepBelowYourHouseId Cards.deepBelowYourHouse)
-      ReturnToCellar <$> runMessage msg attrs
+      l <$ push (PlaceLocation deepBelowYourHouseId Cards.deepBelowYourHouse)
     _ -> ReturnToCellar <$> runMessage msg attrs

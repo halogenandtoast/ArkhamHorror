@@ -16,9 +16,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -33,25 +31,20 @@ rivertownAbandonedWarehouse = location
   Circle
   [Moon, Diamond, Square, Squiggle, Hourglass]
 
-ability :: LocationAttrs -> Ability
-ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
- where
-  base = mkAbility
-    (toSource attrs)
-    1
-    (ActionAbility Nothing $ Costs
-      [ ActionCost 1
-      , HandDiscardCost 1 Nothing mempty (singleton SkillWillpower)
-      ]
-    )
-
 instance HasAbilities env RivertownAbandonedWarehouse where
-  getAbilities iid window@(Window Timing.When NonFast) (RivertownAbandonedWarehouse attrs)
-    | locationRevealed attrs
-    = withBaseAbilities iid window attrs $ do
-      pure [locationAbility (ability attrs)]
   getAbilities iid window (RivertownAbandonedWarehouse attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility
+            attrs
+            1
+            (ActionAbility Nothing $ Costs
+              [ ActionCost 1
+              , HandDiscardCost 1 Nothing mempty (singleton SkillWillpower)
+              ]
+            )
+          & (abilityLimitL .~ GroupLimit PerGame 1)
+      | locationRevealed attrs
+      ]
 
 willpowerCount :: Payment -> Int
 willpowerCount (DiscardCardPayment cards) =

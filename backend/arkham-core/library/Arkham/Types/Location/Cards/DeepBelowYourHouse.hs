@@ -3,16 +3,19 @@ module Arkham.Types.Location.Cards.DeepBelowYourHouse where
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (deepBelowYourHouse)
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Matcher hiding (RevealLocation)
-import Arkham.Types.Message
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype DeepBelowYourHouse = DeepBelowYourHouse LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepBelowYourHouse :: LocationCard DeepBelowYourHouse
@@ -24,15 +27,20 @@ deepBelowYourHouse = location
   Squiggle
   [Plus]
 
-instance HasModifiersFor env DeepBelowYourHouse
-
 instance HasAbilities env DeepBelowYourHouse where
   getAbilities i window (DeepBelowYourHouse attrs) =
-    getAbilities i window attrs
+    withBaseAbilities i window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ RevealLocation Timing.After You
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
-instance (LocationRunner env) => RunMessage env DeepBelowYourHouse where
+instance LocationRunner env => RunMessage env DeepBelowYourHouse where
   runMessage msg l@(DeepBelowYourHouse attrs) = case msg of
-    RevealLocation (Just iid) lid | lid == locationId attrs -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push
         (BeginSkillTest
           iid

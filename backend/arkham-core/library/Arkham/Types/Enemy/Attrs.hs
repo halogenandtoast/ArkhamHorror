@@ -191,25 +191,15 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       }
     }
 
-spawnAtEmptyLocation
-  :: (MonadIO m, HasSet EmptyLocationId env (), MonadReader env m, HasQueue env)
-  => InvestigatorId
-  -> EnemyId
-  -> m ()
-spawnAtEmptyLocation iid eid = do
-  emptyLocations <- map unEmptyLocationId <$> getSetList ()
-  case emptyLocations of
-    [] -> push (Discard (EnemyTarget eid))
-    [lid] -> push (EnemySpawn Nothing lid eid)
-    lids -> push (chooseOne iid [ EnemySpawn Nothing lid eid | lid <- lids ])
-
 spawnAt
-  :: (MonadIO m, MonadReader env m, HasQueue env)
+  :: (MonadIO m, MonadReader env m, HasQueue env, HasSet InvestigatorId env ())
   => EnemyId
   -> LocationMatcher
   -> m ()
-spawnAt eid locationMatcher =
-  pushAll $ resolve (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
+spawnAt eid locationMatcher = do
+  windows' <- windows [Window.EnemyAttemptsToSpawnAt eid locationMatcher]
+  pushAll $ windows' <> resolve
+    (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
 
 modifiedEnemyFight
   :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)

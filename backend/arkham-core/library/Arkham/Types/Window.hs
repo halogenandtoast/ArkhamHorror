@@ -7,6 +7,7 @@ import Arkham.Types.Agenda.AdvancementReason
 import Arkham.Types.Card (Card)
 import Arkham.Types.Deck
 import Arkham.Types.Id
+import Arkham.Types.Matcher (LocationMatcher)
 import Arkham.Types.Phase (Phase)
 import Arkham.Types.SkillType (SkillType)
 import Arkham.Types.Source (Source)
@@ -55,6 +56,7 @@ data WindowType
   | EnemyWouldBeDefeated EnemyId
   | EnemyEngaged InvestigatorId EnemyId
   | EnemyEvaded InvestigatorId EnemyId
+  | EnemyAttemptsToSpawnAt EnemyId LocationMatcher
   | EnemySpawns EnemyId LocationId
   | EnemyEnters EnemyId LocationId
   | EnterPlay Target

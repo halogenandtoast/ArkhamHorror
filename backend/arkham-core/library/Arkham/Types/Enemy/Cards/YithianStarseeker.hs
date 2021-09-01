@@ -6,16 +6,17 @@ module Arkham.Types.Enemy.Cards.YithianStarseeker
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Matcher
-import Arkham.Types.Message
-import Arkham.Types.Query
+import Arkham.Types.Message hiding (EnemyAttacks)
+import qualified Arkham.Types.Timing as Timing
 
 newtype YithianStarseeker = YithianStarseeker EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yithianStarseeker :: EnemyCard YithianStarseeker
 yithianStarseeker = enemyWith
@@ -25,11 +26,20 @@ yithianStarseeker = enemyWith
   (2, 1)
   (spawnAtL ?~ LocationWithTitle "Another Dimension")
 
-instance (HasCount DiscardCount env InvestigatorId, EnemyAttrsRunMessage env) => RunMessage env YithianStarseeker where
-  runMessage msg (YithianStarseeker attrs) = case msg of
-    PerformEnemyAttack iid eid _ | eid == enemyId attrs -> do
-      discardCount <- unDiscardCount <$> getCount iid
-      YithianStarseeker <$> runMessage
-        msg
-        (attrs & doomL +~ if discardCount >= 10 then 1 else 0)
+instance HasAbilities env YithianStarseeker where
+  getAbilities iid window (YithianStarseeker attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ EnemyAttacks
+            Timing.When
+            (DiscardWith $ LengthIs $ GreaterThan $ Static 10)
+        $ EnemyWithId
+        $ toId attrs
+      ]
+
+instance EnemyAttrsRunMessage env => RunMessage env YithianStarseeker where
+  runMessage msg e@(YithianStarseeker attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      e <$ push (PlaceDoom (toTarget attrs) 1)
     _ -> YithianStarseeker <$> runMessage msg attrs

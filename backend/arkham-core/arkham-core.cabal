@@ -386,6 +386,7 @@ library
       Arkham.Types.Effect.Effects.WilliamYorick
       Arkham.Types.Effect.Effects.WillToSurvive3
       Arkham.Types.Effect.Effects.WindowModifierEffect
+      Arkham.Types.Effect.Effects.YogSothoth
       Arkham.Types.Effect.Helpers
       Arkham.Types.Effect.Window
       Arkham.Types.EffectId

@@ -11,12 +11,13 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -32,14 +33,15 @@ stepsOfYhagharl = location
   [Diamond, Moon]
 
 instance HasAbilities env StepsOfYhagharl where
-  getAbilities iid (Window Timing.When (Leaving who lid)) (StepsOfYhagharl attrs)
-    | iid == who
-    = pure
-      [ locationAbility (mkAbility attrs 1 LegacyForcedAbility)
-      | lid == locationId attrs
-      ]
   getAbilities iid window (StepsOfYhagharl attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ Leaves Timing.When You
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env StepsOfYhagharl where
   runMessage msg l@(StepsOfYhagharl attrs) = case msg of

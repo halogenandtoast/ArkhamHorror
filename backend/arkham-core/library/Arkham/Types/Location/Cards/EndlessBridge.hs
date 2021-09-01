@@ -16,7 +16,6 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 import Control.Monad.Extra (findM)
 
 newtype EndlessBridge = EndlessBridge LocationAttrs
@@ -32,15 +31,16 @@ endlessBridge = location
   Triangle
   [Square, Squiggle]
 
-forcedAbility :: LocationAttrs -> Ability
-forcedAbility a = mkAbility (toSource a) 1 LegacyForcedAbility
-
-instance ActionRunner env => HasAbilities env EndlessBridge where
-  getAbilities iid (Window Timing.After (Leaving who lid)) (EndlessBridge attrs)
-    | lid == toId attrs && who == iid = do
-      leadInvestigator <- getLeadInvestigatorId
-      pure [ forcedAbility attrs | iid == leadInvestigator ]
-  getAbilities iid window (EndlessBridge attrs) = getAbilities iid window attrs
+instance HasAbilities env EndlessBridge where
+  getAbilities iid window (EndlessBridge attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ Leaves Timing.After Anyone
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env EndlessBridge where
   runMessage msg l@(EndlessBridge attrs) = case msg of

@@ -3,16 +3,19 @@ module Arkham.Types.Location.Cards.FarAboveYourHouse where
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (farAboveYourHouse)
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype FarAboveYourHouse = FarAboveYourHouse LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 farAboveYourHouse :: LocationCard FarAboveYourHouse
@@ -24,24 +27,28 @@ farAboveYourHouse = location
   Moon
   [Triangle]
 
-instance HasModifiersFor env FarAboveYourHouse
-
 instance HasAbilities env FarAboveYourHouse where
-  getAbilities i window (FarAboveYourHouse attrs) = getAbilities i window attrs
+  getAbilities i window (FarAboveYourHouse attrs) =
+    withBaseAbilities i window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ RevealLocation Timing.After You
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance (LocationRunner env) => RunMessage env FarAboveYourHouse where
   runMessage msg l@(FarAboveYourHouse attrs) = case msg of
-    RevealLocation (Just iid) lid | lid == locationId attrs -> do
-      push
-        (BeginSkillTest
-          iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          Nothing
-          SkillWillpower
-          4
-        )
-      FarAboveYourHouse <$> runMessage msg attrs
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (BeginSkillTest
+        iid
+        (toSource attrs)
+        (InvestigatorTarget iid)
+        Nothing
+        SkillWillpower
+        4
+      )
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
         investigatorIds <- getInvestigatorIds

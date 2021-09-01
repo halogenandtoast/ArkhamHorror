@@ -243,6 +243,7 @@ data LocationMatcher
   | RevealedLocation
   | UnrevealedLocation
   | InvestigatableLocation
+  | LocationNotInPlay
   | FarthestLocationFromYou LocationMatcher
   | NearestLocationToYou LocationMatcher
   | LocationWithTrait Trait
@@ -404,6 +405,7 @@ data WindowMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | PlacedCounter Timing Who CounterMatcher ValueMatcher
   | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
+  | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemySpawns Timing Where EnemyMatcher
   | FastPlayerWindow
   | TurnBegins Timing Who

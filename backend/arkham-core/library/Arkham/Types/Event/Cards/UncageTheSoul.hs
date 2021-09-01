@@ -31,7 +31,7 @@ instance CanCheckPlayable env => RunMessage env UncageTheSoul where
   runMessage msg e@(UncageTheSoul attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
       let
-        windows = map
+        windows' = map
           (Window Timing.When)
           [Window.DuringTurn iid, Window.NonFast, Window.FastPlayerWindow]
       availableResources <- unResourceCount <$> getCount iid
@@ -44,7 +44,7 @@ instance CanCheckPlayable env => RunMessage env UncageTheSoul where
           iid
           (InvestigatorSource iid)
           (availableResources + 3)
-          windows
+          windows'
         )
         results
       cardsWithCosts <- traverse (traverseToSnd (getModifiedCardCost iid)) cards

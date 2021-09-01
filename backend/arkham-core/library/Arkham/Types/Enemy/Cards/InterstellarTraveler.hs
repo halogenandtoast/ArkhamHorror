@@ -6,18 +6,21 @@ module Arkham.Types.Enemy.Cards.InterstellarTraveler
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 
 newtype InterstellarTraveler = InterstellarTraveler EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 interstellarTraveler :: EnemyCard InterstellarTraveler
 interstellarTraveler = enemyWith
@@ -27,10 +30,21 @@ interstellarTraveler = enemyWith
   (1, 2)
   (spawnAtL ?~ LocationWithTrait Extradimensional)
 
+instance HasAbilities env InterstellarTraveler where
+  getAbilities iid window (InterstellarTraveler attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ EnemyEnters Timing.When Anywhere
+        $ EnemyWithId
+        $ toId attrs
+      ]
+
 instance (HasCount ClueCount env LocationId, EnemyAttrsRunMessage env) => RunMessage env InterstellarTraveler where
-  runMessage msg (InterstellarTraveler attrs) = case msg of
-    EnemyEntered eid lid | eid == enemyId attrs -> do
+  runMessage msg e@(InterstellarTraveler attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      let lid = enemyLocation attrs
       clueCount <- unClueCount <$> getCount lid
-      when (clueCount > 0) (push $ RemoveClues (LocationTarget lid) 1)
-      pure . InterstellarTraveler $ attrs & doomL +~ 1
+      push (PlaceDoom (toTarget attrs) 1)
+      e <$ when (clueCount > 0) (push $ RemoveClues (LocationTarget lid) 1)
     _ -> InterstellarTraveler <$> runMessage msg attrs

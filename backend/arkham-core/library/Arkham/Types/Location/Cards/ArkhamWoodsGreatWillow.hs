@@ -13,7 +13,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsGreatWillow :: LocationCard ArkhamWoodsGreatWillow
@@ -27,8 +27,6 @@ arkhamWoodsGreatWillow = locationWith
   ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Star])
   . (revealedSymbolL .~ Heart)
   )
-
-instance HasModifiersFor env ArkhamWoodsGreatWillow
 
 instance HasAbilities env ArkhamWoodsGreatWillow where
   getAbilities i window (ArkhamWoodsGreatWillow attrs) =

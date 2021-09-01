@@ -6,13 +6,17 @@ module Arkham.Types.Location.Cards.ReturnToAttic
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Message
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (RevealLocation)
+import qualified Arkham.Types.Timing as Timing
 
 newtype ReturnToAttic = ReturnToAttic LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToAttic :: LocationCard ReturnToAttic
@@ -24,15 +28,20 @@ returnToAttic = location
   Triangle
   [Square, Moon]
 
-instance HasModifiersFor env ReturnToAttic
-
 instance HasAbilities env ReturnToAttic where
-  getAbilities i window (ReturnToAttic attrs) = getAbilities i window attrs
+  getAbilities i window (ReturnToAttic attrs) =
+    withBaseAbilities i window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ RevealLocation Timing.After You
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance (LocationRunner env) => RunMessage env ReturnToAttic where
-  runMessage msg (ReturnToAttic attrs) = case msg of
-    RevealLocation _ lid | lid == locationId attrs -> do
+  runMessage msg l@(ReturnToAttic attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       farAboveYourHouseId <- getRandom
-      push (PlaceLocation farAboveYourHouseId Cards.farAboveYourHouse)
-      ReturnToAttic <$> runMessage msg attrs
+      l <$ push (PlaceLocation farAboveYourHouseId Cards.farAboveYourHouse)
     _ -> ReturnToAttic <$> runMessage msg attrs

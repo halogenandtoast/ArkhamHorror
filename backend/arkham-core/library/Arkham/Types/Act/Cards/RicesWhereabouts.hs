@@ -51,9 +51,9 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
       playerCount <- getPlayerCount
       let discardCount = if playerCount == 1 then 10 else 5
       a <$ push (DiscardTopOfEncounterDeck iid discardCount Nothing)
-    UseCardAbility iid source windows 2 _ | isSource attrs source -> do
+    UseCardAbility iid source windows' 2 _ | isSource attrs source -> do
       let
-        mCard = flip firstJust windows $ \case
+        mCard = flip firstJust windows' $ \case
           Window _ (Window.Discarded _ card)
             | toCardDef card == Assets.jazzMulligan -> Just card
           _ -> Nothing

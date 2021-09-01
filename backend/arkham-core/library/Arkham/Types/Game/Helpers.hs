@@ -1283,6 +1283,18 @@ windowMatches
   -> m Bool
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.EnemyAttemptsToSpawnAt timing enemyMatcher locationMatcher ->
+    case window' of
+      Window t (Window.EnemyAttemptsToSpawnAt eid locationMatcher')
+        | t == timing -> do
+          case locationMatcher of
+            Matcher.LocationNotInPlay -> do
+              liftA2
+                (&&)
+                (enemyMatches eid enemyMatcher)
+                (null <$> select locationMatcher')
+            _ -> pure False -- TODO: We may need more things here
+      _ -> pure False
   Matcher.TookControlOfAsset timing whoMatcher assetMatcher -> case window' of
     Window t (Window.TookControlOfAsset who aid) | t == timing -> liftA2
       (&&)
@@ -1723,6 +1735,7 @@ locationMatches
   -> Matcher.LocationMatcher
   -> m Bool
 locationMatches investigatorId source window locationId = \case
+  Matcher.LocationNotInPlay -> pure False
   Matcher.LocationWithLabel label ->
     (== label) . Location.unLabel <$> Location.getLabel locationId
   Matcher.LocationWithTitle title ->

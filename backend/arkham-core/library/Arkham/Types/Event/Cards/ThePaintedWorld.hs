@@ -26,12 +26,12 @@ thePaintedWorld = event ThePaintedWorld Cards.thePaintedWorld
 
 instance CanCheckPlayable env => RunMessage env ThePaintedWorld where
   runMessage msg e@(ThePaintedWorld attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ windows | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ windows' | eid == toId attrs -> do
       playableCards <-
         filterM
             (getIsPlayable iid (toSource attrs)
             $ Window Timing.When (DuringTurn iid)
-            : windows
+            : windows'
             )
           =<< getList
                 (BasicCardMatch (NonExceptional <> EventCard)

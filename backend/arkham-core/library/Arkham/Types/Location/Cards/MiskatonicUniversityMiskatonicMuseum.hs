@@ -14,8 +14,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype MiskatonicUniversityMiskatonicMuseum = MiskatonicUniversityMiskatonicMuseum LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -31,17 +29,13 @@ miskatonicUniversityMiskatonicMuseum = location
   Diamond
   [T, Plus, Circle, Square]
 
-ability :: LocationAttrs -> Ability
-ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
- where
-  base = mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
-
 instance HasAbilities env MiskatonicUniversityMiskatonicMuseum where
-  getAbilities iid window@(Window Timing.When NonFast) (MiskatonicUniversityMiskatonicMuseum attrs@LocationAttrs {..})
-    | locationRevealed
-    = withBaseAbilities iid window attrs $ pure [locationAbility (ability attrs)]
   getAbilities iid window (MiskatonicUniversityMiskatonicMuseum attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1)
+          & (abilityLimitL .~ PlayerLimit PerGame 1)
+      | locationRevealed attrs
+      ]
 
 instance (LocationRunner env) => RunMessage env MiskatonicUniversityMiskatonicMuseum where
   runMessage msg l@(MiskatonicUniversityMiskatonicMuseum attrs) = case msg of

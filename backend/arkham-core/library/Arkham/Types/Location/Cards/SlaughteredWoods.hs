@@ -14,7 +14,6 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
-import Arkham.Types.Query
 import qualified Arkham.Types.Timing as Timing
 
 newtype SlaughteredWoods = SlaughteredWoods LocationAttrs

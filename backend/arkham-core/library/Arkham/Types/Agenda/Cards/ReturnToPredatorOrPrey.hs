@@ -18,23 +18,18 @@ import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype ReturnToPredatorOrPrey = ReturnToPredatorOrPrey AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToPredatorOrPrey :: AgendaCard ReturnToPredatorOrPrey
 returnToPredatorOrPrey =
   agenda (1, A) ReturnToPredatorOrPrey Cards.returnToPredatorOrPrey (Static 6)
 
-instance HasModifiersFor env ReturnToPredatorOrPrey
-
 instance HasAbilities env ReturnToPredatorOrPrey where
-  getAbilities _ (Window Timing.When NonFast) (ReturnToPredatorOrPrey attrs) =
+  getAbilities _ _ (ReturnToPredatorOrPrey attrs) =
     pure [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
-  getAbilities _ _ _ = pure []
 
 instance AgendaRunner env => RunMessage env ReturnToPredatorOrPrey where
   runMessage msg a@(ReturnToPredatorOrPrey attrs@AgendaAttrs {..}) =

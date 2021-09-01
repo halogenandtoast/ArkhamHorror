@@ -18,7 +18,7 @@ import Arkham.Types.Target
 
 newtype MysteriousGateway = MysteriousGateway ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
 mysteriousGateway :: ActCard MysteriousGateway
 mysteriousGateway = act
@@ -27,21 +27,8 @@ mysteriousGateway = act
   Cards.mysteriousGateway
   (Just $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Guest Hall"))
 
-instance HasAbilities env MysteriousGateway where
-  getAbilities i window (MysteriousGateway x) = getAbilities i window x
-
 instance ActRunner env => RunMessage env MysteriousGateway where
   runMessage msg a@(MysteriousGateway attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getSetList @InvestigatorId
-        (LocationWithTitle "Guest Hall")
-      requiredClues <- getPlayerCountValue (PerPlayer 3)
-      pushAll
-        [ SpendClues requiredClues investigatorIds
-        , chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
-        ]
-      pure $ MysteriousGateway $ attrs & (sequenceL .~ Act 1 B)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getSetList @InvestigatorId

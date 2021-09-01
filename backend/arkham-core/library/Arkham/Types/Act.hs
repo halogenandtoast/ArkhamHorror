@@ -11,7 +11,6 @@ import Arkham.Types.Act.Cards
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Decks
 import Arkham.Types.Id
 import Arkham.Types.Name
 import Arkham.Types.Query
@@ -19,7 +18,7 @@ import Arkham.Types.Trait
 
 $(buildEntity "Act")
 
-instance ActionRunner env => HasAbilities env Act where
+instance HasAbilities env Act where
   getAbilities = genericGetAbilities
 
 instance

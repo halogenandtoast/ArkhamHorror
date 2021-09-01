@@ -3303,6 +3303,8 @@ runGameMessage msg g = case msg of
     phaseBeginsWindows <- checkWindows
       [ Window Timing.When Window.AnyPhaseBegins
       , Window Timing.When (Window.PhaseBegins EnemyPhase)
+      , Window Timing.After Window.AnyPhaseBegins
+      , Window Timing.After (Window.PhaseBegins EnemyPhase)
       , Window Timing.When Window.FastPlayerWindow
       ]
     case investigatorIds of
@@ -3377,6 +3379,8 @@ runGameMessage msg g = case msg of
     phaseBeginsWindows <- checkWindows
       [ Window Timing.When Window.AnyPhaseBegins
       , Window Timing.When (Window.PhaseBegins EnemyPhase)
+      , Window Timing.After Window.AnyPhaseBegins
+      , Window Timing.After (Window.PhaseBegins EnemyPhase)
       ]
     pushAllEnd $ phaseBeginsWindows <> [HuntersMove, EnemiesAttack, EndEnemy]
     pure $ g & phaseL .~ EnemyPhase
@@ -3396,6 +3400,8 @@ runGameMessage msg g = case msg of
     phaseBeginsWindows <- checkWindows
       [ Window Timing.When Window.AnyPhaseBegins
       , Window Timing.When (Window.PhaseBegins UpkeepPhase)
+      , Window Timing.After Window.AnyPhaseBegins
+      , Window Timing.After (Window.PhaseBegins UpkeepPhase)
       ]
     pushAllEnd
       $ phaseBeginsWindows
@@ -3432,6 +3438,8 @@ runGameMessage msg g = case msg of
     phaseBeginsWindows <- checkWindows
       [ Window Timing.When Window.AnyPhaseBegins
       , Window Timing.When (Window.PhaseBegins MythosPhase)
+      , Window Timing.After Window.AnyPhaseBegins
+      , Window Timing.After (Window.PhaseBegins MythosPhase)
       ]
     allDrawWindows <- checkWindows
       [Window Timing.When Window.AllDrawEncounterCard]

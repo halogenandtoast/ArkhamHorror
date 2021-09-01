@@ -6,6 +6,7 @@ module Arkham.Types.Enemy.Cards.CorpseTaker
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
@@ -13,10 +14,12 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Phase
+import qualified Arkham.Types.Timing as Timing
 
 newtype CorpseTaker = CorpseTaker EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corpseTaker :: EnemyCard CorpseTaker
 corpseTaker = enemyWith
@@ -26,10 +29,18 @@ corpseTaker = enemyWith
   (1, 2)
   (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
 
+instance HasAbilities env CorpseTaker where
+  getAbilities i w (CorpseTaker x) = withBaseAbilities i w x $ pure
+    [ mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
+      MythosPhase
+    , mkAbility x 2 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase
+    ]
+
 instance EnemyRunner env => RunMessage env CorpseTaker where
   runMessage msg e@(CorpseTaker attrs@EnemyAttrs {..}) = case msg of
-    EndMythos -> pure $ CorpseTaker $ attrs & doomL +~ 1
-    EndEnemy -> do
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      e <$ pure (PlaceDoom (toTarget attrs) 1)
+    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       mRivertown <- selectOne (LocationWithTitle "Rivertown")
       mMainPath <- selectOne (LocationWithTitle "Main Path")
       let

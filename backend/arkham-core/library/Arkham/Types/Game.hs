@@ -3023,7 +3023,9 @@ runGameMessage msg g = case msg of
           let
             tid = TreacheryId cardId
             treachery = lookupTreachery (toCardCode pc) iid tid
-          pushAll [Revelation iid (TreacherySource tid), UnsetActiveCard]
+          pushAll
+            $ resolve (Revelation iid (TreacherySource tid))
+            <> [UnsetActiveCard]
           pure
             $ g
             & (treacheriesL %~ insertMap tid treachery)
@@ -3807,7 +3809,7 @@ runGameMessage msg g = case msg of
         asset = createAsset card
         assetId = toId asset
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
-      push $ Revelation iid (AssetSource assetId)
+      pushAll $ resolve $ Revelation iid (AssetSource assetId)
       pure $ g & (assetsL . at assetId ?~ asset)
     LocationType -> do
       let

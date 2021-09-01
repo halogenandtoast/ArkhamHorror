@@ -17,8 +17,6 @@ import Arkham.Types.Message
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype GardenDistrict = GardenDistrict LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -31,7 +29,7 @@ gardenDistrict =
 instance HasAbilities env GardenDistrict where
   getAbilities iid window (GardenDistrict attrs) =
     withBaseAbilities iid window attrs $ pure
-      [ restrictedAbility attrs Here 1 $ ActionAbility Nothing $ ActionCost 1
+      [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
       | locationRevealed attrs
       ]
 

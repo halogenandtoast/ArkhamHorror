@@ -81,6 +81,7 @@ data WindowType
   | PhaseEnds Phase
   | PlacedHorror InvestigatorId Int
   | PlacedDamage InvestigatorId Int
+  | PlacedClues Target Int
   | PlayCard InvestigatorId Card
   | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId

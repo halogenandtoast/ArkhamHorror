@@ -10,18 +10,17 @@ import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.Window
 
 newtype SpectralMist = SpectralMist TreacheryAttrs
   deriving anyclass IsTreachery
@@ -36,14 +35,13 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist
     pure $ toModifiers a [ Difficulty 1 | treacheryOnLocation lid a ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env SpectralMist where
-  getAbilities iid (Window Timing.When NonFast) (SpectralMist a) = do
-    investigatorLocationId <- getId @LocationId iid
+instance HasAbilities env SpectralMist where
+  getAbilities _ _ (SpectralMist a) = do
     pure
-      [ mkAbility a 1 $ ActionAbility Nothing $ ActionCost 1
-      | treacheryOnLocation investigatorLocationId a
+      [ restrictedAbility a 1 OnSameLocation
+        $ ActionAbility Nothing
+        $ ActionCost 1
       ]
-  getAbilities _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env SpectralMist where
   runMessage msg t@(SpectralMist attrs@TreacheryAttrs {..}) = case msg of

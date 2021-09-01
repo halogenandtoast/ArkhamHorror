@@ -365,6 +365,32 @@ instance
               | card <- cards
               ]
             )
+        DiscardFromCost x zone cardMatcher -> do
+          let
+            getCards = \case
+              FromHandOf whoMatcher ->
+                selectList (InHandOf whoMatcher <> BasicCardMatch cardMatcher)
+              FromPlayAreaOf whoMatcher ->
+                map unInPlayCard
+                  <$> (selectList whoMatcher >>= concatMapM getList)
+              Zones zs -> concatMapM getCards zs
+          cards <- getCards zone
+          e <$ push
+            (chooseN
+              iid
+              x
+              [ TargetLabel
+                  (CardIdTarget $ toCardId card)
+                  [ PayAbilityCost
+                      (InvestigatorSource iid)
+                      iid
+                      Nothing
+                      skipAdditionalCosts
+                      (DiscardCost $ CardIdTarget $ toCardId card)
+                  ]
+              | card <- cards
+              ]
+            )
         SkillIconCost x skillTypes -> do
           handCards <- mapMaybe (preview _PlayerCard . unHandCard)
             <$> getList iid

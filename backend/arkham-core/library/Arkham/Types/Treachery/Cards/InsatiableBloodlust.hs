@@ -2,19 +2,23 @@ module Arkham.Types.Treachery.Cards.InsatiableBloodlust where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype InsatiableBloodlust = InsatiableBloodlust TreacheryAttrs
-  deriving anyclass (IsTreachery, HasAbilities env)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 insatiableBloodlust :: TreacheryCard InsatiableBloodlust
@@ -27,6 +31,12 @@ instance HasModifiersFor env InsatiableBloodlust where
       [EnemyFight 1, DamageDealt 1, HorrorDealt 1, CannotBeEvaded]
   getModifiersFor _ _ _ = pure []
 
+instance HasAbilities env InsatiableBloodlust where
+  getAbilities _ _ (InsatiableBloodlust x) = pure
+    [ mkAbility x 1 $ ForcedAbility $ EnemyDealtDamage Timing.After $ enemyIs
+        Cards.theRougarou
+    ]
+
 instance TreacheryRunner env => RunMessage env InsatiableBloodlust where
   runMessage msg t@(InsatiableBloodlust attrs@TreacheryAttrs {..}) =
     case msg of
@@ -37,7 +47,6 @@ instance TreacheryRunner env => RunMessage env InsatiableBloodlust where
           Just eid -> do
             push (AttachTreachery treacheryId (EnemyTarget eid))
         InsatiableBloodlust <$> runMessage msg attrs
-      EnemyDamage eid _ _ n | n > 0 -> do
-        mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
-        t <$ when (mrougarou == Just eid) (push (Discard $ toTarget attrs))
+      UseCardAbility _ source _ 1 _ | isSource attrs source ->
+        t <$ push (Discard $ toTarget attrs)
       _ -> InsatiableBloodlust <$> runMessage msg attrs

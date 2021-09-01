@@ -605,9 +605,12 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & cluesL .~ 0
     PlaceClues target n | isTarget a target -> do
       modifiers' <- getModifiers (toSource a) (toTarget a)
+      windows' <- windows [Window.PlacedClues (toTarget a) n]
       if CannotPlaceClues `elem` modifiers'
         then pure a
-        else pure $ a & cluesL +~ n
+        else do
+          pushAll windows'
+          pure $ a & cluesL +~ n
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
     PlaceResources target n | isTarget a target -> pure $ a & resourcesL +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId ->
@@ -622,8 +625,11 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         [ Window Timing.After (Window.RevealLocation iid lid)
         | iid <- maybeToList miid
         ]
-      pushAll $ AddConnection lid locationRevealedSymbol : windowMsgs
-      pure $ a & cluesL +~ locationClueCount & revealedL .~ True
+      pushAll
+        $ AddConnection lid locationRevealedSymbol
+        : windowMsgs
+        <> [ PlaceClues (toTarget a) locationClueCount | locationClueCount > 0 ]
+      pure $ a & revealedL .~ True
     LookAtRevealed source target | isTarget a target -> do
       push (Label "Continue" [After (LookAtRevealed source target)])
       pure $ a & revealedL .~ True

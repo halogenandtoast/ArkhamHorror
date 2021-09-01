@@ -6,18 +6,22 @@ module Arkham.Types.Asset.Cards.BearTrap
 import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.LocationId
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype BearTrap = BearTrap AssetAttrs
   deriving anyclass IsAsset
@@ -33,8 +37,15 @@ instance HasModifiersFor env BearTrap where
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities env BearTrap where
-  getAbilities _ _ (BearTrap x) = pure
-    [restrictedAbility x 1 restriction $ FastAbility Free]
+  getAbilities _ _ (BearTrap x) =
+    pure
+      $ [restrictedAbility x 1 restriction $ FastAbility Free]
+      <> [ mkAbility x 2 $ ForcedAbility $ EnemyEnters
+             Timing.After
+             (LocationWithId attachedLocationId)
+             (enemyIs Cards.theRougarou)
+         | attachedLocationId <- maybeToList (assetLocation x)
+         ]
     where restriction = maybe OwnsThis (const Never) (assetEnemy x)
 
 instance AssetRunner env => RunMessage env BearTrap where
@@ -42,7 +53,7 @@ instance AssetRunner env => RunMessage env BearTrap where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       a <$ push (AttachAsset assetId (LocationTarget locationId))
-    EnemyMove eid _ lid | Just lid == assetLocation -> do
-      isRougarou <- (== CardCode "81028") <$> getId eid
-      a <$ when isRougarou (push (AttachAsset assetId (EnemyTarget eid)))
+    UseCardAbility _ source [Window _ (Window.EnemyEnters eid _)] 2 _
+      | isSource attrs source -> do
+        a <$ push (AttachAsset assetId (EnemyTarget eid))
     _ -> BearTrap <$> runMessage msg attrs

@@ -181,6 +181,7 @@ data GameParams = GameParams
 
 data Game = Game
   { gamePhaseHistory :: HashMap InvestigatorId History
+  , gameTurnHistory :: HashMap InvestigatorId History
   , gameRoundHistory :: HashMap InvestigatorId History
   , gameInitialSeed :: Int
   , gameSeed :: Int
@@ -275,6 +276,9 @@ phaseL = lens gamePhase $ \m x -> m { gamePhase = x }
 
 phaseHistoryL :: Lens' Game (HashMap InvestigatorId History)
 phaseHistoryL = lens gamePhaseHistory $ \m x -> m { gamePhaseHistory = x }
+
+turnHistoryL :: Lens' Game (HashMap InvestigatorId History)
+turnHistoryL = lens gameTurnHistory $ \m x -> m { gameTurnHistory = x }
 
 roundHistoryL :: Lens' Game (HashMap InvestigatorId History)
 roundHistoryL = lens gameRoundHistory $ \m x -> m { gameRoundHistory = x }
@@ -396,6 +400,7 @@ instance ToJSON Game where
     [ "windowDepth" .= toJSON gameWindowDepth
     , "params" .= toJSON gameParams
     , "roundHistory" .= toJSON gameRoundHistory
+    , "turnHistory" .= toJSON gameTurnHistory
     , "phaseHistory" .= toJSON gamePhaseHistory
     , "initialSeed" .= toJSON gameInitialSeed
     , "seed" .= toJSON gameSeed
@@ -602,12 +607,17 @@ getInvestigatorsMatching = \case
       . toList
       . view investigatorsL
       =<< getGame
+  InvestigatorWithoutModifier modifierType -> do
+    is <- toList . view investigatorsL <$> getGame
+    flip filterM is $ \i -> do
+      modifiers' <- getModifiers (toSource i) (toTarget i)
+      pure $ modifierType `notElem` modifiers'
   -- TODO: too lazy to do these right now
+  NoDamageDealtThisTurn -> pure []
   UnengagedInvestigator -> pure []
   UneliminatedInvestigator -> pure []
   ContributedMatchingIcons _ -> pure []
   DiscardWith _ -> pure []
-  InvestigatorWithoutModifier _ -> pure []
   InvestigatorEngagedWith _ -> pure []
   InvestigatorWithResources _ -> pure []
 
@@ -754,6 +764,9 @@ getLocationsMatching = \case
   LocationWithTrait trait ->
     filter hasMatchingTrait . toList . view locationsL <$> getGame
     where hasMatchingTrait = (trait `member`) . toTraits
+  LocationWithoutTrait trait ->
+    filter missingTrait . toList . view locationsL <$> getGame
+    where missingTrait = (trait `notMember`) . toTraits
   LocationMatchAll [] -> pure []
   LocationMatchAll (x : xs) -> do
     matches :: HashSet LocationId <-
@@ -819,6 +832,8 @@ getAssetsMatching matcher = do
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AssetNonStory -> pure $ filter (not . isStory) as
     AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
+    AssetCardMatch cardMatcher ->
+      pure $ filter ((`cardMatch` cardMatcher) . toCard) as
     DiscardableAsset -> pure $ filter canBeDiscarded as
     EnemyAsset eid -> pure $ filter ((== Just eid) . assetEnemy) as
     AssetAt locationMatcher -> do
@@ -826,6 +841,9 @@ getAssetsMatching matcher = do
       pure $ filter (maybe False (`elem` locations) . assetLocation) as
     AssetReady -> pure $ filter (not . isExhausted) as
     AssetExhausted -> pure $ filter isExhausted as
+    AssetWithoutModifier modifierType -> flip filterM as $ \a -> do
+      modifiers' <- getModifiers (toSource a) (toTarget a)
+      pure $ modifierType `notElem` modifiers'
     AssetMatches ms -> foldM filterMatcher as ms
     AssetWithUseType uType -> filterM
       (fmap ((> 0) . unStartingUsesCount) . getCount . (, uType) . toId)
@@ -1632,6 +1650,8 @@ instance HasGame env => HasList DiscardedPlayerCard env InvestigatorId where
   getList = getList <=< getInvestigator
 
 instance HasGame env => HasHistory env where
+  getHistory TurnHistory iid =
+    findWithDefault mempty iid . view turnHistoryL <$> getGame
   getHistory PhaseHistory iid =
     findWithDefault mempty iid . view phaseHistoryL <$> getGame
   getHistory RoundHistory iid = do
@@ -2603,6 +2623,13 @@ instance (HasAbilities env ActionType, HasGame env) => HasAbilities env AssetId 
 instance (HasAbilities env ActionType, HasGame env) => HasAbilities env LocationId where
   getAbilities iid window lid = getAbilities iid window =<< getLocation lid
 
+insertHistory
+  :: InvestigatorId
+  -> History
+  -> HashMap InvestigatorId History
+  -> HashMap InvestigatorId History
+insertHistory = HashMap.insertWith (<>)
+
 runPreGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game
 runPreGameMessage msg g = case msg of
@@ -3316,7 +3343,7 @@ runGameMessage msg g = case msg of
       , Window Timing.After (Window.TurnEnds iid)
       ]
     g <$ pushAll (resolve $ EndTurn iid)
-  EndTurn iid -> pure $ g & usedAbilitiesL %~ filter
+  EndTurn iid -> pure $ g & turnHistoryL .~ mempty & usedAbilitiesL %~ filter
     (\(iid', Ability {..}, _) ->
       iid' /= iid || abilityLimitType abilityLimit /= Just PerTurn
     )
@@ -3331,10 +3358,8 @@ runGameMessage msg g = case msg of
       CampaignPhase -> error "should not be called in this situation"
     pure
       $ g
-      & roundHistoryL
-      %~ (<> view phaseHistoryL g)
-      & phaseHistoryL
-      %~ mempty
+      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (phaseHistoryL %~ mempty)
   EndInvestigation -> do
     pushAll . (<> [EndPhase]) =<< checkWindows
       [Window Timing.When (Window.PhaseEnds InvestigationPhase)]
@@ -3613,6 +3638,22 @@ runGameMessage msg g = case msg of
     let (cards, encounterDeck) = splitAt n (unDeck $ g ^. encounterDeckL)
     push (RequestedEncounterCards target cards)
     pure $ g & encounterDeckL .~ Deck encounterDeck
+  InvestigatorAssignDamage iid' (InvestigatorSource iid) _ n 0 | n > 0 -> do
+    let
+      historyItem = mempty { historyDealtDamageTo = [InvestigatorTarget iid'] }
+      turn = isJust $ view turnPlayerInvestigatorIdL g
+      setTurnHistory =
+        if turn then turnHistoryL %~ insertHistory iid historyItem else id
+
+    pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
+  EnemyDamage eid iid _ n | n > 0 -> do
+    let
+      historyItem = mempty { historyDealtDamageTo = [EnemyTarget eid] }
+      turn = isJust $ view turnPlayerInvestigatorIdL g
+      setTurnHistory =
+        if turn then turnHistoryL %~ insertHistory iid historyItem else id
+
+    pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   FindAndDrawEncounterCard iid matcher -> do
     let
       matchingDiscards = filter (`cardMatch` matcher) (g ^. discardL)
@@ -3842,6 +3883,9 @@ runGameMessage msg g = case msg of
 
     let
       historyItem = mempty { historyTreacheriesDrawn = [toCardCode treachery] }
+      turn = isJust $ view turnPlayerInvestigatorIdL g
+      setTurnHistory =
+        if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
     push (ResolveTreachery iid treacheryId)
 
@@ -3849,7 +3893,8 @@ runGameMessage msg g = case msg of
       $ g
       & (treacheriesL . at treacheryId ?~ treachery)
       & (activeCardL ?~ EncounterCard card)
-      & (phaseHistoryL %~ HashMap.insertWith (<>) iid historyItem)
+      & (phaseHistoryL %~ insertHistory iid historyItem)
+      & setTurnHistory
   ResolveTreachery iid treacheryId -> do
     treachery <- getTreachery treacheryId
     checkWindowMessages <- checkWindows
@@ -3876,12 +3921,16 @@ runGameMessage msg g = case msg of
 
     let
       historyItem = mempty { historyTreacheriesDrawn = [toCardCode treachery] }
+      turn = isJust $ view turnPlayerInvestigatorIdL g
+      setTurnHistory =
+        if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
     pure
       $ g
       & (treacheriesL %~ insertMap treacheryId treachery)
       & (activeCardL ?~ PlayerCard card)
-      & (phaseHistoryL %~ HashMap.insertWith (<>) iid historyItem)
+      & (phaseHistoryL %~ insertHistory iid historyItem)
+      & setTurnHistory
   UnsetActiveCard -> pure $ g & activeCardL .~ Nothing
   AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
   ResignWith (AssetTarget aid) -> do

@@ -116,11 +116,13 @@ type HasCostPayment env
     , HasCount SpendableClueCount env ()
     , HasCount SpendableClueCount env InvestigatorId
     , HasCount UsesCount env AssetId
+    , HasList InPlayCard env InvestigatorId
     , HasId (Maybe LocationId) env LocationMatcher
     , HasList HandCard env InvestigatorId
     , HasList TakenAction env InvestigatorId
     , Query AssetMatcher env
     , Query InvestigatorMatcher env
+    , Query ExtendedCardMatcher env
     , HasSet InvestigatorId env LocationId
     )
 

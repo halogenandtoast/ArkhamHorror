@@ -73,6 +73,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameWindowDepth = 0
       , gameRoundHistory = mempty
       , gamePhaseHistory = mempty
+      , gameTurnHistory = mempty
       , gameInitialSeed = seed
       , gameSeed = seed
       , gameMode = mode

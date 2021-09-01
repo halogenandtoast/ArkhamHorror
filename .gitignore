@@ -24,3 +24,4 @@ yarn-error.log*
 *.sw?
 *.dump-hi
 *.hie
+*.hie-boot

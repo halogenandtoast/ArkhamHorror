@@ -59,6 +59,7 @@ data WindowType
   | EnemyAttemptsToSpawnAt EnemyId LocationMatcher
   | EnemySpawns EnemyId LocationId
   | EnemyEnters EnemyId LocationId
+  | EnemyLeaves EnemyId LocationId
   | EnterPlay Target
   | Entering InvestigatorId LocationId
   | FailAttackEnemy InvestigatorId EnemyId Int

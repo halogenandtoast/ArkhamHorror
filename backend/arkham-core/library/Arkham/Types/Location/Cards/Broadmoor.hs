@@ -11,14 +11,12 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 
 newtype Broadmoor = Broadmoor LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 broadmoor :: LocationCard Broadmoor
 broadmoor =
   location Broadmoor Cards.broadmoor 3 (PerPlayer 1) Plus [Square, Plus]
-
-instance HasModifiersFor env Broadmoor
 
 instance HasAbilities env Broadmoor where
   getAbilities _ _ (Broadmoor a) = pure [locationResignAction a]

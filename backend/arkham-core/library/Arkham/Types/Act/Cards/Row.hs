@@ -28,7 +28,7 @@ newtype Row = Row ActAttrs
 row :: ActCard Row
 row = act (3, A) Row Cards.row Nothing
 
-instance ActionRunner env => HasAbilities env Row where
+instance HasAbilities env Row where
   getAbilities iid (Window Timing.When (WouldDrawEncounterCard who)) (Row x)
     | iid == who = pure [mkAbility x 1 LegacyForcedAbility]
   getAbilities iid window (Row x) = getAbilities iid window x

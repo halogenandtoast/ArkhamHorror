@@ -1562,6 +1562,13 @@ windowMatches iid source window' = \case
         (enemyMatches enemyId enemyMatcher)
         (locationMatches iid source window' lid whereMatcher)
       _ -> pure False
+  Matcher.EnemyLeaves timingMatcher whereMatcher enemyMatcher ->
+    case window' of
+      Window t (Window.EnemyLeaves enemyId lid) | timingMatcher == t -> liftA2
+        (&&)
+        (enemyMatches enemyId enemyMatcher)
+        (locationMatches iid source window' lid whereMatcher)
+      _ -> pure False
   Matcher.ChosenRandomLocation timingMatcher whereMatcher -> case window' of
     Window t (Window.ChosenRandomLocation lid) | timingMatcher == t ->
       locationMatches iid source window' lid whereMatcher

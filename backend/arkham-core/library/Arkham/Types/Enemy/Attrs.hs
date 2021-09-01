@@ -513,11 +513,14 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
               ]
             , MoveUntil lid target
             ]
-    EnemyMove eid _ lid | eid == enemyId -> do
+    EnemyMove eid oldLid lid | eid == enemyId -> do
       willMove <- canEnterLocation eid lid
       if willMove
         then do
-          pushAll [EnemyEntered eid lid, EnemyCheckEngagement eid]
+          leaveWindows <- windows [Window.EnemyLeaves eid oldLid]
+          pushAll
+            $ leaveWindows
+            <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
           pure $ a & engagedInvestigatorsL .~ mempty
         else a <$ push (EnemyCheckEngagement eid)
     After (EndTurn _) -> a <$ push (EnemyCheckEngagement $ toId a)

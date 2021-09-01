@@ -9,6 +9,7 @@ import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.EncounterSet
 import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -19,7 +20,6 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
@@ -39,19 +39,6 @@ findingLadyEsprit = act
 
 instance HasAbilities env FindingLadyEsprit where
   getAbilities i window (FindingLadyEsprit x) = getAbilities i window x
-
-bayouLocations
-  :: (MonadReader env m, HasSet LocationId env [Trait])
-  => m (HashSet LocationId)
-bayouLocations = getSet [Bayou]
-
-nonBayouLocations
-  :: ( MonadReader env m
-     , HasSet LocationId env ()
-     , HasSet LocationId env [Trait]
-     )
-  => m (HashSet LocationId)
-nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance ActRunner env => RunMessage env FindingLadyEsprit where
   runMessage msg a@(FindingLadyEsprit attrs@ActAttrs {..}) = case msg of

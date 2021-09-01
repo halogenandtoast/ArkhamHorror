@@ -11,13 +11,14 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype CursedShores = CursedShores LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -33,27 +34,28 @@ cursedShores = location
   [Plus, Triangle, Diamond, Hourglass]
 
 instance HasAbilities env CursedShores where
-  getAbilities iid window@(Window Timing.When NonFast) (CursedShores attrs@LocationAttrs {..})
-    | locationRevealed
-    = withBaseAbilities iid window attrs $ pure
-      [ locationAbility
-          (mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 1)
-      ]
-  getAbilities i window (CursedShores attrs) = getAbilities i window attrs
+  getAbilities iid window (CursedShores attrs) =
+    withBaseAbilities iid window attrs $ pure $ if locationRevealed attrs
+      then
+        [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
+        , mkAbility attrs 2
+        $ ForcedAbility
+        $ Leaves Timing.When You
+        $ LocationWithId
+        $ toId attrs
+        ]
+      else []
 
 instance LocationRunner env => RunMessage env CursedShores where
-  runMessage msg l@(CursedShores attrs@LocationAttrs {..}) = case msg of
+  runMessage msg l@(CursedShores attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
       [ InvestigatorAssignDamage iid source DamageAny 1 0
       , CreateEffect "81007" Nothing (toSource attrs) (InvestigatorTarget iid)
       ]
-    WhenEnterLocation iid lid
-      | -- TODO: SHOULD WE BROADCAST LRAVING THE LOCATION INSTEAD
-        lid /= locationId && iid `elem` locationInvestigators -> do
-        skillCards <- map unHandCardId <$> getSetList (iid, SkillType)
-        case skillCards of
-          [] -> pure ()
-          [x] -> push (DiscardCard iid x)
-          xs -> push (chooseOne iid [ DiscardCard iid x | x <- xs ])
-        CursedShores <$> runMessage msg attrs
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+      skillCards <- map unHandCardId <$> getSetList (iid, SkillType)
+      l <$ case skillCards of
+        [] -> pure ()
+        [x] -> push (DiscardCard iid x)
+        xs -> push (chooseOne iid [ DiscardCard iid x | x <- xs ])
     _ -> CursedShores <$> runMessage msg attrs

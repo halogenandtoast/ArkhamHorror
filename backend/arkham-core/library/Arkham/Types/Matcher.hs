@@ -381,6 +381,7 @@ data WindowMatcher
   | EnemyWouldBeDefeated Timing EnemyMatcher
   | EnemyWouldReady Timing EnemyMatcher
   | EnemyEnters Timing Where EnemyMatcher
+  | EnemyLeaves Timing Where EnemyMatcher
   | AgendaAdvances Timing AgendaMatcher
   | AgendaWouldAdvance Timing AgendaAdvancementReason AgendaMatcher
   | AssetDefeated Timing AssetMatcher

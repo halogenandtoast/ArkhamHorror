@@ -24,6 +24,7 @@ library
       Arkham.PlayerCard
       Arkham.Prelude
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
+      Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
       Arkham.Skill.Cards
       Arkham.Treachery.Cards

@@ -313,9 +313,12 @@ instance
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | a `isTarget` target ->
       a <$ push (RemovedFromPlay $ toSource a)
-    Discard target | a `isTarget` target ->
+    Discard target | a `isTarget` target -> do
+      windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       a <$ pushAll
-        [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
+        (windows'
+        <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
+        )
     Exile target | a `isTarget` target ->
       a <$ pushAll [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
     RemovedFromPlay source | isSource a source -> do

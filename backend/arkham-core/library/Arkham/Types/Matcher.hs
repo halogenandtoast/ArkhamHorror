@@ -407,6 +407,7 @@ data WindowMatcher
   | RevealChaosToken Timing Who TokenMatcher
   | WouldRevealChaosToken Timing Who
   | Discarded Timing Who CardMatcher
+  | AssetWouldBeDiscarded Timing AssetMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | PlacedCounter Timing Who CounterMatcher ValueMatcher
   | PlacedCounterOnLocation Timing Where CounterMatcher ValueMatcher

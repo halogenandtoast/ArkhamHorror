@@ -23,6 +23,7 @@ abbessAllegriaDiBiase :: AssetCard AbbessAllegriaDiBiase
 abbessAllegriaDiBiase =
   ally AbbessAllegriaDiBiase Cards.abbessAllegriaDiBiase (2, 2)
 
+-- TODO: Hand Abbess outside of Carnevale
 instance HasAbilities env AbbessAllegriaDiBiase where
   getAbilities _ _ (AbbessAllegriaDiBiase attrs) =
     pure $ case assetLocation attrs of

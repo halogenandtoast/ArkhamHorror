@@ -6,19 +6,34 @@ module Arkham.Types.Enemy.Cards.ElisabettaMagro
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Phase
+import qualified Arkham.Types.Timing as Timing
 
 newtype ElisabettaMagro = ElisabettaMagro EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elisabettaMagro :: EnemyCard ElisabettaMagro
 elisabettaMagro =
   enemy ElisabettaMagro Cards.elisabettaMagro (3, Static 4, 4) (1, 1)
 
+-- | Abilities
+-- The first forced ability is handled by MaskedCarnevaleGoer_18
+instance HasAbilities env ElisabettaMagro where
+  getAbilities iid window (ElisabettaMagro attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
+          MythosPhase
+      ]
+
 instance EnemyAttrsRunMessage env => RunMessage env ElisabettaMagro where
-  runMessage msg (ElisabettaMagro attrs) = case msg of
-    EndMythos -> pure $ ElisabettaMagro $ attrs & doomL +~ 1
+  runMessage msg e@(ElisabettaMagro attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      e <$ push (PlaceDoom (toTarget attrs) 1)
     _ -> ElisabettaMagro <$> runMessage msg attrs

@@ -2901,7 +2901,7 @@ runGameMessage msg g = case msg of
       card = fromJustNote "could not find card in hand"
         $ find ((== cardId) . toCardId) (handOf investigator)
     afterMsgs <- checkWindows
-      [Window Timing.After (Window.CommitedCard iid card)]
+      [Window Timing.After (Window.CommittedCard iid card)]
     pushAll (InvestigatorCommittedCard iid cardId : afterMsgs)
     case card of
       PlayerCard pc -> case toCardType pc of

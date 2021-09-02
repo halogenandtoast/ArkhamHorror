@@ -54,7 +54,7 @@ instance HasCount ClueCount env LocationId => HasTokenValue env RolandBanks wher
   getTokenValue (RolandBanks attrs) iid ElderSign | iid == toId attrs = do
     locationClueCount <- unClueCount <$> getCount (investigatorLocation attrs)
     pure $ TokenValue ElderSign (PositiveModifier locationClueCount)
-  getTokenValue (RolandBanks attrs) iid token = getTokenValue attrs iid token
+  getTokenValue _ _ token = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks a) = case msg of

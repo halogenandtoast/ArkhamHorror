@@ -9,12 +9,8 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype UrsulaDowns = UrsulaDowns InvestigatorAttrs
-  deriving anyclass (HasAbilities env)
+  deriving anyclass (HasAbilities, HasModifiersFor env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env UrsulaDowns where
-  getModifiersFor source target (UrsulaDowns attrs) =
-    getModifiersFor source target attrs
 
 ursulaDowns :: UrsulaDowns
 ursulaDowns = UrsulaDowns $ baseAttrs

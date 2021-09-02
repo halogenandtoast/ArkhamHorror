@@ -10,10 +10,11 @@ import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EntityInstance
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Stats
@@ -46,7 +47,7 @@ minhThiPhan = MinhThiPhan $ baseAttrs
 instance HasAbilities MinhThiPhan where
   getAbilities (MinhThiPhan attrs) =
     [ restrictedAbility
-          i
+          attrs
           1
           Self
           (ReactionAbility

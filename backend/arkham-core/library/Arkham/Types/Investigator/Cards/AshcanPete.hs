@@ -44,19 +44,19 @@ ashcanPete = AshcanPete $ base & startsWithL .~ [Assets.duke]
 instance HasAbilities AshcanPete where
   getAbilities (AshcanPete x) =
     [ restrictedAbility
-        x
-        1
-        (Self <> AssetExists (AssetOwnedBy You <> AssetExhausted) <> Negate
-          (SelfHasModifier ControlledAssetsCannotReady)
-        )
-      $ FastAbility
-      $ HandDiscardCost 1 Nothing mempty mempty
+          x
+          1
+          (Self <> AssetExists (AssetOwnedBy You <> AssetExhausted) <> Negate
+            (SelfHasModifier ControlledAssetsCannotReady)
+          )
+        $ FastAbility
+        $ HandDiscardCost 1 Nothing mempty mempty
     ]
 
 instance HasTokenValue env AshcanPete where
   getTokenValue (AshcanPete attrs) iid ElderSign | iid == toId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 2)
-  getTokenValue (AshcanPete attrs) iid token = getTokenValue attrs iid token
+  getTokenValue _ _ token = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env AshcanPete where
   runMessage msg i@(AshcanPete attrs) = case msg of

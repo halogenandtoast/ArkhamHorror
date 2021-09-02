@@ -2,12 +2,9 @@ module Arkham.Types.Investigator.Cards.WilliamYorick where
 
 import Arkham.Prelude
 
-import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
-import Arkham.Types.Cost
-import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
@@ -19,7 +16,6 @@ import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window
-import System.IO.Unsafe
 
 newtype WilliamYorick = WilliamYorick InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -44,46 +40,12 @@ instance HasTokenValue env WilliamYorick where
   getTokenValue (WilliamYorick attrs) iid ElderSign
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 2)
-  getTokenValue (WilliamYorick attrs) iid token = getTokenValue attrs iid token
+  getTokenValue _ _ token = pure $ TokenValue token mempty
 
--- because we are checking if cards are playable will we inevitably
--- trigger a case where we need to check for actions. For example
--- "I'm outta here" needs to check for a resign ability. Doing this
--- will cause infinite recursion, so we take out a global lock to
--- ensure we only run this code once in an iteration
-williamYorickRecursionLock :: IORef Bool
-williamYorickRecursionLock = unsafePerformIO $ newIORef False
-{-# NOINLINE williamYorickRecursionLock #-}
+instance HasAbilities WilliamYorick where
+  getAbilities = error "not working"
 
-instance EntityInstanceRunner env => HasAbilities WilliamYorick where
-  getAbilities i (Window Timing.After (EnemyDefeated who _)) (WilliamYorick attrs)
-    | i == who
-    = if unsafePerformIO $ readIORef williamYorickRecursionLock
-      then pure []
-      else do
-        _ <- pure $ unsafePerformIO $ writeIORef williamYorickRecursionLock True
-        let
-          targets =
-            filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
-        playableTargets <- filterM
-          (getIsPlayable
-              i
-              (toSource attrs)
-              [Window Timing.When NonFast, Window Timing.When (DuringTurn i)]
-          . PlayerCard
-          )
-          targets
-        _ <- pure $ unsafePerformIO $ writeIORef
-          williamYorickRecursionLock
-          False
-        pure
-          [ mkAbility attrs 1 $ LegacyReactionAbility Free
-          | notNull playableTargets
-          ]
-  getAbilities (WilliamYorick attrs) = getAbilities attrs
-
-
-instance (InvestigatorRunner env) => RunMessage env WilliamYorick where
+instance InvestigatorRunner env => RunMessage env WilliamYorick where
   runMessage msg i@(WilliamYorick attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let

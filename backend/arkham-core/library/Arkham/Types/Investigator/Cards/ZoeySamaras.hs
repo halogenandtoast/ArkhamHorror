@@ -51,7 +51,7 @@ instance HasAbilities ZoeySamaras where
 instance HasTokenValue env ZoeySamaras where
   getTokenValue (ZoeySamaras attrs) iid ElderSign | iid == toId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue (ZoeySamaras attrs) iid token = getTokenValue attrs iid token
+  getTokenValue _ _ token = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs) = case msg of

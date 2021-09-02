@@ -33,8 +33,8 @@ theKingInYellow = handWith
   Cards.theKingInYellow
   (canLeavePlayByNormalMeansL .~ False)
 
-instance HasAbilities env TheKingInYellow where
-  getAbilities _ _ (TheKingInYellow x) = pure
+instance HasAbilities TheKingInYellow where
+  getAbilities (TheKingInYellow x) =
     [ restrictedAbility x 1 OwnsThis $ ReactionAbility
         (SkillTestResult
             Timing.After

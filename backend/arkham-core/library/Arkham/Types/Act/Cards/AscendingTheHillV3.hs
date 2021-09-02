@@ -37,8 +37,8 @@ instance HasSet Trait env LocationId => HasModifiersFor env AscendingTheHillV3 w
     pure $ toModifiers attrs [ CannotPlaceClues | Altered `notMember` traits ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env AscendingTheHillV3 where
-  getAbilities _ _ (AscendingTheHillV3 x) = pure
+instance HasAbilities AscendingTheHillV3 where
+  getAbilities (AscendingTheHillV3 x) =
     [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ LocationWithTitle
         "Sentinel Peak"
     ]

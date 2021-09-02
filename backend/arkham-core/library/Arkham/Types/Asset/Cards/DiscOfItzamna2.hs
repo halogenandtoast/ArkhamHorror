@@ -24,8 +24,8 @@ newtype DiscOfItzamna2 = DiscOfItzamna2 AssetAttrs
 discOfItzamna2 :: AssetCard DiscOfItzamna2
 discOfItzamna2 = accessory DiscOfItzamna2 Cards.discOfItzamna2
 
-instance HasAbilities env DiscOfItzamna2 where
-  getAbilities _ _ (DiscOfItzamna2 a) = pure
+instance HasAbilities DiscOfItzamna2 where
+  getAbilities (DiscOfItzamna2 a) =
     [ restrictedAbility a 1 OwnsThis
         $ ReactionAbility
             (EnemySpawns Timing.When YourLocation NonEliteEnemy)

@@ -20,7 +20,7 @@ import Arkham.Types.Source
 
 newtype BroodOfYogSothoth = BroodOfYogSothoth EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 broodOfYogSothoth :: EnemyCard BroodOfYogSothoth
 broodOfYogSothoth =

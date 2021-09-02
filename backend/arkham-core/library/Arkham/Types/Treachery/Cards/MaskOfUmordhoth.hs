@@ -17,7 +17,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype MaskOfUmordhoth = MaskOfUmordhoth TreacheryAttrs
-  deriving anyclass (IsTreachery, HasAbilities env)
+  deriving anyclass (IsTreachery, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 maskOfUmordhoth :: TreacheryCard MaskOfUmordhoth

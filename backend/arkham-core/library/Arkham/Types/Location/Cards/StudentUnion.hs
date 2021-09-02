@@ -26,20 +26,18 @@ studentUnion :: LocationCard StudentUnion
 studentUnion =
   location StudentUnion Cards.studentUnion 1 (Static 2) Diamond [Plus, Equals]
 
-instance HasAbilities env StudentUnion where
-  getAbilities iid window (StudentUnion attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure $ if locationRevealed attrs
-        then
-          [ mkAbility attrs 1
-          $ ForcedAbility
-          $ RevealLocation Timing.After Anyone
-          $ LocationWithId
-          $ toId attrs
-          , restrictedAbility attrs 2 Here $ ActionAbility Nothing $ ActionCost
-            2
-          ]
-        else []
+instance HasAbilities StudentUnion where
+  getAbilities (StudentUnion attrs) =
+    withBaseAbilities attrs $ if locationRevealed attrs
+      then
+        [ mkAbility attrs 1
+        $ ForcedAbility
+        $ RevealLocation Timing.After Anyone
+        $ LocationWithId
+        $ toId attrs
+        , restrictedAbility attrs 2 Here $ ActionAbility Nothing $ ActionCost 2
+        ]
+      else []
 
 instance LocationRunner env => RunMessage env StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of

@@ -14,7 +14,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype EphemeralExhibits = EphemeralExhibits TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ephemeralExhibits :: TreacheryCard EphemeralExhibits

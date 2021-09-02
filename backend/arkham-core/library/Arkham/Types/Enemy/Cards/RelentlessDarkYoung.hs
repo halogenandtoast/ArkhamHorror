@@ -29,10 +29,10 @@ relentlessDarkYoung = enemyWith
   (2, 1)
   (preyL .~ LowestSkill SkillAgility)
 
-instance HasAbilities env RelentlessDarkYoung where
-  getAbilities i window (RelentlessDarkYoung attrs) =
-    withBaseAbilities i window attrs
-      $ pure [mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When]
+instance HasAbilities RelentlessDarkYoung where
+  getAbilities (RelentlessDarkYoung attrs) = withBaseAbilities
+    attrs
+    [mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When]
 
 instance EnemyRunner env => RunMessage env RelentlessDarkYoung where
   runMessage msg e@(RelentlessDarkYoung attrs) = case msg of

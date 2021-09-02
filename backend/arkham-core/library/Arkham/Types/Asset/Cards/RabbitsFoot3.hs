@@ -26,8 +26,8 @@ newtype RabbitsFoot3 = RabbitsFoot3 AssetAttrs
 rabbitsFoot3 :: AssetCard RabbitsFoot3
 rabbitsFoot3 = accessory RabbitsFoot3 Cards.rabbitsFoot3
 
-instance HasAbilities env RabbitsFoot3 where
-  getAbilities _ _ (RabbitsFoot3 a) = pure
+instance HasAbilities RabbitsFoot3 where
+  getAbilities (RabbitsFoot3 a) =
     [ restrictedAbility a 1 OwnsThis $ ReactionAbility
         (SkillTestResult Timing.After You AnySkillTest (FailureResult AnyValue))
         (ExhaustCost $ toTarget a)

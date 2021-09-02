@@ -21,7 +21,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
-import Arkham.Types.Target
 import Arkham.Types.Trait (Trait, toTraits)
 import Arkham.Types.TreacheryId
 
@@ -52,13 +51,8 @@ preventedByModifier e msg (CannotTakeAction matcher) =
     Nothing -> False
 preventedByModifier _ _ _ = False
 
-instance ActionRunner env => HasAbilities env Enemy where
-  getAbilities investigator window x = do
-    modifiers' <- getModifiers (toSource x) (InvestigatorTarget investigator)
-    actions <- genericGetAbilities investigator window x
-    pure $ filter
-      (\action -> not $ any (preventedByModifier (toAttrs x) action) modifiers')
-      actions
+instance HasAbilities Enemy where
+  getAbilities = genericGetAbilities
 
 instance
     ( HasId LocationId env InvestigatorId

@@ -33,9 +33,9 @@ arkhamWoodsGreatWillow = locationWith
   . (revealedSymbolL .~ Heart)
   )
 
-instance HasAbilities env ArkhamWoodsGreatWillow where
-  getAbilities i window (ArkhamWoodsGreatWillow attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities ArkhamWoodsGreatWillow where
+  getAbilities (ArkhamWoodsGreatWillow attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here
         $ ForcedAbility
         $ SkillTestResult Timing.After You (SkillTestOnTreachery AnyTreachery)

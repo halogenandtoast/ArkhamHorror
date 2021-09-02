@@ -20,8 +20,8 @@ newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
 forbiddenKnowledge :: AssetCard ForbiddenKnowledge
 forbiddenKnowledge = asset ForbiddenKnowledge Cards.forbiddenKnowledge
 
-instance HasAbilities env ForbiddenKnowledge where
-  getAbilities _ _ (ForbiddenKnowledge a) = pure
+instance HasAbilities ForbiddenKnowledge where
+  getAbilities (ForbiddenKnowledge a) =
     [ restrictedAbility
         (toSource a)
         1

@@ -26,8 +26,8 @@ acolyte = enemyWith
   (1, 0)
   (spawnAtL ?~ EmptyLocation)
 
-instance HasAbilities env Acolyte where
-  getAbilities _ _ (Acolyte a) = pure
+instance HasAbilities Acolyte where
+  getAbilities (Acolyte a) =
     [ mkAbility a 1
       $ ForcedAbility
       $ EnemySpawns Timing.After Anywhere

@@ -31,20 +31,20 @@ instance HasModifiersFor env Parlor where
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env Parlor where
-  getAbilities iid window (Parlor attrs@LocationAttrs {..}) | locationRevealed =
-    withResignAction iid window attrs $ pure
-      [ restrictedAbility
-          (ProxySource
-            (AssetMatcherSource $ assetIs Cards.litaChantler)
-            (toSource attrs)
-          )
-          1
-          (Unowned <> OnSameLocation)
-        $ ActionAbility (Just Action.Parley)
-        $ ActionCost 1
-      ]
-  getAbilities iid window (Parlor attrs) = getAbilities iid window attrs
+instance HasAbilities Parlor where
+  getAbilities (Parlor attrs) = withResignAction
+    attrs
+    [ restrictedAbility
+        (ProxySource
+          (AssetMatcherSource $ assetIs Cards.litaChantler)
+          (toSource attrs)
+        )
+        1
+        (Unowned <> OnSameLocation)
+      $ ActionAbility (Just Action.Parley)
+      $ ActionCost 1
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@LocationAttrs {..}) = case msg of

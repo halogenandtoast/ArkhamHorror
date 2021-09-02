@@ -22,8 +22,8 @@ graveyard :: LocationCard Graveyard
 graveyard =
   location Graveyard Cards.graveyard 1 (PerPlayer 2) Hourglass [Circle]
 
-instance HasAbilities env Graveyard where
-  getAbilities i window (Graveyard x) = withBaseAbilities i window x $ pure
+instance HasAbilities Graveyard where
+  getAbilities (Graveyard x) = withBaseAbilities x $
     [ mkAbility x 1
         $ ForcedAbility (Enters Timing.After Anyone $ LocationWithId (toId x))
     ]

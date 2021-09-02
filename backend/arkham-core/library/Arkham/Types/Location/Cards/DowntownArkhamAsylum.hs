@@ -30,9 +30,9 @@ downtownArkhamAsylum = location
   Triangle
   [Moon, T]
 
-instance HasAbilities env DowntownArkhamAsylum where
-  getAbilities iid window (DowntownArkhamAsylum x) | locationRevealed x =
-    withBaseAbilities iid window x $ pure
+instance HasAbilities DowntownArkhamAsylum where
+  getAbilities (DowntownArkhamAsylum x) | locationRevealed x =
+    withBaseAbilities x $
       [ restrictedAbility
           x
           1
@@ -41,8 +41,8 @@ instance HasAbilities env DowntownArkhamAsylum where
         & abilityLimitL
         .~ PlayerLimit PerGame 1
       ]
-  getAbilities iid window (DowntownArkhamAsylum attrs) =
-    getAbilities iid window attrs
+  getAbilities (DowntownArkhamAsylum attrs) =
+    getAbilities attrs
 
 instance LocationRunner env => RunMessage env DowntownArkhamAsylum where
   runMessage msg l@(DowntownArkhamAsylum attrs) = case msg of

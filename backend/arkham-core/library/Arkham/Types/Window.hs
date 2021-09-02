@@ -33,7 +33,7 @@ data WindowType
   | AtEndOfRound
   | EndOfGame
   | ChosenRandomLocation LocationId
-  | CommitedCard InvestigatorId Card
+  | CommittedCards InvestigatorId [Card]
   | DealtDamage Source Target
   | DealtHorror Source Target
   | Defeated Source
@@ -73,7 +73,7 @@ data WindowType
   | InHandWindow InvestigatorId Window
   | Leaving InvestigatorId LocationId
   | LeavePlay Target
-  | MoveFromHunter EnemyId
+  | MovedFromHunter EnemyId
   | MovedBy Source LocationId InvestigatorId
   | NonFast
   | PassSkillTest (Maybe Action) Source InvestigatorId Int

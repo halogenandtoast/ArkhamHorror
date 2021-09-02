@@ -327,15 +327,13 @@ canEnterLocation eid lid = do
     _ -> False
 
 withResignAction
-  :: (Entity location, EntityAttrs location ~ LocationAttrs, MonadReader env m)
-  => InvestigatorId
-  -> Window
-  -> location
-  -> m [Ability]
-  -> m [Ability]
-withResignAction iid window x body = do
-  other <- withBaseAbilities iid window attrs body
-  pure $ locationResignAction attrs : other
+  :: (Entity location, EntityAttrs location ~ LocationAttrs)
+  => location
+  -> [Ability]
+  -> [Ability]
+withResignAction x body = do
+  let other = withBaseAbilities attrs body
+  locationResignAction attrs : other
   where attrs = toAttrs x
 
 locationResignAction :: LocationAttrs -> Ability
@@ -360,17 +358,16 @@ locationAbility ability = case abilitySource ability of
   _ -> ability
 
 withDrawCardUnderneathAction
-  :: (Entity location, EntityAttrs location ~ LocationAttrs, MonadReader env m)
-  => InvestigatorId
-  -> Window
-  -> location
-  -> m [Ability]
-withDrawCardUnderneathAction iid window x = withBaseAbilities iid window attrs
-  $ pure [ drawCardUnderneathAction attrs | locationRevealed attrs ]
+  :: (Entity location, EntityAttrs location ~ LocationAttrs)
+  => location
+  -> [Ability]
+withDrawCardUnderneathAction x = withBaseAbilities
+  attrs
+  [ drawCardUnderneathAction attrs | locationRevealed attrs ]
   where attrs = toAttrs x
 
-instance HasAbilities env LocationAttrs where
-  getAbilities _ _ l = pure
+instance HasAbilities LocationAttrs where
+  getAbilities l =
     [ restrictedAbility l 101 (OnLocation $ LocationWithId $ toId l)
       $ ActionAbility (Just Action.Investigate) (ActionCost 1)
     , restrictedAbility

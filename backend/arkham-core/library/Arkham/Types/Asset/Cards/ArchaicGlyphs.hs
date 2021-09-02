@@ -24,8 +24,8 @@ newtype ArchaicGlyphs = ArchaicGlyphs AssetAttrs
 archaicGlyphs :: AssetCard ArchaicGlyphs
 archaicGlyphs = asset ArchaicGlyphs Cards.archaicGlyphs
 
-instance HasAbilities env ArchaicGlyphs where
-  getAbilities _ _ (ArchaicGlyphs attrs) = pure
+instance HasAbilities ArchaicGlyphs where
+  getAbilities (ArchaicGlyphs attrs) =
     [ restrictedAbility attrs 1 OwnsThis
       $ ActionAbility Nothing
       $ SkillIconCost 1

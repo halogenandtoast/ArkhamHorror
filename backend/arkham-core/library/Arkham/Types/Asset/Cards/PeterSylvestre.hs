@@ -32,8 +32,8 @@ instance HasModifiersFor env PeterSylvestre where
     pure [ toModifier a (SkillModifier SkillAgility 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env PeterSylvestre where
-  getAbilities _ _ (PeterSylvestre x) = pure
+instance HasAbilities PeterSylvestre where
+  getAbilities (PeterSylvestre x) =
     [ restrictedAbility
         x
         1

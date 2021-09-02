@@ -32,9 +32,9 @@ stepsOfYhagharl = location
   Plus
   [Diamond, Moon]
 
-instance HasAbilities env StepsOfYhagharl where
-  getAbilities iid window (StepsOfYhagharl attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities StepsOfYhagharl where
+  getAbilities (StepsOfYhagharl attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ Leaves Timing.When You

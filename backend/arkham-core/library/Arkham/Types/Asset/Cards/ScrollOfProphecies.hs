@@ -25,8 +25,8 @@ newtype ScrollOfProphecies = ScrollOfProphecies AssetAttrs
 scrollOfProphecies :: AssetCard ScrollOfProphecies
 scrollOfProphecies = hand ScrollOfProphecies Cards.scrollOfProphecies
 
-instance HasAbilities env ScrollOfProphecies where
-  getAbilities _ _ (ScrollOfProphecies x) = pure
+instance HasAbilities ScrollOfProphecies where
+  getAbilities (ScrollOfProphecies x) =
     [ restrictedAbility
         x
         1

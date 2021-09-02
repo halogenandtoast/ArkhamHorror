@@ -27,8 +27,8 @@ newtype Flashlight = Flashlight AssetAttrs
 flashlight :: AssetCard Flashlight
 flashlight = hand Flashlight Cards.flashlight
 
-instance HasAbilities env Flashlight where
-  getAbilities _ _ (Flashlight x) = pure
+instance HasAbilities Flashlight where
+  getAbilities (Flashlight x) =
     [ restrictedAbility x 1 OwnsThis $ ActionAbility
         (Just Action.Investigate)
         (Costs [ActionCost 1, UseCost (toId x) Supply 1])

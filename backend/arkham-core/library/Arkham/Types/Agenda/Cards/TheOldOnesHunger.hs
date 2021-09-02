@@ -14,7 +14,7 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 
 newtype TheOldOnesHunger = TheOldOnesHunger AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theOldOnesHunger :: AgendaCard TheOldOnesHunger

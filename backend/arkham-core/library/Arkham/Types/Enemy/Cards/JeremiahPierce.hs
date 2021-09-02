@@ -34,13 +34,13 @@ jeremiahPierce = enemyWith
     [LocationWithTitle "Your House", LocationWithTitle "Rivertown"]
   )
 
-instance HasAbilities env JeremiahPierce where
-  getAbilities iid window (JeremiahPierce attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ restrictedAbility attrs 1 OnSameLocation
-        $ ActionAbility (Just Parley)
-        $ ActionCost 1
-      ]
+instance HasAbilities JeremiahPierce where
+  getAbilities (JeremiahPierce attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility attrs 1 OnSameLocation
+      $ ActionAbility (Just Parley)
+      $ ActionCost 1
+    ]
 
 instance EnemyRunner env => RunMessage env JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs@EnemyAttrs {..}) = case msg of

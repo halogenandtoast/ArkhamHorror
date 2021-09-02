@@ -26,9 +26,9 @@ ritualGrounds = location
   Equals
   [Hourglass, Equals]
 
-instance HasAbilities env RitualGrounds where
-  getAbilities i window (RitualGrounds attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities RitualGrounds where
+  getAbilities (RitualGrounds attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds
           Timing.After
           You

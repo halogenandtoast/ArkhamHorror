@@ -30,8 +30,8 @@ newtype BidingItsTime = BidingItsTime AgendaAttrs
 bidingItsTime :: AgendaCard BidingItsTime
 bidingItsTime = agenda (2, A) BidingItsTime Cards.bidingItsTime (Static 6)
 
-instance HasAbilities env BidingItsTime where
-  getAbilities _ _ (BidingItsTime x) = pure
+instance HasAbilities BidingItsTime where
+  getAbilities (BidingItsTime x) =
     [mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase]
 
 instance AgendaRunner env => RunMessage env BidingItsTime where

@@ -27,15 +27,8 @@ $(buildEntity "Asset")
 createAsset :: IsCard a => a -> Asset
 createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)
 
-instance ActionRunner env => HasAbilities env Asset where
-  getAbilities iid window x = do
-    inPlay <- member (toId x) <$> select AnyAsset
-    modifiers' <- if inPlay
-      then getModifiers (toSource x) (toTarget x)
-      else pure []
-    if Blank `elem` modifiers'
-      then getAbilities iid window (toAttrs x)
-      else genericGetAbilities iid window x
+instance HasAbilities Asset where
+  getAbilities = genericGetAbilities
 
 instance
   ( HasId LocationId env InvestigatorId

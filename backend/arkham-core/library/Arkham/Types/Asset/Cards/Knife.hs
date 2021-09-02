@@ -26,8 +26,8 @@ newtype Knife = Knife AssetAttrs
 knife :: AssetCard Knife
 knife = hand Knife Cards.knife
 
-instance HasAbilities env Knife where
-  getAbilities _ _ (Knife a) = pure
+instance HasAbilities Knife where
+  getAbilities (Knife a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility (Just Fight) (ActionCost 1)
     , restrictedAbility a 2 OwnsThis
       $ ActionAbility

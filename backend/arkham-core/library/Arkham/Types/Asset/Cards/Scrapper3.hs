@@ -28,8 +28,8 @@ newtype Scrapper3 = Scrapper3 AssetAttrs
 scrapper3 :: AssetCard Scrapper3
 scrapper3 = asset Scrapper3 Cards.scrapper3
 
-instance HasAbilities env Scrapper3 where
-  getAbilities _ _ (Scrapper3 a) = pure
+instance HasAbilities Scrapper3 where
+  getAbilities (Scrapper3 a) =
     [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1

@@ -33,9 +33,9 @@ cursedShores = location
   Square
   [Plus, Triangle, Diamond, Hourglass]
 
-instance HasAbilities env CursedShores where
-  getAbilities iid window (CursedShores attrs) =
-    withBaseAbilities iid window attrs $ pure $ if locationRevealed attrs
+instance HasAbilities CursedShores where
+  getAbilities (CursedShores attrs) =
+    withBaseAbilities attrs $ if locationRevealed attrs
       then
         [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
         , mkAbility attrs 2

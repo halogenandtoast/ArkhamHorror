@@ -29,14 +29,13 @@ hermanCollins = enemyWith
   (1, 1)
   (spawnAtL ?~ LocationWithTitle "Graveyard")
 
-instance HasAbilities env HermanCollins where
-  getAbilities iid window (HermanCollins attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility attrs 1 OnSameLocation $ ActionAbility
-            (Just Parley)
-            (Costs [ActionCost 1, HandDiscardCost 4 Nothing mempty mempty])
-        ]
+instance HasAbilities HermanCollins where
+  getAbilities (HermanCollins attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility attrs 1 OnSameLocation $ ActionAbility
+        (Just Parley)
+        (Costs [ActionCost 1, HandDiscardCost 4 Nothing mempty mempty])
+    ]
 
 instance EnemyRunner env => RunMessage env HermanCollins where
   runMessage msg e@(HermanCollins attrs) = case msg of

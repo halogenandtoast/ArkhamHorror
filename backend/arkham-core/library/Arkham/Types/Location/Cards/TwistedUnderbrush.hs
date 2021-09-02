@@ -28,9 +28,9 @@ twistedUnderbrush = location
   Moon
   [Diamond, Moon]
 
-instance HasAbilities env TwistedUnderbrush where
-  getAbilities iid window (TwistedUnderbrush attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities TwistedUnderbrush where
+  getAbilities (TwistedUnderbrush attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
       | locationRevealed attrs
       ]

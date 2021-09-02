@@ -27,8 +27,8 @@ newtype DrFrancisMorgan = DrFrancisMorgan AssetAttrs
 drFrancisMorgan :: AssetCard DrFrancisMorgan
 drFrancisMorgan = ally DrFrancisMorgan Cards.drFrancisMorgan (4, 1)
 
-instance HasAbilities env DrFrancisMorgan where
-  getAbilities _ _ (DrFrancisMorgan x) = pure
+instance HasAbilities DrFrancisMorgan where
+  getAbilities (DrFrancisMorgan x) =
     [ restrictedAbility x 1 OwnsThis $ ReactionAbility
         (EnemyDefeated Timing.After You AnyEnemy)
         (ExhaustCost $ toTarget x)

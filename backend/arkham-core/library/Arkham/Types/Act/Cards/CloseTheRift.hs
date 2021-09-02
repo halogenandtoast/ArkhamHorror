@@ -32,10 +32,9 @@ closeTheRift = act
     (LocationWithTitle "The Edge of the Universe")
   )
 
-instance HasAbilities env CloseTheRift where
-  getAbilities iid window (CloseTheRift x) =
-    withBaseAbilities iid window x $ do
-      pure [mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1]
+instance HasAbilities CloseTheRift where
+  getAbilities (CloseTheRift x) =
+    withBaseAbilities x [mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1]
 
 instance ActRunner env => RunMessage env CloseTheRift where
   runMessage msg a@(CloseTheRift attrs@ActAttrs {..}) = case msg of

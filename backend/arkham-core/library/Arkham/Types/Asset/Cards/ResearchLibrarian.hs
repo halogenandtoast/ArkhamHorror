@@ -22,8 +22,8 @@ newtype ResearchLibrarian = ResearchLibrarian AssetAttrs
 researchLibrarian :: AssetCard ResearchLibrarian
 researchLibrarian = ally ResearchLibrarian Cards.researchLibrarian (1, 1)
 
-instance HasAbilities env ResearchLibrarian where
-  getAbilities _ _ (ResearchLibrarian x) = pure
+instance HasAbilities ResearchLibrarian where
+  getAbilities (ResearchLibrarian x) =
     [ restrictedAbility
         x
         1

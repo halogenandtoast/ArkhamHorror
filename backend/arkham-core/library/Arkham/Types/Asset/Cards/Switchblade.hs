@@ -26,8 +26,8 @@ newtype Switchblade = Switchblade AssetAttrs
 switchblade :: AssetCard Switchblade
 switchblade = hand Switchblade Cards.switchblade
 
-instance HasAbilities env Switchblade where
-  getAbilities _ _ (Switchblade a) = pure
+instance HasAbilities Switchblade where
+  getAbilities (Switchblade a) =
     [ restrictedAbility a 1 OwnsThis
         $ ActionAbility (Just Action.Fight) (ActionCost 1)
     ]

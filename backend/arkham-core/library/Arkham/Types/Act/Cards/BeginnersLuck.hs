@@ -33,21 +33,19 @@ newtype BeginnersLuck = BeginnersLuck ActAttrs
 beginnersLuck :: ActCard BeginnersLuck
 beginnersLuck = act (1, A) BeginnersLuck Cards.beginnersLuck Nothing
 
-instance HasAbilities env BeginnersLuck where
-  getAbilities iid window (BeginnersLuck x) =
-    withBaseAbilities iid window x $ pure $ if onSide A x
-      then
-        [ mkAbility
-            x
-            1
-            (ReactionAbility (RevealChaosToken Timing.When Anyone AnyToken) Free
-            )
-          & (abilityLimitL .~ GroupLimit PerRound 1)
-        , mkAbility x 2 $ Objective $ ForcedAbilityWithCost
-          AnyWindow
-          (GroupClueCost (PerPlayer 4) Anywhere)
-        ]
-      else []
+instance HasAbilities BeginnersLuck where
+  getAbilities (BeginnersLuck x) = withBaseAbilities x $ if onSide A x
+    then
+      [ mkAbility
+          x
+          1
+          (ReactionAbility (RevealChaosToken Timing.When Anyone AnyToken) Free)
+        & (abilityLimitL .~ GroupLimit PerRound 1)
+      , mkAbility x 2 $ Objective $ ForcedAbilityWithCost
+        AnyWindow
+        (GroupClueCost (PerPlayer 4) Anywhere)
+      ]
+    else []
 
 instance ActRunner env => RunMessage env BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs) = case msg of

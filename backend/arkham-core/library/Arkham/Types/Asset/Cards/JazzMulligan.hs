@@ -30,8 +30,8 @@ jazzMulligan :: AssetCard JazzMulligan
 jazzMulligan =
   allyWith JazzMulligan Cards.jazzMulligan (2, 2) (isStoryL .~ True)
 
-instance HasAbilities env JazzMulligan where
-  getAbilities _ _ (JazzMulligan x) = pure
+instance HasAbilities JazzMulligan where
+  getAbilities (JazzMulligan x) =
     [ restrictedAbility x 1 (Unowned <> OnSameLocation)
       $ ActionAbility (Just Parley)
       $ ActionCost 1

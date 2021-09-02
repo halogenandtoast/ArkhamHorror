@@ -31,9 +31,9 @@ endlessBridge = location
   Triangle
   [Square, Squiggle]
 
-instance HasAbilities env EndlessBridge where
-  getAbilities iid window (EndlessBridge attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities EndlessBridge where
+  getAbilities (EndlessBridge attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ Leaves Timing.After Anyone

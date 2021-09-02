@@ -34,9 +34,9 @@ floodedSquare = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasAbilities env FloodedSquare where
-  getAbilities iid window (FloodedSquare attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities FloodedSquare where
+  getAbilities (FloodedSquare attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
           attrs
           1

@@ -9,7 +9,7 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Target
 
 newtype Perception = Perception SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 perception :: SkillCard Perception

@@ -25,8 +25,8 @@ vaultOfEarthlyDemise :: TreacheryCard VaultOfEarthlyDemise
 vaultOfEarthlyDemise =
   treachery VaultOfEarthlyDemise Cards.vaultOfEarthlyDemise
 
-instance HasAbilities env VaultOfEarthlyDemise where
-  getAbilities _ _ (VaultOfEarthlyDemise attrs) = pure
+instance HasAbilities VaultOfEarthlyDemise where
+  getAbilities (VaultOfEarthlyDemise attrs) =
     [ mkAbility attrs 1
       $ ForcedAbility
       $ EnemySpawns Timing.When Anywhere

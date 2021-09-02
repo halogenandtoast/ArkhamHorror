@@ -29,9 +29,9 @@ overgrownCairns = location
   Equals
   [Hourglass, Equals]
 
-instance HasAbilities env OvergrownCairns where
-  getAbilities iid window (OvergrownCairns attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities OvergrownCairns where
+  getAbilities (OvergrownCairns attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
             attrs
             1

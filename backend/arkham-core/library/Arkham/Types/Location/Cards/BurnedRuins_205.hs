@@ -27,11 +27,10 @@ burnedRuins_205 = location
   Triangle
   [Square, Diamond]
 
-instance HasAbilities env BurnedRuins_205 where
-  getAbilities i w (BurnedRuins_205 x) = do
-    rest <- withDrawCardUnderneathAction i w x
-    pure
-      $ [ mkAbility x 1
+instance HasAbilities BurnedRuins_205 where
+  getAbilities (BurnedRuins_205 x) = do
+    let rest = withDrawCardUnderneathAction x
+    [ mkAbility x 1
           $ ForcedAbility
           $ SkillTestResult
               Timing.After

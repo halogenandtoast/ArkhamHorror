@@ -29,8 +29,8 @@ strangeSolutionFreezingVariant4 :: AssetCard StrangeSolutionFreezingVariant4
 strangeSolutionFreezingVariant4 =
   asset StrangeSolutionFreezingVariant4 Cards.strangeSolutionFreezingVariant4
 
-instance HasAbilities env StrangeSolutionFreezingVariant4 where
-  getAbilities _ _ (StrangeSolutionFreezingVariant4 attrs) = pure
+instance HasAbilities StrangeSolutionFreezingVariant4 where
+  getAbilities (StrangeSolutionFreezingVariant4 attrs) =
     [ restrictedAbility attrs 1 OwnsThis
       $ ActionAbility (Just Action.Evade)
       $ Costs [ActionCost 1, UseCost (toId attrs) Supply 1]

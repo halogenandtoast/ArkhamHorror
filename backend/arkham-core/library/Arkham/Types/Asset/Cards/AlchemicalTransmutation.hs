@@ -25,8 +25,8 @@ alchemicalTransmutation :: AssetCard AlchemicalTransmutation
 alchemicalTransmutation =
   arcane AlchemicalTransmutation Cards.alchemicalTransmutation
 
-instance HasAbilities env AlchemicalTransmutation where
-  getAbilities _ _ (AlchemicalTransmutation a) = pure
+instance HasAbilities AlchemicalTransmutation where
+  getAbilities (AlchemicalTransmutation a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
         [ExhaustCost (toTarget a), UseCost (toId a) Charge 1]
     ]

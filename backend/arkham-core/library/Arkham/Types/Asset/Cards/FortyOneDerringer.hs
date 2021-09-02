@@ -27,8 +27,8 @@ newtype FortyOneDerringer = FortyOneDerringer AssetAttrs
 fortyOneDerringer :: AssetCard FortyOneDerringer
 fortyOneDerringer = hand FortyOneDerringer Cards.fortyOneDerringer
 
-instance HasAbilities env FortyOneDerringer where
-  getAbilities _ _ (FortyOneDerringer a) = pure
+instance HasAbilities FortyOneDerringer where
+  getAbilities (FortyOneDerringer a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])

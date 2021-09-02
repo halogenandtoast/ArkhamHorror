@@ -28,8 +28,8 @@ zebulonWhateley :: AssetCard ZebulonWhateley
 zebulonWhateley =
   allyWith ZebulonWhateley Cards.zebulonWhateley (1, 4) (isStoryL .~ True)
 
-instance HasAbilities env ZebulonWhateley where
-  getAbilities _ _ (ZebulonWhateley x) = pure
+instance HasAbilities ZebulonWhateley where
+  getAbilities (ZebulonWhateley x) =
     [ restrictedAbility x 1 OwnsThis $ ReactionAbility
         (SkillTestResult
           Timing.After

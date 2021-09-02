@@ -27,8 +27,8 @@ newtype Scavenging = Scavenging AssetAttrs
 scavenging :: AssetCard Scavenging
 scavenging = asset Scavenging Cards.scavenging
 
-instance HasAbilities env Scavenging where
-  getAbilities _ _ (Scavenging a) = pure
+instance HasAbilities Scavenging where
+  getAbilities (Scavenging a) =
     [ restrictedAbility
           a
           1

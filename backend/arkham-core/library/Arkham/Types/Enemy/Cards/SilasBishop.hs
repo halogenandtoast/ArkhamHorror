@@ -14,7 +14,7 @@ import Arkham.Types.Modifier
 
 newtype SilasBishop = SilasBishop EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 silasBishop :: EnemyCard SilasBishop
 silasBishop = enemy SilasBishop Cards.silasBishop (3, PerPlayer 6, 7) (2, 2)

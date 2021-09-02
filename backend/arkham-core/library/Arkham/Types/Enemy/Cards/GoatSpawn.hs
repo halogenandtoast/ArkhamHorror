@@ -22,8 +22,9 @@ newtype GoatSpawn = GoatSpawn EnemyAttrs
 goatSpawn :: EnemyCard GoatSpawn
 goatSpawn = enemy GoatSpawn Cards.goatSpawn (3, Static 3, 2) (1, 0)
 
-instance HasAbilities env GoatSpawn where
-  getAbilities iid window (GoatSpawn a) = withBaseAbilities iid window a $ pure
+instance HasAbilities GoatSpawn where
+  getAbilities (GoatSpawn a) = withBaseAbilities
+    a
     [ mkAbility a 1
       $ ForcedAbility
       $ EnemyDefeated Timing.When Anyone

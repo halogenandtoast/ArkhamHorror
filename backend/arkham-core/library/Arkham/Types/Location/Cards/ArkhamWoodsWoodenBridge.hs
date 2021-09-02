@@ -29,9 +29,9 @@ arkhamWoodsWoodenBridge = locationWith
   . (revealedSymbolL .~ Circle)
   )
 
-instance HasAbilities env ArkhamWoodsWoodenBridge where
-  getAbilities i window (ArkhamWoodsWoodenBridge attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities ArkhamWoodsWoodenBridge where
+  getAbilities (ArkhamWoodsWoodenBridge attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
           attrs
           1

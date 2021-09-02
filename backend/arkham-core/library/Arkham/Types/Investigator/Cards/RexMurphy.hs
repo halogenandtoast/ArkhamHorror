@@ -39,8 +39,8 @@ rexMurphy = RexMurphy $ baseAttrs
     }
   [Reporter]
 
-instance HasAbilities env RexMurphy where
-  getAbilities _ _ (RexMurphy x) = pure
+instance HasAbilities RexMurphy where
+  getAbilities (RexMurphy x) =
     [ restrictedAbility
           x
           1

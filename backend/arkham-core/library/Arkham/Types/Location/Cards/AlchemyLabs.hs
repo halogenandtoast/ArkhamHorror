@@ -34,14 +34,13 @@ instance HasModifiersFor env AlchemyLabs where
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env AlchemyLabs where
-  getAbilities iid window (AlchemyLabs attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility attrs 1 Here
-            $ ActionAbility (Just Action.Investigate) (ActionCost 1)
-        | locationRevealed attrs
-        ]
+instance HasAbilities AlchemyLabs where
+  getAbilities (AlchemyLabs attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility attrs 1 Here
+        $ ActionAbility (Just Action.Investigate) (ActionCost 1)
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env AlchemyLabs where
   runMessage msg l@(AlchemyLabs attrs) = case msg of

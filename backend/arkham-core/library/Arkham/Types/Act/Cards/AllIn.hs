@@ -31,8 +31,8 @@ newtype AllIn = AllIn ActAttrs
 allIn :: ActCard AllIn
 allIn = act (3, A) AllIn Cards.allIn Nothing
 
-instance HasAbilities env AllIn where
-  getAbilities i w (AllIn x) = withBaseAbilities i w x $ pure $ if onSide A x
+instance HasAbilities AllIn where
+  getAbilities (AllIn x) = withBaseAbilities x $ if onSide A x
     then
       [ restrictedAbility
         (ProxySource

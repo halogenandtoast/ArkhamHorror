@@ -30,18 +30,18 @@ exhibitHallHallOfTheDead = locationWithRevealedSideConnections
   Squiggle
   [Square, Hourglass]
 
-instance HasAbilities env ExhibitHallHallOfTheDead where
-  getAbilities i w (ExhibitHallHallOfTheDead x) = withBaseAbilities i w x $ do
-    pure
-      [ mkAbility x 1
-        $ ForcedAbility
-        $ SkillTestResult
-            Timing.After
-            You
-            (WhileInvestigating $ LocationWithId $ toId x)
-        $ FailureResult AnyValue
-      | locationRevealed x
-      ]
+instance HasAbilities ExhibitHallHallOfTheDead where
+  getAbilities (ExhibitHallHallOfTheDead x) = withBaseAbilities
+    x
+    [ mkAbility x 1
+      $ ForcedAbility
+      $ SkillTestResult
+          Timing.After
+          You
+          (WhileInvestigating $ LocationWithId $ toId x)
+      $ FailureResult AnyValue
+    | locationRevealed x
+    ]
 
 instance LocationRunner env => RunMessage env ExhibitHallHallOfTheDead where
   runMessage msg l@(ExhibitHallHallOfTheDead attrs) = case msg of

@@ -41,8 +41,8 @@ ashcanPete = AshcanPete $ base & startsWithL .~ [Assets.duke]
       }
     [Drifter]
 
-instance HasAbilities env AshcanPete where
-  getAbilities _ _ (AshcanPete x) = pure
+instance HasAbilities AshcanPete where
+  getAbilities (AshcanPete x) =
     [ restrictedAbility
         x
         1

@@ -29,8 +29,8 @@ newtype Encyclopedia = Encyclopedia AssetAttrs
 encyclopedia :: AssetCard Encyclopedia
 encyclopedia = hand Encyclopedia Cards.encyclopedia
 
-instance HasAbilities env Encyclopedia where
-  getAbilities _ _ (Encyclopedia a) = pure
+instance HasAbilities Encyclopedia where
+  getAbilities (Encyclopedia a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, ExhaustCost (toTarget a), UseCost (toId a) Secret 1]
     ]

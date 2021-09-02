@@ -27,8 +27,8 @@ theBeastUnleashed :: AgendaCard TheBeastUnleashed
 theBeastUnleashed =
   agenda (3, A) TheBeastUnleashed Cards.theBeastUnleashed (Static 2)
 
-instance HasAbilities env TheBeastUnleashed where
-  getAbilities _ _ (TheBeastUnleashed x) = pure
+instance HasAbilities TheBeastUnleashed where
+  getAbilities (TheBeastUnleashed x) =
     [ mkAbility x 1
     $ ForcedAbility
     $ AgendaWouldAdvance Timing.When DoomThreshold

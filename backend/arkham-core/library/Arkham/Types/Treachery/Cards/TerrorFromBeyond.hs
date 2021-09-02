@@ -16,7 +16,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TerrorFromBeyond = TerrorFromBeyond TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 terrorFromBeyond :: TreacheryCard TerrorFromBeyond

@@ -27,8 +27,8 @@ newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
 fortyFiveAutomatic :: AssetCard FortyFiveAutomatic
 fortyFiveAutomatic = hand FortyFiveAutomatic Cards.fortyFiveAutomatic
 
-instance HasAbilities env FortyFiveAutomatic where
-  getAbilities _ _ (FortyFiveAutomatic a) = pure
+instance HasAbilities FortyFiveAutomatic where
+  getAbilities (FortyFiveAutomatic a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])

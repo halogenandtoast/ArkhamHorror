@@ -24,8 +24,8 @@ newtype JewelOfAureolus3 = JewelOfAureolus3 AssetAttrs
 jewelOfAureolus3 :: AssetCard JewelOfAureolus3
 jewelOfAureolus3 = asset JewelOfAureolus3 Cards.jewelOfAureolus3
 
-instance HasAbilities env JewelOfAureolus3 where
-  getAbilities _ _ (JewelOfAureolus3 x) = pure
+instance HasAbilities JewelOfAureolus3 where
+  getAbilities (JewelOfAureolus3 x) =
     [ restrictedAbility
         x
         1

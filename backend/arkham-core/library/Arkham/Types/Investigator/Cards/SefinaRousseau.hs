@@ -8,6 +8,7 @@ import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Helpers
@@ -46,18 +47,15 @@ instance HasTokenValue env SefinaRousseau where
   getTokenValue (SefinaRousseau attrs) iid token =
     getTokenValue attrs iid token
 
-ability :: InvestigatorAttrs -> Ability
-ability attrs = (mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1))
-  { abilityDoesNotProvokeAttacksOfOpportunity = True
-  }
+instance EntityInstanceRunner env => HasAbilities SefinaRousseau where
+  getAbilities (SefinaRousseau attrs) =
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Self (ActionAbility Nothing $ ActionCost 1)
+            & (abilityDoesNotProvokeAttacksOfOpportunityL .~ True)
+        | notNull (investigatorCardsUnderneath attrs)
+        ]
 
-instance EntityInstanceRunner env => HasAbilities env SefinaRousseau where
-  getAbilities i window@(Window Timing.When NonFast) (SefinaRousseau attrs)
-    | i == toId attrs = withBaseAbilities i window attrs
-    $ pure [ ability attrs | notNull (investigatorCardsUnderneath attrs) ]
-  getAbilities i window (SefinaRousseau attrs) = getAbilities i window attrs
-
-instance (InvestigatorRunner env) => RunMessage env SefinaRousseau where
+instance InvestigatorRunner env => RunMessage env SefinaRousseau where
   runMessage msg i@(SefinaRousseau attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> i <$ push
       (chooseOne

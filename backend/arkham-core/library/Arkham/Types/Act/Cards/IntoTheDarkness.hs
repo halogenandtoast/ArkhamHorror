@@ -21,15 +21,15 @@ newtype IntoTheDarkness = IntoTheDarkness ActAttrs
 intoTheDarkness :: ActCard IntoTheDarkness
 intoTheDarkness = act (2, A) IntoTheDarkness Cards.intoTheDarkness Nothing
 
-instance HasAbilities env IntoTheDarkness where
-  getAbilities _ _ (IntoTheDarkness attrs) | onSide A attrs = pure
+instance HasAbilities IntoTheDarkness where
+  getAbilities (IntoTheDarkness attrs) | onSide A attrs =
     [ mkAbility attrs 1
-      $ Objective
-      $ ForcedAbility
-      $ Enters Timing.After Anyone
-      $ LocationWithTitle "Ritual Site"
+        $ Objective
+        $ ForcedAbility
+        $ Enters Timing.After Anyone
+        $ LocationWithTitle "Ritual Site"
     ]
-  getAbilities _ _ _ = pure []
+  getAbilities _ = []
 
 instance ActRunner env => RunMessage env IntoTheDarkness where
   runMessage msg a@(IntoTheDarkness attrs@ActAttrs {..}) = case msg of

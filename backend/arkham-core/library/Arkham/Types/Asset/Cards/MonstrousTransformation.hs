@@ -40,8 +40,8 @@ instance HasModifiersFor env MonstrousTransformation where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env MonstrousTransformation where
-  getAbilities _ _ (MonstrousTransformation a) = pure
+instance HasAbilities MonstrousTransformation where
+  getAbilities (MonstrousTransformation a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ExhaustCost (toTarget a), ActionCost 1])

@@ -29,8 +29,8 @@ newtype PowderOfIbnGhazi = PowderOfIbnGhazi AssetAttrs
 powderOfIbnGhazi :: AssetCard PowderOfIbnGhazi
 powderOfIbnGhazi = asset PowderOfIbnGhazi Cards.powderOfIbnGhazi
 
-instance HasAbilities env PowderOfIbnGhazi where
-  getAbilities _ _ (PowderOfIbnGhazi x) = pure
+instance HasAbilities PowderOfIbnGhazi where
+  getAbilities (PowderOfIbnGhazi x) =
     [ restrictedAbility
         x
         1

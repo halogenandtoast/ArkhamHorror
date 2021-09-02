@@ -25,15 +25,15 @@ newtype AcridMiasma = AcridMiasma TreacheryAttrs
 acridMiasma :: TreacheryCard AcridMiasma
 acridMiasma = treachery AcridMiasma Cards.acridMiasma
 
-instance HasAbilities env AcridMiasma where
-  getAbilities _ _ (AcridMiasma attrs) = case treacheryAttachedTarget attrs of
-    Just (LocationTarget lid) -> pure
+instance HasAbilities AcridMiasma where
+  getAbilities (AcridMiasma attrs) = case treacheryAttachedTarget attrs of
+    Just (LocationTarget lid) ->
       [ mkAbility attrs 1
-        $ ForcedAbility
-        $ Enters Timing.After You
-        $ LocationWithId lid
+          $ ForcedAbility
+          $ Enters Timing.After You
+          $ LocationWithId lid
       ]
-    _ -> pure []
+    _ -> []
 
 instance
   ( HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)

@@ -24,9 +24,9 @@ newtype MedicalTexts = MedicalTexts AssetAttrs
 medicalTexts :: AssetCard MedicalTexts
 medicalTexts = hand MedicalTexts Cards.medicalTexts
 
-instance HasAbilities env MedicalTexts where
-  getAbilities _ _ (MedicalTexts a) =
-    pure [restrictedAbility a 1 OwnsThis (ActionAbility Nothing $ ActionCost 1)]
+instance HasAbilities MedicalTexts where
+  getAbilities (MedicalTexts a) =
+    [restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ ActionCost 1]
 
 instance AssetRunner env => RunMessage env MedicalTexts where
   runMessage msg a@(MedicalTexts attrs) = case msg of

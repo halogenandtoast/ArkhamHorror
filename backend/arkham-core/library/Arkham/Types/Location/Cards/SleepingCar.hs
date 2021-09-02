@@ -43,9 +43,9 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env SleepingCar wh
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env SleepingCar where
-  getAbilities iid window (SleepingCar attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities SleepingCar where
+  getAbilities (SleepingCar attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
           & (abilityLimitL .~ GroupLimit PerGame 1)
       | locationRevealed attrs

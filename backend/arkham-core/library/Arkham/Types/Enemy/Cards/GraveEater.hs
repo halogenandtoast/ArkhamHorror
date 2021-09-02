@@ -22,8 +22,9 @@ newtype GraveEater = GraveEater EnemyAttrs
 graveEater :: EnemyCard GraveEater
 graveEater = enemy GraveEater Cards.graveEater (2, Static 2, 2) (1, 1)
 
-instance HasAbilities env GraveEater where
-  getAbilities i w (GraveEater x) = withBaseAbilities i w x $ pure
+instance HasAbilities GraveEater where
+  getAbilities (GraveEater x) = withBaseAbilities
+    x
     [ mkAbility x 1
       $ ForcedAbility
       $ EnemyAttacks Timing.After You

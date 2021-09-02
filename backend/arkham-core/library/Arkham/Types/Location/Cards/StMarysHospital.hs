@@ -30,9 +30,9 @@ stMarysHospital = location
   Plus
   [Diamond, Square]
 
-instance HasAbilities env StMarysHospital where
-  getAbilities iid window (StMarysHospital x) | locationRevealed x =
-    withBaseAbilities iid window x $ pure
+instance HasAbilities StMarysHospital where
+  getAbilities (StMarysHospital x) | locationRevealed x =
+    withBaseAbilities x $
       [ restrictedAbility
           x
           1
@@ -41,8 +41,8 @@ instance HasAbilities env StMarysHospital where
         & abilityLimitL
         .~ PlayerLimit PerGame 1
       ]
-  getAbilities iid window (StMarysHospital attrs) =
-    getAbilities iid window attrs
+  getAbilities (StMarysHospital attrs) =
+    getAbilities attrs
 
 instance LocationRunner env => RunMessage env StMarysHospital where
   runMessage msg l@(StMarysHospital attrs) = case msg of

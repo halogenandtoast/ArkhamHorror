@@ -24,8 +24,8 @@ newtype Hypochondria = Hypochondria TreacheryAttrs
 hypochondria :: TreacheryCard Hypochondria
 hypochondria = treachery Hypochondria Cards.hypochondria
 
-instance HasAbilities env Hypochondria where
-  getAbilities _ _ (Hypochondria a) = pure
+instance HasAbilities Hypochondria where
+  getAbilities (Hypochondria a) =
     [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ DealtDamage
       Timing.After
       You

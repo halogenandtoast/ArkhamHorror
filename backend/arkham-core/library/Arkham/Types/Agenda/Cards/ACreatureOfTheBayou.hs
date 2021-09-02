@@ -19,7 +19,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype ACreatureOfTheBayou = ACreatureOfTheBayou AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aCreatureOfTheBayou :: AgendaCard ACreatureOfTheBayou

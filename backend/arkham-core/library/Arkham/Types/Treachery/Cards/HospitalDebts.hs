@@ -37,19 +37,18 @@ instance HasModifiersFor env HospitalDebts where
       [ XPModifier (-2) | treacheryOnInvestigator iid attrs && resources' < 6 ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env HospitalDebts where
-  getAbilities _ _ (HospitalDebts a) =
-    pure
-      $ (restrictedAbility
-            a
-            1
-            (OnSameLocation <> InvestigatorExists
-              (You <> InvestigatorWithResources (AtLeast $ Static 1))
-            )
-            (FastAbility Free)
-        & abilityLimitL
-        .~ PlayerLimit PerRound 2
-        )
+instance HasAbilities HospitalDebts where
+  getAbilities (HospitalDebts a) =
+    (restrictedAbility
+          a
+          1
+          (OnSameLocation <> InvestigatorExists
+            (You <> InvestigatorWithResources (AtLeast $ Static 1))
+          )
+          (FastAbility Free)
+      & abilityLimitL
+      .~ PlayerLimit PerRound 2
+      )
       : [ restrictedAbility a 2 (ResourcesOnThis $ LessThan $ Static 6)
           $ ForcedAbility
           $ OrWindowMatcher

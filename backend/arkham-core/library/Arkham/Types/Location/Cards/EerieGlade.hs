@@ -33,9 +33,9 @@ eerieGlade = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Plus])
   )
 
-instance HasAbilities env EerieGlade where
-  getAbilities iid window (EerieGlade attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities EerieGlade where
+  getAbilities (EerieGlade attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
           attrs
           1

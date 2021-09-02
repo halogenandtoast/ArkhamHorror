@@ -30,9 +30,9 @@ cloverClubLounge = location
   Circle
   [Moon, Square, Triangle]
 
-instance HasAbilities env CloverClubLounge where
-  getAbilities iid window (CloverClubLounge attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities CloverClubLounge where
+  getAbilities (CloverClubLounge attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
             attrs
             1

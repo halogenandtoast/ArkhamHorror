@@ -24,9 +24,9 @@ newtype StrangeSolution = StrangeSolution AssetAttrs
 strangeSolution :: AssetCard StrangeSolution
 strangeSolution = asset StrangeSolution Cards.strangeSolution
 
-instance HasAbilities env StrangeSolution where
-  getAbilities _ _ (StrangeSolution x) =
-    pure [restrictedAbility x 1 OwnsThis $ ActionAbility Nothing $ ActionCost 1]
+instance HasAbilities StrangeSolution where
+  getAbilities (StrangeSolution x) =
+    [restrictedAbility x 1 OwnsThis $ ActionAbility Nothing $ ActionCost 1]
 
 instance AssetRunner env => RunMessage env StrangeSolution where
   runMessage msg a@(StrangeSolution attrs) = case msg of

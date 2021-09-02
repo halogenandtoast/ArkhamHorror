@@ -32,8 +32,9 @@ artGallery = locationWith
   [Diamond]
   (revealedSymbolL .~ Hourglass)
 
-instance HasAbilities env ArtGallery where
-  getAbilities i w (ArtGallery x) = withBaseAbilities i w x $ pure
+instance HasAbilities ArtGallery where
+  getAbilities (ArtGallery x) = withBaseAbilities
+    x
     [ restrictedAbility x 1 Here $ ForcedAbility $ SkillTestResult
         Timing.After
         You

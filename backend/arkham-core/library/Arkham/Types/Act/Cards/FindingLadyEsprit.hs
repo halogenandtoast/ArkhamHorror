@@ -28,7 +28,7 @@ import Data.Maybe (fromJust)
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 findingLadyEsprit :: ActCard FindingLadyEsprit
 findingLadyEsprit = act
@@ -36,9 +36,6 @@ findingLadyEsprit = act
   FindingLadyEsprit
   Cards.findingLadyEsprit
   (Just $ GroupClueCost (PerPlayer 1) (LocationWithTrait Bayou))
-
-instance HasAbilities env FindingLadyEsprit where
-  getAbilities i window (FindingLadyEsprit x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env FindingLadyEsprit where
   runMessage msg a@(FindingLadyEsprit attrs@ActAttrs {..}) = case msg of

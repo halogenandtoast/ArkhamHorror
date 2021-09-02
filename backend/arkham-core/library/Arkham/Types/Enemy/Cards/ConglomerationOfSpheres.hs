@@ -32,8 +32,9 @@ conglomerationOfSpheres = enemyWith
   (1, 1)
   (preyL .~ LowestSkill SkillWillpower)
 
-instance HasAbilities env ConglomerationOfSpheres where
-  getAbilities i w (ConglomerationOfSpheres x) = withBaseAbilities i w x $ pure
+instance HasAbilities ConglomerationOfSpheres where
+  getAbilities (ConglomerationOfSpheres x) = withBaseAbilities
+    x
     [ mkAbility x 1
       $ ForcedAbility
       $ EnemyAttacked Timing.After You (SourceWithTrait Melee)

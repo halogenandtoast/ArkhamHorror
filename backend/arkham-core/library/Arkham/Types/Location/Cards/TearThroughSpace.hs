@@ -31,9 +31,9 @@ tearThroughSpace = location
   Square
   [Diamond, Triangle, Square]
 
-instance HasAbilities env TearThroughSpace where
-  getAbilities iid window (TearThroughSpace attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities TearThroughSpace where
+  getAbilities (TearThroughSpace attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When
       | locationRevealed attrs
       ]

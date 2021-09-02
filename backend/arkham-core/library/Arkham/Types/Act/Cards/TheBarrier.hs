@@ -26,8 +26,8 @@ newtype TheBarrier = TheBarrier ActAttrs
 theBarrier :: ActCard TheBarrier
 theBarrier = act (2, A) TheBarrier Cards.theBarrier Nothing
 
-instance HasAbilities env TheBarrier where
-  getAbilities _ _ (TheBarrier x) = pure
+instance HasAbilities TheBarrier where
+  getAbilities (TheBarrier x) =
     [ mkAbility x 1
       $ Objective
       $ ReactionAbility (RoundEnds Timing.When)

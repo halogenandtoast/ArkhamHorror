@@ -34,8 +34,8 @@ instance HasModifiersFor env PeterSylvestre2 where
       [SkillModifier SkillAgility 1, SkillModifier SkillWillpower 1]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env PeterSylvestre2 where
-  getAbilities _ _ (PeterSylvestre2 x) = pure
+instance HasAbilities PeterSylvestre2 where
+  getAbilities (PeterSylvestre2 x) =
     [ restrictedAbility
         x
         1

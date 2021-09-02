@@ -16,7 +16,7 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype JimCulver = JimCulver InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasAbilities env)
+  deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 jimCulver :: JimCulver
@@ -38,13 +38,12 @@ instance HasModifiersFor env JimCulver where
   getModifiersFor (SkillTestSource iid _ _ _ _) (TokenTarget token) (JimCulver attrs)
     | iid == investigatorId attrs && tokenFace token == Skull
     = pure $ toModifiers attrs [ChangeTokenModifier $ PositiveModifier 0]
-  getModifiersFor source target (JimCulver attrs) =
-    getModifiersFor source target attrs
+  getModifiersFor _ _ _ = pure []
 
 instance HasTokenValue env JimCulver where
   getTokenValue (JimCulver attrs) iid ElderSign | iid == investigatorId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue (JimCulver attrs) iid token = getTokenValue attrs iid token
+  getTokenValue _ _ token = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env JimCulver where
   runMessage msg i@(JimCulver attrs@InvestigatorAttrs {..}) = case msg of

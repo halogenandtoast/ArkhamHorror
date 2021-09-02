@@ -23,8 +23,8 @@ newtype AlteredBeast = AlteredBeast TreacheryAttrs
 alteredBeast :: TreacheryCard AlteredBeast
 alteredBeast = treachery AlteredBeast Cards.alteredBeast
 
-instance HasAbilities env AlteredBeast where
-  getAbilities _ _ (AlteredBeast x) = pure $ case treacheryAttachedTarget x of
+instance HasAbilities AlteredBeast where
+  getAbilities (AlteredBeast x) = case treacheryAttachedTarget x of
     Just (EnemyTarget eid) ->
       [ mkAbility x 1 $ ForcedAbility $ OrWindowMatcher
           [ EnemyEnters Timing.When YourLocation $ EnemyWithId eid

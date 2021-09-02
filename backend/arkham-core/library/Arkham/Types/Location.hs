@@ -37,7 +37,7 @@ instance HasCardCode Location where
 instance IsCard Location where
   toCardId = toCardId . toAttrs
 
-instance ActionRunner env => HasAbilities env Location where
+instance HasAbilities Location where
   getAbilities = genericGetAbilities
 
 instance

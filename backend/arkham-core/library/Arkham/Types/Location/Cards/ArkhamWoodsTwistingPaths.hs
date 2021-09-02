@@ -31,17 +31,17 @@ arkhamWoodsTwistingPaths = locationWith
   . (revealedSymbolL .~ T)
   )
 
-instance HasAbilities env ArkhamWoodsTwistingPaths where
-  getAbilities i window (ArkhamWoodsTwistingPaths attrs)
-    | locationRevealed attrs = withBaseAbilities i window attrs $ pure
+instance HasAbilities ArkhamWoodsTwistingPaths where
+  getAbilities (ArkhamWoodsTwistingPaths attrs)
+    | locationRevealed attrs = withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ Leaves Timing.When You
         $ LocationWithId
         $ toId attrs
       ]
-  getAbilities i window (ArkhamWoodsTwistingPaths attrs) =
-    getAbilities i window attrs
+  getAbilities (ArkhamWoodsTwistingPaths attrs) =
+    getAbilities attrs
 
 instance LocationRunner env => RunMessage env ArkhamWoodsTwistingPaths where
   runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = case msg of

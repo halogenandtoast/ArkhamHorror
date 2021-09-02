@@ -27,8 +27,8 @@ newtype Row = Row ActAttrs
 row :: ActCard Row
 row = act (3, A) Row Cards.row Nothing
 
-instance HasAbilities env Row where
-  getAbilities _ _ (Row x) = pure
+instance HasAbilities Row where
+  getAbilities (Row x) =
     [ mkAbility x 1 $ ForcedAbility $ WouldDrawEncounterCard Timing.When You
     , restrictedAbility
       x

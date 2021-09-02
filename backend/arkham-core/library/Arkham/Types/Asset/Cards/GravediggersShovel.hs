@@ -26,8 +26,8 @@ newtype GravediggersShovel = GravediggersShovel AssetAttrs
 gravediggersShovel :: AssetCard GravediggersShovel
 gravediggersShovel = hand GravediggersShovel Cards.gravediggersShovel
 
-instance HasAbilities env GravediggersShovel where
-  getAbilities _ _ (GravediggersShovel x) = pure
+instance HasAbilities GravediggersShovel where
+  getAbilities (GravediggersShovel x) =
     [ restrictedAbility x 1 OwnsThis
       $ ActionAbility (Just Action.Fight) (ActionCost 1)
     , restrictedAbility x 2 OwnsThis $ ActionAbility Nothing $ Costs

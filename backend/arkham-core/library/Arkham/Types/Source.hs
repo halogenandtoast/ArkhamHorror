@@ -47,5 +47,6 @@ data Source
   | YouSource
   | AttackSource EnemyId
   | AssetMatcherSource AssetMatcher
+  | LocationMatcherSource LocationMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

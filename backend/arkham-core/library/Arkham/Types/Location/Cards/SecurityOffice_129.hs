@@ -31,8 +31,9 @@ securityOffice_129 = location
   Diamond
   [Square]
 
-instance HasAbilities env SecurityOffice_129 where
-  getAbilities i w (SecurityOffice_129 x) = withBaseAbilities i w x $ pure
+instance HasAbilities SecurityOffice_129 where
+  getAbilities (SecurityOffice_129 x) = withBaseAbilities
+    x
     [ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 2)
         & (abilityLimitL .~ PlayerLimit PerTurn 1)
     | locationRevealed x

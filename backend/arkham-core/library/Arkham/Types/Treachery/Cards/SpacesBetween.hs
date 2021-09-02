@@ -15,7 +15,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype SpacesBetween = SpacesBetween TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 spacesBetween :: TreacheryCard SpacesBetween

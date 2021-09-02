@@ -23,8 +23,8 @@ newtype SordidAndSilent = SordidAndSilent TreacheryAttrs
 sordidAndSilent :: TreacheryCard SordidAndSilent
 sordidAndSilent = treachery SordidAndSilent Cards.sordidAndSilent
 
-instance HasAbilities env SordidAndSilent where
-  getAbilities _ _ (SordidAndSilent x) = pure
+instance HasAbilities SordidAndSilent where
+  getAbilities (SordidAndSilent x) =
     [ mkAbility x 1 $ ForcedAbility $ RoundEnds Timing.When
     , mkAbility x 2 $ ForcedAbility $ AgendaAdvances Timing.When AnyAgenda
     ]

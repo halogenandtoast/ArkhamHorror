@@ -27,8 +27,8 @@ newtype Shrivelling = Shrivelling AssetAttrs
 shrivelling :: AssetCard Shrivelling
 shrivelling = arcane Shrivelling Cards.shrivelling
 
-instance HasAbilities env Shrivelling where
-  getAbilities _ _ (Shrivelling a) = pure
+instance HasAbilities Shrivelling where
+  getAbilities (Shrivelling a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbilityWithSkill
         (Just Action.Fight)
         SkillWillpower

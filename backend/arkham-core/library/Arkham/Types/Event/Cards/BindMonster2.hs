@@ -26,8 +26,8 @@ newtype BindMonster2 = BindMonster2 EventAttrs
 bindMonster2 :: EventCard BindMonster2
 bindMonster2 = event BindMonster2 Cards.bindMonster2
 
-instance HasAbilities env BindMonster2 where
-  getAbilities _ _ (BindMonster2 x) = pure $ case eventAttachedTarget x of
+instance HasAbilities BindMonster2 where
+  getAbilities (BindMonster2 x) = case eventAttachedTarget x of
     Just (EnemyTarget eid) ->
       [ restrictedAbility x 1 OwnsThis
           $ ReactionAbility (EnemyWouldReady Timing.When $ EnemyWithId eid) Free

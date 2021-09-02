@@ -15,7 +15,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Source
 
 newtype TrueGrit = TrueGrit AssetAttrs
-  deriving anyclass (IsAsset, HasAbilities env)
+  deriving anyclass (IsAsset, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trueGrit :: AssetCard TrueGrit

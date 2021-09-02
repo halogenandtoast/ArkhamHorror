@@ -27,8 +27,8 @@ newtype SongOfTheDead2 = SongOfTheDead2 AssetAttrs
 songOfTheDead2 :: AssetCard SongOfTheDead2
 songOfTheDead2 = arcane SongOfTheDead2 Cards.songOfTheDead2
 
-instance HasAbilities env SongOfTheDead2 where
-  getAbilities _ _ (SongOfTheDead2 x) = pure
+instance HasAbilities SongOfTheDead2 where
+  getAbilities (SongOfTheDead2 x) =
     [ restrictedAbility x 1 OwnsThis $ ActionAbility (Just Action.Fight) $ Costs
         [ActionCost 1, UseCost (toId x) Charge 1]
     ]

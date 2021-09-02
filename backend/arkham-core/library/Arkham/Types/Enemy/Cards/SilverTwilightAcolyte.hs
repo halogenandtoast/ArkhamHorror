@@ -28,15 +28,15 @@ silverTwilightAcolyte = enemyWith
   (1, 0)
   (preyL .~ SetToBearer)
 
-instance HasAbilities env SilverTwilightAcolyte where
-  getAbilities iid window (SilverTwilightAcolyte a) =
-    withBaseAbilities iid window a $ pure
-      [ mkAbility a 1
-        $ ForcedAbility
-        $ EnemyAttacks Timing.After Anyone
-        $ EnemyWithId
-        $ toId a
-      ]
+instance HasAbilities SilverTwilightAcolyte where
+  getAbilities (SilverTwilightAcolyte a) = withBaseAbilities
+    a
+    [ mkAbility a 1
+      $ ForcedAbility
+      $ EnemyAttacks Timing.After Anyone
+      $ EnemyWithId
+      $ toId a
+    ]
 
 instance EnemyRunner env => RunMessage env SilverTwilightAcolyte where
   runMessage msg e@(SilverTwilightAcolyte attrs) = case msg of

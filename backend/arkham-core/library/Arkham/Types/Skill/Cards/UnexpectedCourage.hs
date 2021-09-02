@@ -7,7 +7,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Skill.Attrs
 
 newtype UnexpectedCourage = UnexpectedCourage SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unexpectedCourage :: SkillCard UnexpectedCourage

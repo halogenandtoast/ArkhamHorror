@@ -13,7 +13,7 @@ import Arkham.Types.Query
 import Arkham.Types.ScenarioId
 
 newtype QuietHalls = QuietHalls AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 quietHalls :: AgendaCard QuietHalls

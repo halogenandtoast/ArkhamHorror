@@ -13,7 +13,7 @@ import Arkham.Types.Prey
 
 newtype RavenousGhoul = RavenousGhoul EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 ravenousGhoul :: EnemyCard RavenousGhoul
 ravenousGhoul = enemyWith

@@ -31,8 +31,8 @@ haroldWalsted :: AssetCard HaroldWalsted
 haroldWalsted =
   allyWith HaroldWalsted Cards.haroldWalsted (1, 1) (isStoryL .~ True)
 
-instance HasAbilities env HaroldWalsted where
-  getAbilities _ _ (HaroldWalsted x) = pure
+instance HasAbilities HaroldWalsted where
+  getAbilities (HaroldWalsted x) =
     [ mkAbility x 1
       $ ForcedAbility
       $ AssetLeavesPlay Timing.When

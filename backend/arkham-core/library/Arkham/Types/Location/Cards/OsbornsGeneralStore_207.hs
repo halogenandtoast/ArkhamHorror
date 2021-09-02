@@ -29,11 +29,10 @@ osbornsGeneralStore_207 = location
   Circle
   [Moon, Square]
 
-instance HasAbilities env OsbornsGeneralStore_207 where
-  getAbilities iid window (OsbornsGeneralStore_207 attrs) = do
-    rest <- withDrawCardUnderneathAction iid window attrs
-    pure
-      $ [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
+instance HasAbilities OsbornsGeneralStore_207 where
+  getAbilities (OsbornsGeneralStore_207 attrs) = do
+    let rest = withDrawCardUnderneathAction attrs
+    [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
             [ActionCost 1, ResourceCost 1]
         | locationRevealed attrs
         ]

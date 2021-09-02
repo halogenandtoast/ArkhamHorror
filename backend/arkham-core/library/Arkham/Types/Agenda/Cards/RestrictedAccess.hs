@@ -32,8 +32,8 @@ restrictedAccess :: AgendaCard RestrictedAccess
 restrictedAccess =
   agenda (1, A) RestrictedAccess Cards.restrictedAccess (Static 5)
 
-instance HasAbilities env RestrictedAccess where
-  getAbilities _ _ (RestrictedAccess x) = pure
+instance HasAbilities RestrictedAccess where
+  getAbilities (RestrictedAccess x) =
     [ mkAbility x 1 $ ForcedAbility $ EnemySpawns Timing.When Anywhere $ enemyIs
         Cards.huntingHorror
     ]

@@ -31,9 +31,9 @@ theGuardian = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasAbilities env TheGuardian where
-  getAbilities iid window (TheGuardian attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities TheGuardian where
+  getAbilities (TheGuardian attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
           $ ReactionAbility
               (Enters Timing.After You $ LocationWithId $ toId attrs)

@@ -27,14 +27,14 @@ disruptingTheRitual = actWith
   Nothing
   (cluesL ?~ 0)
 
-instance HasAbilities env DisruptingTheRitual where
-  getAbilities _ _ (DisruptingTheRitual a) | onSide A a = pure
+instance HasAbilities DisruptingTheRitual where
+  getAbilities (DisruptingTheRitual a) | onSide A a =
     [ mkAbility a 1 $ ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1]
     , restrictedAbility a 2 (CluesOnThis $ AtLeast $ PerPlayer 2)
-    $ Objective
-    $ ForcedAbility AnyWindow
+      $ Objective
+      $ ForcedAbility AnyWindow
     ]
-  getAbilities _ _ _ = pure []
+  getAbilities _ = []
 
 instance ActRunner env => RunMessage env DisruptingTheRitual where
   runMessage msg a@(DisruptingTheRitual attrs@ActAttrs {..}) = case msg of

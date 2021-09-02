@@ -25,9 +25,9 @@ holeInTheWall = location
   Square
   [T, Triangle, Plus, Diamond]
 
-instance HasAbilities env HoleInTheWall where
-  getAbilities i window (HoleInTheWall attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities HoleInTheWall where
+  getAbilities (HoleInTheWall attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ RevealLocation Timing.After You

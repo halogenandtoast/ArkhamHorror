@@ -30,19 +30,18 @@ exhibitHallEgyptianExhibit = locationWithRevealedSideConnections
   Moon
   [Square, T]
 
-instance HasAbilities env ExhibitHallEgyptianExhibit where
-  getAbilities i w (ExhibitHallEgyptianExhibit x) =
-    withBaseAbilities i w x $ do
-      pure
-        [ mkAbility x 1
-          $ ForcedAbility
-          $ SkillTestResult
-              Timing.After
-              You
-              (WhileInvestigating $ LocationWithId $ toId x)
-          $ FailureResult AnyValue
-        | locationRevealed x
-        ]
+instance HasAbilities ExhibitHallEgyptianExhibit where
+  getAbilities (ExhibitHallEgyptianExhibit x) = withBaseAbilities
+    x
+    [ mkAbility x 1
+      $ ForcedAbility
+      $ SkillTestResult
+          Timing.After
+          You
+          (WhileInvestigating $ LocationWithId $ toId x)
+      $ FailureResult AnyValue
+    | locationRevealed x
+    ]
 
 instance LocationRunner env => RunMessage env ExhibitHallEgyptianExhibit where
   runMessage msg l@(ExhibitHallEgyptianExhibit attrs) = case msg of

@@ -34,19 +34,19 @@ instance HasCount PlayerCount env () => HasModifiersFor env Umordhoth where
     pure $ toModifiers a [HealthModifier healthModifier]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env Umordhoth where
-  getAbilities iid window (Umordhoth attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ mkAbility attrs 1 $ ForcedAbility $ TurnEnds Timing.After Anyone
-      , restrictedAbility
-        attrs
-        2
-        (OnSameLocation
-        <> AssetExists (AssetOwnedBy You <> assetIs Cards.litaChantler)
-        )
-      $ ActionAbility Nothing
-      $ ActionCost 1
-      ]
+instance HasAbilities Umordhoth where
+  getAbilities (Umordhoth attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1 $ ForcedAbility $ TurnEnds Timing.After Anyone
+    , restrictedAbility
+      attrs
+      2
+      (OnSameLocation
+      <> AssetExists (AssetOwnedBy You <> assetIs Cards.litaChantler)
+      )
+    $ ActionAbility Nothing
+    $ ActionCost 1
+    ]
 
 instance EnemyRunner env => RunMessage env Umordhoth where
   runMessage msg e@(Umordhoth attrs) = case msg of

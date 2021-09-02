@@ -28,15 +28,15 @@ billyCooper = enemyWith
   (2, 0)
   (spawnAtL ?~ LocationWithTitle "Easttown")
 
-instance HasAbilities env BillyCooper where
-  getAbilities iid window (BillyCooper attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ EnemyDefeated Timing.After Anyone
-        $ EnemyAt (LocationWithId $ enemyLocation attrs)
-        <> EnemyWithTrait Monster
-      ]
+instance HasAbilities BillyCooper where
+  getAbilities (BillyCooper attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1
+      $ ForcedAbility
+      $ EnemyDefeated Timing.After Anyone
+      $ EnemyAt (LocationWithId $ enemyLocation attrs)
+      <> EnemyWithTrait Monster
+    ]
 
 instance EnemyRunner env => RunMessage env BillyCooper where
   runMessage msg e@(BillyCooper attrs) = case msg of

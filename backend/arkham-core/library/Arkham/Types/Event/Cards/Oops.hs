@@ -17,7 +17,7 @@ import Arkham.Types.Window (Window(..))
 import qualified Arkham.Types.Window as Window
 
 newtype Oops = Oops EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oops :: EventCard Oops

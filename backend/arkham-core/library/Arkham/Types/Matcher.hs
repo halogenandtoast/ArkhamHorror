@@ -378,9 +378,12 @@ instance Semigroup CardMatcher where
 
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
+  | DrawingStartingHand Timing Who
   | InvestigatorDefeated Timing SourceMatcher Who
+  | AmongSearchedCards Who
   | DeckHasNoCards Timing Who
   | MovedBy Timing Who SourceMatcher
+  | MovedFromHunter Timing EnemyMatcher
   | ChosenRandomLocation Timing LocationMatcher
   | EnemyWouldBeDefeated Timing EnemyMatcher
   | EnemyWouldReady Timing EnemyMatcher
@@ -436,6 +439,7 @@ data WindowMatcher
   | GameEnds Timing
   | InvestigatorEliminated Timing Who
   | AnyWindow
+  | CommittedCards Timing Who CardListMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -537,7 +541,7 @@ instance Semigroup ActionMatcher where
 instance Monoid ActionMatcher where
   mempty = AnyAction
 
-data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher
+data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher | AnyCards
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

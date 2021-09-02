@@ -33,8 +33,8 @@ instance HasModifiersFor env WrackedByNightmares where
       [ ControlledAssetsCannotReady | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env WrackedByNightmares where
-  getAbilities _ _ (WrackedByNightmares a) = pure
+instance HasAbilities WrackedByNightmares where
+  getAbilities (WrackedByNightmares a) =
     [ restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost
         2
     ]

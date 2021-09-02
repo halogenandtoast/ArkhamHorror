@@ -36,9 +36,9 @@ destroyedPath = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Equals])
   )
 
-instance HasAbilities env DestroyedPath where
-  getAbilities iid window (DestroyedPath attrs) =
-    withBaseAbilities iid window attrs $ pure $ if locationRevealed attrs
+instance HasAbilities DestroyedPath where
+  getAbilities (DestroyedPath attrs) =
+    withBaseAbilities attrs $ if locationRevealed attrs
       then
         [ mkAbility attrs 1
         $ ForcedAbility

@@ -23,7 +23,7 @@ import Arkham.Types.Trait
 
 newtype SkinGame = SkinGame ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 skinGame :: ActCard SkinGame
 skinGame = act
@@ -31,9 +31,6 @@ skinGame = act
   SkinGame
   Cards.skinGame
   (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "VIP Area"))
-
-instance HasAbilities env SkinGame where
-  getAbilities i window (SkinGame x) = getAbilities i window x
 
 instance ActRunner env => RunMessage env SkinGame where
   runMessage msg a@(SkinGame attrs) = case msg of

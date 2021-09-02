@@ -10,15 +10,14 @@ import Arkham.Types.Ability
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EntityInstance
+import Arkham.Types.Criteria
 import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype MarkHarrigan = MarkHarrigan InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -42,26 +41,28 @@ markHarrigan =
       }
     [Veteran]
 
-ability :: InvestigatorAttrs -> Ability
-ability attrs =
-  mkAbility attrs 1 (LegacyReactionAbility Free) & abilityLimitL .~ PlayerLimit
-    PerPhase
-    1
-
-instance EntityInstanceRunner env => HasAbilities env MarkHarrigan where
-  getAbilities i (Window Timing.When (DealtDamage _ target)) (MarkHarrigan attrs)
-    | isTarget attrs target && i == toId attrs
-    = pure [ability attrs]
-  getAbilities i (Window Timing.When (DealtDamage _ (AssetTarget aid))) (MarkHarrigan attrs)
-    | aid `elem` investigatorAssets attrs && i == toId attrs
-    = pure [ability attrs]
-  getAbilities i window (MarkHarrigan attrs) = getAbilities i window attrs
+instance HasAbilities MarkHarrigan where
+  getAbilities (MarkHarrigan attrs) =
+    [ restrictedAbility
+          attrs
+          1
+          Self
+          (ReactionAbility
+            (OrWindowMatcher
+              [ DealtDamage Timing.When You
+              , AssetDealtDamage Timing.When (AssetOwnedBy You)
+              ]
+            )
+            Free
+          )
+        & (abilityLimitL .~ PlayerLimit PerPhase 1)
+    ]
 
 instance HasTokenValue env MarkHarrigan where
   getTokenValue (MarkHarrigan attrs) iid ElderSign | iid == toId attrs = do
     let tokenValue' = PositiveModifier $ investigatorHealthDamage attrs
     pure $ TokenValue ElderSign tokenValue'
-  getTokenValue (MarkHarrigan attrs) iid token = getTokenValue attrs iid token
+  getTokenValue _ _ token = pure $ TokenValue token mempty
 
 instance (InvestigatorRunner env) => RunMessage env MarkHarrigan where
   runMessage msg i@(MarkHarrigan attrs) = case msg of

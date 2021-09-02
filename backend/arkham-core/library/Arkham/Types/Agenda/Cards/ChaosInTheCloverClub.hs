@@ -29,8 +29,8 @@ chaosInTheCloverClub :: AgendaCard ChaosInTheCloverClub
 chaosInTheCloverClub =
   agenda (3, A) ChaosInTheCloverClub Cards.chaosInTheCloverClub (Static 7)
 
-instance HasAbilities env ChaosInTheCloverClub where
-  getAbilities _ _ (ChaosInTheCloverClub x) = pure
+instance HasAbilities ChaosInTheCloverClub where
+  getAbilities (ChaosInTheCloverClub x) =
     [ mkAbility x 1 $ ForcedAbility $ PhaseBegins Timing.When $ PhaseIs
         EnemyPhase
     | onSide A x

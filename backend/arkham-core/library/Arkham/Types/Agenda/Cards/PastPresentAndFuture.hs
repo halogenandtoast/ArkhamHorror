@@ -28,8 +28,8 @@ pastPresentAndFuture :: AgendaCard PastPresentAndFuture
 pastPresentAndFuture =
   agenda (2, A) PastPresentAndFuture Cards.pastPresentAndFuture (Static 4)
 
-instance HasAbilities env PastPresentAndFuture where
-  getAbilities _ _ (PastPresentAndFuture x) = pure
+instance HasAbilities PastPresentAndFuture where
+  getAbilities (PastPresentAndFuture x) =
     [ mkAbility x 1 $ ForcedAbility $ MovedBy
         Timing.After
         You

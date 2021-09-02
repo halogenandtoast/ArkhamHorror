@@ -16,7 +16,7 @@ import Arkham.Types.Modifier
 
 newtype ExhibitHallRestrictedHall = ExhibitHallRestrictedHall LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 exhibitHallRestrictedHall :: LocationCard ExhibitHallRestrictedHall
 exhibitHallRestrictedHall = locationWithRevealedSideConnections

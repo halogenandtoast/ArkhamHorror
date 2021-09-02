@@ -27,8 +27,8 @@ newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
 nightAtTheMuseum :: ActCard NightAtTheMuseum
 nightAtTheMuseum = act (2, A) NightAtTheMuseum Cards.nightAtTheMuseum Nothing
 
-instance HasAbilities env NightAtTheMuseum where
-  getAbilities _ _ (NightAtTheMuseum x) = pure
+instance HasAbilities NightAtTheMuseum where
+  getAbilities (NightAtTheMuseum x) =
     [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ locationIs
         Cards.exhibitHallRestrictedHall
     ]

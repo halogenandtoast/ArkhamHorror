@@ -31,9 +31,9 @@ anotherDimension = location
   Circle
   [Square, Diamond, Triangle]
 
-instance HasAbilities env AnotherDimension where
-  getAbilities iid window (AnotherDimension attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities AnotherDimension where
+  getAbilities (AnotherDimension attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ LocationLeavesPlay Timing.When

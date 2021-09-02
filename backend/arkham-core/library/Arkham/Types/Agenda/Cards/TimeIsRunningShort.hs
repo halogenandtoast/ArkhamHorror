@@ -24,9 +24,9 @@ timeIsRunningShort :: AgendaCard TimeIsRunningShort
 timeIsRunningShort =
   agenda (2, A) TimeIsRunningShort Cards.timeIsRunningShort (Static 8)
 
-instance HasAbilities env TimeIsRunningShort where
-  getAbilities _ _ (TimeIsRunningShort a) =
-    pure [mkAbility a 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
+instance HasAbilities TimeIsRunningShort where
+  getAbilities (TimeIsRunningShort a) =
+    [mkAbility a 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
 
 instance AgendaRunner env => RunMessage env TimeIsRunningShort where
   runMessage msg a@(TimeIsRunningShort attrs@AgendaAttrs {..}) = case msg of

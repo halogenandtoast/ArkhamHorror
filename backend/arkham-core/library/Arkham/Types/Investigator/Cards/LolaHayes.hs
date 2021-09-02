@@ -6,16 +6,16 @@ import Arkham.Types.Ability
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EntityInstance
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Stats
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype LolaHayes = LolaHayes InvestigatorAttrs
   deriving anyclass IsInvestigator
@@ -24,8 +24,7 @@ newtype LolaHayes = LolaHayes InvestigatorAttrs
 instance HasModifiersFor env LolaHayes where
   getModifiersFor _ target (LolaHayes attrs) | isTarget attrs target =
     pure $ toModifiers attrs [CanOnlyUseCardsInRole $ investigatorClass attrs]
-  getModifiersFor source target (LolaHayes attrs) =
-    getModifiersFor source target attrs
+  getModifiersFor _ _ _ = pure []
 
 lolaHayes :: LolaHayes
 lolaHayes = LolaHayes $ baseAttrs
@@ -45,18 +44,16 @@ lolaHayes = LolaHayes $ baseAttrs
 instance HasTokenValue env LolaHayes where
   getTokenValue (LolaHayes attrs) iid ElderSign | iid == investigatorId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 2)
-  getTokenValue (LolaHayes attrs) iid token = getTokenValue attrs iid token
+  getTokenValue _ _ token = pure $ TokenValue token mempty
 
-instance EntityInstanceRunner env => HasAbilities env LolaHayes where
-  getAbilities i (Window Timing.After (DrawingStartingHand iid)) (LolaHayes attrs)
-    | iid == toId attrs && i == iid
-    = pure [mkAbility attrs 1 LegacyForcedAbility]
-  getAbilities i (Window Timing.When FastPlayerWindow) (LolaHayes attrs)
-    | i == toId attrs = pure
-      [ mkAbility attrs 2 (FastAbility Free)
-          & (abilityLimitL .~ PlayerLimit PerRound 1)
-      ]
-  getAbilities i window (LolaHayes attrs) = getAbilities i window attrs
+instance HasAbilities LolaHayes where
+  getAbilities (LolaHayes attrs) =
+    [ restrictedAbility attrs 1 Self $ ForcedAbility $ DrawingStartingHand
+      Timing.After
+      You
+    , restrictedAbility attrs 2 Self (FastAbility Free)
+      & (abilityLimitL .~ PlayerLimit PerRound 1)
+    ]
 
 switchRole
   :: (MonadIO m, MonadReader env m, HasQueue env) => InvestigatorAttrs -> m ()

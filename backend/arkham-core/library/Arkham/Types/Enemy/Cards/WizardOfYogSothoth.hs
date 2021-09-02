@@ -30,8 +30,9 @@ wizardOfYogSothoth = enemyWith
   (1, 2)
   (preyL .~ FewestCards)
 
-instance HasAbilities env WizardOfYogSothoth where
-  getAbilities i w (WizardOfYogSothoth x) = withBaseAbilities i w x $ pure
+instance HasAbilities WizardOfYogSothoth where
+  getAbilities (WizardOfYogSothoth x) = withBaseAbilities
+    x
     [ restrictedAbility x 1 (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
       $ ForcedAbility
       $ DrawCard

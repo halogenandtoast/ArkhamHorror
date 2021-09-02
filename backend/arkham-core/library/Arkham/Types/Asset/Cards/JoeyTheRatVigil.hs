@@ -28,8 +28,8 @@ joeyTheRatVigil = ally JoeyTheRatVigil Cards.joeyTheRatVigil (3, 2)
 
 -- This card is a pain and the solution here is a hack
 -- we end up with a separate function for resource modification
-instance HasAbilities env JoeyTheRatVigil where
-  getAbilities _ _ (JoeyTheRatVigil x) = pure
+instance HasAbilities JoeyTheRatVigil where
+  getAbilities (JoeyTheRatVigil x) =
     [ restrictedAbility
         x
         1

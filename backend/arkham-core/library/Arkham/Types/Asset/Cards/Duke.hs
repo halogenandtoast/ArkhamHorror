@@ -39,8 +39,8 @@ instance HasModifiersFor env Duke where
     = pure $ toModifiers a [BaseSkillOf SkillIntellect 4]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env Duke where
-  getAbilities _ _ (Duke a) = pure
+instance HasAbilities Duke where
+  getAbilities (Duke a) =
     [ restrictedAbility
       a
       1

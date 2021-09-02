@@ -25,8 +25,8 @@ newtype BeyondTheVeil = BeyondTheVeil TreacheryAttrs
 beyondTheVeil :: TreacheryCard BeyondTheVeil
 beyondTheVeil = treachery BeyondTheVeil Cards.beyondTheVeil
 
-instance HasAbilities env BeyondTheVeil where
-  getAbilities _ _ (BeyondTheVeil x) = pure
+instance HasAbilities BeyondTheVeil where
+  getAbilities (BeyondTheVeil x) =
     [ restrictedAbility x 1 (InThreatAreaOf You)
       $ ForcedAbility
       $ DeckHasNoCards Timing.When You

@@ -34,8 +34,8 @@ instance HasModifiersFor env CursedLuck where
       [ AnySkillValue (-1) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env CursedLuck where
-  getAbilities _ _ (CursedLuck x) = pure
+instance HasAbilities CursedLuck where
+  getAbilities (CursedLuck x) =
     [ restrictedAbility x 1 (InThreatAreaOf You)
       $ ForcedAbility
       $ SkillTestResult Timing.After You AnySkillTest

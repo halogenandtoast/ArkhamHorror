@@ -14,7 +14,7 @@ import Arkham.Types.Trait
 
 newtype Easttown = Easttown LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 easttown :: LocationCard Easttown
 easttown =

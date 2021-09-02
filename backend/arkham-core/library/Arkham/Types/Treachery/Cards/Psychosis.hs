@@ -24,8 +24,8 @@ newtype Psychosis = Psychosis TreacheryAttrs
 psychosis :: TreacheryCard Psychosis
 psychosis = treachery Psychosis Cards.psychosis
 
-instance HasAbilities env Psychosis where
-  getAbilities _ _ (Psychosis a) = pure
+instance HasAbilities Psychosis where
+  getAbilities (Psychosis a) =
     [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ DealtHorror
       Timing.After
       You

@@ -30,13 +30,12 @@ mobEnforcer = enemyWith
   (1, 0)
   (preyL .~ SetToBearer)
 
-instance HasAbilities env MobEnforcer where
-  getAbilities iid window (MobEnforcer attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility attrs 1 OnSameLocation
-            $ ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 4])
-        ]
+instance HasAbilities MobEnforcer where
+  getAbilities (MobEnforcer attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility attrs 1 OnSameLocation
+        $ ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 4])
+    ]
 
 instance EnemyRunner env => RunMessage env MobEnforcer where
   runMessage msg e@(MobEnforcer attrs@EnemyAttrs {..}) = case msg of

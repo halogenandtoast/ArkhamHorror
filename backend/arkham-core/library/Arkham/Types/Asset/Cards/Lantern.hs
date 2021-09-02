@@ -28,8 +28,8 @@ newtype Lantern = Lantern AssetAttrs
 lantern :: AssetCard Lantern
 lantern = hand Lantern Cards.lantern
 
-instance HasAbilities env Lantern where
-  getAbilities _ _ (Lantern x) = pure
+instance HasAbilities Lantern where
+  getAbilities (Lantern x) =
     [ restrictedAbility x 1 OwnsThis
     $ ActionAbility (Just Action.Investigate)
     $ ActionCost 1

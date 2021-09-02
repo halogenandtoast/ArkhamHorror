@@ -23,8 +23,8 @@ newtype CurseOfTheRougarou = CurseOfTheRougarou TreacheryAttrs
 curseOfTheRougarou :: TreacheryCard CurseOfTheRougarou
 curseOfTheRougarou = treachery CurseOfTheRougarou Cards.curseOfTheRougarou
 
-instance HasAbilities env CurseOfTheRougarou where
-  getAbilities _ _ (CurseOfTheRougarou x) = pure
+instance HasAbilities CurseOfTheRougarou where
+  getAbilities (CurseOfTheRougarou x) =
     [ restrictedAbility
         x
         1

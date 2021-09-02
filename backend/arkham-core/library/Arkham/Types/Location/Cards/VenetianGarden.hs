@@ -31,9 +31,9 @@ venetianGarden = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasAbilities env VenetianGarden where
-  getAbilities iid window (VenetianGarden attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities VenetianGarden where
+  getAbilities (VenetianGarden attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
             attrs
             1

@@ -18,7 +18,7 @@ import Arkham.Types.Trait
 
 $(buildEntity "Act")
 
-instance HasAbilities env Act where
+instance HasAbilities Act where
   getAbilities = genericGetAbilities
 
 instance

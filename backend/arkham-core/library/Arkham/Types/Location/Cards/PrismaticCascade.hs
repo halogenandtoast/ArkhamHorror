@@ -31,9 +31,9 @@ prismaticCascade = location
   Diamond
   [Square, Plus]
 
-instance HasAbilities env PrismaticCascade where
-  getAbilities iid window (PrismaticCascade attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities PrismaticCascade where
+  getAbilities (PrismaticCascade attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ DiscoveringLastClue Timing.After Anyone

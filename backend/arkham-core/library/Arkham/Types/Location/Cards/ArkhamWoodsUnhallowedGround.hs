@@ -30,17 +30,17 @@ arkhamWoodsUnhallowedGround = locationWith
   . (revealedSymbolL .~ Triangle)
   )
 
-instance HasAbilities env ArkhamWoodsUnhallowedGround where
-  getAbilities i window (ArkhamWoodsUnhallowedGround x) | locationRevealed x =
-    withBaseAbilities i window x $ pure
+instance HasAbilities ArkhamWoodsUnhallowedGround where
+  getAbilities (ArkhamWoodsUnhallowedGround x) | locationRevealed x =
+    withBaseAbilities x $
       [ mkAbility x 1
         $ ForcedAbility
         $ Enters Timing.After You
         $ LocationWithId
         $ toId x
       ]
-  getAbilities i window (ArkhamWoodsUnhallowedGround x) =
-    getAbilities i window x
+  getAbilities (ArkhamWoodsUnhallowedGround x) =
+    getAbilities x
 
 instance LocationRunner env => RunMessage env ArkhamWoodsUnhallowedGround where
   runMessage msg l@(ArkhamWoodsUnhallowedGround attrs) = case msg of

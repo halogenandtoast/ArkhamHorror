@@ -36,7 +36,7 @@ instance HasModifiersFor env HouseInTheReeds_210 where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env HouseInTheReeds_210 where
+instance HasAbilities HouseInTheReeds_210 where
   getAbilities = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env HouseInTheReeds_210 where

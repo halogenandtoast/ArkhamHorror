@@ -37,7 +37,7 @@ instance HasCount DoomCount env Agenda where
 instance HasStep AgendaStep env Agenda where
   getStep = getStep . toAttrs
 
-instance HasAbilities env Agenda where
+instance HasAbilities Agenda where
   getAbilities = genericGetAbilities
 
 instance (HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda where

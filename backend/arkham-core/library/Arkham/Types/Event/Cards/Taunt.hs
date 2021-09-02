@@ -13,7 +13,7 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 
 newtype Taunt = Taunt EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 taunt :: EventCard Taunt

@@ -33,7 +33,7 @@ instance HasModifiersFor env Schoolhouse_212 where
       [ CannotCommitCards | iid `member` locationInvestigators attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env Schoolhouse_212 where
+instance HasAbilities Schoolhouse_212 where
   getAbilities = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env Schoolhouse_212 where

@@ -25,8 +25,8 @@ newtype ArcaneInitiate = ArcaneInitiate AssetAttrs
 arcaneInitiate :: AssetCard ArcaneInitiate
 arcaneInitiate = ally ArcaneInitiate Cards.arcaneInitiate (1, 2)
 
-instance HasAbilities env ArcaneInitiate where
-  getAbilities _ _ (ArcaneInitiate a) = pure
+instance HasAbilities ArcaneInitiate where
+  getAbilities (ArcaneInitiate a) =
     [ restrictedAbility a 1 OwnsThis
     $ ForcedAbility
     $ AssetEntersPlay Timing.When

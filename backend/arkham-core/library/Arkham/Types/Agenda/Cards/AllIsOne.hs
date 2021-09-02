@@ -25,8 +25,8 @@ newtype AllIsOne = AllIsOne AgendaAttrs
 allIsOne :: AgendaCard AllIsOne
 allIsOne = agenda (1, A) AllIsOne Cards.allIsOne (Static 4)
 
-instance HasAbilities env AllIsOne where
-  getAbilities _ _ (AllIsOne x) = pure
+instance HasAbilities AllIsOne where
+  getAbilities (AllIsOne x) =
     [ mkAbility x 1 $ ForcedAbility $ MovedBy
         Timing.After
         You

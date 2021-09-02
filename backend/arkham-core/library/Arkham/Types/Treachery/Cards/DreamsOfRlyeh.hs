@@ -32,8 +32,8 @@ instance HasModifiersFor env DreamsOfRlyeh where
       else []
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env DreamsOfRlyeh where
-  getAbilities _ _ (DreamsOfRlyeh a) = pure
+instance HasAbilities DreamsOfRlyeh where
+  getAbilities (DreamsOfRlyeh a) =
     [ restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost
         1
     ]

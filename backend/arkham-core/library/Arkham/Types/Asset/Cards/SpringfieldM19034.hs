@@ -31,8 +31,8 @@ springfieldM19034 = assetWith
   Cards.springfieldM19034
   (slotsL .~ [HandSlot, HandSlot])
 
-instance HasAbilities env SpringfieldM19034 where
-  getAbilities _ _ (SpringfieldM19034 a) = pure
+instance HasAbilities SpringfieldM19034 where
+  getAbilities (SpringfieldM19034 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])

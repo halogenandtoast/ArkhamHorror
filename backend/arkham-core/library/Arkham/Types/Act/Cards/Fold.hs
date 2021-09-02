@@ -31,8 +31,8 @@ newtype Fold = Fold ActAttrs
 fold :: ActCard Fold
 fold = act (3, A) Fold Cards.fold Nothing
 
-instance HasAbilities env Fold where
-  getAbilities i w (Fold x) = withBaseAbilities i w x $ pure $ if onSide A x
+instance HasAbilities Fold where
+  getAbilities (Fold x) = withBaseAbilities x $ if onSide A x
     then
       [ restrictedAbility
         (ProxySource

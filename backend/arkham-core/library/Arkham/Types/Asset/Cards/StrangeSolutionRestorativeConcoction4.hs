@@ -28,8 +28,8 @@ strangeSolutionRestorativeConcoction4 = asset
   StrangeSolutionRestorativeConcoction4
   Cards.strangeSolutionRestorativeConcoction4
 
-instance HasAbilities env StrangeSolutionRestorativeConcoction4 where
-  getAbilities _ _ (StrangeSolutionRestorativeConcoction4 x) = pure
+instance HasAbilities StrangeSolutionRestorativeConcoction4 where
+  getAbilities (StrangeSolutionRestorativeConcoction4 x) =
     [ restrictedAbility
         x
         1

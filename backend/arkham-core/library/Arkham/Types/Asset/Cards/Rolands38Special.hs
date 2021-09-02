@@ -29,8 +29,8 @@ newtype Rolands38Special = Rolands38Special AssetAttrs
 rolands38Special :: AssetCard Rolands38Special
 rolands38Special = hand Rolands38Special Cards.rolands38Special
 
-instance HasAbilities env Rolands38Special where
-  getAbilities _ _ (Rolands38Special x) = pure
+instance HasAbilities Rolands38Special where
+  getAbilities (Rolands38Special x) =
     [ restrictedAbility x 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId x) Ammo 1])

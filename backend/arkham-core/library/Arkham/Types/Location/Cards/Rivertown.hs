@@ -9,7 +9,7 @@ import Arkham.Types.Location.Attrs
 
 newtype Rivertown = Rivertown LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 rivertown :: LocationCard Rivertown
 rivertown = location

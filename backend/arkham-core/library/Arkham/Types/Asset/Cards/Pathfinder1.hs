@@ -23,8 +23,8 @@ newtype Pathfinder1 = Pathfinder1 AssetAttrs
 pathfinder1 :: AssetCard Pathfinder1
 pathfinder1 = asset Pathfinder1 Cards.pathfinder1
 
-instance HasAbilities env Pathfinder1 where
-  getAbilities _ _ (Pathfinder1 attrs) = pure
+instance HasAbilities Pathfinder1 where
+  getAbilities (Pathfinder1 attrs) =
     [ restrictedAbility
         attrs
         1

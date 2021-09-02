@@ -21,7 +21,8 @@ import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype MinhThiPhan = MinhThiPhan InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -42,31 +43,29 @@ minhThiPhan = MinhThiPhan $ baseAttrs
     }
   [Assistant]
 
-ability :: InvestigatorAttrs -> InvestigatorId -> Card -> Ability
-ability attrs iid card =
-  mkAbility attrs 1 (LegacyReactionAbility Free)
-    & (abilityLimitL .~ PerInvestigatorLimit iid PerRound 1)
-    & (abilityMetadataL ?~ TargetMetadata (CardIdTarget $ toCardId card))
-
-instance EntityInstanceRunner env => HasAbilities env MinhThiPhan where
-  getAbilities i (Window Timing.After (CommitedCard who card)) (MinhThiPhan attrs)
-    = do
-      atSameLocation <- liftA2
-        (==)
-        (getId @LocationId i)
-        (getId @LocationId who)
-      pure [ ability attrs who card | atSameLocation ]
-  getAbilities i window (MinhThiPhan attrs) = getAbilities i window attrs
+instance HasAbilities MinhThiPhan where
+  getAbilities (MinhThiPhan attrs) =
+    [ restrictedAbility
+          i
+          1
+          Self
+          (ReactionAbility
+            (CommittedCards Timing.After (InvestigatorAt YourLocation) AnyCards)
+            Free
+          )
+        & (abilityLimitL .~ PerInvestigatorLimit PerRound 1)
+    ]
 
 instance HasTokenValue env MinhThiPhan where
   getTokenValue (MinhThiPhan attrs) iid ElderSign
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue (MinhThiPhan attrs) iid token = getTokenValue attrs iid token
+  getTokenValue _ _ token = pure $ TokenValue token mempty
 
+-- TODO: Should we let card selection for ability
 instance (InvestigatorRunner env) => RunMessage env MinhThiPhan where
   runMessage msg i@(MinhThiPhan attrs) = case msg of
-    UseCardAbility _ source [Window _ (CommitedCard _ card)] 1 _
+    UseCardAbility _ source [Window _ (Window.CommittedCards _ (card : _))] 1 _
       | isSource attrs source -> i <$ push
         (CreateEffect
           (unInvestigatorId $ toId attrs)

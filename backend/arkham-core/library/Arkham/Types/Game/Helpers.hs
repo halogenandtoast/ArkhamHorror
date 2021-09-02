@@ -96,14 +96,8 @@ replaceToken token = withQueue $ \queue ->
   , ()
   )
 
-withBaseAbilities
-  :: (HasAbilities env a, MonadReader env m)
-  => InvestigatorId
-  -> Window
-  -> a
-  -> m [Ability]
-  -> m [Ability]
-withBaseAbilities iid window a f = (<>) <$> getAbilities iid window a <*> f
+withBaseAbilities :: HasAbilities a => a -> [Ability] -> [Ability]
+withBaseAbilities a f = getAbilities a <> f
 
 getCanPerformAbility
   :: (MonadReader env m, CanCheckPlayable env, HasCallStack)
@@ -369,61 +363,62 @@ getCanAffordCost iid source mAction windows' = \case
           )
       >= n
 
-instance
-  ( HasCostPayment env
-  , HasList UsedAbility env ()
-  , CanCheckPlayable env
-  )
-  => HasAbilities env () where
-  getAbilities iid window _ = do
-    actions' <- nub . concat <$> traverse
-      (getAbilities iid window)
-      ([minBound .. maxBound] :: [ActionType])
-    actionsWithSources <- concat <$> for
-      actions'
-      \action -> do
-        case abilitySource action of
-          ProxySource (AssetMatcherSource m) base -> do
-            sources <- selectListMap AssetSource m
-            pure $ map
-              (\source -> action { abilitySource = ProxySource source base })
-              sources
-          _ -> pure [action]
+getActions
+  :: ( MonadReader env m
+     , HasCostPayment env
+     , HasList UsedAbility env ()
+     , CanCheckPlayable env
+     )
+  => InvestigatorId
+  -> Window
+  -> m [Ability]
+getActions iid window = do
+  actions' <- nub <$> asks getAbilities
+  actionsWithSources <- concat <$> for
+    actions'
+    \action -> do
+      case abilitySource action of
+        ProxySource (AssetMatcherSource m) base -> do
+          sources <- selectListMap AssetSource m
+          pure $ map
+            (\source -> action { abilitySource = ProxySource source base })
+            sources
+        _ -> pure [action]
 
-    actions'' <- catMaybes <$> for
-      actionsWithSources
-      \ability -> do
-        modifiers' <- getModifiers
-          (InvestigatorSource iid)
-          (sourceToTarget $ abilitySource ability)
-        investigatorModifiers <- getModifiers
-          (InvestigatorSource iid)
-          (InvestigatorTarget iid)
-        cardClasses <- case abilitySource ability of
-          AssetSource aid -> insertSet Neutral <$> getSet aid
-          _ -> pure $ singleton Neutral
-        let
-          -- Lola Hayes: Forced abilities will always trigger
-          prevents (CanOnlyUseCardsInRole role) =
-            null (singleton role `intersect` cardClasses)
-              && not (isForcedAbility ability)
-          prevents _ = False
-          -- If the window is fast we only permit fast abilities, but forced
-          -- abilities need to be everpresent so we include them
-          needsToBeFast = windowType window == Window.FastPlayerWindow && not
-            (isFastAbility ability || isForcedAbility ability)
-        if any prevents investigatorModifiers || needsToBeFast
-          then pure Nothing
-          else pure $ Just $ applyAbilityModifiers ability modifiers'
-    actions''' <- filterM
-      (\action -> liftA2
-        (&&)
-        (getCanPerformAbility iid (abilitySource action) window action)
-        (getCanAffordAbility iid action)
-      )
-      actions''
-    let forcedActions = filter isForcedAbility actions'''
-    pure $ if null forcedActions then actions''' else forcedActions
+  actions'' <- catMaybes <$> for
+    actionsWithSources
+    \ability -> do
+      modifiers' <- getModifiers
+        (InvestigatorSource iid)
+        (sourceToTarget $ abilitySource ability)
+      investigatorModifiers <- getModifiers
+        (InvestigatorSource iid)
+        (InvestigatorTarget iid)
+      cardClasses <- case abilitySource ability of
+        AssetSource aid -> insertSet Neutral <$> getSet aid
+        _ -> pure $ singleton Neutral
+      let
+        -- Lola Hayes: Forced abilities will always trigger
+        prevents (CanOnlyUseCardsInRole role) =
+          null (singleton role `intersect` cardClasses)
+            && not (isForcedAbility ability)
+        prevents _ = False
+        -- If the window is fast we only permit fast abilities, but forced
+        -- abilities need to be everpresent so we include them
+        needsToBeFast = windowType window == Window.FastPlayerWindow && not
+          (isFastAbility ability || isForcedAbility ability)
+      if any prevents investigatorModifiers || needsToBeFast
+        then pure Nothing
+        else pure $ Just $ applyAbilityModifiers ability modifiers'
+  actions''' <- filterM
+    (\action -> liftA2
+      (&&)
+      (getCanPerformAbility iid (abilitySource action) window action)
+      (getCanAffordAbility iid action)
+    )
+    actions''
+  let forcedActions = filter isForcedAbility actions'''
+  pure $ if null forcedActions then actions''' else forcedActions
 
 enemyAtInvestigatorLocation
   :: ( MonadReader env m
@@ -712,7 +707,7 @@ targetToSource = \case
   ActTarget aid -> ActSource aid
   CardIdTarget _ -> error "can not convert"
   CardCodeTarget _ -> error "can not convert"
-  SearchedCardTarget _ _ -> error "can not convert"
+  SearchedCardTarget _ -> error "can not convert"
   EventTarget eid -> EventSource eid
   SkillTarget sid -> SkillSource sid
   SkillTestInitiatorTarget _ -> error "can not convert"
@@ -758,6 +753,7 @@ sourceToTarget = \case
   ActDeckSource -> ActDeckTarget
   AgendaDeckSource -> AgendaDeckTarget
   AssetMatcherSource{} -> error "not converted"
+  LocationMatcherSource{} -> error "not converted"
   AttackSource a -> EnemyTarget a
 
 addCampaignCardToDeckChoice
@@ -898,7 +894,7 @@ type CanCheckPlayable env
     , HasList TakenAction env InvestigatorId
     , HasId CardCode env LocationId
     , HasSet Trait env Source
-    , HasAbilities env ActionType
+    , HasAbilities env
     , HasSet EnemyId env InvestigatorId
     , HasCount ResourceCount env InvestigatorId
     , HasCount DoomCount env AssetId
@@ -1185,12 +1181,7 @@ passesCriteria iid source windows' = \case
       assetIds
     pure $ investigatorDoomCount > 0 || notNull assetsWithDoomCount
   Criteria.ScenarioCardHasResignAbility -> do
-    actions' <- concat . concat <$> sequence
-      [ traverse
-          (getAbilities iid window)
-          ([minBound .. maxBound] :: [ActionType])
-      | window <- windows'
-      ]
+    actions' <- asks getAbilities
     pure $ flip
       any
       actions'
@@ -1319,6 +1310,20 @@ windowMatches
   -> m Bool
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
+  Matcher.DrawingStartingHand timing whoMatcher -> case window' of
+    Window t (Window.DrawingStartingHand who) | t == timing ->
+      matchWho iid who whoMatcher
+    _ -> pure False
+  Matcher.MovedFromHunter timing enemyMatcher -> case window' of
+    Window t (Window.MovedFromHunter eid) | t == timing ->
+      member eid <$> select enemyMatcher
+    _ -> pure False
+  Matcher.CommittedCards timing whoMatcher cardListMatcher -> case window' of
+    Window t (Window.CommittedCards who cards) | t == timing -> liftA2
+      (&&)
+      (matchWho iid who whoMatcher)
+      (cardListMatches cards cardListMatcher)
+    _ -> pure False
   Matcher.EnemyAttemptsToSpawnAt timing enemyMatcher locationMatcher ->
     case window' of
       Window t (Window.EnemyAttemptsToSpawnAt eid locationMatcher')
@@ -1340,6 +1345,9 @@ windowMatches iid source window' = \case
   Matcher.WouldDrawEncounterCard timing whoMatcher -> case window' of
     Window t (Window.WouldDrawEncounterCard who) | t == timing ->
       matchWho iid who whoMatcher
+    _ -> pure False
+  Matcher.AmongSearchedCards whoMatcher -> case window' of
+    Window _ (Window.AmongSearchedCards who) -> matchWho iid who whoMatcher
     _ -> pure False
   Matcher.Discarded timing whoMatcher cardMatcher -> case window' of
     Window t (Window.Discarded who card) | t == timing ->
@@ -1990,6 +1998,7 @@ cardListMatches
   -> Matcher.CardListMatcher
   -> m Bool
 cardListMatches cards = \case
+  Matcher.AnyCards -> pure True
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
   Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards
 

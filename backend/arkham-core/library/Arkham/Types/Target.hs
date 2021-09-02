@@ -33,7 +33,7 @@ data Target
   | ActTarget ActId
   | CardIdTarget CardId
   | CardCodeTarget CardCode
-  | SearchedCardTarget InvestigatorId CardId
+  | SearchedCardTarget CardId
   | EventTarget EventId
   | SkillTarget SkillId
   | SkillTestInitiatorTarget Target

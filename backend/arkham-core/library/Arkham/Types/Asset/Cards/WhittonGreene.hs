@@ -30,8 +30,8 @@ newtype WhittonGreene = WhittonGreene AssetAttrs
 whittonGreene :: AssetCard WhittonGreene
 whittonGreene = ally WhittonGreene Cards.whittonGreene (2, 2)
 
-instance HasAbilities env WhittonGreene where
-  getAbilities _ _ (WhittonGreene x) = pure
+instance HasAbilities WhittonGreene where
+  getAbilities (WhittonGreene x) =
     [ restrictedAbility x 1 OwnsThis $ ReactionAbility
         (OrWindowMatcher
           [ RevealLocation Timing.After You Anywhere

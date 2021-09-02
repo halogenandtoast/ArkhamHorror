@@ -19,7 +19,7 @@ import Arkham.Types.Trait
 
 newtype AvianThrall = AvianThrall EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 avianThrall :: EnemyCard AvianThrall
 avianThrall = enemyWith

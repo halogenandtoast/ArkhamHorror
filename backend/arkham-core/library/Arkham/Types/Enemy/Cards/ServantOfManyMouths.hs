@@ -30,18 +30,18 @@ servantOfManyMouths = enemyWith
   (2, 0)
   (spawnAtL ?~ EmptyLocation)
 
-instance HasAbilities env ServantOfManyMouths where
-  getAbilities iid window (ServantOfManyMouths attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ restrictedAbility
-          attrs
-          1
-          (LocationExists LocationWithAnyClues <> CanDiscoverClues)
-          (ReactionAbility
-            (EnemyDefeated Timing.After You $ EnemyWithId $ toId attrs)
-            Free
-          )
-      ]
+instance HasAbilities ServantOfManyMouths where
+  getAbilities (ServantOfManyMouths attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+        attrs
+        1
+        (LocationExists LocationWithAnyClues <> CanDiscoverClues)
+        (ReactionAbility
+          (EnemyDefeated Timing.After You $ EnemyWithId $ toId attrs)
+          Free
+        )
+    ]
 
 instance EnemyRunner env => RunMessage env ServantOfManyMouths where
   runMessage msg e@(ServantOfManyMouths attrs) = case msg of

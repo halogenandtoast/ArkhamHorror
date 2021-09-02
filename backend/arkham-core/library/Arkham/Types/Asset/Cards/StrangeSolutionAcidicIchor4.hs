@@ -29,8 +29,8 @@ strangeSolutionAcidicIchor4 :: AssetCard StrangeSolutionAcidicIchor4
 strangeSolutionAcidicIchor4 =
   asset StrangeSolutionAcidicIchor4 Cards.strangeSolutionAcidicIchor4
 
-instance HasAbilities env StrangeSolutionAcidicIchor4 where
-  getAbilities _ _ (StrangeSolutionAcidicIchor4 attrs) = pure
+instance HasAbilities StrangeSolutionAcidicIchor4 where
+  getAbilities (StrangeSolutionAcidicIchor4 attrs) =
     [ restrictedAbility attrs 1 OwnsThis
       $ ActionAbility (Just Action.Fight)
       $ Costs [ActionCost 1, UseCost (toId attrs) Supply 1]

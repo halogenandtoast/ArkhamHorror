@@ -14,7 +14,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype CelaenoFragments = CelaenoFragments AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasAbilities)
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 celaenoFragments :: AssetCard CelaenoFragments
@@ -30,9 +30,6 @@ instance HasCount CardCount env InvestigatorId => HasModifiersFor env CelaenoFra
         <> [ SkillModifier SkillWillpower 1 | count' >= 10 ]
         <> [ SkillModifier SkillIntellect 1 | count' >= 15 ]
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities env CelaenoFragments where
-  getAbilities i window (CelaenoFragments x) = getAbilities i window x
 
 instance (AssetRunner env) => RunMessage env CelaenoFragments where
   runMessage msg (CelaenoFragments attrs) =

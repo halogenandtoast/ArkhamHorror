@@ -29,18 +29,17 @@ cloverClubBar = location
   Square
   [Triangle, Circle]
 
-instance HasAbilities env CloverClubBar where
-  getAbilities iid window (CloverClubBar attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility
-              attrs
-              1
-              (OnAct 1)
-              (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
-            & (abilityLimitL .~ PlayerLimit PerGame 1)
-        | locationRevealed attrs
-        ]
+instance HasAbilities CloverClubBar where
+  getAbilities (CloverClubBar attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+          attrs
+          1
+          (OnAct 1)
+          (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
+        & (abilityLimitL .~ PlayerLimit PerGame 1)
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env CloverClubBar where
   runMessage msg l@(CloverClubBar attrs) = case msg of

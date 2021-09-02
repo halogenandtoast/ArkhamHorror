@@ -14,7 +14,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 
 newtype FeedTheBeast = FeedTheBeast AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 feedTheBeast :: AgendaCard FeedTheBeast

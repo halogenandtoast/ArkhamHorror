@@ -19,7 +19,7 @@ import Arkham.Types.Name
 
 newtype TheHiddenChamber = TheHiddenChamber LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theHiddenChamber :: LocationCard TheHiddenChamber
 theHiddenChamber =

@@ -40,8 +40,8 @@ instance HasModifiersFor env TheNecronomiconAdvanced where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env TheNecronomiconAdvanced where
-  getAbilities _ _ (TheNecronomiconAdvanced a) = pure
+instance HasAbilities TheNecronomiconAdvanced where
+  getAbilities (TheNecronomiconAdvanced a) =
     [ restrictedAbility a 1 (OwnsThis <> AnyHorrorOnThis)
       $ ActionAbility Nothing
       $ ActionCost 1

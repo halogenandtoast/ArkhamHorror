@@ -31,8 +31,8 @@ instance HasModifiersFor env LaboratoryAssistant where
     pure $ toModifiers attrs [ HandSize 2 | ownedBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env LaboratoryAssistant where
-  getAbilities _ _ (LaboratoryAssistant x) = pure
+instance HasAbilities LaboratoryAssistant where
+  getAbilities (LaboratoryAssistant x) =
     [ restrictedAbility x 1 OwnsThis
         $ ReactionAbility
             (AssetEntersPlay Timing.When (AssetWithId $ toId x))

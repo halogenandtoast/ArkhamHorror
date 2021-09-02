@@ -28,8 +28,8 @@ newtype RiteOfSeeking4 = RiteOfSeeking4 AssetAttrs
 riteOfSeeking4 :: AssetCard RiteOfSeeking4
 riteOfSeeking4 = arcane RiteOfSeeking4 Cards.riteOfSeeking4
 
-instance HasAbilities env RiteOfSeeking4 where
-  getAbilities _ _ (RiteOfSeeking4 a) = pure
+instance HasAbilities RiteOfSeeking4 where
+  getAbilities (RiteOfSeeking4 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Investigate)
         (Costs [ActionCost 1, UseCost (toId a) Charge 1])

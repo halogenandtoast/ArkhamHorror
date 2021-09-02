@@ -31,8 +31,8 @@ chicagoTypewriter4 = assetWith
   Cards.chicagoTypewriter4
   (slotsL .~ [HandSlot, HandSlot])
 
-instance HasAbilities env ChicagoTypewriter4 where
-  getAbilities _ _ (ChicagoTypewriter4 a) = pure
+instance HasAbilities ChicagoTypewriter4 where
+  getAbilities (ChicagoTypewriter4 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility (Just Action.Fight) $ Costs
         [ActionCost 1, AdditionalActionsCost, UseCost (toId a) Ammo 1]
     ]

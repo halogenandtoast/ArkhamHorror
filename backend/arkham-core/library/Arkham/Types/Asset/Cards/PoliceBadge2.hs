@@ -31,8 +31,8 @@ instance HasModifiersFor env PoliceBadge2 where
     pure [ toModifier a (SkillModifier SkillWillpower 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env PoliceBadge2 where
-  getAbilities _ _ (PoliceBadge2 a) = pure
+instance HasAbilities PoliceBadge2 where
+  getAbilities (PoliceBadge2 a) =
     [restrictedAbility a 1 criteria $ FastAbility $ DiscardCost (toTarget a)]
    where
     criteria = OwnsThis

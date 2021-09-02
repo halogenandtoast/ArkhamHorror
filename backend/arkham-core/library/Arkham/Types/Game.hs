@@ -634,12 +634,11 @@ getActionsMatching
 getActionsMatching matcher = guardYourLocation $ \_ -> do
   iid <- view activeInvestigatorIdL <$> getGame
   let window = Window Timing.When Window.NonFast
-  abilities <- concat <$> traverse
-    (getAbilities iid window)
-    ([minBound .. maxBound] :: [ActionType])
+  abilities <- concat
+    <$> traverse getAbilities ([minBound .. maxBound] :: [ActionType])
   case matcher of
     AnyAction -> pure abilities
-    ActionOnLocation lid -> getLocation lid >>= getAbilities iid window
+    ActionOnLocation lid -> getLocation lid >>= getAbilities
     ActionIs _ -> pure []
     ActionWindow _ -> pure []
     ActionMatches _ -> pure []
@@ -965,7 +964,7 @@ getEnemiesMatching matcher = do
     CanFightEnemy -> \enemy -> do
       let window = Window Timing.When Window.NonFast
       iid <- view activeInvestigatorIdL <$> getGame
-      getAbilities iid window enemy >>= anyM
+      getAbilities enemy >>= anyM
         (andM . sequence
           [ pure . (`abilityIs` Action.Fight)
           , getCanPerformAbility iid (InvestigatorSource iid) window
@@ -974,7 +973,7 @@ getEnemiesMatching matcher = do
     CanEvadeEnemy -> \enemy -> do
       let window = Window Timing.When Window.NonFast
       iid <- view activeInvestigatorIdL <$> getGame
-      getAbilities iid window enemy >>= anyM
+      getAbilities enemy >>= anyM
         (andM . sequence
           [ pure . (`abilityIs` Action.Evade)
           , getCanPerformAbility iid (InvestigatorSource iid) window
@@ -983,7 +982,7 @@ getEnemiesMatching matcher = do
     CanEngageEnemy -> \enemy -> do
       let window = Window Timing.When Window.NonFast
       iid <- view activeInvestigatorIdL <$> getGame
-      getAbilities iid window enemy >>= anyM
+      getAbilities enemy >>= anyM
         (andM . sequence
           [ pure . (`abilityIs` Action.Engage)
           , getCanPerformAbility iid (InvestigatorSource iid) window
@@ -2573,20 +2572,17 @@ instance HasGame env => Query SkillMatcher env where
 instance HasGame env => Query TreacheryMatcher env where
   select = fmap (setFromList . map toId) . getTreacheriesMatching
 
-instance HasGame env => HasAbilities env ActionType where
-  getAbilities iid window actionType = do
-    g <- getGame
+instance HasGame env => HasAbilities env where
+  getAbilities env = do
+    g <- view gameL env
     case actionType of
-      EnemyActionType -> concatMapM' (getAbilities iid window) (g ^. enemiesL)
-      LocationActionType ->
-        concatMapM' (getAbilities iid window) (g ^. locationsL)
-      AssetActionType -> concatMapM' (getAbilities iid window) (g ^. assetsL)
-      TreacheryActionType ->
-        concatMapM' (getAbilities iid window) (g ^. treacheriesL)
-      ActActionType -> concatMapM' (getAbilities iid window) (g ^. actsL)
-      AgendaActionType -> concatMapM' (getAbilities iid window) (g ^. agendasL)
-      InvestigatorActionType ->
-        concatMapM' (getAbilities iid window) (g ^. investigatorsL)
+      EnemyActionType -> concatMap getAbilities (g ^. enemiesL)
+      LocationActionType -> concatMap getAbilities (g ^. locationsL)
+      AssetActionType -> concatMap getAbilities (g ^. assetsL)
+      TreacheryActionType -> concatMap getAbilities (g ^. treacheriesL)
+      ActActionType -> concatMap getAbilities (g ^. actsL)
+      AgendaActionType -> concatMap getAbilities (g ^. agendasL)
+      InvestigatorActionType -> concatMap getAbilities (g ^. investigatorsL)
 
 instance HasGame env => HasId Difficulty env () where
   getId _ = do
@@ -2597,31 +2593,31 @@ instance HasGame env => HasId Difficulty env () where
       (const . difficultyOf)
       (g ^. modeL)
 
-instance HasGame env => HasAbilities env (ActionType, Trait) where
-  getAbilities iid window (actionType, trait) = do
+instance HasGame env => HasAbilities (ActionType, Trait) where
+  getAbilities (actionType, trait) = do
     g <- getGame
     case actionType of
       EnemyActionType -> concatMapM'
-        (getAbilities iid window)
+        getAbilities
         (filterMap ((trait `elem`) . toTraits) $ g ^. enemiesL)
       LocationActionType -> concatMapM'
-        (getAbilities iid window)
+        getAbilities
         (filterMap ((trait `elem`) . toTraits) $ g ^. locationsL)
       AssetActionType -> concatMapM'
-        (getAbilities iid window)
+        getAbilities
         (filterMap ((trait `elem`) . toTraits) $ g ^. assetsL)
       TreacheryActionType -> concatMapM'
-        (getAbilities iid window)
+        getAbilities
         (filterMap ((trait `elem`) . toTraits) $ g ^. treacheriesL)
       InvestigatorActionType -> pure [] -- do we need these
       ActActionType -> pure [] -- acts do not have traits
       AgendaActionType -> pure [] -- agendas do not have traits
 
-instance (HasAbilities env ActionType, HasGame env) => HasAbilities env AssetId where
-  getAbilities iid window aid = getAbilities iid window =<< getAsset aid
+instance (HasAbilities ActionType, HasGame env) => HasAbilities AssetId where
+  getAbilities aid = getAbilities =<< getAsset aid
 
-instance (HasAbilities env ActionType, HasGame env) => HasAbilities env LocationId where
-  getAbilities iid window lid = getAbilities iid window =<< getLocation lid
+instance (HasAbilities ActionType, HasGame env) => HasAbilities LocationId where
+  getAbilities lid = getAbilities =<< getLocation lid
 
 insertHistory
   :: InvestigatorId

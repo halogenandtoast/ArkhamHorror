@@ -45,8 +45,9 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env PassengerCar_1
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env PassengerCar_167 where
-  getAbilities i w (PassengerCar_167 x) = withBaseAbilities i w x $ pure
+instance HasAbilities PassengerCar_167 where
+  getAbilities (PassengerCar_167 x) = withBaseAbilities
+    x
     [ mkAbility x 1
       $ ForcedAbility
       $ Enters Timing.After You

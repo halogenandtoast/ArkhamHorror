@@ -29,8 +29,8 @@ newtype AlchemicalConcoction = AlchemicalConcoction AssetAttrs
 alchemicalConcoction :: AssetCard AlchemicalConcoction
 alchemicalConcoction = asset AlchemicalConcoction Cards.alchemicalConcoction
 
-instance HasAbilities env AlchemicalConcoction where
-  getAbilities _ _ (AlchemicalConcoction a) = pure
+instance HasAbilities AlchemicalConcoction where
+  getAbilities (AlchemicalConcoction a) =
     [ restrictedAbility a 1 OwnsThis
       $ ActionAbility (Just Action.Fight)
       $ ActionCost 1

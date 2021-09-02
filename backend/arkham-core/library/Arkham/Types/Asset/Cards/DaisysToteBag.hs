@@ -14,7 +14,7 @@ import Arkham.Types.Slot
 import Arkham.Types.Trait
 
 newtype DaisysToteBag = DaisysToteBag AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 daisysToteBag :: AssetCard DaisysToteBag

@@ -15,7 +15,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype BrokenRails = BrokenRails TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brokenRails :: TreacheryCard BrokenRails

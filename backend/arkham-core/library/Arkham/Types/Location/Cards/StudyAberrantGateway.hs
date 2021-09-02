@@ -31,16 +31,15 @@ studyAberrantGateway = location
   Circle
   [T]
 
-instance HasAbilities env StudyAberrantGateway where
-  getAbilities iid window (StudyAberrantGateway attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 2
-        , mkAbility attrs 2 $ ForcedAbility $ EnemyAttemptsToSpawnAt
-          Timing.When
-          AnyEnemy
-          LocationNotInPlay
-        ]
+instance HasAbilities StudyAberrantGateway where
+  getAbilities (StudyAberrantGateway attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 2
+    , mkAbility attrs 2 $ ForcedAbility $ EnemyAttemptsToSpawnAt
+      Timing.When
+      AnyEnemy
+      LocationNotInPlay
+    ]
 
 instance LocationRunner env => RunMessage env StudyAberrantGateway where
   runMessage msg l@(StudyAberrantGateway attrs) = case msg of

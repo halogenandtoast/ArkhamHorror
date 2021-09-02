@@ -31,8 +31,9 @@ darkenedHall = locationWith
   .~ setFromList [Triangle, T, Hourglass, Plus, Squiggle]
   )
 
-instance HasAbilities env DarkenedHall where
-  getAbilities i w (DarkenedHall x) = withBaseAbilities i w x $ pure
+instance HasAbilities DarkenedHall where
+  getAbilities (DarkenedHall x) = withBaseAbilities
+    x
     [ mkAbility x 1
       $ ForcedAbility
       $ RevealLocation Timing.After Anyone

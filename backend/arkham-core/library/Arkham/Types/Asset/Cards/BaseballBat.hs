@@ -35,8 +35,8 @@ instance HasModifiersFor env BaseballBat where
     = pure $ toModifiers a [DamageDealt 1]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env BaseballBat where
-  getAbilities _ _ (BaseballBat a) = pure
+instance HasAbilities BaseballBat where
+  getAbilities (BaseballBat a) =
     [ restrictedAbility a 1 OwnsThis
         $ ActionAbility (Just Action.Fight) (ActionCost 1)
     ]

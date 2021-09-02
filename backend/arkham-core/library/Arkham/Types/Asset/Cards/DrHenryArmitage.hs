@@ -23,8 +23,8 @@ newtype DrHenryArmitage = DrHenryArmitage AssetAttrs
 drHenryArmitage :: AssetCard DrHenryArmitage
 drHenryArmitage = ally DrHenryArmitage Cards.drHenryArmitage (2, 2)
 
-instance HasAbilities env DrHenryArmitage where
-  getAbilities _ _ (DrHenryArmitage a) = pure
+instance HasAbilities DrHenryArmitage where
+  getAbilities (DrHenryArmitage a) =
     [ restrictedAbility a 1 OwnsThis
       $ ReactionAbility
           (DrawCard Timing.After You (BasicCardMatch AnyCard) (DeckOf You))

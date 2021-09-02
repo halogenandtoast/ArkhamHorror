@@ -18,7 +18,7 @@ import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window
 
 newtype EverVigilant1 = EverVigilant1 EventAttrs
-  deriving anyclass (IsEvent, HasAbilities env)
+  deriving anyclass (IsEvent, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 everVigilant1 :: EventCard EverVigilant1

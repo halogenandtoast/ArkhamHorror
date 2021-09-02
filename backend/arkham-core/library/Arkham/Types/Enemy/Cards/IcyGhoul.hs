@@ -13,7 +13,7 @@ import Arkham.Types.Matcher
 
 newtype IcyGhoul = IcyGhoul EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 icyGhoul :: EnemyCard IcyGhoul
 icyGhoul = enemyWith

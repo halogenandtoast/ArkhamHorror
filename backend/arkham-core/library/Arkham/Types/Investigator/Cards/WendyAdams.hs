@@ -48,8 +48,8 @@ instance HasTokenValue env WendyAdams where
     pure $ TokenValue ElderSign (PositiveModifier 0)
   getTokenValue (WendyAdams attrs) iid token = getTokenValue attrs iid token
 
-instance HasAbilities env WendyAdams where
-  getAbilities _ _ (WendyAdams attrs) = pure
+instance HasAbilities WendyAdams where
+  getAbilities (WendyAdams attrs) =
     [ restrictedAbility
           attrs
           1

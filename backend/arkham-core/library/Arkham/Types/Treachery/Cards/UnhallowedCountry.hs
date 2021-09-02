@@ -46,8 +46,8 @@ instance (HasSet Trait env AssetId, HasId (Maybe OwnerId) env AssetId) => HasMod
       Nothing -> []
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env UnhallowedCountry where
-  getAbilities _ _ (UnhallowedCountry x) = pure
+instance HasAbilities UnhallowedCountry where
+  getAbilities (UnhallowedCountry x) =
     [ restrictedAbility x 1 (InThreatAreaOf You) $ ForcedAbility $ TurnEnds
         Timing.When
         You

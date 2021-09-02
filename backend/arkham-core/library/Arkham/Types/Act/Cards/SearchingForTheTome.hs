@@ -25,8 +25,8 @@ searchingForTheTome :: ActCard SearchingForTheTome
 searchingForTheTome =
   act (3, A) SearchingForTheTome Cards.searchingForTheTome Nothing
 
-instance HasAbilities env SearchingForTheTome where
-  getAbilities _ _ (SearchingForTheTome x) = pure
+instance HasAbilities SearchingForTheTome where
+  getAbilities (SearchingForTheTome x) =
     [ restrictedAbility
         x
         1

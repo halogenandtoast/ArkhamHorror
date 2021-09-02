@@ -15,7 +15,7 @@ import Arkham.Types.Source
 import Arkham.Types.Trait
 
 newtype RiseOfTheGhouls = RiseOfTheGhouls AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riseOfTheGhouls :: AgendaCard RiseOfTheGhouls

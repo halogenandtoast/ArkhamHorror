@@ -26,17 +26,17 @@ yithianStarseeker = enemyWith
   (2, 1)
   (spawnAtL ?~ LocationWithTitle "Another Dimension")
 
-instance HasAbilities env YithianStarseeker where
-  getAbilities iid window (YithianStarseeker attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ EnemyAttacks
-            Timing.When
-            (DiscardWith $ LengthIs $ GreaterThan $ Static 10)
-        $ EnemyWithId
-        $ toId attrs
-      ]
+instance HasAbilities YithianStarseeker where
+  getAbilities (YithianStarseeker attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1
+      $ ForcedAbility
+      $ EnemyAttacks
+          Timing.When
+          (DiscardWith $ LengthIs $ GreaterThan $ Static 10)
+      $ EnemyWithId
+      $ toId attrs
+    ]
 
 instance EnemyAttrsRunMessage env => RunMessage env YithianStarseeker where
   runMessage msg e@(YithianStarseeker attrs) = case msg of

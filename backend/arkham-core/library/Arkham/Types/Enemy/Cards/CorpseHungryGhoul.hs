@@ -13,7 +13,7 @@ import Arkham.Types.Matcher
 
 newtype CorpseHungryGhoul = CorpseHungryGhoul EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 corpseHungryGhoul :: EnemyCard CorpseHungryGhoul
 corpseHungryGhoul = enemyWith

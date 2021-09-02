@@ -28,8 +28,8 @@ newtype Encyclopedia2 = Encyclopedia2 AssetAttrs
 encyclopedia2 :: AssetCard Encyclopedia2
 encyclopedia2 = hand Encyclopedia2 Cards.encyclopedia2
 
-instance HasAbilities env Encyclopedia2 where
-  getAbilities _ _ (Encyclopedia2 a) = pure
+instance HasAbilities Encyclopedia2 where
+  getAbilities (Encyclopedia2 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, ExhaustCost $ toTarget a]
     ]

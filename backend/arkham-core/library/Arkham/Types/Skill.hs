@@ -26,7 +26,7 @@ instance HasCardCode Skill where
 instance HasCardDef Skill where
   toCardDef = toCardDef . toAttrs
 
-instance HasAbilities env Skill where
+instance HasAbilities Skill where
   getAbilities = genericGetAbilities
 
 instance

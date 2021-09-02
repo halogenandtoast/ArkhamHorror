@@ -15,7 +15,7 @@ import Arkham.Types.Target
 
 newtype GraveyardGhouls = GraveyardGhouls EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 graveyardGhouls :: EnemyCard GraveyardGhouls
 graveyardGhouls = enemyWith

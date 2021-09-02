@@ -27,9 +27,9 @@ scienceBuilding = location
   Hourglass
   [Plus, Squiggle]
 
-instance HasAbilities env ScienceBuilding where
-  getAbilities i window (ScienceBuilding x) =
-    withBaseAbilities i window x $ pure $ if locationRevealed x
+instance HasAbilities ScienceBuilding where
+  getAbilities (ScienceBuilding x) =
+    withBaseAbilities x $ if locationRevealed x
       then
         [ restrictedAbility x 1 Here
         $ ForcedAbility

@@ -31,8 +31,8 @@ newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced AssetAttrs
 daisysToteBagAdvanced :: AssetCard DaisysToteBagAdvanced
 daisysToteBagAdvanced = asset DaisysToteBagAdvanced Cards.daisysToteBagAdvanced
 
-instance HasAbilities env DaisysToteBagAdvanced where
-  getAbilities _ _ (DaisysToteBagAdvanced a) = pure
+instance HasAbilities DaisysToteBagAdvanced where
+  getAbilities (DaisysToteBagAdvanced a) =
     [ restrictedAbility a 1 OwnsThis
       $ ReactionAbility
           (PlayCard Timing.When You (BasicCardMatch $ CardWithTrait Tome))

@@ -26,8 +26,8 @@ theCurseSpreads :: AgendaCard TheCurseSpreads
 theCurseSpreads =
   agenda (3, A) TheCurseSpreads Cards.theCurseSpreads (Static 8)
 
-instance HasAbilities env TheCurseSpreads where
-  getAbilities _ _ (TheCurseSpreads x) = pure
+instance HasAbilities TheCurseSpreads where
+  getAbilities (TheCurseSpreads x) =
     [ mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
         InvestigationPhase
     ]

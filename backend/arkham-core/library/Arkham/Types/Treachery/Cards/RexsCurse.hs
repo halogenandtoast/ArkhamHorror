@@ -24,8 +24,8 @@ newtype RexsCurse = RexsCurse TreacheryAttrs
 rexsCurse :: TreacheryCard RexsCurse
 rexsCurse = treachery RexsCurse Cards.rexsCurse
 
-instance HasAbilities env RexsCurse where
-  getAbilities _ _ (RexsCurse x) = pure
+instance HasAbilities RexsCurse where
+  getAbilities (RexsCurse x) =
     [ restrictedAbility
         x
         1

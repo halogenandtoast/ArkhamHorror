@@ -27,7 +27,7 @@ schoolhouse_213 = location
 instance HasModifiersFor env Schoolhouse_213
 
 
-instance HasAbilities env Schoolhouse_213 where
+instance HasAbilities Schoolhouse_213 where
   getAbilities = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env Schoolhouse_213 where

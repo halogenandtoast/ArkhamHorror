@@ -27,8 +27,8 @@ wizardOfTheOrder = enemyWith
   (1, 0)
   (spawnAtL ?~ EmptyLocation)
 
-instance HasAbilities env WizardOfTheOrder where
-  getAbilities _ _ (WizardOfTheOrder a) = pure
+instance HasAbilities WizardOfTheOrder where
+  getAbilities (WizardOfTheOrder a) =
     [ mkAbility a 1 $ ForcedAbility $ PhaseEnds Timing.After $ PhaseIs
         MythosPhase
     ]

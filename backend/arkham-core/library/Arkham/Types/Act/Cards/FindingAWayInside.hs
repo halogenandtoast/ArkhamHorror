@@ -21,7 +21,7 @@ import Arkham.Types.Target
 
 newtype FindingAWayInside = FindingAWayInside ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 findingAWayInside :: ActCard FindingAWayInside
 findingAWayInside = act

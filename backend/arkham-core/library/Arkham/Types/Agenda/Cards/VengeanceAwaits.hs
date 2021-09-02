@@ -28,21 +28,22 @@ vengeanceAwaits :: AgendaCard VengeanceAwaits
 vengeanceAwaits =
   agenda (3, A) VengeanceAwaits Cards.vengeanceAwaits (Static 5)
 
-instance HasAbilities env VengeanceAwaits where
-  getAbilities _ _ (VengeanceAwaits a) | onSide A a = pure
-    [ mkAbility a 1
-      $ ForcedAbility
-      $ AgendaAdvances Timing.When
-      $ AgendaWithId
-      $ toId a
-    ]
-  getAbilities _ _ (VengeanceAwaits a) = pure -- on side b
-    [ mkAbility a 2
-      $ Objective
-      $ ForcedAbility
-      $ EnemyDefeated Timing.After Anyone
-      $ enemyIs Enemies.umordhoth
-    ]
+instance HasAbilities VengeanceAwaits where
+  getAbilities (VengeanceAwaits a) = if onSide A a
+    then
+      [ mkAbility a 1
+        $ ForcedAbility
+        $ AgendaAdvances Timing.When
+        $ AgendaWithId
+        $ toId a
+      ]
+    else
+      [ mkAbility a 2
+        $ Objective
+        $ ForcedAbility
+        $ EnemyDefeated Timing.After Anyone
+        $ enemyIs Enemies.umordhoth
+      ]
 
 instance AgendaRunner env => RunMessage env VengeanceAwaits where
   runMessage msg a@(VengeanceAwaits attrs@AgendaAttrs {..}) = case msg of

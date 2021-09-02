@@ -28,9 +28,9 @@ yourHouse :: LocationCard YourHouse
 yourHouse =
   location YourHouse Cards.yourHouse 2 (PerPlayer 1) Squiggle [Circle]
 
-instance HasAbilities env YourHouse where
-  getAbilities iid window (YourHouse x) | locationRevealed x =
-    withBaseAbilities iid window x $ pure
+instance HasAbilities YourHouse where
+  getAbilities (YourHouse x) | locationRevealed x =
+    withBaseAbilities x $
       [ mkAbility x 1
         $ ForcedAbility
             (EnemySpawns Timing.When Anywhere $ enemyIs Cards.ghoulPriest)
@@ -38,7 +38,7 @@ instance HasAbilities env YourHouse where
       & abilityLimitL
       .~ PlayerLimit PerTurn 1
       ]
-  getAbilities iid window (YourHouse x) = getAbilities iid window x
+  getAbilities (YourHouse x) = getAbilities x
 
 instance LocationRunner env => RunMessage env YourHouse where
   runMessage msg l@(YourHouse attrs@LocationAttrs {..}) = case msg of

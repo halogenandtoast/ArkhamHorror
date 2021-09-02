@@ -27,8 +27,8 @@ newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
 grotesqueStatue4 :: AssetCard GrotesqueStatue4
 grotesqueStatue4 = hand GrotesqueStatue4 Cards.grotesqueStatue4
 
-instance HasAbilities env GrotesqueStatue4 where
-  getAbilities _ _ (GrotesqueStatue4 x) = pure
+instance HasAbilities GrotesqueStatue4 where
+  getAbilities (GrotesqueStatue4 x) =
     [ restrictedAbility
         x
         1

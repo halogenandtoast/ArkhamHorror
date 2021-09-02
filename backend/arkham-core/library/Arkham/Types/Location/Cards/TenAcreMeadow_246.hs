@@ -32,24 +32,19 @@ tenAcreMeadow_246 = location
   Diamond
   [Circle, Triangle, Plus]
 
-instance HasAbilities env TenAcreMeadow_246 where
-  getAbilities iid window (TenAcreMeadow_246 attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility
-              attrs
-              1
-              (Here
-              <> EnemyCriteria
-                   (EnemyExists
-                   $ EnemyAt YourLocation
-                   <> EnemyWithTrait Abomination
-                   )
-              )
-              (FastAbility Free)
-            & (abilityLimitL .~ GroupLimit PerGame 1)
-        | locationRevealed attrs
-        ]
+instance HasAbilities TenAcreMeadow_246 where
+  getAbilities (TenAcreMeadow_246 attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+          attrs
+          1
+          (Here <> EnemyCriteria
+            (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Abomination)
+          )
+          (FastAbility Free)
+        & (abilityLimitL .~ GroupLimit PerGame 1)
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env TenAcreMeadow_246 where
   runMessage msg l@(TenAcreMeadow_246 attrs) = case msg of

@@ -24,8 +24,8 @@ newtype Atychiphobia = Atychiphobia TreacheryAttrs
 atychiphobia :: TreacheryCard Atychiphobia
 atychiphobia = treachery Atychiphobia Cards.atychiphobia
 
-instance HasAbilities env Atychiphobia where
-  getAbilities _ _ (Atychiphobia a) = pure
+instance HasAbilities Atychiphobia where
+  getAbilities (Atychiphobia a) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
     $ ForcedAbility
     $ SkillTestResult Timing.After You AnySkillTest

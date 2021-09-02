@@ -26,8 +26,8 @@ newtype TheGoldPocketWatch4 = TheGoldPocketWatch4 AssetAttrs
 theGoldPocketWatch4 :: AssetCard TheGoldPocketWatch4
 theGoldPocketWatch4 = asset TheGoldPocketWatch4 Cards.theGoldPocketWatch4
 
-instance HasAbilities env TheGoldPocketWatch4 where
-  getAbilities _ _ (TheGoldPocketWatch4 attrs) = pure
+instance HasAbilities TheGoldPocketWatch4 where
+  getAbilities (TheGoldPocketWatch4 attrs) =
     [ restrictedAbility attrs 1 OwnsThis
       $ ReactionAbility (PhaseBegins Timing.When AnyPhase) Free
     , restrictedAbility attrs 2 OwnsThis

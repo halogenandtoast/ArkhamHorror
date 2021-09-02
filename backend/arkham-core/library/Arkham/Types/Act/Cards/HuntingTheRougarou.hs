@@ -32,8 +32,8 @@ huntingTheRougarou :: ActCard HuntingTheRougarou
 huntingTheRougarou =
   act (2, A) HuntingTheRougarou Cards.huntingTheRougarou Nothing
 
-instance HasAbilities env HuntingTheRougarou where
-  getAbilities _ _ (HuntingTheRougarou a) = pure
+instance HasAbilities HuntingTheRougarou where
+  getAbilities (HuntingTheRougarou a) =
     [ mkAbility a 1
     $ ForcedAbility
     $ EnemyLeaves Timing.After Anywhere

@@ -24,8 +24,8 @@ newtype ClarityOfMind = ClarityOfMind AssetAttrs
 clarityOfMind :: AssetCard ClarityOfMind
 clarityOfMind = arcane ClarityOfMind Cards.clarityOfMind
 
-instance HasAbilities env ClarityOfMind where
-  getAbilities _ _ (ClarityOfMind a) = pure
+instance HasAbilities ClarityOfMind where
+  getAbilities (ClarityOfMind a) =
     [ restrictedAbility
         a
         1

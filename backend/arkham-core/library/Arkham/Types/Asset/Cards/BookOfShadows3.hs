@@ -30,8 +30,8 @@ bookOfShadows3 = hand BookOfShadows3 Cards.bookOfShadows3
 slot :: AssetAttrs -> Slot
 slot AssetAttrs { assetId } = Slot (AssetSource assetId) Nothing
 
-instance HasAbilities env BookOfShadows3 where
-  getAbilities _ _ (BookOfShadows3 a) = pure
+instance HasAbilities BookOfShadows3 where
+  getAbilities (BookOfShadows3 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, ExhaustCost (toTarget a)]
     ]

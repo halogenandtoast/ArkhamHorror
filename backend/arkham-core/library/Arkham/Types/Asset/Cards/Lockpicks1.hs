@@ -26,8 +26,8 @@ newtype Lockpicks1 = Lockpicks1 AssetAttrs
 lockpicks1 :: AssetCard Lockpicks1
 lockpicks1 = hand Lockpicks1 Cards.lockpicks1
 
-instance HasAbilities env Lockpicks1 where
-  getAbilities _ _ (Lockpicks1 a) = pure
+instance HasAbilities Lockpicks1 where
+  getAbilities (Lockpicks1 a) =
     [ restrictedAbility a 1 OwnsThis
       $ ActionAbility (Just Action.Investigate)
       $ ExhaustCost

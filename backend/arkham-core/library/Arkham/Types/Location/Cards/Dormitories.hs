@@ -28,9 +28,9 @@ instance HasModifiersFor env Dormitories where
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env Dormitories where
-  getAbilities iid window (Dormitories attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities Dormitories where
+  getAbilities (Dormitories attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here $ FastAbility $ GroupClueCost
           (PerPlayer 3)
           (LocationWithTitle "Dormitories")

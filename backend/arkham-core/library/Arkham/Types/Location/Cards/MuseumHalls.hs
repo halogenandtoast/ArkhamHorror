@@ -40,29 +40,25 @@ instance HasModifiersFor env MuseumHalls where
     pure $ toModifiers l [ Blocked | unrevealed l ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasAbilities env MuseumHalls where
-  getAbilities iid window (MuseumHalls attrs) | unrevealed attrs =
-    withBaseAbilities iid window attrs $ do
-      lid <- fromJustNote "missing location"
-        <$> selectOne (LocationWithTitle "Museum Entrance")
-      pure
-        [ (mkAbility
-            (ProxySource (LocationSource lid) (toSource attrs))
-            1
-            (ActionAbility Nothing $ ActionCost 1)
-          )
-            { abilityCriteria = Just (OnLocation $ LocationWithId lid)
-            }
+instance HasAbilities MuseumHalls where
+  getAbilities (MuseumHalls attrs) | unrevealed attrs = withBaseAbilities
+    attrs
+    [ restrictedAbility
+        (ProxySource
+          (LocationMatcherSource $ LocationWithTitle "Museum Entrance")
+          (toSource attrs)
+        )
+        1
+        (OnLocation $ LocationWithTitle "Museum Entrance")
+        (ActionAbility Nothing $ ActionCost 1)
+    ]
+  getAbilities (MuseumHalls attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
+        [ ActionCost 1
+        , GroupClueCost (PerPlayer 1) (LocationWithTitle "Museum Halls")
         ]
-  getAbilities iid window (MuseumHalls attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ locationAbility
-          (mkAbility attrs 1 $ ActionAbility Nothing $ Costs
-            [ ActionCost 1
-            , GroupClueCost (PerPlayer 1) (LocationWithTitle "Museum Halls")
-            ]
-          )
-      ]
+    ]
 
 instance LocationRunner env => RunMessage env MuseumHalls where
   runMessage msg l@(MuseumHalls attrs) = case msg of

@@ -27,8 +27,8 @@ newtype JimsTrumpet = JimsTrumpet AssetAttrs
 jimsTrumpet :: AssetCard JimsTrumpet
 jimsTrumpet = hand JimsTrumpet Cards.jimsTrumpet
 
-instance HasAbilities env JimsTrumpet where
-  getAbilities _ _ (JimsTrumpet x) = pure
+instance HasAbilities JimsTrumpet where
+  getAbilities (JimsTrumpet x) =
     [ restrictedAbility
         x
         1

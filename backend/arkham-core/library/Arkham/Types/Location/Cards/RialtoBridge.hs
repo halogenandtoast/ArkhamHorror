@@ -30,9 +30,9 @@ rialtoBridge = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasAbilities env RialtoBridge where
-  getAbilities iid window (RialtoBridge attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities RialtoBridge where
+  getAbilities (RialtoBridge attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ Leaves Timing.After You

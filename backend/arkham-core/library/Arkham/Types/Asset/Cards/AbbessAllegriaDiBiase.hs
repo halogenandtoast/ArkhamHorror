@@ -23,26 +23,25 @@ abbessAllegriaDiBiase :: AssetCard AbbessAllegriaDiBiase
 abbessAllegriaDiBiase =
   ally AbbessAllegriaDiBiase Cards.abbessAllegriaDiBiase (2, 2)
 
--- TODO: Hand Abbess outside of Carnevale
-instance HasAbilities env AbbessAllegriaDiBiase where
-  getAbilities _ _ (AbbessAllegriaDiBiase attrs) =
-    pure $ case assetLocation attrs of
-      Just abbessLocation ->
-        [ restrictedAbility
-            attrs
-            1
-            (AnyCriterion
-              [ LocationExists
-                (LocationWithId abbessLocation <> AccessibleLocation)
-              , LocationExists
-                (AccessibleFrom (LocationWithId abbessLocation)
-                <> AccessibleLocation
-                )
-              ]
-            )
-            (FastAbility $ ExhaustCost (toTarget attrs))
-        ]
-      Nothing -> []
+-- TODO: Handle Abbess outside of Carnevale
+instance HasAbilities AbbessAllegriaDiBiase where
+  getAbilities (AbbessAllegriaDiBiase attrs) = case assetLocation attrs of
+    Just abbessLocation ->
+      [ restrictedAbility
+          attrs
+          1
+          (AnyCriterion
+            [ LocationExists
+              (LocationWithId abbessLocation <> AccessibleLocation)
+            , LocationExists
+              (AccessibleFrom (LocationWithId abbessLocation)
+              <> AccessibleLocation
+              )
+            ]
+          )
+          (FastAbility $ ExhaustCost (toTarget attrs))
+      ]
+    Nothing -> []
 
 getAssetLocation
   :: (MonadReader env m, HasId LocationId env InvestigatorId)

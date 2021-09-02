@@ -16,7 +16,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype FineClothes = FineClothes AssetAttrs
-  deriving anyclass (IsAsset, HasAbilities env)
+  deriving anyclass (IsAsset, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fineClothes :: AssetCard FineClothes

@@ -16,7 +16,7 @@ import Arkham.Types.Trait
 
 newtype SentinelPeak = SentinelPeak LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 sentinelPeak :: LocationCard SentinelPeak
 sentinelPeak = locationWith

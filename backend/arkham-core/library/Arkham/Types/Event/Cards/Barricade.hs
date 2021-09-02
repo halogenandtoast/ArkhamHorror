@@ -32,13 +32,13 @@ instance HasModifiersFor env Barricade where
     ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env Barricade where
-  getAbilities _ _ (Barricade x) = case eventAttachedTarget x of
-    Just (LocationTarget lid) -> pure
+instance HasAbilities Barricade where
+  getAbilities (Barricade x) = case eventAttachedTarget x of
+    Just (LocationTarget lid) ->
       [ mkAbility x 1 $ ForcedAbility $ Leaves Timing.When You $ LocationWithId
           lid
       ]
-    _ -> pure []
+    _ -> []
 
 instance EventRunner env => RunMessage env Barricade where
   runMessage msg e@(Barricade attrs) = case msg of

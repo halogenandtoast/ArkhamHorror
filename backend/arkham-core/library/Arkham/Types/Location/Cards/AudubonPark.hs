@@ -26,9 +26,9 @@ audubonPark = location
   Squiggle
   [Triangle, Squiggle]
 
-instance HasAbilities env AudubonPark where
-  getAbilities i window (AudubonPark attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities AudubonPark where
+  getAbilities (AudubonPark attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here
         $ ForcedAbility
         $ EnemyEvaded Timing.When You

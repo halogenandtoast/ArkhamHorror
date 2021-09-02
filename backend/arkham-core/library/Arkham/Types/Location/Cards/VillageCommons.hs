@@ -24,9 +24,9 @@ villageCommons = location
   Plus
   [Square, Circle, Moon]
 
-instance HasAbilities env VillageCommons where
-  getAbilities iid window (VillageCommons a) =
-    withBaseAbilities iid window a $ pure [locationResignAction a]
+instance HasAbilities VillageCommons where
+  getAbilities (VillageCommons a) =
+    withBaseAbilities a $ [locationResignAction a]
 
 instance LocationRunner env => RunMessage env VillageCommons where
   runMessage msg (VillageCommons attrs) =

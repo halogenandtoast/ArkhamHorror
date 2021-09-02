@@ -17,7 +17,7 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype DaisyWalker = DaisyWalker InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsInvestigator, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 -- TODO: Tome action should be a modifier and actions should quantify restrictions

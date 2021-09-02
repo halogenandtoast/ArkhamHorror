@@ -16,7 +16,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype LightOfAforgomon = LightOfAforgomon TreacheryAttrs
-  deriving anyclass (IsTreachery, HasAbilities env)
+  deriving anyclass (IsTreachery, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lightOfAforgomon :: TreacheryCard LightOfAforgomon

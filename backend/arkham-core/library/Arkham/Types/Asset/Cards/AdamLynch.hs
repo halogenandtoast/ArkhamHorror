@@ -29,8 +29,8 @@ adamLynch =
     $ (isStoryL .~ True)
     . (slotsL .~ mempty)
 
-instance HasAbilities env AdamLynch where
-  getAbilities _ _ (AdamLynch x) = pure
+instance HasAbilities AdamLynch where
+  getAbilities (AdamLynch x) =
     [ mkAbility x 1
       $ ForcedAbility
       $ AssetLeavesPlay Timing.When

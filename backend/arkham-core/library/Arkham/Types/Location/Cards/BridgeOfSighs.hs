@@ -30,9 +30,9 @@ bridgeOfSighs = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasAbilities env BridgeOfSighs where
-  getAbilities iid window (BridgeOfSighs attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities BridgeOfSighs where
+  getAbilities (BridgeOfSighs attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ Leaves Timing.After You

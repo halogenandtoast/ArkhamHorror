@@ -31,8 +31,8 @@ newtype ShadowsDeepen = ShadowsDeepen AgendaAttrs
 shadowsDeepen :: AgendaCard ShadowsDeepen
 shadowsDeepen = agenda (2, A) ShadowsDeepen Cards.shadowsDeepen (Static 7)
 
-instance HasAbilities env ShadowsDeepen where
-  getAbilities _ _ (ShadowsDeepen x) = pure
+instance HasAbilities ShadowsDeepen where
+  getAbilities (ShadowsDeepen x) =
     [ mkAbility x 1 $ ForcedAbility $ EnemySpawns Timing.When Anywhere $ enemyIs
         Cards.huntingHorror
     ]

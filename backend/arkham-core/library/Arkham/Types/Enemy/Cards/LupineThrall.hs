@@ -15,7 +15,7 @@ import Arkham.Types.SkillType
 
 newtype LupineThrall = LupineThrall EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 lupineThrall :: EnemyCard LupineThrall
 lupineThrall = enemyWith

@@ -22,8 +22,8 @@ newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
 whatHaveYouDone :: ActCard WhatHaveYouDone
 whatHaveYouDone = act (3, A) WhatHaveYouDone Cards.whatHaveYouDone Nothing
 
-instance HasAbilities env WhatHaveYouDone where
-  getAbilities _ _ (WhatHaveYouDone x) = pure
+instance HasAbilities WhatHaveYouDone where
+  getAbilities (WhatHaveYouDone x) =
     [ mkAbility x 1
       $ Objective
       $ ForcedAbility

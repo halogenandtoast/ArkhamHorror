@@ -30,15 +30,15 @@ yithianObserver = enemyWith
   (1, 1)
   (preyL .~ FewestCards)
 
-instance HasAbilities env YithianObserver where
-  getAbilities iid window (YithianObserver a) =
-    withBaseAbilities iid window a $ pure
-      [ mkAbility a 1
-        $ ForcedAbility
-        $ EnemyAttacks Timing.When You
-        $ EnemyWithId
-        $ toId a
-      ]
+instance HasAbilities YithianObserver where
+  getAbilities (YithianObserver a) = withBaseAbilities
+    a
+    [ mkAbility a 1
+      $ ForcedAbility
+      $ EnemyAttacks Timing.When You
+      $ EnemyWithId
+      $ toId a
+    ]
 
 instance EnemyRunner env => RunMessage env YithianObserver where
   runMessage msg e@(YithianObserver attrs) = case msg of

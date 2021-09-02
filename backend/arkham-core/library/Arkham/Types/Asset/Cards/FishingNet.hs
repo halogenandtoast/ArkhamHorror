@@ -35,8 +35,8 @@ instance HasModifiersFor env FishingNet where
     [ RemoveKeyword Retaliate | assetEnemy attrs == Just eid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env FishingNet where
-  getAbilities _ _ (FishingNet x) = pure
+instance HasAbilities FishingNet where
+  getAbilities (FishingNet x) =
     [restrictedAbility x 1 restriction $ FastAbility Free]
    where
     restriction = case assetEnemy x of

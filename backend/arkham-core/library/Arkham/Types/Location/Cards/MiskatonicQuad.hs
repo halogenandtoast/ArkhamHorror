@@ -24,9 +24,9 @@ miskatonicQuad = location
   Plus
   [Triangle, Hourglass, Square, Diamond, Circle]
 
-instance HasAbilities env MiskatonicQuad where
-  getAbilities iid window (MiskatonicQuad a) =
-    withBaseAbilities iid window a $ pure [locationResignAction a]
+instance HasAbilities MiskatonicQuad where
+  getAbilities (MiskatonicQuad a) =
+    withBaseAbilities a $ [locationResignAction a]
 
 instance (LocationRunner env) => RunMessage env MiskatonicQuad where
   runMessage msg (MiskatonicQuad attrs) =

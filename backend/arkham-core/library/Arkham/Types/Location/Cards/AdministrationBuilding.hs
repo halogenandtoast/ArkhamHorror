@@ -26,9 +26,9 @@ administrationBuilding = location
   Circle
   [Plus, T]
 
-instance HasAbilities env AdministrationBuilding where
-  getAbilities i window (AdministrationBuilding x) =
-    withBaseAbilities i window x $ pure $ if locationRevealed x
+instance HasAbilities AdministrationBuilding where
+  getAbilities (AdministrationBuilding x) =
+    withBaseAbilities x $ if locationRevealed x
       then
         [ restrictedAbility x 1 Here
         $ ForcedAbility

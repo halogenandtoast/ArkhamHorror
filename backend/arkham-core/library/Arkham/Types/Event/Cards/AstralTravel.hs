@@ -18,7 +18,7 @@ import Arkham.Types.Token
 import qualified Arkham.Types.Trait as Trait
 
 newtype AstralTravel = AstralTravel EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 astralTravel :: EventCard AstralTravel

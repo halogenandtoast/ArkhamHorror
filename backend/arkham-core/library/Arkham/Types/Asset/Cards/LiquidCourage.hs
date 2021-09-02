@@ -26,8 +26,8 @@ newtype LiquidCourage = LiquidCourage AssetAttrs
 liquidCourage :: AssetCard LiquidCourage
 liquidCourage = asset LiquidCourage Cards.liquidCourage
 
-instance HasAbilities env LiquidCourage where
-  getAbilities _ _ (LiquidCourage x) = pure
+instance HasAbilities LiquidCourage where
+  getAbilities (LiquidCourage x) =
     [ restrictedAbility
         x
         1

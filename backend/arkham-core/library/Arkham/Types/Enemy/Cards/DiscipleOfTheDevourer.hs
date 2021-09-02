@@ -28,8 +28,9 @@ discipleOfTheDevourer = enemyWith
   (1, 0)
   (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
 
-instance HasAbilities env DiscipleOfTheDevourer where
-  getAbilities i w (DiscipleOfTheDevourer x) = withBaseAbilities i w x $ pure
+instance HasAbilities DiscipleOfTheDevourer where
+  getAbilities (DiscipleOfTheDevourer x) = withBaseAbilities
+    x
     [ mkAbility x 1
       $ ForcedAbility
       $ EnemySpawns Timing.After Anywhere

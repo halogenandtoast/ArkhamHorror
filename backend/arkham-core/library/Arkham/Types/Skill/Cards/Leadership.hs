@@ -16,7 +16,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype Leadership = Leadership SkillAttrs
-  deriving anyclass (IsSkill, HasAbilities env)
+  deriving anyclass (IsSkill, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 leadership :: SkillCard Leadership

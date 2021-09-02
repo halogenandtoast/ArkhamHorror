@@ -30,8 +30,8 @@ newtype Shotgun4 = Shotgun4 AssetAttrs
 shotgun4 :: AssetCard Shotgun4
 shotgun4 = assetWith Shotgun4 Cards.shotgun4 (slotsL .~ [HandSlot, HandSlot])
 
-instance HasAbilities env Shotgun4 where
-  getAbilities _ _ (Shotgun4 a) = pure
+instance HasAbilities Shotgun4 where
+  getAbilities (Shotgun4 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility (Just Action.Fight) $ Costs
         [ActionCost 1, UseCost (toId a) Ammo 1]
     ]

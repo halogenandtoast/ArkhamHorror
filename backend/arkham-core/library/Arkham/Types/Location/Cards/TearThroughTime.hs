@@ -25,9 +25,9 @@ tearThroughTime = location
   Moon
   [Circle, Plus, Squiggle]
 
-instance HasAbilities env TearThroughTime where
-  getAbilities iid window (TearThroughTime attrs) =
-    withBaseAbilities iid window attrs $ pure [resignAction attrs]
+instance HasAbilities TearThroughTime where
+  getAbilities (TearThroughTime attrs) =
+    withBaseAbilities attrs $ [resignAction attrs]
 
 instance LocationRunner env => RunMessage env TearThroughTime where
   runMessage msg (TearThroughTime attrs) =

@@ -23,8 +23,8 @@ getTheEngineRunning :: ActCard GetTheEngineRunning
 getTheEngineRunning =
   act (2, A) GetTheEngineRunning Cards.getTheEngineRunning Nothing
 
-instance HasAbilities env GetTheEngineRunning where
-  getAbilities _ _ (GetTheEngineRunning x) = pure
+instance HasAbilities GetTheEngineRunning where
+  getAbilities (GetTheEngineRunning x) =
     [ restrictedAbility
         x
         1

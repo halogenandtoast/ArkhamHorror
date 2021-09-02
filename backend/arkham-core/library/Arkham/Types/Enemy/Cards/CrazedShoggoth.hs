@@ -28,14 +28,14 @@ crazedShoggoth = enemyWith
   (2, 2)
   (spawnAtL ?~ NearestLocationToYou (LocationWithTrait Altered))
 
-instance HasAbilities env CrazedShoggoth where
-  getAbilities iid window (CrazedShoggoth attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ mkAbility attrs 1 $ ForcedAbility $ InvestigatorDefeated
-          Timing.When
-          (SourceIs $ AttackSource $ toId attrs)
-          You
-      ]
+instance HasAbilities CrazedShoggoth where
+  getAbilities (CrazedShoggoth attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1 $ ForcedAbility $ InvestigatorDefeated
+        Timing.When
+        (SourceIs $ AttackSource $ toId attrs)
+        You
+    ]
 
 instance EnemyAttrsRunMessage env => RunMessage env CrazedShoggoth where
   runMessage msg e@(CrazedShoggoth attrs) = case msg of

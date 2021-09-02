@@ -28,9 +28,9 @@ arkhamWoodsLakeside = locationWithRevealedSideConnections
   Star
   [Squiggle, Heart]
 
-instance HasAbilities env ArkhamWoodsLakeside where
-  getAbilities i window (ArkhamWoodsLakeside attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities ArkhamWoodsLakeside where
+  getAbilities (ArkhamWoodsLakeside attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
           attrs
           1

@@ -30,16 +30,16 @@ exhibitHallNatureExhibit = locationWithRevealedSideConnections
   Hourglass
   [Square, Squiggle]
 
-instance HasAbilities env ExhibitHallNatureExhibit where
-  getAbilities i w (ExhibitHallNatureExhibit x) = withBaseAbilities i w x $ do
-    pure
-      [ mkAbility x 1
-        $ ForcedAbility
-        $ Enters Timing.After You
-        $ LocationWithId
-        $ toId x
-      | locationRevealed x
-      ]
+instance HasAbilities ExhibitHallNatureExhibit where
+  getAbilities (ExhibitHallNatureExhibit x) = withBaseAbilities
+    x
+    [ mkAbility x 1
+      $ ForcedAbility
+      $ Enters Timing.After You
+      $ LocationWithId
+      $ toId x
+    | locationRevealed x
+    ]
 
 instance LocationRunner env => RunMessage env ExhibitHallNatureExhibit where
   runMessage msg l@(ExhibitHallNatureExhibit attrs) = case msg of

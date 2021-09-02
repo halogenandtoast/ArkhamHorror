@@ -30,8 +30,8 @@ theCarnevaleConspiracy :: ActCard TheCarnevaleConspiracy
 theCarnevaleConspiracy =
   act (1, A) TheCarnevaleConspiracy Cards.theCarnevaleConspiracy Nothing
 
-instance HasAbilities env TheCarnevaleConspiracy where
-  getAbilities _ _ (TheCarnevaleConspiracy x) = pure
+instance HasAbilities TheCarnevaleConspiracy where
+  getAbilities (TheCarnevaleConspiracy x) =
     [ restrictedAbility
       x
       1

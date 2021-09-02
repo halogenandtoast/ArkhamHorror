@@ -42,9 +42,9 @@ instance HasModifiersFor env WhateleyRuins_250 where
       [ SkillModifier SkillWillpower (-1) | iid `on` attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env WhateleyRuins_250 where
-  getAbilities iid window (WhateleyRuins_250 attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities WhateleyRuins_250 where
+  getAbilities (WhateleyRuins_250 attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
             attrs
             1

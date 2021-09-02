@@ -23,8 +23,8 @@ newtype ArtStudent = ArtStudent AssetAttrs
 artStudent :: AssetCard ArtStudent
 artStudent = ally ArtStudent Cards.artStudent (1, 2)
 
-instance HasAbilities env ArtStudent where
-  getAbilities _ _ (ArtStudent x) = pure
+instance HasAbilities ArtStudent where
+  getAbilities (ArtStudent x) =
     [ restrictedAbility
         x
         1

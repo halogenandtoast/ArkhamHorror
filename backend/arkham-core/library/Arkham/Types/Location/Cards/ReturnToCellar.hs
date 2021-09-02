@@ -28,9 +28,9 @@ returnToCellar = location
   Plus
   [Square, Squiggle]
 
-instance HasAbilities env ReturnToCellar where
-  getAbilities i window (ReturnToCellar attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities ReturnToCellar where
+  getAbilities (ReturnToCellar attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ RevealLocation Timing.After You

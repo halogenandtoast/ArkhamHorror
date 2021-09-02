@@ -21,8 +21,8 @@ newtype DraggedUnder = DraggedUnder TreacheryAttrs
 draggedUnder :: TreacheryCard DraggedUnder
 draggedUnder = treachery DraggedUnder Cards.draggedUnder
 
-instance HasAbilities env DraggedUnder where
-  getAbilities _ _ (DraggedUnder x) = pure
+instance HasAbilities DraggedUnder where
+  getAbilities (DraggedUnder x) =
     [ restrictedAbility x 1 (InThreatAreaOf You) $ ForcedAbility $ Leaves
       Timing.When
       You

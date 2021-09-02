@@ -23,8 +23,8 @@ newtype Burglary = Burglary AssetAttrs
 burglary :: AssetCard Burglary
 burglary = asset Burglary Cards.burglary
 
-instance HasAbilities env Burglary where
-  getAbilities _ _ (Burglary a) = pure
+instance HasAbilities Burglary where
+  getAbilities (Burglary a) =
     [ restrictedAbility a 1 OwnsThis
       $ ActionAbility (Just Action.Investigate)
       $ Costs [ActionCost 1, ExhaustCost (toTarget a)]

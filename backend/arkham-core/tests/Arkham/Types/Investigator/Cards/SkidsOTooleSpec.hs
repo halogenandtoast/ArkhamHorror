@@ -18,10 +18,7 @@ spec = describe "\"Skids\" O'Toole" $ do
         $ do
             runMessages
             skidsOToole' <- updated skidsOToole
-            [buyAction] <- getAbilitiesOf
-              skidsOToole'
-              (duringTurn $ toId skidsOToole)
-              skidsOToole'
+            [buyAction] <- getAbilitiesOf skidsOToole'
             push $ UseAbility (toId skidsOToole) buyAction []
             runMessages
             getCanAffordCost

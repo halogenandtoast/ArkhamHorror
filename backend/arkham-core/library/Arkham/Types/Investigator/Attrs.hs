@@ -1736,7 +1736,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     committedCardIds <- map unCommittedCardId <$> getSetList iid
     committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
     let window = Window Timing.When (Window.SkillTest skillType)
-    actions <- asks getAbilities
+    actions <- getActions iid window
     isScenarioAbility <- getIsScenarioAbility
     clueCount <- unClueCount <$> getCount investigatorLocation
     source <- fromJustNote "damage outside skill test" <$> getSkillTestSource

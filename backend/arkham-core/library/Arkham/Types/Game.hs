@@ -925,11 +925,15 @@ getEnemy eid =
   where missingEnemy = "Unknown enemy: " <> show eid
 
 getEnemyMatching
-  :: (MonadReader env m, HasGame env) => EnemyMatcher -> m (Maybe Enemy)
+  :: (MonadReader env m, HasGame env, HasAbilities env)
+  => EnemyMatcher
+  -> m (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
 getEnemiesMatching
-  :: (MonadReader env m, HasGame env) => EnemyMatcher -> m [Enemy]
+  :: (MonadReader env m, HasGame env, HasAbilities env)
+  => EnemyMatcher
+  -> m [Enemy]
 getEnemiesMatching matcher = do
   allGameEnemies <- toList . view enemiesL <$> getGame
   filterM (matcherFilter matcher) allGameEnemies
@@ -1812,6 +1816,7 @@ instance HasGame env => HasSet Trait env Source where
     ProxySource _ _ -> pure mempty
     ResourceSource -> pure mempty
     AssetMatcherSource{} -> pure mempty -- should have been replaced
+    LocationMatcherSource{} -> pure mempty -- should have been replaced
 
 instance HasGame env => HasSet Trait env (InvestigatorId, CardId) where
   getSet (iid, cid) =
@@ -2573,8 +2578,9 @@ instance HasGame env => Query SkillMatcher env where
 instance HasGame env => Query TreacheryMatcher env where
   select = fmap (setFromList . map toId) . getTreacheriesMatching
 
-instance HasAbilities Game where
-  getAbilities g =
+instance {-# OVERLAPPABLE #-} HasGame env => HasAbilities env where
+  getAbilities env = do
+    let g = view gameL env
     concatMap getAbilities (g ^. enemiesL)
       <> concatMap getAbilities (g ^. locationsL)
       <> concatMap getAbilities (g ^. assetsL)
@@ -2613,7 +2619,13 @@ runPreGameMessage msg g = case msg of
   _ -> pure g
 
 runGameMessage
-  :: (HasQueue env, MonadReader env m, MonadRandom m, MonadIO m, HasGame env)
+  :: ( HasQueue env
+     , MonadReader env m
+     , MonadRandom m
+     , MonadIO m
+     , HasGame env
+     , HasAbilities env
+     )
   => Message
   -> Game
   -> m Game

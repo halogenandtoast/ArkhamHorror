@@ -20,7 +20,6 @@ import Arkham.Types.History
 import Arkham.Types.Id
 import Arkham.Types.Keyword
 import Arkham.Types.Matcher
-import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Phase
@@ -159,7 +158,6 @@ type ActionRunner env
     , Query AssetMatcher env
     , Query LocationMatcher env
     , GetCardDef env EnemyId
-    , HasAbilities ActionType
     , HasCostPayment env
     , ( HasCount
           ActionRemainingCount

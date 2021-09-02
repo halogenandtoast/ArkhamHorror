@@ -46,8 +46,6 @@ spec = describe "Wracked by Nightmares" $ do
             wrackedByNightmaresTreachery =
               game ^?! treacheriesL . to toList . ix 0
           [discardWrackedByNightmares] <- getAbilitiesOf
-            investigator
-            nonFast
             wrackedByNightmaresTreachery
           pushAll
             [ UseAbility (toId investigator) discardWrackedByNightmares []

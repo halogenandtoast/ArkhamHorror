@@ -36,10 +36,7 @@ spec = describe "Arcane Initiate" $ do
           $ do
               runMessages
               chooseOnlyOption "trigger forced ability"
-              [_, ability] <- getAbilitiesOf
-                investigator
-                fastPlayerWindow
-                arcaneInitiate
+              [_, ability] <- getAbilitiesOf arcaneInitiate
               push $ UseAbility (toId investigator) ability []
               runMessages
               chooseOnlyOption "search top of deck"
@@ -57,10 +54,7 @@ spec = describe "Arcane Initiate" $ do
       $ do
           runMessages
           chooseOnlyOption "trigger forced ability"
-          [_, ability] <- getAbilitiesOf
-            investigator
-            fastPlayerWindow
-            arcaneInitiate
+          [_, ability] <- getAbilitiesOf arcaneInitiate
           push $ UseAbility (toId investigator) ability []
           runMessages
           chooseOnlyOption "search top of deck"

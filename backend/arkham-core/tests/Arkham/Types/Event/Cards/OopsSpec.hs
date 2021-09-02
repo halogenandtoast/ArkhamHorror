@@ -37,7 +37,7 @@ spec = describe "Oops!" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf investigator nonFast rolands38Special
+          [doFight] <- getAbilitiesOf rolands38Special
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOptionMatching
@@ -89,7 +89,7 @@ spec = describe "Oops!" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf investigator nonFast fortyOneDerringer
+          [doFight] <- getAbilitiesOf fortyOneDerringer
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOptionMatching
@@ -141,7 +141,7 @@ spec = describe "Oops!" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf investigator nonFast shotgun4
+          [doFight] <- getAbilitiesOf shotgun4
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOptionMatching

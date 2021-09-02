@@ -91,14 +91,7 @@ instance SourceEntity Enemy where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-instance
-    ( EnemyRunner env
-    , HasName env AssetId
-    , HasSet EnemyId env ()
-    , HasId (Maybe StoryEnemyId) env CardCode
-    ) =>
-    RunMessage env Enemy
-    where
+instance EnemyRunner env => RunMessage env Enemy where
   runMessage msg e = do
     -- we must check that an enemy exists when grabbing modifiers
     -- as some messages are not masked when targetting cards in the

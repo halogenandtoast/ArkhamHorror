@@ -2,13 +2,10 @@ module Arkham.Types.Enemy.Runner where
 
 import Arkham.Prelude
 
-import Arkham.Types.ActId
-import Arkham.Types.AgendaId
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Direction
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Prey
 import Arkham.Types.Query
@@ -18,6 +15,9 @@ import Arkham.Types.Trait
 
 type EnemyRunner env
   = ( HasQueue env
+    , HasName env AssetId
+    , HasSet EnemyId env ()
+    , HasId (Maybe StoryEnemyId) env CardCode
     , Query LocationMatcher env
     , Query InvestigatorMatcher env
     , HasCount CardCount env InvestigatorId

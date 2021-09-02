@@ -9,12 +9,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Cards
 import Arkham.Types.Event.Runner
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Query
-import Arkham.Types.Source
 
 $(buildEntity "Event")
 
@@ -37,15 +35,7 @@ instance
   => HasModifiersFor env Event where
   getModifiersFor = genericGetModifiersFor
 
-instance
-  ( EventRunner env
-  , HasSet FightableEnemyId env (InvestigatorId, Source)
-  , HasCount HealthDamageCount env EnemyId
-  , HasCount SanityDamageCount env EnemyId
-  , HasCount FightCount env EnemyId
-  , CanCheckPlayable env
-  )
-  => RunMessage env Event where
+instance EventRunner env => RunMessage env Event where
   runMessage = genericRunMessage
 
 instance Entity Event where

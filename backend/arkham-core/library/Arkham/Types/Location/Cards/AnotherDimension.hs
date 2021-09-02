@@ -33,16 +33,16 @@ anotherDimension = location
 
 instance HasAbilities AnotherDimension where
   getAbilities (AnotherDimension attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ LocationLeavesPlay Timing.When
-        $ LocationMatchAny
-            [LocationWithEnemy AnyEnemy, LocationWithInvestigator Anyone]
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ LocationLeavesPlay Timing.When
+          $ LocationMatchAny
+              [LocationWithEnemy AnyEnemy, LocationWithInvestigator Anyone]
+        | locationRevealed attrs
+        ]
 
-instance (HasSet UnengagedEnemyId env LocationId, LocationRunner env) => RunMessage env AnotherDimension where
+instance LocationRunner env => RunMessage env AnotherDimension where
   runMessage msg l@(AnotherDimension attrs) = case msg of
     UseCardAbility _ source [Window _ (LeavePlay (LocationTarget lid))] 1 _
       | isSource attrs source -> do

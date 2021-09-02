@@ -5,19 +5,20 @@ module Arkham.Types.EntityInstance
 import Arkham.Prelude
 
 import Arkham.Types.Asset
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Enemy
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Event
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Id
-import Arkham.Types.Investigator.Runner
-import qualified Arkham.Types.Label as L
+import Arkham.Types.Event.Runner
 import Arkham.Types.Location
-import Arkham.Types.Matcher
+import Arkham.Types.Location.Runner
 import Arkham.Types.Message
 import Arkham.Types.Skill
+import Arkham.Types.Skill.Runner
 import Arkham.Types.Treachery
+import Arkham.Types.Treachery.Runner
 
 data EntityInstance
   = AssetInstance Asset
@@ -27,7 +28,7 @@ data EntityInstance
   | EnemyInstance Enemy
   | TreacheryInstance Treachery
 
-instance (EntityInstanceRunner env, InnerInvestigatorRunner env) => RunMessage env EntityInstance where
+instance EntityInstanceRunner env => RunMessage env EntityInstance where
   runMessage msg (AssetInstance x) = AssetInstance <$> runMessage msg x
   runMessage msg (EnemyInstance x) = EnemyInstance <$> runMessage msg x
   runMessage msg (EventInstance x) = EventInstance <$> runMessage msg x
@@ -65,16 +66,11 @@ doNotMask Revelation{} = True
 doNotMask _ = False
 
 type EntityInstanceRunner env
-  = ( ActionRunner env
-    , Query LocationMatcher env
-    , Query ExtendedCardMatcher env
-    , HasSkillValue env InvestigatorId
-    , HasHistory env
-    , HasId CardCode env TreacheryId
-    , L.GetLabel env LocationId
-    , HasName env EnemyId
-    , HasName env LocationId
-    , HasId CardCode env TreacheryId
-    , CanCheckFast env
-    , CanCheckPlayable env
+  = ( EnemyRunner env
+    , LocationRunner env
+    , AssetRunner env
+    , TreacheryRunner env
+    , LocationRunner env
+    , SkillRunner env
+    , EventRunner env
     )

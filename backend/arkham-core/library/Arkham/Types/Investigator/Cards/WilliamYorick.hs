@@ -2,12 +2,16 @@ module Arkham.Types.Investigator.Cards.WilliamYorick where
 
 import Arkham.Prelude
 
+import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Source
 import Arkham.Types.Stats
@@ -15,7 +19,8 @@ import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
+import Arkham.Types.Window (Window(..))
+import qualified Arkham.Types.Window as Window
 
 newtype WilliamYorick = WilliamYorick InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -43,9 +48,19 @@ instance HasTokenValue env WilliamYorick where
   getTokenValue _ _ token = pure $ TokenValue token mempty
 
 instance HasAbilities WilliamYorick where
-  getAbilities = error "not working"
+  getAbilities (WilliamYorick attrs) =
+    [ restrictedAbility
+          attrs
+          1
+          (Self <> PlayableCardInDiscard
+            (DiscardOf You)
+            (BasicCardMatch $ CardWithType AssetType)
+          )
+          (ReactionAbility (EnemyDefeated Timing.After You AnyEnemy) Free)
+        & (abilityLimitL .~ PlayerLimit PerRound 1)
+    ]
 
-instance InvestigatorRunner env => RunMessage env WilliamYorick where
+instance (InvestigatorRunner env) => RunMessage env WilliamYorick where
   runMessage msg i@(WilliamYorick attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let
@@ -61,7 +76,9 @@ instance InvestigatorRunner env => RunMessage env WilliamYorick where
         (getIsPlayable
             iid
             source
-            [Window Timing.When NonFast, Window Timing.When (DuringTurn iid)]
+            [ Window Timing.When Window.NonFast
+            , Window Timing.When (Window.DuringTurn iid)
+            ]
         . PlayerCard
         )
         targets

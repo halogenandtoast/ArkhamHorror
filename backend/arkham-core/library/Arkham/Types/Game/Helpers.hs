@@ -1108,6 +1108,24 @@ passesCriteria iid source windows' = \case
   Criteria.PlayableCardExists cardMatcher -> do
     results <- getList @Card cardMatcher
     anyM (getIsPlayable iid source windows') results
+  Criteria.PlayableCardInDiscard discardSignifier cardMatcher -> do
+    let
+      investigatorMatcher = case discardSignifier of
+        Criteria.DiscardOf matcher -> matcher
+        Criteria.AnyPlayerDiscard -> Matcher.Anyone
+    investigatorIds <-
+      filterM
+          (fmap (notElem CardsCannotLeaveYourDiscardPile)
+          . getModifiers GameSource
+          . InvestigatorTarget
+          )
+        =<< selectList investigatorMatcher
+    discards <-
+      concat
+        <$> traverse
+              (fmap (map unDiscardedPlayerCard) . getList)
+              investigatorIds
+    anyM (getIsPlayable iid source windows' . PlayerCard) discards
   Criteria.FirstAction -> do
     n <- unActionTakenCount <$> getCount iid
     pure $ n == 0
@@ -1117,14 +1135,18 @@ passesCriteria iid source windows' = \case
     anyM
       (\window -> locationMatches iid source window lid locationMatcher)
       windows'
-  Criteria.ReturnableCardInDiscard Criteria.AnyPlayerDiscard traits -> do
+  Criteria.ReturnableCardInDiscard discardSignifier traits -> do
+    let
+      investigatorMatcher = case discardSignifier of
+        Criteria.DiscardOf matcher -> matcher
+        Criteria.AnyPlayerDiscard -> Matcher.Anyone
     investigatorIds <-
       filterM
           (fmap (notElem CardsCannotLeaveYourDiscardPile)
           . getModifiers GameSource
           . InvestigatorTarget
           )
-        =<< getInvestigatorIds
+        =<< selectList investigatorMatcher
     discards <-
       concat
         <$> traverse

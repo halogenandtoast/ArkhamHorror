@@ -9,7 +9,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.Trait
 
-data DiscardSignifier = AnyPlayerDiscard
+data DiscardSignifier = AnyPlayerDiscard | DiscardOf Who
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -61,6 +61,7 @@ data Criterion
   | ResourcesOnThis ValueMatcher
   | ResourcesOnLocation Where ValueMatcher
   | ReturnableCardInDiscard DiscardSignifier [Trait]
+  | PlayableCardInDiscard DiscardSignifier ExtendedCardMatcher
   | ScenarioCardHasResignAbility
   | Self
   | SetAsideCardExists CardMatcher

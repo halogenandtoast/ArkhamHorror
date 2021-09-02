@@ -11,7 +11,6 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -38,11 +37,7 @@ findAllyMessages iid investigatorIds e =
     ]
   ]
 
-instance
-  ( EventRunner env
-  , HasSet FightableEnemyId env (InvestigatorId, Source)
-  )
-  => RunMessage env Flare1 where
+instance EventRunner env => RunMessage env Flare1 where
   runMessage msg e@(Flare1 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       investigatorIds <- getInvestigatorIds

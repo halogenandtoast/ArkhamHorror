@@ -1,4 +1,7 @@
-module Arkham.Types.Investigator.Attrs where
+module Arkham.Types.Investigator.Attrs
+  ( module Arkham.Types.Investigator.Attrs
+  , module Arkham.Types.Investigator.Runner
+  ) where
 
 import Arkham.Prelude
 
@@ -606,30 +609,8 @@ canCommitToAnotherLocation attrs = do
     m > length n
   permit _ _ = False
 
-instance (EntityInstanceRunner env, InvestigatorRunner env) => RunMessage env InvestigatorAttrs where
-  runMessage msg i | doNotMask msg = do
-    traverseOf_
-      (handL . traverse . _PlayerCard)
-      (runMessage msg . toCardInstance (toId i) . PlayerCard)
-      i
-    traverseOf_
-      (discardL . traverse)
-      (runMessage msg . toCardInstance (toId i) . PlayerCard)
-      i
-    runInvestigatorMessage msg i
-  runMessage msg i = do
-    traverseOf_
-      (handL . traverse . _PlayerCard)
-      (runMessage (InHand (toId i) msg) . toCardInstance (toId i) . PlayerCard)
-      i
-    traverseOf_
-      (discardL . traverse)
-      (runMessage (InDiscard (toId i) msg)
-      . toCardInstance (toId i)
-      . PlayerCard
-      )
-      i
-    runInvestigatorMessage msg i
+instance InvestigatorRunner env => RunMessage env InvestigatorAttrs where
+  runMessage = runInvestigatorMessage
 
 hasModifier
   :: (MonadReader env m, HasModifiersFor env ())
@@ -667,12 +648,7 @@ getAsIfInHandCards attrs = do
     (zip (investigatorDiscard attrs) [0 :: Int ..])
 
 runInvestigatorMessage
-  :: ( EntityInstanceRunner env
-     , InvestigatorRunner env
-     , MonadReader env m
-     , MonadRandom m
-     , MonadIO m
-     )
+  :: (InvestigatorRunner env, MonadReader env m, MonadRandom m, MonadIO m)
   => Message
   -> InvestigatorAttrs
   -> m InvestigatorAttrs

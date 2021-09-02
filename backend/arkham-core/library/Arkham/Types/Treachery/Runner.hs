@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.Id
@@ -15,6 +16,16 @@ import Arkham.Types.Trait
 
 type TreacheryRunner env
   = ( HasQueue env
+    , HasSet SkillId env SkillMatcher
+    , HasSet EventId env EventMatcher
+    , HasSet ClassSymbol env InvestigatorId
+    , GetCardDef env LocationId
+    , HasId (Maybe OwnerId) env AssetId
+    , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
+    , HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)
+    , HasSet EnemyId env EnemyMatcher
+    , HasList UnderneathCard env InvestigatorId
+    , HasList DeckCard env InvestigatorId
     , HasHistory env
     , Query AssetMatcher env
     , Query EnemyMatcher env

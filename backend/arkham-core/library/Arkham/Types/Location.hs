@@ -51,12 +51,7 @@ instance
   => HasModifiersFor env Location where
   getModifiersFor = genericGetModifiersFor
 
-instance
-  ( HasSet UnengagedEnemyId env LocationId
-  , HasSet EnemyId env EnemyMatcher
-  , LocationRunner env
-  )
-  => RunMessage env Location where
+instance LocationRunner env => RunMessage env Location where
   runMessage msg l = do
     modifiers' <- getModifiers (toSource l) (toTarget l)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg

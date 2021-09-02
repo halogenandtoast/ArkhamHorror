@@ -2,14 +2,21 @@ module Arkham.Types.Event.Runner where
 
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
+import Arkham.Types.Source
 import Arkham.Types.Trait
 
 type EventRunner env
   = ( HasQueue env
+    , HasSet FightableEnemyId env (InvestigatorId, Source)
+    , HasCount HealthDamageCount env EnemyId
+    , HasCount SanityDamageCount env EnemyId
+    , HasCount FightCount env EnemyId
+    , CanCheckPlayable env
     , Query AssetMatcher env
     , Query LocationMatcher env
     , HasCount Shroud env LocationId

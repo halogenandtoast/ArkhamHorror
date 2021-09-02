@@ -68,7 +68,6 @@ type EntityInstanceRunner env
   = ( ActionRunner env
     , Query LocationMatcher env
     , Query ExtendedCardMatcher env
-    , HasAbilities LocationId
     , HasSkillValue env InvestigatorId
     , HasHistory env
     , HasId CardCode env TreacheryId

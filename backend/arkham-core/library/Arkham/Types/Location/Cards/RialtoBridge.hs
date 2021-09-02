@@ -6,14 +6,18 @@ module Arkham.Types.Location.Cards.RialtoBridge
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
+import qualified Arkham.Types.Timing as Timing
 
 newtype RialtoBridge = RialtoBridge LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rialtoBridge :: LocationCard RialtoBridge
@@ -26,13 +30,19 @@ rialtoBridge = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasModifiersFor env RialtoBridge
-
 instance HasAbilities env RialtoBridge where
-  getAbilities iid window (RialtoBridge attrs) = getAbilities iid window attrs
+  getAbilities iid window (RialtoBridge attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1
+        $ ForcedAbility
+        $ Leaves Timing.After You
+        $ LocationWithId
+        $ toId attrs
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env RialtoBridge where
   runMessage msg l@(RialtoBridge attrs) = case msg of
-    MoveFrom _ iid lid | lid == toId attrs ->
-      l <$ push (LoseActions iid (toSource attrs) 1)
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      l <$ push (LoseActions iid source 1)
     _ -> RialtoBridge <$> runMessage msg attrs

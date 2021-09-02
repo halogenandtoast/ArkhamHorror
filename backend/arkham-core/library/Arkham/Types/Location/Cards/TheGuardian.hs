@@ -12,9 +12,10 @@ import Arkham.Types.Cost
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype TheGuardian = TheGuardian LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -30,13 +31,15 @@ theGuardian = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-ability :: LocationAttrs -> Ability
-ability attrs = mkAbility attrs 1 (LegacyReactionAbility Free)
-
 instance HasAbilities env TheGuardian where
-  getAbilities iid (Window Timing.After (Entering who lid)) (TheGuardian attrs)
-    | lid == toId attrs && iid == who = pure [ability attrs]
-  getAbilities iid window (TheGuardian attrs) = getAbilities iid window attrs
+  getAbilities iid window (TheGuardian attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1
+          $ ReactionAbility
+              (Enters Timing.After You $ LocationWithId $ toId attrs)
+              Free
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env TheGuardian where
   runMessage msg l@(TheGuardian attrs) = case msg of

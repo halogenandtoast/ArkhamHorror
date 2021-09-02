@@ -15,7 +15,6 @@ import Arkham.Types.Id
 import Arkham.Types.Keyword
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher
-import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
@@ -34,10 +33,7 @@ type InnerInvestigatorRunner env
     , Query InvestigatorMatcher env
     , HasCount UsesCount env (AssetId, UseType)
     , HasList SlotType env AssetId
-    , ( HasAbilities ()
-      , HasAbilities AssetId
-      , HasAbilities ActionType
-      )
+    , HasAbilities env
     , ( HasCount ActionTakenCount env InvestigatorId
       , HasCount ActionRemainingCount env InvestigatorId
       , HasCount

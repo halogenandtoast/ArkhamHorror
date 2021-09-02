@@ -383,6 +383,11 @@ getActions iid window = do
           pure $ map
             (\source -> action { abilitySource = ProxySource source base })
             sources
+        ProxySource (LocationMatcherSource m) base -> do
+          sources <- selectListMap LocationSource m
+          pure $ map
+            (\source -> action { abilitySource = ProxySource source base })
+            sources
         _ -> pure [action]
 
   actions'' <- catMaybes <$> for

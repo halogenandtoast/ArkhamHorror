@@ -76,9 +76,12 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
           tomeAssets <- filterM
             ((elem Tome <$>) . getSet)
             (setToList investigatorAssets)
+          allAbilities <- asks getAbilities
           let
+            abilitiesForAsset aid =
+              filter ((AssetSource aid ==) . abilitySource) allAbilities
             pairs' = filter (notNull . snd)
-              $ map (\a -> (a, getAbilities a)) tomeAssets
+              $ map (\a -> (a, abilitiesForAsset a)) tomeAssets
           if null pairs'
             then pure i
             else i <$ push

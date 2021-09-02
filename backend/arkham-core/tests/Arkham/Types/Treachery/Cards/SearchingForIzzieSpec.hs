@@ -50,10 +50,7 @@ spec = describe "Searching for Izzie" $ do
           let
             updatedSearchingForIzzie = game ^?! treacheriesL . to toList . ix 0
 
-          [searchingForIzzieAction] <- getAbilitiesOf
-            investigator
-            nonFast
-            updatedSearchingForIzzie
+          [searchingForIzzieAction] <- getAbilitiesOf updatedSearchingForIzzie
 
           push $ UseAbility (toId investigator) searchingForIzzieAction []
           runMessages

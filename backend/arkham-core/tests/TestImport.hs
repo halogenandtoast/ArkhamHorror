@@ -353,21 +353,15 @@ testUnconnectedLocations f1 f2 = do
   pure (location1, location2)
 
 getAbilitiesOf
-  :: ( HasAbilities GameEnv a
+  :: ( HasAbilities a
      , TestEntity a
      , MonadIO m
      , MonadReader env m
-     , HasStdGen env
      , HasGameRef env
-     , HasQueue env
      )
-  => Investigator
-  -> Window
-  -> a
+  => a
   -> m [Ability]
-getAbilitiesOf investigator window e = do
-  e' <- updated e
-  toGameEnv >>= runReaderT (getAbilities (toId investigator) window e')
+getAbilitiesOf e = getAbilities <$> updated e
 
 getChaosBagTokens
   :: (HasGameRef env, MonadIO m, MonadReader env m) => m [TokenFace]

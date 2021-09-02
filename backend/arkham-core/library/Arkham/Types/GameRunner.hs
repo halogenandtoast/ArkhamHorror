@@ -11,7 +11,6 @@ import Arkham.Types.Id
 import Arkham.Types.Keyword (Keyword)
 import Arkham.Types.Location
 import Arkham.Types.Matcher
-import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
@@ -102,10 +101,7 @@ type GameRunner env
       , HasSet VictoryDisplayCardCode env ()
       )
     , HasSkillTest env
-    , HasAbilities ()
-    , HasAbilities AssetId
-    , HasAbilities (ActionType, Trait)
-    , HasAbilities ActionType
+    , HasAbilities env
     , HasRecord env
     , HasTokenValue env InvestigatorId
     , CanBeWeakness env TreacheryId

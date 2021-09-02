@@ -48,6 +48,11 @@ abilityLimitL = lens abilityLimit $ \m x -> m { abilityLimit = x }
 abilityMetadataL :: Lens' Ability (Maybe AbilityMetadata)
 abilityMetadataL = lens abilityMetadata $ \m x -> m { abilityMetadata = x }
 
+abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability Bool
+abilityDoesNotProvokeAttacksOfOpportunityL =
+  lens abilityDoesNotProvokeAttacksOfOpportunity
+    $ \m x -> m { abilityDoesNotProvokeAttacksOfOpportunity = x }
+
 instance Eq Ability where
   a == b =
     (abilitySource a == abilitySource b) && (abilityIndex a == abilityIndex b)

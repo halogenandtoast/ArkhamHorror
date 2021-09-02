@@ -39,7 +39,7 @@ daisyWalker =
 instance HasTokenValue env DaisyWalker where
   getTokenValue (DaisyWalker attrs) iid ElderSign | iid == toId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 0)
-  getTokenValue (DaisyWalker attrs) iid token = getTokenValue attrs iid token
+  getTokenValue _ _ token = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env DaisyWalker where
   runMessage msg i@(DaisyWalker attrs@InvestigatorAttrs {..}) = case msg of

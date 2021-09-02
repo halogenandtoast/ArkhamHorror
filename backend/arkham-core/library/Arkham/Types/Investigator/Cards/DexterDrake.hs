@@ -9,12 +9,8 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype DexterDrake = DexterDrake InvestigatorAttrs
-  deriving anyclass (HasAbilities env)
+  deriving anyclass (HasAbilities, HasModifiersFor env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env DexterDrake where
-  getModifiersFor source target (DexterDrake attrs) =
-    getModifiersFor source target attrs
 
 dexterDrake :: DexterDrake
 dexterDrake = DexterDrake $ baseAttrs

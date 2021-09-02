@@ -9,12 +9,8 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype CalvinWright = CalvinWright InvestigatorAttrs
-  deriving anyclass (HasAbilities env)
+  deriving anyclass (HasAbilities, HasModifiersFor env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env CalvinWright where
-  getModifiersFor source target (CalvinWright attrs) =
-    getModifiersFor source target attrs
 
 calvinWright :: CalvinWright
 calvinWright = CalvinWright $ baseAttrs

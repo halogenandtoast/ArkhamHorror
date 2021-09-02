@@ -9,12 +9,8 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype WinifredHabbamock = WinifredHabbamock InvestigatorAttrs
-  deriving anyclass (HasAbilities env)
+  deriving anyclass (HasAbilities, HasModifiersFor env)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
-
-instance HasModifiersFor env WinifredHabbamock where
-  getModifiersFor source target (WinifredHabbamock attrs) =
-    getModifiersFor source target attrs
 
 winifredHabbamock :: WinifredHabbamock
 winifredHabbamock = WinifredHabbamock $ baseAttrs

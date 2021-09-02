@@ -9,7 +9,6 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Card
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
-import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers (getInvestigatorIds)
 import Arkham.Types.Helpers
 import Arkham.Types.Id
@@ -77,12 +76,8 @@ hasResigned = view resignedL . toAttrs
 instance {-# OVERLAPPING #-} HasTraits Investigator where
   toTraits = toTraits . toAttrs
 
-instance EntityInstanceRunner env => HasAbilities Investigator where
-  getAbilities investigator = do
-    modifiers' <- getModifiers (toSource investigator) (toTarget investigator)
-    if Blank `elem` modifiers'
-      then getAbilities (toAttrs investigator)
-      else genericGetAbilities iid window investigator
+instance HasAbilities Investigator where
+  getAbilities = genericGetAbilities
 
 instance InvestigatorRunner env => RunMessage env Investigator where
   runMessage msg i = do

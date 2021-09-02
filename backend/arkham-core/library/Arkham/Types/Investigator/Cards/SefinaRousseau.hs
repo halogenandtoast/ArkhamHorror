@@ -9,17 +9,13 @@ import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.EntityInstance
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Stats
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype SefinaRousseau = SefinaRousseau InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
@@ -44,16 +40,14 @@ instance HasTokenValue env SefinaRousseau where
   getTokenValue (SefinaRousseau attrs) iid ElderSign
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 3)
-  getTokenValue (SefinaRousseau attrs) iid token =
-    getTokenValue attrs iid token
+  getTokenValue _ _ token = pure $ TokenValue token mempty
 
-instance EntityInstanceRunner env => HasAbilities SefinaRousseau where
+instance HasAbilities SefinaRousseau where
   getAbilities (SefinaRousseau attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Self (ActionAbility Nothing $ ActionCost 1)
-            & (abilityDoesNotProvokeAttacksOfOpportunityL .~ True)
-        | notNull (investigatorCardsUnderneath attrs)
-        ]
+    [ restrictedAbility attrs 1 Self (ActionAbility Nothing $ ActionCost 1)
+        & (abilityDoesNotProvokeAttacksOfOpportunityL .~ True)
+    | notNull (investigatorCardsUnderneath attrs)
+    ]
 
 instance InvestigatorRunner env => RunMessage env SefinaRousseau where
   runMessage msg i@(SefinaRousseau attrs) = case msg of

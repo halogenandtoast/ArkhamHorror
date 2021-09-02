@@ -6,19 +6,38 @@ module Arkham.Types.Enemy.Cards.WrithingAppendage
 import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (EnemyAttacks, EnemyDefeated)
+import qualified Arkham.Types.Timing as Timing
 
 newtype WrithingAppendage = WrithingAppendage EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 writhingAppendage :: EnemyCard WrithingAppendage
 writhingAppendage =
   enemy WrithingAppendage Cards.writhingAppendage (2, Static 2, 4) (1, 0)
+
+instance HasAbilities env WrithingAppendage where
+  getAbilities iid window (WrithingAppendage attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1
+      $ ForcedAbility
+      $ EnemyAttacks Timing.After You
+      $ EnemyWithId
+      $ toId attrs
+      , mkAbility attrs 2
+      $ ForcedAbility
+      $ EnemyDefeated Timing.When Anyone
+      $ EnemyWithId
+      $ toId attrs
+      ]
 
 instance
   ( HasId (Maybe StoryEnemyId) env CardCode
@@ -26,9 +45,11 @@ instance
   )
   => RunMessage env WrithingAppendage where
   runMessage msg e@(WrithingAppendage attrs) = case msg of
-    After (EnemyAttack iid eid _) | eid == toId attrs ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       e <$ push (RandomDiscard iid)
-    EnemyDefeated eid iid _ _ _ _ | eid == toId attrs -> do
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+      -- TODO: Damage here should not be dealt from an investigator to avoid
+      -- triggering any abilities
       mCnidathquaId <- fmap unStoryEnemyId
         <$> getId (toCardCode Cards.cnidathqua)
       case mCnidathquaId of

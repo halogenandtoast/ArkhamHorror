@@ -21,6 +21,7 @@ newtype CarnevaleSentinel = CarnevaleSentinel EnemyAttrs
   deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
 
+-- TODO: Should use spawnAtL for this
 carnevaleSentinel :: EnemyCard CarnevaleSentinel
 carnevaleSentinel =
   enemy CarnevaleSentinel Cards.carnevaleSentinel (3, Static 3, 3) (2, 0)

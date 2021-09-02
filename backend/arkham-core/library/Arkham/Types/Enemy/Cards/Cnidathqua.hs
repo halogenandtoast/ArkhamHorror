@@ -12,13 +12,12 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Id
-import Arkham.Types.Matcher hiding (EnemyDefeated)
-import Arkham.Types.Message
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Modifier
 import Arkham.Types.Resolution
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window hiding (EnemyDefeated)
 
 newtype Cnidathqua = Cnidathqua EnemyAttrs
     deriving anyclass IsEnemy
@@ -38,10 +37,22 @@ instance HasModifiersFor env Cnidathqua where
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities env Cnidathqua where
-  getAbilities i (Window Timing.After (FailAttackEnemy who eid _)) (Cnidathqua attrs)
-    | eid == toId attrs && i == who
-    = pure [mkAbility attrs 1 LegacyForcedAbility]
-  getAbilities i window (Cnidathqua attrs) = getAbilities i window attrs
+  getAbilities iid window (Cnidathqua attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ mkAbility attrs 1
+      $ ForcedAbility
+      $ SkillTestResult
+          Timing.After
+          You
+          (WhileAttackingAnEnemy $ EnemyWithId $ toId attrs)
+      $ FailureResult AnyValue
+      , mkAbility attrs 2
+      $ Objective
+      $ ForcedAbility
+      $ EnemyDefeated Timing.When Anyone
+      $ EnemyWithId
+      $ toId attrs
+      ]
 
 instance EnemyAttrsRunMessage env => RunMessage env Cnidathqua where
   runMessage msg e@(Cnidathqua attrs) = case msg of
@@ -55,6 +66,6 @@ instance EnemyAttrsRunMessage env => RunMessage env Cnidathqua where
     FoundEncounterCard iid target card | isTarget attrs target -> do
       lid <- getId @LocationId iid
       e <$ push (SpawnEnemyAtEngagedWith (EncounterCard card) lid iid)
-    EnemyDefeated eid _ _ _ _ _ | eid == enemyId attrs -> do
+    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       e <$ push (ScenarioResolution $ Resolution 2)
     _ -> Cnidathqua <$> runMessage msg attrs

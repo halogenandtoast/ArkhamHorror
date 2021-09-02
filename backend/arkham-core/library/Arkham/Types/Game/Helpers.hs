@@ -1345,6 +1345,10 @@ windowMatches iid source window' = \case
     Window t (Window.Discarded who card) | t == timing ->
       (cardMatch card cardMatcher &&) <$> matchWho iid who whoMatcher
     _ -> pure False
+  Matcher.AssetWouldBeDiscarded timing assetMatcher -> case window' of
+    Window t (Window.WouldBeDiscarded (AssetTarget aid)) | t == timing ->
+      elem aid <$> select assetMatcher
+    _ -> pure False
   Matcher.AgendaAdvances timingMatcher agendaMatcher -> case window' of
     Window t (Window.AgendaAdvance aid) | t == timingMatcher ->
       pure $ agendaMatches aid agendaMatcher

@@ -16,9 +16,11 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import qualified Arkham.Types.Timing as Timing
 
 newtype InnocentReveler = InnocentReveler AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -30,7 +32,12 @@ innocentReveler = ally InnocentReveler Cards.innocentReveler (2, 2)
 instance HasAbilities env InnocentReveler where
   getAbilities _ _ (InnocentReveler x) = pure
     [ restrictedAbility x 1 (Unowned <> OnSameLocation)
-        $ ActionAbility (Just Parley) (ActionCost 1)
+      $ ActionAbility (Just Parley) (ActionCost 1)
+    , mkAbility x 1
+    $ ForcedAbility
+    $ AssetWouldBeDiscarded Timing.When
+    $ AssetWithId
+    $ toId x
     ]
 
 instance
@@ -51,9 +58,7 @@ instance
                SkillIntellect
                2
              )
-    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> a <$ push (TakeControlOfAsset iid $ toId attrs)
-    When (Discard target) | isTarget attrs target -> do
+    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       let
         card = PlayerCard $ lookupPlayerCard (toCardDef attrs) (toCardId attrs)
@@ -63,5 +68,7 @@ instance
           | iid' <- investigatorIds
           ]
         )
+    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> a <$ push (TakeControlOfAsset iid $ toId attrs)
     _ -> InnocentReveler <$> runMessage msg attrs
 

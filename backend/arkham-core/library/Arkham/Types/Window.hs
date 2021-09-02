@@ -42,6 +42,7 @@ data WindowType
   | DiscoveringLastClue InvestigatorId LocationId
   | DrawCard InvestigatorId Card DeckSignifier
   | Discarded InvestigatorId Card
+  | WouldBeDiscarded Target
   | DrawToken InvestigatorId Token
   | DrawingStartingHand InvestigatorId
   | DuringTurn InvestigatorId

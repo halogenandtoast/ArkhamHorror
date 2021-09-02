@@ -59,6 +59,7 @@ data Criterion
   | PlayableCardExists ExtendedCardMatcher
   | PlayableCardExistsWithCostReduction Int ExtendedCardMatcher
   | ResourcesOnThis ValueMatcher
+  | ResourcesOnLocation Where ValueMatcher
   | ReturnableCardInDiscard DiscardSignifier [Trait]
   | ScenarioCardHasResignAbility
   | Self

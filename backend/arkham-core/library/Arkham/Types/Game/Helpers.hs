@@ -1048,6 +1048,10 @@ passesCriteria iid source windows' = \case
     TreacherySource tid ->
       (`gameValueMatches` valueMatcher) . unResourceCount =<< getCount tid
     _ -> error "missing ChargesOnThis check"
+  Criteria.ResourcesOnLocation locationMatcher valueMatcher -> do
+    locations <- selectList locationMatcher
+    total <- sum <$> traverse (fmap unResourceCount . getCount) locations
+    gameValueMatches total valueMatcher
   Criteria.CluesOnThis valueMatcher -> case source of
     LocationSource lid -> do
       (`gameValueMatches` valueMatcher) . unClueCount =<< getCount lid
@@ -1332,6 +1336,10 @@ windowMatches iid source window' = \case
       (&&)
       (matchWho iid who whoMatcher)
       (member aid <$> select assetMatcher)
+    _ -> pure False
+  Matcher.WouldDrawEncounterCard timing whoMatcher -> case window' of
+    Window t (Window.WouldDrawEncounterCard who) | t == timing ->
+      matchWho iid who whoMatcher
     _ -> pure False
   Matcher.Discarded timing whoMatcher cardMatcher -> case window' of
     Window t (Window.Discarded who card) | t == timing ->

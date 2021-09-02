@@ -424,6 +424,7 @@ data WindowMatcher
   | DealtDamage Timing Who
   | DealtHorror Timing Who
   | DealtDamageOrHorror Timing Who
+  | WouldDrawEncounterCard Timing Who
   | DrawCard Timing Who ExtendedCardMatcher DeckMatcher
   | PlayCard Timing Who ExtendedCardMatcher
   | PhaseBegins Timing PhaseMatcher

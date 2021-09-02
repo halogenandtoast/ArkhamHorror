@@ -22,10 +22,8 @@ instance HasAbilities env Act where
   getAbilities = genericGetAbilities
 
 instance
-  ( HasName env LocationId
-  , ActRunner env
+  ( ActRunner env
   , HasId LocationId env InvestigatorId
-  , HasCount ResourceCount env LocationId
   , HasModifiersFor env ()
   )
   => RunMessage env Act where

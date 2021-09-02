@@ -505,6 +505,7 @@ newGame investigator = do
     , gameWindowDepth = 0
     , gamePhaseHistory = mempty
     , gameRoundHistory = mempty
+    , gameTurnHistory = mempty
     , gameTurnPlayerInvestigatorId = Just investigatorId
     , gameSeed = seed
     , gameInitialSeed = seed

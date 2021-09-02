@@ -26,8 +26,8 @@ newtype DigDeep2 = DigDeep2 AssetAttrs
 digDeep2 :: AssetCard DigDeep2
 digDeep2 = asset DigDeep2 Cards.digDeep2
 
-instance HasAbilities env DigDeep2 where
-  getAbilities _ _ (DigDeep2 a) = pure
+instance HasAbilities DigDeep2 where
+  getAbilities (DigDeep2 a) =
     [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1

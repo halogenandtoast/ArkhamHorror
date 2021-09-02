@@ -32,9 +32,9 @@ aTearInThePath = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Square, Squiggle])
   )
 
-instance HasAbilities env ATearInThePath where
-  getAbilities iid window (ATearInThePath attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities ATearInThePath where
+  getAbilities (ATearInThePath attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
           attrs
           1

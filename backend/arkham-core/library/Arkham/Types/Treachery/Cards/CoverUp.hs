@@ -31,20 +31,18 @@ coverUpClues :: TreacheryAttrs -> Int
 coverUpClues TreacheryAttrs { treacheryClues } =
   fromJustNote "must be set" treacheryClues
 
-instance HasAbilities env CoverUp where
-  getAbilities _ _ (CoverUp a) =
-    pure
-      $ restrictedAbility
-          a
-          1
-          (OnSameLocation <> CluesOnThis (AtLeast $ Static 1))
-          (ReactionAbility
-            (Matcher.DiscoverClues Timing.When You YourLocation
-            $ AtLeast
-            $ Static 1
-            )
-            Free
+instance HasAbilities CoverUp where
+  getAbilities (CoverUp a) =
+    restrictedAbility
+        a
+        1
+        (OnSameLocation <> CluesOnThis (AtLeast $ Static 1))
+        (ReactionAbility
+          (Matcher.DiscoverClues Timing.When You YourLocation $ AtLeast $ Static
+            1
           )
+          Free
+        )
       : [ restrictedAbility a 2 (CluesOnThis $ AtLeast $ Static 1)
           $ ForcedAbility
           $ OrWindowMatcher

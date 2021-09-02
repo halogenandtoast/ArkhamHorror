@@ -10,7 +10,7 @@ data TokenModifier = PositiveModifier Int | NegativeModifier Int | ZeroModifier 
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Monoid TokenModifier where
-  mempty = ZeroModifier
+  mempty = NoModifier
 
 -- TODO: this is a huge bandaid and might not work later
 instance Semigroup TokenModifier where

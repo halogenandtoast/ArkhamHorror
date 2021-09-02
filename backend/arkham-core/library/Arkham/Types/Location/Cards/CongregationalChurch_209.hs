@@ -27,11 +27,10 @@ congregationalChurch_209 = location
   Diamond
   [Plus, Triangle, Squiggle]
 
-instance HasAbilities env CongregationalChurch_209 where
-  getAbilities iid window (CongregationalChurch_209 attrs) = do
-    rest <- withDrawCardUnderneathAction iid window attrs
-    pure
-      $ [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
+instance HasAbilities CongregationalChurch_209 where
+  getAbilities (CongregationalChurch_209 attrs) = do
+    let rest = withDrawCardUnderneathAction attrs
+    [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
             [ActionCost 1, HandDiscardCost 1 Nothing mempty mempty]
         | locationRevealed attrs
         ]

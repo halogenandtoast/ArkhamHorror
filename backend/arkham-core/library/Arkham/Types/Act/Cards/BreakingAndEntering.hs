@@ -29,8 +29,8 @@ breakingAndEntering :: ActCard BreakingAndEntering
 breakingAndEntering =
   act (2, A) BreakingAndEntering Cards.breakingAndEntering Nothing
 
-instance HasAbilities env BreakingAndEntering where
-  getAbilities _ _ (BreakingAndEntering x) = pure
+instance HasAbilities BreakingAndEntering where
+  getAbilities (BreakingAndEntering x) =
     [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ locationIs
         Cards.exhibitHallRestrictedHall
     ]

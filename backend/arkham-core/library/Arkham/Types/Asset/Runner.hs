@@ -24,7 +24,7 @@ type AssetRunner env
     , HasModifiersFor env ()
     , HasList UsedAbility env ()
     , HasList CommittedCard env InvestigatorId
-    , HasAbilities env LocationId
+    , HasAbilities LocationId
     , HasId LeadInvestigatorId env ()
     , HasCount ActionRemainingCount env InvestigatorId
     , HasCount AssetCount env (InvestigatorId, [Trait])

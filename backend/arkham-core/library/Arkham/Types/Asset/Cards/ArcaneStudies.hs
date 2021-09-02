@@ -26,8 +26,8 @@ newtype ArcaneStudies = ArcaneStudies AssetAttrs
 arcaneStudies :: AssetCard ArcaneStudies
 arcaneStudies = asset ArcaneStudies Cards.arcaneStudies
 
-instance HasAbilities env ArcaneStudies where
-  getAbilities _ _ (ArcaneStudies a) = pure
+instance HasAbilities ArcaneStudies where
+  getAbilities (ArcaneStudies a) =
     [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1

@@ -36,9 +36,9 @@ sanMarcoBasilica = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasAbilities env SanMarcoBasilica where
-  getAbilities iid window (SanMarcoBasilica attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities SanMarcoBasilica where
+  getAbilities (SanMarcoBasilica attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
       | locationRevealed attrs
       ]

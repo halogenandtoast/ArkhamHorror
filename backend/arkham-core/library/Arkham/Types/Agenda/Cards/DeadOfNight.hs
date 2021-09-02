@@ -18,7 +18,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype DeadOfNight = DeadOfNight AgendaAttrs
-  deriving anyclass (IsAgenda, HasAbilities env)
+  deriving anyclass (IsAgenda, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deadOfNight :: AgendaCard DeadOfNight

@@ -30,15 +30,15 @@ southsideMasBoardingHouse = location
   Square
   [Diamond, Plus, Circle]
 
-instance HasAbilities env SouthsideMasBoardingHouse where
-  getAbilities iid window (SouthsideMasBoardingHouse x) | locationRevealed x =
-    withBaseAbilities iid window x $ pure
+instance HasAbilities SouthsideMasBoardingHouse where
+  getAbilities (SouthsideMasBoardingHouse x) | locationRevealed x =
+    withBaseAbilities x $
       [ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 1)
         & abilityLimitL
         .~ PlayerLimit PerGame 1
       ]
-  getAbilities iid window (SouthsideMasBoardingHouse attrs) =
-    getAbilities iid window attrs
+  getAbilities (SouthsideMasBoardingHouse attrs) =
+    getAbilities attrs
 
 instance LocationRunner env => RunMessage env SouthsideMasBoardingHouse where
   runMessage msg l@(SouthsideMasBoardingHouse attrs) = case msg of

@@ -19,7 +19,7 @@ import Arkham.Types.Target
 
 newtype CarnevaleSentinel = CarnevaleSentinel EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 -- TODO: Should use spawnAtL for this
 carnevaleSentinel :: EnemyCard CarnevaleSentinel

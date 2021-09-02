@@ -29,18 +29,17 @@ angeredSpirits :: TreacheryCard AngeredSpirits
 angeredSpirits =
   treacheryWith AngeredSpirits Cards.angeredSpirits (resourcesL ?~ 0)
 
-instance HasAbilities env AngeredSpirits where
-  getAbilities _ _ (AngeredSpirits a) = do
-    pure
-      $ restrictedAbility
-          a
-          1
-          OnSameLocation
-          (FastAbility
-          $ ExhaustAssetCost
-          $ AssetWithTrait Spell
-          <> AssetOwnedBy You
-          )
+instance HasAbilities AngeredSpirits where
+  getAbilities (AngeredSpirits a) =
+    restrictedAbility
+        a
+        1
+        OnSameLocation
+        (FastAbility
+        $ ExhaustAssetCost
+        $ AssetWithTrait Spell
+        <> AssetOwnedBy You
+        )
       : [ restrictedAbility a 2 (ChargesOnThis $ EqualTo $ Static 0)
           $ ForcedAbility
           $ OrWindowMatcher

@@ -29,15 +29,15 @@ youngDeepOne = enemyWith
   (1, 1)
   (preyL .~ LowestSkill SkillCombat)
 
-instance HasAbilities env YoungDeepOne where
-  getAbilities iid window (YoungDeepOne a) =
-    withBaseAbilities iid window a $ pure
-      [ mkAbility a 1
-        $ ForcedAbility
-        $ EnemyEngaged Timing.After You
-        $ EnemyWithId
-        $ toId a
-      ]
+instance HasAbilities YoungDeepOne where
+  getAbilities (YoungDeepOne a) = withBaseAbilities
+    a
+    [ mkAbility a 1
+      $ ForcedAbility
+      $ EnemyEngaged Timing.After You
+      $ EnemyWithId
+      $ toId a
+    ]
 
 instance EnemyRunner env => RunMessage env YoungDeepOne where
   runMessage msg e@(YoungDeepOne attrs) = case msg of

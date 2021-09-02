@@ -12,7 +12,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype MindWipe3 = MindWipe3 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mindWipe3 :: EventCard MindWipe3

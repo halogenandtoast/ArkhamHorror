@@ -43,8 +43,8 @@ instance (HasId LocationId env InvestigatorId) => HasModifiersFor env BrotherXav
         ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env BrotherXavier1 where
-  getAbilities _ _ (BrotherXavier1 a) = pure
+instance HasAbilities BrotherXavier1 where
+  getAbilities (BrotherXavier1 a) =
     [ restrictedAbility a 1 OwnsThis
         $ ReactionAbility
             (AssetDefeated Timing.When $ AssetWithId $ toId a)

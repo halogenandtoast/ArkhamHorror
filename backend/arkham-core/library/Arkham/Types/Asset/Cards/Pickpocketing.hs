@@ -23,8 +23,8 @@ newtype Pickpocketing = Pickpocketing AssetAttrs
 pickpocketing :: AssetCard Pickpocketing
 pickpocketing = asset Pickpocketing Cards.pickpocketing
 
-instance HasAbilities env Pickpocketing where
-  getAbilities _ _ (Pickpocketing a) = pure
+instance HasAbilities Pickpocketing where
+  getAbilities (Pickpocketing a) =
     [ restrictedAbility a 1 OwnsThis $ ReactionAbility
         (EnemyEvaded Timing.After You AnyEnemy)
         (ExhaustCost $ toTarget a)

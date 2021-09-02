@@ -35,13 +35,13 @@ instance (EntityInstanceRunner env, InnerInvestigatorRunner env) => RunMessage e
   runMessage msg (SkillInstance x) = SkillInstance <$> runMessage msg x
   runMessage msg (TreacheryInstance x) = TreacheryInstance <$> runMessage msg x
 
-instance EntityInstanceRunner env => HasAbilities env EntityInstance where
-  getAbilities iid window (AssetInstance x) = getAbilities iid window x
-  getAbilities iid window (EnemyInstance x) = getAbilities iid window x
-  getAbilities iid window (EventInstance x) = getAbilities iid window x
-  getAbilities iid window (LocationInstance x) = getAbilities iid window x
-  getAbilities iid window (SkillInstance x) = getAbilities iid window x
-  getAbilities iid window (TreacheryInstance x) = getAbilities iid window x
+instance HasAbilities EntityInstance where
+  getAbilities (AssetInstance x) = getAbilities x
+  getAbilities (EnemyInstance x) = getAbilities x
+  getAbilities (EventInstance x) = getAbilities x
+  getAbilities (LocationInstance x) = getAbilities x
+  getAbilities (SkillInstance x) = getAbilities x
+  getAbilities (TreacheryInstance x) = getAbilities x
 
 toCardInstance :: InvestigatorId -> Card -> EntityInstance
 toCardInstance iid card = case toCardType card of
@@ -68,7 +68,7 @@ type EntityInstanceRunner env
   = ( ActionRunner env
     , Query LocationMatcher env
     , Query ExtendedCardMatcher env
-    , HasAbilities env LocationId
+    , HasAbilities LocationId
     , HasSkillValue env InvestigatorId
     , HasHistory env
     , HasId CardCode env TreacheryId

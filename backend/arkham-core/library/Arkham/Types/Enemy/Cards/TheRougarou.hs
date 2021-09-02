@@ -40,10 +40,10 @@ isEngage ability = case abilityType ability of
   ActionAbility (Just Action.Engage) _ -> True
   _ -> False
 
-instance HasAbilities env TheRougarou where
-  getAbilities iid window (TheRougarou (attrs `With` meta)) = do
-    actions' <- getAbilities iid window attrs
+instance HasAbilities TheRougarou where
+  getAbilities (TheRougarou (attrs `With` meta)) = do
     let
+      actions' = getAbilities attrs
       forcedAbility =
         restrictedAbility
             attrs
@@ -61,11 +61,8 @@ instance HasAbilities env TheRougarou where
               $ ActionAbility (Just Action.Engage)
               $ GroupClueCost (ByPlayerCount 1 1 2 2) Anywhere
               <> ActionCost 1
-        pure
-          $ forcedAbility
-          : filter (not . isEngage) actions'
-          <> [engageAction]
-      else pure $ forcedAbility : actions'
+        forcedAbility : filter (not . isEngage) actions' <> [engageAction]
+      else forcedAbility : actions'
 
 instance EnemyRunner env => RunMessage env TheRougarou where
   runMessage msg (TheRougarou (attrs@EnemyAttrs {..} `With` metadata)) =

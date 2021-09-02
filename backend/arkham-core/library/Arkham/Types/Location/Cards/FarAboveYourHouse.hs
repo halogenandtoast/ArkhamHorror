@@ -27,9 +27,9 @@ farAboveYourHouse = location
   Moon
   [Triangle]
 
-instance HasAbilities env FarAboveYourHouse where
-  getAbilities i window (FarAboveYourHouse attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities FarAboveYourHouse where
+  getAbilities (FarAboveYourHouse attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ RevealLocation Timing.After You

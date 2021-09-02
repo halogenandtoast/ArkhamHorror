@@ -34,9 +34,9 @@ type InnerInvestigatorRunner env
     , Query InvestigatorMatcher env
     , HasCount UsesCount env (AssetId, UseType)
     , HasList SlotType env AssetId
-    , ( HasAbilities env ()
-      , HasAbilities env AssetId
-      , HasAbilities env ActionType
+    , ( HasAbilities ()
+      , HasAbilities AssetId
+      , HasAbilities ActionType
       )
     , ( HasCount ActionTakenCount env InvestigatorId
       , HasCount ActionRemainingCount env InvestigatorId

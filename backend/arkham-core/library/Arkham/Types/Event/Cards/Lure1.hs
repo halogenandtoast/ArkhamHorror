@@ -25,8 +25,8 @@ newtype Lure1 = Lure1 EventAttrs
 lure1 :: EventCard Lure1
 lure1 = event Lure1 Cards.lure1
 
-instance HasAbilities env Lure1 where
-  getAbilities _ _ (Lure1 attrs) = pure
+instance HasAbilities Lure1 where
+  getAbilities (Lure1 attrs) =
     [restrictedAbility attrs 1 OwnsThis $ ForcedAbility $ RoundEnds Timing.When]
 
 instance HasModifiersFor env Lure1 where

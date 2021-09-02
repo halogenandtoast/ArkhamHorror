@@ -17,7 +17,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype SeekingAnswers = SeekingAnswers EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 seekingAnswers :: EventCard SeekingAnswers

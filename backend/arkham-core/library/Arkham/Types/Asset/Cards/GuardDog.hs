@@ -26,8 +26,8 @@ newtype GuardDog = GuardDog AssetAttrs
 guardDog :: AssetCard GuardDog
 guardDog = ally GuardDog Cards.guardDog (3, 1)
 
-instance HasAbilities env GuardDog where
-  getAbilities _ _ (GuardDog x) = pure
+instance HasAbilities GuardDog where
+  getAbilities (GuardDog x) =
     [ restrictedAbility
         x
         1

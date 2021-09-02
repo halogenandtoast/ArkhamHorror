@@ -11,7 +11,7 @@ import Arkham.Types.SkillType
 
 newtype ArkhamWoodsOldHouse = ArkhamWoodsOldHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 arkhamWoodsOldHouse :: LocationCard ArkhamWoodsOldHouse
 arkhamWoodsOldHouse = locationWith

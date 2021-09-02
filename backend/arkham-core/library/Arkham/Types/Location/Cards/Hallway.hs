@@ -9,7 +9,7 @@ import Arkham.Types.Location.Attrs
 
 newtype Hallway = Hallway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hallway :: LocationCard Hallway
 hallway =

@@ -24,8 +24,8 @@ newtype FindingANewWay = FindingANewWay ActAttrs
 findingANewWay :: ActCard FindingANewWay
 findingANewWay = act (4, A) FindingANewWay Cards.findingANewWay Nothing
 
-instance HasAbilities env FindingANewWay where
-  getAbilities _ _ (FindingANewWay x) = pure
+instance HasAbilities FindingANewWay where
+  getAbilities (FindingANewWay x) =
     [ mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1
     , restrictedAbility x 2 AllUndefeatedInvestigatorsResigned
     $ Objective

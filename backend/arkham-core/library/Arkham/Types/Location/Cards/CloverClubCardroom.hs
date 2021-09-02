@@ -30,18 +30,17 @@ cloverClubCardroom = location
   Triangle
   [Circle, Square, Diamond]
 
-instance HasAbilities env CloverClubCardroom where
-  getAbilities iid window (CloverClubCardroom attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility
-              attrs
-              1
-              (OnAct 1)
-              (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
-            & (abilityLimitL .~ GroupLimit PerRound 1)
-        | locationRevealed attrs
-        ]
+instance HasAbilities CloverClubCardroom where
+  getAbilities (CloverClubCardroom attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+          attrs
+          1
+          (OnAct 1)
+          (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
+        & (abilityLimitL .~ GroupLimit PerRound 1)
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env CloverClubCardroom where
   runMessage msg l@(CloverClubCardroom attrs) = case msg of

@@ -29,8 +29,8 @@ thirtyTwoColt :: AssetCard ThirtyTwoColt
 thirtyTwoColt =
   assetWith ThirtyTwoColt Cards.thirtyTwoColt (slotsL .~ [HandSlot])
 
-instance HasAbilities env ThirtyTwoColt where
-  getAbilities _ _ (ThirtyTwoColt a) = pure
+instance HasAbilities ThirtyTwoColt where
+  getAbilities (ThirtyTwoColt a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])

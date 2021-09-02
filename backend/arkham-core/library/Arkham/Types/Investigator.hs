@@ -77,11 +77,11 @@ hasResigned = view resignedL . toAttrs
 instance {-# OVERLAPPING #-} HasTraits Investigator where
   toTraits = toTraits . toAttrs
 
-instance EntityInstanceRunner env => HasAbilities env Investigator where
-  getAbilities iid window investigator = do
+instance EntityInstanceRunner env => HasAbilities Investigator where
+  getAbilities investigator = do
     modifiers' <- getModifiers (toSource investigator) (toTarget investigator)
     if Blank `elem` modifiers'
-      then getAbilities iid window (toAttrs investigator)
+      then getAbilities (toAttrs investigator)
       else genericGetAbilities iid window investigator
 
 instance InvestigatorRunner env => RunMessage env Investigator where

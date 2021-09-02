@@ -39,20 +39,18 @@ instance HasModifiersFor env FoulSwamp where
     $ toModifiers attrs [CannotHealHorror, CannotCancelHorror]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env FoulSwamp where
-  getAbilities iid window (FoulSwamp attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ restrictedAbility
-          attrs
-          1
-          Here
-          (ActionAbility Nothing $ Costs
-            [ ActionCost 1
-            , UpTo 3 (HorrorCost (toSource attrs) (InvestigatorTarget iid) 1)
-            ]
-          )
-      | locationRevealed attrs
-      ]
+instance HasAbilities FoulSwamp where
+  getAbilities (FoulSwamp attrs) =
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            Here
+            (ActionAbility Nothing $ Costs
+              [ActionCost 1, UpTo 3 (HorrorCost (toSource attrs) YouTarget 1)]
+            )
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env FoulSwamp where
   runMessage msg l@(FoulSwamp attrs) = case msg of

@@ -23,8 +23,8 @@ newtype StrayCat = StrayCat AssetAttrs
 strayCat :: AssetCard StrayCat
 strayCat = ally StrayCat Cards.strayCat (1, 0)
 
-instance HasAbilities env StrayCat where
-  getAbilities _ _ (StrayCat a) = pure
+instance HasAbilities StrayCat where
+  getAbilities (StrayCat a) =
     [restrictedAbility a 1 OwnsThis $ FastAbility $ DiscardCost $ toTarget a]
 
 instance AssetRunner env => RunMessage env StrayCat where

@@ -37,8 +37,8 @@ skidsOToole = SkidsOToole $ baseAttrs
     }
   [Criminal]
 
-instance HasAbilities env SkidsOToole where
-  getAbilities _ _ (SkidsOToole a) = pure
+instance HasAbilities SkidsOToole where
+  getAbilities (SkidsOToole a) =
     [ restrictedAbility
           a
           1

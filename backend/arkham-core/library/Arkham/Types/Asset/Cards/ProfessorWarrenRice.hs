@@ -33,8 +33,8 @@ instance HasModifiersFor env ProfessorWarrenRice where
     pure [ toModifier a (SkillModifier SkillIntellect 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env ProfessorWarrenRice where
-  getAbilities _ _ (ProfessorWarrenRice a) = pure
+instance HasAbilities ProfessorWarrenRice where
+  getAbilities (ProfessorWarrenRice a) =
     [ restrictedAbility a 1 OwnsThis $ ReactionAbility
         (DiscoveringLastClue Timing.After You YourLocation)
         (ExhaustCost $ toTarget a)

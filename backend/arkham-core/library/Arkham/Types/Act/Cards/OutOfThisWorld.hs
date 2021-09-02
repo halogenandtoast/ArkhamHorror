@@ -29,9 +29,9 @@ outOfThisWorld = act
   Cards.outOfThisWorld
   (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
-instance HasAbilities env OutOfThisWorld where
-  getAbilities iid window (OutOfThisWorld x) = withBaseAbilities iid window x
-    $ pure [mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1]
+instance HasAbilities OutOfThisWorld where
+  getAbilities (OutOfThisWorld x) =
+    withBaseAbilities x [mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1]
 
 instance ActRunner env => RunMessage env OutOfThisWorld where
   runMessage msg a@(OutOfThisWorld attrs@ActAttrs {..}) = case msg of

@@ -26,8 +26,8 @@ theEndOfAllThings :: AgendaCard TheEndOfAllThings
 theEndOfAllThings =
   agenda (4, A) TheEndOfAllThings Cards.theEndOfAllThings (Static 2)
 
-instance HasAbilities env TheEndOfAllThings where
-  getAbilities _ _ (TheEndOfAllThings x) = pure
+instance HasAbilities TheEndOfAllThings where
+  getAbilities (TheEndOfAllThings x) =
     [ mkAbility x 1 $ ForcedAbility $ MovedBy
       Timing.After
       You

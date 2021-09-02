@@ -30,9 +30,9 @@ easttownArkhamPoliceStation = location
   Moon
   [Circle, Triangle]
 
-instance HasAbilities env EasttownArkhamPoliceStation where
-  getAbilities iid window (EasttownArkhamPoliceStation attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities EasttownArkhamPoliceStation where
+  getAbilities (EasttownArkhamPoliceStation attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1)
           & (abilityLimitL .~ PlayerLimit PerGame 1)
       | locationRevealed attrs

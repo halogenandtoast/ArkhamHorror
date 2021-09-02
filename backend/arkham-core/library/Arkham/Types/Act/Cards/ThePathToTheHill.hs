@@ -24,8 +24,8 @@ newtype ThePathToTheHill = ThePathToTheHill ActAttrs
 thePathToTheHill :: ActCard ThePathToTheHill
 thePathToTheHill = act (1, A) ThePathToTheHill Cards.thePathToTheHill Nothing
 
-instance HasAbilities env ThePathToTheHill where
-  getAbilities _ _ (ThePathToTheHill x) = pure
+instance HasAbilities ThePathToTheHill where
+  getAbilities (ThePathToTheHill x) =
     [ mkAbility x 1 $ Objective $ ForcedAbilityWithCost
         AnyWindow
         (GroupClueCost (PerPlayer 2) Anywhere)

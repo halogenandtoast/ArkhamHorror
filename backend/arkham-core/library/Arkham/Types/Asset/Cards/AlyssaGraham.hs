@@ -25,8 +25,8 @@ newtype AlyssaGraham = AlyssaGraham AssetAttrs
 alyssaGraham :: AssetCard AlyssaGraham
 alyssaGraham = ally AlyssaGraham Cards.alyssaGraham (1, 3)
 
-instance HasAbilities env AlyssaGraham where
-  getAbilities _ _ (AlyssaGraham a) = pure
+instance HasAbilities AlyssaGraham where
+  getAbilities (AlyssaGraham a) =
     [ restrictedAbility a 1 OwnsThis $ FastAbility $ Costs
         [ExhaustCost (toTarget a)]
     ]

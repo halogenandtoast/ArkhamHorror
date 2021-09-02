@@ -24,8 +24,8 @@ newtype Painkillers = Painkillers AssetAttrs
 painkillers :: AssetCard Painkillers
 painkillers = asset Painkillers Cards.painkillers
 
-instance HasAbilities env Painkillers where
-  getAbilities _ _ (Painkillers a) = pure
+instance HasAbilities Painkillers where
+  getAbilities (Painkillers a) =
     [ restrictedAbility
         a
         1

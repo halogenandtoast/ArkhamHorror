@@ -36,8 +36,8 @@ instance HasModifiersFor env ToothOfEztli where
       [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env ToothOfEztli where
-  getAbilities _ _ (ToothOfEztli x) = pure
+instance HasAbilities ToothOfEztli where
+  getAbilities (ToothOfEztli x) =
     [ restrictedAbility
         x
         1

@@ -26,8 +26,8 @@ searchingForAnswers :: ActCard SearchingForAnswers
 searchingForAnswers =
   act (1, A) SearchingForAnswers Cards.searchingForAnswers Nothing
 
-instance HasAbilities env SearchingForAnswers where
-  getAbilities _ _ (SearchingForAnswers x) = pure
+instance HasAbilities SearchingForAnswers where
+  getAbilities (SearchingForAnswers x) =
     [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ LocationWithTitle
         "The Hidden Chamber"
     ]

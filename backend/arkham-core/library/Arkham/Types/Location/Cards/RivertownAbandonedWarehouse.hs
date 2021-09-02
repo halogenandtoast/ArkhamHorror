@@ -31,9 +31,9 @@ rivertownAbandonedWarehouse = location
   Circle
   [Moon, Diamond, Square, Squiggle, Hourglass]
 
-instance HasAbilities env RivertownAbandonedWarehouse where
-  getAbilities iid window (RivertownAbandonedWarehouse attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities RivertownAbandonedWarehouse where
+  getAbilities (RivertownAbandonedWarehouse attrs) =
+    withBaseAbilities attrs $
       [ mkAbility
             attrs
             1

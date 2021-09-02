@@ -37,9 +37,9 @@ instance HasModifiersFor env FauborgMarigny where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env FauborgMarigny where
-  getAbilities iid window (FauborgMarigny a) =
-    withBaseAbilities iid window a $ pure [locationResignAction a]
+instance HasAbilities FauborgMarigny where
+  getAbilities (FauborgMarigny a) =
+    withBaseAbilities a $ [locationResignAction a]
 
 instance LocationRunner env => RunMessage env FauborgMarigny where
   runMessage msg (FauborgMarigny attrs) =

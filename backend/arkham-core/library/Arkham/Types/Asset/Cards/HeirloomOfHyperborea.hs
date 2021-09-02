@@ -22,8 +22,8 @@ heirloomOfHyperborea :: AssetCard HeirloomOfHyperborea
 heirloomOfHyperborea =
   accessory HeirloomOfHyperborea Cards.heirloomOfHyperborea
 
-instance HasAbilities env HeirloomOfHyperborea where
-  getAbilities _ _ (HeirloomOfHyperborea x) = pure
+instance HasAbilities HeirloomOfHyperborea where
+  getAbilities (HeirloomOfHyperborea x) =
     [ restrictedAbility x 1 OwnsThis $ ReactionAbility
         (PlayCard Timing.After You (BasicCardMatch $ CardWithTrait Spell))
         Free

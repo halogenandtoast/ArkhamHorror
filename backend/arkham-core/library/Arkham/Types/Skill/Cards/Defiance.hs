@@ -15,7 +15,7 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype Defiance = Defiance SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 defiance :: SkillCard Defiance

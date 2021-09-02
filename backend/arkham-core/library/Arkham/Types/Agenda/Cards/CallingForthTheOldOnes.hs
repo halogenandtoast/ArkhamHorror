@@ -13,7 +13,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 
 newtype CallingForthTheOldOnes = CallingForthTheOldOnes AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 callingForthTheOldOnes :: AgendaCard CallingForthTheOldOnes

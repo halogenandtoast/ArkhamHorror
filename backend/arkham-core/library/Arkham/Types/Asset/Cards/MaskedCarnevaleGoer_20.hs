@@ -28,8 +28,8 @@ maskedCarnevaleGoer_20 :: AssetCard MaskedCarnevaleGoer_20
 maskedCarnevaleGoer_20 =
   asset MaskedCarnevaleGoer_20 Cards.maskedCarnevaleGoer_20
 
-instance HasAbilities env MaskedCarnevaleGoer_20 where
-  getAbilities _ _ (MaskedCarnevaleGoer_20 x) = pure
+instance HasAbilities MaskedCarnevaleGoer_20 where
+  getAbilities (MaskedCarnevaleGoer_20 x) =
     [ restrictedAbility
         x
         1

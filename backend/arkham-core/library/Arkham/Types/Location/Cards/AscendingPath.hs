@@ -41,9 +41,9 @@ instance HasModifiersFor env AscendingPath where
     $ toModifiers l [ Blocked | not locationRevealed ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env AscendingPath where
-  getAbilities iid window (AscendingPath attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities AscendingPath where
+  getAbilities (AscendingPath attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
             attrs
             1

@@ -21,7 +21,7 @@ import Arkham.Types.Window (Window(..))
 import qualified Arkham.Types.Window as Window
 
 newtype UncageTheSoul = UncageTheSoul EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 uncageTheSoul :: EventCard UncageTheSoul

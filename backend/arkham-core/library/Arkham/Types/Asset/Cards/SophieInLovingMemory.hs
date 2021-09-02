@@ -31,8 +31,8 @@ sophieInLovingMemory = assetWith
   Cards.sophieInLovingMemory
   (canLeavePlayByNormalMeansL .~ False)
 
-instance HasAbilities env SophieInLovingMemory where
-  getAbilities _ _ (SophieInLovingMemory x) = pure
+instance HasAbilities SophieInLovingMemory where
+  getAbilities (SophieInLovingMemory x) =
     [ restrictedAbility x 1 (OwnsThis <> DuringSkillTest AnySkillTest)
     $ FastAbility
     $ DirectDamageCost (toSource x) You 1

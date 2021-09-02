@@ -26,8 +26,8 @@ newtype InTheKnow1 = InTheKnow1 AssetAttrs
 inTheKnow1 :: AssetCard InTheKnow1
 inTheKnow1 = asset InTheKnow1 Cards.inTheKnow1
 
-instance HasAbilities env InTheKnow1 where
-  getAbilities _ _ (InTheKnow1 attrs) = pure
+instance HasAbilities InTheKnow1 where
+  getAbilities (InTheKnow1 attrs) =
     [ restrictedAbility attrs 1 OwnsThis
       $ ActionAbility (Just Action.Investigate)
       $ ActionCost 1

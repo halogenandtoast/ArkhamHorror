@@ -30,8 +30,8 @@ newtype InEveryShadow = InEveryShadow AgendaAttrs
 inEveryShadow :: AgendaCard InEveryShadow
 inEveryShadow = agenda (3, A) InEveryShadow Cards.inEveryShadow (Static 7)
 
-instance HasAbilities env InEveryShadow where
-  getAbilities _ _ (InEveryShadow x) = pure
+instance HasAbilities InEveryShadow where
+  getAbilities (InEveryShadow x) =
     [ mkAbility x 1 $ ForcedAbility $ EnemySpawns Timing.When Anywhere $ enemyIs
         Cards.huntingHorror
     ]

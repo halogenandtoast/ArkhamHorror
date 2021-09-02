@@ -26,8 +26,8 @@ newtype RiteOfSeeking = RiteOfSeeking AssetAttrs
 riteOfSeeking :: AssetCard RiteOfSeeking
 riteOfSeeking = arcane RiteOfSeeking Cards.riteOfSeeking
 
-instance HasAbilities env RiteOfSeeking where
-  getAbilities _ _ (RiteOfSeeking a) = pure
+instance HasAbilities RiteOfSeeking where
+  getAbilities (RiteOfSeeking a) =
     [ restrictedAbility
         a
         1

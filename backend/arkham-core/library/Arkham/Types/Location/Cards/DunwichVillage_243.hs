@@ -32,20 +32,19 @@ dunwichVillage_243 = location
   Circle
   [Triangle, Square, Diamond]
 
-instance HasAbilities env DunwichVillage_243 where
-  getAbilities iid window (DunwichVillage_243 x) =
-    withResignAction iid window x $ do
-      pure
-        [ restrictedAbility
-            x
-            1
-            (Here <> EnemyCriteria
-              (EnemyExists $ EnemyWithTitle "Brood of Yog-Sothoth")
-            )
-          $ ActionAbility Nothing
-          $ ActionCost 1
-        | locationRevealed x
-        ]
+instance HasAbilities DunwichVillage_243 where
+  getAbilities (DunwichVillage_243 x) = withResignAction
+    x
+    [ restrictedAbility
+        x
+        1
+        (Here <> EnemyCriteria
+          (EnemyExists $ EnemyWithTitle "Brood of Yog-Sothoth")
+        )
+      $ ActionAbility Nothing
+      $ ActionCost 1
+    | locationRevealed x
+    ]
 
 instance LocationRunner env => RunMessage env DunwichVillage_243 where
   runMessage msg l@(DunwichVillage_243 attrs) = case msg of

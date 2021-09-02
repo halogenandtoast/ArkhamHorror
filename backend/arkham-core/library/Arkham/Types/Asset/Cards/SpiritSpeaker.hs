@@ -25,8 +25,8 @@ newtype SpiritSpeaker = SpiritSpeaker AssetAttrs
 spiritSpeaker :: AssetCard SpiritSpeaker
 spiritSpeaker = asset SpiritSpeaker Cards.spiritSpeaker
 
-instance HasAbilities env SpiritSpeaker where
-  getAbilities _ _ (SpiritSpeaker attrs) = pure
+instance HasAbilities SpiritSpeaker where
+  getAbilities (SpiritSpeaker attrs) =
     [ restrictedAbility
         attrs
         1

@@ -23,8 +23,8 @@ newtype DrWilliamTMaleson = DrWilliamTMaleson AssetAttrs
 drWilliamTMaleson :: AssetCard DrWilliamTMaleson
 drWilliamTMaleson = ally DrWilliamTMaleson Cards.drWilliamTMaleson (2, 2)
 
-instance HasAbilities env DrWilliamTMaleson where
-  getAbilities _ _ (DrWilliamTMaleson attrs) = pure
+instance HasAbilities DrWilliamTMaleson where
+  getAbilities (DrWilliamTMaleson attrs) =
     [ restrictedAbility
         attrs
         1

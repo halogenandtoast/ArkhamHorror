@@ -27,8 +27,8 @@ newtype GetToTheBoats = GetToTheBoats ActAttrs
 getToTheBoats :: ActCard GetToTheBoats
 getToTheBoats = act (2, A) GetToTheBoats Cards.getToTheBoats Nothing
 
-instance HasAbilities env GetToTheBoats where
-  getAbilities _ _ (GetToTheBoats x) = pure
+instance HasAbilities GetToTheBoats where
+  getAbilities (GetToTheBoats x) =
     [ mkAbility x 1 $ ForcedAbility $ PhaseBegins Timing.After $ PhaseIs
       MythosPhase
     , restrictedAbility

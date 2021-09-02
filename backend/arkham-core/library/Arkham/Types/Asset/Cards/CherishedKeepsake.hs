@@ -8,16 +8,13 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 
 newtype CherishedKeepsake = CherishedKeepsake AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 cherishedKeepsake :: AssetCard CherishedKeepsake
 cherishedKeepsake =
   accessoryWith CherishedKeepsake Cards.cherishedKeepsake (sanityL ?~ 2)
 
-instance HasAbilities env CherishedKeepsake where
-  getAbilities i window (CherishedKeepsake x) = getAbilities i window x
-
-instance (AssetRunner env) => RunMessage env CherishedKeepsake where
+instance AssetRunner env => RunMessage env CherishedKeepsake where
   runMessage msg (CherishedKeepsake attrs) =
     CherishedKeepsake <$> runMessage msg attrs

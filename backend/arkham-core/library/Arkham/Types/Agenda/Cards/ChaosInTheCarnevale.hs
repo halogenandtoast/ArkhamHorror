@@ -31,8 +31,8 @@ chaosInTheCarnevale :: AgendaCard ChaosInTheCarnevale
 chaosInTheCarnevale =
   agenda (3, A) ChaosInTheCarnevale Cards.chaosInTheCarnevale (Static 3)
 
-instance HasAbilities env ChaosInTheCarnevale where
-  getAbilities _ _ (ChaosInTheCarnevale x) = pure
+instance HasAbilities ChaosInTheCarnevale where
+  getAbilities (ChaosInTheCarnevale x) =
     [ mkAbility x 1
       $ ForcedAbility
       $ EnemySpawns Timing.After Anywhere

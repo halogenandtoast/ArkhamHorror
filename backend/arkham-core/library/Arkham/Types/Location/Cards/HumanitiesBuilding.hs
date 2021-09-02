@@ -27,9 +27,9 @@ humanitiesBuilding = location
   Square
   [Plus, Triangle]
 
-instance HasAbilities env HumanitiesBuilding where
-  getAbilities i window (HumanitiesBuilding attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities HumanitiesBuilding where
+  getAbilities (HumanitiesBuilding attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds
           Timing.When
           You

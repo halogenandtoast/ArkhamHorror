@@ -250,9 +250,6 @@ defeated AssetAttrs {..} =
   maybe False (assetHealthDamage >=) assetHealth
     || maybe False (assetSanityDamage >=) assetSanity
 
-instance HasAbilities env AssetAttrs where
-  getAbilities _ _ _ = pure []
-
 instance
   ( HasSet InvestigatorId env ()
   , HasQueue env

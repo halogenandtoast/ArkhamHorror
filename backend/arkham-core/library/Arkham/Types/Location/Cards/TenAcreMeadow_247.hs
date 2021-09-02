@@ -32,26 +32,25 @@ tenAcreMeadow_247 = location
   Diamond
   [Circle, Triangle, Plus]
 
-instance HasAbilities env TenAcreMeadow_247 where
-  getAbilities iid window (TenAcreMeadow_247 attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility
-              attrs
-              1
-              (Here
-              <> InvestigatorExists
-                   (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
-              <> EnemyCriteria
-                   (EnemyExists
-                   $ EnemyAt YourLocation
-                   <> EnemyWithTrait Abomination
-                   )
-              )
-              (FastAbility Free)
-            & (abilityLimitL .~ GroupLimit PerGame 1)
-        | locationRevealed attrs
-        ]
+instance HasAbilities TenAcreMeadow_247 where
+  getAbilities (TenAcreMeadow_247 attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+          attrs
+          1
+          (Here
+          <> InvestigatorExists
+               (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+          <> EnemyCriteria
+               (EnemyExists
+               $ EnemyAt YourLocation
+               <> EnemyWithTrait Abomination
+               )
+          )
+          (FastAbility Free)
+        & (abilityLimitL .~ GroupLimit PerGame 1)
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env TenAcreMeadow_247 where
   runMessage msg l@(TenAcreMeadow_247 attrs) = case msg of

@@ -40,8 +40,8 @@ rolandBanks = RolandBanks $ baseAttrs
     }
   [Agency, Detective]
 
-instance HasAbilities env RolandBanks where
-  getAbilities _ _ (RolandBanks a) = pure
+instance HasAbilities RolandBanks where
+  getAbilities (RolandBanks a) =
     [ restrictedAbility
           a
           1

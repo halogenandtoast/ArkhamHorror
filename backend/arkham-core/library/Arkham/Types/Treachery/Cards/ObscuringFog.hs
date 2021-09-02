@@ -29,16 +29,16 @@ instance HasModifiersFor env ObscuringFog where
       $ toModifiers attrs [ ShroudModifier 2 | treacheryOnLocation lid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env ObscuringFog where
-  getAbilities _ _ (ObscuringFog a) = case treacheryAttachedTarget a of
-    Just (LocationTarget lid) -> pure
+instance HasAbilities ObscuringFog where
+  getAbilities (ObscuringFog a) = case treacheryAttachedTarget a of
+    Just (LocationTarget lid) ->
       [ mkAbility a 1 $ ForcedAbility $ SkillTestResult
           Timing.After
           Anyone
           (WhileInvestigating $ LocationWithId lid)
           (SuccessResult AnyValue)
       ]
-    _ -> pure []
+    _ -> []
 
 instance TreacheryRunner env => RunMessage env ObscuringFog where
   runMessage msg t@(ObscuringFog attrs@TreacheryAttrs {..}) = case msg of

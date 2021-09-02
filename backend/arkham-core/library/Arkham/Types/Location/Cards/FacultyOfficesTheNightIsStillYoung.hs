@@ -42,9 +42,9 @@ instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
     $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env FacultyOfficesTheNightIsStillYoung where
-  getAbilities iid window (FacultyOfficesTheNightIsStillYoung x) =
-    withBaseAbilities iid window x $ pure $ if locationRevealed x
+instance HasAbilities FacultyOfficesTheNightIsStillYoung where
+  getAbilities (FacultyOfficesTheNightIsStillYoung x) =
+    withBaseAbilities x $ if locationRevealed x
       then
         [ mkAbility x 1
         $ ForcedAbility

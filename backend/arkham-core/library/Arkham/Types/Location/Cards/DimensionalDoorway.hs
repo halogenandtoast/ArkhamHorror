@@ -32,9 +32,9 @@ dimensionalDoorway = location
   Squiggle
   [Triangle, Moon]
 
-instance HasAbilities env DimensionalDoorway where
-  getAbilities iid window (DimensionalDoorway attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities DimensionalDoorway where
+  getAbilities (DimensionalDoorway attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds
           Timing.When
           You

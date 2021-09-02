@@ -25,8 +25,8 @@ newtype BloodPact3 = BloodPact3 AssetAttrs
 bloodPact3 :: AssetCard BloodPact3
 bloodPact3 = asset BloodPact3 Cards.bloodPact3
 
-instance HasAbilities env BloodPact3 where
-  getAbilities _ _ (BloodPact3 x) = pure
+instance HasAbilities BloodPact3 where
+  getAbilities (BloodPact3 x) =
     [ restrictedAbility x idx OwnsThis (FastAbility $ ResourceCost 2)
       & abilityLimitL
       .~ PlayerLimit PerTestOrAbility 1

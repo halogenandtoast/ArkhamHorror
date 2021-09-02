@@ -28,12 +28,11 @@ swampLeech = enemyWith
   (1, 0)
   (spawnAtL ?~ LocationWithTrait Bayou)
 
-instance HasAbilities env SwampLeech where
-  getAbilities i window (SwampLeech attrs) = do
-    actions' <- getAbilities i window attrs
+instance HasAbilities SwampLeech where
+  getAbilities (SwampLeech attrs) = do
+    let actions' = getAbilities attrs
     let base = filter (not . (`abilityIs` Action.Evade)) actions'
-    pure
-      $ base
+    base
       <> [ mkAbility attrs 1
            $ ForcedAbility
            $ EnemyEnters Timing.When (LocationWithoutTrait Bayou)

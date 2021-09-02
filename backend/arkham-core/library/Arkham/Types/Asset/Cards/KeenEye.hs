@@ -27,8 +27,8 @@ newtype KeenEye = KeenEye AssetAttrs
 keenEye :: AssetCard KeenEye
 keenEye = asset KeenEye Cards.keenEye
 
-instance HasAbilities env KeenEye where
-  getAbilities _ _ (KeenEye a) = pure
+instance HasAbilities KeenEye where
+  getAbilities (KeenEye a) =
     [ restrictedAbility a idx OwnsThis (FastAbility $ ResourceCost 2)
     | idx <- [1, 2]
     ]

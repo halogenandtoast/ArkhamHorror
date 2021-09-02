@@ -30,8 +30,9 @@ cloverClubPitBoss = enemyWith
   (2, 0)
   (preyL .~ HighestSkill SkillIntellect)
 
-instance HasAbilities env CloverClubPitBoss where
-  getAbilities i w (CloverClubPitBoss x) = withBaseAbilities i w x $ pure
+instance HasAbilities CloverClubPitBoss where
+  getAbilities (CloverClubPitBoss x) = withBaseAbilities
+    x
     [ restrictedAbility x 1 OnSameLocation $ ForcedAbility $ GainsClues
         Timing.After
         You

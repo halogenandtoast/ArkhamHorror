@@ -33,15 +33,15 @@ arkhamWoodsQuietGlade = locationWith
   . (revealedSymbolL .~ Moon)
   )
 
-instance HasAbilities env ArkhamWoodsQuietGlade where
-  getAbilities iid window (ArkhamWoodsQuietGlade attrs)
-    | locationRevealed attrs = withBaseAbilities iid window attrs $ pure
+instance HasAbilities ArkhamWoodsQuietGlade where
+  getAbilities (ArkhamWoodsQuietGlade attrs)
+    | locationRevealed attrs = withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
         & abilityLimitL
         .~ PlayerLimit PerTurn 1
       ]
-  getAbilities iid window (ArkhamWoodsQuietGlade attrs) =
-    getAbilities iid window attrs
+  getAbilities (ArkhamWoodsQuietGlade attrs) =
+    getAbilities attrs
 
 instance LocationRunner env => RunMessage env ArkhamWoodsQuietGlade where
   runMessage msg l@(ArkhamWoodsQuietGlade attrs@LocationAttrs {..}) =

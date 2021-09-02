@@ -40,8 +40,8 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler
           pure [ toModifier a (SkillModifier SkillCombat 1) | sameLocation ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env LitaChantler where
-  getAbilities _ _ (LitaChantler a) = pure
+instance HasAbilities LitaChantler where
+  getAbilities (LitaChantler a) =
     [ restrictedAbility
         a
         1

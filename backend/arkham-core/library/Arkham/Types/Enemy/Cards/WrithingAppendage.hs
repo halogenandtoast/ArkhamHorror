@@ -24,20 +24,20 @@ writhingAppendage :: EnemyCard WrithingAppendage
 writhingAppendage =
   enemy WrithingAppendage Cards.writhingAppendage (2, Static 2, 4) (1, 0)
 
-instance HasAbilities env WrithingAppendage where
-  getAbilities iid window (WrithingAppendage attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ mkAbility attrs 1
-      $ ForcedAbility
-      $ EnemyAttacks Timing.After You
-      $ EnemyWithId
-      $ toId attrs
-      , mkAbility attrs 2
-      $ ForcedAbility
-      $ EnemyDefeated Timing.When Anyone
-      $ EnemyWithId
-      $ toId attrs
-      ]
+instance HasAbilities WrithingAppendage where
+  getAbilities (WrithingAppendage attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1
+    $ ForcedAbility
+    $ EnemyAttacks Timing.After You
+    $ EnemyWithId
+    $ toId attrs
+    , mkAbility attrs 2
+    $ ForcedAbility
+    $ EnemyDefeated Timing.When Anyone
+    $ EnemyWithId
+    $ toId attrs
+    ]
 
 instance
   ( HasId (Maybe StoryEnemyId) env CardCode

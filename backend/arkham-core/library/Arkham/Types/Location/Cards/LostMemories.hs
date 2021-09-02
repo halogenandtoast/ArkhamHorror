@@ -33,9 +33,9 @@ lostMemories = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
   )
 
-instance HasAbilities env LostMemories where
-  getAbilities iid window (LostMemories attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities LostMemories where
+  getAbilities (LostMemories attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
           attrs
           1

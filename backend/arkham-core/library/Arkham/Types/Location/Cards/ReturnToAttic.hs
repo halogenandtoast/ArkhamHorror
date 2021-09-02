@@ -28,9 +28,9 @@ returnToAttic = location
   Triangle
   [Square, Moon]
 
-instance HasAbilities env ReturnToAttic where
-  getAbilities i window (ReturnToAttic attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities ReturnToAttic where
+  getAbilities (ReturnToAttic attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ RevealLocation Timing.After You

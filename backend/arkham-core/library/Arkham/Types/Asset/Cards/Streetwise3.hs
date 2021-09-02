@@ -26,8 +26,8 @@ newtype Streetwise3 = Streetwise3 AssetAttrs
 streetwise3 :: AssetCard Streetwise3
 streetwise3 = asset Streetwise3 Cards.streetwise3
 
-instance HasAbilities env Streetwise3 where
-  getAbilities _ _ (Streetwise3 a) = pure
+instance HasAbilities Streetwise3 where
+  getAbilities (Streetwise3 a) =
     [ restrictedAbility
         a
         idx

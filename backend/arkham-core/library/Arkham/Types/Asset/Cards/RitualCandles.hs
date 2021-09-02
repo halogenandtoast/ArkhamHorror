@@ -27,8 +27,8 @@ newtype RitualCandles = RitualCandles AssetAttrs
 ritualCandles :: AssetCard RitualCandles
 ritualCandles = hand RitualCandles Cards.ritualCandles
 
-instance HasAbilities env RitualCandles where
-  getAbilities _ _ (RitualCandles x) = pure
+instance HasAbilities RitualCandles where
+  getAbilities (RitualCandles x) =
     [ restrictedAbility
         x
         1

@@ -18,7 +18,7 @@ import Arkham.Types.Message
 
 newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 investigatingTheTrail :: ActCard InvestigatingTheTrail
 investigatingTheTrail = act

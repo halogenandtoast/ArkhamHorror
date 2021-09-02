@@ -22,8 +22,9 @@ newtype Mobster = Mobster EnemyAttrs
 mobster :: EnemyCard Mobster
 mobster = enemy Mobster Cards.mobster (2, Static 2, 2) (1, 0)
 
-instance HasAbilities env Mobster where
-  getAbilities i w (Mobster x) = withBaseAbilities i w x $ pure
+instance HasAbilities Mobster where
+  getAbilities (Mobster x) = withBaseAbilities
+    x
     [ mkAbility x 1
       $ ForcedAbility
       $ EnemyAttacks Timing.After You

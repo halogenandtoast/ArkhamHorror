@@ -29,8 +29,8 @@ newtype InnocentReveler = InnocentReveler AssetAttrs
 innocentReveler :: AssetCard InnocentReveler
 innocentReveler = ally InnocentReveler Cards.innocentReveler (2, 2)
 
-instance HasAbilities env InnocentReveler where
-  getAbilities _ _ (InnocentReveler x) = pure
+instance HasAbilities InnocentReveler where
+  getAbilities (InnocentReveler x) =
     [ restrictedAbility x 1 (Unowned <> OnSameLocation)
       $ ActionAbility (Just Parley) (ActionCost 1)
     , mkAbility x 1

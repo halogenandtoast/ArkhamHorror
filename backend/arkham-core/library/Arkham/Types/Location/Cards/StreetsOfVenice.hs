@@ -30,9 +30,9 @@ streetsOfVenice = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasAbilities env StreetsOfVenice where
-  getAbilities iid window (StreetsOfVenice attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities StreetsOfVenice where
+  getAbilities (StreetsOfVenice attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here $ FastAbility Free
       | locationRevealed attrs
       ]

@@ -36,15 +36,15 @@ instance Query EnemyMatcher env => HasModifiersFor env HidingSpot where
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env HidingSpot where
-  getAbilities _ _ (HidingSpot x) = pure
+instance HasAbilities HidingSpot where
+  getAbilities (HidingSpot x) =
     [ restrictedAbility
-        x
-        1
-        (EnemyCriteria $ EnemyExistsAtAttachedLocation AnyEnemy)
-      $ ForcedAbility
-      $ PhaseEnds Timing.When
-      $ PhaseIs EnemyPhase
+          x
+          1
+          (EnemyCriteria $ EnemyExistsAtAttachedLocation AnyEnemy)
+        $ ForcedAbility
+        $ PhaseEnds Timing.When
+        $ PhaseIs EnemyPhase
     ]
 
 instance EventRunner env => RunMessage env HidingSpot where

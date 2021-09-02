@@ -25,8 +25,8 @@ keyToTheChamber :: AssetCard KeyToTheChamber
 keyToTheChamber =
   assetWith KeyToTheChamber Cards.keyToTheChamber (isStoryL .~ True)
 
-instance HasAbilities env KeyToTheChamber where
-  getAbilities _ _ (KeyToTheChamber attrs) = pure
+instance HasAbilities KeyToTheChamber where
+  getAbilities (KeyToTheChamber attrs) =
     [ restrictedAbility
         attrs
         1

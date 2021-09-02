@@ -31,8 +31,8 @@ instance HasModifiersFor env Haunted where
       [ AnySkillValue (-1) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env Haunted where
-  getAbilities _ _ (Haunted a) = pure
+instance HasAbilities Haunted where
+  getAbilities (Haunted a) =
     [ restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost
         2
     ]

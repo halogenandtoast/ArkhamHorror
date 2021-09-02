@@ -28,12 +28,12 @@ devoteeOfTheKey = enemyWith
   (1, 1)
   (spawnAtL ?~ LocationWithTitle "Base of the Hill")
 
-instance HasAbilities env DevoteeOfTheKey where
-  getAbilities iid window (DevoteeOfTheKey attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ mkAbility attrs 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
-          EnemyPhase
-      ]
+instance HasAbilities DevoteeOfTheKey where
+  getAbilities (DevoteeOfTheKey attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
+        EnemyPhase
+    ]
 
 instance
   ( Query LocationMatcher env

@@ -22,7 +22,7 @@ newtype FirstWatchMetadata = FirstWatchMetadata { firstWatchPairings :: [(Invest
   deriving newtype (Show, Eq, ToJSON, FromJSON)
 
 newtype FirstWatch = FirstWatch (EventAttrs `With` FirstWatchMetadata)
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 firstWatch :: EventCard FirstWatch

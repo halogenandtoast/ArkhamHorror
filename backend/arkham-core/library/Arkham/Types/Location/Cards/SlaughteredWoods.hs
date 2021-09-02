@@ -32,9 +32,9 @@ slaughteredWoods = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
   )
 
-instance HasAbilities env SlaughteredWoods where
-  getAbilities iid window (SlaughteredWoods attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities SlaughteredWoods where
+  getAbilities (SlaughteredWoods attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
             attrs
             1

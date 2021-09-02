@@ -31,20 +31,20 @@ darkYoungHost = enemyWith
   (2, 2)
   (spawnAtL ?~ LocationWithTrait Bayou)
 
-instance HasAbilities env DarkYoungHost where
-  getAbilities iid window (DarkYoungHost attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ mkAbility attrs 1 $ ForcedAbility $ PlacedCounterOnLocation
-        Timing.When
-        (LocationWithId $ enemyLocation attrs)
-        ClueCounter
-        (AtLeast $ Static 1)
-      , mkAbility attrs 2
-      $ ForcedAbility
-      $ EnemyDefeated Timing.When Anyone
-      $ EnemyWithId
-      $ toId attrs
-      ]
+instance HasAbilities DarkYoungHost where
+  getAbilities (DarkYoungHost attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1 $ ForcedAbility $ PlacedCounterOnLocation
+      Timing.When
+      (LocationWithId $ enemyLocation attrs)
+      ClueCounter
+      (AtLeast $ Static 1)
+    , mkAbility attrs 2
+    $ ForcedAbility
+    $ EnemyDefeated Timing.When Anyone
+    $ EnemyWithId
+    $ toId attrs
+    ]
 
 instance EnemyRunner env => RunMessage env DarkYoungHost where
   runMessage msg e@(DarkYoungHost attrs) = case msg of

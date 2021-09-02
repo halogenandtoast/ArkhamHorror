@@ -9,7 +9,7 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Target
 
 newtype Guts = Guts SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guts :: SkillCard Guts

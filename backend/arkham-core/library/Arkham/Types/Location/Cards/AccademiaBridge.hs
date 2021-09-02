@@ -30,9 +30,9 @@ accademiaBridge = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasAbilities env AccademiaBridge where
-  getAbilities iid window (AccademiaBridge attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities AccademiaBridge where
+  getAbilities (AccademiaBridge attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ Leaves Timing.After You

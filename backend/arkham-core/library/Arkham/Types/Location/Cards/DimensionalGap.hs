@@ -32,9 +32,9 @@ dimensionalGap = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
   )
 
-instance HasAbilities env DimensionalGap where
-  getAbilities iid window (DimensionalGap attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities DimensionalGap where
+  getAbilities (DimensionalGap attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ RevealLocation Timing.After You

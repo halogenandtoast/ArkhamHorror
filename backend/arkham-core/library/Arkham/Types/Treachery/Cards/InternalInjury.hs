@@ -24,8 +24,8 @@ newtype InternalInjury = InternalInjury TreacheryAttrs
 internalInjury :: TreacheryCard InternalInjury
 internalInjury = treachery InternalInjury Cards.internalInjury
 
-instance HasAbilities env InternalInjury where
-  getAbilities _ _ (InternalInjury x) = pure
+instance HasAbilities InternalInjury where
+  getAbilities (InternalInjury x) =
     [ restrictedAbility x 1 (InThreatAreaOf You) $ ForcedAbility $ TurnEnds
       Timing.When
       You

@@ -32,9 +32,9 @@ uprootedWoods = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Square, T])
   )
 
-instance HasAbilities env UprootedWoods where
-  getAbilities iid window (UprootedWoods attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities UprootedWoods where
+  getAbilities (UprootedWoods attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
           attrs
           1

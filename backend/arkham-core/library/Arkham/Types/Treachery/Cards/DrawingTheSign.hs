@@ -31,8 +31,8 @@ instance HasModifiersFor env DrawingTheSign where
       [ HandSize (-5) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env DrawingTheSign where
-  getAbilities _ _ (DrawingTheSign a) = pure
+instance HasAbilities DrawingTheSign where
+  getAbilities (DrawingTheSign a) =
     [ restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost
         2
     ]

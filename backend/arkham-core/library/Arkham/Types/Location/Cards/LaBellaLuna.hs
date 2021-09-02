@@ -19,9 +19,8 @@ laBellaLuna :: LocationCard LaBellaLuna
 laBellaLuna =
   location LaBellaLuna Cards.laBellaLuna 2 (PerPlayer 1) Moon [Circle]
 
-instance HasAbilities env LaBellaLuna where
-  getAbilities i w (LaBellaLuna a) =
-    withBaseAbilities i w a $ pure [locationResignAction a]
+instance HasAbilities LaBellaLuna where
+  getAbilities (LaBellaLuna a) = withBaseAbilities a [locationResignAction a]
 
 instance LocationRunner env => RunMessage env LaBellaLuna where
   runMessage msg (LaBellaLuna attrs) = LaBellaLuna <$> runMessage msg attrs

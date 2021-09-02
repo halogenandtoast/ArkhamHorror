@@ -27,8 +27,8 @@ newtype HiredMuscle1 = HiredMuscle1 AssetAttrs
 hiredMuscle1 :: AssetCard HiredMuscle1
 hiredMuscle1 = ally HiredMuscle1 Cards.hiredMuscle1 (3, 1)
 
-instance HasAbilities env HiredMuscle1 where
-  getAbilities _ _ (HiredMuscle1 x) = pure
+instance HasAbilities HiredMuscle1 where
+  getAbilities (HiredMuscle1 x) =
     [ restrictedAbility x 1 OwnsThis
       $ ForcedAbility
       $ PhaseEnds Timing.When

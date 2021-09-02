@@ -26,8 +26,8 @@ newtype Blackjack = Blackjack AssetAttrs
 blackjack :: AssetCard Blackjack
 blackjack = hand Blackjack Cards.blackjack
 
-instance HasAbilities env Blackjack where
-  getAbilities _ _ (Blackjack a) = pure
+instance HasAbilities Blackjack where
+  getAbilities (Blackjack a) =
     [ restrictedAbility a 1 OwnsThis
         $ ActionAbility (Just Action.Fight) (ActionCost 1)
     ]

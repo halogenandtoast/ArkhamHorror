@@ -27,15 +27,15 @@ wolfManDrew = enemyWith
   (2, 0)
   (spawnAtL ?~ LocationWithTitle "Downtown")
 
-instance HasAbilities env WolfManDrew where
-  getAbilities iid window (WolfManDrew a) =
-    withBaseAbilities iid window a $ pure
-      [ mkAbility a 1
-        $ ForcedAbility
-        $ EnemyAttacks Timing.When Anyone
-        $ EnemyWithId
-        $ toId a
-      ]
+instance HasAbilities WolfManDrew where
+  getAbilities (WolfManDrew a) = withBaseAbilities
+    a
+    [ mkAbility a 1
+      $ ForcedAbility
+      $ EnemyAttacks Timing.When Anyone
+      $ EnemyWithId
+      $ toId a
+    ]
 
 instance EnemyRunner env => RunMessage env WolfManDrew where
   runMessage msg e@(WolfManDrew attrs) = case msg of

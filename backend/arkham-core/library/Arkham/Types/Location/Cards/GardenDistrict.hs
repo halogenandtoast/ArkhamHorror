@@ -26,9 +26,9 @@ gardenDistrict :: LocationCard GardenDistrict
 gardenDistrict =
   location GardenDistrict Cards.gardenDistrict 1 (Static 0) Plus [Square, Plus]
 
-instance HasAbilities env GardenDistrict where
-  getAbilities iid window (GardenDistrict attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities GardenDistrict where
+  getAbilities (GardenDistrict attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
       | locationRevealed attrs
       ]

@@ -23,8 +23,8 @@ theyMustBeDestroyed :: ActCard TheyMustBeDestroyed
 theyMustBeDestroyed =
   act (2, A) TheyMustBeDestroyed Cards.theyMustBeDestroyed Nothing
 
-instance HasAbilities env TheyMustBeDestroyed where
-  getAbilities _ _ (TheyMustBeDestroyed x) = pure
+instance HasAbilities TheyMustBeDestroyed where
+  getAbilities (TheyMustBeDestroyed x) =
     [ restrictedAbility
           x
           1

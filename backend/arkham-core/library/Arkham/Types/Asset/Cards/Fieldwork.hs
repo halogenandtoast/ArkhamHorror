@@ -26,8 +26,8 @@ newtype Fieldwork = Fieldwork AssetAttrs
 fieldwork :: AssetCard Fieldwork
 fieldwork = asset Fieldwork Cards.fieldwork
 
-instance HasAbilities env Fieldwork where
-  getAbilities _ _ (Fieldwork attrs) = pure
+instance HasAbilities Fieldwork where
+  getAbilities (Fieldwork attrs) =
     [ restrictedAbility
         attrs
         1

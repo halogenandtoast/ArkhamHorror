@@ -29,13 +29,12 @@ victoriaDevereux = enemyWith
   (1, 0)
   (spawnAtL ?~ LocationWithTitle "Northside")
 
-instance HasAbilities env VictoriaDevereux where
-  getAbilities iid window (VictoriaDevereux attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility attrs 1 OnSameLocation
-            $ ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 5])
-        ]
+instance HasAbilities VictoriaDevereux where
+  getAbilities (VictoriaDevereux attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility attrs 1 OnSameLocation
+        $ ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 5])
+    ]
 
 instance EnemyRunner env => RunMessage env VictoriaDevereux where
   runMessage msg e@(VictoriaDevereux attrs) = case msg of

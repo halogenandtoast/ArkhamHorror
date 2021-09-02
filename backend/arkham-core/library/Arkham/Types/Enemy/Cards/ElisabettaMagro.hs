@@ -25,12 +25,12 @@ elisabettaMagro =
 
 -- | Abilities
 -- The first forced ability is handled by MaskedCarnevaleGoer_18
-instance HasAbilities env ElisabettaMagro where
-  getAbilities iid window (ElisabettaMagro attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ mkAbility attrs 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
-          MythosPhase
-      ]
+instance HasAbilities ElisabettaMagro where
+  getAbilities (ElisabettaMagro attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
+        MythosPhase
+    ]
 
 instance EnemyAttrsRunMessage env => RunMessage env ElisabettaMagro where
   runMessage msg e@(ElisabettaMagro attrs) = case msg of

@@ -33,9 +33,9 @@ blastedHeath_248 = location
   Square
   [Circle, Hourglass]
 
-instance HasAbilities env BlastedHeath_248 where
-  getAbilities iid window (BlastedHeath_248 attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities BlastedHeath_248 where
+  getAbilities (BlastedHeath_248 attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
             attrs
             1

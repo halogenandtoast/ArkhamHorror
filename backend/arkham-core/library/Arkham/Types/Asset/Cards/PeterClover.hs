@@ -28,8 +28,8 @@ peterClover =
     $ (slotsL .~ [])
     . (isStoryL .~ True)
 
-instance HasAbilities env PeterClover where
-  getAbilities _ _ (PeterClover x) = pure
+instance HasAbilities PeterClover where
+  getAbilities (PeterClover x) =
     [ restrictedAbility x 1 Unowned
     $ ForcedAbility
     $ PhaseBegins Timing.When

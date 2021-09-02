@@ -26,8 +26,8 @@ newtype HardKnocks = HardKnocks AssetAttrs
 hardKnocks :: AssetCard HardKnocks
 hardKnocks = asset HardKnocks Cards.hardKnocks
 
-instance HasAbilities env HardKnocks where
-  getAbilities _ _ (HardKnocks a) = pure
+instance HasAbilities HardKnocks where
+  getAbilities (HardKnocks a) =
     [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1

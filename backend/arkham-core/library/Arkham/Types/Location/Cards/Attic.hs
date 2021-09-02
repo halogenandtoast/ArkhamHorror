@@ -19,8 +19,8 @@ newtype Attic = Attic LocationAttrs
 attic :: LocationCard Attic
 attic = location Attic Cards.attic 1 (PerPlayer 2) Triangle [Square]
 
-instance HasAbilities env Attic where
-  getAbilities i window (Attic a) = withBaseAbilities i window a $ pure
+instance HasAbilities Attic where
+  getAbilities (Attic a) = withBaseAbilities a $
     [ mkAbility a 1
       $ ForcedAbility
       $ Enters Timing.After You

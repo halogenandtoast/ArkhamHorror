@@ -11,7 +11,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Id
 
 newtype Adaptable1 = Adaptable1 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 adaptable1 :: AssetCard Adaptable1

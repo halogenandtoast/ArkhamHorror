@@ -23,16 +23,15 @@ newtype PsychopompsSong = PsychopompsSong TreacheryAttrs
 psychopompsSong :: TreacheryCard PsychopompsSong
 psychopompsSong = treachery PsychopompsSong Cards.psychopompsSong
 
-instance HasAbilities env PsychopompsSong where
-  getAbilities _ _ (PsychopompsSong attrs) =
-    case treacheryAttachedTarget attrs of
-      Just (InvestigatorTarget iid) -> pure
-        [ mkAbility attrs 1
+instance HasAbilities PsychopompsSong where
+  getAbilities (PsychopompsSong attrs) = case treacheryAttachedTarget attrs of
+    Just (InvestigatorTarget iid) ->
+      [ mkAbility attrs 1
           $ ForcedAbility
           $ DealtDamage Timing.When
           $ InvestigatorWithId iid
-        ]
-      _ -> pure []
+      ]
+    _ -> []
 
 instance TreacheryRunner env => RunMessage env PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of

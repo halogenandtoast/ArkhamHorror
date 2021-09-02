@@ -19,8 +19,8 @@ newtype Cellar = Cellar LocationAttrs
 cellar :: LocationCard Cellar
 cellar = location Cellar Cards.cellar 4 (PerPlayer 2) Plus [Square]
 
-instance HasAbilities env Cellar where
-  getAbilities i window (Cellar a) = withBaseAbilities i window a $ pure
+instance HasAbilities Cellar where
+  getAbilities (Cellar a) = withBaseAbilities a $
     [ mkAbility a 1
       $ ForcedAbility
       $ Enters Timing.After You

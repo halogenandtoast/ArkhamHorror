@@ -11,7 +11,7 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype JennyBarnes = JennyBarnes InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsInvestigator, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 jennyBarnes :: JennyBarnes

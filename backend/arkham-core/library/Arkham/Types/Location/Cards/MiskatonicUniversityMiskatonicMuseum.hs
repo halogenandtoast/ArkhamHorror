@@ -29,9 +29,9 @@ miskatonicUniversityMiskatonicMuseum = location
   Diamond
   [T, Plus, Circle, Square]
 
-instance HasAbilities env MiskatonicUniversityMiskatonicMuseum where
-  getAbilities iid window (MiskatonicUniversityMiskatonicMuseum attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities MiskatonicUniversityMiskatonicMuseum where
+  getAbilities (MiskatonicUniversityMiskatonicMuseum attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1)
           & (abilityLimitL .~ PlayerLimit PerGame 1)
       | locationRevealed attrs

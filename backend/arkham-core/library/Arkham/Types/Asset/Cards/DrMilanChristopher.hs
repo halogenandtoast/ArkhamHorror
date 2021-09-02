@@ -29,8 +29,8 @@ instance HasModifiersFor env DrMilanChristopher where
     pure [ toModifier a (SkillModifier SkillIntellect 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env DrMilanChristopher where
-  getAbilities _ _ (DrMilanChristopher x) = pure
+instance HasAbilities DrMilanChristopher where
+  getAbilities (DrMilanChristopher x) =
     [ restrictedAbility x 1 OwnsThis $ ReactionAbility
         (SkillTestResult Timing.After You (WhileInvestigating Anywhere)
         $ SuccessResult AnyValue

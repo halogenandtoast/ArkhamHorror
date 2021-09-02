@@ -37,9 +37,9 @@ instance HasModifiersFor env TrappersCabin where
       [ CannotGainResources | iid `member` locationInvestigators attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env TrappersCabin where
-  getAbilities iid window (TrappersCabin attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities TrappersCabin where
+  getAbilities (TrappersCabin attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
           attrs
           1

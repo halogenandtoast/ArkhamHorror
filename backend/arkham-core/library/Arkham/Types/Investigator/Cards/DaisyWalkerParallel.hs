@@ -9,10 +9,11 @@ import Arkham.Types.Ability
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
 import Arkham.Types.Cost
-import Arkham.Types.EntityInstance
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -20,10 +21,8 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel InvestigatorAttrs
   deriving anyclass IsInvestigator
@@ -43,39 +42,31 @@ daisyWalkerParallel = DaisyWalkerParallel
     }
 
 instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env DaisyWalkerParallel where
-  getModifiersFor source target@(InvestigatorTarget iid) (DaisyWalkerParallel attrs@InvestigatorAttrs {..})
+  getModifiersFor _ (InvestigatorTarget iid) (DaisyWalkerParallel attrs@InvestigatorAttrs {..})
     | iid == investigatorId
     = do
       tomeCount <- unAssetCount <$> getCount (investigatorId, [Tome])
-      baseModifiers <- map modifierType <$> getModifiersFor source target attrs
       pure
         $ toModifiers attrs
         $ SkillModifier SkillWillpower tomeCount
-        : SanityModifier tomeCount
-        : baseModifiers
-  getModifiersFor source target (DaisyWalkerParallel attrs) =
-    getModifiersFor source target attrs
-
-ability :: InvestigatorAttrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (FastAbility Free))
-  { abilityLimit = PlayerLimit PerGame 1
-  }
+        : [SanityModifier tomeCount]
+  getModifiersFor _ _ _ = pure []
 
 instance HasTokenValue env DaisyWalkerParallel where
   getTokenValue (DaisyWalkerParallel attrs) iid ElderSign
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue (DaisyWalkerParallel attrs) iid token =
-    getTokenValue attrs iid token
+  getTokenValue _ _ token = pure $ TokenValue token mempty
 
-instance EntityInstanceRunner env => HasAbilities env DaisyWalkerParallel where
-  getAbilities iid window@(Window Timing.When FastPlayerWindow) (DaisyWalkerParallel attrs)
-    | iid == investigatorId attrs
-    = withBaseAbilities iid window attrs $ do
-      hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
-      pure [ ability attrs | hasTomes ]
-  getAbilities i window (DaisyWalkerParallel attrs) =
-    getAbilities i window attrs
+instance HasAbilities DaisyWalkerParallel where
+  getAbilities (DaisyWalkerParallel attrs) =
+    [ restrictedAbility
+          attrs
+          1
+          (Self <> AssetExists (AssetOwnedBy You <> AssetWithTrait Tome))
+          (FastAbility Free)
+        & (abilityLimitL .~ PlayerLimit PerGame 1)
+    ]
 
 instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs@InvestigatorAttrs {..}) =
@@ -85,13 +76,9 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
           tomeAssets <- filterM
             ((elem Tome <$>) . getSet)
             (setToList investigatorAssets)
-          pairs' <-
-            filter (notNull . snd)
-              <$> traverse
-                    (\a ->
-                      (a, ) <$> getAbilities iid (Window Timing.When NonFast) a
-                    )
-                    tomeAssets
+          let
+            pairs' = filter (notNull . snd)
+              $ map (\a -> (a, getAbilities a)) tomeAssets
           if null pairs'
             then pure i
             else i <$ push

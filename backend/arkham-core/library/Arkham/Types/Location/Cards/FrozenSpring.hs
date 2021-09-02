@@ -31,9 +31,9 @@ frozenSpring = locationWith
   . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
   )
 
-instance HasAbilities env FrozenSpring where
-  getAbilities iid window (FrozenSpring attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities FrozenSpring where
+  getAbilities (FrozenSpring attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ RevealLocation Timing.After You

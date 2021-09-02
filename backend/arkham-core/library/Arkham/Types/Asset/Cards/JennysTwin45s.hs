@@ -29,8 +29,8 @@ jennysTwin45s :: AssetCard JennysTwin45s
 jennysTwin45s =
   assetWith JennysTwin45s Cards.jennysTwin45s (slotsL .~ [HandSlot, HandSlot])
 
-instance HasAbilities env JennysTwin45s where
-  getAbilities _ _ (JennysTwin45s a) = pure
+instance HasAbilities JennysTwin45s where
+  getAbilities (JennysTwin45s a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Ammo 1])

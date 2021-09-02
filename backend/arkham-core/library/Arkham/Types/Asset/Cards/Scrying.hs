@@ -24,8 +24,8 @@ newtype Scrying = Scrying AssetAttrs
 scrying :: AssetCard Scrying
 scrying = arcane Scrying Cards.scrying
 
-instance HasAbilities env Scrying where
-  getAbilities _ _ (Scrying a) = pure
+instance HasAbilities Scrying where
+  getAbilities (Scrying a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, UseCost (toId a) Charge 1, ExhaustCost $ toTarget a]
     ]

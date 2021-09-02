@@ -269,8 +269,8 @@ canEnterLocation eid lid = do
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
 
-instance HasAbilities env EnemyAttrs where
-  getAbilities _ _ e = pure
+instance HasAbilities EnemyAttrs where
+  getAbilities e =
     [ restrictedAbility
         e
         100
@@ -609,7 +609,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
           [ EnemyMove enemyId enemyLocation lid
           , CheckWindow
             leadInvestigatorId
-            [Window Timing.After (Window.MoveFromHunter enemyId)]
+            [Window Timing.After (Window.MovedFromHunter enemyId)]
           ]
         ls -> a <$ pushAll
           (chooseOne
@@ -617,7 +617,7 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
               (map (EnemyMove enemyId enemyLocation) ls)
           : [ CheckWindow
                 leadInvestigatorId
-                [Window Timing.After (Window.MoveFromHunter enemyId)]
+                [Window Timing.After (Window.MovedFromHunter enemyId)]
             ]
           )
     EnemiesAttack | notNull enemyEngagedInvestigators && not enemyExhausted ->

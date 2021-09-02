@@ -13,7 +13,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype LeoDeLuca1 = LeoDeLuca1 AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 leoDeLuca1 :: AssetCard LeoDeLuca1
@@ -24,10 +24,7 @@ instance HasModifiersFor env LeoDeLuca1 where
     pure [ toModifier a (AdditionalActions 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env LeoDeLuca1 where
-  getAbilities i window (LeoDeLuca1 x) = getAbilities i window x
-
-instance (AssetRunner env) => RunMessage env LeoDeLuca1 where
+instance AssetRunner env => RunMessage env LeoDeLuca1 where
   runMessage msg (LeoDeLuca1 attrs@AssetAttrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       push $ GainActions iid (AssetSource aid) 1

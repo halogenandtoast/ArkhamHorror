@@ -17,7 +17,7 @@ import Arkham.Types.Target
 
 newtype SalvatoreNeri = SalvatoreNeri EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 salvatoreNeri :: EnemyCard SalvatoreNeri
 salvatoreNeri = enemy SalvatoreNeri Cards.salvatoreNeri (0, Static 3, 0) (0, 2)

@@ -14,7 +14,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype DaringManeuver = DaringManeuver EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 daringManeuver :: EventCard DaringManeuver

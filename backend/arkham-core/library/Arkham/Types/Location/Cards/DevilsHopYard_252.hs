@@ -33,9 +33,9 @@ devilsHopYard_252 = location
   Hourglass
   [Square, Plus]
 
-instance HasAbilities env DevilsHopYard_252 where
-  getAbilities iid window (DevilsHopYard_252 attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities DevilsHopYard_252 where
+  getAbilities (DevilsHopYard_252 attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
             attrs
             1

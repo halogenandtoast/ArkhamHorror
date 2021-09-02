@@ -14,7 +14,7 @@ import Arkham.Types.Matcher
 
 newtype EmergentMonstrosity = EmergentMonstrosity EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 emergentMonstrosity :: EnemyCard EmergentMonstrosity
 emergentMonstrosity = enemyWith

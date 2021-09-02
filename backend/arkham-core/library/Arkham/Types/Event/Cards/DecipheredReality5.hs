@@ -18,7 +18,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype DecipheredReality5 = DecipheredReality5 EventAttrs
-  deriving anyclass (IsEvent, HasAbilities env, HasModifiersFor env)
+  deriving anyclass (IsEvent, HasAbilities, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 decipheredReality5 :: EventCard DecipheredReality5

@@ -27,9 +27,9 @@ returnToPredatorOrPrey :: AgendaCard ReturnToPredatorOrPrey
 returnToPredatorOrPrey =
   agenda (1, A) ReturnToPredatorOrPrey Cards.returnToPredatorOrPrey (Static 6)
 
-instance HasAbilities env ReturnToPredatorOrPrey where
-  getAbilities _ _ (ReturnToPredatorOrPrey attrs) =
-    pure [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
+instance HasAbilities ReturnToPredatorOrPrey where
+  getAbilities (ReturnToPredatorOrPrey attrs) =
+    [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
 
 instance AgendaRunner env => RunMessage env ReturnToPredatorOrPrey where
   runMessage msg a@(ReturnToPredatorOrPrey attrs@AgendaAttrs {..}) =

@@ -30,15 +30,15 @@ interstellarTraveler = enemyWith
   (1, 2)
   (spawnAtL ?~ LocationWithTrait Extradimensional)
 
-instance HasAbilities env InterstellarTraveler where
-  getAbilities iid window (InterstellarTraveler attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ EnemyEnters Timing.When Anywhere
-        $ EnemyWithId
-        $ toId attrs
-      ]
+instance HasAbilities InterstellarTraveler where
+  getAbilities (InterstellarTraveler attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1
+      $ ForcedAbility
+      $ EnemyEnters Timing.When Anywhere
+      $ EnemyWithId
+      $ toId attrs
+    ]
 
 instance (HasCount ClueCount env LocationId, EnemyAttrsRunMessage env) => RunMessage env InterstellarTraveler where
   runMessage msg e@(InterstellarTraveler attrs) = case msg of

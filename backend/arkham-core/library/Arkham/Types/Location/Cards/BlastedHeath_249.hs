@@ -29,9 +29,9 @@ blastedHeath_249 = location
   Square
   [Circle, Hourglass]
 
-instance HasAbilities env BlastedHeath_249 where
-  getAbilities iid window (BlastedHeath_249 attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities BlastedHeath_249 where
+  getAbilities (BlastedHeath_249 attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds
           Timing.When
           You

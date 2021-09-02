@@ -38,10 +38,10 @@ instance HasPhase env => HasModifiersFor env TheEdgeOfTheUniverse where
       pure $ toModifiers attrs [ CannotDrawCards | phase == UpkeepPhase ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env TheEdgeOfTheUniverse where
-  getAbilities iid window (TheEdgeOfTheUniverse attrs) = do
-    actions <- getAbilities iid window attrs
-    pure $ flip map actions $ \action -> case abilityType action of
+instance HasAbilities TheEdgeOfTheUniverse where
+  getAbilities (TheEdgeOfTheUniverse attrs) = do
+    let actions = getAbilities attrs
+    flip map actions $ \action -> case abilityType action of
       ActionAbility (Just Action.Move) _ -> action
         { abilityCriteria =
           Just $ fromMaybe mempty (abilityCriteria action) <> InvestigatorExists

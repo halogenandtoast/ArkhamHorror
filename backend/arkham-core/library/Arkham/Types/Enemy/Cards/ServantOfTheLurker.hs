@@ -29,8 +29,9 @@ servantOfTheLurker = enemyWith
   (2, 2)
   (preyL .~ LowestSkill SkillAgility)
 
-instance HasAbilities env ServantOfTheLurker where
-  getAbilities i w (ServantOfTheLurker x) = withBaseAbilities i w x $ pure
+instance HasAbilities ServantOfTheLurker where
+  getAbilities (ServantOfTheLurker x) = withBaseAbilities
+    x
     [ mkAbility x 1
       $ ForcedAbility
       $ EnemyAttacks Timing.When You

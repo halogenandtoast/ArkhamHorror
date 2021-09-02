@@ -26,8 +26,8 @@ newtype TryAndTryAgain3 = TryAndTryAgain3 AssetAttrs
 tryAndTryAgain3 :: AssetCard TryAndTryAgain3
 tryAndTryAgain3 = asset TryAndTryAgain3 Cards.tryAndTryAgain3
 
-instance HasAbilities env TryAndTryAgain3 where
-  getAbilities _ _ (TryAndTryAgain3 x) = pure
+instance HasAbilities TryAndTryAgain3 where
+  getAbilities (TryAndTryAgain3 x) =
     [ restrictedAbility x 1 OwnsThis $ ReactionAbility
         (SkillTestResult
           Timing.After

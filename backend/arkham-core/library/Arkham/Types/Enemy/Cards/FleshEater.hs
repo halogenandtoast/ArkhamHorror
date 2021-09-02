@@ -13,7 +13,7 @@ import Arkham.Types.Matcher
 
 newtype FleshEater = FleshEater EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 fleshEater :: EnemyCard FleshEater
 fleshEater = enemyWith

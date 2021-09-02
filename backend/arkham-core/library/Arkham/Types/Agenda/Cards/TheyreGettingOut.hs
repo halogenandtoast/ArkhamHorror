@@ -25,8 +25,8 @@ theyreGettingOut :: AgendaCard TheyreGettingOut
 theyreGettingOut =
   agenda (3, A) TheyreGettingOut Cards.theyreGettingOut (Static 10)
 
-instance HasAbilities env TheyreGettingOut where
-  getAbilities _ _ (TheyreGettingOut x) = pure
+instance HasAbilities TheyreGettingOut where
+  getAbilities (TheyreGettingOut x) =
     [ mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase
     , mkAbility x 2 $ ForcedAbility $ RoundEnds Timing.When
     ]

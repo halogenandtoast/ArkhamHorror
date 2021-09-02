@@ -33,17 +33,17 @@ baseOfTheHill = location
   Triangle
   [Square, Plus, Squiggle, Hourglass]
 
-instance HasAbilities env BaseOfTheHill where
-  getAbilities iid window (BaseOfTheHill attrs) =
-    withResignAction iid window attrs $ pure
-      [ restrictedAbility
-            attrs
-            1
-            Here
-            (ActionAbility (Just Action.Investigate) (ActionCost 1))
-          & (abilityLimitL .~ PlayerLimit PerRound 1)
-      | locationRevealed attrs
-      ]
+instance HasAbilities BaseOfTheHill where
+  getAbilities (BaseOfTheHill attrs) = withResignAction
+    attrs
+    [ restrictedAbility
+          attrs
+          1
+          Here
+          (ActionAbility (Just Action.Investigate) (ActionCost 1))
+        & (abilityLimitL .~ PlayerLimit PerRound 1)
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env BaseOfTheHill where
   runMessage msg l@(BaseOfTheHill attrs) = case msg of

@@ -26,9 +26,9 @@ newtype PredatorOrPrey = PredatorOrPrey AgendaAttrs
 predatorOrPrey :: AgendaCard PredatorOrPrey
 predatorOrPrey = agenda (1, A) PredatorOrPrey Cards.predatorOrPrey (Static 6)
 
-instance HasAbilities env PredatorOrPrey where
-  getAbilities _ _ (PredatorOrPrey attrs) =
-    pure [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
+instance HasAbilities PredatorOrPrey where
+  getAbilities (PredatorOrPrey attrs) =
+    [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
 
 instance (AgendaRunner env) => RunMessage env PredatorOrPrey where
   runMessage msg a@(PredatorOrPrey attrs@AgendaAttrs {..}) = case msg of

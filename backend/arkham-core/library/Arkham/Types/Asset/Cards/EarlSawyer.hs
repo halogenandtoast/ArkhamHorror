@@ -27,8 +27,8 @@ newtype EarlSawyer = EarlSawyer AssetAttrs
 earlSawyer :: AssetCard EarlSawyer
 earlSawyer = ally EarlSawyer Cards.earlSawyer (3, 2)
 
-instance HasAbilities env EarlSawyer where
-  getAbilities _ _ (EarlSawyer attrs) = pure
+instance HasAbilities EarlSawyer where
+  getAbilities (EarlSawyer attrs) =
     [ restrictedAbility attrs 1 OwnsThis $ ReactionAbility
         (EnemyEvaded Timing.After You AnyEnemy)
         (ExhaustCost $ toTarget attrs)

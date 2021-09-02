@@ -44,24 +44,23 @@ instance HasModifiersFor env BrackishWaters where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env BrackishWaters where
-  getAbilities iid window (BrackishWaters attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility
-            attrs
-            1
-            (Here <> Negate (AssetExists $ assetIs Assets.fishingNet))
-          $ ActionAbility Nothing
-          $ Costs
-              [ ActionCost 1
-              , DiscardFromCost
-                2
-                (FromHandOf You <> FromPlayAreaOf You)
-                (CardWithType AssetType)
-              ]
-        | locationRevealed attrs
-        ]
+instance HasAbilities BrackishWaters where
+  getAbilities (BrackishWaters attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+        attrs
+        1
+        (Here <> Negate (AssetExists $ assetIs Assets.fishingNet))
+      $ ActionAbility Nothing
+      $ Costs
+          [ ActionCost 1
+          , DiscardFromCost
+            2
+            (FromHandOf You <> FromPlayAreaOf You)
+            (CardWithType AssetType)
+          ]
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env BrackishWaters where
   runMessage msg l@(BrackishWaters attrs) = case msg of

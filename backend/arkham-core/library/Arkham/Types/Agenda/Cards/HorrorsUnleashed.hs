@@ -30,8 +30,8 @@ horrorsUnleashed :: AgendaCard HorrorsUnleashed
 horrorsUnleashed =
   agenda (3, A) HorrorsUnleashed Cards.horrorsUnleashed (Static 7)
 
-instance HasAbilities env HorrorsUnleashed where
-  getAbilities _ _ (HorrorsUnleashed x) = pure
+instance HasAbilities HorrorsUnleashed where
+  getAbilities (HorrorsUnleashed x) =
     [mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase]
 
 instance HasSet Trait env EnemyId => HasModifiersFor env HorrorsUnleashed where

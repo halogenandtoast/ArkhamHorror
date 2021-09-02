@@ -27,15 +27,15 @@ ruthTurner = enemyWith
   (1, 0)
   (spawnAtL ?~ LocationWithTitle "St. Mary's Hospital")
 
-instance HasAbilities env RuthTurner where
-  getAbilities iid window (RuthTurner a) =
-    withBaseAbilities iid window a $ pure
-      [ mkAbility a 1
-        $ ForcedAbility
-        $ EnemyEvaded Timing.After Anyone
-        $ EnemyWithId
-        $ toId a
-      ]
+instance HasAbilities RuthTurner where
+  getAbilities (RuthTurner a) = withBaseAbilities
+    a
+    [ mkAbility a 1
+      $ ForcedAbility
+      $ EnemyEvaded Timing.After Anyone
+      $ EnemyWithId
+      $ toId a
+    ]
 
 instance EnemyRunner env => RunMessage env RuthTurner where
   runMessage msg e@(RuthTurner attrs) = case msg of

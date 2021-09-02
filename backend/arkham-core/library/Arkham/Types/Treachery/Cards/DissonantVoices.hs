@@ -32,8 +32,8 @@ instance HasModifiersFor env DissonantVoices where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env DissonantVoices where
-  getAbilities _ _ (DissonantVoices a) = pure
+instance HasAbilities DissonantVoices where
+  getAbilities (DissonantVoices a) =
     [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ RoundEnds
         Timing.When
     ]

@@ -16,7 +16,7 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Target
 
 newtype SurvivalInstinct2 = SurvivalInstinct2 SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 survivalInstinct2 :: SkillCard SurvivalInstinct2

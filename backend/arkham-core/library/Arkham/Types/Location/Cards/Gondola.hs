@@ -9,6 +9,7 @@ import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
@@ -16,8 +17,6 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype Gondola = Gondola LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -26,14 +25,12 @@ newtype Gondola = Gondola LocationAttrs
 gondola :: LocationCard Gondola
 gondola = location Gondola Cards.gondola 5 (Static 0) NoSymbol []
 
-ability :: LocationAttrs -> Ability
-ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
-
-instance HasAbilities env Gondola where
-  getAbilities iid window@(Window Timing.When NonFast) (Gondola attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure [locationAbility (ability attrs)]
-  getAbilities iid window (Gondola attrs) = getAbilities iid window attrs
+instance HasAbilities Gondola where
+  getAbilities (Gondola x) = withBaseAbilities
+    x
+    [ restrictedAbility x 1 Here $ ActionAbility Nothing $ ActionCost 1
+    | locationRevealed x
+    ]
 
 instance LocationRunner env => RunMessage env Gondola where
   runMessage msg l@(Gondola attrs) = case msg of
@@ -41,7 +38,9 @@ instance LocationRunner env => RunMessage env Gondola where
       locationIds <-
         setToList . deleteSet (toId attrs) <$> getSet @LocationId ()
       l <$ pushAll
-        (MoveAllTo (toSource attrs) (toId attrs) : [ RemoveLocation lid | lid <- locationIds ])
+        (MoveAllTo (toSource attrs) (toId attrs)
+        : [ RemoveLocation lid | lid <- locationIds ]
+        )
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       l <$ push
         (chooseOne

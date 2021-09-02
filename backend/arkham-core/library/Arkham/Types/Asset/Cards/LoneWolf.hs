@@ -23,8 +23,8 @@ newtype LoneWolf = LoneWolf AssetAttrs
 loneWolf :: AssetCard LoneWolf
 loneWolf = asset LoneWolf Cards.loneWolf
 
-instance HasAbilities env LoneWolf where
-  getAbilities _ _ (LoneWolf x) = pure
+instance HasAbilities LoneWolf where
+  getAbilities (LoneWolf x) =
     [ restrictedAbility
         x
         1

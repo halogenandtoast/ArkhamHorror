@@ -26,8 +26,8 @@ newtype PhysicalTraining2 = PhysicalTraining2 AssetAttrs
 physicalTraining2 :: AssetCard PhysicalTraining2
 physicalTraining2 = asset PhysicalTraining2 Cards.physicalTraining2
 
-instance HasAbilities env PhysicalTraining2 where
-  getAbilities _ _ (PhysicalTraining2 a) = pure
+instance HasAbilities PhysicalTraining2 where
+  getAbilities (PhysicalTraining2 a) =
     [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1

@@ -30,7 +30,6 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window (Window)
 import qualified Data.Char as C
 import qualified Data.HashSet as HashSet
 import GHC.Generics
@@ -160,7 +159,7 @@ type ActionRunner env
     , Query AssetMatcher env
     , Query LocationMatcher env
     , GetCardDef env EnemyId
-    , HasAbilities env ActionType
+    , HasAbilities ActionType
     , HasCostPayment env
     , ( HasCount
           ActionRemainingCount
@@ -216,30 +215,25 @@ type ActionRunner env
     , HasStep ActStep env ()
     )
 
-class HasAbilities1 env f where
-  getAbilities1 :: (HasCallStack, MonadReader env m) => InvestigatorId -> Window -> f p -> m [Ability]
+class HasAbilities1 f where
+  getAbilities1 :: f p -> [Ability]
 
-instance HasAbilities1 env f => HasAbilities1 env (M1 i c f) where
-  getAbilities1 iid window (M1 x) = getAbilities1 iid window x
+instance HasAbilities1 f => HasAbilities1 (M1 i c f) where
+  getAbilities1 (M1 x) = getAbilities1 x
 
-instance (HasAbilities1 env l, HasAbilities1 env r) => HasAbilities1 env (l :+: r) where
-  getAbilities1 iid window (L1 x) = getAbilities1 iid window x
-  getAbilities1 iid window (R1 x) = getAbilities1 iid window x
+instance (HasAbilities1 l, HasAbilities1 r) => HasAbilities1 (l :+: r) where
+  getAbilities1 (L1 x) = getAbilities1 x
+  getAbilities1 (R1 x) = getAbilities1 x
 
-instance (HasAbilities env p) => HasAbilities1 env (K1 R p) where
-  getAbilities1 iid window (K1 x) = getAbilities iid window x
+instance (HasAbilities p) => HasAbilities1 (K1 R p) where
+  getAbilities1 (K1 x) = getAbilities x
 
-genericGetAbilities
-  :: (HasCallStack, Generic a, HasAbilities1 env (Rep a), MonadReader env m)
-  => InvestigatorId
-  -> Window
-  -> a
-  -> m [Ability]
-genericGetAbilities iid window = getAbilities1 iid window . from
+genericGetAbilities :: (Generic a, HasAbilities1 (Rep a)) => a -> [Ability]
+genericGetAbilities = getAbilities1 . from
 
-class HasAbilities env a where
-  getAbilities :: (HasCallStack, MonadReader env m) => InvestigatorId -> Window -> a -> m [Ability]
-  getAbilities _ _ _ = pure []
+class HasAbilities a where
+  getAbilities :: a -> [Ability]
+  getAbilities = const []
 
 class HasModifiersFor1 env f where
   getModifiersFor1 :: (HasCallStack, MonadReader env m) => Source -> Target -> f p -> m [Modifier]

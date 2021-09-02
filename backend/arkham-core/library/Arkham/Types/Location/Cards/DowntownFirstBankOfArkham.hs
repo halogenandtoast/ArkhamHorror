@@ -28,20 +28,17 @@ downtownFirstBankOfArkham = location
   Triangle
   [Moon, T]
 
-instance HasAbilities env DowntownFirstBankOfArkham where
-  getAbilities iid window (DowntownFirstBankOfArkham attrs)
-    | locationRevealed attrs = withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility
-            attrs
-            1
-            (Here <> CanGainResources)
-            (ActionAbility Nothing $ ActionCost 1)
-          & abilityLimitL
-          .~ PlayerLimit PerGame 1
-        ]
-  getAbilities iid window (DowntownFirstBankOfArkham attrs) =
-    getAbilities iid window attrs
+instance HasAbilities DowntownFirstBankOfArkham where
+  getAbilities (DowntownFirstBankOfArkham attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+          attrs
+          1
+          (Here <> CanGainResources)
+          (ActionAbility Nothing $ ActionCost 1)
+        & (abilityLimitL .~ PlayerLimit PerGame 1)
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env DowntownFirstBankOfArkham where
   runMessage msg l@(DowntownFirstBankOfArkham attrs) = case msg of

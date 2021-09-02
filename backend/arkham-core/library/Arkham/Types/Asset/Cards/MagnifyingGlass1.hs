@@ -31,8 +31,8 @@ instance HasModifiersFor env MagnifyingGlass1 where
     ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env MagnifyingGlass1 where
-  getAbilities _ _ (MagnifyingGlass1 a) = pure
+instance HasAbilities MagnifyingGlass1 where
+  getAbilities (MagnifyingGlass1 a) =
     [ restrictedAbility
           a
           1

@@ -30,8 +30,8 @@ sophieItWasAllMyFault = assetWith
   Cards.sophieItWasAllMyFault
   (canLeavePlayByNormalMeansL .~ False)
 
-instance HasAbilities env SophieItWasAllMyFault where
-  getAbilities _ _ (SophieItWasAllMyFault x) = pure
+instance HasAbilities SophieItWasAllMyFault where
+  getAbilities (SophieItWasAllMyFault x) =
     [ restrictedAbility
         x
         1

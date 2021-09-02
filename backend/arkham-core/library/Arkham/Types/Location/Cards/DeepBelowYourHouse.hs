@@ -27,9 +27,9 @@ deepBelowYourHouse = location
   Squiggle
   [Plus]
 
-instance HasAbilities env DeepBelowYourHouse where
-  getAbilities i window (DeepBelowYourHouse attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities DeepBelowYourHouse where
+  getAbilities (DeepBelowYourHouse attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ RevealLocation Timing.After You

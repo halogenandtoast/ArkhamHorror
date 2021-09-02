@@ -21,8 +21,8 @@ newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs
 smiteTheWicked :: TreacheryCard SmiteTheWicked
 smiteTheWicked = treachery SmiteTheWicked Cards.smiteTheWicked
 
-instance HasAbilities env SmiteTheWicked where
-  getAbilities _ _ (SmiteTheWicked a) = pure
+instance HasAbilities SmiteTheWicked where
+  getAbilities (SmiteTheWicked a) =
     [ mkAbility a 1 $ ForcedAbility $ OrWindowMatcher
         [ GameEnds Timing.When
         , InvestigatorEliminated Timing.When (InvestigatorWithId iid)

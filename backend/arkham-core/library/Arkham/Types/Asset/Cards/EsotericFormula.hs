@@ -31,8 +31,8 @@ newtype EsotericFormula = EsotericFormula AssetAttrs
 esotericFormula :: AssetCard EsotericFormula
 esotericFormula = asset EsotericFormula Cards.esotericFormula
 
-instance HasAbilities env EsotericFormula where
-  getAbilities _ _ (EsotericFormula x) = pure
+instance HasAbilities EsotericFormula where
+  getAbilities (EsotericFormula x) =
     [ restrictedAbility
         x
         1

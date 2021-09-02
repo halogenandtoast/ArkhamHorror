@@ -32,26 +32,25 @@ devilsHopYard_253 = location
   Hourglass
   [Square, Plus]
 
-instance HasAbilities env DevilsHopYard_253 where
-  getAbilities iid window (DevilsHopYard_253 attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility
-              attrs
-              1
-              (Here
-              <> InvestigatorExists
-                   (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
-              <> EnemyCriteria
-                   (EnemyExists
-                   $ EnemyAt YourLocation
-                   <> EnemyWithTrait Abomination
-                   )
-              )
-              (FastAbility Free)
-            & (abilityLimitL .~ GroupLimit PerGame 1)
-        | locationRevealed attrs
-        ]
+instance HasAbilities DevilsHopYard_253 where
+  getAbilities (DevilsHopYard_253 attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+          attrs
+          1
+          (Here
+          <> InvestigatorExists
+               (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+          <> EnemyCriteria
+               (EnemyExists
+               $ EnemyAt YourLocation
+               <> EnemyWithTrait Abomination
+               )
+          )
+          (FastAbility Free)
+        & (abilityLimitL .~ GroupLimit PerGame 1)
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env DevilsHopYard_253 where
   runMessage msg l@(DevilsHopYard_253 attrs) = case msg of

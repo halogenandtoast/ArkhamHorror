@@ -29,9 +29,9 @@ northsideTrainStation = location
   T
   [Diamond, Triangle]
 
-instance HasAbilities env NorthsideTrainStation where
-  getAbilities iid window (NorthsideTrainStation attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities NorthsideTrainStation where
+  getAbilities (NorthsideTrainStation attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1)
           & (abilityLimitL .~ PlayerLimit PerGame 1)
       | locationRevealed attrs

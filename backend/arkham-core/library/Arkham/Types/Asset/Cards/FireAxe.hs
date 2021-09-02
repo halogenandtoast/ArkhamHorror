@@ -38,8 +38,8 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAx
       pure $ toModifiers a [ DamageDealt 1 | resourceCount == 0 ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env FireAxe where
-  getAbilities _ _ (FireAxe a) = pure
+instance HasAbilities FireAxe where
+  getAbilities (FireAxe a) =
     [ restrictedAbility a 1 OwnsThis
       $ ActionAbility (Just Action.Fight) (ActionCost 1)
     , restrictedAbility

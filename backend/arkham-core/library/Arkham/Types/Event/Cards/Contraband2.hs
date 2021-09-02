@@ -16,7 +16,7 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 
 newtype Contraband2 = Contraband2 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities env)
+  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 contraband2 :: EventCard Contraband2

@@ -30,13 +30,12 @@ peterWarren = enemyWith
   (1, 0)
   (spawnAtL ?~ LocationWithTitle "Miskatonic University")
 
-instance HasAbilities env PeterWarren where
-  getAbilities iid window (PeterWarren attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility attrs 1 OnSameLocation
-            $ ActionAbility (Just Parley) (Costs [ActionCost 1, ClueCost 2])
-        ]
+instance HasAbilities PeterWarren where
+  getAbilities (PeterWarren attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility attrs 1 OnSameLocation
+        $ ActionAbility (Just Parley) (Costs [ActionCost 1, ClueCost 2])
+    ]
 
 instance EnemyRunner env => RunMessage env PeterWarren where
   runMessage msg e@(PeterWarren attrs@EnemyAttrs {..}) = case msg of

@@ -35,8 +35,8 @@ instance Query EnemyMatcher env => HasModifiersFor env TheCloverClub where
       pure $ toModifiers attrs [ AddKeyword Aloof | isCriminal ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env TheCloverClub where
-  getAbilities _ _ (TheCloverClub x) = pure
+instance HasAbilities TheCloverClub where
+  getAbilities (TheCloverClub x) =
     [ mkAbility x 1
       $ ForcedAbility
       $ EnemyDealtDamage Timing.When

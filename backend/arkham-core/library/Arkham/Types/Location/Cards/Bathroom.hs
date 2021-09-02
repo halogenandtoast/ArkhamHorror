@@ -21,9 +21,9 @@ newtype Bathroom = Bathroom LocationAttrs
 bathroom :: LocationCard Bathroom
 bathroom = location Bathroom Cards.bathroom 1 (PerPlayer 1) Star [T]
 
-instance HasAbilities env Bathroom where
-  getAbilities i window (Bathroom attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities Bathroom where
+  getAbilities (Bathroom attrs) =
+    withBaseAbilities attrs $
       [ restrictedAbility
           attrs
           1

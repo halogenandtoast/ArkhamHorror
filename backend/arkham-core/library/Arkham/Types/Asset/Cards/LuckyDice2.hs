@@ -27,8 +27,8 @@ newtype LuckyDice2 = LuckyDice2 AssetAttrs
 luckyDice2 :: AssetCard LuckyDice2
 luckyDice2 = accessory LuckyDice2 Cards.luckyDice2
 
-instance HasAbilities env LuckyDice2 where
-  getAbilities _ _ (LuckyDice2 a) = pure
+instance HasAbilities LuckyDice2 where
+  getAbilities (LuckyDice2 a) =
     [ restrictedAbility a 1 OwnsThis $ ReactionAbility
         (RevealChaosToken Timing.After You (TokenFaceIsNot AutoFail))
         (ResourceCost 2)

@@ -27,8 +27,8 @@ theThingThatFollows = enemyWith
   (1, 1)
   ((preyL .~ SetToBearer) . (spawnAtL ?~ FarthestLocationFromYou Anywhere))
 
-instance HasAbilities env TheThingThatFollows where
-  getAbilities _ _ (TheThingThatFollows x) = pure
+instance HasAbilities TheThingThatFollows where
+  getAbilities (TheThingThatFollows x) =
     [ mkAbility x 1
       $ ForcedAbility
       $ EnemyWouldBeDefeated Timing.When

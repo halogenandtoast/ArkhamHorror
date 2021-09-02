@@ -22,8 +22,8 @@ newtype LadyEsprit = LadyEsprit AssetAttrs
 ladyEsprit :: AssetCard LadyEsprit
 ladyEsprit = allyWith LadyEsprit Cards.ladyEsprit (2, 4) (isStoryL .~ True)
 
-instance HasAbilities env LadyEsprit where
-  getAbilities _ _ (LadyEsprit x) = pure
+instance HasAbilities LadyEsprit where
+  getAbilities (LadyEsprit x) =
     [ restrictedAbility
         x
         1

@@ -15,7 +15,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype Barricade3 = Barricade3 EventAttrs
-  deriving anyclass (IsEvent, HasAbilities env)
+  deriving anyclass (IsEvent, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 barricade3 :: EventCard Barricade3

@@ -28,8 +28,8 @@ helplessPassenger :: AssetCard HelplessPassenger
 helplessPassenger =
   allyWith HelplessPassenger Cards.helplessPassenger (1, 1) (isStoryL .~ True)
 
-instance HasAbilities env HelplessPassenger where
-  getAbilities _ _ (HelplessPassenger x) = pure
+instance HasAbilities HelplessPassenger where
+  getAbilities (HelplessPassenger x) =
     [ restrictedAbility
       x
       1

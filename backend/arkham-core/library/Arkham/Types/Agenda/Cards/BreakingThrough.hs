@@ -27,8 +27,8 @@ breakingThrough :: AgendaCard BreakingThrough
 breakingThrough =
   agenda (3, A) BreakingThrough Cards.breakingThrough (Static 6)
 
-instance HasAbilities env BreakingThrough where
-  getAbilities _ _ (BreakingThrough x) = pure
+instance HasAbilities BreakingThrough where
+  getAbilities (BreakingThrough x) =
     [ mkAbility x 1 $ ForcedAbility $ MovedBy
         Timing.After
         You

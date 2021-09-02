@@ -41,24 +41,24 @@ instance HasModifiersFor env ColdSpringGlen_244 where
       [ EnemyEvade (-1) | eid `elem` locationEnemies attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env ColdSpringGlen_244 where
-  getAbilities iid window (ColdSpringGlen_244 attrs) =
-    withResignAction iid window attrs $ pure
-      [ restrictedAbility
-            attrs
-            1
-            (Here
-            <> InvestigatorExists (You <> InvestigatorWithAnyClues)
-            <> EnemyCriteria
-                 (EnemyExists
-                 $ EnemyAt YourLocation
-                 <> EnemyWithTrait Abomination
-                 )
-            )
-            (FastAbility Free)
-          & (abilityLimitL .~ GroupLimit PerGame 1)
-      | locationRevealed attrs
-      ]
+instance HasAbilities ColdSpringGlen_244 where
+  getAbilities (ColdSpringGlen_244 attrs) = withResignAction
+    attrs
+    [ restrictedAbility
+          attrs
+          1
+          (Here
+          <> InvestigatorExists (You <> InvestigatorWithAnyClues)
+          <> EnemyCriteria
+               (EnemyExists
+               $ EnemyAt YourLocation
+               <> EnemyWithTrait Abomination
+               )
+          )
+          (FastAbility Free)
+        & (abilityLimitL .~ GroupLimit PerGame 1)
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env ColdSpringGlen_244 where
   runMessage msg l@(ColdSpringGlen_244 attrs) = case msg of

@@ -25,15 +25,15 @@ newtype Kidnapped = Kidnapped TreacheryAttrs
 kidnapped :: TreacheryCard Kidnapped
 kidnapped = treachery Kidnapped Cards.kidnapped
 
-instance HasAbilities env Kidnapped where
-  getAbilities _ _ (Kidnapped attrs) = case treacheryAttachedTarget attrs of
-    Just (AgendaTarget aid) -> pure
+instance HasAbilities Kidnapped where
+  getAbilities (Kidnapped attrs) = case treacheryAttachedTarget attrs of
+    Just (AgendaTarget aid) ->
       [ mkAbility attrs 1
-        $ ForcedAbility
-        $ AgendaAdvances Timing.When
-        $ AgendaWithId aid
+          $ ForcedAbility
+          $ AgendaAdvances Timing.When
+          $ AgendaWithId aid
       ]
-    _ -> pure []
+    _ -> []
 
 instance TreacheryRunner env => RunMessage env Kidnapped where
   runMessage msg t@(Kidnapped attrs@TreacheryAttrs {..}) = case msg of

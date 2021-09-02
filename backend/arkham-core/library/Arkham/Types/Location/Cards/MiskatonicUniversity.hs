@@ -30,11 +30,12 @@ miskatonicUniversity = location
   Diamond
   [T, Plus, Circle, Square]
 
-instance HasAbilities env MiskatonicUniversity where
-  getAbilities iid window (MiskatonicUniversity x) | locationRevealed x =
-    withBaseAbilities iid window x
-      $ pure [restrictedAbility x 1 Here $ ActionAbility Nothing $ ActionCost 1]
-  getAbilities iid window (MiskatonicUniversity x) = getAbilities iid window x
+instance HasAbilities MiskatonicUniversity where
+  getAbilities (MiskatonicUniversity x) = withBaseAbilities
+    x
+    [ restrictedAbility x 1 Here $ ActionAbility Nothing $ ActionCost 1
+    | locationRevealed x
+    ]
 
 instance LocationRunner env => RunMessage env MiskatonicUniversity where
   runMessage msg l@(MiskatonicUniversity attrs) = case msg of

@@ -29,15 +29,14 @@ almaHill = enemyWith
   (0, 2)
   (spawnAtL ?~ LocationWithTitle "Southside")
 
-instance HasAbilities env AlmaHill where
-  getAbilities iid window (AlmaHill attrs) =
-    withBaseAbilities iid window attrs $ do
-      pure
-        [ restrictedAbility attrs 1 OnSameLocation
-            $ ActionAbility (Just Parley) (ActionCost 1)
-        ]
+instance HasAbilities AlmaHill where
+  getAbilities (AlmaHill attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility attrs 1 OnSameLocation
+        $ ActionAbility (Just Parley) (ActionCost 1)
+    ]
 
-instance (EnemyRunner env) => RunMessage env AlmaHill where
+instance EnemyRunner env => RunMessage env AlmaHill where
   runMessage msg e@(AlmaHill attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ pushAll
       (replicate 3 (InvestigatorDrawEncounterCard iid)

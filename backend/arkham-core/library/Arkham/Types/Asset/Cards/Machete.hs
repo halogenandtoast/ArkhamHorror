@@ -27,8 +27,8 @@ newtype Machete = Machete AssetAttrs
 machete :: AssetCard Machete
 machete = hand Machete Cards.machete
 
-instance HasAbilities env Machete where
-  getAbilities _ _ (Machete a) = pure
+instance HasAbilities Machete where
+  getAbilities (Machete a) =
     [ restrictedAbility a 1 OwnsThis
       $ ActionAbility (Just Action.Fight)
       $ ActionCost 1

@@ -27,8 +27,8 @@ newtype Shrivelling3 = Shrivelling3 AssetAttrs
 shrivelling3 :: AssetCard Shrivelling3
 shrivelling3 = arcane Shrivelling3 Cards.shrivelling3
 
-instance HasAbilities env Shrivelling3 where
-  getAbilities _ _ (Shrivelling3 a) = pure
+instance HasAbilities Shrivelling3 where
+  getAbilities (Shrivelling3 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Charge 1])

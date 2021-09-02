@@ -12,18 +12,13 @@ import Arkham.Types.Classes
 import Arkham.Types.Message
 
 newtype OccultLexicon = OccultLexicon AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 occultLexicon :: AssetCard OccultLexicon
 occultLexicon = hand OccultLexicon Cards.occultLexicon
 
-instance HasModifiersFor env OccultLexicon
-
-instance HasAbilities env OccultLexicon where
-  getAbilities i window (OccultLexicon x) = getAbilities i window x
-
-instance (AssetRunner env) => RunMessage env OccultLexicon where
+instance AssetRunner env => RunMessage env OccultLexicon where
   runMessage msg (OccultLexicon attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       handBloodRite <- PlayerCard <$> genPlayerCard Events.bloodRite

@@ -28,8 +28,8 @@ newtype SpiritAthame1 = SpiritAthame1 AssetAttrs
 spiritAthame1 :: AssetCard SpiritAthame1
 spiritAthame1 = hand SpiritAthame1 Cards.spiritAthame1
 
-instance HasAbilities env SpiritAthame1 where
-  getAbilities _ _ (SpiritAthame1 x) = pure
+instance HasAbilities SpiritAthame1 where
+  getAbilities (SpiritAthame1 x) =
     [ restrictedAbility
       x
       1

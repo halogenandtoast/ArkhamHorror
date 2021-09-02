@@ -25,9 +25,8 @@ backAlley = locationWith
   [Diamond]
   (revealedSymbolL .~ Squiggle)
 
-instance HasAbilities env BackAlley where
-  getAbilities i w (BackAlley a) =
-    withBaseAbilities i w a $ pure [locationResignAction a]
+instance HasAbilities BackAlley where
+  getAbilities (BackAlley a) = withBaseAbilities a [locationResignAction a]
 
 instance LocationRunner env => RunMessage env BackAlley where
   runMessage msg (BackAlley attrs) = BackAlley <$> runMessage msg attrs

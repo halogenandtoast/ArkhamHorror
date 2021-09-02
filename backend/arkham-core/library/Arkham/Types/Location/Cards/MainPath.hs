@@ -21,9 +21,9 @@ mainPath :: LocationCard MainPath
 mainPath =
   location MainPath Cards.mainPath 2 (Static 0) Squiggle [Square, Plus]
 
-instance HasAbilities env MainPath where
-  getAbilities iid window (MainPath a) =
-    withBaseAbilities iid window a $ pure [locationResignAction a]
+instance HasAbilities MainPath where
+  getAbilities (MainPath a) =
+    withBaseAbilities a $ [locationResignAction a]
 
 -- TODO: make constant ability "connected to woods" a modifier
 instance LocationRunner env => RunMessage env MainPath where

@@ -39,8 +39,8 @@ zoeySamaras = ZoeySamaras $ baseAttrs
     }
   [Believer, Hunter]
 
-instance HasAbilities env ZoeySamaras where
-  getAbilities _ _ (ZoeySamaras x) = pure
+instance HasAbilities ZoeySamaras where
+  getAbilities (ZoeySamaras x) =
     [ restrictedAbility
           x
           1

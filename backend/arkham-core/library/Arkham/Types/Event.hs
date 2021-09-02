@@ -27,7 +27,7 @@ instance HasCardCode Event where
 instance HasCardDef Event where
   toCardDef = toCardDef . toAttrs
 
-instance HasAbilities env Event where
+instance HasAbilities Event where
   getAbilities = genericGetAbilities
 
 instance

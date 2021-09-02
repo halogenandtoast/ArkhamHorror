@@ -38,8 +38,8 @@ agnesBaker = AgnesBaker $ baseAttrs
     }
   [Sorcerer]
 
-instance HasAbilities env AgnesBaker where
-  getAbilities _ _ (AgnesBaker x) = pure
+instance HasAbilities AgnesBaker where
+  getAbilities (AgnesBaker x) =
     [ restrictedAbility
           x
           1
@@ -55,7 +55,7 @@ instance HasTokenValue env AgnesBaker where
   getTokenValue (AgnesBaker attrs) iid ElderSign | iid == toId attrs = do
     let tokenValue' = PositiveModifier $ investigatorSanityDamage attrs
     pure $ TokenValue ElderSign tokenValue'
-  getTokenValue (AgnesBaker attrs) iid token = getTokenValue attrs iid token
+  getTokenValue _ _ token = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs) = case msg of

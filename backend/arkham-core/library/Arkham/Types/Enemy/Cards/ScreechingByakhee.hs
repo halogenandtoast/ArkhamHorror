@@ -17,7 +17,7 @@ import Arkham.Types.Query
 
 newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 screechingByakhee :: EnemyCard ScreechingByakhee
 screechingByakhee = enemyWith

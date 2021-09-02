@@ -26,14 +26,13 @@ newtype SearchingForIzzie = SearchingForIzzie TreacheryAttrs
 searchingForIzzie :: TreacheryCard SearchingForIzzie
 searchingForIzzie = treachery SearchingForIzzie Cards.searchingForIzzie
 
-instance HasAbilities env SearchingForIzzie where
-  getAbilities _ _ (SearchingForIzzie x) =
-    pure
-      $ restrictedAbility
-          x
-          1
-          OnSameLocation
-          (ActionAbility (Just Action.Investigate) $ ActionCost 2)
+instance HasAbilities SearchingForIzzie where
+  getAbilities (SearchingForIzzie x) =
+    restrictedAbility
+        x
+        1
+        OnSameLocation
+        (ActionAbility (Just Action.Investigate) $ ActionCost 2)
       : [ mkAbility x 1 $ ForcedAbility $ OrWindowMatcher
             [ GameEnds Timing.When
             , InvestigatorEliminated Timing.When (InvestigatorWithId iid)

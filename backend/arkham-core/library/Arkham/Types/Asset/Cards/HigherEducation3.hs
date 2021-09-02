@@ -27,8 +27,8 @@ newtype HigherEducation3 = HigherEducation3 AssetAttrs
 higherEducation3 :: AssetCard HigherEducation3
 higherEducation3 = asset HigherEducation3 Cards.higherEducation3
 
-instance HasAbilities env HigherEducation3 where
-  getAbilities _ _ (HigherEducation3 x) = pure
+instance HasAbilities HigherEducation3 where
+  getAbilities (HigherEducation3 x) =
     [ restrictedAbility x idx restriction $ FastAbility $ ResourceCost 1
     | idx <- [1, 2]
     ]

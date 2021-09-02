@@ -28,9 +28,9 @@ southsideHistoricalSociety = location
   Square
   [Diamond, Plus, Circle]
 
-instance HasAbilities env SouthsideHistoricalSociety where
-  getAbilities iid window (SouthsideHistoricalSociety x) | locationRevealed x =
-    withBaseAbilities iid window x $ pure
+instance HasAbilities SouthsideHistoricalSociety where
+  getAbilities (SouthsideHistoricalSociety x) | locationRevealed x =
+    withBaseAbilities x $
       [ restrictedAbility
           x
           1
@@ -39,8 +39,8 @@ instance HasAbilities env SouthsideHistoricalSociety where
         & abilityLimitL
         .~ PlayerLimit PerGame 1
       ]
-  getAbilities iid window (SouthsideHistoricalSociety x) =
-    getAbilities iid window x
+  getAbilities (SouthsideHistoricalSociety x) =
+    getAbilities x
 
 instance LocationRunner env => RunMessage env SouthsideHistoricalSociety where
   runMessage msg l@(SouthsideHistoricalSociety attrs) = case msg of

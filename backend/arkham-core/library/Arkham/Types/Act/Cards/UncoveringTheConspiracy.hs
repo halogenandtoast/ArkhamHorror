@@ -26,8 +26,8 @@ uncoveringTheConspiracy :: ActCard UncoveringTheConspiracy
 uncoveringTheConspiracy =
   act (1, A) UncoveringTheConspiracy Cards.uncoveringTheConspiracy Nothing
 
-instance HasAbilities env UncoveringTheConspiracy where
-  getAbilities _ _ (UncoveringTheConspiracy a) = pure
+instance HasAbilities UncoveringTheConspiracy where
+  getAbilities (UncoveringTheConspiracy a) =
     [ mkAbility a 1
     $ ActionAbility Nothing
     $ ActionCost 1

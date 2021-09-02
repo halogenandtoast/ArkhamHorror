@@ -23,8 +23,8 @@ newtype FireExtinguisher1 = FireExtinguisher1 AssetAttrs
 fireExtinguisher1 :: AssetCard FireExtinguisher1
 fireExtinguisher1 = hand FireExtinguisher1 Cards.fireExtinguisher1
 
-instance HasAbilities env FireExtinguisher1 where
-  getAbilities _ _ (FireExtinguisher1 a) = pure
+instance HasAbilities FireExtinguisher1 where
+  getAbilities (FireExtinguisher1 a) =
     [ restrictedAbility a 1 OwnsThis
       $ ActionAbility (Just Action.Fight) (ActionCost 1)
     , restrictedAbility a 2 OwnsThis $ ActionAbility

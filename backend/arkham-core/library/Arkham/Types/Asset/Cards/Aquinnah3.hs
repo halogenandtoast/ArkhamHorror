@@ -29,8 +29,8 @@ aquinnah3 = ally Aquinnah3 Cards.aquinnah3 (1, 4)
 dropUntilAttack :: [Message] -> [Message]
 dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 
-instance HasAbilities env Aquinnah3 where
-  getAbilities _ _ (Aquinnah3 a) = pure
+instance HasAbilities Aquinnah3 where
+  getAbilities (Aquinnah3 a) =
     [ restrictedAbility
         a
         1

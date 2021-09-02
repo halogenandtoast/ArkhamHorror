@@ -29,8 +29,9 @@ corpseTaker = enemyWith
   (1, 2)
   (spawnAtL ?~ FarthestLocationFromYou EmptyLocation)
 
-instance HasAbilities env CorpseTaker where
-  getAbilities i w (CorpseTaker x) = withBaseAbilities i w x $ pure
+instance HasAbilities CorpseTaker where
+  getAbilities (CorpseTaker x) = withBaseAbilities
+    x
     [ mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
       MythosPhase
     , mkAbility x 2 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase

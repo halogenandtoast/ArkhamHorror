@@ -38,14 +38,14 @@ instance HasCount PlayerCount env () => HasModifiersFor env YogSothoth where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env YogSothoth where
-  getAbilities iid window (YogSothoth attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ mkAbility attrs 1
-          $ ReactionAbility
-              (EnemyAttacks Timing.When You $ EnemyWithId $ toId attrs)
-              Free
-      ]
+instance HasAbilities YogSothoth where
+  getAbilities (YogSothoth attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1
+        $ ReactionAbility
+            (EnemyAttacks Timing.When You $ EnemyWithId $ toId attrs)
+            Free
+    ]
 
 instance EnemyAttrsRunMessage env => RunMessage env YogSothoth where
   runMessage msg e@(YogSothoth attrs@EnemyAttrs {..}) = case msg of

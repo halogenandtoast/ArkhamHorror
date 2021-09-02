@@ -31,11 +31,10 @@ houseInTheReeds_211 = location
 
 instance HasModifiersFor env HouseInTheReeds_211
 
-instance HasAbilities env HouseInTheReeds_211 where
-  getAbilities iid window (HouseInTheReeds_211 x) = do
-    rest <- withDrawCardUnderneathAction iid window x
-    pure
-      $ [ mkAbility x 1
+instance HasAbilities HouseInTheReeds_211 where
+  getAbilities (HouseInTheReeds_211 x) = do
+    let rest = withDrawCardUnderneathAction x
+    [ mkAbility x 1
           $ ForcedAbility
           $ RevealLocation Timing.After Anyone
           $ LocationWithId

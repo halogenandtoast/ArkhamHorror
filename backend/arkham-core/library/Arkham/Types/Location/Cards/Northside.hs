@@ -23,9 +23,9 @@ northside :: LocationCard Northside
 northside =
   location Northside Cards.northside 3 (PerPlayer 2) T [Diamond, Triangle]
 
-instance HasAbilities env Northside where
-  getAbilities iid window (Northside x) | locationRevealed x =
-    withBaseAbilities iid window x $ pure
+instance HasAbilities Northside where
+  getAbilities (Northside x) | locationRevealed x =
+    withBaseAbilities x $
       [ restrictedAbility
             x
             1
@@ -33,7 +33,7 @@ instance HasAbilities env Northside where
             (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 5])
           & (abilityLimitL .~ GroupLimit PerGame 1)
       ]
-  getAbilities iid window (Northside attrs) = getAbilities iid window attrs
+  getAbilities (Northside attrs) = getAbilities attrs
 
 instance LocationRunner env => RunMessage env Northside where
   runMessage msg l@(Northside attrs) = case msg of

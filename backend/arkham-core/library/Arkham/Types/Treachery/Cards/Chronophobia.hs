@@ -24,8 +24,8 @@ newtype Chronophobia = Chronophobia TreacheryAttrs
 chronophobia :: TreacheryCard Chronophobia
 chronophobia = treachery Chronophobia Cards.chronophobia
 
-instance HasAbilities env Chronophobia where
-  getAbilities _ _ (Chronophobia x) = pure
+instance HasAbilities Chronophobia where
+  getAbilities (Chronophobia x) =
     [ restrictedAbility x 1 (InThreatAreaOf You) $ ForcedAbility $ TurnEnds
       Timing.When
       You

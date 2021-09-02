@@ -33,8 +33,8 @@ instance HasModifiersFor env FrozenInFear where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env FrozenInFear where
-  getAbilities _ _ (FrozenInFear a) = pure
+instance HasAbilities FrozenInFear where
+  getAbilities (FrozenInFear a) =
     [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ TurnEnds
         Timing.After
         You

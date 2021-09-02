@@ -27,8 +27,8 @@ newtype Kukri = Kukri AssetAttrs
 kukri :: AssetCard Kukri
 kukri = hand Kukri Cards.kukri
 
-instance HasAbilities env Kukri where
-  getAbilities _ _ (Kukri a) = pure
+instance HasAbilities Kukri where
+  getAbilities (Kukri a) =
     [ restrictedAbility a 1 OwnsThis
         $ ActionAbility (Just Action.Fight) (ActionCost 1)
     ]

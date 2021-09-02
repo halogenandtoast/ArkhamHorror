@@ -8,16 +8,11 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 
 newtype LeatherCoat = LeatherCoat AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 leatherCoat :: AssetCard LeatherCoat
 leatherCoat = bodyWith LeatherCoat Cards.leatherCoat (healthL ?~ 2)
 
-instance HasModifiersFor env LeatherCoat
-
-instance HasAbilities env LeatherCoat where
-  getAbilities i window (LeatherCoat x) = getAbilities i window x
-
-instance (AssetRunner env) => RunMessage env LeatherCoat where
+instance AssetRunner env => RunMessage env LeatherCoat where
   runMessage msg (LeatherCoat attrs) = LeatherCoat <$> runMessage msg attrs

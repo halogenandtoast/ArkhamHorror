@@ -23,8 +23,8 @@ newtype OldBookOfLore = OldBookOfLore AssetAttrs
 oldBookOfLore :: AssetCard OldBookOfLore
 oldBookOfLore = hand OldBookOfLore Cards.oldBookOfLore
 
-instance HasAbilities env OldBookOfLore where
-  getAbilities _ _ (OldBookOfLore a) = pure
+instance HasAbilities OldBookOfLore where
+  getAbilities (OldBookOfLore a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, ExhaustCost $ toTarget a]
     ]

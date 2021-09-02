@@ -25,8 +25,9 @@ newtype TheExperiment = TheExperiment EnemyAttrs
 theExperiment :: EnemyCard TheExperiment
 theExperiment = enemy TheExperiment Cards.theExperiment (4, Static 7, 2) (2, 2)
 
-instance HasAbilities env TheExperiment where
-  getAbilities i w (TheExperiment x) = withBaseAbilities i w x $ pure
+instance HasAbilities TheExperiment where
+  getAbilities (TheExperiment x) = withBaseAbilities
+    x
     [ mkAbility x 1 $ ForcedAbility $ PhaseBegins Timing.When $ PhaseIs
       EnemyPhase
     , mkAbility x 2

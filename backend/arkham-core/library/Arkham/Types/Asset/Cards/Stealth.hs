@@ -28,8 +28,8 @@ newtype Stealth = Stealth AssetAttrs
 stealth :: AssetCard Stealth
 stealth = asset Stealth Cards.stealth
 
-instance HasAbilities env Stealth where
-  getAbilities _ _ (Stealth attrs) = pure
+instance HasAbilities Stealth where
+  getAbilities (Stealth attrs) =
     [ restrictedAbility attrs 1 OwnsThis
       $ ActionAbility (Just Action.Evade)
       $ ActionCost 1

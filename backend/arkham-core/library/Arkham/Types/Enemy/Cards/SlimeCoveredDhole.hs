@@ -29,15 +29,15 @@ slimeCoveredDhole = enemyWith
   (1, 1)
   ((preyL .~ LowestRemainingHealth) . (spawnAtL ?~ LocationWithoutTrait Bayou))
 
-instance HasAbilities env SlimeCoveredDhole where
-  getAbilities iid window (SlimeCoveredDhole attrs) =
-    withBaseAbilities iid window attrs $ pure
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ EnemyEnters Timing.When (LocationWithInvestigator Anyone)
-        $ EnemyWithId
-        $ toId attrs
-      ]
+instance HasAbilities SlimeCoveredDhole where
+  getAbilities (SlimeCoveredDhole attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1
+      $ ForcedAbility
+      $ EnemyEnters Timing.When (LocationWithInvestigator Anyone)
+      $ EnemyWithId
+      $ toId attrs
+    ]
 
 instance EnemyRunner env => RunMessage env SlimeCoveredDhole where
   runMessage msg e@(SlimeCoveredDhole attrs) = case msg of

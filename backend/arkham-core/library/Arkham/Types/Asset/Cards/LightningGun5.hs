@@ -29,8 +29,8 @@ lightningGun5 :: AssetCard LightningGun5
 lightningGun5 =
   assetWith LightningGun5 Cards.lightningGun5 (slotsL .~ [HandSlot, HandSlot])
 
-instance HasAbilities env LightningGun5 where
-  getAbilities _ _ (LightningGun5 a) = pure
+instance HasAbilities LightningGun5 where
+  getAbilities (LightningGun5 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])

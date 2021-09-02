@@ -31,20 +31,20 @@ dunwichVillage_242 = location
   Circle
   [Triangle, Square, Diamond]
 
-instance HasAbilities env DunwichVillage_242 where
-  getAbilities iid window (DunwichVillage_242 attrs) =
-    withResignAction iid window attrs $ pure
-      [ restrictedAbility
-            attrs
-            1
-            (Here
-            <> InvestigatorExists (You <> InvestigatorWithAnyClues)
-            <> EnemyCriteria (EnemyExists $ EnemyWithTrait Abomination)
-            )
-            (FastAbility Free)
-          & (abilityLimitL .~ GroupLimit PerGame 1)
-      | locationRevealed attrs
-      ]
+instance HasAbilities DunwichVillage_242 where
+  getAbilities (DunwichVillage_242 attrs) = withResignAction
+    attrs
+    [ restrictedAbility
+          attrs
+          1
+          (Here
+          <> InvestigatorExists (You <> InvestigatorWithAnyClues)
+          <> EnemyCriteria (EnemyExists $ EnemyWithTrait Abomination)
+          )
+          (FastAbility Free)
+        & (abilityLimitL .~ GroupLimit PerGame 1)
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env DunwichVillage_242 where
   runMessage msg l@(DunwichVillage_242 attrs) = case msg of

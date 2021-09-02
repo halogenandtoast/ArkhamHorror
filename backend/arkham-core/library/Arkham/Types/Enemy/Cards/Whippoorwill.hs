@@ -16,7 +16,7 @@ import Arkham.Types.Target
 
 newtype Whippoorwill = Whippoorwill EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 whippoorwill :: EnemyCard Whippoorwill
 whippoorwill = enemy Whippoorwill Cards.whippoorwill (2, Static 1, 4) (0, 1)

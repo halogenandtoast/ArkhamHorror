@@ -26,8 +26,8 @@ rampagingCreatures :: AgendaCard RampagingCreatures
 rampagingCreatures =
   agenda (1, A) RampagingCreatures Cards.rampagingCreatures (Static 5)
 
-instance HasAbilities env RampagingCreatures where
-  getAbilities _ _ (RampagingCreatures x) = pure
+instance HasAbilities RampagingCreatures where
+  getAbilities (RampagingCreatures x) =
     [mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase]
 
 instance AgendaRunner env => RunMessage env RampagingCreatures where

@@ -40,9 +40,9 @@ instance HasModifiersFor env ColdSpringGlen_245 where
       [ EnemyEvade (-1) | eid `elem` locationEnemies attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env ColdSpringGlen_245 where
-  getAbilities iid window (ColdSpringGlen_245 attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities ColdSpringGlen_245 where
+  getAbilities (ColdSpringGlen_245 attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1 $ ReactionAbility
           (ChosenRandomLocation Timing.After $ LocationWithId $ toId attrs)
           Free

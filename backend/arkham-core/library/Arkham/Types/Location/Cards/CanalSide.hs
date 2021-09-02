@@ -31,9 +31,9 @@ canalSide = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-instance HasAbilities env CanalSide where
-  getAbilities iid window (CanalSide attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities CanalSide where
+  getAbilities (CanalSide attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
           $ ReactionAbility
               (Enters Timing.After You $ LocationWithId $ toId attrs)

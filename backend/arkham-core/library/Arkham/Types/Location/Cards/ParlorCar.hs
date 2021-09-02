@@ -45,9 +45,9 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env ParlorCar wher
       Nothing -> pure $ toModifiers l [CannotInvestigate]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env ParlorCar where
-  getAbilities iid window (ParlorCar attrs) =
-    withBaseAbilities iid window attrs $ pure
+instance HasAbilities ParlorCar where
+  getAbilities (ParlorCar attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1 $ ActionAbility Nothing $ Costs
           [ActionCost 1, ResourceCost 3]
       | locationRevealed attrs

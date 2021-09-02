@@ -24,8 +24,8 @@ newtype SmokingPipe = SmokingPipe AssetAttrs
 smokingPipe :: AssetCard SmokingPipe
 smokingPipe = asset SmokingPipe Cards.smokingPipe
 
-instance HasAbilities env SmokingPipe where
-  getAbilities _ _ (SmokingPipe a) = pure
+instance HasAbilities SmokingPipe where
+  getAbilities (SmokingPipe a) =
     [ restrictedAbility
         a
         1

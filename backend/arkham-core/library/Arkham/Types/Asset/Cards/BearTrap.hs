@@ -36,10 +36,9 @@ instance HasModifiersFor env BearTrap where
     $ toModifiers attrs [EnemyFight (-1), EnemyEvade (-1)]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env BearTrap where
-  getAbilities _ _ (BearTrap x) =
-    pure
-      $ [restrictedAbility x 1 restriction $ FastAbility Free]
+instance HasAbilities BearTrap where
+  getAbilities (BearTrap x) =
+    [restrictedAbility x 1 restriction $ FastAbility Free]
       <> [ mkAbility x 2 $ ForcedAbility $ EnemyEnters
              Timing.After
              (LocationWithId attachedLocationId)

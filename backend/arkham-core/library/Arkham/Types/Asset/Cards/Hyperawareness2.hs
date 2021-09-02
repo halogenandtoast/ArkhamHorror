@@ -26,8 +26,8 @@ newtype Hyperawareness2 = Hyperawareness2 AssetAttrs
 hyperawareness2 :: AssetCard Hyperawareness2
 hyperawareness2 = asset Hyperawareness2 Cards.hyperawareness2
 
-instance HasAbilities env Hyperawareness2 where
-  getAbilities _ _ (Hyperawareness2 a) = pure
+instance HasAbilities Hyperawareness2 where
+  getAbilities (Hyperawareness2 a) =
     [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1

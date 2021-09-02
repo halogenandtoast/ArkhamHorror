@@ -16,7 +16,7 @@ import Arkham.Types.Resolution
 
 newtype TheGateOpens = TheGateOpens ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theGateOpens :: ActCard TheGateOpens
 theGateOpens = act

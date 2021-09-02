@@ -43,8 +43,8 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env EngineCar_177 
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env EngineCar_177 where
-  getAbilities i window (EngineCar_177 x) = withBaseAbilities i window x $ pure
+instance HasAbilities EngineCar_177 where
+  getAbilities (EngineCar_177 x) = withBaseAbilities x $
     [ restrictedAbility x 1 Here
       $ ForcedAbility
       $ RevealLocation Timing.After You

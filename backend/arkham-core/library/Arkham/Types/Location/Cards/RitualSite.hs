@@ -21,14 +21,14 @@ ritualSite :: LocationCard RitualSite
 ritualSite =
   location RitualSite Cards.ritualSite 3 (PerPlayer 2) Plus [Squiggle]
 
-instance HasAbilities env RitualSite where
-  getAbilities i window (RitualSite attrs) | locationRevealed attrs =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities RitualSite where
+  getAbilities (RitualSite attrs) | locationRevealed attrs =
+    withBaseAbilities attrs $
       [ restrictedAbility attrs 1 (CluesOnThis $ LessThan $ PerPlayer 2)
         $ ForcedAbility
         $ RoundEnds Timing.When
       ]
-  getAbilities i window (RitualSite attrs) = getAbilities i window attrs
+  getAbilities (RitualSite attrs) = getAbilities attrs
 
 instance LocationRunner env => RunMessage env RitualSite where
   runMessage msg l@(RitualSite attrs) = case msg of

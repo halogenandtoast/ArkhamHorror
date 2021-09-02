@@ -28,8 +28,9 @@ newtype HuntingHorror = HuntingHorror EnemyAttrs
 huntingHorror :: EnemyCard HuntingHorror
 huntingHorror = enemy HuntingHorror Cards.huntingHorror (2, Static 3, 2) (1, 1)
 
-instance HasAbilities env HuntingHorror where
-  getAbilities i w (HuntingHorror x) = withBaseAbilities i w x $ pure
+instance HasAbilities HuntingHorror where
+  getAbilities (HuntingHorror x) = withBaseAbilities
+    x
     [ mkAbility x 1 $ ForcedAbility $ PhaseBegins Timing.When $ PhaseIs
       EnemyPhase
     , mkAbility x 2

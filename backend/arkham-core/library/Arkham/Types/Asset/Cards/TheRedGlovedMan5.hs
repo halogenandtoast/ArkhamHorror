@@ -33,8 +33,8 @@ theRedGlovedMan5 :: AssetCard TheRedGlovedMan5
 theRedGlovedMan5 =
   ally (TheRedGlovedMan5 . (`with` Metadata [])) Cards.theRedGlovedMan5 (4, 4)
 
-instance HasAbilities env TheRedGlovedMan5 where
-  getAbilities _ _ (TheRedGlovedMan5 (x `With` _)) = pure
+instance HasAbilities TheRedGlovedMan5 where
+  getAbilities (TheRedGlovedMan5 (x `With` _)) =
     [ restrictedAbility x 1 OwnsThis
       $ ReactionAbility
           (AssetEntersPlay Timing.When (AssetWithId $ toId x))

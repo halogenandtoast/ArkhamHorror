@@ -25,9 +25,9 @@ forgottenMarsh = location
   Diamond
   [Moon, Square, Triangle, Hourglass]
 
-instance HasAbilities env ForgottenMarsh where
-  getAbilities i window (ForgottenMarsh attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities ForgottenMarsh where
+  getAbilities (ForgottenMarsh attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ Leaves Timing.When You

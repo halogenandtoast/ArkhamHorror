@@ -19,9 +19,9 @@ newtype Bedroom = Bedroom LocationAttrs
 bedroom :: LocationCard Bedroom
 bedroom = location Bedroom Cards.bedroom 2 (PerPlayer 1) Heart [T]
 
-instance HasAbilities env Bedroom where
-  getAbilities i window (Bedroom attrs) =
-    withBaseAbilities i window attrs $ pure
+instance HasAbilities Bedroom where
+  getAbilities (Bedroom attrs) =
+    withBaseAbilities attrs $
       [ mkAbility attrs 1
         $ ForcedAbility
         $ SkillTestResult

@@ -27,8 +27,8 @@ theChamberOfTheBeast :: ActCard TheChamberOfTheBeast
 theChamberOfTheBeast =
   act (2, A) TheChamberOfTheBeast Cards.theChamberOfTheBeast Nothing
 
-instance HasAbilities env TheChamberOfTheBeast where
-  getAbilities _ _ (TheChamberOfTheBeast x) = pure
+instance HasAbilities TheChamberOfTheBeast where
+  getAbilities (TheChamberOfTheBeast x) =
     [ mkAbility x 1
     $ Objective
     $ ForcedAbility

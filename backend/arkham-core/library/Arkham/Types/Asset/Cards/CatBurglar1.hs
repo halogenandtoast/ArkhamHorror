@@ -33,8 +33,8 @@ instance HasModifiersFor env CatBurglar1 where
   getModifiersFor _ _ _ = pure []
 
 
-instance HasAbilities env CatBurglar1 where
-  getAbilities _ _ (CatBurglar1 a) = pure
+instance HasAbilities CatBurglar1 where
+  getAbilities (CatBurglar1 a) =
     [ (restrictedAbility
         a
         1

@@ -24,8 +24,8 @@ newtype FirstAid = FirstAid AssetAttrs
 firstAid :: AssetCard FirstAid
 firstAid = asset FirstAid Cards.firstAid
 
-instance HasAbilities env FirstAid where
-  getAbilities _ _ (FirstAid x) = pure
+instance HasAbilities FirstAid where
+  getAbilities (FirstAid x) =
     [ restrictedAbility x 1 OwnsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, UseCost (toId x) Supply 1]
     ]

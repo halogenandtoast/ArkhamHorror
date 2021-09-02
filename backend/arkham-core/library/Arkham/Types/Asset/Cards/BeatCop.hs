@@ -31,8 +31,8 @@ instance HasModifiersFor env BeatCop where
     pure $ toModifiers a [ SkillModifier SkillCombat 1 | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env BeatCop where
-  getAbilities _ _ (BeatCop x) = pure
+instance HasAbilities BeatCop where
+  getAbilities (BeatCop x) =
     [ restrictedAbility
           x
           1

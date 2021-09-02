@@ -24,8 +24,8 @@ newtype Run = Run ActAttrs
 run :: ActCard Run
 run = act (1, A) Run Cards.run Nothing
 
-instance HasAbilities env Run where
-  getAbilities _ _ (Run x) = pure
+instance HasAbilities Run where
+  getAbilities (Run x) =
     [ mkAbility x 1 $ ForcedAbility $ Enters Timing.When You $ LocationWithTitle
         "Engine Car"
     ]

@@ -13,7 +13,7 @@ import Arkham.Types.Target
 
 newtype OrneLibrary = OrneLibrary LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 orneLibrary :: LocationCard OrneLibrary
 orneLibrary =

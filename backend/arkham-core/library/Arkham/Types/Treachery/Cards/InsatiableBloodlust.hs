@@ -31,8 +31,8 @@ instance HasModifiersFor env InsatiableBloodlust where
       [EnemyFight 1, DamageDealt 1, HorrorDealt 1, CannotBeEvaded]
   getModifiersFor _ _ _ = pure []
 
-instance HasAbilities env InsatiableBloodlust where
-  getAbilities _ _ (InsatiableBloodlust x) = pure
+instance HasAbilities InsatiableBloodlust where
+  getAbilities (InsatiableBloodlust x) =
     [ mkAbility x 1 $ ForcedAbility $ EnemyDealtDamage Timing.After $ enemyIs
         Cards.theRougarou
     ]

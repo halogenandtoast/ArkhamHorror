@@ -10,6 +10,7 @@ import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Id
@@ -18,8 +19,6 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher hiding (EnemyEvaded)
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window hiding (EnemyEvaded)
 
 newtype FloodedSquare = FloodedSquare LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -35,17 +34,19 @@ floodedSquare = locationWith
   []
   (connectsToL .~ singleton RightOf)
 
-ability :: LocationAttrs -> Ability
-ability a = mkAbility a 1 (ActionAbility Nothing $ ActionCost 1)
-
-instance ActionRunner env => HasAbilities env FloodedSquare where
-  getAbilities iid window@(Window Timing.When NonFast) (FloodedSquare attrs) =
-    withBaseAbilities iid window attrs $ do
-      counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
-      nonEliteEnemies <- getSet @EnemyId $ EnemyMatchAll
-        [NonEliteEnemy, EnemyAt $ LocationWithId counterClockwiseLocation]
-      pure [ ability attrs | notNull nonEliteEnemies ]
-  getAbilities iid window (FloodedSquare attrs) = getAbilities iid window attrs
+instance HasAbilities env FloodedSquare where
+  getAbilities iid window (FloodedSquare attrs) =
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility
+          attrs
+          1
+          (EnemyCriteria $ EnemyExists $ NonEliteEnemy <> EnemyAt
+            (LocationInDirection RightOf $ LocationWithId $ toId attrs)
+          )
+        $ ActionAbility Nothing
+        $ ActionCost 1
+      | locationRevealed attrs
+      ]
 
 instance
   ( HasSet EnemyId env EnemyMatcher

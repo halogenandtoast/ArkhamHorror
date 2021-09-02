@@ -9,12 +9,12 @@ import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Window
 
 newtype StreetsOfVenice = StreetsOfVenice LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -31,10 +31,11 @@ streetsOfVenice = locationWith
   (connectsToL .~ singleton RightOf)
 
 instance HasAbilities env StreetsOfVenice where
-  getAbilities _ (Window Timing.When FastPlayerWindow) (StreetsOfVenice attrs)
-    = pure [locationAbility $ mkAbility attrs 1 (FastAbility Free)]
   getAbilities iid window (StreetsOfVenice attrs) =
-    getAbilities iid window attrs
+    withBaseAbilities iid window attrs $ pure
+      [ restrictedAbility attrs 1 Here $ FastAbility Free
+      | locationRevealed attrs
+      ]
 
 instance LocationRunner env => RunMessage env StreetsOfVenice where
   runMessage msg l@(StreetsOfVenice attrs) = case msg of

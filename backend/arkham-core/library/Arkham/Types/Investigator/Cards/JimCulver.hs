@@ -2,18 +2,13 @@ module Arkham.Types.Investigator.Cards.JimCulver where
 
 import Arkham.Prelude
 
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
-import Arkham.Types.Stats
 import Arkham.Types.Target
-import Arkham.Types.Token
-import Arkham.Types.Trait
 
 newtype JimCulver = JimCulver InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)

@@ -6,18 +6,13 @@ module Arkham.Types.Investigator.Cards.AgnesBaker
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Stats
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Token
-import Arkham.Types.Trait
 
 newtype AgnesBaker = AgnesBaker InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)

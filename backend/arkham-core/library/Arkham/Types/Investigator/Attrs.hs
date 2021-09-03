@@ -1,9 +1,17 @@
 module Arkham.Types.Investigator.Attrs
   ( module Arkham.Types.Investigator.Attrs
-  , module Arkham.Types.Investigator.Runner
+  , module X
   ) where
 
 import Arkham.Prelude
+
+import Arkham.Types.Token as X
+import Arkham.Types.ClassSymbol as X
+import Arkham.Types.Investigator.Runner as X
+import Arkham.Types.Name as X
+import Arkham.Types.Stats as X
+import Arkham.Types.Trait as X hiding (Cultist)
+import Arkham.Types.Classes as X hiding (discard)
 
 import Arkham.Json
 import Arkham.Types.Ability
@@ -12,8 +20,6 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Cost
 import Arkham.Types.Deck
@@ -22,21 +28,17 @@ import Arkham.Types.Game.Helpers hiding (windows)
 import qualified Arkham.Types.Game.Helpers as Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Id
-import Arkham.Types.Investigator.Runner
 import Arkham.Types.Matcher
   (pattern AloofEnemy, AssetMatcher(..), EnemyMatcher(..), InvestigatorMatcher(..), LocationMatcher(..), assetIs)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
-import Arkham.Types.Stats
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Trait
 import Arkham.Types.Window (Window(..))
 import qualified Arkham.Types.Window as Window
 import qualified Data.HashSet as HashSet

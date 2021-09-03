@@ -3,8 +3,6 @@ module Arkham.Types.Investigator.Cards.ZoeySamaras where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Effect.Window
@@ -15,10 +13,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Source
-import Arkham.Types.Stats
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Token
-import Arkham.Types.Trait
 
 newtype ZoeySamaras = ZoeySamaras InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)

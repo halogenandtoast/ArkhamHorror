@@ -2,11 +2,8 @@ module Arkham.Types.Investigator.Cards.DianaStanley where
 
 import Arkham.Prelude
 
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes
-import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Stats
-import Arkham.Types.Trait
+import Arkham.Types.Investigator.Attrs hiding (Cultist)
+import Arkham.Types.Trait (Trait(Cultist))
 
 newtype DianaStanley = DianaStanley InvestigatorAttrs
   deriving anyclass (HasAbilities, HasModifiersFor env)

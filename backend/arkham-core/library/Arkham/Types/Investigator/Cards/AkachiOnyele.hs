@@ -3,8 +3,6 @@ module Arkham.Types.Investigator.Cards.AkachiOnyele where
 import Arkham.Prelude
 
 import Arkham.Types.Asset.Uses
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Attrs
@@ -12,10 +10,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Source
-import Arkham.Types.Stats
 import Arkham.Types.Target
-import Arkham.Types.Token
-import Arkham.Types.Trait
 
 newtype AkachiOnyele = AkachiOnyele InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)

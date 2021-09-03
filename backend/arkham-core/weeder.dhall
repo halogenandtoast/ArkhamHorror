@@ -4,6 +4,7 @@
           , "^Arkham.Types.Game.startGame$"
           , "^Arkham.Types.Game.toInternalGame$"
           , "^Arkham.Types.Investigator.lookupInvestigator$"
+          , "^TestImport*"
           , "^Paths_.*"
           , "^Main.main$"
           , "^Main.spec$"

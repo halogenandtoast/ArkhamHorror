@@ -31,6 +31,7 @@ pattern CanDrawCards <- Negate (SelfHasModifier CannotDrawCards) where
 
 data Criterion
   = AssetExists AssetMatcher
+  | InYourHand
   | OnAct Int
   | CardExists CardMatcher
   | CardInDiscard DiscardSignifier [Trait]
@@ -61,7 +62,7 @@ data Criterion
   | ResourcesOnThis ValueMatcher
   | ResourcesOnLocation Where ValueMatcher
   | ReturnableCardInDiscard DiscardSignifier [Trait]
-  | PlayableCardInDiscard DiscardSignifier ExtendedCardMatcher
+  | PlayableCardInDiscard DiscardSignifier CardMatcher
   | ScenarioCardHasResignAbility
   | Self
   | SetAsideCardExists CardMatcher

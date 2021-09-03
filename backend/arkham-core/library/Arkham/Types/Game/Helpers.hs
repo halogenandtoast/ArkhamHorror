@@ -1001,6 +1001,11 @@ passesCriteria iid source windows' = \case
       (select Matcher.UneliminatedInvestigator)
       (select investigatorMatcher)
   Criteria.Never -> pure False
+  Criteria.InYourHand -> do
+    hand <- map (toCardId . unHandCard) <$> getList iid
+    case source of
+      EventSource eid -> pure $ unEventId eid `elem` hand
+      _ -> error $ "source not handled for in your hand: " <> show source
   Criteria.InThreatAreaOf who -> do
     investigators <- selectList who
     case source of
@@ -1121,10 +1126,9 @@ passesCriteria iid source windows' = \case
           )
         =<< selectList investigatorMatcher
     discards <-
-      concat
-        <$> traverse
-              (fmap (map unDiscardedPlayerCard) . getList)
-              investigatorIds
+      filter (`cardMatch` cardMatcher)
+      . concat
+      <$> traverse (fmap (map unDiscardedPlayerCard) . getList) investigatorIds
     anyM (getIsPlayable iid source windows' . PlayerCard) discards
   Criteria.FirstAction -> do
     n <- unActionTakenCount <$> getCount iid
@@ -1158,8 +1162,12 @@ passesCriteria iid source windows' = \case
         traitsToMatch ->
           filter (any (`elem` traitsToMatch) . toTraits) discards
     pure $ notNull filteredDiscards
-  Criteria.CardInDiscard Criteria.AnyPlayerDiscard traits -> do
-    investigatorIds <- getInvestigatorIds
+  Criteria.CardInDiscard discardSignifier traits -> do
+    let
+      investigatorMatcher = case discardSignifier of
+        Criteria.DiscardOf matcher -> matcher
+        Criteria.AnyPlayerDiscard -> Matcher.Anyone
+    investigatorIds <- selectList investigatorMatcher
     discards <-
       concat
         <$> traverse

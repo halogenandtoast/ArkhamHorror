@@ -23,7 +23,8 @@ import qualified Arkham.Types.Game.Helpers as Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Matcher (AssetMatcher(..), InvestigatorMatcher(..), assetIs)
+import Arkham.Types.Matcher
+  (pattern AloofEnemy, AssetMatcher(..), EnemyMatcher(..), InvestigatorMatcher(..), LocationMatcher(..), assetIs)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -609,8 +610,30 @@ canCommitToAnotherLocation attrs = do
     m > length n
   permit _ _ = False
 
-instance InvestigatorRunner env => RunMessage env InvestigatorAttrs where
-  runMessage = runInvestigatorMessage
+instance (EntityInstanceRunner env, InvestigatorRunner env) => RunMessage env InvestigatorAttrs where
+  runMessage msg i | doNotMask msg = do
+    traverseOf_
+      (handL . traverse . _PlayerCard)
+      (runMessage msg . toCardInstance (toId i) . PlayerCard)
+      i
+    traverseOf_
+      (discardL . traverse)
+      (runMessage msg . toCardInstance (toId i) . PlayerCard)
+      i
+    runInvestigatorMessage msg i
+  runMessage msg i = do
+    traverseOf_
+      (handL . traverse . _PlayerCard)
+      (runMessage (InHand (toId i) msg) . toCardInstance (toId i) . PlayerCard)
+      i
+    traverseOf_
+      (discardL . traverse)
+      (runMessage (InDiscard (toId i) msg)
+      . toCardInstance (toId i)
+      . PlayerCard
+      )
+      i
+    runInvestigatorMessage msg i
 
 hasModifier
   :: (MonadReader env m, HasModifiersFor env ())
@@ -920,8 +943,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             )
   ChooseFightEnemyNotEngagedWithInvestigator iid source skillType isAction
     | iid == investigatorId -> do
-      enemyIds <- getSet investigatorLocation
-      aloofEnemyIds <- mapSet unAloofEnemyId <$> getSet investigatorLocation
+      enemyIds <- select $ EnemyAt $ LocationWithId investigatorLocation
+      aloofEnemyIds <- select $ AloofEnemy <> EnemyAt (LocationWithId investigatorLocation)
       let
         fightableEnemyIds =
           enemyIds
@@ -963,12 +986,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       , FightEnemy iid eid source skillType False
       ]
   FightEnemy iid eid source skillType False | iid == investigatorId -> do
-    pushAll
-      [ WhenAttackEnemy iid eid
-      , AttackEnemy iid eid source skillType
-      , AfterAttackEnemy iid eid
-      ]
-    pure a
+    a <$ push (AttackEnemy iid eid source skillType)
   FailedAttackEnemy iid eid | iid == investigatorId -> do
     doesNotDamageOtherInvestigators <- hasModifier
       a
@@ -1036,10 +1054,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ]
   EvadeEnemy iid eid source skillType False | iid == investigatorId ->
     a <$ pushAll
-      [ WhenEvadeEnemy iid eid
-      , TryEvadeEnemy iid eid source skillType
-      , AfterEvadeEnemy iid eid
-      ]
+      [TryEvadeEnemy iid eid source skillType, AfterEvadeEnemy iid eid]
   MoveAction iid lid cost True | iid == investigatorId -> a <$ pushAll
     [TakeAction iid (Just Action.Move) cost, MoveAction iid lid cost False]
   MoveAction iid lid _cost False | iid == investigatorId ->
@@ -1387,15 +1402,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure $ a & handL %~ (PlayerCard choiceAsCard :) . filter
         ((/= cardId) . toCardId)
   InitiatePlayCard iid cardId mtarget asAction | iid == investigatorId -> do
-    let
-      card = findCard cardId a
-      isFastEvent = case card of
-        PlayerCard pc ->
-          isJust (cdFastWindow $ toCardDef pc) && toCardType card == EventType
-        _ -> False
+    let card = findCard cardId a
     a <$ pushAll
       [ CheckWindow iid [Window Timing.When (Window.PlayCard iid card)]
-      , if isFastEvent
+      , if isFastEvent card
         then PlayFastEvent
           iid
           cardId

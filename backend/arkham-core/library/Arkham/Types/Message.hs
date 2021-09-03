@@ -138,7 +138,6 @@ data Message
     | DoAdvanceAgendaIfThresholdSatisfied
     | AdvanceCurrentAgenda
     | After Message
-    | AfterAttackEnemy InvestigatorId EnemyId
     | AfterDiscoverClues InvestigatorId LocationId Int
     | AfterEnterLocation InvestigatorId LocationId
     | AfterEvadeEnemy InvestigatorId EnemyId
@@ -531,11 +530,9 @@ data Message
     | UseLimitedAbility InvestigatorId Ability
     | UseScenarioSpecificAbility InvestigatorId (Maybe Target) Int
     | When Message
-    | WhenAttackEnemy InvestigatorId EnemyId
     | WhenWillEnterLocation InvestigatorId LocationId
     | WhenEnterLocation InvestigatorId LocationId
     | SetLocationAsIf InvestigatorId LocationId
-    | WhenEvadeEnemy InvestigatorId EnemyId
     | Will Message
     -- must be called on instance directly
     | SetOriginalCardCode CardCode

@@ -29,7 +29,6 @@ type AgendaRunner env
     , HasCount SetAsideCount env CardCode
     , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe LocationId) env (Direction, LocationId)
-    , HasId (Maybe StoryEnemyId) env CardCode
     , HasId (Maybe StoryTreacheryId) env CardCode
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
@@ -54,6 +53,5 @@ type AgendaRunner env
     , HasSet LocationId env ()
     , HasSet LocationId env [Trait]
     , HasSet Trait env EnemyId
-    , HasSet UnengagedEnemyId env ()
     )
 

@@ -13,6 +13,7 @@ import Arkham.Types.Trait
 
 type ScenarioRunner env
   = ( HasQueue env
+    , Query EnemyMatcher env
     , HasCount DoomCount env ()
     , HasModifiersFor env ()
     , HasCount DoomCount env EnemyId
@@ -26,7 +27,6 @@ type ScenarioRunner env
     , HasId LocationId env InvestigatorId
     , HasId (Maybe CampaignId) env ()
     , HasId (Maybe EnemyId) env EnemyMatcher
-    , HasId (Maybe StoryEnemyId) env CardCode
     , HasList DeckCard env InvestigatorId
     , HasList CampaignStoryCard env ()
     , HasName env LocationId
@@ -45,7 +45,6 @@ type ScenarioRunner env
     , HasSet LocationId env [Trait]
     , HasSet LocationId env LocationMatcher
     , HasSet ScenarioLogKey env ()
-    , HasSet StoryEnemyId env CardCode
     , HasSet Trait env LocationId
     , HasSet VictoryDisplayCardCode env ()
     , HasSkillTest env

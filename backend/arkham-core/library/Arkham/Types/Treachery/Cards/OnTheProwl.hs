@@ -7,9 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import qualified Arkham.Treachery.Cards as Cards
-import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -26,7 +24,7 @@ onTheProwl = treachery OnTheProwl Cards.onTheProwl
 instance TreacheryRunner env => RunMessage env OnTheProwl where
   runMessage msg t@(OnTheProwl attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
+      mrougarou <- getTheRougarou
       t <$ case mrougarou of
         Nothing -> pure ()
         Just eid -> do

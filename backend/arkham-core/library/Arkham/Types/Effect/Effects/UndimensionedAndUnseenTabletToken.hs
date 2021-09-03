@@ -5,12 +5,14 @@ module Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken
 
 import Arkham.Prelude
 
-import Arkham.Types.Card.CardCode
+
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 import Arkham.Types.EnemyId
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -42,14 +44,13 @@ instance HasId Difficulty env () => HasModifiersFor env UndimensionedAndUnseenTa
 instance
   ( HasId Difficulty env ()
   , HasQueue env
+  , Query EnemyMatcher env
   , HasCount ClueCount env EnemyId
-  , HasSet StoryEnemyId env CardCode
   )
   => RunMessage env UndimensionedAndUnseenTabletToken where
   runMessage msg e@(UndimensionedAndUnseenTabletToken attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs -> do
-      broodOfYogSothoth <- map unStoryEnemyId
-        <$> getSetList @StoryEnemyId (CardCode "02255")
+      broodOfYogSothoth <- getBroodOfYogSothoth
       broodOfYogSothothWithClues <- filterM
         (fmap ((> 0) . unClueCount) . getCount)
         broodOfYogSothoth

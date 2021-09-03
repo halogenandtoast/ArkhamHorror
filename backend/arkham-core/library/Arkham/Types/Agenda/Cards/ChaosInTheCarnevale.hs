@@ -34,9 +34,9 @@ chaosInTheCarnevale =
 instance HasAbilities ChaosInTheCarnevale where
   getAbilities (ChaosInTheCarnevale x) =
     [ mkAbility x 1
-      $ ForcedAbility
-      $ EnemySpawns Timing.After Anywhere
-      $ enemyIs Enemies.writhingAppendage
+        $ ForcedAbility
+        $ EnemySpawns Timing.After Anywhere
+        $ enemyIs Enemies.writhingAppendage
     | onSide A x
     ]
 
@@ -46,8 +46,7 @@ instance AgendaRunner env => RunMessage env ChaosInTheCarnevale where
       | isSource attrs source -> a <$ push (PlaceDoom (EnemyTarget eid) 2)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       investigatorIds <- getInvestigatorIds
-      mCnidathquaId <- fmap unStoryEnemyId
-        <$> getId (toCardCode Enemies.cnidathqua)
+      mCnidathquaId <- selectOne $ enemyIs Enemies.cnidathqua
       a <$ case mCnidathquaId of
         Just cnidathquaId ->
           pushAll

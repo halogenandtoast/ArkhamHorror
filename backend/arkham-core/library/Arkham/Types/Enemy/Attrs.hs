@@ -1,4 +1,3 @@
-{-# LANGUAGE PatternSynonyms #-}
 module Arkham.Types.Enemy.Attrs
   ( module Arkham.Types.Enemy.Attrs
   , module X

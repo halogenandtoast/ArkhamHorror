@@ -6,6 +6,8 @@ module Arkham.Types.Agenda.Cards.TheRougarouFeeds
 import Arkham.Prelude
 
 import qualified Arkham.Agenda.Cards as Cards
+import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
@@ -26,15 +28,10 @@ theRougarouFeeds :: AgendaCard TheRougarouFeeds
 theRougarouFeeds =
   agenda (2, A) TheRougarouFeeds Cards.theRougarouFeeds (Static 6)
 
-getRougarou
-  :: (MonadReader env m, HasId (Maybe StoryEnemyId) env CardCode)
-  => m (Maybe EnemyId)
-getRougarou = fmap unStoryEnemyId <$> getId (CardCode "81028")
-
 instance AgendaRunner env => RunMessage env TheRougarouFeeds where
   runMessage msg a@(TheRougarouFeeds attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
-      mrougarou <- getRougarou
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
+      mrougarou <- getTheRougarou
       case mrougarou of
         Nothing -> a <$ pushAll
           [ ShuffleAllInEncounterDiscardBackIn "81034"

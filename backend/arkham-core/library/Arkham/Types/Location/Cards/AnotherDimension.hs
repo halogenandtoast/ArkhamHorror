@@ -47,7 +47,7 @@ instance LocationRunner env => RunMessage env AnotherDimension where
     UseCardAbility _ source [Window _ (LeavePlay (LocationTarget lid))] 1 _
       | isSource attrs source -> do
         investigatorIds <- getSetList @InvestigatorId lid
-        enemyIds <- map unUnengagedEnemyId <$> getSetList lid
+        enemyIds <- selectList $ UnengagedEnemy <> EnemyAt (LocationWithId lid)
         l <$ pushAll
           ([ MoveTo (toSource attrs) iid (toId attrs) | iid <- investigatorIds ]
           <> [ EnemyMove eid lid (toId attrs) | eid <- enemyIds ]

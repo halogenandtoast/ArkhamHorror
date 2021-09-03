@@ -1118,6 +1118,10 @@ passesCriteria iid source windows' = \case
       investigatorMatcher = case discardSignifier of
         Criteria.DiscardOf matcher -> matcher
         Criteria.AnyPlayerDiscard -> Matcher.Anyone
+      windows'' =
+        [ Window Timing.When (Window.DuringTurn iid)
+        , Window Timing.When Window.FastPlayerWindow
+        ]
     investigatorIds <-
       filterM
           (fmap (notElem CardsCannotLeaveYourDiscardPile)
@@ -1129,7 +1133,7 @@ passesCriteria iid source windows' = \case
       filter (`cardMatch` cardMatcher)
       . concat
       <$> traverse (fmap (map unDiscardedPlayerCard) . getList) investigatorIds
-    anyM (getIsPlayable iid source windows' . PlayerCard) discards
+    anyM (getIsPlayable iid source windows'' . PlayerCard) discards
   Criteria.FirstAction -> do
     n <- unActionTakenCount <$> getCount iid
     pure $ n == 0

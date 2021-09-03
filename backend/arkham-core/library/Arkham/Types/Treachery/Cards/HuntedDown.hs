@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -25,9 +26,7 @@ instance TreacheryRunner env => RunMessage env HuntedDown where
   runMessage msg t@(HuntedDown attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       destinationId <- getId @LocationId iid
-      unengagedEnemyIds <- mapSet unUnengagedEnemyId <$> getSet ()
-      criminalEnemyIds <- getSet Criminal
-      let enemiesToMove = criminalEnemyIds `intersection` unengagedEnemyIds
+      enemiesToMove <- select $ UnengagedEnemy <> EnemyWithTrait Criminal
       if null enemiesToMove
         then t <$ push (Surge iid $ toSource attrs)
         else do

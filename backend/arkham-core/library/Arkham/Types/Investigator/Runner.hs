@@ -69,7 +69,6 @@ type InnerInvestigatorRunner env
       , HasId (Maybe LocationId) env AssetId
       , HasId (Maybe LocationId) env LocationMatcher
       , HasId (Maybe OwnerId) env AssetId
-      , HasId (Maybe StoryEnemyId) env CardCode
       , HasId ActiveInvestigatorId env ()
       , HasId CardCode env AssetId
       , HasId CardCode env EnemyId
@@ -100,7 +99,6 @@ type InnerInvestigatorRunner env
         , HasSet ActId env ()
         , HasSet AgendaId env ()
         , HasSet AgendaId env TreacheryCardCode
-        , HasSet AloofEnemyId env LocationId
         , HasSet ClassSymbol env InvestigatorId
         , HasSet EventId env EventMatcher
         , HasSet SkillId env SkillMatcher
@@ -133,7 +131,6 @@ type InnerInvestigatorRunner env
         , HasSet EnemyId env ([Trait], LocationId)
         , HasSet EnemyId env EnemyMatcher
         , HasSet EventId env ()
-        , HasSet ExhaustedEnemyId env LocationId
         , HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait)
         , HasSet FarthestLocationId env InvestigatorId
         , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
@@ -158,16 +155,12 @@ type InnerInvestigatorRunner env
         , HasSet PreyId env (Prey, LocationId)
         , HasSet RevealedLocationId env ()
         , HasSet ScenarioLogKey env ()
-        , HasSet StoryEnemyId env CardCode
         , HasSet Trait env AssetId
         , HasSet Trait env EnemyId
         , HasSet Trait env LocationId
         , HasSet Trait env Source
         , HasSet Trait env (InvestigatorId, CardId)
         , HasSet TreacheryId env LocationId
-        , HasSet UnengagedEnemyId env ()
-        , HasSet UnengagedEnemyId env LocationId
-        , HasSet UniqueEnemyId env ()
         , HasSet UnrevealedLocationId env ()
         , HasSet UnrevealedLocationId env LocationMatcher
         )

@@ -149,6 +149,12 @@ isDynamic (PlayerCard card) = case cdCost (toCardDef card) of
   _ -> False
 isDynamic (EncounterCard _) = False
 
+isFastEvent :: Card -> Bool
+isFastEvent (PlayerCard card) =
+  let CardDef {..} = toCardDef card
+  in isJust cdFastWindow && cdCardType == EventType
+isFastEvent (EncounterCard _) = False
+
 toPlayerCard :: Card -> Maybe PlayerCard
 toPlayerCard (PlayerCard pc) = Just pc
 toPlayerCard (EncounterCard _) = Nothing

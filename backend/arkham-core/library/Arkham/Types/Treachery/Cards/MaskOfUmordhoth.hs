@@ -23,13 +23,11 @@ newtype MaskOfUmordhoth = MaskOfUmordhoth TreacheryAttrs
 maskOfUmordhoth :: TreacheryCard MaskOfUmordhoth
 maskOfUmordhoth = treachery MaskOfUmordhoth Cards.maskOfUmordhoth
 
-instance HasSet UniqueEnemyId env () => HasModifiersFor env MaskOfUmordhoth where
+instance Query EnemyMatcher env => HasModifiersFor env MaskOfUmordhoth where
   getModifiersFor _ (EnemyTarget eid) (MaskOfUmordhoth attrs)
     | treacheryOnEnemy eid attrs = do
-      uniqueEnemyIds <- map unUniqueEnemyId <$> getSetList ()
-      let
-        keyword =
-          if eid `elem` uniqueEnemyIds then Keyword.Retaliate else Keyword.Aloof
+      isUnique <- member eid <$> select UniqueEnemy
+      let keyword = if isUnique then Keyword.Retaliate else Keyword.Aloof
       pure $ toModifiers attrs [HealthModifier 2, AddKeyword keyword]
   getModifiersFor _ _ _ = pure []
 

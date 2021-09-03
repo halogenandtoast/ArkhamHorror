@@ -51,7 +51,7 @@ instance HasAbilities FishingNet where
 instance AssetRunner env => RunMessage env FishingNet where
   runMessage msg a@(FishingNet attrs@AssetAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
+      mrougarou <- selectOne $ enemyIs Cards.theRougarou
       case mrougarou of
         Nothing -> error "can not use this ability"
         Just eid -> a <$ push (AttachAsset assetId (EnemyTarget eid))

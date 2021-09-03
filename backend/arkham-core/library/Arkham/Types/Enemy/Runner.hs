@@ -17,8 +17,8 @@ type EnemyRunner env
   = ( HasQueue env
     , HasName env AssetId
     , HasSet EnemyId env ()
-    , HasId (Maybe StoryEnemyId) env CardCode
     , Query LocationMatcher env
+    , Query EnemyMatcher env
     , Query InvestigatorMatcher env
     , HasCount CardCount env InvestigatorId
     , HasCount ClueCount env LocationId

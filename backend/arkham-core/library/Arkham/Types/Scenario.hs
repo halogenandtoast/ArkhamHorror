@@ -81,10 +81,10 @@ instance
   , HasCount EnemyCount env (InvestigatorLocation, [Trait])
   , HasCount EnemyCount env [Trait]
   , HasCount Shroud env LocationId
+  , Query EnemyMatcher env
   , HasSet EnemyId env Trait
   , HasSet EnemyId env LocationId
   , HasSet LocationId env [Trait]
-  , HasSet StoryEnemyId env CardCode
   , HasSet LocationId env ()
   , HasSet Trait env LocationId
   , HasList UnderneathCard env LocationId

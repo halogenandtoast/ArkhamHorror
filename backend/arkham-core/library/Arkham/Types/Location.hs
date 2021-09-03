@@ -45,8 +45,8 @@ instance
   , HasCount CardCount env InvestigatorId
   , HasCount ClueCount env LocationId
   , HasCount ResourceCount env InvestigatorId
-  , HasId (Maybe StoryEnemyId) env CardCode
   , Query AssetMatcher env
+  , Query EnemyMatcher env
   )
   => HasModifiersFor env Location where
   getModifiersFor = genericGetModifiersFor

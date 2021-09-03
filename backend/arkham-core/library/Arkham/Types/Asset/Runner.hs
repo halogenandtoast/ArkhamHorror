@@ -36,7 +36,6 @@ type AssetRunner env
     , HasCount SanityDamageCount env EnemyId
     , HasId (Maybe LocationId) env (Direction, LocationId)
     , HasId (Maybe LocationId) env LocationMatcher
-    , HasId (Maybe StoryEnemyId) env CardCode
     , HasId ActiveInvestigatorId env ()
     , HasId CardCode env EnemyId
     , HasId LocationId env InvestigatorId
@@ -47,11 +46,9 @@ type AssetRunner env
     , HasSet EnemyId env ([Trait], LocationId)
     , HasSet EnemyId env InvestigatorId
     , HasSet EnemyId env LocationId
-    , HasSet ExhaustedEnemyId env LocationId
     , HasSet InScenarioInvestigatorId env ()
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env LocationId
-    , HasSet StoryEnemyId env CardCode
     , HasSet Trait env AssetId
     , HasSet Trait env EnemyId
     , HasSet Trait env Source

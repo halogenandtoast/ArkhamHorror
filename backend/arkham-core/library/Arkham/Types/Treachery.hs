@@ -6,6 +6,7 @@ import Arkham.Prelude
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -35,8 +36,8 @@ instance
   , HasId (Maybe OwnerId) env AssetId
   , HasSet Trait env AssetId
   , HasSet Trait env LocationId
-  , HasSet UniqueEnemyId env ()
   , HasCount ResourceCount env TreacheryId
+  , Query EnemyMatcher env
   )
   => HasModifiersFor env Treachery where
   getModifiersFor = genericGetModifiersFor

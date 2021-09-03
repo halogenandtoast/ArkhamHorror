@@ -14,6 +14,7 @@ import Arkham.Types.Effect.Effects
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -89,7 +90,6 @@ data Effect
   | WillToSurvive3' WillToSurvive3
   | SureGamble3' SureGamble3
   | ArkhamWoodsTwistingPaths' ArkhamWoodsTwistingPaths
-  | HuntingNightgaunt' HuntingNightgaunt
   | RiteOfSeeking' RiteOfSeeking
   | BindMonster2' BindMonster2
   | PushedIntoTheBeyond' PushedIntoTheBeyond
@@ -142,11 +142,11 @@ instance
   , HasModifiersFor env ()
   , HasId Difficulty env ()
   , HasCount ClueCount env EnemyId
-  , HasSet StoryEnemyId env CardCode
   , HasSet EnemyId env InvestigatorId
   , HasList DiscardedPlayerCard env InvestigatorId
   , HasCount ActionRemainingCount env InvestigatorId
   , HasSet ClassSymbol env InvestigatorId
+  , Query EnemyMatcher env
   )
   => RunMessage env Effect where
   runMessage = genericRunMessage
@@ -196,7 +196,6 @@ allEffects = mapFromList
   , ("01085", WillToSurvive3' . willToSurvive3)
   , ("01088", SureGamble3' . sureGamble3)
   , ("01151", ArkhamWoodsTwistingPaths' . arkhamWoodsTwistingPaths)
-  , ("01172", HuntingNightgaunt' . huntingNightgaunt)
   , ("02028", RiteOfSeeking' . riteOfSeeking)
   , ("02031", BindMonster2' . bindMonster2)
   , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)

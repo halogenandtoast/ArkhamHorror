@@ -15,6 +15,7 @@ import Arkham.Types.Trait (Trait)
 type ActRunner env
   = ( HasQueue env
     , Query AssetMatcher env
+    , Query EnemyMatcher env
     , Query LocationMatcher env
     , HasCount ClueCount env AssetId
     , HasCount DamageCount env EnemyId
@@ -23,7 +24,6 @@ type ActRunner env
     , HasCount SpendableClueCount env ()
     , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe OwnerId) env AssetId
-    , HasId (Maybe StoryEnemyId) env CardCode
     , HasId CardCode env AssetId
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()

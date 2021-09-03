@@ -5,8 +5,8 @@ module Arkham.Types.Treachery.Cards.StalkedInTheDark
 
 import Arkham.Prelude
 
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import qualified Arkham.Treachery.Cards as Cards
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Message
@@ -24,7 +24,7 @@ stalkedInTheDark = treachery StalkedInTheDark Cards.stalkedInTheDark
 instance TreacheryRunner env => RunMessage env StalkedInTheDark where
   runMessage msg t@(StalkedInTheDark attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")
+      mHuntingHorrorId <- getHuntingHorror
       case mHuntingHorrorId of
         Just eid -> do
           lid <- getId @LocationId iid

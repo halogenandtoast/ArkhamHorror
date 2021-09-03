@@ -52,7 +52,7 @@ instance AgendaRunner env => RunMessage env RestrictedAccess where
             push $ AttachStoryTreacheryTo shadowSpawned (EnemyTarget eid)
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")
+      mHuntingHorrorId <- selectOne $ enemyIs Cards.huntingHorror
       a <$ case mHuntingHorrorId of
         Just eid -> pushAll
           [PlaceDoom (EnemyTarget eid) 1, NextAgenda (toId attrs) "02120"]

@@ -1,5 +1,3 @@
-{-# LANGUAGE PatternSynonyms #-}
-
 module Arkham.Types.Matcher where
 
 import Arkham.Prelude
@@ -167,6 +165,7 @@ data EnemyMatcher
   | EnemyMatchAll [EnemyMatcher]
   | EnemyEngagedWithYou
   | UnengagedEnemy
+  | UniqueEnemy
   | NotEnemy EnemyMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

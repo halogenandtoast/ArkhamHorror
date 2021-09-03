@@ -42,7 +42,6 @@ type TreacheryRunner env
     , HasCount Shroud env LocationId
     , HasCount SpendableClueCount env InvestigatorId
     , HasCount TreacheryCount env (LocationId, CardCode)
-    , HasId (Maybe StoryEnemyId) env CardCode
     , HasId CardCode env AssetId
     , HasId CardCode env EnemyId
     , HasId LocationId env EnemyId
@@ -69,9 +68,7 @@ type TreacheryRunner env
     , HasSet LocationId env TreacheryCardCode
     , HasSet LocationId env [Trait]
     , HasSet ScenarioLogKey env ()
-    , HasSet UnengagedEnemyId env ()
     , HasSet Trait env LocationId
     , HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait)
-    , HasSet UniqueEnemyId env ()
     , HasSet EnemyId env ()
     )

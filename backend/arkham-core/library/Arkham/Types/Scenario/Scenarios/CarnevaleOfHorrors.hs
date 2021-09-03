@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
+import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
@@ -379,8 +380,7 @@ instance
                 ]
               )
         ElderThing -> do
-          mCnidathquaId <- fmap unStoryEnemyId
-            <$> getId (toCardCode Enemies.cnidathqua)
+          mCnidathquaId <- getCnidathqua
           case mCnidathquaId of
             Just cnidathquaId -> push $ EnemyAttack
               iid

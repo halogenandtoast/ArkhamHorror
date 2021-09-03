@@ -35,8 +35,9 @@ instance
             then pure e
             else do
               discards <- map unDiscardedPlayerCard <$> getList iid
-              e <$ push
-                (chooseOne
+              e <$ when
+                (notNull discards)
+                (push $ chooseOne
                   iid
                   (Done "Do not return card to hand"
                   : [ TargetLabel

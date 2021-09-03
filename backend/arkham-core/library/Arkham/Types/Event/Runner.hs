@@ -31,7 +31,6 @@ type EventRunner env
     , HasSet EmptyLocationId env ()
     , HasSet EnemyId env InvestigatorId
     , HasSet EnemyId env LocationId
-    , HasSet ExhaustedEnemyId env LocationId
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env LocationId
     , HasSet RevealedLocationId env ()

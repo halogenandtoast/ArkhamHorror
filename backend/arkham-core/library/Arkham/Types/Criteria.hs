@@ -1,5 +1,3 @@
-{-# LANGUAGE PatternSynonyms #-}
-
 module Arkham.Types.Criteria where
 
 import Arkham.Prelude

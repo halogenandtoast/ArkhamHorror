@@ -7,13 +7,13 @@ import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Location.Cards as Cards
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -39,7 +39,7 @@ instance ActRunner env => RunMessage env NightAtTheMuseum where
       a <$ push (AdvanceAct (toId attrs) source)
     AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      mHuntingHorror <- fmap unStoryEnemyId <$> getId (CardCode "02141")
+      mHuntingHorror <- getHuntingHorror
       case mHuntingHorror of
         Just eid -> do
           lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"

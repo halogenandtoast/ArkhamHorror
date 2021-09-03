@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
@@ -19,10 +20,10 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Matcher hiding (ChosenRandomLocation, RevealLocation)
 import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
+import Arkham.Types.Scenario.Runner
 import Arkham.Types.SkillTest
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -141,31 +142,17 @@ instance HasRecord UndimensionedAndUnseen where
   hasRecordSet _ = pure []
   hasRecordCount _ = pure 0
 
-instance
-  ( HasSet StoryEnemyId env CardCode
-  , HasTokenValue env InvestigatorId
-  )
-  => HasTokenValue env UndimensionedAndUnseen where
+instance (Query EnemyMatcher env, HasTokenValue env InvestigatorId) => HasTokenValue env UndimensionedAndUnseen where
   getTokenValue (UndimensionedAndUnseen attrs) iid = \case
     Skull -> do
-      broodCount <- length <$> getSetList @StoryEnemyId (CardCode "02255")
+      broodCount <- length <$> getBroodOfYogSothoth
       pure $ toTokenValue attrs Skull broodCount (2 * broodCount)
     Cultist -> pure $ TokenValue Cultist NoModifier
     Tablet -> pure $ TokenValue Tablet ZeroModifier
     ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
     otherFace -> getTokenValue attrs iid otherFace
 
-instance
-  ( HasId CardCode env EnemyId
-  , HasSkillTest env
-  , HasCount XPCount env ()
-  , HasSet StoryEnemyId env CardCode
-  , HasList DeckCard env InvestigatorId
-  , HasRecord env
-  , ScenarioAttrsRunner env
-  , HasModifiersFor env ()
-  )
-  => RunMessage env UndimensionedAndUnseen where
+instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
   runMessage msg s@(UndimensionedAndUnseen attrs) = case msg of
     SetTokensForScenario -> do
       standalone <- getIsStandalone
@@ -346,7 +333,7 @@ instance
       broodEscapedIntoTheWild <-
         (+ count ((== "02255") . toCardCode) (scenarioSetAsideCards attrs))
         . length
-        <$> getSetList @StoryEnemyId (CardCode "02255")
+        <$> getBroodOfYogSothoth
       s <$ pushAll
         ([ chooseOne
            leadInvestigatorId

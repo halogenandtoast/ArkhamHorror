@@ -41,7 +41,7 @@ instance TreacheryRunner env => RunMessage env InsatiableBloodlust where
   runMessage msg t@(InsatiableBloodlust attrs@TreacheryAttrs {..}) =
     case msg of
       Revelation _iid source | isSource attrs source -> do
-        mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
+        mrougarou <- selectOne $ enemyIs Cards.theRougarou
         case mrougarou of
           Nothing -> error "can't happen"
           Just eid -> do

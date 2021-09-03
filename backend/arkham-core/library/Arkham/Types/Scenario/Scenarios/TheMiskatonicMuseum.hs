@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Location.Cards as Locations
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
@@ -241,12 +242,10 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
       s <$ push (InvestigatorPlaceCluesOnLocation iid 1)
     ResolveToken _ Tablet iid | isHardExpert attrs -> do
       lid <- getId @LocationId iid
-      enemyIds <- getSetList @EnemyId lid
-      mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")
+      mHuntingHorrorId <- getHuntingHorrorWith $ EnemyAt $ LocationWithId lid
       case mHuntingHorrorId of
-        Just huntingHorrorId -> s <$ when
-          (huntingHorrorId `elem` enemyIds)
-          (push $ EnemyAttack iid huntingHorrorId DamageAny)
+        Just huntingHorrorId ->
+          s <$ push (EnemyAttack iid huntingHorrorId DamageAny)
         Nothing -> pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of

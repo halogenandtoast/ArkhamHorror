@@ -44,7 +44,6 @@ type GameRunner env
       )
     , ( HasId (Maybe AssetId) env CardCode
       , HasId (Maybe OwnerId) env AssetId
-      , HasId (Maybe StoryEnemyId) env CardCode
       , HasId ActiveInvestigatorId env ()
       , HasId LeadInvestigatorId env ()
       , HasId CardCode env AssetId
@@ -61,7 +60,6 @@ type GameRunner env
     , HasModifiersFor env ()
     , ( HasSet AccessibleLocationId env LocationId
       , HasSet AgendaId env ()
-      , HasSet AloofEnemyId env LocationId
       , HasSet BlockedLocationId env ()
       , HasSet ClosestEnemyId env (LocationId, [Trait])
       , HasSet ClosestEnemyId env InvestigatorId
@@ -97,7 +95,6 @@ type GameRunner env
       , HasSet Trait env EnemyId
       , HasSet Trait env LocationId
       , HasSet TreacheryId env LocationId
-      , HasSet UniqueEnemyId env ()
       , HasSet VictoryDisplayCardCode env ()
       )
     , HasSkillTest env

@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Agenda.Cards as Cards
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
@@ -51,7 +52,7 @@ instance AgendaRunner env => RunMessage env ShadowsDeepen where
             push $ AttachStoryTreacheryTo shadowSpawned (EnemyTarget eid)
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")
+      mHuntingHorrorId <- getHuntingHorror
       a <$ case mHuntingHorrorId of
         Just eid -> pushAll
           [PlaceDoom (EnemyTarget eid) 1, NextAgenda (toId attrs) "02121"]

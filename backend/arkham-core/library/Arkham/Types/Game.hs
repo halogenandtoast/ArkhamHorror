@@ -961,6 +961,7 @@ getEnemiesMatching matcher = do
       iid <- view activeInvestigatorIdL <$> getGame
       member iid <$> getSet (toId enemy)
     UnengagedEnemy -> \enemy -> null <$> getSet @InvestigatorId (toId enemy)
+    UniqueEnemy -> pure . isUnique
     M.EnemyAt locationMatcher -> \enemy ->
       liftA2 member (getId @LocationId $ toId enemy) (select locationMatcher)
     CanFightEnemy -> \enemy -> do
@@ -1243,7 +1244,7 @@ instance HasGame env => HasSet FightableEnemyId env (InvestigatorId, Source) whe
     enemyIds <- union (setFromList fightAnywhereEnemyIds)
       <$> getSet @EnemyId locationId
     investigatorEnemyIds <- getSet @EnemyId iid
-    aloofEnemyIds <- mapSet unAloofEnemyId <$> getSet locationId
+    aloofEnemyIds <- select $ AloofEnemy <> EnemyAt (LocationWithId locationId)
     let
       potentials = setToList
         (investigatorEnemyIds `union` (enemyIds `difference` aloofEnemyIds))
@@ -1290,12 +1291,6 @@ instance HasGame env => HasId (Maybe TreacheryId) env CardCode where
       . mapToList
       . view treacheriesL
       <$> getGame
-
-instance HasGame env => HasId (Maybe StoryEnemyId) env CardCode where
-  getId cardCode = fmap StoryEnemyId <$> getId cardCode
-
-instance HasGame env => HasSet StoryEnemyId env CardCode where
-  getSet cardCode = mapSet StoryEnemyId <$> getSet cardCode
 
 instance HasGame env => HasSet EnemyId env CardCode where
   getSet cardCode =
@@ -1864,16 +1859,6 @@ instance HasGame env => HasId (Maybe LocationId) env EventId where
 instance HasGame env => HasSet EnemyId env InvestigatorId where
   getSet iid = getEngagedEnemies <$> getInvestigator iid
 
-instance HasGame env => HasSet ExhaustedEnemyId env LocationId where
-  getSet lid = do
-    location <- getLocation lid
-    locationEnemyIds <- getSet @EnemyId location
-    mapSet ExhaustedEnemyId
-      . keysSet
-      . filterMap (\e -> toId e `member` locationEnemyIds && isExhausted e)
-      . view enemiesL
-      <$> getGame
-
 instance HasGame env => HasSet AgendaId env () where
   getSet _ = keysSet . view agendasL <$> getGame
 
@@ -2082,23 +2067,6 @@ instance HasGame env => HasSet InScenarioInvestigatorId env () where
       . keysSet
       . filterMap (not . (\i -> hasResigned i || isDefeated i))
       . view investigatorsL
-      <$> getGame
-
-instance HasGame env => HasSet UnengagedEnemyId env () where
-  getSet _ =
-    mapSet UnengagedEnemyId
-      . keysSet
-      . filterMap (not . isEngaged)
-      . view enemiesL
-      <$> getGame
-
-instance HasGame env => HasSet UnengagedEnemyId env LocationId where
-  getSet lid = do
-    enemyIds <- getSet =<< getLocation lid
-    mapSet UnengagedEnemyId
-      . keysSet
-      . filterMap (and . sequence [not . isEngaged, (`member` enemyIds) . toId])
-      . view enemiesL
       <$> getGame
 
 instance HasGame env => HasSet EnemyId env Trait where
@@ -2514,11 +2482,6 @@ instance HasGame env => HasSet EventId env () where
 instance HasGame env => HasSet EnemyId env () where
   getSet _ = keysSet . view enemiesL <$> getGame
 
-instance HasGame env => HasSet UniqueEnemyId env () where
-  getSet _ = do
-    enemies <- filter isUnique . toList . view enemiesL <$> getGame
-    pure . setFromList . coerce $ map toId enemies
-
 instance HasGame env => HasSet EnemyId env LocationId where
   getSet = getSet <=< getLocation
 
@@ -2531,14 +2494,6 @@ instance HasGame env => HasSet EnemyId env ([Trait], LocationId) where
             . getEnemy
             )
             enemyIds
-
-instance HasGame env => HasSet AloofEnemyId env LocationId where
-  getSet lid = do
-    enemyIds <- getSetList @EnemyId lid
-    enemiesWithKeywords <- traverse (traverseToSnd getSetList) enemyIds
-    pure . setFromList . coerce . map fst $ filter
-      (elem Keyword.Aloof . snd)
-      enemiesWithKeywords
 
 instance HasGame env => HasSet InvestigatorId env () where
   getSet _ = keysSet . view investigatorsL <$> getGame
@@ -3985,4 +3940,4 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
               (toCardInstance (gameLeadInvestigatorId g) (EncounterCard c))
             )
       >>= runGameMessage msg
-    where maskedMsg f = if doNotMask msg then msg else f msg
+    where maskedMsg f = f msg

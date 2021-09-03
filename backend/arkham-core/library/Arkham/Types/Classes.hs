@@ -177,7 +177,6 @@ type ActionRunner env
       )
     , HasId (Maybe LocationId) env AssetId
     , HasId (Maybe OwnerId) env AssetId
-    , HasId (Maybe StoryEnemyId) env CardCode
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env EnemyId
@@ -197,7 +196,6 @@ type ActionRunner env
     , HasSet EnemyId env EnemyMatcher
     , HasSet EnemyId env InvestigatorId
     , HasSet EnemyId env LocationId
-    , HasSet ExhaustedEnemyId env LocationId
     , HasSet FightableEnemyId env (InvestigatorId, Source)
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env (HashSet LocationId)
@@ -205,7 +203,6 @@ type ActionRunner env
     , HasSet Keyword env EnemyId
     , HasSet LocationId env ()
     , HasSet LocationId env [Trait]
-    , HasSet StoryEnemyId env CardCode
     , HasSet Trait env (InvestigatorId, CardId)
     , HasSet Trait env EnemyId
     , HasSet Trait env LocationId

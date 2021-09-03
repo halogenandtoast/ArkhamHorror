@@ -4,15 +4,14 @@ import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Query
@@ -35,9 +34,9 @@ huntingTheRougarou =
 instance HasAbilities HuntingTheRougarou where
   getAbilities (HuntingTheRougarou a) =
     [ mkAbility a 1
-    $ ForcedAbility
-    $ EnemyLeaves Timing.After Anywhere
-    $ enemyIs Cards.theRougarou
+      $ ForcedAbility
+      $ EnemyLeaves Timing.After Anywhere
+      $ enemyIs Cards.theRougarou
     , mkAbility a 2 $ ForcedAbility $ EnemyDefeated Timing.When Anyone $ enemyIs
       Cards.theRougarou
     , restrictedAbility
@@ -61,8 +60,7 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
     AdvanceAct aid _ | aid == toId attrs && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      rougarou <- unStoryEnemyId . fromJustNote "must be" <$> getId
-        (CardCode "81028")
+      rougarou <- fromJustNote "must be" <$> getTheRougarou
 
       requiredClueCount <- getPlayerCountValue (PerPlayer 4)
       learnedMoreAboutTheCurse <- (>= requiredClueCount)

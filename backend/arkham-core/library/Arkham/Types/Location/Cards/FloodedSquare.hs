@@ -36,23 +36,19 @@ floodedSquare = locationWith
 
 instance HasAbilities FloodedSquare where
   getAbilities (FloodedSquare attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          (EnemyCriteria $ EnemyExists $ NonEliteEnemy <> EnemyAt
-            (LocationInDirection RightOf $ LocationWithId $ toId attrs)
-          )
-        $ ActionAbility Nothing
-        $ ActionCost 1
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            (EnemyCriteria $ EnemyExists $ NonEliteEnemy <> EnemyAt
+              (LocationInDirection RightOf $ LocationWithId $ toId attrs)
+            )
+          $ ActionAbility Nothing
+          $ ActionCost 1
+        | locationRevealed attrs
+        ]
 
-instance
-  ( HasSet EnemyId env EnemyMatcher
-  , LocationRunner env
-  )
-  => RunMessage env FloodedSquare where
+instance LocationRunner env => RunMessage env FloodedSquare where
   runMessage msg l@(FloodedSquare attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)

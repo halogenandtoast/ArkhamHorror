@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Location.Cards as Cards
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -15,7 +16,6 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
@@ -42,7 +42,7 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
     AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      mHuntingHorror <- fmap unStoryEnemyId <$> getId (CardCode "02141")
+      mHuntingHorror <- getHuntingHorror
       haroldWalsted <- EncounterCard <$> genEncounterCard Assets.haroldWalsted
       case mHuntingHorror of
         Just eid -> do

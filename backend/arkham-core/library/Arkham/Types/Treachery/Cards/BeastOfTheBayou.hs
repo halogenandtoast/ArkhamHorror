@@ -2,8 +2,8 @@ module Arkham.Types.Treachery.Cards.BeastOfTheBayou where
 
 import Arkham.Prelude
 
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import qualified Arkham.Treachery.Cards as Cards
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Message
@@ -22,7 +22,7 @@ beastOfTheBayou = treachery BeastOfTheBayou Cards.beastOfTheBayou
 instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
   runMessage msg t@(BeastOfTheBayou attrs@TreacheryAttrs {..}) = case msg of
     Revelation _iid source | isSource attrs source -> do
-      mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
+      mrougarou <- getTheRougarou
       t <$ case mrougarou of
         Nothing -> pushAll [PlaceDoomOnAgenda]
         Just eid -> do

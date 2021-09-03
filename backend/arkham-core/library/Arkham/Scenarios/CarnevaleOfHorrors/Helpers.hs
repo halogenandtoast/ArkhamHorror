@@ -2,8 +2,14 @@ module Arkham.Scenarios.CarnevaleOfHorrors.Helpers where
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Matcher
+
+getCnidathqua
+  :: (MonadReader env m, Query EnemyMatcher env) => m (Maybe EnemyId)
+getCnidathqua = selectOne $ enemyIs Cards.cnidathqua
 
 -- | An across location will be 4 locations away
 getAcrossLocation

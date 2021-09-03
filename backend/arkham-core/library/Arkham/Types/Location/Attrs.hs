@@ -1,5 +1,3 @@
-{-# LANGUAGE PatternSynonyms #-}
-
 module Arkham.Types.Location.Attrs
   ( module Arkham.Types.Location.Attrs
   , module X

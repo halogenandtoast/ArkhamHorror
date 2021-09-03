@@ -6,10 +6,8 @@ import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Source
-import Arkham.Types.Target
 
 newtype SneakAttack = SneakAttack EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
@@ -19,14 +17,12 @@ sneakAttack :: EventCard SneakAttack
 sneakAttack = event SneakAttack Cards.sneakAttack
 
 instance EventRunner env => RunMessage env SneakAttack where
-  runMessage msg e@(SneakAttack attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
-      lid <- getId @LocationId iid
-      enemyIds <- map unExhaustedEnemyId <$> getSetList lid
+  runMessage msg e@(SneakAttack attrs) = case msg of
+    InvestigatorPlayEvent you eid _ _ | eid == toId attrs -> do
+      yourLocation <- LocationWithId <$> getId you
+      enemies <- selectList $ ExhaustedEnemy <> EnemyAt yourLocation
       e <$ pushAll
-        ([ EnemyDamage enemyId iid (EventSource eventId) 2
-         | enemyId <- enemyIds
-         ]
-        <> [Discard (EventTarget eventId)]
+        ([ EnemyDamage enemy you (toSource attrs) 2 | enemy <- enemies ]
+        <> [Discard $ toTarget attrs]
         )
     _ -> SneakAttack <$> runMessage msg attrs

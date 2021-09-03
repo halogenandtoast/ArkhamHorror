@@ -65,12 +65,14 @@ instance (InvestigatorRunner env) => RunMessage env WilliamYorick where
       let
         targets =
           filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
-        playCardMsgs c =
-          [ AddToHand iid c
-          , if isDynamic c
-            then InitiatePlayDynamicCard iid (toCardId c) 0 Nothing False
-            else InitiatePlayCard iid (toCardId c) Nothing False
-          ]
+        playCardMsgs c = [AddToHand iid c] <> if isDynamic c
+          then [InitiatePlayDynamicCard iid (toCardId c) 0 Nothing False]
+          else if isFastEvent c
+            then [InitiatePlayCard iid (toCardId c) Nothing False]
+            else
+              [ PayCardCost iid (toCardId c)
+              , InitiatePlayCard iid (toCardId c) Nothing False
+              ]
       playableTargets <- filterM
         (getIsPlayable
             iid

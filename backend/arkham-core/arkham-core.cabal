@@ -26,6 +26,8 @@ library
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
+      Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+      Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Skill.Cards
       Arkham.Treachery.Cards
       Arkham.Types.Ability
@@ -357,7 +359,6 @@ library
       Arkham.Types.Effect.Effects.ExposeWeakness1
       Arkham.Types.Effect.Effects.Fieldwork
       Arkham.Types.Effect.Effects.FireExtinguisher1
-      Arkham.Types.Effect.Effects.HuntingNightgaunt
       Arkham.Types.Effect.Effects.Improvisation
       Arkham.Types.Effect.Effects.JeremiahPierce
       Arkham.Types.Effect.Effects.LetMeHandleThis
@@ -963,6 +964,7 @@ library
   hs-source-dirs:
       library
   default-extensions:
+      PatternSynonyms
       AllowAmbiguousTypes
       BangPatterns
       BlockArguments
@@ -1020,6 +1022,7 @@ executable validate
   hs-source-dirs:
       validate
   default-extensions:
+      PatternSynonyms
       AllowAmbiguousTypes
       BangPatterns
       BlockArguments
@@ -1128,6 +1131,7 @@ test-suite spec
   hs-source-dirs:
       tests
   default-extensions:
+      PatternSynonyms
       AllowAmbiguousTypes
       BangPatterns
       BlockArguments

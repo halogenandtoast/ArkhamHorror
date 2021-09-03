@@ -19,10 +19,10 @@ import Arkham.Types.Trait
 type LocationRunner env
   = ( HasQueue env
     , HasSkillTest env
-    , HasSet UnengagedEnemyId env LocationId
     , HasSet EnemyId env EnemyMatcher
     , Query AssetMatcher env
     , Query LocationMatcher env
+    , Query EnemyMatcher env
     , HasCostPayment env
     , HasCount ActionRemainingCount env InvestigatorId
     , HasCount ClueCount env InvestigatorId

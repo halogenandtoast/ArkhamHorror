@@ -5,6 +5,7 @@ module Arkham.Types.Treachery.Cards.SlitheringBehindYou
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Cards
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -25,7 +26,7 @@ slitheringBehindYou = treachery SlitheringBehindYou Cards.slitheringBehindYou
 instance TreacheryRunner env => RunMessage env SlitheringBehindYou where
   runMessage msg t@(SlitheringBehindYou attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")
+      mHuntingHorrorId <- selectOne $ enemyIs Cards.huntingHorror
       case mHuntingHorrorId of
         Just eid ->
           t <$ pushAll

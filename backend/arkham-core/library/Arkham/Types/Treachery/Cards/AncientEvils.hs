@@ -5,7 +5,6 @@ import Arkham.Prelude
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
@@ -17,11 +16,7 @@ ancientEvils :: TreacheryCard AncientEvils
 ancientEvils = treachery AncientEvils Cards.ancientEvils
 
 instance TreacheryRunner env => RunMessage env AncientEvils where
-  runMessage msg t@(AncientEvils attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(AncientEvils attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
-      t <$ pushAll
-        [ PlaceDoomOnAgenda
-        , AdvanceAgendaIfThresholdSatisfied
-        , Discard (TreacheryTarget treacheryId)
-        ]
+      t <$ pushAll [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
     _ -> AncientEvils <$> runMessage msg attrs

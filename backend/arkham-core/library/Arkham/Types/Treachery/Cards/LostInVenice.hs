@@ -25,8 +25,8 @@ instance TreacheryRunner env => RunMessage env LostInVenice where
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
       acrossLocationId <- getAcrossLocation lid
-      t <$ pushAll
-        [ chooseOne
+      t <$ push
+        (chooseOne
           iid
           [ Label
             "Take 2 damage"
@@ -35,6 +35,5 @@ instance TreacheryRunner env => RunMessage env LostInVenice where
             "Move to the location across from you"
             [Move source iid lid acrossLocationId]
           ]
-        , Discard (toTarget attrs)
-        ]
+        )
     _ -> LostInVenice <$> runMessage msg attrs

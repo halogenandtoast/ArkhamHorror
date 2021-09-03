@@ -24,7 +24,7 @@ instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
     Revelation _iid source | isSource attrs source -> do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       t <$ case mrougarou of
-        Nothing -> pushAll [PlaceDoomOnAgenda, Discard (toTarget attrs)]
+        Nothing -> pushAll [PlaceDoomOnAgenda]
         Just eid -> do
           locationId <- getId @LocationId eid
           connectedLocationIds <- map unConnectedLocationId
@@ -33,11 +33,8 @@ instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
             (getSetList @InvestigatorId)
             (locationId : connectedLocationIds)
           case investigatorIds of
-            [] -> pushAll [PlaceDoomOnAgenda, Discard (toTarget attrs)]
-            xs -> pushAll
-              ([ EnemyAttack iid' eid DamageAny | iid' <- xs ]
-              <> [Discard (toTarget attrs)]
-              )
+            [] -> pushAll [PlaceDoomOnAgenda]
+            xs -> pushAll [ EnemyAttack iid' eid DamageAny | iid' <- xs ]
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == treacheryId
       -> t

@@ -34,7 +34,7 @@ instance TreacheryRunner env => RunMessage env ToweringBeasts where
     Revelation iid source | isSource attrs source -> do
       broodOfYogSothoth <- getSetList @EnemyId (CardCode "02255")
       case broodOfYogSothoth of
-        [] -> t <$ push (Discard $ toTarget attrs)
+        [] -> pure t
         xs -> do
           locationId <- getId @LocationId iid
           broodWithLocationIds <- for xs $ \x -> (x, ) <$> getId @LocationId x

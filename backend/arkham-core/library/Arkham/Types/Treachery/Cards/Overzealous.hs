@@ -23,8 +23,7 @@ overzealous = treachery Overzealous Cards.overzealous
 instance TreacheryRunner env => RunMessage env Overzealous where
   runMessage msg t@(Overzealous attrs) = case msg of
     Revelation _iid source | isSource attrs source ->
-      t <$ pushAll
-        [DrawEncounterCards (toTarget attrs) 1, Discard $ toTarget attrs]
+      t <$ push (DrawEncounterCards (toTarget attrs) 1)
     RequestedEncounterCards target [card] | isTarget attrs target ->
       withTreacheryOwner
         attrs

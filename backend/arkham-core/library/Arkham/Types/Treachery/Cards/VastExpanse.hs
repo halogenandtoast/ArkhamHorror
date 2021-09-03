@@ -37,7 +37,7 @@ instance TreacheryRunner env => RunMessage env VastExpanse where
             Nothing
             SkillWillpower
             (min 5 extradimensionalCount)
-      t <$ pushAll [revelationMsg, Discard (toTarget attrs)]
+      t <$ push revelationMsg
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> t
       <$ push (InvestigatorAssignDamage iid source DamageAny 0 n)

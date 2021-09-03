@@ -23,11 +23,7 @@ newtype WatchersGaze = WatchersGaze TreacheryAttrs
 watchersGaze :: TreacheryCard WatchersGaze
 watchersGaze = treachery WatchersGaze Cards.watchersGaze
 
-instance
-  ( HasId (Maybe OwnerId) env AssetId
-  , TreacheryRunner env
-  )
-  => RunMessage env WatchersGaze where
+instance TreacheryRunner env => RunMessage env WatchersGaze where
   runMessage msg t@(WatchersGaze attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       innocentRevelerIds <- selectList
@@ -36,11 +32,9 @@ instance
         catMaybes
           <$> traverse (fmap (fmap unOwnerId) . getId) innocentRevelerIds
       t <$ pushAll
-        ([ RevelationSkillTest iid' source SkillWillpower 4
-         | iid' <- nub (iid : investigatorsWithRevelers)
-         ]
-        <> [Discard (toTarget attrs)]
-        )
+        [ RevelationSkillTest iid' source SkillWillpower 4
+        | iid' <- nub (iid : investigatorsWithRevelers)
+        ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         t <$ push

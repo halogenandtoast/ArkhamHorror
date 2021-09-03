@@ -25,7 +25,6 @@ instance TreacheryRunner env => RunMessage env TheZealotsSeal where
     Revelation _ source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       -- we must unshift this first for other effects happen before
-      push (Discard $ TreacheryTarget treacheryId)
       t <$ for_
         investigatorIds
         (\iid' -> do

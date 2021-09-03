@@ -20,8 +20,8 @@ onWingsOfDarkness = treachery OnWingsOfDarkness Cards.onWingsOfDarkness
 
 instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
   runMessage msg t@(OnWingsOfDarkness attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [RevelationSkillTest iid source SkillAgility 4, Discard (toTarget attrs)]
+    Revelation iid source | isSource attrs source ->
+      t <$ push (RevelationSkillTest iid source SkillAgility 4)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         centralLocations <- getSetList [Central]

@@ -11,7 +11,6 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.History
 import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
@@ -39,8 +38,8 @@ instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
       iidsWithSkills <- traverse
         (traverseToSnd $ (map unHandCardId <$>) . getSetList . (, SkillType))
         iids
-      t <$ pushAll
-        [ chooseN
+      t <$ push
+        (chooseN
           iid
           (if secondCopy then 2 else 1)
           [ Label
@@ -59,6 +58,5 @@ instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
             | (iid', skills) <- iidsWithSkills
             ]
           ]
-        , Discard $ TreacheryTarget (treacheryId attrs)
-        ]
+        )
     _ -> TerrorFromBeyond <$> runMessage msg attrs

@@ -27,6 +27,5 @@ instance TreacheryRunner env => RunMessage env FinalRhapsody where
         [ chooseOne iid [Continue ("Take " <> tshow damageCount <> " damage")]
         , InvestigatorAssignDamage iid source DamageAny damageCount damageCount
         , ResetTokens source
-        , Discard $ toTarget attrs
         ]
     _ -> FinalRhapsody <$> runMessage msg attrs

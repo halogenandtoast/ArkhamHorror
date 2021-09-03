@@ -24,12 +24,11 @@ wormhole = treachery Wormhole Cards.wormhole
 
 instance TreacheryRunner env => RunMessage env Wormhole where
   runMessage msg t@(Wormhole attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ DiscardEncounterUntilFirst
+    Revelation iid source | isSource attrs source -> t <$ push
+      (DiscardEncounterUntilFirst
         (ProxySource source (InvestigatorSource iid))
         (CardWithType LocationType)
-      , Discard (toTarget attrs)
-      ]
+      )
     RequestedEncounterCard (ProxySource source (InvestigatorSource iid)) mcard
       | isSource attrs source -> t <$ case mcard of
         Nothing -> pure ()

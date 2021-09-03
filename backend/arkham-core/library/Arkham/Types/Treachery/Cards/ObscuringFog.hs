@@ -47,7 +47,7 @@ instance TreacheryRunner env => RunMessage env ObscuringFog where
       obscuringFogCount <- unTreacheryCount
         <$> getCount (currentLocationId, toCardCode attrs)
       if obscuringFogCount > 0
-        then t <$ push (Discard $ toTarget attrs)
+        then pure t
         else do
           t <$ push
             (AttachTreachery treacheryId $ LocationTarget currentLocationId)

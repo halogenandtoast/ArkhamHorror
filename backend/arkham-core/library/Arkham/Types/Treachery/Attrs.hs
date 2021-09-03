@@ -180,4 +180,7 @@ instance TreacheryRunner env => RunMessage env TreacheryAttrs where
       a <$ push (Discard $ toTarget a)
     Discarded target _ | target `elem` treacheryAttachedTarget ->
       a <$ push (Discard $ toTarget a)
+    After (Revelation _ source) | isSource a source -> a <$ when
+      (isNothing treacheryAttachedTarget)
+      (push $ Discard $ toTarget a)
     _ -> pure a

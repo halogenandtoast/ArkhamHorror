@@ -27,22 +27,20 @@ instance TreacheryRunner env => RunMessage env PushedIntoTheBeyond where
     Revelation iid source | isSource attrs source -> do
       validAssets <- selectList (AssetOwnedBy You <> AssetNonStory)
       targets <- traverse (traverseToSnd getId) validAssets
-      t <$ if notNull targets
-        then push
-          (chooseOne
-            iid
-            [ TargetLabel
-                (AssetTarget aid)
-                [ ShuffleIntoDeck iid (AssetTarget aid)
-                , CreateEffect
-                  (CardCode "02100")
-                  (Just (EffectCardCode cardCode))
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-                , Discard (toTarget attrs)
-                ]
-            | (aid, cardCode) <- targets
-            ]
-          )
-        else push (Discard $ toTarget attrs)
+      t <$ when
+        (notNull targets)
+        (push $ chooseOne
+          iid
+          [ TargetLabel
+              (AssetTarget aid)
+              [ ShuffleIntoDeck iid (AssetTarget aid)
+              , CreateEffect
+                (CardCode "02100")
+                (Just (EffectCardCode cardCode))
+                (toSource attrs)
+                (InvestigatorTarget iid)
+              ]
+          | (aid, cardCode) <- targets
+          ]
+        )
     _ -> PushedIntoTheBeyond <$> runMessage msg attrs

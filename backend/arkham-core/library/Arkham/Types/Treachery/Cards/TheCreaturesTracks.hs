@@ -26,12 +26,9 @@ instance TreacheryRunner env => RunMessage env TheCreaturesTracks where
       broodOfYogSothothCount <- unSetAsideCount
         <$> getCount @SetAsideCount (CardCode "02255")
       if broodOfYogSothothCount == 0
-        then t <$ pushAll
-          [ InvestigatorAssignDamage iid source DamageAny 0 2
-          , Discard (toTarget attrs)
-          ]
-        else t <$ pushAll
-          [ chooseOne
+        then t <$ push (InvestigatorAssignDamage iid source DamageAny 0 2)
+        else t <$ push
+          (chooseOne
             iid
             [ Label
               "Take 2 horror"
@@ -40,6 +37,5 @@ instance TreacheryRunner env => RunMessage env TheCreaturesTracks where
               "Spawn a set aside Brood of Yog-Sothoth at a random location"
               [UseScenarioSpecificAbility iid Nothing 1]
             ]
-          , Discard (toTarget attrs)
-          ]
+          )
     _ -> TheCreaturesTracks <$> runMessage msg attrs

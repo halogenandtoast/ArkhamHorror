@@ -34,6 +34,5 @@ instance TreacheryRunner env => RunMessage env BrokenRails where
         <> [ ChooseAndDiscardAsset iid' AnyAsset
            | iid' <- investigatorsWhoMustDiscard
            ]
-        <> [Discard (toTarget attrs)]
         )
     _ -> BrokenRails <$> runMessage msg attrs

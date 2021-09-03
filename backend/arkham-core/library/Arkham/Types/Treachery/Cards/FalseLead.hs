@@ -24,16 +24,8 @@ instance TreacheryRunner env => RunMessage env FalseLead where
     Revelation iid source | isSource attrs source -> do
       playerClueCount <- unClueCount <$> getCount iid
       if playerClueCount == 0
-        then
-          t
-            <$ pushAll
-                 [ chooseOne iid [Surge iid (toSource attrs)]
-                 , Discard $ toTarget attrs
-                 ]
-        else t <$ pushAll
-          [ RevelationSkillTest iid source SkillIntellect 4
-          , Discard $ toTarget attrs
-          ]
+        then t <$ push (chooseOne iid [Surge iid (toSource attrs)])
+        else t <$ push (RevelationSkillTest iid source SkillIntellect 4)
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == toId attrs -> t <$ push (InvestigatorPlaceCluesOnLocation iid n)
     _ -> FalseLead <$> runMessage msg attrs

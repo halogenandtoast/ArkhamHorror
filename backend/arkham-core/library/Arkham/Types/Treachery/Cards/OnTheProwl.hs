@@ -24,11 +24,11 @@ onTheProwl :: TreacheryCard OnTheProwl
 onTheProwl = treachery OnTheProwl Cards.onTheProwl
 
 instance TreacheryRunner env => RunMessage env OnTheProwl where
-  runMessage msg t@(OnTheProwl attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(OnTheProwl attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       t <$ case mrougarou of
-        Nothing -> push (Discard (TreacheryTarget treacheryId))
+        Nothing -> pure ()
         Just eid -> do
           locationIds <- setToList <$> nonBayouLocations
           locationsWithClueCounts <- for locationIds
@@ -36,22 +36,18 @@ instance TreacheryRunner env => RunMessage env OnTheProwl where
           let
             sortedLocationsWithClueCounts = sortOn snd locationsWithClueCounts
           case sortedLocationsWithClueCounts of
-            [] -> push (Discard (TreacheryTarget treacheryId))
+            [] -> pure ()
             ((_, c) : _) ->
               let
                 (matches, _) =
                   span ((== c) . snd) sortedLocationsWithClueCounts
               in
                 case matches of
-                  [(x, _)] ->
-                    pushAll
-                      [ MoveUntil x (EnemyTarget eid)
-                      , Discard (TreacheryTarget treacheryId)
-                      ]
-                  xs -> pushAll
-                    [ chooseOne
-                      iid
-                      [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
-                    , Discard (TreacheryTarget treacheryId)
-                    ]
+                  [(x, _)] -> push (MoveUntil x (EnemyTarget eid))
+                  xs ->
+                    push
+                      (chooseOne
+                        iid
+                        [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
+                      )
     _ -> OnTheProwl <$> runMessage msg attrs

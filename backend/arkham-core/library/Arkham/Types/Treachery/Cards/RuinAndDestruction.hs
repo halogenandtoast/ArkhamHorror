@@ -42,7 +42,6 @@ instance TreacheryRunner env => RunMessage env RuinAndDestruction where
              3
          | iid' <- targetInvestigators
          ]
-        <> [Discard (toTarget attrs)]
         <> [ Surge iid source | null targetInvestigators ]
         )
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n

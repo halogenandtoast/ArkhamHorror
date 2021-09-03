@@ -40,10 +40,8 @@ instance
 
 instance TreacheryRunner env => RunMessage env CursedSwamp where
   runMessage msg t@(CursedSwamp attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ RevelationSkillTest iid source SkillWillpower 3
-      , Discard (TreacheryTarget treacheryId)
-      ]
+    Revelation iid source | isSource attrs source ->
+      t <$ push (RevelationSkillTest iid source SkillWillpower 3)
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == treacheryId
       -> t

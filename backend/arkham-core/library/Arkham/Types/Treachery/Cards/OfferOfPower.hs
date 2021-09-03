@@ -18,8 +18,8 @@ offerOfPower = treachery OfferOfPower Cards.offerOfPower
 instance TreacheryRunner env => RunMessage env OfferOfPower where
   runMessage msg t@(OfferOfPower attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      t <$ pushAll
-        [ chooseOne
+      t <$ push
+        (chooseOne
           iid
           [ Label
             "Draw 2 cards and place 2 doom on agenda"
@@ -32,6 +32,5 @@ instance TreacheryRunner env => RunMessage env OfferOfPower where
             "Take 2 horror"
             [InvestigatorAssignDamage iid source DamageAny 0 2]
           ]
-        , Discard $ toTarget attrs
-        ]
+        )
     _ -> OfferOfPower <$> runMessage msg attrs

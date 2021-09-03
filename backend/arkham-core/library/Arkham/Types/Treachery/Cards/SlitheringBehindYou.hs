@@ -27,11 +27,9 @@ instance TreacheryRunner env => RunMessage env SlitheringBehindYou where
     Revelation iid source | isSource attrs source -> do
       mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")
       case mHuntingHorrorId of
-        Just eid -> t <$ pushAll
-          [ PlaceDoom (EnemyTarget eid) 1
-          , ShuffleIntoEncounterDeck []
-          , Discard $ toTarget attrs
-          ]
+        Just eid ->
+          t <$ pushAll
+            [PlaceDoom (EnemyTarget eid) 1, ShuffleIntoEncounterDeck []]
         Nothing ->
           t
             <$ push

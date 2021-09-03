@@ -38,7 +38,7 @@ instance TreacheryRunner env => RunMessage env AlteredBeast where
     Revelation iid source | isSource attrs source -> do
       abominations <- selectListMap EnemyTarget $ EnemyWithTrait Abomination
       t <$ case abominations of
-        [] -> pushAll [Surge iid source, Discard $ toTarget attrs]
+        [] -> push (Surge iid source)
         xs -> push
           (chooseOrRunOne
             iid

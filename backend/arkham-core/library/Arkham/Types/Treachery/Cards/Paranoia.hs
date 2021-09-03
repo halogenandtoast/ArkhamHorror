@@ -20,5 +20,5 @@ instance TreacheryRunner env => RunMessage env Paranoia where
   runMessage msg t@(Paranoia attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       resourceCount' <- unResourceCount <$> getCount iid
-      t <$ pushAll [SpendResources iid resourceCount', Discard $ toTarget attrs]
+      t <$ push (SpendResources iid resourceCount')
     _ -> Paranoia <$> runMessage msg attrs

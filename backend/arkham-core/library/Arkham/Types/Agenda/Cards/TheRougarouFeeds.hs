@@ -6,19 +6,15 @@ module Arkham.Types.Agenda.Cards.TheRougarouFeeds
 import Arkham.Prelude
 
 import qualified Arkham.Agenda.Cards as Cards
-import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype TheRougarouFeeds = TheRougarouFeeds AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
@@ -40,12 +36,10 @@ instance AgendaRunner env => RunMessage env TheRougarouFeeds where
           ]
         Just eid -> do
           leadInvestigatorId <- getLeadInvestigatorId
-          locations <- getLocationSet
-          nonBayouLocations <- setToList . difference locations <$> getSet
-            [Bayou]
-          nonBayouLocationsWithClueCounts <- sortOn snd <$> for
-            nonBayouLocations
-            (\lid -> (lid, ) . unClueCount <$> getCount lid)
+          targets <- setToList <$> nonBayouLocations
+          nonBayouLocationsWithClueCounts <-
+            sortOn snd
+              <$> traverse (traverseToSnd (fmap unClueCount . getCount)) targets
           let
             moveMessage = case nonBayouLocationsWithClueCounts of
               [] -> error "there has to be such a location"

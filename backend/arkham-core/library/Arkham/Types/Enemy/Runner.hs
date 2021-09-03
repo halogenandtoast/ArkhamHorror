@@ -2,7 +2,6 @@ module Arkham.Types.Enemy.Runner where
 
 import Arkham.Prelude
 
-import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.Id

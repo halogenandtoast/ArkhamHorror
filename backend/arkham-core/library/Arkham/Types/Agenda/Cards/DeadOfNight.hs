@@ -10,7 +10,6 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
-import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message

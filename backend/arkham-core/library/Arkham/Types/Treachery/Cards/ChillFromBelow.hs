@@ -19,11 +19,9 @@ chillFromBelow :: TreacheryCard ChillFromBelow
 chillFromBelow = treachery ChillFromBelow Cards.chillFromBelow
 
 instance TreacheryRunner env => RunMessage env ChillFromBelow where
-  runMessage msg t@(ChillFromBelow attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ RevelationSkillTest iid source SkillWillpower 3
-      , Discard (TreacheryTarget treacheryId)
-      ]
+  runMessage msg t@(ChillFromBelow attrs) = case msg of
+    Revelation iid source | isSource attrs source ->
+      t <$ push (RevelationSkillTest iid source SkillWillpower 3)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
         handCount <- unCardCount <$> getCount iid

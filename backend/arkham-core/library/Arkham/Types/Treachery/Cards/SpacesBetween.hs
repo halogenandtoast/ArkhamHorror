@@ -21,7 +21,7 @@ newtype SpacesBetween = SpacesBetween TreacheryAttrs
 spacesBetween :: TreacheryCard SpacesBetween
 spacesBetween = treachery SpacesBetween Cards.spacesBetween
 
-instance (GetCardDef env LocationId, TreacheryRunner env) => RunMessage env SpacesBetween where
+instance TreacheryRunner env => RunMessage env SpacesBetween where
   runMessage msg t@(SpacesBetween attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       sentinelHillLocations <- getSet @LocationId [SentinelHill]
@@ -60,6 +60,5 @@ instance (GetCardDef env LocationId, TreacheryRunner env) => RunMessage env Spac
         <> [ PlaceLocation locationId cardDef
            | (locationId, cardDef) <- shuffledLocations
            ]
-        <> [Discard (toTarget attrs)]
         )
     _ -> SpacesBetween <$> runMessage msg attrs

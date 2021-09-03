@@ -45,7 +45,7 @@ instance TreacheryRunner env => RunMessage env SearchingForIzzie where
     Revelation iid source | isSource attrs source -> do
       targets <- selectListMap LocationTarget $ FarthestLocationFromYou Anywhere
       t <$ case targets of
-        [] -> push (Discard $ toTarget attrs)
+        [] -> pure ()
         xs ->
           push
             (chooseOrRunOne

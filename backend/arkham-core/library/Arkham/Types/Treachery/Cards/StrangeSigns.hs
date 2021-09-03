@@ -22,11 +22,9 @@ strangeSigns :: TreacheryCard StrangeSigns
 strangeSigns = treachery StrangeSigns Cards.strangeSigns
 
 instance TreacheryRunner env => RunMessage env StrangeSigns where
-  runMessage msg t@(StrangeSigns attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ RevelationSkillTest iid source SkillIntellect 3
-      , Discard (TreacheryTarget treacheryId)
-      ]
+  runMessage msg t@(StrangeSigns attrs) = case msg of
+    Revelation iid source | isSource attrs source ->
+      t <$ push (RevelationSkillTest iid source SkillIntellect 3)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         playerCount <- getPlayerCount

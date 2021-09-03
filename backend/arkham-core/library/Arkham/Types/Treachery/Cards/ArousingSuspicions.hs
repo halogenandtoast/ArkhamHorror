@@ -27,9 +27,6 @@ instance TreacheryRunner env => RunMessage env ArousingSuspicions where
       lid <- getId @LocationId iid
       criminals <- getSetList @EnemyId ([Criminal], lid)
       if null criminals
-        then t <$ pushAll [SpendResources iid 2, Discard $ toTarget attrs]
-        else t <$ pushAll
-          ([ PlaceDoom (EnemyTarget eid) 1 | eid <- criminals ]
-          <> [Discard $ toTarget attrs]
-          )
+        then t <$ push (SpendResources iid 2)
+        else t <$ pushAll [ PlaceDoom (EnemyTarget eid) 1 | eid <- criminals ]
     _ -> ArousingSuspicions <$> runMessage msg attrs

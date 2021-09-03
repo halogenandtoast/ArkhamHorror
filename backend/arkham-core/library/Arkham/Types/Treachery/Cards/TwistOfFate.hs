@@ -59,5 +59,5 @@ instance TreacheryRunner env => RunMessage env TwistOfFate where
           . tokenFace
           )
           tokens
-      t <$ pushAll (msgs <> [ResetTokens source, Discard $ toTarget attrs])
+      t <$ pushAll (msgs <> [ResetTokens source])
     _ -> TwistOfFate <$> runMessage msg attrs

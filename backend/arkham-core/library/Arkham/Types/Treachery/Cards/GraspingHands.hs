@@ -22,8 +22,8 @@ graspingHands = treachery GraspingHands Cards.graspingHands
 
 instance TreacheryRunner env => RunMessage env GraspingHands where
   runMessage msg t@(GraspingHands attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [RevelationSkillTest iid source SkillAgility 3, Discard $ toTarget attrs]
+    Revelation iid source | isSource attrs source ->
+      t <$ push (RevelationSkillTest iid source SkillAgility 3)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> t
       <$ push (InvestigatorAssignDamage iid source DamageAny n 0)

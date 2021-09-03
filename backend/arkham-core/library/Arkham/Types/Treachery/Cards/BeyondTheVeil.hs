@@ -28,8 +28,8 @@ beyondTheVeil = treachery BeyondTheVeil Cards.beyondTheVeil
 instance HasAbilities BeyondTheVeil where
   getAbilities (BeyondTheVeil x) =
     [ restrictedAbility x 1 (InThreatAreaOf You)
-      $ ForcedAbility
-      $ DeckHasNoCards Timing.When You
+        $ ForcedAbility
+        $ DeckHasNoCards Timing.When You
     ]
 
 instance TreacheryRunner env => RunMessage env BeyondTheVeil where
@@ -38,7 +38,7 @@ instance TreacheryRunner env => RunMessage env BeyondTheVeil where
       exemptInvestigators <- getSet @InvestigatorId
         (TreacheryCardCode $ toCardCode attrs)
       t <$ if iid `member` exemptInvestigators
-        then push (Discard $ toTarget attrs)
+        then pure ()
         else push (AttachTreachery treacheryId (InvestigatorTarget iid))
     UseCardAbility iid source _ 1 _ | isSource attrs source -> t <$ pushAll
       [ InvestigatorAssignDamage iid source DamageAny 10 0

@@ -30,8 +30,5 @@ instance TreacheryRunner env => RunMessage env UmordhothsHunger where
           else RandomDiscard iid
       enemyIds <- getSetList @EnemyId ()
       t <$ pushAll
-        (msgs
-        <> [ HealDamage (EnemyTarget eid) 1 | eid <- enemyIds ]
-        <> [Discard $ toTarget attrs]
-        )
+        (msgs <> [ HealDamage (EnemyTarget eid) 1 | eid <- enemyIds ])
     _ -> UmordhothsHunger <$> runMessage msg attrs

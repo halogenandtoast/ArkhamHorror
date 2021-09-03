@@ -27,10 +27,8 @@ clawsOfSteam = treachery ClawsOfSteam Cards.clawsOfSteam
 
 instance TreacheryRunner env => RunMessage env ClawsOfSteam where
   runMessage msg t@(ClawsOfSteam attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ RevelationSkillTest iid source SkillWillpower 3
-      , Discard (toTarget attrs)
-      ]
+    Revelation iid source | isSource attrs source ->
+      t <$ push (RevelationSkillTest iid source SkillWillpower 3)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t <$ pushAll
         [ CreateWindowModifierEffect

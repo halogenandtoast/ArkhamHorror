@@ -25,10 +25,7 @@ instance TreacheryRunner env => RunMessage env EagerForDeath where
   runMessage msg t@(EagerForDeath attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       difficulty <- (+ 2) . unDamageCount <$> getCount iid
-      t <$ pushAll
-        [ RevelationSkillTest iid source SkillWillpower difficulty
-        , Discard (toTarget attrs)
-        ]
+      t <$ push (RevelationSkillTest iid source SkillWillpower difficulty)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t
       <$ push (InvestigatorAssignDamage iid source DamageAny 0 2)

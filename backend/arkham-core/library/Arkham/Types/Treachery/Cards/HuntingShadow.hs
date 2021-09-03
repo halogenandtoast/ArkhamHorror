@@ -21,18 +21,14 @@ instance TreacheryRunner env => RunMessage env HuntingShadow where
     Revelation iid source | isSource attrs source -> do
       playerSpendableClueCount <- unSpendableClueCount <$> getCount iid
       if playerSpendableClueCount > 0
-        then t <$ pushAll
-          [ chooseOne
+        then t <$ push
+          (chooseOne
             iid
             [ Label "Spend 1 clue" [SpendClues 1 [iid]]
             , Label
               "Take 2 damage"
               [InvestigatorAssignDamage iid source DamageAny 2 0]
             ]
-          , Discard $ toTarget attrs
-          ]
-        else t <$ pushAll
-          [ InvestigatorAssignDamage iid source DamageAny 2 0
-          , Discard $ toTarget attrs
-          ]
+          )
+        else t <$ push (InvestigatorAssignDamage iid source DamageAny 2 0)
     _ -> HuntingShadow <$> runMessage msg attrs

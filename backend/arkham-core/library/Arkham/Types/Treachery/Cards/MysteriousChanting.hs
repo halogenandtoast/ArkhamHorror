@@ -26,14 +26,12 @@ instance TreacheryRunner env => RunMessage env MysteriousChanting where
       lid <- getId @LocationId iid
       enemies <- map unClosestEnemyId <$> getSetList (lid, [Cultist])
       case enemies of
-        [] -> t <$ pushAll
-          [ FindAndDrawEncounterCard
+        [] -> t <$ push
+          (FindAndDrawEncounterCard
             iid
             (CardWithType EnemyType <> CardWithTrait Cultist)
-          , Discard $ toTarget attrs
-          ]
-        xs -> t <$ pushAll
-          [ chooseOne iid [ PlaceDoom (EnemyTarget eid) 2 | eid <- xs ]
-          , Discard $ toTarget attrs
-          ]
+          )
+        xs ->
+          t <$ pushAll
+            [chooseOne iid [ PlaceDoom (EnemyTarget eid) 2 | eid <- xs ]]
     _ -> MysteriousChanting <$> runMessage msg attrs

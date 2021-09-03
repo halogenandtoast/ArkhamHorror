@@ -31,6 +31,6 @@ instance TreacheryRunner env => RunMessage env SomethingInTheDrinks where
          | iid <- investigatorIds
          , HadADrink iid `member` scenarioLogs
          ]
-        <> [Continue "Continue", Discard $ toTarget attrs]
+        <> [Continue "Continue"]
         )
     _ -> SomethingInTheDrinks <$> runMessage msg attrs

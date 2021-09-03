@@ -19,10 +19,8 @@ rottingRemains = treachery RottingRemains Cards.rottingRemains
 
 instance TreacheryRunner env => RunMessage env RottingRemains where
   runMessage msg t@(RottingRemains attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ RevelationSkillTest iid source SkillWillpower 3
-      , Discard $ toTarget attrs
-      ]
+    Revelation iid source | isSource attrs source ->
+      t <$ push (RevelationSkillTest iid source SkillWillpower 3)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> t
       <$ push (InvestigatorAssignDamage iid source DamageAny 0 n)

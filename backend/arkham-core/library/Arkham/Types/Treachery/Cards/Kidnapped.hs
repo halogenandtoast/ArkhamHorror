@@ -66,10 +66,9 @@ instance TreacheryRunner env => RunMessage env Kidnapped where
       | isTarget attrs target -> do
         allies <- selectList (AssetOwnedBy You <> AssetWithTrait Ally)
         if null allies
-          then t <$ pushAll
-            [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
-            , Discard (toTarget attrs)
-            ]
+          then
+            t <$ push
+              (InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0)
           else do
             agendaId <-
               fromJustNote "missing agenga"

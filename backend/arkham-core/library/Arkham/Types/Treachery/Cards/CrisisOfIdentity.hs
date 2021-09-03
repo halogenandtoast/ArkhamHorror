@@ -9,7 +9,6 @@ import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card.CardDef
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
-import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
@@ -23,13 +22,7 @@ newtype CrisisOfIdentity = CrisisOfIdentity TreacheryAttrs
 crisisOfIdentity :: TreacheryCard CrisisOfIdentity
 crisisOfIdentity = treachery CrisisOfIdentity Cards.crisisOfIdentity
 
-instance
-  ( HasSet SkillId env SkillMatcher
-  , HasSet EventId env EventMatcher
-  , HasSet ClassSymbol env InvestigatorId
-  , TreacheryRunner env
-  )
-  => RunMessage env CrisisOfIdentity where
+instance TreacheryRunner env => RunMessage env CrisisOfIdentity where
   runMessage msg t@(CrisisOfIdentity attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       roles <- getSetList iid
@@ -44,9 +37,7 @@ instance
             $ [ Discard $ AssetTarget aid | aid <- assets ]
             <> [ Discard $ EventTarget eid | eid <- events ]
             <> [ Discard $ SkillTarget sid | sid <- skills ]
-            <> [ DiscardTopOfDeck iid 1 (Just $ toTarget attrs)
-               , Discard (toTarget attrs)
-               ]
+            <> [DiscardTopOfDeck iid 1 (Just $ toTarget attrs)]
     DiscardedTopOfDeck iid [card] target | isTarget attrs target -> do
       t <$ push
         (SetRole iid $ fromMaybe Neutral $ cdClassSymbol $ toCardDef card)

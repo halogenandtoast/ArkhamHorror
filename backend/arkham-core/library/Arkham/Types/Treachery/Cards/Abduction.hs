@@ -24,10 +24,8 @@ abduction = treachery Abduction Cards.abduction
 
 instance TreacheryRunner env => RunMessage env Abduction where
   runMessage msg t@(Abduction attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ RevelationSkillTest iid source SkillWillpower 3
-      , Discard $ toTarget attrs
-      ]
+    Revelation iid source | isSource attrs source ->
+      t <$ push (RevelationSkillTest iid source SkillWillpower 3)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         allies <- map AssetTarget <$> selectList

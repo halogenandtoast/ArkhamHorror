@@ -35,18 +35,13 @@ instance HasAbilities AcridMiasma where
       ]
     _ -> []
 
-instance
-  ( HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)
-  , HasSet EnemyId env EnemyMatcher
-  , TreacheryRunner env
-  )
-  => RunMessage env AcridMiasma where
+instance TreacheryRunner env => RunMessage env AcridMiasma where
   runMessage msg t@(AcridMiasma attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       targetLocations <- map unClosestLocationId <$> getSetList
         (iid, LocationWithoutTreachery $ toCardCode Cards.acridMiasma)
       case targetLocations of
-        [] -> t <$ push (Discard $ toTarget attrs)
+        [] -> pure t
         (x : _) -> t <$ push (AttachTreachery (toId attrs) (LocationTarget x))
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       t <$ push (RevelationSkillTest iid (toSource attrs) SkillWillpower 2)

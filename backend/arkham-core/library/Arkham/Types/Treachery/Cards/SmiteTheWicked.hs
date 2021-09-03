@@ -35,7 +35,7 @@ instance TreacheryRunner env => RunMessage env SmiteTheWicked where
     Revelation _iid source | isSource attrs source ->
       t <$ push (DiscardEncounterUntilFirst source (CardWithType EnemyType))
     RequestedEncounterCard source mcard | isSource attrs source -> case mcard of
-      Nothing -> t <$ push (Discard $ toTarget attrs)
+      Nothing -> pure t
       Just card -> do
         let
           ownerId = fromJustNote "has to be set" treacheryOwner

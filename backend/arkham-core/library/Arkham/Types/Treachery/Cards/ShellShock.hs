@@ -23,8 +23,5 @@ instance TreacheryRunner env => RunMessage env ShellShock where
   runMessage msg t@(ShellShock attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       horrorCount <- (`div` 2) . unDamageCount <$> getCount iid
-      t <$ pushAll
-        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 horrorCount
-        , Discard $ toTarget attrs
-        ]
+      t <$ push (InvestigatorAssignDamage iid source DamageAny 0 horrorCount)
     _ -> ShellShock <$> runMessage msg attrs

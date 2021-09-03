@@ -21,16 +21,15 @@ theYellowSign = treachery TheYellowSign Cards.theYellowSign
 
 instance TreacheryRunner env => RunMessage env TheYellowSign where
   runMessage msg t@(TheYellowSign attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ BeginSkillTest
+    Revelation iid source | isSource attrs source -> t <$ push
+      (BeginSkillTest
         iid
         source
         (InvestigatorTarget iid)
         Nothing
         SkillWillpower
         4
-      , Discard $ toTarget attrs
-      ]
+      )
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t <$ pushAll
         [ InvestigatorAssignDamage

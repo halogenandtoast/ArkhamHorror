@@ -25,10 +25,8 @@ visionsOfFuturesPast =
 instance TreacheryRunner env => RunMessage env VisionsOfFuturesPast where
   runMessage msg t@(VisionsOfFuturesPast attrs@TreacheryAttrs {..}) =
     case msg of
-      Revelation iid source | isSource attrs source -> t <$ pushAll
-        [ RevelationSkillTest iid source SkillWillpower 5
-        , Discard (TreacheryTarget treacheryId)
-        ]
+      Revelation iid source | isSource attrs source ->
+        t <$ push (RevelationSkillTest iid source SkillWillpower 5)
       FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
         | tid == treacheryId -> t <$ push (DiscardTopOfDeck iid n Nothing)
       _ -> VisionsOfFuturesPast <$> runMessage msg attrs

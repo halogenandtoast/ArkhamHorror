@@ -19,11 +19,9 @@ cryptChill :: TreacheryCard CryptChill
 cryptChill = treachery CryptChill Cards.cryptChill
 
 instance TreacheryRunner env => RunMessage env CryptChill where
-  runMessage msg t@(CryptChill attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ RevelationSkillTest iid source SkillWillpower 4
-      , Discard (TreacheryTarget treacheryId)
-      ]
+  runMessage msg t@(CryptChill attrs) = case msg of
+    Revelation iid source | isSource attrs source ->
+      t <$ push (RevelationSkillTest iid source SkillWillpower 4)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         assetCount <- length <$> select (DiscardableAsset <> AssetOwnedBy You)

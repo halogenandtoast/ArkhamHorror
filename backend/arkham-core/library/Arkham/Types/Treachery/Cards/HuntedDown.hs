@@ -29,7 +29,7 @@ instance TreacheryRunner env => RunMessage env HuntedDown where
       criminalEnemyIds <- getSet Criminal
       let enemiesToMove = criminalEnemyIds `intersection` unengagedEnemyIds
       if null enemiesToMove
-        then t <$ pushAll [Surge iid $ toSource attrs, Discard $ toTarget attrs]
+        then t <$ push (Surge iid $ toSource attrs)
         else do
           messages <- for (setToList enemiesToMove) $ \eid -> do
             locationId <- getId eid
@@ -52,9 +52,5 @@ instance TreacheryRunner env => RunMessage env HuntedDown where
 
           t <$ unless
             (null enemiesToMove || null (catMaybes messages))
-            (pushAll
-              [ chooseOneAtATime iid (catMaybes messages)
-              , Discard $ toTarget attrs
-              ]
-            )
+            (push $ chooseOneAtATime iid (catMaybes messages))
     _ -> HuntedDown <$> runMessage msg attrs

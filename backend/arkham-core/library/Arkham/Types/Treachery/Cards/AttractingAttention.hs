@@ -28,13 +28,11 @@ instance TreacheryRunner env => RunMessage env AttractingAttention where
       broodOfYogSothoth <- getSetList (CardCode "02255")
 
       t <$ pushAll
-        ([ chooseOneAtATime
-             iid
-             [ MoveToward (EnemyTarget eid) (LocationWithId lid)
-             | eid <- broodOfYogSothoth
-             ]
-         | notNull broodOfYogSothoth
-         ]
-        <> [Discard (toTarget attrs)]
-        )
+        [ chooseOneAtATime
+            iid
+            [ MoveToward (EnemyTarget eid) (LocationWithId lid)
+            | eid <- broodOfYogSothoth
+            ]
+        | notNull broodOfYogSothoth
+        ]
     _ -> AttractingAttention <$> runMessage msg attrs

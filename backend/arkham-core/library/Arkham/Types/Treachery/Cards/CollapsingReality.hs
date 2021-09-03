@@ -33,5 +33,5 @@ instance TreacheryRunner env => RunMessage env CollapsingReality where
             , InvestigatorAssignDamage iid source DamageAny 1 0
             ]
           else [InvestigatorAssignDamage iid source DamageAny 2 0]
-      t <$ pushAll (revelationMsgs <> [Discard (toTarget attrs)])
+      t <$ pushAll revelationMsgs
     _ -> CollapsingReality <$> runMessage msg attrs

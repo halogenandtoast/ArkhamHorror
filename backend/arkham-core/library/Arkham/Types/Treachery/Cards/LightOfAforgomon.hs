@@ -39,12 +39,13 @@ instance TreacheryRunner env => RunMessage env LightOfAforgomon where
         . setToList
         . (`difference` exemptAgendas)
         <$> getSet ()
-      if null (targetActs <> targetAgendas)
-        then push (Discard $ toTarget attrs)
-        else push $ chooseOne
+      when
+        (notNull $ targetActs <> targetAgendas)
+        (push $ chooseOne
           iid
           [ AttachTreachery treacheryId target
           | target <- targetActs <> targetAgendas
           ]
+        )
       LightOfAforgomon <$> runMessage msg attrs
     _ -> LightOfAforgomon <$> runMessage msg attrs

@@ -52,9 +52,8 @@ instance HasAbilities WilliamYorick where
     [ restrictedAbility
           attrs
           1
-          (Self <> PlayableCardInDiscard
-            (DiscardOf You)
-            (BasicCardMatch $ CardWithType AssetType)
+          (Self
+          <> PlayableCardInDiscard (DiscardOf You) (CardWithType AssetType)
           )
           (ReactionAbility (EnemyDefeated Timing.After You AnyEnemy) Free)
         & (abilityLimitL .~ PlayerLimit PerRound 1)

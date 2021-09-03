@@ -1,6 +1,4 @@
-module Arkham.Types.EntityInstance
-  ( module Arkham.Types.EntityInstance
-  ) where
+module Arkham.Types.EntityInstance where
 
 import Arkham.Prelude
 
@@ -12,6 +10,7 @@ import Arkham.Types.Enemy
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Event
 import Arkham.Types.Event.Runner
+import Arkham.Types.Id
 import Arkham.Types.Location
 import Arkham.Types.Location.Runner
 import Arkham.Types.Message

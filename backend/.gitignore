@@ -10,6 +10,7 @@ config/client_session_key.aes
 *.dump-simpl
 .hsenv*
 cabal-dev/
+.hie/
 .stack-work/
 .stack-work-devel/
 yesod-devel/

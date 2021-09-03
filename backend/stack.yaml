@@ -31,6 +31,7 @@ ghc-options:
     -Wno-missing-monadfail-instances
     -fignore-optim-changes
     -fwrite-ide-info
+    -hiedir=.hie
     -Wno-missing-safe-haskell-mode
     -Wno-prepositive-qualified-module
 

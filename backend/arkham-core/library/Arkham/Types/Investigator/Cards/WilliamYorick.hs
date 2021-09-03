@@ -4,8 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Card
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
@@ -14,11 +12,8 @@ import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Source
-import Arkham.Types.Stats
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Token
-import Arkham.Types.Trait
 import Arkham.Types.Window (Window(..))
 import qualified Arkham.Types.Window as Window
 

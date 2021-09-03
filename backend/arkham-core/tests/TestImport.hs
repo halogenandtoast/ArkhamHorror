@@ -58,7 +58,6 @@ import Arkham.Types.Location.Cards.Study
 import Arkham.Types.LocationId as X
 import Arkham.Types.Message as X
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Phase
 import Arkham.Types.Query as X
 import Arkham.Types.Scenario as X

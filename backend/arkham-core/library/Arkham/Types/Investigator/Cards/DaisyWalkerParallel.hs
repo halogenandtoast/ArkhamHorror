@@ -6,8 +6,6 @@ module Arkham.Types.Investigator.Cards.DaisyWalkerParallel
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
@@ -19,10 +17,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import Arkham.Types.Stats
 import Arkham.Types.Target
-import Arkham.Types.Token
-import Arkham.Types.Trait
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel InvestigatorAttrs
   deriving anyclass IsInvestigator

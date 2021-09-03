@@ -6,8 +6,6 @@ module Arkham.Types.Investigator.Cards.RexMurphy
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.GameValue
@@ -15,10 +13,7 @@ import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (PassSkillTest)
 import Arkham.Types.Modifier
-import Arkham.Types.Stats
 import qualified Arkham.Types.Timing as Timing
-import Arkham.Types.Token
-import Arkham.Types.Trait
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)

@@ -5,17 +5,12 @@ import Arkham.Prelude
 import qualified Arkham.Event.Cards as Events
 import Arkham.Types.Ability
 import Arkham.Types.Card
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Message
-import Arkham.Types.Stats
 import Arkham.Types.Target
-import Arkham.Types.Token
-import Arkham.Types.Trait
 
 newtype SefinaRousseau = SefinaRousseau InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)

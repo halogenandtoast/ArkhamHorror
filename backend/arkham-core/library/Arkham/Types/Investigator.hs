@@ -7,8 +7,6 @@ import Arkham.Prelude
 import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Card
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers (getInvestigatorIds)
 import Arkham.Types.Helpers
 import Arkham.Types.Id
@@ -17,13 +15,10 @@ import Arkham.Types.Investigator.Cards
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import Arkham.Types.Stats
-import Arkham.Types.Trait
 
 data Investigator
   = AgnesBaker' AgnesBaker

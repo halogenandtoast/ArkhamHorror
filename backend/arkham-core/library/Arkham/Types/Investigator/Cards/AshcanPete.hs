@@ -7,18 +7,13 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.Types.Ability
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher hiding (FastPlayerWindow)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Stats
 import Arkham.Types.Target
-import Arkham.Types.Token
-import Arkham.Types.Trait
 
 newtype AshcanPete = AshcanPete InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)

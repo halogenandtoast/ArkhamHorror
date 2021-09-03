@@ -2,11 +2,7 @@ module Arkham.Types.Investigator.Cards.RitaYoung where
 
 import Arkham.Prelude
 
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes
 import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Stats
-import Arkham.Types.Trait
 
 newtype RitaYoung = RitaYoung InvestigatorAttrs
   deriving anyclass (HasAbilities, HasModifiersFor env)

@@ -192,6 +192,12 @@ breakingThrough = agenda "02314" "Breaking Through" LostInTimeAndSpace
 theEndOfAllThings :: CardDef
 theEndOfAllThings = agenda "02315" "The End of All Things" LostInTimeAndSpace
 
+theThirdAct :: CardDef
+theThirdAct = agenda "03044" "The Third Act" CurtainCall
+
+encore :: CardDef
+encore = agenda "03045" "Encore" CurtainCall
+
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =
   agenda "50026" "Predator or Prey?" ReturnToTheMidnightMasks

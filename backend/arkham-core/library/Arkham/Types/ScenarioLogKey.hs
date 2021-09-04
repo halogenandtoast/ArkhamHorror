@@ -10,5 +10,6 @@ data ScenarioLogKey
   | FoundAStrangeDoll
   | FoundAnAncientBindingStone
   | StolenAPassengersLuggage
+  | StoleFromTheBoxOffice
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

@@ -23,7 +23,7 @@ import Arkham.Types.Token
 
 newtype ExtracurricularActivity = ExtracurricularActivity ScenarioAttrs
   deriving stock Generic
-  deriving anyclass HasRecord
+  deriving anyclass (IsScenario, HasRecord)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 extracurricularActivity :: Difficulty -> ExtracurricularActivity

@@ -164,6 +164,9 @@ class HasMessageLogger a where
 getGame :: (HasGame env, MonadReader env m) => m Game
 getGame = view gameL
 
+getScenario :: (HasGame env, MonadReader env m) => m (Maybe Scenario)
+getScenario = modeScenario . view modeL <$> getGame
+
 data GameChoice
   = AskChoice InvestigatorId Int
   | DebugMessage Message
@@ -543,6 +546,11 @@ getInvestigatorsMatching = \case
     filter (/= you) . toList . view investigatorsL <$> getGame
   Anyone -> toList . view investigatorsL <$> getGame
   TurnInvestigator -> maybeToList <$> getTurnInvestigator
+  InvestigatorWithTitle title ->
+    filter ((== title) . nameTitle . toName)
+      . toList
+      . view investigatorsL
+      <$> getGame
   InvestigatorAt locationMatcher -> do
     you <- getInvestigator . view activeInvestigatorIdL =<< getGame
     location <- getId @LocationId (toId you)
@@ -678,6 +686,11 @@ getLocationsMatching = \case
       <$> getGame
   LocationWithFullTitle title subtitle ->
     filter ((== Name title (Just subtitle)) . toName)
+      . toList
+      . view locationsL
+      <$> getGame
+  LocationWithUnrevealedTitle title ->
+    filter ((== title) . nameTitle . toName . Unrevealed)
       . toList
       . view locationsL
       <$> getGame
@@ -1154,6 +1167,9 @@ instance HasGame env => HasId InvestigatorId env EventId where
 
 instance HasGame env => HasName env LocationId where
   getName = getName <=< getLocation
+
+instance HasGame env => HasName env (Unrevealed LocationId) where
+  getName (Unrevealed lid) = getName . Unrevealed =<< getLocation lid
 
 instance HasGame env => HasName env EnemyId where
   getName = getName <=< getEnemy
@@ -1954,15 +1970,21 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
     investigatorIds <- getInvestigatorIds
     handCards <- map unHandCard . concat <$> traverse getList investigatorIds
     discards <- getDiscards investigatorIds
+    setAsideCards <- map unSetAsideCard <$> getList ()
     underneathCards <-
       map unUnderneathCard . concat <$> traverse getList investigatorIds
-    filterM (`matches` matcher) (handCards <> underneathCards <> discards)
+    filterM
+      (`matches` matcher)
+      (handCards <> underneathCards <> discards <> setAsideCards)
    where
     getDiscards iids =
       map PlayerCard
         . concat
         <$> traverse (fmap discardOf . getInvestigator) iids
     matches c = \case
+      SetAsideCardMatch matcher' -> do
+        cards <- map unSetAsideCard <$> getList ()
+        pure $ c `elem` filter (`cardMatch` matcher') cards
       BasicCardMatch cm -> pure $ cardMatch c cm
       InHandOf who -> do
         iids <- selectList who

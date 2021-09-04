@@ -1282,6 +1282,9 @@ getModifiedCardCost iid c@(PlayerCard _) = do
   applyModifier n (ReduceCostOf cardMatcher m) = do
     matches <- getList @Card cardMatcher
     pure $ if c `elem` matches then max 0 (n - m) else n
+  applyModifier n (IncreaseCostOf cardMatcher m) = do
+    matches <- getList @Card cardMatcher
+    pure $ if c `elem` matches then n + m else n
   applyModifier n _ = pure n
 getModifiedCardCost iid c@(EncounterCard _) = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
@@ -1293,6 +1296,9 @@ getModifiedCardCost iid c@(EncounterCard _) = do
   applyModifier n (ReduceCostOf cardMatcher m) = do
     matches <- getList @Card cardMatcher
     pure $ if c `elem` matches then max 0 (n - m) else n
+  applyModifier n (IncreaseCostOf cardMatcher m) = do
+    matches <- getList @Card cardMatcher
+    pure $ if c `elem` matches then n + m else n
   applyModifier n _ = pure n
 
 type CanCheckFast env
@@ -1319,6 +1325,7 @@ type CanCheckFast env
     , HasSet FarthestLocationId env (InvestigatorId, Matcher.LocationMatcher)
     , HasSet ClosestLocationId env (InvestigatorId, Matcher.LocationMatcher)
     , HasName env LocationId
+    , HasName env (Unrevealed LocationId)
     , HasName env EnemyId
     , HasCount PlayerCount env ()
     , Location.GetLabel env LocationId
@@ -1796,6 +1803,8 @@ matchWho you who = \case
   Matcher.InvestigatorAt locationMatcher -> do
     lid <- getId @LocationId who
     member lid <$> select locationMatcher
+  Matcher.InvestigatorWithTitle title -> do
+    member who <$> select (Matcher.InvestigatorWithTitle title)
   Matcher.InvestigatorCanMove -> do
     notElem CannotMove
       <$> getModifiers (InvestigatorSource who) (InvestigatorTarget who)
@@ -1866,6 +1875,8 @@ locationMatches investigatorId source window locationId = \case
     (== title) . nameTitle <$> getName locationId
   Matcher.LocationWithFullTitle title subtitle ->
     (== Name title (Just subtitle)) <$> getName locationId
+  Matcher.LocationWithUnrevealedTitle title ->
+    (== title) . nameTitle <$> getName (Unrevealed locationId)
   Matcher.LocationWithId lid -> pure $ lid == locationId
   Matcher.LocationIs cardCode -> (== cardCode) <$> getId locationId
   Matcher.Anywhere -> pure True

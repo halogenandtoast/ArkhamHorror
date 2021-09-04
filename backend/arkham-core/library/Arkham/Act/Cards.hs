@@ -185,6 +185,21 @@ closeTheRift = act "02318" "Close the Rift" LostInTimeAndSpace
 findingANewWay :: CardDef
 findingANewWay = act "02319" "Finding a New Way" LostInTimeAndSpace
 
+awakening :: CardDef
+awakening = act "03046" "Awakening" CurtainCall
+
+theStrangerACityAflame :: CardDef
+theStrangerACityAflame = act "03047a" "The Stranger" CurtainCall
+
+theStrangerThePathIsMine :: CardDef
+theStrangerThePathIsMine = act "03047b" "The Stranger" CurtainCall
+
+theStrangerTheShoresOfHali :: CardDef
+theStrangerTheShoresOfHali = act "03047c" "The Stranger" CurtainCall
+
+curtainCall :: CardDef
+curtainCall = act "03048" "Curtain Call" CurtainCall
+
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" ReturnToTheGathering
 

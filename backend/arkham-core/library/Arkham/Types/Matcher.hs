@@ -70,6 +70,7 @@ data InvestigatorMatcher
   | InvestigatorWithHorror ValueMatcher
   | InvestigatorWithResources ValueMatcher
   | InvestigatorWithId InvestigatorId
+  | InvestigatorWithTitle Text
   | InvestigatorMatches [InvestigatorMatcher]
   | AnyInvestigator [InvestigatorMatcher]
   | TurnInvestigator
@@ -221,6 +222,7 @@ locationIs = LocationIs . toCardCode
 data LocationMatcher
   = LocationWithTitle Text
   | LocationWithFullTitle Text Text
+  | LocationWithUnrevealedTitle Text
   | LocationWithId LocationId
   | LocationWithLabel Text
   | LocationLeavingPlay
@@ -332,6 +334,7 @@ data ExtendedCardMatcher
   | CardIsBeneathInvestigator Who
   | InHandOf Who
   | InDiscardOf Who
+  | SetAsideCardMatch CardMatcher
   | ExtendedCardWithOneOf [ExtendedCardMatcher]
   | ExtendedCardMatches [ExtendedCardMatcher]
   deriving stock (Show, Eq, Generic)
@@ -423,6 +426,8 @@ data WindowMatcher
   | DuringTurn Who
   | Enters Timing Who Where
   | Leaves Timing Who Where
+  | Moves Timing Who Where Where
+  --                 ^ from ^ to
   | OrWindowMatcher [WindowMatcher]
   | DealtDamage Timing Who
   | DealtHorror Timing Who

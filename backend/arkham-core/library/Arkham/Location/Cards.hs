@@ -920,7 +920,6 @@ stepsOfYhagharl :: CardDef
 stepsOfYhagharl = (location "02327" "Steps of Y'hagharl" LostInTimeAndSpace)
   { cdCardTraits = setFromList [Otherworld, Extradimensional]
   , cdDoubleSided = False
-  , cdEncounterSetQuantity = Just 1
   }
 
 dimensionalDoorway :: CardDef
@@ -928,8 +927,70 @@ dimensionalDoorway = (location "02328" "Dimensional Doorway" LostInTimeAndSpace
                      )
   { cdCardTraits = setFromList [Otherworld, Extradimensional]
   , cdDoubleSided = False
-  , cdEncounterSetQuantity = Just 1
   }
+
+theatre :: CardDef
+theatre = location "03049" "Theatre" CurtainCall
+
+lobby :: CardDef
+lobby = location "03050" "Lobby" CurtainCall
+
+balcony :: CardDef
+balcony = (location "03051" "Balcony" CurtainCall) { cdVictoryPoints = Just 1 }
+
+backstage :: CardDef
+backstage = (location "03052" "Backstage" CurtainCall)
+  { cdCardTraits = singleton Private
+  }
+
+lightingBox :: CardDef
+lightingBox =
+  (locationWithUnrevealed "03053" "Lobby Doorway" "Lighting Box" CurtainCall)
+    { cdVictoryPoints = Just 1
+    , cdCardTraits = singleton Private
+    }
+
+boxOffice :: CardDef
+boxOffice =
+  (locationWithUnrevealed "03054" "Lobby Doorway" "Box Office" CurtainCall)
+    { cdCardTraits = singleton Private
+    }
+
+greenRoom :: CardDef
+greenRoom =
+  (locationWithUnrevealed "03055" "Lobby Doorway" "Lighting Box" CurtainCall)
+    { cdVictoryPoints = Just 1
+    , cdCardTraits = singleton Private
+    }
+
+dressingRoom :: CardDef
+dressingRoom =
+  (locationWithUnrevealed
+      "03056"
+      "Backstage Doorway"
+      "Dressing Room"
+      CurtainCall
+    )
+    { cdCardTraits = singleton Private
+    }
+
+rehearsalRoom :: CardDef
+rehearsalRoom = (locationWithUnrevealed
+                  "03057"
+                  "Backstage Doorway"
+                  "Rehearsal Room"
+                  CurtainCall
+                )
+  { cdVictoryPoints = Just 1
+  , cdCardTraits = singleton Private
+  }
+
+trapRoom :: CardDef
+trapRoom =
+  (locationWithUnrevealed "03058" "Backstage Doorway" "Trap Room" CurtainCall)
+    { cdVictoryPoints = Just 1
+    , cdCardTraits = singleton Private
+    }
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

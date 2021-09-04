@@ -13,6 +13,10 @@ library
       Arkham.Act.Cards
       Arkham.Agenda.Cards
       Arkham.Asset.Cards
+      Arkham.Campaigns.ThePathToCarcosa.CampaignSteps
+      Arkham.Campaigns.ThePathToCarcosa.ChaosBag
+      Arkham.Campaigns.ThePathToCarcosa.FlavorText
+      Arkham.Campaigns.ThePathToCarcosa.Import
       Arkham.Card
       Arkham.EncounterCard
       Arkham.EncounterSet
@@ -41,6 +45,7 @@ library
       Arkham.Types.Act.Cards.AscendingTheHillV1
       Arkham.Types.Act.Cards.AscendingTheHillV2
       Arkham.Types.Act.Cards.AscendingTheHillV3
+      Arkham.Types.Act.Cards.Awakening
       Arkham.Types.Act.Cards.BeginnersLuck
       Arkham.Types.Act.Cards.BreakingAndEntering
       Arkham.Types.Act.Cards.CampusSafety
@@ -120,6 +125,7 @@ library
       Arkham.Types.Agenda.Cards.TheRitualBegins
       Arkham.Types.Agenda.Cards.TheRougarouFeeds
       Arkham.Types.Agenda.Cards.TheShadowOfTheEclipse
+      Arkham.Types.Agenda.Cards.TheThirdAct
       Arkham.Types.Agenda.Cards.TheyreGettingOut
       Arkham.Types.Agenda.Cards.TimeIsRunningShort
       Arkham.Types.Agenda.Cards.UndergroundMuscle
@@ -308,6 +314,7 @@ library
       Arkham.Types.Campaign.Campaigns.NightOfTheZealot
       Arkham.Types.Campaign.Campaigns.ReturnToNightOfTheZealot
       Arkham.Types.Campaign.Campaigns.TheDunwichLegacy
+      Arkham.Types.Campaign.Campaigns.ThePathToCarcosa
       Arkham.Types.Campaign.Runner
       Arkham.Types.CampaignId
       Arkham.Types.CampaignLog
@@ -647,6 +654,8 @@ library
       Arkham.Types.Location.Cards.Attic
       Arkham.Types.Location.Cards.AudubonPark
       Arkham.Types.Location.Cards.BackAlley
+      Arkham.Types.Location.Cards.Backstage
+      Arkham.Types.Location.Cards.Balcony
       Arkham.Types.Location.Cards.BaseOfTheHill
       Arkham.Types.Location.Cards.Bathroom
       Arkham.Types.Location.Cards.Bedroom
@@ -654,6 +663,7 @@ library
       Arkham.Types.Location.Cards.BishopsBrook_203
       Arkham.Types.Location.Cards.BlastedHeath_248
       Arkham.Types.Location.Cards.BlastedHeath_249
+      Arkham.Types.Location.Cards.BoxOffice
       Arkham.Types.Location.Cards.BrackishWaters
       Arkham.Types.Location.Cards.BridgeOfSighs
       Arkham.Types.Location.Cards.Broadmoor
@@ -680,6 +690,7 @@ library
       Arkham.Types.Location.Cards.Dormitories
       Arkham.Types.Location.Cards.DowntownArkhamAsylum
       Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
+      Arkham.Types.Location.Cards.DressingRoom
       Arkham.Types.Location.Cards.DunwichVillage_242
       Arkham.Types.Location.Cards.DunwichVillage_243
       Arkham.Types.Location.Cards.Easttown
@@ -706,6 +717,7 @@ library
       Arkham.Types.Location.Cards.GardenDistrict
       Arkham.Types.Location.Cards.Gondola
       Arkham.Types.Location.Cards.Graveyard
+      Arkham.Types.Location.Cards.GreenRoom
       Arkham.Types.Location.Cards.GuestHall
       Arkham.Types.Location.Cards.Hallway
       Arkham.Types.Location.Cards.HoleInTheWall
@@ -713,6 +725,8 @@ library
       Arkham.Types.Location.Cards.HouseInTheReeds_211
       Arkham.Types.Location.Cards.HumanitiesBuilding
       Arkham.Types.Location.Cards.LaBellaLuna
+      Arkham.Types.Location.Cards.LightingBox
+      Arkham.Types.Location.Cards.Lobby
       Arkham.Types.Location.Cards.LostMemories
       Arkham.Types.Location.Cards.MainPath
       Arkham.Types.Location.Cards.MiskatonicQuad
@@ -734,6 +748,7 @@ library
       Arkham.Types.Location.Cards.PassengerCar_170
       Arkham.Types.Location.Cards.PassengerCar_171
       Arkham.Types.Location.Cards.PrismaticCascade
+      Arkham.Types.Location.Cards.RehearsalRoom
       Arkham.Types.Location.Cards.ReturnToAttic
       Arkham.Types.Location.Cards.ReturnToCellar
       Arkham.Types.Location.Cards.RialtoBridge
@@ -762,10 +777,12 @@ library
       Arkham.Types.Location.Cards.TearThroughTime
       Arkham.Types.Location.Cards.TenAcreMeadow_246
       Arkham.Types.Location.Cards.TenAcreMeadow_247
+      Arkham.Types.Location.Cards.Theatre
       Arkham.Types.Location.Cards.TheEdgeOfTheUniverse
       Arkham.Types.Location.Cards.TheGuardian
       Arkham.Types.Location.Cards.TheHiddenChamber
       Arkham.Types.Location.Cards.TrappersCabin
+      Arkham.Types.Location.Cards.TrapRoom
       Arkham.Types.Location.Cards.TwistedUnderbrush
       Arkham.Types.Location.Cards.UprootedWoods
       Arkham.Types.Location.Cards.VenetianGarden
@@ -797,6 +814,7 @@ library
       Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
       Arkham.Types.Scenario.Scenarios.CarnevaleOfHorrors
       Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
+      Arkham.Types.Scenario.Scenarios.CurtainCall
       Arkham.Types.Scenario.Scenarios.ExtracurricularActivity
       Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace
       Arkham.Types.Scenario.Scenarios.ReturnToTheDevourerBelow

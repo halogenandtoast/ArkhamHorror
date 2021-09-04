@@ -42,6 +42,7 @@ allCampaigns :: HashMap CampaignId (Difficulty -> Campaign)
 allCampaigns = mapFromList
   [ ("01", NightOfTheZealot' . nightOfTheZealot)
   , ("02", TheDunwichLegacy' . theDunwichLegacy)
+  , ("03", ThePathToCarcosa' . thePathToCarcosa)
   , ("50", ReturnToNightOfTheZealot' . returnToNightOfTheZealot)
   ]
 

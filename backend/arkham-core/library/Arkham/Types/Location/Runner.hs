@@ -23,6 +23,7 @@ type LocationRunner env
     , Query AssetMatcher env
     , Query LocationMatcher env
     , Query EnemyMatcher env
+    , Query ExtendedCardMatcher env
     , HasCostPayment env
     , HasCount ActionRemainingCount env InvestigatorId
     , HasCount ClueCount env InvestigatorId

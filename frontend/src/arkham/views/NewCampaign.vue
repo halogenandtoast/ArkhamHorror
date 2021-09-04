@@ -147,6 +147,10 @@ const campaigns = [
     id: '02',
     name: 'The Dunwich Legacy',
   },
+  {
+    id: '03',
+    name: 'The Path to Carcosa',
+  },
 ]
 
 const difficulties: Difficulty[] = ['Easy', 'Standard', 'Hard', 'Expert']

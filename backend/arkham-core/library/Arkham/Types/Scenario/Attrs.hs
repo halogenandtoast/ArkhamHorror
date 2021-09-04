@@ -28,6 +28,8 @@ import Arkham.Types.Token
 import Arkham.Types.Window (Window(..))
 import qualified Arkham.Types.Window as Window
 
+class IsScenario a
+
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON, Eq)
 
@@ -63,6 +65,10 @@ cardsUnderneathActDeckL =
 
 locationsL :: Lens' ScenarioAttrs (HashMap LocationName [CardDef])
 locationsL = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
+
+locationLayoutL :: Lens' ScenarioAttrs (Maybe [GridTemplateRow])
+locationLayoutL =
+  lens scenarioLocationLayout $ \m x -> m { scenarioLocationLayout = x }
 
 inResolutionL :: Lens' ScenarioAttrs Bool
 inResolutionL =

@@ -113,6 +113,7 @@ data Trait
   | Police
   | Power
   | Practiced
+  | Private
   | Ranged
   | Relic
   | Reporter

@@ -64,6 +64,9 @@ instance Entity Location where
 instance Named Location where
   toName = toName . toAttrs
 
+instance Named (Unrevealed Location) where
+  toName (Unrevealed l) = toName . Unrevealed $ toAttrs l
+
 instance TargetEntity Location where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
@@ -77,6 +80,9 @@ instance HasCardDef Location where
 
 instance HasName env Location where
   getName = getName . toAttrs
+
+instance HasName env (Unrevealed Location) where
+  getName (Unrevealed l) = getName . Unrevealed $ toAttrs l
 
 instance HasVictoryPoints Location where
   getVictoryPoints l =

@@ -5,13 +5,13 @@ module Arkham.Types.Investigator.Attrs
 
 import Arkham.Prelude
 
-import Arkham.Types.Token as X
 import Arkham.Types.ClassSymbol as X
+import Arkham.Types.Classes as X hiding (discard)
 import Arkham.Types.Investigator.Runner as X
 import Arkham.Types.Name as X
 import Arkham.Types.Stats as X
+import Arkham.Types.Token as X
 import Arkham.Types.Trait as X hiding (Cultist)
-import Arkham.Types.Classes as X hiding (discard)
 
 import Arkham.Json
 import Arkham.Types.Ability
@@ -29,7 +29,13 @@ import qualified Arkham.Types.Game.Helpers as Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Matcher
-  (pattern AloofEnemy, AssetMatcher(..), EnemyMatcher(..), InvestigatorMatcher(..), LocationMatcher(..), assetIs)
+  ( AssetMatcher(..)
+  , EnemyMatcher(..)
+  , InvestigatorMatcher(..)
+  , LocationMatcher(..)
+  , assetIs
+  , pattern AloofEnemy
+  )
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -303,6 +309,17 @@ getHandSize attrs = do
  where
   applyModifier (HandSize m) n = max 0 (n + m)
   applyModifier _ n = n
+
+getInHandCount :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Int
+getInHandCount attrs = do
+  let cards = investigatorHand attrs
+      applyModifier n = \case
+        HandSizeCardCount m -> m
+        _ -> n
+      getCardHandSize c = do
+        modifiers <- getModifiers (toSource attrs) (CardTarget c)
+        pure $ foldl' applyModifier 1 modifiers
+  sum <$> traverse getCardHandSize cards
 
 getAbilitiesForTurn
   :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Int
@@ -860,12 +877,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & treacheriesL %~ insertSet tid
   AllCheckHandSize | not (a ^. defeatedL || a ^. resignedL) -> do
     handSize <- getHandSize a
-    when (length investigatorHand > handSize)
+    inHandCount <- getInHandCount a
+    when (inHandCount > handSize)
       $ push (CheckHandSize investigatorId)
     pure a
   CheckHandSize iid | iid == investigatorId -> do
     handSize <- getHandSize a
-    when (length investigatorHand > handSize) $ push
+    inHandCount <- getInHandCount a
+    when (inHandCount > handSize) $ push
       (chooseOne
         iid
         [ Run [DiscardCard iid (toCardId card), CheckHandSize iid]
@@ -882,6 +901,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Discard (CardIdTarget cardId)
     | isJust (find ((== cardId) . toCardId) investigatorHand) -> a
     <$ push (DiscardCard investigatorId cardId)
+  DiscardHand iid | iid == investigatorId ->
+    a <$ pushAll (map (DiscardCard iid . toCardId) investigatorHand)
   DiscardCard iid cardId | iid == investigatorId -> do
     let
       card = fromJustNote "must be in hand"

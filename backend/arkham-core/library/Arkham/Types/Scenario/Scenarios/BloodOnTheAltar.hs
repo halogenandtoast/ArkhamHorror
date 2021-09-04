@@ -36,7 +36,7 @@ newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata { sacrifices :: [Card]
 
 newtype BloodOnTheAltar = BloodOnTheAltar (ScenarioAttrs `With` BloodOnTheAltarMetadata)
   deriving stock Generic
-  deriving anyclass HasRecord
+  deriving anyclass (IsScenario, HasRecord)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 bloodOnTheAltar :: Difficulty -> BloodOnTheAltar

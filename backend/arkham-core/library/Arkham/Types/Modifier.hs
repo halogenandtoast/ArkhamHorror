@@ -98,6 +98,7 @@ data ModifierType
   | EnemyFight Int
   | ForcedTokenChange TokenFace [TokenFace]
   | HandSize Int
+  | HandSizeCardCount Int
   | HealthModifier Int
   | HorrorDealt Int
   | HunterConnectedTo LocationId
@@ -110,6 +111,7 @@ data ModifierType
   | NegativeToPositive
   | ChangeTokenModifier TokenModifier
   | ReduceCostOf CardMatcher Int
+  | IncreaseCostOf CardMatcher Int
   | RemoveKeyword Keyword
   | RemoveFromGameInsteadOfDiscard
   | ReturnToHandAfterTest

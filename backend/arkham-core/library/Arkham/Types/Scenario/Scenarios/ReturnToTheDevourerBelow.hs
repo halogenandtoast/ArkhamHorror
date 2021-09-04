@@ -24,7 +24,7 @@ import Arkham.Types.Trait hiding (Cultist)
 
 newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
   deriving stock Generic
-  deriving anyclass HasRecord
+  deriving anyclass (IsScenario, HasRecord)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToTheDevourerBelow :: Difficulty -> ReturnToTheDevourerBelow

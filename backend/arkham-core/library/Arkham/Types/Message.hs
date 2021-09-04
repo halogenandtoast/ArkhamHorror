@@ -215,6 +215,7 @@ data Message
     | DisableEffect EffectId
     | Discard Target
     | DiscardCard InvestigatorId CardId
+    | DiscardHand InvestigatorId
     | DiscardEncounterUntilFirst Source CardMatcher
     | DiscardTopOfDeck InvestigatorId Int (Maybe Target)
     | DiscardTopOfEncounterDeck InvestigatorId Int (Maybe Target)

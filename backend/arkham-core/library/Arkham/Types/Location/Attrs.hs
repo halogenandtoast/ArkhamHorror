@@ -168,6 +168,9 @@ instance Named LocationAttrs where
     else baseName
     where baseName = toName (toCardDef l)
 
+instance Named (Unrevealed LocationAttrs) where
+  toName (Unrevealed l) = toName (toCardDef l)
+
 instance TargetEntity LocationAttrs where
   toTarget = LocationTarget . toId
   isTarget LocationAttrs { locationId } (LocationTarget lid) =
@@ -187,6 +190,9 @@ instance IsCard LocationAttrs where
   toCardId = unLocationId . locationId
 
 instance HasName env LocationAttrs where
+  getName = pure . toName
+
+instance HasName env (Unrevealed LocationAttrs) where
   getName = pure . toName
 
 instance HasId (Maybe LocationId) env (Direction, LocationAttrs) where

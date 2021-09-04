@@ -61,7 +61,6 @@ data CardDef = CardDef
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
-
 data CardLimit = LimitPerInvestigator Int | LimitPerTrait Trait Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (Hashable, FromJSON, ToJSON)
@@ -111,6 +110,8 @@ instance HasCardDef CardDef where
 
 instance HasCardCode CardDef where
   toCardCode = cdCardCode
+
+newtype Unrevealed a = Unrevealed a
 
 testCardDef :: CardType -> CardCode -> CardDef
 testCardDef cardType cardCode = CardDef

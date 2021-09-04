@@ -62,6 +62,8 @@ import Arkham.Types.Phase
 import Arkham.Types.Query as X
 import Arkham.Types.Scenario as X
 import Arkham.Types.Scenario.Attrs
+import qualified Arkham.Types.Scenario.Attrs as Scenario
+import Arkham.Types.Scenario.Scenarios.TheGathering (TheGathering(..))
 import Arkham.Types.SkillType as X
 import Arkham.Types.Source as X
 import Arkham.Types.Stats as X
@@ -212,7 +214,13 @@ testScenario
   :: MonadIO m => CardCode -> (ScenarioAttrs -> ScenarioAttrs) -> m Scenario
 testScenario cardCode f =
   let name = mkName $ unCardCode cardCode
-  in pure $ baseScenario cardCode name [] [] Easy f
+  in
+    pure $ TheGathering' $ TheGathering $ f $ Scenario.baseAttrs
+      cardCode
+      name
+      []
+      []
+      Easy
 
 buildEvent :: MonadRandom m => CardCode -> Investigator -> m Event
 buildEvent cardCode investigator =

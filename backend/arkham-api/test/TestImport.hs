@@ -49,7 +49,7 @@ withApp = before $ do
   foundation <- makeFoundation settings
   wipeDB foundation
   logWare <- liftIO $ makeLogWare foundation
-  return (foundation, logWare)
+  pure (foundation, logWare)
 
 -- This function will truncate all of the tables in your database.
 -- 'withApp' calls it before each test, creating a clean environment for each
@@ -74,7 +74,7 @@ getTables = do
     |]
     []
 
-  return $ map unSingle tables
+  pure $ map unSingle tables
 
 -- | Authenticate as a user. This relies on the `auth-dummy-login: true` flag
 -- being set in test-settings.yaml, which enables dummy authentication in
@@ -90,9 +90,8 @@ authenticateAs (Entity _ u) = do
 -- checking is switched off in wipeDB for those database backends which need it.
 createUser :: Text -> YesodExample App (Entity User)
 createUser ident = runDB $ do
-  user <- insertEntity User
+  insertEntity User
     { userUsername = ident
     , userEmail = ident <> "@example.com"
     , userPasswordDigest = "password"
     }
-  return user

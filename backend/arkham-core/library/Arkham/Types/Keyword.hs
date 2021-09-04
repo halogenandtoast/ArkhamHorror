@@ -6,6 +6,7 @@ data Keyword
   = Alert
   | Aloof
   | Fast
+  | Hidden
   | Hunter
   | Massive
   | Peril

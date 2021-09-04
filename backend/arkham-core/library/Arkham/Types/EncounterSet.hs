@@ -37,6 +37,7 @@ data EncounterSet
   | NaomisCrew
   | TheBeyond
   | HideousAbominations
+  | CurtainCall
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

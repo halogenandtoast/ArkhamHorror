@@ -32,7 +32,7 @@ newtype CurseOfTheRougarouMetadata = CurseOfTheRougarouMetadata { setAsideLocati
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou (ScenarioAttrs `With` CurseOfTheRougarouMetadata)
   deriving stock Generic
-  deriving anyclass HasRecord
+  deriving anyclass (IsScenario, HasRecord)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 curseOfTheRougarou :: Difficulty -> CurseOfTheRougarou

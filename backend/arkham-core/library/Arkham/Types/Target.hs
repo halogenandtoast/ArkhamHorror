@@ -4,6 +4,7 @@ module Arkham.Types.Target
 
 import Arkham.Prelude
 
+import {-# SOURCE #-} Arkham.Types.Card
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
 import Arkham.Types.EffectId
@@ -32,6 +33,7 @@ data Target
   | AgendaTarget AgendaId
   | ActTarget ActId
   | CardIdTarget CardId
+  | CardTarget Card
   | CardCodeTarget CardCode
   | SearchedCardTarget CardId
   | EventTarget EventId

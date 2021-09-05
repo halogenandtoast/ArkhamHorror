@@ -3275,7 +3275,8 @@ runGameMessage msg g = case msg of
     case card of
       PlayerCard pc -> do
         case getBearer enemy of
-          Nothing -> error "No bearer recorded"
+          Nothing -> push (RemoveFromGame $ EnemyTarget eid)
+          -- The Man in the Pallid Mask has not bearer in Curtain Call
           Just iid' -> push (AddToDiscard iid' pc)
         pure $ g & enemiesL %~ deleteMap eid
       EncounterCard ec ->

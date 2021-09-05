@@ -5,15 +5,25 @@ module Arkham.Types.Scenario.Scenarios.CurtainCall
 
 import Arkham.Prelude
 
+import qualified Arkham.Enemy.Cards as Enemies
+import qualified Arkham.Location.Cards as Locations
+import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
+import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Matcher
+import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
+import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
 
 newtype CurtainCall = CurtainCall ScenarioAttrs
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curtainCall :: Difficulty -> CurtainCall
@@ -52,4 +62,59 @@ instance
     otherFace -> getTokenValue attrs iid otherFace
 
 instance ScenarioRunner env => RunMessage env CurtainCall where
-  runMessage msg (CurtainCall attrs) = CurtainCall <$> runMessage msg attrs
+  runMessage msg (CurtainCall attrs) = case msg of
+    Setup -> do
+      encounterDeck <- buildEncounterDeckExcluding
+        [Enemies.royalEmissary]
+        [EncounterSet.CurtainCall, EncounterSet.StrikingFear, EncounterSet.Rats]
+      theatreId <- getRandom
+      lobbyId <- getRandom
+      balconyId <- getRandom
+      backstageId <- getRandom
+
+      investigatorIds <- getInvestigatorIds
+      mLolaId <- selectOne $ InvestigatorWithTitle "Lola Hayes"
+      let
+        theatreInvestigatorIds =
+          maybe investigatorIds (`deleteFirst` investigatorIds) mLolaId
+        theatreMoveTo = map
+          (\iid -> MoveTo (toSource attrs) iid theatreId)
+          theatreInvestigatorIds
+        backstageMoveTo =
+          [ MoveTo (toSource attrs) lolaId backstageId
+          | lolaId <- maybeToList mLolaId
+          ]
+
+      pushAll
+        ([ SetEncounterDeck encounterDeck
+         , AddAgenda "03044"
+         , AddAct "03046"
+         , PlaceLocation theatreId Locations.theatre
+         , PlaceLocation lobbyId Locations.lobby
+         , PlaceLocation balconyId Locations.balcony
+         , PlaceLocation backstageId Locations.backstage
+         ]
+        <> theatreMoveTo
+        <> backstageMoveTo
+        )
+      backstageDoorways <- traverse
+        (fmap EncounterCard . genEncounterCard)
+        [Locations.dressingRoom, Locations.rehearsalRoom, Locations.trapRoom]
+      lobbyDoorways <- traverse
+        (fmap EncounterCard . genEncounterCard)
+        [Locations.lightingBox, Locations.boxOffice, Locations.greenRoom]
+      CurtainCall <$> runMessage
+        msg
+        (attrs
+        & locationsL
+        .~ locationNameMap
+             [ Locations.theatre
+             , Locations.lobby
+             , Locations.balcony
+             , Locations.backstage
+             ]
+        & setAsideCardsL
+        .~ backstageDoorways
+        <> lobbyDoorways
+        )
+    _ -> CurtainCall <$> runMessage msg attrs

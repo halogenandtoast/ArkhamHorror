@@ -87,11 +87,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
         , PlaceLocation studyId Locations.study
         , RevealLocation Nothing studyId
         , MoveAllTo (toSource attrs) studyId
-        , AskMap
-        . mapFromList
-        $ [ (iid, ChooseOne [Run [Continue "Continue", theGatheringIntro]])
-          | iid <- investigatorIds
-          ]
+        , story investigatorIds theGatheringIntro
         ]
       TheGathering <$> runMessage
         msg

@@ -70,6 +70,8 @@ allLocationCards = mapFromList $ map
   , attic
   , audubonPark
   , backAlley
+  , backstage
+  , balcony
   , baseOfTheHill
   , bathroom
   , bedroom
@@ -77,6 +79,7 @@ allLocationCards = mapFromList $ map
   , bishopsBrook_203
   , blastedHeath_248
   , blastedHeath_249
+  , boxOffice
   , brackishWaters
   , bridgeOfSighs
   , broadmoor
@@ -103,6 +106,7 @@ allLocationCards = mapFromList $ map
   , dormitories
   , downtownArkhamAsylum
   , downtownFirstBankOfArkham
+  , dressingRoom
   , dunwichVillage_242
   , dunwichVillage_243
   , easttown
@@ -129,6 +133,7 @@ allLocationCards = mapFromList $ map
   , gardenDistrict
   , gondola
   , graveyard
+  , greenRoom
   , guestHall
   , hallway
   , holeInTheWall
@@ -136,6 +141,8 @@ allLocationCards = mapFromList $ map
   , houseInTheReeds_211
   , humanitiesBuilding
   , laBellaLuna
+  , lightingBox
+  , lobby
   , lostMemories
   , mainPath
   , miskatonicQuad
@@ -157,6 +164,7 @@ allLocationCards = mapFromList $ map
   , passengerCar_170
   , passengerCar_171
   , prismaticCascade
+  , rehearsalRoom
   , returnToAttic
   , returnToCellar
   , rialtoBridge
@@ -188,6 +196,8 @@ allLocationCards = mapFromList $ map
   , theEdgeOfTheUniverse
   , theGuardian
   , theHiddenChamber
+  , theatre
+  , trapRoom
   , trappersCabin
   , twistedUnderbrush
   , uprootedWoods

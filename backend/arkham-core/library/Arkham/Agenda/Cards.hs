@@ -76,6 +76,8 @@ allAgendaCards = mapFromList $ map
   , pastPresentAndFuture
   , breakingThrough
   , theEndOfAllThings
+  , theThirdAct
+  , encore
   , returnToPredatorOrPrey
   , aCreatureOfTheBayou
   , theRougarouFeeds

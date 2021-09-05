@@ -14,6 +14,7 @@ import Arkham.Types.Trait
 type ScenarioRunner env
   = ( HasQueue env
     , Query EnemyMatcher env
+    , Query InvestigatorMatcher env
     , HasCount DoomCount env ()
     , HasModifiersFor env ()
     , HasCount DoomCount env EnemyId

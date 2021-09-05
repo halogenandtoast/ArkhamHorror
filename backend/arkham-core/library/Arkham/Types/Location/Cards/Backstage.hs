@@ -54,8 +54,12 @@ instance LocationRunner env => RunMessage env Backstage where
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       backstageDoorwayCount <- selectCount
         (LocationWithUnrevealedTitle "Backstage Doorway")
-      backstageDoorways <- zip [backstageDoorwayCount ..]
-        <$> selectList (SetAsideCardMatch $ CardWithTitle "Backstage Doorway")
+      backstageDoorways <-
+        zip [backstageDoorwayCount ..]
+        . take 2
+        <$> (shuffleM =<< selectList
+              (SetAsideCardMatch $ CardWithTitle "Backstage Doorway")
+            )
       msgs <- concat <$> for
         backstageDoorways
         \(idx, backstageDoorway) -> do

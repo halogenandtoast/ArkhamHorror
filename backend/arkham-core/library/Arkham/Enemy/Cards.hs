@@ -487,6 +487,17 @@ theManInThePallidMask = (weakness "03059" "The Man in the Pallid Mask")
   , cdUnique = True
   }
 
+royalEmissary :: CardDef
+royalEmissary =
+  (enemy "03060" ("Royal Emissary" <:> "Messenger from Aldebaran") CurtainCall 1
+    )
+    { cdCardTraits = setFromList [Monster, Elite]
+    , cdKeywords = setFromList
+      [Keyword.Massive, Keyword.Hunter, Keyword.Retaliate]
+    , cdUnique = True
+    , cdVictoryPoints = Just 2
+    }
+
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul = (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering 1
                     )

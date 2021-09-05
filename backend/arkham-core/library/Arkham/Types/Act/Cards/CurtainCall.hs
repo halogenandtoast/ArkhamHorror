@@ -37,13 +37,7 @@ instance HasAbilities CurtainCall where
           (toSource attrs)
         )
         1
-        (Here
-        <> LocationExists (RevealedLocation <> locationIs Cards.lobby)
-        <> Negate
-             (EnemyCriteria $ EnemyExists $ enemyIs
-               Cards.theManInThePallidMask
-             )
-        )
+        Here
       $ ActionAbility (Just Action.Resign)
       $ ActionCost 1
     , restrictedAbility

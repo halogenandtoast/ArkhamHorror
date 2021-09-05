@@ -11,6 +11,7 @@ export interface CardContents {
 export interface PlayerCardContents {
   id: string;
   cardCode: string;
+  isFlipped?: boolean;
 }
 
 export interface EncounterCardContents {
@@ -33,6 +34,7 @@ export const playerCardContentsDecoder = JsonDecoder.object<PlayerCardContents>(
   {
     id: JsonDecoder.string,
     cardCode: JsonDecoder.string,
+    isFlipped: JsonDecoder.optional(JsonDecoder.boolean),
   },
   'PlayerCard',
 );

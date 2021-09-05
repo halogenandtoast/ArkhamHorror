@@ -27,13 +27,15 @@ export default defineComponent({
   props: {
     game: { type: Object as () => Game, required: true },
     card: { type: Object as () => Card, required: true },
+    revealed: { type: Boolean, default: false },
     investigatorId: { type: String, required: true }
   },
   setup(props) {
     const image = computed(() => {
-      const { cardCode } = props.card.contents;
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+      const { cardCode } = props.card.contents
+      const suffix = !props.revealed && props.card.contents.isFlipped ? 'b' : ''
+      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : ''
+      return `${baseUrl}/img/arkham/cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`
     })
 
     const id = computed(() => props.card.contents.id)

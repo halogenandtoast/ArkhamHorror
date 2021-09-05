@@ -72,6 +72,24 @@ export default defineComponent({
         return contents === 2
       }
     })
+
+    const isTripleActionAbility = computed(() => {
+      if (ability.value.tag !== "UseAbility") {
+        return false
+      }
+      const {tag} = ability.value.contents[1].type
+      if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
+        return false
+      }
+      const costIndex = tag === "ActionAbility" ? 1 : 2
+      const { contents } = ability.value.contents[1].type.contents[costIndex]
+      if (typeof contents?.some == 'function') {
+        return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 3)
+      } else {
+        return contents === 3
+      }
+    })
+
     const isObjective = computed(() => ability.value.tag === "UseAbility" && ability.value.contents[1].type.tag === "Objective")
     const isFastActionAbility = computed(() => ability.value.tag === "UseAbility" && ability.value.contents[1].type.tag === "FastAbility")
     const isReactionAbility = computed(() => ability.value.tag === "UseAbility" && (ability.value.contents[1].type.tag === "ReactionAbility" || ability.value.contents[1].type.tag === "LegacyReactionAbility"))
@@ -116,6 +134,7 @@ export default defineComponent({
       return {
         'ability-button': isSingleActionAbility.value && isNeutralAbility.value,
         'double-ability-button': isDoubleActionAbility.value,
+        'triple-ability-button': isTripleActionAbility.value,
         'fast-ability-button': isFastActionAbility.value,
         'reaction-ability-button': isReactionAbility.value,
         'forced-ability-button': isForcedAbility.value,
@@ -133,6 +152,7 @@ export default defineComponent({
       abilityLabel,
       isSingleActionAbility,
       isDoubleActionAbility,
+      isTripleActionAbility,
       isFastActionAbility,
       isReactionAbility,
       isForcedAbility,
@@ -204,6 +224,15 @@ export default defineComponent({
   &:before {
     font-family: "arkham";
     content: "\0049\0049";
+    margin-right: 5px;
+  }
+}
+
+.triple-ability-button {
+  background-color: #555;
+  &:before {
+    font-family: "arkham";
+    content: "\0049\0049\0049";
     margin-right: 5px;
   }
 }

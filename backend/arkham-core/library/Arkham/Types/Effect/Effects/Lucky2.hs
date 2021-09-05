@@ -13,6 +13,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype Lucky2 = Lucky2 EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lucky2 :: EffectArgs -> Lucky2

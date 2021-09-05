@@ -212,6 +212,15 @@ pattern LocationWithAnyClues <-
   LocationWithClues (GreaterThan (Static 0)) where
   LocationWithAnyClues = LocationWithClues (GreaterThan (Static 0))
 
+pattern LocationWithAnyHorror :: LocationMatcher
+pattern LocationWithAnyHorror <-
+  LocationWithHorror (GreaterThan (Static 0)) where
+  LocationWithAnyHorror = LocationWithHorror (GreaterThan (Static 0))
+
+pattern LocationWithoutHorror :: LocationMatcher
+pattern LocationWithoutHorror <- LocationWithHorror (EqualTo (Static 0)) where
+  LocationWithoutHorror = LocationWithHorror (EqualTo (Static 0))
+
 pattern LocationWithoutClues :: LocationMatcher
 pattern LocationWithoutClues <- LocationWithClues (EqualTo (Static 0)) where
   LocationWithoutClues = LocationWithClues (EqualTo (Static 0))
@@ -239,6 +248,7 @@ data LocationMatcher
   | ConnectedLocation
   | LocationWithResources ValueMatcher
   | LocationWithClues ValueMatcher
+  | LocationWithHorror ValueMatcher
   | LocationWithMostClues
   | LocationWithoutInvestigators
   | LocationWithoutEnemies
@@ -258,6 +268,8 @@ data LocationMatcher
   | LocationMatchAll [LocationMatcher]
   | LocationMatchAny [LocationMatcher]
   | FirstLocation [LocationMatcher]
+  -- only useful for windows
+  | ThisLocation
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -416,6 +428,7 @@ data WindowMatcher
   | WouldRevealChaosToken Timing Who
   | Discarded Timing Who CardMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher
+  | EnemyWouldBeDiscarded Timing EnemyMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | PlacedCounter Timing Who CounterMatcher ValueMatcher
   | PlacedCounterOnLocation Timing Where CounterMatcher ValueMatcher

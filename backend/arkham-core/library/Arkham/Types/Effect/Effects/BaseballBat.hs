@@ -13,6 +13,7 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype BaseballBat = BaseballBat EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseballBat :: EffectArgs -> BaseballBat

@@ -11,6 +11,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype AChanceEncounter = AChanceEncounter EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aChanceEncounter :: EffectArgs -> AChanceEncounter

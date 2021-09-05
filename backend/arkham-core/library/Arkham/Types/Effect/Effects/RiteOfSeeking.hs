@@ -13,6 +13,7 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype RiteOfSeeking = RiteOfSeeking EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riteOfSeeking :: EffectArgs -> RiteOfSeeking

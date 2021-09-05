@@ -10,7 +10,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Message
 
 newtype RexsCurse = RexsCurse EffectAttrs
-  deriving anyclass (HasModifiersFor env)
+  deriving anyclass (HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rexsCurse :: EffectArgs -> RexsCurse

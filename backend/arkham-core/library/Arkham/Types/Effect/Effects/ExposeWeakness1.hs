@@ -15,6 +15,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype ExposeWeakness1 = ExposeWeakness1 EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exposeWeakness1 :: EffectArgs -> ExposeWeakness1

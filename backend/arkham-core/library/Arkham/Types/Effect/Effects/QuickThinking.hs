@@ -11,6 +11,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype QuickThinking = QuickThinking EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 quickThinking :: EffectArgs -> QuickThinking

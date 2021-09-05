@@ -15,6 +15,7 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype LuckyDice2 = LuckyDice2 (EffectAttrs `With` Metadata)
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 newtype Metadata = Metadata { alreadyTriggered :: Bool }

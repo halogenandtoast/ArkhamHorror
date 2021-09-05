@@ -14,6 +14,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype CursedShores = CursedShores EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cursedShores :: EffectArgs -> CursedShores

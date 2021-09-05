@@ -15,6 +15,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype Overzealous = Overzealous EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 overzealous :: EffectArgs -> Overzealous

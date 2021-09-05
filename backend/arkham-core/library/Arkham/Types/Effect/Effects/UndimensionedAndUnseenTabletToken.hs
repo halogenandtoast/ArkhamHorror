@@ -20,6 +20,7 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype UndimensionedAndUnseenTabletToken = UndimensionedAndUnseenTabletToken EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 undimensionedAndUnseenTabletToken

@@ -89,3 +89,7 @@ popMessageMatching matcher = withQueue \queue ->
     case after of
       [] -> (before, Nothing)
       (msg' : rest) -> (before <> rest, Just msg')
+
+popMessageMatching_
+  :: (MonadIO m, MonadReader env m, HasQueue env) => (Message -> Bool) -> m ()
+popMessageMatching_ = void . popMessageMatching

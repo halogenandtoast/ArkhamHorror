@@ -13,6 +13,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 
 newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsGreatWillow :: EffectArgs -> ArkhamWoodsGreatWillow

@@ -13,6 +13,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 
 newtype MindOverMatter = MindOverMatter EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mindOverMatter :: EffectArgs -> MindOverMatter

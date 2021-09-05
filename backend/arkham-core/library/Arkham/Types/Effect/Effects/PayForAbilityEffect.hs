@@ -29,6 +29,7 @@ import Arkham.Types.Window (Window(..))
 import qualified Arkham.Types.Window as Window
 
 newtype PayForAbilityEffect = PayForAbilityEffect (EffectAttrs `With` Payment)
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 payForAbilityEffect

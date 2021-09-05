@@ -12,6 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 
 newtype CurseOfTheRougarouTabletToken = CurseOfTheRougarouTabletToken EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curseOfTheRougarouTabletToken :: EffectArgs -> CurseOfTheRougarouTabletToken

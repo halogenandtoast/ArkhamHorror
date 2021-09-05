@@ -13,6 +13,7 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype Shrivelling = Shrivelling EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shrivelling :: EffectArgs -> Shrivelling

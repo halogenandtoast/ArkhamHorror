@@ -17,6 +17,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsTwistingPaths :: EffectArgs -> ArkhamWoodsTwistingPaths

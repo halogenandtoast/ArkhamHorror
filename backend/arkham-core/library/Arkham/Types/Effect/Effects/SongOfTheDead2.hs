@@ -14,6 +14,7 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype SongOfTheDead2 = SongOfTheDead2 EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 songOfTheDead2 :: EffectArgs -> SongOfTheDead2

@@ -114,6 +114,9 @@ data Effect
   | Lockpicks1' Lockpicks1
   | AlchemicalTransmutation' AlchemicalTransmutation
   | Overzealous' Overzealous
+  | TheStrangerACityAflame' TheStrangerACityAflame
+  | TheStrangerThePathIsMine' TheStrangerThePathIsMine
+  | TheStrangerTheShoresOfHali' TheStrangerTheShoresOfHali
   | MindWipe3' MindWipe3
   | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
   | JeremiahPierce' JeremiahPierce
@@ -132,6 +135,9 @@ instance
   )
   => HasModifiersFor env Effect where
   getModifiersFor = genericGetModifiersFor
+
+instance HasAbilities Effect where
+  getAbilities = genericGetAbilities
 
 instance
   ( HasQueue env
@@ -222,6 +228,9 @@ allEffects = mapFromList
   , ("03031", Lockpicks1' . lockpicks1)
   , ("03032", AlchemicalTransmutation' . alchemicalTransmutation)
   , ("03040", Overzealous' . overzealous)
+  , ("03047a", TheStrangerACityAflame' . theStrangerACityAflame)
+  , ("03047b", TheStrangerThePathIsMine' . theStrangerThePathIsMine)
+  , ("03047c", TheStrangerTheShoresOfHali' . theStrangerTheShoresOfHali)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)
   , ("50044", JeremiahPierce' . jeremiahPierce)

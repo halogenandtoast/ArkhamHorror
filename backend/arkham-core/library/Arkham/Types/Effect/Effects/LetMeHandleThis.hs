@@ -13,6 +13,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype LetMeHandleThis = LetMeHandleThis EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 letMeHandleThis :: EffectArgs -> LetMeHandleThis

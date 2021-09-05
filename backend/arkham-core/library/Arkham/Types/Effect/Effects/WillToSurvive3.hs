@@ -12,6 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 
 newtype WillToSurvive3 = WillToSurvive3 EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 willToSurvive3 :: EffectArgs -> WillToSurvive3

@@ -13,6 +13,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype FireExtinguisher1 = FireExtinguisher1 EffectAttrs
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fireExtinguisher1 :: EffectArgs -> FireExtinguisher1

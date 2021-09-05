@@ -876,6 +876,7 @@ type CanCheckPlayable env
     , HasList Card env Matcher.ExtendedCardMatcher
     , HasCount ActionTakenCount env InvestigatorId
     , HasCount HorrorCount env AssetId
+    , HasCount HorrorCount env LocationId
     , HasCount ResourceCount env LocationId
     , HasCount ResourceCount env TreacheryId
     , HasCount (Maybe ClueCount) env TreacheryId
@@ -1404,6 +1405,10 @@ windowMatches iid source window' = \case
     Window t (Window.WouldBeDiscarded (AssetTarget aid)) | t == timing ->
       elem aid <$> select assetMatcher
     _ -> pure False
+  Matcher.EnemyWouldBeDiscarded timing enemyMatcher -> case window' of
+    Window t (Window.WouldBeDiscarded (EnemyTarget eid)) | t == timing ->
+      elem eid <$> select enemyMatcher
+    _ -> pure False
   Matcher.AgendaAdvances timingMatcher agendaMatcher -> case window' of
     Window t (Window.AgendaAdvance aid) | t == timingMatcher ->
       pure $ agendaMatches aid agendaMatcher
@@ -1924,6 +1929,8 @@ locationMatches investigatorId source window locationId = \case
     member locationId <$> select Matcher.UnrevealedLocation
   Matcher.LocationWithClues valueMatcher ->
     (`gameValueMatches` valueMatcher) . unClueCount =<< getCount locationId
+  Matcher.LocationWithHorror valueMatcher ->
+    (`gameValueMatches` valueMatcher) . unHorrorCount =<< getCount locationId
   Matcher.LocationWithMostClues ->
     member locationId <$> select Matcher.LocationWithMostClues
   Matcher.LocationWithResources valueMatcher ->
@@ -1941,6 +1948,9 @@ locationMatches investigatorId source window locationId = \case
   Matcher.YourLocation -> do
     yourLocationId <- getId @LocationId investigatorId
     pure $ locationId == yourLocationId
+  Matcher.ThisLocation -> case source of
+    (LocationSource lid) -> pure $ lid == locationId
+    _ -> error "Invalid source for ThisLocation"
   Matcher.NotYourLocation -> do
     yourLocationId <- getId @LocationId investigatorId
     pure $ locationId /= yourLocationId

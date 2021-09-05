@@ -29,6 +29,7 @@ library
       Arkham.Prelude
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
+      Arkham.Scenarios.CurtainCall.Helpers
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
@@ -396,6 +397,9 @@ library
       Arkham.Types.Effect.Effects.SureGamble3
       Arkham.Types.Effect.Effects.TenAcreMeadow_246
       Arkham.Types.Effect.Effects.ThePaintedWorld
+      Arkham.Types.Effect.Effects.TheStrangerACityAflame
+      Arkham.Types.Effect.Effects.TheStrangerThePathIsMine
+      Arkham.Types.Effect.Effects.TheStrangerTheShoresOfHali
       Arkham.Types.Effect.Effects.TokenEffect
       Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken
       Arkham.Types.Effect.Effects.WilliamYorick

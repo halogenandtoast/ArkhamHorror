@@ -620,10 +620,12 @@ getInvestigatorsMatching = \case
     flip filterM is $ \i -> do
       modifiers' <- getModifiers (toSource i) (toTarget i)
       pure $ modifierType `notElem` modifiers'
+  UneliminatedInvestigator -> do
+    is <- toList . view investigatorsL <$> getGame
+    pure $ filter (not . isEliminated) is
   -- TODO: too lazy to do these right now
   NoDamageDealtThisTurn -> pure []
   UnengagedInvestigator -> pure []
-  UneliminatedInvestigator -> pure []
   ContributedMatchingIcons _ -> pure []
   DiscardWith _ -> pure []
   InvestigatorEngagedWith _ -> pure []
@@ -731,6 +733,11 @@ getLocationsMatching = \case
     filterM
       (getCount >=> (`gameValueMatches` gameValueMatcher) . unClueCount)
       allLocations'
+  LocationWithHorror gameValueMatcher -> do
+    allLocations' <- toList . view locationsL <$> getGame
+    filterM
+      (getCount >=> (`gameValueMatches` gameValueMatcher) . unHorrorCount)
+      allLocations'
   LocationWithMostClues -> do
     allLocations' <- toList . view locationsL <$> getGame
     maxes
@@ -830,6 +837,7 @@ getLocationsMatching = \case
   -- these can not be queried
   LocationLeavingPlay -> pure []
   SameLocation -> pure []
+  ThisLocation -> pure []
 
 guardYourLocation
   :: (MonadReader env m, HasGame env) => (LocationId -> m [a]) -> m [a]
@@ -1158,6 +1166,9 @@ instance HasGame env => HasCount UsesCount env AssetId where
 
 instance HasGame env => HasCount HorrorCount env AssetId where
   getCount = getCount <=< getAsset
+
+instance HasGame env => HasCount HorrorCount env LocationId where
+  getCount = getCount <=< getLocation
 
 instance HasGame env => HasId LocationId env AssetId where
   getId aid = do
@@ -2593,6 +2604,7 @@ instance {-# OVERLAPPABLE #-} HasGame env => HasAbilities env where
       <> concatMap getAbilities (g ^. treacheriesL)
       <> concatMap getAbilities (g ^. actsL)
       <> concatMap getAbilities (g ^. agendasL)
+      <> concatMap getAbilities (g ^. effectsL)
       <> concatMap getAbilities (g ^. investigatorsL)
 
 instance HasGame env => HasId Difficulty env () where

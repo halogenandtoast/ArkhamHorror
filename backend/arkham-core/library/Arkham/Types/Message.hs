@@ -387,6 +387,7 @@ data Message
     | PerformEnemyAttack InvestigatorId EnemyId DamageStrategy
     | PlaceClues Target Int
     | PlaceDoom Target Int
+    | PlaceHorror Target Int
     | PlaceDoomOnAgenda
     | PlaceEnemyInVoid EnemyId
     | PlaceLocation LocationId CardDef

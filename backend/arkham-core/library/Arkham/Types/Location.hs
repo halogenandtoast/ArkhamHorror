@@ -95,6 +95,9 @@ instance HasVictoryPoints Location where
 instance HasCount ResourceCount env Location where
   getCount = pure . ResourceCount . locationResources . toAttrs
 
+instance HasCount HorrorCount env Location where
+  getCount = pure . HorrorCount . locationHorror . toAttrs
+
 instance HasCount ClueCount env Location where
   getCount = pure . ClueCount . locationClues . toAttrs
 

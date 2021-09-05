@@ -56,6 +56,7 @@ data LocationAttrs = LocationAttrs
   , locationRevealClues :: GameValue Int
   , locationClues :: Int
   , locationDoom :: Int
+  , locationHorror :: Int
   , locationResources :: Int
   , locationShroud :: Int
   , locationRevealed :: Bool
@@ -119,6 +120,9 @@ assetsL = lens locationAssets $ \m x -> m { locationAssets = x }
 
 doomL :: Lens' LocationAttrs Int
 doomL = lens locationDoom $ \m x -> m { locationDoom = x }
+
+horrorL :: Lens' LocationAttrs Int
+horrorL = lens locationHorror $ \m x -> m { locationHorror = x }
 
 cluesL :: Lens' LocationAttrs Int
 cluesL = lens locationClues $ \m x -> m { locationClues = x }
@@ -261,6 +265,7 @@ locationWith f def shroud' revealClues symbol' connectedSymbols' g =
       , locationLabel = nameToLabel (cdName def)
       , locationRevealClues = revealClues
       , locationClues = 0
+      , locationHorror = 0
       , locationDoom = 0
       , locationResources = 0
       , locationShroud = shroud'
@@ -599,7 +604,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     EnemySpawnedAt lid eid | lid == locationId ->
       pure $ a & enemiesL %~ insertSet eid
     RemoveEnemy eid -> pure $ a & enemiesL %~ deleteSet eid
-    EnemyDefeated eid _ _ _ _ _ -> pure $ a & enemiesL %~ deleteSet eid
+    RemovedFromPlay (EnemySource eid) -> pure $ a & enemiesL %~ deleteSet eid
     TakeControlOfAsset _ aid -> pure $ a & assetsL %~ deleteSet aid
     MoveAllCluesTo target | not (isTarget a target) -> do
       when (locationClues > 0) (push $ PlaceClues target locationClues)
@@ -614,6 +619,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
           pure $ a & cluesL +~ n
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
     PlaceResources target n | isTarget a target -> pure $ a & resourcesL +~ n
+    PlaceHorror target n | isTarget a target -> pure $ a & horrorL +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & cluesL %~ max 0 . subtract n
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0

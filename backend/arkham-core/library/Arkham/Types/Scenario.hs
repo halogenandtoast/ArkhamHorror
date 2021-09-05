@@ -75,6 +75,7 @@ instance
   , HasId LocationId env InvestigatorId
   , HasId CardCode env EnemyId
   , HasStep AgendaStep env ()
+  , HasCount HorrorCount env InvestigatorId
   , HasModifiersFor env ()
   )
   => HasTokenValue env Scenario where
@@ -135,6 +136,7 @@ allScenarios = mapFromList
   , ("02236", UndimensionedAndUnseen' . undimensionedAndUnseen)
   , ("02274", WhereDoomAwaits' . whereDoomAwaits)
   , ("02311", LostInTimeAndSpace' . lostInTimeAndSpace)
+  , ("03043", CurtainCall' . curtainCall)
   , ("50011", ReturnToTheGathering' . returnToTheGathering)
   , ("50025", ReturnToTheMidnightMasks' . returnToTheMidnightMasks)
   , ("50032", ReturnToTheDevourerBelow' . returnToTheDevourerBelow)

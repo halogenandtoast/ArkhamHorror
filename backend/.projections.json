@@ -71,6 +71,7 @@
       "import Arkham.Types.Token",
       "",
       "newtype {dot} = {dot} ScenarioAttrs",
+      "  deriving anyclass IsScenario",
       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",
       "",
       "{dot|snakecase|camelcase} :: Difficulty -> {dot}",

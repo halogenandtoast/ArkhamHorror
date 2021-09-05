@@ -622,13 +622,18 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       locationClueCount <- if CannotPlaceClues `elem` modifiers'
         then pure 0
         else fromGameValue locationRevealClues . unPlayerCount <$> getCount ()
-      windowMsgs <- checkWindows
-        [ Window Timing.After (Window.RevealLocation iid lid)
-        | iid <- maybeToList miid
+      revealer <- maybe getLeadInvestigatorId pure miid
+      whenWindowMsgs <- checkWindows
+        [ Window Timing.When (Window.RevealLocation revealer lid)
+        ]
+
+      afterWindowMsgs <- checkWindows
+        [ Window Timing.After (Window.RevealLocation revealer lid)
         ]
       pushAll
         $ AddConnection lid locationRevealedSymbol
-        : windowMsgs
+        : whenWindowMsgs
+        <> afterWindowMsgs
         <> [ PlaceClues (toTarget a) locationClueCount | locationClueCount > 0 ]
       pure $ a & revealedL .~ True
     LookAtRevealed source target | isTarget a target -> do

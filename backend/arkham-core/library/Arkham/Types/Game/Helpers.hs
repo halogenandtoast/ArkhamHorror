@@ -405,7 +405,7 @@ getActions iid window = do
       let
         -- Lola Hayes: Forced abilities will always trigger
         prevents (CanOnlyUseCardsInRole role) =
-          null (singleton role `intersect` cardClasses)
+          null (setFromList [role, Neutral] `intersect` cardClasses)
             && not (isForcedAbility ability)
         prevents _ = False
         -- If the window is fast we only permit fast abilities, but forced

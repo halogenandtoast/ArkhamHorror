@@ -75,6 +75,11 @@ allActCards = mapFromList $ map
   , intoTheBeyond
   , closeTheRift
   , findingANewWay
+  , awakening
+  , theStrangerACityAflame
+  , theStrangerThePathIsMine
+  , theStrangerTheShoresOfHali
+  , curtainCall
   , mysteriousGateway
   , findingLadyEsprit
   , huntingTheRougarou

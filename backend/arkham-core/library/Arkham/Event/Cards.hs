@@ -450,6 +450,7 @@ iveGotAPlan :: CardDef
 iveGotAPlan = (event "02107" "\"I've got a plan!\"" 3 Seeker)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Insight, Tactic]
+  , cdAction = Just Action.Fight
   }
 
 contraband :: CardDef
@@ -817,4 +818,5 @@ iveGotAPlan2 = (event "60225" "\"I've got a plan!\"" 2 Seeker)
   { cdSkills = [SkillIntellect, SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Insight, Tactic]
   , cdLevel = 2
+  , cdAction = Just Action.Fight
   }

@@ -42,8 +42,12 @@ instance LocationRunner env => RunMessage env Lobby where
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       lobbyDoorwayCount <- selectCount
         (LocationWithUnrevealedTitle "Lobby Doorway")
-      lobbyDoorways <- zip [lobbyDoorwayCount ..]
-        <$> selectList (SetAsideCardMatch $ CardWithTitle "Lobby Doorway")
+      lobbyDoorways <-
+        zip [lobbyDoorwayCount ..]
+        . take 2
+        <$> (shuffleM =<< selectList
+              (SetAsideCardMatch $ CardWithTitle "Lobby Doorway")
+            )
       msgs <- concat <$> for
         lobbyDoorways
         \(idx, lobbyDoorway) -> do

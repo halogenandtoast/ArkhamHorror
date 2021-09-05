@@ -1990,11 +1990,17 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
     handCards <- map unHandCard . concat <$> traverse getList investigatorIds
     discards <- getDiscards investigatorIds
     setAsideCards <- map unSetAsideCard <$> getList ()
+    victoryDisplayCards <- map unVictoryDisplayCard <$> getSetList ()
     underneathCards <-
       map unUnderneathCard . concat <$> traverse getList investigatorIds
     filterM
       (`matches` matcher)
-      (handCards <> underneathCards <> discards <> setAsideCards)
+      (handCards
+      <> underneathCards
+      <> discards
+      <> setAsideCards
+      <> victoryDisplayCards
+      )
    where
     getDiscards iids =
       map PlayerCard
@@ -2003,6 +2009,9 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
     matches c = \case
       SetAsideCardMatch matcher' -> do
         cards <- map unSetAsideCard <$> getList ()
+        pure $ c `elem` filter (`cardMatch` matcher') cards
+      VictoryDisplayCardMatch matcher' -> do
+        cards <- map unVictoryDisplayCard <$> getSetList ()
         pure $ c `elem` filter (`cardMatch` matcher') cards
       BasicCardMatch cm -> pure $ cardMatch c cm
       InHandOf who -> do
@@ -3263,13 +3272,18 @@ runGameMessage msg g = case msg of
     let
       cardId = unEnemyId eid
       card = lookupCard (toCardCode enemy) cardId
-    push $ After msg
+    windowMsgs <- windows [Window.AddedToVictory card]
+    pushAll $ windowMsgs <> [After msg]
     case card of
       PlayerCard _ -> error "can not be player card yet?"
       EncounterCard ec -> pure $ g & (victoryDisplayL %~ (EncounterCard ec :))
   AddToVictory (EventTarget eid) -> do
     event <- getEvent eid
-    push $ After msg
+    let
+      cardId = unEventId eid
+      card = lookupCard (toCardCode event) cardId
+    windowMsgs <- windows [Window.AddedToVictory card]
+    pushAll $ windowMsgs <> [After msg]
     pure
       $ g
       & (eventsL %~ deleteMap eid) -- we might not want to remove here?

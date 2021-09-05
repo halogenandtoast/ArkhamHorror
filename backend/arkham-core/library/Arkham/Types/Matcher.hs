@@ -336,6 +336,7 @@ data ExtendedCardMatcher
   | InHandOf Who
   | InDiscardOf Who
   | SetAsideCardMatch CardMatcher
+  | VictoryDisplayCardMatch CardMatcher
   | ExtendedCardWithOneOf [ExtendedCardMatcher]
   | ExtendedCardMatches [ExtendedCardMatcher]
   deriving stock (Show, Eq, Generic)
@@ -381,6 +382,7 @@ instance Semigroup CardMatcher where
 
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
+  | AddedToVictory Timing CardMatcher
   | DrawingStartingHand Timing Who
   | InvestigatorDefeated Timing SourceMatcher Who
   | AmongSearchedCards Who

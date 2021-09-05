@@ -97,12 +97,17 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
         <> theatreMoveTo
         <> backstageMoveTo
         )
-      backstageDoorways <- traverse
+      setAsideCards <- traverse
         (fmap EncounterCard . genEncounterCard)
-        [Locations.dressingRoom, Locations.rehearsalRoom, Locations.trapRoom]
-      lobbyDoorways <- traverse
-        (fmap EncounterCard . genEncounterCard)
-        [Locations.lightingBox, Locations.boxOffice, Locations.greenRoom]
+        [ Enemies.theManInThePallidMask
+        , Enemies.royalEmissary
+        , Locations.lightingBox
+        , Locations.boxOffice
+        , Locations.greenRoom
+        , Locations.dressingRoom
+        , Locations.rehearsalRoom
+        , Locations.trapRoom
+        ]
       CurtainCall <$> runMessage
         msg
         (attrs
@@ -114,7 +119,6 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
              , Locations.backstage
              ]
         & setAsideCardsL
-        .~ backstageDoorways
-        <> lobbyDoorways
+        .~ setAsideCards
         )
     _ -> CurtainCall <$> runMessage msg attrs

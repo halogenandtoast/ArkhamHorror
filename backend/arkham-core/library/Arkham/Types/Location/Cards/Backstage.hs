@@ -27,7 +27,7 @@ newtype Backstage = Backstage LocationAttrs
 
 backstage :: LocationCard Backstage
 backstage =
-  location Backstage Cards.backstage 3 (Static 1) Diamond [Circle, Circle]
+  location Backstage Cards.backstage 3 (Static 1) Diamond [Circle, Moon]
 
 instance HasModifiersFor env Backstage where
   getModifiersFor (InvestigatorSource iid) (CardTarget card) (Backstage attrs)

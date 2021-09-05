@@ -1573,8 +1573,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & locationL .~ lid
   AddedConnection lid1 lid2 | lid1 == investigatorLocation ->
     pure $ a & (connectedLocationsL %~ insertSet lid2)
-  AddedConnection lid1 lid2 | lid2 == investigatorLocation ->
-    pure $ a & (connectedLocationsL %~ insertSet lid1)
+  -- AddedConnection lid1 lid2 | lid2 == investigatorLocation ->
+  --   pure $ a & (connectedLocationsL %~ insertSet lid1)
   AddSlot iid slotType slot | iid == investigatorId -> do
     let
       slots = findWithDefault [] slotType investigatorSlots

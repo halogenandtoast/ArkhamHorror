@@ -249,6 +249,7 @@ data LocationMatcher
   | InvestigatableLocation
   | LocationNotInPlay
   | FarthestLocationFromYou LocationMatcher
+  | FarthestLocationFromAll LocationMatcher
   | NearestLocationToYou LocationMatcher
   | LocationWithTrait Trait
   | LocationWithoutTrait Trait

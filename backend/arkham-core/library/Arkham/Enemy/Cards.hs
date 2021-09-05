@@ -480,6 +480,13 @@ theThingThatFollows = (weakness "03042" "The Thing That Follows")
   , cdUnique = True
   }
 
+theManInThePallidMask :: CardDef
+theManInThePallidMask = (weakness "03059" "The Man in the Pallid Mask")
+  { cdCardTraits = setFromList [Humanoid, Elite]
+  , cdKeywords = setFromList [Keyword.Aloof]
+  , cdUnique = True
+  }
+
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul = (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering 1
                     )

@@ -464,6 +464,7 @@ library
       Arkham.Types.Enemy.Cards.SwampLeech
       Arkham.Types.Enemy.Cards.SwarmOfRats
       Arkham.Types.Enemy.Cards.TheExperiment
+      Arkham.Types.Enemy.Cards.TheManInThePallidMask
       Arkham.Types.Enemy.Cards.TheMaskedHunter
       Arkham.Types.Enemy.Cards.TheRougarou
       Arkham.Types.Enemy.Cards.TheThingThatFollows

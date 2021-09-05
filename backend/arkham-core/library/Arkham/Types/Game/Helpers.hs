@@ -725,6 +725,7 @@ targetToSource = \case
   InvestigationTarget{} -> error "not converted"
   YouTarget -> YouSource
   ProxyTarget{} -> error "can not convert"
+  CardTarget{} -> error "can not convert"
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -1509,6 +1510,13 @@ windowMatches iid source window' = \case
       (matchWho iid iid' whoMatcher)
       (locationMatches iid source window' lid whereMatcher)
     _ -> pure False
+  Matcher.Moves whenMatcher whoMatcher fromMatcher toMatcher -> case window' of
+    Window t (Window.Moves iid' fromLid toLid) | whenMatcher == t -> andM
+      [ matchWho iid iid' whoMatcher
+      , locationMatches iid source window' fromLid fromMatcher
+      , locationMatches iid source window' toLid toMatcher
+      ]
+    _ -> pure False
   Matcher.WouldHaveSkillTestResult whenMatcher whoMatcher _ skillTestResultMatcher
     -> case skillTestResultMatcher of
       Matcher.FailureResult _ -> case window' of
@@ -1937,6 +1945,8 @@ locationMatches investigatorId source window locationId = \case
     elem locationId . catMaybes <$> traverse (getId . (direction, )) starts
   Matcher.FarthestLocationFromYou matcher' ->
     member (FarthestLocationId locationId) <$> getSet (investigatorId, matcher')
+  Matcher.FarthestLocationFromAll matcher' -> do
+    member locationId <$> select (Matcher.FarthestLocationFromAll matcher')
   Matcher.NearestLocationToYou matcher' ->
     member (ClosestLocationId locationId) <$> getSet (investigatorId, matcher')
   Matcher.LocationWithTrait t -> member t <$> getSet locationId

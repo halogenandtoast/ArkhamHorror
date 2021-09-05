@@ -71,6 +71,7 @@ data WindowType
   | FastPlayerWindow
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window
+  | Moves InvestigatorId LocationId LocationId
   | Leaving InvestigatorId LocationId
   | LeavePlay Target
   | MovedFromHunter EnemyId

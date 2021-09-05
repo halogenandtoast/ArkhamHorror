@@ -1082,13 +1082,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     [TakeAction iid (Just Action.Move) cost, MoveAction iid lid cost False]
   MoveAction iid lid _cost False | iid == investigatorId ->
     a <$ pushAll (resolve $ Move (toSource a) iid investigatorLocation lid)
-  Move source iid fromLocationId toLocationId | iid == investigatorId ->
+  Move source iid fromLocationId toLocationId | iid == investigatorId -> do
+    windowMsgs <- Helpers.windows [Window.Moves iid fromLocationId toLocationId]
     a <$ pushAll
-      [ Will (MoveFrom source iid fromLocationId)
+      ([ Will (MoveFrom source iid fromLocationId)
       , Will (MoveTo source iid toLocationId)
       , MoveFrom source iid fromLocationId
       , MoveTo source iid toLocationId
-      ]
+      ] <> windowMsgs)
   Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _ _)
     | iid == iid' && iid == investigatorId -> do
       windows <- checkWindows

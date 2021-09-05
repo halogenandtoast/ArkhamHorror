@@ -749,6 +749,25 @@ getLocationsMatching = \case
     matchingLocationIds <- map toId <$> getLocationsMatching matcher
     matches <- getLongestPath start (pure . (`elem` matchingLocationIds))
     filter ((`elem` matches) . toId) . toList . view locationsL <$> getGame
+  FarthestLocationFromAll matcher -> do
+    iids <- getInvestigatorIds
+    candidates <- map toId <$> getLocationsMatching matcher
+    distances <- for iids $ \iid -> do
+      start <- locationFor iid
+      distanceSingletons <$> evalStateT
+        (markDistances start (pure . (`elem` candidates)) mempty)
+        (LPState (pure start) (singleton start) mempty)
+    let
+      overallDistances =
+        distanceAggregates $ foldr (unionWith min) mempty distances
+      resultIds =
+        maybe [] coerce
+          . headMay
+          . map snd
+          . sortOn (Down . fst)
+          . mapToList
+          $ overallDistances
+    traverse getLocation resultIds
   NearestLocationToYou matcher -> guardYourLocation $ \start -> do
     matchingLocationIds <- map toId <$> getLocationsMatching matcher
     matches <- getShortestPath

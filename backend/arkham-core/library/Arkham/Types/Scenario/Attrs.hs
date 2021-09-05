@@ -38,10 +38,10 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioId :: ScenarioId
   , scenarioDifficulty :: Difficulty
   -- These types are to handle complex scenarios with multiple stacks
-  , scenarioAgendaStack :: [(Int, [AgendaId])] -- These types are to handle complex scenarios with multiple stacks
+  , scenarioAgendaStack :: [(Int, [CardDef])] -- These types are to handle complex scenarios with multiple stacks
   , scenarioCardsUnderAgendaDeck :: [Card]
   , scenarioCardsUnderActDeck :: [Card]
-  , scenarioActStack :: [(Int, [ActId])]
+  , scenarioActStack :: [(Int, [CardDef])]
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDeck :: Maybe ScenarioDeck
   , scenarioLog :: HashSet ScenarioLogKey
@@ -77,7 +77,7 @@ inResolutionL =
 deckL :: Lens' ScenarioAttrs (Maybe ScenarioDeck)
 deckL = lens scenarioDeck $ \m x -> m { scenarioDeck = x }
 
-actStackL :: Lens' ScenarioAttrs [(Int, [ActId])]
+actStackL :: Lens' ScenarioAttrs [(Int, [CardDef])]
 actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
 
 logL :: Lens' ScenarioAttrs (HashSet ScenarioLogKey)
@@ -137,7 +137,7 @@ isHardExpert ScenarioAttrs { scenarioDifficulty } =
   scenarioDifficulty `elem` [Hard, Expert]
 
 baseAttrs
-  :: CardCode -> Name -> [AgendaId] -> [ActId] -> Difficulty -> ScenarioAttrs
+  :: CardCode -> Name -> [CardDef] -> [CardDef] -> Difficulty -> ScenarioAttrs
 baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   { scenarioId = ScenarioId cardCode
   , scenarioName = name
@@ -312,6 +312,8 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
             ]
     PlaceLocation _ cardDef -> pure $ a & setAsideCardsL %~ deleteFirstMatch
       ((== toCardCode cardDef) . toCardCode)
+    CreateEnemyAt card _ _ -> do
+      pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
     PlaceUnderneath AgendaDeckTarget cards -> do
       push (After msg)
       pure $ a & cardsUnderneathAgendaDeckL <>~ cards

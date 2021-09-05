@@ -1355,7 +1355,7 @@ instance HasGame env => HasCount FightCount env EnemyId where
 
 instance HasGame env => HasCount ActsRemainingCount env () where
   getCount _ = do
-    actIds <-
+    acts <-
       scenarioActs
       . fromJustNote "scenario has to be set"
       . modeScenario
@@ -1366,7 +1366,8 @@ instance HasGame env => HasCount ActsRemainingCount env () where
       currentActId = case activeActIds of
         [aid] -> aid
         _ -> error "Cannot handle multiple acts"
-      (_, _ : remainingActs) = break (== currentActId) actIds
+      (_, _ : remainingActs) =
+        break ((== currentActId) . ActId . toCardCode) acts
     pure $ ActsRemainingCount $ length remainingActs
 
 instance HasGame env => HasCount ActionTakenCount env InvestigatorId where

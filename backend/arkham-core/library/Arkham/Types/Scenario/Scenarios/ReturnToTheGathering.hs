@@ -2,6 +2,8 @@ module Arkham.Types.Scenario.Scenarios.ReturnToTheGathering where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Acts
+import qualified Arkham.Agenda.Cards as Agendas
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Classes
@@ -22,22 +24,25 @@ newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToTheGathering :: Difficulty -> ReturnToTheGathering
-returnToTheGathering difficulty = ReturnToTheGathering . TheGathering $ base
-  { scenarioLocationLayout = Just
-    [ ".     .         fieldOfGraves .     "
-    , ".     bedroom   attic         .     "
-    , "study guestHall hallway       parlor"
-    , ".     bathroom  cellar        .     "
-    , ".     .         ghoulPits     .     "
-    ]
-  }
- where
-  base = baseAttrs
-    "50011"
-    "Return To The Gathering"
-    ["01105", "01106", "01107"]
-    ["50012", "01109", "01110"]
-    difficulty
+returnToTheGathering difficulty =
+  ReturnToTheGathering
+    . TheGathering
+    $ baseAttrs
+        "50011"
+        "Return To The Gathering"
+        [ Agendas.whatsGoingOn
+        , Agendas.riseOfTheGhouls
+        , Agendas.theyreGettingOut
+        ]
+        [Acts.mysteriousGateway, Acts.theBarrier, Acts.whatHaveYouDone]
+        difficulty
+    & locationLayoutL
+    ?~ [ ".     .         fieldOfGraves .     "
+       , ".     bedroom   attic         .     "
+       , "study guestHall hallway       parlor"
+       , ".     bathroom  cellar        .     "
+       , ".     .         ghoulPits     .     "
+       ]
 
 instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (InvestigatorLocation, [Trait])) => HasTokenValue env ReturnToTheGathering where
   getTokenValue (ReturnToTheGathering theGathering') iid =

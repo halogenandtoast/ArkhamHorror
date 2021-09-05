@@ -5,6 +5,8 @@ module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Acts
+import qualified Arkham.Agenda.Cards as Agendas
 import qualified Arkham.Location.Cards as Locations
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.CampaignLogKey
@@ -34,17 +36,21 @@ newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theEssexCountyExpress :: Difficulty -> TheEssexCountyExpress
-theEssexCountyExpress difficulty = TheEssexCountyExpress $ base
-  { scenarioLocationLayout = Just
-    ["trainCar6 trainCar5 trainCar4 trainCar3 trainCar2 trainCar1 engineCar"]
-  }
- where
-  base = baseAttrs
-    "02159"
-    "The Essex County Express"
-    ["02160", "02161", "02162", "02163", "02164"]
-    ["02165", "02166"]
-    difficulty
+theEssexCountyExpress difficulty =
+  TheEssexCountyExpress
+    $ baseAttrs
+        "02159"
+        "The Essex County Express"
+        [ Agendas.aTearInReality
+        , Agendas.theMawWidens
+        , Agendas.rollingBackwards
+        , Agendas.drawnIn
+        , Agendas.outOfTime
+        ]
+        [Acts.run, Acts.getTheEngineRunning]
+        difficulty
+    & locationLayoutL
+    ?~ ["trainCar6 trainCar5 trainCar4 trainCar3 trainCar2 trainCar1 engineCar"]
 
 theEssexCountyExpressIntro :: Message
 theEssexCountyExpressIntro = FlavorText

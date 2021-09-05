@@ -5,6 +5,8 @@ module Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Acts
+import qualified Arkham.Agenda.Cards as Agendas
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
@@ -32,28 +34,35 @@ newtype LostInTimeAndSpace = LostInTimeAndSpace ScenarioAttrs
 
 lostInTimeAndSpace :: Difficulty -> LostInTimeAndSpace
 lostInTimeAndSpace difficulty =
-  LostInTimeAndSpace $ (baseAttrs
-                         "02311"
-                         "Lost in Time and Space"
-                         ["02312", "02313", "02314", "02315"]
-                         ["02316", "02317", "02318", "02319"]
-                         difficulty
-                       )
-    { scenarioLocationLayout = Just
-      [ ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
-      , ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
-      , ".              tearThroughSpace3  tearThroughSpace3  .                 .                    .                    .                  tearThroughSpace4 tearThroughSpace4 ."
-      , ".              tearThroughSpace3  tearThroughSpace3  .                 .                    .                    .                  tearThroughSpace4 tearThroughSpace4 ."
-      , "endlessBridge2 endlessBridge2     endlessBridge1     endlessBridge1    .                    .                    prismaticCascade1  prismaticCascade1 prismaticCascade2 prismaticCascade2"
-      , "endlessBridge2 endlessBridge2     endlessBridge1     endlessBridge1    .                    .                    prismaticCascade1  prismaticCascade1 prismaticCascade2 prismaticCascade2"
-      , ".              dimensionalDoorway dimensionalDoorway .                 anotherDimension     anotherDimension     .                  stepsOfYhagharl   stepsOfYhagharl   ."
-      , ".              dimensionalDoorway dimensionalDoorway .                 anotherDimension     anotherDimension     .                  stepsOfYhagharl   stepsOfYhagharl   ."
-      , ".              .                  .                  .                 tearThroughTime      tearThroughTime      .                  .                 .                 ."
-      , ".              .                  .                  .                 tearThroughTime      tearThroughTime      .                  .                 .                 ."
-      , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
-      , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
-      ]
-    }
+  LostInTimeAndSpace
+    $ baseAttrs
+        "02311"
+        "Lost in Time and Space"
+        [ Agendas.allIsOne
+        , Agendas.pastPresentAndFuture
+        , Agendas.breakingThrough
+        , Agendas.theEndOfAllThings
+        ]
+        [ Acts.outOfThisWorld
+        , Acts.intoTheBeyond
+        , Acts.closeTheRift
+        , Acts.findingANewWay
+        ]
+        difficulty
+    & locationLayoutL
+    ?~ [ ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
+       , ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
+       , ".              tearThroughSpace3  tearThroughSpace3  .                 .                    .                    .                  tearThroughSpace4 tearThroughSpace4 ."
+       , ".              tearThroughSpace3  tearThroughSpace3  .                 .                    .                    .                  tearThroughSpace4 tearThroughSpace4 ."
+       , "endlessBridge2 endlessBridge2     endlessBridge1     endlessBridge1    .                    .                    prismaticCascade1  prismaticCascade1 prismaticCascade2 prismaticCascade2"
+       , "endlessBridge2 endlessBridge2     endlessBridge1     endlessBridge1    .                    .                    prismaticCascade1  prismaticCascade1 prismaticCascade2 prismaticCascade2"
+       , ".              dimensionalDoorway dimensionalDoorway .                 anotherDimension     anotherDimension     .                  stepsOfYhagharl   stepsOfYhagharl   ."
+       , ".              dimensionalDoorway dimensionalDoorway .                 anotherDimension     anotherDimension     .                  stepsOfYhagharl   stepsOfYhagharl   ."
+       , ".              .                  .                  .                 tearThroughTime      tearThroughTime      .                  .                 .                 ."
+       , ".              .                  .                  .                 tearThroughTime      tearThroughTime      .                  .                 .                 ."
+       , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
+       , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
+       ]
 
 instance HasRecord LostInTimeAndSpace where
   hasRecord _ = pure False

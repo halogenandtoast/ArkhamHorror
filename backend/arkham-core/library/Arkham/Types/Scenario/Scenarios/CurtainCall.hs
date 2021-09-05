@@ -5,10 +5,13 @@ module Arkham.Types.Scenario.Scenarios.CurtainCall
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Acts
+import qualified Arkham.Agenda.Cards as Agendas
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
@@ -32,8 +35,13 @@ curtainCall difficulty =
     $ baseAttrs
         "03043"
         "Curtain Call"
-        ["03044", "03045"]
-        ["03046", "03047a", "03047b", "03047c", "03048"]
+        [Agendas.theThirdAct, Agendas.encore]
+        [ Acts.awakening
+        , Acts.theStrangerACityAflame
+        , Acts.theStrangerThePathIsMine
+        , Acts.theStrangerTheShoresOfHali
+        , Acts.curtainCall
+        ]
         difficulty
     & locationLayoutL
     ?~ [ "lobbyDoorway1 .     balcony .         backstageDoorway1"
@@ -97,10 +105,11 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
         <> theatreMoveTo
         <> backstageMoveTo
         )
-      setAsideCards <- traverse
+      setAsidePlayerCards <-
+        pure . PlayerCard <$> genPlayerCard Enemies.theManInThePallidMask
+      setAsideEncounterCards <- traverse
         (fmap EncounterCard . genEncounterCard)
-        [ Enemies.theManInThePallidMask
-        , Enemies.royalEmissary
+        [ Enemies.royalEmissary
         , Locations.lightingBox
         , Locations.boxOffice
         , Locations.greenRoom
@@ -119,6 +128,6 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
              , Locations.backstage
              ]
         & setAsideCardsL
-        .~ setAsideCards
+        .~ (setAsidePlayerCards <> setAsideEncounterCards)
         )
     _ -> CurtainCall <$> runMessage msg attrs

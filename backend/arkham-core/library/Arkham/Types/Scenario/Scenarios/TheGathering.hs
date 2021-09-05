@@ -2,6 +2,8 @@ module Arkham.Types.Scenario.Scenarios.TheGathering where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Acts
+import qualified Arkham.Agenda.Cards as Agendas
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
@@ -30,17 +32,22 @@ newtype TheGathering = TheGathering ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theGathering :: Difficulty -> TheGathering
-theGathering difficulty = TheGathering $ base
-  { scenarioLocationLayout = Just
-    ["   .   attic   .     ", " study hallway parlor", "   .   cellar  .     "]
-  }
- where
-  base = baseAttrs
-    "01104"
-    "The Gathering"
-    ["01105", "01106", "01107"]
-    ["01108", "01109", "01110"]
-    difficulty
+theGathering difficulty =
+  TheGathering
+    $ baseAttrs
+        "01104"
+        "The Gathering"
+        [ Agendas.whatsGoingOn
+        , Agendas.riseOfTheGhouls
+        , Agendas.theyreGettingOut
+        ]
+        [Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
+        difficulty
+    & locationLayoutL
+    ?~ [ "   .   attic   .     "
+       , " study hallway parlor"
+       , "   .   cellar  .     "
+       ]
 
 theGatheringIntro :: Message
 theGatheringIntro = FlavorText

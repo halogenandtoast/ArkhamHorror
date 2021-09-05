@@ -5,6 +5,8 @@ module Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Acts
+import qualified Arkham.Agenda.Cards as Agendas
 import Arkham.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
@@ -36,20 +38,24 @@ newtype WhereDoomAwaits = WhereDoomAwaits ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whereDoomAwaits :: Difficulty -> WhereDoomAwaits
-whereDoomAwaits difficulty = WhereDoomAwaits $ base
-  { scenarioLocationLayout = Just
-    [ "divergingPath1 divergingPath2 divergingPath3"
-    , "baseOfTheHill ascendingPath sentinelPeak"
-    , "alteredPath1 alteredPath2 alteredPath3"
-    ]
-  }
- where
-  base = baseAttrs
-    "02274"
-    "Where Doom Awaits"
-    ["02275", "02276"]
-    ["02277", "02278", "02279", "02280", "02281"]
-    difficulty
+whereDoomAwaits difficulty =
+  WhereDoomAwaits
+    $ baseAttrs
+        "02274"
+        "Where Doom Awaits"
+        [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
+        [ Acts.thePathToTheHill
+        , Acts.ascendingTheHillV1
+        , Acts.ascendingTheHillV2
+        , Acts.ascendingTheHillV3
+        , Acts.theGateOpens
+        ]
+        difficulty
+    & locationLayoutL
+    ?~ [ "divergingPath1 divergingPath2 divergingPath3"
+       , "baseOfTheHill ascendingPath sentinelPeak"
+       , "alteredPath1 alteredPath2 alteredPath3"
+       ]
 
 whereDoomAwaitsIntro :: Message
 whereDoomAwaitsIntro = FlavorText

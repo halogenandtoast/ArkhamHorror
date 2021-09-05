@@ -84,7 +84,7 @@ allAgendaCards = mapFromList $ map
   , theCurseSpreads
   , theFestivitiesBegin
   , theShadowOfTheEclipse
-  , chaosInTheCarnevale
+  , chaosAtTheCarnevale
   ]
 
 whatsGoingOn :: CardDef
@@ -220,6 +220,6 @@ theShadowOfTheEclipse :: CardDef
 theShadowOfTheEclipse =
   agenda "82003" "The Shadow of the Eclipse" CarnevaleOfHorrors
 
-chaosInTheCarnevale :: CardDef
-chaosInTheCarnevale =
+chaosAtTheCarnevale :: CardDef
+chaosAtTheCarnevale =
   agenda "82004" "Chaos at the Carnevale" CarnevaleOfHorrors

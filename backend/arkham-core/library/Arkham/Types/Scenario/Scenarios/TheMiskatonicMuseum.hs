@@ -2,6 +2,8 @@ module Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Acts
+import qualified Arkham.Agenda.Cards as Agendas
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
@@ -29,23 +31,26 @@ newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theMiskatonicMuseum :: Difficulty -> TheMiskatonicMuseum
-theMiskatonicMuseum difficulty = TheMiskatonicMuseum $ base
-  { scenarioLocationLayout = Just
-    [ ".     .     .                    .                    hall3 hall3          hall4          hall4 .                  .              .     ."
-    , ".     .     hall2                hall2                hall3 hall3          hall4          hall4 hall5              hall5          .     ."
-    , "hall1 hall1 hall2                hall2                .     museumHalls    museumHalls    .     hall5              hall5          hall6 hall6"
-    , "hall1 hall1 .                    .                    .     museumHalls    museumHalls    .     .                  .              hall6 hall6"
-    , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
-    , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
-    ]
-  }
- where
-  base = baseAttrs
-    "02118"
-    "The Miskatonic Museum"
-    ["02119", "02120", "02121"]
-    ["02122", "02123", "02124", "02125"]
-    difficulty
+theMiskatonicMuseum difficulty =
+  TheMiskatonicMuseum
+    $ baseAttrs
+        "02118"
+        "The Miskatonic Museum"
+        [Agendas.restrictedAccess, Agendas.shadowsDeepen, Agendas.inEveryShadow]
+        [ Acts.findingAWayInside
+        , Acts.nightAtTheMuseum
+        , Acts.breakingAndEntering
+        , Acts.searchingForTheTome
+        ]
+        difficulty
+    & locationLayoutL
+    ?~ [ ".     .     .                    .                    hall3 hall3          hall4          hall4 .                  .              .     ."
+       , ".     .     hall2                hall2                hall3 hall3          hall4          hall4 hall5              hall5          .     ."
+       , "hall1 hall1 hall2                hall2                .     museumHalls    museumHalls    .     hall5              hall5          hall6 hall6"
+       , "hall1 hall1 .                    .                    .     museumHalls    museumHalls    .     .                  .              hall6 hall6"
+       , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
+       , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
+       ]
 
 theMiskatonicMuseumIntro1 :: Message
 theMiskatonicMuseumIntro1 = FlavorText

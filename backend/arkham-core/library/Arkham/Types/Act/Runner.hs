@@ -17,6 +17,7 @@ type ActRunner env
     , Query AssetMatcher env
     , Query EnemyMatcher env
     , Query LocationMatcher env
+    , Query ExtendedCardMatcher env
     , HasCount ClueCount env AssetId
     , HasCount DamageCount env EnemyId
     , HasCount PlayerCount env ()

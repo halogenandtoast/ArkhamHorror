@@ -50,6 +50,7 @@ library
       Arkham.Types.Act.Cards.BreakingAndEntering
       Arkham.Types.Act.Cards.CampusSafety
       Arkham.Types.Act.Cards.CloseTheRift
+      Arkham.Types.Act.Cards.CurtainCall
       Arkham.Types.Act.Cards.DisruptingTheRitual
       Arkham.Types.Act.Cards.FindingANewWay
       Arkham.Types.Act.Cards.FindingAWayInside
@@ -76,6 +77,9 @@ library
       Arkham.Types.Act.Cards.TheChamberOfTheBeast
       Arkham.Types.Act.Cards.TheGateOpens
       Arkham.Types.Act.Cards.ThePathToTheHill
+      Arkham.Types.Act.Cards.TheStrangerACityAflame
+      Arkham.Types.Act.Cards.TheStrangerThePathIsMine
+      Arkham.Types.Act.Cards.TheStrangerTheShoresOfHali
       Arkham.Types.Act.Cards.TheyMustBeDestroyed
       Arkham.Types.Act.Cards.Trapped
       Arkham.Types.Act.Cards.UncoveringTheConspiracy
@@ -96,7 +100,7 @@ library
       Arkham.Types.Agenda.Cards.BidingItsTime
       Arkham.Types.Agenda.Cards.BreakingThrough
       Arkham.Types.Agenda.Cards.CallingForthTheOldOnes
-      Arkham.Types.Agenda.Cards.ChaosInTheCarnevale
+      Arkham.Types.Agenda.Cards.ChaosAtTheCarnevale
       Arkham.Types.Agenda.Cards.ChaosInTheCloverClub
       Arkham.Types.Agenda.Cards.DeadOfNight
       Arkham.Types.Agenda.Cards.DrawnIn

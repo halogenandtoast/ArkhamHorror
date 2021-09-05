@@ -1038,6 +1038,7 @@ passesCriteria iid source windows' = \case
     _ -> pure False
   Criteria.Here -> case source of
     LocationSource lid -> (== lid) <$> getId iid
+    ProxySource (LocationSource lid) _ -> (== lid) <$> getId iid
     _ -> pure False
   Criteria.OwnsThis -> case source of
     AssetSource aid -> member aid
@@ -1950,6 +1951,7 @@ locationMatches investigatorId source window locationId = \case
     pure $ locationId == yourLocationId
   Matcher.ThisLocation -> case source of
     (LocationSource lid) -> pure $ lid == locationId
+    (ProxySource (LocationSource lid) _) -> pure $ lid == locationId
     _ -> error "Invalid source for ThisLocation"
   Matcher.NotYourLocation -> do
     yourLocationId <- getId @LocationId investigatorId

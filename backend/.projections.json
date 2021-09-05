@@ -165,9 +165,9 @@
       "{dot|snakecase|camelcase} = agenda (1, A) {dot} Cards.{dot|snakecase|camelcase} (Static 12)",
       "",
       "instance AgendaRunner env => RunMessage env {dot} where",
-      "  runMessage msg a@({dot} attrs@AgendaAttrs {open}..{close}) =",
+      "  runMessage msg a@({dot} attrs) =",
       "    case msg of",
-      "      AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->",
+      "      AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->",
       "        a <$ pushAll [NextAgenda aid \"TODO\"]",
       "      _ -> {dot} <$> runMessage msg attrs"
     ]

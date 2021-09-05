@@ -16,6 +16,7 @@ type AgendaRunner env
   = ( HasQueue env
     , Query AssetMatcher env
     , Query EnemyMatcher env
+    , Query ExtendedCardMatcher env
     , Query InvestigatorMatcher env
     , Query LocationMatcher env
     , HasCount ClueCount env InvestigatorId

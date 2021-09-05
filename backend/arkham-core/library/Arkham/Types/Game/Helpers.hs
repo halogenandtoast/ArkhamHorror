@@ -1658,6 +1658,10 @@ windowMatches iid source window' = \case
         (matchWho iid who whoMatcher)
         (matchToken who token tokenMatcher)
       _ -> pure False
+  Matcher.AddedToVictory timingMatcher cardMatcher -> case window' of
+    Window t (Window.AddedToVictory card) | timingMatcher == t ->
+      pure $ cardMatch card cardMatcher
+    _ -> pure False
   Matcher.AssetDefeated timingMatcher assetMatcher -> case window' of
     Window t (Window.AssetDefeated assetId) | timingMatcher == t ->
       member assetId <$> select assetMatcher

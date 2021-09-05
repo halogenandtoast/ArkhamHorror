@@ -62,6 +62,7 @@ data WindowType
   | EnemyEnters EnemyId LocationId
   | EnemyLeaves EnemyId LocationId
   | EnterPlay Target
+  | AddedToVictory Card
   | Entering InvestigatorId LocationId
   | FailAttackEnemy InvestigatorId EnemyId Int
   | FailEvadeEnemy InvestigatorId EnemyId Int

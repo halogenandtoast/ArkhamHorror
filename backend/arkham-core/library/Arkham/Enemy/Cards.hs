@@ -57,6 +57,7 @@ allPlayerEnemyCards = mapFromList $ map
   , stubbornDetective
   , graveyardGhouls
   , theThingThatFollows
+  , theManInThePallidMask
   ]
 
 allEncounterEnemyCards :: HashMap CardCode CardDef
@@ -105,6 +106,7 @@ allEncounterEnemyCards = mapFromList $ map
   , poleman
   , ravenousGhoul
   , relentlessDarkYoung
+  , royalEmissary
   , ruthTurner
   , salvatoreNeri
   , savioCorvi

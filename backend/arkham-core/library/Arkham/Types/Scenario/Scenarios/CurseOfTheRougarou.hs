@@ -5,6 +5,8 @@ module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Acts
+import qualified Arkham.Agenda.Cards as Agendas
 import qualified Arkham.Asset.Cards as Assets
 import Arkham.Json
 import qualified Arkham.Location.Cards as Locations
@@ -39,20 +41,21 @@ curseOfTheRougarou :: Difficulty -> CurseOfTheRougarou
 curseOfTheRougarou difficulty =
   CurseOfTheRougarou
     . (`with` CurseOfTheRougarouMetadata mempty)
-    $ (baseAttrs
+    $ baseAttrs
         "81001"
         "Curse of the Rougarou"
-        ["81002", "81003", "81004"]
-        ["81005", "81006"]
+        [ Agendas.aCreatureOfTheBayou
+        , Agendas.theRougarouFeeds
+        , Agendas.theCurseSpreads
+        ]
+        [Acts.findingLadyEsprit, Acts.huntingTheRougarou]
         difficulty
-      )
-        { scenarioLocationLayout = Just
-          [ "     .       unhallowed1      newOrleans1       ."
-          , "unhallowed2 unhallowedBayou newOrleansBayou newOrleans2"
-          , "riverside2 riversideBayou wildernessBayou wilderness2"
-          , "     .       riverside1      wilderness1       ."
-          ]
-        }
+    & locationLayoutL
+    ?~ [ "     .       unhallowed1      newOrleans1       ."
+       , "unhallowed2 unhallowedBayou newOrleansBayou newOrleans2"
+       , "riverside2 riversideBayou wildernessBayou wilderness2"
+       , "     .       riverside1      wilderness1       ."
+       ]
 
 locationsByTrait :: HashMap Trait [CardDef]
 locationsByTrait = mapFromList

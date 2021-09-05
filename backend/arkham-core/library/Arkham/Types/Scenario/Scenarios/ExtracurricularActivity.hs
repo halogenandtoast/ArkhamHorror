@@ -2,6 +2,8 @@ module Arkham.Types.Scenario.Scenarios.ExtracurricularActivity where
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Acts
+import qualified Arkham.Agenda.Cards as Agendas
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
@@ -28,19 +30,18 @@ newtype ExtracurricularActivity = ExtracurricularActivity ScenarioAttrs
 
 extracurricularActivity :: Difficulty -> ExtracurricularActivity
 extracurricularActivity difficulty =
-  ExtracurricularActivity $ (baseAttrs
-                              "02041"
-                              "Extracurricular Activity"
-                              ["02042", "02043", "02044"]
-                              ["02045", "02046", "02047"]
-                              difficulty
-                            )
-    { scenarioLocationLayout = Just
-      [ "orneLibrary        miskatonicQuad scienceBuilding alchemyLabs"
-      , "humanitiesBuilding studentUnion   administrationBuilding ."
-      , ".                  dormitories    facultyOffices         ."
-      ]
-    }
+  ExtracurricularActivity
+    $ baseAttrs
+        "02041"
+        "Extracurricular Activity"
+        [Agendas.quietHalls, Agendas.deadOfNight, Agendas.theBeastUnleashed]
+        [Acts.afterHours, Acts.ricesWhereabouts, Acts.campusSafety]
+        difficulty
+    & locationLayoutL
+    ?~ [ "orneLibrary        miskatonicQuad scienceBuilding alchemyLabs"
+       , "humanitiesBuilding studentUnion   administrationBuilding ."
+       , ".                  dormitories    facultyOffices         ."
+       ]
 
 extracurricularActivityIntro :: Message
 extracurricularActivityIntro = FlavorText

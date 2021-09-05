@@ -1,6 +1,6 @@
-module Arkham.Types.Agenda.Cards.ChaosInTheCarnevale
-  ( ChaosInTheCarnevale
-  , chaosInTheCarnevale
+module Arkham.Types.Agenda.Cards.ChaosAtTheCarnevale
+  ( ChaosAtTheCarnevale
+  , chaosAtTheCarnevale
   ) where
 
 import Arkham.Prelude
@@ -21,16 +21,16 @@ import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window (Window(..))
 import qualified Arkham.Types.Window as Window
 
-newtype ChaosInTheCarnevale = ChaosInTheCarnevale AgendaAttrs
+newtype ChaosAtTheCarnevale = ChaosAtTheCarnevale AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-chaosInTheCarnevale :: AgendaCard ChaosInTheCarnevale
-chaosInTheCarnevale =
-  agenda (3, A) ChaosInTheCarnevale Cards.chaosInTheCarnevale (Static 3)
+chaosAtTheCarnevale :: AgendaCard ChaosAtTheCarnevale
+chaosAtTheCarnevale =
+  agenda (3, A) ChaosAtTheCarnevale Cards.chaosAtTheCarnevale (Static 3)
 
-instance HasAbilities ChaosInTheCarnevale where
-  getAbilities (ChaosInTheCarnevale x) =
+instance HasAbilities ChaosAtTheCarnevale where
+  getAbilities (ChaosAtTheCarnevale x) =
     [ mkAbility x 1
         $ ForcedAbility
         $ EnemySpawns Timing.After Anywhere
@@ -38,8 +38,8 @@ instance HasAbilities ChaosInTheCarnevale where
     | onSide A x
     ]
 
-instance AgendaRunner env => RunMessage env ChaosInTheCarnevale where
-  runMessage msg a@(ChaosInTheCarnevale attrs@AgendaAttrs {..}) = case msg of
+instance AgendaRunner env => RunMessage env ChaosAtTheCarnevale where
+  runMessage msg a@(ChaosAtTheCarnevale attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility _ source [Window _ (Window.EnemySpawns eid _)] 1 _
       | isSource attrs source -> a <$ push (PlaceDoom (EnemyTarget eid) 2)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
@@ -56,4 +56,4 @@ instance AgendaRunner env => RunMessage env ChaosInTheCarnevale where
               ]
             <> [RevertAgenda (toId attrs)]
         Nothing -> pure ()
-    _ -> ChaosInTheCarnevale <$> runMessage msg attrs
+    _ -> ChaosAtTheCarnevale <$> runMessage msg attrs

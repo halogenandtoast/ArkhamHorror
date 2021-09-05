@@ -5,6 +5,8 @@ module Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Acts
+import qualified Arkham.Agenda.Cards as Agendas
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
@@ -35,23 +37,25 @@ newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 undimensionedAndUnseen :: Difficulty -> UndimensionedAndUnseen
-undimensionedAndUnseen difficulty = UndimensionedAndUnseen $ base
-  { scenarioLocationLayout = Just
-    [ ". blastedHeath devilsHopYard"
-    , ". blastedHeath devilsHopYard"
-    , "dunwichVillage tenAcreMeadow ."
-    , "dunwichVillage tenAcreMeadow whateleyRuins"
-    , ". coldSpringGlen whateleyRuins"
-    , ". coldSpringGlen ."
-    ]
-  }
- where
-  base = baseAttrs
-    "02236"
-    "Undimensioned and Unseen"
-    ["02237", "02238", "02239"]
-    ["02240", "02241"]
-    difficulty
+undimensionedAndUnseen difficulty =
+  UndimensionedAndUnseen
+    $ baseAttrs
+        "02236"
+        "Undimensioned and Unseen"
+        [ Agendas.rampagingCreatures
+        , Agendas.bidingItsTime
+        , Agendas.horrorsUnleashed
+        ]
+        [Acts.saracenicScript, Acts.theyMustBeDestroyed]
+        difficulty
+    & locationLayoutL
+    ?~ [ ". blastedHeath devilsHopYard"
+       , ". blastedHeath devilsHopYard"
+       , "dunwichVillage tenAcreMeadow ."
+       , "dunwichVillage tenAcreMeadow whateleyRuins"
+       , ". coldSpringGlen whateleyRuins"
+       , ". coldSpringGlen ."
+       ]
 
 undimensionedAndUnseenIntro :: Message
 undimensionedAndUnseenIntro = FlavorText

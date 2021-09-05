@@ -118,7 +118,7 @@ lookupScenario = fromJustNote "Unknown scenario" . flip lookup allScenarios
 difficultyOfScenario :: Scenario -> Difficulty
 difficultyOfScenario = scenarioDifficulty . toAttrs
 
-scenarioActs :: Scenario -> [ActId]
+scenarioActs :: Scenario -> [CardDef]
 scenarioActs s = case scenarioActStack (toAttrs s) of
   [(_, actIds)] -> actIds
   _ -> error "Not able to handle multiple act stacks yet"

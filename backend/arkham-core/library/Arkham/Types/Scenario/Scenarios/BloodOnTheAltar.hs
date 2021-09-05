@@ -5,6 +5,8 @@ module Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
 
 import Arkham.Prelude
 
+import qualified Arkham.Act.Cards as Acts
+import qualified Arkham.Agenda.Cards as Agendas
 import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
@@ -52,8 +54,11 @@ bloodOnTheAltar difficulty =
   base = baseAttrs
     "02195"
     "Blood on the Altar"
-    ["02196", "02197", "02198"]
-    ["02199", "02200"]
+    [ Agendas.strangeDisappearances
+    , Agendas.theOldOnesHunger
+    , Agendas.feedTheBeast
+    ]
+    [Acts.searchingForAnswers, Acts.theChamberOfTheBeast]
     difficulty
 
 bloodOnTheAltarIntro :: Message

@@ -73,6 +73,15 @@
           :key="index"
           @choose="$emit('choose', $event)"
         />
+
+        <Treachery
+          v-for="treacheryId in player.contents.inHandTreacheries"
+          :key="treacheryId"
+          :treachery="game.treacheries[treacheryId]"
+          :game="game"
+          :investigatorId="investigatorId"
+          @choose="$emit('choose', $event)"
+        />
       </section>
     </div>
 

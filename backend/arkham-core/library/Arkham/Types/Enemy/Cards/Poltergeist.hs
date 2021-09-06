@@ -14,14 +14,16 @@ import Arkham.Types.Criteria
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
 newtype Poltergeist = Poltergeist EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 poltergeist :: EnemyCard Poltergeist
@@ -34,6 +36,16 @@ instance HasAbilities Poltergeist where
       $ ActionAbility (Just Action.Parley)
       $ ActionCost 1
     ]
+
+instance HasModifiersFor env Poltergeist where
+  getModifiersFor _ (EnemyTarget eid) (Poltergeist a) | toId a == eid =
+    pure $ toModifiers
+      a
+      [ CannotBeDamagedByPlayerSourcesExcept $ SourceMatchesAny $ map
+          SourceWithTrait
+          [Spell, Relic]
+      ]
+  getModifiersFor _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env Poltergeist where
   runMessage msg e@(Poltergeist attrs) = case msg of
@@ -49,13 +61,13 @@ instance EnemyRunner env => RunMessage env Poltergeist where
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> e
       <$ push (EnemyDamage (toId attrs) iid source 1)
-    EnemyDamage eid iid source n | eid == toId attrs -> do
+    EnemyDamage eid _ source _ | eid == toId attrs -> do
       let matches = any (`elem` [Spell, Relic])
       damaged <- case source of
-        AssetSource aid -> matches <$> getSet aid
-        EventSource eid -> matches <$> getSet eid
-        SkillSource sid -> matches <$> getSet sid
-        InvestigatorSource iid' -> matches <$> getSet iid'
+        AssetSource asset -> matches <$> getSet asset
+        EventSource event -> matches <$> getSet event
+        SkillSource skill -> matches <$> getSet skill
+        InvestigatorSource investigator -> matches <$> getSet investigator
         _ -> pure True
       if damaged then Poltergeist <$> runMessage msg attrs else pure e
     _ -> Poltergeist <$> runMessage msg attrs

@@ -53,6 +53,7 @@ data ModifierType
   | Blocked
   | CancelSkills
   | CanBeAssignedDamage
+  | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast (Maybe CardType, [Trait])
   | CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation Int

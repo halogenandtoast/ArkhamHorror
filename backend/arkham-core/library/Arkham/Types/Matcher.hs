@@ -479,7 +479,11 @@ data SkillTestMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data SourceMatcher = SourceWithTrait Trait | SourceIs Source | EncounterCardSource
+data SourceMatcher
+  = SourceWithTrait Trait
+  | SourceIs Source
+  | EncounterCardSource
+  | SourceMatchesAny [SourceMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

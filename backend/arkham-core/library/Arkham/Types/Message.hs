@@ -321,7 +321,7 @@ data Message
     | InvestigatorCommittedCard InvestigatorId CardId
     | InvestigatorCommittedSkill InvestigatorId SkillId
     | InvestigatorDamage InvestigatorId Source Int Int
-    | InvestigatorDamageEnemy InvestigatorId EnemyId
+    | InvestigatorDamageEnemy InvestigatorId EnemyId Source
     | InvestigatorDamageInvestigator InvestigatorId InvestigatorId
     | InvestigatorDefeated Source InvestigatorId
     | InvestigatorDirectDamage InvestigatorId Source Int Int

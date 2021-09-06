@@ -32,7 +32,7 @@ instance EventRunner env => RunMessage env Taunt3 where
           [ TargetLabel
               (EnemyTarget enemyId)
               [ EngageEnemy iid enemyId False
-              , InvestigatorDamageEnemy iid enemyId
+              , InvestigatorDamageEnemy iid enemyId (toSource attrs)
               , DrawCards iid 1 False
               ]
           | enemyId <- enemyIds

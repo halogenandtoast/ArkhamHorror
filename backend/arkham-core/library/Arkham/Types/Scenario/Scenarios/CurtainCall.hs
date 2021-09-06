@@ -77,6 +77,7 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
         [ EncounterSet.CurtainCall
         , EncounterSet.EvilPortents
         , EncounterSet.Delusions
+        , EncounterSet.Hauntings
         , EncounterSet.StrikingFear
         , EncounterSet.Rats
         ]

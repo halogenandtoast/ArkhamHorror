@@ -1040,9 +1040,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              damage
              0
            )
-  InvestigatorDamageEnemy iid eid | iid == investigatorId -> do
+  InvestigatorDamageEnemy iid eid source | iid == investigatorId -> do
     damage <- damageValueFor 1 a
-    a <$ push (EnemyDamage eid iid (InvestigatorSource iid) damage)
+    a <$ push (EnemyDamage eid iid source damage)
   EnemyEvaded iid eid | iid == investigatorId -> do
     modifiers' <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
     pushAll =<< checkWindows [Window Timing.After (Window.EnemyEvaded iid eid)]

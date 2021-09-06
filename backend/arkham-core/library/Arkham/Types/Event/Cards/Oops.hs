@@ -11,6 +11,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Window (Window(..))
@@ -38,10 +39,12 @@ instance
         let
           damageMsg = case enemies of
             [] -> error "event should not have been playable"
-            [x] -> InvestigatorDamageEnemy iid x
+            [x] -> InvestigatorDamageEnemy iid x (EnemySource targetId)
             xs -> chooseOne
               iid
-              [ TargetLabel (EnemyTarget x) [InvestigatorDamageEnemy iid x]
+              [ TargetLabel
+                  (EnemyTarget x)
+                  [InvestigatorDamageEnemy iid x (EnemySource targetId)]
               | x <- xs
               ]
         e <$ pushAll

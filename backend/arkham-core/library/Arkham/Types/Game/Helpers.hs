@@ -2132,11 +2132,12 @@ sourceCanDamageEnemy
   -> Source
   -> m Bool
 sourceCanDamageEnemy eid source = do
-  modifiers' <- getModifiers source (EnemyTarget eid)
+  modifiers' <- getModifiers (traceShowId source) (EnemyTarget eid)
   not <$> anyM prevents modifiers'
  where
   prevents = \case
-    CannotBeDamagedByPlayerSourcesExcept matcher ->
-      not <$> sourceMatches source matcher
+    CannotBeDamagedByPlayerSourcesExcept matcher -> not <$> sourceMatches
+      source
+      (Matcher.SourceMatchesAny [Matcher.EncounterCardSource, matcher])
     _ -> pure False
 

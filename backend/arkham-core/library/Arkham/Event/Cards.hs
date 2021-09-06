@@ -127,6 +127,7 @@ allPlayerEventCards = mapFromList $ map
   , teamwork
   , thePaintedWorld
   , thinkOnYourFeet
+  , uncageTheSoul
   , wardOfProtection
   , wardOfProtection5
   , willToSurvive3

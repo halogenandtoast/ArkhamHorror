@@ -612,7 +612,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
           skillType
           enemyFight'
         )
-    After (PassedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ n)
+    After (PassedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget target) _ n)
       | isTarget a target
       -> do
         whenWindows <- checkWindows
@@ -622,7 +622,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         a
           <$ pushAll
                (whenWindows
-               <> [InvestigatorDamageEnemy iid enemyId]
+               <> [InvestigatorDamageEnemy iid enemyId source]
                <> afterWindows
                )
     After (FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ n)

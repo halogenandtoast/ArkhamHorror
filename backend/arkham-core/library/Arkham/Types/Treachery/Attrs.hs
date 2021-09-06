@@ -27,6 +27,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryCardCode :: CardCode
   , treacheryAttachedTarget :: Maybe Target
   , treacheryOwner :: Maybe InvestigatorId
+  , treacheryInHandOf :: Maybe InvestigatorId
   , treacheryDoom :: Int
   , treacheryClues :: Maybe Int
   , treacheryResources :: Maybe Int
@@ -39,6 +40,9 @@ cluesL = lens treacheryClues $ \m x -> m { treacheryClues = x }
 attachedTargetL :: Lens' TreacheryAttrs (Maybe Target)
 attachedTargetL =
   lens treacheryAttachedTarget $ \m x -> m { treacheryAttachedTarget = x }
+
+inHandOfL :: Lens' TreacheryAttrs (Maybe InvestigatorId)
+inHandOfL = lens treacheryInHandOf $ \m x -> m { treacheryInHandOf = x }
 
 resourcesL :: Lens' TreacheryAttrs (Maybe Int)
 resourcesL = lens treacheryResources $ \m x -> m { treacheryResources = x }
@@ -153,6 +157,7 @@ treacheryWith f cardDef g = CardBuilder
     { treacheryId = tid
     , treacheryCardCode = toCardCode cardDef
     , treacheryAttachedTarget = Nothing
+    , treacheryInHandOf = Nothing
     , treacheryOwner = if cdWeakness cardDef then Just iid else Nothing
     , treacheryDoom = 0
     , treacheryClues = Nothing
@@ -178,9 +183,11 @@ instance TreacheryRunner env => RunMessage env TreacheryAttrs where
       pure $ a & resourcesL ?~ amount
     PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget ->
       a <$ push (Discard $ toTarget a)
+    AddTreacheryToHand iid tid | tid == treacheryId ->
+      pure $ a & inHandOfL ?~ iid
     Discarded target _ | target `elem` treacheryAttachedTarget ->
       a <$ push (Discard $ toTarget a)
     After (Revelation _ source) | isSource a source -> a <$ when
-      (isNothing treacheryAttachedTarget)
+      (isNothing treacheryAttachedTarget && isNothing treacheryInHandOf)
       (push $ Discard $ toTarget a)
     _ -> pure a

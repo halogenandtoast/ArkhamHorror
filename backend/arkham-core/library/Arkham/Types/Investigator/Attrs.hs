@@ -30,6 +30,7 @@ import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Matcher
   ( AssetMatcher(..)
+  , CardMatcher(..)
   , EnemyMatcher(..)
   , InvestigatorMatcher(..)
   , LocationMatcher(..)
@@ -82,6 +83,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorConnectedLocations :: HashSet LocationId
   , investigatorTraits :: HashSet Trait
   , investigatorTreacheries :: HashSet TreacheryId
+  , investigatorInHandTreacheries :: HashSet TreacheryId
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
   , investigatorSlots :: HashMap SlotType [Slot]
@@ -116,6 +118,10 @@ agilityL = lens investigatorAgility $ \m x -> m { investigatorAgility = x }
 treacheriesL :: Lens' InvestigatorAttrs (HashSet TreacheryId)
 treacheriesL =
   lens investigatorTreacheries $ \m x -> m { investigatorTreacheries = x }
+
+inHandTreacheriesL :: Lens' InvestigatorAttrs (HashSet TreacheryId)
+inHandTreacheriesL =
+  lens investigatorInHandTreacheries $ \m x -> m { investigatorInHandTreacheries = x }
 
 assetsL :: Lens' InvestigatorAttrs (HashSet AssetId)
 assetsL = lens investigatorAssets $ \m x -> m { investigatorAssets = x }
@@ -444,6 +450,7 @@ baseAttrs iid name classSymbol Stats {..} traits = InvestigatorAttrs
   , investigatorConnectedLocations = mempty
   , investigatorTraits = setFromList traits
   , investigatorTreacheries = mempty
+  , investigatorInHandTreacheries = mempty
   , investigatorDefeated = False
   , investigatorResigned = False
   , investigatorSlots = mapFromList
@@ -924,7 +931,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (assetsL %~ deleteSet aid)
       & (deckL .~ Deck deck')
       & (slotsL %~ removeFromSlots aid)
-  Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
+  AddTreacheryToHand iid tid | iid == investigatorId ->
+    pure $ a & inHandTreacheriesL %~ insertSet tid
+  Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid & inHandTreacheriesL %~ deleteSet tid
   Discarded (EnemyTarget eid) _ -> pure $ a & engagedEnemiesL %~ deleteSet eid
   PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   Discarded (AssetTarget aid) (PlayerCard card)
@@ -1752,7 +1761,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
 
     skillTestModifiers' <- getModifiers (toSource a) SkillTestTarget
-    cannotCommitCards <- elem CannotCommitCards
+    cannotCommitCards <- elem (CannotCommitCards AnyCard)
       <$> getModifiers source (InvestigatorTarget investigatorId)
     let
       triggerMessage =
@@ -1783,6 +1792,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   CanOnlyUseCardsInRole role ->
                     cdClassSymbol (toCardDef card)
                       `notElem` [Just Neutral, Just role, Nothing]
+                  CannotCommitCards matcher -> cardMatch card matcher
                   _ -> False
             in
               toCardId card

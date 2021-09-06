@@ -38,7 +38,9 @@ data EncounterSet
   | TheBeyond
   | HideousAbominations
   | CurtainCall
+  | Delusions
   | EvilPortents
+  | Hauntings
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

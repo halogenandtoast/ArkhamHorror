@@ -48,6 +48,10 @@ type EnemyRunner env
     , HasSet PreyId env (Prey, LocationId)
     , HasSet PreyId env Prey
     , HasSet Trait env EnemyId
+    , HasSet Trait env InvestigatorId
+    , HasSet Trait env SkillId
+    , HasSet Trait env AssetId
+    , HasSet Trait env EventId
     , HasSet Trait env LocationId
     , HasSet Trait env Source
     , HasSkillTest env

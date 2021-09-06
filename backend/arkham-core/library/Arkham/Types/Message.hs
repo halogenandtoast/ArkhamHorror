@@ -124,6 +124,7 @@ data Message
     | AddToDiscard InvestigatorId PlayerCard
     | AddToEncounterDeck EncounterCard
     | AddToHand InvestigatorId Card
+    | AddTreacheryToHand InvestigatorId TreacheryId
     | AddToHandFromDeck InvestigatorId CardId
     | AddToScenarioDeck Target
     | AddCardToScenarioDeck Card

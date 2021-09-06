@@ -74,7 +74,12 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
     Setup -> do
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.royalEmissary]
-        [EncounterSet.CurtainCall, EncounterSet.StrikingFear, EncounterSet.Rats]
+        [ EncounterSet.CurtainCall
+        , EncounterSet.EvilPortents
+        , EncounterSet.Delusions
+        , EncounterSet.StrikingFear
+        , EncounterSet.Rats
+        ]
       theatreId <- getRandom
       lobbyId <- getRandom
       balconyId <- getRandom

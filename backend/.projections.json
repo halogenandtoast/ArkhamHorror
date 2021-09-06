@@ -191,7 +191,7 @@
       "import Arkham.Types.Treachery.Runner",
       "",
       "newtype {dot} = {dot} TreacheryAttrs",
-      "  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities env)",
+      "  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)",
       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",
       "",
       "{dot|snakecase|camelcase} :: TreacheryCard {dot}",

@@ -14,6 +14,7 @@ export interface LocationContents {
   id: string;
   clues: number;
   doom: number;
+  horror: number;
   resources: number;
   shroud: number;
   revealed: boolean;
@@ -33,6 +34,7 @@ export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
     id: JsonDecoder.string,
     clues: JsonDecoder.number,
     doom: JsonDecoder.number,
+    horror: JsonDecoder.number,
     resources: JsonDecoder.number,
     shroud: JsonDecoder.number,
     revealed: JsonDecoder.boolean,

@@ -96,6 +96,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , attractingAttention
   , beastOfTheBayou
   , beyondTheVeil
+  , blackStarsRise
   , brokenRails
   , chaosInTheWater
   , chillFromBelow
@@ -527,6 +528,11 @@ overzealous =
 drawingTheSign :: CardDef
 drawingTheSign = (weakness "03041" "Drawing the Sign")
   { cdCardTraits = setFromList [Pact, Madness]
+  }
+
+blackStarsRise :: CardDef
+blackStarsRise = (treachery "03090" "Black Stars Rise" EvilPortents 2)
+  { cdCardTraits = singleton Omen
   }
 
 theZealotsSeal :: CardDef

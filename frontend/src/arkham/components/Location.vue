@@ -64,6 +64,9 @@
         <div v-if="location.contents.doom > 0" class="pool">
           <PoolItem type="doom" :amount="location.contents.doom" />
         </div>
+        <div v-if="location.contents.horror > 0" class="pool">
+          <PoolItem type="horror" :amount="location.contents.horror" />
+        </div>
         <div v-if="location.contents.cardsUnderneath.length > 0" class="pool">
           <PoolItem type="card" :amount="location.contents.cardsUnderneath.length" />
         </div>

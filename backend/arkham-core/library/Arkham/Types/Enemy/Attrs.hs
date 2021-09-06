@@ -16,6 +16,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.EnemyId
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue as X
 import Arkham.Types.InvestigatorId
@@ -330,32 +331,7 @@ getModifiedHealth EnemyAttrs {..} = do
 emptyLocationMap :: HashMap LocationId [LocationId]
 emptyLocationMap = mempty
 
-type EnemyAttrsRunMessage env
-  = ( HasQueue env
-    , HasCount PlayerCount env ()
-    , HasId (Maybe LocationId) env LocationMatcher
-    , HasId LeadInvestigatorId env ()
-    , HasId LocationId env InvestigatorId
-    , HasModifiersFor env ()
-    , HasSet
-        ClosestPathLocationId
-        env
-        (LocationId, LocationId, HashMap LocationId [LocationId])
-    , HasSet
-        ClosestPathLocationId
-        env
-        (LocationId, Prey, HashMap LocationId [LocationId])
-    , HasSet ConnectedLocationId env LocationId
-    , HasSet InvestigatorId env ()
-    , HasSet InvestigatorId env LocationId
-    , HasSet LocationId env ()
-    , HasSet PreyId env (Prey, LocationId)
-    , HasSet PreyId env Prey
-    , HasSet Trait env EnemyId
-    , HasSkillTest env
-    )
-
-instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
+instance EnemyRunner env => RunMessage env EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       preyIds <- map unPreyId <$> getSetList enemyPrey
@@ -726,30 +702,34 @@ instance EnemyAttrsRunMessage env => RunMessage env EnemyAttrs where
     HealAllDamage (EnemyTarget eid) | eid == enemyId -> pure $ a & damageL .~ 0
     EnemySetDamage eid _ amount | eid == enemyId -> pure $ a & damageL .~ amount
     EnemyDamage eid iid source amount | eid == enemyId -> do
-      amount' <- getModifiedDamageAmount a amount
-      modifiedHealth <- getModifiedHealth a
-      damageWhenMsgs <- checkWindows
-        [Window Timing.When (Window.DealtDamage source $ toTarget a)]
-      damageAfterMsgs <- checkWindows
-        [Window Timing.After (Window.DealtDamage source $ toTarget a)]
-      when (a ^. damageL + amount' >= modifiedHealth) $ do
-        whenMsgs <- checkWindows
-          [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
-        afterMsgs <- checkWindows
-          [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
-        pushAll
-          $ whenMsgs
-          <> afterMsgs
-          <> [ EnemyDefeated
-                 eid
-                 iid
-                 enemyLocation
-                 (toCardCode a)
-                 source
-                 (setToList $ toTraits a)
-             ]
-      pushAll $ damageWhenMsgs <> damageAfterMsgs
-      pure $ a & damageL +~ amount'
+      canDamage <- sourceCanDamageEnemy eid source
+      if canDamage
+       then do
+        amount' <- getModifiedDamageAmount a amount
+        modifiedHealth <- getModifiedHealth a
+        damageWhenMsgs <- checkWindows
+          [Window Timing.When (Window.DealtDamage source $ toTarget a)]
+        damageAfterMsgs <- checkWindows
+          [Window Timing.After (Window.DealtDamage source $ toTarget a)]
+        when (a ^. damageL + amount' >= modifiedHealth) $ do
+          whenMsgs <- checkWindows
+            [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
+          afterMsgs <- checkWindows
+            [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
+          pushAll
+            $ whenMsgs
+            <> afterMsgs
+            <> [ EnemyDefeated
+                   eid
+                   iid
+                   enemyLocation
+                   (toCardCode a)
+                   source
+                   (setToList $ toTraits a)
+               ]
+        pushAll $ damageWhenMsgs <> damageAfterMsgs
+        pure $ a & damageL +~ amount'
+       else pure a
     DefeatEnemy eid iid source | eid == enemyId -> a <$ push
       (EnemyDefeated
         eid

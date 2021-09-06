@@ -7,14 +7,12 @@ import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Ability
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
@@ -44,14 +42,12 @@ instance HasAbilities LockedDoor where
 instance (TreacheryRunner env) => RunMessage env LockedDoor where
   runMessage msg t@(LockedDoor attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      exemptLocations <- getSet @LocationId
-        (TreacheryCardCode $ toCardCode attrs)
-      targetLocations <-
-        setToList . (`difference` exemptLocations) <$> getSet @LocationId ()
-      locations <- for
-        targetLocations
-        (traverseToSnd $ (unClueCount <$>) . getCount)
-      case maxes locations of
+      targets <-
+        selectList
+        $ LocationWithMostClues
+        $ LocationWithoutTreachery
+        $ treacheryIs Cards.lockedDoor
+      t <$ case targets of
         [] -> pure ()
         [x] -> pushAll [AttachTreachery treacheryId (LocationTarget x)]
         xs -> push
@@ -59,7 +55,6 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
             iid
             [ AttachTreachery treacheryId (LocationTarget x) | x <- xs ]
           )
-      LockedDoor <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let
         target = toTarget attrs

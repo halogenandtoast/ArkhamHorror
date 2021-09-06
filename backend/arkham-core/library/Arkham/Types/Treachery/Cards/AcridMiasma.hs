@@ -39,7 +39,7 @@ instance TreacheryRunner env => RunMessage env AcridMiasma where
   runMessage msg t@(AcridMiasma attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       targetLocations <- map unClosestLocationId <$> getSetList
-        (iid, LocationWithoutTreachery $ toCardCode Cards.acridMiasma)
+        (iid, LocationWithoutTreachery $ treacheryIs Cards.acridMiasma)
       case targetLocations of
         [] -> pure t
         (x : _) -> t <$ push (AttachTreachery (toId attrs) (LocationTarget x))

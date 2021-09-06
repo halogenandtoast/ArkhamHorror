@@ -12,6 +12,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyAttacks)
@@ -47,7 +48,7 @@ instance HasAbilities YogSothoth where
             Free
     ]
 
-instance EnemyAttrsRunMessage env => RunMessage env YogSothoth where
+instance EnemyRunner env => RunMessage env YogSothoth where
   runMessage msg e@(YogSothoth attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       e <$ push

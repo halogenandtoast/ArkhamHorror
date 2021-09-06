@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyAttacks)
 import qualified Arkham.Types.Timing as Timing
@@ -38,7 +39,7 @@ instance HasAbilities YithianStarseeker where
       $ toId attrs
     ]
 
-instance EnemyAttrsRunMessage env => RunMessage env YithianStarseeker where
+instance EnemyRunner env => RunMessage env YithianStarseeker where
   runMessage msg e@(YithianStarseeker attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       e <$ push (PlaceDoom (toTarget attrs) 1)

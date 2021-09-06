@@ -9,6 +9,7 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Matcher
@@ -37,7 +38,7 @@ instance HasAbilities DevoteeOfTheKey where
 
 instance
   ( Query LocationMatcher env
-  , EnemyAttrsRunMessage env
+  , EnemyRunner env
   )
   => RunMessage env DevoteeOfTheKey where
   runMessage msg e@(DevoteeOfTheKey attrs@EnemyAttrs {..}) = case msg of

@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (InvestigatorDefeated)
 import Arkham.Types.Source
@@ -37,7 +38,7 @@ instance HasAbilities CrazedShoggoth where
         You
     ]
 
-instance EnemyAttrsRunMessage env => RunMessage env CrazedShoggoth where
+instance EnemyRunner env => RunMessage env CrazedShoggoth where
   runMessage msg e@(CrazedShoggoth attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       e <$ push (InvestigatorKilled source iid)

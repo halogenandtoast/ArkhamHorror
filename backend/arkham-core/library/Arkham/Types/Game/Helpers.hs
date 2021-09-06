@@ -1864,6 +1864,7 @@ sourceMatches
   -> Matcher.SourceMatcher
   -> m Bool
 sourceMatches s = \case
+  Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms
   Matcher.SourceWithTrait t -> elem t <$> getSet s
   Matcher.SourceIs s' -> pure $ s == s'
   Matcher.EncounterCardSource -> pure $ case s of
@@ -1937,8 +1938,8 @@ locationMatches investigatorId source window locationId = \case
     (`gameValueMatches` valueMatcher) . unClueCount =<< getCount locationId
   Matcher.LocationWithHorror valueMatcher ->
     (`gameValueMatches` valueMatcher) . unHorrorCount =<< getCount locationId
-  Matcher.LocationWithMostClues ->
-    member locationId <$> select Matcher.LocationWithMostClues
+  Matcher.LocationWithMostClues locationMatcher ->
+    member locationId <$> select (Matcher.LocationWithMostClues locationMatcher)
   Matcher.LocationWithResources valueMatcher ->
     (`gameValueMatches` valueMatcher) . unResourceCount =<< getCount locationId
   Matcher.LocationLeavingPlay -> case window of
@@ -1978,10 +1979,16 @@ locationMatches investigatorId source window locationId = \case
     anyM (locationMatches investigatorId source window locationId) ms
   Matcher.FirstLocation ms ->
     anyM (locationMatches investigatorId source window locationId) ms -- a bit weird here since first means nothing
-  Matcher.LocationWithoutTreacheryWithCardCode cCode -> do
-    treacheryIds <- getSetList @TreacheryId locationId
-    cardCodes <- traverse (getId @CardCode) treacheryIds
-    pure $ cCode `notElem` cardCodes
+  Matcher.LocationWithoutTreachery treacheryMatcher -> do
+    null <$> select
+      (Matcher.TreacheryAt (Matcher.LocationWithId locationId)
+      <> treacheryMatcher
+      )
+  Matcher.LocationWithTreachery treacheryMatcher -> do
+    notNull <$> select
+      (Matcher.TreacheryAt (Matcher.LocationWithId locationId)
+      <> treacheryMatcher
+      )
   Matcher.InvestigatableLocation -> do
     modifiers <- getModifiers
       (InvestigatorSource investigatorId)
@@ -2118,3 +2125,18 @@ spawnAtOneOf iid eid targetLids = do
         | lid <- lids
         ]
       )
+
+sourceCanDamageEnemy
+  :: (MonadReader env m, HasModifiersFor env (), HasSet Trait env Source)
+  => EnemyId
+  -> Source
+  -> m Bool
+sourceCanDamageEnemy eid source = do
+  modifiers' <- getModifiers source (EnemyTarget eid)
+  not <$> anyM prevents modifiers'
+ where
+  prevents = \case
+    CannotBeDamagedByPlayerSourcesExcept matcher ->
+      not <$> sourceMatches source matcher
+    _ -> pure False
+

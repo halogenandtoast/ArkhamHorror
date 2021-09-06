@@ -9,11 +9,9 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Name
-import Arkham.Types.Query
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Cards
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillTest
 
 $(buildEntity "Skill")
 
@@ -29,12 +27,7 @@ instance HasCardDef Skill where
 instance HasAbilities Skill where
   getAbilities = genericGetAbilities
 
-instance
-  ( HasSkillTest env
-  , HasCount DamageCount env InvestigatorId
-  , SkillRunner env
-  )
-  => RunMessage env Skill where
+instance SkillRunner env => RunMessage env Skill where
   runMessage = genericRunMessage
 
 instance HasModifiersFor env Skill where

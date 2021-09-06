@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Modifier
 import Arkham.Types.Prey
@@ -31,6 +32,6 @@ instance HasModifiersFor env GraveyardGhouls where
     $ toModifiers attrs [CardsCannotLeaveYourDiscardPile]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyAttrsRunMessage env => RunMessage env GraveyardGhouls where
+instance EnemyRunner env => RunMessage env GraveyardGhouls where
   runMessage msg (GraveyardGhouls attrs) =
     GraveyardGhouls <$> runMessage msg attrs

@@ -109,6 +109,7 @@ data AssetMatcher
   | DiscardableAsset
   | AssetWithDamage
   | AssetWithHorror
+  | AssetWithFewestClues AssetMatcher
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeAssignedHorrorBy InvestigatorId
   deriving stock (Show, Eq, Generic)
@@ -253,6 +254,7 @@ data LocationMatcher
   | LocationWithoutInvestigators
   | LocationWithoutEnemies
   | LocationWithEnemy EnemyMatcher
+  | LocationWithAsset AssetMatcher
   | LocationWithInvestigator InvestigatorMatcher
   | RevealedLocation
   | UnrevealedLocation

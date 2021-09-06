@@ -396,6 +396,7 @@ library
       Arkham.Types.Effect.Effects.SongOfTheDead2
       Arkham.Types.Effect.Effects.SureGamble3
       Arkham.Types.Effect.Effects.TenAcreMeadow_246
+      Arkham.Types.Effect.Effects.TheKingsEdict
       Arkham.Types.Effect.Effects.ThePaintedWorld
       Arkham.Types.Effect.Effects.TheStrangerACityAflame
       Arkham.Types.Effect.Effects.TheStrangerThePathIsMine
@@ -977,6 +978,7 @@ library
       Arkham.Types.Treachery.Cards.StrangeSigns
       Arkham.Types.Treachery.Cards.TerrorFromBeyond
       Arkham.Types.Treachery.Cards.TheCreaturesTracks
+      Arkham.Types.Treachery.Cards.TheKingsEdict
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.TheZealotsSeal
       Arkham.Types.Treachery.Cards.ToweringBeasts

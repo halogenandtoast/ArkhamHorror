@@ -11,6 +11,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyDefeated)
@@ -54,7 +55,7 @@ instance HasAbilities Cnidathqua where
     $ toId attrs
     ]
 
-instance EnemyAttrsRunMessage env => RunMessage env Cnidathqua where
+instance EnemyRunner env => RunMessage env Cnidathqua where
   runMessage msg e@(Cnidathqua attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       e <$ push

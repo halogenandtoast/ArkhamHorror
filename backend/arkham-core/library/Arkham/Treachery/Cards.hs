@@ -145,6 +145,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , spacesBetween
   , spectralMist
   , spiresOfCarcosa
+  , spiritsTorment
   , stalkedInTheDark
   , strangeSigns
   , terrorFromBeyond
@@ -584,6 +585,11 @@ spiresOfCarcosa = (treachery "03091" "Spires of Carcosa" EvilPortents 2)
 twistedToHisWill :: CardDef
 twistedToHisWill = (treachery "03092" "Twisted to His Will" EvilPortents 2)
   { cdCardTraits = singleton Pact
+  }
+
+spiritsTorment :: CardDef
+spiritsTorment = (treachery "03094" "Spirit's TOrment" Hauntings 2)
+  { cdCardTraits = setFromList [Curse, Geist]
   }
 
 theZealotsSeal :: CardDef

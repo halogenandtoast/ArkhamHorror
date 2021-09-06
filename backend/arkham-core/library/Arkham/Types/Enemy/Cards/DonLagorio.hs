@@ -10,6 +10,7 @@ import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Id
 import Arkham.Types.Modifier
 import Arkham.Types.Target
@@ -31,5 +32,5 @@ instance (HasSet ConnectedLocationId env LocationId, HasSet LocationId env ()) =
       pure $ toModifiers attrs [HunterConnectedTo counterClockwiseLocationId]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyAttrsRunMessage env => RunMessage env DonLagorio where
+instance EnemyRunner env => RunMessage env DonLagorio where
   runMessage msg (DonLagorio attrs) = DonLagorio <$> runMessage msg attrs

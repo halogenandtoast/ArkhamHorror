@@ -10,6 +10,7 @@ import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
@@ -38,7 +39,7 @@ instance (HasName env AssetId, HasId (Maybe LocationId) env AssetId) => HasModif
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance EnemyAttrsRunMessage env => RunMessage env CarnevaleSentinel where
+instance EnemyRunner env => RunMessage env CarnevaleSentinel where
   runMessage msg (CarnevaleSentinel attrs) = case msg of
     InvestigatorDrawEnemy _ lid eid | eid == toId attrs -> do
       acrossLocationId <- getAcrossLocation lid

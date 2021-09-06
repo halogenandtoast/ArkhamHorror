@@ -643,6 +643,11 @@ getTreacheriesMatching matcher = do
       pure . (== Name title (Just subtitle)) . toName
     TreacheryWithId treacheryId -> pure . (== treacheryId) . toId
     TreacheryWithTrait t -> fmap (member t) . getSet . toId
+    TreacheryIs cardCode -> pure . (== cardCode) . toCardCode
+    TreacheryAt locationMatcher -> \treachery -> do
+      locations <- selectList locationMatcher
+      matches <- concat <$> traverse getSetList locations
+      pure $ toId treachery `elem` matches
     TreacheryInHandOf investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
       pure $ case treacheryInHandOf treachery of
@@ -754,13 +759,18 @@ getLocationsMatching = \case
     filterM
       (getCount >=> (`gameValueMatches` gameValueMatcher) . unHorrorCount)
       allLocations'
-  LocationWithMostClues -> do
-    allLocations' <- toList . view locationsL <$> getGame
-    maxes
-      <$> traverse (traverseToSnd $ (unClueCount <$>) . getCount) allLocations'
-  LocationWithoutTreacheryWithCardCode cardCode ->
-    filterM
-        (fmap (cardCode `notElem`) . traverse getId <=< getSetList @TreacheryId)
+  LocationWithMostClues locationMatcher -> do
+    matches <- getLocationsMatching locationMatcher
+    maxes <$> traverse (traverseToSnd $ (unClueCount <$>) . getCount) matches
+  LocationWithoutTreachery matcher -> do
+    treacheryIds <- select matcher
+    filterM (fmap (none (`elem` treacheryIds)) . getSetList @TreacheryId)
+      . toList
+      . view locationsL
+      =<< getGame
+  LocationWithTreachery matcher -> do
+    treacheryIds <- select matcher
+    filterM (fmap (any (`elem` treacheryIds)) . getSetList @TreacheryId)
       . toList
       . view locationsL
       =<< getGame

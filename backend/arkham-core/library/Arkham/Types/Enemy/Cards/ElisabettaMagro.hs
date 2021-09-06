@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Phase
@@ -32,7 +33,7 @@ instance HasAbilities ElisabettaMagro where
         MythosPhase
     ]
 
-instance EnemyAttrsRunMessage env => RunMessage env ElisabettaMagro where
+instance EnemyRunner env => RunMessage env ElisabettaMagro where
   runMessage msg e@(ElisabettaMagro attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (PlaceDoom (toTarget attrs) 1)

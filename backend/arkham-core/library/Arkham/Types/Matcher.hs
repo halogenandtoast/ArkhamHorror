@@ -201,12 +201,6 @@ instance Semigroup EventMatcher where
 
 type Where = LocationMatcher
 
-pattern LocationWithoutTreachery :: CardCode -> LocationMatcher
-pattern LocationWithoutTreachery card <-
-  LocationWithoutTreacheryWithCardCode card where
-  LocationWithoutTreachery card =
-    LocationWithoutTreacheryWithCardCode (toCardCode card)
-
 pattern LocationWithAnyClues :: LocationMatcher
 pattern LocationWithAnyClues <-
   LocationWithClues (GreaterThan (Static 0)) where
@@ -249,7 +243,7 @@ data LocationMatcher
   | LocationWithResources ValueMatcher
   | LocationWithClues ValueMatcher
   | LocationWithHorror ValueMatcher
-  | LocationWithMostClues
+  | LocationWithMostClues LocationMatcher
   | LocationWithoutInvestigators
   | LocationWithoutEnemies
   | LocationWithEnemy EnemyMatcher
@@ -264,7 +258,8 @@ data LocationMatcher
   | LocationWithTrait Trait
   | LocationWithoutTrait Trait
   | LocationInDirection Direction LocationMatcher
-  | LocationWithoutTreacheryWithCardCode CardCode
+  | LocationWithTreachery TreacheryMatcher
+  | LocationWithoutTreachery TreacheryMatcher
   | LocationMatchAll [LocationMatcher]
   | LocationMatchAny [LocationMatcher]
   | FirstLocation [LocationMatcher]
@@ -303,12 +298,17 @@ instance Semigroup SkillMatcher where
 instance Monoid SkillMatcher where
   mempty = AnySkill
 
+treacheryIs :: HasCardCode a => a -> TreacheryMatcher
+treacheryIs = TreacheryIs . toCardCode
+
 data TreacheryMatcher
   = TreacheryWithTitle Text
   | TreacheryWithFullTitle Text Text
   | TreacheryWithId TreacheryId
   | TreacheryWithTrait Trait
   | TreacheryInHandOf InvestigatorMatcher
+  | TreacheryIs CardCode
+  | TreacheryAt LocationMatcher
   | AnyTreachery
   | TreacheryOwnedBy InvestigatorId
   | TreacheryMatches [TreacheryMatcher]

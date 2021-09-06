@@ -61,13 +61,4 @@ instance EnemyRunner env => RunMessage env Poltergeist where
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> e
       <$ push (EnemyDamage (toId attrs) iid source 1)
-    EnemyDamage eid _ source _ | eid == toId attrs -> do
-      let matches = any (`elem` [Spell, Relic])
-      damaged <- case source of
-        AssetSource asset -> matches <$> getSet asset
-        EventSource event -> matches <$> getSet event
-        SkillSource skill -> matches <$> getSet skill
-        InvestigatorSource investigator -> matches <$> getSet investigator
-        _ -> pure True
-      if damaged then Poltergeist <$> runMessage msg attrs else pure e
     _ -> Poltergeist <$> runMessage msg attrs

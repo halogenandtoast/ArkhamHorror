@@ -10,7 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
-import Arkham.Types.Id
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -40,7 +40,7 @@ instance HasAbilities InterstellarTraveler where
       $ toId attrs
     ]
 
-instance (HasCount ClueCount env LocationId, EnemyAttrsRunMessage env) => RunMessage env InterstellarTraveler where
+instance EnemyRunner env => RunMessage env InterstellarTraveler where
   runMessage msg e@(InterstellarTraveler attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       let lid = enemyLocation attrs

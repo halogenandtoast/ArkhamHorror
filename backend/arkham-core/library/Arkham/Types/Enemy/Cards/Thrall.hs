@@ -21,7 +21,7 @@ thrall = enemyWith
   Cards.thrall
   (2, Static 2, 2)
   (1, 1)
-  (spawnAtL ?~ LocationWithMostClues)
+  (spawnAtL ?~ LocationWithMostClues Anywhere)
 
 instance EnemyRunner env => RunMessage env Thrall where
   runMessage msg (Thrall attrs) = Thrall <$> runMessage msg attrs

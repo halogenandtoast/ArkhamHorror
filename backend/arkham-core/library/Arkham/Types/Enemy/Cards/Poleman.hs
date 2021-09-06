@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Prey
 
@@ -25,5 +26,5 @@ poleman = enemyWith
   . (preyL .~ HasMostMatchingAsset (AssetWithTitle "Innocent Reveler"))
   )
 
-instance EnemyAttrsRunMessage env => RunMessage env Poleman where
+instance EnemyRunner env => RunMessage env Poleman where
   runMessage msg (Poleman attrs) = Poleman <$> runMessage msg attrs

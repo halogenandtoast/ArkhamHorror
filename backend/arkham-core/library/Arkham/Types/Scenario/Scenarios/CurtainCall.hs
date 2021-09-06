@@ -9,6 +9,8 @@ import qualified Arkham.Act.Cards as Acts
 import qualified Arkham.Agenda.Cards as Agendas
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
+import Arkham.Scenarios.CurtainCall.Story
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.PlayerCard
@@ -20,9 +22,12 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
+import Arkham.Types.ScenarioLogKey
+import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype CurtainCall = CurtainCall ScenarioAttrs
@@ -70,7 +75,7 @@ instance
     otherFace -> getTokenValue attrs iid otherFace
 
 instance ScenarioRunner env => RunMessage env CurtainCall where
-  runMessage msg (CurtainCall attrs) = case msg of
+  runMessage msg s@(CurtainCall attrs) = case msg of
     Setup -> do
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.royalEmissary]
@@ -78,6 +83,7 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
         , EncounterSet.EvilPortents
         , EncounterSet.Delusions
         , EncounterSet.Hauntings
+        , EncounterSet.CultOfTheYellowSign
         , EncounterSet.StrikingFear
         , EncounterSet.Rats
         ]
@@ -100,7 +106,8 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
           ]
 
       pushAll
-        ([ SetEncounterDeck encounterDeck
+        ([ story investigatorIds intro
+         , SetEncounterDeck encounterDeck
          , AddAgenda "03044"
          , AddAct "03046"
          , PlaceLocation theatreId Locations.theatre
@@ -136,4 +143,54 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
         & setAsideCardsL
         .~ (setAsidePlayerCards <> setAsideEncounterCards)
         )
+    ScenarioResolution resolution -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      gainXP <- map (uncurry GainXP) <$> getXp
+      conviction <- hasRecordCount Conviction
+      doubt <- hasRecordCount Conviction
+      let
+        stoleFromTheBoxOffice =
+          member StoleFromTheBoxOffice (scenarioLog attrs)
+      let
+        theStrangerIsOnToYou =
+          [ Record TheStrangerIsOnToYou
+          , AddCampaignCardToDeck
+            leadInvestigatorId
+            Enemies.theManInThePallidMask
+          ]
+      s <$ case resolution of
+        NoResolution ->
+          pushAll
+            $ story investigatorIds noResolution
+            : theStrangerIsOnToYou
+            <> gainXP
+        Resolution 1 -> pushAll
+          ([ story investigatorIds resolution1
+           , Record YouTriedToWarnThePolice
+           , RecordCount Conviction (conviction + 1)
+           ]
+          <> [ Record ThePoliceAreSuspiciousOfYou | stoleFromTheBoxOffice ]
+          <> theStrangerIsOnToYou
+          <> gainXP
+          )
+        Resolution 2 -> pushAll
+          ([ story investigatorIds resolution2
+           , Record YouChoseNotToGoToThePolice
+           , RecordCount Doubt (doubt + 1)
+           ]
+          <> [ Record ThePoliceAreSuspiciousOfYou | stoleFromTheBoxOffice ]
+          <> theStrangerIsOnToYou
+          <> gainXP
+          )
+        _ -> error "Invalid resolution"
+    ResolveToken _ tokenFace iid
+      | tokenFace `elem` [Cultist, Tablet, ElderThing] -> do
+        lid <- getId iid
+        horrorCount <- unHorrorCount <$> getCount lid
+        s <$ push
+          (if horrorCount > 0
+            then InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+            else PlaceHorror (LocationTarget lid) 1
+          )
     _ -> CurtainCall <$> runMessage msg attrs

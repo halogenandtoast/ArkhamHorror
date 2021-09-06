@@ -152,6 +152,7 @@ instance
   , HasId Difficulty env ()
   , HasCount ClueCount env EnemyId
   , HasSet EnemyId env InvestigatorId
+  , HasSet InvestigatorId env ()
   , HasList DiscardedPlayerCard env InvestigatorId
   , HasCount ActionRemainingCount env InvestigatorId
   , HasSet ClassSymbol env InvestigatorId

@@ -6,14 +6,17 @@ module Arkham.Types.Campaign.Campaigns.ThePathToCarcosa
 import Arkham.Prelude
 
 import Arkham.Campaigns.ThePathToCarcosa.Import
+import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignId
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.CampaignStep
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Game.Helpers
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (EnemyDefeated)
 import Arkham.Types.Message
 
 newtype ThePathToCarcosa = ThePathToCarcosa CampaignAttrs
@@ -46,4 +49,8 @@ instance CampaignRunner env => RunMessage env ThePathToCarcosa where
         $ a
         & (stepL .~ step)
         & (completedStepsL %~ completeStep (campaignStep a))
+    EnemyDefeated _ _ _ cardCode _ _
+      | cardCode == toCardCode Enemies.theManInThePallidMask -> do
+        n <- runReaderT (hasRecordCount ChasingTheStranger) (campaignLog a)
+        c <$ push (RecordCount ChasingTheStranger (n + 1))
     _ -> ThePathToCarcosa <$> runMessage msg a

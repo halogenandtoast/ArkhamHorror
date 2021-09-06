@@ -402,6 +402,7 @@ instance Semigroup CardMatcher where
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
   | AddedToVictory Timing CardMatcher
+  | PerformAction Timing Who ActionMatcher
   | DrawingStartingHand Timing Who
   | InvestigatorDefeated Timing SourceMatcher Who
   | AmongSearchedCards Who
@@ -451,6 +452,8 @@ data WindowMatcher
   | Leaves Timing Who Where
   | Moves Timing Who Where Where
   --                 ^ from ^ to
+  | MoveAction Timing Who Where Where
+  --                      ^ from ^ to
   | OrWindowMatcher [WindowMatcher]
   | DealtDamage Timing Who
   | DealtHorror Timing Who
@@ -553,24 +556,30 @@ data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data ActionMatcher
-  = ActionOnLocation LocationId
-  | ActionIs Action
-  | ActionWindow WindowMatcher
-  | ActionMatches [ActionMatcher]
-  | AnyAction
-  | ActionOnScenarioCard
+newtype ActionMatcher = ActionIs Action
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
-instance Semigroup ActionMatcher where
-  AnyAction <> x = x
-  x <> AnyAction = x
-  ActionMatches xs <> ActionMatches ys = ActionMatches $ xs <> ys
-  ActionMatches xs <> x = ActionMatches $ xs <> [x]
-  x <> ActionMatches xs = ActionMatches $ x : xs
-  x <> y = ActionMatches [x, y]
+data AbilityMatcher
+  = AbilityOnLocation LocationId
+  | AbilityWindow WindowMatcher
+  | AbilityIsAction Action
+  | AbilityMatches [AbilityMatcher]
+  | AnyAbility
+  | AbilityOnScenarioCard
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
-instance Monoid ActionMatcher where
-  mempty = AnyAction
+instance Semigroup AbilityMatcher where
+  AnyAbility <> x = x
+  x <> AnyAbility = x
+  AbilityMatches xs <> AbilityMatches ys = AbilityMatches $ xs <> ys
+  AbilityMatches xs <> x = AbilityMatches $ xs <> [x]
+  x <> AbilityMatches xs = AbilityMatches $ x : xs
+  x <> y = AbilityMatches [x, y]
+
+instance Monoid AbilityMatcher where
+  mempty = AnyAbility
 
 data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher | AnyCards
   deriving stock (Show, Eq, Generic)

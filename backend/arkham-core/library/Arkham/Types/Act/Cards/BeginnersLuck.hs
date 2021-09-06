@@ -69,7 +69,7 @@ instance ActRunner env => RunMessage env BeginnersLuck where
                 ]
             | token' <- tokensInBag
             ]
-          , Remember $ Cheated iid
+          , Remember Cheated
           ]
     UseCardAbility _ source _ 2 _ -> a <$ push (AdvanceAct (toId a) source)
     AdvanceAct aid _ | aid == toId a && onSide B attrs -> do

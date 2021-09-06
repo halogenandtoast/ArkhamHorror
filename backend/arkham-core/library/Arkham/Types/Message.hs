@@ -189,6 +189,7 @@ data Message
     | ChooseFightEnemy InvestigatorId Source SkillType (HashSet Trait) Bool
     | ChooseFightEnemyNotEngagedWithInvestigator InvestigatorId Source SkillType Bool
     | ChooseLeadInvestigator
+    | StandaloneSetup
     | ChoosePlayer InvestigatorId ChoosePlayerChoice
     | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
     | ChooseRandomLocation Target (HashSet LocationId)

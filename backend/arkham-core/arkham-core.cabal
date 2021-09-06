@@ -30,7 +30,9 @@ library
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.CurtainCall.Helpers
+      Arkham.Scenarios.CurtainCall.Story
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
+      Arkham.Scenarios.TheLastKing.Story
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Skill.Cards
@@ -671,6 +673,7 @@ library
       Arkham.Types.Location.Cards.BackAlley
       Arkham.Types.Location.Cards.Backstage
       Arkham.Types.Location.Cards.Balcony
+      Arkham.Types.Location.Cards.Ballroom
       Arkham.Types.Location.Cards.BaseOfTheHill
       Arkham.Types.Location.Cards.Bathroom
       Arkham.Types.Location.Cards.Bedroom
@@ -693,6 +696,7 @@ library
       Arkham.Types.Location.Cards.ColdSpringGlen_245
       Arkham.Types.Location.Cards.CongregationalChurch_208
       Arkham.Types.Location.Cards.CongregationalChurch_209
+      Arkham.Types.Location.Cards.Courtyard
       Arkham.Types.Location.Cards.CursedShores
       Arkham.Types.Location.Cards.DarkenedHall
       Arkham.Types.Location.Cards.DeepBelowYourHouse
@@ -702,6 +706,7 @@ library
       Arkham.Types.Location.Cards.DimensionalDoorway
       Arkham.Types.Location.Cards.DimensionalGap
       Arkham.Types.Location.Cards.DiningCar
+      Arkham.Types.Location.Cards.DiningRoom
       Arkham.Types.Location.Cards.Dormitories
       Arkham.Types.Location.Cards.DowntownArkhamAsylum
       Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
@@ -728,7 +733,9 @@ library
       Arkham.Types.Location.Cards.FloodedSquare
       Arkham.Types.Location.Cards.ForgottenMarsh
       Arkham.Types.Location.Cards.FoulSwamp
+      Arkham.Types.Location.Cards.Foyer
       Arkham.Types.Location.Cards.FrozenSpring
+      Arkham.Types.Location.Cards.Gallery
       Arkham.Types.Location.Cards.GardenDistrict
       Arkham.Types.Location.Cards.Gondola
       Arkham.Types.Location.Cards.Graveyard
@@ -741,6 +748,7 @@ library
       Arkham.Types.Location.Cards.HumanitiesBuilding
       Arkham.Types.Location.Cards.LaBellaLuna
       Arkham.Types.Location.Cards.LightingBox
+      Arkham.Types.Location.Cards.LivingRoom
       Arkham.Types.Location.Cards.Lobby
       Arkham.Types.Location.Cards.LostMemories
       Arkham.Types.Location.Cards.MainPath
@@ -839,6 +847,7 @@ library
       Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
       Arkham.Types.Scenario.Scenarios.TheGathering
       Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
+      Arkham.Types.Scenario.Scenarios.TheLastKing
       Arkham.Types.Scenario.Scenarios.TheMidnightMasks
       Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum
       Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen

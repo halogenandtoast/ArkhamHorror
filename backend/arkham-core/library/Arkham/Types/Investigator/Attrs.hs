@@ -1089,8 +1089,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [TryEvadeEnemy iid eid source skillType, AfterEvadeEnemy iid eid]
   MoveAction iid lid cost True | iid == investigatorId -> a <$ pushAll
     [TakeAction iid (Just Action.Move) cost, MoveAction iid lid cost False]
-  MoveAction iid lid _cost False | iid == investigatorId ->
-    a <$ pushAll (resolve $ Move (toSource a) iid investigatorLocation lid)
+  MoveAction iid lid _cost False | iid == investigatorId -> do
+    afterWindowMsgs <- Helpers.checkWindows [Window Timing.After $ Window.MoveAction iid investigatorLocation lid]
+    a <$ pushAll (resolve (Move (toSource a) iid investigatorLocation lid) <> afterWindowMsgs)
   Move source iid fromLocationId toLocationId | iid == investigatorId -> do
     windowMsgs <- Helpers.windows [Window.Moves iid fromLocationId toLocationId]
     a <$ pushAll

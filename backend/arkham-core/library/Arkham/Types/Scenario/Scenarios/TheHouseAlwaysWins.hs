@@ -158,13 +158,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
       s <$ push (ScenarioResolution $ Resolution 1)
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      cheated <-
-        any
-            (\case
-              Cheated{} -> True
-              _ -> False
-            )
-          <$> getSet ()
+      let cheated = member Cheated (scenarioLog attrs)
       xp <- getXp
       s <$ pushAll
         ([ chooseOne

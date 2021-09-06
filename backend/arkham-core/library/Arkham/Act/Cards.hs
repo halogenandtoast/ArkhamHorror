@@ -80,6 +80,7 @@ allActCards = mapFromList $ map
   , theStrangerThePathIsMine
   , theStrangerTheShoresOfHali
   , curtainCall
+  , discoveringTheTruth
   , mysteriousGateway
   , findingLadyEsprit
   , huntingTheRougarou
@@ -204,6 +205,9 @@ theStrangerTheShoresOfHali = act "03047c" "The Stranger" CurtainCall
 
 curtainCall :: CardDef
 curtainCall = act "03048" "Curtain Call" CurtainCall
+
+discoveringTheTruth :: CardDef
+discoveringTheTruth = act "03064" "Discovering the Truth" TheLastKing
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" ReturnToTheGathering

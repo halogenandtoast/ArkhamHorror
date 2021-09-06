@@ -13,7 +13,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (MoveAction)
 import Arkham.Types.Message
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs

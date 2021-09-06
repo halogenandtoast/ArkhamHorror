@@ -26,12 +26,13 @@ instance
   , HasCount ClueCount env EnemyId
   )
   => HasModifiersFor env TheKingsEdict where
-  getModifiersFor _ (EnemyTarget eid) (TheKingsEdict a) = do
-    clueCount <- unClueCount <$> getCount eid
-    doomCount <- unDoomCount <$> getCount eid
-    pure $ toModifiers
-      a
-      [ EnemyFight (clueCount + doomCount) | clueCount + doomCount > 0 ]
+  getModifiersFor _ target@(EnemyTarget eid) (TheKingsEdict a)
+    | target == effectTarget a = do
+      clueCount <- unClueCount <$> getCount eid
+      doomCount <- unDoomCount <$> getCount eid
+      pure $ toModifiers
+        a
+        [ EnemyFight (clueCount + doomCount) | clueCount + doomCount > 0 ]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env TheKingsEdict where

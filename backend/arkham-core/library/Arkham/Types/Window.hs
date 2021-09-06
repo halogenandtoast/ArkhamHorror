@@ -73,6 +73,7 @@ data WindowType
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window
   | Moves InvestigatorId LocationId LocationId
+  | MoveAction InvestigatorId LocationId LocationId
   | Leaving InvestigatorId LocationId
   | LeavePlay Target
   | MovedFromHunter EnemyId
@@ -80,6 +81,7 @@ data WindowType
   | NonFast
   | PassSkillTest (Maybe Action) Source InvestigatorId Int
   | PassInvestigationSkillTest InvestigatorId LocationId Int
+  | PerformAction InvestigatorId Action
   | PhaseBegins Phase
   | PhaseEnds Phase
   | PlacedHorror InvestigatorId Int

@@ -84,6 +84,7 @@ allEncounterEnemyCards = mapFromList $ map
   , donLagorio
   , elisabettaMagro
   , emergentMonstrosity
+  , fanatic
   , fleshEater
   , ghoulFromTheDepths
   , ghoulMinion
@@ -504,6 +505,11 @@ royalEmissary =
 poltergeist :: CardDef
 poltergeist = (enemy "03093" "Poltergeist" Hauntings 2)
   { cdCardTraits = setFromList [Monster, Geist]
+  }
+
+fanatic :: CardDef
+fanatic = (enemy "03098" "Fanatic" CultOfTheYellowSign 3)
+  { cdCardTraits = setFromList [Humanoid, Cultist]
   }
 
 corpseHungryGhoul :: CardDef

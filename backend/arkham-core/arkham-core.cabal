@@ -435,6 +435,7 @@ library
       Arkham.Types.Enemy.Cards.DonLagorio
       Arkham.Types.Enemy.Cards.ElisabettaMagro
       Arkham.Types.Enemy.Cards.EmergentMonstrosity
+      Arkham.Types.Enemy.Cards.Fanatic
       Arkham.Types.Enemy.Cards.FleshEater
       Arkham.Types.Enemy.Cards.GhoulFromTheDepths
       Arkham.Types.Enemy.Cards.GhoulMinion

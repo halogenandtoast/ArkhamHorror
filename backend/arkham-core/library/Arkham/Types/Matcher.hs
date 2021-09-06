@@ -147,6 +147,11 @@ pattern NonEliteEnemy :: EnemyMatcher
 pattern NonEliteEnemy <- EnemyWithoutTrait Elite where
   NonEliteEnemy = EnemyWithoutTrait Elite
 
+pattern EnemyWithAnyClues :: EnemyMatcher
+pattern EnemyWithAnyClues <-
+  EnemyWithClues (GreaterThan (Static 0)) where
+  EnemyWithAnyClues = EnemyWithClues (GreaterThan (Static 0))
+
 data EnemyMatcher
   = EnemyWithTitle Text
   | EnemyWithFullTitle Text Text
@@ -155,6 +160,7 @@ data EnemyMatcher
   | EnemyAt LocationMatcher
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword
+  | EnemyWithClues ValueMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
   | EnemyIs CardCode
   | AnyEnemy

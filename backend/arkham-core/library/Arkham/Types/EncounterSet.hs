@@ -41,6 +41,7 @@ data EncounterSet
   | Delusions
   | EvilPortents
   | Hauntings
+  | CultOfTheYellowSign
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

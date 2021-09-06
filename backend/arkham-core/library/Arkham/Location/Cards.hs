@@ -949,9 +949,7 @@ balcony :: CardDef
 balcony = (location "03051" "Balcony" CurtainCall) { cdVictoryPoints = Just 1 }
 
 backstage :: CardDef
-backstage = (location "03052" "Backstage" CurtainCall)
-  { cdCardTraits = singleton Private
-  }
+backstage = location "03052" "Backstage" CurtainCall
 
 lightingBox :: CardDef
 lightingBox =
@@ -968,7 +966,7 @@ boxOffice =
 
 greenRoom :: CardDef
 greenRoom =
-  (locationWithUnrevealed "03055" "Lobby Doorway" "Lighting Box" CurtainCall)
+  (locationWithUnrevealed "03055" "Lobby Doorway" "Green Room" CurtainCall)
     { cdVictoryPoints = Just 1
     , cdCardTraits = singleton Private
     }

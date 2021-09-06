@@ -1928,6 +1928,8 @@ locationMatches investigatorId source window locationId = \case
   Matcher.LocationWithoutEnemies -> null <$> getSet @EnemyId locationId
   Matcher.LocationWithEnemy enemyMatcher -> notNull <$> select
     (Matcher.EnemyAt (Matcher.LocationWithId locationId) <> enemyMatcher)
+  Matcher.LocationWithAsset assetMatcher -> notNull <$> select
+    (Matcher.AssetAt (Matcher.LocationWithId locationId) <> assetMatcher)
   Matcher.LocationWithInvestigator whoMatcher -> notNull <$> select
     (Matcher.InvestigatorAt (Matcher.LocationWithId locationId) <> whoMatcher)
   Matcher.AccessibleLocation -> do

@@ -1282,11 +1282,7 @@ gravediggersShovel = (asset "03037" "Gravedigger's Shovel" 2 Survivor)
 
 constanceDumaine :: CardDef
 constanceDumaine =
-  (storyAsset
-      "03076a"
-      ("Constance Dumaine" <:> "Sociable Hostess")
-      0
-      TheLastKing
+  (storyAsset "03076" ("Constance Dumaine" <:> "Sociable Hostess") 0 TheLastKing
     )
     { cdCardTraits = singleton Bystander
     , cdUnique = True

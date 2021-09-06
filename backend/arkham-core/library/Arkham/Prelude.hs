@@ -75,6 +75,12 @@ maxes ps = case sortedPairs of
   ((_, c) : _) -> map fst $ takeWhile ((== c) . snd) sortedPairs
   where sortedPairs = sortOn (Down . snd) ps
 
+mins :: [(a, Int)] -> [a]
+mins ps = case sortedPairs of
+  [] -> []
+  ((_, c) : _) -> map fst $ takeWhile ((== c) . snd) sortedPairs
+  where sortedPairs = sortOn snd ps
+
 concatMapM'
   :: (Monad m, MonoFoldable mono) => (Element mono -> m [b]) -> mono -> m [b]
 concatMapM' f xs = concatMapM f (toList xs)

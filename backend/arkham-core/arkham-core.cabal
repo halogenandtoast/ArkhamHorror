@@ -135,6 +135,7 @@ library
       Arkham.Types.Agenda.Cards.TheRitualBegins
       Arkham.Types.Agenda.Cards.TheRougarouFeeds
       Arkham.Types.Agenda.Cards.TheShadowOfTheEclipse
+      Arkham.Types.Agenda.Cards.TheTerrifyingTruth
       Arkham.Types.Agenda.Cards.TheThirdAct
       Arkham.Types.Agenda.Cards.TheyreGettingOut
       Arkham.Types.Agenda.Cards.TimeIsRunningShort
@@ -442,6 +443,7 @@ library
       Arkham.Types.Enemy.Cards.CrazedShoggoth
       Arkham.Types.Enemy.Cards.DarkYoungHost
       Arkham.Types.Enemy.Cards.DevoteeOfTheKey
+      Arkham.Types.Enemy.Cards.DianneDevine
       Arkham.Types.Enemy.Cards.DiscipleOfTheDevourer
       Arkham.Types.Enemy.Cards.DonLagorio
       Arkham.Types.Enemy.Cards.ElisabettaMagro

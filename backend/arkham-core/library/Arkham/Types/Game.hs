@@ -740,6 +740,12 @@ getLocationsMatching = \case
       . toList
       . view locationsL
       =<< getGame
+  LocationWithAsset assetMatcher -> do
+    assets <- select assetMatcher
+    filterM (fmap (notNull . intersection assets) . getSet . toId)
+      . toList
+      . view locationsL
+      =<< getGame
   LocationWithInvestigator whoMatcher -> do
     investigators <- select whoMatcher
     filterM (fmap (notNull . intersection investigators) . getSet . toId)
@@ -911,6 +917,9 @@ getAssetsMatching matcher = do
     AssetWithUseType uType -> filterM
       (fmap ((> 0) . unStartingUsesCount) . getCount . (, uType) . toId)
       as
+    AssetWithFewestClues assetMatcher -> do
+      matches <- getAssetsMatching assetMatcher
+      mins <$> traverse (traverseToSnd $ (unClueCount <$>) . getCount) matches
     AssetWithUses uType ->
       filterM (fmap ((> 0) . unUsesCount) . getCount . (, uType) . toId) as
     AssetCanBeAssignedDamageBy iid -> do
@@ -2586,6 +2595,9 @@ instance HasGame env => HasSet EnemyId env () where
 instance HasGame env => HasSet EnemyId env LocationId where
   getSet = getSet <=< getLocation
 
+instance HasGame env => HasSet AssetId env LocationId where
+  getSet = getSet <=< getLocation
+
 instance HasGame env => HasSet EnemyId env ([Trait], LocationId) where
   getSet (traits, lid) = do
     enemyIds <- getSetList =<< getLocation lid
@@ -3646,8 +3658,14 @@ runGameMessage msg g = case msg of
       enemyId = toId enemy
     pure $ g & enemiesL . at enemyId ?~ enemy
   CreateEnemyAtLocationMatching cardCode locationMatcher -> do
-    lid <- fromJustNote "missing location" <$> getId locationMatcher
-    g <$ push (CreateEnemyAt cardCode lid Nothing)
+    matches <- selectList locationMatcher
+    when (null matches) (error "No matching locations")
+    leadInvestigatorId <- getLeadInvestigatorId
+    g <$ push
+      (chooseOrRunOne
+        leadInvestigatorId
+        [ CreateEnemyAt cardCode lid Nothing | lid <- matches ]
+      )
   CreateEnemyAt card lid mtarget -> do
     let
       enemy = createEnemy card

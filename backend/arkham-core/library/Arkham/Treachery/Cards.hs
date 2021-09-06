@@ -150,6 +150,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , strangeSigns
   , terrorFromBeyond
   , theCreaturesTracks
+  , theKingsEdict
   , theYellowSign
   , theZealotsSeal
   , toweringBeasts
@@ -590,6 +591,11 @@ twistedToHisWill = (treachery "03092" "Twisted to His Will" EvilPortents 2)
 spiritsTorment :: CardDef
 spiritsTorment = (treachery "03094" "Spirit's Torment" Hauntings 2)
   { cdCardTraits = setFromList [Curse, Geist]
+  }
+
+theKingsEdict :: CardDef
+theKingsEdict = (treachery "03100" "The King's Edict" CultOfTheYellowSign 2)
+  { cdCardTraits = singleton Pact
   }
 
 theZealotsSeal :: CardDef

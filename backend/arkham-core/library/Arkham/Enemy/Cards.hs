@@ -65,6 +65,7 @@ allEncounterEnemyCards = mapFromList $ map
   (toCardCode &&& id)
   [ acolyte
   , acolyteOfUmordhoth
+  , agentOfTheKing
   , almaHill
   , avianThrall
   , balefulReveler
@@ -510,6 +511,13 @@ poltergeist = (enemy "03093" "Poltergeist" Hauntings 2)
 fanatic :: CardDef
 fanatic = (enemy "03098" "Fanatic" CultOfTheYellowSign 3)
   { cdCardTraits = setFromList [Humanoid, Cultist]
+  }
+
+agentOfTheKing :: CardDef
+agentOfTheKing = (enemy "03099" "Agent of the King" CultOfTheYellowSign 1)
+  { cdCardTraits = setFromList [Humanoid, Cultist]
+  , cdKeywords = singleton Keyword.Hunter
+  , cdVictoryPoints = Just 1
   }
 
 corpseHungryGhoul :: CardDef

@@ -588,7 +588,7 @@ twistedToHisWill = (treachery "03092" "Twisted to His Will" EvilPortents 2)
   }
 
 spiritsTorment :: CardDef
-spiritsTorment = (treachery "03094" "Spirit's TOrment" Hauntings 2)
+spiritsTorment = (treachery "03094" "Spirit's Torment" Hauntings 2)
   { cdCardTraits = setFromList [Curse, Geist]
   }
 

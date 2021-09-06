@@ -43,6 +43,7 @@
         @choose="$emit('choose', sanityAction)"
       />
       <PoolItem v-if="asset.contents.doom > 0" type="doom" :amount="asset.contents.doom" />
+      <PoolItem v-if="asset.contents.clues > 0" type="clue" :amount="asset.contents.clues" />
     </div>
   </div>
 </template>
@@ -71,8 +72,10 @@ export default defineComponent({
         health,
         horror,
         uses,
+	doom,
+	clues,
       } = props.asset.contents;
-      return sanity || health || horror || uses;
+      return sanity || health || horror || uses || doom > 0 || clues > 0;
     })
 
     const exhausted = computed(() => props.asset.contents.exhausted)

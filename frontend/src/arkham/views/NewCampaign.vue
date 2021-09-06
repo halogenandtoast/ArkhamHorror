@@ -128,12 +128,16 @@ const scenarios = [
     name: 'Lost in Time and Space',
   },
   {
+    id: '03061',
+    name: 'The Last King',
+  },
+  {
     id: '81001',
     name: 'Curse of the Rougarou',
   },
   {
     id: '82001',
-    name: 'Carnevale of Horrors [BETA]',
+    name: 'Carnevale of Horrors',
   },
 ]
 

@@ -69,7 +69,7 @@ doomL :: Lens' AssetAttrs Int
 doomL = lens assetDoom $ \m x -> m { assetDoom = x }
 
 cluesL :: Lens' AssetAttrs Int
-cluesL = lens assetClues $ \m x -> m { assetHealthDamage = x }
+cluesL = lens assetClues $ \m x -> m { assetClues = x }
 
 healthDamageL :: Lens' AssetAttrs Int
 healthDamageL = lens assetHealthDamage $ \m x -> m { assetHealthDamage = x }

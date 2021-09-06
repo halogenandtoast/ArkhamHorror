@@ -54,6 +54,7 @@ library
       Arkham.Types.Act.Cards.CampusSafety
       Arkham.Types.Act.Cards.CloseTheRift
       Arkham.Types.Act.Cards.CurtainCall
+      Arkham.Types.Act.Cards.DiscoveringTheTruth
       Arkham.Types.Act.Cards.DisruptingTheRitual
       Arkham.Types.Act.Cards.FindingANewWay
       Arkham.Types.Act.Cards.FindingAWayInside
@@ -108,6 +109,7 @@ library
       Arkham.Types.Agenda.Cards.DeadOfNight
       Arkham.Types.Agenda.Cards.DrawnIn
       Arkham.Types.Agenda.Cards.Encore
+      Arkham.Types.Agenda.Cards.FashionablyLate
       Arkham.Types.Agenda.Cards.FeedTheBeast
       Arkham.Types.Agenda.Cards.HorrorsUnleashed
       Arkham.Types.Agenda.Cards.InEveryShadow
@@ -161,6 +163,7 @@ library
       Arkham.Types.Asset.Cards.ArcaneStudies2
       Arkham.Types.Asset.Cards.ArchaicGlyphs
       Arkham.Types.Asset.Cards.ArtStudent
+      Arkham.Types.Asset.Cards.AshleighClarke
       Arkham.Types.Asset.Cards.Bandolier
       Arkham.Types.Asset.Cards.BaseballBat
       Arkham.Types.Asset.Cards.BearTrap
@@ -178,6 +181,7 @@ library
       Arkham.Types.Asset.Cards.CherishedKeepsake
       Arkham.Types.Asset.Cards.ChicagoTypewriter4
       Arkham.Types.Asset.Cards.ClarityOfMind
+      Arkham.Types.Asset.Cards.ConstanceDumaine
       Arkham.Types.Asset.Cards.DaisysToteBag
       Arkham.Types.Asset.Cards.DaisysToteBagAdvanced
       Arkham.Types.Asset.Cards.DarkHorse
@@ -220,11 +224,13 @@ library
       Arkham.Types.Asset.Cards.Hyperawareness2
       Arkham.Types.Asset.Cards.InnocentReveler
       Arkham.Types.Asset.Cards.InTheKnow1
+      Arkham.Types.Asset.Cards.IshimaruHaruko
       Arkham.Types.Asset.Cards.JazzMulligan
       Arkham.Types.Asset.Cards.JennysTwin45s
       Arkham.Types.Asset.Cards.JewelOfAureolus3
       Arkham.Types.Asset.Cards.JimsTrumpet
       Arkham.Types.Asset.Cards.JoeyTheRatVigil
+      Arkham.Types.Asset.Cards.JordanPerry
       Arkham.Types.Asset.Cards.KeenEye
       Arkham.Types.Asset.Cards.KeenEye3
       Arkham.Types.Asset.Cards.KeyToTheChamber
@@ -278,6 +284,7 @@ library
       Arkham.Types.Asset.Cards.Scrapper3
       Arkham.Types.Asset.Cards.ScrollOfProphecies
       Arkham.Types.Asset.Cards.Scrying
+      Arkham.Types.Asset.Cards.SebastienMoreau
       Arkham.Types.Asset.Cards.Shotgun4
       Arkham.Types.Asset.Cards.Shrivelling
       Arkham.Types.Asset.Cards.Shrivelling3

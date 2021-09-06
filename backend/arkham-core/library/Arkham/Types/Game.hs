@@ -1015,6 +1015,8 @@ getEnemiesMatching matcher = do
     EnemyWithTrait t -> fmap (member t) . getSet . toId
     EnemyWithoutTrait t -> fmap (notMember t) . getSet . toId
     EnemyWithKeyword k -> fmap (elem k) . getSet . toId
+    EnemyWithClues gameValueMatcher ->
+      getCount >=> (`gameValueMatches` gameValueMatcher) . unClueCount
     ExhaustedEnemy -> pure . isExhausted
     AnyEnemy -> pure . const True
     EnemyIs cardCode -> pure . (== cardCode) . toCardCode

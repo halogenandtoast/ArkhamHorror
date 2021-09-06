@@ -6,7 +6,6 @@ module Arkham.Types.Act.Cards.CurtainCall
 import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Enemy.Cards as Cards
 import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
@@ -45,7 +44,7 @@ instance HasAbilities CurtainCall where
         2
         (LocationExists
         $ LocationWithoutHorror
-        <> AccessibleFrom LocationWithAnyHorror
+        <> AccessibleTo LocationWithAnyHorror
         )
       $ ForcedAbility
       $ RoundEnds Timing.When
@@ -63,7 +62,7 @@ instance ActRunner env => RunMessage env CurtainCall where
       targets <-
         selectListMap LocationTarget
         $ LocationWithoutHorror
-        <> AccessibleFrom LocationWithAnyHorror
+        <> AccessibleTo LocationWithAnyHorror
       a <$ pushAll (map (`PlaceHorror` 1) targets)
     UseCardAbility _ source _ 3 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source)

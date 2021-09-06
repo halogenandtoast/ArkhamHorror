@@ -38,6 +38,7 @@ data EncounterSet
   | TheBeyond
   | HideousAbominations
   | CurtainCall
+  | EvilPortents
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

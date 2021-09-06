@@ -12,7 +12,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
-import Arkham.Types.Message
+import Arkham.Types.Message hiding (MoveAction)
 import qualified Arkham.Types.Timing as Timing
 
 newtype Balcony = Balcony LocationAttrs
@@ -26,7 +26,7 @@ balcony =
 instance HasAbilities Balcony where
   getAbilities (Balcony attrs) = withBaseAbilities
     attrs
-    [ mkAbility attrs 1 $ ForcedAbility $ Moves
+    [ mkAbility attrs 1 $ ForcedAbility $ MoveAction
         Timing.After
         You
         (LocationWithId $ toId attrs)

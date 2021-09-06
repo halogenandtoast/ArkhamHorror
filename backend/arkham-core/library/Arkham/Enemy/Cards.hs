@@ -81,6 +81,7 @@ allEncounterEnemyCards = mapFromList $ map
   , crazedShoggoth
   , darkYoungHost
   , devoteeOfTheKey
+  , dianneDevine
   , discipleOfTheDevourer
   , donLagorio
   , elisabettaMagro
@@ -501,6 +502,15 @@ royalEmissary =
       [Keyword.Massive, Keyword.Hunter, Keyword.Retaliate]
     , cdUnique = True
     , cdVictoryPoints = Just 2
+    }
+
+dianneDevine :: CardDef
+dianneDevine =
+  (enemy "03081" ("Dianne Devine" <:> "Mercurial and Mischevious") TheLastKing 1
+    )
+    { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
+    , cdKeywords = singleton Keyword.Aloof
+    , cdUnique = True
     }
 
 poltergeist :: CardDef

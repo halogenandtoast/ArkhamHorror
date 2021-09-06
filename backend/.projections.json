@@ -95,7 +95,7 @@
       "    ElderThing -> pure $ TokenValue ElderThing NoModifier",
       "    otherFace -> getTokenValue attrs iid otherFace",
       "",
-      "instance ScenarioAttrsRunner env => RunMessage env {dot} where",
+      "instance ScenarioRunner env => RunMessage env {dot} where",
       "  runMessage msg ({dot} attrs) =",
       "    {dot} <$> runMessage msg attrs"
     ]

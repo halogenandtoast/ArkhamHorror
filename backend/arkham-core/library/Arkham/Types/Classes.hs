@@ -62,7 +62,7 @@ type family QueryElement a where
   QueryElement EnemyMatcher = EnemyId
   QueryElement TreacheryMatcher = TreacheryId
   QueryElement ExtendedCardMatcher = Card
-  QueryElement ActionMatcher = Ability
+  QueryElement AbilityMatcher = Ability
   QueryElement SkillMatcher = SkillId
 
 selectCount :: (HasCallStack, MonadReader env m, Query a env) => a -> m Int

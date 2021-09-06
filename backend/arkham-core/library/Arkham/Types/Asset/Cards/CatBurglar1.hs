@@ -14,7 +14,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.LocationId
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (MoveAction)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType

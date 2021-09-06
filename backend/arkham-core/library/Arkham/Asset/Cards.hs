@@ -249,6 +249,11 @@ allEncounterAssetCards = mapFromList $ map
   , jazzMulligan
   , keyToTheChamber
   , peterClover
+  , constanceDumaine
+  , jordanPerry
+  , ishimaruHaruko
+  , sebastienMoreau
+  , ashleighClarke
   ]
 
 rolands38Special :: CardDef
@@ -1273,6 +1278,69 @@ gravediggersShovel :: CardDef
 gravediggersShovel = (asset "03037" "Gravedigger's Shovel" 2 Survivor)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item, Tool, Weapon, Melee]
+  }
+
+constanceDumaine :: CardDef
+constanceDumaine =
+  (storyAsset
+      "03076a"
+      ("Constance Dumaine" <:> "Sociable Hostess")
+      0
+      TheLastKing
+    )
+    { cdCardTraits = singleton Bystander
+    , cdUnique = True
+    , cdCardType = EncounterAssetType
+    , cdDoubleSided = True
+    , cdCost = Nothing
+    }
+
+jordanPerry :: CardDef
+jordanPerry =
+  (storyAsset "03077" ("Jordan Perry" <:> "Dignified Financier") 0 TheLastKing)
+    { cdCardTraits = singleton Bystander
+    , cdUnique = True
+    , cdCardType = EncounterAssetType
+    , cdDoubleSided = True
+    , cdCost = Nothing
+    }
+
+ishimaruHaruko :: CardDef
+ishimaruHaruko =
+  (storyAsset "03078" ("Ishimaru Haruko" <:> "Costume Designer") 0 TheLastKing)
+    { cdCardTraits = singleton Bystander
+    , cdUnique = True
+    , cdCardType = EncounterAssetType
+    , cdDoubleSided = True
+    , cdCost = Nothing
+    }
+
+sebastienMoreau :: CardDef
+sebastienMoreau = (storyAsset
+                    "03079"
+                    ("Sebastien Moreau" <:> "Impassioned Producer")
+                    0
+                    TheLastKing
+                  )
+  { cdCardTraits = singleton Bystander
+  , cdUnique = True
+  , cdCardType = EncounterAssetType
+  , cdDoubleSided = True
+  , cdCost = Nothing
+  }
+
+ashleighClarke :: CardDef
+ashleighClarke = (storyAsset
+                   "03080"
+                   ("Ashleigh Clarke" <:> "Talented Entertainer")
+                   0
+                   TheLastKing
+                 )
+  { cdCardTraits = singleton Bystander
+  , cdUnique = True
+  , cdCardType = EncounterAssetType
+  , cdDoubleSided = True
+  , cdCost = Nothing
   }
 
 cherishedKeepsake :: CardDef

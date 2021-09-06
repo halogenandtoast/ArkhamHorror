@@ -78,6 +78,8 @@ allAgendaCards = mapFromList $ map
   , theEndOfAllThings
   , theThirdAct
   , encore
+  , fashionablyLate
+  , theTerrifyingTruth
   , returnToPredatorOrPrey
   , aCreatureOfTheBayou
   , theRougarouFeeds
@@ -199,6 +201,12 @@ theThirdAct = agenda "03044" "The Third Act" CurtainCall
 
 encore :: CardDef
 encore = agenda "03045" "Encore" CurtainCall
+
+fashionablyLate :: CardDef
+fashionablyLate = agenda "03062" "Fashionably Late" TheLastKing
+
+theTerrifyingTruth :: CardDef
+theTerrifyingTruth = agenda "03063" "The Terrifying Truth" TheLastKing
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

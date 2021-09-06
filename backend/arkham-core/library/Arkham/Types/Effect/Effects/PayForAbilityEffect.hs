@@ -163,6 +163,7 @@ instance
   ( HasQueue env
   , HasCostPayment env
   , HasSet Trait env Source
+  , HasSet InvestigatorId env ()
   , HasModifiersFor env ()
   , HasCount ActionRemainingCount env InvestigatorId
   )
@@ -434,9 +435,16 @@ instance
       pure $ PayForAbilityEffect (attrs `with` (payments <> payment))
     PayAbilityCostFinished eid source iid | eid == toId attrs ->
       case effectMetadata attrs of
-        Just (EffectAbility (Ability {..}, windows')) -> e <$ pushAll
-          [ DisableEffect $ toId attrs
-          , UseCardAbility iid source windows' abilityIndex payments
-          ]
+        Just (EffectAbility (ability@Ability {..}, windows')) -> do
+          afterWindowMsgs <- case abilityAction ability of
+            Just action -> checkWindows
+              [Window Timing.After (Window.PerformAction iid action)]
+            Nothing -> pure []
+          e <$ pushAll
+            ([ DisableEffect $ toId attrs
+             , UseCardAbility iid source windows' abilityIndex payments
+             ]
+            <> afterWindowMsgs
+            )
         _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> PayForAbilityEffect . (`with` payments) <$> runMessage msg attrs

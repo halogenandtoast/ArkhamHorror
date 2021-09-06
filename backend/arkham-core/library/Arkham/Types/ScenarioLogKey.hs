@@ -6,7 +6,7 @@ import Arkham.Types.InvestigatorId
 
 data ScenarioLogKey
   = HadADrink InvestigatorId
-  | Cheated InvestigatorId
+  | Cheated
   | FoundAStrangeDoll
   | FoundAnAncientBindingStone
   | StolenAPassengersLuggage

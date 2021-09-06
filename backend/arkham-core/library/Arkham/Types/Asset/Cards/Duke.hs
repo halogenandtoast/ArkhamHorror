@@ -16,7 +16,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (MoveAction)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -78,7 +78,7 @@ instance AssetRunner env => RunMessage env Duke where
                 . (`applyAbilityModifiers` [ActionCostModifier (-1)])
               ]
             )
-          =<< selectList (ActionOnLocation lid)
+          =<< selectList (AbilityOnLocation lid)
       let
         investigateActions :: [Message] = map
           (($ windows')

@@ -15,6 +15,7 @@ data CampaignLogKey
   | TheRitualToSummonUmordhothWasBroken
   | TheInvestigatorsRepelledUmordoth
   | TheInvestigatorsSacrificedLitaChantlerToUmordhoth
+  -- ^ The Night of the Zealot
   | ProfessorWarrenRiceWasKidnapped
   | TheInvestigatorsRescuedProfessorWarrenRice
   | TheInvestigatorsFailedToSaveTheStudents
@@ -49,13 +50,25 @@ data CampaignLogKey
   | YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
   | TheInvestigatorsClosedTheTearInReality
   | YogSothothHasFledToAnotherDimension
+  -- ^ The Dunwich Legacy
+  | TheStrangerIsOnToYou
+  | ChasingTheStranger
+  | YouTriedToWarnThePolice
+  | ThePoliceAreSuspiciousOfYou
+  | YouChoseNotToGoToThePolice
+  | Doubt
+  | Conviction
+  -- ^ The Path to Carcosa
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse
+  -- ^ Curse of the Rougarou
   | ManyWereSacrificedToCnidathquaDuringTheCarnivale
   | TheSunBanishedCnidathquaIntoTheDepths
   | CnidathquaRetreatedToNurseItsWounds
+  -- ^ Carnevale of Horrors
   | YouHaveIdentifiedTheSolution
   | YouHaveTranslatedTheGlyphs
+  -- ^ Player Cards
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

@@ -27,6 +27,7 @@ instance TreacheryRunner env => RunMessage env TheKingsEdict where
     Revelation iid source | isSource attrs source -> do
       targets <-
         selectList $ EnemyWithTrait Cultist <> EnemyAt LocationWithAnyClues
+      enemiesInPlay <- selectList $ EnemyWithTrait Cultist
       t <$ case targets of
         [] -> push (Surge iid source)
         xs -> do
@@ -40,6 +41,12 @@ instance TreacheryRunner env => RunMessage env TheKingsEdict where
                 ]
           pushAll
             $ msgs
-            <> [CreateEffect (toCardCode attrs) Nothing source (toTarget attrs)]
+            <> map
+                 (CreateEffect
+                   (toCardCode attrs)
+                   Nothing
+                   source . EnemyTarget
+                 )
+                 enemiesInPlay
 
     _ -> TheKingsEdict <$> runMessage msg attrs

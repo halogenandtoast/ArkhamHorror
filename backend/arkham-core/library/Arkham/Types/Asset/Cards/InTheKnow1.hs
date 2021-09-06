@@ -29,9 +29,9 @@ inTheKnow1 = asset InTheKnow1 Cards.inTheKnow1
 instance HasAbilities InTheKnow1 where
   getAbilities (InTheKnow1 attrs) =
     [ restrictedAbility attrs 1 OwnsThis
-      $ ActionAbility (Just Action.Investigate)
-      $ ActionCost 1
-      <> UseCost (toId attrs) Secret 1
+        $ ActionAbility (Just Action.Investigate)
+        $ ActionCost 1
+        <> UseCost (toId attrs) Secret 1
     ]
 
 instance AssetRunner env => RunMessage env InTheKnow1 where
@@ -43,7 +43,9 @@ instance AssetRunner env => RunMessage env InTheKnow1 where
         locations
         \lid -> do
           investigateActions <-
-            selectList $ ActionOnLocation lid <> ActionIs Action.Investigate
+            selectList
+            $ AbilityOnLocation lid
+            <> AbilityIsAction Action.Investigate
           pure $ map (lid, ) investigateActions
       a <$ push
         (chooseOne

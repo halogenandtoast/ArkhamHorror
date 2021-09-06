@@ -15,7 +15,7 @@ import Arkham.Types.Trait
 type AssetRunner env
   = ( HasQueue env
     , Query AssetMatcher env
-    , Query ActionMatcher env
+    , Query AbilityMatcher env
     , Query LocationMatcher env
     , Query InvestigatorMatcher env
     , Query EnemyMatcher env

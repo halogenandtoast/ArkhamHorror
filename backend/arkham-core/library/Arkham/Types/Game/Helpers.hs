@@ -826,28 +826,28 @@ fightAction source n costs =
   mkAbility source n (ActionAbility (Just Action.Fight) (Costs costs))
 
 hasFightActions
-  :: (MonadReader env m, Query Matcher.ActionMatcher env)
+  :: (MonadReader env m, Query Matcher.AbilityMatcher env)
   => InvestigatorId
   -> Matcher.WindowMatcher
   -> m Bool
-hasFightActions _ window = notNull
-  <$> select (Matcher.ActionIs Action.Fight <> Matcher.ActionWindow window)
+hasFightActions _ window = notNull <$> select
+  (Matcher.AbilityIsAction Action.Fight <> Matcher.AbilityWindow window)
 
 hasEvadeActions
-  :: (MonadReader env m, Query Matcher.ActionMatcher env)
+  :: (MonadReader env m, Query Matcher.AbilityMatcher env)
   => InvestigatorId
   -> Matcher.WindowMatcher
   -> m Bool
-hasEvadeActions _ window = notNull
-  <$> select (Matcher.ActionIs Action.Evade <> Matcher.ActionWindow window)
+hasEvadeActions _ window = notNull <$> select
+  (Matcher.AbilityIsAction Action.Evade <> Matcher.AbilityWindow window)
 
 hasInvestigateActions
-  :: (MonadReader env m, Query Matcher.ActionMatcher env)
+  :: (MonadReader env m, Query Matcher.AbilityMatcher env)
   => InvestigatorId
   -> Matcher.WindowMatcher
   -> m Bool
 hasInvestigateActions _ window = notNull <$> select
-  (Matcher.ActionIs Action.Investigate <> Matcher.ActionWindow window)
+  (Matcher.AbilityIsAction Action.Investigate <> Matcher.AbilityWindow window)
 
 type CanCheckPlayable env
   = ( HasModifiersFor env ()
@@ -862,7 +862,7 @@ type CanCheckPlayable env
     , HasId (Maybe LocationId) env EventId
     , Query Matcher.AssetMatcher env
     , Query Matcher.InvestigatorMatcher env
-    , Query Matcher.ActionMatcher env
+    , Query Matcher.AbilityMatcher env
     , Query Matcher.LocationMatcher env
     , Query Matcher.TreacheryMatcher env
     , Query Matcher.EnemyMatcher env
@@ -1528,6 +1528,18 @@ windowMatches iid source window' = \case
       , locationMatches iid source window' toLid toMatcher
       ]
     _ -> pure False
+  Matcher.MoveAction whenMatcher whoMatcher fromMatcher toMatcher ->
+    case window' of
+      Window t (Window.MoveAction iid' fromLid toLid) | whenMatcher == t -> andM
+        [ matchWho iid iid' whoMatcher
+        , locationMatches iid source window' fromLid fromMatcher
+        , locationMatches iid source window' toLid toMatcher
+        ]
+      _ -> pure False
+  Matcher.PerformAction whenMatcher whoMatcher actionMatcher -> case window' of
+    Window t (Window.PerformAction iid' action) | whenMatcher == t ->
+      andM [matchWho iid iid' whoMatcher, actionMatches action actionMatcher]
+    _ -> pure False
   Matcher.WouldHaveSkillTestResult whenMatcher whoMatcher _ skillTestResultMatcher
     -> case skillTestResultMatcher of
       Matcher.FailureResult _ -> case window' of
@@ -2105,6 +2117,9 @@ agendaMatches :: AgendaId -> Matcher.AgendaMatcher -> Bool
 agendaMatches _ Matcher.AnyAgenda = True
 agendaMatches aid (Matcher.AgendaWithId aid') = aid == aid'
 
+actionMatches :: Applicative m => Action -> Matcher.ActionMatcher -> m Bool
+actionMatches a (Matcher.ActionIs a') = pure $ a == a'
+
 spawnAtOneOf
   :: (MonadIO m, HasSet LocationId env (), MonadReader env m, HasQueue env)
   => InvestigatorId
@@ -2132,7 +2147,7 @@ sourceCanDamageEnemy
   -> Source
   -> m Bool
 sourceCanDamageEnemy eid source = do
-  modifiers' <- getModifiers (traceShowId source) (EnemyTarget eid)
+  modifiers' <- getModifiers source (EnemyTarget eid)
   not <$> anyM prevents modifiers'
  where
   prevents = \case
@@ -2140,4 +2155,3 @@ sourceCanDamageEnemy eid source = do
       source
       (Matcher.SourceMatchesAny [Matcher.EncounterCardSource, matcher])
     _ -> pure False
-

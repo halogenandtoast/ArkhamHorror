@@ -72,6 +72,7 @@ allLocationCards = mapFromList $ map
   , backAlley
   , backstage
   , balcony
+  , ballroom
   , baseOfTheHill
   , bathroom
   , bedroom
@@ -94,6 +95,7 @@ allLocationCards = mapFromList $ map
   , coldSpringGlen_245
   , congregationalChurch_208
   , congregationalChurch_209
+  , courtyard
   , cursedShores
   , darkenedHall
   , deepBelowYourHouse
@@ -103,6 +105,7 @@ allLocationCards = mapFromList $ map
   , dimensionalDoorway
   , dimensionalGap
   , diningCar
+  , diningRoom
   , dormitories
   , downtownArkhamAsylum
   , downtownFirstBankOfArkham
@@ -129,7 +132,9 @@ allLocationCards = mapFromList $ map
   , floodedSquare
   , forgottenMarsh
   , foulSwamp
+  , foyer
   , frozenSpring
+  , gallery
   , gardenDistrict
   , gondola
   , graveyard
@@ -142,6 +147,7 @@ allLocationCards = mapFromList $ map
   , humanitiesBuilding
   , laBellaLuna
   , lightingBox
+  , livingRoom
   , lobby
   , lostMemories
   , mainPath
@@ -999,6 +1005,24 @@ trapRoom =
     { cdVictoryPoints = Just 1
     , cdCardTraits = singleton Private
     }
+
+foyer :: CardDef
+foyer = location "03070" "Foyer" TheLastKing
+
+ballroom :: CardDef
+ballroom = location "03071" "Ballroom" TheLastKing
+
+livingRoom :: CardDef
+livingRoom = location "03072" "Living Room" TheLastKing
+
+gallery :: CardDef
+gallery = location "03073" "Gallery" TheLastKing
+
+courtyard :: CardDef
+courtyard = location "03074" "Courtyard" TheLastKing
+
+diningRoom :: CardDef
+diningRoom = location "03075" "Dining Room" TheLastKing
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

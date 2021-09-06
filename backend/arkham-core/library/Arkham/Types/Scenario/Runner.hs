@@ -16,6 +16,7 @@ type ScenarioRunner env
     , Query EnemyMatcher env
     , Query InvestigatorMatcher env
     , HasCount DoomCount env ()
+    , HasCount HorrorCount env LocationId
     , HasModifiersFor env ()
     , HasCount DoomCount env EnemyId
     , HasCount EnemyCount env [Trait]

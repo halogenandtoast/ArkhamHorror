@@ -660,18 +660,18 @@ getTreacheriesMatching matcher = do
     TreacheryMatches matchers ->
       \treachery -> allM (`matcherFilter` treachery) matchers
 
-getActionsMatching
-  :: (HasGame env, MonadReader env m) => ActionMatcher -> m [Ability]
-getActionsMatching matcher = guardYourLocation $ \_ -> do
+getAbilitiesMatching
+  :: (HasGame env, MonadReader env m) => AbilityMatcher -> m [Ability]
+getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   g <- getGame
   let abilities = getAbilities g
   case matcher of
-    AnyAction -> pure abilities
-    ActionOnLocation lid -> getAbilities <$> getLocation lid
-    ActionIs _ -> pure []
-    ActionWindow _ -> pure []
-    ActionMatches _ -> pure []
-    ActionOnScenarioCard -> pure []
+    AnyAbility -> pure abilities
+    AbilityOnLocation lid -> getAbilities <$> getLocation lid
+    AbilityIsAction _ -> pure []
+    AbilityWindow _ -> pure []
+    AbilityMatches _ -> pure []
+    AbilityOnScenarioCard -> pure []
 
 getLocationMatching
   :: (HasCallStack, MonadReader env m, HasGame env)
@@ -2625,8 +2625,8 @@ locationFor
   :: (HasGame env, MonadReader env m) => InvestigatorId -> m LocationId
 locationFor iid = locationOf <$> getInvestigator iid
 
-instance HasGame env => Query ActionMatcher env where
-  select = fmap setFromList . getActionsMatching
+instance HasGame env => Query AbilityMatcher env where
+  select = fmap setFromList . getAbilitiesMatching
 
 instance HasGame env => Query SkillMatcher env where
   select = fmap (setFromList . map toId) . getSkillsMatching
@@ -2725,7 +2725,8 @@ runGameMessage msg g = case msg of
         (const . difficultyOf)
         (g ^. modeL)
     pushAll
-      [ ChooseLeadInvestigator
+      [ StandaloneSetup
+      , ChooseLeadInvestigator
       , SetupInvestigators
       , SetTokensForScenario -- (chaosBagOf campaign')
       , InvestigatorsMulligan

@@ -117,6 +117,7 @@ data Effect
   | TheStrangerACityAflame' TheStrangerACityAflame
   | TheStrangerThePathIsMine' TheStrangerThePathIsMine
   | TheStrangerTheShoresOfHali' TheStrangerTheShoresOfHali
+  | TheKingsEdict' TheKingsEdict
   | MindWipe3' MindWipe3
   | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
   | JeremiahPierce' JeremiahPierce
@@ -132,6 +133,8 @@ data Effect
 instance
   ( HasSet ClassSymbol env InvestigatorId
   , HasId Difficulty env ()
+  , HasCount DoomCount env EnemyId
+  , HasCount ClueCount env EnemyId
   )
   => HasModifiersFor env Effect where
   getModifiersFor = genericGetModifiersFor
@@ -231,6 +234,7 @@ allEffects = mapFromList
   , ("03047a", TheStrangerACityAflame' . theStrangerACityAflame)
   , ("03047b", TheStrangerThePathIsMine' . theStrangerThePathIsMine)
   , ("03047c", TheStrangerTheShoresOfHali' . theStrangerTheShoresOfHali)
+  , ("03100", TheKingsEdict' . theKingsEdict)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)
   , ("50044", JeremiahPierce' . jeremiahPierce)

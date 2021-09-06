@@ -416,6 +416,7 @@ library
       Arkham.Types.Enemy.Cards
       Arkham.Types.Enemy.Cards.Acolyte
       Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth
+      Arkham.Types.Enemy.Cards.AgentOfTheKing
       Arkham.Types.Enemy.Cards.AlmaHill
       Arkham.Types.Enemy.Cards.AvianThrall
       Arkham.Types.Enemy.Cards.BalefulReveler

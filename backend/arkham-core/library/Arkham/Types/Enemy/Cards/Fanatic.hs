@@ -37,7 +37,8 @@ instance HasAbilities Fanatic where
     , mkAbility a 2
       $ ForcedAbility
       $ EnemyDefeated Timing.When You
-      $ EnemyMatchAll [EnemyWithId $ toId a, EnemyWithAnyClues]
+      $ EnemyWithId (toId a)
+      <> EnemyWithAnyClues
     ]
 
 instance EnemyRunner env => RunMessage env Fanatic where

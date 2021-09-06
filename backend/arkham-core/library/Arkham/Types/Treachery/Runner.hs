@@ -32,9 +32,12 @@ type TreacheryRunner env
     , Query LocationMatcher env
     , Query InvestigatorMatcher env
     , HasCount ActsRemainingCount env ()
+    , HasCount DoomCount env ()
     , HasCount CardCount env InvestigatorId
     , HasCount ClueCount env InvestigatorId
+    , HasCount HorrorCount env InvestigatorId
     , HasCount ClueCount env LocationId
+    , HasCount DoomCount env LocationId
     , HasCount DamageCount env InvestigatorId
     , HasCount PlayerCount env ()
     , HasCount ResourceCount env InvestigatorId

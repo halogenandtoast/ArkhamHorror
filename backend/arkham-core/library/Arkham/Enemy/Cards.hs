@@ -104,6 +104,7 @@ allEncounterEnemyCards = mapFromList $ map
   , oBannionsThug
   , peterWarren
   , poleman
+  , poltergeist
   , ravenousGhoul
   , relentlessDarkYoung
   , royalEmissary
@@ -499,6 +500,11 @@ royalEmissary =
     , cdUnique = True
     , cdVictoryPoints = Just 2
     }
+
+poltergeist :: CardDef
+poltergeist = (enemy "03093" "Poltergeist" Hauntings 2)
+  { cdCardTraits = setFromList [Monster, Geist]
+  }
 
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul = (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering 1

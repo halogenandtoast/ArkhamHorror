@@ -105,6 +105,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , cryptChill
   , cursedLuck
   , cursedSwamp
+  , descentIntoMadness
   , dissonantVoices
   , draggedUnder
   , dreamsOfRlyeh
@@ -143,6 +144,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , sordidAndSilent
   , spacesBetween
   , spectralMist
+  , spiresOfCarcosa
   , stalkedInTheDark
   , strangeSigns
   , terrorFromBeyond
@@ -151,6 +153,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , theZealotsSeal
   , toweringBeasts
   , twistOfFate
+  , twistedToHisWill
   , umordhothsHunger
   , umordhothsWrath
   , unhallowedCountry
@@ -159,6 +162,10 @@ allEncounterTreacheryCards = mapFromList $ map
   , visionsOfFuturesPast
   , vortexOfTime
   , watchersGaze
+  , whispersInYourHeadDismay
+  , whispersInYourHeadDread
+  , whispersInYourHeadAnxiety
+  , whispersInYourHeadDoubt
   , wormhole
   ]
 
@@ -530,9 +537,53 @@ drawingTheSign = (weakness "03041" "Drawing the Sign")
   { cdCardTraits = setFromList [Pact, Madness]
   }
 
+whispersInYourHeadDismay :: CardDef
+whispersInYourHeadDismay =
+  (treachery "03084a" "Whispers in Your Head (Dismay)" Delusions 1)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+whispersInYourHeadDread :: CardDef
+whispersInYourHeadDread =
+  (treachery "03084b" "Whispers in Your Head (Dread)" Delusions 1)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+whispersInYourHeadAnxiety :: CardDef
+whispersInYourHeadAnxiety =
+  (treachery "03084c" "Whispers in Your Head (Anxiety)" Delusions 1)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+whispersInYourHeadDoubt :: CardDef
+whispersInYourHeadDoubt =
+  (treachery "03084d" "Whispers in Your Head (Doubt)" Delusions 1)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+descentIntoMadness :: CardDef
+descentIntoMadness = (treachery "03085" "Descent into Madness" Delusions 2)
+  { cdCardTraits = singleton Terror
+  , cdKeywords = singleton Keyword.Surge
+  }
+
 blackStarsRise :: CardDef
 blackStarsRise = (treachery "03090" "Black Stars Rise" EvilPortents 2)
   { cdCardTraits = singleton Omen
+  }
+
+spiresOfCarcosa :: CardDef
+spiresOfCarcosa = (treachery "03091" "Spires of Carcosa" EvilPortents 2)
+  { cdCardTraits = singleton Omen
+  }
+
+twistedToHisWill :: CardDef
+twistedToHisWill = (treachery "03092" "Twisted to His Will" EvilPortents 2)
+  { cdCardTraits = singleton Pact
   }
 
 theZealotsSeal :: CardDef

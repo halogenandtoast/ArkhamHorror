@@ -308,6 +308,7 @@ data TreacheryMatcher
   | TreacheryWithFullTitle Text Text
   | TreacheryWithId TreacheryId
   | TreacheryWithTrait Trait
+  | TreacheryInHandOf InvestigatorMatcher
   | AnyTreachery
   | TreacheryOwnedBy InvestigatorId
   | TreacheryMatches [TreacheryMatcher]

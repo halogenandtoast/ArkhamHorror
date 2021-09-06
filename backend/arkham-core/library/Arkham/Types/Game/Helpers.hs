@@ -407,6 +407,7 @@ getActions iid window = do
         prevents (CanOnlyUseCardsInRole role) =
           null (setFromList [role, Neutral] `intersect` cardClasses)
             && not (isForcedAbility ability)
+        prevents CannotTriggerFastAbilities = isFastAbility ability
         prevents _ = False
         -- If the window is fast we only permit fast abilities, but forced
         -- abilities need to be everpresent so we include them
@@ -628,12 +629,14 @@ getCanMoveTo
      , HasSet Trait env Source
      , HasId LocationId env InvestigatorId
      , HasModifiersFor env ()
+     , HasHistory env
      , HasCallStack
      )
   => LocationId
   -> InvestigatorId
   -> m Bool
 getCanMoveTo lid iid = do
+  history <- getHistory TurnHistory iid
   locationId <- getId @LocationId iid
   modifiers' <- getModifiers (LocationSource lid) (InvestigatorTarget iid)
   locationModifiers' <- getModifiers
@@ -647,15 +650,14 @@ getCanMoveTo lid iid = do
     []
     (ActionCost 1)
   pure
-    $ lid
-    `elem` accessibleLocations
+    $ (lid `elem` accessibleLocations)
     && canAffordActions
-    && lid
-    /= locationId
-    && CannotMove
-    `notElem` modifiers'
-    && Blocked
-    `notElem` locationModifiers'
+    && (lid /= locationId)
+    && (CannotMove `notElem` modifiers')
+    && (CannotMoveMoreThanOnceEachTurn `notElem` modifiers' || not
+         (historyMoved history)
+       )
+    && (Blocked `notElem` locationModifiers')
 
 getResourceCount
   :: (MonadReader env m, HasCount ResourceCount env InvestigatorId)
@@ -1007,6 +1009,9 @@ passesCriteria iid source windows' = \case
     hand <- map (toCardId . unHandCard) <$> getList iid
     case source of
       EventSource eid -> pure $ unEventId eid `elem` hand
+      TreacherySource tid -> do
+        member tid <$> select
+          (Matcher.TreacheryInHandOf $ Matcher.InvestigatorWithId iid)
       _ -> error $ "source not handled for in your hand: " <> show source
   Criteria.InThreatAreaOf who -> do
     investigators <- selectList who

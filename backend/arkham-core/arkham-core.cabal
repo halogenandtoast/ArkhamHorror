@@ -457,6 +457,7 @@ library
       Arkham.Types.Enemy.Cards.OBannionsThug
       Arkham.Types.Enemy.Cards.PeterWarren
       Arkham.Types.Enemy.Cards.Poleman
+      Arkham.Types.Enemy.Cards.Poltergeist
       Arkham.Types.Enemy.Cards.RavenousGhoul
       Arkham.Types.Enemy.Cards.RelentlessDarkYoung
       Arkham.Types.Enemy.Cards.RoyalEmissary
@@ -914,6 +915,7 @@ library
       Arkham.Types.Treachery.Cards.CursedLuck
       Arkham.Types.Treachery.Cards.CursedSwamp
       Arkham.Types.Treachery.Cards.CurseOfTheRougarou
+      Arkham.Types.Treachery.Cards.DescentIntoMadness
       Arkham.Types.Treachery.Cards.DissonantVoices
       Arkham.Types.Treachery.Cards.DraggedUnder
       Arkham.Types.Treachery.Cards.DrawingTheSign
@@ -966,6 +968,7 @@ library
       Arkham.Types.Treachery.Cards.SordidAndSilent
       Arkham.Types.Treachery.Cards.SpacesBetween
       Arkham.Types.Treachery.Cards.SpectralMist
+      Arkham.Types.Treachery.Cards.SpiresOfCarcosa
       Arkham.Types.Treachery.Cards.StalkedInTheDark
       Arkham.Types.Treachery.Cards.StarsOfHyades
       Arkham.Types.Treachery.Cards.StrangeSigns
@@ -974,6 +977,7 @@ library
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.TheZealotsSeal
       Arkham.Types.Treachery.Cards.ToweringBeasts
+      Arkham.Types.Treachery.Cards.TwistedToHisWill
       Arkham.Types.Treachery.Cards.TwistOfFate
       Arkham.Types.Treachery.Cards.UmordhothsHunger
       Arkham.Types.Treachery.Cards.UmordhothsWrath
@@ -983,6 +987,10 @@ library
       Arkham.Types.Treachery.Cards.VisionsOfFuturesPast
       Arkham.Types.Treachery.Cards.VortexOfTime
       Arkham.Types.Treachery.Cards.WatchersGaze
+      Arkham.Types.Treachery.Cards.WhispersInYourHeadAnxiety
+      Arkham.Types.Treachery.Cards.WhispersInYourHeadDismay
+      Arkham.Types.Treachery.Cards.WhispersInYourHeadDoubt
+      Arkham.Types.Treachery.Cards.WhispersInYourHeadDread
       Arkham.Types.Treachery.Cards.Wormhole
       Arkham.Types.Treachery.Cards.WrackedByNightmares
       Arkham.Types.Treachery.Helpers

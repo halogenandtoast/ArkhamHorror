@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -35,7 +36,7 @@ instance
     = do
       locationId <- getId @LocationId iid
       isBayou <- member Bayou <$> getSet locationId
-      pure $ toModifiers attrs [ CannotCommitCards | isBayou ]
+      pure $ toModifiers attrs [ CannotCommitCards AnyCard | isBayou ]
   getModifiersFor _ _ _ = pure []
 
 instance TreacheryRunner env => RunMessage env CursedSwamp where

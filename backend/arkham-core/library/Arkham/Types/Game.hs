@@ -78,7 +78,6 @@ import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Treachery
-import Arkham.Types.Treachery.Attrs (treacheryOwner)
 import Arkham.Types.Window (Window(..))
 import qualified Arkham.Types.Window as Window
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
@@ -634,10 +633,27 @@ getInvestigatorsMatching = \case
 getTreacheriesMatching
   :: (MonadReader env m, HasGame env) => TreacheryMatcher -> m [Treachery]
 getTreacheriesMatching matcher = do
-  allTreacheries' <- toList . view treacheriesL <$> getGame
-  case matcher of
-    AnyTreachery -> pure allTreacheries'
-    _ -> pure allTreacheries'
+  allGameTreacheries <- toList . view treacheriesL <$> getGame
+  filterM (matcherFilter matcher) allGameTreacheries
+ where
+  matcherFilter = \case
+    AnyTreachery -> pure . const True
+    TreacheryWithTitle title -> pure . (== title) . nameTitle . toName
+    TreacheryWithFullTitle title subtitle ->
+      pure . (== Name title (Just subtitle)) . toName
+    TreacheryWithId treacheryId -> pure . (== treacheryId) . toId
+    TreacheryWithTrait t -> fmap (member t) . getSet . toId
+    TreacheryInHandOf investigatorMatcher -> \treachery -> do
+      iids <- select investigatorMatcher
+      pure $ case treacheryInHandOf treachery of
+        Just iid -> iid `member` iids
+        Nothing -> False
+    TreacheryOwnedBy iid -> \treachery -> do
+      pure $ case treacheryOwner treachery of
+        Just iid' -> iid == iid'
+        Nothing -> False
+    TreacheryMatches matchers ->
+      \treachery -> allM (`matcherFilter` treachery) matchers
 
 getActionsMatching
   :: (HasGame env, MonadReader env m) => ActionMatcher -> m [Ability]
@@ -1440,6 +1456,9 @@ instance HasGame env => HasCount ClueCount env EnemyId where
 instance HasGame env => HasCount DoomCount env EnemyId where
   getCount = getCount <=< getEnemy
 
+instance HasGame env => HasCount DoomCount env LocationId where
+  getCount = getCount <=< getLocation
+
 instance HasGame env => HasCount DoomCount env InvestigatorId where
   getCount = getCount <=< getInvestigator
 
@@ -1465,6 +1484,7 @@ instance HasGame env => HasCount DoomCount env () where
     assetDoomCount <- traverse getCount . toList $ g ^. assetsL
     treacheryDoomCount <- traverse getCount . toList $ g ^. treacheriesL
     agendaDoomCount <- traverse getCount . toList $ g ^. agendasL
+    investigatorDoomCount <- traverse getCount . toList $ g ^. investigatorsL
     pure
       $ DoomCount
       . sum
@@ -1474,6 +1494,7 @@ instance HasGame env => HasCount DoomCount env () where
       <> assetDoomCount
       <> treacheryDoomCount
       <> agendaDoomCount
+      <> investigatorDoomCount
 
 instance HasGame env => HasCount ClueCount env LocationId where
   getCount = getCount <=< getLocation
@@ -1824,6 +1845,12 @@ instance HasGame env => HasList UnderneathCard env ActDeck where
 
 instance HasGame env => HasSet Trait env LocationId where
   getSet lid = toTraits <$> getLocation lid
+
+instance HasGame env => HasSet Trait env InvestigatorId where
+  getSet iid = toTraits <$> getInvestigator iid
+
+instance HasGame env => HasSet Trait env TreacheryId where
+  getSet tid = toTraits <$> getTreachery tid
 
 instance HasGame env => HasSet Trait env Source where
   getSet = \case
@@ -2778,6 +2805,13 @@ runGameMessage msg g = case msg of
   MoveTopOfDeckToBottom _ Deck.EncounterDeck n -> do
     let (cards, deck) = splitAt n (unDeck $ gameEncounterDeck g)
     pure $ g & encounterDeckL .~ Deck (deck <> cards)
+  MoveTo _ iid _ -> do
+    let
+      historyItem = mempty { historyMoved = True }
+      turn = isJust $ view turnPlayerInvestigatorIdL g
+      setTurnHistory =
+        if turn then turnHistoryL %~ insertHistory iid historyItem else id
+    pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   SearchTopOfDeck iid _ EncounterDeckTarget n _traits strategy -> do
     let (cards, encounterDeck) = splitAt n $ unDeck (gameEncounterDeck g)
     case strategy of
@@ -3971,8 +4005,7 @@ runGameMessage msg g = case msg of
     case card of
       PlayerCard pc -> do
         let
-          ownerId = fromJustNote "owner was not set"
-            $ treacheryOwner (toAttrs treachery)
+          ownerId = fromJustNote "owner was not set" $ treacheryOwner treachery
         push (AddToDiscard ownerId pc { pcBearer = Just ownerId })
         pure $ g & treacheriesL %~ deleteMap tid
       EncounterCard ec ->

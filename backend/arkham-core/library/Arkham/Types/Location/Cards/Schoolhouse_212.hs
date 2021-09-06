@@ -6,10 +6,12 @@ module Arkham.Types.Location.Cards.Schoolhouse_212
 import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards (schoolhouse_212)
+import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.Target
 
@@ -30,7 +32,9 @@ instance HasModifiersFor env Schoolhouse_212 where
   getModifiersFor _ (InvestigatorTarget iid) (Schoolhouse_212 attrs) =
     pure $ toModifiers
       attrs
-      [ CannotCommitCards | iid `member` locationInvestigators attrs ]
+      [ CannotCommitCards (CardWithType SkillType)
+      | iid `member` locationInvestigators attrs
+      ]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities Schoolhouse_212 where

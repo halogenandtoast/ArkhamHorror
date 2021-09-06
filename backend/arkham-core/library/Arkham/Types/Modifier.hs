@@ -65,7 +65,7 @@ data ModifierType
   | CannotBeEvaded
   | CannotBeRevealed
   | CannotCancelHorror
-  | CannotCommitCards
+  | CannotCommitCards CardMatcher
   | CannotDiscoverClues
   | CannotDrawCards
   | CannotGainResources
@@ -74,11 +74,13 @@ data ModifierType
   | CannotInvestigate
   | CannotMakeAttacksOfOpportunity
   | CannotMove
+  | CannotMoveMoreThanOnceEachTurn
   | CannotMulligan
   | CannotPerformSkillTest
   | CannotPlaceClues
   | CannotPlay [(CardType, HashSet Trait)]
   | CannotSpendClues
+  | CannotTriggerFastAbilities
   | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
   | CardsCannotLeaveYourDiscardPile
   | ControlledAssetsCannotReady

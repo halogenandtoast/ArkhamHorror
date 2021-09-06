@@ -618,6 +618,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
           pushAll windows'
           pure $ a & cluesL +~ n
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
+    RemoveDoom target n | isTarget a target -> pure $ a & doomL %~ max 0 . subtract n
     PlaceResources target n | isTarget a target -> pure $ a & resourcesL +~ n
     PlaceHorror target n | isTarget a target -> pure $ a & horrorL +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId ->

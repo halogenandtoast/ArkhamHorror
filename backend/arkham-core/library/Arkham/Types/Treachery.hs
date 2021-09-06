@@ -11,7 +11,8 @@ import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Trait (Trait)
-import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Attrs hiding (treacheryInHandOf, treacheryOwner)
+import qualified Arkham.Types.Treachery.Attrs as Attrs
 import Arkham.Types.Treachery.Cards
 import Arkham.Types.Treachery.Runner
 
@@ -73,7 +74,7 @@ instance HasCount (Maybe ClueCount) env Treachery where
   getCount = pure . (ClueCount <$>) . treacheryClues . toAttrs
 
 instance HasId (Maybe OwnerId) env Treachery where
-  getId = pure . (OwnerId <$>) . treacheryOwner . toAttrs
+  getId = pure . (OwnerId <$>) . Attrs.treacheryOwner . toAttrs
 
 lookupTreachery :: CardCode -> (InvestigatorId -> TreacheryId -> Treachery)
 lookupTreachery cardCode =
@@ -87,6 +88,12 @@ allTreacheries = mapFromList $ map
 
 isWeakness :: Treachery -> Bool
 isWeakness = cdWeakness . toCardDef
+
+treacheryInHandOf :: Treachery -> Maybe InvestigatorId
+treacheryInHandOf = Attrs.treacheryInHandOf . toAttrs
+
+treacheryOwner :: Treachery -> Maybe InvestigatorId
+treacheryOwner = Attrs.treacheryOwner . toAttrs
 
 instance CanBeWeakness env Treachery where
   getIsWeakness = pure . isWeakness

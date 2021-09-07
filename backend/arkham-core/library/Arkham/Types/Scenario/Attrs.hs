@@ -290,7 +290,9 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         [Window Timing.When (Window.InvestigatorEliminated iid)]
       a <$ pushAll
         (whenMsgs
-        <> [InvestigatorPlaceAllCluesOnLocation, InvestigatorEliminated iid]
+        <> [ InvestigatorPlaceAllCluesOnLocation iid
+           , InvestigatorEliminated iid
+           ]
         <> afterMsgs
         )
     Remember logKey -> pure $ a & logL %~ insertSet logKey

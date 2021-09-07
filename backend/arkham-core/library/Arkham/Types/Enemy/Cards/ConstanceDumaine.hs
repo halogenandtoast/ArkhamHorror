@@ -16,7 +16,12 @@ newtype ConstanceDumaine = ConstanceDumaine EnemyAttrs
 
 constanceDumaine :: EnemyCard ConstanceDumaine
 constanceDumaine =
-  enemy ConstanceDumaine Cards.constanceDumaine (0, Static 1, 0) (0, 0)
+  enemy ConstanceDumaine Cards.constanceDumaine (4, Static 6, 1) (2, 0)
+
+instance HasModifiersFor ConstanceDumaine where
+  getModifiersFor _ (EnemyTarget eid) (ConstanceDumaine a) | eid == toId a =
+    pure $ toModifiers a [ EnemyFight 3 | enemyExhausted a ]
+  getModifiersFor _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env ConstanceDumaine where
   runMessage msg (ConstanceDumaine attrs) =

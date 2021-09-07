@@ -284,3 +284,102 @@ instance StaticStuff AbandonedAndAlone ...
 ```
 
 What other changes flow from this?
+
+# OK so what about the question lmao
+
+Uh.
+
+Right.
+
+How to make abilities part of the datatype.
+
+Right now, `getAbilities :: a -> [Ability]`, and this suggests that we should have something like `abilities :: [Ability]` instead, and this becomes a field accessor.
+
+Abilities aren't necessarily static.
+
+Consider `AlteredBeast`:
+
+```haskell
+instance HasAbilities AlteredBeast where
+  getAbilities (AlteredBeast x) = case treacheryAttachedTarget x of
+    Just (EnemyTarget eid) ->
+      [ mkAbility x 1 $ ForcedAbility $ OrWindowMatcher
+          [ EnemyEnters Timing.When YourLocation $ EnemyWithId eid
+          , Enters Timing.When You (LocationWithEnemy $ EnemyWithId eid)
+          ]
+      ]
+    _ -> error "Altered Beast must be attached to an enemy"
+```
+
+The `[Ability]` does depend on the `eid` from the `treacheryAttachedTarget`.
+And we have an error condition.
+
+In slack I mentioned some mismatched dependencies - an arrow is pointing one way where it should point the other.
+This particular instance suggests that maybe the datatype shouldn't *carry* a `TreacheryAttrs`, but should instead be able to *produce* a `TreacheryAttrs`.
+
+```haskell
+class ToTreacheryAttrs a where
+    toTreacheryAttrs :: a -> TreacheryAttrs
+
+-- with current definition,
+instance ToTreacheryAttrs AlteredBeast where
+    toTreacheryAttrs (AlteredBeast a) = a
+
+-- or,
+data AlteredBeast = AlteredBeast
+    { id :: TreacheryId
+    , attachedTarget :: EnemyId
+    }
+
+instance ToTreacheryAttrs AlteredBeast where
+    toTreacheryAttrs AlteredBeast {..} = 
+        TreacheryAttrs
+            { treacheryId
+            , treacheryCardCode = getCardCode @AlteredBeast
+            , treacheryAttachedTarget = Just $ EnemyTarget attachedTarget
+            , ...
+            }
+
+instance HasAbilities AlteredBeast where
+    getAbilities AlteredBeast { attachedTarget = eid } = 
+        [ mkAbility x 1 $ ForcedAbility $ OrWindowMatcher
+            [ EnemyEnters Timing.When YourLocation $ EnemyWithId eid
+            , Enters Timing.When You (LocationWithEnemy $ EnemyWithId eid)
+            ]
+        ]
+```
+
+But we do run into a snag with `RunMessage`.
+
+```haskell
+instance TreacheryRunner env => RunMessage env AlteredBeast where
+  runMessage msg t@(AlteredBeast {..}) = case msg of
+    Revelation iid source | isSource (toTreacheryAttrs t) source -> do
+      abominations <- selectListMap EnemyTarget $ EnemyWithTrait Abomination
+      t <$ case abominations of
+        [] -> push (Surge iid source)
+        xs -> push
+          (chooseOrRunOne
+            iid
+            [ TargetLabel x [AttachTreachery treacheryId x, HealAllDamage x]
+            | x <- xs
+            ]
+          )
+    UseCardAbility iid source _ 1 _ ->
+      t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
+    _ -> ??? <$> runMessage msg (toTreacheryAttrs t)
+```
+
+How do we deal with that fallback case?
+
+We've possibly *modified* the `TreacheryAttrs` in `runMessage`.
+
+So we need a *new* function -
+
+```haskell
+patchAlteredBeast :: AlteredBeast -> TreacheryAttrs -> AlteredBeast
+```
+
+This would let us reconcile the modifications that happened in `runMessage`.
+Incidentally, splitting out the dynamic and static parts of this should make it easier.
+After all it does not make sense for the `TreacheryAttrs` to have a different `CardCode`!

@@ -15,8 +15,8 @@ import Arkham.Types.Id
 import Arkham.Types.Keyword
 import Arkham.Types.Matcher
 import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
+import {-# SOURCE #-} Arkham.Types.Source
+import {-# SOURCE #-} Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
 

@@ -103,6 +103,9 @@ instance HasCount SetAsideCount env (Scenario, CardCode) where
 instance HasList SetAsideCard env Scenario where
   getList = getList . toAttrs
 
+instance HasList UnderScenarioReferenceCard env Scenario where
+  getList = getList . toAttrs
+
 instance HasList UnderneathCard env (Scenario, ActDeck) where
   getList (s, _) = getList (toAttrs s, ActDeck)
 

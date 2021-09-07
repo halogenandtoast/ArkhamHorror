@@ -48,5 +48,6 @@ data Source
   | AttackSource EnemyId
   | AssetMatcherSource AssetMatcher
   | LocationMatcherSource LocationMatcher
+  | StorySource CardCode
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

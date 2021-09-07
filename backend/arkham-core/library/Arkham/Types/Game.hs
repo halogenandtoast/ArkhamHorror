@@ -1037,6 +1037,9 @@ getEnemiesMatching matcher = do
     EnemyEngagedWithYou -> \enemy -> do
       iid <- view activeInvestigatorIdL <$> getGame
       member iid <$> getSet (toId enemy)
+    EnemyWithMostRemainingHealth enemyMatcher -> \enemy -> do
+      matches <- getEnemiesMatching enemyMatcher
+      elem enemy . maxes <$> traverse (traverseToSnd remainingHealth) matches
     UnengagedEnemy -> \enemy -> null <$> getSet @InvestigatorId (toId enemy)
     UniqueEnemy -> pure . isUnique
     M.EnemyAt locationMatcher -> \enemy ->
@@ -1346,6 +1349,13 @@ instance HasGame env => HasSet FightableEnemyId env (InvestigatorId, Source) whe
     pure . setFromList . coerce $ fightableEnemyIds
 
 instance HasGame env => HasList SetAsideCard env () where
+  getList _ = do
+    mScenario <- modeScenario . view modeL <$> getGame
+    case mScenario of
+      Just scenario -> getList scenario
+      Nothing -> error "missing scenario"
+
+instance HasGame env => HasList UnderScenarioReferenceCard env () where
   getList _ = do
     mScenario <- modeScenario . view modeL <$> getGame
     case mScenario of
@@ -2069,6 +2079,9 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
     matches c = \case
       SetAsideCardMatch matcher' -> do
         cards <- map unSetAsideCard <$> getList ()
+        pure $ c `elem` filter (`cardMatch` matcher') cards
+      UnderScenarioReferenceMatch matcher' -> do
+        cards <- map unUnderScenarioReferenceCard <$> getList ()
         pure $ c `elem` filter (`cardMatch` matcher') cards
       VictoryDisplayCardMatch matcher' -> do
         cards <- map unVictoryDisplayCard <$> getSetList ()

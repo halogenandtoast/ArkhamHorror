@@ -5,7 +5,10 @@
 The goal of this project is to implement a web version of Arkham Horror with as
 many of the rules implemented as possible.
 
-##
+## Warning
+
+This is very much a work in progress. Things may break at any time, but if they do,
+please file a bug.
 
 ## Features
 

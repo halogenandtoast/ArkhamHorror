@@ -36,6 +36,7 @@ library
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Skill.Cards
+      Arkham.Story.Cards
       Arkham.Treachery.Cards
       Arkham.Types.Ability
       Arkham.Types.Ability.Limit

@@ -504,6 +504,57 @@ royalEmissary =
     , cdVictoryPoints = Just 2
     }
 
+constanceDumaine :: CardDef
+constanceDumaine =
+  (enemy "03065" ("Constance Dumaine" <:> "A Little Too Sociable") TheLastKing 1
+    )
+    { cdCardTraits = setFromList [Monster, Lunatic, Elite]
+    , cdKeywords = singleton Keyword.Hunter
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdVictoryPoints = Just 0
+    }
+
+jordanPerry :: CardDef
+jordanPerry =
+  (enemy "03066" ("Jordan Perry" <:> "An Imposing Presence") TheLastKing 1)
+    { cdCardTraits = setFromList [Monster, Lunatic, Elite]
+    , cdKeywords = singleton Keyword.Hunter
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdVictoryPoints = Just 0
+    }
+
+ishimaruHaruko :: CardDef
+ishimaruHaruko =
+  (enemy "03067" ("Ishimaru Haroku" <:> "Just Skin and Bones") TheLastKing 1)
+    { cdCardTraits = setFromList [Monster, Lunatic, Elite]
+    , cdKeywords = singleton Keyword.Hunter
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdVictoryPoints = Just 0
+    }
+
+sebastienMoreau :: CardDef
+sebastienMoreau =
+  (enemy "03068" ("Sebastien Moreau" <:> "Savage Hysteria") TheLastKing 1)
+    { cdCardTraits = setFromList [Monster, Lunatic, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdVictoryPoints = Just 0
+    }
+
+ashleighClarke :: CardDef
+ashleighClarke =
+  (enemy "03069" ("Ashleigh Clarke" <:> "Songs Die Unheard") TheLastKing 1)
+    { cdCardTraits = setFromList [Monster, Lunatic, Elite]
+    , cdKeywords = singleton Keyword.Hunter
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdVictoryPoints = Just 0
+    }
+
 dianneDevine :: CardDef
 dianneDevine =
   (enemy "03081" ("Dianne Devine" <:> "Mercurial and Mischevious") TheLastKing 1
@@ -512,6 +563,7 @@ dianneDevine =
     , cdKeywords = singleton Keyword.Aloof
     , cdUnique = True
     }
+
 
 poltergeist :: CardDef
 poltergeist = (enemy "03093" "Poltergeist" Hauntings 2)

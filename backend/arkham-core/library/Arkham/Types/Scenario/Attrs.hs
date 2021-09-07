@@ -39,6 +39,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioDifficulty :: Difficulty
   -- These types are to handle complex scenarios with multiple stacks
   , scenarioAgendaStack :: [(Int, [CardDef])] -- These types are to handle complex scenarios with multiple stacks
+  , scenarioCardsUnderScenarioReference :: [Card]
   , scenarioCardsUnderAgendaDeck :: [Card]
   , scenarioCardsUnderActDeck :: [Card]
   , scenarioActStack :: [(Int, [CardDef])]
@@ -87,6 +88,10 @@ setAsideCardsL :: Lens' ScenarioAttrs [Card]
 setAsideCardsL =
   lens scenarioSetAsideCards $ \m x -> m { scenarioSetAsideCards = x }
 
+cardsUnderScenarioReferenceL :: Lens' ScenarioAttrs [Card]
+cardsUnderScenarioReferenceL = lens scenarioCardsUnderScenarioReference
+  $ \m x -> m { scenarioCardsUnderScenarioReference = x }
+
 instance ToJSON ScenarioAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "scenario"
   toEncoding = genericToEncoding $ aesonOptions $ Just "scenario"
@@ -116,6 +121,10 @@ instance HasCount SetAsideCount env (ScenarioAttrs, CardCode) where
 
 instance HasList SetAsideCard env ScenarioAttrs where
   getList = pure . map SetAsideCard . scenarioSetAsideCards
+
+instance HasList UnderScenarioReferenceCard env ScenarioAttrs where
+  getList =
+    pure . map UnderScenarioReferenceCard . scenarioCardsUnderScenarioReference
 
 instance HasList UnderneathCard env (ScenarioAttrs, ActDeck) where
   getList (s, _) = pure $ map UnderneathCard (scenarioCardsUnderActDeck s)
@@ -151,6 +160,7 @@ baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   , scenarioLog = mempty
   , scenarioLocations = mempty
   , scenarioSetAsideCards = mempty
+  , scenarioCardsUnderScenarioReference = mempty
   , scenarioInResolution = False
   }
 
@@ -329,4 +339,12 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         (x : xs) -> do
           push (RequestedSetAsideCard target x)
           pure $ a & setAsideCardsL .~ (before <> xs)
+    ReadStory card -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      push
+        (chooseOne
+          leadInvestigatorId
+          [TargetLabel (StoryTarget $ toCardCode card) [ResolveStory card]]
+        )
+      pure $ a & cardsUnderScenarioReferenceL %~ filter (/= card)
     _ -> pure a

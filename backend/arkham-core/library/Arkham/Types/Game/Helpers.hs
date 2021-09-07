@@ -728,6 +728,7 @@ targetToSource = \case
   YouTarget -> YouSource
   ProxyTarget{} -> error "can not convert"
   CardTarget{} -> error "can not convert"
+  StoryTarget code -> StorySource code
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -763,6 +764,7 @@ sourceToTarget = \case
   AssetMatcherSource{} -> error "not converted"
   LocationMatcherSource{} -> error "not converted"
   AttackSource a -> EnemyTarget a
+  StorySource code -> StoryTarget code
 
 addCampaignCardToDeckChoice
   :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message

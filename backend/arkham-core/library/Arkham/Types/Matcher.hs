@@ -172,6 +172,7 @@ data EnemyMatcher
   | NonWeaknessEnemy
   | EnemyMatchAll [EnemyMatcher]
   | EnemyEngagedWithYou
+  | EnemyWithMostRemainingHealth EnemyMatcher
   | UnengagedEnemy
   | UniqueEnemy
   | NotEnemy EnemyMatcher
@@ -357,6 +358,7 @@ data ExtendedCardMatcher
   | InHandOf Who
   | InDiscardOf Who
   | SetAsideCardMatch CardMatcher
+  | UnderScenarioReferenceMatch CardMatcher
   | VictoryDisplayCardMatch CardMatcher
   | ExtendedCardWithOneOf [ExtendedCardMatcher]
   | ExtendedCardMatches [ExtendedCardMatcher]

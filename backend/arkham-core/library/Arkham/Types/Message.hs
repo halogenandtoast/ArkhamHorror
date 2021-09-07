@@ -111,6 +111,8 @@ data ActionType
 
 data Message
     = UseAbility InvestigatorId Ability [Window]
+    | ReadStory Card
+    | ResolveStory Card
     | AddAct ActId
     | AddAgenda AgendaId
     | AddCampaignCardToDeck InvestigatorId CardDef

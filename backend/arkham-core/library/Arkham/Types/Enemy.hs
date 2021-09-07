@@ -12,6 +12,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
@@ -151,6 +152,13 @@ isEngaged = notNull . enemyEngagedInvestigators . toAttrs
 
 isUnique :: Enemy -> Bool
 isUnique = cdUnique . toCardDef
+
+remainingHealth
+  :: (HasCount PlayerCount env (), MonadReader env m) => Enemy -> m Int
+remainingHealth e = do
+  totalHealth <- getPlayerCountValue (enemyHealth attrs)
+  pure $ totalHealth - enemyDamage attrs
+  where attrs = toAttrs e
 
 instance Exhaustable Enemy where
   isExhausted = enemyExhausted . toAttrs

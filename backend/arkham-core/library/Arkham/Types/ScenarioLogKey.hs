@@ -11,5 +11,10 @@ data ScenarioLogKey
   | FoundAnAncientBindingStone
   | StolenAPassengersLuggage
   | StoleFromTheBoxOffice
+  | InterviewedConstance
+  | InterviewedJordan
+  | InterviewedHaruko
+  | InterviewedSebastien
+  | InterviewedAshleigh
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

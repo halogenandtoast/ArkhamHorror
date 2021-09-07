@@ -22,6 +22,7 @@ type ScenarioRunner env
     , HasCount EnemyCount env [Trait]
     , HasCount PlayerCount env ()
     , HasCount ResourceCount env InvestigatorId
+    , HasCount ClueCount env InvestigatorId
     , HasCount XPCount env ()
     , HasCount EnemyCount env (InvestigatorLocation, [Trait])
     , HasId CardCode env EnemyId

@@ -47,5 +47,6 @@ data Target
   | YouTarget
   | InvestigationTarget InvestigatorId LocationId
   | ProxyTarget Target Target
+  | StoryTarget CardCode
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

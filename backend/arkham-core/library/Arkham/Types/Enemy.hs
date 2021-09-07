@@ -67,6 +67,7 @@ instance
     , HasSet LocationId env ()
     , HasModifiersFor env ()
     , HasName env AssetId
+    , HasPhase env
     , HasId (Maybe LocationId) env AssetId
     , HasSkillValue env InvestigatorId
     ) =>

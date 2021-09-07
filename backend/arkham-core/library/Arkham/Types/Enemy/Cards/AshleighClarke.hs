@@ -8,15 +8,29 @@ import Arkham.Prelude
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.Id
+import Arkham.Types.Modifier
+import Arkham.Types.Phase
+import Arkham.Types.Target
 
 newtype AshleighClarke = AshleighClarke EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 ashleighClarke :: EnemyCard AshleighClarke
 ashleighClarke =
-  enemy AshleighClarke Cards.ashleighClarke (0, Static 1, 0) (0, 0)
+  enemy AshleighClarke Cards.ashleighClarke (2, Static 5, 4) (0, 2)
+
+instance (HasId LocationId env InvestigatorId, HasPhase env) => HasModifiersFor env AshleighClarke where
+  getModifiersFor _ (InvestigatorTarget iid) (AshleighClarke attrs) = do
+    lid <- getId iid
+    phase <- getPhase
+    pure $ toModifiers
+      attrs
+      [ CannotDrawCards | phase == UpkeepPhase && lid == enemyLocation attrs ]
+  getModifiersFor _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env AshleighClarke where
   runMessage msg (AshleighClarke attrs) =

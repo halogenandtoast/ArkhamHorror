@@ -18,6 +18,14 @@ discoveringTheTruth :: ActCard DiscoveringTheTruth
 discoveringTheTruth =
   act (1, A) DiscoveringTheTruth Cards.discoveringTheTruth Nothing
 
+instance HasAbilities DiscoveringTheTruth where
+  getAbilities (DiscoveringTheTruth a) =
+    [mkAbility a 1 $ ForcedAbility $ InvestigatorEliminated Timing.When You]
+
 instance ActRunner env => RunMessage env DiscoveringTheTruth where
-  runMessage msg (DiscoveringTheTruth attrs) =
-    DiscoveringTheTruth <$> runMessage msg attrs
+  runMessage msg a@(DiscoveringTheTruth attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      clueCount <- unClueCount <$> getCount iid
+      a <$ pushAll
+        [InvestigatorDiscardAllClues, PlaceClues (toTarget attrs) clueCount]
+    _ -> DiscoveringTheTruth <$> runMessage msg attrs

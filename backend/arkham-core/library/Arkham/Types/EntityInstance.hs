@@ -56,6 +56,7 @@ toCardInstance iid card = case toCardType card of
   TreacheryType -> TreacheryInstance $ createTreachery card iid
   ActType -> error "Unhandled"
   AgendaType -> error "Unhandled"
+  StoryType -> error "Unhandled"
 
 -- | Masking rules
 -- UseCardAbility: Because some abilities have a discard self cost, the card of the ability will have already been discarded when we go to resolve this. While we could use InDiscard in the RunMessage instance for that card's entity, there may be cases where we can trigger abilities without paying the cost, so we want it to be accessible from both.

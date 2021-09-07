@@ -67,6 +67,7 @@ allEncounterEnemyCards = mapFromList $ map
   , acolyteOfUmordhoth
   , agentOfTheKing
   , almaHill
+  , ashleighClarke
   , avianThrall
   , balefulReveler
   , billyCooper
@@ -76,6 +77,7 @@ allEncounterEnemyCards = mapFromList $ map
   , cloverClubPitBoss
   , cnidathqua
   , conglomerationOfSpheres
+  , constanceDumaine
   , corpseHungryGhoul
   , corpseTaker
   , crazedShoggoth
@@ -99,7 +101,9 @@ allEncounterEnemyCards = mapFromList $ map
   , huntingNightgaunt
   , icyGhoul
   , interstellarTraveler
+  , ishimaruHaruko
   , jeremiahPierce
+  , jordanPerry
   , lupineThrall
   , marshGug
   , mobster
@@ -115,6 +119,7 @@ allEncounterEnemyCards = mapFromList $ map
   , salvatoreNeri
   , savioCorvi
   , screechingByakhee
+  , sebastienMoreau
   , servantOfManyMouths
   , servantOfTheLurker
   , sethBishop
@@ -506,7 +511,11 @@ royalEmissary =
 
 constanceDumaine :: CardDef
 constanceDumaine =
-  (enemy "03065" ("Constance Dumaine" <:> "A Little Too Sociable") TheLastKing 1
+  (enemy
+      "03065b"
+      ("Constance Dumaine" <:> "A Little Too Sociable")
+      TheLastKing
+      1
     )
     { cdCardTraits = setFromList [Monster, Lunatic, Elite]
     , cdKeywords = singleton Keyword.Hunter
@@ -517,7 +526,7 @@ constanceDumaine =
 
 jordanPerry :: CardDef
 jordanPerry =
-  (enemy "03066" ("Jordan Perry" <:> "An Imposing Presence") TheLastKing 1)
+  (enemy "03066b" ("Jordan Perry" <:> "An Imposing Presence") TheLastKing 1)
     { cdCardTraits = setFromList [Monster, Lunatic, Elite]
     , cdKeywords = singleton Keyword.Hunter
     , cdUnique = True
@@ -527,7 +536,7 @@ jordanPerry =
 
 ishimaruHaruko :: CardDef
 ishimaruHaruko =
-  (enemy "03067" ("Ishimaru Haroku" <:> "Just Skin and Bones") TheLastKing 1)
+  (enemy "03067b" ("Ishimaru Haruku" <:> "Just Skin and Bones") TheLastKing 1)
     { cdCardTraits = setFromList [Monster, Lunatic, Elite]
     , cdKeywords = singleton Keyword.Hunter
     , cdUnique = True
@@ -537,7 +546,7 @@ ishimaruHaruko =
 
 sebastienMoreau :: CardDef
 sebastienMoreau =
-  (enemy "03068" ("Sebastien Moreau" <:> "Savage Hysteria") TheLastKing 1)
+  (enemy "03068b" ("Sebastien Moreau" <:> "Savage Hysteria") TheLastKing 1)
     { cdCardTraits = setFromList [Monster, Lunatic, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdUnique = True
@@ -547,7 +556,7 @@ sebastienMoreau =
 
 ashleighClarke :: CardDef
 ashleighClarke =
-  (enemy "03069" ("Ashleigh Clarke" <:> "Songs Die Unheard") TheLastKing 1)
+  (enemy "03069b" ("Ashleigh Clarke" <:> "Songs Die Unheard") TheLastKing 1)
     { cdCardTraits = setFromList [Monster, Lunatic, Elite]
     , cdKeywords = singleton Keyword.Hunter
     , cdUnique = True

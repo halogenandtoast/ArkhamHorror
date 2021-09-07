@@ -589,7 +589,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         ls -> a <$ pushAll
           (chooseOne
               leadInvestigatorId
-              (map (EnemyMove enemyId enemyLocation) ls)
+              [TargetLabel (LocationTarget l) [EnemyMove enemyId enemyLocation l] | l <- ls]
           : [ CheckWindow
                 leadInvestigatorId
                 [Window Timing.After (Window.MovedFromHunter enemyId)]

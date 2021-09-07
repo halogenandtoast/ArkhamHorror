@@ -104,6 +104,7 @@ displayCardType = \case
   AssetType -> "asset"
   EventType -> "event"
   SkillType -> "skill"
+  StoryType -> "story"
   PlayerTreacheryType -> "treachery"
   PlayerEnemyType -> "enemy"
   TreacheryType -> "treachery"

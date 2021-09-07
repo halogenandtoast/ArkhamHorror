@@ -25,7 +25,7 @@
 
     <div v-if="cardLabels.length > 0">
       <template v-for="[choice, index] in cardLabels" :key="index">
-        <a href='#' @click="$emit('choose', index)">
+        <a href='#' @click.prevent="$emit('choose', index)">
           <img class="card" :src="cardLabelImage(choice.contents[0])"/>
         </a>
       </template>

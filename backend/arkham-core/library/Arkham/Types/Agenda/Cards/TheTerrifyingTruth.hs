@@ -39,8 +39,8 @@ instance HasAbilities TheTerrifyingTruth where
 instance AgendaRunner env => RunMessage env TheTerrifyingTruth where
   runMessage msg a@(TheTerrifyingTruth attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      storyCards <- selectList $ UnderScenarioReferenceMatch $ CardWithType
-        StoryType
+      storyCards <- traceShowId
+        <$> selectList (UnderScenarioReferenceMatch $ CardWithType StoryType)
       result <- case storyCards of
         [] -> pure $ AdvanceAgenda (toId attrs)
         (x : xs) -> do

@@ -155,8 +155,20 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
       setAsideEncounterCards <- traverse
         (fmap EncounterCard . genEncounterCard)
         [Enemies.dianneDevine]
-      TheLastKing
-        <$> runMessage msg (attrs & setAsideCardsL .~ setAsideEncounterCards)
+      storyCards <- traverse
+        (fmap EncounterCard . genEncounterCard)
+        [ Story.sickeningReality_65
+        , Story.sickeningReality_66
+        , Story.sickeningReality_67
+        , Story.sickeningReality_68
+        , Story.sickeningReality_69
+        ]
+      TheLastKing <$> runMessage
+        msg
+        (attrs
+        & (setAsideCardsL .~ setAsideEncounterCards)
+        & (cardsUnderScenarioReferenceL .~ storyCards)
+        )
     ResolveToken _ token iid -> s <$ case token of
       Skull -> push (DrawAnotherToken iid)
       Cultist | isHardExpert attrs -> do
@@ -190,15 +202,15 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
     ResolveStory card | toName card == "Sickening Reality" -> do
       let
         findPair
-          | card == Story.sickeningReality_65
+          | toCardDef card == Story.sickeningReality_65
           = (Assets.constanceDumaine, Enemies.constanceDumaine)
-          | card == Story.sickeningReality_66
+          | toCardDef card == Story.sickeningReality_66
           = (Assets.jordanPerry, Enemies.jordanPerry)
-          | card == Story.sickeningReality_67
+          | toCardDef card == Story.sickeningReality_67
           = (Assets.ishimaruHaruko, Enemies.ishimaruHaruko)
-          | card == Story.sickeningReality_68
+          | toCardDef card == Story.sickeningReality_68
           = (Assets.sebastienMoreau, Enemies.sebastienMoreau)
-          | card == Story.sickeningReality_69
+          | toCardDef card == Story.sickeningReality_69
           = (Assets.ashleighClarke, Enemies.ashleighClarke)
           | otherwise
           = error "Invalid story"
@@ -209,28 +221,29 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
       lid <- getId @LocationId assetId
       iids <- selectList $ InvestigatorAt $ LocationWithId lid
       clues <- unClueCount <$> getCount assetId
-      pushAll
-        $ [ InvestigatorAssignDamage
-              iid
-              (StorySource $ toCardCode card)
-              DamageAny
-              0
-              1
-          | iid <- iids
-          ]
+      s <$ pushAll
+        ([ InvestigatorAssignDamage
+             iid
+             (StorySource $ toCardCode card)
+             DamageAny
+             0
+             1
+         | iid <- iids
+         ]
         <> [ RemoveClues (AssetTarget assetId) clues
            , PlaceClues (LocationTarget lid) clues
            , RemoveFromGame (AssetTarget assetId)
            , CreateEnemyAt enemyCard lid Nothing
            ]
+        )
     ResolveStory card -> do
       let
         remember
-          | card == Story.engramsOath = InterviewedConstance
-          | card == Story.langneauPerdu = InterviewedJordan
-          | card == Story.thePattern = InterviewedHaruko
-          | card == Story.theFirstShow = InterviewedSebastien
-          | card == Story.aboveAndBelow = InterviewedAshleigh
+          | toCardDef card == Story.engramsOath = InterviewedConstance
+          | toCardDef card == Story.langneauPerdu = InterviewedJordan
+          | toCardDef card == Story.thePattern = InterviewedHaruko
+          | toCardDef card == Story.theFirstShow = InterviewedSebastien
+          | toCardDef card == Story.aboveAndBelow = InterviewedAshleigh
           | otherwise = error "invalid story"
       s <$ push (Remember remember)
     _ -> TheLastKing <$> runMessage msg attrs

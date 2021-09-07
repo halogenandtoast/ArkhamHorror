@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Asset.Cards
 import Arkham.Enemy.Cards
 import Arkham.Location.Cards
+import Arkham.Story.Cards
 import Arkham.Treachery.Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
@@ -20,3 +21,4 @@ allEncounterCards =
     <> allLocationCards
     <> allEncounterTreacheryCards
     <> allEncounterAssetCards
+    <> allStoryCards

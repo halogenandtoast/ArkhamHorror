@@ -40,7 +40,19 @@ story cardCode name encounterSet = CardDef
   }
 
 allStoryCards :: HashMap CardCode CardDef
-allStoryCards = mapFromList $ map (toCardCode &&& id) []
+allStoryCards = mapFromList $ map
+  (toCardCode &&& id)
+  [ sickeningReality_65
+  , sickeningReality_66
+  , sickeningReality_67
+  , sickeningReality_68
+  , sickeningReality_69
+  , engramsOath
+  , langneauPerdu
+  , thePattern
+  , theFirstShow
+  , aboveAndBelow
+  ]
 
 sickeningReality_65 :: CardDef
 sickeningReality_65 = story "03065" "Sickening Reality" TheLastKing

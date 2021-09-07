@@ -1,5 +1,7 @@
 # Arkham Horror LCG
 
+![Screenshot](./docs/img/screenshot.png)
+
 The goal of this project is to implement a web version of Arkham Horror with as
 many of the rules implemented as possible.
 

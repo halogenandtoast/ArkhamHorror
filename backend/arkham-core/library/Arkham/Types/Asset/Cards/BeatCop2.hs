@@ -13,7 +13,8 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Matcher
+import Arkham.Types.DamageEffect
+import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -34,11 +35,12 @@ instance HasModifiersFor env BeatCop2 where
 instance HasAbilities BeatCop2 where
   getAbilities (BeatCop2 x) =
     [ restrictedAbility
-        x
-        1
-        (OwnsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
-      $ FastAbility
-      $ Costs [ExhaustCost (toTarget x), DamageCost (toSource x) (toTarget x) 1]
+          x
+          1
+          (OwnsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
+        $ FastAbility
+        $ Costs
+            [ExhaustCost (toTarget x), DamageCost (toSource x) (toTarget x) 1]
     ]
 
 instance AssetRunner env => RunMessage env BeatCop2 where
@@ -48,6 +50,8 @@ instance AssetRunner env => RunMessage env BeatCop2 where
       a <$ push
         (chooseOrRunOne
           iid
-          [ EnemyDamage eid iid (toSource attrs) 1 | eid <- enemies ]
+          [ EnemyDamage eid iid (toSource attrs) NonAttackDamageEffect 1
+          | eid <- enemies
+          ]
         )
     _ -> BeatCop2 <$> runMessage msg attrs

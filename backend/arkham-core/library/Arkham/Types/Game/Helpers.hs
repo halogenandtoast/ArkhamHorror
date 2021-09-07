@@ -16,6 +16,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria (Criterion)
 import qualified Arkham.Types.Criteria as Criteria
+import Arkham.Types.DamageEffect
 import Arkham.Types.Deck
 import Arkham.Types.Decks
 import Arkham.Types.Direction
@@ -1734,7 +1735,7 @@ windowMatches iid source window' = \case
       _ -> pure False
     _ -> pure False
   Matcher.DealtDamage whenMatcher whoMatcher -> case window' of
-    Window t (Window.DealtDamage _ (InvestigatorTarget iid'))
+    Window t (Window.DealtDamage _ _ (InvestigatorTarget iid'))
       | t == whenMatcher -> matchWho iid iid' whoMatcher
     _ -> pure False
   Matcher.DealtHorror whenMatcher whoMatcher -> case window' of
@@ -1742,13 +1743,17 @@ windowMatches iid source window' = \case
       | t == whenMatcher -> matchWho iid iid' whoMatcher
     _ -> pure False
   Matcher.AssetDealtDamage timingMatcher assetMatcher -> case window' of
-    Window t (Window.DealtDamage _ (AssetTarget aid)) | t == timingMatcher ->
+    Window t (Window.DealtDamage _ _ (AssetTarget aid)) | t == timingMatcher ->
       member aid <$> select assetMatcher
     _ -> pure False
-  Matcher.EnemyDealtDamage timingMatcher enemyMatcher -> case window' of
-    Window t (Window.DealtDamage _ (EnemyTarget eid)) | t == timingMatcher ->
-      member eid <$> select enemyMatcher
-    _ -> pure False
+  Matcher.EnemyDealtDamage timingMatcher damageEffectMatcher enemyMatcher ->
+    case window' of
+      Window t (Window.DealtDamage _ damageEffect (EnemyTarget eid))
+        | t == timingMatcher -> liftA2
+          (&&)
+          (damageEffectMatches damageEffect damageEffectMatcher)
+          (member eid <$> select enemyMatcher)
+      _ -> pure False
   Matcher.DiscoverClues whenMatcher whoMatcher whereMatcher valueMatcher ->
     case window' of
       Window t (Window.DiscoverClues who lid n) | whenMatcher == t -> andM
@@ -2123,6 +2128,13 @@ agendaMatches aid (Matcher.AgendaWithId aid') = aid == aid'
 
 actionMatches :: Applicative m => Action -> Matcher.ActionMatcher -> m Bool
 actionMatches a (Matcher.ActionIs a') = pure $ a == a'
+
+damageEffectMatches
+  :: Applicative m => DamageEffect -> Matcher.DamageEffectMatcher -> m Bool
+damageEffectMatches a = \case
+  Matcher.AnyDamageEffect -> pure True
+  Matcher.AttackDamageEffect -> pure $ a == AttackDamageEffect
+  Matcher.NonAttackDamageEffect -> pure $ a == NonAttackDamageEffect
 
 spawnAtOneOf
   :: (MonadIO m, HasSet LocationId env (), MonadReader env m, HasQueue env)

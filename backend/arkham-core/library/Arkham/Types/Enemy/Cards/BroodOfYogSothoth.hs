@@ -37,10 +37,10 @@ instance HasCount PlayerCount env () => HasModifiersFor env BroodOfYogSothoth wh
 
 instance EnemyRunner env => RunMessage env BroodOfYogSothoth where
   runMessage msg e@(BroodOfYogSothoth attrs) = case msg of
-    EnemyDamage eid _ (AssetSource aid) _ | eid == enemyId attrs -> do
+    EnemyDamage eid _ (AssetSource aid) _ _ | eid == enemyId attrs -> do
       name <- getName aid
       if name == mkName "Esoteric Formula"
         then BroodOfYogSothoth <$> runMessage msg attrs
         else pure e
-    EnemyDamage eid _ _ _ | eid == enemyId attrs -> pure e
+    EnemyDamage eid _ _ _ _ | eid == enemyId attrs -> pure e
     _ -> BroodOfYogSothoth <$> runMessage msg attrs

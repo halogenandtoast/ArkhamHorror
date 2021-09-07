@@ -12,8 +12,9 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
+import Arkham.Types.DamageEffect
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message hiding (EnemyAttacks)
 import Arkham.Types.Query
 import Arkham.Types.Source
@@ -32,13 +33,14 @@ dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 instance HasAbilities Aquinnah1 where
   getAbilities (Aquinnah1 a) =
     [ restrictedAbility
-        a
-        1
-        (OwnsThis <> EnemyCriteria
-          (NotAttackingEnemy <> EnemyExists (EnemyAt YourLocation))
-        )
-      $ ReactionAbility (EnemyAttacks Timing.When You AnyEnemy)
-      $ Costs [ExhaustCost (toTarget a), HorrorCost (toSource a) (toTarget a) 1]
+          a
+          1
+          (OwnsThis <> EnemyCriteria
+            (NotAttackingEnemy <> EnemyExists (EnemyAt YourLocation))
+          )
+        $ ReactionAbility (EnemyAttacks Timing.When You AnyEnemy)
+        $ Costs
+            [ExhaustCost (toTarget a), HorrorCost (toSource a) (toTarget a) 1]
     ]
 
 instance AssetRunner env => RunMessage env Aquinnah1 where
@@ -58,7 +60,7 @@ instance AssetRunner env => RunMessage env Aquinnah1 where
         (chooseOne
           iid
           [ Run
-              [ EnemyDamage eid iid source healthDamage'
+              [ EnemyDamage eid iid source NonAttackDamageEffect healthDamage'
               , InvestigatorAssignDamage
                 iid
                 (EnemySource enemyId)

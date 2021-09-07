@@ -9,6 +9,7 @@ import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.DamageEffect
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 import Arkham.Types.Id
@@ -75,7 +76,7 @@ instance EventRunner env => RunMessage env BloodRite where
                    [ SpendResources iid 1
                    , chooseOne
                      iid
-                     [ EnemyDamage enemyId iid source 1
+                     [ EnemyDamage enemyId iid source NonAttackDamageEffect 1
                      | enemyId <- enemyIds
                      ]
                    ]

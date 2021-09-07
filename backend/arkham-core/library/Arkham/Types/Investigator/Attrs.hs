@@ -28,6 +28,7 @@ import Arkham.Types.Game.Helpers hiding (windows)
 import qualified Arkham.Types.Game.Helpers as Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Id
+import Arkham.Types.DamageEffect
 import Arkham.Types.Matcher
   ( AssetMatcher(..)
   , CardMatcher(..)
@@ -1042,7 +1043,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
            )
   InvestigatorDamageEnemy iid eid source | iid == investigatorId -> do
     damage <- damageValueFor 1 a
-    a <$ push (EnemyDamage eid iid source damage)
+    a <$ push (EnemyDamage eid iid source AttackDamageEffect damage)
   EnemyEvaded iid eid | iid == investigatorId -> do
     modifiers' <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
     pushAll =<< checkWindows [Window Timing.After (Window.EnemyEvaded iid eid)]
@@ -1161,7 +1162,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          ]
       <> [ CheckWindow
              iid
-             [Window Timing.When (Window.DealtDamage source (toTarget a))]
+             [Window Timing.When (Window.DealtDamage source NonAttackDamageEffect (toTarget a))]
          | damage > 0
          ]
       )
@@ -1223,7 +1224,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorDoAssignDamage iid source _ 0 0 damageTargets horrorTargets
     | iid == investigatorId -> a <$ push
       (CheckWindow iid
-      $ [ Window Timing.When (Window.DealtDamage source target)
+      $ [ Window Timing.When (Window.DealtDamage source NonAttackDamageEffect target)
         | target <- nub damageTargets
         ]
       <> [ Window Timing.When (Window.DealtHorror source target)

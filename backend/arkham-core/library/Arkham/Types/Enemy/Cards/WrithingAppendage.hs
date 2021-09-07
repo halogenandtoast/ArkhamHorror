@@ -9,10 +9,11 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.DamageEffect
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message hiding (EnemyAttacks, EnemyDefeated)
 import qualified Arkham.Types.Timing as Timing
 
@@ -49,7 +50,14 @@ instance EnemyRunner env => RunMessage env WrithingAppendage where
       mCnidathquaId <- getCnidathqua
       case mCnidathquaId of
         Just cnidathquaId ->
-          push (EnemyDamage cnidathquaId iid (toSource attrs) 1)
+          push
+            (EnemyDamage
+              cnidathquaId
+              iid
+              (toSource attrs)
+              NonAttackDamageEffect
+              1
+            )
         Nothing -> pure ()
       WrithingAppendage <$> runMessage msg attrs
     _ -> WrithingAppendage <$> runMessage msg attrs

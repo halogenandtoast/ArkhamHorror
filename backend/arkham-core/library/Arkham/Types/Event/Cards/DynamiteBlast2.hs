@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
+import Arkham.Types.DamageEffect
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 import Arkham.Types.Id
@@ -30,7 +31,10 @@ instance EventRunner env => RunMessage env DynamiteBlast2 where
         investigatorIds <- getSetList @InvestigatorId lid
         pure
           ( lid
-          , map (\enid -> EnemyDamage enid iid (EventSource eid) 3) enemyIds
+          , map
+              (\enid -> EnemyDamage enid iid (EventSource eid) NonAttackDamageEffect 3
+              )
+              enemyIds
             <> map
                  (\iid' -> InvestigatorAssignDamage
                    iid'

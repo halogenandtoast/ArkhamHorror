@@ -11,10 +11,11 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
+import Arkham.Types.DamageEffect
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -59,5 +60,5 @@ instance EnemyRunner env => RunMessage env Poltergeist where
       )
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> e
-      <$ push (EnemyDamage (toId attrs) iid source 1)
+      <$ push (EnemyDamage (toId attrs) iid source NonAttackDamageEffect 1)
     _ -> Poltergeist <$> runMessage msg attrs

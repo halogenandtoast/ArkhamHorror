@@ -153,6 +153,11 @@ pattern EnemyWithAnyClues <-
   EnemyWithClues (GreaterThan (Static 0)) where
   EnemyWithAnyClues = EnemyWithClues (GreaterThan (Static 0))
 
+pattern EnemyWithAnyDamage :: EnemyMatcher
+pattern EnemyWithAnyDamage <-
+  EnemyWithDamage (GreaterThan (Static 0)) where
+  EnemyWithAnyDamage = EnemyWithDamage (GreaterThan (Static 0))
+
 data EnemyMatcher
   = EnemyWithTitle Text
   | EnemyWithFullTitle Text Text
@@ -162,6 +167,7 @@ data EnemyMatcher
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword
   | EnemyWithClues ValueMatcher
+  | EnemyWithDamage ValueMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
   | EnemyIs CardCode
   | AnyEnemy
@@ -427,7 +433,7 @@ data WindowMatcher
   | AssetEntersPlay Timing AssetMatcher
   | AssetLeavesPlay Timing AssetMatcher
   | AssetDealtDamage Timing AssetMatcher
-  | EnemyDealtDamage Timing EnemyMatcher
+  | EnemyDealtDamage Timing DamageEffectMatcher EnemyMatcher
   | EnemyLeavesPlay Timing EnemyMatcher
   | LocationLeavesPlay Timing LocationMatcher
   | TookControlOfAsset Timing Who AssetMatcher
@@ -594,5 +600,9 @@ data DeckMatcher = EncounterDeck | DeckOf InvestigatorMatcher | AnyDeck
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data AgendaMatcher = AgendaWithId AgendaId | AnyAgenda
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data DamageEffectMatcher = AttackDamageEffect | NonAttackDamageEffect | AnyDamageEffect
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

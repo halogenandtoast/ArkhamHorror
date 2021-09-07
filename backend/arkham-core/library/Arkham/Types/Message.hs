@@ -14,6 +14,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBagStepState
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
+import Arkham.Types.DamageEffect
 import Arkham.Types.Deck
 import Arkham.Types.Direction
 import Arkham.Types.Effect.Window
@@ -260,7 +261,7 @@ data Message
     | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
     | EnemyAttacks [Message]
     | EnemyCheckEngagement EnemyId
-    | EnemyDamage EnemyId InvestigatorId Source Int
+    | EnemyDamage EnemyId InvestigatorId Source DamageEffect Int
     | EnemySetDamage EnemyId Source Int
     | DefeatEnemy EnemyId InvestigatorId Source
     | EnemyDefeated EnemyId InvestigatorId LocationId CardCode Source [Trait]

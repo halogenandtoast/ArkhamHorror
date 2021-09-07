@@ -1917,6 +1917,7 @@ instance HasGame env => HasSet Trait env Source where
     ResourceSource -> pure mempty
     AssetMatcherSource{} -> pure mempty -- should have been replaced
     LocationMatcherSource{} -> pure mempty -- should have been replaced
+    StorySource{} -> pure mempty
 
 instance HasGame env => HasSet Trait env (InvestigatorId, CardId) where
   getSet (iid, cid) =
@@ -2061,12 +2062,15 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
     discards <- getDiscards investigatorIds
     setAsideCards <- map unSetAsideCard <$> getList ()
     victoryDisplayCards <- map unVictoryDisplayCard <$> getSetList ()
+    underScenarioReferenceCards <- map unUnderScenarioReferenceCard
+      <$> getList ()
     underneathCards <-
       map unUnderneathCard . concat <$> traverse getList investigatorIds
     filterM
       (`matches` matcher)
       (handCards
       <> underneathCards
+      <> underScenarioReferenceCards
       <> discards
       <> setAsideCards
       <> victoryDisplayCards
@@ -2716,6 +2720,7 @@ runGameMessage msg g = case msg of
   Label _ msgs -> g <$ pushAll msgs
   TargetLabel _ msgs -> g <$ pushAll msgs
   EvadeLabel _ msgs -> g <$ pushAll msgs
+  CardLabel _ msgs -> g <$ pushAll msgs
   Continue _ -> pure g
   EndOfGame -> g <$ pushEnd EndOfScenario
   ResetGame ->

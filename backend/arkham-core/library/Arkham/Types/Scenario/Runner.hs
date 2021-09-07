@@ -13,6 +13,7 @@ import Arkham.Types.Trait
 
 type ScenarioRunner env
   = ( HasQueue env
+    , Query AssetMatcher env
     , Query EnemyMatcher env
     , Query InvestigatorMatcher env
     , HasCount DoomCount env ()
@@ -23,11 +24,13 @@ type ScenarioRunner env
     , HasCount PlayerCount env ()
     , HasCount ResourceCount env InvestigatorId
     , HasCount ClueCount env InvestigatorId
+    , HasCount ClueCount env AssetId
     , HasCount XPCount env ()
     , HasCount EnemyCount env (InvestigatorLocation, [Trait])
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
+    , HasId LocationId env AssetId
     , HasId (Maybe CampaignId) env ()
     , HasId (Maybe EnemyId) env EnemyMatcher
     , HasList DeckCard env InvestigatorId

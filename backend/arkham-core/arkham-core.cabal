@@ -430,6 +430,7 @@ library
       Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth
       Arkham.Types.Enemy.Cards.AgentOfTheKing
       Arkham.Types.Enemy.Cards.AlmaHill
+      Arkham.Types.Enemy.Cards.AshleighClarke
       Arkham.Types.Enemy.Cards.AvianThrall
       Arkham.Types.Enemy.Cards.BalefulReveler
       Arkham.Types.Enemy.Cards.BillyCooper
@@ -439,6 +440,7 @@ library
       Arkham.Types.Enemy.Cards.CloverClubPitBoss
       Arkham.Types.Enemy.Cards.Cnidathqua
       Arkham.Types.Enemy.Cards.ConglomerationOfSpheres
+      Arkham.Types.Enemy.Cards.ConstanceDumaine
       Arkham.Types.Enemy.Cards.CorpseHungryGhoul
       Arkham.Types.Enemy.Cards.CorpseTaker
       Arkham.Types.Enemy.Cards.CrazedShoggoth
@@ -463,7 +465,9 @@ library
       Arkham.Types.Enemy.Cards.HuntingNightgaunt
       Arkham.Types.Enemy.Cards.IcyGhoul
       Arkham.Types.Enemy.Cards.InterstellarTraveler
+      Arkham.Types.Enemy.Cards.IshimaruHaruko
       Arkham.Types.Enemy.Cards.JeremiahPierce
+      Arkham.Types.Enemy.Cards.JordanPerry
       Arkham.Types.Enemy.Cards.LupineThrall
       Arkham.Types.Enemy.Cards.MarshGug
       Arkham.Types.Enemy.Cards.MobEnforcer
@@ -480,6 +484,7 @@ library
       Arkham.Types.Enemy.Cards.SalvatoreNeri
       Arkham.Types.Enemy.Cards.SavioCorvi
       Arkham.Types.Enemy.Cards.ScreechingByakhee
+      Arkham.Types.Enemy.Cards.SebastienMoreau
       Arkham.Types.Enemy.Cards.ServantOfManyMouths
       Arkham.Types.Enemy.Cards.ServantOfTheLurker
       Arkham.Types.Enemy.Cards.SethBishop

@@ -344,7 +344,7 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
       push
         (chooseOne
           leadInvestigatorId
-          [TargetLabel (StoryTarget $ toCardCode card) [ResolveStory card]]
+          [CardLabel (toCardCode card) [ResolveStory card]]
         )
       pure $ a & cardsUnderScenarioReferenceL %~ filter (/= card)
     _ -> pure a

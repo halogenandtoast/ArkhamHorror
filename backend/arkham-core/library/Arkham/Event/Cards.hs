@@ -12,6 +12,7 @@ import Arkham.Types.ClassSymbol
 import qualified Arkham.Types.Criteria as Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
+import Arkham.Types.Modifier (ModifierType(..))
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import qualified Arkham.Types.Timing as Timing
@@ -161,7 +162,9 @@ dodge = (event "01023" "Dodge" 1 Guardian)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Tactic]
   , cdFastWindow = Just
-    (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemy)
+    (EnemyAttacks Timing.When (InvestigatorAt YourLocation)
+    $ EnemyWithoutModifier AttacksCannotBeCancelled
+    )
   }
 
 dynamiteBlast :: CardDef
@@ -511,7 +514,9 @@ hypnoticGaze = (event "02153" "Hypnotic Gaze" 3 Mystic)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = singleton Spell
   , cdFastWindow = Just
-    (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemy)
+    (EnemyAttacks Timing.When (InvestigatorAt YourLocation)
+    $ EnemyWithoutModifier AttacksCannotBeCancelled
+    )
   }
 
 lure1 :: CardDef

@@ -179,6 +179,7 @@ data EnemyMatcher
   | EnemyMatchAll [EnemyMatcher]
   | EnemyEngagedWithYou
   | EnemyWithMostRemainingHealth EnemyMatcher
+  | EnemyWithoutModifier ModifierType
   | UnengagedEnemy
   | UniqueEnemy
   | NotEnemy EnemyMatcher

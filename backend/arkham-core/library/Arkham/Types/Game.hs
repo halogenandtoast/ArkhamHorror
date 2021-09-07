@@ -1042,6 +1042,8 @@ getEnemiesMatching matcher = do
     EnemyWithMostRemainingHealth enemyMatcher -> \enemy -> do
       matches <- getEnemiesMatching enemyMatcher
       elem enemy . maxes <$> traverse (traverseToSnd remainingHealth) matches
+    EnemyWithoutModifier modifier -> \enemy ->
+      notElem modifier <$> getModifiers (toSource enemy) (toTarget enemy)
     UnengagedEnemy -> \enemy -> null <$> getSet @InvestigatorId (toId enemy)
     UniqueEnemy -> pure . isUnique
     M.EnemyAt locationMatcher -> \enemy ->

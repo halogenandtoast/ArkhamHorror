@@ -47,6 +47,7 @@ data ModifierType
   | AlternateSuccessfullEvasion
   | AlternativeReady Source
   | AnySkillValue Int
+  | AttacksCannotBeCancelled
   | BaseSkillOf SkillType Int
   | BecomesFast
   | Blank

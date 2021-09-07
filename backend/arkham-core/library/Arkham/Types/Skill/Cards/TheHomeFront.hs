@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Skill.Cards as Cards
 import Arkham.Types.Action
 import Arkham.Types.Classes
+import Arkham.Types.DamageEffect
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -36,7 +37,7 @@ instance SkillRunner env => RunMessage env TheHomeFront where
             do
               pushAll
                 [ HealDamage (InvestigatorTarget skillOwner) 1
-                , EnemyDamage eid skillOwner (toSource attrs) 1
+                , EnemyDamage eid skillOwner (toSource attrs) NonAttackDamageEffect 1
                 ]
         _ -> pure ()
     _ -> TheHomeFront <$> runMessage msg attrs

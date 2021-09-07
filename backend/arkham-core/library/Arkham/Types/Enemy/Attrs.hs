@@ -701,16 +701,16 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
       pure $ a & damageL %~ max 0 . subtract n
     HealAllDamage (EnemyTarget eid) | eid == enemyId -> pure $ a & damageL .~ 0
     EnemySetDamage eid _ amount | eid == enemyId -> pure $ a & damageL .~ amount
-    EnemyDamage eid iid source amount | eid == enemyId -> do
+    EnemyDamage eid iid source damageEffect amount | eid == enemyId -> do
       canDamage <- sourceCanDamageEnemy eid source
       if canDamage
        then do
         amount' <- getModifiedDamageAmount a amount
         modifiedHealth <- getModifiedHealth a
         damageWhenMsgs <- checkWindows
-          [Window Timing.When (Window.DealtDamage source $ toTarget a)]
+          [Window Timing.When (Window.DealtDamage source damageEffect $ toTarget a)]
         damageAfterMsgs <- checkWindows
-          [Window Timing.After (Window.DealtDamage source $ toTarget a)]
+          [Window Timing.After (Window.DealtDamage source damageEffect $ toTarget a)]
         when (a ^. damageL + amount' >= modifiedHealth) $ do
           whenMsgs <- checkWindows
             [Window Timing.When (Window.EnemyWouldBeDefeated eid)]

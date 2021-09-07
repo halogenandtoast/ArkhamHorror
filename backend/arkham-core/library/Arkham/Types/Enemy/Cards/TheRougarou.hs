@@ -49,8 +49,10 @@ instance HasAbilities TheRougarou where
             attrs
             1
             (ValueIs (damagePerPhase meta) (EqualTo $ PerPlayer 1))
-            (ForcedAbility $ EnemyDealtDamage Timing.After $ EnemyWithId $ toId
-              attrs
+            (ForcedAbility
+            $ EnemyDealtDamage Timing.After AnyDamageEffect
+            $ EnemyWithId
+            $ toId attrs
             )
           & (abilityLimitL .~ NoLimit)
     if any isEngage actions'
@@ -90,7 +92,7 @@ instance EnemyRunner env => RunMessage env TheRougarou where
           <$> runMessage msg attrs
       EndPhase ->
         TheRougarou . (`with` TheRougarouMetadata 0) <$> runMessage msg attrs
-      EnemyDamage eid _ _ n | eid == enemyId ->
+      EnemyDamage eid _ _ _ n | eid == enemyId ->
         TheRougarou
           . (`with` TheRougarouMetadata (damagePerPhase metadata + n))
           <$> runMessage msg attrs

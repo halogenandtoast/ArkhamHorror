@@ -12,7 +12,8 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Matcher
+import Arkham.Types.DamageEffect
+import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message
 import Arkham.Types.Source
 import qualified Arkham.Types.Timing as Timing
@@ -40,7 +41,7 @@ instance HasAbilities GuardDog where
 
 instance (AssetRunner env) => RunMessage env GuardDog where
   runMessage msg a@(GuardDog attrs) = case msg of
-    UseCardAbility iid source [Window Timing.When (Window.DealtDamage (EnemySource eid) _)] 1 _
+    UseCardAbility iid source [Window Timing.When (Window.DealtDamage (EnemySource eid) _ _)] 1 _
       | isSource attrs source
-      -> a <$ push (EnemyDamage eid iid source 1)
+      -> a <$ push (EnemyDamage eid iid source NonAttackDamageEffect 1)
     _ -> GuardDog <$> runMessage msg attrs

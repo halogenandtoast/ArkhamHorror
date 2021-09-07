@@ -13,7 +13,8 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Matcher
+import Arkham.Types.DamageEffect
+import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -45,5 +46,10 @@ instance AssetRunner env => RunMessage env BeatCop where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       enemies <- selectList (EnemyAt YourLocation)
       a <$ push
-        (chooseOrRunOne iid [ EnemyDamage eid iid source 1 | eid <- enemies ])
+        (chooseOrRunOne
+          iid
+          [ EnemyDamage eid iid source NonAttackDamageEffect 1
+          | eid <- enemies
+          ]
+        )
     _ -> BeatCop <$> runMessage msg attrs

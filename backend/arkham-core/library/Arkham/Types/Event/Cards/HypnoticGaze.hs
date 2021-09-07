@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
+import Arkham.Types.DamageEffect
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Id
 import Arkham.Types.Message
@@ -42,7 +43,12 @@ instance HasCount HealthDamageCount env EnemyId => RunMessage env HypnoticGaze w
         then do
           healthDamage' <- unHealthDamageCount <$> getCount enemyId
           e <$ pushAll
-            [ EnemyDamage enemyId iid (toSource attrs) healthDamage'
+            [ EnemyDamage
+              enemyId
+              iid
+              (toSource attrs)
+              NonAttackDamageEffect
+              healthDamage'
             , Discard $ toTarget attrs
             ]
         else e <$ push (Discard $ toTarget attrs)

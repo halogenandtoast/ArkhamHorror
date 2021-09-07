@@ -38,9 +38,9 @@ instance Query EnemyMatcher env => HasModifiersFor env TheCloverClub where
 instance HasAbilities TheCloverClub where
   getAbilities (TheCloverClub x) =
     [ mkAbility x 1
-      $ ForcedAbility
-      $ EnemyDealtDamage Timing.When
-      $ EnemyWithTrait Criminal
+        $ ForcedAbility
+        $ EnemyDealtDamage Timing.When AnyDamageEffect
+        $ EnemyWithTrait Criminal
     | onSide A x
     ]
 

@@ -13,8 +13,9 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
+import Arkham.Types.DamageEffect
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message hiding (AssetDefeated)
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -56,5 +57,10 @@ instance AssetRunner env => RunMessage env BrotherXavier1 where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       enemies <- selectList (EnemyAt YourLocation)
       a <$ pushAll
-        [chooseOrRunOne iid [ EnemyDamage eid iid source 2 | eid <- enemies ]]
+        [ chooseOrRunOne
+            iid
+            [ EnemyDamage eid iid source NonAttackDamageEffect 2
+            | eid <- enemies
+            ]
+        ]
     _ -> BrotherXavier1 <$> runMessage msg attrs

@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
+import Arkham.Types.DamageEffect
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -30,10 +31,9 @@ instance HasQueue env => RunMessage env BlindingLight where
         (pushAll [LoseActions iid (toSource attrs) 1, DisableEffect effectId])
     PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
       | SkillTestTarget == effectTarget
-      -> e
-        <$ pushAll
-             [ EnemyDamage eid iid (InvestigatorSource iid) 1
-             , DisableEffect effectId
-             ]
+      -> e <$ pushAll
+        [ EnemyDamage eid iid (InvestigatorSource iid) NonAttackDamageEffect 1
+        , DisableEffect effectId
+        ]
     SkillTestEnds _ -> e <$ push (DisableEffect effectId)
     _ -> BlindingLight <$> runMessage msg attrs

@@ -4,9 +4,10 @@ import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
 import Arkham.Types.Classes
+import Arkham.Types.DamageEffect
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message
 
 newtype SneakAttack = SneakAttack EventAttrs
@@ -22,7 +23,9 @@ instance EventRunner env => RunMessage env SneakAttack where
       yourLocation <- LocationWithId <$> getId you
       enemies <- selectList $ ExhaustedEnemy <> EnemyAt yourLocation
       e <$ pushAll
-        ([ EnemyDamage enemy you (toSource attrs) 2 | enemy <- enemies ]
+        ([ EnemyDamage enemy you (toSource attrs) NonAttackDamageEffect 2
+         | enemy <- enemies
+         ]
         <> [Discard $ toTarget attrs]
         )
     _ -> SneakAttack <$> runMessage msg attrs

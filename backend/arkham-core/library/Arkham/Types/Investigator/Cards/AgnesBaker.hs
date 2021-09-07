@@ -8,9 +8,10 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
+import Arkham.Types.DamageEffect
 import Arkham.Types.GameValue
 import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message
 import qualified Arkham.Types.Timing as Timing
 
@@ -59,6 +60,8 @@ instance InvestigatorRunner env => RunMessage env AgnesBaker where
       i <$ push
         (chooseOne
           (toId attrs)
-          [ EnemyDamage eid (toId attrs) source 1 | eid <- enemyIds ]
+          [ EnemyDamage eid (toId attrs) source NonAttackDamageEffect 1
+          | eid <- enemyIds
+          ]
         )
     _ -> AgnesBaker <$> runMessage msg attrs

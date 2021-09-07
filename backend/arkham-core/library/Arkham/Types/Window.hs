@@ -3,8 +3,9 @@ module Arkham.Types.Window where
 import Arkham.Prelude
 
 import Arkham.Types.Action (Action)
-import Arkham.Types.Agenda.AdvancementReason
+import Arkham.Types.Agenda.AdvancementReason (AgendaAdvancementReason)
 import Arkham.Types.Card (Card)
+import Arkham.Types.DamageEffect (DamageEffect)
 import Arkham.Types.Deck
 import Arkham.Types.Id
 import Arkham.Types.Matcher (LocationMatcher)
@@ -34,7 +35,7 @@ data WindowType
   | EndOfGame
   | ChosenRandomLocation LocationId
   | CommittedCards InvestigatorId [Card]
-  | DealtDamage Source Target
+  | DealtDamage Source DamageEffect Target
   | DealtHorror Source Target
   | Defeated Source
   | DiscoverClues InvestigatorId LocationId Int

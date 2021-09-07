@@ -1026,6 +1026,8 @@ getEnemiesMatching matcher = do
     EnemyWithKeyword k -> fmap (elem k) . getSet . toId
     EnemyWithClues gameValueMatcher ->
       getCount >=> (`gameValueMatches` gameValueMatcher) . unClueCount
+    EnemyWithDamage gameValueMatcher ->
+      (`gameValueMatches` gameValueMatcher) . fst . getDamage
     ExhaustedEnemy -> pure . isExhausted
     AnyEnemy -> pure . const True
     EnemyIs cardCode -> pure . (== cardCode) . toCardCode
@@ -3741,7 +3743,7 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  EnemyDamage eid iid _ n | n > 0 -> do
+  EnemyDamage eid iid _ _ n | n > 0 -> do
     let
       historyItem = mempty { historyDealtDamageTo = [EnemyTarget eid] }
       turn = isJust $ view turnPlayerInvestigatorIdL g

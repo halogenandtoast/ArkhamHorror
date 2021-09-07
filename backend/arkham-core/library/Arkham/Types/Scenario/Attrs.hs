@@ -288,7 +288,11 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         [Window Timing.When (Window.InvestigatorEliminated iid)]
       afterMsgs <- checkWindows
         [Window Timing.When (Window.InvestigatorEliminated iid)]
-      a <$ pushAll (whenMsgs <> [InvestigatorEliminated iid] <> afterMsgs)
+      a <$ pushAll
+        (whenMsgs
+        <> [InvestigatorPlaceAllCluesOnLocation, InvestigatorEliminated iid]
+        <> afterMsgs
+        )
     Remember logKey -> pure $ a & logL %~ insertSet logKey
     ResolveToken _drawnToken token _iid | token == AutoFail ->
       a <$ push FailSkillTest

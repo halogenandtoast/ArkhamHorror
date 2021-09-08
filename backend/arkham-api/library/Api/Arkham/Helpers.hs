@@ -81,9 +81,7 @@ newtype ArkhamDBDecklistMeta = ArkhamDBDecklistMeta { alternate_front :: Investi
 loadDecklistCards :: ArkhamDBDecklist -> IO [PlayerCard]
 loadDecklistCards decklist =
   flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' ->
-    if cardCode /= "01000"
-      then replicateM count' (genPlayerCard (lookupPlayerCardDef cardCode))
-      else pure []
+      replicateM count' (genPlayerCard (lookupPlayerCardDef cardCode))
 
 loadDecklist :: ArkhamDeck -> IO (InvestigatorId, [PlayerCard])
 loadDecklist arkhamDeck = (investigatorId, ) <$> loadDecklistCards decklist

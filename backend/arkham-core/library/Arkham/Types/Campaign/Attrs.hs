@@ -3,6 +3,7 @@ module Arkham.Types.Campaign.Attrs where
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.PlayerCard
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignLog
 import Arkham.Types.CampaignLogKey
@@ -20,6 +21,7 @@ import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Resolution
 import Arkham.Types.Token
+import qualified Data.List.NonEmpty as NonEmpty
 
 class IsCampaign a
 
@@ -92,8 +94,11 @@ instance HasList CampaignStoryCard env CampaignAttrs where
       campaignStoryCards
 
 addRandomBasicWeaknessIfNeeded
-  :: Monad m => Deck PlayerCard -> m (Deck PlayerCard)
-addRandomBasicWeaknessIfNeeded = pure
+  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard)
+addRandomBasicWeaknessIfNeeded deck = do
+  Deck <$> for (unDeck deck) \card -> if toCardDef card == randomWeakness
+    then sample (NonEmpty.fromList allWeaknesses) >>= genPlayerCard
+    else pure card
 
 instance CampaignRunner env => RunMessage env CampaignAttrs where
   runMessage msg a@CampaignAttrs {..} = case msg of

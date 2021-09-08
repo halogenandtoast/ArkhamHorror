@@ -17,8 +17,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.SkillType
-import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 
 newtype AshleighClarke = AshleighClarke AssetAttrs
@@ -30,8 +28,9 @@ ashleighClarke = asset AshleighClarke Cards.ashleighClarke
 
 instance HasAbilities AshleighClarke where
   getAbilities (AshleighClarke a) =
-    [ restrictedAbility a 1 OnSameLocation $ ActionAbility Nothing $ ActionCost
-      2
+    [ restrictedAbility a 1 (OnSameLocation <> CanTakeControlOfClues)
+      $ ActionAbility Nothing
+      $ ActionCost 2
     , mkAbility a 2
       $ ForcedAbility
       $ LastClueRemovedFromAsset Timing.When

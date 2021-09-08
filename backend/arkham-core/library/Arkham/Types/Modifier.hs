@@ -69,6 +69,7 @@ data ModifierType
   | CannotCancelHorror
   | CannotCommitCards CardMatcher
   | CannotDiscoverClues
+  | CannotTakeControlOfClues
   | CannotDrawCards
   | CannotGainResources
   | CannotTakeAction ActionTarget

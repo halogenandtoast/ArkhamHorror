@@ -16,6 +16,7 @@ default-extensions:
 - FlexibleContexts
 - FlexibleInstances
 - GeneralizedNewtypeDeriving
+- GADTs
 - LambdaCase
 - MultiParamTypeClasses
 - NamedFieldPuns

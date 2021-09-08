@@ -18,6 +18,7 @@ import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
@@ -52,8 +53,9 @@ instance AssetRunner env => RunMessage env JordanPerry where
       (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 2)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
+        modifiers <- getModifiers source (InvestigatorTarget iid)
         a <$ when
-          (assetClues attrs > 0)
+          (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers)
           (pushAll [RemoveClues (toTarget attrs) 1, GainClues iid 1])
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       a <$ push

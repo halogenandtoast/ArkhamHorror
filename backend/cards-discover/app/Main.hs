@@ -2,6 +2,7 @@ module Main where
 
 import Cards.Discover.Exe
 import Options.Applicative
+import Prelude
 
 data Opts = Opts
   { dir :: FilePath

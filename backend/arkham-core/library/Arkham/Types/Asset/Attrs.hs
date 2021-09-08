@@ -269,7 +269,9 @@ instance
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
     RemoveDoom target n | isTarget a target ->
       pure $ a & doomL %~ min 0 . subtract n
-    RemoveClues target n | isTarget a target ->
+    RemoveClues target n | isTarget a target -> do
+      when (assetClues - n <= 0) $ pushAll =<< windows
+        [Window.LastClueRemovedFromAsset (toId a)]
       pure $ a & cluesL %~ max 0 . subtract n
     CheckDefeated _ -> do
       when (defeated a) $ do

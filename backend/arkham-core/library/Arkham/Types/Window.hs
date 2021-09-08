@@ -41,6 +41,7 @@ data WindowType
   | DiscoverClues InvestigatorId LocationId Int
   | GainsClues InvestigatorId Int
   | DiscoveringLastClue InvestigatorId LocationId
+  | LastClueRemovedFromAsset AssetId
   | DrawCard InvestigatorId Card DeckSignifier
   | Discarded InvestigatorId Card
   | WouldBeDiscarded Target

@@ -952,6 +952,7 @@ library
       Arkham.Types.Treachery.Cards.EphemeralExhibits
       Arkham.Types.Treachery.Cards.FalseLead
       Arkham.Types.Treachery.Cards.FinalRhapsody
+      Arkham.Types.Treachery.Cards.FineDining
       Arkham.Types.Treachery.Cards.FrozenInFear
       Arkham.Types.Treachery.Cards.GraspingHands
       Arkham.Types.Treachery.Cards.Haunted
@@ -1044,6 +1045,7 @@ library
       FlexibleContexts
       FlexibleInstances
       GeneralizedNewtypeDeriving
+      GADTs
       LambdaCase
       MultiParamTypeClasses
       NamedFieldPuns
@@ -1102,6 +1104,7 @@ executable validate
       FlexibleContexts
       FlexibleInstances
       GeneralizedNewtypeDeriving
+      GADTs
       LambdaCase
       MultiParamTypeClasses
       NamedFieldPuns
@@ -1211,6 +1214,7 @@ test-suite spec
       FlexibleContexts
       FlexibleInstances
       GeneralizedNewtypeDeriving
+      GADTs
       LambdaCase
       MultiParamTypeClasses
       NamedFieldPuns

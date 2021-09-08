@@ -6,6 +6,7 @@ import Cards.Discover.Exe (getFilesRecursive, stripSuffix)
 import Data.FileEmbed
 import Language.Haskell.TH
 import Language.Haskell.TH.Syntax
+import Prelude
 
 findCardFiles :: FilePath -> Q (TExp [FilePath])
 findCardFiles root = do

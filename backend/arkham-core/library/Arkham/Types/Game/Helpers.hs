@@ -1773,6 +1773,10 @@ windowMatches iid source window' = \case
         (matchWho iid who whoMatcher)
         (locationMatches iid source window' lid whereMatcher)
       _ -> pure False
+  Matcher.LastClueRemovedFromAsset whenMatcher assetMatcher -> case window' of
+    Window t (Window.LastClueRemovedFromAsset aid) | whenMatcher == t ->
+      member aid <$> select assetMatcher
+    _ -> pure False
   Matcher.DrawCard whenMatcher whoMatcher cardMatcher deckMatcher ->
     case window' of
       Window t (Window.DrawCard who card deck) | whenMatcher == t -> andM

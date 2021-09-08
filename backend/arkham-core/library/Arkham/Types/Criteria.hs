@@ -23,6 +23,10 @@ pattern CanDiscoverClues :: Criterion
 pattern CanDiscoverClues <- Negate (SelfHasModifier CannotDiscoverClues) where
   CanDiscoverClues = Negate (SelfHasModifier CannotDiscoverClues)
 
+pattern CanTakeControlOfClues :: Criterion
+pattern CanTakeControlOfClues <- Negate (SelfHasModifier CannotTakeControlOfClues) where
+  CanTakeControlOfClues = Negate (SelfHasModifier CannotTakeControlOfClues)
+
 pattern CanDrawCards :: Criterion
 pattern CanDrawCards <- Negate (SelfHasModifier CannotDrawCards) where
   CanDrawCards = Negate (SelfHasModifier CannotDrawCards)

@@ -91,6 +91,10 @@ instance HasList CampaignStoryCard env CampaignAttrs where
     pure $ concatMap (uncurry (map . CampaignStoryCard)) $ mapToList
       campaignStoryCards
 
+addRandomBasicWeaknessIfNeeded
+  :: Monad m => Deck PlayerCard -> m (Deck PlayerCard)
+addRandomBasicWeaknessIfNeeded = pure
+
 instance CampaignRunner env => RunMessage env CampaignAttrs where
   runMessage msg a@CampaignAttrs {..} = case msg of
     StartCampaign -> a <$ push (CampaignStep campaignStep)
@@ -118,7 +122,9 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
         & storyCardsL
         %~ adjustMap (filter ((/= cardCode) . cdCardCode . toCardDef)) iid
     AddToken token -> pure $ a & chaosBagL %~ (token :)
-    InitDeck iid deck -> pure $ a & decksL %~ insertMap iid deck
+    InitDeck iid deck -> do
+      deck' <- addRandomBasicWeaknessIfNeeded deck
+      pure $ a & decksL %~ insertMap iid deck'
     UpgradeDeck iid deck -> pure $ a & decksL %~ insertMap iid deck
     FinishedUpgradingDecks -> case a ^. stepL of
       Just (UpgradeDeckStep nextStep) -> do

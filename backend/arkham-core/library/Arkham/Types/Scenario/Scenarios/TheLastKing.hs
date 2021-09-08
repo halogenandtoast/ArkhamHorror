@@ -100,18 +100,18 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
         then push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
         else pure ()
     StandaloneSetup -> do
-      standalone <- getIsStandalone
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ when
-        standalone
-        (push $ AddCampaignCardToDeck
-          leadInvestigatorId
-          Enemies.theManInThePallidMask
-        )
+      s
+        <$ push
+             (AddCampaignCardToDeck
+               leadInvestigatorId
+               Enemies.theManInThePallidMask
+             )
     Setup -> do
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.dianneDevine]
         [EncounterSet.TheLastKing, EncounterSet.AncientEvils]
+
       foyerId <- getRandom
       courtyardId <- getRandom
       livingRoomId <- getRandom

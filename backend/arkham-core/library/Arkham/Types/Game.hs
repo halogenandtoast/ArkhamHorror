@@ -2758,15 +2758,17 @@ runGameMessage msg g = case msg of
         difficultyOfScenario
         (const . difficultyOf)
         (g ^. modeL)
+      standalone = isNothing $ modeCampaign $ g ^. modeL
     pushAll
-      [ StandaloneSetup
-      , ChooseLeadInvestigator
-      , SetupInvestigators
-      , SetTokensForScenario -- (chaosBagOf campaign')
-      , InvestigatorsMulligan
-      , Setup
-      , EndSetup
-      ]
+      ([ StandaloneSetup | standalone ]
+      <> [ ChooseLeadInvestigator
+         , SetupInvestigators
+         , SetTokensForScenario -- (chaosBagOf campaign')
+         , InvestigatorsMulligan
+         , Setup
+         , EndSetup
+         ]
+      )
     pure
       $ g
       & (modeL %~ setScenario (lookupScenario sid difficulty))
@@ -3979,8 +3981,6 @@ runGameMessage msg g = case msg of
     let
       treachery = createTreachery card iid
       treacheryId = toId treachery
-
-    let
       historyItem = mempty { historyTreacheriesDrawn = [toCardCode treachery] }
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =

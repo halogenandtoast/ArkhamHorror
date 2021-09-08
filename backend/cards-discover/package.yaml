@@ -4,6 +4,7 @@ dependencies:
 - base >= 4.7 && < 5
 
 default-extensions:
+- NoImplicitPrelude
 - BlockArguments
 - BangPatterns
 - ConstraintKinds
@@ -11,6 +12,7 @@ default-extensions:
 - DeriveGeneric
 - DerivingStrategies
 - DerivingVia
+- GADTs
 - FlexibleContexts
 - FlexibleInstances
 - GeneralizedNewtypeDeriving

@@ -112,6 +112,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , eagerForDeath
   , ephemeralExhibits
   , falseLead
+  , fineDining
   , frozenInFear
   , graspingHands
   , huntedDown
@@ -153,6 +154,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , theKingsEdict
   , theYellowSign
   , theZealotsSeal
+  , toughCrowd
   , toweringBeasts
   , twistOfFate
   , twistedToHisWill
@@ -537,6 +539,17 @@ overzealous =
 drawingTheSign :: CardDef
 drawingTheSign = (weakness "03041" "Drawing the Sign")
   { cdCardTraits = setFromList [Pact, Madness]
+  }
+
+fineDining :: CardDef
+fineDining = (treachery "03082" "Fine Dining" TheLastKing 2)
+  { cdCardTraits = singleton Terror
+  , cdKeywords = singleton Keyword.Peril
+  }
+
+toughCrowd :: CardDef
+toughCrowd = (treachery "03083" "Tough Crowd" TheLastKing 2)
+  { cdCardTraits = singleton Hazard
   }
 
 whispersInYourHeadDismay :: CardDef

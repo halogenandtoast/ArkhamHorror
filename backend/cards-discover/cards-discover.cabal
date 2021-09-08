@@ -17,6 +17,7 @@ library
   hs-source-dirs:
       library
   default-extensions:
+      NoImplicitPrelude
       BlockArguments
       BangPatterns
       ConstraintKinds
@@ -24,6 +25,7 @@ library
       DeriveGeneric
       DerivingStrategies
       DerivingVia
+      GADTs
       FlexibleContexts
       FlexibleInstances
       GeneralizedNewtypeDeriving
@@ -57,6 +59,7 @@ executable cards-discover
   hs-source-dirs:
       app
   default-extensions:
+      NoImplicitPrelude
       BlockArguments
       BangPatterns
       ConstraintKinds
@@ -64,6 +67,7 @@ executable cards-discover
       DeriveGeneric
       DerivingStrategies
       DerivingVia
+      GADTs
       FlexibleContexts
       FlexibleInstances
       GeneralizedNewtypeDeriving

@@ -9,6 +9,7 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message
@@ -27,7 +28,8 @@ acolyte = enemyWith
   (spawnAtL ?~ EmptyLocation)
 
 instance HasAbilities Acolyte where
-  getAbilities (Acolyte a) =
+  getAbilities (Acolyte a) = withBaseAbilities
+    a
     [ mkAbility a 1
       $ ForcedAbility
       $ EnemySpawns Timing.After Anywhere

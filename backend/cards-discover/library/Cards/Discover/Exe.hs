@@ -9,6 +9,7 @@ import Data.Foldable (for_)
 import Data.List (groupBy, intercalate, sort, stripPrefix)
 import Data.Maybe
 import Data.String
+import Prelude
 import System.Directory
 import System.FilePath
 

@@ -9,6 +9,7 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message
@@ -23,12 +24,13 @@ ishimaruHaruko =
   enemy IshimaruHaruko Cards.ishimaruHaruko (6, Static 4, 3) (1, 1)
 
 instance HasAbilities IshimaruHaruko where
-  getAbilities (IshimaruHaruko a) =
+  getAbilities (IshimaruHaruko a) = withBaseAbilities
+    a
     [ mkAbility a 1
-        $ ForcedAbility
-        $ EnemyDealtDamage Timing.After NonAttackDamageEffect
-        $ EnemyWithId
-        $ toId a
+      $ ForcedAbility
+      $ EnemyDealtDamage Timing.After NonAttackDamageEffect
+      $ EnemyWithId
+      $ toId a
     ]
 
 instance EnemyRunner env => RunMessage env IshimaruHaruko where

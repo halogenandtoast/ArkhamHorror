@@ -9,6 +9,7 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyDefeated)
@@ -28,7 +29,8 @@ theThingThatFollows = enemyWith
   ((preyL .~ SetToBearer) . (spawnAtL ?~ FarthestLocationFromYou Anywhere))
 
 instance HasAbilities TheThingThatFollows where
-  getAbilities (TheThingThatFollows x) =
+  getAbilities (TheThingThatFollows x) = withBaseAbilities
+    x
     [ mkAbility x 1
       $ ForcedAbility
       $ EnemyWouldBeDefeated Timing.When

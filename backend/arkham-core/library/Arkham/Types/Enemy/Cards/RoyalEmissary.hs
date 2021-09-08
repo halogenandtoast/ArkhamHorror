@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message
@@ -37,11 +38,12 @@ investigatorMatcher a = AnyInvestigator
   ]
 
 instance HasAbilities RoyalEmissary where
-  getAbilities (RoyalEmissary a) =
+  getAbilities (RoyalEmissary a) = withBaseAbilities
+    a
     [ restrictedAbility a 1 (InvestigatorExists $ investigatorMatcher a)
-        $ ForcedAbility
-        $ PhaseEnds Timing.When
-        $ PhaseIs EnemyPhase
+      $ ForcedAbility
+      $ PhaseEnds Timing.When
+      $ PhaseIs EnemyPhase
     ]
 
 instance EnemyRunner env => RunMessage env RoyalEmissary where

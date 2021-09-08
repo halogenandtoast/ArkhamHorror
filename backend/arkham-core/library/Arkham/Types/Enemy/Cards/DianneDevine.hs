@@ -36,7 +36,8 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env DianneDevine
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities DianneDevine where
-  getAbilities (DianneDevine a) =
+  getAbilities (DianneDevine a) = withBaseAbilities
+    a
     [ mkAbility a 1 $ ForcedAbility $ PhaseBegins Timing.When $ PhaseIs
         EnemyPhase
     ]

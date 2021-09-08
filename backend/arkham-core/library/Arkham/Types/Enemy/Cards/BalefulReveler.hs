@@ -30,7 +30,8 @@ balefulReveler =
   enemy BalefulReveler Cards.balefulReveler (4, PerPlayer 5, 3) (2, 2)
 
 instance HasAbilities BalefulReveler where
-  getAbilities (BalefulReveler attrs) =
+  getAbilities (BalefulReveler attrs) = withBaseAbilities
+    attrs
     [ mkAbility
           attrs
           1

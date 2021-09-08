@@ -19,7 +19,7 @@ broadmoor =
   location Broadmoor Cards.broadmoor 3 (PerPlayer 1) Plus [Square, Plus]
 
 instance HasAbilities Broadmoor where
-  getAbilities (Broadmoor a) = [locationResignAction a]
+  getAbilities (Broadmoor a) = withResignAction a []
 
 instance LocationRunner env => RunMessage env Broadmoor where
   runMessage msg (Broadmoor attrs) = Broadmoor <$> runMessage msg attrs

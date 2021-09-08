@@ -33,10 +33,11 @@ theManInThePallidMask = enemyWith
   (spawnAtL ?~ FarthestLocationFromAll Anywhere)
 
 instance HasAbilities TheManInThePallidMask where
-  getAbilities (TheManInThePallidMask a) =
+  getAbilities (TheManInThePallidMask a) = withBaseAbilities
+    a
     [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility (Just Action.Investigate)
-        $ ActionCost 1
+      $ ActionAbility (Just Action.Investigate)
+      $ ActionCost 1
     ]
 
 instance EnemyRunner env => RunMessage env TheManInThePallidMask where

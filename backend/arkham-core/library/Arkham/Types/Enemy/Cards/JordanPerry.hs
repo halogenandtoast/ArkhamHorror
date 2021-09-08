@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message
@@ -24,11 +25,12 @@ jordanPerry :: EnemyCard JordanPerry
 jordanPerry = enemy JordanPerry Cards.jordanPerry (2, Static 8, 2) (1, 1)
 
 instance HasAbilities JordanPerry where
-  getAbilities (JordanPerry a) =
+  getAbilities (JordanPerry a) = withBaseAbilities
+    a
     [ restrictedAbility a 1 (EnemyCriteria $ ThisEnemy EnemyWithAnyDamage)
-        $ ForcedAbility
-        $ PhaseBegins Timing.When
-        $ PhaseIs EnemyPhase
+      $ ForcedAbility
+      $ PhaseBegins Timing.When
+      $ PhaseIs EnemyPhase
     ]
 
 instance EnemyRunner env => RunMessage env JordanPerry where

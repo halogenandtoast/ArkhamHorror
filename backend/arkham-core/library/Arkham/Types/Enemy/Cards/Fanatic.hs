@@ -9,6 +9,7 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyDefeated)
@@ -28,17 +29,18 @@ fanatic = enemyWith
   (spawnAtL ?~ LocationWithMostClues RevealedLocation)
 
 instance HasAbilities Fanatic where
-  getAbilities (Fanatic a) =
+  getAbilities (Fanatic a) = withBaseAbilities
+    a
     [ mkAbility a 1
-      $ ForcedAbility
-      $ EnemySpawns Timing.After LocationWithAnyClues
-      $ EnemyWithId
-      $ toId a
+    $ ForcedAbility
+    $ EnemySpawns Timing.After LocationWithAnyClues
+    $ EnemyWithId
+    $ toId a
     , mkAbility a 2
-      $ ForcedAbility
-      $ EnemyDefeated Timing.When You
-      $ EnemyWithId (toId a)
-      <> EnemyWithAnyClues
+    $ ForcedAbility
+    $ EnemyDefeated Timing.When You
+    $ EnemyWithId (toId a)
+    <> EnemyWithAnyClues
     ]
 
 instance EnemyRunner env => RunMessage env Fanatic where

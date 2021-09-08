@@ -1781,7 +1781,10 @@ windowMatches iid source window' = \case
     case window' of
       Window t (Window.DrawCard who card deck) | whenMatcher == t -> andM
         [ matchWho iid who whoMatcher
-        , member card <$> select cardMatcher
+        , case cardMatcher of
+          Matcher.BasicCardMatch baseMatcher ->
+            pure $ cardMatch card baseMatcher
+          _ -> member card <$> select cardMatcher
         , deckMatch iid deck deckMatcher
         ]
       _ -> pure False

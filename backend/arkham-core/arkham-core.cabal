@@ -1007,6 +1007,7 @@ library
       Arkham.Types.Treachery.Cards.TheKingsEdict
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.TheZealotsSeal
+      Arkham.Types.Treachery.Cards.ToughCrowd
       Arkham.Types.Treachery.Cards.ToweringBeasts
       Arkham.Types.Treachery.Cards.TwistedToHisWill
       Arkham.Types.Treachery.Cards.TwistOfFate

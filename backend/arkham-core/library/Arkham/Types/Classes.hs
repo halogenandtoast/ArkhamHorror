@@ -55,16 +55,6 @@ getSetListMap
   :: (HasSet set env a, MonadReader env m) => (set -> set') -> a -> m [set']
 getSetListMap f a = map f <$> getSetList a
 
-type family QueryElement a where
-  QueryElement AssetMatcher = AssetId
-  QueryElement InvestigatorMatcher = InvestigatorId
-  QueryElement LocationMatcher = LocationId
-  QueryElement EnemyMatcher = EnemyId
-  QueryElement TreacheryMatcher = TreacheryId
-  QueryElement ExtendedCardMatcher = Card
-  QueryElement AbilityMatcher = Ability
-  QueryElement SkillMatcher = SkillId
-
 selectCount :: (HasCallStack, MonadReader env m, Query a env) => a -> m Int
 selectCount = fmap HashSet.size . select
 
@@ -89,8 +79,61 @@ selectOne matcher = do
     [] -> Nothing
     x : _ -> Just x
 
+-- An Open Query type class
+
 class (Hashable (QueryElement a), Eq (QueryElement a)) => Query a env where
   select :: (HasCallStack, MonadReader env m) => a -> m (HashSet (QueryElement a))
+
+-- but a closed QueryElement type family
+
+type family QueryElement a where
+  QueryElement AssetMatcher = AssetId
+  QueryElement InvestigatorMatcher = InvestigatorId
+  QueryElement LocationMatcher = LocationId
+  QueryElement EnemyMatcher = EnemyId
+  QueryElement TreacheryMatcher = TreacheryId
+  QueryElement ExtendedCardMatcher = Card
+  QueryElement AbilityMatcher = Ability
+  QueryElement SkillMatcher = SkillId
+
+{-
+
+-- Query instances, currently stored in Arkham.Types.Game
+
+instance HasGame env => Query AssetMatcher env where
+  select = fmap (setFromList . map toId) . getAssetsMatching
+
+instance HasGame env => Query LocationMatcher env where
+  select = fmap (setFromList . map toId) . getLocationsMatching
+
+instance HasGame env => Query EnemyMatcher env where
+  select = fmap (setFromList . map toId) . getEnemiesMatching
+
+instance HasGame env => Query InvestigatorMatcher env where
+  select = fmap (setFromList . map toId) . getInvestigatorsMatching
+
+instance HasGame env => Query ExtendedCardMatcher env where
+  select = fmap setFromList . getList
+
+-}
+
+-- The requirement that we return an element from a closed type family
+-- means that this is, in some sense, a *closed* type class. But we can't
+-- do anything to take advantage of that.
+--
+-- A closed type family + a class operating on it is equivalent to a GADT,
+-- where the data constructor carries the class parameter and the GADT's
+-- return type indicates the return of the method.
+
+data QueryG target where
+    QueryAsset :: AssetMatcher -> QueryG AssetId
+    QueryInvestigator :: InvestigatorMatcher -> QueryG InvestigatorId
+    QueryLocation :: LocationMatcher -> QueryG LocationId
+    QueryEnemy :: EnemyMatcher -> QueryG EnemyId
+    QueryTreachery :: TreacheryMatcher -> QueryG TreacheryId
+    QueryExtended :: ExtendedCardMatcher -> QueryG Card
+    QueryAbility :: AbilityMatcher -> QueryG Ability
+    QuerySkill :: SkillMatcher -> QueryG SkillId
 
 class HasList list env a where
   getList :: MonadReader env m => a -> m [list]

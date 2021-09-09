@@ -50,11 +50,7 @@ postApiV1ArkhamDecksR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   postData <- requireCheckJsonBody
   edeck <- fromPostData userId postData
-  case edeck of
-    Left err -> error err
-    Right deck -> do
-      deckId <- runDB (insert deck)
-      pure $ Entity deckId deck
+  runDB $ either error insertEntity edeck
 
 putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameDecksR gameId = do
@@ -95,8 +91,8 @@ putApiV1ArkhamGameDecksR gameId = do
   liftIO $ atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedMessages ge)
-  void $ runDB
-    (replace
+  runDB
+    $ replace
       gameId
       (ArkhamGame
         arkhamGameName
@@ -105,15 +101,14 @@ putApiV1ArkhamGameDecksR gameId = do
         updatedMessages
         arkhamGameMultiplayerVariant
       )
-    )
 
 fromPostData
   :: (MonadIO m) => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)
 fromPostData userId CreateDeckPost {..} = do
   edecklist <- getDeckList deckUrl
-  pure $ case edecklist of
-    Left err -> Left err
-    Right decklist -> Right $ ArkhamDeck
+  pure $ do
+    decklist <- edecklist
+    pure $ ArkhamDeck
       { arkhamDeckUserId = userId
       , arkhamDeckInvestigatorName = tshow $ investigator_name decklist
       , arkhamDeckName = deckName
@@ -126,8 +121,7 @@ getDeckList url = liftIO $ eitherDecode <$> simpleHttp (unpack url)
 deleteApiV1ArkhamDeckR :: ArkhamDeckId -> Handler ()
 deleteApiV1ArkhamDeckR deckId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  void $ runDB $ do
-    delete $ do
-      decks <- from $ table @ArkhamDeck
-      where_ $ decks ^. persistIdField ==. val deckId
-      where_ $ decks ^. ArkhamDeckUserId ==. val userId
+  runDB $ delete $ do
+    decks <- from $ table @ArkhamDeck
+    where_ $ decks ^. persistIdField ==. val deckId
+    where_ $ decks ^. ArkhamDeckUserId ==. val userId

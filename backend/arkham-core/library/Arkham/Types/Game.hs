@@ -114,6 +114,9 @@ data GameEnv = GameEnv
 instance HasStdGen GameEnv where
   genL = lens gameRandomGen $ \m x -> m { gameRandomGen = x }
 
+instance HasAbilities GameEnv where
+  getAbilities = getAbilities . view gameL
+
 instance HasGame GameEnv where
   gameL = lens gameEnvGame $ \m x -> m { gameEnvGame = x }
 
@@ -151,7 +154,7 @@ instance MonadRandom GameEnvT where
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
 
-class HasGame a where
+class HasAbilities a => HasGame a where
   gameL :: Lens' a Game
 
 class HasStdGen a where
@@ -159,6 +162,46 @@ class HasStdGen a where
 
 class HasMessageLogger a where
   messageLoggerL :: Lens' a (Message -> IO ())
+
+-- With type classes, we can run raw:
+--
+-- > runQuery (a :: AssetMatcher) :: m (HashSet AssetId)
+--
+-- THis works because we're *open* - we sort of do a partial pattern match
+-- on kind `Type` with our instances.
+--
+-- The GADT requires us to use constructor tags.
+--
+-- > runQueryG (QueryAsset a) :: m (HashSet AssetId)
+runQueryG
+    :: (HasCallStack, HasGame env, MonadReader env m)
+    => QueryG target
+    -> m (HashSet target)
+runQueryG q =
+    case q of
+        QueryAsset a ->
+            fmap (setFromList . map toId) $ getAssetsMatching a
+        QueryInvestigator a ->
+            fmap (setFromList . map toId) $ getInvestigatorsMatching a
+        QueryLocation a ->
+            fmap (setFromList . map toId) $ getLocationsMatching a
+        QueryEnemy a ->
+            fmap (setFromList . map toId) $ getEnemiesMatching a
+        QueryTreachery a ->
+            fmap (setFromList . map toId) $ getTreacheriesMatching a
+        QueryExtended a ->
+            setFromList <$> getList a
+        QueryAbility a ->
+            setFromList <$> getAbilitiesMatching a
+        QuerySkill a ->
+            fmap (setFromList . map toId) $ getSkillsMatching a
+
+selectListMapG
+    :: (HasCallStack, MonadReader env m, HasGame env, Hashable target, Eq target)
+    => (target -> b)
+    -> QueryG target
+    -> m [b]
+selectListMapG f = fmap (map f . setToList) . runQueryG
 
 getGame :: (HasGame env, MonadReader env m) => m Game
 getGame = view gameL
@@ -2677,9 +2720,22 @@ instance HasGame env => Query SkillMatcher env where
 instance HasGame env => Query TreacheryMatcher env where
   select = fmap (setFromList . map toId) . getTreacheriesMatching
 
-instance {-# OVERLAPPABLE #-} HasGame env => HasAbilities env where
-  getAbilities env = do
-    let g = view gameL env
+-- This instance causes problems and is an antipattern -
+-- instance {-# OVERLAPPABLE #-} HasGame env => HasAbilities env where
+--   getAbilities env = do
+--     let g = view gameL env
+--     concatMap getAbilities (g ^. enemiesL)
+--       <> concatMap getAbilities (g ^. locationsL)
+--       <> concatMap getAbilities (g ^. assetsL)
+--       <> concatMap getAbilities (g ^. treacheriesL)
+--       <> concatMap getAbilities (g ^. actsL)
+--       <> concatMap getAbilities (g ^. agendasL)
+--       <> concatMap getAbilities (g ^. effectsL)
+--       <> concatMap getAbilities (g ^. investigatorsL)
+
+-- Replacing it with a direct instance:
+instance HasAbilities Game where
+  getAbilities g = do
     concatMap getAbilities (g ^. enemiesL)
       <> concatMap getAbilities (g ^. locationsL)
       <> concatMap getAbilities (g ^. assetsL)

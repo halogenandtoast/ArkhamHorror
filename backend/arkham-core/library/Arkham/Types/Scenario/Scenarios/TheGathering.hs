@@ -101,7 +101,13 @@ instance ScenarioRunner env => RunMessage env TheGathering where
 
       setAsideCards <- traverse
         genCard
-        [Enemies.ghoulPriest, Assets.litaChantler]
+        [ Enemies.ghoulPriest
+        , Assets.litaChantler
+        , Locations.hallway
+        , Locations.attic
+        , Locations.cellar
+        , Locations.parlor
+        ]
 
       TheGathering <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
     ResolveToken _ Cultist iid ->

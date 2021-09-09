@@ -92,7 +92,13 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
 
         setAsideCards <- traverse
           genCard
-          [Enemies.ghoulPriest, Assets.litaChantler, attic, cellar]
+          [ Enemies.ghoulPriest
+          , Assets.litaChantler
+          , attic
+          , cellar
+          , Locations.deepBelowYourHouse
+          , Locations.farAboveYourHouse
+          ]
 
         ReturnToTheGathering . TheGathering <$> runMessage
           msg

@@ -38,7 +38,7 @@ data CardDef = CardDef
   , cdCost :: Maybe CardCost
   , cdLevel :: Int
   , cdCardType :: CardType
-  , cdWeakness :: Bool
+  , cdCardSubType :: Maybe CardSubType
   , cdClassSymbol :: Maybe ClassSymbol
   , cdSkills :: [SkillType]
   , cdCardTraits :: HashSet Trait
@@ -68,8 +68,8 @@ data CardLimit = LimitPerInvestigator Int | LimitPerTrait Trait Int
 instance Named CardDef where
   toName = cdName
 
-weaknessL :: Lens' CardDef Bool
-weaknessL = lens cdWeakness $ \m x -> m { cdWeakness = x }
+subTypeL :: Lens' CardDef (Maybe CardSubType)
+subTypeL = lens cdCardSubType $ \m x -> m { cdCardSubType = x }
 
 keywordsL :: Lens' CardDef (HashSet Keyword)
 keywordsL = lens cdKeywords $ \m x -> m { cdKeywords = x }
@@ -121,7 +121,7 @@ testCardDef cardType cardCode = CardDef
   , cdCost = Nothing
   , cdLevel = 0
   , cdCardType = cardType
-  , cdWeakness = False
+  , cdCardSubType = Nothing
   , cdClassSymbol = Nothing
   , cdSkills = []
   , cdCardTraits = mempty

@@ -14,16 +14,22 @@ import Arkham.Types.Name
 import Arkham.Types.Trait
 
 baseTreachery
-  :: CardCode -> Name -> Maybe (EncounterSet, Int) -> Bool -> CardDef
+  :: CardCode
+  -> Name
+  -> Maybe (EncounterSet, Int)
+  -> Maybe CardSubType
+  -> CardDef
 baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   { cdCardCode = cardCode
   , cdName = name
   , cdRevealedName = Nothing
   , cdCost = Nothing
   , cdLevel = 0
-  , cdCardType = if isWeakness then PlayerTreacheryType else TreacheryType
-  , cdWeakness = isWeakness
-  , cdClassSymbol = if isWeakness then Just Neutral else Nothing
+  , cdCardType = if isJust isWeakness
+    then PlayerTreacheryType
+    else TreacheryType
+  , cdCardSubType = isWeakness
+  , cdClassSymbol = if isJust isWeakness then Just Neutral else Nothing
   , cdSkills = mempty
   , cdCardTraits = mempty
   , cdKeywords = mempty
@@ -45,11 +51,18 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   }
 
 weakness :: CardCode -> Name -> CardDef
-weakness cardCode name = baseTreachery cardCode name Nothing True
+weakness cardCode name = baseTreachery cardCode name Nothing (Just Weakness)
+
+basicWeakness :: CardCode -> Name -> CardDef
+basicWeakness cardCode name =
+  baseTreachery cardCode name Nothing (Just BasicWeakness)
 
 treachery :: CardCode -> Name -> EncounterSet -> Int -> CardDef
-treachery cardCode name encounterSet encounterSetQuantity =
-  baseTreachery cardCode name (Just (encounterSet, encounterSetQuantity)) False
+treachery cardCode name encounterSet encounterSetQuantity = baseTreachery
+  cardCode
+  name
+  (Just (encounterSet, encounterSetQuantity))
+  Nothing
 
 allTreacheryCards :: HashMap CardCode CardDef
 allTreacheryCards = allPlayerTreacheryCards <> allEncounterTreacheryCards
@@ -186,22 +199,25 @@ abandonedAndAlone = (weakness "01015" "Abandoned and Alone")
   }
 
 amnesia :: CardDef
-amnesia = (weakness "01096" "Amnesia") { cdCardTraits = setFromList [Madness] }
+amnesia =
+  (basicWeakness "01096" "Amnesia") { cdCardTraits = setFromList [Madness] }
 
 paranoia :: CardDef
 paranoia =
-  (weakness "01097" "Paranoia") { cdCardTraits = setFromList [Madness] }
+  (basicWeakness "01097" "Paranoia") { cdCardTraits = setFromList [Madness] }
 
 haunted :: CardDef
-haunted = (weakness "01098" "Haunted") { cdCardTraits = setFromList [Curse] }
+haunted =
+  (basicWeakness "01098" "Haunted") { cdCardTraits = setFromList [Curse] }
 
 psychosis :: CardDef
 psychosis =
-  (weakness "01099" "Psychosis") { cdCardTraits = setFromList [Madness] }
+  (basicWeakness "01099" "Psychosis") { cdCardTraits = setFromList [Madness] }
 
 hypochondria :: CardDef
-hypochondria =
-  (weakness "01100" "Hypochondria") { cdCardTraits = setFromList [Madness] }
+hypochondria = (basicWeakness "01100" "Hypochondria")
+  { cdCardTraits = setFromList [Madness]
+  }
 
 huntingShadow :: CardDef
 huntingShadow = (treachery "01135" "Hunting Shadow" TheMidnightMasks 3)
@@ -303,18 +319,18 @@ wrackedByNightmares = (weakness "02015" "Wracked by Nightmares")
   }
 
 indebted :: CardDef
-indebted = (weakness "02037" "Indebted")
+indebted = (basicWeakness "02037" "Indebted")
   { cdCardTraits = singleton Flaw
   , cdPermanent = True
   }
 
 internalInjury :: CardDef
 internalInjury =
-  (weakness "02038" "Internal Injury") { cdCardTraits = singleton Injury }
+  (basicWeakness "02038" "Internal Injury") { cdCardTraits = singleton Injury }
 
 chronophobia :: CardDef
 chronophobia =
-  (weakness "02039" "Chronophobia") { cdCardTraits = singleton Madness }
+  (basicWeakness "02039" "Chronophobia") { cdCardTraits = singleton Madness }
 
 somethingInTheDrinks :: CardDef
 somethingInTheDrinks =
@@ -534,10 +550,10 @@ crisisOfIdentity =
 
 overzealous :: CardDef
 overzealous =
-  (weakness "03040" "Overzealous") { cdCardTraits = singleton Flaw }
+  (basicWeakness "03040" "Overzealous") { cdCardTraits = singleton Flaw }
 
 drawingTheSign :: CardDef
-drawingTheSign = (weakness "03041" "Drawing the Sign")
+drawingTheSign = (basicWeakness "03041" "Drawing the Sign")
   { cdCardTraits = setFromList [Pact, Madness]
   }
 
@@ -644,8 +660,9 @@ maskOfUmordhoth = (treachery "50043" "Mask of Umôrdhoth" TheDevourersCult 2)
   }
 
 atychiphobia :: CardDef
-atychiphobia =
-  (weakness "60504" "Atychiphobia") { cdCardTraits = setFromList [Madness] }
+atychiphobia = (basicWeakness "60504" "Atychiphobia")
+  { cdCardTraits = setFromList [Madness]
+  }
 
 cursedSwamp :: CardDef
 cursedSwamp = (treachery "81024" "Cursed Swamp" TheBayou 3)

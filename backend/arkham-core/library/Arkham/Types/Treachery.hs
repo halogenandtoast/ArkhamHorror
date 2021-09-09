@@ -87,7 +87,7 @@ allTreacheries = mapFromList $ map
   $(buildEntityLookupList "Treachery")
 
 isWeakness :: Treachery -> Bool
-isWeakness = cdWeakness . toCardDef
+isWeakness = isJust . cdCardSubType . toCardDef
 
 treacheryInHandOf :: Treachery -> Maybe InvestigatorId
 treacheryInHandOf = Attrs.treacheryInHandOf . toAttrs

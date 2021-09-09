@@ -12,16 +12,21 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Name
 import Arkham.Types.Trait
 
-baseEnemy :: CardCode -> Name -> Maybe (EncounterSet, Int) -> Bool -> CardDef
+baseEnemy
+  :: CardCode
+  -> Name
+  -> Maybe (EncounterSet, Int)
+  -> Maybe CardSubType
+  -> CardDef
 baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   { cdCardCode = cardCode
   , cdName = name
   , cdRevealedName = Nothing
   , cdCost = Nothing
   , cdLevel = 0
-  , cdCardType = if isWeakness then PlayerEnemyType else EnemyType
-  , cdWeakness = isWeakness
-  , cdClassSymbol = if isWeakness then Just Neutral else Nothing
+  , cdCardType = if isJust isWeakness then PlayerEnemyType else EnemyType
+  , cdCardSubType = isWeakness
+  , cdClassSymbol = if isJust isWeakness then Just Neutral else Nothing
   , cdSkills = mempty
   , cdCardTraits = mempty
   , cdKeywords = mempty
@@ -43,11 +48,15 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   }
 
 weakness :: CardCode -> Name -> CardDef
-weakness cardCode name = baseEnemy cardCode name Nothing True
+weakness cardCode name = baseEnemy cardCode name Nothing (Just Weakness)
+
+basicWeakness :: CardCode -> Name -> CardDef
+basicWeakness cardCode name =
+  baseEnemy cardCode name Nothing (Just BasicWeakness)
 
 enemy :: CardCode -> Name -> EncounterSet -> Int -> CardDef
 enemy cardCode name encounterSet encounterSetQuantity =
-  baseEnemy cardCode name (Just (encounterSet, encounterSetQuantity)) False
+  baseEnemy cardCode name (Just (encounterSet, encounterSetQuantity)) Nothing
 
 allPlayerEnemyCards :: HashMap CardCode CardDef
 allPlayerEnemyCards = mapFromList $ map
@@ -145,19 +154,19 @@ allEncounterEnemyCards = mapFromList $ map
   ]
 
 mobEnforcer :: CardDef
-mobEnforcer = (weakness "01101" "Mob Enforcer")
+mobEnforcer = (basicWeakness "01101" "Mob Enforcer")
   { cdCardTraits = setFromList [Humanoid, Criminal]
   , cdKeywords = setFromList [Keyword.Hunter]
   }
 
 silverTwilightAcolyte :: CardDef
-silverTwilightAcolyte = (weakness "01102" "Silver Twilight Acolyte")
+silverTwilightAcolyte = (basicWeakness "01102" "Silver Twilight Acolyte")
   { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
   , cdKeywords = setFromList [Keyword.Hunter]
   }
 
 stubbornDetective :: CardDef
-stubbornDetective = (weakness "01103" "Stubborn Detective")
+stubbornDetective = (basicWeakness "01103" "Stubborn Detective")
   { cdCardTraits = setFromList [Humanoid, Detective]
   , cdKeywords = setFromList [Keyword.Hunter]
   }
@@ -485,7 +494,7 @@ graveyardGhouls = (weakness "03017" "Graveyard Ghouls")
   }
 
 theThingThatFollows :: CardDef
-theThingThatFollows = (weakness "03042" "The Thing That Follows")
+theThingThatFollows = (basicWeakness "03042" "The Thing That Follows")
   { cdCardTraits = setFromList [Monster, Curse]
   , cdKeywords = setFromList [Keyword.Hunter]
   , cdUnique = True

@@ -158,7 +158,9 @@ treacheryWith f cardDef g = CardBuilder
     , treacheryCardCode = toCardCode cardDef
     , treacheryAttachedTarget = Nothing
     , treacheryInHandOf = Nothing
-    , treacheryOwner = if cdWeakness cardDef then Just iid else Nothing
+    , treacheryOwner = if isJust (cdCardSubType cardDef)
+      then Just iid
+      else Nothing
     , treacheryDoom = 0
     , treacheryClues = Nothing
     , treacheryResources = Nothing

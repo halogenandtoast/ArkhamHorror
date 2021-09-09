@@ -64,7 +64,7 @@ cardMatch a = \case
   CardMatches ms -> all (cardMatch a) ms
   CardWithOneOf ms -> any (cardMatch a) ms
   CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
-  NonWeakness -> not . cdWeakness $ toCardDef a
+  NonWeakness -> isNothing . cdCardSubType $ toCardDef a
   NonExceptional -> not . cdExceptional $ toCardDef a
   NotCard m -> not (cardMatch a m)
 
@@ -168,7 +168,7 @@ toEncounterCard (PlayerCard _) = Nothing
 
 cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False
-cardIsWeakness (PlayerCard pc) = cdWeakness (toCardDef pc)
+cardIsWeakness (PlayerCard pc) = isJust $ cdCardSubType (toCardDef pc)
 
 filterCardType :: HasCardDef a => CardType -> [a] -> [a]
 filterCardType cardType' = filter ((== cardType') . cdCardType . toCardDef)

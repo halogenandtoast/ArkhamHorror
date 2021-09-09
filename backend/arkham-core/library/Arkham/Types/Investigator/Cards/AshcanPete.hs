@@ -44,8 +44,9 @@ instance HasAbilities AshcanPete where
           (Self <> AssetExists (AssetOwnedBy You <> AssetExhausted) <> Negate
             (SelfHasModifier ControlledAssetsCannotReady)
           )
-        $ FastAbility
-        $ HandDiscardCost 1 Nothing mempty mempty
+          (FastAbility $ HandDiscardCost 1 Nothing mempty mempty)
+        & abilityLimitL
+        .~ PlayerLimit PerRound 1
     ]
 
 instance HasTokenValue env AshcanPete where

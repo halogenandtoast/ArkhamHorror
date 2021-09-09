@@ -18,6 +18,10 @@ data CardType
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+data CardSubType = Weakness | BasicWeakness
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
 encounterCardTypes :: [CardType]
 encounterCardTypes =
   [TreacheryType, EnemyType, LocationType, EncounterAssetType]

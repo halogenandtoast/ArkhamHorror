@@ -27,20 +27,20 @@ holeInTheWall = location
 
 instance HasAbilities HoleInTheWall where
   getAbilities (HoleInTheWall attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env HoleInTheWall where
   runMessage msg l@(HoleInTheWall attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> l <$ pushAll
-      [ PlaceLocationMatching (LocationWithTitle "Attic")
-      , PlaceLocationMatching (LocationWithTitle "Cellar")
-      , PlaceLocationMatching (LocationWithTitle "Parlor")
+      [ PlaceLocationMatching (CardWithTitle "Attic")
+      , PlaceLocationMatching (CardWithTitle "Cellar")
+      , PlaceLocationMatching (CardWithTitle "Parlor")
       ]
     _ -> HoleInTheWall <$> runMessage msg attrs

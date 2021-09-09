@@ -30,18 +30,18 @@ returnToAttic = location
 
 instance HasAbilities ReturnToAttic where
   getAbilities (ReturnToAttic attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance (LocationRunner env) => RunMessage env ReturnToAttic where
   runMessage msg l@(ReturnToAttic attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      farAboveYourHouseId <- getRandom
-      l <$ push (PlaceLocation farAboveYourHouseId Cards.farAboveYourHouse)
+      farAboveYourHouse <- getSetAsideCard Cards.farAboveYourHouse
+      l <$ push (PlaceLocation farAboveYourHouse)
     _ -> ReturnToAttic <$> runMessage msg attrs

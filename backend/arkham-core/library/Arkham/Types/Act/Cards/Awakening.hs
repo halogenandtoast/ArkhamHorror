@@ -9,9 +9,7 @@ import qualified Arkham.Act.Cards as Cards
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.CardType
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Id
@@ -43,10 +41,10 @@ instance ActRunner env => RunMessage env Awakening where
         (LocationWithUnrevealedTitle $ nameTitle $ toName location)
       let
         label = nameToLabel (toName location) <> tshow (otherLocationCount + 1)
+        locationId = LocationId (toCardId location)
 
       -- spawn the set-aside The Man in the Pallid Mask enemy at that location
-      theManInThePallidMask <- fromJustNote "Must be set aside"
-        <$> selectOne (SetAsideCardMatch $ cardIs Cards.theManInThePallidMask)
+      theManInThePallidMask <- getSetAsideCard Cards.theManInThePallidMask
 
       -- Advance to one of the 3 copies of act 2a, at random
       nextActId <- ActId . toCardCode <$> sample
@@ -54,9 +52,8 @@ instance ActRunner env => RunMessage env Awakening where
         :| [Cards.theStrangerThePathIsMine, Cards.theStrangerTheShoresOfHali]
         )
 
-      locationId <- getRandom
       a <$ pushAll
-        [ PlaceLocation locationId (toCardDef location)
+        [ PlaceLocation location
         , SetLocationLabel locationId label
         , CreateEnemyAt theManInThePallidMask locationId Nothing
         , NextAct (toId attrs) nextActId

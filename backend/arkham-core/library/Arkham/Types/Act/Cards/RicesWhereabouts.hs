@@ -81,7 +81,7 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
         <$> genEncounterCard Assets.alchemicalConcoction
 
       pushAll
-        $ [ PlaceLocationMatching (LocationWithTitle "Alchemy Labs")
+        $ [ PlaceLocationMatching (CardWithTitle "Alchemy Labs")
           | not alchemyLabsInPlay
           ]
         <> [ CreateEnemyAtLocationMatching

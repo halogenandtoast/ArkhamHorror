@@ -86,51 +86,46 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
         , EncounterSet.LockedDoors
         , EncounterSet.AgentsOfYogSothoth
         ]
-      miskatonicQuadId <- getRandom
-      humanitiesBuildingId <- getRandom
-      orneLibraryId <- getRandom
-      studentUnionId <- getRandom
-      scienceBuildingId <- getRandom
-      administrationBuildingId <- getRandom
+
+      miskatonicQuad <- genCard Locations.miskatonicQuad
+      humanitiesBuilding <- genCard Locations.humanitiesBuilding
+      orneLibrary <- genCard Locations.orneLibrary
+      studentUnion <- genCard Locations.studentUnion
+      scienceBuilding <- genCard Locations.scienceBuilding
+      administrationBuilding <- genCard Locations.administrationBuilding
+
+      let miskatonicQuadId = toLocationId miskatonicQuad
+
       pushAllEnd
         [ SetEncounterDeck encounterDeck
         , AddAgenda "02042"
         , AddAct "02045"
-        , PlaceLocation miskatonicQuadId Locations.miskatonicQuad
-        , PlaceLocation orneLibraryId Locations.orneLibrary
-        , PlaceLocation humanitiesBuildingId Locations.humanitiesBuilding
-        , PlaceLocation studentUnionId Locations.studentUnion
-        , PlaceLocation scienceBuildingId Locations.scienceBuilding
-        , PlaceLocation
-          administrationBuildingId
-          Locations.administrationBuilding
+        , PlaceLocation miskatonicQuad
+        , PlaceLocation orneLibrary
+        , PlaceLocation humanitiesBuilding
+        , PlaceLocation studentUnion
+        , PlaceLocation scienceBuilding
+        , PlaceLocation administrationBuilding
         , RevealLocation Nothing miskatonicQuadId
         , MoveAllTo (toSource attrs) miskatonicQuadId
-        , AskMap
-        . mapFromList
-        $ [ ( iid
-            , ChooseOne
-              [Run [Continue "Continue", extracurricularActivityIntro]]
-            )
-          | iid <- investigatorIds
-          ]
+        , story investigatorIds extracurricularActivityIntro
         ]
-      let
-        locations' = locationNameMap
-          [ Locations.miskatonicQuad
-          , Locations.humanitiesBuilding
-          , Locations.orneLibrary
-          , Locations.studentUnion
-          , Locations.dormitories
-          , Locations.administrationBuilding
-          , if completedTheHouseAlwaysWins
-            then Locations.facultyOfficesTheHourIsLate
-            else Locations.facultyOfficesTheNightIsStillYoung
-          , Locations.scienceBuilding
-          , Locations.alchemyLabs
-          ]
+
+      setAsideCards <- traverse
+        genCard
+        [ if completedTheHouseAlwaysWins
+          then Locations.facultyOfficesTheHourIsLate
+          else Locations.facultyOfficesTheNightIsStillYoung
+        , Assets.jazzMulligan
+        , Assets.alchemicalConcoction
+        , Enemies.theExperiment
+        , Locations.dormitories
+        , Locations.alchemyLabs
+        , Assets.professorWarrenRice
+        ]
+
       ExtracurricularActivity
-        <$> runMessage msg (attrs & locationsL .~ locations')
+        <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
     ResolveToken drawnToken ElderThing iid -> s <$ push
       (DiscardTopOfDeck
         iid

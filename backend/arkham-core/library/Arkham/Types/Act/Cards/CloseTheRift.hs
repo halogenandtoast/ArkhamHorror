@@ -43,12 +43,10 @@ instance ActRunner env => RunMessage env CloseTheRift where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       theEdgeOfTheUniverseId <- getJustLocationIdByName
         "The Edge of the Universe"
-      tearThroughTimeId <- getRandom
+      tearThroughTime <- getSetAsideCard Locations.tearThroughTime
       a <$ pushAll
         (resolve (RemoveLocation theEdgeOfTheUniverseId)
-        <> [ PlaceLocation tearThroughTimeId Locations.tearThroughTime
-           , NextAct actId "02319"
-           ]
+        <> [PlaceLocation tearThroughTime, NextAct actId "02319"]
         )
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
       let locationCards = filterLocations cards

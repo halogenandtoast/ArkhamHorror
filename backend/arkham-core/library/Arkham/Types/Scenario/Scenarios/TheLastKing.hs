@@ -13,8 +13,6 @@ import qualified Arkham.Location.Cards as Locations
 import Arkham.Scenarios.TheLastKing.Story
 import qualified Arkham.Story.Cards as Story
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCard
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
@@ -112,25 +110,27 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
         [Enemies.dianneDevine]
         [EncounterSet.TheLastKing, EncounterSet.AncientEvils]
 
-      foyerId <- getRandom
-      courtyardId <- getRandom
-      livingRoomId <- getRandom
-      ballroomId <- getRandom
-      diningRoomId <- getRandom
-      galleryId <- getRandom
+      foyer <- genCard Locations.foyer
+      courtyard <- genCard Locations.courtyard
+      livingRoom <- genCard Locations.livingRoom
+      ballroom <- genCard Locations.ballroom
+      diningRoom <- genCard Locations.diningRoom
+      gallery <- genCard Locations.gallery
 
       totalClues <- getPlayerCountValue (StaticWithPerPlayer 1 1)
 
       bystanders <- shuffleM =<< traverse
-        (fmap PlayerCard . genPlayerCard)
+        genCard
         [ Assets.constanceDumaine
         , Assets.jordanPerry
         , Assets.ishimaruHaruko
         , Assets.sebastienMoreau
         , Assets.ashleighClarke
         ]
-      destinations <- shuffleM
-        [courtyardId, livingRoomId, ballroomId, diningRoomId, galleryId]
+
+      destinations <- shuffleM $ map
+        toLocationId
+        [courtyard, livingRoom, ballroom, diningRoom, gallery]
 
       investigatorIds <- getInvestigatorIds
 
@@ -139,30 +139,31 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
          , SetEncounterDeck encounterDeck
          , AddAgenda "03062"
          , AddAct "03064"
-         , PlaceLocation foyerId Locations.foyer
-         , PlaceLocation courtyardId Locations.courtyard
-         , PlaceLocation livingRoomId Locations.livingRoom
-         , PlaceLocation ballroomId Locations.ballroom
-         , PlaceLocation diningRoomId Locations.diningRoom
-         , PlaceLocation galleryId Locations.gallery
-         , MoveAllTo (toSource attrs) foyerId
+         , PlaceLocation foyer
+         , PlaceLocation courtyard
+         , PlaceLocation livingRoom
+         , PlaceLocation ballroom
+         , PlaceLocation diningRoom
+         , PlaceLocation gallery
+         , MoveAllTo (toSource attrs) (toLocationId foyer)
          ]
         <> zipWith CreateStoryAssetAt bystanders destinations
         <> map
              ((`PlaceClues` totalClues) . AssetTarget . AssetId . toCardId)
              bystanders
         )
-      setAsideEncounterCards <- traverse
-        (fmap EncounterCard . genEncounterCard)
-        [Enemies.dianneDevine]
+
+      setAsideEncounterCards <- traverse genCard [Enemies.dianneDevine]
+
       storyCards <- traverse
-        (fmap EncounterCard . genEncounterCard)
+        genCard
         [ Story.sickeningReality_65
         , Story.sickeningReality_66
         , Story.sickeningReality_67
         , Story.sickeningReality_68
         , Story.sickeningReality_69
         ]
+
       TheLastKing <$> runMessage
         msg
         (attrs
@@ -217,7 +218,7 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
         (asset, enemy) = findPair
 
       assetId <- fromJustNote "missing" <$> selectOne (assetIs asset)
-      enemyCard <- EncounterCard <$> genEncounterCard enemy
+      enemyCard <- genCard enemy
       lid <- getId @LocationId assetId
       iids <- selectList $ InvestigatorAt $ LocationWithId lid
       clues <- unClueCount <$> getCount assetId

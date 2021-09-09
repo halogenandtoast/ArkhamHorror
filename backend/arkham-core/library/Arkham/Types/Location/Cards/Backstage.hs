@@ -7,10 +7,12 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Keyword
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -62,12 +64,11 @@ instance LocationRunner env => RunMessage env Backstage where
             )
       msgs <- concat <$> for
         backstageDoorways
-        \(idx, backstageDoorway) -> do
-          locationId <- getRandom
-          pure
-            [ PlaceLocation locationId (toCardDef backstageDoorway)
-            , SetLocationLabel locationId $ "backstageDoorway" <> tshow
-              (idx + 1)
-            ]
+        \(idx, backstageDoorway) -> pure
+          [ PlaceLocation backstageDoorway
+          , SetLocationLabel (LocationId $ toCardId backstageDoorway)
+          $ "backstageDoorway"
+          <> tshow (idx + 1)
+          ]
       l <$ pushAll msgs
     _ -> Backstage <$> runMessage msg attrs

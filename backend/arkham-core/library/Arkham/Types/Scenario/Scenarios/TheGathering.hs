@@ -86,26 +86,24 @@ instance ScenarioRunner env => RunMessage env TheGathering where
         , EncounterSet.AncientEvils
         , EncounterSet.ChillingCold
         ]
-      studyId <- getRandom
+      study <- genCard Locations.study
+      let studyId = toLocationId study
+
       pushAllEnd
         [ SetEncounterDeck encounterDeck
         , AddAgenda "01105"
         , AddAct "01108"
-        , PlaceLocation studyId Locations.study
+        , PlaceLocation study
         , RevealLocation Nothing studyId
         , MoveAllTo (toSource attrs) studyId
         , story investigatorIds theGatheringIntro
         ]
-      TheGathering <$> runMessage
-        msg
-        (attrs & locationsL .~ locationNameMap
-          [ Locations.study
-          , Locations.hallway
-          , Locations.attic
-          , Locations.cellar
-          , Locations.parlor
-          ]
-        )
+
+      setAsideCards <- traverse
+        genCard
+        [Enemies.ghoulPriest, Assets.litaChantler]
+
+      TheGathering <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
     ResolveToken _ Cultist iid ->
       s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)
     ResolveToken _ Tablet iid -> do

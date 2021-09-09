@@ -8,17 +8,15 @@ import Arkham.Prelude
 import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 
@@ -43,15 +41,15 @@ instance HasModifiersFor env AscendingPath where
 
 instance HasAbilities AscendingPath where
   getAbilities (AscendingPath attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-            attrs
-            1
-            Here
-            (ActionAbility (Just Action.Investigate) (ActionCost 1))
-          & (abilityLimitL .~ PlayerLimit PerRound 1)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+              attrs
+              1
+              Here
+              (ActionAbility (Just Action.Investigate) (ActionCost 1))
+            & (abilityLimitL .~ PlayerLimit PerRound 1)
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env AscendingPath where
   runMessage msg l@(AscendingPath attrs) = case msg of
@@ -66,13 +64,11 @@ instance LocationRunner env => RunMessage env AscendingPath where
       )
     SuccessfulInvestigation _ _ (AbilitySource source 1) _
       | isSource attrs source -> do
-        setAsideCards <- map unSetAsideCard <$> getList ()
-        let alteredPaths = filter ((== "Altered Path") . toName) setAsideCards
+        alteredPaths <- getSetAsideCardsMatching $ CardWithTitle "Altered Path"
         case nonEmpty alteredPaths of
           Just ne -> do
             card <- sample ne
-            l <$ push
-              (PlaceLocation (LocationId $ toCardId card) (toCardDef card))
+            l <$ push (PlaceLocation card)
           Nothing -> pure l
     AddConnection lid _ | toId attrs /= lid -> do
       isAlteredPath <- (== "Altered Path") <$> getName lid

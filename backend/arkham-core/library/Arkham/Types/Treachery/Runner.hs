@@ -5,8 +5,8 @@ import Arkham.Prelude
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.EnemyId
 import Arkham.Types.Id
 import Arkham.Types.Matcher
@@ -19,6 +19,7 @@ type TreacheryRunner env
     , HasSet SkillId env SkillMatcher
     , HasSet EventId env EventMatcher
     , HasSet ClassSymbol env InvestigatorId
+    , HasName env (Unrevealed LocationId)
     , GetCardDef env LocationId
     , HasId (Maybe OwnerId) env AssetId
     , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)

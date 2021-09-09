@@ -395,8 +395,8 @@ data Message
     | PlaceHorror Target Int
     | PlaceDoomOnAgenda
     | PlaceEnemyInVoid EnemyId
-    | PlaceLocation LocationId CardDef
-    | PlaceLocationMatching LocationMatcher
+    | PlaceLocation Card
+    | PlaceLocationMatching CardMatcher
     | PlaceResources Target Int
     | PlaceUnderneath Target [Card]
     | PlacedLocation Name CardCode LocationId
@@ -409,7 +409,6 @@ data Message
     | PutCardIntoPlay InvestigatorId Card (Maybe Target)
     | PutOnTopOfDeck InvestigatorId PlayerCard
     | PutOnTopOfEncounterDeck InvestigatorId EncounterCard
-    | PutSetAsideIntoPlay Target
     | RandomDiscard InvestigatorId
     | Ready Target
     | ReadyAlternative Source Target
@@ -455,6 +454,7 @@ data Message
     | ReturnTokens [Token]
     | RevealInHand CardId
     | RevealLocation (Maybe InvestigatorId) LocationId
+    | UnrevealLocation LocationId
     | RevealSkillTestTokens InvestigatorId
     | RevealToken Source InvestigatorId Token
     | Revelation InvestigatorId Source

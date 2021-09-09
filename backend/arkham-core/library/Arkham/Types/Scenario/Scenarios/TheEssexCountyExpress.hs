@@ -11,6 +11,7 @@ import qualified Arkham.Location.Cards as Locations
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Direction
@@ -202,24 +203,26 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
         s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
       Setup -> do
         investigatorIds <- getInvestigatorIds
-        engineCar <-
-          sample
-          $ Locations.engineCar_175
+
+        let toLocationCard = fmap EncounterCard . genEncounterCard
+
+        engineCar <- toLocationCard =<< sample
+          (Locations.engineCar_175
           :| [Locations.engineCar_176, Locations.engineCar_177]
-        trainCars <-
-          zip
-          <$> getRandoms
-          <*> (take 6 <$> shuffleM
-                [ Locations.passengerCar_167
-                , Locations.passengerCar_168
-                , Locations.passengerCar_169
-                , Locations.passengerCar_170
-                , Locations.passengerCar_171
-                , Locations.sleepingCar
-                , Locations.diningCar
-                , Locations.parlorCar
-                ]
-              )
+          )
+        let engineCarId = LocationId $ toCardId engineCar
+
+        trainCars <- traverse toLocationCard . take 6 =<< shuffleM
+          [ Locations.passengerCar_167
+          , Locations.passengerCar_168
+          , Locations.passengerCar_169
+          , Locations.passengerCar_170
+          , Locations.passengerCar_171
+          , Locations.sleepingCar
+          , Locations.diningCar
+          , Locations.parlorCar
+          ]
+
         encounterDeck <- buildEncounterDeck
           [ EncounterSet.TheEssexCountyExpress
           , EncounterSet.TheBeyond
@@ -228,13 +231,13 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
           , EncounterSet.DarkCult
           ]
 
-        engineCarId <- getRandom
-
         let
-          start = fromJustNote "No train cars?" $ headMay (map fst trainCars)
-          end = fromJustNote "No train cars?" $ headMay $ reverse
-            (map fst trainCars)
-          allCars = map fst trainCars <> [engineCarId]
+          start =
+            LocationId . toCardId . fromJustNote "No train cars?" $ headMay
+              trainCars
+          end = LocationId . toCardId . fromJustNote "No train cars?" $ headMay
+            (reverse trainCars)
+          allCars = trainCars <> [engineCar]
           token = case scenarioDifficulty of
             Easy -> MinusTwo
             Standard -> MinusThree
@@ -249,15 +252,20 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
             , AddAct "02165"
             ]
           <> concat
-               [ [ PlaceLocation locationId cardDef
-                 , SetLocationLabel locationId ("trainCar" <> tshow @Int n)
+               [ [ PlaceLocation card
+                 , SetLocationLabel
+                   (LocationId $ toCardId card)
+                   ("trainCar" <> tshow @Int n)
                  ]
-               | (n, (locationId, cardDef)) <- zip [6, 5 ..] trainCars
+               | (n, card) <- zip [6, 5 ..] trainCars
                ]
-          <> [ PlacedLocationDirection lid1 LeftOf lid2
-             | (lid1, lid2) <- zip allCars (drop 1 allCars)
+          <> [ PlacedLocationDirection
+                 (LocationId $ toCardId l1)
+                 LeftOf
+                 (LocationId $ toCardId l2)
+             | (l1, l2) <- zip allCars (drop 1 allCars)
              ]
-          <> [ PlaceLocation engineCarId engineCar
+          <> [ PlaceLocation engineCar
              , PlacedLocationDirection engineCarId RightOf end
              , CreateWindowModifierEffect
                EffectSetupWindow
@@ -268,9 +276,16 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
              , MoveAllTo (toSource attrs) start
              ]
 
-        let locations' = locationNameMap (engineCar : map snd trainCars)
+        setAsideCards <- traverse
+          genCard
+          [ Treacheries.acrossSpaceAndTime
+          , Treacheries.acrossSpaceAndTime
+          , Treacheries.acrossSpaceAndTime
+          , Treacheries.acrossSpaceAndTime
+          ]
+
         TheEssexCountyExpress
-          <$> runMessage msg (attrs & locationsL .~ locations')
+          <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
       ResolveToken _ Tablet iid | isEasyStandard attrs -> do
         closestCultists <- map unClosestEnemyId
           <$> getSetList (iid, [Trait.Cultist])

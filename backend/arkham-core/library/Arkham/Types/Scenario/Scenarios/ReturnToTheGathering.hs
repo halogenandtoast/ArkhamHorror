@@ -4,8 +4,10 @@ import Arkham.Prelude
 
 import qualified Arkham.Act.Cards as Acts
 import qualified Arkham.Agenda.Cards as Agendas
+import qualified Arkham.Asset.Cards as Assets
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
@@ -53,6 +55,7 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
     case msg of
       Setup -> do
         investigatorIds <- getInvestigatorIds
+
         encounterDeck <- buildEncounterDeckExcluding
           [Enemies.ghoulPriest]
           [ EncounterSet.ReturnToTheGathering
@@ -63,42 +66,35 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
           , EncounterSet.AncientEvils
           , EncounterSet.ChillingCold
           ]
-        studyId <- getRandom
-        guestHallId <- getRandom
-        bedroomId <- getRandom
-        bathroomId <- getRandom
+
+        studyAberrantGateway <- genCard Locations.studyAberrantGateway
+        let studyId = toLocationId studyAberrantGateway
+
+        guestHall <- genCard Locations.guestHall
+        bedroom <- genCard Locations.bedroom
+        bathroom <- genCard Locations.bathroom
+
         pushAllEnd
           [ SetEncounterDeck encounterDeck
           , AddAgenda "01105"
           , AddAct "50012"
-          , PlaceLocation studyId Locations.studyAberrantGateway
-          , PlaceLocation guestHallId Locations.guestHall
-          , PlaceLocation bedroomId Locations.bedroom
-          , PlaceLocation bathroomId Locations.bathroom
+          , PlaceLocation studyAberrantGateway
+          , PlaceLocation guestHall
+          , PlaceLocation bedroom
+          , PlaceLocation bathroom
           , RevealLocation Nothing studyId
           , MoveAllTo (toSource attrs) studyId
-          , AskMap
-          . mapFromList
-          $ [ (iid, ChooseOne [Run [Continue "Continue", theGatheringIntro]])
-            | iid <- investigatorIds
-            ]
+          , story investigatorIds theGatheringIntro
           ]
+
         attic <- sample $ Locations.returnToAttic :| [Locations.attic]
         cellar <- sample $ Locations.returnToCellar :| [Locations.cellar]
-        let
-          locations' = locationNameMap
-            [ Locations.studyAberrantGateway
-            , Locations.guestHall
-            , Locations.bedroom
-            , Locations.bathroom
-            , Locations.holeInTheWall
-            , attic
-            , Locations.farAboveYourHouse
-            , cellar
-            , Locations.deepBelowYourHouse
-            , Locations.parlor
-            ]
+
+        setAsideCards <- traverse
+          genCard
+          [Enemies.ghoulPriest, Assets.litaChantler, attic, cellar]
+
         ReturnToTheGathering . TheGathering <$> runMessage
           msg
-          (attrs & locationsL .~ locations')
+          (attrs & setAsideCardsL .~ setAsideCards)
       _ -> ReturnToTheGathering <$> runMessage msg theGathering'

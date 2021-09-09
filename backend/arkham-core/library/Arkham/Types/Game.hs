@@ -2927,10 +2927,12 @@ runGameMessage msg g = case msg of
   GameOver -> do
     clearQueue
     pure $ g & gameStateL .~ IsOver
-  PlaceLocation lid cardDef -> if isNothing $ g ^. locationsL . at lid
+  PlaceLocation card -> if isNothing $ g ^. locationsL . at (toLocationId card)
     then do
-      let location = lookupLocation (toCardCode cardDef) lid
-      push (PlacedLocation (toName location) (toCardCode cardDef) lid)
+      let
+        lid = toLocationId card
+        location = lookupLocation (toCardCode card) lid
+      push (PlacedLocation (toName location) (toCardCode card) lid)
       pure $ g & locationsL . at lid ?~ location
     else pure g
   SetEncounterDeck encounterDeck -> pure $ g & encounterDeckL .~ encounterDeck

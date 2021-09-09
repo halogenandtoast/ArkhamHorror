@@ -7,8 +7,10 @@ import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Matcher (LocationMatcher(..))
 import Arkham.Types.Message
 import Arkham.Types.Target
@@ -26,15 +28,19 @@ instance ActRunner env => RunMessage env Trapped where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       studyId <- getJustLocationIdByName "Study"
       enemyIds <- getSetList studyId
-      hallwayId <- getRandom
-      atticId <- getRandom
-      cellarId <- getRandom
-      parlorId <- getRandom
+
+      hallway <- getSetAsideCard Locations.hallway
+      cellar <- getSetAsideCard Locations.cellar
+      attic <- getSetAsideCard Locations.attic
+      parlor <- getSetAsideCard Locations.parlor
+
+      let hallwayId = LocationId $ toCardId hallway
+
       a <$ pushAll
-        ([ PlaceLocation hallwayId Locations.hallway
-         , PlaceLocation cellarId Locations.cellar
-         , PlaceLocation atticId Locations.attic
-         , PlaceLocation parlorId Locations.parlor
+        ([ PlaceLocation hallway
+         , PlaceLocation cellar
+         , PlaceLocation attic
+         , PlaceLocation parlor
          ]
         <> map (Discard . EnemyTarget) enemyIds
         <> [ RevealLocation Nothing hallwayId

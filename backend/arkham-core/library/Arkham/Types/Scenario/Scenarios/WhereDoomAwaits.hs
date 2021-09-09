@@ -13,7 +13,6 @@ import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
-import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Effect.Window
@@ -199,9 +198,9 @@ instance
       silasBishopPutOutOfMisery <- getHasRecord
         TheInvestigatorsPutSilasBishopOutOfHisMisery
 
-      baseOfTheHillId <- getRandom
-      ascendingPathId <- getRandom
-      sentinelPeakId <- getRandom
+      baseOfTheHill <- genCard Locations.baseOfTheHill
+      ascendingPath <- genCard Locations.ascendingPath
+      sentinelPeak <- genCard Locations.sentinelPeak
 
       silasMsgs <- if silasBishopPutOutOfMisery
         then do
@@ -212,37 +211,27 @@ instance
           pure
             [ SpawnEnemyAt
               (EncounterCard conglomerationOfSpheres)
-              ascendingPathId
+              (toLocationId ascendingPath)
             , ShuffleIntoEncounterDeck rest
             ]
         else pure []
 
-      divergingPaths <-
-        traverse (fmap EncounterCard . genEncounterCard) . take 3 =<< shuffleM
-          [ Locations.slaughteredWoods
-          , Locations.eerieGlade
-          , Locations.destroyedPath
-          , Locations.frozenSpring
-          ]
-      alteredPaths <-
-        traverse (fmap EncounterCard . genEncounterCard) . take 3 =<< shuffleM
-          [ Locations.dimensionalGap
-          , Locations.aTearInThePath
-          , Locations.uprootedWoods
-          , Locations.lostMemories
-          ]
+      divergingPaths <- traverse genCard . take 3 =<< shuffleM
+        [ Locations.slaughteredWoods
+        , Locations.eerieGlade
+        , Locations.destroyedPath
+        , Locations.frozenSpring
+        ]
+
+      alteredPaths <- traverse genCard . take 3 =<< shuffleM
+        [ Locations.dimensionalGap
+        , Locations.aTearInThePath
+        , Locations.uprootedWoods
+        , Locations.lostMemories
+        ]
 
       let
-        inPlayLocations =
-          [ (baseOfTheHillId, Locations.baseOfTheHill)
-          , (ascendingPathId, Locations.ascendingPath)
-          , (sentinelPeakId, Locations.sentinelPeak)
-          ]
-        locations =
-          map snd inPlayLocations
-            <> map toCardDef divergingPaths
-            <> map toCardDef alteredPaths
-        locations' = locationNameMap locations
+        inPlayLocations = [baseOfTheHill, ascendingPath, sentinelPeak]
         token = case scenarioDifficulty attrs of
           Easy -> MinusThree
           Standard -> MinusFive
@@ -261,19 +250,20 @@ instance
            , AddAct "02277"
            ]
         <> replicate broodEscapedCount PlaceDoomOnAgenda
-        <> [ PlaceLocation locationId cardDef
-           | (locationId, cardDef) <- inPlayLocations
-           ]
+        <> [ PlaceLocation card | card <- inPlayLocations ]
         <> silasMsgs
-        <> [ RevealLocation Nothing baseOfTheHillId
-           , MoveAllTo (toSource attrs) baseOfTheHillId
+        <> [ RevealLocation Nothing $ toLocationId baseOfTheHill
+           , MoveAllTo (toSource attrs) $ toLocationId baseOfTheHill
            ]
+
+      setAsideCards <- traverse genCard [Enemies.silasBishop]
 
       WhereDoomAwaits <$> runMessage
         msg
         (attrs
-        & (locationsL .~ locations')
-        & (setAsideCardsL <>~ (divergingPaths <> alteredPaths))
+        & (setAsideCardsL
+          <>~ (divergingPaths <> alteredPaths <> setAsideCards)
+          )
         )
     ResolveToken drawnToken Cultist iid -> s <$ pushAll
       [ CreateWindowModifierEffect

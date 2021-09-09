@@ -52,37 +52,33 @@ instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
           <$> gatherEncounterSet EncounterSet.TheDevourersCult
         -- we will spawn these disciples of the devourer
 
-        southside <-
-          sample
-          $ Locations.southsideHistoricalSociety
-          :| [Locations.southsideMasBoardingHouse]
-        downtown <-
-          sample
-          $ Locations.downtownFirstBankOfArkham
-          :| [Locations.downtownArkhamAsylum]
-        easttown <-
-          sample $ Locations.easttown :| [Locations.easttownArkhamPoliceStation]
-        northside <-
-          sample $ Locations.northside :| [Locations.northsideTrainStation]
-        rivertown <-
-          sample
-          $ Locations.rivertown
-          :| [Locations.rivertownAbandonedWarehouse]
-        miskatonicUniversity <-
-          sample
-          $ Locations.miskatonicUniversity
-          :| [Locations.miskatonicUniversityMiskatonicMuseum]
-        predatorOrPrey <- sample $ "01121" :| ["50026"]
 
-        yourHouseId <- getRandom
-        rivertownId <- getRandom
-        southsideId <- getRandom
-        stMarysHospitalId <- getRandom
-        miskatonicUniversityId <- getRandom
-        downtownId <- getRandom
-        easttownId <- getRandom
-        graveyardId <- getRandom
-        northsideId <- getRandom
+        yourHouse <- genCard Locations.yourHouse
+        rivertown <- genCard =<< sample
+          (Locations.rivertown :| [Locations.rivertownAbandonedWarehouse])
+        southside <- genCard =<< sample
+          (Locations.southsideHistoricalSociety
+          :| [Locations.southsideMasBoardingHouse]
+          )
+        stMarysHospital <- genCard Locations.stMarysHospital
+        miskatonicUniversity <- genCard =<< sample
+          (Locations.miskatonicUniversity
+          :| [Locations.miskatonicUniversityMiskatonicMuseum]
+          )
+        downtown <-
+          genCard
+            =<< sample
+                  (Locations.downtownFirstBankOfArkham
+                  :| [Locations.downtownArkhamAsylum]
+                  )
+        easttown <- genCard =<< sample
+          (Locations.easttown :| [Locations.easttownArkhamPoliceStation])
+        graveyard <- genCard Locations.graveyard
+        northside <-
+          genCard =<< sample
+            (Locations.northside :| [Locations.northsideTrainStation])
+
+        predatorOrPrey <- sample $ "01121" :| ["50026"]
 
         houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
         ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
@@ -97,19 +93,20 @@ instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
         let
           startingLocationMessages = if houseBurnedDown
             then
-              [ RevealLocation Nothing rivertownId
-              , MoveAllTo (toSource attrs) rivertownId
+              [ RevealLocation Nothing $ toLocationId rivertown
+              , MoveAllTo (toSource attrs) $ toLocationId rivertown
               ]
             else
-              [ PlaceLocation yourHouseId Locations.yourHouse
-              , RevealLocation Nothing yourHouseId
-              , MoveAllTo (toSource attrs) yourHouseId
+              [ PlaceLocation yourHouse
+              , RevealLocation Nothing $ toLocationId yourHouse
+              , MoveAllTo (toSource attrs) $ toLocationId yourHouse
               ]
           ghoulPriestMessages =
             [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
           spawnAcolyteMessages =
             [ CreateEnemyAt (EncounterCard c) l Nothing
-            | (c, l) <- zip acolytes [southsideId, downtownId, graveyardId]
+            | (c, l) <- zip acolytes
+              $ map toLocationId [southside, downtown, graveyard]
             ]
           intro1or2 = if litaForcedToFindOthersToHelpHerCause
             then TheMidnightMasksIntroOne
@@ -128,35 +125,19 @@ instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
             , SetEncounterDeck encounterDeck
             , AddAgenda predatorOrPrey
             , AddAct "01123"
-            , PlaceLocation rivertownId rivertown
-            , PlaceLocation southsideId southside
-            , PlaceLocation stMarysHospitalId Locations.stMarysHospital
-            , PlaceLocation miskatonicUniversityId miskatonicUniversity
-            , PlaceLocation downtownId downtown
-            , PlaceLocation easttownId easttown
-            , PlaceLocation graveyardId Locations.graveyard
-            , PlaceLocation northsideId northside
+            , PlaceLocation rivertown
+            , PlaceLocation southside
+            , PlaceLocation stMarysHospital
+            , PlaceLocation miskatonicUniversity
+            , PlaceLocation downtown
+            , PlaceLocation easttown
+            , PlaceLocation graveyard
+            , PlaceLocation northside
             ]
           <> startingLocationMessages
           <> ghoulPriestMessages
           <> spawnAcolyteMessages
-        let
-          locations' = locationNameMap
-            [ Locations.yourHouse
-            , rivertown
-            , southside
-            , Locations.stMarysHospital
-            , miskatonicUniversity
-            , downtown
-            , easttown
-            , Locations.graveyard
-            , northside
-            ]
         ReturnToTheMidnightMasks . TheMidnightMasks <$> runMessage
           msg
-          (attrs
-            { scenarioDeck = Just $ CultistDeck cultistDeck'
-            , scenarioLocations = locations'
-            }
-          )
+          (attrs { scenarioDeck = Just $ CultistDeck cultistDeck' })
       _ -> ReturnToTheMidnightMasks <$> runMessage msg theMidnightMasks'

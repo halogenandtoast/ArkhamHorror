@@ -191,40 +191,31 @@ instance
         , EncounterSet.HideousAbominations
         , EncounterSet.AgentsOfYogSothoth
         ]
-      anotherDimensionId <- getRandom
+
+      anotherDimension <- EncounterCard
+        <$> genEncounterCard Locations.anotherDimension
+
+      let anotherDimensionId = LocationId $ toCardId anotherDimension
+
       pushAll
         [ story investigatorIds lostInTimeAndSpaceIntro
         , SetEncounterDeck encounterDeck
         , AddAgenda "02312"
         , AddAct "02316"
-        , PlaceLocation anotherDimensionId Locations.anotherDimension
+        , PlaceLocation anotherDimension
         , RevealLocation Nothing anotherDimensionId
         , MoveAllTo (toSource attrs) anotherDimensionId
         ]
 
-      let
-        locations' = locationNameMap
-          [ Locations.anotherDimension
-          , Locations.theEdgeOfTheUniverse
-          , Locations.tearThroughTime
-          , Locations.tearThroughSpace
-          , Locations.prismaticCascade
-          , Locations.endlessBridge
-          , Locations.stepsOfYhagharl
-          , Locations.dimensionalDoorway
-          ]
-      theEdgeOfTheUniverse <- genEncounterCard Locations.theEdgeOfTheUniverse
-      tearThroughTime <- genEncounterCard Locations.tearThroughTime
-      LostInTimeAndSpace <$> runMessage
-        msg
-        (attrs
-        & (locationsL .~ locations')
-        & (setAsideCardsL
-          <>~ [ EncounterCard theEdgeOfTheUniverse
-              , EncounterCard tearThroughTime
-              ]
-          )
-        )
+      setAsideCards <- traverse
+        genCard
+        [ Locations.theEdgeOfTheUniverse
+        , Locations.tearThroughTime
+        , Enemies.yogSothoth
+        ]
+
+      LostInTimeAndSpace
+        <$> runMessage msg (attrs & (setAsideCardsL .~ setAsideCards))
     After (PassedSkillTest iid _ _ (TokenTarget token) _ _) ->
       s <$ case (isHardExpert attrs, tokenFace token) of
         (True, Cultist) ->
@@ -256,7 +247,7 @@ instance
       | isSource attrs source -> s <$ case mcard of
         Nothing -> pure ()
         Just card -> pushAll
-          [ PlaceLocation (LocationId $ toCardId card) (toCardDef card)
+          [ PlaceLocation (EncounterCard card)
           , MoveTo (toSource attrs) iid (LocationId $ toCardId card)
           ]
     ScenarioResolution NoResolution -> do

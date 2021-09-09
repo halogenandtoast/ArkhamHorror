@@ -79,6 +79,25 @@ selectListMap
   -> m [b]
 selectListMap f = fmap (map f . setToList) . select
 
+selectJust
+  :: (HasCallStack, Show a, MonadReader env m, Query a env)
+  => a
+  -> m (QueryElement a)
+selectJust matcher = fromJustNote errorNote <$> selectOne matcher
+  where errorNote = "Could not find any matches for: " <> show matcher
+
+getSetAsideCard
+  :: (HasCallStack, MonadReader env m, Query ExtendedCardMatcher env)
+  => CardDef
+  -> m Card
+getSetAsideCard = selectJust . SetAsideCardMatch . cardIs
+
+getSetAsideCardsMatching
+  :: (HasCallStack, MonadReader env m, Query ExtendedCardMatcher env)
+  => CardMatcher
+  -> m [Card]
+getSetAsideCardsMatching = selectList . SetAsideCardMatch
+
 selectOne
   :: (HasCallStack, MonadReader env m, Query a env)
   => a

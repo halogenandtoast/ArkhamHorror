@@ -48,5 +48,8 @@ instance LocationRunner env => RunMessage env StudyAberrantGateway where
     UseCardAbility _ source [Window _ (Window.EnemyAttemptsToSpawnAt _ locationMatcher)] 2 _
       | isSource attrs source
       -> do
-        l <$ push (PlaceLocationMatching locationMatcher)
+        case locationMatcher of
+          LocationWithTitle title ->
+            l <$ push (PlaceLocationMatching $ CardWithTitle title)
+          _ -> error "Expected everything to use titles"
     _ -> StudyAberrantGateway <$> runMessage msg attrs

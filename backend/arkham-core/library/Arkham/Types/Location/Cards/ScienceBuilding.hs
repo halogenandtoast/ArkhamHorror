@@ -47,7 +47,7 @@ instance HasAbilities ScienceBuilding where
 instance (LocationRunner env) => RunMessage env ScienceBuilding where
   runMessage msg l@(ScienceBuilding attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      l <$ push (PlaceLocationMatching $ LocationWithTitle "Alchemy Labs")
+      l <$ push (PlaceLocationMatching $ CardWithTitle "Alchemy Labs")
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       l <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
     _ -> ScienceBuilding <$> runMessage msg attrs

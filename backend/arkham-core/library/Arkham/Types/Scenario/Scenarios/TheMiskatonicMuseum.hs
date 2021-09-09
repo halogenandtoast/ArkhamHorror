@@ -151,7 +151,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck [] -> pure s
         ExhibitDeck (x : xs) -> do
-          push (PlaceLocation (LocationId $ toCardId x) (toCardDef x))
+          push (PlaceLocation (EncounterCard x))
           pure $ TheMiskatonicMuseum $ attrs & deckL ?~ ExhibitDeck xs
         _ -> error "Wrong deck"
     LookAtTopOfDeck _ ScenarioDeckTarget n ->
@@ -162,13 +162,6 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         _ -> error "Wrong deck"
     Setup -> do
       investigatorIds <- getInvestigatorIds
-
-      securityOffice <-
-        sample $ Locations.securityOffice_128 :| [Locations.securityOffice_129]
-      administrationOffice <-
-        sample
-        $ Locations.administrationOffice_130
-        :| [Locations.administrationOffice_131]
 
       armitageKidnapped <- getHasRecordOrStandalone
         DrHenryArmitageWasKidnapped
@@ -201,10 +194,14 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         , EncounterSet.LockedDoors
         ]
 
-      museumEntranceId <- getRandom
-      museumHallsId <- getRandom
-      securityOfficeId <- getRandom
-      administrationOfficeId <- getRandom
+      museumEntrance <- genCard Locations.museumEntrance
+      museumHalls <- genCard Locations.museumHalls
+      securityOffice <- genCard =<< sample
+        (Locations.securityOffice_128 :| [Locations.securityOffice_129])
+      administrationOffice <- genCard =<< sample
+        (Locations.administrationOffice_130
+        :| [Locations.administrationOffice_131]
+        )
 
       pushAllEnd
         [ story investigatorIds theMiskatonicMuseumIntro1
@@ -212,30 +209,28 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         , SetEncounterDeck encounterDeck
         , AddAgenda "02119"
         , AddAct "02122"
-        , PlaceLocation securityOfficeId securityOffice
-        , PlaceLocation administrationOfficeId administrationOffice
-        , PlaceLocation museumEntranceId Locations.museumEntrance
-        , PlaceLocation museumHallsId Locations.museumHalls
-        , RevealLocation Nothing museumEntranceId
-        , MoveAllTo (toSource attrs) museumEntranceId
+        , PlaceLocation securityOffice
+        , PlaceLocation administrationOffice
+        , PlaceLocation museumEntrance
+        , PlaceLocation museumHalls
+        , RevealLocation Nothing $ toLocationId museumEntrance
+        , MoveAllTo (toSource attrs) $ toLocationId museumEntrance
         ]
 
-      let
-        locations' = locationNameMap
-          [ Locations.museumEntrance
-          , Locations.museumHalls
-          , securityOffice
-          , administrationOffice
-          , Locations.exhibitHallAthabaskanExhibit
-          , Locations.exhibitHallMedusaExhibit
-          , Locations.exhibitHallNatureExhibit
-          , Locations.exhibitHallEgyptianExhibit
-          , Locations.exhibitHallHallOfTheDead
-          , Locations.exhibitHallRestrictedHall
-          ]
+      setAsideCards <- traverse
+        genCard
+        [ Assets.haroldWalsted
+        , Assets.adamLynch
+        , Assets.theNecronomiconOlausWormiusTranslation
+        , Treacheries.shadowSpawned
+        ]
+
       TheMiskatonicMuseum <$> runMessage
         msg
-        (attrs & locationsL .~ locations' & deckL ?~ ExhibitDeck exhibitDeck)
+        (attrs
+        & (deckL ?~ ExhibitDeck exhibitDeck)
+        & (setAsideCardsL .~ setAsideCards)
+        )
     PlacedLocation name _ lid -> do
       s <$ if nameTitle name == "Exhibit Hall"
         then do

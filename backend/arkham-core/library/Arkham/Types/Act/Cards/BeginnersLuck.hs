@@ -71,11 +71,12 @@ instance ActRunner env => RunMessage env BeginnersLuck where
             ]
           , Remember Cheated
           ]
-    UseCardAbility _ source _ 2 _ -> a <$ push (AdvanceAct (toId a) source)
+    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId a) source)
     AdvanceAct aid _ | aid == toId a && onSide B attrs -> do
-      lid <- getRandom
+      darkenedHall <- getSetAsideCard Locations.darkenedHall
       a <$ pushAll
-        [ PlaceLocation lid Locations.darkenedHall
+        [ PlaceLocation darkenedHall
         , DiscardEncounterUntilFirst
           (toSource attrs)
           (CardWithType EnemyType <> CardWithTrait Criminal)

@@ -176,25 +176,24 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
         standalone <- getIsStandalone
         s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
       Setup -> do
+        let toLocationCard = fmap EncounterCard . genEncounterCard
         investigatorIds <- getInvestigatorIds
-        bishopsBrook <-
-          sample $ Locations.bishopsBrook_202 :| [Locations.bishopsBrook_203]
-        burnedRuins <-
-          sample $ Locations.burnedRuins_204 :| [Locations.burnedRuins_205]
-        osbornsGeneralStore <-
-          sample
-          $ Locations.osbornsGeneralStore_206
+        bishopsBrook <- toLocationCard =<< sample
+          (Locations.bishopsBrook_202 :| [Locations.bishopsBrook_203])
+        burnedRuins <- toLocationCard =<< sample
+          (Locations.burnedRuins_204 :| [Locations.burnedRuins_205])
+        osbornsGeneralStore <- toLocationCard =<< sample
+          (Locations.osbornsGeneralStore_206
           :| [Locations.osbornsGeneralStore_207]
-        congregationalChurch <-
-          sample
-          $ Locations.congregationalChurch_208
+          )
+        congregationalChurch <- toLocationCard =<< sample
+          (Locations.congregationalChurch_208
           :| [Locations.congregationalChurch_209]
-        houseInTheReeds <-
-          sample
-          $ Locations.houseInTheReeds_210
-          :| [Locations.houseInTheReeds_211]
-        schoolhouse <-
-          sample $ Locations.schoolhouse_212 :| [Locations.schoolhouse_213]
+          )
+        houseInTheReeds <- toLocationCard =<< sample
+          (Locations.houseInTheReeds_210 :| [Locations.houseInTheReeds_211])
+        schoolhouse <- toLocationCard =<< sample
+          (Locations.schoolhouse_212 :| [Locations.schoolhouse_213])
 
         oBannionGangHasABoneToPick <- getHasRecordOrStandalone
           OBannionGangHasABoneToPickWithTheInvestigators
@@ -261,7 +260,9 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
           , schoolhouse
           ]
 
-        villageCommonsId <- getRandom
+        villageCommons <- EncounterCard
+          <$> genEncounterCard Locations.villageCommons
+
         locationIds <- getRandoms
 
         let
@@ -275,36 +276,31 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
             , AddAgenda "02196"
             ]
           <> [ PlaceDoomOnAgenda | delayedOnTheirWayToDunwich ]
-          <> [ AddAct "02199"
-             , PlaceLocation villageCommonsId Locations.villageCommons
-             ]
+          <> [AddAct "02199", PlaceLocation villageCommons]
           <> concat
-               [ [ PlaceLocation locationId location
+               [ [ PlaceLocation location
                  , PlaceUnderneath (LocationTarget locationId) [card]
                  ]
                | (locationId, (location, card)) <- zip
                  locationIds
                  locationCardPairs
                ]
-          <> [ RevealLocation Nothing villageCommonsId
-             , MoveAllTo (toSource attrs) villageCommonsId
+          <> [ RevealLocation Nothing (LocationId $ toCardId villageCommons)
+             , MoveAllTo (toSource attrs) (LocationId $ toCardId villageCommons)
              ]
 
-        let
-          locations' = locationNameMap
-            [ Locations.villageCommons
-            , bishopsBrook
-            , burnedRuins
-            , osbornsGeneralStore
-            , congregationalChurch
-            , houseInTheReeds
-            , schoolhouse
-            , Locations.theHiddenChamber
-            ]
+        setAsideCards <- traverse
+          genCard
+          [ Enemies.silasBishop
+          , Locations.theHiddenChamber
+          , Assets.keyToTheChamber
+          , Assets.powderOfIbnGhazi
+          ]
+
         BloodOnTheAltar . (`with` metadata) <$> runMessage
           msg
           (attrs
-          & (locationsL .~ locations')
+          & (setAsideCardsL .~ setAsideCards)
           & (deckL ?~ PotentialSacrifices potentialSacrifices)
           )
       ResolveToken _ Tablet iid -> do

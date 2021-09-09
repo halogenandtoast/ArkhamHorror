@@ -30,18 +30,18 @@ returnToCellar = location
 
 instance HasAbilities ReturnToCellar where
   getAbilities (ReturnToCellar attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance (LocationRunner env) => RunMessage env ReturnToCellar where
   runMessage msg l@(ReturnToCellar attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      deepBelowYourHouseId <- getRandom
-      l <$ push (PlaceLocation deepBelowYourHouseId Cards.deepBelowYourHouse)
+      deepBelowYourHouse <- getSetAsideCard Cards.deepBelowYourHouse
+      l <$ push (PlaceLocation deepBelowYourHouse)
     _ -> ReturnToCellar <$> runMessage msg attrs

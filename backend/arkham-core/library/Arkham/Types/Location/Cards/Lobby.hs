@@ -7,10 +7,12 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
@@ -50,12 +52,12 @@ instance LocationRunner env => RunMessage env Lobby where
             )
       msgs <- concat <$> for
         lobbyDoorways
-        \(idx, lobbyDoorway) -> do
-          locationId <- getRandom
-          pure
-            [ PlaceLocation locationId (toCardDef lobbyDoorway)
-            , SetLocationLabel locationId $ "lobbyDoorway" <> tshow (idx + 1)
-            ]
+        \(idx, lobbyDoorway) -> pure
+          [ PlaceLocation lobbyDoorway
+          , SetLocationLabel (LocationId $ toCardId lobbyDoorway)
+          $ "lobbyDoorway"
+          <> tshow (idx + 1)
+          ]
       l <$ pushAll msgs
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       l <$ push (DrawCards iid 3 False)

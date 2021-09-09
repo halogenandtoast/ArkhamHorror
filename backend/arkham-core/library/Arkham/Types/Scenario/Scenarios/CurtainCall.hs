@@ -18,7 +18,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -77,6 +77,7 @@ instance
 instance ScenarioRunner env => RunMessage env CurtainCall where
   runMessage msg s@(CurtainCall attrs) = case msg of
     Setup -> do
+      let toLocationCard = fmap EncounterCard . genEncounterCard
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.royalEmissary]
         [ EncounterSet.CurtainCall
@@ -87,10 +88,10 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
         , EncounterSet.StrikingFear
         , EncounterSet.Rats
         ]
-      theatreId <- getRandom
-      lobbyId <- getRandom
-      balconyId <- getRandom
-      backstageId <- getRandom
+      theatre <- toLocationCard Locations.theatre
+      lobby <- toLocationCard Locations.lobby
+      balcony <- toLocationCard Locations.balcony
+      backstage <- toLocationCard Locations.backstage
 
       investigatorIds <- getInvestigatorIds
       mLolaId <- selectOne $ InvestigatorWithTitle "Lola Hayes"
@@ -98,10 +99,10 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
         theatreInvestigatorIds =
           maybe investigatorIds (`deleteFirst` investigatorIds) mLolaId
         theatreMoveTo = map
-          (\iid -> MoveTo (toSource attrs) iid theatreId)
+          (\iid -> MoveTo (toSource attrs) iid (LocationId $ toCardId theatre))
           theatreInvestigatorIds
         backstageMoveTo =
-          [ MoveTo (toSource attrs) lolaId backstageId
+          [ MoveTo (toSource attrs) lolaId (LocationId $ toCardId backstage)
           | lolaId <- maybeToList mLolaId
           ]
 
@@ -110,10 +111,10 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
          , SetEncounterDeck encounterDeck
          , AddAgenda "03044"
          , AddAct "03046"
-         , PlaceLocation theatreId Locations.theatre
-         , PlaceLocation lobbyId Locations.lobby
-         , PlaceLocation balconyId Locations.balcony
-         , PlaceLocation backstageId Locations.backstage
+         , PlaceLocation theatre
+         , PlaceLocation lobby
+         , PlaceLocation balcony
+         , PlaceLocation backstage
          ]
         <> theatreMoveTo
         <> backstageMoveTo
@@ -133,15 +134,7 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
       CurtainCall <$> runMessage
         msg
         (attrs
-        & locationsL
-        .~ locationNameMap
-             [ Locations.theatre
-             , Locations.lobby
-             , Locations.balcony
-             , Locations.backstage
-             ]
-        & setAsideCardsL
-        .~ (setAsidePlayerCards <> setAsideEncounterCards)
+        & (setAsideCardsL .~ setAsidePlayerCards <> setAsideEncounterCards)
         )
     ScenarioResolution resolution -> do
       leadInvestigatorId <- getLeadInvestigatorId

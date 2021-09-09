@@ -36,11 +36,8 @@ instance HasAbilities OutOfThisWorld where
 instance ActRunner env => RunMessage env OutOfThisWorld where
   runMessage msg a@(OutOfThisWorld attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      theEdgeOfTheUniverseId <- getRandom
-      a <$ pushAll
-        [ PlaceLocation theEdgeOfTheUniverseId Locations.theEdgeOfTheUniverse
-        , NextAct actId "02317"
-        ]
+      theEdgeOfTheUniverse <- getSetAsideCard Locations.theEdgeOfTheUniverse
+      a <$ pushAll [PlaceLocation theEdgeOfTheUniverse, NextAct actId "02317"]
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do

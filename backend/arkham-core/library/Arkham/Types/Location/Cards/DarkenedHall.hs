@@ -7,9 +7,11 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
@@ -45,15 +47,19 @@ instance HasAbilities DarkenedHall where
 instance LocationRunner env => RunMessage env DarkenedHall where
   runMessage msg (DarkenedHall attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      locations <- shuffleM [Cards.artGallery, Cards.vipArea, Cards.backAlley]
-      randomIds <- replicateM 3 getRandom
+      artGallery <- getSetAsideCard Cards.artGallery
+      vipArea <- getSetAsideCard Cards.vipArea
+      backAlley <- getSetAsideCard Cards.backAlley
+
+      locationsWithLabels <-
+        zip ["backHallDoorway1", "backHallDoorway2", "backHallDoorway3"]
+          <$> shuffleM [artGallery, vipArea, backAlley]
+
       pushAll $ concat
-        [ [ PlaceLocation locationId' location'
-          , SetLocationLabel locationId' label'
+        [ [ PlaceLocation location'
+          , SetLocationLabel (LocationId $ toCardId location') label'
           ]
-        | (locationId', (label', location')) <- zip randomIds $ zip
-          ["backHallDoorway1", "backHallDoorway2", "backHallDoorway3"]
-          locations
+        | (label', location') <- locationsWithLabels
         ]
       DarkenedHall <$> runMessage msg attrs
     _ -> DarkenedHall <$> runMessage msg attrs

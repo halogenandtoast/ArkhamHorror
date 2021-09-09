@@ -20,10 +20,11 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
+import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Trait
+import qualified Data.HashSet as HashSet
 import Data.Maybe (fromJust)
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
@@ -43,11 +44,31 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
       ladyEspritSpawnLocation <-
         fromJust . headMay . setToList <$> bayouLocations
       ladyEsprit <- PlayerCard <$> genPlayerCard Assets.ladyEsprit
+      setAsideLocations <- selectList $ SetAsideCardMatch $ CardWithType
+        LocationType
+
+      let
+        traits =
+          toList
+            $ HashSet.unions (map toTraits setAsideLocations)
+            `intersect` setFromList
+                          [NewOrleans, Riverside, Wilderness, Unhallowed]
+        locationsFor t = filter (member t . toTraits) setAsideLocations
+
+      setAsideLocationsWithLabels <-
+        concat
+          <$> traverse (\t -> locationsWithLabels t (locationsFor t)) traits
+
       a <$ pushAll
-        [ CreateStoryAssetAt ladyEsprit ladyEspritSpawnLocation
-        , PutSetAsideIntoPlay (SetAsideLocationsTarget mempty)
-        , NextAdvanceActStep aid 2
-        ]
+        ([CreateStoryAssetAt ladyEsprit ladyEspritSpawnLocation]
+        <> concat
+             [ [ PlaceLocation card
+               , SetLocationLabel (LocationId $ toCardId card) label
+               ]
+             | (label, card) <- setAsideLocationsWithLabels
+             ]
+        <> [NextAdvanceActStep aid 2]
+        )
     NextAdvanceActStep aid 2 | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       curseOfTheRougarouSet <- gatherEncounterSet

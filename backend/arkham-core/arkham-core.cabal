@@ -31,6 +31,7 @@ library
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.CurtainCall.Helpers
       Arkham.Scenarios.CurtainCall.Story
+      Arkham.Scenarios.TheDevourerBelow.Story
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
       Arkham.Scenarios.TheLastKing.Story
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers

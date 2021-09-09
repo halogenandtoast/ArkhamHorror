@@ -7,9 +7,10 @@ import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -33,14 +34,17 @@ instance ActRunner env => RunMessage env MysteriousGateway where
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getSetList @InvestigatorId
         (LocationWithTitle "Guest Hall")
-      holeInTheWallId <- getRandom
+      holeInTheWall <- getSetAsideCard Locations.holeInTheWall
       a <$ pushAll
-        ([PlaceLocation holeInTheWallId Locations.holeInTheWall]
+        ([PlaceLocation holeInTheWall]
         <> [ chooseOne
              leadInvestigatorId
              [ TargetLabel
                  (InvestigatorTarget iid')
-                 [ MoveTo (toSource attrs) iid' holeInTheWallId
+                 [ MoveTo
+                   (toSource attrs)
+                   iid'
+                   (LocationId $ toCardId holeInTheWall)
                  , BeginSkillTest
                    iid'
                    (ActSource aid)

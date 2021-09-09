@@ -652,6 +652,8 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       if lid `notElem` toList (a ^. directionsL)
         then pure $ a & connectedLocationsL %~ deleteSet lid
         else pure a
+    UnrevealLocation lid | lid == locationId ->
+      pure $ a & revealedL .~ False
     RemoveLocation lid ->
       pure $ a & connectedLocationsL %~ deleteSet lid & directionsL %~ filterMap
         (/= lid)

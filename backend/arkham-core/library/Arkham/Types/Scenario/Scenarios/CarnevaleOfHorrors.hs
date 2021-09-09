@@ -13,7 +13,6 @@ import qualified Arkham.Location.Cards as Locations
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Direction
@@ -174,7 +173,7 @@ instance
 
       -- Locations
       let locationLabels = [ "location" <> tshow @Int n | n <- [1 .. 8] ]
-      randomLocations <- drop 1 <$> shuffleM
+      randomLocations <- traverse genCard . drop 1 =<< shuffleM
         [ Locations.streetsOfVenice
         , Locations.rialtoBridge
         , Locations.venetianGarden
@@ -183,14 +182,18 @@ instance
         , Locations.accademiaBridge
         , Locations.theGuardian
         ]
-      sanMarcoBasilicaId <- getRandom
-      unshuffled <- zip <$> getRandoms <*> pure
-        (Locations.canalSide : randomLocations)
-      let nonSanMarcoBasilicaLocationIds = map fst unshuffled
+      canalSide <- genCard Locations.canalSide
+      sanMarcoBasilica <- genCard Locations.sanMarcoBasilica
+
+      let
+        unshuffled = canalSide : randomLocations
+        nonSanMarcoBasilicaLocationIds = map (LocationId . toCardId) unshuffled
+        sanMarcoBasilicaId = LocationId $ toCardId sanMarcoBasilica
+
       locationIdsWithMaskedCarnevaleGoers <-
         zip nonSanMarcoBasilicaLocationIds
           <$> (shuffleM =<< traverse
-                (fmap PlayerCard . genPlayerCard)
+                genCard
                 [ Assets.maskedCarnevaleGoer_17
                 , Assets.maskedCarnevaleGoer_18
                 , Assets.maskedCarnevaleGoer_19
@@ -200,29 +203,27 @@ instance
                 , Assets.maskedCarnevaleGoer_21
                 ]
               )
-      locations <- ((sanMarcoBasilicaId, Locations.sanMarcoBasilica) :|)
-        <$> shuffleM unshuffled
+      locations <- (sanMarcoBasilica :|) <$> shuffleM unshuffled
 
       -- Assets
-      abbess <- PlayerCard <$> genPlayerCard Assets.abbessAllegriaDiBiase
+      abbess <- genCard Assets.abbessAllegriaDiBiase
 
       pushAllEnd
         $ [SetEncounterDeck encounterDeck, AddAgenda "82002", AddAct "82005"]
-        <> [ PlaceLocation locationId cardDef
-           | (locationId, cardDef) <- toList locations
-           ]
-        <> [ SetLocationLabel locationId label
-           | (label, (locationId, _)) <- zip locationLabels (toList locations)
-           ]
-        <> [ PlacedLocationDirection lid1 LeftOf lid2
-           | ((lid1, _), (lid2, _)) <- zip
-             (toList locations)
-             (drop 1 $ toList locations)
+        <> [ PlaceLocation cardDef | cardDef <- toList locations ]
+        <> [ SetLocationLabel (LocationId $ toCardId location) label
+           | (label, location) <- zip locationLabels (toList locations)
            ]
         <> [ PlacedLocationDirection
-               (fst $ NE.last locations)
+               (LocationId $ toCardId l1)
                LeftOf
-               (fst $ NE.head locations)
+               (LocationId $ toCardId l2)
+           | (l1, l2) <- zip (toList locations) (drop 1 $ toList locations)
+           ]
+        <> [ PlacedLocationDirection
+               (LocationId . toCardId $ NE.last locations)
+               LeftOf
+               (LocationId . toCardId $ NE.head locations)
            ]
         <> [ CreateStoryAssetAt asset locationId
            | (locationId, asset) <- locationIdsWithMaskedCarnevaleGoers
@@ -262,19 +263,18 @@ instance
              ]
            ]
 
-      let
-        locations' = locationNameMap
-          [ Locations.sanMarcoBasilica
-          , Locations.canalSide
-          , Locations.streetsOfVenice
-          , Locations.rialtoBridge
-          , Locations.venetianGarden
-          , Locations.bridgeOfSighs
-          , Locations.floodedSquare
-          , Locations.accademiaBridge
-          , Locations.theGuardian
-          ]
-      CarnevaleOfHorrors <$> runMessage msg (attrs & locationsL .~ locations')
+
+      setAsideCards <- traverse
+        genCard
+        [ Enemies.cnidathqua
+        , Assets.pantalone
+        , Assets.medicoDellaPeste
+        , Assets.bauta
+        , Assets.gildedVolto
+        ]
+
+      CarnevaleOfHorrors
+        <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
     SetTokensForScenario -> do
       let
         tokens = if isEasyStandard attrs

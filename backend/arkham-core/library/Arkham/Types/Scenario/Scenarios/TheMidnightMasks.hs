@@ -101,6 +101,8 @@ introPart2 = FlavorText
     \ cultists we find before midnight, the better.”"
   ]
 
+-- "
+
 instance ScenarioRunner env => RunMessage env TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs@ScenarioAttrs {..}) = case msg of
     Setup -> do
@@ -109,24 +111,24 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
       (acolytes, darkCult) <- splitAt (count' - 1)
         <$> gatherEncounterSet EncounterSet.DarkCult
       -- we will spawn these acolytes
-      southside <-
-        sample
-        $ Locations.southsideHistoricalSociety
-        :| [Locations.southsideMasBoardingHouse]
-      downtown <-
-        sample
-        $ Locations.downtownFirstBankOfArkham
-        :| [Locations.downtownArkhamAsylum]
 
-      yourHouseId <- getRandom
-      rivertownId <- getRandom
-      southsideId <- getRandom
-      stMarysHospitalId <- getRandom
-      miskatonicUniversityId <- getRandom
-      downtownId <- getRandom
-      easttownId <- getRandom
-      graveyardId <- getRandom
-      northsideId <- getRandom
+      yourHouse <- genCard Locations.yourHouse
+      rivertown <- genCard Locations.rivertown
+      southside <- genCard =<< sample
+        (Locations.southsideHistoricalSociety
+        :| [Locations.southsideMasBoardingHouse]
+        )
+      stMarysHospital <- genCard Locations.stMarysHospital
+      miskatonicUniversity <- genCard Locations.miskatonicUniversity
+      downtown <-
+        genCard
+          =<< sample
+                (Locations.downtownFirstBankOfArkham
+                :| [Locations.downtownArkhamAsylum]
+                )
+      easttown <- genCard Locations.easttown
+      graveyard <- genCard Locations.graveyard
+      northside <- genCard Locations.northside
 
       houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
       ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
@@ -135,23 +137,27 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
       ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
       cultistDeck' <- shuffleM
         =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
+
       let
         startingLocationMessages = if houseBurnedDown
           then
-            [ RevealLocation Nothing rivertownId
-            , MoveAllTo (toSource attrs) rivertownId
+            [ RevealLocation Nothing $ toLocationId rivertown
+            , MoveAllTo (toSource attrs) $ toLocationId rivertown
             ]
           else
-            [ PlaceLocation yourHouseId Locations.yourHouse
-            , RevealLocation Nothing yourHouseId
-            , MoveAllTo (toSource attrs) yourHouseId
+            [ PlaceLocation yourHouse
+            , RevealLocation Nothing $ toLocationId yourHouse
+            , MoveAllTo (toSource attrs) $ toLocationId yourHouse
             ]
         ghoulPriestMessages =
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
         spawnAcolyteMessages =
           [ CreateEnemyAt (EncounterCard c) l Nothing
-          | (c, l) <- zip acolytes [southsideId, downtownId, graveyardId]
+          | (c, l) <- zip
+            acolytes
+            (map toLocationId [southside, downtown, graveyard])
           ]
+
       encounterDeck <- buildEncounterDeckWith
         (<> darkCult)
         [ EncounterSet.TheMidnightMasks
@@ -159,46 +165,33 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         , EncounterSet.Nightgaunts
         , EncounterSet.LockedDoors
         ]
+
       let
         intro1or2 = if litaForcedToFindOthersToHelpHerCause
           then TheMidnightMasksIntroOne
           else TheMidnightMasksIntroTwo
+
       pushAllEnd
         $ [ story investigatorIds (introPart1 intro1or2)
           , story investigatorIds introPart2
           , SetEncounterDeck encounterDeck
           , AddAgenda "01121"
           , AddAct "01123"
-          , PlaceLocation rivertownId Locations.rivertown
-          , PlaceLocation southsideId southside
-          , PlaceLocation stMarysHospitalId Locations.stMarysHospital
-          , PlaceLocation miskatonicUniversityId Locations.miskatonicUniversity
-          , PlaceLocation downtownId downtown
-          , PlaceLocation easttownId Locations.easttown
-          , PlaceLocation graveyardId Locations.graveyard
-          , PlaceLocation northsideId Locations.northside
+          , PlaceLocation rivertown
+          , PlaceLocation southside
+          , PlaceLocation stMarysHospital
+          , PlaceLocation miskatonicUniversity
+          , PlaceLocation downtown
+          , PlaceLocation easttown
+          , PlaceLocation graveyard
+          , PlaceLocation northside
           ]
         <> startingLocationMessages
         <> ghoulPriestMessages
         <> spawnAcolyteMessages
-      let
-        locations' = locationNameMap
-          [ Locations.yourHouse
-          , Locations.rivertown
-          , southside
-          , Locations.stMarysHospital
-          , Locations.miskatonicUniversity
-          , downtown
-          , Locations.easttown
-          , Locations.graveyard
-          , Locations.northside
-          ]
+
       pure $ TheMidnightMasks
-        (attrs
-          { scenarioDeck = Just $ CultistDeck cultistDeck'
-          , scenarioLocations = locations'
-          }
-        )
+        (attrs { scenarioDeck = Just $ CultistDeck cultistDeck' })
     UseScenarioSpecificAbility iid _ 1 ->
       case fromJustNote "must be set" scenarioDeck of
         CultistDeck [] -> pure s

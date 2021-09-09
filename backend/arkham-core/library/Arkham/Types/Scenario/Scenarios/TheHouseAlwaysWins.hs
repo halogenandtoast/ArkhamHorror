@@ -8,10 +8,10 @@ import Arkham.Prelude
 import qualified Arkham.Act.Cards as Acts
 import qualified Arkham.Agenda.Cards as Agendas
 import qualified Arkham.Asset.Cards as Assets
-import Arkham.Card
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Types.CampaignLogKey
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
@@ -80,6 +80,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
   runMessage msg s@(TheHouseAlwaysWins attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
+
       encounterDeck <- buildEncounterDeckExcluding
         [Assets.peterClover, Enemies.cloverClubPitBoss]
         [ EncounterSet.TheHouseAlwaysWins
@@ -87,42 +88,43 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         , EncounterSet.NaomisCrew
         , EncounterSet.Rats
         ]
-      cloverClubPitBoss <- buildCard "02078"
-      laBellaLunaId <- getRandom
-      cloverClubLoungeId <- getRandom
-      cloverClubBarId <- getRandom
-      cloverClubCardroomId <- getRandom
+
+      cloverClubPitBoss <- genCard Enemies.cloverClubPitBoss
+      laBellaLuna <- genCard Locations.laBellaLuna
+      cloverClubLounge <- genCard Locations.cloverClubLounge
+      cloverClubBar <- genCard Locations.cloverClubBar
+      cloverClubCardroom <- genCard Locations.cloverClubCardroom
+
+      let
+        laBellaLunaId = toLocationId laBellaLuna
+        cloverClubLoungeId = toLocationId cloverClubLounge
+
       pushAllEnd
         [ SetEncounterDeck encounterDeck
         , AddAgenda "02063"
         , AddAct "02066"
-        , PlaceLocation laBellaLunaId Locations.laBellaLuna
-        , PlaceLocation cloverClubLoungeId Locations.cloverClubLounge
-        , PlaceLocation cloverClubBarId Locations.cloverClubBar
-        , PlaceLocation cloverClubCardroomId Locations.cloverClubCardroom
+        , PlaceLocation laBellaLuna
+        , PlaceLocation cloverClubLounge
+        , PlaceLocation cloverClubBar
+        , PlaceLocation cloverClubCardroom
         , RevealLocation Nothing laBellaLunaId
         , MoveAllTo (toSource attrs) laBellaLunaId
         , CreateEnemyAt cloverClubPitBoss cloverClubLoungeId Nothing
-        , AskMap
-        . mapFromList
-        $ [ ( iid
-            , ChooseOne [Run [Continue "Continue", theHouseAlwaysWinsIntro]]
-            )
-          | iid <- investigatorIds
-          ]
+        , story investigatorIds theHouseAlwaysWinsIntro
         ]
-      let
-        locations' = locationNameMap
-          [ Locations.laBellaLuna
-          , Locations.cloverClubLounge
-          , Locations.cloverClubBar
-          , Locations.cloverClubCardroom
-          , Locations.darkenedHall
-          , Locations.artGallery
-          , Locations.vipArea
-          , Locations.backAlley
-          ]
-      TheHouseAlwaysWins <$> runMessage msg (attrs & locationsL .~ locations')
+
+      setAsideCards <- traverse
+        genCard
+        [ Locations.darkenedHall
+        , Assets.peterClover
+        , Assets.drFrancisMorgan
+        , Locations.artGallery
+        , Locations.vipArea
+        , Locations.backAlley
+        ]
+
+      TheHouseAlwaysWins
+        <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
     ResolveToken _ Tablet iid -> s <$ push (SpendResources iid 3)
     ResolveToken drawnToken Skull iid -> do
       let requiredResources = if isEasyStandard attrs then 2 else 3

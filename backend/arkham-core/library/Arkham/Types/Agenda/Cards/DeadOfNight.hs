@@ -38,7 +38,7 @@ instance AgendaRunner env => RunMessage env DeadOfNight where
       scienceBuildingId <- fromJustNote "missing science building"
         <$> selectOne (LocationWithTitle "Science Building")
       a <$ pushAll
-        ([ PlaceLocationMatching (LocationWithTitle "Dormitories")
+        ([ PlaceLocationMatching (CardWithTitle "Dormitories")
          | not dormitoriesInPlay
          ]
         <> [ MoveToward (EnemyTarget eid) (LocationWithTitle "Dormitories")

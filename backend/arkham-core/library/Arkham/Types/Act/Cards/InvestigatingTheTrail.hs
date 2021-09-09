@@ -33,8 +33,8 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
       mRitualSiteId <- getLocationIdByName "Ritual Site"
       mainPathId <- getJustLocationIdByName "Main Path"
       when (isNothing mRitualSiteId) $ do
-        ritualSiteId <- getRandom
-        push (PlaceLocation ritualSiteId Locations.ritualSite)
+        ritualSite <- getSetAsideCard Locations.ritualSite
+        push (PlaceLocation ritualSite)
       cultistsWhoGotAwayDefs <- map lookupEncounterCardDef
         <$> hasRecordSet CultistsWhoGotAway
       cultistsWhoGotAway <- traverse genEncounterCard cultistsWhoGotAwayDefs

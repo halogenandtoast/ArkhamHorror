@@ -13,7 +13,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Name
@@ -65,8 +64,7 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
         case nonEmpty divergingPaths of
           Just ne -> do
             card <- sample ne
-            l <$ push
-              (PlaceLocation (LocationId $ toCardId card) (toCardDef card))
+            l <$ push (PlaceLocation card)
           Nothing -> pure l
     AddConnection lid _ | toId attrs /= lid -> do
       isDivergingPath <- (== "Diverging Path") <$> getName lid

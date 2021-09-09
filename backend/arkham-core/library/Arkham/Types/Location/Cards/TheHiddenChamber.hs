@@ -43,7 +43,7 @@ instance LocationRunner env => RunMessage env TheHiddenChamber where
       connectedLocation <- getId iid
       name <- getName connectedLocation
       pushAll
-        [ PlaceLocation (toId attrs) (toCardDef attrs)
+        [ PlaceLocation (toCard attrs)
         , AddDirectConnection (toId attrs) connectedLocation
         , AddDirectConnection connectedLocation (toId attrs)
         , SetLocationLabel (toId attrs) $ nameToLabel name <> "HiddenChamber"

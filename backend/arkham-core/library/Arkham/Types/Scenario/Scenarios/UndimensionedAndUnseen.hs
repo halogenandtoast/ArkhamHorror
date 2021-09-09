@@ -189,25 +189,24 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
         , EncounterSet.StrikingFear
         ]
 
-      dunwichVillage <-
-        sample $ Locations.dunwichVillage_242 :| [Locations.dunwichVillage_243]
-      coldSpringGlen <-
-        sample $ Locations.coldSpringGlen_244 :| [Locations.coldSpringGlen_245]
-      tenAcreMeadow <-
-        sample $ Locations.tenAcreMeadow_246 :| [Locations.tenAcreMeadow_247]
+      dunwichVillage <- genCard =<< sample
+        (Locations.dunwichVillage_242 :| [Locations.dunwichVillage_243])
+      coldSpringGlen <- genCard =<< sample
+        (Locations.coldSpringGlen_244 :| [Locations.coldSpringGlen_245])
+      tenAcreMeadow <- genCard =<< sample
+        (Locations.tenAcreMeadow_246 :| [Locations.tenAcreMeadow_247])
       blastedHeath <-
-        sample $ Locations.blastedHeath_248 :| [Locations.blastedHeath_249]
-      whateleyRuins <-
-        sample $ Locations.whateleyRuins_250 :| [Locations.whateleyRuins_251]
-      devilsHopYard <-
-        sample $ Locations.devilsHopYard_252 :| [Locations.devilsHopYard_253]
+        genCard =<< sample
+          (Locations.blastedHeath_248 :| [Locations.blastedHeath_249])
+      whateleyRuins <- genCard =<< sample
+        (Locations.whateleyRuins_250 :| [Locations.whateleyRuins_251])
+      devilsHopYard <- genCard =<< sample
+        (Locations.devilsHopYard_252 :| [Locations.devilsHopYard_253])
 
-      dunwichVillageId <- getRandom
-      coldSpringGlenId <- getRandom
-      tenAcreMeadowId <- getRandom
-      blastedHeathId <- getRandom
-      whateleyRuinsId <- getRandom
-      devilsHopYardId <- getRandom
+      let
+        dunwichVillageId = toLocationId dunwichVillage
+        coldSpringGlenId = toLocationId coldSpringGlen
+        blastedHeathId = toLocationId blastedHeath
 
       sacrificedToYogSothoth <- if standalone
         then pure 3
@@ -246,18 +245,19 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
 
       setAsideBroodOfYogSothoth <- replicateM
         setAsideCount
-        (EncounterCard <$> genEncounterCard Enemies.broodOfYogSothoth)
+        (genCard Enemies.broodOfYogSothoth)
+
+      setAsideCards <- replicateM 4 (genCard Assets.esotericFormula)
 
       let
         locations =
-          [ (dunwichVillageId, dunwichVillage)
-          , (coldSpringGlenId, coldSpringGlen)
-          , (tenAcreMeadowId, tenAcreMeadow)
-          , (blastedHeathId, blastedHeath)
-          , (whateleyRuinsId, whateleyRuins)
-          , (devilsHopYardId, devilsHopYard)
+          [ dunwichVillage
+          , coldSpringGlen
+          , tenAcreMeadow
+          , blastedHeath
+          , whateleyRuins
+          , devilsHopYard
           ]
-        locations' = locationNameMap $ map snd locations
 
       pushAll
         $ [ story
@@ -272,9 +272,7 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
           , AddAgenda "02237"
           , AddAct "02240"
           ]
-        <> [ PlaceLocation locationId cardDef
-           | (locationId, cardDef) <- locations
-           ]
+        <> [ PlaceLocation location | location <- locations ]
         <> [ RevealLocation Nothing dunwichVillageId
            , MoveAllTo (toSource attrs) dunwichVillageId
            ]
@@ -300,12 +298,7 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
 
       UndimensionedAndUnseen <$> runMessage
         msg
-        (attrs
-        & locationsL
-        .~ locations'
-        & setAsideCardsL
-        .~ setAsideBroodOfYogSothoth
-        )
+        (attrs & (setAsideCardsL .~ setAsideBroodOfYogSothoth <> setAsideCards))
     ResolveToken drawnToken Tablet _ -> s <$ push
       (CreateEffect
         "02236"

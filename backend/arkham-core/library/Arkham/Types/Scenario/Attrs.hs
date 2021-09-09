@@ -46,15 +46,10 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDeck :: Maybe ScenarioDeck
   , scenarioLog :: HashSet ScenarioLogKey
-  , scenarioLocations :: HashMap LocationName [CardDef]
   , scenarioSetAsideCards :: [Card]
   , scenarioInResolution :: Bool
   }
   deriving stock (Show, Generic, Eq)
-
-locationNameMap :: [CardDef] -> HashMap LocationName [CardDef]
-locationNameMap defs = unionsWith (<>) $ map toMap defs
-  where toMap = liftM2 singletonMap (LocationName . toName) pure
 
 cardsUnderneathAgendaDeckL :: Lens' ScenarioAttrs [Card]
 cardsUnderneathAgendaDeckL = lens scenarioCardsUnderAgendaDeck
@@ -63,9 +58,6 @@ cardsUnderneathAgendaDeckL = lens scenarioCardsUnderAgendaDeck
 cardsUnderneathActDeckL :: Lens' ScenarioAttrs [Card]
 cardsUnderneathActDeckL =
   lens scenarioCardsUnderActDeck $ \m x -> m { scenarioCardsUnderActDeck = x }
-
-locationsL :: Lens' ScenarioAttrs (HashMap LocationName [CardDef])
-locationsL = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
 
 locationLayoutL :: Lens' ScenarioAttrs (Maybe [GridTemplateRow])
 locationLayoutL =
@@ -158,7 +150,6 @@ baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   , scenarioLocationLayout = Nothing
   , scenarioDeck = Nothing
   , scenarioLog = mempty
-  , scenarioLocations = mempty
   , scenarioSetAsideCards = mempty
   , scenarioCardsUnderScenarioReference = mempty
   , scenarioInResolution = False
@@ -201,20 +192,6 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env ScenarioAttrs whe
     MinusEight -> pure $ TokenValue MinusEight (NegativeModifier 8)
     otherFace -> pure $ TokenValue otherFace NoModifier
 
-findLocationKey
-  :: LocationMatcher -> HashMap LocationName [CardDef] -> Maybe LocationName
-findLocationKey locationMatcher locations = fst
-  <$> find match (mapToList locations)
- where
-  match (LocationName (Name title msubtitle), _) = case locationMatcher of
-    LocationWithTitle title' -> title == title'
-    LocationWithFullTitle title' subtitle' ->
-      title == title' && Just subtitle' == msubtitle
-    _ ->
-      error
-        $ "can not uniquely determine via location matcher: "
-        <> show locationMatcher
-
 type ScenarioAttrsRunner env
   = ( HasSet InScenarioInvestigatorId env ()
     , HasSet InvestigatorId env ()
@@ -235,29 +212,18 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
     Setup -> a <$ pushEnd BeginInvestigation
     StartCampaign -> do
       standalone <- getIsStandalone
-      a <$ if standalone
-        then push $ StartScenario scenarioName scenarioId
-        else pure ()
+      a <$ when standalone (push $ StartScenario scenarioName scenarioId)
     InitDeck iid deck -> do
       standalone <- getIsStandalone
       a <$ if standalone then push $ LoadDeck iid deck else pure ()
-    PlaceLocationMatching locationMatcher -> do
-      mlid <- selectOne locationMatcher
-      case mlid of
-        Just _ -> pure a
-        Nothing -> do
-          let
-            locations =
-              fromMaybe []
-                $ findLocationKey locationMatcher scenarioLocations
-                >>= flip lookup scenarioLocations
-          a <$ case locations of
-            [] -> error "There were no locations with that name"
-            [cardDef] -> do
-              lid <- getRandom
-              push (PlaceLocation lid cardDef)
-            _ -> error
-              "We want there to be only one location when targetting names"
+    PlaceLocationMatching cardMatcher -> do
+      let
+        matches = filter
+          (`cardMatch` (CardWithType LocationType <> cardMatcher))
+          scenarioSetAsideCards
+      a <$ case matches of
+        [] -> error "There were no locations with that name"
+        (card : _) -> push (PlaceLocation card)
     EnemySpawnAtLocationMatching miid locationMatcher eid -> do
       lids <- selectList locationMatcher
       leadInvestigatorId <- getLeadInvestigatorId
@@ -326,8 +292,7 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
               ]
             , ChosenRandomLocation target randomLocationId
             ]
-    PlaceLocation _ cardDef -> pure $ a & setAsideCardsL %~ deleteFirstMatch
-      ((== toCardCode cardDef) . toCardCode)
+    PlaceLocation card -> pure $ a & setAsideCardsL %~ delete card
     CreateEnemyAt card _ _ -> do
       pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
     PlaceUnderneath AgendaDeckTarget cards -> do

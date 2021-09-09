@@ -42,7 +42,7 @@ instance HasAbilities StudentUnion where
 instance LocationRunner env => RunMessage env StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      l <$ push (PlaceLocationMatching $ LocationWithTitle "Dormitories")
+      l <$ push (PlaceLocationMatching $ CardWithTitle "Dormitories")
     UseCardAbility iid source _ 2 _ | isSource attrs source -> l <$ pushAll
       [ HealDamage (InvestigatorTarget iid) 1
       , HealHorror (InvestigatorTarget iid) 1

@@ -52,10 +52,10 @@ instance AgendaRunner env => RunMessage env VengeanceAwaits where
       umordhoth <- EncounterCard <$> genEncounterCard Enemies.umordhoth
       a <$ if "01146" `elem` actIds
         then do
-          ritualSiteId <- getRandom
+          ritualSite <- getSetAsideCard Locations.ritualSite
           pushAll
-            [ PlaceLocation ritualSiteId Locations.ritualSite
-            , CreateEnemyAt umordhoth ritualSiteId Nothing
+            [ PlaceLocation ritualSite
+            , CreateEnemyAt umordhoth (LocationId $ toCardId ritualSite) Nothing
             ]
         else do
           ritualSiteId <- getJustLocationIdByName "Ritual Site"

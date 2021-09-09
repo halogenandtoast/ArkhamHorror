@@ -18,6 +18,7 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Card.PlayerCard as X
   (BearerId(..), DiscardedPlayerCard(..), PlayerCard(..))
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
 import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Trait
@@ -49,6 +50,15 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCard :: a -> Card
   toCard a = lookupCard (cdCardCode $ toCardDef a) (toCardId a)
   toCardId :: a -> CardId
+
+toLocationId :: IsCard a => a -> LocationId
+toLocationId = LocationId . toCardId
+
+genCard :: (MonadRandom m, HasCardDef a) => a -> m Card
+genCard a = if cdCardType def `elem` encounterCardTypes
+  then EncounterCard <$> genEncounterCard def
+  else PlayerCard <$> genPlayerCard def
+  where def = toCardDef a
 
 cardMatch :: IsCard a => a -> CardMatcher -> Bool
 cardMatch a = \case

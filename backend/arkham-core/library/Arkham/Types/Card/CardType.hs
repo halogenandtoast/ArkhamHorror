@@ -24,7 +24,14 @@ data CardSubType = Weakness | BasicWeakness
 
 encounterCardTypes :: [CardType]
 encounterCardTypes =
-  [TreacheryType, EnemyType, LocationType, EncounterAssetType]
+  [ TreacheryType
+  , EnemyType
+  , LocationType
+  , EncounterAssetType
+  , StoryType
+  , ActType
+  , AgendaType
+  ]
 
 playerCardTypes :: [CardType]
 playerCardTypes =

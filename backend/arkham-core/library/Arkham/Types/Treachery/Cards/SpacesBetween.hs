@@ -37,19 +37,31 @@ instance TreacheryRunner env => RunMessage env SpacesBetween where
                     <> LocationWithTrait SentinelHill
                     )
 
-          -- TODO: We should not be removing the location
           pure
             $ [ MoveTo source iid destination | iid <- investigatorIds ]
             <> [ EnemyMove eid flipLocation destination | eid <- enemyIds ]
-            <> [RemoveLocation flipLocation]
+            <> [UnrevealLocation flipLocation]
         )
         nonSentinelHillLocations
-      shuffledLocations <- traverse (\lid -> (lid, ) <$> getCardDef lid)
-        =<< shuffleM nonSentinelHillLocations
+
+      alteredPaths <-
+        shuffleM
+          =<< filterM
+                (fmap (== "Altered Path") . getName . Unrevealed)
+                nonSentinelHillLocations
+      divergingPaths <-
+        shuffleM
+          =<< filterM
+                (fmap (== "Diverging Path") . getName . Unrevealed)
+                nonSentinelHillLocations
+
       t <$ pushAll
         (msgs
-        <> [ PlaceLocation locationId cardDef
-           | (locationId, cardDef) <- shuffledLocations
+        <> [ SetLocationLabel locationId $ "alteredPath" <> tshow idx
+           | (idx, locationId) <- zip [1 ..] alteredPaths
+           ]
+        <> [ SetLocationLabel locationId $ "divergingPath" <> tshow idx
+           | (idx, locationId) <- zip [1 ..] divergingPaths
            ]
         )
     _ -> SpacesBetween <$> runMessage msg attrs

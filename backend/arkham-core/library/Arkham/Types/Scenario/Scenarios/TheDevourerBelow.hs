@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
+import Arkham.Scenarios.TheDevourerBelow.Story
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
@@ -58,16 +59,9 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
       ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
       cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway
       ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
-      mainPathId <- getRandom
+
       let
-        arkhamWoods =
-          [ Locations.arkhamWoodsUnhallowedGround
-          , Locations.arkhamWoodsTwistingPaths
-          , Locations.arkhamWoodsOldHouse
-          , Locations.arkhamWoodsCliffside
-          , Locations.arkhamWoodsTangledThicket
-          , Locations.arkhamWoodsQuietGlade
-          ]
+        toLocationCard = fmap EncounterCard . genEncounterCard
         woodsLabels = [ "woods" <> tshow @Int n | n <- [1 .. 4] ]
         ghoulPriestMessages =
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
@@ -75,7 +69,22 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
           if pastMidnight then [AllRandomDiscard, AllRandomDiscard] else []
         cultistsWhoGotAwayMessages =
           replicate ((length cultistsWhoGotAway + 1) `div` 2) PlaceDoomOnAgenda
-      woodsLocations <- zip <$> getRandoms <*> (take 4 <$> shuffleM arkhamWoods)
+
+      mainPath <- toLocationCard Locations.mainPath
+      let mainPathId = LocationId $ toCardId mainPath
+
+      arkhamWoods <- traverse
+        toLocationCard
+        [ Locations.arkhamWoodsUnhallowedGround
+        , Locations.arkhamWoodsTwistingPaths
+        , Locations.arkhamWoodsOldHouse
+        , Locations.arkhamWoodsCliffside
+        , Locations.arkhamWoodsTangledThicket
+        , Locations.arkhamWoodsQuietGlade
+        ]
+
+      woodsLocations <- take 4 <$> shuffleM arkhamWoods
+
       randomSet <-
         sample
         $ EncounterSet.AgentsOfYogSothoth
@@ -83,6 +92,7 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
            , EncounterSet.AgentsOfCthulhu
            , EncounterSet.AgentsOfHastur
            ]
+
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.umordhoth]
         [ EncounterSet.TheDevourerBelow
@@ -92,52 +102,18 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
         , EncounterSet.DarkCult
         , randomSet
         ]
+
       pushAllEnd
-        $ [ AskMap
-            (mapFromList
-              [ ( iid
-                , ChooseOne
-                  [ Run
-                      [ Continue "Continue"
-                      , FlavorText
-                        (Just "Part III: The Devourer Below")
-                        [ "After a frantic nighttime search throughout Arkham, you have tracker\
-                              \ down and questioned several members of the cult. Your findings are\
-                              \ disturbing: they claim to worship a being known as Umôrdhoth, a\
-                              \ monstrous entity from another realm."
-                        , "You are able to confirm much of Lita’s story: the cult is agitated over\
-                              \ the destruction of a ghoul lair. However, a surprising detail also turns\
-                              \ up: the one who invaded the lair and set this night’s events in motion\
-                              \ was none other than Lita Chantler herself! You are not sure why this\
-                              \ important detail was omitted from Lita’s story—did she tell you only\
-                              \ as much as was necessary to draw you into her conflict? But in another\
-                              \ light, she seems to be fighting to protect the city of Arkham from a\
-                              \ terrible menace."
-                        , "The final piece of the puzzle was found written in a journal possessed by\
-                              \ one of the cultists. It describes a dark ritual to be performed deep within\
-                              \ the woods south of Arkham, this very night. According to the journal,\
-                              \ the ritual’s completion will open a gate and bring forth the cult’s dark\
-                              \ master into this world. “If the cult is not stopped,” Lita warns, “there is\
-                              \ a possibility that Umôrdhoth’s vengeance will consume all in its path.”\
-                              \ Frightened but determined to stop the ritual, you head into the woods…"
-                        ]
-                      ]
-                  ]
-                )
-              | iid <- investigatorIds
-              ]
-            )
+        $ [ story investigatorIds intro
           , SetEncounterDeck encounterDeck
           , AddToken ElderThing
           , AddAgenda "01143"
           , AddAct "01146"
-          , PlaceLocation mainPathId Locations.mainPath
+          , PlaceLocation mainPath
           ]
-        <> [ PlaceLocation locationId cardDef
-           | (locationId, cardDef) <- woodsLocations
-           ]
-        <> [ SetLocationLabel locationId label
-           | (label, (locationId, _)) <- zip woodsLabels woodsLocations
+        <> [ PlaceLocation card | card <- woodsLocations ]
+        <> [ SetLocationLabel (LocationId $ toCardId card) label
+           | (label, card) <- zip woodsLabels woodsLocations
            ]
         <> [ RevealLocation Nothing mainPathId
            , MoveAllTo (toSource attrs) mainPathId
@@ -145,10 +121,13 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
         <> ghoulPriestMessages
         <> cultistsWhoGotAwayMessages
         <> pastMidnightMessages
-      let
-        locations' = locationNameMap
-          ([Locations.mainPath, Locations.ritualSite] <> map snd woodsLocations)
-      TheDevourerBelow <$> runMessage msg (attrs & locationsL .~ locations')
+
+      setAsideCards <- traverse
+        genCard
+        [Locations.ritualSite, Enemies.umordhoth]
+
+      TheDevourerBelow
+        <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
     ResolveToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
       closestEnemyIds <- map unClosestEnemyId <$> getSetList iid

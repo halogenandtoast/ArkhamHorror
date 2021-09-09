@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
+import Arkham.Types.ClassSymbol
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -668,10 +668,20 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   case matcher of
     AnyAbility -> pure abilities
     AbilityOnLocation lid -> getAbilities <$> getLocation lid
-    AbilityIsAction _ -> pure []
-    AbilityWindow _ -> pure []
-    AbilityMatches _ -> pure []
-    AbilityOnScenarioCard -> pure []
+    AbilityIsAction action ->
+      pure $ filter ((== Just action) . abilityAction) abilities
+    AbilityWindow windowMatcher ->
+      pure $ filter ((== windowMatcher) . abilityWindow) abilities
+    AbilityMatches [] -> pure []
+    AbilityMatches (x : xs) ->
+      toList
+        <$> (foldl' intersection
+            <$> (setFromList @(HashSet Ability) <$> getAbilitiesMatching x)
+            <*> traverse (fmap setFromList . getAbilitiesMatching) xs
+            )
+    AbilityOnScenarioCard -> filterM
+      ((`sourceMatches` M.EncounterCardSource) . abilitySource)
+      abilities
 
 getLocationMatching
   :: (HasCallStack, MonadReader env m, HasGame env)

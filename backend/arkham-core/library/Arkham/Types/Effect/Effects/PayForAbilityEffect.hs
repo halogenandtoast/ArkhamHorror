@@ -261,12 +261,18 @@ instance
           InvestigatorTarget iid' | iid' == iid -> do
             push (InvestigatorAssignDamage iid source DamageAny 0 x)
             withPayment $ HorrorPayment x
+          YouTarget -> do
+            push (InvestigatorAssignDamage iid source DamageAny 0 x)
+            withPayment $ HorrorPayment x
           AssetTarget aid -> do
             pushAll [AssetDamage aid source 0 x, CheckDefeated source]
             withPayment $ HorrorPayment x
           _ -> error "can't target for horror cost"
         DamageCost _ target x -> case target of
           InvestigatorTarget iid' | iid' == iid -> do
+            push (InvestigatorAssignDamage iid source DamageAny x 0)
+            withPayment $ DamagePayment x
+          YouTarget -> do
             push (InvestigatorAssignDamage iid source DamageAny x 0)
             withPayment $ DamagePayment x
           AssetTarget aid -> do

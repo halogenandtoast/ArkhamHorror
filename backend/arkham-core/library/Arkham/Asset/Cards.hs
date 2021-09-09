@@ -34,7 +34,7 @@ fast cd = cd { cdFastWindow = Just (DuringTurn You) }
 
 weakness :: CardCode -> Name -> CardDef
 weakness cardCode name = (baseAsset Nothing cardCode name 0 Neutral)
-  { cdWeakness = True
+  { cdCardSubType = Just Weakness
   , cdRevelation = True
   , cdCost = Nothing
   }
@@ -53,7 +53,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdCost = Just (StaticCost cost)
   , cdLevel = 0
   , cdCardType = AssetType
-  , cdWeakness = False
+  , cdCardSubType = Nothing
   , cdClassSymbol = Just classSymbol
   , cdSkills = mempty
   , cdCardTraits = mempty
@@ -1563,7 +1563,7 @@ theNecronomiconAdvanced :: CardDef
 theNecronomiconAdvanced =
   (asset "90003" ("The Necronomicon" <:> "John Dee Translation") 0 Neutral)
     { cdCardTraits = setFromList [Item, Tome]
-    , cdWeakness = True
+    , cdCardSubType = Just Weakness
     , cdRevelation = True
     , cdCost = Nothing
     }

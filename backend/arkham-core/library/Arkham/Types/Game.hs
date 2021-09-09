@@ -1031,7 +1031,7 @@ getEnemiesMatching matcher = do
     ExhaustedEnemy -> pure . isExhausted
     AnyEnemy -> pure . const True
     EnemyIs cardCode -> pure . (== cardCode) . toCardCode
-    NonWeaknessEnemy -> pure . not . cdWeakness . toCardDef
+    NonWeaknessEnemy -> pure . isNothing . cdCardSubType . toCardDef
     EnemyIsEngagedWith investigatorMatcher -> \enemy -> do
       iids <-
         setFromList . map toId <$> getInvestigatorsMatching investigatorMatcher

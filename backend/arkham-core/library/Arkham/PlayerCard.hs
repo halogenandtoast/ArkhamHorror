@@ -2,22 +2,22 @@ module Arkham.PlayerCard
   ( lookupPlayerCardDef
   , lookupPlayerCardName
   , allPlayerCards
-  , allWeaknesses
+  , allBasicWeaknesses
   , randomWeakness
   ) where
 
 import Arkham.Prelude
 
-import Arkham.Types.Card.CardType
 import Arkham.Asset.Cards (allPlayerAssetCards)
 import Arkham.Enemy.Cards (allPlayerEnemyCards)
 import Arkham.Event.Cards (allPlayerEventCards)
 import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Treachery.Cards (allPlayerTreacheryCards)
+import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
+import Arkham.Types.Card.CardType
 import Arkham.Types.Name
-import Arkham.Types.Asset.Uses
 
 lookupPlayerCardName :: CardCode -> Name
 lookupPlayerCardName = cdName . lookupPlayerCardDef
@@ -27,8 +27,9 @@ lookupPlayerCardDef cardCode =
   fromJustNote ("Unknown card: " <> show cardCode)
     $ lookup cardCode allPlayerCards
 
-allWeaknesses :: [CardDef]
-allWeaknesses = filter (and . sequence [cdWeakness, (/= "01000") . cdCardCode]) . toList $ allPlayerCards
+allBasicWeaknesses :: [CardDef]
+allBasicWeaknesses =
+  filter ((== Just BasicWeakness) . cdCardSubType) . toList $ allPlayerCards
 
 allPlayerCards :: HashMap CardCode CardDef
 allPlayerCards =
@@ -47,7 +48,7 @@ randomWeakness = CardDef
   , cdCost = Nothing
   , cdLevel = 0
   , cdCardType = PlayerTreacheryType
-  , cdWeakness = True
+  , cdCardSubType = Just Weakness
   , cdClassSymbol = Nothing
   , cdSkills = mempty
   , cdCardTraits = mempty

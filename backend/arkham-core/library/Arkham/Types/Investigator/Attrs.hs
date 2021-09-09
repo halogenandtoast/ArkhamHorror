@@ -570,7 +570,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
   go 0 (d, h, cs) = (d, h, cs)
   go _ (_, _, []) =
     error "this should never happen, it means the deck was empty during drawing"
-  go m (d, h, c : cs) = if cdWeakness (toCardDef c)
+  go m (d, h, c : cs) = if isJust (cdCardSubType $ toCardDef c)
     then go m (c : d, h, cs)
     else go (m - 1) (d, PlayerCard c : h, cs)
 
@@ -830,13 +830,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       Nothing -> pure a
       Just c -> a <$ push (DiscardCard investigatorId (toCardId c))
   FinishedWithMulligan iid | iid == investigatorId -> do
+    modifiers' <- getModifiers (toSource a) (toTarget a)
     let (discard, hand, deck) = drawOpeningHand a (5 - length investigatorHand)
+    let
+      startingResources = foldl'
+        (\total -> \case
+          StartingResources n -> max 0 (total + n)
+          _ -> total
+        )
+        5
+        modifiers'
     windows <- checkWindows
       [Window Timing.After (Window.DrawingStartingHand iid)]
     pushAll $ ShuffleDiscardBackIn iid : windows
     pure
       $ a
-      & (resourcesL .~ 5)
+      & (resourcesL .~ startingResources)
       & (discardL .~ discard)
       & (handL .~ hand)
       & (deckL .~ Deck deck)
@@ -896,7 +905,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       (chooseOne
         iid
         [ Run [DiscardCard iid (toCardId card), CheckHandSize iid]
-        | card <- filter (not . cdWeakness . toCardDef)
+        | card <- filter (isNothing . cdCardSubType . toCardDef)
           $ mapMaybe (preview _PlayerCard) investigatorHand
         ]
       )
@@ -1672,8 +1681,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             when (toCardType card == PlayerEnemyType)
               $ push (DrewPlayerEnemy iid $ PlayerCard card)
             when
-                (toCardType card /= PlayerTreacheryType && cdWeakness
-                  (toCardDef card)
+                (toCardType card /= PlayerTreacheryType && isJust (cdCardSubType
+                  $toCardDef card)
                 )
               $ push (Revelation iid (PlayerCardSource $ toCardId card))
           Nothing -> pure ()
@@ -1742,7 +1751,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     shuffled <-
       shuffleM
       $ flip map (unDeck deck)
-      $ \card -> if cdWeakness (toCardDef card)
+      $ \card -> if isJust (cdCardSubType $ toCardDef card)
           then card { pcBearer = Just iid }
           else card
     pure $ a & deckL .~ Deck shuffled
@@ -2303,4 +2312,5 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         a <$ unless
           (null choices)
           (push $ AskPlayer $ chooseOne investigatorId choices)
+  Blanked msg' -> runMessage msg' a
   _ -> pure a

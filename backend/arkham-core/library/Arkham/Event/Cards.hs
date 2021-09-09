@@ -26,7 +26,7 @@ event cardCode name cost classSymbol = CardDef
   , cdCost = Just (StaticCost cost)
   , cdLevel = 0
   , cdCardType = EventType
-  , cdWeakness = False
+  , cdCardSubType = Nothing
   , cdClassSymbol = Just classSymbol
   , cdSkills = mempty
   , cdCardTraits = mempty
@@ -145,7 +145,7 @@ onTheLam = (event "01010" "On the Lam" 1 Neutral)
 darkMemory :: CardDef
 darkMemory = (event "01013" "Dark Memory" 2 Neutral)
   { cdCardTraits = setFromList [Spell]
-  , cdWeakness = True
+  , cdCardSubType = Just Weakness
   }
 
 evidence :: CardDef

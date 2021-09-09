@@ -21,6 +21,7 @@ import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Resolution
 import Arkham.Types.Token
+import Control.Monad.Writer hiding (filterM)
 import qualified Data.List.NonEmpty as NonEmpty
 
 class IsCampaign a
@@ -94,11 +95,16 @@ instance HasList CampaignStoryCard env CampaignAttrs where
       campaignStoryCards
 
 addRandomBasicWeaknessIfNeeded
-  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard)
-addRandomBasicWeaknessIfNeeded deck = do
-  Deck <$> for (unDeck deck) \card -> if toCardDef card == randomWeakness
-    then sample (NonEmpty.fromList allWeaknesses) >>= genPlayerCard
-    else pure card
+  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
+addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
+  Deck <$> flip
+    filterM
+    (unDeck deck)
+    \card -> do
+      when
+        (toCardDef card == randomWeakness)
+        (sample (NonEmpty.fromList allBasicWeaknesses) >>= tell . pure)
+      pure $ toCardDef card /= randomWeakness
 
 instance CampaignRunner env => RunMessage env CampaignAttrs where
   runMessage msg a@CampaignAttrs {..} = case msg of
@@ -128,7 +134,8 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
         %~ adjustMap (filter ((/= cardCode) . cdCardCode . toCardDef)) iid
     AddToken token -> pure $ a & chaosBagL %~ (token :)
     InitDeck iid deck -> do
-      deck' <- addRandomBasicWeaknessIfNeeded deck
+      (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
+      pushAll $ map (AddCampaignCardToDeck iid) randomWeaknesses
       pure $ a & decksL %~ insertMap iid deck'
     UpgradeDeck iid deck -> pure $ a & decksL %~ insertMap iid deck
     FinishedUpgradingDecks -> case a ^. stepL of

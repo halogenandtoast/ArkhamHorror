@@ -8,6 +8,7 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
@@ -33,8 +34,7 @@ instance HasAbilities Scrying where
 instance AssetRunner env => RunMessage env Scrying where
   runMessage msg a@(Scrying attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationId <- getId @LocationId iid
-      targets <- map InvestigatorTarget <$> getSetList locationId
+      targets <- map InvestigatorTarget <$> getInvestigatorIds
       a <$ push
         (chooseOne iid
         $ SearchTopOfDeck

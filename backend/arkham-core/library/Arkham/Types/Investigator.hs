@@ -141,7 +141,7 @@ instance HasList DiscardableHandCard env Investigator where
       . toAttrs
    where
     isWeakness = \case
-      PlayerCard pc -> cdWeakness (toCardDef pc)
+      PlayerCard pc -> isJust $ cdCardSubType $ toCardDef pc
       EncounterCard _ -> True -- maybe?
 
 instance HasCount MentalTraumaCount env Investigator where

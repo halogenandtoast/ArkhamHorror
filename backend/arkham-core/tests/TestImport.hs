@@ -21,7 +21,7 @@ import Arkham.Types.Agenda as X
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Cards.WhatsGoingOn
 import Arkham.Types.AgendaId
-import Arkham.Types.Asset as X
+import Arkham.Types.Asset as X (Asset(Adaptable1'), createAsset, lookupAsset)
 import Arkham.Types.Asset.Attrs hiding (body)
 import Arkham.Types.Asset.Cards.Adaptable1
 import Arkham.Types.AssetId
@@ -31,10 +31,10 @@ import Arkham.Types.Card.EncounterCard as X
 import Arkham.Types.Card.PlayerCard as X
 import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes as X hiding
   (getCount, getId, getModifiers, getTokenValue)
 import qualified Arkham.Types.Classes as Arkham
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost as X
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
@@ -242,7 +242,7 @@ testEnemy :: MonadRandom m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
 testEnemy = testEnemyWithDef id
 
 testWeaknessEnemy :: MonadRandom m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
-testWeaknessEnemy = testEnemyWithDef (CardDef.weaknessL .~ True)
+testWeaknessEnemy = testEnemyWithDef (CardDef.subTypeL ?~ Weakness)
 
 testEnemyWithDef
   :: MonadRandom m

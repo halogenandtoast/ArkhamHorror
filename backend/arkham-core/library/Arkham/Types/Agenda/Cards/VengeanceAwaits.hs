@@ -10,7 +10,6 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Id
@@ -49,7 +48,7 @@ instance AgendaRunner env => RunMessage env VengeanceAwaits where
   runMessage msg a@(VengeanceAwaits attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       actIds <- getSetList @ActId ()
-      umordhoth <- EncounterCard <$> genEncounterCard Enemies.umordhoth
+      umordhoth <- getSetAsideCard Enemies.umordhoth
       a <$ if "01146" `elem` actIds
         then do
           ritualSite <- getSetAsideCard Locations.ritualSite

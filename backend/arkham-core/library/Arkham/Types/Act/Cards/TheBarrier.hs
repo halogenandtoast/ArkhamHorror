@@ -9,9 +9,6 @@ import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
-import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCard
-import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher hiding (RevealLocation)
@@ -29,9 +26,9 @@ theBarrier = act (2, A) TheBarrier Cards.theBarrier Nothing
 instance HasAbilities TheBarrier where
   getAbilities (TheBarrier x) =
     [ mkAbility x 1
-      $ Objective
-      $ ReactionAbility (RoundEnds Timing.When)
-      $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Hallway")
+        $ Objective
+        $ ReactionAbility (RoundEnds Timing.When)
+        $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Hallway")
     ]
 
 instance ActRunner env => RunMessage env TheBarrier where
@@ -40,9 +37,9 @@ instance ActRunner env => RunMessage env TheBarrier where
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid))
     AdvanceAct aid _ | aid == toId a && onSide B attrs -> do
       hallwayId <- getJustLocationIdByName "Hallway"
-      ghoulPriest <- EncounterCard <$> genEncounterCard Enemies.ghoulPriest
-      litaChantler <- PlayerCard <$> genPlayerCard Assets.litaChantler
       parlorId <- getJustLocationIdByName "Parlor"
+      ghoulPriest <- getSetAsideCard Enemies.ghoulPriest
+      litaChantler <- getSetAsideCard Assets.litaChantler
       a <$ pushAll
         [ RevealLocation Nothing parlorId
         , CreateStoryAssetAt litaChantler parlorId

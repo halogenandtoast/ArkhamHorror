@@ -3712,7 +3712,10 @@ runGameMessage msg g = case msg of
         , EnemySpawn Nothing lid enemyId
         ]
       <> [ CreatedEnemyAt enemyId lid target | target <- maybeToList mtarget ]
-    pure $ g & enemiesL . at enemyId ?~ enemy
+    pure
+      $ g
+      & (enemiesL . at enemyId ?~ enemy)
+      & (victoryDisplayL %~ delete card)
   CreateEnemyEngagedWithPrey card -> do
     let
       enemy = createEnemy card

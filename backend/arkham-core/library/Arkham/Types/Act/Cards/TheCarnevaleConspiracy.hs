@@ -77,7 +77,7 @@ instance
       a <$ push (AdvanceAct (toId attrs) source)
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      cnidathqua <- EncounterCard <$> genEncounterCard Enemies.cnidathqua
+      cnidathqua <- getSetAsideCard Enemies.cnidathqua
       maskedCarnevaleGoers <- selectList
         (AssetWithTitle "Masked Carnevale-Goer")
       let

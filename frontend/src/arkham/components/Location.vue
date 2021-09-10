@@ -90,6 +90,7 @@
         :enemy="game.enemies[enemyId]"
         :game="game"
         :investigatorId="investigatorId"
+        :atLocation="true"
         @choose="$emit('choose', $event)"
       />
     </div>

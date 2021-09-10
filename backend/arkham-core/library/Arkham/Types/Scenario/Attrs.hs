@@ -293,6 +293,8 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
             , ChosenRandomLocation target randomLocationId
             ]
     PlaceLocation card -> pure $ a & setAsideCardsL %~ delete card
+    CreateStoryAssetAt card _ -> do
+      pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
     CreateEnemyAt card _ _ -> do
       pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
     PlaceUnderneath AgendaDeckTarget cards -> do

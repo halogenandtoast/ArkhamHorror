@@ -1,8 +1,8 @@
 <template>
-  <div class="treachery">
+  <div class="treachery" :class="{ attached: attached }">
     <img
       :src="image"
-      class="card treachery"
+      class="card"
       :class="{ 'treachery--can-interact': cardAction !== -1 }"
       @click="$emit('choose', cardAction)"
     />
@@ -13,16 +13,18 @@
       :data-image="image"
       @click="$emit('choose', ability)"
       />
-    <PoolItem
-      v-if="treachery.contents.clues && treachery.contents.clues > 0"
-      type="clue"
-      :amount="treachery.contents.clues"
-    />
-    <PoolItem
-      v-if="treachery.contents.resources && treachery.contents.resources > 0"
-      type="resource"
-      :amount="treachery.contents.resources"
-    />
+    <div class="pool">
+      <PoolItem
+        v-if="treachery.contents.clues && treachery.contents.clues > 0"
+        type="clue"
+        :amount="treachery.contents.clues"
+      />
+      <PoolItem
+        v-if="treachery.contents.resources && treachery.contents.resources > 0"
+        type="resource"
+        :amount="treachery.contents.resources"
+      />
+    </div>
   </div>
 </template>
 
@@ -41,6 +43,7 @@ export default defineComponent({
     game: { type: Object as () => Game, required: true },
     treachery: { type: Object as () => Arkham.Treachery, required: true },
     investigatorId: { type: String, required: true },
+    attached: { type: Boolean, default: false }
   },
   setup(props) {
     const image = computed(() => {
@@ -117,5 +120,11 @@ export default defineComponent({
 .treachery {
   display: flex;
   flex-direction: column;
+}
+
+.attached .card {
+  object-fit: cover;
+  object-position: left bottom;
+  height: $card-width*0.6;
 }
 </style>

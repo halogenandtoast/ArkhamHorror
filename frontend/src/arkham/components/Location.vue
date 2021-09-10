@@ -342,6 +342,7 @@ export default defineComponent({
 
 .location-column :deep(.enemy) {
   width: $card-width * 0.8;
+
 }
 
 .location-column :deep(.treachery) {
@@ -349,6 +350,7 @@ export default defineComponent({
   object-position: 0 -74px;
   height: 68px;
   margin-top: 2px;
+
 }
 
 .location-column :deep(.event) {

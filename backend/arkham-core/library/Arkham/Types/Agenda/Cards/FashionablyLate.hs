@@ -26,8 +26,7 @@ fashionablyLate =
 instance AgendaRunner env => RunMessage env FashionablyLate where
   runMessage msg a@(FashionablyLate attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      dianneDevine <- fromJustNote "missing"
-        <$> selectOne (SetAsideCardMatch $ cardIs Cards.dianneDevine)
+      dianneDevine <- getSetAsideCard Cards.dianneDevine
 
       a <$ pushAll
         [ CreateEnemyAtLocationMatching dianneDevine

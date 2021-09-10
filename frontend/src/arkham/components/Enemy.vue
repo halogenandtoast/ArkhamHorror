@@ -23,6 +23,7 @@
       :game="game"
       :investigatorId="investigatorId"
       :attached="true"
+      :class="{ 'small-treachery': atLocation }"
       @choose="$emit('choose', $event)"
     />
     <Asset
@@ -56,6 +57,7 @@ export default defineComponent({
     game: { type: Object as () => Game, required: true },
     enemy: { type: Object as () => Arkham.Enemy, required: true },
     investigatorId: { type: String, required: true },
+    atLocation: { type: Boolean, default: false },
   },
   setup(props) {
     const image = computed(() => {
@@ -202,6 +204,10 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+.small-treachery :deep(.card) {
+  height: $card-width * 0.35;
+}
+
 .enemy--can-interact {
   border: 3px solid $select;
   border-radius: 15px;

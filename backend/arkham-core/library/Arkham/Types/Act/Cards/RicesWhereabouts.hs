@@ -14,7 +14,6 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Exception
 import Arkham.Types.Matcher
@@ -76,9 +75,8 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
       agendaStep <- unAgendaStep <$> getStep ()
       completedTheHouseAlwaysWins <-
         elem "02062" . map unCompletedScenarioId <$> getSetList ()
-      theExperiment <- EncounterCard <$> genEncounterCard Enemies.theExperiment
-      alchemicalConcoction <- EncounterCard
-        <$> genEncounterCard Assets.alchemicalConcoction
+      theExperiment <- getSetAsideCard Enemies.theExperiment
+      alchemicalConcoction <- getSetAsideCard Assets.alchemicalConcoction
 
       pushAll
         $ [ PlaceLocationMatching (CardWithTitle "Alchemy Labs")

@@ -44,11 +44,10 @@ instance AgendaRunner env => RunMessage env RestrictedAccess where
       | isSource attrs source -> do
         mShadowSpawnedId <- fmap unStoryTreacheryId
           <$> getId (toCardCode Treacheries.shadowSpawned)
-        shadowSpawned <- EncounterCard
-          <$> genEncounterCard Treacheries.shadowSpawned
         a <$ case mShadowSpawnedId of
           Just tid -> push $ PlaceResources (TreacheryTarget tid) 1
-          Nothing ->
+          Nothing -> do
+            shadowSpawned <- getSetAsideCard Treacheries.shadowSpawned
             push $ AttachStoryTreacheryTo shadowSpawned (EnemyTarget eid)
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

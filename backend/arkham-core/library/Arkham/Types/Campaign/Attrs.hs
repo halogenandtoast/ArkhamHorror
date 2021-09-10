@@ -9,7 +9,6 @@ import Arkham.Types.CampaignLog
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.CampaignStep
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
@@ -22,7 +21,7 @@ import Arkham.Types.Name
 import Arkham.Types.Resolution
 import Arkham.Types.Token
 import Control.Monad.Writer hiding (filterM)
-import qualified Data.List.NonEmpty as NonEmpty
+import qualified Data.List.NonEmpty as NE
 
 class IsCampaign a
 
@@ -103,7 +102,7 @@ addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
     \card -> do
       when
         (toCardDef card == randomWeakness)
-        (sample (NonEmpty.fromList allBasicWeaknesses) >>= tell . pure)
+        (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
       pure $ toCardDef card /= randomWeakness
 
 instance CampaignRunner env => RunMessage env CampaignAttrs where
@@ -124,9 +123,6 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
     AddCampaignCardToDeck iid cardDef -> do
       card <- lookupPlayerCard cardDef <$> getRandom
       pure $ a & storyCardsL %~ insertWith (<>) iid [card]
-    AddCampaignCardToEncounterDeck cardDef -> do
-      card <- lookupEncounterCard cardDef <$> getRandom
-      a <$ pushAll [AddToEncounterDeck card]
     RemoveCampaignCardFromDeck iid cardCode ->
       pure
         $ a

@@ -58,10 +58,10 @@ instance TreacheryRunner env => RunMessage env SpacesBetween where
       t <$ pushAll
         (msgs
         <> [ SetLocationLabel locationId $ "alteredPath" <> tshow idx
-           | (idx, locationId) <- zip [1 ..] alteredPaths
+           | (idx, locationId) <- zip [1 :: Int ..] alteredPaths
            ]
         <> [ SetLocationLabel locationId $ "divergingPath" <> tshow idx
-           | (idx, locationId) <- zip [1 ..] divergingPaths
+           | (idx, locationId) <- zip [1 :: Int ..] divergingPaths
            ]
         )
     _ -> SpacesBetween <$> runMessage msg attrs

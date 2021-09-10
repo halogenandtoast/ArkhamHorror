@@ -61,7 +61,6 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
       ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
 
       let
-        toLocationCard = fmap EncounterCard . genEncounterCard
         woodsLabels = [ "woods" <> tshow @Int n | n <- [1 .. 4] ]
         ghoulPriestMessages =
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
@@ -70,11 +69,11 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
         cultistsWhoGotAwayMessages =
           replicate ((length cultistsWhoGotAway + 1) `div` 2) PlaceDoomOnAgenda
 
-      mainPath <- toLocationCard Locations.mainPath
-      let mainPathId = LocationId $ toCardId mainPath
+      mainPath <- genCard Locations.mainPath
+      let mainPathId = toLocationId mainPath
 
       arkhamWoods <- traverse
-        toLocationCard
+        genCard
         [ Locations.arkhamWoodsUnhallowedGround
         , Locations.arkhamWoodsTwistingPaths
         , Locations.arkhamWoodsOldHouse

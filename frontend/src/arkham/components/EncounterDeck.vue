@@ -100,6 +100,7 @@ export default defineComponent({
 .encounter-deck {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .top-of-deck {
@@ -114,5 +115,15 @@ export default defineComponent({
   left: 50%;
   bottom: 0%;
   transform: translateX(-50%) translateY(-50%);
+}
+
+.portrait {
+  width: 50px;
+  position: absolute;
+  border-radius: 5px;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  pointer-events: none;
 }
 </style>

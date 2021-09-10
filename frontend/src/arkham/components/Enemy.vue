@@ -5,12 +5,24 @@
       class="card enemy"
       @click="$emit('choose', cardAction)"
     />
+    <AbilityButton
+      v-for="ability in abilities"
+      :key="ability"
+      :ability="choices[ability]"
+      :data-image="image"
+      @click="$emit('choose', ability)"
+      />
+    <div class="pool">
+      <PoolItem type="health" :amount="enemy.contents.damage" />
+      <PoolItem v-if="enemy.contents.doom > 0" type="doom" :amount="enemy.contents.doom" />
+    </div>
     <Treachery
       v-for="treacheryId in enemy.contents.treacheries"
       :key="treacheryId"
       :treachery="game.treacheries[treacheryId]"
       :game="game"
       :investigatorId="investigatorId"
+      :attached="true"
       @choose="$emit('choose', $event)"
     />
     <Asset
@@ -21,20 +33,9 @@
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
     />
-    <AbilityButton
-      v-for="ability in abilities"
-      :key="ability"
-      :ability="choices[ability]"
-      :data-image="image"
-      @click="$emit('choose', ability)"
-      />
     <template v-if="debug">
       <button @click="debugChoose({tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'TestSource', contents:[]}]})">Defeat</button>
     </template>
-    <div class="pool">
-      <PoolItem type="health" :amount="enemy.contents.damage" />
-      <PoolItem v-if="enemy.contents.doom > 0" type="doom" :amount="enemy.contents.doom" />
-    </div>
   </div>
 </template>
 
@@ -220,7 +221,6 @@ export default defineComponent({
   border: 1px solid #ff00ff;
 }
 
-
 .card {
   width: $card-width;
   max-width: $card-width;
@@ -239,13 +239,6 @@ export default defineComponent({
   color: #fff;
   border-radius: 4px;
   border: 1px solid #ff00ff;
-}
-
-.enemy :deep(.treachery) {
-  object-fit: cover;
-  object-position: 0 -74px;
-  height: 68px;
-  margin-top: 2px;
 }
 
 .exhausted {

@@ -3343,7 +3343,7 @@ runGameMessage msg g = case msg of
     enemy <- getEnemy eid
     pure $ g & enemiesL %~ deleteMap eid & enemiesInVoidL %~ insertMap eid enemy
   EnemySpawnFromVoid miid lid eid -> do
-    push (EnemySpawn miid lid eid)
+    pushAll (resolve $ EnemySpawn miid lid eid)
     case lookup eid (g ^. enemiesInVoidL) of
       Just enemy ->
         pure

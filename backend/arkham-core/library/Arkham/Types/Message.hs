@@ -117,7 +117,6 @@ data Message
     | AddAct ActId
     | AddAgenda AgendaId
     | AddCampaignCardToDeck InvestigatorId CardDef
-    | AddCampaignCardToEncounterDeck CardDef
     | AddConnection LocationId LocationSymbol
     | AddDirectConnection LocationId LocationId
     | AddFocusedToHand InvestigatorId Target CardId

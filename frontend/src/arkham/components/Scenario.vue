@@ -34,11 +34,13 @@
             @choose="$emit('choose', $event)"
           />
         </div>
-        <img
-          v-if="scenarioDeck"
-          :src="scenarioDeck"
-          class="card"
-        />
+        <div class="deck" v-if="scenarioDeck">
+          <img
+            :src="scenarioDeck"
+            class="card"
+          />
+          <span class="deck-size">{{scenarioDeckCount}}</span>
+        </div>
         <VictoryDisplay :game="game" @show="doShowCards" />
         <div v-if="topOfEncounterDiscard" class="discard">
           <img
@@ -286,6 +288,17 @@ export default defineComponent({
       }
     })
 
+    const scenarioDeckCount = computed(() => {
+      const { scenario } = props.game;
+      const scenarioDeck = scenario?.contents?.deck
+      if (scenarioDeck) {
+        const { deckSize } = scenarioDeck
+        return deckSize;
+      }
+      return null
+    })
+
+
     const locationStyles = computed(() => {
       const { scenario } = props.game;
       if (!scenario) {
@@ -384,6 +397,7 @@ export default defineComponent({
       locationStyles,
       scenarioGuide,
       scenarioDeck,
+      scenarioDeckCount,
       topEnemyInVoid,
       enemiesAsLocations,
       cardsUnderAgenda,
@@ -588,5 +602,24 @@ export default defineComponent({
 .active-phase {
   font-weight: bold;
   background-color: #8e9ca4;
+}
+
+.deck {
+  position: relative;
+}
+
+.deck-size {
+  position: absolute;
+  font-weight: bold;
+  font-size: 1.2em;
+  width: 1.3em;
+  height: 1.3em;
+  border-radius: 1.3em;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
+  left: 50%;
+  bottom: 0%;
+  transform: translateX(-50%) translateY(-50%);
 }
 </style>

@@ -92,6 +92,14 @@ getSetAsideCard
   -> m Card
 getSetAsideCard = selectJust . SetAsideCardMatch . cardIs
 
+getSetAsideEncounterCard
+  :: (HasCallStack, MonadReader env m, Query ExtendedCardMatcher env)
+  => CardDef
+  -> m EncounterCard
+getSetAsideEncounterCard =
+  fmap (fromJustNote "must be encounter card" . preview _EncounterCard)
+    . getSetAsideCard
+
 getSetAsideCardsMatching
   :: (HasCallStack, MonadReader env m, Query ExtendedCardMatcher env)
   => CardMatcher

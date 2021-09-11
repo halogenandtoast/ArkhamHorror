@@ -89,9 +89,6 @@ export default defineComponent({
   margin: 2px;
   width: $card-width;
 }
-.portrait {
-  width: $card-width;
-}
 .can-interact {
   border: 3px solid $select;
   cursor: pointer;

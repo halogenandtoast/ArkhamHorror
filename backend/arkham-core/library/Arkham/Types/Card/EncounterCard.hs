@@ -46,5 +46,6 @@ lookupEncounterCard cardDef cardId = MkEncounterCard
   { ecId = cardId
   , ecCardCode = toCardCode cardDef
   , ecOriginalCardCode = toCardCode cardDef
-  , ecIsFlipped = Just $ isJust (cdRevealedName cardDef)
+  , ecIsFlipped =
+    Just $ isJust (cdRevealedName cardDef) && cdDoubleSided cardDef
   }

@@ -6,11 +6,14 @@ module Arkham.Types.Scenario.Attrs
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.PlayerCard
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
 import Arkham.Types.Game.Helpers
+import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Location as X
 import Arkham.Types.Matcher hiding
@@ -27,6 +30,8 @@ import qualified Arkham.Types.Timing as Timing
 import Arkham.Types.Token
 import Arkham.Types.Window (Window(..))
 import qualified Arkham.Types.Window as Window
+import Control.Monad.Writer hiding (filterM)
+import qualified Data.List.NonEmpty as NE
 
 class IsScenario a
 
@@ -207,6 +212,18 @@ getIsStandalone
   :: (MonadReader env m, HasId (Maybe CampaignId) env ()) => m Bool
 getIsStandalone = isNothing <$> getId @(Maybe CampaignId) ()
 
+addRandomBasicWeaknessIfNeeded
+  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
+addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
+  Deck <$> flip
+    filterM
+    (unDeck deck)
+    \card -> do
+      when
+        (toCardDef card == randomWeakness)
+        (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
+      pure $ toCardDef card /= randomWeakness
+
 instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
   runMessage msg a@ScenarioAttrs {..} = case msg of
     Setup -> a <$ pushEnd BeginInvestigation
@@ -215,7 +232,12 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
       a <$ when standalone (push $ StartScenario scenarioName scenarioId)
     InitDeck iid deck -> do
       standalone <- getIsStandalone
-      a <$ if standalone then push $ LoadDeck iid deck else pure ()
+      a <$ when
+        standalone
+        do
+          (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
+          weaknesses <- traverse genPlayerCard randomWeaknesses
+          push $ LoadDeck iid (Deck $ unDeck deck' <> weaknesses)
     PlaceLocationMatching cardMatcher -> do
       let
         matches = filter

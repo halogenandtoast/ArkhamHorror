@@ -1898,7 +1898,6 @@ sourceMatches s = \case
     AgendaSource _ -> True
     EnemySource _ -> True
     LocationSource _ -> True
-    ScenarioSource _ -> True
     TreacherySource _ -> True
     _ -> False
 

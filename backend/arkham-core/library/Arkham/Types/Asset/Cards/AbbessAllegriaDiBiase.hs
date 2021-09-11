@@ -24,7 +24,6 @@ abbessAllegriaDiBiase :: AssetCard AbbessAllegriaDiBiase
 abbessAllegriaDiBiase =
   ally AbbessAllegriaDiBiase Cards.abbessAllegriaDiBiase (2, 2)
 
--- TODO: Handle Abbess outside of Carnevale
 instance HasAbilities AbbessAllegriaDiBiase where
   getAbilities (AbbessAllegriaDiBiase attrs) = case assetLocation attrs of
     Just abbessLocation ->

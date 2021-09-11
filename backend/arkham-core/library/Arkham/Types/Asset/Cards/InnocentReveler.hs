@@ -27,17 +27,18 @@ newtype InnocentReveler = InnocentReveler AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 innocentReveler :: AssetCard InnocentReveler
-innocentReveler = ally InnocentReveler Cards.innocentReveler (2, 2)
+innocentReveler =
+  allyWith InnocentReveler Cards.innocentReveler (2, 2) (slotsL .~ mempty)
 
 instance HasAbilities InnocentReveler where
   getAbilities (InnocentReveler x) =
     [ restrictedAbility x 1 (Unowned <> OnSameLocation)
       $ ActionAbility (Just Parley) (ActionCost 1)
     , mkAbility x 1
-    $ ForcedAbility
-    $ AssetWouldBeDiscarded Timing.When
-    $ AssetWithId
-    $ toId x
+      $ ForcedAbility
+      $ AssetWouldBeDiscarded Timing.When
+      $ AssetWithId
+      $ toId x
     ]
 
 instance

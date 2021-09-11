@@ -38,10 +38,17 @@ sanMarcoBasilica = locationWith
 
 instance HasAbilities SanMarcoBasilica where
   getAbilities (SanMarcoBasilica attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            (Here <> AssetExists
+              (AssetOwnedBy You <> assetIs Assets.innocentReveler)
+            )
+          $ ActionAbility Nothing
+          $ ActionCost 1
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env SanMarcoBasilica where
   runMessage msg l@(SanMarcoBasilica attrs) = case msg of

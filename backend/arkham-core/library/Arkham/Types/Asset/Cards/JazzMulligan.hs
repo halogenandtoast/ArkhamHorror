@@ -27,14 +27,17 @@ newtype JazzMulligan = JazzMulligan AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jazzMulligan :: AssetCard JazzMulligan
-jazzMulligan =
-  allyWith JazzMulligan Cards.jazzMulligan (2, 2) (isStoryL .~ True)
+jazzMulligan = allyWith
+  JazzMulligan
+  Cards.jazzMulligan
+  (2, 2)
+  ((isStoryL .~ True) . (slotsL .~ mempty))
 
 instance HasAbilities JazzMulligan where
   getAbilities (JazzMulligan x) =
     [ restrictedAbility x 1 (Unowned <> OnSameLocation)
-      $ ActionAbility (Just Parley)
-      $ ActionCost 1
+        $ ActionAbility (Just Parley)
+        $ ActionCost 1
     ]
 
 instance HasSet Trait env LocationId => HasModifiersFor env JazzMulligan where

@@ -34,7 +34,7 @@ instance HasAbilities InnocentReveler where
   getAbilities (InnocentReveler x) =
     [ restrictedAbility x 1 (Unowned <> OnSameLocation)
       $ ActionAbility (Just Parley) (ActionCost 1)
-    , mkAbility x 1
+    , mkAbility x 2
       $ ForcedAbility
       $ AssetWouldBeDiscarded Timing.When
       $ AssetWithId

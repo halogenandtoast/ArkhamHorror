@@ -16,14 +16,14 @@
         @choose="$emit('choose', $event)"
       />
       <CardRow
-        v-if="showCards.length > 0"
+        v-if="showCards.ref.length > 0"
         :game="game"
-        :cards="showCards"
+        :cards="showCards.ref"
         :isDiscards="viewingDiscard"
         :title="cardRowTitle"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
-        @close="showCards = []"
+        @close="hideCards"
       />
       <div class="scenario-cards">
         <div v-if="topEnemyInVoid">
@@ -48,7 +48,7 @@
             class="card"
           />
 
-          <button v-if="discards.length > 0" class="view-discard-button" @click="doShowCards($event, discards, 'Encounter Discard', true)">{{viewDiscardLabel}}</button>
+          <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
         </div>
 
         <EncounterDeck
@@ -94,9 +94,9 @@
           class="card"
         />
 
-        <button v-if="removedFromPlay.length > 0" class="view-removed-from-play-button" @click="doShowCards($event, removedFromPlay, 'Removed from Play', true)"><font-awesome-icon icon="eye" /> Removed from Play</button>
+        <button v-if="removedFromPlay.length > 0" class="view-removed-from-play-button" @click="showRemovedFromPlay"><font-awesome-icon icon="eye" /> Removed from Play</button>
 
-        <button v-if="outOfPlay.length > 0" class="view-out-of-play-button" @click="doShowCards($event, outOfPlay, 'Out of Play', true)"><font-awesome-icon icon="eye" /> Out of Play</button>
+        <button v-if="outOfPlay.length > 0" class="view-out-of-play-button" @click="showOutOfPlay"><font-awesome-icon icon="eye" /> Out of Play</button>
       </div>
 
       <svg id="svg">
@@ -145,9 +145,9 @@
 
 <script lang="ts">
 import throttle from 'lodash/throttle'
-import { defineComponent, computed, onMounted, onUnmounted, onUpdated, nextTick, ref } from 'vue';
+import { defineComponent, computed, onMounted, onUnmounted, onUpdated, nextTick, ref, ComputedRef, reactive } from 'vue';
 import { Game } from '@/arkham/types/Game';
-import { CardContents } from '@/arkham/types/Card';
+import { Card } from '@/arkham/types/Card';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
@@ -213,6 +213,10 @@ function handleConnections(investigatorId: string, game: Game) {
       }
     });
   }
+}
+
+interface RefWrapper<T> {
+  ref: ComputedRef<T>
 }
 
 export default defineComponent({
@@ -326,19 +330,27 @@ export default defineComponent({
 
     const players = computed(() => props.game.investigators)
     const playerOrder = computed(() => props.game.playerOrder)
-    const discards = computed(() => props.game.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
+    const discards = computed<Card[]>(() => props.game.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
     const outOfPlay = computed(() => (props.game.scenario?.contents?.setAsideCards || []))
     const removedFromPlay = computed(() => props.game.removedFromPlay)
+    const noCards = computed<Card[]>(() => [])
 
-    const showCards = ref<CardContents[]>([])
+    // eslint-disable-next-line
+    const showCards = reactive<RefWrapper<any>>({ ref: noCards })
     const viewingDiscard = ref(false)
     const cardRowTitle = ref("")
 
-    const doShowCards = (event: Event, cards: CardContents[], title: string, isDiscards: boolean) => {
+
+    const doShowCards = (event: Event, cards: ComputedRef<Card[]>, title: string, isDiscards: boolean) => {
       cardRowTitle.value = title
-      showCards.value = cards
+      showCards.ref = cards
       viewingDiscard.value = isDiscards
     }
+
+    const showOutOfPlay = (e: Event) => doShowCards(e, outOfPlay, 'Out of Play', true)
+    const showRemovedFromPlay = (e: Event) => doShowCards(e, removedFromPlay, 'Removed from Play', true)
+    const showDiscards = (e: Event) => doShowCards(e, discards, 'Discards', true)
+    const hideCards = () => showCards.ref = noCards
 
     const viewDiscardLabel = computed(() => `${discards.value.length} Cards`)
     const topOfEncounterDiscard = computed(() => {
@@ -379,10 +391,13 @@ export default defineComponent({
     })
 
     const skills = computed(() => Object.values(props.game.skills))
-
     const phase = computed(() => props.game.phase)
 
     return {
+      hideCards,
+      showOutOfPlay,
+      showRemovedFromPlay,
+      showDiscards,
       phase,
       removedFromPlay,
       skills,

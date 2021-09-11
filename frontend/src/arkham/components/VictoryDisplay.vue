@@ -5,7 +5,7 @@
       class="card"
     />
 
-    <button @click="$emit('show', $event, victoryDisplay, 'Victory Display', true)">{{viewVictoryDisplayLabel}}</button>
+    <button @click="showVictoryDisplay">{{viewVictoryDisplayLabel}}</button>
   </div>
 </template>
 
@@ -17,7 +17,7 @@ export default defineComponent({
   props: {
     game: { type: Object as () => Game, required: true },
   },
-  setup(props) {
+  setup(props, context) {
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
     const victoryDisplay = computed(() => props.game.victoryDisplay)
     const topOfVictoryDisplay = computed(() => {
@@ -31,7 +31,9 @@ export default defineComponent({
 
     const viewVictoryDisplayLabel = computed(() => `${victoryDisplay.value.length} Cards`)
 
-    return { victoryDisplay, topOfVictoryDisplay, viewVictoryDisplayLabel }
+    const showVictoryDisplay = (e: Event) => context.emit('show', e, victoryDisplay, 'Victory Display', true)
+
+    return { victoryDisplay, topOfVictoryDisplay, viewVictoryDisplayLabel, showVictoryDisplay }
   }
 })
 </script>

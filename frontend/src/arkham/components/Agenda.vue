@@ -26,11 +26,11 @@
         type="doom"
         :amount="agenda.contents.doom"
       />
-    </div>
 
-    <template v-if="debug">
-      <button @click="debugChoose({tag: 'PlaceDoom', contents: [{'tag': 'AgendaTarget', 'contents': id}, 1]})">+</button>
-    </template>
+      <template v-if="debug">
+        <button @click="debugChoose({tag: 'PlaceDoom', contents: [{'tag': 'AgendaTarget', 'contents': id}, 1]})">+</button>
+      </template>
+    </div>
 
     <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAgenda">{{viewUnderLabel}}</button>
   </div>

@@ -32,12 +32,12 @@
       <button @click="debugChoose({tag: 'PlaceDoom', contents: [{'tag': 'AgendaTarget', 'contents': id}, 1]})">+</button>
     </template>
 
-    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
+    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAgenda">{{viewUnderLabel}}</button>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, inject } from 'vue';
+import { defineComponent, computed, inject, ref } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import { Card } from '@/arkham/types/Card'
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -68,6 +68,10 @@ export default defineComponent({
     })
 
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+    const viewingUnder = ref(false)
+    const toggleUnder = function() { viewingUnder.value = !viewingUnder.value }
+    const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
 
     function canInteract(c: Message): boolean {
       switch (c.tag) {
@@ -109,7 +113,7 @@ export default defineComponent({
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    return { showCardsUnderAgenda, debug, debugChoose, abilities, choices, interactAction, image, id }
+    return { toggleUnder, viewUnderLabel, showCardsUnderAgenda, debug, debugChoose, abilities, choices, interactAction, image, id }
   }
 })
 </script>

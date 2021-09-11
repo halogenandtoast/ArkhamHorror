@@ -65,6 +65,7 @@
           :game="game"
           :investigatorId="investigatorId"
           @choose="$emit('choose', $event)"
+          @show="doShowCards"
         />
 
 

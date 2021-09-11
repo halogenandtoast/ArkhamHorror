@@ -46,7 +46,7 @@
 
       <div class="discard">
         <Card v-if="topOfDiscard" :game="game" :card="topOfDiscard" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
-        <button v-if="discards.length > 0" class="view-discard-button" @click="toggleDiscard">{{viewDiscardLabel}}</button>
+        <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
       </div>
 
       <div class="deck-container">
@@ -86,35 +86,24 @@
     </div>
 
     <CardRow
-      v-if="showCards.length > 0"
+      v-if="showCards.ref.length > 0"
       :game="game"
       :investigatorId="investigatorId"
-      :cards="showCards"
-      :isDiscards="false"
-      title="Cards Underneath"
+      :cards="showCards.ref"
+      :isDiscards="viewingDiscard"
+      :title="cardRowTitle"
       @choose="$emit('choose', $event)"
-      @close="showCards = []"
-    />
-
-    <CardRow
-      v-if="viewingDiscard"
-      :game="game"
-      :investigatorId="investigatorId"
-      :cards="discards"
-      :isDiscards="true"
-      title="Discards"
-      @choose="$emit('choose', $event)"
-      @close="viewingDiscard = false"
+      @close="hideCards"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, inject } from 'vue';
+import { defineComponent, computed, ref, inject, ComputedRef, reactive } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
-import { CardContents } from '@/arkham/types/Card';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
@@ -124,6 +113,10 @@ import CardRow from '@/arkham/components/CardRow.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import * as Arkham from '@/arkham/types/Investigator';
+
+interface RefWrapper<T> {
+  ref: ComputedRef<T>
+}
 
 export default defineComponent({
   components: {
@@ -143,14 +136,13 @@ export default defineComponent({
   },
   setup(props) {
 
-    const discards = computed(() => props.player.contents.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
+    const discards = computed<ArkhamCard.Card[]>(() => props.player.contents.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
     const topOfDiscard = computed(() => discards.value[0])
 
 
     const viewingDiscard = ref(false)
-    const toggleDiscard = function() { viewingDiscard.value = !viewingDiscard.value }
     const viewDiscardLabel = computed(() => viewingDiscard.value ? "Close" : `${discards.value.length} Cards`)
 
     const id = computed(() => props.player.contents.id)
@@ -162,16 +154,26 @@ export default defineComponent({
         .findIndex((c) => c.tag === MessageType.DRAW_CARDS && c.contents[0] === id.value);
     })
 
-    const showCards = ref<CardContents[]>([])
+    const noCards = computed<ArkhamCard.Card[]>(() => [])
 
-    const doShowCards = (cards: CardContents[]) => {
-      showCards.value = cards
+    // eslint-disable-next-line
+    const showCards = reactive<RefWrapper<any>>({ ref: noCards })
+    const cardRowTitle = ref("")
+
+
+    const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title: string, isDiscards: boolean) => {
+      cardRowTitle.value = title
+      showCards.ref = cards
+      viewingDiscard.value = isDiscards
     }
+
+    const showDiscards = (e: Event) => doShowCards(e, discards, 'Discards', true)
+    const hideCards = () => showCards.ref = noCards
 
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    return { debug, debugChoose, doShowCards, showCards, baseUrl, discards, topOfDiscard, drawCardsAction, toggleDiscard, viewingDiscard, viewDiscardLabel }
+    return { cardRowTitle, debug, debugChoose, doShowCards, showCards, baseUrl, discards, topOfDiscard, drawCardsAction, hideCards, showDiscards, viewingDiscard, viewDiscardLabel }
   }
 })
 </script>
@@ -192,21 +194,31 @@ export default defineComponent({
 }
 
 .discard {
-  width: 110px;
+  width: $card-width;
   margin-top: 10px;
-  position: relative;
-  &::after {
-    pointer-events: none;
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #FFF;
-    /* background-image: linear-gradient(120deg, #eaee44, #33d0ff); */
-    opacity: .85;
-    mix-blend-mode: saturation;
+  &:deep(.card) {
+    margin: 0;
+    box-shadow: none;
+  }
+  &:deep(.card-container) {
+    width: $card-width;
+    margin: 0;
+    position:relative;
+    display: inline-flex;
+    &::after {
+      pointer-events: none;
+      border-radius: 6px;
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #FFF;
+      /* background-image: linear-gradient(120deg, #eaee44, #33d0ff); */
+      opacity: .85;
+      mix-blend-mode: saturation;
+    }
   }
 }
 

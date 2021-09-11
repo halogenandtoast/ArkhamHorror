@@ -27,7 +27,7 @@
       <button @click="debugChoose({tag: 'AdvanceAct', contents: [id, {tag: 'TestSource', contents:[]}]})">Advance</button>
     </template>
 
-    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="$emit('show', $event, cardsUnder, 'Cards Under Act', false)">{{viewUnderLabel}}</button>
+    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
 
     <div class="pool">
       <PoolItem
@@ -59,7 +59,7 @@ export default defineComponent({
     investigatorId: { type: String, required: true }
   },
 
-  setup(props) {
+  setup(props, context) {
     const id = computed(() => props.act.contents.id)
     const image = computed(() => {
       const side = props.act.contents.sequence.side.toLowerCase().replace('a', '')
@@ -116,10 +116,13 @@ export default defineComponent({
         }, [])
     })
 
+    const cardsUnder = computed(() => props.cardsUnder)
+    const showCardsUnderAct = (e: Event) => context.emit('show', e, cardsUnder, 'Cards Under Act', false)
+
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    return { debug, debugChoose, viewUnderLabel, toggleUnder, abilities, abilityLabel, interactAction, choices, image, id }
+    return { showCardsUnderAct, debug, debugChoose, viewUnderLabel, toggleUnder, abilities, abilityLabel, interactAction, choices, image, id }
   }
 })
 </script>

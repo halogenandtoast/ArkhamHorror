@@ -285,6 +285,7 @@ library
       Arkham.Types.Asset.Cards.RitualCandles
       Arkham.Types.Asset.Cards.Rolands38Special
       Arkham.Types.Asset.Cards.Scavenging
+      Arkham.Types.Asset.Cards.ScientificTheory1
       Arkham.Types.Asset.Cards.Scrapper3
       Arkham.Types.Asset.Cards.ScrollOfProphecies
       Arkham.Types.Asset.Cards.Scrying
@@ -523,6 +524,7 @@ library
       Arkham.Types.Event.Cards
       Arkham.Types.Event.Cards.AceInTheHole3
       Arkham.Types.Event.Cards.AChanceEncounter
+      Arkham.Types.Event.Cards.AnatomicalDiagrams
       Arkham.Types.Event.Cards.AstoundingRevelation
       Arkham.Types.Event.Cards.AstralTravel
       Arkham.Types.Event.Cards.Backstab

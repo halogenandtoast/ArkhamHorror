@@ -19,6 +19,7 @@ type EventRunner env
     , CanCheckPlayable env
     , Query AssetMatcher env
     , Query LocationMatcher env
+    , Query EnemyMatcher env
     , HasCount Shroud env LocationId
     , HasCount ClueCount env InvestigatorId
     , HasCount ClueCount env LocationId

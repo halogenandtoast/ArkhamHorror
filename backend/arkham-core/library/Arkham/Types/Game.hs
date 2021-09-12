@@ -589,6 +589,11 @@ getInvestigatorsMatching = \case
     filterM
       ((`gameValueMatches` gameValueMatcher) . snd . getDamage)
       allInvestigators'
+  InvestigatorWithRemainingSanity gameValueMatcher -> do
+    allInvestigators' <- toList . view investigatorsL <$> getGame
+    filterM
+      ((`gameValueMatches` gameValueMatcher) <=< getRemainingSanity)
+      allInvestigators'
   InvestigatorMatches [] -> pure []
   InvestigatorMatches (x : xs) -> do
     matches :: HashSet InvestigatorId <-

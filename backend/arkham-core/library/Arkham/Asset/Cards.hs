@@ -180,6 +180,7 @@ allPlayerAssetCards = mapFromList $ map
   , newspaper
   , occultLexicon
   , oldBookOfLore
+  , painkillers
   , pathfinder1
   , peterSylvestre
   , peterSylvestre2
@@ -211,7 +212,7 @@ allPlayerAssetCards = mapFromList $ map
   , spiritAthame1
   , stealth
   , streetwise3
-  , painkillers
+  , scientificTheory1
   , songOfTheDead2
   , spiritSpeaker
   , springfieldM19034
@@ -1345,6 +1346,15 @@ combatTraining1 = (asset "03107" "Combat Training" 1 Guardian)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Talent, Composure]
   , cdLimits = [LimitPerTrait Composure 1]
+  , cdLevel = 1
+  }
+
+scientificTheory1 :: CardDef
+scientificTheory1 = (asset "03109" "Scientific Theory" 1 Seeker)
+  { cdSkills = [SkillIntellect, SkillCombat]
+  , cdCardTraits = setFromList [Talent, Composure]
+  , cdLimits = [LimitPerTrait Composure 1]
+  , cdLevel = 1
   }
 
 cherishedKeepsake :: CardDef

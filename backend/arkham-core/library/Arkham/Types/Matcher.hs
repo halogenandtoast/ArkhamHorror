@@ -68,6 +68,7 @@ data InvestigatorMatcher
   | InvestigatorWithClues ValueMatcher
   | InvestigatorWithDamage ValueMatcher
   | InvestigatorWithHorror ValueMatcher
+  | InvestigatorWithRemainingSanity ValueMatcher
   | InvestigatorWithResources ValueMatcher
   | InvestigatorWithId InvestigatorId
   | InvestigatorWithTitle Text

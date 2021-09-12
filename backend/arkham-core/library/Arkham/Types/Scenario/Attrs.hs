@@ -47,6 +47,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioCardsUnderScenarioReference :: [Card]
   , scenarioCardsUnderAgendaDeck :: [Card]
   , scenarioCardsUnderActDeck :: [Card]
+  , scenarioCardsNextToActDeck :: [CardDef]
   , scenarioActStack :: [(Int, [CardDef])]
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDeck :: Maybe ScenarioDeck
@@ -63,6 +64,10 @@ cardsUnderneathAgendaDeckL = lens scenarioCardsUnderAgendaDeck
 cardsUnderneathActDeckL :: Lens' ScenarioAttrs [Card]
 cardsUnderneathActDeckL =
   lens scenarioCardsUnderActDeck $ \m x -> m { scenarioCardsUnderActDeck = x }
+
+cardsNextToActDeckL :: Lens' ScenarioAttrs [CardDef]
+cardsNextToActDeckL =
+  lens scenarioCardsNextToActDeck $ \m x -> m { scenarioCardsNextToActDeck = x }
 
 locationLayoutL :: Lens' ScenarioAttrs (Maybe [GridTemplateRow])
 locationLayoutL =
@@ -152,6 +157,7 @@ baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   , scenarioActStack = [(1, actStack')]
   , scenarioCardsUnderAgendaDeck = mempty
   , scenarioCardsUnderActDeck = mempty
+  , scenarioCardsNextToActDeck = mempty
   , scenarioLocationLayout = Nothing
   , scenarioDeck = Nothing
   , scenarioLog = mempty
@@ -329,6 +335,8 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
     PlaceUnderneath ActDeckTarget cards -> do
       push (After msg)
       pure $ a & cardsUnderneathActDeckL <>~ cards
+    PlaceNextTo ActDeckTarget cards -> do
+      pure $ a & cardsNextToActDeckL <>~ cards
     RequestSetAsideCard target cardCode -> do
       let
         (before, rest) =

@@ -11,8 +11,8 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria (Criterion)
 import qualified Arkham.Types.Criteria as Criteria
@@ -248,11 +248,13 @@ getCanAffordUse iid ability = case abilityLimit ability of
   GroupLimit _ n ->
     (< n) . count (== ability) . map (snd . unUsedAbility) <$> getList ()
 
-applyActionCostModifier :: Maybe Action -> ModifierType -> Int -> Int
-applyActionCostModifier (Just action) (ActionCostOf (IsAction action') m) n
+applyActionCostModifier :: [Action] -> Maybe Action -> ModifierType -> Int -> Int
+applyActionCostModifier _ (Just action) (ActionCostOf (IsAction action') m) n
   | action == action' = n + m
-applyActionCostModifier _ (ActionCostModifier m) n = n + m
-applyActionCostModifier _ _ n = n
+applyActionCostModifier takenActions (Just action) (ActionCostOf (FirstOneOf as) m) n
+  | action `elem` as && all (`notElem` takenActions) as = n + m
+applyActionCostModifier _ _ (ActionCostModifier m) n = n + m
+applyActionCostModifier _ _ _ n = n
 
 getCanAffordCost
   :: ( MonadReader env m
@@ -288,9 +290,10 @@ getCanAffordCost iid source mAction windows' = \case
     if ActionsAreFree `elem` modifiers
       then pure True
       else do
+        takenActions <- map unTakenAction <$> getList iid
         let
           modifiedActionCost =
-            foldr (applyActionCostModifier mAction) n modifiers
+            foldr (applyActionCostModifier takenActions mAction) n modifiers
         traits <- getSetList @Trait source
         actionCount <- unActionRemainingCount
           <$> getCount (mAction, traits, iid)

@@ -47,7 +47,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioCardsUnderScenarioReference :: [Card]
   , scenarioCardsUnderAgendaDeck :: [Card]
   , scenarioCardsUnderActDeck :: [Card]
-  , scenarioCardsNextToActDeck :: [CardDef]
+  , scenarioCardsNextToActDeck :: [Card]
   , scenarioActStack :: [(Int, [CardDef])]
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDeck :: Maybe ScenarioDeck
@@ -65,7 +65,7 @@ cardsUnderneathActDeckL :: Lens' ScenarioAttrs [Card]
 cardsUnderneathActDeckL =
   lens scenarioCardsUnderActDeck $ \m x -> m { scenarioCardsUnderActDeck = x }
 
-cardsNextToActDeckL :: Lens' ScenarioAttrs [CardDef]
+cardsNextToActDeckL :: Lens' ScenarioAttrs [Card]
 cardsNextToActDeckL =
   lens scenarioCardsNextToActDeck $ \m x -> m { scenarioCardsNextToActDeck = x }
 

@@ -6,6 +6,12 @@
       @click="$emit('choose', interactAction)"
       :src="image"
     />
+    <img
+      v-for="(card, idx) in cardsNextTo"
+      class="card card--sideways"
+      :key="idx"
+      :src="imageForCard(card)"
+    />
     <Treachery
       v-for="treacheryId in act.contents.treacheries"
       :key="treacheryId"
@@ -56,6 +62,7 @@ export default defineComponent({
     act: { type: Object as () => Arkham.Act, required: true },
     game: { type: Object as () => Game, required: true },
     cardsUnder: { type: Array as () => Card[], required: true },
+    cardsNextTo: { type: Array as () => Card[], required: true },
     investigatorId: { type: String, required: true }
   },
 
@@ -66,6 +73,12 @@ export default defineComponent({
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
       return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}${side}.jpg`
     })
+
+    const imageForCard = (card: Card) => {
+      const side = card.contents.isFlipped ? 'b' : ''
+      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+      return `${baseUrl}/img/arkham/cards/${card.contents.cardCode.replace('c', '')}${side}.jpg`
+    }
 
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
@@ -122,7 +135,7 @@ export default defineComponent({
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    return { showCardsUnderAct, debug, debugChoose, viewUnderLabel, toggleUnder, abilities, abilityLabel, interactAction, choices, image, id }
+    return { imageForCard, showCardsUnderAct, debug, debugChoose, viewUnderLabel, toggleUnder, abilities, abilityLabel, interactAction, choices, image, id }
   }
 })
 </script>

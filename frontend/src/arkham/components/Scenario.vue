@@ -74,6 +74,7 @@
           :key="key"
           :act="act"
           :cardsUnder="cardsUnderAct"
+          :cardsNextTo="cardsNextToAct"
           :game="game"
           :investigatorId="investigatorId"
           @choose="$emit('choose', $event)"
@@ -391,6 +392,15 @@ export default defineComponent({
       return scenario.contents.cardsUnderActDeck
     })
 
+    const cardsNextToAct = computed(() => {
+      const { scenario } = props.game
+      if (!scenario) {
+        return []
+      }
+
+      return scenario.contents.cardsNextToActDeck
+    })
+
     const skills = computed(() => Object.values(props.game.skills))
     const phase = computed(() => props.game.phase)
 
@@ -418,6 +428,7 @@ export default defineComponent({
       enemiesAsLocations,
       cardsUnderAgenda,
       cardsUnderAct,
+      cardsNextToAct,
       doShowCards,
       viewDiscardLabel,
       viewingDiscard,

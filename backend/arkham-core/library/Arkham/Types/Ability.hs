@@ -72,6 +72,7 @@ data AbilityMetadata
   | SourceMetadata Source
   | EncounterCardMetadata EncounterCard
   | SkillChoiceMetadata SkillType
+  | NoAbilityMetadata
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

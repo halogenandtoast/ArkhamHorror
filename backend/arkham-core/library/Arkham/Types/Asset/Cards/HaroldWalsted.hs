@@ -28,16 +28,19 @@ newtype HaroldWalsted = HaroldWalsted AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 haroldWalsted :: AssetCard HaroldWalsted
-haroldWalsted =
-  allyWith HaroldWalsted Cards.haroldWalsted (1, 1) (isStoryL .~ True)
+haroldWalsted = allyWith
+  HaroldWalsted
+  Cards.haroldWalsted
+  (1, 1)
+  ((isStoryL .~ True) . (slotsL .~ mempty))
 
 instance HasAbilities HaroldWalsted where
   getAbilities (HaroldWalsted x) =
     [ mkAbility x 1
-      $ ForcedAbility
-      $ AssetLeavesPlay Timing.When
-      $ AssetWithId
-      $ toId x
+        $ ForcedAbility
+        $ AssetLeavesPlay Timing.When
+        $ AssetWithId
+        $ toId x
     ]
 
 instance

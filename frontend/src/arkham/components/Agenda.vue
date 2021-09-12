@@ -26,16 +26,20 @@
         type="doom"
         :amount="agenda.contents.doom"
       />
+
       <template v-if="debug">
         <button @click="debugChoose({tag: 'PlaceDoom', contents: [{'tag': 'AgendaTarget', 'contents': id}, 1]})">+</button>
       </template>
     </div>
+
+    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAgenda">{{viewUnderLabel}}</button>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, inject } from 'vue';
+import { defineComponent, computed, inject, ref } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import { Card } from '@/arkham/types/Card'
 import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue';
@@ -48,9 +52,10 @@ export default defineComponent({
   props: {
     agenda: { type: Object as () => Arkham.Agenda, required: true },
     game: { type: Object as () => Game, required: true },
+    cardsUnder: { type: Array as () => Card[], required: true },
     investigatorId: { type: String, required: true }
   },
-  setup(props) {
+  setup(props, context) {
     const id = computed(() => props.agenda.contents.id)
     const image = computed(() => {
       const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
@@ -63,6 +68,10 @@ export default defineComponent({
     })
 
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+    const viewingUnder = ref(false)
+    const toggleUnder = function() { viewingUnder.value = !viewingUnder.value }
+    const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
 
     function canInteract(c: Message): boolean {
       switch (c.tag) {
@@ -98,10 +107,13 @@ export default defineComponent({
         }, [])
     })
 
+    const cardsUnder = computed(() => props.cardsUnder)
+    const showCardsUnderAgenda = (e: Event) => context.emit('show', e, cardsUnder, 'Cards Under Agenda', false)
+
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    return { debug, debugChoose, abilities, choices, interactAction, image, id }
+    return { toggleUnder, viewUnderLabel, showCardsUnderAgenda, debug, debugChoose, abilities, choices, interactAction, image, id }
   }
 })
 </script>

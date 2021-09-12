@@ -14,6 +14,7 @@ import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Matcher hiding (MoveAction)
 import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype AbbessAllegriaDiBiase = AbbessAllegriaDiBiase AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -23,7 +24,6 @@ abbessAllegriaDiBiase :: AssetCard AbbessAllegriaDiBiase
 abbessAllegriaDiBiase =
   ally AbbessAllegriaDiBiase Cards.abbessAllegriaDiBiase (2, 2)
 
--- TODO: Handle Abbess outside of Carnevale
 instance HasAbilities AbbessAllegriaDiBiase where
   getAbilities (AbbessAllegriaDiBiase attrs) = case assetLocation attrs of
     Just abbessLocation ->
@@ -33,10 +33,8 @@ instance HasAbilities AbbessAllegriaDiBiase where
           (AnyCriterion
             [ LocationExists
               (LocationWithId abbessLocation <> AccessibleLocation)
-            , LocationExists
-              (AccessibleFrom (LocationWithId abbessLocation)
-              <> AccessibleLocation
-              )
+            , LocationExists $ YourLocation <> AccessibleFrom
+              (LocationWithId abbessLocation)
             ]
           )
           (FastAbility $ ExhaustCost (toTarget attrs))
@@ -70,9 +68,11 @@ instance
           connectedLocationIds <- map unConnectedLocationId
             <$> getSetList abbessLocationId
           push
-            (chooseOne
+            (chooseOrRunOne
               iid
-              [ MoveAction iid connectedLocationId Free False
+              [ TargetLabel
+                  (LocationTarget connectedLocationId)
+                  [MoveAction iid connectedLocationId Free False]
               | connectedLocationId <- connectedLocationIds
               ]
             )

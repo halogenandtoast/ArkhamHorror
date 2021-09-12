@@ -25,8 +25,11 @@ newtype HelplessPassenger = HelplessPassenger AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 helplessPassenger :: AssetCard HelplessPassenger
-helplessPassenger =
-  allyWith HelplessPassenger Cards.helplessPassenger (1, 1) (isStoryL .~ True)
+helplessPassenger = allyWith
+  HelplessPassenger
+  Cards.helplessPassenger
+  (1, 1)
+  ((isStoryL .~ True) . (slotsL .~ mempty))
 
 instance HasAbilities HelplessPassenger where
   getAbilities (HelplessPassenger x) =
@@ -36,10 +39,10 @@ instance HasAbilities HelplessPassenger where
       (Unowned <> OnSameLocation)
       (ActionAbility (Just Parley) $ ActionCost 1)
     , mkAbility x 2
-    $ ForcedAbility
-    $ AssetLeavesPlay Timing.When
-    $ AssetWithId
-    $ toId x
+      $ ForcedAbility
+      $ AssetLeavesPlay Timing.When
+      $ AssetWithId
+      $ toId x
     ]
 
 instance AssetRunner env => RunMessage env HelplessPassenger where

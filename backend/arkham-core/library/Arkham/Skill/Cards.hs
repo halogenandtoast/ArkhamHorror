@@ -8,6 +8,8 @@ import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
+import Arkham.Types.GameValue
+import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
@@ -48,6 +50,7 @@ allPlayerSkillCards = mapFromList $ map
   [ deduction
   , deduction2
   , defiance
+  , desperateSearch
   , doubleOrNothing
   , fearless
   , fearless2
@@ -60,8 +63,11 @@ allPlayerSkillCards = mapFromList $ map
   , overpower
   , perception
   , quickThinking
+  , recklessAssault
   , resourceful
   , riseToTheOccasion
+  , runForYourLife
+  , sayYourPrayers
   , strokeOfLuck2
   , survivalInstinct
   , survivalInstinct2
@@ -216,6 +222,70 @@ theHomeFront =
   (skill "03007" "The Home Front" (replicate 4 SkillCombat) Neutral)
     { cdCardTraits = setFromList [Practiced, Expert]
     }
+
+sayYourPrayers :: CardDef
+sayYourPrayers = (skill
+                   "03116"
+                   "Say Your Prayers"
+                   [ SkillWillpower
+                   , SkillWillpower
+                   , SkillWillpower
+                   , SkillWillpower
+                   ]
+                   Neutral
+                 )
+  { cdCardTraits = singleton Desperate
+  , cdCommitRestrictions =
+    [ MaxOnePerTest
+    , SelfCanCommitWhen $ InvestigatorWithRemainingSanity $ AtMost $ Static 3
+    ]
+  }
+
+desperateSearch :: CardDef
+desperateSearch = (skill
+                    "03117"
+                    "Desperate Search"
+                    [ SkillIntellect
+                    , SkillIntellect
+                    , SkillIntellect
+                    , SkillIntellect
+                    ]
+                    Neutral
+                  )
+  { cdCardTraits = singleton Desperate
+  , cdCommitRestrictions =
+    [ MaxOnePerTest
+    , SelfCanCommitWhen $ InvestigatorWithRemainingSanity $ AtMost $ Static 3
+    ]
+  }
+
+recklessAssault :: CardDef
+recklessAssault = (skill
+                    "03118"
+                    "Reckless Assault"
+                    [SkillCombat, SkillCombat, SkillCombat, SkillCombat]
+                    Neutral
+                  )
+  { cdCardTraits = singleton Desperate
+  , cdCommitRestrictions =
+    [ MaxOnePerTest
+    , SelfCanCommitWhen $ InvestigatorWithRemainingSanity $ AtMost $ Static 3
+    ]
+  }
+
+runForYourLife :: CardDef
+runForYourLife = (skill
+                   "03119"
+                   "Run For Your Life"
+                   [SkillAgility, SkillAgility, SkillAgility, SkillAgility]
+                   Neutral
+                 )
+  { cdCardTraits = singleton Desperate
+  , cdCommitRestrictions =
+    [ MaxOnePerTest
+    , SelfCanCommitWhen $ InvestigatorWithRemainingSanity $ AtMost $ Static 3
+    ]
+  }
 
 resourceful :: CardDef
 resourceful = (skill

@@ -111,6 +111,7 @@ allPlayerAssetCards = mapFromList $ map
   , daisysToteBag
   , daisysToteBagAdvanced
   , darkHorse
+  , davidRenfield
   , digDeep
   , digDeep2
   , discOfItzamna2
@@ -135,6 +136,7 @@ allPlayerAssetCards = mapFromList $ map
   , fortyOneDerringer
   , gravediggersShovel
   , grotesqueStatue4
+  , grounded1
   , guardDog
   , hardKnocks
   , hardKnocks2
@@ -154,6 +156,7 @@ allPlayerAssetCards = mapFromList $ map
   , keenEye
   , keenEye3
   , knife
+  , knuckleduster
   , kukri
   , laboratoryAssistant
   , ladyEsprit
@@ -177,6 +180,7 @@ allPlayerAssetCards = mapFromList $ map
   , maskedCarnevaleGoer_21
   , medicalTexts
   , monstrousTransformation
+  , moxie1
   , newspaper
   , occultLexicon
   , oldBookOfLore
@@ -187,6 +191,7 @@ allPlayerAssetCards = mapFromList $ map
   , physicalTraining
   , physicalTraining2
   , pickpocketing
+  , plucky1
   , policeBadge2
   , powderOfIbnGhazi
   , professorWarrenRice
@@ -1357,10 +1362,48 @@ scientificTheory1 = (asset "03109" "Scientific Theory" 1 Seeker)
   , cdLevel = 1
   }
 
+knuckleduster :: CardDef
+knuckleduster = (asset "03110" "Knuckleduster" 2 Rogue)
+  { cdSkills = [SkillCombat]
+  , cdCardTraits = setFromList [Item, Weapon, Melee, Illicit]
+  }
+
+moxie1 :: CardDef
+moxie1 = (asset "03111" "Moxie" 1 Rogue)
+  { cdSkills = [SkillWillpower, SkillAgility]
+  , cdCardTraits = setFromList [Talent, Composure]
+  , cdLimits = [LimitPerTrait Composure 1]
+  , cdLevel = 1
+  }
+
+davidRenfield :: CardDef
+davidRenfield =
+  (asset "03112" ("David Renfield" <:> "Esteemed Eschatologist") 2 Mystic)
+    { cdSkills = [SkillIntellect]
+    , cdCardTraits = setFromList [Ally, Patron]
+    , cdUnique = True
+    }
+
+grounded1 :: CardDef
+grounded1 = (asset "03113" "Grounded" 1 Mystic)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = setFromList [Talent, Composure]
+  , cdLimits = [LimitPerTrait Composure 1]
+  , cdLevel = 1
+  }
+
 cherishedKeepsake :: CardDef
 cherishedKeepsake = (asset "03114" "Cherished Keepsake" 0 Survivor)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Item, Charm]
+  }
+
+plucky1 :: CardDef
+plucky1 = (asset "03115" "Plucky" 1 Survivor)
+  { cdSkills = [SkillWillpower, SkillIntellect]
+  , cdCardTraits = setFromList [Talent, Composure]
+  , cdLimits = [LimitPerTrait Composure 1]
+  , cdLevel = 1
   }
 
 toothOfEztli :: CardDef

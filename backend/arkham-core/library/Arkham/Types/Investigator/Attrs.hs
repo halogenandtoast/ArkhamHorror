@@ -1781,42 +1781,43 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         | CannotPerformSkillTest `notElem` skillTestModifiers'
         ]
       beginMessage = BeforeSkillTest iid skillType skillDifficulty
-      committableCards = if cannotCommitCards
-        then []
-        else flip filter investigatorHand $ \case
-          PlayerCard card ->
-            let
-              passesCriterias = flip
-                all
-                (cdCommitRestrictions $ toCardDef card)
-                \case
-                  MaxOnePerTest -> toCardCode card `notElem` committedCardCodes
-                  OnlyYourTest -> True
-                  OnlyIfYourLocationHasClues -> clueCount > 0
-                  ScenarioAbility -> isScenarioAbility
-                  MinSkillTestValueDifference n ->
-                    (skillDifficulty - baseSkillValueFor skillType Nothing [] a)
-                      >= n
-              prevented = flip
-                any
-                modifiers'
-                \case
-                  CanOnlyUseCardsInRole role ->
-                    cdClassSymbol (toCardDef card)
-                      `notElem` [Just Neutral, Just role, Nothing]
-                  CannotCommitCards matcher -> cardMatch card matcher
-                  _ -> False
-            in
-              toCardId card
-              `notElem` committedCardIds
-              && (SkillWild
-                 `elem` cdSkills (toCardDef card)
-                 || skillType
-                 `elem` cdSkills (toCardDef card)
-                 )
-              && passesCriterias
-              && not prevented
-          _ -> False
+    committableCards <- if cannotCommitCards
+      then pure []
+      else flip filterM investigatorHand $ \case
+        PlayerCard card -> do
+          let
+            passesCommitRestriction = \case
+                MaxOnePerTest -> pure $ toCardCode card `notElem` committedCardCodes
+                OnlyYourTest -> pure True
+                OnlyIfYourLocationHasClues -> pure $ clueCount > 0
+                ScenarioAbility -> pure isScenarioAbility
+                SelfCanCommitWhen matcher -> notNull <$> select (You <> matcher)
+                MinSkillTestValueDifference n ->
+                  pure $ (skillDifficulty - baseSkillValueFor skillType Nothing [] a)
+                    >= n
+            prevented = flip
+              any
+              modifiers'
+              \case
+                CanOnlyUseCardsInRole role ->
+                  cdClassSymbol (toCardDef card)
+                    `notElem` [Just Neutral, Just role, Nothing]
+                CannotCommitCards matcher -> cardMatch card matcher
+                _ -> False
+          passesCommitRestrictions <-
+              allM
+              passesCommitRestriction
+              (cdCommitRestrictions $ toCardDef card)
+          pure $ toCardId card
+            `notElem` committedCardIds
+            && (SkillWild
+               `elem` cdSkills (toCardDef card)
+               || skillType
+               `elem` cdSkills (toCardDef card)
+               )
+            && passesCommitRestrictions
+            && not prevented
+        _ -> pure False
     if notNull committableCards || notNull committedCardIds || notNull actions
       then push
         (SkillTestAsk $ chooseOne
@@ -1852,27 +1853,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       modifiers' <- getModifiers (toSource a) (toTarget a)
       let
         beginMessage = BeforeSkillTest iid skillType skillDifficulty
-        committableCards = if notNull committedCardIds
-          then []
+      committableCards <- if notNull committedCardIds
+          then pure []
           else flip
-            filter
+            filterM
             investigatorHand
             \case
-              PlayerCard card ->
+              PlayerCard card -> do
                 let
-                  passesCriterias = flip
-                    all
-                    (cdCommitRestrictions $ toCardDef card)
-                    \case
-                      MaxOnePerTest ->
-                        toCardCode card `notElem` committedCardCodes
-                      OnlyYourTest -> False
-                      OnlyIfYourLocationHasClues -> clueCount > 0
-                      ScenarioAbility -> isScenarioAbility
+                  passesCommitRestriction = \case
+                      MaxOnePerTest -> pure $ toCardCode card `notElem` committedCardCodes
+                      OnlyYourTest -> pure False
+                      OnlyIfYourLocationHasClues -> pure $ clueCount > 0
+                      ScenarioAbility -> pure isScenarioAbility
+                      SelfCanCommitWhen matcher -> notNull <$> select (You <> matcher)
                       MinSkillTestValueDifference n ->
-                        (skillDifficulty
-                          - baseSkillValueFor skillType Nothing [] a
-                          )
+                        pure $ (skillDifficulty - baseSkillValueFor skillType Nothing [] a)
                           >= n
                   prevented = flip
                     any
@@ -1882,8 +1878,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                         cdClassSymbol (toCardDef card)
                           `notElem` [Just Neutral, Just role, Nothing]
                       _ -> False
-                in
-                  toCardId card
+                passesCriterias <-
+                  allM
+                  passesCommitRestriction
+                  (cdCommitRestrictions $ toCardDef card)
+                pure $ toCardId card
                   `notElem` committedCardIds
                   && (SkillWild
                      `elem` cdSkills (toCardDef card)
@@ -1892,7 +1891,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                      )
                   && passesCriterias
                   && not prevented
-              _ -> False
+              _ -> pure False
       when (notNull committableCards || notNull committedCardIds) $ push
         (SkillTestAsk $ chooseOne
           investigatorId

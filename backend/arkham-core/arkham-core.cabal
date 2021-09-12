@@ -189,6 +189,7 @@ library
       Arkham.Types.Asset.Cards.DaisysToteBag
       Arkham.Types.Asset.Cards.DaisysToteBagAdvanced
       Arkham.Types.Asset.Cards.DarkHorse
+      Arkham.Types.Asset.Cards.DavidRenfield
       Arkham.Types.Asset.Cards.DigDeep
       Arkham.Types.Asset.Cards.DigDeep2
       Arkham.Types.Asset.Cards.DiscOfItzamna2
@@ -214,6 +215,7 @@ library
       Arkham.Types.Asset.Cards.FortyOneDerringer
       Arkham.Types.Asset.Cards.GravediggersShovel
       Arkham.Types.Asset.Cards.GrotesqueStatue4
+      Arkham.Types.Asset.Cards.Grounded1
       Arkham.Types.Asset.Cards.GuardDog
       Arkham.Types.Asset.Cards.HardKnocks
       Arkham.Types.Asset.Cards.HardKnocks2
@@ -239,6 +241,7 @@ library
       Arkham.Types.Asset.Cards.KeenEye3
       Arkham.Types.Asset.Cards.KeyToTheChamber
       Arkham.Types.Asset.Cards.Knife
+      Arkham.Types.Asset.Cards.Knuckleduster
       Arkham.Types.Asset.Cards.Kukri
       Arkham.Types.Asset.Cards.LaboratoryAssistant
       Arkham.Types.Asset.Cards.LadyEsprit
@@ -262,6 +265,7 @@ library
       Arkham.Types.Asset.Cards.MaskedCarnevaleGoer_21
       Arkham.Types.Asset.Cards.MedicalTexts
       Arkham.Types.Asset.Cards.MonstrousTransformation
+      Arkham.Types.Asset.Cards.Moxie1
       Arkham.Types.Asset.Cards.Newspaper
       Arkham.Types.Asset.Cards.OccultLexicon
       Arkham.Types.Asset.Cards.OldBookOfLore
@@ -273,6 +277,7 @@ library
       Arkham.Types.Asset.Cards.PhysicalTraining
       Arkham.Types.Asset.Cards.PhysicalTraining2
       Arkham.Types.Asset.Cards.Pickpocketing
+      Arkham.Types.Asset.Cards.Plucky1
       Arkham.Types.Asset.Cards.PoliceBadge2
       Arkham.Types.Asset.Cards.PowderOfIbnGhazi
       Arkham.Types.Asset.Cards.ProfessorWarrenRice
@@ -881,6 +886,7 @@ library
       Arkham.Types.Skill.Cards.Deduction
       Arkham.Types.Skill.Cards.Deduction2
       Arkham.Types.Skill.Cards.Defiance
+      Arkham.Types.Skill.Cards.DesperateSearch
       Arkham.Types.Skill.Cards.DoubleOrNothing
       Arkham.Types.Skill.Cards.Fearless
       Arkham.Types.Skill.Cards.Fearless2
@@ -893,8 +899,11 @@ library
       Arkham.Types.Skill.Cards.Overpower
       Arkham.Types.Skill.Cards.Perception
       Arkham.Types.Skill.Cards.QuickThinking
+      Arkham.Types.Skill.Cards.RecklessAssault
       Arkham.Types.Skill.Cards.Resourceful
       Arkham.Types.Skill.Cards.RiseToTheOccasion
+      Arkham.Types.Skill.Cards.RunForYourLife
+      Arkham.Types.Skill.Cards.SayYourPrayers
       Arkham.Types.Skill.Cards.StrokeOfLuck2
       Arkham.Types.Skill.Cards.SurvivalInstinct
       Arkham.Types.Skill.Cards.SurvivalInstinct2

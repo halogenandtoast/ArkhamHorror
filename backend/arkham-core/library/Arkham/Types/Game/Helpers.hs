@@ -868,14 +868,15 @@ type CanCheckPlayable env
     , HasId (Maybe LocationId) env (Direction, LocationId)
     , HasId (Maybe LocationId) env TreacheryId
     , HasId (Maybe LocationId) env EventId
-    , Query Matcher.AssetMatcher env
-    , Query Matcher.InvestigatorMatcher env
-    , Query Matcher.AbilityMatcher env
-    , Query Matcher.LocationMatcher env
-    , Query Matcher.TreacheryMatcher env
-    , Query Matcher.EnemyMatcher env
-    , Query Matcher.SkillMatcher env
-    , Query Matcher.ExtendedCardMatcher env
+    , ( Query Matcher.AssetMatcher env
+      , Query Matcher.InvestigatorMatcher env
+      , Query Matcher.AbilityMatcher env
+      , Query Matcher.LocationMatcher env
+      , Query Matcher.TreacheryMatcher env
+      , Query Matcher.EnemyMatcher env
+      , Query Matcher.SkillMatcher env
+      , Query Matcher.ExtendedCardMatcher env
+      )
     , HasSkillTest env
     , CanCheckFast env
     , HasSet ClassSymbol env AssetId
@@ -893,6 +894,7 @@ type CanCheckPlayable env
     , HasCount ClueCount env AssetId
     , HasCount ClueCount env ActId
     , HasCount ClueCount env InvestigatorId
+    , HasCount RemainingSanity env InvestigatorId
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
     , HasCount ActionRemainingCount env InvestigatorId
     , HasSet InvestigatorId env LocationId

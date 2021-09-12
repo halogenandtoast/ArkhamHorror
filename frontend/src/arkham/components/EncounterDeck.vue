@@ -89,9 +89,6 @@ export default defineComponent({
   margin: 2px;
   width: $card-width;
 }
-.portrait {
-  width: $card-width;
-}
 .can-interact {
   border: 3px solid $select;
   cursor: pointer;
@@ -118,12 +115,13 @@ export default defineComponent({
 }
 
 .portrait {
-  width: 50px;
+  width: $card-width * 0.55;
   position: absolute;
+  opacity: 0.8;
   border-radius: 5px;
   left: 50%;
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%);
+  top: 10%;
+  transform: translateX(-50%);
   pointer-events: none;
 }
 </style>

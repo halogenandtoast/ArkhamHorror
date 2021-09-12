@@ -1898,7 +1898,6 @@ sourceMatches s = \case
     AgendaSource _ -> True
     EnemySource _ -> True
     LocationSource _ -> True
-    ScenarioSource _ -> True
     TreacherySource _ -> True
     _ -> False
 
@@ -1953,8 +1952,9 @@ locationMatches investigatorId source window locationId = \case
     lids <- selectList locationMatcher
     anyM (fmap (member (AccessibleLocationId locationId)) . getSet) lids
   Matcher.AccessibleTo locationMatcher -> do
-    froms <- getSet locationId
-    any ((`member` froms) . AccessibleLocationId) <$> selectList locationMatcher
+    accessibleLocations <- map unAccessibleLocationId <$> getSetList locationId
+    destinations <- select locationMatcher
+    pure $ notNull $ intersect (setFromList accessibleLocations) destinations
   Matcher.ConnectedLocation -> do
     yourLocationId <- getId @LocationId investigatorId
     member (ConnectedLocationId locationId) <$> getSet yourLocationId

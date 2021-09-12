@@ -1460,12 +1460,14 @@ bearTrap :: CardDef
 bearTrap = (storyAsset "81020" "Bear Trap" 0 TheBayou)
   { cdCardTraits = setFromList [Trap]
   , cdCost = Nothing
+  , cdCardType = EncounterAssetType
   }
 
 fishingNet :: CardDef
 fishingNet = (storyAsset "81021" "Fishing Net" 0 TheBayou)
   { cdCardTraits = setFromList [Trap]
   , cdCost = Nothing
+  , cdCardType = EncounterAssetType
   }
 
 monstrousTransformation :: CardDef

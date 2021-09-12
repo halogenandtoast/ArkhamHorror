@@ -53,6 +53,7 @@ allPlayerEventCards = mapFromList $ map
   (toCardCode &&& id)
   [ aChanceEncounter
   , aceInTheHole3
+  , anatomicalDiagrams
   , astoundingRevelation
   , astralTravel
   , backstab
@@ -740,7 +741,23 @@ heroicRescue :: CardDef
 heroicRescue = (event "03106" "Heroic Rescue" 1 Guardian)
   { cdSkills = [SkillWillpower, SkillCombat]
   , cdCardTraits = setFromList [Spirit, Tactic]
-  , cdFastWindow = Just $ EnemyWouldAttack Timing.When (NotYou <> InvestigatorAt YourLocation) NonEliteEnemy
+  , cdFastWindow = Just $ EnemyWouldAttack
+    Timing.When
+    (NotYou <> InvestigatorAt YourLocation)
+    NonEliteEnemy
+  }
+
+anatomicalDiagrams :: CardDef
+anatomicalDiagrams = (event "03108" "Anatomical Diagrams" 1 Seeker)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdCardTraits = singleton Insight
+  , cdFastWindow = Just $ DuringTurn Anyone
+  , cdCriteria =
+    Just
+    $ Criteria.InvestigatorExists
+        (You <> InvestigatorWithRemainingSanity (AtLeast $ Static 5))
+    <> Criteria.EnemyCriteria
+         (Criteria.EnemyExists $ EnemyAt YourLocation <> NonEliteEnemy)
   }
 
 secondWind :: CardDef

@@ -1878,6 +1878,8 @@ matchWho you who = \case
     (`gameValueMatches` valueMatcher) . unDamageCount =<< getCount who
   Matcher.InvestigatorWithHorror valueMatcher ->
     (`gameValueMatches` valueMatcher) . unHorrorCount =<< getCount who
+  Matcher.InvestigatorWithRemainingSanity valueMatcher ->
+    (`gameValueMatches` valueMatcher) . unRemainingSanity =<< getCount who
   Matcher.InvestigatorWithResources valueMatcher ->
     (`gameValueMatches` valueMatcher) . unResourceCount =<< getCount who
   Matcher.InvestigatorWithId iid' -> pure $ who == iid'

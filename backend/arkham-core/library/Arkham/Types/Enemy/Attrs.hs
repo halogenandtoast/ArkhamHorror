@@ -684,10 +684,13 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
              | Keyword.Alert `elem` keywords
              ]
           )
-    EnemyAttack iid eid damageStrategy | eid == enemyId -> a <$ pushAll
-      [ PerformEnemyAttack iid eid damageStrategy
-      , After (PerformEnemyAttack iid eid damageStrategy)
-      ]
+    EnemyAttack iid eid damageStrategy | eid == enemyId -> do
+      whenAttacksWindows <- checkWindows [Window Timing.When (Window.EnemyAttacks iid eid)]
+      whenWouldAttackWindows <- checkWindows [Window Timing.When (Window.EnemyWouldAttack iid eid)]
+      a <$ pushAll
+        (whenWouldAttackWindows <> whenAttacksWindows <> [ PerformEnemyAttack iid eid damageStrategy
+        , After (PerformEnemyAttack iid eid damageStrategy)
+        ])
     PerformEnemyAttack iid eid damageStrategy | eid == enemyId -> a <$ pushAll
       [ InvestigatorAssignDamage
         iid

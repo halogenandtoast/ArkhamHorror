@@ -53,6 +53,7 @@ data WindowType
   | InvestigatorEliminated InvestigatorId
   | AssetDefeated AssetId
   | TookControlOfAsset InvestigatorId AssetId
+  | EnemyWouldAttack InvestigatorId EnemyId
   | EnemyAttacks InvestigatorId EnemyId
   | EnemyAttacked InvestigatorId Source EnemyId
   | EnemyDefeated InvestigatorId EnemyId

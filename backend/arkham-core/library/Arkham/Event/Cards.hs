@@ -87,6 +87,7 @@ allPlayerEventCards = mapFromList $ map
   , extraAmmunition1
   , firstWatch
   , flare1
+  , heroicRescue
   , hidingSpot
   , hotStreak2
   , hotStreak4
@@ -733,6 +734,13 @@ hidingSpot = (event "03038" "Hiding Spot" 1 Survivor)
   { cdSkills = [SkillAgility, SkillAgility]
   , cdCardTraits = setFromList [Tactic, Trick]
   , cdFastWindow = Just AnyWindow
+  }
+
+heroicRescue :: CardDef
+heroicRescue = (event "03106" "Heroic Rescue" 1 Guardian)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdCardTraits = setFromList [Spirit, Tactic]
+  , cdFastWindow = Just $ EnemyWouldAttack Timing.When (NotYou <> InvestigatorAt YourLocation) NonEliteEnemy
   }
 
 secondWind :: CardDef

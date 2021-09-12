@@ -442,6 +442,7 @@ data WindowMatcher
   | DiscoveringLastClue Timing Who Where
   | DiscoverClues Timing Who Where ValueMatcher
   | GainsClues Timing Who ValueMatcher
+  | EnemyWouldAttack Timing Who EnemyMatcher
   | EnemyAttacks Timing Who EnemyMatcher
   | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
   | RevealChaosToken Timing Who TokenMatcher

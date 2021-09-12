@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes hiding (discard)
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -3207,9 +3207,6 @@ runGameMessage msg g = case msg of
           [] -> []
           (_ : xs) -> xs
       in before <> remaining
-    pure g
-  EnemyAttack iid eid _ -> do
-    pushAll =<< checkWindows [Window Timing.When (Window.EnemyAttacks iid eid)]
     pure g
   EngageEnemy iid eid False -> do
     pushAll =<< checkWindows [Window Timing.After (Window.EnemyEngaged iid eid)]

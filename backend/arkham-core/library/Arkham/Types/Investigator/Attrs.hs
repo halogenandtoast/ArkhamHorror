@@ -1308,8 +1308,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               pure
                 $ [ damageInvestigator | null sanityDamageableAssets ]
                 <> map damageAsset sanityDamageableAssets
-            DamageAny ->
-              pure $ damageInvestigator : map damageAsset sanityDamageableAssets
+            DamageAny -> do
+              mustBeDamagedFirstBeforeInvestigator <- selectList (AssetCanBeAssignedHorrorBy iid <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst)
+              pure $ [damageInvestigator | null mustBeDamagedFirstBeforeInvestigator] <> map damageAsset sanityDamageableAssets
             DamageFirst def -> do
               validAssets <-
                 setToList

@@ -11,8 +11,8 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.Criteria (Criterion)
 import qualified Arkham.Types.Criteria as Criteria
@@ -248,11 +248,13 @@ getCanAffordUse iid ability = case abilityLimit ability of
   GroupLimit _ n ->
     (< n) . count (== ability) . map (snd . unUsedAbility) <$> getList ()
 
-applyActionCostModifier :: [Action] -> Maybe Action -> ModifierType -> Int -> Int
+applyActionCostModifier
+  :: [Action] -> Maybe Action -> ModifierType -> Int -> Int
 applyActionCostModifier _ (Just action) (ActionCostOf (IsAction action') m) n
   | action == action' = n + m
 applyActionCostModifier takenActions (Just action) (ActionCostOf (FirstOneOf as) m) n
-  | action `elem` as && all (`notElem` takenActions) as = n + m
+  | action `elem` as && all (`notElem` takenActions) as
+  = n + m
 applyActionCostModifier _ _ (ActionCostModifier m) n = n + m
 applyActionCostModifier _ _ _ n = n
 
@@ -1644,6 +1646,14 @@ windowMatches iid source window' = \case
           (&&)
           (enemyMatches enemyId enemyMatcher)
           (locationMatches iid source window' locationId whereMatcher)
+      _ -> pure False
+  Matcher.EnemyWouldAttack timingMatcher whoMatcher enemyMatcher ->
+    case window' of
+      Window t (Window.EnemyWouldAttack who enemyId) | timingMatcher == t ->
+        liftA2
+          (&&)
+          (matchWho iid who whoMatcher)
+          (enemyMatches enemyId enemyMatcher)
       _ -> pure False
   Matcher.EnemyAttacks timingMatcher whoMatcher enemyMatcher -> case window' of
     Window t (Window.EnemyAttacks who enemyId) | timingMatcher == t -> liftA2

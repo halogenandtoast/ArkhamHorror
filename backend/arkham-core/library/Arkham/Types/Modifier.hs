@@ -54,6 +54,7 @@ data ModifierType
   | Blocked
   | CancelSkills
   | CanBeAssignedDamage
+  | NonDirectHorrorMustBeAssignToThisFirst
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast (Maybe CardType, [Trait])

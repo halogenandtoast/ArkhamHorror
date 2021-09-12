@@ -98,6 +98,7 @@ data AssetMatcher
   | AssetNonStory
   | AssetReady
   | AssetExhausted
+  | AssetWithModifier ModifierType
   | AssetWithoutModifier ModifierType
   | AssetWithUseType UseType
   | AssetWithUses UseType

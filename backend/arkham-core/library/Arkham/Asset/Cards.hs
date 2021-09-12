@@ -107,6 +107,7 @@ allPlayerAssetCards = mapFromList $ map
   , cherishedKeepsake
   , chicagoTypewriter4
   , clarityOfMind
+  , combatTraining1
   , daisysToteBag
   , daisysToteBagAdvanced
   , darkHorse
@@ -1337,6 +1338,13 @@ ashleighClarke = (storyAsset
   , cdCardType = EncounterAssetType
   , cdDoubleSided = True
   , cdCost = Nothing
+  }
+
+combatTraining1 :: CardDef
+combatTraining1 = (asset "03107" "Combat Training" 1 Guardian)
+  { cdSkills = [SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Talent, Composure]
+  , cdLimits = [LimitPerTrait Composure 1]
   }
 
 cherishedKeepsake :: CardDef

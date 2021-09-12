@@ -153,6 +153,7 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
             $ story investigatorIds noResolution
             : theStrangerIsOnToYou
             <> gainXP
+            <> [EndOfGame]
         Resolution 1 -> pushAll
           ([ story investigatorIds resolution1
            , Record YouTriedToWarnThePolice
@@ -161,6 +162,7 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
           <> [ Record ThePoliceAreSuspiciousOfYou | stoleFromTheBoxOffice ]
           <> theStrangerIsOnToYou
           <> gainXP
+          <> [EndOfGame]
           )
         Resolution 2 -> pushAll
           ([ story investigatorIds resolution2
@@ -170,6 +172,7 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
           <> [ Record ThePoliceAreSuspiciousOfYou | stoleFromTheBoxOffice ]
           <> theStrangerIsOnToYou
           <> gainXP
+          <> [EndOfGame]
           )
         _ -> error "Invalid resolution"
     ResolveToken _ tokenFace iid

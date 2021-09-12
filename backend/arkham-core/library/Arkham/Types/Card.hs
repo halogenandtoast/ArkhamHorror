@@ -90,6 +90,10 @@ data Card
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+flipCard :: Card -> Card
+flipCard (EncounterCard ec) = EncounterCard $ ec { ecIsFlipped = not <$> ecIsFlipped ec }
+flipCard (PlayerCard pc) = PlayerCard pc
+
 _PlayerCard :: Traversal' Card PlayerCard
 _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
 _PlayerCard _ other = pure other

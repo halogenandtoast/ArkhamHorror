@@ -209,6 +209,7 @@ getSkills CardJson {..} =
   getSkill skillType (Just n) = replicate n skillType
 
 getTraits :: CardJson -> HashSet Trait
+getTraits CardJson {code} | code == "01000" = mempty
 getTraits CardJson {..} = case traits of
   Nothing -> mempty
   Just s -> setFromList $ map toTrait (T.splitOn ". " $ cleanText s)
@@ -269,7 +270,7 @@ runValidations cards = do
       (ccode /= cdCardCode card)
       (throw $ InternalCardCodeMismatch ccode (cdCardCode card))
     case lookup ccode cards of
-      Nothing -> throw $ UnknownCard (cdCardCode card)
+      Nothing -> when (ccode /= "03076") (throw $ UnknownCard ccode)
       Just cardJson@CardJson {..} -> do
         if type_code == "location"
           then do
@@ -424,7 +425,7 @@ runValidations cards = do
   for_ (filterTestEntities $ mapToList allAssets) $ \(ccode, builder) -> do
     attrs <- toAttrs . builder <$> getRandom
     case lookup ccode cards of
-      Nothing -> throw $ UnknownCard ccode
+      Nothing -> when (ccode /= "03076") (throw $ UnknownCard ccode)
       Just CardJson {..} -> do
         let
           cardStats = (health, sanity)
@@ -492,7 +493,7 @@ runMissingImages = do
             </> "cards"
             </> filename
       exists <- doesFileExist filepath
-      pure $ if exists then Nothing else Just (unCardCode ccode)
+      pure $ if exists || ccode == "01000" then Nothing else Just (unCardCode ccode)
   traverse_ putStrLn (sort missing)
 
 main :: IO ()

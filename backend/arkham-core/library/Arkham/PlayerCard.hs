@@ -17,6 +17,7 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Name
 
 lookupPlayerCardName :: CardCode -> Name
@@ -43,13 +44,13 @@ allPlayerCards =
 randomWeakness :: CardDef
 randomWeakness = CardDef
   { cdCardCode = "01000"
-  , cdName = "Random Weakness"
+  , cdName = "Random Basic Weakness"
   , cdRevealedName = Nothing
   , cdCost = Nothing
   , cdLevel = 0
   , cdCardType = PlayerTreacheryType
   , cdCardSubType = Just Weakness
-  , cdClassSymbol = Nothing
+  , cdClassSymbol = Just Neutral
   , cdSkills = mempty
   , cdCardTraits = mempty
   , cdKeywords = mempty

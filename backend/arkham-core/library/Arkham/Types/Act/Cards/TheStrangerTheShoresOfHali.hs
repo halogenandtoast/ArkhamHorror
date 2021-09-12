@@ -11,7 +11,7 @@ import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
-import Arkham.Types.Card.CardDef
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Matcher hiding (Discarded)
 import Arkham.Types.Message
@@ -45,11 +45,12 @@ instance ActRunner env => RunMessage env TheStrangerTheShoresOfHali where
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
       privateLocations <- selectListMap LocationTarget
         $ LocationWithTrait Private
+      card <- flipCard <$> genCard (toCardDef attrs)
       a <$ pushAll
         ([AddToken ElderThing, AddToken ElderThing]
         <> map (`PlaceHorror` 1) privateLocations
         <> [ CreateEffect "03047c" Nothing (toSource attrs) (toTarget attrs)
-           , PlaceNextTo ActDeckTarget [toCardDef attrs]
+           , PlaceNextTo ActDeckTarget [card]
            , NextAct aid "03048"
            ]
         )

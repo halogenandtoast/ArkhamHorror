@@ -11,6 +11,7 @@ import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
+import Arkham.Types.Card.CardDef
 import Arkham.Types.Classes
 import Arkham.Types.Matcher hiding (Discarded)
 import Arkham.Types.Message
@@ -47,6 +48,7 @@ instance ActRunner env => RunMessage env TheStrangerACityAflame where
         [ AddToken Cultist
         , AddToken Cultist
         , PlaceHorror (LocationTarget theatre) 1
+        , PlaceNextTo ActDeckTarget [toCardDef attrs]
         , CreateEffect "03047a" Nothing (toSource attrs) (toTarget attrs)
         , NextAct aid "03048"
         ]

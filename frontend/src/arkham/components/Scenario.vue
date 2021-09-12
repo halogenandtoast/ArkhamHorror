@@ -526,7 +526,12 @@ export default defineComponent({
   position: relative;
   display: flex;
   flex-direction: column;
+  &:deep(.card) {
+    margin: 0;
+    box-shadow: none;
+  }
   &::after {
+    border-radius: 6px;
     pointer-events: none;
     content: "";
     position: absolute;

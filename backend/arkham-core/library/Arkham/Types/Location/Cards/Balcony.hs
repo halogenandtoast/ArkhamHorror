@@ -30,7 +30,7 @@ instance HasAbilities Balcony where
         Timing.After
         You
         (LocationWithId $ toId attrs)
-        Anywhere
+        (locationIs Cards.theatre)
     | locationRevealed attrs
     ]
 

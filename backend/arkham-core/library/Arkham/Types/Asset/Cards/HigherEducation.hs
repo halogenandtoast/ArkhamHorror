@@ -39,18 +39,16 @@ instance HasAbilities HigherEducation where
 
 instance AssetRunner env => RunMessage env HigherEducation where
   runMessage msg a@(HigherEducation attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ SpendResources iid 1
-      , skillTestModifier
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+      (skillTestModifier
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillWillpower 1)
-      ]
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ pushAll
-      [ SpendResources iid 1
-      , skillTestModifier
+      )
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
+      (skillTestModifier
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillIntellect 1)
-      ]
+      )
     _ -> HigherEducation <$> runMessage msg attrs

@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
+import Arkham.Types.ClassSymbol
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -923,6 +923,9 @@ getAssetsMatching matcher = do
     AssetWithoutModifier modifierType -> flip filterM as $ \a -> do
       modifiers' <- getModifiers (toSource a) (toTarget a)
       pure $ modifierType `notElem` modifiers'
+    AssetWithModifier modifierType -> flip filterM as $ \a -> do
+      modifiers' <- getModifiers (toSource a) (toTarget a)
+      pure $ modifierType `elem` modifiers'
     AssetMatches ms -> foldM filterMatcher as ms
     AssetWithUseType uType -> filterM
       (fmap ((> 0) . unStartingUsesCount) . getCount . (, uType) . toId)

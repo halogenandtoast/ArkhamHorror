@@ -25,8 +25,9 @@ please file a bug.
 ### Campaigns
 
 * Night of the Zealot
+  * Return to Night of the Zealot
 * The Dunwich Legacy
-* The Path To Carcosa [Curtain Call]
+* The Path To Carcosa (2/8)
 
 ### Side Stories
 
@@ -71,3 +72,7 @@ table statements and run them manually, you will want to specifically run the
 * start the backend with `cd backend && make api.watch`
 * start the frontend with `cd frontend && PORT=8081 npm run serve`
 * start the ngingx server with ``nginx -c `pwd`/local.nginxconf``
+
+## Copyright Disclaimer
+
+The Card Game, both literal and graphical, is copyrighted by Fantasy Flight Games. This application and the corresponding website is not produced, endorsed, supported, or affiliated with Fantasy Flight Games.

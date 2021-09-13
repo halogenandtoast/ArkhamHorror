@@ -64,6 +64,9 @@ data CampaignLogKey
   | Conviction
   | VIPsInterviewed
   | VIPsSlain
+  | YouIntrudedOnASecretMeeting
+  | YouFledTheDinnerParty
+  | YouSlayedTheMonstersAtTheDinnerParty
   -- ^ The Path to Carcosa
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

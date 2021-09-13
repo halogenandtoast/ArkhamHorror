@@ -296,7 +296,13 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
       clearQueue
       standalone <- getIsStandalone
       a <$ push
-        (if standalone then GameOver else NextCampaignStep mNextCampaignStep)
+        (if standalone
+          then GameOver
+          else maybe
+            (NextCampaignStep Nothing)
+            (CampaignStep . Just)
+            mNextCampaignStep
+        )
     ScenarioResolution _ ->
       error "The scenario should specify what to do for no resolution"
     UseScenarioSpecificAbility{} ->

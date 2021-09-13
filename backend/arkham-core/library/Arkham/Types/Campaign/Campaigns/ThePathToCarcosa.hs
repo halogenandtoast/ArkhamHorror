@@ -18,6 +18,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Matcher hiding (EnemyDefeated)
 import Arkham.Types.Message
+import Arkham.Types.Token
 
 newtype ThePathToCarcosa = ThePathToCarcosa CampaignAttrs
   deriving anyclass IsCampaign
@@ -40,6 +41,51 @@ instance CampaignRunner env => RunMessage env ThePathToCarcosa where
         ([story investigatorIds prologue]
         <> [ story investigatorIds lolaPrologue | lolaHayesChosen ]
         <> [NextCampaignStep Nothing]
+        )
+    CampaignStep (Just (InterludeStep 1)) -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      doubt <- hasRecordCount Doubt
+      conviction <- hasRecordCount Conviction
+      c <$ push
+        (chooseOne
+          leadInvestigatorId
+          [ Label
+            "Things seem to have calmed down. Perhaps we should go back inside and investigate further."
+            [ story investigatorIds lunacysReward1
+            , Record YouIntrudedOnASecretMeeting
+            , RecordCount Doubt (doubt + 1)
+            , RemoveAllTokens Cultist
+            , RemoveAllTokens Tablet
+            , RemoveAllTokens ElderThing
+            , AddToken ElderThing
+            , AddToken ElderThing
+            , NextCampaignStep Nothing
+            ]
+          , Label
+            "I donbt trust this place one bit. Letbs block the door and get the hell out of here!"
+            [ story investigatorIds lunacysReward2
+            , Record YouFledTheDinnerParty
+            , RemoveAllTokens Cultist
+            , RemoveAllTokens Tablet
+            , RemoveAllTokens ElderThing
+            , AddToken Tablet
+            , AddToken Tablet
+            , NextCampaignStep Nothing
+            ]
+          , Label
+            "If these people are allowed to live, these horrors will only repeat themselves. We have to put an end to this. We have to kill them."
+            [ story investigatorIds lunacysReward3
+            , Record YouSlayedTheMonstersAtTheDinnerParty
+            , RecordCount Conviction (conviction + 1)
+            , RemoveAllTokens Cultist
+            , RemoveAllTokens Tablet
+            , RemoveAllTokens ElderThing
+            , AddToken Cultist
+            , AddToken Cultist
+            , NextCampaignStep Nothing
+            ]
+          ]
         )
     NextCampaignStep _ -> do
       let step = nextStep a

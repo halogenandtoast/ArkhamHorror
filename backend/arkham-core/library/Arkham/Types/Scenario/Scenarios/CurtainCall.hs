@@ -136,7 +136,7 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
       investigatorIds <- getInvestigatorIds
       gainXP <- map (uncurry GainXP) <$> getXp
       conviction <- hasRecordCount Conviction
-      doubt <- hasRecordCount Conviction
+      doubt <- hasRecordCount Doubt
       let
         stoleFromTheBoxOffice =
           member StoleFromTheBoxOffice (scenarioLog attrs)

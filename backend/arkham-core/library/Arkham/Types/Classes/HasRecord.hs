@@ -11,8 +11,8 @@ class HasRecord env where
   hasRecord :: MonadReader env m => CampaignLogKey -> m Bool
   default hasRecord :: (MonadReader env m, Generic env, HasRecord1 (Rep env)) => CampaignLogKey -> m Bool
   hasRecord = defaultHasRecord
-  hasRecordSet :: MonadReader env m => CampaignLogKey -> m [CardCode]
-  default hasRecordSet :: (MonadReader env m, Generic env, HasRecord1 (Rep env)) => CampaignLogKey -> m [CardCode]
+  hasRecordSet :: MonadReader env m => CampaignLogKey -> m [Recorded CardCode]
+  default hasRecordSet :: (MonadReader env m, Generic env, HasRecord1 (Rep env)) => CampaignLogKey -> m [Recorded CardCode]
   hasRecordSet = defaultHasRecordSet
   hasRecordCount :: MonadReader env m => CampaignLogKey -> m Int
   default hasRecordCount :: (MonadReader env m, Generic env, HasRecord1 (Rep env)) => CampaignLogKey -> m Int
@@ -20,7 +20,7 @@ class HasRecord env where
 
 class HasRecord1 f where
   hasRecord1 :: MonadReader (f p) m => CampaignLogKey -> m Bool
-  hasRecordSet1 :: MonadReader (f p) m => CampaignLogKey -> m [CardCode]
+  hasRecordSet1 :: MonadReader (f p) m => CampaignLogKey -> m [Recorded CardCode]
   hasRecordCount1 :: MonadReader (f p) m => CampaignLogKey -> m Int
 
 instance HasRecord1 f => HasRecord1 (M1 i c f) where
@@ -79,7 +79,7 @@ defaultHasRecord logKey = do
 defaultHasRecordSet
   :: (MonadReader env m, Generic env, HasRecord1 (Rep env))
   => CampaignLogKey
-  -> m [CardCode]
+  -> m [Recorded CardCode]
 defaultHasRecordSet logKey = do
   env <- from <$> ask
   runReaderT (hasRecordSet1 logKey) env

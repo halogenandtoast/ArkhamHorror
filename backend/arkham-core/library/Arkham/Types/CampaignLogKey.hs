@@ -2,6 +2,10 @@ module Arkham.Types.CampaignLogKey where
 
 import Arkham.Prelude
 
+data Recorded a = Recorded a | CrossedOut a
+  deriving stock (Show, Generic, Eq)
+  deriving anyclass (ToJSON, FromJSON)
+
 data CampaignLogKey
   = DrivenInsaneInvestigators
   | GhoulPriestIsStillAlive
@@ -58,6 +62,8 @@ data CampaignLogKey
   | YouChoseNotToGoToThePolice
   | Doubt
   | Conviction
+  | VIPsInterviewed
+  | VIPsSlain
   -- ^ The Path to Carcosa
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

@@ -35,8 +35,13 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
       when (isNothing mRitualSiteId) $ do
         ritualSite <- getSetAsideCard Locations.ritualSite
         push (PlaceLocation ritualSite)
-      cultistsWhoGotAwayDefs <- map lookupEncounterCardDef
-        <$> hasRecordSet CultistsWhoGotAway
+      cultistsWhoGotAwayDefs <-
+        mapMaybe
+            (\case
+              Recorded cCode -> Just $ lookupEncounterCardDef cCode
+              CrossedOut _ -> Nothing
+            )
+          <$> hasRecordSet CultistsWhoGotAway
       cultistsWhoGotAway <- traverse genEncounterCard cultistsWhoGotAwayDefs
       a <$ pushAll
         ([ CreateEnemyAt (EncounterCard card) mainPathId Nothing

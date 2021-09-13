@@ -15,11 +15,14 @@ import qualified Arkham.Story.Cards as Story
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
+import Arkham.Types.Effect.Window
+import Arkham.Types.EffectMetadata
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Resolution
@@ -252,13 +255,41 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
       anyResigned <- notNull <$> select ResignedInvestigator
       s <$ push (ScenarioResolution $ Resolution $ if anyResigned then 1 else 2)
     ScenarioResolution (Resolution n) -> do
+      -- Resolution handles XP in a special way, we must divvy up between investigators
+      -- evenly and apply, this will have a weird interaction with Hospital Debts so we
+      -- want to handle `getXp` in two phases. The first phase will essentially evenly
+      -- add XP modifiers to the players in order to have `getXp` resolve "normally"
       investigatorIds <- getInvestigatorIds
-      xp <- getXp
+      investigatorIdsWithNames <- traverse
+        (traverseToSnd getName)
+        investigatorIds
+      leadInvestigatorId <- getLeadInvestigatorId
       clueCounts <- traverse (fmap unClueCount . getCount)
         =<< getSetList @ActId ()
       let
         extraXp = ceiling @Double (fromIntegral (sum clueCounts) / 2)
-        gainXp = [ GainXP iid (x + extraXp) | (iid, x) <- xp ]
+        (assignedXp, remainingXp) = quotRem extraXp (length investigatorIds)
+        assignXp amount iid = CreateWindowModifierEffect
+          EffectGameWindow
+          (EffectModifiers $ toModifiers (toSource attrs) [XPModifier amount])
+          (toSource attrs)
+          (InvestigatorTarget iid)
+      s <$ pushAll
+        ([ assignXp assignedXp iid | iid <- investigatorIds ]
+        <> [ chooseN
+               leadInvestigatorId
+               remainingXp
+               [ Label
+                   ("Choose " <> display name <> " to gain 1 additional XP")
+                   [assignXp 1 iid]
+               | (iid, name) <- investigatorIdsWithNames
+               ]
+           ]
+        <> [ScenarioResolutionStep 1 (Resolution n)]
+        )
+    ScenarioResolutionStep 1 (Resolution n) -> do
+      investigatorIds <- getInvestigatorIds
+      gainXp <- map (uncurry GainXP) <$> getXp
       s <$ case n of
         1 -> pushAll $ [story investigatorIds resolution1] <> gainXp
         2 -> pushAll $ [story investigatorIds resolution2] <> gainXp

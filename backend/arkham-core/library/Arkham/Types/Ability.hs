@@ -86,9 +86,9 @@ abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
 
 defaultAbilityLimit :: AbilityType -> AbilityLimit
 defaultAbilityLimit = \case
-  ForcedAbility _ -> PlayerLimit PerWindow 1
-  ForcedAbilityWithCost _ _ -> PlayerLimit PerWindow 1
-  LegacyForcedAbility -> PlayerLimit PerWindow 1
+  ForcedAbility _ -> GroupLimit PerWindow 1
+  ForcedAbilityWithCost _ _ -> GroupLimit PerWindow 1
+  LegacyForcedAbility -> GroupLimit PerWindow 1
   ReactionAbility _ _ -> PlayerLimit PerWindow 1
   LegacyReactionAbility _ -> PlayerLimit PerWindow 1
   FastAbility _ -> NoLimit

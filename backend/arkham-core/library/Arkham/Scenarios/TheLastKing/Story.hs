@@ -13,3 +13,12 @@ intro = FlavorText
     \ woman named Constance Dumaine is hosting an event in celebration of\
     \ the play’s one-night engagement in Arkham."
   ]
+
+resolution1 :: Message
+resolution1 = FlavorText (Just "Resolution 1") [""]
+
+resolution2 :: Message
+resolution2 = FlavorText (Just "Resolution 2") [""]
+
+resolution3 :: Message
+resolution3 = FlavorText (Just "Resolution 3") [""]

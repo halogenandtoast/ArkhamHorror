@@ -864,6 +864,7 @@ library
       Arkham.Types.Scenario.Scenarios.CarnevaleOfHorrors
       Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
       Arkham.Types.Scenario.Scenarios.CurtainCall
+      Arkham.Types.Scenario.Scenarios.EchoesOfThePast
       Arkham.Types.Scenario.Scenarios.ExtracurricularActivity
       Arkham.Types.Scenario.Scenarios.LostInTimeAndSpace
       Arkham.Types.Scenario.Scenarios.ReturnToTheDevourerBelow

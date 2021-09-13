@@ -22,6 +22,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
+import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
@@ -247,4 +248,20 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
           | toCardDef card == Story.aboveAndBelow = InterviewedAshleigh
           | otherwise = error "invalid story"
       s <$ push (Remember remember)
+    ScenarioResolution NoResolution -> do
+      anyResigned <- notNull <$> select ResignedInvestigator
+      s <$ push (ScenarioResolution $ Resolution $ if anyResigned then 1 else 2)
+    ScenarioResolution (Resolution n) -> do
+      investigatorIds <- getInvestigatorIds
+      xp <- getXp
+      clueCounts <- traverse (fmap unClueCount . getCount)
+        =<< getSetList @ActId ()
+      let
+        extraXp = ceiling @Double (fromIntegral (sum clueCounts) / 2)
+        gainXp = [ GainXP iid (x + extraXp) | (iid, x) <- xp ]
+      s <$ case n of
+        1 -> pushAll $ [story investigatorIds resolution1] <> gainXp
+        2 -> pushAll $ [story investigatorIds resolution2] <> gainXp
+        3 -> pushAll $ [story investigatorIds resolution3] <> gainXp
+        _ -> error "Invalid resolution"
     _ -> TheLastKing <$> runMessage msg attrs

@@ -134,7 +134,11 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
       (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
       pushAll $ map (AddCampaignCardToDeck iid) randomWeaknesses
       pure $ a & decksL %~ insertMap iid deck'
-    UpgradeDeck iid deck -> pure $ a & decksL %~ insertMap iid deck
+    UpgradeDeck iid deck -> do
+      -- We remove the random weakness if the upgrade deck still has it listed
+      -- since this will have been added at the beginning of the campaign
+      (deck', _) <- addRandomBasicWeaknessIfNeeded deck
+      pure $ a & decksL %~ insertMap iid deck'
     FinishedUpgradingDecks -> case a ^. stepL of
       Just (UpgradeDeckStep nextStep) -> do
         push (CampaignStep $ Just nextStep)

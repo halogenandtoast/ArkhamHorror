@@ -76,7 +76,7 @@ spec = describe "Searching for Izzie" $ do
         [ loadDeck investigator [searchingForIzzie]
         , moveTo investigator location
         , drawCards investigator 1
-        , EndOfGame
+        , EndOfGame Nothing
         ]
         (locationsL %~ insertEntity location)
       $ do

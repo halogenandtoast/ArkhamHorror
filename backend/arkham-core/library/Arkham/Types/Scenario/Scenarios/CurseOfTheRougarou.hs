@@ -241,7 +241,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
               , Record TheRougarouContinuesToHauntTheBayou
               ]
             <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [EndOfGame]
+            <> [EndOfGame Nothing]
           ]
         )
     ScenarioResolution (Resolution 2) -> do
@@ -273,7 +273,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
                 ]
               ]
             <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [EndOfGame]
+            <> [EndOfGame Nothing]
           ]
         )
     ScenarioResolution (Resolution 3) -> do
@@ -303,7 +303,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
                 Assets.monstrousTransformation
               ]
             <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [EndOfGame]
+            <> [EndOfGame Nothing]
           ]
         )
     _ -> CurseOfTheRougarou <$> runMessage msg attrs

@@ -176,7 +176,7 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
                 ]
               , Record ArkhamSuccumbedToUmordhothsTerribleVengeance
               ]
-            <> [EndOfGame]
+            <> [EndOfGame Nothing]
           ]
         )
     ScenarioResolution (Resolution 1) -> do
@@ -197,7 +197,7 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
                 ]
               , Record TheRitualToSummonUmordhothWasBroken
               ]
-            <> [EndOfGame]
+            <> [EndOfGame Nothing]
           ]
         )
     ScenarioResolution (Resolution 2) -> do
@@ -224,7 +224,7 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
                 ]
               , Record TheInvestigatorsRepelledUmordoth
               ]
-            <> [EndOfGame]
+            <> [EndOfGame Nothing]
           ]
         )
     ScenarioResolution (Resolution 3) -> do
@@ -252,7 +252,7 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
                 ]
               , Record TheInvestigatorsSacrificedLitaChantlerToUmordhoth
               ]
-            <> [EndOfGame]
+            <> [EndOfGame Nothing]
           ]
         )
     _ -> TheDevourerBelow <$> runMessage msg attrs

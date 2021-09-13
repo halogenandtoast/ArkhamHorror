@@ -184,7 +184,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
          ]
         <> [ AddToken ElderThing | cheated ]
         <> [ GainXP iid (n + 1) | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -235,7 +235,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
          ]
         <> [ AddToken Tablet | cheated ]
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -286,7 +286,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
          ]
         <> [ AddToken Tablet | cheated ]
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 4) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -324,6 +324,6 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
          ]
         <> [ AddToken Tablet | cheated ]
         <> [ GainXP iid (n + 1) | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     _ -> TheHouseAlwaysWins <$> runMessage msg attrs

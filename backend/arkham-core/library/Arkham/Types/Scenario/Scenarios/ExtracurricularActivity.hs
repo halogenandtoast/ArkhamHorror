@@ -172,7 +172,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
          , AddToken Tablet
          ]
         <> [ GainXP iid (n + 1) | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -217,7 +217,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
            ]
          ]
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -247,7 +247,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
          , Record TheStudentsWereRescued
          ]
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -270,7 +270,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
          , Record TheExperimentWasDefeated
          ]
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 4) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -297,6 +297,6 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
          , AddToken Tablet
          ]
         <> [ GainXP iid (n + 1) | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     _ -> ExtracurricularActivity <$> runMessage msg attrs

@@ -171,7 +171,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
            ]
          ]
         <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -204,7 +204,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
          , SufferTrauma leadInvestigatorId 0 1
          ]
         <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -231,7 +231,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
          , GainXP leadInvestigatorId 1
          ]
         <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -259,6 +259,6 @@ instance ScenarioRunner env => RunMessage env TheGathering where
             [AddCampaignCardToDeck leadInvestigatorId Assets.litaChantler]
           , Label "Do not add Lita Chantler to your deck" []
           ]
-        , EndOfGame
+        , EndOfGame Nothing
         ]
     _ -> TheGathering <$> runMessage msg attrs

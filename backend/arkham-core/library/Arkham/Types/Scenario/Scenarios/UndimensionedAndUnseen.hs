@@ -350,7 +350,7 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
          ]
         <> [ RemoveCampaignCardFromDeck iid "02219" | iid <- investigatorIds ]
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -373,7 +373,7 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
          ]
         <> [ RemoveCampaignCardFromDeck iid "02219" | iid <- investigatorIds ]
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     UseScenarioSpecificAbility _ Nothing 1 ->
       s <$ push (ChooseRandomLocation (toTarget attrs) mempty)

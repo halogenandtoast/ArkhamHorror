@@ -417,7 +417,7 @@ instance
          ]
         <> additionalRewardsMsg
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -443,7 +443,7 @@ instance
          ]
         <> additionalRewardsMsg
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -469,7 +469,7 @@ instance
          ]
         <> additionalRewardsMsg
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ChooseOneRewardByEachPlayer rewards@(_ : _) (currentInvestigatorId : rest)
       -> do

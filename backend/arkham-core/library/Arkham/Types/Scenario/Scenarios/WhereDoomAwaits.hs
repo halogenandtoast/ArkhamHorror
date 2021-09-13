@@ -315,7 +315,7 @@ instance
          , Record TheInvestigatorsEnteredTheGate
          ]
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 2) -> do
       investigatorIds <- getInvestigatorIds

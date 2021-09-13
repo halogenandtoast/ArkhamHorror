@@ -358,7 +358,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
                ]
            ]
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
-          <> [EndOfGame]
+          <> [EndOfGame Nothing]
           )
       ScenarioResolution (Resolution 1) -> do
         leadInvestigatorId <- getLeadInvestigatorId
@@ -388,7 +388,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
                ]
            ]
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
-          <> [EndOfGame]
+          <> [EndOfGame Nothing]
           )
       ScenarioResolution (Resolution 2) -> do
         leadInvestigatorId <- getLeadInvestigatorId
@@ -423,7 +423,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
                ]
            ]
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
-          <> [EndOfGame]
+          <> [EndOfGame Nothing]
           )
       ScenarioResolution (Resolution 3) -> do
         leadInvestigatorId <- getLeadInvestigatorId
@@ -460,7 +460,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
                ]
            ]
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
-          <> [EndOfGame]
+          <> [EndOfGame Nothing]
           )
       AddCardToScenarioDeck card -> case scenarioDeck of
         Just (PotentialSacrifices cards) ->

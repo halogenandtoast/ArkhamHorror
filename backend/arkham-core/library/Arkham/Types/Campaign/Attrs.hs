@@ -129,6 +129,7 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
         & storyCardsL
         %~ adjustMap (filter ((/= cardCode) . cdCardCode . toCardDef)) iid
     AddToken token -> pure $ a & chaosBagL %~ (token :)
+    RemoveAllTokens token -> pure $ a & chaosBagL %~ filter (/= token)
     InitDeck iid deck -> do
       (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
       pushAll $ map (AddCampaignCardToDeck iid) randomWeaknesses

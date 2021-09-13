@@ -48,7 +48,7 @@ spec = describe "Smite the Wicked" $ do
         , loadDeck investigator [smiteTheWicked]
         , moveTo investigator location
         , drawCards investigator 1
-        , EndOfGame
+        , EndOfGame Nothing
         ]
         (locationsL %~ insertEntity location)
       $ do
@@ -83,7 +83,7 @@ spec = describe "Smite the Wicked" $ do
               (toCardCode enemy)
               (toSource investigator)
               []
-            , EndOfGame
+            , EndOfGame Nothing
             ]
           runMessages
 

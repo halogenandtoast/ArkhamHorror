@@ -287,7 +287,7 @@ instance
            ]
         <> [ SufferTrauma iid 2 2 | iid <- investigatorIds ]
         <> [ GainXP iid (n + 5) | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 2) -> do
@@ -321,7 +321,7 @@ instance
                    ]
                  ]
              ]
-           , EndOfGame
+           , EndOfGame Nothing
            ]
         )
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
@@ -353,7 +353,7 @@ instance
         <> [ InvestigatorKilled (toSource attrs) iid
            | iid <- investigatorIds
            ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 4) -> do
@@ -386,7 +386,7 @@ instance
              YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
            ]
         <> [ DrivenInsane iid | iid <- investigatorIds ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     _ -> LostInTimeAndSpace <$> runMessage msg attrs

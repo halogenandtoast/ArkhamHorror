@@ -246,7 +246,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
               ]
             <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]
             <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [EndOfGame]
+            <> [EndOfGame Nothing]
           ]
         )
     ScenarioResolution (Resolution 2) -> do
@@ -279,7 +279,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
               ]
             <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]
             <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [EndOfGame]
+            <> [EndOfGame Nothing]
           ]
         )
     _ -> TheMidnightMasks <$> runMessage msg attrs

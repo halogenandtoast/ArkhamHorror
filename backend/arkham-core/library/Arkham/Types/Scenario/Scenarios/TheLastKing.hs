@@ -12,6 +12,8 @@ import qualified Arkham.Enemy.Cards as Enemies
 import qualified Arkham.Location.Cards as Locations
 import Arkham.Scenarios.TheLastKing.Story
 import qualified Arkham.Story.Cards as Story
+import Arkham.Types.CampaignLogKey
+import Arkham.Types.CampaignStep
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
@@ -92,6 +94,15 @@ standaloneTokens =
   , AutoFail
   , ElderSign
   ]
+
+interviewedToCardCode :: ScenarioLogKey -> Maybe CardCode
+interviewedToCardCode = \case
+  InterviewedConstance -> Just $ toCardCode Assets.constanceDumaine
+  InterviewedJordan -> Just $ toCardCode Assets.jordanPerry
+  InterviewedHaruko -> Just $ toCardCode Assets.ishimaruHaruko
+  InterviewedSebastien -> Just $ toCardCode Assets.sebastienMoreau
+  InterviewedAshleigh -> Just $ toCardCode Assets.ashleighClarke
+  _ -> Nothing
 
 instance ScenarioRunner env => RunMessage env TheLastKing where
   runMessage msg s@(TheLastKing attrs) = case msg of
@@ -266,7 +277,12 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
       leadInvestigatorId <- getLeadInvestigatorId
       clueCounts <- traverse (fmap unClueCount . getCount)
         =<< getSetList @ActId ()
+      vipsSlain <-
+        selectListMap toCardCode $ VictoryDisplayCardMatch $ CardWithTrait
+          Trait.Lunatic
       let
+        interviewed =
+          mapMaybe interviewedToCardCode (setToList $ scenarioLog attrs)
         extraXp = ceiling @Double (fromIntegral (sum clueCounts) / 2)
         (assignedXp, remainingXp) = quotRem extraXp (length investigatorIds)
         assignXp amount iid = CreateWindowModifierEffect
@@ -285,14 +301,42 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
                | (iid, name) <- investigatorIdsWithNames
                ]
            ]
-        <> [ScenarioResolutionStep 1 (Resolution n)]
+        <> [ RecordSet VIPsInterviewed interviewed | notNull interviewed ]
+        <> [ RecordSet VIPsSlain vipsSlain | notNull vipsSlain ]
+        <> if n == 2 || n == 3
+             then
+               [ RemoveAllTokens Cultist
+               , RemoveAllTokens Tablet
+               , RemoveAllTokens ElderThing
+               , AddToken Cultist
+               , AddToken Tablet
+               , AddToken ElderThing
+               ]
+             else
+               []
+               <> [ CrossOutRecordSetEntries VIPsInterviewed interviewed
+                  | n == 3
+                  ]
+               <> [ScenarioResolutionStep 1 (Resolution n)]
         )
     ScenarioResolutionStep 1 (Resolution n) -> do
       investigatorIds <- getInvestigatorIds
       gainXp <- map (uncurry GainXP) <$> getXp
       s <$ case n of
-        1 -> pushAll $ [story investigatorIds resolution1] <> gainXp
-        2 -> pushAll $ [story investigatorIds resolution2] <> gainXp
-        3 -> pushAll $ [story investigatorIds resolution3] <> gainXp
+        1 ->
+          pushAll
+            $ [story investigatorIds resolution1]
+            <> gainXp
+            <> [EndOfGame (Just $ InterludeStep 1)]
+        2 ->
+          pushAll
+            $ [story investigatorIds resolution2]
+            <> gainXp
+            <> [EndOfGame Nothing]
+        3 ->
+          pushAll
+            $ [story investigatorIds resolution3]
+            <> gainXp
+            <> [EndOfGame Nothing]
         _ -> error "Invalid resolution"
     _ -> TheLastKing <$> runMessage msg attrs

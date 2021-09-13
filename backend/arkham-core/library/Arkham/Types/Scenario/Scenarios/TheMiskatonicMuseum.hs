@@ -280,7 +280,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
          , Record TheInvestigatorsFailedToRecoverTheNecronomicon
          ]
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -308,7 +308,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
          , Record TheInvestigatorsDestroyedTheNecronomicon
          ]
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -354,6 +354,6 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
          , AddToken ElderThing
          ]
         <> [ GainXP iid n | (iid, n) <- xp ]
-        <> [EndOfGame]
+        <> [EndOfGame Nothing]
         )
     _ -> TheMiskatonicMuseum <$> runMessage msg attrs

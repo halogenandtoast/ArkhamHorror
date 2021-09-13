@@ -132,6 +132,7 @@ data Message
     | AddCardToScenarioDeck Card
     | AddToVictory Target
     | AddToken TokenFace
+    | RemoveAllTokens TokenFace
     | AddTraits Target [Trait]
     | AddUses Target UseType Int
     | AddedConnection LocationId LocationId
@@ -245,12 +246,12 @@ data Message
     | EndEnemy
     | EndInvestigation
     | EndMythos
-    | EndOfGame
+    | EndOfGame (Maybe CampaignStep)
     | Exile Target
     | Exiled Target Card
     | ScenarioResolution Resolution
     | ScenarioResolutionStep Int Resolution
-    | EndOfScenario
+    | EndOfScenario (Maybe CampaignStep)
     | EndRound
     | EndRoundWindow
     | EndSearch InvestigatorId Source

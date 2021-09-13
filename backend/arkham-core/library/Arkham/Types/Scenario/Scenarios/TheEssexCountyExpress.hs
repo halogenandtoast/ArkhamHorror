@@ -337,7 +337,7 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
                  (n + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
              | (iid, n) <- xp
              ]
-          <> [EndOfGame]
+          <> [EndOfGame Nothing]
           )
       ScenarioResolution (Resolution 2) -> do
         msgs <- investigatorDefeat
@@ -366,6 +366,6 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
                  (n + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
              | (iid, n) <- xp
              ]
-          <> [EndOfGame]
+          <> [EndOfGame Nothing]
           )
       _ -> TheEssexCountyExpress <$> runMessage msg attrs

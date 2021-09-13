@@ -2750,7 +2750,7 @@ runGameMessage msg g = case msg of
   EvadeLabel _ msgs -> g <$ pushAll msgs
   CardLabel _ msgs -> g <$ pushAll msgs
   Continue _ -> pure g
-  EndOfGame -> g <$ pushEnd EndOfScenario
+  EndOfGame mNextCampaignStep -> g <$ pushEnd (EndOfScenario mNextCampaignStep)
   ResetGame ->
     pure
       $ g

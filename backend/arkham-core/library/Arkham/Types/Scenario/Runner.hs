@@ -15,6 +15,7 @@ type ScenarioRunner env
   = ( HasQueue env
     , Query AssetMatcher env
     , Query EnemyMatcher env
+    , Query ExtendedCardMatcher env
     , Query InvestigatorMatcher env
     , HasCount DoomCount env ()
     , HasCount HorrorCount env LocationId

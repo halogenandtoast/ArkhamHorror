@@ -36,7 +36,7 @@ instance HasAbilities Knuckleduster where
     ]
 
 instance HasModifiersFor env Knuckleduster where
-  getModifiersFor (SkillTestSource iid' _ source (EnemyTarget eid) (Just Action.Fight)) (EnemyTarget eid') (Knuckleduster attrs)
+  getModifiersFor (SkillTestSource _ _ source (EnemyTarget eid) (Just Action.Fight)) (EnemyTarget eid') (Knuckleduster attrs)
     | isSource attrs source && eid == eid'
     = do
       pure $ toModifiers attrs [AddKeyword Keyword.Retaliate]

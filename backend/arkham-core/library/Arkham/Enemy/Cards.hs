@@ -29,6 +29,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdClassSymbol = if isJust isWeakness then Just Neutral else Nothing
   , cdSkills = mempty
   , cdCardTraits = mempty
+  , cdRevealedCardTraits = mempty
   , cdKeywords = mempty
   , cdFastWindow = Nothing
   , cdAction = Nothing
@@ -598,6 +599,18 @@ agentOfTheKing = (enemy "03099" "Agent of the King" CultOfTheYellowSign 1)
   { cdCardTraits = setFromList [Humanoid, Cultist]
   , cdKeywords = singleton Keyword.Hunter
   , cdVictoryPoints = Just 1
+  }
+
+possessedOathspeaker :: CardDef
+possessedOathspeaker = (enemy
+                         "03140"
+                         ("Possessed Oathspeaker" <:> "A Damnable Fate")
+                         CultOfTheYellowSign
+                         1
+                       )
+  { cdCardTraits = setFromList [Monster, Servitor, Elite]
+  , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+  , cdVictoryPoints = Just 2
   }
 
 corpseHungryGhoul :: CardDef

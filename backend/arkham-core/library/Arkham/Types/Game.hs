@@ -1903,7 +1903,7 @@ instance HasGame env => HasList UnderneathCard env ActDeck where
       Nothing -> pure []
 
 instance HasGame env => HasSet Trait env LocationId where
-  getSet lid = toTraits <$> getLocation lid
+  getSet = getSet <=< getLocation
 
 instance HasGame env => HasSet Trait env InvestigatorId where
   getSet iid = toTraits <$> getInvestigator iid

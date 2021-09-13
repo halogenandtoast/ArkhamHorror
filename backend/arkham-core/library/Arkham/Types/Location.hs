@@ -18,6 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
+import Arkham.Types.Trait (Trait)
 import Data.UUID (nil)
 
 $(buildEntity "Location")
@@ -109,6 +110,12 @@ instance HasCount DoomCount env Location where
 
 instance HasList UnderneathCard env Location where
   getList = getList . toAttrs
+
+instance HasSet Trait env Location where
+  getSet l = pure $ if locationRevealed (toAttrs l)
+    then cdRevealedCardTraits def
+    else cdCardTraits def
+    where def = toCardDef l
 
 instance HasSet EnemyId env Location where
   getSet = pure . locationEnemies . toAttrs

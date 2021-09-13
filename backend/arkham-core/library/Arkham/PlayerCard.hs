@@ -53,6 +53,7 @@ randomWeakness = CardDef
   , cdClassSymbol = Just Neutral
   , cdSkills = mempty
   , cdCardTraits = mempty
+  , cdRevealedCardTraits = mempty
   , cdKeywords = mempty
   , cdFastWindow = Nothing
   , cdAction = Nothing

@@ -42,6 +42,7 @@ data CardDef = CardDef
   , cdClassSymbol :: Maybe ClassSymbol
   , cdSkills :: [SkillType]
   , cdCardTraits :: HashSet Trait
+  , cdRevealedCardTraits :: HashSet Trait
   , cdKeywords :: HashSet Keyword
   , cdFastWindow :: Maybe WindowMatcher
   , cdAction :: Maybe Action
@@ -125,6 +126,7 @@ testCardDef cardType cardCode = CardDef
   , cdClassSymbol = Nothing
   , cdSkills = []
   , cdCardTraits = mempty
+  , cdRevealedCardTraits = mempty
   , cdKeywords = mempty
   , cdFastWindow = Nothing
   , cdAction = Nothing

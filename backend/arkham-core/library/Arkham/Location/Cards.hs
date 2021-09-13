@@ -11,12 +11,16 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Name
 import Arkham.Types.Trait
 
-locationWithUnrevealed :: CardCode -> Name -> Name -> EncounterSet -> CardDef
-locationWithUnrevealed cardCode unrevealedName name encounterSet =
-  (location cardCode unrevealedName encounterSet) { cdRevealedName = Just name }
+locationWithUnrevealed
+  :: CardCode -> Name -> [Trait] -> Name -> [Trait] -> EncounterSet -> CardDef
+locationWithUnrevealed cardCode unrevealedName unrevealedTraits name traits encounterSet
+  = (location cardCode unrevealedName unrevealedTraits encounterSet)
+    { cdRevealedName = Just name
+    , cdRevealedCardTraits = setFromList traits
+    }
 
-location :: CardCode -> Name -> EncounterSet -> CardDef
-location cardCode name encounterSet = CardDef
+location :: CardCode -> Name -> [Trait] -> EncounterSet -> CardDef
+location cardCode name traits encounterSet = CardDef
   { cdCardCode = cardCode
   , cdName = name
   , cdRevealedName = Just name
@@ -26,7 +30,8 @@ location cardCode name encounterSet = CardDef
   , cdCardSubType = Nothing
   , cdClassSymbol = Nothing
   , cdSkills = mempty
-  , cdCardTraits = mempty
+  , cdCardTraits = setFromList traits
+  , cdRevealedCardTraits = setFromList traits
   , cdKeywords = mempty
   , cdFastWindow = Nothing
   , cdAction = Nothing
@@ -216,163 +221,147 @@ allLocationCards = mapFromList $ map
   ]
 
 study :: CardDef
-study = location "01111" "Study" TheGathering
+study = location "01111" "Study" mempty TheGathering
 
 hallway :: CardDef
-hallway = location "01112" "Hallway" TheGathering
+hallway = location "01112" "Hallway" mempty TheGathering
 
 attic :: CardDef
-attic = (location "01113" "Attic" TheGathering) { cdVictoryPoints = Just 1 }
+attic =
+  (location "01113" "Attic" mempty TheGathering) { cdVictoryPoints = Just 1 }
 
 cellar :: CardDef
-cellar = (location "01114" "Cellar" TheGathering) { cdVictoryPoints = Just 1 }
+cellar =
+  (location "01114" "Cellar" mempty TheGathering) { cdVictoryPoints = Just 1 }
 
 parlor :: CardDef
-parlor = location "01115" "Parlor" TheGathering
+parlor = location "01115" "Parlor" mempty TheGathering
 
 yourHouse :: CardDef
-yourHouse = (location "01124" "Your House" TheMidnightMasks)
-  { cdCardTraits = singleton Arkham
-  }
+yourHouse = location "01124" "Your House" [Arkham] TheMidnightMasks
 
 rivertown :: CardDef
-rivertown = (location "01125" "Rivertown" TheMidnightMasks)
-  { cdCardTraits = setFromList [Arkham, Central]
-  }
+rivertown = location "01125" "Rivertown" [Arkham, Central] TheMidnightMasks
 
 southsideHistoricalSociety :: CardDef
-southsideHistoricalSociety =
-  (location "01126" ("Southside" <:> "Historical Society") TheMidnightMasks)
-    { cdCardTraits = singleton Arkham
-    }
+southsideHistoricalSociety = location
+  "01126"
+  ("Southside" <:> "Historical Society")
+  [Arkham]
+  TheMidnightMasks
 
 southsideMasBoardingHouse :: CardDef
-southsideMasBoardingHouse =
-  (location "01127" ("Southside" <:> "Ma's Boarding House") TheMidnightMasks)
-    { cdCardTraits = singleton Arkham
-    }
+southsideMasBoardingHouse = location
+  "01127"
+  ("Southside" <:> "Ma's Boarding House")
+  [Arkham]
+  TheMidnightMasks
 
 stMarysHospital :: CardDef
-stMarysHospital = (location "01128" "St. Mary's Hospital" TheMidnightMasks)
-  { cdCardTraits = singleton Arkham
-  }
+stMarysHospital =
+  location "01128" "St. Mary's Hospital" [Arkham] TheMidnightMasks
 
 miskatonicUniversity :: CardDef
 miskatonicUniversity =
-  (location "01129" "Miskatonic University" TheMidnightMasks)
-    { cdCardTraits = singleton Arkham
-    , cdVictoryPoints = Just 1
+  (location "01129" "Miskatonic University" [Arkham] TheMidnightMasks)
+    { cdVictoryPoints = Just 1
     }
 
 downtownFirstBankOfArkham :: CardDef
-downtownFirstBankOfArkham =
-  (location "01130" ("Downtown" <:> "First Bank of Arkham") TheMidnightMasks)
-    { cdCardTraits = singleton Arkham
-    }
+downtownFirstBankOfArkham = location
+  "01130"
+  ("Downtown" <:> "First Bank of Arkham")
+  [Arkham]
+  TheMidnightMasks
 
 downtownArkhamAsylum :: CardDef
 downtownArkhamAsylum =
-  (location "01131" ("Downtown" <:> "Arkham Asylum") TheMidnightMasks)
-    { cdCardTraits = singleton Arkham
-    , cdVictoryPoints = Just 1
+  (location "01131" ("Downtown" <:> "Arkham Asylum") [Arkham] TheMidnightMasks)
+    { cdVictoryPoints = Just 1
     }
 
 easttown :: CardDef
-easttown = (location "01132" "Easttown" TheMidnightMasks)
-  { cdCardTraits = singleton Arkham
-  }
+easttown = location "01132" "Easttown" [Arkham] TheMidnightMasks
 
 graveyard :: CardDef
-graveyard = (location "01133" "Graveyard" TheMidnightMasks)
-  { cdCardTraits = singleton Arkham
-  , cdVictoryPoints = Just 1
+graveyard = (location "01133" "Graveyard" [Arkham] TheMidnightMasks)
+  { cdVictoryPoints = Just 1
   }
 
 northside :: CardDef
-northside = (location "01134" "Northside" TheMidnightMasks)
-  { cdCardTraits = singleton Arkham
-  , cdVictoryPoints = Just 1
+northside = (location "01134" "Northside" [Arkham] TheMidnightMasks)
+  { cdVictoryPoints = Just 1
   }
 
 mainPath :: CardDef
-mainPath = (location "01149" "Main Path" TheDevourerBelow)
-  { cdCardTraits = singleton Woods
-  }
+mainPath = location "01149" "Main Path" [Woods] TheDevourerBelow
 
 arkhamWoodsUnhallowedGround :: CardDef
-arkhamWoodsUnhallowedGround =
-  (location "01150" ("Arkham Woods" <:> "Unhallowed Ground") TheDevourerBelow)
-    { cdCardTraits = singleton Woods
-    }
+arkhamWoodsUnhallowedGround = location
+  "01150"
+  ("Arkham Woods" <:> "Unhallowed Ground")
+  [Woods]
+  TheDevourerBelow
 
 arkhamWoodsTwistingPaths :: CardDef
-arkhamWoodsTwistingPaths =
-  (location "01151" ("Arkham Woods" <:> "Twisting Paths") TheDevourerBelow)
-    { cdCardTraits = singleton Woods
-    }
+arkhamWoodsTwistingPaths = location
+  "01151"
+  ("Arkham Woods" <:> "Twisting Paths")
+  [Woods]
+  TheDevourerBelow
 
 arkhamWoodsOldHouse :: CardDef
 arkhamWoodsOldHouse =
-  (location "01152" ("Arkham Woods" <:> "Old House") TheDevourerBelow)
-    { cdCardTraits = singleton Woods
-    }
+  location "01152" ("Arkham Woods" <:> "Old House") [Woods] TheDevourerBelow
 
 arkhamWoodsCliffside :: CardDef
 arkhamWoodsCliffside =
-  (location "01153" ("Arkham Woods" <:> "Cliffside") TheDevourerBelow)
-    { cdCardTraits = singleton Woods
-    }
+  location "01153" ("Arkham Woods" <:> "Cliffside") [Woods] TheDevourerBelow
 
 arkhamWoodsTangledThicket :: CardDef
-arkhamWoodsTangledThicket =
-  (location "01154" ("Arkham Woods" <:> "Tangled Thicket") TheDevourerBelow)
-    { cdCardTraits = singleton Woods
-    }
+arkhamWoodsTangledThicket = location
+  "01154"
+  ("Arkham Woods" <:> "Tangled Thicket")
+  [Woods]
+  TheDevourerBelow
 
 arkhamWoodsQuietGlade :: CardDef
 arkhamWoodsQuietGlade =
-  (location "01155" ("Arkham Woods" <:> "Quiet Glade") TheDevourerBelow)
-    { cdCardTraits = singleton Woods
-    }
+  location "01155" ("Arkham Woods" <:> "Quiet Glade") [Woods] TheDevourerBelow
 
 ritualSite :: CardDef
-ritualSite = (location "01156" "Ritual Site" TheDevourerBelow)
-  { cdCardTraits = singleton Cave
-  }
+ritualSite = location "01156" "Ritual Site" [Cave] TheDevourerBelow
 
 miskatonicQuad :: CardDef
-miskatonicQuad = (location "02048" "Miskatonic Quad" ExtracurricularActivity)
-  { cdCardTraits = singleton Miskatonic
-  }
+miskatonicQuad =
+  location "02048" "Miskatonic Quad" [Miskatonic] ExtracurricularActivity
 
 humanitiesBuilding :: CardDef
 humanitiesBuilding =
-  (location "02049" "Humanities Building" ExtracurricularActivity)
-    { cdCardTraits = singleton Miskatonic
-    }
+  location "02049" "Humanities Building" [Miskatonic] ExtracurricularActivity
 
 orneLibrary :: CardDef
-orneLibrary = (location "02050" "Orne Library" ExtracurricularActivity)
-  { cdCardTraits = singleton Miskatonic
-  , cdVictoryPoints = Just 1
-  }
+orneLibrary =
+  (location "02050" "Orne Library" [Miskatonic] ExtracurricularActivity)
+    { cdVictoryPoints = Just 1
+    }
 
 studentUnion :: CardDef
-studentUnion = (location "02051" "Student Union" ExtracurricularActivity)
-  { cdCardTraits = singleton Miskatonic
-  }
+studentUnion =
+  location "02051" "Student Union" [Miskatonic] ExtracurricularActivity
 
 dormitories :: CardDef
-dormitories = (location "02052" "Dormitories" ExtracurricularActivity)
-  { cdCardTraits = singleton Miskatonic
-  , cdVictoryPoints = Just 1
-  }
+dormitories =
+  (location "02052" "Dormitories" [Miskatonic] ExtracurricularActivity)
+    { cdVictoryPoints = Just 1
+    }
 
 administrationBuilding :: CardDef
-administrationBuilding =
-  (location "02053" "Administration Building" ExtracurricularActivity)
-    { cdCardTraits = singleton Miskatonic
-    }
+administrationBuilding = location
+  "02053"
+  "Administration Building"
+  [Miskatonic]
+  ExtracurricularActivity
 
 facultyOfficesTheNightIsStillYoung :: CardDef
 facultyOfficesTheNightIsStillYoung = (location
@@ -380,691 +369,759 @@ facultyOfficesTheNightIsStillYoung = (location
                                        ("Faculty Offices"
                                        <:> "The Night is Still Young"
                                        )
+                                       [Miskatonic]
                                        ExtracurricularActivity
                                      )
-  { cdCardTraits = singleton Miskatonic
-  , cdVictoryPoints = Just 1
+  { cdVictoryPoints = Just 1
   }
 
 facultyOfficesTheHourIsLate :: CardDef
-facultyOfficesTheHourIsLate = (location
-                                "02055"
-                                ("Faculty Offices" <:> "The Hour is Late")
-                                ExtracurricularActivity
-                              )
-  { cdCardTraits = singleton Miskatonic
-  }
+facultyOfficesTheHourIsLate = location
+  "02055"
+  ("Faculty Offices" <:> "The Hour is Late")
+  [Miskatonic]
+  ExtracurricularActivity
 
 scienceBuilding :: CardDef
-scienceBuilding = (location "02056" "Science Building" ExtracurricularActivity)
-  { cdCardTraits = singleton Miskatonic
-  }
+scienceBuilding =
+  location "02056" "Science Building" [Miskatonic] ExtracurricularActivity
 
 alchemyLabs :: CardDef
-alchemyLabs = (location "02057" "Alchemy Labs" ExtracurricularActivity)
-  { cdCardTraits = singleton Miskatonic
-  }
+alchemyLabs =
+  location "02057" "Alchemy Labs" [Miskatonic] ExtracurricularActivity
 
 laBellaLuna :: CardDef
-laBellaLuna = (location "02070" "La Bella Luna" TheHouseAlwaysWins)
-  { cdCardTraits = singleton Arkham
-  }
+laBellaLuna = location "02070" "La Bella Luna" [Arkham] TheHouseAlwaysWins
 
 cloverClubLounge :: CardDef
-cloverClubLounge = (location "02071" "Clover Club Lounge" TheHouseAlwaysWins)
-  { cdCardTraits = singleton CloverClub
-  }
+cloverClubLounge =
+  location "02071" "Clover Club Lounge" [CloverClub] TheHouseAlwaysWins
 
 cloverClubBar :: CardDef
-cloverClubBar = (location "02072" "Clover Club Bar" TheHouseAlwaysWins)
-  { cdCardTraits = singleton CloverClub
-  }
+cloverClubBar =
+  location "02072" "Clover Club Bar" [CloverClub] TheHouseAlwaysWins
 
 cloverClubCardroom :: CardDef
 cloverClubCardroom =
-  (location "02073" "Clover Club Cardroom" TheHouseAlwaysWins)
-    { cdCardTraits = singleton CloverClub
-    }
+  location "02073" "Clover Club Cardroom" [CloverClub] TheHouseAlwaysWins
 
 darkenedHall :: CardDef
-darkenedHall = (location "02074" "Darkened Hall" TheHouseAlwaysWins)
-  { cdCardTraits = singleton CloverClub
-  }
+darkenedHall = location "02074" "Darkened Hall" [CloverClub] TheHouseAlwaysWins
 
 artGallery :: CardDef
 artGallery = (locationWithUnrevealed
                "02075"
                "Back Hall Doorway"
+               [CloverClub]
                "Art Gallery"
+               [CloverClub]
                TheHouseAlwaysWins
              )
-  { cdCardTraits = singleton CloverClub
-  , cdVictoryPoints = Just 1
+  { cdVictoryPoints = Just 1
   }
 
 vipArea :: CardDef
 vipArea = (locationWithUnrevealed
             "02076"
             "Back Hall Doorway"
+            [CloverClub]
             "VIP Area"
+            [CloverClub]
             TheHouseAlwaysWins
           )
-  { cdCardTraits = singleton CloverClub
-  , cdVictoryPoints = Just 1
+  { cdVictoryPoints = Just 1
   }
 
 backAlley :: CardDef
 backAlley = (locationWithUnrevealed
               "02077"
               "Back Hall Doorway"
+              [CloverClub]
               "Back Alley"
+              [CloverClub]
               TheHouseAlwaysWins
             )
-  { cdCardTraits = singleton CloverClub
-  , cdVictoryPoints = Just 1
+  { cdVictoryPoints = Just 1
   }
 
 museumEntrance :: CardDef
-museumEntrance = (location "02126" "Museum Entrance" TheMiskatonicMuseum)
-  { cdCardTraits = singleton Miskatonic
-  }
+museumEntrance =
+  location "02126" "Museum Entrance" [Miskatonic] TheMiskatonicMuseum
 
 museumHalls :: CardDef
-museumHalls = (location "02127" "Museum Halls" TheMiskatonicMuseum)
-  { cdCardTraits = singleton Miskatonic
-  }
+museumHalls = location "02127" "Museum Halls" [Miskatonic] TheMiskatonicMuseum
 
 securityOffice_128 :: CardDef
-securityOffice_128 = (location "02128" "Security Office" TheMiskatonicMuseum)
-  { cdCardTraits = singleton Miskatonic
-  }
+securityOffice_128 =
+  location "02128" "Security Office" [Miskatonic] TheMiskatonicMuseum
 
 securityOffice_129 :: CardDef
-securityOffice_129 = (location "02129" "Security Office" TheMiskatonicMuseum)
-  { cdCardTraits = singleton Miskatonic
-  }
+securityOffice_129 =
+  location "02129" "Security Office" [Miskatonic] TheMiskatonicMuseum
 
 administrationOffice_130 :: CardDef
 administrationOffice_130 =
-  (location "02130" "Administration Office" TheMiskatonicMuseum)
-    { cdCardTraits = singleton Miskatonic
-    }
+  location "02130" "Administration Office" [Miskatonic] TheMiskatonicMuseum
 
 administrationOffice_131 :: CardDef
 administrationOffice_131 =
-  (location "02131" "Administration Office" TheMiskatonicMuseum)
-    { cdCardTraits = singleton Miskatonic
-    }
+  location "02131" "Administration Office" [Miskatonic] TheMiskatonicMuseum
 
 exhibitHallAthabaskanExhibit :: CardDef
-exhibitHallAthabaskanExhibit = (locationWithUnrevealed
-                                 "02132"
-                                 "Exhibit Hall"
-                                 ("Exhibit Hall" <:> "Athabaskan Exhibit")
-                                 TheMiskatonicMuseum
-                               )
-  { cdCardTraits = setFromList [Miskatonic, Exhibit]
-  }
+exhibitHallAthabaskanExhibit = locationWithUnrevealed
+  "02132"
+  "Exhibit Hall"
+  [Miskatonic, Exhibit]
+  ("Exhibit Hall" <:> "Athabaskan Exhibit")
+  [Miskatonic, Exhibit]
+  TheMiskatonicMuseum
 
 exhibitHallMedusaExhibit :: CardDef
 exhibitHallMedusaExhibit = (locationWithUnrevealed
                              "02133"
                              "Exhibit Hall"
+                             [Miskatonic, Exhibit]
                              ("Exhibit Hall" <:> "Medusa Exhibit")
+                             [Miskatonic, Exhibit]
                              TheMiskatonicMuseum
                            )
-  { cdCardTraits = setFromList [Miskatonic, Exhibit]
-  , cdVictoryPoints = Just 1
+  { cdVictoryPoints = Just 1
   }
 
 exhibitHallNatureExhibit :: CardDef
 exhibitHallNatureExhibit = (locationWithUnrevealed
                              "02134"
                              "Exhibit Hall"
+                             [Miskatonic, Exhibit]
                              ("Exhibit Hall" <:> "Nature Exhibit")
+                             [Miskatonic, Exhibit]
                              TheMiskatonicMuseum
                            )
-  { cdCardTraits = setFromList [Miskatonic, Exhibit]
-  , cdVictoryPoints = Just 1
+  { cdVictoryPoints = Just 1
   }
 
 exhibitHallEgyptianExhibit :: CardDef
 exhibitHallEgyptianExhibit = (locationWithUnrevealed
                                "02135"
                                "Exhibit Hall"
+                               [Miskatonic, Exhibit]
                                ("Exhibit Hall" <:> "Egyptian Exhibit")
+                               [Miskatonic, Exhibit]
                                TheMiskatonicMuseum
                              )
-  { cdCardTraits = setFromList [Miskatonic, Exhibit]
-  , cdVictoryPoints = Just 1
+  { cdVictoryPoints = Just 1
   }
 
 exhibitHallHallOfTheDead :: CardDef
 exhibitHallHallOfTheDead = (locationWithUnrevealed
                              "02136"
                              "Exhibit Hall"
+                             [Miskatonic, Exhibit]
                              ("Exhibit Hall" <:> "Hall of the Dead")
+                             [Miskatonic, Exhibit]
                              TheMiskatonicMuseum
                            )
-  { cdCardTraits = setFromList [Miskatonic, Exhibit]
-  , cdVictoryPoints = Just 1
+  { cdVictoryPoints = Just 1
   }
 
 exhibitHallRestrictedHall :: CardDef
 exhibitHallRestrictedHall = (locationWithUnrevealed
                               "02137"
                               "Exhibit Hall"
+                              [Miskatonic, Exhibit]
                               ("Exhibit Hall" <:> "Restricted Hall")
+                              [Miskatonic, Exhibit]
                               TheMiskatonicMuseum
                             )
-  { cdCardTraits = setFromList [Miskatonic, Exhibit]
-  , cdVictoryPoints = Just 1
+  { cdVictoryPoints = Just 1
   }
 
 passengerCar_167 :: CardDef
-passengerCar_167 = (locationWithUnrevealed
-                     "02167"
-                     "Train Car"
-                     "Passenger Car"
-                     TheEssexCountyExpress
-                   )
-  { cdCardTraits = singleton Train
-  }
+passengerCar_167 = locationWithUnrevealed
+  "02167"
+  "Train Car"
+  [Train]
+  "Passenger Car"
+  [Train]
+  TheEssexCountyExpress
 
 passengerCar_168 :: CardDef
-passengerCar_168 = (locationWithUnrevealed
-                     "02168"
-                     "Train Car"
-                     "Passenger Car"
-                     TheEssexCountyExpress
-                   )
-  { cdCardTraits = singleton Train
-  }
+passengerCar_168 = locationWithUnrevealed
+  "02168"
+  "Train Car"
+  [Train]
+  "Passenger Car"
+  [Train]
+  TheEssexCountyExpress
 
 passengerCar_169 :: CardDef
-passengerCar_169 = (locationWithUnrevealed
-                     "02169"
-                     "Train Car"
-                     "Passenger Car"
-                     TheEssexCountyExpress
-                   )
-  { cdCardTraits = singleton Train
-  }
+passengerCar_169 = locationWithUnrevealed
+  "02169"
+  "Train Car"
+  [Train]
+  "Passenger Car"
+  [Train]
+  TheEssexCountyExpress
 
 passengerCar_170 :: CardDef
-passengerCar_170 = (locationWithUnrevealed
-                     "02170"
-                     "Train Car"
-                     "Passenger Car"
-                     TheEssexCountyExpress
-                   )
-  { cdCardTraits = singleton Train
-  }
+passengerCar_170 = locationWithUnrevealed
+  "02170"
+  "Train Car"
+  [Train]
+  "Passenger Car"
+  [Train]
+  TheEssexCountyExpress
 
 passengerCar_171 :: CardDef
-passengerCar_171 = (locationWithUnrevealed
-                     "02171"
-                     "Train Car"
-                     "Passenger Car"
-                     TheEssexCountyExpress
-                   )
-  { cdCardTraits = singleton Train
-  }
+passengerCar_171 = locationWithUnrevealed
+  "02171"
+  "Train Car"
+  [Train]
+  "Passenger Car"
+  [Train]
+  TheEssexCountyExpress
 
 sleepingCar :: CardDef
-sleepingCar = (locationWithUnrevealed
-                "02172"
-                "Train Car"
-                "Sleeping Car"
-                TheEssexCountyExpress
-              )
-  { cdCardTraits = singleton Train
-  }
+sleepingCar = locationWithUnrevealed
+  "02172"
+  "Train Car"
+  [Train]
+  "Sleeping Car"
+  [Train]
+  TheEssexCountyExpress
 
 diningCar :: CardDef
-diningCar =
-  (locationWithUnrevealed "02173" "Train Car" "Dining Car" TheEssexCountyExpress
-    )
-    { cdCardTraits = singleton Train
-    }
+diningCar = locationWithUnrevealed
+  "02173"
+  "Train Car"
+  [Train]
+  "Dining Car"
+  [Train]
+  TheEssexCountyExpress
 
 parlorCar :: CardDef
-parlorCar =
-  (locationWithUnrevealed "02174" "Train Car" "Parlor Car" TheEssexCountyExpress
-    )
-    { cdCardTraits = singleton Train
-    , cdVictoryPoints = Just 1
-    }
+parlorCar = (locationWithUnrevealed
+              "02174"
+              "Train Car"
+              [Train]
+              "Parlor Car"
+              [Train]
+              TheEssexCountyExpress
+            )
+  { cdVictoryPoints = Just 1
+  }
 
 engineCar_175 :: CardDef
-engineCar_175 = (location "02175" "Engine Car" TheEssexCountyExpress)
-  { cdCardTraits = singleton Train
-  , cdVictoryPoints = Just 1
+engineCar_175 = (location "02175" "Engine Car" [Train] TheEssexCountyExpress)
+  { cdVictoryPoints = Just 1
   }
 
 engineCar_176 :: CardDef
-engineCar_176 = (location "02176" "Engine Car" TheEssexCountyExpress)
-  { cdCardTraits = singleton Train
-  , cdVictoryPoints = Just 1
+engineCar_176 = (location "02176" "Engine Car" [Train] TheEssexCountyExpress)
+  { cdVictoryPoints = Just 1
   }
 
 engineCar_177 :: CardDef
-engineCar_177 = (location "02177" "Engine Car" TheEssexCountyExpress)
-  { cdCardTraits = singleton Train
-  , cdVictoryPoints = Just 1
+engineCar_177 = (location "02177" "Engine Car" [Train] TheEssexCountyExpress)
+  { cdVictoryPoints = Just 1
   }
 
 villageCommons :: CardDef
-villageCommons = (location "02201" "Village Commons" BloodOnTheAltar)
-  { cdCardTraits = setFromList [Dunwich, Central]
-  }
+villageCommons =
+  location "02201" "Village Commons" [Dunwich, Central] BloodOnTheAltar
 
 bishopsBrook_202 :: CardDef
-bishopsBrook_202 = (location "02202" "Bishop's Brook" BloodOnTheAltar)
-  { cdCardTraits = singleton Dunwich
-  }
+bishopsBrook_202 = location "02202" "Bishop's Brook" [Dunwich] BloodOnTheAltar
 
 bishopsBrook_203 :: CardDef
-bishopsBrook_203 = (location "02203" "Bishop's Brook" BloodOnTheAltar)
-  { cdCardTraits = singleton Dunwich
-  }
+bishopsBrook_203 = location "02203" "Bishop's Brook" [Dunwich] BloodOnTheAltar
 
 burnedRuins_204 :: CardDef
-burnedRuins_204 = (location "02204" "Burned Ruins" BloodOnTheAltar)
-  { cdCardTraits = singleton Dunwich
-  }
+burnedRuins_204 = location "02204" "Burned Ruins" [Dunwich] BloodOnTheAltar
 
 burnedRuins_205 :: CardDef
-burnedRuins_205 = (location "02205" "Burned Ruins" BloodOnTheAltar)
-  { cdCardTraits = singleton Dunwich
-  }
+burnedRuins_205 = location "02205" "Burned Ruins" [Dunwich] BloodOnTheAltar
 
 osbornsGeneralStore_206 :: CardDef
 osbornsGeneralStore_206 =
-  (location "02206" "Osborn's General Store" BloodOnTheAltar)
-    { cdCardTraits = singleton Dunwich
-    }
+  location "02206" "Osborn's General Store" [Dunwich] BloodOnTheAltar
 
 osbornsGeneralStore_207 :: CardDef
 osbornsGeneralStore_207 =
-  (location "02207" "Osborn's General Store" BloodOnTheAltar)
-    { cdCardTraits = singleton Dunwich
-    }
+  location "02207" "Osborn's General Store" [Dunwich] BloodOnTheAltar
 
 congregationalChurch_208 :: CardDef
 congregationalChurch_208 =
-  (location "02208" "Congregational Church" BloodOnTheAltar)
-    { cdCardTraits = singleton Dunwich
-    }
+  location "02208" "Congregational Church" [Dunwich] BloodOnTheAltar
 
 congregationalChurch_209 :: CardDef
 congregationalChurch_209 =
-  (location "02209" "Congregational Church" BloodOnTheAltar)
-    { cdCardTraits = singleton Dunwich
-    }
+  location "02209" "Congregational Church" [Dunwich] BloodOnTheAltar
 
 houseInTheReeds_210 :: CardDef
-houseInTheReeds_210 = (location "02210" "House in the Reeds" BloodOnTheAltar)
-  { cdCardTraits = singleton Dunwich
-  }
+houseInTheReeds_210 =
+  location "02210" "House in the Reeds" [Dunwich] BloodOnTheAltar
 
 houseInTheReeds_211 :: CardDef
-houseInTheReeds_211 = (location "02211" "House in the Reeds" BloodOnTheAltar)
-  { cdCardTraits = singleton Dunwich
-  }
+houseInTheReeds_211 =
+  location "02211" "House in the Reeds" [Dunwich] BloodOnTheAltar
 
 schoolhouse_212 :: CardDef
-schoolhouse_212 = (location "02212" "Schoolhouse" BloodOnTheAltar)
-  { cdCardTraits = singleton Dunwich
-  }
+schoolhouse_212 = location "02212" "Schoolhouse" [Dunwich] BloodOnTheAltar
 
 schoolhouse_213 :: CardDef
-schoolhouse_213 = (location "02213" "Schoolhouse" BloodOnTheAltar)
-  { cdCardTraits = singleton Dunwich
-  }
+schoolhouse_213 = location "02213" "Schoolhouse" [Dunwich] BloodOnTheAltar
 
 theHiddenChamber :: CardDef
 theHiddenChamber = (location
                      "02214"
                      ("The Hidden Chamber" <:> "Prison of the Beast")
+                     [Dunwich]
                      BloodOnTheAltar
                    )
-  { cdCardTraits = singleton Dunwich
-  , cdVictoryPoints = Just 2
+  { cdVictoryPoints = Just 2
   }
 
 dunwichVillage_242 :: CardDef
-dunwichVillage_242 = (location "02242" "Dunwich Village" UndimensionedAndUnseen
-                     )
-  { cdCardTraits = setFromList [Dunwich]
-  }
+dunwichVillage_242 =
+  location "02242" "Dunwich Village" [Dunwich] UndimensionedAndUnseen
 
 dunwichVillage_243 :: CardDef
-dunwichVillage_243 = (location "02243" "Dunwich Village" UndimensionedAndUnseen
-                     )
-  { cdCardTraits = setFromList [Dunwich]
-  }
+dunwichVillage_243 =
+  location "02243" "Dunwich Village" [Dunwich] UndimensionedAndUnseen
 
 coldSpringGlen_244 :: CardDef
 coldSpringGlen_244 =
-  (location "02244" "Cold Spring Glen" UndimensionedAndUnseen)
-    { cdCardTraits = setFromList [Dunwich]
-    }
+  location "02244" "Cold Spring Glen" [Dunwich] UndimensionedAndUnseen
 
 coldSpringGlen_245 :: CardDef
 coldSpringGlen_245 =
-  (location "02245" "Cold Spring Glen" UndimensionedAndUnseen)
-    { cdCardTraits = setFromList [Dunwich]
-    }
+  location "02245" "Cold Spring Glen" [Dunwich] UndimensionedAndUnseen
 
 tenAcreMeadow_246 :: CardDef
-tenAcreMeadow_246 = (location "02246" "Ten-Acre Meadow" UndimensionedAndUnseen)
-  { cdCardTraits = setFromList [Dunwich]
-  }
+tenAcreMeadow_246 =
+  location "02246" "Ten-Acre Meadow" [Dunwich] UndimensionedAndUnseen
 
 tenAcreMeadow_247 :: CardDef
-tenAcreMeadow_247 = (location "02247" "Ten-Acre Meadow" UndimensionedAndUnseen)
-  { cdCardTraits = setFromList [Dunwich]
-  }
+tenAcreMeadow_247 =
+  location "02247" "Ten-Acre Meadow" [Dunwich] UndimensionedAndUnseen
 
 blastedHeath_248 :: CardDef
-blastedHeath_248 = (location "02248" "Blasted Heath" UndimensionedAndUnseen)
-  { cdCardTraits = setFromList [Dunwich]
-  }
+blastedHeath_248 =
+  location "02248" "Blasted Heath" [Dunwich] UndimensionedAndUnseen
 
 blastedHeath_249 :: CardDef
-blastedHeath_249 = (location "02249" "Blasted Heath" UndimensionedAndUnseen)
-  { cdCardTraits = setFromList [Dunwich]
-  }
+blastedHeath_249 =
+  location "02249" "Blasted Heath" [Dunwich] UndimensionedAndUnseen
 
 whateleyRuins_250 :: CardDef
-whateleyRuins_250 = (location "02250" "Whateley Ruins" UndimensionedAndUnseen)
-  { cdCardTraits = setFromList [Dunwich]
-  }
+whateleyRuins_250 =
+  location "02250" "Whateley Ruins" [Dunwich] UndimensionedAndUnseen
 
 whateleyRuins_251 :: CardDef
-whateleyRuins_251 = (location "02251" "Whateley Ruins" UndimensionedAndUnseen)
-  { cdCardTraits = setFromList [Dunwich]
-  }
+whateleyRuins_251 =
+  location "02251" "Whateley Ruins" [Dunwich] UndimensionedAndUnseen
 
 devilsHopYard_252 :: CardDef
-devilsHopYard_252 = (location "02252" "Devil's Hop Yard" UndimensionedAndUnseen
-                    )
-  { cdCardTraits = setFromList [Dunwich]
-  }
+devilsHopYard_252 =
+  location "02252" "Devil's Hop Yard" [Dunwich] UndimensionedAndUnseen
 
 devilsHopYard_253 :: CardDef
-devilsHopYard_253 = (location "02253" "Devil's Hop Yard" UndimensionedAndUnseen
-                    )
-  { cdCardTraits = setFromList [Dunwich]
-  }
+devilsHopYard_253 =
+  location "02253" "Devil's Hop Yard" [Dunwich] UndimensionedAndUnseen
 
 baseOfTheHill :: CardDef
-baseOfTheHill = (location "02282" "Base of the Hill" WhereDoomAwaits)
-  { cdCardTraits = setFromList [Dunwich, SentinelHill]
-  }
+baseOfTheHill =
+  location "02282" "Base of the Hill" [Dunwich, SentinelHill] WhereDoomAwaits
 
 ascendingPath :: CardDef
-ascendingPath = (location "02283" "Ascending Path" WhereDoomAwaits)
-  { cdCardTraits = setFromList [Dunwich, SentinelHill]
-  }
+ascendingPath =
+  location "02283" "Ascending Path" [Dunwich, SentinelHill] WhereDoomAwaits
 
 sentinelPeak :: CardDef
-sentinelPeak = (location "02284" "Sentinel Peak" WhereDoomAwaits)
-  { cdCardTraits = setFromList [Dunwich, SentinelHill]
-  , cdVictoryPoints = Just 2
-  }
+sentinelPeak =
+  (location "02284" "Sentinel Peak" [Dunwich, SentinelHill] WhereDoomAwaits)
+    { cdVictoryPoints = Just 2
+    }
 
 slaughteredWoods :: CardDef
-slaughteredWoods = (locationWithUnrevealed
-                     "02285"
-                     "Diverging Path"
-                     "Slaughtered Woods"
-                     WhereDoomAwaits
-                   )
-  { cdCardTraits = setFromList [Dunwich, Woods]
-  }
+slaughteredWoods = locationWithUnrevealed
+  "02285"
+  "Diverging Path"
+  [Dunwich, Woods]
+  "Slaughtered Woods"
+  [Dunwich, Woods]
+  WhereDoomAwaits
 
 eerieGlade :: CardDef
-eerieGlade =
-  (locationWithUnrevealed "02286" "Diverging Path" "Eerie Glade" WhereDoomAwaits
-    )
-    { cdCardTraits = setFromList [Dunwich, Woods]
-    }
+eerieGlade = locationWithUnrevealed
+  "02286"
+  "Diverging Path"
+  [Dunwich, Woods]
+  "Eerie Glade"
+  [Dunwich, Woods]
+  WhereDoomAwaits
 
 destroyedPath :: CardDef
-destroyedPath = (locationWithUnrevealed
-                  "02287"
-                  "Diverging Path"
-                  "Destroyed Path"
-                  WhereDoomAwaits
-                )
-  { cdCardTraits = setFromList [Dunwich, Woods]
-  }
+destroyedPath = locationWithUnrevealed
+  "02287"
+  "Diverging Path"
+  [Dunwich, Woods]
+  "Destroyed Path"
+  [Dunwich, Woods]
+  WhereDoomAwaits
 
 frozenSpring :: CardDef
-frozenSpring = (locationWithUnrevealed
-                 "02288"
-                 "Diverging Path"
-                 "Frozen Spring"
-                 WhereDoomAwaits
-               )
-  { cdCardTraits = setFromList [Dunwich, Woods]
-  }
+frozenSpring = locationWithUnrevealed
+  "02288"
+  "Diverging Path"
+  [Dunwich, Woods]
+  "Frozen Spring"
+  [Dunwich, Woods]
+  WhereDoomAwaits
 
 dimensionalGap :: CardDef
-dimensionalGap = (locationWithUnrevealed
-                   "02289"
-                   "Altered Path"
-                   "Dimensional Gap"
-                   WhereDoomAwaits
-                 )
-  { cdCardTraits = setFromList [Dunwich, Woods, Altered]
-  }
+dimensionalGap = locationWithUnrevealed
+  "02289"
+  "Altered Path"
+  [Dunwich, Woods, Altered]
+  "Dimensional Gap"
+  [Dunwich, Woods, Altered]
+  WhereDoomAwaits
 
 aTearInThePath :: CardDef
-aTearInThePath = (locationWithUnrevealed
-                   "02290"
-                   "Altered Path"
-                   "A Tear in the Path"
-                   WhereDoomAwaits
-                 )
-  { cdCardTraits = setFromList [Dunwich, Woods, Altered]
-  }
+aTearInThePath = locationWithUnrevealed
+  "02290"
+  "Altered Path"
+  [Dunwich, Woods, Altered]
+  "A Tear in the Path"
+  [Dunwich, Woods, Altered]
+  WhereDoomAwaits
 
 uprootedWoods :: CardDef
-uprootedWoods =
-  (locationWithUnrevealed
-      "02291"
-      "Altered Path"
-      "Uprooted Woods"
-      WhereDoomAwaits
-    )
-    { cdCardTraits = setFromList [Dunwich, Woods, Altered]
-    }
+uprootedWoods = locationWithUnrevealed
+  "02291"
+  "Altered Path"
+  [Dunwich, Woods, Altered]
+  "Uprooted Woods"
+  [Dunwich, Woods, Altered]
+  WhereDoomAwaits
 
 lostMemories :: CardDef
-lostMemories =
-  (locationWithUnrevealed "02292" "Altered Path" "Lost Memories" WhereDoomAwaits
-    )
-    { cdCardTraits = setFromList [Dunwich, Woods, Altered]
-    }
+lostMemories = locationWithUnrevealed
+  "02292"
+  "Altered Path"
+  [Dunwich, Woods, Altered]
+  "Lost Memories"
+  [Dunwich, Woods, Altered]
+  WhereDoomAwaits
 
 anotherDimension :: CardDef
-anotherDimension = (location
-                     "02320"
-                     ("Another Dimension" <:> "Unfettered by Reality")
-                     LostInTimeAndSpace
-                   )
-  { cdCardTraits = setFromList [Otherworld]
-  }
+anotherDimension = location
+  "02320"
+  ("Another Dimension" <:> "Unfettered by Reality")
+  [Otherworld]
+  LostInTimeAndSpace
 
 theEdgeOfTheUniverse :: CardDef
 theEdgeOfTheUniverse =
-  (location "02321" "The Edge of the Universe" LostInTimeAndSpace)
-    { cdCardTraits = setFromList [Otherworld]
-    }
+  location "02321" "The Edge of the Universe" [Otherworld] LostInTimeAndSpace
 
 tearThroughTime :: CardDef
-tearThroughTime = (location "02322" "Tear Through Time" LostInTimeAndSpace)
-  { cdCardTraits = setFromList [Otherworld]
-  }
+tearThroughTime =
+  location "02322" "Tear Through Time" [Otherworld] LostInTimeAndSpace
 
 tearThroughSpace :: CardDef
-tearThroughSpace = (location "02324" "Tear Through Space" LostInTimeAndSpace)
-  { cdCardTraits = setFromList [Otherworld, Extradimensional]
-  , cdKeywords = setFromList [Keyword.Surge]
+tearThroughSpace = (location
+                     "02324"
+                     "Tear Through Space"
+                     [Otherworld, Extradimensional]
+                     LostInTimeAndSpace
+                   )
+  { cdKeywords = setFromList [Keyword.Surge]
   , cdDoubleSided = False
   , cdEncounterSetQuantity = Just 4
   }
 
 prismaticCascade :: CardDef
-prismaticCascade = (location "02325" "Prismatic Cascade" LostInTimeAndSpace)
-  { cdCardTraits = setFromList [Otherworld, Extradimensional]
-  , cdDoubleSided = False
+prismaticCascade = (location
+                     "02325"
+                     "Prismatic Cascade"
+                     [Otherworld, Extradimensional]
+                     LostInTimeAndSpace
+                   )
+  { cdDoubleSided = False
   , cdEncounterSetQuantity = Just 2
   }
 
 endlessBridge :: CardDef
-endlessBridge = (location "02326" "Endless Bridge" LostInTimeAndSpace)
-  { cdCardTraits = setFromList [Otherworld, Extradimensional]
-  , cdDoubleSided = False
+endlessBridge = (location
+                  "02326"
+                  "Endless Bridge"
+                  [Otherworld, Extradimensional]
+                  LostInTimeAndSpace
+                )
+  { cdDoubleSided = False
   , cdEncounterSetQuantity = Just 2
   }
 
 stepsOfYhagharl :: CardDef
-stepsOfYhagharl = (location "02327" "Steps of Y'hagharl" LostInTimeAndSpace)
-  { cdCardTraits = setFromList [Otherworld, Extradimensional]
-  , cdDoubleSided = False
+stepsOfYhagharl = (location
+                    "02327"
+                    "Steps of Y'hagharl"
+                    [Otherworld, Extradimensional]
+                    LostInTimeAndSpace
+                  )
+  { cdDoubleSided = False
   }
 
 dimensionalDoorway :: CardDef
-dimensionalDoorway = (location "02328" "Dimensional Doorway" LostInTimeAndSpace
+dimensionalDoorway = (location
+                       "02328"
+                       "Dimensional Doorway"
+                       [Otherworld, Extradimensional]
+                       LostInTimeAndSpace
                      )
-  { cdCardTraits = setFromList [Otherworld, Extradimensional]
-  , cdDoubleSided = False
+  { cdDoubleSided = False
   }
 
 theatre :: CardDef
-theatre = location "03049" "Theatre" CurtainCall
+theatre = location "03049" "Theatre" mempty CurtainCall
 
 lobby :: CardDef
-lobby = location "03050" "Lobby" CurtainCall
+lobby = location "03050" "Lobby" mempty CurtainCall
 
 balcony :: CardDef
-balcony = (location "03051" "Balcony" CurtainCall) { cdVictoryPoints = Just 1 }
+balcony =
+  (location "03051" "Balcony" mempty CurtainCall) { cdVictoryPoints = Just 1 }
 
 backstage :: CardDef
-backstage = location "03052" "Backstage" CurtainCall
+backstage = location "03052" "Backstage" mempty CurtainCall
 
 lightingBox :: CardDef
-lightingBox =
-  (locationWithUnrevealed "03053" "Lobby Doorway" "Lighting Box" CurtainCall)
-    { cdVictoryPoints = Just 1
-    , cdCardTraits = singleton Private
-    }
+lightingBox = (locationWithUnrevealed
+                "03053"
+                "Lobby Doorway"
+                [Private]
+                "Lighting Box"
+                [Private]
+                CurtainCall
+              )
+  { cdVictoryPoints = Just 1
+  }
 
 boxOffice :: CardDef
-boxOffice =
-  (locationWithUnrevealed "03054" "Lobby Doorway" "Box Office" CurtainCall)
-    { cdCardTraits = singleton Private
-    }
+boxOffice = locationWithUnrevealed
+  "03054"
+  "Lobby Doorway"
+  [Private]
+  "Box Office"
+  [Private]
+  CurtainCall
 
 greenRoom :: CardDef
-greenRoom =
-  (locationWithUnrevealed "03055" "Lobby Doorway" "Green Room" CurtainCall)
-    { cdVictoryPoints = Just 1
-    , cdCardTraits = singleton Private
-    }
+greenRoom = (locationWithUnrevealed
+              "03055"
+              "Lobby Doorway"
+              [Private]
+              "Green Room"
+              [Private]
+              CurtainCall
+            )
+  { cdVictoryPoints = Just 1
+  }
 
 dressingRoom :: CardDef
-dressingRoom =
-  (locationWithUnrevealed
-      "03056"
-      "Backstage Doorway"
-      "Dressing Room"
-      CurtainCall
-    )
-    { cdCardTraits = singleton Private
-    }
+dressingRoom = locationWithUnrevealed
+  "03056"
+  "Backstage Doorway"
+  [Private]
+  "Dressing Room"
+  [Private]
+  CurtainCall
 
 rehearsalRoom :: CardDef
 rehearsalRoom = (locationWithUnrevealed
                   "03057"
                   "Backstage Doorway"
+                  [Private]
                   "Rehearsal Room"
+                  [Private]
                   CurtainCall
                 )
   { cdVictoryPoints = Just 1
-  , cdCardTraits = singleton Private
   }
 
 trapRoom :: CardDef
-trapRoom =
-  (locationWithUnrevealed "03058" "Backstage Doorway" "Trap Room" CurtainCall)
-    { cdVictoryPoints = Just 1
-    , cdCardTraits = singleton Private
-    }
+trapRoom = (locationWithUnrevealed
+             "03058"
+             "Backstage Doorway"
+             [Private]
+             "Trap Room"
+             [Private]
+             CurtainCall
+           )
+  { cdVictoryPoints = Just 1
+  }
 
 foyer :: CardDef
-foyer = location "03070" "Foyer" TheLastKing
+foyer = location "03070" "Foyer" mempty TheLastKing
 
 ballroom :: CardDef
-ballroom = location "03071" "Ballroom" TheLastKing
+ballroom = location "03071" "Ballroom" mempty TheLastKing
 
 livingRoom :: CardDef
-livingRoom = location "03072" "Living Room" TheLastKing
+livingRoom = location "03072" "Living Room" mempty TheLastKing
 
 gallery :: CardDef
-gallery = location "03073" "Gallery" TheLastKing
+gallery = location "03073" "Gallery" mempty TheLastKing
 
 courtyard :: CardDef
-courtyard = location "03074" "Courtyard" TheLastKing
+courtyard = location "03074" "Courtyard" mempty TheLastKing
 
 diningRoom :: CardDef
-diningRoom = location "03075" "Dining Room" TheLastKing
+diningRoom = location "03075" "Dining Room" mempty TheLastKing
+
+entryHall :: CardDef
+entryHall = location "03127" "Entry Hall" [GroundFloor] EchoesOfThePast
+
+historicalSocietyMeetingRoom :: CardDef
+historicalSocietyMeetingRoom = locationWithUnrevealed
+  "03128"
+  "Historical Society"
+  [GroundFloor]
+  ("Historical Society" <:> "Meeting Room")
+  [GroundFloor, Passageway]
+  EchoesOfThePast
+
+historicalSocietyRecordOffice_129 :: CardDef
+historicalSocietyRecordOffice_129 = locationWithUnrevealed
+  "03129"
+  "Historical Society"
+  [GroundFloor]
+  ("Historical Society" <:> "Record Office")
+  [GroundFloor]
+  EchoesOfThePast
+
+historicalSocietyHistoricalMuseum_130 :: CardDef
+historicalSocietyHistoricalMuseum_130 = locationWithUnrevealed
+  "03130"
+  "Historical Society"
+  [GroundFloor]
+  ("Historical Society" <:> "Historical Museum")
+  [GroundFloor]
+  EchoesOfThePast
+
+quietHalls_131 :: CardDef
+quietHalls_131 = location "03131" "Quiet Halls" [SecondFloor] EchoesOfThePast
+
+historicalSocietyHistoricalMuseum_132 :: CardDef
+historicalSocietyHistoricalMuseum_132 = locationWithUnrevealed
+  "03132"
+  "Historical Society"
+  [SecondFloor]
+  ("Historical Society" <:> "Historical Museum")
+  [SecondFloor]
+  EchoesOfThePast
+
+historicalSocietyHistoricalLibrary_133 :: CardDef
+historicalSocietyHistoricalLibrary_133 = locationWithUnrevealed
+  "03133"
+  "Historical Society"
+  [SecondFloor]
+  ("Historical Society" <:> "Historical Library")
+  [SecondFloor, Passageway]
+  EchoesOfThePast
+
+historicalSocietyReadingRoom :: CardDef
+historicalSocietyReadingRoom = locationWithUnrevealed
+  "03134"
+  "Historical Society"
+  [SecondFloor]
+  ("Historical Society" <:> "Reading Room")
+  [SecondFloor]
+  EchoesOfThePast
+
+quietHalls_135 :: CardDef
+quietHalls_135 = location "03135" "Quiet Halls" [ThirdFloor] EchoesOfThePast
+
+historicalSocietyHistoricalLibrary_136 :: CardDef
+historicalSocietyHistoricalLibrary_136 = locationWithUnrevealed
+  "03136"
+  "Historical Society"
+  [ThirdFloor]
+  ("Historical Society" <:> "Historical Library")
+  [ThirdFloor, Passageway]
+  EchoesOfThePast
+
+historicalSocietyPeabodysOffice :: CardDef
+historicalSocietyPeabodysOffice = locationWithUnrevealed
+  "03137"
+  "Historical Society"
+  [ThirdFloor]
+  ("Historical Society" <:> "Peabody's Office")
+  [ThirdFloor, Passageway]
+  EchoesOfThePast
+
+historicalSocietyRecordOffice_138 :: CardDef
+historicalSocietyRecordOffice_138 = locationWithUnrevealed
+  "03138"
+  "Historical Society"
+  [ThirdFloor]
+  ("Historical Society" <:> "Record Office")
+  [ThirdFloor]
+  EchoesOfThePast
+
+hiddenLibrary :: CardDef
+hiddenLibrary = location "03139" "Hidden Library" mempty EchoesOfThePast
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =
-  location "50013" ("Study" <:> "Aberrant Gateway") ReturnToTheGathering
+  location "50013" ("Study" <:> "Aberrant Gateway") mempty ReturnToTheGathering
 
 guestHall :: CardDef
-guestHall = location "50014" "Guest Hall" ReturnToTheGathering
+guestHall = location "50014" "Guest Hall" mempty ReturnToTheGathering
 
 bedroom :: CardDef
-bedroom = location "50015" "Bedroom" ReturnToTheGathering
+bedroom = location "50015" "Bedroom" mempty ReturnToTheGathering
 
 bathroom :: CardDef
-bathroom = location "50016" "Bathroom" ReturnToTheGathering
+bathroom = location "50016" "Bathroom" mempty ReturnToTheGathering
 
 holeInTheWall :: CardDef
 holeInTheWall = locationWithUnrevealed
   "50017"
   "Hole in the Wall"
+  mempty
   "Hallway"
+  mempty
   ReturnToTheGathering
 
 returnToAttic :: CardDef
-returnToAttic = location "50018" "Attic" ReturnToTheGathering
+returnToAttic = location "50018" "Attic" mempty ReturnToTheGathering
 
 farAboveYourHouse :: CardDef
 farAboveYourHouse = (locationWithUnrevealed
                       "50019"
                       "Far Above Your House"
+                      mempty
                       "Field of Graves"
+                      mempty
                       ReturnToTheGathering
                     )
   { cdVictoryPoints = Just 1
   }
 
 returnToCellar :: CardDef
-returnToCellar = location "50020" "Cellar" ReturnToTheGathering
+returnToCellar = location "50020" "Cellar" mempty ReturnToTheGathering
 
 deepBelowYourHouse :: CardDef
 deepBelowYourHouse = (locationWithUnrevealed
                        "50021"
                        "Deep Below Your House"
+                       mempty
                        "Ghoul Pits"
+                       mempty
                        ReturnToTheGathering
                      )
   { cdVictoryPoints = Just 1
@@ -1074,189 +1131,189 @@ easttownArkhamPoliceStation :: CardDef
 easttownArkhamPoliceStation = (location
                                 "50027"
                                 ("Easttown" <:> "Arkham Police Station")
+                                [Arkham]
                                 ReturnToTheMidnightMasks
                               )
-  { cdCardTraits = setFromList [Arkham]
-  , cdVictoryPoints = Just 1
+  { cdVictoryPoints = Just 1
   }
 
 northsideTrainStation :: CardDef
-northsideTrainStation =
-  (location "50028" ("Northside" <:> "Train Station") ReturnToTheMidnightMasks)
-    { cdCardTraits = setFromList [Arkham]
-    }
+northsideTrainStation = location
+  "50028"
+  ("Northside" <:> "Train Station")
+  [Arkham]
+  ReturnToTheMidnightMasks
 
 miskatonicUniversityMiskatonicMuseum :: CardDef
-miskatonicUniversityMiskatonicMuseum = (location
-                                         "50029"
-                                         ("Miskatonic University"
-                                         <:> "Miskatonic Museum"
-                                         )
-                                         ReturnToTheMidnightMasks
-                                       )
-  { cdCardTraits = setFromList [Arkham]
-  }
+miskatonicUniversityMiskatonicMuseum = location
+  "50029"
+  ("Miskatonic University" <:> "Miskatonic Museum")
+  [Arkham]
+  ReturnToTheMidnightMasks
 
 rivertownAbandonedWarehouse :: CardDef
-rivertownAbandonedWarehouse = (location
-                                "50030"
-                                ("Rivertown" <:> "Abandoned Warehouse")
-                                ReturnToTheMidnightMasks
-                              )
-  { cdCardTraits = setFromList [Arkham, Central]
-  }
+rivertownAbandonedWarehouse = location
+  "50030"
+  ("Rivertown" <:> "Abandoned Warehouse")
+  [Arkham, Central]
+  ReturnToTheMidnightMasks
 
 arkhamWoodsGreatWillow :: CardDef
-arkhamWoodsGreatWillow =
-  (location "50033" ("Arkham Woods" <:> "Great Willow") ReturnToTheDevourerBelow
-    )
-    { cdCardTraits = setFromList [Woods]
-    }
+arkhamWoodsGreatWillow = location
+  "50033"
+  ("Arkham Woods" <:> "Great Willow")
+  [Woods]
+  ReturnToTheDevourerBelow
 
 arkhamWoodsLakeside :: CardDef
-arkhamWoodsLakeside =
-  (location "50034" ("Arkham Woods" <:> "Lakeside") ReturnToTheDevourerBelow)
-    { cdCardTraits = setFromList [Woods]
-    }
+arkhamWoodsLakeside = location
+  "50034"
+  ("Arkham Woods" <:> "Lakeside")
+  [Woods]
+  ReturnToTheDevourerBelow
 
 arkhamWoodsCorpseRiddenClearing :: CardDef
-arkhamWoodsCorpseRiddenClearing = (location
-                                    "50035"
-                                    ("Arkham Woods"
-                                    <:> "Corpse-Ridden Clearing"
-                                    )
-                                    ReturnToTheDevourerBelow
-                                  )
-  { cdCardTraits = setFromList [Woods]
-  }
+arkhamWoodsCorpseRiddenClearing = location
+  "50035"
+  ("Arkham Woods" <:> "Corpse-Ridden Clearing")
+  [Woods]
+  ReturnToTheDevourerBelow
 
 arkhamWoodsWoodenBridge :: CardDef
-arkhamWoodsWoodenBridge =
-  (location
-      "50036"
-      ("Arkham Woods" <:> "Wooden Bridge")
-      ReturnToTheDevourerBelow
-    )
-    { cdCardTraits = setFromList [Woods]
-    }
+arkhamWoodsWoodenBridge = location
+  "50036"
+  ("Arkham Woods" <:> "Wooden Bridge")
+  [Woods]
+  ReturnToTheDevourerBelow
 
 cursedShores :: CardDef
-cursedShores = (location "81007" "Cursed Shores" TheBayou)
-  { cdCardTraits = setFromList [NewOrleans, Bayou]
-  }
+cursedShores = location "81007" "Cursed Shores" [NewOrleans, Bayou] TheBayou
 
 gardenDistrict :: CardDef
-gardenDistrict =
-  (locationWithUnrevealed "81008" "New Orleans" "Garden District" TheBayou)
-    { cdCardTraits = setFromList [NewOrleans]
-    }
+gardenDistrict = locationWithUnrevealed
+  "81008"
+  "New Orleans"
+  [NewOrleans]
+  "Garden District"
+  [NewOrleans]
+  TheBayou
 
 broadmoor :: CardDef
-broadmoor = (locationWithUnrevealed "81009" "New Orleans" "Broadmoor" TheBayou)
-  { cdCardTraits = setFromList [NewOrleans]
-  , cdVictoryPoints = Just 1
+broadmoor = (locationWithUnrevealed
+              "81009"
+              "New Orleans"
+              [NewOrleans]
+              "Broadmoor"
+              [NewOrleans]
+              TheBayou
+            )
+  { cdVictoryPoints = Just 1
   }
 
 brackishWaters :: CardDef
-brackishWaters = (location "81010" "Brackish Waters" TheBayou)
-  { cdCardTraits = setFromList [Riverside, Bayou]
-  }
+brackishWaters = location "81010" "Brackish Waters" [Riverside, Bayou] TheBayou
 
 audubonPark :: CardDef
-audubonPark =
-  (locationWithUnrevealed "81011" "Riverside" "Audubon Park" TheBayou)
-    { cdCardTraits = setFromList [Riverside]
-    , cdVictoryPoints = Just 1
-    }
+audubonPark = (locationWithUnrevealed
+                "81011"
+                "Riverside"
+                [Riverside]
+                "Audubon Park"
+                [Riverside]
+                TheBayou
+              )
+  { cdVictoryPoints = Just 1
+  }
 
 fauborgMarigny :: CardDef
-fauborgMarigny =
-  (locationWithUnrevealed "81012" "Riverside" "Fauborg Marigny" TheBayou)
-    { cdCardTraits = setFromList [Riverside]
-    }
+fauborgMarigny = locationWithUnrevealed
+  "81012"
+  "Riverside"
+  [Riverside]
+  "Fauborg Marigny"
+  [Riverside]
+  TheBayou
 
 forgottenMarsh :: CardDef
-forgottenMarsh = (location "81013" "Forgotten Marsh" TheBayou)
-  { cdCardTraits = setFromList [Wilderness, Bayou]
-  }
+forgottenMarsh =
+  location "81013" "Forgotten Marsh" [Wilderness, Bayou] TheBayou
 
 trappersCabin :: CardDef
-trappersCabin =
-  (locationWithUnrevealed "81014" "Wilderness" "Trapper's Cabin" TheBayou)
-    { cdCardTraits = setFromList [Wilderness]
-    }
+trappersCabin = locationWithUnrevealed
+  "81014"
+  "Wilderness"
+  [Wilderness]
+  "Trapper's Cabin"
+  [Wilderness]
+  TheBayou
 
 twistedUnderbrush :: CardDef
-twistedUnderbrush =
-  (locationWithUnrevealed "81015" "Wilderness" "Twisted Underbrush" TheBayou)
-    { cdCardTraits = setFromList [Wilderness]
-    , cdVictoryPoints = Just 1
-    }
+twistedUnderbrush = (locationWithUnrevealed
+                      "81015"
+                      "Wilderness"
+                      [Wilderness]
+                      "Twisted Underbrush"
+                      [Wilderness]
+                      TheBayou
+                    )
+  { cdVictoryPoints = Just 1
+  }
 
 foulSwamp :: CardDef
-foulSwamp = (location "81016" "Foul Swamp" TheBayou)
-  { cdCardTraits = setFromList [Unhallowed, Bayou]
-  }
+foulSwamp = location "81016" "Foul Swamp" [Unhallowed, Bayou] TheBayou
 
 ritualGrounds :: CardDef
-ritualGrounds =
-  (locationWithUnrevealed "81017" "Unhallowed Land" "Ritual Grounds" TheBayou)
-    { cdCardTraits = setFromList [Unhallowed]
-    , cdVictoryPoints = Just 1
-    }
+ritualGrounds = (locationWithUnrevealed
+                  "81017"
+                  "Unhallowed Land"
+                  [Unhallowed]
+                  "Ritual Grounds"
+                  [Unhallowed]
+                  TheBayou
+                )
+  { cdVictoryPoints = Just 1
+  }
 
 overgrownCairns :: CardDef
-overgrownCairns =
-  (locationWithUnrevealed "81018" "Unhallowed Land" "Overgrown Cairns" TheBayou)
-    { cdCardTraits = setFromList [Unhallowed]
-    }
+overgrownCairns = locationWithUnrevealed
+  "81018"
+  "Unhallowed Land"
+  [Unhallowed]
+  "Overgrown Cairns"
+  [Unhallowed]
+  TheBayou
 
 gondola :: CardDef
-gondola = (location "82006b" "Gondola" CarnevaleOfHorrors)
-  { cdCardTraits = setFromList [Venice, Boat]
-  }
+gondola = location "82006b" "Gondola" [Venice, Boat] CarnevaleOfHorrors
 
 sanMarcoBasilica :: CardDef
-sanMarcoBasilica = (location "82008" "San Marco Basilica" CarnevaleOfHorrors)
-  { cdCardTraits = setFromList [Venice]
-  }
+sanMarcoBasilica =
+  location "82008" "San Marco Basilica" [Venice] CarnevaleOfHorrors
 
 canalSide :: CardDef
-canalSide = (location "82009" "Canal-side" CarnevaleOfHorrors)
-  { cdCardTraits = setFromList [Venice]
-  }
+canalSide = location "82009" "Canal-side" [Venice] CarnevaleOfHorrors
 
 streetsOfVenice :: CardDef
-streetsOfVenice = (location "82010" "Streets of Venice" CarnevaleOfHorrors)
-  { cdCardTraits = setFromList [Venice]
-  }
+streetsOfVenice =
+  location "82010" "Streets of Venice" [Venice] CarnevaleOfHorrors
 
 rialtoBridge :: CardDef
-rialtoBridge = (location "82011" "Rialto Bridge" CarnevaleOfHorrors)
-  { cdCardTraits = setFromList [Venice, Bridge]
-  }
+rialtoBridge =
+  location "82011" "Rialto Bridge" [Venice, Bridge] CarnevaleOfHorrors
 
 venetianGarden :: CardDef
-venetianGarden = (location "82012" "Venetian Garden" CarnevaleOfHorrors)
-  { cdCardTraits = setFromList [Venice]
-  }
+venetianGarden = location "82012" "Venetian Garden" [Venice] CarnevaleOfHorrors
 
 bridgeOfSighs :: CardDef
-bridgeOfSighs = (location "82013" "Bridge of Sighs" CarnevaleOfHorrors)
-  { cdCardTraits = setFromList [Venice, Bridge]
-  }
+bridgeOfSighs =
+  location "82013" "Bridge of Sighs" [Venice, Bridge] CarnevaleOfHorrors
 
 floodedSquare :: CardDef
-floodedSquare = (location "82014" "Flooded Square" CarnevaleOfHorrors)
-  { cdCardTraits = setFromList [Venice]
-  }
+floodedSquare = location "82014" "Flooded Square" [Venice] CarnevaleOfHorrors
 
 accademiaBridge :: CardDef
-accademiaBridge = (location "82015" "Accademia Bridge" CarnevaleOfHorrors)
-  { cdCardTraits = setFromList [Venice, Bridge]
-  }
+accademiaBridge =
+  location "82015" "Accademia Bridge" [Venice, Bridge] CarnevaleOfHorrors
 
 theGuardian :: CardDef
-theGuardian = (location "82016" "The Guardian" CarnevaleOfHorrors)
-  { cdCardTraits = setFromList [Venice]
-  }
+theGuardian = location "82016" "The Guardian" [Venice] CarnevaleOfHorrors

@@ -30,6 +30,7 @@ event cardCode name cost classSymbol = CardDef
   , cdClassSymbol = Just classSymbol
   , cdSkills = mempty
   , cdCardTraits = mempty
+  , cdRevealedCardTraits = mempty
   , cdKeywords = mempty
   , cdFastWindow = Nothing
   , cdAction = Nothing

@@ -39,6 +39,14 @@ weakness cardCode name = (baseAsset Nothing cardCode name 0 Neutral)
   , cdCost = Nothing
   }
 
+storyWeakness :: CardCode -> Name -> EncounterSet -> CardDef
+storyWeakness cardCode name encounterSet =
+  (baseAsset (Just (encounterSet, 1)) cardCode name 0 Neutral)
+    { cdCardSubType = Just Weakness
+    , cdRevelation = True
+    , cdCost = Nothing
+    }
+
 baseAsset
   :: Maybe (EncounterSet, Int)
   -> CardCode
@@ -57,6 +65,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdClassSymbol = Just classSymbol
   , cdSkills = mempty
   , cdCardTraits = mempty
+  , cdRevealedCardTraits = mempty
   , cdKeywords = mempty
   , cdFastWindow = Nothing
   , cdAction = Nothing
@@ -107,6 +116,7 @@ allPlayerAssetCards = mapFromList $ map
   , cherishedKeepsake
   , chicagoTypewriter4
   , clarityOfMind
+  , claspOfBlackOnyx
   , combatTraining1
   , daisysToteBag
   , daisysToteBagAdvanced
@@ -234,6 +244,7 @@ allPlayerAssetCards = mapFromList $ map
   , theNecronomiconAdvanced
   , theNecronomiconOlausWormiusTranslation
   , theRedGlovedMan5
+  , theTatteredCloak
   , thirtyTwoColt
   , toothOfEztli
   , trueGrit
@@ -261,6 +272,7 @@ allEncounterAssetCards = mapFromList $ map
   , ishimaruHaruko
   , sebastienMoreau
   , ashleighClarke
+  , mrPeabody
   ]
 
 rolands38Special :: CardDef
@@ -1404,6 +1416,41 @@ plucky1 = (asset "03115" "Plucky" 1 Survivor)
   , cdCardTraits = setFromList [Talent, Composure]
   , cdLimits = [LimitPerTrait Composure 1]
   , cdLevel = 1
+  }
+
+mrPeabody :: CardDef
+mrPeabody = (storyAsset
+              "03141"
+              ("Mr. Peabody" <:> "Historical Society Curator")
+              0
+              EchoesOfThePast
+            )
+  { cdCardTraits = setFromList [Ally, HistoricalSociety]
+  , cdUnique = True
+  , cdCardType = EncounterAssetType
+  }
+
+claspOfBlackOnyx :: CardDef
+claspOfBlackOnyx = (storyWeakness
+                     "03142"
+                     ("Clasp of Black Onyx" <:> "A Gift Unlooked For")
+                     EchoesOfThePast
+                   )
+  { cdSkills = [SkillWillpower, SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Item, Clothing]
+  , cdCost = Just (StaticCost 1)
+  , cdRevelation = False
+  }
+
+theTatteredCloak :: CardDef
+theTatteredCloak = (storyAsset
+                     "03143"
+                     ("The Tattered Cloak" <:> "Regalia Dementia")
+                     2
+                     EchoesOfThePast
+                   )
+  { cdSkills = [SkillWillpower, SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Item, Clothing]
   }
 
 toothOfEztli :: CardDef

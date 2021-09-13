@@ -75,9 +75,11 @@ data Trait
   | Geist
   | Ghoul
   | Grant
+  | GroundFloor
   | Gug
   | Hazard
   | Hex
+  | HistoricalSociety
   | Human
   | Humanoid
   | Hunter
@@ -107,6 +109,7 @@ data Trait
   | Otherworld
   | Pact
   | Paradox
+  | Passageway
   | Patron
   | Performer
   | Poison
@@ -123,6 +126,7 @@ data Trait
   | Scheme
   | Scholar
   | Science
+  | SecondFloor
   | SentinelHill
   | Serpent
   | Service
@@ -143,6 +147,7 @@ data Trait
   | Task
   | Tentacle
   | Terror
+  | ThirdFloor
   | Tindalos
   | Tome
   | Tool

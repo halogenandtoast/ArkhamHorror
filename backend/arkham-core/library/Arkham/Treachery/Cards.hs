@@ -32,6 +32,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdClassSymbol = if isJust isWeakness then Just Neutral else Nothing
   , cdSkills = mempty
   , cdCardTraits = mempty
+  , cdRevealedCardTraits = mempty
   , cdKeywords = mempty
   , cdFastWindow = Nothing
   , cdAction = Nothing

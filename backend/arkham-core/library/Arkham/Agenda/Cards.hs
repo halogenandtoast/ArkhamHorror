@@ -21,6 +21,7 @@ agenda cardCode name encounterSet = CardDef
   , cdClassSymbol = Nothing
   , cdSkills = mempty
   , cdCardTraits = mempty
+  , cdRevealedCardTraits = mempty
   , cdKeywords = mempty
   , cdFastWindow = Nothing
   , cdAction = Nothing

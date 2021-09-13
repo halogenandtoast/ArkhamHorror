@@ -67,3 +67,53 @@ prologue = FlavorText
     \ consider leaving early, stifling a yawn. Before you are able to decide,\
     \ however, you find yourself drifting…drifting…to sleep."
   ]
+
+lunacysReward1 :: Message
+lunacysReward1 = FlavorText
+  (Just "Lunacy's Reward 1")
+  [ "The change in the atmosphere has you curious.\
+    \ What if it was all a trick of your mind? What if the hauntings that\
+    \ follow The King in Yellow are but transitory? The answers to all of\
+    \ your questions might lie inside. Cautiously, you open the front door\
+    \ to the manor once again. Reassuring jazz and the clamor of casual\
+    \ conversation grow louder as you step inside. The enticing smell of roasted\
+    \ pork wafts through the air. As you suspected, the signs of struggle and\
+    \ oddities you noticed before have vanished without explanation. Then, as\
+    \ you turn the corner into the dining room, you find the Stranger speaking\
+    \ with another man—tall, mustached, wearing a fine black suit, and\
+    \ holding a silver-handled cane. The Stranger turns to you, his gaze drills\
+    \ through your mind, and your vision swims with agony. Before you realize\
+    \ it, you are running as fast as you can, toppling through the front doorway\
+    \ in a haze of pain and disorientation. Without time to catch your breath,\
+    \ you race to your vehicle and speed away, hands trembling upon the\
+    \ steering wheel."
+  ]
+
+lunacysReward2 :: Message
+lunacysReward2 = FlavorText
+  (Just "Lunacy's Reward 2")
+  [ "You can’t trust your senses. This is all a trick, an\
+    \ attempt to lure you back inside. You’re no safer now than you were before.\
+    \ Swallowing your fear, you set to work barricading the front door of the\
+    \ manor using several of the heavy stone benches lining the cobblestone\
+    \ path in the front yard. You hope it’s enough, but you aren’t willing to\
+    \ stick around to find out. As soon as you’re done, you head back to your\
+    \ vehicle and drive toward Southside, where you hope to find answers."
+  ]
+
+lunacysReward3 :: Message
+lunacysReward3 = FlavorText
+  (Just "Lunacy's Reward 3")
+  [ "You dare not risk stepping back inside that\
+    \ madhouse. But you canbpt let the monstrosities run amok, either. You\
+    \ root through the open garage for a few supplies, finding an old hose, an\
+    \ empty gasoline canister, and some matches. Knowing what you must do,\
+    \ you first siphon some gas from Mrs. Dumainebns Oakland 6-54A. You\
+    \ spread the gasoline across the front porch, inside the garage, and around\
+    \ the manorb s outer walls. From there, all it takes is several matches to\
+    \ start the blaze. You watch from the front yard as the manor is eventually\
+    \ consumed by the flames. The sounds of crackling fire and snapping\
+    \ wood and the screeching of dying horrors fills the street. Satisfied, you\
+    \ head back to your vehicle and tear off toward Southside, full of grim\
+    \ determination."
+  ]

@@ -9,15 +9,20 @@ import Arkham.Types.Classes.HasRecord
 
 data CampaignLog = CampaignLog
   { campaignLogRecorded :: HashSet CampaignLogKey
+  , campaignLogCrossedOut :: HashSet CampaignLogKey
   , campaignLogRecordedCounts :: HashMap CampaignLogKey Int
-  , campaignLogRecordedSets :: HashMap CampaignLogKey [CardCode]
+  , campaignLogRecordedSets :: HashMap CampaignLogKey [Recorded CardCode]
   }
   deriving stock (Show, Generic, Eq)
 
 recorded :: Lens' CampaignLog (HashSet CampaignLogKey)
 recorded = lens campaignLogRecorded $ \m x -> m { campaignLogRecorded = x }
 
-recordedSets :: Lens' CampaignLog (HashMap CampaignLogKey [CardCode])
+crossedOut :: Lens' CampaignLog (HashSet CampaignLogKey)
+crossedOut =
+  lens campaignLogCrossedOut $ \m x -> m { campaignLogCrossedOut = x }
+
+recordedSets :: Lens' CampaignLog (HashMap CampaignLogKey [Recorded CardCode])
 recordedSets =
   lens campaignLogRecordedSets $ \m x -> m { campaignLogRecordedSets = x }
 
@@ -40,6 +45,7 @@ instance HasRecord CampaignLog where
 mkCampaignLog :: CampaignLog
 mkCampaignLog = CampaignLog
   { campaignLogRecorded = mempty
+  , campaignLogCrossedOut = mempty
   , campaignLogRecordedCounts = mempty
   , campaignLogRecordedSets = mempty
   }

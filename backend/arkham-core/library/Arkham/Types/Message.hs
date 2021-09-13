@@ -249,6 +249,7 @@ data Message
     | Exile Target
     | Exiled Target Card
     | ScenarioResolution Resolution
+    | ScenarioResolutionStep Int Resolution
     | EndOfScenario
     | EndRound
     | EndRoundWindow
@@ -416,6 +417,7 @@ data Message
     | Record CampaignLogKey
     | RecordCount CampaignLogKey Int
     | RecordSet CampaignLogKey [CardCode]
+    | CrossOutRecordSetEntries CampaignLogKey [CardCode]
     | RefillSlots InvestigatorId SlotType [AssetId]
     | Remember ScenarioLogKey
     | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode

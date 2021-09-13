@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
+import Arkham.Types.ClassSymbol
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -1262,6 +1262,9 @@ instance HasGame env => HasId InvestigatorId env EventId where
 
 instance HasGame env => HasName env LocationId where
   getName = getName <=< getLocation
+
+instance HasGame env => HasName env InvestigatorId where
+  getName = getName <=< getInvestigator
 
 instance HasGame env => HasName env (Unrevealed LocationId) where
   getName (Unrevealed lid) = getName . Unrevealed =<< getLocation lid

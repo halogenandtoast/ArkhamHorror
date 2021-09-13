@@ -252,7 +252,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
               Assets.powderOfIbnGhazi
             <$ guard
                  (any
-                   ((`notElem` sacrificedToYogSothoth) . toCardCode)
+                   ((`notElem` sacrificedToYogSothoth) . Recorded . toCardCode)
                    [ Assets.drHenryArmitage
                    , Assets.professorWarrenRice
                    , Assets.drFrancisMorgan
@@ -265,7 +265,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
               Assets.drHenryArmitage
             <$ guard
                  (drHenryArmitageUnowned
-                 && toCardCode Assets.drHenryArmitage
+                 && Recorded (toCardCode Assets.drHenryArmitage)
                  `notElem` sacrificedToYogSothoth
                  )
         addProfessorWarrenRice =
@@ -275,7 +275,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
               Assets.professorWarrenRice
             <$ guard
                  (professorWarrenRiceUnowned
-                 && toCardCode Assets.professorWarrenRice
+                 && Recorded (toCardCode Assets.professorWarrenRice)
                  `notElem` sacrificedToYogSothoth
                  )
         addDrFrancisMorgan =
@@ -285,7 +285,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
               Assets.drFrancisMorgan
             <$ guard
                  (drFrancisMorganUnowned
-                 && toCardCode Assets.drFrancisMorgan
+                 && Recorded (toCardCode Assets.drFrancisMorgan)
                  `notElem` sacrificedToYogSothoth
                  )
         addZebulonWhateley =
@@ -294,7 +294,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
               investigatorIds
               Assets.zebulonWhateley
             <$ guard
-                 (toCardCode Assets.zebulonWhateley
+                 (Recorded (toCardCode Assets.zebulonWhateley)
                  `notElem` sacrificedToYogSothoth
                  )
         addEarlSawyer =
@@ -303,7 +303,9 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
               investigatorIds
               Assets.earlSawyer
             <$ guard
-                 (toCardCode Assets.earlSawyer `notElem` sacrificedToYogSothoth)
+                 (Recorded (toCardCode Assets.earlSawyer)
+                 `notElem` sacrificedToYogSothoth
+                 )
       c <$ pushAll
         ([ AskMap
            . mapFromList
@@ -347,7 +349,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
                  )
                | iid <- investigatorIds
                ]
-           | "02040" `notElem` sacrificedToYogSothoth
+           | Recorded "02040" `notElem` sacrificedToYogSothoth
            ]
         <> addDrHenryArmitage
         <> [ AskMap
@@ -371,7 +373,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
                  )
                | iid <- investigatorIds
                ]
-           | "02061" `notElem` sacrificedToYogSothoth
+           | Recorded "02061" `notElem` sacrificedToYogSothoth
            ]
         <> addProfessorWarrenRice
         <> [ AskMap
@@ -393,7 +395,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
                  )
                | iid <- investigatorIds
                ]
-           | "02080" `notElem` sacrificedToYogSothoth
+           | Recorded "02080" `notElem` sacrificedToYogSothoth
            ]
         <> addDrFrancisMorgan
         <> [ AskMap
@@ -416,7 +418,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
                  )
                | iid <- investigatorIds
                ]
-           | "02217" `notElem` sacrificedToYogSothoth
+           | Recorded "02217" `notElem` sacrificedToYogSothoth
            ]
         <> addZebulonWhateley
         <> [ AskMap
@@ -437,7 +439,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
                  )
                | iid <- investigatorIds
                ]
-           | "02218" `notElem` sacrificedToYogSothoth
+           | Recorded "02218" `notElem` sacrificedToYogSothoth
            ]
         <> addEarlSawyer
         <> addPowderOfIbnGhazi

@@ -453,7 +453,9 @@ getRecordCount :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m Int
 getRecordCount = hasRecordCount
 
 getRecordSet
-  :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m [CardCode]
+  :: (HasRecord env, MonadReader env m)
+  => CampaignLogKey
+  -> m [Recorded CardCode]
 getRecordSet = hasRecordSet
 
 getIsUnused'
@@ -1860,6 +1862,8 @@ matchWho you who = \case
       <$> getModifiers (InvestigatorSource who) (InvestigatorTarget who)
   Matcher.UneliminatedInvestigator ->
     member who <$> getSet Matcher.UneliminatedInvestigator
+  Matcher.ResignedInvestigator ->
+    member who <$> getSet Matcher.ResignedInvestigator
   Matcher.InvestigatorEngagedWith enemyMatcher -> do
     engagedInvestigators <- select
       (Matcher.InvestigatorEngagedWith enemyMatcher)

@@ -144,15 +144,33 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
         let investigatorStoryCards = findWithDefault [] iid campaignStoryCards
         push (LoadDeck iid . Deck $ unDeck deck <> investigatorStoryCards)
       pure a
-    CrossOutRecord key ->
+    CrossOutRecord key -> do
+      let
+        crossedOutModifier =
+          if key `member` view (logL . recorded) a then insertSet key else id
+
       pure
         $ a
         & (logL . recorded %~ deleteSet key)
+        & (logL . crossedOut %~ crossedOutModifier)
         & (logL . recordedSets %~ deleteMap key)
         & (logL . recordedCounts %~ deleteMap key)
     Record key -> pure $ a & logL . recorded %~ insertSet key
     RecordSet key cardCodes ->
-      pure $ a & logL . recordedSets %~ insertMap key cardCodes
+      pure $ a & logL . recordedSets %~ insertMap key (map Recorded cardCodes)
+    CrossOutRecordSetEntries key cardCodes ->
+      pure
+        $ a
+        & logL
+        . recordedSets
+        %~ adjustMap
+             (map
+               (\case
+                 Recorded c | c `elem` cardCodes -> CrossedOut c
+                 other -> other
+               )
+             )
+             key
     RecordCount key int ->
       pure $ a & logL . recordedCounts %~ insertMap key int
     ScenarioResolution r -> case campaignStep of
@@ -161,7 +179,7 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
     DrivenInsane iid -> pure $ a & logL . recordedSets %~ insertWith
       (<>)
       DrivenInsaneInvestigators
-      (singleton $ unInvestigatorId iid)
+      (singleton $ Recorded $ unInvestigatorId iid)
     _ -> pure a
 
 baseAttrs :: CampaignId -> Text -> Difficulty -> [TokenFace] -> CampaignAttrs

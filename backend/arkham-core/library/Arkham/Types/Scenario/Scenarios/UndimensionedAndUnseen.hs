@@ -143,7 +143,7 @@ standaloneTokens =
 
 instance HasRecord UndimensionedAndUnseen where
   hasRecord _ = pure False
-  hasRecordSet SacrificedToYogSothoth = pure ["02040"]
+  hasRecordSet SacrificedToYogSothoth = pure [Recorded "02040"]
   hasRecordSet _ = pure []
   hasRecordCount _ = pure 0
 

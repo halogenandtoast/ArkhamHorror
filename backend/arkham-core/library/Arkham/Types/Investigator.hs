@@ -385,6 +385,9 @@ instance Entity Investigator where
   type EntityId Investigator = InvestigatorId
   type EntityAttrs Investigator = InvestigatorAttrs
 
+instance HasName env Investigator where
+  getName = pure . toName
+
 instance Named Investigator where
   toName = toName . toAttrs
 

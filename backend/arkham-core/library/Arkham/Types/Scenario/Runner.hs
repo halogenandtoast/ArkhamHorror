@@ -25,6 +25,7 @@ type ScenarioRunner env
     , HasCount ResourceCount env InvestigatorId
     , HasCount ClueCount env InvestigatorId
     , HasCount ClueCount env AssetId
+    , HasCount ClueCount env ActId
     , HasCount XPCount env ()
     , HasCount EnemyCount env (InvestigatorLocation, [Trait])
     , HasId CardCode env EnemyId
@@ -38,6 +39,7 @@ type ScenarioRunner env
     , HasName env LocationId
     , HasRecord env
     , HasSet AgendaId env ()
+    , HasSet ActId env ()
     , HasSet ClosestEnemyId env (InvestigatorId, [Trait])
     , HasSet ClosestEnemyId env InvestigatorId
     , HasSet CompletedScenarioId env ()

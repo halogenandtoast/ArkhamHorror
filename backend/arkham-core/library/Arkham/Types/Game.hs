@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes hiding (discard)
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -627,6 +627,9 @@ getInvestigatorsMatching = \case
   UneliminatedInvestigator -> do
     is <- toList . view investigatorsL <$> getGame
     pure $ filter (not . isEliminated) is
+  ResignedInvestigator -> do
+    is <- toList . view investigatorsL <$> getGame
+    pure $ filter isResigned is
   -- TODO: too lazy to do these right now
   NoDamageDealtThisTurn -> pure []
   UnengagedInvestigator -> pure []
@@ -1990,6 +1993,9 @@ instance HasGame env => HasSet EnemyId env InvestigatorId where
 instance HasGame env => HasSet AgendaId env () where
   getSet _ = keysSet . view agendasL <$> getGame
 
+instance HasGame env => HasSet ActId env () where
+  getSet _ = keysSet . view actsL <$> getGame
+
 instance HasGame env => HasSet VictoryDisplayCardCode env () where
   getSet _ =
     setFromList . map (coerce . toCardCode) . view victoryDisplayL <$> getGame
@@ -2206,9 +2212,6 @@ instance HasGame env => HasSet LocationId env [Trait] where
     keysSet . filterMap hasMatchingTrait . view locationsL <$> getGame
    where
     hasMatchingTrait = notNull . (setFromList traits `intersection`) . toTraits
-
-instance HasGame env => HasSet ActId env () where
-  getSet _ = keysSet . view actsL <$> getGame
 
 instance HasGame env => HasSet InScenarioInvestigatorId env () where
   getSet _ =

@@ -43,6 +43,7 @@ data EncounterSet
   | EvilPortents
   | Hauntings
   | CultOfTheYellowSign
+  | EchoesOfThePast
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

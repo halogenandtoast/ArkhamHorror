@@ -58,6 +58,7 @@ data InvestigatorMatcher
   | NotYou
   | Anyone
   | UneliminatedInvestigator
+  | ResignedInvestigator
   | InvestigatorCanMove
   | ContributedMatchingIcons ValueMatcher
   | HandWith CardListMatcher

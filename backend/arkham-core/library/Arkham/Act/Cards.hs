@@ -81,6 +81,9 @@ allActCards = mapFromList $ map
   , theStrangerTheShoresOfHali
   , curtainCall
   , discoveringTheTruth
+  , raceForAnswers
+  , mistakesOfThePast
+  , theOath
   , mysteriousGateway
   , findingLadyEsprit
   , huntingTheRougarou
@@ -208,6 +211,15 @@ curtainCall = act "03048" "Curtain Call" CurtainCall
 
 discoveringTheTruth :: CardDef
 discoveringTheTruth = act "03064" "Discovering the Truth" TheLastKing
+
+raceForAnswers :: CardDef
+raceForAnswers = act "03124" "Race for Answers" EchoesOfThePast
+
+mistakesOfThePast :: CardDef
+mistakesOfThePast = act "03125" "Mistakes of the Past" EchoesOfThePast
+
+theOath :: CardDef
+theOath = act "03126" "The Oath" EchoesOfThePast
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" ReturnToTheGathering

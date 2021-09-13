@@ -208,6 +208,16 @@ fashionablyLate = agenda "03062" "Fashionably Late" TheLastKing
 theTerrifyingTruth :: CardDef
 theTerrifyingTruth = agenda "03063" "The Terrifying Truth" TheLastKing
 
+theTruthIsHidden :: CardDef
+theTruthIsHidden = agenda "03121" "The Truth is Hidden" EchoesOfThePast
+
+ransackingTheManor :: CardDef
+ransackingTheManor = agenda "03122" "Ransacking the Manor" EchoesOfThePast
+
+secretsBetterLeftHidden :: CardDef
+secretsBetterLeftHidden =
+  agenda "03123" "Secrets Better Left Hidden" EchoesOfThePast
+
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =
   agenda "50026" "Predator or Prey?" ReturnToTheMidnightMasks

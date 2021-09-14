@@ -40,11 +40,12 @@ data ModifierType
   | ActionCostSetToModifier Int
   | ActionSkillModifier Action SkillType Int
   | ActionsAreFree
+  | AddKeyword Keyword
+  | AddSkillIcons [SkillType]
   | AdditionalActions Int
   | AdditionalStartingUses Int
-  | AddKeyword Keyword
-  | AlternateSuccessfullInvestigation
   | AlternateSuccessfullEvasion
+  | AlternateSuccessfullInvestigation
   | AlternativeReady Source
   | AnySkillValue Int
   | AttacksCannotBeCancelled
@@ -52,17 +53,16 @@ data ModifierType
   | BecomesFast
   | Blank
   | Blocked
-  | CancelSkills
   | CanBeAssignedDamage
-  | NonDirectHorrorMustBeAssignToThisFirst
-  | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast (Maybe CardType, [Trait])
   | CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation Int
+  | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
   | CanOnlyUseCardsInRole ClassSymbol
   | CanPlayTopOfDiscard (Maybe CardType, [Trait])
-  | PlaceOnBottomOfDeckInsteadOfDiscard
+  | CancelSkills
   | CannotBeAttackedByNonElite
+  | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
   | CannotBeDiscarded
   | CannotBeEnteredByNonElite
   | CannotBeEvaded
@@ -70,10 +70,9 @@ data ModifierType
   | CannotCancelHorror
   | CannotCommitCards CardMatcher
   | CannotDiscoverClues
-  | CannotTakeControlOfClues
   | CannotDrawCards
+  | CannotEngage InvestigatorId
   | CannotGainResources
-  | CannotTakeAction ActionTarget
   | CannotHealHorror
   | CannotInvestigate
   | CannotMakeAttacksOfOpportunity
@@ -84,19 +83,20 @@ data ModifierType
   | CannotPlaceClues
   | CannotPlay [(CardType, HashSet Trait)]
   | CannotSpendClues
+  | CannotTakeAction ActionTarget
+  | CannotTakeControlOfClues
   | CannotTriggerFastAbilities
-  | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
   | CardsCannotLeaveYourDiscardPile
+  | ChangeTokenModifier TokenModifier
   | ControlledAssetsCannotReady
   | DamageDealt Int
   | DamageTaken Int
   | Difficulty Int
-  | SetDifficulty Int
   | DiscoveredClues Int
   | DoNotDrawChaosTokensForSkillChecks
   | DoesNotDamageOtherInvestigator
-  | DoubleNegativeModifiersOnTokens
   | DoubleDifficulty
+  | DoubleNegativeModifiersOnTokens
   | DoubleSuccess
   | DuringEnemyPhaseMustMoveToward Target
   | EnemyCannotEngage InvestigatorId
@@ -111,28 +111,29 @@ data ModifierType
   | IgnoreText
   | IgnoreToken
   | IgnoreTokenEffects
+  | IncreaseCostOf CardMatcher Int
   | MaxDamageTaken Int
   | MayChooseNotToTakeUpkeepResources
   | ModifierIfSucceededBy Int Modifier
   | NegativeToPositive
-  | ChangeTokenModifier TokenModifier
+  | NonDirectHorrorMustBeAssignToThisFirst
+  | PlaceOnBottomOfDeckInsteadOfDiscard
   | ReduceCostOf CardMatcher Int
-  | IncreaseCostOf CardMatcher Int
-  | RemoveKeyword Keyword
   | RemoveFromGameInsteadOfDiscard
+  | RemoveKeyword Keyword
   | ReturnToHandAfterTest
   | SanityModifier Int
+  | SetDifficulty Int
   | ShroudModifier Int
   | SkillModifier SkillType Int
-  | StartingResources Int
-  | TokenValueModifier Int
-  | TokenFaceModifier [TokenFace]
-  | TreatAllDamageAsDirect
+  | SkillCannotBeIncrease SkillType
   | SpawnNonEliteAtConnectingInstead
+  | StartingResources Int
+  | TokenFaceModifier [TokenFace]
+  | TokenValueModifier Int
+  | TreatAllDamageAsDirect
   | UseSkillInPlaceOf SkillType SkillType
-  | AddSkillIcons [SkillType]
   | XPModifier Int
-  | CannotEngage InvestigatorId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON, Hashable)
 

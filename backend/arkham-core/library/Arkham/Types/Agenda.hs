@@ -40,7 +40,7 @@ instance HasStep AgendaStep env Agenda where
 instance HasAbilities Agenda where
   getAbilities = genericGetAbilities
 
-instance (HasId (Maybe EnemyId) env EnemyMatcher, HasRecord env, AgendaRunner env) => RunMessage env Agenda where
+instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessage env Agenda where
   runMessage = genericRunMessage
 
 instance (Query EnemyMatcher env, HasSet Trait env EnemyId) => HasModifiersFor env Agenda where

@@ -5,6 +5,7 @@ module Arkham.Types.ModifierData
 import Arkham.Prelude
 
 import Arkham.Json
+import Arkham.Types.Id
 import Arkham.Types.Modifier
 
 newtype ModifierData = ModifierData { mdModifiers :: [Modifier] }
@@ -13,3 +14,10 @@ newtype ModifierData = ModifierData { mdModifiers :: [Modifier] }
 instance ToJSON ModifierData where
   toJSON = genericToJSON $ aesonOptions $ Just "md"
   toEncoding = genericToEncoding $ aesonOptions $ Just "md"
+
+newtype ConnectionData = ConnectionData { cdConnectedLocations :: [LocationId] }
+  deriving stock (Show, Eq, Generic)
+
+instance ToJSON ConnectionData where
+  toJSON = genericToJSON $ aesonOptions $ Just "cd"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "cd"

@@ -392,6 +392,8 @@ data Message
     | PayedForDynamicCard InvestigatorId CardId Int Bool
     | PerformEnemyAttack InvestigatorId EnemyId DamageStrategy
     | PlaceClues Target Int
+    | PlaceCluesUpToClueValue LocationId Int
+    | FlipClues Target Int
     | PlaceDoom Target Int
     | PlaceHorror Target Int
     | PlaceDoomOnAgenda
@@ -407,6 +409,7 @@ data Message
     | PlayFastEvent InvestigatorId CardId (Maybe Target) [Window]
     | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
     | PlayedCard InvestigatorId Card
+    | ResolvedCard InvestigatorId Card
     | PlayerWindow InvestigatorId [Message] Bool
     | PutCardIntoPlay InvestigatorId Card (Maybe Target)
     | PutOnTopOfDeck InvestigatorId PlayerCard

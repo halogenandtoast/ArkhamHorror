@@ -1085,7 +1085,9 @@ historicalSocietyRecordOffice_138 = locationWithUnrevealed
   EchoesOfThePast
 
 hiddenLibrary :: CardDef
-hiddenLibrary = location "03139" "Hidden Library" mempty EchoesOfThePast
+hiddenLibrary = (location "03139" "Hidden Library" mempty EchoesOfThePast)
+  { cdVictoryPoints = Just 2
+  }
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

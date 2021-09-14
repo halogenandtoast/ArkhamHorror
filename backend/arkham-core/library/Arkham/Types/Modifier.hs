@@ -14,6 +14,7 @@ import Arkham.Types.ClassSymbol
 import Arkham.Types.Id
 import Arkham.Types.Keyword
 import Arkham.Types.Matcher
+import Arkham.Types.Phase
 import Arkham.Types.SkillType
 import {-# SOURCE #-} Arkham.Types.Source
 import {-# SOURCE #-} Arkham.Types.Target
@@ -41,6 +42,7 @@ data ModifierType
   | ActionSkillModifier Action SkillType Int
   | ActionsAreFree
   | AddKeyword Keyword
+  | AddTrait Trait
   | AddSkillIcons [SkillType]
   | AdditionalActions Int
   | AdditionalStartingUses Int
@@ -126,7 +128,8 @@ data ModifierType
   | SetDifficulty Int
   | ShroudModifier Int
   | SkillModifier SkillType Int
-  | SkillCannotBeIncrease SkillType
+  | SkillCannotBeIncreased SkillType
+  | SkipMythosPhaseStep MythosPhaseStep
   | SpawnNonEliteAtConnectingInstead
   | StartingResources Int
   | TokenFaceModifier [TokenFace]

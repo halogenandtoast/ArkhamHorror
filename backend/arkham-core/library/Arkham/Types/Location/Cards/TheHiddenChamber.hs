@@ -51,9 +51,4 @@ instance LocationRunner env => RunMessage env TheHiddenChamber where
       TheHiddenChamber <$> runMessage msg attrs
     -- Revealing will cause the other location to drop it's known connections
     -- So we must queue up to add it back
-    RevealLocation _ lid | lid == locationId attrs -> do
-      pushAll $ map
-        (`AddDirectConnection` toId attrs)
-        (setToList $ locationConnectedLocations attrs)
-      TheHiddenChamber <$> runMessage msg attrs
     _ -> TheHiddenChamber <$> runMessage msg attrs

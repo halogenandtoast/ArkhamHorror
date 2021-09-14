@@ -81,7 +81,6 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorDeck :: Deck PlayerCard
   , investigatorDiscard :: [PlayerCard]
   , investigatorHand :: [Card]
-  , investigatorConnectedLocations :: HashSet LocationId
   , investigatorTraits :: HashSet Trait
   , investigatorTreacheries :: HashSet TreacheryId
   , investigatorInHandTreacheries :: HashSet TreacheryId
@@ -137,10 +136,6 @@ sanityDamageL =
 
 locationL :: Lens' InvestigatorAttrs LocationId
 locationL = lens investigatorLocation $ \m x -> m { investigatorLocation = x }
-
-connectedLocationsL :: Lens' InvestigatorAttrs (HashSet LocationId)
-connectedLocationsL = lens investigatorConnectedLocations
-  $ \m x -> m { investigatorConnectedLocations = x }
 
 slotsL :: Lens' InvestigatorAttrs (HashMap SlotType [Slot])
 slotsL = lens investigatorSlots $ \m x -> m { investigatorSlots = x }
@@ -254,10 +249,11 @@ skillValueFor skill maction tempModifiers attrs = foldr
   (baseSkillValueFor skill maction tempModifiers attrs)
   tempModifiers
  where
-  applyModifier (AnySkillValue m) n = max 0 (n + m)
-  applyModifier (SkillModifier skillType m) n =
+  canBeIncreased = SkillCannotBeIncreased skill `notElem` tempModifiers
+  applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 = max 0 (n + m)
+  applyModifier (SkillModifier skillType m) n | canBeIncreased || m < 0 =
     if skillType == skill then max 0 (n + m) else n
-  applyModifier (ActionSkillModifier action skillType m) n =
+  applyModifier (ActionSkillModifier action skillType m) n | canBeIncreased || m < 0 =
     if skillType == skill && Just action == maction then max 0 (n + m) else n
   applyModifier _ n = n
 
@@ -448,7 +444,6 @@ baseAttrs iid name classSymbol Stats {..} traits = InvestigatorAttrs
   , investigatorDeck = mempty
   , investigatorDiscard = mempty
   , investigatorHand = mempty
-  , investigatorConnectedLocations = mempty
   , investigatorTraits = setFromList traits
   , investigatorTreacheries = mempty
   , investigatorInHandTreacheries = mempty
@@ -1347,9 +1342,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (DiscoverCluesAtLocation iid lid modifiedCluesToDiscover maction)
       else pure a
   GainClues iid n | iid == investigatorId -> do
-    push (After (GainClues iid n))
-    pushAll =<< checkWindows
+    windows <- checkWindows
       ((`Window` Window.GainsClues iid n) <$> [Timing.When, Timing.After])
+    a <$ pushAll (windows <> [PlaceClues (InvestigatorTarget iid) n, After (GainClues iid n)])
+  PlaceClues (InvestigatorTarget iid) n | iid == investigatorId -> do
     pure $ a & cluesL +~ n
   DiscoverClues iid lid n _ | iid == investigatorId ->
     a <$ push (AfterDiscoverClues iid lid n)
@@ -1579,7 +1575,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) ->
     a <$ push (MoveTo source investigatorId lid)
   MoveTo source iid lid | iid == investigatorId -> do
-    connectedLocations <- mapSet unConnectedLocationId <$> getSet lid
     movedByWindows <- Helpers.windows [Window.MovedBy source lid iid]
     pushAll
       $ movedByWindows
@@ -1587,15 +1582,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          , WhenEnterLocation iid lid
          , AfterEnterLocation iid lid
          ]
-    pure $ a & locationL .~ lid & connectedLocationsL .~ connectedLocations
+    pure $ a & locationL .~ lid
   SetLocationAsIf iid lid | iid == investigatorId ->
     -- In the as if situation we want to avoid callbacks
     -- so this sets the value directly
     pure $ a & locationL .~ lid
-  AddedConnection lid1 lid2 | lid1 == investigatorLocation ->
-    pure $ a & (connectedLocationsL %~ insertSet lid2)
-  -- AddedConnection lid1 lid2 | lid2 == investigatorLocation ->
-  --   pure $ a & (connectedLocationsL %~ insertSet lid1)
   AddSlot iid slotType slot | iid == investigatorId -> do
     let
       slots = findWithDefault [] slotType investigatorSlots

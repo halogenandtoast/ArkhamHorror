@@ -23,14 +23,15 @@ newtype HistoricalSocietyRecordOffice_129 = HistoricalSocietyRecordOffice_129 Lo
 
 historicalSocietyRecordOffice_129
   :: LocationCard HistoricalSocietyRecordOffice_129
-historicalSocietyRecordOffice_129 = locationWith
+historicalSocietyRecordOffice_129 = locationWithRevealedSideConnections
   HistoricalSocietyRecordOffice_129
   Cards.historicalSocietyRecordOffice_129
   2
   (PerPlayer 1)
   NoSymbol
   [Square]
-  (revealedSymbolL .~ Plus)
+  Plus
+  [Square]
 
 instance HasModifiersFor env HistoricalSocietyRecordOffice_129 where
   getModifiersFor _ (EnemyTarget eid) (HistoricalSocietyRecordOffice_129 attrs)

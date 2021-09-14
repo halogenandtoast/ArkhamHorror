@@ -33,7 +33,7 @@ instance HasAbilities AllIsOne where
         EncounterCardSource
     ]
 
-instance (HasRecord env, AgendaRunner env) => RunMessage env AllIsOne where
+instance AgendaRunner env => RunMessage env AllIsOne where
   runMessage msg a@(AllIsOne attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)

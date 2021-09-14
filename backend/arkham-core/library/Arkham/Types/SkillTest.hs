@@ -187,9 +187,15 @@ initSkillTest iid source target maction skillType' _skillValue' difficulty' =
 
 skillIconCount
   :: (MonadReader env m, HasModifiersFor env ()) => SkillTest -> m Int
-skillIconCount st@SkillTest {..} = length . filter matches <$> concatMapM
-  (iconsForCard . snd)
-  (toList skillTestCommittedCards)
+skillIconCount st@SkillTest {..} = do
+  investigatorModifiers <- getModifiers
+    (toSource st)
+    (InvestigatorTarget skillTestInvestigator)
+  if SkillCannotBeIncreased skillTestSkillType `elem` investigatorModifiers
+    then pure 0
+    else length . filter matches <$> concatMapM
+      (iconsForCard . snd)
+      (toList skillTestCommittedCards)
  where
   iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
     modifiers' <- getModifiers (toSource st) (CardIdTarget pcId)

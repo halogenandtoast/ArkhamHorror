@@ -47,14 +47,20 @@ instance CanCheckPlayable env => RunMessage env UncageTheSoul where
           windows'
         )
         results
-      cardsWithCosts <- traverse (traverseToSnd (getModifiedCardCost iid)) cards
       e <$ pushAll
         [ chooseOne
           iid
           [ TargetLabel
               (CardIdTarget $ toCardId c)
-              [SpendResources iid cost, PlayCard iid (toCardId c) Nothing False]
-          | (c, cost) <- cardsWithCosts
+              [ CreateEffect
+                (toCardCode attrs)
+                Nothing
+                (toSource attrs)
+                (CardIdTarget $ toCardId c)
+              , PayCardCost iid (toCardId c)
+              , PlayCard iid (toCardId c) Nothing False
+              ]
+          | c <- cards
           ]
         , Discard (toTarget attrs)
         ]

@@ -43,7 +43,7 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       mHuntingHorror <- getHuntingHorror
-      haroldWalsted <- EncounterCard <$> genEncounterCard Assets.haroldWalsted
+      haroldWalsted <- getSetAsideCard Assets.haroldWalsted
       case mHuntingHorror of
         Just eid -> do
           lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
@@ -53,7 +53,7 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
               leadInvestigatorId
               [ TargetLabel
                   (InvestigatorTarget iid)
-                  [AddCampaignCardToDeck iid Assets.haroldWalsted]
+                  [TakeControlOfSetAsideAsset iid haroldWalsted]
               | iid <- investigatorIds
               ]
             , EnemySpawn Nothing lid eid

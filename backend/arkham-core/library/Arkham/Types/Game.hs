@@ -379,6 +379,26 @@ withModifiers a = do
   modifiers' <- getModifiersFor source (toTarget a) ()
   pure $ a `with` ModifierData modifiers'
 
+withLocationConnectionData
+  :: (MonadReader env m, HasGame env, HasCallStack)
+  => With Location ModifierData
+  -> m (With (With Location ModifierData) ConnectionData)
+withLocationConnectionData inner@(With target mdata) = do
+  connectedLocationIds <- selectList
+    $ AccessibleFrom (LocationWithId $ toId target)
+  pure $ inner `with` ConnectionData connectedLocationIds
+
+withInvestigatorConnectionData
+  :: (MonadReader env m, HasGame env, HasCallStack)
+  => With WithDeckSize ModifierData
+  -> m (With (With WithDeckSize ModifierData) ConnectionData)
+withInvestigatorConnectionData inner@(With target _) = case target of
+  WithDeckSize investigator -> do
+    lid <- getId @LocationId (toId investigator)
+    connectedLocationIds <- selectList $ AccessibleLocation <> AccessibleFrom
+      (LocationWithId lid)
+    pure $ inner `with` ConnectionData connectedLocationIds
+
 newtype WithDeckSize = WithDeckSize Investigator
   deriving newtype TargetEntity
 
@@ -466,9 +486,20 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "log" .= toJSON glog
     , "mode" .= toJSON gameMode
     , "encounterDeckSize" .= toJSON (length $ unDeck gameEncounterDeck)
-    , "locations" .= toJSON (runReader (traverse withModifiers gameLocations) g)
+    , "locations" .= toJSON
+      (runReader
+        (traverse withLocationConnectionData
+        =<< traverse withModifiers gameLocations
+        )
+        g
+      )
     , "investigators" .= toJSON
-      (runReader (traverse (withModifiers . WithDeckSize) gameInvestigators) g)
+      (runReader
+        (traverse withInvestigatorConnectionData
+        =<< traverse (withModifiers . WithDeckSize) gameInvestigators
+        )
+        g
+      )
     , "enemies" .= toJSON (runReader (traverse withModifiers gameEnemies) g)
     , "enemiesInVoid"
       .= toJSON (runReader (traverse withModifiers gameEnemiesInVoid) g)
@@ -1052,6 +1083,8 @@ getEnemiesMatching matcher = do
     EnemyWithKeyword k -> fmap (elem k) . getSet . toId
     EnemyWithClues gameValueMatcher ->
       getCount >=> (`gameValueMatches` gameValueMatcher) . unClueCount
+    EnemyWithDoom gameValueMatcher ->
+      getCount >=> (`gameValueMatches` gameValueMatcher) . unDoomCount
     EnemyWithDamage gameValueMatcher ->
       (`gameValueMatches` gameValueMatcher) . fst . getDamage
     ExhaustedEnemy -> pure . isExhausted
@@ -1104,6 +1137,16 @@ getEnemiesMatching matcher = do
           ]
         )
         (getAbilities enemy)
+    NearestEnemy matcher' -> \enemy -> do
+      matchingEnemyIds <- map toId <$> getEnemiesMatching matcher'
+      matches <- guardYourLocation $ \start -> do
+        getShortestPath
+          start
+          (fmap (any (`elem` matchingEnemyIds)) . getSet)
+          mempty
+      if null matches
+        then pure $ toId enemy `elem` matchingEnemyIds
+        else (`elem` matches) <$> getId enemy
 
 getAct :: (HasCallStack, MonadReader env m, HasGame env) => ActId -> m Act
 getAct aid = fromJustNote missingAct . preview (actsL . ix aid) <$> getGame
@@ -2606,12 +2649,15 @@ instance HasGame env => HasSet PreyId env (Prey, LocationId) where
       <$> filterM (getIsPrey preyType <=< getInvestigator) investigators
 
 instance HasGame env => HasSet ConnectedLocationId env LocationId where
-  getSet = getSet <=< getLocation
+  getSet =
+    fmap setFromList
+      . selectListMap ConnectedLocationId
+      . AccessibleFrom
+      . LocationWithId
 
 instance HasGame env => HasSet AccessibleLocationId env LocationId where
   getSet lid = do
-    location <- getLocation lid
-    connectedLocationIds <- mapSet unConnectedLocationId <$> getSet location
+    connectedLocationIds <- select (AccessibleFrom $ LocationWithId lid)
     blockedLocationIds <- mapSet unBlockedLocationId <$> getSet ()
     pure
       $ mapSet AccessibleLocationId
@@ -2621,8 +2667,7 @@ instance HasGame env => HasSet AccessibleLocationId env LocationId where
 instance HasGame env => HasSet EnemyAccessibleLocationId env (EnemyId, LocationId) where
   getSet (eid, lid) = do
     enemy <- getEnemy eid
-    location <- getLocation lid
-    connectedLocationIds <- map unConnectedLocationId <$> getSetList location
+    connectedLocationIds <- selectList (AccessibleFrom $ LocationWithId lid)
     let
       enemyIsElite = Elite `member` toTraits enemy
       unblocked lid' = do
@@ -3118,6 +3163,7 @@ runGameMessage msg g = case msg of
               (slotsOf asset)
               (toList $ toTraits asset)
               n
+            , ResolvedCard iid card
             ]
           pure $ g & assetsL %~ insertMap aid asset
         EventType -> do
@@ -3125,7 +3171,11 @@ runGameMessage msg g = case msg of
             (SetOriginalCardCode $ pcOriginalCardCode pc)
             (createEvent pc iid)
           let eid = toId event
-          pushAll [PlayedCard iid card, InvestigatorPlayDynamicEvent iid eid n]
+          pushAll
+            [ PlayedCard iid card
+            , InvestigatorPlayDynamicEvent iid eid n
+            , ResolvedCard iid card
+            ]
           pure $ g & eventsL %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
@@ -3154,6 +3204,7 @@ runGameMessage msg g = case msg of
           [ PayCardCost iid (toCardId card)
           , PlayedCard iid card
           , InvestigatorPlayEvent iid eid mtarget windows'
+          , ResolvedCard iid card
           ]
         pure $ g & eventsL %~ insertMap eid event
   PutCardIntoPlay iid card mtarget -> do
@@ -3185,6 +3236,7 @@ runGameMessage msg g = case msg of
               aid
               (slotsOf asset)
               (toList $ toTraits asset)
+            , ResolvedCard iid card
             ]
           pure $ g & assetsL %~ insertMap aid asset
         EventType -> do
@@ -3193,7 +3245,10 @@ runGameMessage msg g = case msg of
             (createEvent pc iid)
           let eid = toId event
           pushAll
-            [PlayedCard iid card, InvestigatorPlayEvent iid eid mtarget []]
+            [ PlayedCard iid card
+            , InvestigatorPlayEvent iid eid mtarget []
+            , ResolvedCard iid card
+            ]
           pure $ g & eventsL %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
@@ -3562,9 +3617,13 @@ runGameMessage msg g = case msg of
     allDrawWindows <- checkWindows
       [Window Timing.When Window.AllDrawEncounterCard]
     fastWindows <- checkWindows [Window Timing.When Window.FastPlayerWindow]
+    modifiers <- getModifiers GameSource (PhaseTarget MythosPhase)
     pushAllEnd
       $ phaseBeginsWindows
-      <> [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+      <> [ PlaceDoomOnAgenda
+         | SkipMythosPhaseStep PlaceDoomOnAgendaStep `notElem` modifiers
+         ]
+      <> [AdvanceAgendaIfThresholdSatisfied]
       <> allDrawWindows
       <> [AllDrawEncounterCard]
       <> fastWindows

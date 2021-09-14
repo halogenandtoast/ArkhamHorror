@@ -14,6 +14,7 @@ import Arkham.Types.Trait
 
 type AgendaRunner env
   = ( HasQueue env
+    , HasRecord env
     , Query AssetMatcher env
     , Query EnemyMatcher env
     , Query ExtendedCardMatcher env

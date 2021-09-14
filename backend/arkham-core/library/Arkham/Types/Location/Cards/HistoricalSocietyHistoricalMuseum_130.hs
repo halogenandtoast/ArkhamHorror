@@ -39,7 +39,7 @@ historicalSocietyHistoricalMuseum_130 = locationWithRevealedSideConnections
 instance HasModifiersFor env HistoricalSocietyHistoricalMuseum_130 where
   getModifiersFor (SkillTestSource _ _ _ target (Just Action.Investigate)) (InvestigatorTarget _) (HistoricalSocietyHistoricalMuseum_130 attrs)
     | isTarget attrs target
-    = pure $ toModifiers attrs [SkillCannotBeIncrease SkillIntellect]
+    = pure $ toModifiers attrs [SkillCannotBeIncreased SkillIntellect]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities HistoricalSocietyHistoricalMuseum_130 where

@@ -6,8 +6,8 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Card
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Difficulty
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Effects
@@ -113,6 +113,7 @@ data Effect
   | SleightOfHand' SleightOfHand
   | Lockpicks1' Lockpicks1
   | AlchemicalTransmutation' AlchemicalTransmutation
+  | UncageTheSoul' UncageTheSoul
   | Overzealous' Overzealous
   | TheStrangerACityAflame' TheStrangerACityAflame
   | TheStrangerThePathIsMine' TheStrangerThePathIsMine
@@ -231,6 +232,7 @@ allEffects = mapFromList
   , ("03029", SleightOfHand' . sleightOfHand)
   , ("03031", Lockpicks1' . lockpicks1)
   , ("03032", AlchemicalTransmutation' . alchemicalTransmutation)
+  , ("03033", UncageTheSoul' . uncageTheSoul)
   , ("03040", Overzealous' . overzealous)
   , ("03047a", TheStrangerACityAflame' . theStrangerACityAflame)
   , ("03047b", TheStrangerThePathIsMine' . theStrangerThePathIsMine)

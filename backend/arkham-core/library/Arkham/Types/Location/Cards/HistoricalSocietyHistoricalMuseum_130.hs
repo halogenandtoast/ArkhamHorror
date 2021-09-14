@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -15,6 +16,7 @@ import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
+import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Timing as Timing
 
@@ -36,9 +38,9 @@ historicalSocietyHistoricalMuseum_130 = locationWith
   )
 
 instance HasModifiersFor env HistoricalSocietyHistoricalMuseum_130 where
-  getModifiersFor (SkillTestSource _ _ _ target (Just Investigate)) (InvestigtorTarget _) (HistoricalSocietyHistoricalMuseum_130 attrs)
+  getModifiersFor (SkillTestSource _ _ _ target (Just Action.Investigate)) (InvestigatorTarget _) (HistoricalSocietyHistoricalMuseum_130 attrs)
     | isTarget attrs target
-    = pure $ toModifiers a [SkillCannotBeIncrease SkillIntellect]
+    = pure $ toModifiers attrs [SkillCannotBeIncrease SkillIntellect]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities HistoricalSocietyHistoricalMuseum_130 where

@@ -1,6 +1,4 @@
-module Arkham.Types.Phase
-  ( Phase(..)
-  ) where
+module Arkham.Types.Phase where
 
 import Arkham.Prelude
 
@@ -11,5 +9,14 @@ data Phase
   | UpkeepPhase
   | ResolutionPhase
   | CampaignPhase
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data MythosPhaseStep
+  = MythosPhaseBeginsStep
+  | PlaceDoomOnAgendaStep
+  | CheckDoomThresholdStep
+  | EachInvestigatorDrawsEncounterCardStep
+  | MythosPhaseEndsStep
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

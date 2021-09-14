@@ -172,7 +172,9 @@ data EnemyMatcher
   | EnemyWithKeyword Keyword
   | EnemyWithClues ValueMatcher
   | EnemyWithDamage ValueMatcher
+  | EnemyWithDoom ValueMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
+  | NearestEnemy EnemyMatcher
   | EnemyIs CardCode
   | AnyEnemy
   | CanFightEnemy
@@ -458,6 +460,7 @@ data WindowMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | PlacedCounter Timing Who CounterMatcher ValueMatcher
   | PlacedCounterOnLocation Timing Where CounterMatcher ValueMatcher
+  | PlacedCounterOnEnemy Timing EnemyMatcher CounterMatcher ValueMatcher
   | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemySpawns Timing Where EnemyMatcher

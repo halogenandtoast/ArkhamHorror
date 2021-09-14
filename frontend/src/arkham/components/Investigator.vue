@@ -14,7 +14,7 @@
         @click="$emit('choose', investigatorAction)"
       />
 
-      <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="$emit('show-cards', cardsUnderneath)">{{cardsUnderneathLabel}}</button>
+      <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
     </div>
 
     <div class="resources">
@@ -87,7 +87,7 @@ export default defineComponent({
     investigatorId: { type: String, required: true },
     portrait: { type: Boolean, default: false }
   },
-  setup(props) {
+  setup(props, context) {
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
     const id = computed(() => props.player.contents.id)
     const debug = inject('debug')
@@ -233,8 +233,11 @@ export default defineComponent({
     const cardsUnderneath = computed(() => props.player.contents.cardsUnderneath)
     const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
 
+    const showCardsUnderneath = (e: Event) => context.emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
+
     return {
       id,
+      showCardsUnderneath,
       portraitImage,
       cardsUnderneath,
       cardsUnderneathLabel,

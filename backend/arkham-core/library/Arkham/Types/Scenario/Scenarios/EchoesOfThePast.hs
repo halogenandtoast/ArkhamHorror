@@ -25,6 +25,8 @@ import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait (Trait(SecondFloor, ThirdFloor))
 import Data.List (replicate)
@@ -46,9 +48,9 @@ echoesOfThePast difficulty =
         [Acts.raceForAnswers, Acts.mistakesOfThePast, Acts.theOath]
         difficulty
     & locationLayoutL
-    ?~ [ "thirdFloor1  quietHalls2 thirdFloor2"
-       , "secondFloor1 quietHalls1 secondFloor2"
-       , "groundFloor1 entryHall   groundFloor2"
+    ?~ [ "thirdFloor1  quietHalls2 thirdFloor2  . ."
+       , "secondFloor1 quietHalls1 secondFloor2 . hiddenLibrary"
+       , "groundFloor1 entryHall   groundFloor2 . ."
        ]
 
 instance HasRecord EchoesOfThePast where
@@ -215,4 +217,44 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
 
       EchoesOfThePast
         <$> runMessage msg (attrs & (setAsideCardsL .~ setAsideCards))
+    ResolveToken _ token iid -> s <$ case token of
+      Cultist -> do
+        matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
+        push $ chooseOne
+          iid
+          [ TargetLabel target [PlaceDoom target 1] | target <- matches ]
+      Tablet -> push $ RandomDiscard iid
+      ElderThing -> do
+        triggers <- notNull <$> select (EnemyAt YourLocation)
+        when
+          triggers
+          (push $ InvestigatorAssignDamage
+            iid
+            (TokenEffectSource token)
+            DamageAny
+            0
+            1
+          )
+      _ -> pure ()
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ | isEasyStandard attrs -> do
+      case tokenFace token of
+        Cultist -> do
+          matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
+          push $ chooseOne
+            iid
+            [ TargetLabel target [PlaceDoom target 1] | target <- matches ]
+        Tablet -> push $ RandomDiscard iid
+        ElderThing -> do
+          triggers <- notNull <$> select (EnemyAt YourLocation)
+          when
+            triggers
+            (push $ InvestigatorAssignDamage
+              iid
+              (TokenEffectSource $ tokenFace token)
+              DamageAny
+              0
+              1
+            )
+        _ -> pure ()
+      pure s
     _ -> EchoesOfThePast <$> runMessage msg attrs

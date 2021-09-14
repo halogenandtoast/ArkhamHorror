@@ -1292,7 +1292,10 @@ getModifiedCardCost
   -> m Int
 getModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
-  foldM applyModifier startingCost modifiers
+  cardModifiers <- getModifiers
+    (InvestigatorSource iid)
+    (CardIdTarget $ toCardId c)
+  foldM applyModifier startingCost (modifiers <> cardModifiers)
  where
   pcDef = toCardDef c
   startingCost = case cdCost pcDef of
@@ -1470,6 +1473,14 @@ windowMatches iid source window' = \case
         | t == whenMatcher && counterMatcher == Matcher.ClueCounter -> liftA2
           (&&)
           (locationMatches iid source window' locationId whereMatcher)
+          (gameValueMatches n valueMatcher)
+      _ -> pure False
+  Matcher.PlacedCounterOnEnemy whenMatcher enemyMatcher counterMatcher valueMatcher
+    -> case window' of
+      Window t (Window.PlacedClues (EnemyTarget enemyId) n)
+        | t == whenMatcher && counterMatcher == Matcher.ClueCounter -> liftA2
+          (&&)
+          (enemyMatches enemyId enemyMatcher)
           (gameValueMatches n valueMatcher)
       _ -> pure False
   Matcher.RevealLocation timingMatcher whoMatcher locationMatcher ->

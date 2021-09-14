@@ -64,16 +64,8 @@ data LocationAttrs = LocationAttrs
   , locationEnemies :: HashSet EnemyId
   , locationSymbol :: LocationSymbol
   , locationRevealedSymbol :: LocationSymbol
-
   , locationConnectedMatchers :: [LocationMatcher]
   , locationRevealedConnectedMatchers :: [LocationMatcher]
-
-  -- , locationConnectedSymbols :: HashSet LocationSymbol
-  -- , locationRevealedConnectedSymbols :: HashSet LocationSymbol
-  -- , locationConnectedTraits :: HashSet Trait
-  -- , locationRevealedConnectedTraits :: HashSet Trait
-
-  , locationConnectedLocations :: HashSet LocationId
   , locationTreacheries :: HashSet TreacheryId
   , locationEvents :: HashSet EventId
   , locationAssets :: HashSet AssetId
@@ -139,10 +131,6 @@ resourcesL = lens locationResources $ \m x -> m { locationResources = x }
 
 revealedL :: Lens' LocationAttrs Bool
 revealedL = lens locationRevealed $ \m x -> m { locationRevealed = x }
-
-connectedLocationsL :: Lens' LocationAttrs (HashSet LocationId)
-connectedLocationsL =
-  lens locationConnectedLocations $ \m x -> m { locationConnectedLocations = x }
 
 directionsL :: Lens' LocationAttrs (HashMap Direction LocationId)
 directionsL = lens locationDirections $ \m x -> m { locationDirections = x }
@@ -296,13 +284,8 @@ locationWith f def shroud' revealClues symbol' connectedSymbols' g =
       , locationEnemies = mempty
       , locationSymbol = symbol'
       , locationRevealedSymbol = symbol'
-      -- , locationConnectedSymbols = setFromList connectedSymbols'
-      -- , locationRevealedConnectedSymbols = setFromList connectedSymbols'
-      -- , locationConnectedTraits = mempty
-      -- , locationRevealedConnectedTraits = mempty
       , locationConnectedMatchers = map LocationWithSymbol connectedSymbols'
       , locationRevealedConnectedMatchers = map LocationWithSymbol connectedSymbols'
-      , locationConnectedLocations = mempty
       , locationTreacheries = mempty
       , locationEvents = mempty
       , locationAssets = mempty
@@ -409,8 +392,10 @@ instance HasAbilities LocationAttrs where
         l
         102
         (OnLocation $ AccessibleTo $ LocationWithId $ toId l)
-      $ ActionAbility (Just Action.Move) (ActionCost 1)
+      $ ActionAbility (Just Action.Move) moveCost
     ]
+   where
+    moveCost = if not (locationRevealed l) then locationCostToEnterUnrevealed l else ActionCost 1
 
 getShouldSpawnNonEliteAtConnectingInstead
   :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Bool
@@ -469,54 +454,20 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & cardsUnderneathL %~ (<> cards)
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & labelL .~ label'
-    PlacedLocation _ _ lid | lid == locationId ->
-      a <$ push (AddConnection lid locationSymbol)
-    PlacedLocationDirection lid direction lid2 | lid == locationId ->
-      case direction of
-        LeftOf | RightOf `member` locationConnectsTo ->
-          pure
-            $ a
-            & (connectedLocationsL %~ insertSet lid2)
-            & (directionsL %~ insertMap RightOf lid2)
-        RightOf | LeftOf `member` locationConnectsTo ->
-          pure
-            $ a
-            & (connectedLocationsL %~ insertSet lid2)
-            & (directionsL %~ insertMap LeftOf lid2)
-        Above | Below `member` locationConnectsTo ->
-          pure
-            $ a
-            & (connectedLocationsL %~ insertSet lid2)
-            & (directionsL %~ insertMap Below lid2)
-        Below | Above `member` locationConnectsTo ->
-          pure
-            $ a
-            & (connectedLocationsL %~ insertSet lid2)
-            & (directionsL %~ insertMap Above lid2)
-        _ -> pure a
+    PlacedLocationDirection lid direction lid2 | lid == locationId -> do
+      let reversedDirection = case direction of
+                                LeftOf -> RightOf
+                                RightOf -> LeftOf
+                                Above -> Below
+                                Below -> Above
+
+      pure
+        $ a
+        & (directionsL %~ insertMap reversedDirection lid2)
     PlacedLocationDirection lid direction lid2 | lid2 == locationId ->
-      case direction of
-        LeftOf | LeftOf `member` locationConnectsTo ->
-          pure
-            $ a
-            & (connectedLocationsL %~ insertSet lid)
-            & (directionsL %~ insertMap LeftOf lid)
-        RightOf | RightOf `member` locationConnectsTo ->
-          pure
-            $ a
-            & (connectedLocationsL %~ insertSet lid)
-            & (directionsL %~ insertMap RightOf lid)
-        Above | Above `member` locationConnectsTo ->
-          pure
-            $ a
-            & (connectedLocationsL %~ insertSet lid)
-            & (directionsL %~ insertMap Above lid)
-        Below | Below `member` locationConnectsTo ->
-          pure
-            $ a
-            & (connectedLocationsL %~ insertSet lid2)
-            & (directionsL %~ insertMap Below lid2)
-        _ -> pure a
+      pure
+        $ a
+        & (directionsL %~ insertMap direction lid)
     AttachTreachery tid (LocationTarget lid) | lid == locationId ->
       pure $ a & treacheriesL %~ insertSet tid
     AttachEvent eid (LocationTarget lid) | lid == locationId ->
@@ -536,27 +487,8 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     AttachAsset aid (LocationTarget lid) | lid == locationId ->
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
-    AddConnection lid _ | lid == locationId -> do
-      connectedLocations <- selectList $ LocationMatchAny
-        (if locationRevealed
-          then locationRevealedConnectedMatchers
-          else locationConnectedMatchers
-        )
-      pushAll $ map (AddedConnection locationId) connectedLocations
-      pure $ a & connectedLocationsL %~ union (setFromList connectedLocations)
-    AddConnection lid _symbol | lid /= locationId -> do
-      let
-        matchers = if locationRevealed
-          then locationRevealedConnectedMatchers
-          else locationConnectedMatchers
-      isMatch <- member lid <$> select (LocationMatchAny matchers)
-      if isMatch
-        then do
-          push (AddedConnection locationId lid)
-          pure $ a & connectedLocationsL %~ insertSet lid
-        else pure a
     AddDirectConnection fromLid toLid | fromLid == locationId -> do
-      pure $ a & connectedLocationsL %~ insertSet toLid
+      pure $ a & revealedConnectedMatchersL <>~ [LocationWithId toLid] & connectedMatchersL <>~ [LocationWithId toLid]
     DiscoverCluesAtLocation iid lid n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
       checkWindowMsgs <- checkWindows
@@ -644,6 +576,10 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         else do
           pushAll windows'
           pure $ a & cluesL +~ n
+    PlaceCluesUpToClueValue lid n | lid == locationId -> do
+      clueValue <- getPlayerCountValue locationRevealClues
+      let n' = min n (clueValue - locationClues)
+      a <$ push (PlaceClues (toTarget a) n')
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
     RemoveDoom target n | isTarget a target -> pure $ a & doomL %~ max 0 . subtract n
     PlaceResources target n | isTarget a target -> pure $ a & resourcesL +~ n
@@ -655,7 +591,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       modifiers' <- getModifiers (toSource a) (toTarget a)
       locationClueCount <- if CannotPlaceClues `elem` modifiers'
         then pure 0
-        else fromGameValue locationRevealClues . unPlayerCount <$> getCount ()
+        else getPlayerCountValue locationRevealClues
       revealer <- maybe getLeadInvestigatorId pure miid
       whenWindowMsgs <- checkWindows
         [ Window Timing.When (Window.RevealLocation revealer lid)
@@ -675,14 +611,10 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & revealedL .~ True
     After (LookAtRevealed _ target) | isTarget a target ->
       pure $ a & revealedL .~ False
-    RevealLocation _ lid | lid /= locationId ->
-      if lid `notElem` toList (a ^. directionsL)
-        then pure $ a & connectedLocationsL %~ deleteSet lid
-        else pure a
     UnrevealLocation lid | lid == locationId ->
       pure $ a & revealedL .~ False
     RemoveLocation lid ->
-      pure $ a & connectedLocationsL %~ deleteSet lid & directionsL %~ filterMap
+      pure $ a & directionsL %~ filterMap
         (/= lid)
     UseResign iid source | isSource a source -> a <$ push (Resign iid)
     UseDrawCardUnderneath iid source | isSource a source ->

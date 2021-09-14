@@ -14,6 +14,7 @@ import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher hiding (MoveAction)
 import Arkham.Types.Message
 
 newtype StreetsOfVenice = StreetsOfVenice LocationAttrs
@@ -32,15 +33,16 @@ streetsOfVenice = locationWith
 
 instance HasAbilities StreetsOfVenice where
   getAbilities (StreetsOfVenice attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $ FastAbility Free
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here $ FastAbility Free
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env StreetsOfVenice where
   runMessage msg l@(StreetsOfVenice attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      case setToList (locationConnectedLocations attrs) of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      locations <- selectList AccessibleLocation
+      case locations of
         [] -> error "No connections?"
         (x : _) -> l <$ push (MoveAction iid x Free False)
     _ -> StreetsOfVenice <$> runMessage msg attrs

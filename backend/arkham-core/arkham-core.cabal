@@ -69,6 +69,7 @@ library
       Arkham.Types.Act.Cards.IntoTheBeyond
       Arkham.Types.Act.Cards.IntoTheDarkness
       Arkham.Types.Act.Cards.InvestigatingTheTrail
+      Arkham.Types.Act.Cards.MistakesOfThePast
       Arkham.Types.Act.Cards.MysteriousGateway
       Arkham.Types.Act.Cards.NightAtTheMuseum
       Arkham.Types.Act.Cards.OutOfThisWorld
@@ -122,10 +123,12 @@ library
       Arkham.Types.Agenda.Cards.PredatorOrPrey
       Arkham.Types.Agenda.Cards.QuietHalls
       Arkham.Types.Agenda.Cards.RampagingCreatures
+      Arkham.Types.Agenda.Cards.RansackingTheManor
       Arkham.Types.Agenda.Cards.RestrictedAccess
       Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
       Arkham.Types.Agenda.Cards.RiseOfTheGhouls
       Arkham.Types.Agenda.Cards.RollingBackwards
+      Arkham.Types.Agenda.Cards.SecretsBetterLeftHidden
       Arkham.Types.Agenda.Cards.ShadowsDeepen
       Arkham.Types.Agenda.Cards.StrangeDisappearances
       Arkham.Types.Agenda.Cards.TheArkhamWoods
@@ -425,6 +428,7 @@ library
       Arkham.Types.Effect.Effects.TheStrangerThePathIsMine
       Arkham.Types.Effect.Effects.TheStrangerTheShoresOfHali
       Arkham.Types.Effect.Effects.TokenEffect
+      Arkham.Types.Effect.Effects.UncageTheSoul
       Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken
       Arkham.Types.Effect.Effects.WilliamYorick
       Arkham.Types.Effect.Effects.WillToSurvive3
@@ -497,6 +501,7 @@ library
       Arkham.Types.Enemy.Cards.SavioCorvi
       Arkham.Types.Enemy.Cards.ScreechingByakhee
       Arkham.Types.Enemy.Cards.SebastienMoreau
+      Arkham.Types.Enemy.Cards.SeekerOfCarcosa
       Arkham.Types.Enemy.Cards.ServantOfManyMouths
       Arkham.Types.Enemy.Cards.ServantOfTheLurker
       Arkham.Types.Enemy.Cards.SethBishop

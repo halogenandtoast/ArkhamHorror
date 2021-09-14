@@ -814,8 +814,15 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
     RemoveAllDoom -> pure $ a & doomL .~ 0
     PlaceDoom (CardIdTarget cid) amount | cid == unEnemyId enemyId ->
       pure $ a & doomL +~ amount
-    PlaceDoom (EnemyTarget eid) amount | eid == enemyId ->
-      pure $ a & doomL +~ amount
+    PlaceClues target n | isTarget a target -> do
+      windows' <- windows [Window.PlacedClues (toTarget a) n]
+      pushAll windows'
+      pure $ a & cluesL +~ n
+    RemoveClues target n | isTarget a target ->
+      pure $ a & cluesL %~ max 0 . subtract n
+    FlipClues target n | isTarget a target -> do
+      let flipCount = min n enemyClues
+      pure $ a & cluesL %~ max 0 . subtract n & doomL +~ flipCount
     AttachTreachery tid target | isTarget a target ->
       pure $ a & treacheriesL %~ insertSet tid
     AttachAsset aid (EnemyTarget eid) | eid == enemyId ->

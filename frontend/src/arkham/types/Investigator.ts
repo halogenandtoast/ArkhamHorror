@@ -11,6 +11,7 @@ export interface Investigator {
   tag: string;
   contents: InvestigatorContents;
   deckSize?: number;
+  connectedLocations: string[];
 }
 
 type ClassSymbol = 'Guardian' | 'Seeker' | 'Rogue' | 'Mystic' | 'Survivor' | 'Neutral';
@@ -45,7 +46,6 @@ export interface InvestigatorContents {
   assets: string[];
   discard: PlayerCardContents[];
   hand: Card[];
-  connectedLocations: string[];
   treacheries: string[];
   inHandTreacheries: string[];
   defeated: boolean;
@@ -77,7 +77,6 @@ export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorConten
   // deck: Deck PlayerCard,
   discard: JsonDecoder.array<PlayerCardContents>(playerCardContentsDecoder, 'PlayerCardContents[]'),
   hand: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
-  connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
   // traits: HashSet Trait,
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
   inHandTreacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
@@ -92,4 +91,5 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   tag: JsonDecoder.string,
   contents: investigatorContentsDecoder,
   deckSize: JsonDecoder.optional(JsonDecoder.number),
+  connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
 }, 'Investigator');

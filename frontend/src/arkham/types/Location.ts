@@ -6,6 +6,7 @@ export interface Location {
   tag: string;
   contents: LocationContents;
   modifiers: Modifier[];
+  connectedLocations: string[];
 }
 
 export interface LocationContents {
@@ -20,7 +21,6 @@ export interface LocationContents {
   revealed: boolean;
   investigators: string[];
   enemies: string[];
-  connectedLocations: string[];
   treacheries: string[];
   assets: string[];
   events: string[];
@@ -40,7 +40,6 @@ export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
     revealed: JsonDecoder.boolean,
     investigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorId[]'),
     enemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),
-    connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
     treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
     assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
     events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
@@ -53,4 +52,5 @@ export const locationDecoder = JsonDecoder.object<Location>({
   tag: JsonDecoder.string,
   contents: locationContentsDecoder,
   modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
+  connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
 }, 'Location');

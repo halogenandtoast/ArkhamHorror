@@ -122,6 +122,7 @@ allEncounterEnemyCards = mapFromList $ map
   , peterWarren
   , poleman
   , poltergeist
+  , possessedOathspeaker
   , ravenousGhoul
   , relentlessDarkYoung
   , royalEmissary
@@ -130,6 +131,7 @@ allEncounterEnemyCards = mapFromList $ map
   , savioCorvi
   , screechingByakhee
   , sebastienMoreau
+  , seekerOfCarcosa
   , servantOfManyMouths
   , servantOfTheLurker
   , sethBishop

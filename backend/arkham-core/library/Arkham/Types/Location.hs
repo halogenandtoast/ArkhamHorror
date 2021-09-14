@@ -132,10 +132,6 @@ instance HasSet AssetId env Location where
 instance HasSet InvestigatorId env Location where
   getSet = pure . locationInvestigators . toAttrs
 
-instance HasSet ConnectedLocationId env Location where
-  getSet =
-    pure . mapSet ConnectedLocationId . locationConnectedLocations . toAttrs
-
 instance HasId LocationId env Location where
   getId = pure . toId
 
@@ -144,7 +140,6 @@ instance HasId LocationSymbol env Location where
 
 instance HasId (Maybe LocationId) env (Direction, Location) where
   getId (dir, location') = getId (dir, toAttrs location')
-
 
 lookupLocationStub :: CardCode -> Location
 lookupLocationStub = ($ LocationId (CardId nil)) . lookupLocation

@@ -18,28 +18,27 @@ newtype ArkhamWoodsWoodenBridge = ArkhamWoodsWoodenBridge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsWoodenBridge :: LocationCard ArkhamWoodsWoodenBridge
-arkhamWoodsWoodenBridge = locationWith
+arkhamWoodsWoodenBridge = locationWithRevealedSideConnections
   ArkhamWoodsWoodenBridge
   Cards.arkhamWoodsWoodenBridge
   3
   (PerPlayer 1)
   Square
   [Squiggle]
-  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Droplet])
-  . (revealedSymbolL .~ Circle)
-  )
+  Circle
+  [Squiggle, Droplet]
 
 instance HasAbilities ArkhamWoodsWoodenBridge where
   getAbilities (ArkhamWoodsWoodenBridge attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          (Here <> DuringSkillTest (WhileEvadingAnEnemy AnyEnemy))
-        $ ForcedAbility
-        $ RevealChaosToken Timing.When You AnyToken
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            (Here <> DuringSkillTest (WhileEvadingAnEnemy AnyEnemy))
+          $ ForcedAbility
+          $ RevealChaosToken Timing.When You AnyToken
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env ArkhamWoodsWoodenBridge where
   runMessage msg l@(ArkhamWoodsWoodenBridge attrs) = case msg of

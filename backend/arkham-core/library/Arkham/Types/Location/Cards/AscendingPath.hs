@@ -25,13 +25,14 @@ newtype AscendingPath = AscendingPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ascendingPath :: LocationCard AscendingPath
-ascendingPath = location
+ascendingPath = locationWith
   AscendingPath
   Cards.ascendingPath
   3
   (Static 0)
   Square
   [Triangle, Diamond, T, Equals, Moon]
+  (revealedConnectedMatchersL <>~ [LocationWithTitle "Altered Path"])
 
 instance HasModifiersFor env AscendingPath where
   getModifiersFor _ target (AscendingPath l@LocationAttrs {..})
@@ -70,10 +71,4 @@ instance LocationRunner env => RunMessage env AscendingPath where
             card <- sample ne
             l <$ push (PlaceLocation card)
           Nothing -> pure l
-    AddConnection lid _ | toId attrs /= lid -> do
-      isAlteredPath <- (== "Altered Path") <$> getName lid
-      if isAlteredPath
-        then AscendingPath
-          <$> runMessage msg (attrs & connectedLocationsL %~ insertSet lid)
-        else AscendingPath <$> runMessage msg attrs
     _ -> AscendingPath <$> runMessage msg attrs

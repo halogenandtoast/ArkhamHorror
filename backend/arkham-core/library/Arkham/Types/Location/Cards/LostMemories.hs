@@ -22,30 +22,29 @@ newtype LostMemories = LostMemories LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lostMemories :: LocationCard LostMemories
-lostMemories = locationWith
+lostMemories = locationWithRevealedSideConnections
   LostMemories
   Cards.lostMemories
   2
   (PerPlayer 1)
   NoSymbol
   []
-  ((revealedSymbolL .~ T)
-  . (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
-  )
+  T
+  [Square, Moon]
 
 instance HasAbilities LostMemories where
   getAbilities (LostMemories attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env LostMemories where
   runMessage msg l@(LostMemories attrs) = case msg of

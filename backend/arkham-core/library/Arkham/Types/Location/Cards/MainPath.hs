@@ -9,7 +9,7 @@ import qualified Arkham.Location.Cards as Cards (mainPath)
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
-import Arkham.Types.Message
+import Arkham.Types.Matcher
 import Arkham.Types.Trait
 
 newtype MainPath = MainPath LocationAttrs
@@ -24,7 +24,7 @@ mainPath = locationWith
   (Static 0)
   Squiggle
   [Square, Plus]
-  (revealedConnectedTraitsL .~ singleton Woods)
+  (revealedConnectedMatchersL <>~ [LocationWithTrait Woods])
 
 instance HasAbilities MainPath where
   getAbilities (MainPath a) = withResignAction a []

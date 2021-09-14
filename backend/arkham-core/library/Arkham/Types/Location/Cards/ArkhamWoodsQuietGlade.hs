@@ -22,26 +22,24 @@ newtype ArkhamWoodsQuietGlade = ArkhamWoodsQuietGlade LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsQuietGlade :: LocationCard ArkhamWoodsQuietGlade
-arkhamWoodsQuietGlade = locationWith
+arkhamWoodsQuietGlade = locationWithRevealedSideConnections
   ArkhamWoodsQuietGlade
   Cards.arkhamWoodsQuietGlade
   1
   (Static 0)
   Square
   [Squiggle]
-  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Equals, Hourglass])
-  . (revealedSymbolL .~ Moon)
-  )
+  Moon
+  [Squiggle, Equals, Hourglass]
 
 instance HasAbilities ArkhamWoodsQuietGlade where
-  getAbilities (ArkhamWoodsQuietGlade attrs)
-    | locationRevealed attrs = withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
-        & abilityLimitL
-        .~ PlayerLimit PerTurn 1
-      ]
-  getAbilities (ArkhamWoodsQuietGlade attrs) =
-    getAbilities attrs
+  getAbilities (ArkhamWoodsQuietGlade attrs) | locationRevealed attrs =
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
+          & abilityLimitL
+          .~ PlayerLimit PerTurn 1
+        ]
+  getAbilities (ArkhamWoodsQuietGlade attrs) = getAbilities attrs
 
 instance LocationRunner env => RunMessage env ArkhamWoodsQuietGlade where
   runMessage msg l@(ArkhamWoodsQuietGlade attrs@LocationAttrs {..}) =

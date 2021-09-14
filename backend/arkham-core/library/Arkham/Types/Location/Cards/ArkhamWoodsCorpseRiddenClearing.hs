@@ -16,16 +16,15 @@ newtype ArkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing Locati
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 arkhamWoodsCorpseRiddenClearing :: LocationCard ArkhamWoodsCorpseRiddenClearing
-arkhamWoodsCorpseRiddenClearing = locationWith
+arkhamWoodsCorpseRiddenClearing = locationWithRevealedSideConnections
   ArkhamWoodsCorpseRiddenClearing
   Cards.arkhamWoodsCorpseRiddenClearing
   3
   (PerPlayer 1)
   Square
   [Squiggle]
-  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Circle])
-  . (revealedSymbolL .~ Droplet)
-  )
+  Droplet
+  [Squiggle, Circle]
 
 instance HasModifiersFor env ArkhamWoodsCorpseRiddenClearing where
   getModifiersFor _ (EnemyTarget eid) (ArkhamWoodsCorpseRiddenClearing attrs) =

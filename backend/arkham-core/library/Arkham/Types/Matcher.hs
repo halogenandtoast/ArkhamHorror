@@ -12,6 +12,7 @@ import Arkham.Types.ClassSymbol
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Id
+import Arkham.Types.LocationSymbol
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import {-# SOURCE #-} Arkham.Types.Modifier
@@ -246,6 +247,7 @@ data LocationMatcher
   | LocationWithUnrevealedTitle Text
   | LocationWithId LocationId
   | LocationWithLabel Text
+  | LocationWithSymbol LocationSymbol
   | LocationLeavingPlay
   | YourLocation
   | SameLocation

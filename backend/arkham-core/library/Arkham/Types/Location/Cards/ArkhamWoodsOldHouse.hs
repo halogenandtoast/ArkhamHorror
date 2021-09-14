@@ -14,16 +14,15 @@ newtype ArkhamWoodsOldHouse = ArkhamWoodsOldHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 arkhamWoodsOldHouse :: LocationCard ArkhamWoodsOldHouse
-arkhamWoodsOldHouse = locationWith
+arkhamWoodsOldHouse = locationWithRevealedSideConnections
   ArkhamWoodsOldHouse
   Cards.arkhamWoodsOldHouse
   2
   (PerPlayer 1)
   Square
   [Squiggle]
-  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Triangle, T])
-  . (revealedSymbolL .~ Diamond)
-  )
+  Diamond
+  [Squiggle, Triangle, T]
 
 -- TODO: Move this to a modifier
 instance LocationRunner env => RunMessage env ArkhamWoodsOldHouse where

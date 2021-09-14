@@ -29,8 +29,8 @@ darkenedHall = locationWith
   (Static 0)
   Diamond
   [Triangle]
-  (revealedConnectedSymbolsL
-  .~ setFromList [Triangle, T, Hourglass, Plus, Squiggle]
+  (revealedConnectedMatchersL
+  .~ map LocationWithSymbol [Triangle, T, Hourglass, Plus, Squiggle]
   )
 
 instance HasAbilities DarkenedHall where

@@ -14,6 +14,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.SkillType
@@ -24,13 +25,14 @@ newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseOfTheHill :: LocationCard BaseOfTheHill
-baseOfTheHill = location
+baseOfTheHill = locationWith
   BaseOfTheHill
   Cards.baseOfTheHill
   3
   (Static 0)
   Triangle
   [Square, Plus, Squiggle, Hourglass]
+  (revealedConnectedMatchersL <>~ [LocationWithTitle "Diverging Path"])
 
 instance HasAbilities BaseOfTheHill where
   getAbilities (BaseOfTheHill attrs) = withResignAction
@@ -66,10 +68,4 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
             card <- sample ne
             l <$ push (PlaceLocation card)
           Nothing -> pure l
-    AddConnection lid _ | toId attrs /= lid -> do
-      isDivergingPath <- (== "Diverging Path") <$> getName lid
-      if isDivergingPath
-        then BaseOfTheHill
-          <$> runMessage msg (attrs & connectedLocationsL %~ insertSet lid)
-        else BaseOfTheHill <$> runMessage msg attrs
     _ -> BaseOfTheHill <$> runMessage msg attrs

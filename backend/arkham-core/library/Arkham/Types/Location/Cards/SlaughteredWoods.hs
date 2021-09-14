@@ -21,28 +21,27 @@ newtype SlaughteredWoods = SlaughteredWoods LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 slaughteredWoods :: LocationCard SlaughteredWoods
-slaughteredWoods = locationWith
+slaughteredWoods = locationWithRevealedSideConnections
   SlaughteredWoods
   Cards.slaughteredWoods
   2
   (PerPlayer 1)
   NoSymbol
   []
-  ((revealedSymbolL .~ Plus)
-  . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
-  )
+  Plus
+  [Triangle, Hourglass]
 
 instance HasAbilities SlaughteredWoods where
   getAbilities (SlaughteredWoods attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-            attrs
-            1
-            (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
-          $ ForcedAbility
-              (RevealLocation Timing.After You $ LocationWithId $ toId attrs)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+              attrs
+              1
+              (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
+            $ ForcedAbility
+                (RevealLocation Timing.After You $ LocationWithId $ toId attrs)
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env SlaughteredWoods where
   runMessage msg l@(SlaughteredWoods attrs) = case msg of

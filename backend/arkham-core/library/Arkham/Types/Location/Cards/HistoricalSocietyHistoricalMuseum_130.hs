@@ -26,16 +26,15 @@ newtype HistoricalSocietyHistoricalMuseum_130 = HistoricalSocietyHistoricalMuseu
 
 historicalSocietyHistoricalMuseum_130
   :: LocationCard HistoricalSocietyHistoricalMuseum_130
-historicalSocietyHistoricalMuseum_130 = locationWith
+historicalSocietyHistoricalMuseum_130 = locationWithRevealedSideConnections
   HistoricalSocietyHistoricalMuseum_130
   Cards.historicalSocietyHistoricalMuseum_130
   2
   (PerPlayer 1)
   NoSymbol
   [Square]
-  ((revealedSymbolL .~ Heart)
-  . (revealedConnectedSymbolsL .~ setFromList [Square, Hourglass])
-  )
+  Heart
+  [Square, Hourglass]
 
 instance HasModifiersFor env HistoricalSocietyHistoricalMuseum_130 where
   getModifiersFor (SkillTestSource _ _ _ target (Just Action.Investigate)) (InvestigatorTarget _) (HistoricalSocietyHistoricalMuseum_130 attrs)

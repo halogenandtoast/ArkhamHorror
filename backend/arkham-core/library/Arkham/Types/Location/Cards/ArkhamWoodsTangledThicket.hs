@@ -14,16 +14,15 @@ newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 arkhamWoodsTangledThicket :: LocationCard ArkhamWoodsTangledThicket
-arkhamWoodsTangledThicket = locationWith
+arkhamWoodsTangledThicket = locationWithRevealedSideConnections
   ArkhamWoodsTangledThicket
   Cards.arkhamWoodsTangledThicket
   2
   (PerPlayer 1)
   Square
   [Squiggle]
-  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, T, Moon])
-  . (revealedSymbolL .~ Equals)
-  )
+  Equals
+  [Squiggle, T, Moon]
 
 -- TODO: Move this to a modifier
 instance (LocationRunner env) => RunMessage env ArkhamWoodsTangledThicket where

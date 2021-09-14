@@ -29,22 +29,22 @@ aTearInThePath = locationWith
   NoSymbol
   []
   ((revealedSymbolL .~ Equals)
-  . (revealedConnectedSymbolsL .~ setFromList [Square, Squiggle])
+  . (revealedConnectedMatchersL .~ map LocationWithSymbol [Square, Squiggle])
   )
 
 instance HasAbilities ATearInThePath where
   getAbilities (ATearInThePath attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env ATearInThePath where
   runMessage msg l@(ATearInThePath attrs) = case msg of

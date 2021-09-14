@@ -33,7 +33,7 @@ destroyedPath = locationWith
   NoSymbol
   []
   ((revealedSymbolL .~ Squiggle)
-  . (revealedConnectedSymbolsL .~ setFromList [Triangle, Equals])
+  . (revealedConnectedMatchersL .~ map LocationWithSymbol [Triangle, Equals])
   )
 
 instance HasAbilities DestroyedPath where

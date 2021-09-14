@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes hiding (discard)
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -383,9 +383,8 @@ withLocationConnectionData
   :: (MonadReader env m, HasGame env, HasCallStack)
   => With Location ModifierData
   -> m (With (With Location ModifierData) ConnectionData)
-withLocationConnectionData inner@(With target mdata) = do
-  connectedLocationIds <- selectList
-    $ AccessibleFrom (LocationWithId $ toId target)
+withLocationConnectionData inner@(With target _) = do
+  connectedLocationIds <- selectList $ connectedMatcher target
   pure $ inner `with` ConnectionData connectedLocationIds
 
 withInvestigatorConnectionData
@@ -394,9 +393,9 @@ withInvestigatorConnectionData
   -> m (With (With WithDeckSize ModifierData) ConnectionData)
 withInvestigatorConnectionData inner@(With target _) = case target of
   WithDeckSize investigator -> do
-    lid <- getId @LocationId (toId investigator)
-    connectedLocationIds <- selectList $ AccessibleLocation <> AccessibleFrom
-      (LocationWithId lid)
+    location <- getLocation =<< getId @LocationId (toId investigator)
+    connectedLocationIds <-
+      selectList $ AccessibleLocation <> connectedMatcher location
     pure $ inner `with` ConnectionData connectedLocationIds
 
 newtype WithDeckSize = WithDeckSize Investigator
@@ -2657,7 +2656,8 @@ instance HasGame env => HasSet ConnectedLocationId env LocationId where
 
 instance HasGame env => HasSet AccessibleLocationId env LocationId where
   getSet lid = do
-    connectedLocationIds <- select (AccessibleFrom $ LocationWithId lid)
+    location <- getLocation lid
+    connectedLocationIds <- select $ connectedMatcher location
     blockedLocationIds <- mapSet unBlockedLocationId <$> getSet ()
     pure
       $ mapSet AccessibleLocationId
@@ -2667,7 +2667,8 @@ instance HasGame env => HasSet AccessibleLocationId env LocationId where
 instance HasGame env => HasSet EnemyAccessibleLocationId env (EnemyId, LocationId) where
   getSet (eid, lid) = do
     enemy <- getEnemy eid
-    connectedLocationIds <- selectList (AccessibleFrom $ LocationWithId lid)
+    location <- getLocation lid
+    connectedLocationIds <- selectList $ connectedMatcher location
     let
       enemyIsElite = Elite `member` toTraits enemy
       unblocked lid' = do

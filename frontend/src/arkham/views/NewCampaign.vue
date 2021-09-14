@@ -132,6 +132,10 @@ const scenarios = [
     name: 'The Last King',
   },
   {
+    id: '03120',
+    name: 'Echoes of the Past',
+  },
+  {
     id: '81001',
     name: 'Curse of the Rougarou',
   },

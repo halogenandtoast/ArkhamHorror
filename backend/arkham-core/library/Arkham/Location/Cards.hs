@@ -124,6 +124,7 @@ allLocationCards = mapFromList $ map
   , engineCar_175
   , engineCar_176
   , engineCar_177
+  , entryHall
   , exhibitHallAthabaskanExhibit
   , exhibitHallEgyptianExhibit
   , exhibitHallHallOfTheDead
@@ -146,6 +147,15 @@ allLocationCards = mapFromList $ map
   , greenRoom
   , guestHall
   , hallway
+  , historicalSocietyHistoricalLibrary_133
+  , historicalSocietyHistoricalLibrary_136
+  , historicalSocietyHistoricalMuseum_130
+  , historicalSocietyHistoricalMuseum_132
+  , historicalSocietyMeetingRoom
+  , historicalSocietyPeabodysOffice
+  , historicalSocietyReadingRoom
+  , historicalSocietyRecordOffice_129
+  , historicalSocietyRecordOffice_138
   , holeInTheWall
   , houseInTheReeds_210
   , houseInTheReeds_211
@@ -175,6 +185,8 @@ allLocationCards = mapFromList $ map
   , passengerCar_170
   , passengerCar_171
   , prismaticCascade
+  , quietHalls_131
+  , quietHalls_135
   , rehearsalRoom
   , returnToAttic
   , returnToCellar

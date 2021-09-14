@@ -605,12 +605,18 @@ possessedOathspeaker :: CardDef
 possessedOathspeaker = (enemy
                          "03140"
                          ("Possessed Oathspeaker" <:> "A Damnable Fate")
-                         CultOfTheYellowSign
+                         EchoesOfThePast
                          1
                        )
   { cdCardTraits = setFromList [Monster, Servitor, Elite]
   , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
   , cdVictoryPoints = Just 2
+  }
+
+seekerOfCarcosa :: CardDef
+seekerOfCarcosa = (enemy "03144" "Seeker of Carcosa" EchoesOfThePast 3)
+  { cdCardTraits = setFromList [Humanoid, Cultist]
+  , cdKeywords = singleton Keyword.Aloof
   }
 
 corpseHungryGhoul :: CardDef

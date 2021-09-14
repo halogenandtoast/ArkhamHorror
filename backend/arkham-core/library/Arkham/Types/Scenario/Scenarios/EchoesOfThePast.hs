@@ -3,7 +3,7 @@ module Arkham.Types.Scenario.Scenarios.EchoesOfThePast
   , echoesOfThePast
   ) where
 
-import Arkham.Prelude
+import Arkham.Prelude hiding (replicate)
 
 import qualified Arkham.Act.Cards as Acts
 import qualified Arkham.Agenda.Cards as Agendas
@@ -26,6 +26,8 @@ import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
+import Arkham.Types.Trait (Trait(SecondFloor, ThirdFloor))
+import Data.List (replicate)
 
 newtype EchoesOfThePast = EchoesOfThePast ScenarioAttrs
   deriving anyclass IsScenario
@@ -44,9 +46,9 @@ echoesOfThePast difficulty =
         [Acts.raceForAnswers, Acts.mistakesOfThePast, Acts.theOath]
         difficulty
     & locationLayoutL
-    ?~ [ "historicalSociety5 quietHalls1 historicalSociety6"
-       , "historicalSociety3 quietHalls2 historicalSociety4"
-       , "historicalSociety1 entryHall   historicalSociety2"
+    ?~ [ "thirdFloor1  quietHalls1 thirdFloor1"
+       , "secondFloor1 quietHalls2 secondFloor2"
+       , "groundFloor1 entryHall   groundFloor2"
        ]
 
 instance HasRecord EchoesOfThePast where
@@ -84,15 +86,47 @@ gatherTheMidnightMasks = traverse
   , Cards.huntingShadow
   ]
 
-labelLocations :: Text -> [EncounterCard] -> [(EncounterCard, Text)]
+labelLocations :: Text -> [a] -> [(a, Text)]
 labelLocations prefix locations =
   [ (location, prefix <> tshow @Int n) | (location, n) <- zip locations [1 ..] ]
 
+standaloneTokens :: [TokenFace]
+standaloneTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFour
+  , Skull
+  , Skull
+  , Skull
+  , AutoFail
+  , ElderSign
+  ]
+
 instance ScenarioRunner env => RunMessage env EchoesOfThePast where
-  runMessage msg (EchoesOfThePast attrs) = case msg of
+  runMessage msg s@(EchoesOfThePast attrs) = case msg of
+    SetTokensForScenario -> do
+      -- TODO: move to helper since consistent
+      standalone <- getIsStandalone
+      randomToken <- sample (Cultist :| [Tablet, ElderThing])
+      s <$ if standalone
+        then push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+        else pure ()
     Setup -> do
+      investigatorIds <- getInvestigatorIds
+
+      -- generate without seekerOfCarcosa as we add based on player count
       partialEncounterDeck <- buildEncounterDeckExcluding
-        [Enemies.possessedOathspeaker, Assets.mrPeabody]
+        [ Enemies.possessedOathspeaker
+        , Enemies.seekerOfCarcosa
+        , Assets.mrPeabody
+        ]
         [ EncounterSet.EchoesOfThePast
         , EncounterSet.CultOfTheYellowSign
         , EncounterSet.Delusions
@@ -100,8 +134,11 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
         , EncounterSet.DarkCult
         ]
       midnightMasks <- gatherTheMidnightMasks
-      encounterDeck <- Deck
-        <$> shuffleM (unDeck partialEncounterDeck <> midnightMasks)
+      (seekersToSpawn, seekersToShuffle) <-
+        splitAt (length investigatorIds - 1)
+          <$> traverse genEncounterCard (replicate 3 Enemies.seekerOfCarcosa)
+      encounterDeck <- Deck <$> shuffleM
+        (unDeck partialEncounterDeck <> midnightMasks <> seekersToShuffle)
 
       groundFloor <- traverse genCard . drop 1 =<< shuffleM
         [ Locations.historicalSocietyMeetingRoom
@@ -125,7 +162,25 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
       quietHalls1 <- genCard Locations.quietHalls_131
       quietHalls2 <- genCard Locations.quietHalls_135
 
-      investigatorIds <- getInvestigatorIds
+      let
+        spawnMessages = case length seekersToSpawn of
+          n | n == 3 ->
+            -- with 3 we can spawn at either 2nd or 3rd floor so we use
+            -- location matching
+            [ CreateEnemyAtLocationMatching
+                (EncounterCard seeker)
+                (EmptyLocation
+                <> LocationMatchAny
+                     [ LocationWithTrait SecondFloor
+                     , LocationWithTrait ThirdFloor
+                     ]
+                )
+            | seeker <- seekersToSpawn
+            ]
+          _ ->
+            [ CreateEnemyAt (EncounterCard card) (toLocationId location) Nothing
+            | (location, card) <- zip thirdFloor seekersToSpawn
+            ]
 
       pushAll
         ([ story investigatorIds intro
@@ -135,8 +190,27 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
          , PlaceLocation entryHall
          , PlaceLocation quietHalls1
          , PlaceLocation quietHalls2
-         , MoveAllTo (toSource attrs) (toLocationId entryHall)
          ]
+        <> concat
+             [ [ PlaceLocation location
+               , SetLocationLabel (toLocationId location) label
+               ]
+             | (location, label) <- labelLocations "groundFloor" groundFloor
+             ]
+        <> concat
+             [ [ PlaceLocation location
+               , SetLocationLabel (toLocationId location) label
+               ]
+             | (location, label) <- labelLocations "secondFloor" secondFloor
+             ]
+        <> concat
+             [ [ PlaceLocation location
+               , SetLocationLabel (toLocationId location) label
+               ]
+             | (location, label) <- labelLocations "thirdFloor" thirdFloor
+             ]
+        <> spawnMessages
+        <> [MoveAllTo (toSource attrs) (toLocationId entryHall)]
         )
 
       setAsideCards <- traverse

@@ -26,14 +26,16 @@ newtype MuseumHalls = MuseumHalls LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 museumHalls :: LocationCard MuseumHalls
-museumHalls = locationWith
+museumHalls = locationWithRevealedSideConnectionsWith
   MuseumHalls
   Cards.museumHalls
   2
   (Static 0)
   Square
   [Circle]
-  (connectedSymbolsL .~ setFromList [Circle, Diamond, Triangle])
+  Square
+  [Circle, Diamond, Triangle]
+  (revealedConnectedMatchersL <>~ [LocationWithTitle "Exhibit Hall"])
 
 instance HasModifiersFor env MuseumHalls where
   getModifiersFor _ target (MuseumHalls l) | isTarget l target =
@@ -81,10 +83,4 @@ instance LocationRunner env => RunMessage env MuseumHalls where
       | isSource attrs source -> do
         actId <- fromJustNote "missing act" . headMay <$> getSetList ()
         l <$ push (AdvanceAct actId source)
-    AddConnection lid _ | locationId attrs /= lid -> do
-      name <- nameTitle <$> getName lid
-      if name == "Exhibit Hall"
-        then MuseumHalls
-          <$> runMessage msg (attrs & connectedLocationsL %~ insertSet lid)
-        else MuseumHalls <$> runMessage msg attrs
     _ -> MuseumHalls <$> runMessage msg attrs

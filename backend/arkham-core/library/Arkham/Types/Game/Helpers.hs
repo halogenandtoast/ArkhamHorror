@@ -1945,6 +1945,8 @@ locationMatches investigatorId source window locationId = \case
     (== title) . nameTitle <$> getName locationId
   Matcher.LocationWithFullTitle title subtitle ->
     (== Name title (Just subtitle)) <$> getName locationId
+  Matcher.LocationWithSymbol locationSymbol ->
+    member locationId <$> select (Matcher.LocationWithSymbol locationSymbol)
   Matcher.LocationWithUnrevealedTitle title ->
     (== title) . nameTitle <$> getName (Unrevealed locationId)
   Matcher.LocationWithId lid -> pure $ lid == locationId

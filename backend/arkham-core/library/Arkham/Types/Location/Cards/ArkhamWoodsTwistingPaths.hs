@@ -20,28 +20,26 @@ newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsTwistingPaths :: LocationCard ArkhamWoodsTwistingPaths
-arkhamWoodsTwistingPaths = locationWith
+arkhamWoodsTwistingPaths = locationWithRevealedSideConnections
   ArkhamWoodsTwistingPaths
   Cards.arkhamWoodsTwistingPaths
   3
   (PerPlayer 1)
   Square
   [Squiggle]
-  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Diamond, Equals])
-  . (revealedSymbolL .~ T)
-  )
+  T
+  [Squiggle, Diamond, Equals]
 
 instance HasAbilities ArkhamWoodsTwistingPaths where
-  getAbilities (ArkhamWoodsTwistingPaths attrs)
-    | locationRevealed attrs = withBaseAbilities attrs $
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ Leaves Timing.When You
-        $ LocationWithId
-        $ toId attrs
-      ]
-  getAbilities (ArkhamWoodsTwistingPaths attrs) =
-    getAbilities attrs
+  getAbilities (ArkhamWoodsTwistingPaths attrs) | locationRevealed attrs =
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ Leaves Timing.When You
+          $ LocationWithId
+          $ toId attrs
+        ]
+  getAbilities (ArkhamWoodsTwistingPaths attrs) = getAbilities attrs
 
 instance LocationRunner env => RunMessage env ArkhamWoodsTwistingPaths where
   runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = case msg of

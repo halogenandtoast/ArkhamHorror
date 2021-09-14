@@ -29,19 +29,19 @@ dimensionalGap = locationWith
   NoSymbol
   []
   ((revealedSymbolL .~ T)
-  . (revealedConnectedSymbolsL .~ setFromList [Square, Moon])
+  . (revealedConnectedMatchersL .~ map LocationWithSymbol [Square, Moon])
   )
 
 instance HasAbilities DimensionalGap where
   getAbilities (DimensionalGap attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env DimensionalGap where
   runMessage msg l@(DimensionalGap attrs) = case msg of

@@ -737,6 +737,11 @@ getLocationsMatching = \case
       <$> getGame
   LocationWithId locationId ->
     filter ((== locationId) . toId) . toList . view locationsL <$> getGame
+  LocationWithSymbol locationSymbol ->
+    filter ((== locationSymbol) . toLocationSymbol)
+      . toList
+      . view locationsL
+      <$> getGame
   LocationNotInPlay -> pure [] -- TODO: Should this check out of play locations
   Anywhere -> toList . view locationsL <$> getGame
   Unblocked -> do

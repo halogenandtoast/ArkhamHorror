@@ -22,26 +22,25 @@ newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsGreatWillow :: LocationCard ArkhamWoodsGreatWillow
-arkhamWoodsGreatWillow = locationWith
+arkhamWoodsGreatWillow = locationWithRevealedSideConnections
   ArkhamWoodsGreatWillow
   Cards.arkhamWoodsGreatWillow
   4
   (PerPlayer 1)
   Square
   [Squiggle]
-  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Star])
-  . (revealedSymbolL .~ Heart)
-  )
+  Heart
+  [Squiggle, Star]
 
 instance HasAbilities ArkhamWoodsGreatWillow where
   getAbilities (ArkhamWoodsGreatWillow attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here
-        $ ForcedAbility
-        $ SkillTestResult Timing.After You (SkillTestOnTreachery AnyTreachery)
-        $ SuccessResult AnyValue
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here
+          $ ForcedAbility
+          $ SkillTestResult Timing.After You (SkillTestOnTreachery AnyTreachery)
+          $ SuccessResult AnyValue
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env ArkhamWoodsGreatWillow where
   runMessage msg l@(ArkhamWoodsGreatWillow attrs) = case msg of

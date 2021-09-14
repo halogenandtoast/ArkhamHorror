@@ -9,6 +9,7 @@ import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Trait
 
 newtype EntryHall = EntryHall LocationAttrs
@@ -23,8 +24,8 @@ entryHall = locationWith
   (Static 0)
   Square
   [Circle]
-  ((connectedTraitsL .~ singleton GroundFloor)
-  . (revealedConnectedTraitsL .~ singleton GroundFloor)
+  ((connectedMatchersL <>~ [LocationWithTrait GroundFloor])
+  . (revealedConnectedMatchersL <>~ [LocationWithTrait GroundFloor])
   )
 
 instance HasAbilities EntryHall where

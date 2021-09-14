@@ -19,28 +19,26 @@ newtype ArkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsUnhallowedGround :: LocationCard ArkhamWoodsUnhallowedGround
-arkhamWoodsUnhallowedGround = locationWith
+arkhamWoodsUnhallowedGround = locationWithRevealedSideConnections
   ArkhamWoodsUnhallowedGround
   Cards.arkhamWoodsUnhallowedGround
   4
   (PerPlayer 1)
   Square
   [Squiggle]
-  ((revealedConnectedSymbolsL .~ setFromList [Squiggle, Hourglass, Diamond])
-  . (revealedSymbolL .~ Triangle)
-  )
+  Triangle
+  [Squiggle, Hourglass, Diamond]
 
 instance HasAbilities ArkhamWoodsUnhallowedGround where
   getAbilities (ArkhamWoodsUnhallowedGround x) | locationRevealed x =
-    withBaseAbilities x $
-      [ mkAbility x 1
-        $ ForcedAbility
-        $ Enters Timing.After You
-        $ LocationWithId
-        $ toId x
-      ]
-  getAbilities (ArkhamWoodsUnhallowedGround x) =
-    getAbilities x
+    withBaseAbilities x
+      $ [ mkAbility x 1
+          $ ForcedAbility
+          $ Enters Timing.After You
+          $ LocationWithId
+          $ toId x
+        ]
+  getAbilities (ArkhamWoodsUnhallowedGround x) = getAbilities x
 
 instance LocationRunner env => RunMessage env ArkhamWoodsUnhallowedGround where
   runMessage msg l@(ArkhamWoodsUnhallowedGround attrs) = case msg of

@@ -20,27 +20,26 @@ newtype FrozenSpring = FrozenSpring LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 frozenSpring :: LocationCard FrozenSpring
-frozenSpring = locationWith
+frozenSpring = locationWithRevealedSideConnections
   FrozenSpring
   Cards.frozenSpring
   3
   (PerPlayer 1)
   NoSymbol
   []
-  ((revealedSymbolL .~ Plus)
-  . (revealedConnectedSymbolsL .~ setFromList [Triangle, Hourglass])
-  )
+  Plus
+  [Triangle, Hourglass]
 
 instance HasAbilities FrozenSpring where
   getAbilities (FrozenSpring attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env FrozenSpring where
   runMessage msg l@(FrozenSpring attrs) = case msg of

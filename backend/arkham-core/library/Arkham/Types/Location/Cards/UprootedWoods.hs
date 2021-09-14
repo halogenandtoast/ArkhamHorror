@@ -21,30 +21,29 @@ newtype UprootedWoods = UprootedWoods LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 uprootedWoods :: LocationCard UprootedWoods
-uprootedWoods = locationWith
+uprootedWoods = locationWithRevealedSideConnections
   UprootedWoods
   Cards.uprootedWoods
   2
   (PerPlayer 1)
   NoSymbol
   []
-  ((revealedSymbolL .~ Moon)
-  . (revealedConnectedSymbolsL .~ setFromList [Square, T])
-  )
+  Moon
+  [Square, T]
 
 instance HasAbilities UprootedWoods where
   getAbilities (UprootedWoods attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env UprootedWoods where
   runMessage msg l@(UprootedWoods attrs) = case msg of

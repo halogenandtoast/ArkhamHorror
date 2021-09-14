@@ -64,10 +64,15 @@ data LocationAttrs = LocationAttrs
   , locationEnemies :: HashSet EnemyId
   , locationSymbol :: LocationSymbol
   , locationRevealedSymbol :: LocationSymbol
-  , locationConnectedSymbols :: HashSet LocationSymbol
-  , locationRevealedConnectedSymbols :: HashSet LocationSymbol
-  , locationConnectedTraits :: HashSet Trait
-  , locationRevealedConnectedTraits :: HashSet Trait
+
+  , locationConnectedMatchers :: [LocationMatcher]
+  , locationRevealedConnectedMatchers :: [LocationMatcher]
+
+  -- , locationConnectedSymbols :: HashSet LocationSymbol
+  -- , locationRevealedConnectedSymbols :: HashSet LocationSymbol
+  -- , locationConnectedTraits :: HashSet Trait
+  -- , locationRevealedConnectedTraits :: HashSet Trait
+
   , locationConnectedLocations :: HashSet LocationId
   , locationTreacheries :: HashSet TreacheryId
   , locationEvents :: HashSet EventId
@@ -82,14 +87,6 @@ data LocationAttrs = LocationAttrs
 symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
 
-connectedSymbolsL :: Lens' LocationAttrs (HashSet LocationSymbol)
-connectedSymbolsL =
-  lens locationConnectedSymbols $ \m x -> m { locationConnectedSymbols = x }
-
-connectedTraitsL :: Lens' LocationAttrs (HashSet Trait)
-connectedTraitsL =
-  lens locationConnectedTraits $ \m x -> m { locationConnectedTraits = x }
-
 costToEnterUnrevealedL :: Lens' LocationAttrs Cost
 costToEnterUnrevealedL = lens locationCostToEnterUnrevealed
   $ \m x -> m { locationCostToEnterUnrevealed = x }
@@ -97,13 +94,13 @@ costToEnterUnrevealedL = lens locationCostToEnterUnrevealed
 connectsToL :: Lens' LocationAttrs (HashSet Direction)
 connectsToL = lens locationConnectsTo $ \m x -> m { locationConnectsTo = x }
 
-revealedConnectedSymbolsL :: Lens' LocationAttrs (HashSet LocationSymbol)
-revealedConnectedSymbolsL = lens locationRevealedConnectedSymbols
-  $ \m x -> m { locationRevealedConnectedSymbols = x }
+connectedMatchersL :: Lens' LocationAttrs [LocationMatcher]
+connectedMatchersL =
+  lens locationConnectedMatchers $ \m x -> m { locationConnectedMatchers = x }
 
-revealedConnectedTraitsL :: Lens' LocationAttrs (HashSet Trait)
-revealedConnectedTraitsL = lens locationRevealedConnectedTraits
-  $ \m x -> m { locationRevealedConnectedTraits = x }
+revealedConnectedMatchersL :: Lens' LocationAttrs [LocationMatcher]
+revealedConnectedMatchersL = lens locationRevealedConnectedMatchers
+  $ \m x -> m { locationRevealedConnectedMatchers = x }
 
 revealedSymbolL :: Lens' LocationAttrs LocationSymbol
 revealedSymbolL =
@@ -246,6 +243,20 @@ locationWithRevealedSideConnections
   -> [LocationSymbol]
   -> CardBuilder LocationId a
 locationWithRevealedSideConnections f def shroud' revealClues symbol' connectedSymbols' revealedSymbol' revealedConnectedSymbols'
+  = locationWithRevealedSideConnectionsWith f def shroud' revealClues symbol' connectedSymbols' revealedSymbol' revealedConnectedSymbols' id
+
+locationWithRevealedSideConnectionsWith
+  :: (LocationAttrs -> a)
+  -> CardDef
+  -> Int
+  -> GameValue Int
+  -> LocationSymbol
+  -> [LocationSymbol]
+  -> LocationSymbol
+  -> [LocationSymbol]
+  -> (LocationAttrs -> LocationAttrs)
+  -> CardBuilder LocationId a
+locationWithRevealedSideConnectionsWith f def shroud' revealClues symbol' connectedSymbols' revealedSymbol' revealedConnectedSymbols' g
   = locationWith
     f
     def
@@ -253,8 +264,9 @@ locationWithRevealedSideConnections f def shroud' revealClues symbol' connectedS
     revealClues
     symbol'
     connectedSymbols'
-    ((revealedConnectedSymbolsL .~ setFromList revealedConnectedSymbols')
+    ((revealedConnectedMatchersL .~ map LocationWithSymbol revealedConnectedSymbols')
     . (revealedSymbolL .~ revealedSymbol')
+    . g
     )
 
 locationWith
@@ -284,10 +296,12 @@ locationWith f def shroud' revealClues symbol' connectedSymbols' g =
       , locationEnemies = mempty
       , locationSymbol = symbol'
       , locationRevealedSymbol = symbol'
-      , locationConnectedSymbols = setFromList connectedSymbols'
-      , locationRevealedConnectedSymbols = setFromList connectedSymbols'
-      , locationConnectedTraits = mempty
-      , locationRevealedConnectedTraits = mempty
+      -- , locationConnectedSymbols = setFromList connectedSymbols'
+      -- , locationRevealedConnectedSymbols = setFromList connectedSymbols'
+      -- , locationConnectedTraits = mempty
+      -- , locationRevealedConnectedTraits = mempty
+      , locationConnectedMatchers = map LocationWithSymbol connectedSymbols'
+      , locationRevealedConnectedMatchers = map LocationWithSymbol connectedSymbols'
       , locationConnectedLocations = mempty
       , locationTreacheries = mempty
       , locationEvents = mempty
@@ -523,23 +537,20 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
     AddConnection lid _ | lid == locationId -> do
-      connectedLocations <- getSetList
+      connectedLocations <- selectList $ LocationMatchAny
         (if locationRevealed
-          then locationRevealedConnectedSymbols
-          else locationConnectedSymbols
+          then locationRevealedConnectedMatchers
+          else locationConnectedMatchers
         )
       pushAll $ map (AddedConnection locationId) connectedLocations
       pure $ a & connectedLocationsL %~ union (setFromList connectedLocations)
-    AddConnection lid symbol' | lid /= locationId -> do
+    AddConnection lid _symbol | lid /= locationId -> do
       let
-        symbols = if locationRevealed
-          then locationRevealedConnectedSymbols
-          else locationConnectedSymbols
-        connectingTraits = if locationRevealed
-          then locationRevealedConnectedTraits
-          else locationConnectedTraits
-      traits <- getSet lid
-      if symbol' `elem` symbols || any (`member` connectingTraits) traits
+        matchers = if locationRevealed
+          then locationRevealedConnectedMatchers
+          else locationConnectedMatchers
+      isMatch <- member lid <$> select (LocationMatchAny matchers)
+      if isMatch
         then do
           push (AddedConnection locationId lid)
           pure $ a & connectedLocationsL %~ insertSet lid

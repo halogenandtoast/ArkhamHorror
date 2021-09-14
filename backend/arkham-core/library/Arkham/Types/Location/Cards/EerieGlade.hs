@@ -30,22 +30,22 @@ eerieGlade = locationWith
   NoSymbol
   []
   ((revealedSymbolL .~ Hourglass)
-  . (revealedConnectedSymbolsL .~ setFromList [Triangle, Plus])
+  . (revealedConnectedMatchersL .~ map LocationWithSymbol [Triangle, Plus])
   )
 
 instance HasAbilities EerieGlade where
   getAbilities (EerieGlade attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env EerieGlade where
   runMessage msg l@(EerieGlade attrs) = case msg of

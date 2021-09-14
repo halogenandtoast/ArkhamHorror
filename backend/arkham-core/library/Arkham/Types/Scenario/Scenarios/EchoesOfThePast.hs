@@ -86,9 +86,13 @@ gatherTheMidnightMasks = traverse
   , Cards.huntingShadow
   ]
 
-labelLocations :: Text -> [a] -> [(a, Text)]
-labelLocations prefix locations =
-  [ (location, prefix <> tshow @Int n) | (location, n) <- zip locations [1 ..] ]
+placeAndLabelLocations :: Text -> [Card] -> [Message]
+placeAndLabelLocations prefix locations = concat
+  [ [ PlaceLocation location
+    , SetLocationLabel (toLocationId location) (prefix <> tshow @Int n)
+    ]
+  | (location, n) <- zip locations [1 ..]
+  ]
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =
@@ -193,24 +197,9 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
          , PlaceLocation quietHalls2
          , SetLocationLabel (toLocationId quietHalls2) "quietHalls2"
          ]
-        <> concat
-             [ [ PlaceLocation location
-               , SetLocationLabel (toLocationId location) label
-               ]
-             | (location, label) <- labelLocations "groundFloor" groundFloor
-             ]
-        <> concat
-             [ [ PlaceLocation location
-               , SetLocationLabel (toLocationId location) label
-               ]
-             | (location, label) <- labelLocations "secondFloor" secondFloor
-             ]
-        <> concat
-             [ [ PlaceLocation location
-               , SetLocationLabel (toLocationId location) label
-               ]
-             | (location, label) <- labelLocations "thirdFloor" thirdFloor
-             ]
+        <> placeAndLabelLocations "groundFloor" groundFloor
+        <> placeAndLabelLocations "secondFloor" secondFloor
+        <> placeAndLabelLocations "thirdFloor" thirdFloor
         <> spawnMessages
         <> [MoveAllTo (toSource attrs) (toLocationId entryHall)]
         )

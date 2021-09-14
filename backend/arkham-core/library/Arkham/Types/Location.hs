@@ -167,5 +167,11 @@ noEnemiesAtLocation :: Location -> Bool
 noEnemiesAtLocation l = null enemies'
   where enemies' = locationEnemies $ toAttrs l
 
+connectedMatcher :: Location -> LocationMatcher
+connectedMatcher l = LocationMatchAny $ if isRevealed l
+  then locationRevealedConnectedMatchers attrs
+  else locationConnectedMatchers attrs
+  where attrs = toAttrs l
+
 isRevealed :: Location -> Bool
 isRevealed = locationRevealed . toAttrs

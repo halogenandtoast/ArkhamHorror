@@ -72,6 +72,7 @@ library
       Arkham.Types.Act.Cards.MysteriousGateway
       Arkham.Types.Act.Cards.NightAtTheMuseum
       Arkham.Types.Act.Cards.OutOfThisWorld
+      Arkham.Types.Act.Cards.RaceForAnswers
       Arkham.Types.Act.Cards.RicesWhereabouts
       Arkham.Types.Act.Cards.Row
       Arkham.Types.Act.Cards.Run
@@ -140,6 +141,7 @@ library
       Arkham.Types.Agenda.Cards.TheShadowOfTheEclipse
       Arkham.Types.Agenda.Cards.TheTerrifyingTruth
       Arkham.Types.Agenda.Cards.TheThirdAct
+      Arkham.Types.Agenda.Cards.TheTruthIsHidden
       Arkham.Types.Agenda.Cards.TheyreGettingOut
       Arkham.Types.Agenda.Cards.TimeIsRunningShort
       Arkham.Types.Agenda.Cards.UndergroundMuscle
@@ -747,6 +749,7 @@ library
       Arkham.Types.Location.Cards.EngineCar_175
       Arkham.Types.Location.Cards.EngineCar_176
       Arkham.Types.Location.Cards.EngineCar_177
+      Arkham.Types.Location.Cards.EntryHall
       Arkham.Types.Location.Cards.ExhibitHallAthabaskanExhibit
       Arkham.Types.Location.Cards.ExhibitHallEgyptianExhibit
       Arkham.Types.Location.Cards.ExhibitHallHallOfTheDead
@@ -769,6 +772,16 @@ library
       Arkham.Types.Location.Cards.GreenRoom
       Arkham.Types.Location.Cards.GuestHall
       Arkham.Types.Location.Cards.Hallway
+      Arkham.Types.Location.Cards.HiddenLibrary
+      Arkham.Types.Location.Cards.HistoricalSocietyHistoricalLibrary_133
+      Arkham.Types.Location.Cards.HistoricalSocietyHistoricalLibrary_136
+      Arkham.Types.Location.Cards.HistoricalSocietyHistoricalMuseum_130
+      Arkham.Types.Location.Cards.HistoricalSocietyHistoricalMuseum_132
+      Arkham.Types.Location.Cards.HistoricalSocietyMeetingRoom
+      Arkham.Types.Location.Cards.HistoricalSocietyPeabodysOffice
+      Arkham.Types.Location.Cards.HistoricalSocietyReadingRoom
+      Arkham.Types.Location.Cards.HistoricalSocietyRecordOffice_129
+      Arkham.Types.Location.Cards.HistoricalSocietyRecordOffice_138
       Arkham.Types.Location.Cards.HoleInTheWall
       Arkham.Types.Location.Cards.HouseInTheReeds_210
       Arkham.Types.Location.Cards.HouseInTheReeds_211
@@ -798,6 +811,8 @@ library
       Arkham.Types.Location.Cards.PassengerCar_170
       Arkham.Types.Location.Cards.PassengerCar_171
       Arkham.Types.Location.Cards.PrismaticCascade
+      Arkham.Types.Location.Cards.QuietHalls_131
+      Arkham.Types.Location.Cards.QuietHalls_135
       Arkham.Types.Location.Cards.RehearsalRoom
       Arkham.Types.Location.Cards.ReturnToAttic
       Arkham.Types.Location.Cards.ReturnToCellar

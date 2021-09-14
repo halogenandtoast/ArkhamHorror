@@ -66,6 +66,8 @@ data LocationAttrs = LocationAttrs
   , locationRevealedSymbol :: LocationSymbol
   , locationConnectedSymbols :: HashSet LocationSymbol
   , locationRevealedConnectedSymbols :: HashSet LocationSymbol
+  , locationConnectedTraits :: HashSet Trait
+  , locationRevealedConnectedTraits :: HashSet Trait
   , locationConnectedLocations :: HashSet LocationId
   , locationTreacheries :: HashSet TreacheryId
   , locationEvents :: HashSet EventId
@@ -84,6 +86,10 @@ connectedSymbolsL :: Lens' LocationAttrs (HashSet LocationSymbol)
 connectedSymbolsL =
   lens locationConnectedSymbols $ \m x -> m { locationConnectedSymbols = x }
 
+connectedTraitsL :: Lens' LocationAttrs (HashSet Trait)
+connectedTraitsL =
+  lens locationConnectedTraits $ \m x -> m { locationConnectedTraits = x }
+
 costToEnterUnrevealedL :: Lens' LocationAttrs Cost
 costToEnterUnrevealedL = lens locationCostToEnterUnrevealed
   $ \m x -> m { locationCostToEnterUnrevealed = x }
@@ -94,6 +100,10 @@ connectsToL = lens locationConnectsTo $ \m x -> m { locationConnectsTo = x }
 revealedConnectedSymbolsL :: Lens' LocationAttrs (HashSet LocationSymbol)
 revealedConnectedSymbolsL = lens locationRevealedConnectedSymbols
   $ \m x -> m { locationRevealedConnectedSymbols = x }
+
+revealedConnectedTraitsL :: Lens' LocationAttrs (HashSet Trait)
+revealedConnectedTraitsL = lens locationRevealedConnectedTraits
+  $ \m x -> m { locationRevealedConnectedTraits = x }
 
 revealedSymbolL :: Lens' LocationAttrs LocationSymbol
 revealedSymbolL =
@@ -276,6 +286,8 @@ locationWith f def shroud' revealClues symbol' connectedSymbols' g =
       , locationRevealedSymbol = symbol'
       , locationConnectedSymbols = setFromList connectedSymbols'
       , locationRevealedConnectedSymbols = setFromList connectedSymbols'
+      , locationConnectedTraits = mempty
+      , locationRevealedConnectedTraits = mempty
       , locationConnectedLocations = mempty
       , locationTreacheries = mempty
       , locationEvents = mempty
@@ -523,7 +535,11 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         symbols = if locationRevealed
           then locationRevealedConnectedSymbols
           else locationConnectedSymbols
-      if symbol' `elem` symbols
+        connectingTraits = if locationRevealed
+          then locationRevealedConnectedTraits
+          else locationConnectedTraits
+      traits <- getSet lid
+      if symbol' `elem` symbols || any (`member` connectingTraits) traits
         then do
           push (AddedConnection locationId lid)
           pure $ a & connectedLocationsL %~ insertSet lid

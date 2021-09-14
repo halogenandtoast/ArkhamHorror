@@ -9,18 +9,26 @@ import qualified Arkham.Location.Cards as Cards
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Trait
 
 newtype EntryHall = EntryHall LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 entryHall :: LocationCard EntryHall
-entryHall = location EntryHall Cards.entryHall 0 (Static 0) NoSymbol []
-
-instance HasModifiersFor env EntryHall
+entryHall = locationWith
+  EntryHall
+  Cards.entryHall
+  2
+  (Static 0)
+  Square
+  [Circle]
+  ((connectedTraitsL .~ singleton GroundFloor)
+  . (revealedConnectedTraitsL .~ singleton GroundFloor)
+  )
 
 instance HasAbilities EntryHall where
-  getAbilities (EntryHall attrs) = getAbilities attrs
+  getAbilities (EntryHall attrs) = withResignAction attrs []
 
 instance LocationRunner env => RunMessage env EntryHall where
   runMessage msg (EntryHall attrs) = EntryHall <$> runMessage msg attrs

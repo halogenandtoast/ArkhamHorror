@@ -46,8 +46,8 @@ echoesOfThePast difficulty =
         [Acts.raceForAnswers, Acts.mistakesOfThePast, Acts.theOath]
         difficulty
     & locationLayoutL
-    ?~ [ "thirdFloor1  quietHalls1 thirdFloor1"
-       , "secondFloor1 quietHalls2 secondFloor2"
+    ?~ [ "thirdFloor1  quietHalls2 thirdFloor2"
+       , "secondFloor1 quietHalls1 secondFloor2"
        , "groundFloor1 entryHall   groundFloor2"
        ]
 
@@ -189,7 +189,9 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
          , AddAct "03124"
          , PlaceLocation entryHall
          , PlaceLocation quietHalls1
+         , SetLocationLabel (toLocationId quietHalls1) "quietHalls1"
          , PlaceLocation quietHalls2
+         , SetLocationLabel (toLocationId quietHalls2) "quietHalls2"
          ]
         <> concat
              [ [ PlaceLocation location

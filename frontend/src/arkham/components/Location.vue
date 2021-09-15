@@ -46,6 +46,7 @@
         :key="treacheryId"
         :treachery="game.treacheries[treacheryId]"
         :game="game"
+        :attached="true"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
@@ -349,9 +350,8 @@ export default defineComponent({
 .location-column :deep(.treachery) {
   object-fit: cover;
   object-position: 0 -74px;
-  height: 68px;
+  height: $card-width * 0.35;
   margin-top: 2px;
-
 }
 
 .location-column :deep(.event) {

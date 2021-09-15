@@ -2650,13 +2650,15 @@ instance HasGame env => HasSet PreyId env (Prey, LocationId) where
 instance HasGame env => HasSet ConnectedLocationId env LocationId where
   getSet lid = do
     location <- getLocation lid
-    connectedLocationIds <- select $ connectedMatcher location
-    pure $ mapSet ConnectedLocationId $ connectedLocationIds
+    connectedLocationIds <- filterSet (/= lid)
+      <$> select (connectedMatcher location)
+    pure $ mapSet ConnectedLocationId connectedLocationIds
 
 instance HasGame env => HasSet AccessibleLocationId env LocationId where
   getSet lid = do
     location <- getLocation lid
-    connectedLocationIds <- select $ connectedMatcher location
+    connectedLocationIds <- filterSet (/= lid)
+      <$> select (connectedMatcher location)
     blockedLocationIds <- mapSet unBlockedLocationId <$> getSet ()
     pure
       $ mapSet AccessibleLocationId

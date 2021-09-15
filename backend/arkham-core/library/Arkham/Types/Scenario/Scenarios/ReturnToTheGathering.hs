@@ -39,11 +39,11 @@ returnToTheGathering difficulty =
         [Acts.mysteriousGateway, Acts.theBarrier, Acts.whatHaveYouDone]
         difficulty
     & locationLayoutL
-    ?~ [ ".     .         fieldOfGraves .     "
-       , ".     bedroom   attic         .     "
-       , "study guestHall holeInTheWall parlor"
-       , ".     bathroom  cellar        .     "
-       , ".     .         ghoulPits     .     "
+    ?~ [ ".     .         farAboveYourHouse  ."
+       , ".     bedroom   attic              ."
+       , "study guestHall holeInTheWall      parlor"
+       , ".     bathroom  cellar             ."
+       , ".     .         deepBelowYourHouse ."
        ]
 
 instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (InvestigatorLocation, [Trait])) => HasTokenValue env ReturnToTheGathering where

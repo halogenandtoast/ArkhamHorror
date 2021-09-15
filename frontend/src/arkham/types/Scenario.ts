@@ -1,5 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
-import { Card, cardDecoder, encounterCardContentsDecoder, EncounterCardContents } from '@/arkham/types/Card';
+import { Card, cardDecoder } from '@/arkham/types/Card';
 
 export interface ScenarioName {
   title: string;
@@ -38,7 +38,7 @@ export interface ScenarioContents {
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
   tag: JsonDecoder.string,
-  deckSize: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'Card[]').map(cards => cards.length),
+  deckSize: JsonDecoder.array<Card>(cardDecoder, 'Card[]').map(cards => cards.length),
 }, 'ScenarioDeck', { deckSize: 'contents' });
 
 export const scenarioContentsDecoder = JsonDecoder.object<ScenarioContents>({

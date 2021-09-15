@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
+import Arkham.Types.ClassSymbol
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -2648,11 +2648,10 @@ instance HasGame env => HasSet PreyId env (Prey, LocationId) where
       <$> filterM (getIsPrey preyType <=< getInvestigator) investigators
 
 instance HasGame env => HasSet ConnectedLocationId env LocationId where
-  getSet =
-    fmap setFromList
-      . selectListMap ConnectedLocationId
-      . AccessibleFrom
-      . LocationWithId
+  getSet lid = do
+    location <- getLocation lid
+    connectedLocationIds <- select $ connectedMatcher location
+    pure $ mapSet ConnectedLocationId $ connectedLocationIds
 
 instance HasGame env => HasSet AccessibleLocationId env LocationId where
   getSet lid = do

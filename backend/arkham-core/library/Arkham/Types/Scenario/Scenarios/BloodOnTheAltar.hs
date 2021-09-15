@@ -263,8 +263,6 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
         villageCommons <- EncounterCard
           <$> genEncounterCard Locations.villageCommons
 
-        locationIds <- getRandoms
-
         let
           locationCardPairs = zip locations cardsToPutUnderneath
           potentialSacrifices = [zebulonWhateley, earlSawyer] <> catMaybes
@@ -279,11 +277,11 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
           <> [AddAct "02199", PlaceLocation villageCommons]
           <> concat
                [ [ PlaceLocation location
-                 , PlaceUnderneath (LocationTarget locationId) [card]
+                 , PlaceUnderneath
+                   (LocationTarget $ toLocationId location)
+                   [card]
                  ]
-               | (locationId, (location, card)) <- zip
-                 locationIds
-                 locationCardPairs
+               | (location, card) <- locationCardPairs
                ]
           <> [ RevealLocation Nothing (LocationId $ toCardId villageCommons)
              , MoveAllTo (toSource attrs) (LocationId $ toCardId villageCommons)

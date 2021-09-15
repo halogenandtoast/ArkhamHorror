@@ -15,8 +15,8 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 
 newtype RaceForAnswers = RaceForAnswers ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 raceForAnswers :: ActCard RaceForAnswers
 raceForAnswers = act

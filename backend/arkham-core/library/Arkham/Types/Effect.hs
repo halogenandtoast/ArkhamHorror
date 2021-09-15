@@ -119,6 +119,7 @@ data Effect
   | TheStrangerThePathIsMine' TheStrangerThePathIsMine
   | TheStrangerTheShoresOfHali' TheStrangerTheShoresOfHali
   | TheKingsEdict' TheKingsEdict
+  | MrPeabody' MrPeabody
   | MindWipe3' MindWipe3
   | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
   | JeremiahPierce' JeremiahPierce
@@ -238,6 +239,7 @@ allEffects = mapFromList
   , ("03047b", TheStrangerThePathIsMine' . theStrangerThePathIsMine)
   , ("03047c", TheStrangerTheShoresOfHali' . theStrangerTheShoresOfHali)
   , ("03100", TheKingsEdict' . theKingsEdict)
+  , ("03141", MrPeabody' . mrPeabody)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)
   , ("50044", JeremiahPierce' . jeremiahPierce)

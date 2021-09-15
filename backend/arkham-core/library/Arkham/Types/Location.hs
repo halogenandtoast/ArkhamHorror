@@ -167,13 +167,21 @@ noEnemiesAtLocation :: Location -> Bool
 noEnemiesAtLocation l = null enemies'
   where enemies' = locationEnemies $ toAttrs l
 
-connectedMatcher :: Location -> LocationMatcher
-connectedMatcher l = LocationMatchAny $ if isRevealed l
-  then locationRevealedConnectedMatchers attrs <> directionalMatchers
-  else locationConnectedMatchers attrs <> directionalMatchers
+getConnectedMatcher
+  :: (HasModifiersFor env (), MonadReader env m)
+  => Location
+  -> m LocationMatcher
+getConnectedMatcher l = do
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
+  pure $ LocationMatchAny $ foldl' applyModifier base modifiers
  where
+  applyModifier current (ConnectedTo matcher) = current <> [matcher]
+  applyModifier current _ = current
   attrs = toAttrs l
   self = LocationWithId $ toId attrs
+  base = if isRevealed l
+    then locationRevealedConnectedMatchers attrs <> directionalMatchers
+    else locationConnectedMatchers attrs <> directionalMatchers
   directionalMatchers =
     map (`LocationInDirection` self) (setToList $ locationConnectsTo attrs)
 

@@ -85,6 +85,7 @@ library
       Arkham.Types.Act.Cards.TheCarnevaleConspiracy
       Arkham.Types.Act.Cards.TheChamberOfTheBeast
       Arkham.Types.Act.Cards.TheGateOpens
+      Arkham.Types.Act.Cards.TheOath
       Arkham.Types.Act.Cards.ThePathToTheHill
       Arkham.Types.Act.Cards.TheStrangerACityAflame
       Arkham.Types.Act.Cards.TheStrangerThePathIsMine
@@ -190,6 +191,7 @@ library
       Arkham.Types.Asset.Cards.CherishedKeepsake
       Arkham.Types.Asset.Cards.ChicagoTypewriter4
       Arkham.Types.Asset.Cards.ClarityOfMind
+      Arkham.Types.Asset.Cards.ClaspOfBlackOnyx
       Arkham.Types.Asset.Cards.CombatTraining1
       Arkham.Types.Asset.Cards.ConstanceDumaine
       Arkham.Types.Asset.Cards.DaisysToteBag
@@ -272,6 +274,7 @@ library
       Arkham.Types.Asset.Cards.MedicalTexts
       Arkham.Types.Asset.Cards.MonstrousTransformation
       Arkham.Types.Asset.Cards.Moxie1
+      Arkham.Types.Asset.Cards.MrPeabody
       Arkham.Types.Asset.Cards.Newspaper
       Arkham.Types.Asset.Cards.OccultLexicon
       Arkham.Types.Asset.Cards.OldBookOfLore
@@ -327,6 +330,7 @@ library
       Arkham.Types.Asset.Cards.TheNecronomiconAdvanced
       Arkham.Types.Asset.Cards.TheNecronomiconOlausWormiusTranslation
       Arkham.Types.Asset.Cards.TheRedGlovedMan5
+      Arkham.Types.Asset.Cards.TheTatteredCloak
       Arkham.Types.Asset.Cards.ThirtyTwoColt
       Arkham.Types.Asset.Cards.ToothOfEztli
       Arkham.Types.Asset.Cards.TrueGrit
@@ -409,6 +413,7 @@ library
       Arkham.Types.Effect.Effects.MindWipe1
       Arkham.Types.Effect.Effects.MindWipe3
       Arkham.Types.Effect.Effects.MinhThiPhan
+      Arkham.Types.Effect.Effects.MrPeabody
       Arkham.Types.Effect.Effects.OnTheLam
       Arkham.Types.Effect.Effects.Overzealous
       Arkham.Types.Effect.Effects.PayForAbilityEffect
@@ -493,6 +498,7 @@ library
       Arkham.Types.Enemy.Cards.PeterWarren
       Arkham.Types.Enemy.Cards.Poleman
       Arkham.Types.Enemy.Cards.Poltergeist
+      Arkham.Types.Enemy.Cards.PossessedOathspeaker
       Arkham.Types.Enemy.Cards.RavenousGhoul
       Arkham.Types.Enemy.Cards.RelentlessDarkYoung
       Arkham.Types.Enemy.Cards.RoyalEmissary

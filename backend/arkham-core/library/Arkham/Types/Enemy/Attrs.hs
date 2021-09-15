@@ -629,14 +629,13 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a
-        a <$ if Keyword.Retaliate `elem` keywords
-          then push (EnemyAttack iid enemyId DamageAny)
-          else pushAll
-            [ FailedAttackEnemy iid enemyId
+        a <$ pushAll
+            ([ FailedAttackEnemy iid enemyId
             , CheckWindow
               iid
               [Window Timing.After (Window.FailAttackEnemy iid enemyId n)]
             ]
+            <> [EnemyAttack iid enemyId DamageAny | Keyword.Retaliate `elem` keywords])
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->
         push (EnemyAttack iid enemyId DamageAny)

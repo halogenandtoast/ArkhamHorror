@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes hiding (discard)
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -2742,16 +2742,47 @@ instance HasGame env => Query TreacheryMatcher env where
   select = fmap (setFromList . map toId) . getTreacheriesMatching
 
 instance {-# OVERLAPPABLE #-} HasGame env => HasAbilities env where
-  getAbilities env = do
-    let g = view gameL env
-    concatMap getAbilities (g ^. enemiesL)
-      <> concatMap getAbilities (g ^. locationsL)
-      <> concatMap getAbilities (g ^. assetsL)
-      <> concatMap getAbilities (g ^. treacheriesL)
-      <> concatMap getAbilities (g ^. actsL)
-      <> concatMap getAbilities (g ^. agendasL)
-      <> concatMap getAbilities (g ^. effectsL)
-      <> concatMap getAbilities (g ^. investigatorsL)
+  getAbilities env =
+    let
+      g = view gameL env
+      blanked a = do
+        modifiers <- getModifiers (toSource a) (toTarget a)
+        pure $ Blank `elem` modifiers
+      unblanked a = do
+        modifiers <- getModifiers (toSource a) (toTarget a)
+        pure $ Blank `notElem` modifiers
+    in flip runReader env $ do
+      enemyAbilities <- concatMap getAbilities
+        <$> filterM unblanked (toList $ g ^. enemiesL)
+      blankedEnemyAbilities <- concatMap (getAbilities . toAttrs)
+        <$> filterM blanked (toList $ g ^. enemiesL)
+      locationAbilities <- concatMap getAbilities
+        <$> filterM unblanked (toList $ g ^. locationsL)
+      blankedLocationAbilities <- concatMap (getAbilities . toAttrs)
+        <$> filterM blanked (toList $ g ^. locationsL)
+      assetAbilities <- concatMap getAbilities
+        <$> filterM unblanked (toList $ g ^. assetsL)
+      treacheryAbilities <- concatMap getAbilities
+        <$> filterM unblanked (toList $ g ^. treacheriesL)
+      actAbilities <- concatMap getAbilities
+        <$> filterM unblanked (toList $ g ^. actsL)
+      agendaAbilities <- concatMap getAbilities
+        <$> filterM unblanked (toList $ g ^. agendasL)
+      effectAbilities <- concatMap getAbilities
+        <$> filterM unblanked (toList $ g ^. effectsL)
+      investigatorAbilities <- concatMap getAbilities
+        <$> filterM unblanked (toList $ g ^. investigatorsL)
+      pure
+        $ enemyAbilities
+        <> blankedEnemyAbilities
+        <> locationAbilities
+        <> blankedLocationAbilities
+        <> assetAbilities
+        <> treacheryAbilities
+        <> actAbilities
+        <> agendaAbilities
+        <> effectAbilities
+        <> investigatorAbilities
 
 instance HasGame env => HasId Difficulty env () where
   getId _ = do

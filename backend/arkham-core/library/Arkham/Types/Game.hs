@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
+import Arkham.Types.ClassSymbol
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -384,7 +384,7 @@ withLocationConnectionData
   => With Location ModifierData
   -> m (With (With Location ModifierData) ConnectionData)
 withLocationConnectionData inner@(With target _) = do
-  connectedLocationIds <- selectList $ connectedMatcher target
+  connectedLocationIds <- selectList (connectedMatcher target)
   pure $ inner `with` ConnectionData connectedLocationIds
 
 withInvestigatorConnectionData
@@ -394,8 +394,8 @@ withInvestigatorConnectionData
 withInvestigatorConnectionData inner@(With target _) = case target of
   WithDeckSize investigator -> do
     location <- getLocation =<< getId @LocationId (toId investigator)
-    connectedLocationIds <-
-      selectList $ AccessibleLocation <> connectedMatcher location
+    connectedLocationIds <- selectList
+      (AccessibleLocation <> connectedMatcher location)
     pure $ inner `with` ConnectionData connectedLocationIds
 
 newtype WithDeckSize = WithDeckSize Investigator

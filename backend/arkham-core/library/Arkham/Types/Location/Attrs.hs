@@ -252,9 +252,9 @@ locationWithRevealedSideConnectionsWith f def shroud' revealClues symbol' connec
     revealClues
     symbol'
     connectedSymbols'
-    ((revealedConnectedMatchersL .~ map LocationWithSymbol revealedConnectedSymbols')
+    (g
+    . (revealedConnectedMatchersL <>~ map LocationWithSymbol revealedConnectedSymbols')
     . (revealedSymbolL .~ revealedSymbol')
-    . g
     )
 
 locationWith

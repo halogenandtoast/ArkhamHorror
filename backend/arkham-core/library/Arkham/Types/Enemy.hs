@@ -7,23 +7,19 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Action
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Trait (Trait, toTraits)
-import Arkham.Types.TreacheryId
 
 $(buildEntity "Enemy")
 
@@ -68,6 +64,7 @@ instance
     , HasModifiersFor env ()
     , HasName env AssetId
     , HasPhase env
+    , HasStep AgendaStep env ()
     , HasId (Maybe LocationId) env AssetId
     , HasSkillValue env InvestigatorId
     ) =>

@@ -46,6 +46,7 @@ data ModifierType
   | AddSkillIcons [SkillType]
   | AdditionalActions Int
   | AdditionalStartingUses Int
+  | ConnectedTo LocationMatcher
   | AlternateSuccessfullEvasion
   | AlternateSuccessfullInvestigation
   | AlternativeReady Source
@@ -64,6 +65,7 @@ data ModifierType
   | CanPlayTopOfDiscard (Maybe CardType, [Trait])
   | CancelSkills
   | CannotBeAttackedByNonElite
+  | CannotBeDamaged
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
   | CannotBeDiscarded
   | CannotBeEnteredByNonElite

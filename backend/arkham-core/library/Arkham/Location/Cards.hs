@@ -147,6 +147,7 @@ allLocationCards = mapFromList $ map
   , greenRoom
   , guestHall
   , hallway
+  , hiddenLibrary
   , historicalSocietyHistoricalLibrary_133
   , historicalSocietyHistoricalLibrary_136
   , historicalSocietyHistoricalMuseum_130

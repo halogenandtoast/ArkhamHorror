@@ -15,10 +15,11 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype MistakesOfThePast = MistakesOfThePast ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 mistakesOfThePast :: ActCard MistakesOfThePast
 mistakesOfThePast = act
@@ -43,11 +44,13 @@ instance ActRunner env => RunMessage env MistakesOfThePast where
          ]
         <> [ chooseOne
              leadInvestigatorId
-             [ TakeControlOfSetAsideAsset iid mrPeabody
+             [ TargetLabel
+                 (InvestigatorTarget iid)
+                 [TakeControlOfSetAsideAsset iid mrPeabody]
              | iid <- investigatorIds
              ]
            , PlaceLocation hiddenLibrary
-           , NextAct aid "03125"
+           , NextAct aid "03126"
            ]
         )
     _ -> MistakesOfThePast <$> runMessage msg attrs

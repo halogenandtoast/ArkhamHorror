@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Enemy
 import Arkham.Types.Enemy.Runner
@@ -13,9 +14,13 @@ import Arkham.Types.Event.Runner
 import Arkham.Types.Id
 import Arkham.Types.Location
 import Arkham.Types.Location.Runner
+import Arkham.Types.Matcher (AssetMatcher, EnemyMatcher, LocationMatcher)
 import Arkham.Types.Message
+import Arkham.Types.Query
 import Arkham.Types.Skill
 import Arkham.Types.Skill.Runner
+import Arkham.Types.SkillTest
+import Arkham.Types.Trait (Trait)
 import Arkham.Types.Treachery
 import Arkham.Types.Treachery.Runner
 
@@ -73,3 +78,44 @@ type EntityInstanceRunner env
     , SkillRunner env
     , EventRunner env
     )
+
+type SomeEntityHasModifiersFor env
+  = ( HasCount ResourceCount env TreacheryId
+    , HasId (Maybe OwnerId) env AssetId
+    , HasCount ClueCount env LocationId
+    , Query AssetMatcher env
+    , Query EnemyMatcher env
+    , HasPhase env
+    , HasSkillTest env
+    , HasModifiersFor env ()
+    , HasName env AssetId
+    , HasId CardCode env EnemyId
+    , HasStep AgendaStep env ()
+    , HasId InvestigatorId env EventId
+    , HasId LocationId env InvestigatorId
+    , HasSkillValue env InvestigatorId
+    , HasId (Maybe LocationId) env AssetId
+    , HasSet CommittedCardId env InvestigatorId
+    , HasSet InvestigatorId env LocationId
+    , HasSet Trait env LocationId
+    , HasSet ConnectedLocationId env LocationId
+    , HasCount ClueCount env InvestigatorId
+    , HasSet LocationId env ()
+    , HasCount ClueCount env EnemyId
+    , HasCount CardCount env InvestigatorId
+    , HasCount RemainingSanity env InvestigatorId
+    , HasCount AssetCount env (InvestigatorId, [Trait])
+    , HasSet Trait env AssetId
+    , HasCount PlayerCount env ()
+    , HasCount ResourceCount env InvestigatorId
+    , Query LocationMatcher env
+    )
+
+instance SomeEntityHasModifiersFor env => HasModifiersFor env EntityInstance where
+  getModifiersFor s t = \case
+    AssetInstance a -> getModifiersFor s t a
+    EnemyInstance e -> getModifiersFor s t e
+    EventInstance e -> getModifiersFor s t e
+    LocationInstance l -> getModifiersFor s t l
+    TreacheryInstance u -> getModifiersFor s t u
+    SkillInstance k -> getModifiersFor s t k

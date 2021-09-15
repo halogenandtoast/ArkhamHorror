@@ -2211,4 +2211,5 @@ sourceCanDamageEnemy eid source = do
     CannotBeDamagedByPlayerSourcesExcept matcher -> not <$> sourceMatches
       source
       (Matcher.SourceMatchesAny [Matcher.EncounterCardSource, matcher])
+    CannotBeDamaged -> pure True
     _ -> pure False

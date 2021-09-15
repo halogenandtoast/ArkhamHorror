@@ -10,7 +10,6 @@ import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import qualified Arkham.Treachery.Cards as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet

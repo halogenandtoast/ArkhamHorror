@@ -41,6 +41,7 @@ instance
   , HasCount AssetCount env (InvestigatorId, [Trait])
   , HasSet Trait env LocationId
   , HasSet CommittedCardId env InvestigatorId
+  , HasCount RemainingSanity env InvestigatorId
   , Query LocationMatcher env
   , HasSkillTest env
   )

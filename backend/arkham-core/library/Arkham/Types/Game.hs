@@ -384,7 +384,8 @@ withLocationConnectionData
   => With Location ModifierData
   -> m (With (With Location ModifierData) ConnectionData)
 withLocationConnectionData inner@(With target _) = do
-  connectedLocationIds <- selectList (connectedMatcher target)
+  matcher <- getConnectedMatcher target
+  connectedLocationIds <- selectList matcher
   pure $ inner `with` ConnectionData connectedLocationIds
 
 withInvestigatorConnectionData
@@ -394,8 +395,8 @@ withInvestigatorConnectionData
 withInvestigatorConnectionData inner@(With target _) = case target of
   WithDeckSize investigator -> do
     location <- getLocation =<< getId @LocationId (toId investigator)
-    connectedLocationIds <- selectList
-      (AccessibleLocation <> connectedMatcher location)
+    matcher <- getConnectedMatcher location
+    connectedLocationIds <- selectList (AccessibleLocation <> matcher)
     pure $ inner `with` ConnectionData connectedLocationIds
 
 newtype WithDeckSize = WithDeckSize Investigator
@@ -1984,6 +1985,7 @@ instance HasGame env => HasSet Trait env Source where
     EmptyDeckSource -> pure mempty
     DeckSource -> pure mempty
     GameSource -> pure mempty
+    InHandSource -> pure mempty -- Only meant for HasModifiersFor
     ActSource _ -> pure mempty
     PlayerCardSource _ -> pure mempty
     EncounterCardSource _ -> pure mempty
@@ -2650,15 +2652,15 @@ instance HasGame env => HasSet PreyId env (Prey, LocationId) where
 instance HasGame env => HasSet ConnectedLocationId env LocationId where
   getSet lid = do
     location <- getLocation lid
-    connectedLocationIds <- filterSet (/= lid)
-      <$> select (connectedMatcher location)
+    matcher <- getConnectedMatcher location
+    connectedLocationIds <- filterSet (/= lid) <$> select matcher
     pure $ mapSet ConnectedLocationId connectedLocationIds
 
 instance HasGame env => HasSet AccessibleLocationId env LocationId where
   getSet lid = do
     location <- getLocation lid
-    connectedLocationIds <- filterSet (/= lid)
-      <$> select (connectedMatcher location)
+    matcher <- getConnectedMatcher location
+    connectedLocationIds <- filterSet (/= lid) <$> select matcher
     blockedLocationIds <- mapSet unBlockedLocationId <$> getSet ()
     pure
       $ mapSet AccessibleLocationId
@@ -2669,7 +2671,8 @@ instance HasGame env => HasSet EnemyAccessibleLocationId env (EnemyId, LocationI
   getSet (eid, lid) = do
     enemy <- getEnemy eid
     location <- getLocation lid
-    connectedLocationIds <- selectList $ connectedMatcher location
+    matcher <- getConnectedMatcher location
+    connectedLocationIds <- selectList matcher
     let
       enemyIsElite = Elite `member` toTraits enemy
       unblocked lid' = do

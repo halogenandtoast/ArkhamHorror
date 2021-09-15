@@ -33,6 +33,7 @@ data Source
   | EmptyDeckSource
   | DeckSource
   | GameSource
+  | InHandSource
   | CardIdSource CardId
   | ActSource ActId
   | PlayerCardSource CardId

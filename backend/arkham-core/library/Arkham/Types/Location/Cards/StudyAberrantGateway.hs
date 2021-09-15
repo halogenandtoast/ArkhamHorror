@@ -9,6 +9,7 @@ import qualified Arkham.Location.Cards as Cards (studyAberrantGateway)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
@@ -34,7 +35,7 @@ studyAberrantGateway = location
 instance HasAbilities StudyAberrantGateway where
   getAbilities (StudyAberrantGateway attrs) = withBaseAbilities
     attrs
-    [ mkAbility attrs 1 $ ActionAbility Nothing $ ActionCost 2
+    [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 2
     , mkAbility attrs 2 $ ForcedAbility $ EnemyAttemptsToSpawnAt
       Timing.When
       AnyEnemy

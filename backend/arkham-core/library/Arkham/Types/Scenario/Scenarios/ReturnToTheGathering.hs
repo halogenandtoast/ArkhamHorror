@@ -41,7 +41,7 @@ returnToTheGathering difficulty =
     & locationLayoutL
     ?~ [ ".     .         fieldOfGraves .     "
        , ".     bedroom   attic         .     "
-       , "study guestHall hallway       parlor"
+       , "study guestHall holeInTheWall parlor"
        , ".     bathroom  cellar        .     "
        , ".     .         ghoulPits     .     "
        ]
@@ -96,8 +96,10 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
           , Assets.litaChantler
           , attic
           , cellar
+          , Locations.holeInTheWall
           , Locations.deepBelowYourHouse
           , Locations.farAboveYourHouse
+          , Locations.parlor
           ]
 
         ReturnToTheGathering . TheGathering <$> runMessage

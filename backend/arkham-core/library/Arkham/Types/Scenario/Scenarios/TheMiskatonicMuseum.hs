@@ -151,7 +151,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck [] -> pure s
         ExhibitDeck (x : xs) -> do
-          push (PlaceLocation (EncounterCard x))
+          push (PlaceLocation x)
           pure $ TheMiskatonicMuseum $ attrs & deckL ?~ ExhibitDeck xs
         _ -> error "Wrong deck"
     LookAtTopOfDeck _ ScenarioDeckTarget n ->
@@ -168,7 +168,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         True
 
       exhibitHalls <- shuffleM =<< traverse
-        genEncounterCard
+        genCard
         [ Locations.exhibitHallAthabaskanExhibit
         , Locations.exhibitHallMedusaExhibit
         , Locations.exhibitHallNatureExhibit
@@ -178,7 +178,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
 
       let (bottom, top) = splitAt 2 exhibitHalls
 
-      restrictedHall <- genEncounterCard Locations.exhibitHallRestrictedHall
+      restrictedHall <- genCard Locations.exhibitHallRestrictedHall
 
       bottom' <- shuffleM $ restrictedHall : bottom -- 02137 is the restricted hall
 

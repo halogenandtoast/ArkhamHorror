@@ -135,7 +135,9 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
       litaForcedToFindOthersToHelpHerCause <- getHasRecord
         LitaWasForcedToFindOthersToHelpHerCause
       ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
-      cultistDeck' <- shuffleM
+      cultistDeck' <-
+        shuffleM
+        . map EncounterCard
         =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
 
       let
@@ -195,7 +197,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
     UseScenarioSpecificAbility iid _ 1 ->
       case fromJustNote "must be set" scenarioDeck of
         CultistDeck [] -> pure s
-        CultistDeck (x : xs) -> do
+        CultistDeck (EncounterCard x : xs) -> do
           push (InvestigatorDrewEncounterCard iid x)
           pure $ TheMidnightMasks
             (attrs { scenarioDeck = Just $ CultistDeck xs })

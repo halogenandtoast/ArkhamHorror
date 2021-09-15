@@ -89,7 +89,7 @@ instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
           (<>)
           (gatherEncounterSet EncounterSet.CultOfUmordhoth)
           (gatherEncounterSet EncounterSet.ReturnCultOfUmordhoth)
-        cultistDeck' <- drop 3 <$> shuffleM cultistCards
+        cultistDeck' <- map EncounterCard . drop 3 <$> shuffleM cultistCards
         let
           startingLocationMessages = if houseBurnedDown
             then

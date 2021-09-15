@@ -21,7 +21,7 @@ drawCardUnderneathAction :: SourceEntity a => a -> Ability
 drawCardUnderneathAction a =
   (restrictedAbility
         a
-        98
+        100
         (Here <> LocationExists (YourLocation <> LocationWithoutClues))
     $ FastAbility Free
     )

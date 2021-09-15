@@ -16,7 +16,6 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target

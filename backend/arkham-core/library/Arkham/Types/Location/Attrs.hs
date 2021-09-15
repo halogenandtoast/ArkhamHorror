@@ -451,7 +451,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         <> afterWindowMsgs
         )
     PlaceUnderneath target cards | isTarget a target ->
-      pure $ a & cardsUnderneathL %~ (<> cards)
+      pure $ a & cardsUnderneathL <>~ cards
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & labelL .~ label'
     PlacedLocationDirection lid direction lid2 | lid == locationId -> do
@@ -622,7 +622,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         (EncounterCard card : rest) -> do
           push (InvestigatorDrewEncounterCard iid card)
           pure $ a & cardsUnderneathL .~ rest
-        _ -> throwIO $ InvalidState "Not expecting a player card or empty yet"
+        _ -> throwIO $ InvalidState $ "Not expecting a player card or empty set, but got " <> tshow locationCardsUnderneath
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid source _ 101 _ | isSource a source -> do
       let

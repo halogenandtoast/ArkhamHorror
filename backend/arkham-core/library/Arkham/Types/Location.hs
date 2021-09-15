@@ -169,9 +169,13 @@ noEnemiesAtLocation l = null enemies'
 
 connectedMatcher :: Location -> LocationMatcher
 connectedMatcher l = LocationMatchAny $ if isRevealed l
-  then locationRevealedConnectedMatchers attrs
-  else locationConnectedMatchers attrs
-  where attrs = toAttrs l
+  then locationRevealedConnectedMatchers attrs <> directionalMatchers
+  else locationConnectedMatchers attrs <> directionalMatchers
+ where
+  attrs = toAttrs l
+  self = LocationWithId $ toId attrs
+  directionalMatchers =
+    map (`LocationInDirection` self) (setToList $ locationConnectsTo attrs)
 
 isRevealed :: Location -> Bool
 isRevealed = locationRevealed . toAttrs

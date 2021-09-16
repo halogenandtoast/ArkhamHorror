@@ -661,12 +661,15 @@ getInvestigatorsMatching = \case
   ResignedInvestigator -> do
     is <- toList . view investigatorsL <$> getGame
     pure $ filter isResigned is
+  InvestigatorEngagedWith enemyMatcher -> do
+    enemyIds <- select enemyMatcher
+    is <- toList . view investigatorsL <$> getGame
+    filterM (fmap (any (`member` enemyIds)) . getSet) is
   -- TODO: too lazy to do these right now
   NoDamageDealtThisTurn -> pure []
   UnengagedInvestigator -> pure []
   ContributedMatchingIcons _ -> pure []
   DiscardWith _ -> pure []
-  InvestigatorEngagedWith _ -> pure []
   InvestigatorWithResources _ -> pure []
 
 getTreacheriesMatching

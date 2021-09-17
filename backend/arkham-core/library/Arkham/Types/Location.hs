@@ -118,8 +118,8 @@ instance HasModifiersFor env () => HasSet Trait env Location where
       <$> getModifiers (toSource attrs) (toTarget attrs)
     pure $ HashSet.union base (setFromList additionalTraits)
    where
-    applyModifier base (AddTrait t) = t : base
-    applyModifier base _ = base
+    applyModifier base' (AddTrait t) = t : base'
+    applyModifier base' _ = base'
     def = toCardDef l
     attrs = toAttrs l
     base = if locationRevealed attrs

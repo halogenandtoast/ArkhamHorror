@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes hiding (discard)
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -887,8 +887,8 @@ getLocationsMatching = \case
   NotYourLocation -> guardYourLocation $ \yourLocation ->
     filter ((/= yourLocation) . toId) . toList . view locationsL <$> getGame
   LocationWithTrait trait ->
-    filter hasMatchingTrait . toList . view locationsL <$> getGame
-    where hasMatchingTrait = (trait `member`) . toTraits
+    filterM hasMatchingTrait . toList . view locationsL =<< getGame
+    where hasMatchingTrait = fmap (trait `member`) . getSet
   LocationWithoutTrait trait ->
     filter missingTrait . toList . view locationsL <$> getGame
     where missingTrait = (trait `notMember`) . toTraits

@@ -19,6 +19,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait (Trait)
+import qualified Data.HashSet as HashSet
 import Data.UUID (nil)
 
 $(buildEntity "Location")
@@ -111,11 +112,20 @@ instance HasCount DoomCount env Location where
 instance HasList UnderneathCard env Location where
   getList = getList . toAttrs
 
-instance HasSet Trait env Location where
-  getSet l = pure $ if locationRevealed (toAttrs l)
-    then cdRevealedCardTraits def
-    else cdCardTraits def
-    where def = toCardDef l
+instance HasModifiersFor env () => HasSet Trait env Location where
+  getSet l = do
+    additionalTraits <- foldl' applyModifier mempty
+      <$> getModifiers (toSource attrs) (toTarget attrs)
+    pure $ HashSet.union base (setFromList additionalTraits)
+   where
+    applyModifier base (AddTrait t) = t : base
+    applyModifier base _ = base
+    def = toCardDef l
+    attrs = toAttrs l
+    base = if locationRevealed attrs
+      then cdRevealedCardTraits def
+      else cdCardTraits def
+
 
 instance HasSet EnemyId env Location where
   getSet = pure . locationEnemies . toAttrs
@@ -168,15 +178,17 @@ noEnemiesAtLocation l = null enemies'
   where enemies' = locationEnemies $ toAttrs l
 
 getConnectedMatcher
-  :: (HasModifiersFor env (), MonadReader env m)
+  :: (HasModifiersFor env (), MonadReader env m, Query LocationMatcher env)
   => Location
   -> m LocationMatcher
 getConnectedMatcher l = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
-  pure $ LocationMatchAny $ foldl' applyModifier base modifiers
+  LocationMatchAny <$> foldM applyModifier base modifiers
  where
-  applyModifier current (ConnectedTo matcher) = current <> [matcher]
-  applyModifier current _ = current
+  applyModifier current (ConnectedToWhen whenMatcher matcher) = do
+    matches <- member (toId l) <$> select whenMatcher
+    pure $ current <> [ matcher | matches ]
+  applyModifier current _ = pure current
   attrs = toAttrs l
   self = LocationWithId $ toId attrs
   base = if isRevealed l

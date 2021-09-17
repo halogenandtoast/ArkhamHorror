@@ -262,8 +262,8 @@ instance
         modifiers <- getModifiers (toSource a) (InvestigatorTarget iid)
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
-          else pure $ a & exhaustedL .~ False
-      Nothing -> pure $ a & exhaustedL .~ False
+          else a <$ push (Ready $ toTarget a)
+      Nothing -> a <$ push (Ready $ toTarget a)
     RemoveAllDoom -> pure $ a & doomL .~ 0
     PlaceClues target n | isTarget a target -> pure $ a & cluesL +~ n
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n

@@ -12,7 +12,6 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
-import Arkham.Types.Matcher (LocationMatcher(..))
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait
@@ -30,11 +29,7 @@ instance
   => RunMessage env Act where
   runMessage = genericRunMessage
 
-instance
-  ( HasSet Trait env LocationId
-  , Query LocationMatcher env
-  )
-  => HasModifiersFor env Act where
+instance HasSet Trait env LocationId => HasModifiersFor env Act where
   getModifiersFor = genericGetModifiersFor
 
 instance HasStep ActStep env Act where

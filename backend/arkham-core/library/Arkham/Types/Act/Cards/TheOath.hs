@@ -30,12 +30,14 @@ theOath = act
   Cards.theOath
   (Just $ GroupClueCost (PerPlayer 3) (locationIs Locations.hiddenLibrary))
 
-instance Query LocationMatcher env => HasModifiersFor env TheOath where
-  getModifiersFor _ (LocationTarget lid) (TheOath attrs) = do
-    isPassageway <- member lid <$> select (LocationWithTrait Passageway)
+instance HasModifiersFor env TheOath where
+  getModifiersFor _ (LocationTarget _) (TheOath attrs) = do
     pure $ toModifiers
       attrs
-      [ ConnectedTo (LocationWithTrait Passageway) | isPassageway ]
+      [ ConnectedToWhen
+          (LocationWithTrait Passageway)
+          (LocationWithTrait Passageway)
+      ]
   getModifiersFor _ _ _ = pure []
 
 instance ActRunner env => RunMessage env TheOath where

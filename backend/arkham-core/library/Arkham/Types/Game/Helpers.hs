@@ -11,8 +11,8 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria (Criterion)
 import qualified Arkham.Types.Criteria as Criteria
@@ -773,6 +773,7 @@ sourceToTarget = \case
   LocationMatcherSource{} -> error "not converted"
   AttackSource a -> EnemyTarget a
   StorySource code -> StoryTarget code
+  InHandSource -> error "not converted"
 
 addCampaignCardToDeckChoice
   :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message

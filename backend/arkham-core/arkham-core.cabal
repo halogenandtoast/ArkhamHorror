@@ -1006,6 +1006,7 @@ library
       Arkham.Types.Treachery.Cards.InsatiableBloodlust
       Arkham.Types.Treachery.Cards.InternalInjury
       Arkham.Types.Treachery.Cards.Kidnapped
+      Arkham.Types.Treachery.Cards.LedAstray
       Arkham.Types.Treachery.Cards.LightOfAforgomon
       Arkham.Types.Treachery.Cards.LockedDoor
       Arkham.Types.Treachery.Cards.LostInVenice
@@ -1046,6 +1047,7 @@ library
       Arkham.Types.Treachery.Cards.StrangeSigns
       Arkham.Types.Treachery.Cards.TerrorFromBeyond
       Arkham.Types.Treachery.Cards.TheCreaturesTracks
+      Arkham.Types.Treachery.Cards.TheCultsSearch
       Arkham.Types.Treachery.Cards.TheKingsEdict
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.TheZealotsSeal

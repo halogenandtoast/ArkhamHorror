@@ -133,6 +133,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , huntingShadow
   , insatiableBloodlust
   , kidnapped
+  , ledAstray
   , lightOfAforgomon
   , lockedDoor
   , lostInVenice
@@ -165,6 +166,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , strangeSigns
   , terrorFromBeyond
   , theCreaturesTracks
+  , theCultsSearch
   , theKingsEdict
   , theYellowSign
   , theZealotsSeal
@@ -616,6 +618,17 @@ spiresOfCarcosa = (treachery "03091" "Spires of Carcosa" EvilPortents 2)
 twistedToHisWill :: CardDef
 twistedToHisWill = (treachery "03092" "Twisted to His Will" EvilPortents 2)
   { cdCardTraits = singleton Pact
+  }
+
+ledAstray :: CardDef
+ledAstray = (treachery "03145" "Led Astray" EchoesOfThePast 3)
+  { cdCardTraits = singleton Scheme
+  , cdKeywords = singleton Keyword.Peril
+  }
+
+theCultsSearch :: CardDef
+theCultsSearch = (treachery "03146" "The Cult's Search" EchoesOfThePast 2)
+  { cdCardTraits = singleton Scheme
   }
 
 spiritsTorment :: CardDef

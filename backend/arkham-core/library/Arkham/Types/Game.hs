@@ -229,6 +229,7 @@ data Game = Game
   , gameRemovedFromPlay :: [Card]
   , gameGameState :: GameState
   , gameSkillTestResults :: Maybe SkillTestResultsData
+  , gameEnemyMoving :: Maybe EnemyId
 
   -- Active questions
   , gameQuestion :: HashMap InvestigatorId Question
@@ -242,6 +243,9 @@ patch :: Game -> Diff.Patch -> Result Game
 patch g p = case Diff.patch p (toJSON g) of
   Error e -> Error e
   Success a -> fromJSON a
+
+enemyMovingL :: Lens' Game (Maybe EnemyId)
+enemyMovingL = lens gameEnemyMoving $ \m x -> m { gameEnemyMoving = x }
 
 windowDepthL :: Lens' Game Int
 windowDepthL = lens gameWindowDepth $ \m x -> m { gameWindowDepth = x }
@@ -1108,6 +1112,8 @@ getEnemiesMatching matcher = do
       notElem modifier <$> getModifiers (toSource enemy) (toTarget enemy)
     UnengagedEnemy -> \enemy -> null <$> getSet @InvestigatorId (toId enemy)
     UniqueEnemy -> pure . isUnique
+    MovingEnemy ->
+      \enemy -> (== Just (toId enemy)) . view enemyMovingL <$> getGame
     M.EnemyAt locationMatcher -> \enemy ->
       liftA2 member (getId @LocationId $ toId enemy) (select locationMatcher)
     CanFightEnemy -> \enemy -> do
@@ -4228,4 +4234,5 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
               (toCardInstance (gameLeadInvestigatorId g) (EncounterCard c))
             )
       >>= runGameMessage msg
+      >>= (\g' -> pure $ g' & enemyMovingL .~ Nothing)
     where maskedMsg f = f msg

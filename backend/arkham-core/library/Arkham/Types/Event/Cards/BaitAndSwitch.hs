@@ -26,26 +26,30 @@ instance (EventRunner env) => RunMessage env BaitAndSwitch where
       [ ChooseEvadeEnemy iid (EventSource eid) SkillAgility False
       , Discard (EventTarget eid)
       ]
-    PassedSkillTest iid _ (EventSource eid) SkillTestInitiatorTarget{} _ _
+    PassedSkillTest _ _ (EventSource eid) SkillTestInitiatorTarget{} _ _
       | eid == eventId -> do
-        lid <- getId iid
-        connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
         target <- fromMaybe (error "missing target") <$> getSkillTestTarget
         case target of
-          EnemyTarget enemyId -> do
-            unless (null connectedLocationIds) $ withQueue_ $ \queue ->
-              let
-                enemyMoves = map (EnemyMove enemyId lid) connectedLocationIds
-                (before, rest) = break
-                  (\case
-                    AfterEvadeEnemy{} -> True
-                    _ -> False
-                  )
-                  queue
-              in case rest of
-                (x : xs) -> before <> [x, chooseOne iid enemyMoves] <> xs
-                _ -> error "evade missing"
-
-            pure e
+          EnemyTarget enemyId -> e <$ push (WillMoveEnemy enemyId msg)
           _ -> error "wrong target type"
+    WillMoveEnemy enemyId (PassedSkillTest iid _ (EventSource eid) SkillTestInitiatorTarget{} _ _)
+      | eid == eventId
+      -> do
+        lid <- getId iid
+        connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
+        e <$ unless
+          (null connectedLocationIds)
+          (withQueue_ \queue ->
+            let
+              enemyMoves = map (EnemyMove enemyId lid) connectedLocationIds
+              (before, rest) = break
+                (\case
+                  AfterEvadeEnemy{} -> True
+                  _ -> False
+                )
+                queue
+            in case rest of
+              (x : xs) -> before <> [x, chooseOne iid enemyMoves] <> xs
+              _ -> error "evade missing"
+          )
     _ -> BaitAndSwitch <$> runMessage msg attrs

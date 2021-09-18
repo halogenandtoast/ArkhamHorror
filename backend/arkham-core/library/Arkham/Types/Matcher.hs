@@ -81,6 +81,12 @@ data InvestigatorMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+replaceYouMatcher :: InvestigatorId -> InvestigatorMatcher -> InvestigatorMatcher
+replaceYouMatcher iid You = InvestigatorWithId iid
+replaceYouMatcher iid (InvestigatorMatches matchers) = InvestigatorMatches $ map (replaceYouMatcher iid) matchers
+replaceYouMatcher iid (AnyInvestigator matchers) = AnyInvestigator $ map (replaceYouMatcher iid) matchers
+replaceYouMatcher _ m = m
+
 instance Semigroup InvestigatorMatcher where
   InvestigatorMatches xs <> InvestigatorMatches ys =
     InvestigatorMatches $ xs <> ys

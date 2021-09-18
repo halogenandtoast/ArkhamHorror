@@ -278,6 +278,7 @@ runMessages isReplay = do
         Just msg -> do
           case msg of
             Ask iid q -> do
+              push $ SetActiveInvestigator $ g ^. activeInvestigatorIdL
               toGameEnv >>= flip
                 runGameEnvT
                 (toExternalGame

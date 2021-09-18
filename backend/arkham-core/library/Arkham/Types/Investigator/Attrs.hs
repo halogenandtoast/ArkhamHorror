@@ -993,10 +993,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           | eid <- setToList fightableEnemyIds
           ]
         )
-  EngageEnemy iid eid True | iid == investigatorId -> a <$ pushAll
-    [ TakeAction iid (Just Action.Engage) (ActionCost 1)
-    , EngageEnemy iid eid False
-    ]
+  EngageEnemy iid eid True | iid == investigatorId -> do
+    modifiers' <- getModifiers (toSource a) (toTarget a)
+    a <$ pushAll
+      ([ TakeAction iid (Just Action.Engage) (ActionCost 1) ]
+      <> [ CheckAttackOfOpportunity iid False | ActionDoesNotCauseAttacksOfOpportunity Action.Engage `notElem` modifiers']
+      <> [EngageEnemy iid eid False
+      ])
   EngageEnemy iid eid False | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ insertSet eid
   EngageEnemy iid eid False | iid /= investigatorId ->
@@ -1319,16 +1322,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Investigate iid lid source mTarget skillType True | iid == investigatorId ->
     do
       modifiers <- getModifiers (toSource a) (LocationTarget lid)
+      modifiers' <- getModifiers (toSource a) (toTarget a)
       let
         investigateCost = foldr applyModifier 1 modifiers
         applyModifier (ActionCostOf (IsAction Action.Investigate) m) n =
           max 0 (n + m)
         applyModifier _ n = n
       a <$ pushAll
-        [ TakeAction iid (Just Action.Investigate) (ActionCost investigateCost)
-        , CheckAttackOfOpportunity iid False
-        , Investigate iid lid source mTarget skillType False
-        ]
+        ([ TakeAction iid (Just Action.Investigate) (ActionCost investigateCost)]
+        <> [ CheckAttackOfOpportunity iid False | ActionDoesNotCauseAttacksOfOpportunity Action.Investigate `notElem` modifiers']
+        <> [ Investigate iid lid source mTarget skillType False
+        ])
   InvestigatorDiscoverCluesAtTheirLocation iid n maction
     | iid == investigatorId -> runMessage
       (InvestigatorDiscoverClues iid investigatorLocation n maction)

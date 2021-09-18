@@ -109,6 +109,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameRemovedFromPlay = mempty
       , gameQuestion = mempty
       , gameSkillTestResults = Nothing
+      , gameEnemyMoving = Nothing
       }
     )
  where
@@ -291,7 +292,16 @@ runMessages isReplay = do
                 runGameEnvT
                 (toExternalGame g askMap >>= atomicWriteIORef gameRef)
             _ -> do
-              g' <- toGameEnv >>= flip runGameEnvT (runMessage msg g)
+              -- Hidden Library handling
+              -- > While an enemy is moving, Hidden Library gains the Passageway trait.
+              -- Therefor we must track the "while" aspect
+              let
+                g' = case msg of
+                  HunterMove eid -> g & enemyMovingL ?~ eid
+                  WillMoveEnemy eid _ -> g & enemyMovingL ?~ eid
+                  _ -> g
               atomicWriteIORef gameRef g'
+              g'' <- toGameEnv >>= flip runGameEnvT (runMessage msg g')
+              atomicWriteIORef gameRef g''
               liftIO $ logger msg
               runMessages isReplay

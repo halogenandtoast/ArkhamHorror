@@ -163,6 +163,11 @@ pattern EnemyWithAnyClues <-
   EnemyWithClues (GreaterThan (Static 0)) where
   EnemyWithAnyClues = EnemyWithClues (GreaterThan (Static 0))
 
+pattern EnemyWithAnyDoom :: EnemyMatcher
+pattern EnemyWithAnyDoom <-
+  EnemyWithDoom (GreaterThan (Static 0)) where
+  EnemyWithAnyDoom = EnemyWithDoom (GreaterThan (Static 0))
+
 pattern EnemyWithAnyDamage :: EnemyMatcher
 pattern EnemyWithAnyDamage <-
   EnemyWithDamage (GreaterThan (Static 0)) where
@@ -195,6 +200,7 @@ data EnemyMatcher
   | UnengagedEnemy
   | UniqueEnemy
   | NotEnemy EnemyMatcher
+  | MovingEnemy
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

@@ -547,6 +547,7 @@ data Message
     | WhenEnterLocation InvestigatorId LocationId
     | SetLocationAsIf InvestigatorId LocationId
     | Will Message
+    | WillMoveEnemy EnemyId Message
     -- must be called on instance directly
     | SetOriginalCardCode CardCode
     deriving stock (Show, Eq, Generic)

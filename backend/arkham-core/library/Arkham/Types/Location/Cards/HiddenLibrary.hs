@@ -10,8 +10,8 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Modifier
-import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -23,9 +23,11 @@ hiddenLibrary :: LocationCard HiddenLibrary
 hiddenLibrary =
   location HiddenLibrary Cards.hiddenLibrary 4 (PerPlayer 3) NoSymbol []
 
-instance HasModifiersFor env HiddenLibrary where
-  getModifiersFor (EnemySource _) (LocationTarget lid) (HiddenLibrary attrs)
-    | toId attrs == lid = pure $ toModifiers attrs [AddTrait Passageway]
+instance Query EnemyMatcher env => HasModifiersFor env HiddenLibrary where
+  getModifiersFor _ (LocationTarget lid) (HiddenLibrary attrs)
+    | toId attrs == lid = do
+      enemyIsMoving <- isJust <$> selectOne MovingEnemy
+      pure $ toModifiers attrs [ AddTrait Passageway | enemyIsMoving ]
   getModifiersFor _ _ _ = pure []
 
 instance LocationRunner env => RunMessage env HiddenLibrary where

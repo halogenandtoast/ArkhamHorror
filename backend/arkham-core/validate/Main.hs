@@ -14,8 +14,8 @@ import Arkham.Types.Asset.Attrs (assetHealth, assetSanity)
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.Cost
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes.Entity
+import Arkham.Types.ClassSymbol
 import Arkham.Types.EncounterSet
 import Arkham.Types.Enemy
 import Arkham.Types.Enemy.Attrs
@@ -209,7 +209,7 @@ getSkills CardJson {..} =
   getSkill skillType (Just n) = replicate n skillType
 
 getTraits :: CardJson -> HashSet Trait
-getTraits CardJson {code} | code == "01000" = mempty
+getTraits CardJson { code } | code == "01000" = mempty
 getTraits CardJson {..} = case traits of
   Nothing -> mempty
   Just s -> setFromList $ map toTrait (T.splitOn ". " $ cleanText s)
@@ -340,7 +340,11 @@ runValidations cards = do
             (cdSkills card)
           )
         when
-          (getTraits cardJson /= cdCardTraits card)
+          (getTraits cardJson
+          /= cdCardTraits card
+          && getTraits cardJson
+          /= cdRevealedCardTraits card
+          )
           (throw $ TraitsMismatch
             code
             (cdName card)
@@ -493,7 +497,9 @@ runMissingImages = do
             </> "cards"
             </> filename
       exists <- doesFileExist filepath
-      pure $ if exists || ccode == "01000" then Nothing else Just (unCardCode ccode)
+      pure $ if exists || ccode == "01000"
+        then Nothing
+        else Just (unCardCode ccode)
   traverse_ putStrLn (sort missing)
 
 main :: IO ()

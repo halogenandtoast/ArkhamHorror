@@ -1426,6 +1426,7 @@ mrPeabody = (storyAsset
               EchoesOfThePast
             )
   { cdCardTraits = setFromList [Ally, HistoricalSociety]
+  , cdCost = Nothing
   , cdUnique = True
   , cdCardType = EncounterAssetType
   }
@@ -1436,8 +1437,7 @@ claspOfBlackOnyx = (storyWeakness
                      ("Clasp of Black Onyx" <:> "A Gift Unlooked For")
                      EchoesOfThePast
                    )
-  { cdSkills = [SkillWillpower, SkillCombat, SkillAgility]
-  , cdCardTraits = setFromList [Item, Clothing]
+  { cdCardTraits = setFromList [Item, Relic]
   , cdCost = Just (StaticCost 1)
   , cdRevelation = False
   }

@@ -80,6 +80,7 @@ data ModifierType
   | CannotHealHorror
   | CannotInvestigate
   | CannotMakeAttacksOfOpportunity
+  | ActionDoesNotCauseAttacksOfOpportunity Action
   | CannotMove
   | CannotMoveMoreThanOnceEachTurn
   | CannotMulligan

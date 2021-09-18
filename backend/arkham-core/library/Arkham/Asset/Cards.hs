@@ -1453,6 +1453,12 @@ theTatteredCloak = (storyAsset
   , cdCardTraits = setFromList [Item, Clothing]
   }
 
+trenchKnife :: CardDef
+trenchKnife = (asset "03147" "Trench Knife" 1 Guardian)
+  { cdSkills = [SkillCombat]
+  , cdCardTraits = setFromList [Item, Weapon, Melee]
+  }
+
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
                )

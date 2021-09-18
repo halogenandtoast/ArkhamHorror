@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
+import Arkham.Types.ClassSymbol
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -1111,8 +1111,8 @@ getEnemiesMatching matcher = do
     M.EnemyAt locationMatcher -> \enemy ->
       liftA2 member (getId @LocationId $ toId enemy) (select locationMatcher)
     CanFightEnemy -> \enemy -> do
-      let window = Window Timing.When Window.NonFast
       iid <- view activeInvestigatorIdL <$> getGame
+      let window = Window Timing.When Window.NonFast
       anyM
         (andM . sequence
           [ pure . (`abilityIs` Action.Fight)
@@ -1121,8 +1121,8 @@ getEnemiesMatching matcher = do
         )
         (getAbilities enemy)
     CanEvadeEnemy -> \enemy -> do
-      let window = Window Timing.When Window.NonFast
       iid <- view activeInvestigatorIdL <$> getGame
+      let window = Window Timing.When Window.NonFast
       anyM
         (andM . sequence
           [ pure . (`abilityIs` Action.Evade)
@@ -1131,8 +1131,8 @@ getEnemiesMatching matcher = do
         )
         (getAbilities enemy)
     CanEngageEnemy -> \enemy -> do
-      let window = Window Timing.When Window.NonFast
       iid <- view activeInvestigatorIdL <$> getGame
+      let window = Window Timing.When Window.NonFast
       anyM
         (andM . sequence
           [ pure . (`abilityIs` Action.Engage)
@@ -3510,6 +3510,7 @@ runGameMessage msg g = case msg of
       $ g
       & (eventsL %~ deleteMap eid) -- we might not want to remove here?
       & (victoryDisplayL %~ (toCard event :))
+  PlayerWindow iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
   BeginInvestigation -> do
     investigatorIds <- getInvestigatorIds
     phaseBeginsWindows <- checkWindows

@@ -11,8 +11,8 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.Criteria (Criterion)
 import qualified Arkham.Types.Criteria as Criteria
@@ -142,7 +142,8 @@ meetsActionRestrictions _ _ Ability {..} = go abilityType
     ActionAbility (Just action) _ -> case action of
       Action.Fight -> case abilitySource of
         EnemySource _ -> pure True
-        _ -> notNull <$> select Matcher.CanFightEnemy
+        _ -> do
+          notNull <$> select Matcher.CanFightEnemy
       Action.Evade -> case abilitySource of
         EnemySource _ -> pure True
         _ -> notNull <$> select Matcher.CanEvadeEnemy
@@ -1217,7 +1218,9 @@ passesCriteria iid source windows' = \case
   Criteria.OnAct step -> (== step) . unActStep <$> getStep ()
   Criteria.AssetExists matcher -> notNull <$> getSet @AssetId matcher
   Criteria.InvestigatorExists matcher ->
-    notNull <$> getSet @InvestigatorId matcher
+    -- Because the matcher can't tell who is asking, we need to replace
+    -- The You matcher by the Id of the investigator asking
+    notNull <$> getSet @InvestigatorId (Matcher.replaceYouMatcher iid matcher)
   Criteria.InvestigatorsHaveSpendableClues valueMatcher ->
     (`gameValueMatches` valueMatcher) . unSpendableClueCount =<< getCount ()
   Criteria.Criteria rs -> allM (passesCriteria iid source windows') rs

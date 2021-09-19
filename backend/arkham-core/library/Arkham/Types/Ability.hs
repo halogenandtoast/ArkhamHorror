@@ -87,10 +87,9 @@ abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
 defaultAbilityLimit :: AbilityType -> AbilityLimit
 defaultAbilityLimit = \case
   ForcedAbility _ -> GroupLimit PerWindow 1
+  SilentForcedAbility _ -> GroupLimit PerWindow 1
   ForcedAbilityWithCost _ _ -> GroupLimit PerWindow 1
-  LegacyForcedAbility -> GroupLimit PerWindow 1
   ReactionAbility _ _ -> PlayerLimit PerWindow 1
-  LegacyReactionAbility _ -> PlayerLimit PerWindow 1
   FastAbility _ -> NoLimit
   ActionAbility _ _ -> NoLimit
   ActionAbilityWithBefore{} -> NoLimit
@@ -105,10 +104,9 @@ defaultAbilityWindow = \case
   ActionAbilityWithBefore{} -> DuringTurn You
   ActionAbilityWithSkill{} -> DuringTurn You
   ForcedAbility window -> window
+  SilentForcedAbility window -> window
   ForcedAbilityWithCost window _ -> window
-  LegacyForcedAbility -> AnyWindow
   ReactionAbility window _ -> window
-  LegacyReactionAbility _ -> AnyWindow
   AbilityEffect _ -> AnyWindow
   Objective aType -> defaultAbilityWindow aType
 
@@ -128,16 +126,30 @@ applyAbilityModifiers :: Ability -> [ModifierType] -> Ability
 applyAbilityModifiers a@Ability { abilityType } modifiers =
   a { abilityType = applyAbilityTypeModifiers abilityType modifiers }
 
+isSilentForcedAbility :: Ability -> Bool
+isSilentForcedAbility Ability { abilityType } = go abilityType
+ where
+  go = \case
+    SilentForcedAbility{} -> True
+    ForcedAbility{} -> False
+    ForcedAbilityWithCost{} -> False
+    Objective aType -> go aType
+    FastAbility{} -> False
+    ReactionAbility{} -> False
+    ActionAbility{} -> False
+    ActionAbilityWithSkill{} -> False
+    ActionAbilityWithBefore{} -> False
+    AbilityEffect{} -> False
+
 isForcedAbility :: Ability -> Bool
 isForcedAbility Ability { abilityType } = go abilityType
  where
   go = \case
-    LegacyForcedAbility -> True
+    SilentForcedAbility{} -> True
     ForcedAbility{} -> True
     ForcedAbilityWithCost{} -> True
     Objective aType -> go aType
     FastAbility{} -> False
-    LegacyReactionAbility{} -> False
     ReactionAbility{} -> False
     ActionAbility{} -> False
     ActionAbilityWithSkill{} -> False
@@ -149,11 +161,10 @@ isFastAbility Ability { abilityType } = go abilityType
  where
   go = \case
     FastAbility{} -> True
-    LegacyForcedAbility -> False
     ForcedAbility{} -> False
+    SilentForcedAbility{} -> False
     ForcedAbilityWithCost{} -> False
     Objective aType -> go aType
-    LegacyReactionAbility{} -> False
     ReactionAbility{} -> False
     ActionAbility{} -> False
     ActionAbilityWithSkill{} -> False

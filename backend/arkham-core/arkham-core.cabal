@@ -544,6 +544,7 @@ library
       Arkham.Types.Event.Cards
       Arkham.Types.Event.Cards.AceInTheHole3
       Arkham.Types.Event.Cards.AChanceEncounter
+      Arkham.Types.Event.Cards.Ambush1
       Arkham.Types.Event.Cards.AnatomicalDiagrams
       Arkham.Types.Event.Cards.AstoundingRevelation
       Arkham.Types.Event.Cards.AstralTravel

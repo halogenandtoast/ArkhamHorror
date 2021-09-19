@@ -33,12 +33,12 @@ sophieItWasAllMyFault = assetWith
 instance HasAbilities SophieItWasAllMyFault where
   getAbilities (SophieItWasAllMyFault x) =
     [ restrictedAbility
-        x
-        1
-        (OwnsThis <> InvestigatorExists
-          (You <> InvestigatorWithDamage (AtMost $ Static 4))
-        )
-        LegacyForcedAbility
+          x
+          1
+          (OwnsThis <> InvestigatorExists
+            (You <> InvestigatorWithDamage (AtMost $ Static 4))
+          )
+        $ ForcedAbility AnyWindow
     ]
 
 instance HasModifiersFor env SophieItWasAllMyFault where

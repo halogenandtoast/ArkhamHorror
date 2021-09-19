@@ -34,15 +34,15 @@ sophieInLovingMemory = assetWith
 instance HasAbilities SophieInLovingMemory where
   getAbilities (SophieInLovingMemory x) =
     [ restrictedAbility x 1 (OwnsThis <> DuringSkillTest AnySkillTest)
-    $ FastAbility
-    $ DirectDamageCost (toSource x) You 1
+      $ FastAbility
+      $ DirectDamageCost (toSource x) You 1
     , restrictedAbility
-      x
-      2
-      (OwnsThis <> InvestigatorExists
-        (You <> InvestigatorWithDamage (AtLeast $ Static 5))
-      )
-      LegacyForcedAbility
+        x
+        2
+        (OwnsThis <> InvestigatorExists
+          (You <> InvestigatorWithDamage (AtLeast $ Static 5))
+        )
+      $ ForcedAbility AnyWindow
     ]
 
 instance AssetRunner env => RunMessage env SophieInLovingMemory where

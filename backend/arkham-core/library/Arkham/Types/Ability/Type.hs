@@ -10,12 +10,11 @@ import Arkham.Types.SkillType
 
 data AbilityType
   = FastAbility Cost
-  | LegacyReactionAbility Cost
   | ReactionAbility WindowMatcher Cost
   | ActionAbility (Maybe Action) Cost
   | ActionAbilityWithSkill (Maybe Action) SkillType Cost
   | ActionAbilityWithBefore (Maybe Action) (Maybe Action) Cost -- Action is first type, before is second
-  | LegacyForcedAbility
+  | SilentForcedAbility WindowMatcher
   | ForcedAbility WindowMatcher
   | ForcedAbilityWithCost WindowMatcher Cost
   | AbilityEffect Cost
@@ -27,12 +26,11 @@ abilityTypeAction :: AbilityType -> Maybe Action
 abilityTypeAction = \case
   FastAbility _ -> Nothing
   ReactionAbility{} -> Nothing
-  LegacyReactionAbility{} -> Nothing
   ActionAbility mAction _ -> mAction
   ActionAbilityWithSkill mAction _ _ -> mAction
   ActionAbilityWithBefore mAction _ _ -> mAction
-  LegacyForcedAbility -> Nothing
   ForcedAbility _ -> Nothing
+  SilentForcedAbility _ -> Nothing
   ForcedAbilityWithCost _ _ -> Nothing
   AbilityEffect _ -> Nothing
   Objective aType -> abilityTypeAction aType
@@ -41,11 +39,10 @@ abilityTypeCost :: AbilityType -> Cost
 abilityTypeCost = \case
   FastAbility cost -> cost
   ReactionAbility _ cost -> cost
-  LegacyReactionAbility cost -> cost
   ActionAbility _ cost -> cost
   ActionAbilityWithSkill _ _ cost -> cost
   ActionAbilityWithBefore _ _ cost -> cost
-  LegacyForcedAbility -> Free
+  SilentForcedAbility _ -> Free
   ForcedAbility _ -> Free
   ForcedAbilityWithCost _ cost -> cost
   AbilityEffect cost -> cost
@@ -54,8 +51,6 @@ abilityTypeCost = \case
 applyAbilityTypeModifiers :: AbilityType -> [ModifierType] -> AbilityType
 applyAbilityTypeModifiers aType modifiers = case aType of
   FastAbility cost -> FastAbility $ applyCostModifiers cost modifiers
-  LegacyReactionAbility cost ->
-    LegacyReactionAbility $ applyCostModifiers cost modifiers
   ReactionAbility window cost ->
     ReactionAbility window $ applyCostModifiers cost modifiers
   ActionAbility mAction cost ->
@@ -65,8 +60,8 @@ applyAbilityTypeModifiers aType modifiers = case aType of
   ActionAbilityWithBefore mAction mBeforeAction cost ->
     ActionAbilityWithBefore mAction mBeforeAction
       $ applyCostModifiers cost modifiers
-  LegacyForcedAbility -> LegacyForcedAbility
   ForcedAbility window -> ForcedAbility window
+  SilentForcedAbility window -> SilentForcedAbility window
   ForcedAbilityWithCost window cost ->
     ForcedAbilityWithCost window $ applyCostModifiers cost modifiers
   AbilityEffect cost -> AbilityEffect cost -- modifiers don't yet apply here

@@ -98,7 +98,6 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
       aType
       abilitySource
       abilityDoesNotProvokeAttacksOfOpportunity
-    LegacyForcedAbility -> pure ()
     ForcedAbility _ -> pure ()
     ForcedAbilityWithCost _ cost ->
       push (PayAbilityCost abilitySource iid Nothing False cost)
@@ -107,8 +106,6 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
     FastAbility cost ->
       push (PayAbilityCost abilitySource iid Nothing False cost)
     ReactionAbility _ cost ->
-      push (PayAbilityCost abilitySource iid Nothing False cost)
-    LegacyReactionAbility cost ->
       push (PayAbilityCost abilitySource iid Nothing False cost)
     ActionAbilityWithBefore mAction _ cost -> do
       -- we do not know which ability will be chosen

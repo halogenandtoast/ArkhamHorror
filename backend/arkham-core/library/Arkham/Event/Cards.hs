@@ -54,6 +54,7 @@ allPlayerEventCards = mapFromList $ map
   (toCardCode &&& id)
   [ aChanceEncounter
   , aceInTheHole3
+  , ambush1
   , anatomicalDiagrams
   , astoundingRevelation
   , astralTravel
@@ -759,6 +760,13 @@ anatomicalDiagrams = (event "03108" "Anatomical Diagrams" 1 Seeker)
         (You <> InvestigatorWithRemainingSanity (AtLeast $ Static 5))
     <> Criteria.EnemyCriteria
          (Criteria.EnemyExists $ EnemyAt YourLocation <> NonEliteEnemy)
+  }
+
+ambush1 :: CardDef
+ambush1 = (event "03148" "Ambush" 2 Guardian)
+  { cdSkills = [SkillIntellect, SkillCombat]
+  , cdCardTraits = singleton Tactic
+  , cdLevel = 1
   }
 
 secondWind :: CardDef

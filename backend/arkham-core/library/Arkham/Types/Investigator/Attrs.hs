@@ -1914,11 +1914,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     playableCards <- getPlayableCards a windows
     if notNull playableCards || notNull actions
       then if any isForcedAbility actions
-        then a <$ push
-          (chooseOne iid $ map
-            (Run . (: [RunWindow iid windows]) . ($ windows) . UseAbility iid)
-            actions
-          )
+        then do
+          -- Silent forced abilities should trigger automatically
+          let (silent, normal) = partition isSilentForcedAbility actions
+              toUseAbilities = map (($ windows) . UseAbility iid)
+          a <$ pushAll (toUseAbilities silent <> [
+            chooseOne iid $ map
+              (Run . (: [RunWindow iid windows])) (toUseAbilities normal) | notNull normal]
+            )
         else do
           actionsWithMatchingWindows <- for actions $ \ability ->
             (ability, )

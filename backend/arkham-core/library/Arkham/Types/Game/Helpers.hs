@@ -11,8 +11,8 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria (Criterion)
 import qualified Arkham.Types.Criteria as Criteria
@@ -163,10 +163,9 @@ meetsActionRestrictions _ _ Ability {..} = go abilityType
       Action.Resource -> pure True
     ActionAbility Nothing _ -> pure True
     FastAbility _ -> pure True
-    LegacyReactionAbility _ -> pure True
     ReactionAbility _ _ -> pure True
-    LegacyForcedAbility -> pure True
     ForcedAbility _ -> pure True
+    SilentForcedAbility _ -> pure True
     ForcedAbilityWithCost _ _ -> pure True
     AbilityEffect _ -> pure True
 
@@ -199,14 +198,12 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
     getCanAffordCost iid abilitySource mAction [] cost
   ActionAbilityWithBefore _ mBeforeAction cost ->
     getCanAffordCost iid abilitySource mBeforeAction [] cost
-  LegacyReactionAbility cost ->
-    getCanAffordCost iid abilitySource Nothing [] cost
   ReactionAbility _ cost -> getCanAffordCost iid abilitySource Nothing [] cost
   FastAbility cost -> getCanAffordCost iid abilitySource Nothing [] cost
   ForcedAbilityWithCost _ cost ->
     getCanAffordCost iid abilitySource Nothing [] cost
-  LegacyForcedAbility -> pure True
   ForcedAbility _ -> pure True
+  SilentForcedAbility _ -> pure True
   AbilityEffect _ -> pure True
   Objective{} -> pure True
 
@@ -217,13 +214,11 @@ getCanAffordUse
   -> m Bool
 getCanAffordUse iid ability = case abilityLimit ability of
   NoLimit -> case abilityType ability of
-    LegacyReactionAbility _ ->
-      notElem (iid, ability) . map unUsedAbility <$> getList ()
     ReactionAbility _ _ ->
       notElem (iid, ability) . map unUsedAbility <$> getList ()
-    LegacyForcedAbility ->
-      notElem (iid, ability) . map unUsedAbility <$> getList ()
     ForcedAbility _ ->
+      notElem (iid, ability) . map unUsedAbility <$> getList ()
+    SilentForcedAbility _ ->
       notElem (iid, ability) . map unUsedAbility <$> getList ()
     ForcedAbilityWithCost _ _ ->
       notElem (iid, ability) . map unUsedAbility <$> getList ()

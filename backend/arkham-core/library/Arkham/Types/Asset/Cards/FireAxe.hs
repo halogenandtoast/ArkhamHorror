@@ -43,24 +43,19 @@ instance HasAbilities FireAxe where
     [ restrictedAbility a 1 OwnsThis
       $ ActionAbility (Just Action.Fight) (ActionCost 1)
     , restrictedAbility
-      a
-      2
-      (OwnsThis <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)
-      )
-      (FastAbility (ResourceCost 1))
-    & abilityLimitL
-    .~ PlayerLimit PerTestOrAbility 3
+        a
+        2
+        (OwnsThis <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)
+        )
+        (FastAbility (ResourceCost 1))
+      & abilityLimitL
+      .~ PlayerLimit PerTestOrAbility 3
     ]
 
 instance (AssetRunner env) => RunMessage env FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
-      [ skillTestModifier
-        attrs
-        (InvestigatorTarget iid)
-        (SkillModifier SkillCombat 1)
-      , ChooseFightEnemy iid source SkillCombat mempty False
-      ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      a <$ push (ChooseFightEnemy iid source SkillCombat mempty False)
     UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ push
       (skillTestModifier
         attrs

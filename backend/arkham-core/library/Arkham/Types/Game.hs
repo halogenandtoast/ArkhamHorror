@@ -1028,7 +1028,10 @@ getEventsMatching matcher = do
     EventWithId eventId -> pure $ filter ((== eventId) . toId) as
     EventWithClass role -> filterM (fmap (member role) . getSet . toId) as
     EventWithTrait t -> filterM (fmap (member t) . getSet . toId) as
-    EventOwnedBy iid -> filterM (fmap (== OwnerId iid) . getId) as
+    EventOwnedBy investigatorMatcher -> do
+      iids <- map (OwnerId . toId)
+        <$> getInvestigatorsMatching investigatorMatcher
+      filterM (fmap (`elem` iids) . getId) as
     EventMatches ms -> foldM filterMatcher as ms
 
 getSkillsMatching
@@ -1385,6 +1388,9 @@ instance HasGame env => HasSet SkillId env SkillMatcher where
 
 instance HasGame env => Query AssetMatcher env where
   select = fmap (setFromList . map toId) . getAssetsMatching
+
+instance HasGame env => Query EventMatcher env where
+  select = fmap (setFromList . map toId) . getEventsMatching
 
 instance HasGame env => Query LocationMatcher env where
   select = fmap (setFromList . map toId) . getLocationsMatching
@@ -2782,6 +2788,8 @@ instance {-# OVERLAPPABLE #-} HasGame env => HasAbilities env where
         <$> filterM unblanked (toList $ g ^. actsL)
       agendaAbilities <- concatMap getAbilities
         <$> filterM unblanked (toList $ g ^. agendasL)
+      eventAbilities <- concatMap getAbilities
+        <$> filterM unblanked (toList $ g ^. eventsL)
       effectAbilities <- concatMap getAbilities
         <$> filterM unblanked (toList $ g ^. effectsL)
       investigatorAbilities <- concatMap getAbilities
@@ -2793,6 +2801,7 @@ instance {-# OVERLAPPABLE #-} HasGame env => HasAbilities env where
         <> blankedLocationAbilities
         <> assetAbilities
         <> treacheryAbilities
+        <> eventAbilities
         <> actAbilities
         <> agendaAbilities
         <> effectAbilities

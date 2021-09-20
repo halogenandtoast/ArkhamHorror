@@ -221,7 +221,7 @@ data EventMatcher
   | EventWithId EventId
   | EventWithTrait Trait
   | EventWithClass ClassSymbol
-  | EventOwnedBy InvestigatorId
+  | EventOwnedBy InvestigatorMatcher
   | EventMatches [EventMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

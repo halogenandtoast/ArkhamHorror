@@ -11,8 +11,8 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Cost
 import Arkham.Types.Criteria (Criterion)
 import qualified Arkham.Types.Criteria as Criteria
@@ -868,6 +868,7 @@ type CanCheckPlayable env
     , HasId (Maybe LocationId) env TreacheryId
     , HasId (Maybe LocationId) env EventId
     , ( Query Matcher.AssetMatcher env
+      , Query Matcher.EventMatcher env
       , Query Matcher.InvestigatorMatcher env
       , Query Matcher.AbilityMatcher env
       , Query Matcher.LocationMatcher env
@@ -1057,6 +1058,8 @@ passesCriteria iid source windows' = \case
   Criteria.OwnsThis -> case source of
     AssetSource aid -> member aid
       <$> select (Matcher.AssetOwnedBy $ Matcher.InvestigatorWithId iid)
+    EventSource eid -> member eid
+      <$> select (Matcher.EventOwnedBy $ Matcher.InvestigatorWithId iid)
     _ -> pure False
   Criteria.DuringSkillTest skillTestMatcher -> do
     mSkillTest <- getSkillTest

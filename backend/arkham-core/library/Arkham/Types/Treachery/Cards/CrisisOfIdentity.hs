@@ -7,8 +7,8 @@ import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Types.Card.CardDef
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
@@ -31,7 +31,8 @@ instance TreacheryRunner env => RunMessage env CrisisOfIdentity where
         role : _ -> do
           assets <- selectList
             (AssetOwnedBy You <> AssetWithClass role <> DiscardableAsset)
-          events <- getSetList (EventOwnedBy iid <> EventWithClass role)
+          events <- getSetList
+            (EventOwnedBy (InvestigatorWithId iid) <> EventWithClass role)
           skills <- getSetList (SkillOwnedBy iid <> SkillWithClass role)
           pushAll
             $ [ Discard $ AssetTarget aid | aid <- assets ]

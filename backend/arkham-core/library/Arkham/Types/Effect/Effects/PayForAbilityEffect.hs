@@ -99,6 +99,7 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
       abilitySource
       abilityDoesNotProvokeAttacksOfOpportunity
     ForcedAbility _ -> pure ()
+    SilentForcedAbility _ -> pure ()
     ForcedAbilityWithCost _ cost ->
       push (PayAbilityCost abilitySource iid Nothing False cost)
     AbilityEffect cost ->

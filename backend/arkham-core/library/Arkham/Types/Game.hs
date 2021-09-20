@@ -3510,10 +3510,14 @@ runGameMessage msg g = case msg of
       cardId = unEnemyId eid
       card = lookupCard (toCardCode enemy) cardId
     windowMsgs <- windows [Window.AddedToVictory card]
-    pushAll $ windowMsgs <> [After msg]
+    pushAll windowMsgs
     case card of
       PlayerCard _ -> error "can not be player card yet?"
-      EncounterCard ec -> pure $ g & (victoryDisplayL %~ (EncounterCard ec :))
+      EncounterCard ec ->
+        pure
+          $ g
+          & (victoryDisplayL %~ (EncounterCard ec :))
+          & (enemiesL %~ deleteMap eid)
   AddToVictory (EventTarget eid) -> do
     event <- getEvent eid
     let

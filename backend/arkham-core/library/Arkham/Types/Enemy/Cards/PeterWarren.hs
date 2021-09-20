@@ -16,7 +16,6 @@ import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Source
 
 newtype PeterWarren = PeterWarren EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
@@ -38,7 +37,7 @@ instance HasAbilities PeterWarren where
     ]
 
 instance EnemyRunner env => RunMessage env PeterWarren where
-  runMessage msg e@(PeterWarren attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->
+  runMessage msg e@(PeterWarren attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (AddToVictory $ toTarget attrs)
     _ -> PeterWarren <$> runMessage msg attrs

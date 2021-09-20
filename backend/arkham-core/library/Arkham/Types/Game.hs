@@ -3524,7 +3524,7 @@ runGameMessage msg g = case msg of
       cardId = unEventId eid
       card = lookupCard (toCardCode event) cardId
     windowMsgs <- windows [Window.AddedToVictory card]
-    pushAll $ windowMsgs <> [After msg]
+    pushAll windowMsgs
     pure
       $ g
       & (eventsL %~ deleteMap eid) -- we might not want to remove here?

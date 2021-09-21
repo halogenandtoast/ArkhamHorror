@@ -207,6 +207,7 @@ library
       Arkham.Types.Asset.Cards.DrWilliamTMaleson
       Arkham.Types.Asset.Cards.Duke
       Arkham.Types.Asset.Cards.EarlSawyer
+      Arkham.Types.Asset.Cards.EighteenDerringer
       Arkham.Types.Asset.Cards.ElderSignAmulet3
       Arkham.Types.Asset.Cards.Encyclopedia
       Arkham.Types.Asset.Cards.Encyclopedia2
@@ -400,6 +401,7 @@ library
       Arkham.Types.Effect.Effects.DaisysToteBagAdvanced
       Arkham.Types.Effect.Effects.Deduction
       Arkham.Types.Effect.Effects.Deduction2
+      Arkham.Types.Effect.Effects.EighteenDerringer
       Arkham.Types.Effect.Effects.ExposeWeakness1
       Arkham.Types.Effect.Effects.Fieldwork
       Arkham.Types.Effect.Effects.FireExtinguisher1

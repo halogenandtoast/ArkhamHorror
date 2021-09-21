@@ -131,6 +131,7 @@ allPlayerAssetCards = mapFromList $ map
   , drWilliamTMaleson
   , duke
   , earlSawyer
+  , eighteenDerringer
   , elderSignAmulet3
   , encyclopedia
   , encyclopedia2
@@ -1561,6 +1562,13 @@ whittonGreene =
     , cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
     }
+
+eighteenDerringer :: CardDef
+eighteenDerringer = (asset "06505" ".18 Derringer" 3 Survivor)
+  { cdSkills = [SkillCombat]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdUses = Uses Ammo 2
+  }
 
 ladyEsprit :: CardDef
 ladyEsprit =

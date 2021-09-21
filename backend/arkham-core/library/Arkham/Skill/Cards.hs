@@ -75,6 +75,7 @@ allPlayerSkillCards = mapFromList $ map
   , theHomeFront
   , trueUnderstanding
   , unexpectedCourage
+  , unexpectedCourage2
   , viciousBlow
   , viciousBlow2
   ]
@@ -303,3 +304,11 @@ trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [ScenarioAbility]
   }
+
+unexpectedCourage2 :: CardDef
+unexpectedCourage2 =
+  (skill "60526" "Unexpected Courage" [SkillWild, SkillWild] Survivor)
+    { cdCardTraits = setFromList [Innate, Developed]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = 2
+    }

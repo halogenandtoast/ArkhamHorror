@@ -76,6 +76,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , amnesia
   , angeredSpirits
   , atychiphobia
+  , calledByTheMists
   , chronophobia
   , coverUp
   , crisisOfIdentity
@@ -671,6 +672,11 @@ chillFromBelow = (treachery "50040" "Chill from Below" GhoulsOfUmordhoth 3)
 maskOfUmordhoth :: CardDef
 maskOfUmordhoth = (treachery "50043" "Mask of Umôrdhoth" TheDevourersCult 2)
   { cdCardTraits = setFromList [Item, Mask]
+  }
+
+calledByTheMists :: CardDef
+calledByTheMists = (weakness "60503" "Called by the Mists")
+  { cdCardTraits = setFromList [Curse]
   }
 
 atychiphobia :: CardDef

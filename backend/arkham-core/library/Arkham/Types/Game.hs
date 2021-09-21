@@ -3711,39 +3711,44 @@ runGameMessage msg g = case msg of
   BeginSkillTest iid source target maction skillType difficulty -> do
     investigator <- getInvestigator iid
     availableSkills <- getAvailableSkillsFor investigator skillType
+    windows' <- windows [Window.InitiatedSkillTest iid maction difficulty]
     case availableSkills of
-      [] ->
-        g
-          <$ push
-               (BeginSkillTestAfterFast
-                 iid
-                 source
-                 target
-                 maction
-                 skillType
-                 difficulty
-               )
-      [_] ->
-        g
-          <$ push
-               (BeginSkillTestAfterFast
-                 iid
-                 source
-                 target
-                 maction
-                 skillType
-                 difficulty
-               )
+      [] -> g <$ pushAll
+        (windows'
+        <> [ BeginSkillTestAfterFast
+               iid
+               source
+               target
+               maction
+               skillType
+               difficulty
+           ]
+        )
+      [_] -> g <$ pushAll
+        (windows'
+        <> [ BeginSkillTestAfterFast
+               iid
+               source
+               target
+               maction
+               skillType
+               difficulty
+           ]
+        )
       xs -> g <$ push
         (chooseOne
           iid
-          [ BeginSkillTestAfterFast
-              iid
-              source
-              target
-              maction
-              skillType'
-              difficulty
+          [ Run
+              (windows'
+              <> [ BeginSkillTestAfterFast
+                     iid
+                     source
+                     target
+                     maction
+                     skillType'
+                     difficulty
+                 ]
+              )
           | skillType' <- xs
           ]
         )

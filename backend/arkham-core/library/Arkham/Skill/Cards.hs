@@ -59,6 +59,7 @@ allPlayerSkillCards = mapFromList $ map
   , inquiringMind
   , leadership
   , manualDexterity
+  , neitherRainNorSnow
   , opportunist
   , opportunist2
   , overpower
@@ -303,6 +304,16 @@ trueUnderstanding :: CardDef
 trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [ScenarioAbility]
+  }
+
+neitherRainNorSnow :: CardDef
+neitherRainNorSnow = (skill
+                       "60502"
+                       "Neither Rain nor Snow"
+                       [SkillWild, SkillWild, SkillWild]
+                       Survivor
+                     )
+  { cdCardTraits = setFromList [Innate, Developed]
   }
 
 unexpectedCourage2 :: CardDef

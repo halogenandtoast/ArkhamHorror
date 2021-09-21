@@ -1577,6 +1577,14 @@ windowMatches iid source window' = \case
           matchWho iid who whoMatcher
         -- TODO: Add success window if it exists
         _ -> pure False
+  Matcher.InitiatedSkillTest whenMatcher whoMatcher _ valueMatcher ->
+    case window' of
+      Window t (Window.InitiatedSkillTest who _ difficulty)
+        | t == whenMatcher -> liftA2
+          (&&)
+          (matchWho iid who whoMatcher)
+          (gameValueMatches difficulty valueMatcher)
+      _ -> pure False
   Matcher.SkillTestResult whenMatcher whoMatcher skillMatcher skillTestResultMatcher
     -> case skillTestResultMatcher of
       Matcher.FailureResult gameValueMatcher -> case window' of

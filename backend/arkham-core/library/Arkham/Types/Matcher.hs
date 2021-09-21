@@ -469,6 +469,7 @@ data WindowMatcher
   | Discarded Timing Who CardMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher
   | EnemyWouldBeDiscarded Timing EnemyMatcher
+  | InitiatedSkillTest Timing Who SkillTestMatcher ValueMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | PlacedCounter Timing Who CounterMatcher ValueMatcher
   | PlacedCounterOnLocation Timing Where CounterMatcher ValueMatcher

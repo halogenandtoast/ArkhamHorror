@@ -93,3 +93,7 @@ popMessageMatching matcher = withQueue \queue ->
 popMessageMatching_
   :: (MonadIO m, MonadReader env m, HasQueue env) => (Message -> Bool) -> m ()
 popMessageMatching_ = void . popMessageMatching
+
+removeAllMessagesMatching
+  :: (MonadIO m, MonadReader env m, HasQueue env) => (Message -> Bool) -> m ()
+removeAllMessagesMatching matcher = withQueue_ $ filter (not . matcher)

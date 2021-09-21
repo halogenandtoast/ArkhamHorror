@@ -925,6 +925,7 @@ library
       Arkham.Types.Skill.Cards.InquiringMind
       Arkham.Types.Skill.Cards.Leadership
       Arkham.Types.Skill.Cards.ManualDexterity
+      Arkham.Types.Skill.Cards.NeitherRainNorSnow
       Arkham.Types.Skill.Cards.Opportunist
       Arkham.Types.Skill.Cards.Opportunist2
       Arkham.Types.Skill.Cards.Overpower
@@ -978,6 +979,7 @@ library
       Arkham.Types.Treachery.Cards.BeyondTheVeil
       Arkham.Types.Treachery.Cards.BlackStarsRise
       Arkham.Types.Treachery.Cards.BrokenRails
+      Arkham.Types.Treachery.Cards.CalledByTheMists
       Arkham.Types.Treachery.Cards.ChaosInTheWater
       Arkham.Types.Treachery.Cards.ChillFromBelow
       Arkham.Types.Treachery.Cards.Chronophobia

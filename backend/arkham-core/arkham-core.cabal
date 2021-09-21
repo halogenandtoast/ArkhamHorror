@@ -593,6 +593,7 @@ library
       Arkham.Types.Event.Cards.IveHadWorse4
       Arkham.Types.Event.Cards.LetMeHandleThis
       Arkham.Types.Event.Cards.LookWhatIFound
+      Arkham.Types.Event.Cards.LookWhatIFound2
       Arkham.Types.Event.Cards.Lucky
       Arkham.Types.Event.Cards.Lucky2
       Arkham.Types.Event.Cards.Lure1

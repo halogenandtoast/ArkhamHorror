@@ -103,6 +103,7 @@ allPlayerEventCards = mapFromList $ map
   , iveHadWorse4
   , letMeHandleThis
   , lookWhatIFound
+  , lookWhatIFound2
   , lucky
   , lucky2
   , lure1
@@ -859,4 +860,22 @@ iveGotAPlan2 = (event "60225" "\"I've got a plan!\"" 2 Seeker)
   , cdCardTraits = setFromList [Insight, Tactic]
   , cdLevel = 2
   , cdAction = Just Action.Fight
+  }
+
+lookWhatIFound2 :: CardDef
+lookWhatIFound2 = (event "60524" "\"Look what I found!\"" 2 Survivor)
+  { cdSkills = [SkillIntellect, SkillIntellect, SkillAgility]
+  , cdCardTraits = singleton Fortune
+  , cdLevel = 2
+  , cdCriteria = Just
+    (Criteria.LocationExists
+    $ LocationMatchAny [YourLocation, ConnectedLocation]
+    <> LocationWithAnyClues
+    )
+  , cdFastWindow =
+    Just
+    $ SkillTestResult Timing.After You (WhileInvestigating Anywhere)
+    $ FailureResult
+    $ LessThan
+    $ Static 4
   }

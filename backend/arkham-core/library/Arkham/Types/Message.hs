@@ -595,6 +595,7 @@ data Question
       -- is a target value. The tuple of ints are the min and max bound for
       -- the specific investigator
       ChoosePaymentAmounts Text (Maybe Int) [(InvestigatorId, (Int, Int), Message)]
+    | ChooseDynamicCardAmounts InvestigatorId CardId (Int, Int) Bool [Message] -- (Int, Int) is (min, max)
     | ChooseUpgradeDeck
     deriving stock (Show, Eq, Generic)
     deriving anyclass (FromJSON, ToJSON)

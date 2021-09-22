@@ -1365,22 +1365,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let card = findCard cardId a
     cost <- getModifiedCardCost iid card
     pure $ a & resourcesL -~ cost
-  PayDynamicCardCost iid cardId n beforePlayMessages | iid == investigatorId ->
-    do
-      let
-        resolveMessages =
-          beforePlayMessages <> [PayedForDynamicCard iid cardId n False]
-      if investigatorResources > n
-        then a <$ push
-          (chooseOne
-            iid
-            [ Label
-              "Increase spent resources"
-              [PayDynamicCardCost iid cardId (n + 1) beforePlayMessages]
-            , Label ("Resolve with cost of " <> tshow n) resolveMessages
-            ]
-          )
-        else a <$ pushAll resolveMessages
+  PayDynamicCardCost iid cardId _n beforePlayMessages | iid == investigatorId ->
+    a <$ push (Ask iid $ ChooseDynamicCardAmounts iid cardId (0, investigatorResources) False beforePlayMessages)
   PayedForDynamicCard iid cardId n False | iid == investigatorId -> do
     push (PlayDynamicCard iid cardId n Nothing False)
     pure $ a & resourcesL -~ n

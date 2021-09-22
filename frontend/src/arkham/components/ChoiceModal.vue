@@ -27,7 +27,7 @@
       <form @submit.prevent="submitAmounts">
         <h1>{{amountsLabel}}</h1>
         <div v-for="[investigator, bounds] in amountsChoices" :key="investigator">
-          {{investigatorName(investigator)}} <input type="range" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[investigator]" />
+          {{investigatorName(investigator)}} <input type="number" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[investigator]" />
         </div>
         <button>Submit</button>
       </form>
@@ -59,6 +59,8 @@ export default defineComponent({
       const question = props.game.question[props.investigatorId]
       if (question.tag == 'ChoosePaymentAmounts') {
         return question.contents[0]
+      } else if (question.tag == 'ChooseDynamicCardAmounts') {
+        return "Pay Dynamic Cost"
       }
 
       return null
@@ -70,6 +72,8 @@ export default defineComponent({
       const question = props.game.question[props.investigatorId]
       if (question.tag == 'ChoosePaymentAmounts') {
         return question.contents[2]
+      } else if (question.tag == 'ChooseDynamicCardAmounts') {
+        return [[question.contents[0], question.contents[2]]]
       }
 
       return null

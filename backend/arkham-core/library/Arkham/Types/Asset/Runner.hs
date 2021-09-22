@@ -26,6 +26,7 @@ type AssetRunner env
     , HasList CommittedCard env InvestigatorId
     , HasId LeadInvestigatorId env ()
     , HasCount ActionRemainingCount env InvestigatorId
+    , HasCount RemainingSanity env InvestigatorId
     , HasCount AssetCount env (InvestigatorId, [Trait])
     , HasCount CardCount env InvestigatorId
     , HasCount ClueCount env LocationId

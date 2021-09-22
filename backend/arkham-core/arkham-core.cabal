@@ -272,6 +272,7 @@ library
       Arkham.Types.Asset.Cards.MaskedCarnevaleGoer_19
       Arkham.Types.Asset.Cards.MaskedCarnevaleGoer_20
       Arkham.Types.Asset.Cards.MaskedCarnevaleGoer_21
+      Arkham.Types.Asset.Cards.MeatCleaver
       Arkham.Types.Asset.Cards.MedicalTexts
       Arkham.Types.Asset.Cards.MonstrousTransformation
       Arkham.Types.Asset.Cards.Moxie1
@@ -412,6 +413,7 @@ library
       Arkham.Types.Effect.Effects.Lucky
       Arkham.Types.Effect.Effects.Lucky2
       Arkham.Types.Effect.Effects.LuckyDice2
+      Arkham.Types.Effect.Effects.MeatCleaver
       Arkham.Types.Effect.Effects.MindOverMatter
       Arkham.Types.Effect.Effects.MindWipe1
       Arkham.Types.Effect.Effects.MindWipe3

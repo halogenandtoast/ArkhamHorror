@@ -31,7 +31,7 @@
 
     <ChoiceModal
       :game="game"
-      :investigatorId="investigatorId"
+      :investigatorId="id"
       @choose="$emit('choose', $event)"
     />
 
@@ -173,7 +173,7 @@ export default defineComponent({
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    return { cardRowTitle, debug, debugChoose, doShowCards, showCards, baseUrl, discards, topOfDiscard, drawCardsAction, hideCards, showDiscards, viewingDiscard, viewDiscardLabel }
+    return { id, cardRowTitle, debug, debugChoose, doShowCards, showCards, baseUrl, discards, topOfDiscard, drawCardsAction, hideCards, showDiscards, viewingDiscard, viewDiscardLabel }
   }
 })
 </script>

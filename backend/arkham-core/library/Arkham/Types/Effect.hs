@@ -161,6 +161,7 @@ instance
   , HasCount ActionRemainingCount env InvestigatorId
   , HasSet ClassSymbol env InvestigatorId
   , Query EnemyMatcher env
+  , HasId LeadInvestigatorId env ()
   )
   => RunMessage env Effect where
   runMessage = genericRunMessage

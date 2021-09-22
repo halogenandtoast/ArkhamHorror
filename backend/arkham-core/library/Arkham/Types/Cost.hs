@@ -144,7 +144,8 @@ displayCostType = \case
     Resource -> pluralize n "Resource"
     Key -> pluralize n "Key"
   UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
-  where pluralize n a = if n == 1 then "1 " <> a else tshow n <> a <> "s"
+ where
+  pluralize n a = if n == 1 then "1 " <> a else tshow n <> " " <> a <> "s"
 
 instance Semigroup Cost where
   Free <> a = a

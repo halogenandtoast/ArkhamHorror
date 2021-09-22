@@ -188,6 +188,7 @@ library
       Arkham.Types.Asset.Cards.CatBurglar1
       Arkham.Types.Asset.Cards.CelaenoFragments
       Arkham.Types.Asset.Cards.Charisma3
+      Arkham.Types.Asset.Cards.CharlesRossEsq
       Arkham.Types.Asset.Cards.CherishedKeepsake
       Arkham.Types.Asset.Cards.ChicagoTypewriter4
       Arkham.Types.Asset.Cards.ClarityOfMind
@@ -397,6 +398,7 @@ library
       Arkham.Types.Effect.Effects.BindMonster2
       Arkham.Types.Effect.Effects.BlindingLight
       Arkham.Types.Effect.Effects.BlindingLight2
+      Arkham.Types.Effect.Effects.CharlesRossEsq
       Arkham.Types.Effect.Effects.CursedShores
       Arkham.Types.Effect.Effects.CurseOfTheRougarouTabletToken
       Arkham.Types.Effect.Effects.DaisysToteBagAdvanced

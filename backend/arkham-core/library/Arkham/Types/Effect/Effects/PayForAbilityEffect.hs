@@ -164,6 +164,7 @@ instance
   , HasSet InvestigatorId env ()
   , HasModifiersFor env ()
   , HasCount ActionRemainingCount env InvestigatorId
+  , HasId LeadInvestigatorId env ()
   )
   => RunMessage env PayForAbilityEffect where
   runMessage msg e@(PayForAbilityEffect (attrs `With` payments)) = case msg of
@@ -340,9 +341,31 @@ instance
           withPayment $ CluePayment x
         GroupClueCost x locationMatcher -> do
           totalClues <- getPlayerCountValue x
-          iids <- selectList $ InvestigatorAt locationMatcher
-          push (SpendClues totalClues iids)
-          withPayment $ CluePayment totalClues
+          iids <-
+            selectList
+            $ InvestigatorAt locationMatcher
+            <> InvestigatorWithAnyClues
+          iidsWithClues <- traverse
+            (traverseToSnd (fmap unSpendableClueCount . getCount))
+            iids
+          let
+            paymentOptions = map
+              (\(iid', clues) ->
+                ( iid'
+                , (0, clues)
+                , PayAbilityCost source iid' mAction True (ClueCost 1)
+                )
+              )
+              iidsWithClues
+          leadInvestigatorId <- getLeadInvestigatorId
+          e <$ push
+            (Ask leadInvestigatorId $ ChoosePaymentAmounts
+              (displayCostType cost)
+              (Just totalClues)
+              paymentOptions
+            )
+          -- push (SpendClues totalClues iids)
+          -- withPayment $ CluePayment totalClues
         HandDiscardCost x mPlayerCardType traits skillTypes -> do
           handCards <- mapMaybe (preview _PlayerCard . unHandCard)
             <$> getList iid

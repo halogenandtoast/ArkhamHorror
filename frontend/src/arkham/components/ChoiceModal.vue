@@ -23,13 +23,13 @@
     </div>
   </div>
   <div v-else-if="amountsLabel" class="modal amount-modal">
-    <div class="modal-contents focused-cards">
-      <form @submit.prevent="submitAmounts">
-        <h1>{{amountsLabel}}</h1>
-        <div v-for="[investigator, bounds] in amountsChoices" :key="investigator">
-          {{investigatorName(investigator)}} <input type="number" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[investigator]" />
+    <div class="modal-contents amount-contents">
+      <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
+        <legend>{{amountsLabel}}</legend>
+        <div v-for="[investigator, bounds] in amountsChoices" :key="investigator" class="selection">
+          {{investigatorName(investigator)}} <input type="number" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[investigator]" onclick="this.select()" />
         </div>
-        <button>Submit</button>
+        <button :disabled="unmetAmountRequirements">Submit</button>
       </form>
     </div>
   </div>
@@ -57,9 +57,9 @@ export default defineComponent({
 
     const amountsLabel = computed(() => {
       const question = props.game.question[props.investigatorId]
-      if (question.tag == 'ChoosePaymentAmounts') {
+      if (question?.tag == 'ChoosePaymentAmounts') {
         return question.contents[0]
-      } else if (question.tag == 'ChooseDynamicCardAmounts') {
+      } else if (question?.tag == 'ChooseDynamicCardAmounts') {
         return "Pay Dynamic Cost"
       }
 
@@ -70,9 +70,9 @@ export default defineComponent({
 
     const amountsChoices = computed(() => {
       const question = props.game.question[props.investigatorId]
-      if (question.tag == 'ChoosePaymentAmounts') {
+      if (question?.tag == 'ChoosePaymentAmounts') {
         return question.contents[2]
-      } else if (question.tag == 'ChooseDynamicCardAmounts') {
+      } else if (question?.tag == 'ChooseDynamicCardAmounts') {
         return [[question.contents[0], question.contents[2]]]
       }
 
@@ -83,6 +83,23 @@ export default defineComponent({
       previousValue[currentValue] = 0
       return previousValue
     }, {}))
+
+    const unmetAmountRequirements = computed(() => {
+      const question = props.game.question[props.investigatorId]
+      if (question?.tag == 'ChoosePaymentAmounts') {
+        const requiredTotal = question.contents[1]
+        if (requiredTotal) {
+          const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+          return total !== requiredTotal
+        }
+
+        return false
+      } else if (question?.tag == 'ChooseDynamicCardAmounts') {
+        return false
+      }
+
+      return true
+    })
 
     const submitAmounts = async () => {
       if (chooseAmounts) {
@@ -98,7 +115,7 @@ export default defineComponent({
         .filter(({ choice }) => choice.tag === MessageType.RESOLUTION);
     })
 
-    return { choices, focusedCards, resolutions, amountsLabel, amountsChoices, amountSelections, investigatorName, submitAmounts }
+    return { choices, focusedCards, resolutions, amountsLabel, amountsChoices, amountSelections, investigatorName, submitAmounts, unmetAmountRequirements }
   }
 })
 </script>
@@ -115,5 +132,41 @@ export default defineComponent({
   flex-direction: row;
   overflow-x: auto;
   flex-wrap: wrap;
+}
+
+.amount-contents {
+  background: #735e7b;
+  padding: 10px;
+  div {
+    display: inline;
+  }
+  button {
+    background: #4a3d50;
+    display: inline;
+    border: 0;
+    color: white;
+    padding: 0.5em;
+    margin-left: 0.5em;
+  }
+
+  button[disabled] {
+    cursor: not-allowed;
+  }
+
+  input {
+    padding: 0.5em;
+  }
+
+  legend {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  .selection {
+    margin-left: 50px;
+    &:nth-of-type(1) {
+      margin-left: 0;
+    }
+  }
 }
 </style>

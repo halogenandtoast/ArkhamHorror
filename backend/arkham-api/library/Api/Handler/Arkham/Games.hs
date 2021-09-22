@@ -365,6 +365,9 @@ handleAnswer Game {..} investigatorId = \case
       in
         concatMap (\(iid, n) -> replicate n (findWithDefault Noop iid costMap))
           $ mapToList (arAmounts response)
+    Just (ChooseDynamicCardAmounts iid cardId _ isFast beforePlayMessages) ->
+      let amount = findWithDefault 0 iid (arAmounts response)
+      in beforePlayMessages <> [PayedForDynamicCard iid cardId amount isFast]
     _ -> error "Wrong question type"
   Answer response -> case lookup investigatorId gameQuestion of
     Just (ChooseOne qs) -> case qs !!? qrChoice response of

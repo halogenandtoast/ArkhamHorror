@@ -91,7 +91,8 @@ data Card
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 flipCard :: Card -> Card
-flipCard (EncounterCard ec) = EncounterCard $ ec { ecIsFlipped = not <$> ecIsFlipped ec }
+flipCard (EncounterCard ec) =
+  EncounterCard $ ec { ecIsFlipped = not <$> ecIsFlipped ec }
 flipCard (PlayerCard pc) = PlayerCard pc
 
 _PlayerCard :: Traversal' Card PlayerCard

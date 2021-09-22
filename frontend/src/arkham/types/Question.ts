@@ -2,7 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck | ChoosePaymentAmounts ;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseDynamicCardAmounts;
 
 export interface ChooseOne {
   tag: 'ChooseOne';
@@ -32,6 +32,11 @@ export interface ChooseOneAtATime {
 export interface ChoosePaymentAmounts {
   tag: 'ChoosePaymentAmounts';
   contents: [string, number | null, [string, [number, number]][]];
+}
+
+export interface ChooseDynamicCardAmounts {
+  tag: 'ChooseDynamicCardAmounts';
+  contents: [string, string, [number, number]]
 }
 
 export interface ChooseOneFromSourceContents {
@@ -69,6 +74,20 @@ export const choosePaymentAmountsDecoder = JsonDecoder.object<ChoosePaymentAmoun
           , '[string, [number, number]][]')
       ]
       , '[string, number?, [string, [number, number]]]')
+  }, 'ChoosePaymentAmounts',
+);
+
+export const chooseDynamicCardAmountsDecoder = JsonDecoder.object<ChooseDynamicCardAmounts>(
+  {
+    tag: JsonDecoder.isExactly('ChooseDynamicCardAmounts'),
+    contents: JsonDecoder.tuple(
+      [ JsonDecoder.string
+      , JsonDecoder.string
+      , JsonDecoder.tuple([ JsonDecoder.number , JsonDecoder.number ], '[number, number]')
+      , JsonDecoder.succeed
+      , JsonDecoder.succeed
+      ]
+      , '[string, string, [number, number], boolean, messages]').map<[string, string, [number, number]]>(([iid, cardId, bounds]) => { return [iid, cardId, bounds] })
   }, 'ChoosePaymentAmounts',
 );
 
@@ -146,6 +165,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseOneFromSourceDecoder,
     chooseUpgradeDeckDecoder,
     choosePaymentAmountsDecoder,
+    chooseDynamicCardAmountsDecoder,
   ],
   'Question',
 );

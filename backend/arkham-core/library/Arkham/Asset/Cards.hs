@@ -113,6 +113,7 @@ allPlayerAssetCards = mapFromList $ map
   , catBurglar1
   , celaenoFragments
   , charisma3
+  , charlesRossEsq
   , cherishedKeepsake
   , chicagoTypewriter4
   , clarityOfMind
@@ -249,6 +250,7 @@ allPlayerAssetCards = mapFromList $ map
   , theTatteredCloak
   , thirtyTwoColt
   , toothOfEztli
+  , trenchKnife
   , trueGrit
   , tryAndTryAgain3
   , wendysAmulet
@@ -1459,6 +1461,17 @@ trenchKnife :: CardDef
 trenchKnife = (asset "03147" "Trench Knife" 1 Guardian)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item, Weapon, Melee]
+  }
+
+charlesRossEsq :: CardDef
+charlesRossEsq = (asset
+                   "03149"
+                   ("Charles Ross, Esq." <:> "Acquisitions and Solicitation")
+                   2
+                   Seeker
+                 )
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Ally, Patron]
   }
 
 toothOfEztli :: CardDef

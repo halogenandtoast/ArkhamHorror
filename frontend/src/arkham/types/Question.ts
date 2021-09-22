@@ -2,7 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck | ChoosePaymentAmounts ;
 
 export interface ChooseOne {
   tag: 'ChooseOne';
@@ -29,6 +29,11 @@ export interface ChooseOneAtATime {
   contents: Message[];
 }
 
+export interface ChoosePaymentAmounts {
+  tag: 'ChoosePaymentAmounts';
+  contents: [string, number | null, [string, [number, number]][]];
+}
+
 export interface ChooseOneFromSourceContents {
   source: Source;
   choices: Message[];
@@ -42,6 +47,31 @@ export interface ChooseOneFromSource {
 export interface ChooseUpgradeDeck {
   tag: 'ChooseUpgradeDeck';
 }
+
+export const choosePaymentAmountsDecoder = JsonDecoder.object<ChoosePaymentAmounts>(
+  {
+    tag: JsonDecoder.isExactly('ChoosePaymentAmounts'),
+    contents: JsonDecoder.tuple(
+      [ JsonDecoder.string
+      , JsonDecoder.nullable(JsonDecoder.number)
+      , JsonDecoder.array(
+          JsonDecoder.tuple(
+            [ JsonDecoder.string
+            , JsonDecoder.tuple(
+              [ JsonDecoder.number
+              , JsonDecoder.number
+              ]
+              , '[number, number]')
+            , JsonDecoder.succeed
+            ]
+            , '[string, [number, number]]'
+          ).map<[string, [number, number]]>(([iid, bounds]) => { return [iid, bounds] })
+          , '[string, [number, number]][]')
+      ]
+      , '[string, number?, [string, [number, number]]]')
+  }, 'ChoosePaymentAmounts',
+);
+
 
 export const chooseUpgradeDeckDecoder = JsonDecoder.object<ChooseUpgradeDeck>(
   {
@@ -115,6 +145,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseOneAtATimeDecoder,
     chooseOneFromSourceDecoder,
     chooseUpgradeDeckDecoder,
+    choosePaymentAmountsDecoder,
   ],
   'Question',
 );

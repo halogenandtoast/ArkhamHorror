@@ -194,21 +194,29 @@ instance
           canAfford <- getCanAffordCost iid source mAction [] cost'
           e <$ when
             canAfford
-            (push $ chooseOne
-              iid
-              [ Label
-                "Pay dynamic cost"
-                [ PayAbilityCost source iid mAction skipAdditionalCosts cost'
-                , PayAbilityCost
-                  source
-                  iid
-                  mAction
-                  skipAdditionalCosts
-                  (UpTo (n - 1) cost')
-                ]
-              , Label "Done with dynamic cost" []
+            (push $ Ask iid $ ChoosePaymentAmounts
+              ("Pay up to " <> displayCostType cost')
+              Nothing
+              [ ( iid
+                , (0, n)
+                , PayAbilityCost source iid mAction skipAdditionalCosts cost'
+                )
               ]
             )
+            --   iid
+            --   [ Label
+            --     "Pay dynamic cost"
+            --     [ PayAbilityCost source iid mAction skipAdditionalCosts cost'
+            --     , PayAbilityCost
+            --       source
+            --       iid
+            --       mAction
+            --       skipAdditionalCosts
+            --       (UpTo (n - 1) cost')
+            --     ]
+            --   , Label "Done with dynamic cost" []
+            --   ]
+            -- )
         ExhaustCost target -> do
           push (Exhaust target)
           withPayment $ ExhaustPayment [target]

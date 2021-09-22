@@ -189,6 +189,7 @@ allPlayerAssetCards = mapFromList $ map
   , maskedCarnevaleGoer_19
   , maskedCarnevaleGoer_20
   , maskedCarnevaleGoer_21
+  , meatCleaver
   , medicalTexts
   , monstrousTransformation
   , moxie1
@@ -1467,6 +1468,12 @@ toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
   , cdCardTraits = setFromList [Item, Relic]
   }
 
+meatCleaver :: CardDef
+meatCleaver = (asset "05114" "Meat Cleaver" 3 Survivor)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = setFromList [Item, Weapon, Melee]
+  }
+
 occultLexicon :: CardDef
 occultLexicon = (asset "05316" "Occult Lexicon" 2 Seeker)
   { cdSkills = [SkillIntellect]
@@ -1564,7 +1571,7 @@ whittonGreene =
     }
 
 eighteenDerringer :: CardDef
-eighteenDerringer = (asset "06505" ".18 Derringer" 3 Survivor)
+eighteenDerringer = (asset "60505" ".18 Derringer" 3 Survivor)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
   , cdUses = Uses Ammo 2

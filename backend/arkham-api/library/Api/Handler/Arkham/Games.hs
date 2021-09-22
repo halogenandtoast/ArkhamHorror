@@ -219,14 +219,25 @@ postApiV1ArkhamGamesR = do
           )
       Nothing -> error "missing either campaign id or scenario id"
 
-data QuestionReponse = QuestionResponse
+data Answer = Answer QuestionResponse | AmountsAnswer AmountsResponse
+  deriving stock Generic
+  deriving anyclass FromJSON
+
+data QuestionResponse = QuestionResponse
   { qrChoice :: Int
   , qrInvestigatorId :: Maybe InvestigatorId
   }
   deriving stock Generic
 
-instance FromJSON QuestionReponse where
+newtype AmountsResponse = AmountsResponse
+  { arAmounts :: HashMap InvestigatorId Int }
+  deriving stock Generic
+
+instance FromJSON QuestionResponse where
   parseJSON = genericParseJSON $ aesonOptions $ Just "qr"
+
+instance FromJSON AmountsResponse where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "ar"
 
 extract :: Int -> [a] -> (Maybe a, [a])
 extract n xs =
@@ -241,46 +252,10 @@ putApiV1ArkhamGameR gameId = do
     $ getBy404 (UniquePlayer userId gameId)
   let
     gameJson@Game {..} = arkhamGameCurrentData
-    investigatorId =
-      fromMaybe (coerce arkhamPlayerInvestigatorId) (qrInvestigatorId response)
-    messages = case lookup investigatorId gameQuestion of
-      Just (ChooseOne qs) -> case qs !!? qrChoice response of
-        Nothing -> [Ask investigatorId $ ChooseOne qs]
-        Just msg -> [msg]
-      Just (ChooseN n qs) -> do
-        let (mm, msgs') = extract (qrChoice response) qs
-        case (mm, msgs') of
-          (Just m', []) -> [m']
-          (Just m', msgs'') -> if n - 1 == 0
-            then [m']
-            else [m', Ask investigatorId $ ChooseN (n - 1) msgs'']
-          (Nothing, msgs'') -> [Ask investigatorId $ ChooseN n msgs'']
-      Just (ChooseUpToN n qs) -> do
-        let (mm, msgs') = extract (qrChoice response) qs
-        case (mm, msgs') of
-          (Just m', []) -> [m']
-          (Just m'@(Done _), _) -> [m']
-          (Just m', msgs'') -> if n - 1 == 0
-            then [m']
-            else [m', Ask investigatorId $ ChooseUpToN (n - 1) msgs'']
-          (Nothing, msgs'') -> [Ask investigatorId $ ChooseUpToN n msgs'']
-      Just (ChooseOneAtATime msgs) -> do
-        let (mm, msgs') = extract (qrChoice response) msgs
-        case (mm, msgs') of
-          (Just m', []) -> [m']
-          (Just m', msgs'') ->
-            [m', Ask investigatorId $ ChooseOneAtATime msgs'']
-          (Nothing, msgs'') -> [Ask investigatorId $ ChooseOneAtATime msgs'']
-      Just (ChooseSome msgs) -> do
-        let (mm, msgs') = extract (qrChoice response) msgs
-        case (mm, msgs') of
-          (Just (Done _), _) -> []
-          (Just m', msgs'') -> case msgs'' of
-            [] -> [m']
-            [Done _] -> [m']
-            rest -> [m', Ask investigatorId $ ChooseSome rest]
-          (Nothing, msgs'') -> [Ask investigatorId $ ChooseSome msgs'']
-      _ -> []
+    investigatorId = fromMaybe
+      (coerce arkhamPlayerInvestigatorId)
+      (answerInvestigator response)
+    messages = handleAnswer gameJson investigatorId response
 
   let currentQueue = maybe [] choiceMessages $ headMay arkhamGameChoices
 
@@ -374,3 +349,57 @@ deleteApiV1ArkhamGameR gameId = void $ runDB $ do
   delete $ do
     games <- from $ table @ArkhamGame
     where_ $ games ^. persistIdField ==. val gameId
+
+answerInvestigator :: Answer -> Maybe InvestigatorId
+answerInvestigator = \case
+  Answer response -> qrInvestigatorId response
+  AmountsAnswer _ -> Nothing
+
+handleAnswer :: Game -> InvestigatorId -> Answer -> [Message]
+handleAnswer Game {..} investigatorId = \case
+  AmountsAnswer response -> case lookup investigatorId gameQuestion of
+    Just (ChoosePaymentAmounts _ _ info) ->
+      let
+        costMap = mapFromList @(HashMap InvestigatorId Message)
+          $ map (\(iid, _, cost) -> (iid, cost)) info
+      in
+        concatMap (\(iid, n) -> replicate n (findWithDefault Noop iid costMap))
+          $ mapToList (arAmounts response)
+    _ -> error "Wrong question type"
+  Answer response -> case lookup investigatorId gameQuestion of
+    Just (ChooseOne qs) -> case qs !!? qrChoice response of
+      Nothing -> [Ask investigatorId $ ChooseOne qs]
+      Just msg -> [msg]
+    Just (ChooseN n qs) -> do
+      let (mm, msgs') = extract (qrChoice response) qs
+      case (mm, msgs') of
+        (Just m', []) -> [m']
+        (Just m', msgs'') -> if n - 1 == 0
+          then [m']
+          else [m', Ask investigatorId $ ChooseN (n - 1) msgs'']
+        (Nothing, msgs'') -> [Ask investigatorId $ ChooseN n msgs'']
+    Just (ChooseUpToN n qs) -> do
+      let (mm, msgs') = extract (qrChoice response) qs
+      case (mm, msgs') of
+        (Just m', []) -> [m']
+        (Just m'@(Done _), _) -> [m']
+        (Just m', msgs'') -> if n - 1 == 0
+          then [m']
+          else [m', Ask investigatorId $ ChooseUpToN (n - 1) msgs'']
+        (Nothing, msgs'') -> [Ask investigatorId $ ChooseUpToN n msgs'']
+    Just (ChooseOneAtATime msgs) -> do
+      let (mm, msgs') = extract (qrChoice response) msgs
+      case (mm, msgs') of
+        (Just m', []) -> [m']
+        (Just m', msgs'') -> [m', Ask investigatorId $ ChooseOneAtATime msgs'']
+        (Nothing, msgs'') -> [Ask investigatorId $ ChooseOneAtATime msgs'']
+    Just (ChooseSome msgs) -> do
+      let (mm, msgs') = extract (qrChoice response) msgs
+      case (mm, msgs') of
+        (Just (Done _), _) -> []
+        (Just m', msgs'') -> case msgs'' of
+          [] -> [m']
+          [Done _] -> [m']
+          rest -> [m', Ask investigatorId $ ChooseSome rest]
+        (Nothing, msgs'') -> [Ask investigatorId $ ChooseSome msgs'']
+    _ -> error "Wrong question type"

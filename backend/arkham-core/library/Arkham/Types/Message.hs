@@ -380,6 +380,7 @@ data Message
     | NextAgenda AgendaId AgendaId
     | NextCampaignStep (Maybe CampaignStep)
     | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
+    | Noop
     | PassSkillTest
     | PassedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int
     | PayAbilityCost Source InvestigatorId (Maybe Action) Bool Cost
@@ -587,6 +588,13 @@ data Question
     | ChooseSome [Message]
     | ChooseUpToN Int [Message]
     | ChooseOneAtATime [Message]
+    | -- | Choosing payment amounts
+      -- The core idea is that costs get broken up into unitary costs and we
+      -- let the players decide how many times an individual player will pay
+      -- the cost. The @Maybe Int@ is used to designate whether or not there
+      -- is a target value. The tuple of ints are the min and max bound for
+      -- the specific investigator
+      ChoosePaymentAmounts Text (Maybe Int) [(InvestigatorId, (Int, Int), Message)]
     | ChooseUpgradeDeck
     deriving stock (Show, Eq, Generic)
     deriving anyclass (FromJSON, ToJSON)

@@ -22,10 +22,21 @@
       </button>
     </div>
   </div>
+  <div v-else-if="amountsLabel" class="modal amount-modal">
+    <div class="modal-contents focused-cards">
+      <form @submit.prevent="submitAmounts">
+        <h1>{{amountsLabel}}</h1>
+        <div v-for="[investigator, bounds] in amountsChoices" :key="investigator">
+          {{investigatorName(investigator)}} <input type="range" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[investigator]" />
+        </div>
+        <button>Submit</button>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, inject, ref } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
@@ -42,6 +53,39 @@ export default defineComponent({
   setup(props) {
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
     const focusedCards = computed(() => props.game.focusedCards)
+    const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('chooseAmounts')
+
+    const amountsLabel = computed(() => {
+      const question = props.game.question[props.investigatorId]
+      if (question.tag == 'ChoosePaymentAmounts') {
+        return question.contents[0]
+      }
+
+      return null
+    })
+
+    const investigatorName = (iid: string) => props.game.investigators[iid].contents.name.title
+
+    const amountsChoices = computed(() => {
+      const question = props.game.question[props.investigatorId]
+      if (question.tag == 'ChoosePaymentAmounts') {
+        return question.contents[2]
+      }
+
+      return null
+    })
+
+    const amountSelections = ref(Object.keys(props.game.investigators).reduce<Record<string, number>>((previousValue, currentValue) => {
+      previousValue[currentValue] = 0
+      return previousValue
+    }, {}))
+
+    const submitAmounts = async () => {
+      if (chooseAmounts) {
+        chooseAmounts(amountSelections.value)
+      }
+    }
+
 
     const resolutions = computed(() => {
       return choices
@@ -50,7 +94,7 @@ export default defineComponent({
         .filter(({ choice }) => choice.tag === MessageType.RESOLUTION);
     })
 
-    return { choices, focusedCards, resolutions }
+    return { choices, focusedCards, resolutions, amountsLabel, amountsChoices, amountSelections, investigatorName, submitAmounts }
   }
 })
 </script>

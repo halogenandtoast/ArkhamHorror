@@ -67,7 +67,10 @@ export const deleteDeck = (deckId: string): Promise<void> => api
   .delete(`arkham/decks/${deckId}`);
 
 export const updateGame = (gameId: string, choice: number, investigatorId: string | null): Promise<void> => api
-  .put(`arkham/games/${gameId}`, { choice, investigatorId })
+  .put(`arkham/games/${gameId}`,  {tag: 'Answer', contents: { choice, investigatorId }})
+
+export const updateGameAmounts = (gameId: string, amounts: Record<string, number>): Promise<void> => api
+  .put(`arkham/games/${gameId}`, {tag: 'AmountsAnswer', contents: { amounts } })
 
 export const upgradeDeck = (gameId: string, deckUrl?: string): Promise<void> => api
   .put(`arkham/games/${gameId}/decks`, { deckUrl });

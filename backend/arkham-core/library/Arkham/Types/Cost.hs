@@ -12,7 +12,8 @@ import Arkham.Types.Matcher
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Trait
+import Arkham.Types.Trait (Trait)
+import qualified Data.Text as T
 
 totalActionCost :: Cost -> Int
 totalActionCost (ActionCost n) = n
@@ -93,6 +94,57 @@ data Cost
   | UpTo Int Cost
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+displayCostType :: Cost -> Text
+displayCostType = \case
+  ActionCost n -> pluralize n "Action"
+  AdditionalActionsCost -> "Additional Action"
+  ClueCost n -> pluralize n "Clue"
+  GroupClueCost gv _ -> case gv of
+    Static n -> pluralize n "Clue" <> " as a Group"
+    PerPlayer n -> pluralize n "Clue" <> " per Player as a Group"
+    StaticWithPerPlayer n m ->
+      tshow n <> " + " <> tshow m <> " Clues per Player"
+    ByPlayerCount a b c d ->
+      tshow a
+        <> ", "
+        <> tshow b
+        <> ", "
+        <> tshow c
+        <> ", or "
+        <> tshow d
+        <> " Clues for 1, 2, 3, or 4 players"
+  PlaceClueOnLocationCost n ->
+    "Place " <> pluralize n "Clue" <> " on your location"
+  ExhaustCost _ -> "Exhaust"
+  ExhaustAssetCost _ -> "Exhaust matching asset"
+  RemoveCost _ -> "Remove from play"
+  Costs cs -> T.intercalate ", " $ map displayCostType cs
+  DamageCost _ _ n -> tshow n <> " Damage"
+  DirectDamageCost _ _ n -> tshow n <> " Direct Damage"
+  DiscardCost _ -> "Discard"
+  DiscardCardCost _ -> "Discard Card"
+  DiscardFromCost n _ _ -> "Discard " <> tshow n
+  DiscardDrawnCardCost -> "Discard Drawn Card"
+  DoomCost _ _ n -> pluralize n "Doom"
+  ExileCost _ -> "Exile"
+  HandDiscardCost n _ _ _ -> "Discard " <> tshow n <> " from Hand"
+  SkillIconCost n _ -> tshow n <> " Matching Icons"
+  HorrorCost _ _ n -> tshow n <> " Horror"
+  Free -> "Free"
+  ResourceCost n -> pluralize n "Resource"
+  UseCost _ uType n -> case uType of
+    Ammo -> tshow n <> " Ammo"
+    Supply -> if n == 1 then "1 Supply" else tshow n <> " Supplies"
+    Secret -> pluralize n "Secret"
+    Charge -> pluralize n "Charge"
+    Try -> if n == 1 then "1 Try" else tshow n <> " Tries"
+    Bounty -> if n == 1 then "1 Bounty" else tshow n <> " Bounties"
+    Whistle -> pluralize n "Whistle"
+    Resource -> pluralize n "Resource"
+    Key -> pluralize n "Key"
+  UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
+  where pluralize n a = if n == 1 then "1 " <> a else tshow n <> a <> "s"
 
 instance Semigroup Cost where
   Free <> a = a

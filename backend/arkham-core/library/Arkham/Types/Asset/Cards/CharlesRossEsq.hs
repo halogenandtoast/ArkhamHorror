@@ -39,6 +39,7 @@ instance HasId LocationId env AssetId => HasModifiersFor env CharlesRossEsq wher
             (InvestigatorAt $ LocationWithId lid)
             (CardWithType AssetType <> CardWithTrait Item)
         ]
+  getModifiersFor _ _ _ = pure []
 
 instance HasAbilities CharlesRossEsq where
   getAbilities (CharlesRossEsq attrs) =

@@ -26,9 +26,11 @@
     <div class="modal-contents amount-contents">
       <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
         <legend>{{amountsLabel}}</legend>
-        <div v-for="[investigator, bounds] in amountsChoices" :key="investigator" class="selection">
-          {{investigatorName(investigator)}} <input type="number" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[investigator]" onclick="this.select()" />
-        </div>
+        <template v-for="[investigator, bounds] in amountsChoices" :key="investigator" class="selection">
+          <div v-if="bounds[1] !== 0">
+            {{investigatorName(investigator)}} <input type="number" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[investigator]" onclick="this.select()" />
+          </div>
+        </template>
         <button :disabled="unmetAmountRequirements">Submit</button>
       </form>
     </div>
@@ -36,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, inject, ref } from 'vue';
+import { defineComponent, computed, inject, ref, watch, onMounted } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
@@ -79,10 +81,21 @@ export default defineComponent({
       return null
     })
 
-    const amountSelections = ref(Object.keys(props.game.investigators).reduce<Record<string, number>>((previousValue, currentValue) => {
-      previousValue[currentValue] = 0
-      return previousValue
-    }, {}))
+    const amountSelections = ref<Record<string, number>>({})
+
+    const setInitialAmounts = () => {
+        amountSelections.value = Object.keys(props.game.investigators).reduce<Record<string, number>>((previousValue, currentValue) => {
+          previousValue[currentValue] = 0
+          return previousValue
+        }, {})
+      }
+
+    onMounted(setInitialAmounts)
+
+
+    watch(
+      () => props.game.question[props.investigatorId],
+      setInitialAmounts)
 
     const unmetAmountRequirements = computed(() => {
       const question = props.game.question[props.investigatorId]

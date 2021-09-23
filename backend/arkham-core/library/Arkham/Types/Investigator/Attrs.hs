@@ -1368,7 +1368,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     iidsWithModifiers <- for iids $ \iid' -> do
       modifiers <- getModifiers (InvestigatorSource iid') (InvestigatorTarget iid')
       pure (iid', modifiers)
-    canHelpPay <- flip filterM iidsWithModifiers $ \(iid', modifiers) -> do
+    canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) -> do
       flip anyM modifiers $ \case
         CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher ->
           liftA2 (&&) (member iid <$> select iMatcher) (pure $ cardMatch card cMatcher)
@@ -1486,10 +1486,27 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     actionCost <- if isFast
       then pure 0
       else maybe (pure 1) (getActionCost a) maction
+
+    iids <- filter (/= iid) <$> getInvestigatorIds
+    iidsWithModifiers <- for iids $ \iid' -> do
+      modifiers <- getModifiers
+        (InvestigatorSource iid')
+        (InvestigatorTarget iid')
+      pure (iid', modifiers)
+    canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) -> do
+      flip anyM modifiers $ \case
+        CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher -> liftA2
+          (&&)
+          (member iid <$> select iMatcher)
+          (pure $ cardMatch card cMatcher)
+        _ -> pure False
+    additionalResources <-
+      sum <$> traverse ((fmap unResourceCount . getCount) . fst) canHelpPay
+
     if investigatorRemainingActions
         >= actionCost
-        && investigatorResources
-        >= getCost card
+        && (investigatorResources + additionalResources
+        >= getCost card)
       then a <$ pushAll
         ([ TakeAction iid (Just Action.Play) (ActionCost actionCost)
          , PayCardCost iid cardId

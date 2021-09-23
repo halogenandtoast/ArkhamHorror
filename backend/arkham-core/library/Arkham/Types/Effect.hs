@@ -127,6 +127,7 @@ data Effect
   | EighteenDerringer' EighteenDerringer
   | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
   | CursedShores' CursedShores
+  | Mesmerize' Mesmerize
   | DaisysToteBagAdvanced' DaisysToteBagAdvanced
   | WindowModifierEffect' WindowModifierEffect
   | PayForAbilityEffect' PayForAbilityEffect
@@ -162,6 +163,7 @@ instance
   , HasSet ClassSymbol env InvestigatorId
   , Query EnemyMatcher env
   , HasId LeadInvestigatorId env ()
+  , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
   )
   => RunMessage env Effect where
   runMessage = genericRunMessage
@@ -250,6 +252,7 @@ allEffects = mapFromList
   , ("60505", EighteenDerringer' . eighteenDerringer)
   , ("81001", CurseOfTheRougarouTabletToken' . curseOfTheRougarouTabletToken)
   , ("81007", CursedShores' . cursedShores)
+  , ("82035", Mesmerize' . mesmerize)
   , ("90002", DaisysToteBagAdvanced' . daisysToteBagAdvanced)
   ]
 

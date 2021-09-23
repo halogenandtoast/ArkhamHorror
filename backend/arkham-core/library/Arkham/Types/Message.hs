@@ -313,6 +313,7 @@ data Message
     | UpgradeDeck InvestigatorId (Deck PlayerCard) -- used to upgrade deck during campaign
     | FinishedUpgradingDecks
     | Flip Source Target
+    | Flipped Source Card
     | InitiatePlayCardAsChoose InvestigatorId CardId [Card] [Message] Bool
     | InitiatePlayCardAs InvestigatorId CardId Card [Message] Bool
     | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool

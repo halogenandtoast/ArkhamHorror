@@ -416,6 +416,7 @@ library
       Arkham.Types.Effect.Effects.Lucky2
       Arkham.Types.Effect.Effects.LuckyDice2
       Arkham.Types.Effect.Effects.MeatCleaver
+      Arkham.Types.Effect.Effects.Mesmerize
       Arkham.Types.Effect.Effects.MindOverMatter
       Arkham.Types.Effect.Effects.MindWipe1
       Arkham.Types.Effect.Effects.MindWipe3

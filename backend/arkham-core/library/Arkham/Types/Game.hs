@@ -3459,6 +3459,8 @@ runGameMessage msg g = case msg of
     defeatedWindows <- checkWindows
       [Window Timing.When (Window.Defeated (AssetSource aid))]
     g <$ pushAll defeatedWindows
+  Flipped (AssetSource aid) card | toCardType card /= AssetType ->
+    pure $ g & assetsL %~ deleteMap aid
   RemoveFromGame (AssetTarget aid) -> do
     asset <- getAsset aid
     pure $ g & assetsL %~ deleteMap aid & removedFromPlayL %~ (toCard asset :)

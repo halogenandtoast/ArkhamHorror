@@ -58,11 +58,10 @@ instance AssetRunner env => RunMessage env MaskedCarnevaleGoer_17 where
         lid = locationOf attrs
         donLagorio = EncounterCard
           $ lookupEncounterCard Enemies.donLagorio (toCardId attrs)
-      a
-        <$ pushAll
-             [ RemoveFromGame (toTarget attrs)
-             , CreateEnemyAt donLagorio lid Nothing
-             ]
+      a <$ pushAll
+        [ CreateEnemyAt donLagorio lid Nothing
+        , Flipped (toSource attrs) donLagorio
+        ]
     LookAtRevealed _ target | isTarget a target -> do
       let
         donLagorio = EncounterCard

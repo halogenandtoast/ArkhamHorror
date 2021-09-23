@@ -26,23 +26,19 @@ instance TreacheryRunner env => RunMessage env Mesmerize where
   runMessage msg t@(Mesmerize attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
-      maskedCarnevaleGoers <- selectList
+      maskedCarnevaleGoers <- selectListMap
+        AssetTarget
         (AssetAtLocation lid <> AssetWithTitle "Masked Carnevale-Goer")
       case maskedCarnevaleGoers of
         [] -> t <$ push (chooseOne iid [Surge iid $ toSource attrs])
-        xs -> do
-          -- Since non-innocent revelers will no longer be assets, we can just queue
-          -- the move and damage by targeting assets and the enemies will be untouched
-          t <$ pushAll
-            [ CreateEffect
-              (toCardCode attrs)
-              Nothing
-              source
-              (InvestigatorTarget iid)
-            , chooseOne
-              iid
-              [ TargetLabel (AssetTarget aid) [Flip source (AssetTarget aid)]
-              | aid <- xs
-              ]
-            ]
+        xs -> t <$ pushAll
+          [ CreateEffect
+            (toCardCode attrs)
+            Nothing
+            source
+            (InvestigatorTarget iid)
+          , chooseOne
+            iid
+            [ TargetLabel target [Flip source target] | target <- xs ]
+          ]
     _ -> Mesmerize <$> runMessage msg attrs

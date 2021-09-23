@@ -9,3 +9,7 @@ deploy:
 .PHONY: sync-images
 sync-images:
 	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --acl public-read
+
+.PHONY: count
+count:
+	cloc . --include-lang=Haskell,TypeScript,Vue --exclude-dir=node_modules,dist,.stack-work --timeout=0

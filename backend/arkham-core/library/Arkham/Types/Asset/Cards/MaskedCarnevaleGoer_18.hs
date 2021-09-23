@@ -59,8 +59,8 @@ instance AssetRunner env => RunMessage env MaskedCarnevaleGoer_18 where
         elisabettaMagro = EncounterCard
           $ lookupEncounterCard Enemies.elisabettaMagro (toCardId attrs)
       a <$ pushAll
-        [ RemoveFromGame (toTarget attrs)
-        , CreateEnemyAt elisabettaMagro lid Nothing
+        [ CreateEnemyAt elisabettaMagro lid Nothing
+        , Flipped (toSource attrs) elisabettaMagro
         ]
     LookAtRevealed iid target | isTarget a target -> do
       let

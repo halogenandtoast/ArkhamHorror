@@ -477,6 +477,8 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     Discard (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
     Discarded (EnemyTarget eid) _ -> pure $ a & enemiesL %~ deleteSet eid
     PlaceEnemyInVoid eid -> pure $ a & enemiesL %~ deleteSet eid
+    Flipped (AssetSource aid) card | toCardType card /= AssetType ->
+      pure $ a & assetsL %~ deleteSet aid
     RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
     RemoveFromGame (TreacheryTarget tid) ->
       pure $ a & treacheriesL %~ deleteSet tid

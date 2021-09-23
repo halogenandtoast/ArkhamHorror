@@ -6,6 +6,7 @@ module Arkham.Types.Treachery.Cards.Mesmerize
 import Arkham.Prelude
 
 import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Matcher
@@ -30,20 +31,18 @@ instance TreacheryRunner env => RunMessage env Mesmerize where
       case maskedCarnevaleGoers of
         [] -> t <$ push (chooseOne iid [Surge iid $ toSource attrs])
         xs -> do
-          locationTargets <- map (LocationTarget . unFarthestLocationId)
-            <$> getSetList (iid, LocationWithoutInvestigators)
           -- Since non-innocent revelers will no longer be assets, we can just queue
           -- the move and damage by targeting assets and the enemies will be untouched
           t <$ pushAll
-            [ Run
-                [ Flip source (AssetTarget aid)
-                , chooseOne
-                  iid
-                  [ TargetLabel locationTarget [AttachAsset aid locationTarget]
-                  | locationTarget <- locationTargets
-                  ]
-                , AssetDamage aid source 1 1
-                ]
-            | aid <- xs
+            [ CreateEffect
+              (toCardCode attrs)
+              Nothing
+              source
+              (InvestigatorTarget iid)
+            , chooseOne
+              iid
+              [ TargetLabel (AssetTarget aid) [Flip source (AssetTarget aid)]
+              | aid <- xs
+              ]
             ]
     _ -> Mesmerize <$> runMessage msg attrs

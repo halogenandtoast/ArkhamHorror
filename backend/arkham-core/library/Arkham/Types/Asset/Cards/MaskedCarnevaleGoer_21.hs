@@ -46,8 +46,8 @@ instance AssetRunner env => RunMessage env MaskedCarnevaleGoer_21 where
             innocentReveler = PlayerCard
               $ lookupPlayerCard Cards.innocentReveler (toCardId attrs)
           a <$ pushAll
-            [ RemoveFromGame (toTarget attrs)
-            , CreateStoryAssetAt innocentReveler lid
+            [ CreateStoryAssetAt innocentReveler lid
+            , Flipped (toSource attrs) innocentReveler
             ]
         Nothing -> error "not possible"
     LookAtRevealed _ target | isTarget a target -> do

@@ -946,6 +946,21 @@ getIsPlayableWithResources
 getIsPlayableWithResources _ _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
 getIsPlayableWithResources iid source availableResources windows' c@(PlayerCard _)
   = do
+    iids <- filter (/= iid) <$> getInvestigatorIds
+    iidsWithModifiers <- for iids $ \iid' -> do
+      modifiers <- getModifiers
+        (InvestigatorSource iid')
+        (InvestigatorTarget iid')
+      pure (iid', modifiers)
+    canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) -> do
+      flip anyM modifiers $ \case
+        CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher -> liftA2
+          (&&)
+          (member iid <$> select iMatcher)
+          (pure $ cardMatch c cMatcher)
+        _ -> pure False
+    additionalResources <-
+      sum <$> traverse ((fmap unResourceCount . getCount) . fst) canHelpPay
     modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
     let
       notFastWindow =
@@ -964,7 +979,7 @@ getIsPlayableWithResources iid source availableResources windows' c@(PlayerCard 
     passesLimits <- allM passesLimit (cdLimits pcDef)
     pure
       $ (cdCardType pcDef /= SkillType)
-      && (modifiedCardCost <= availableResources)
+      && (modifiedCardCost <= (availableResources + additionalResources))
       && none prevents modifiers
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
       && (cdAction pcDef /= Just Action.Evade || canEvade)

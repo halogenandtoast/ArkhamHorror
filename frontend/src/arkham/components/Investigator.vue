@@ -26,6 +26,7 @@
       />
       <template v-if="debug">
         <button @click="debugChoose({tag: 'TakeResources', contents: [id, 1, false]})">+</button>
+        <button @click="debugChoose({tag: 'SpendResources', contents: [id, 1]})">-</button>
       </template>
       <PoolItem
         type="clue"

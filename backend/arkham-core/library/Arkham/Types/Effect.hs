@@ -120,6 +120,7 @@ data Effect
   | TheStrangerTheShoresOfHali' TheStrangerTheShoresOfHali
   | TheKingsEdict' TheKingsEdict
   | MrPeabody' MrPeabody
+  | CharlesRossEsq' CharlesRossEsq
   | MeatCleaver' MeatCleaver
   | MindWipe3' MindWipe3
   | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
@@ -140,6 +141,8 @@ instance
   , HasId Difficulty env ()
   , HasCount DoomCount env EnemyId
   , HasCount ClueCount env EnemyId
+  , HasId LocationId env InvestigatorId
+  , HasId LocationId env AssetId
   )
   => HasModifiersFor env Effect where
   getModifiersFor = genericGetModifiersFor
@@ -163,6 +166,8 @@ instance
   , HasSet ClassSymbol env InvestigatorId
   , Query EnemyMatcher env
   , HasId LeadInvestigatorId env ()
+  , HasId LocationId env InvestigatorId
+  , HasId LocationId env AssetId
   , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
   )
   => RunMessage env Effect where
@@ -245,6 +250,7 @@ allEffects = mapFromList
   , ("03047c", TheStrangerTheShoresOfHali' . theStrangerTheShoresOfHali)
   , ("03100", TheKingsEdict' . theKingsEdict)
   , ("03141", MrPeabody' . mrPeabody)
+  , ("03149", CharlesRossEsq' . charlesRossEsq)
   , ("05114", MeatCleaver' . meatCleaver)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)

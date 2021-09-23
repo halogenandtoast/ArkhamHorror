@@ -1364,7 +1364,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PayCardCost iid cardId | iid == investigatorId -> do
     let card = findCard cardId a
     cost <- getModifiedCardCost iid card
-    pure $ a & resourcesL -~ cost
+    iids <- filter (/= iid) <$> getInvestigatorIds
+    iidsWithModifiers <- for iids $ \iid' -> do
+      modifiers <- getModifiers (InvestigatorSource iid') (InvestigatorTarget iid')
+      pure (iid', modifiers)
+    canHelpPay <- flip filterM iidsWithModifiers $ \(iid', modifiers) -> do
+      flip anyM modifiers $ \case
+        CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher ->
+          liftA2 (&&) (member iid <$> select iMatcher) (pure $ cardMatch card cMatcher)
+        _ -> pure False
+    if null canHelpPay
+       then pure $ a & resourcesL -~ cost
+       else do
+         iidsWithResources <- traverse (traverseToSnd (fmap unResourceCount . getCount)) (iid : map fst canHelpPay)
+         a <$ push (Ask iid $ ChoosePaymentAmounts ("Pay " <> tshow cost <> " resources") (Just cost) $ map (\(iid', resources) -> (iid', (0, resources), SpendResources iid' 1)) iidsWithResources)
   PayDynamicCardCost iid cardId _n beforePlayMessages | iid == investigatorId ->
     a <$ push (Ask iid $ ChooseDynamicCardAmounts iid cardId (0, investigatorResources) False beforePlayMessages)
   PayedForDynamicCard iid cardId n False | iid == investigatorId -> do

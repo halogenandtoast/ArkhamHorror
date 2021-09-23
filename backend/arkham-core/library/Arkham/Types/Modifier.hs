@@ -63,6 +63,7 @@ data ModifierType
   | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
   | CanOnlyUseCardsInRole ClassSymbol
   | CanPlayTopOfDiscard (Maybe CardType, [Trait])
+  | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
   | CancelSkills
   | CannotBeAttackedByNonElite
   | CannotBeDamaged

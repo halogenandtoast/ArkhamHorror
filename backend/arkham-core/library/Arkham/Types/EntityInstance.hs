@@ -108,6 +108,7 @@ type SomeEntityHasModifiersFor env
     , HasSet Trait env AssetId
     , HasCount PlayerCount env ()
     , HasCount ResourceCount env InvestigatorId
+    , HasId LocationId env AssetId
     , Query LocationMatcher env
     )
 

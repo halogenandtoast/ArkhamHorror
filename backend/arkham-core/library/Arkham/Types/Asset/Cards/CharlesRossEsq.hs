@@ -8,19 +8,37 @@ import Arkham.Prelude
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Card.CardCode
+import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
+import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Target
+import Arkham.Types.Trait
 
 newtype CharlesRossEsq = CharlesRossEsq AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 charlesRossEsq :: AssetCard CharlesRossEsq
 charlesRossEsq = ally CharlesRossEsq Cards.charlesRossEsq (1, 2)
+
+instance HasId LocationId env AssetId => HasModifiersFor env CharlesRossEsq where
+  getModifiersFor _ (InvestigatorTarget iid) (CharlesRossEsq attrs)
+    | attrs `ownedBy` iid = do
+      lid <- getId @LocationId (toId attrs)
+      pure $ toModifiers
+        attrs
+        [ CanSpendResourcesOnCardFromInvestigator
+            (InvestigatorAt $ LocationWithId lid)
+            (CardWithType AssetType <> CardWithTrait Item)
+        ]
 
 instance HasAbilities CharlesRossEsq where
   getAbilities (CharlesRossEsq attrs) =

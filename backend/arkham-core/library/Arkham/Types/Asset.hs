@@ -42,6 +42,7 @@ instance
   , HasSet Trait env LocationId
   , HasSet CommittedCardId env InvestigatorId
   , HasCount RemainingSanity env InvestigatorId
+  , HasId LocationId env AssetId
   , Query LocationMatcher env
   , HasSkillTest env
   )

@@ -90,6 +90,7 @@ allPlayerEventCards = mapFromList $ map
   , extraAmmunition1
   , firstWatch
   , flare1
+  , forewarned1
   , heroicRescue
   , hidingSpot
   , hotStreak2
@@ -768,6 +769,20 @@ ambush1 = (event "03148" "Ambush" 2 Guardian)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = singleton Tactic
   , cdLevel = 1
+  }
+
+forewarned1 :: CardDef
+forewarned1 = (event "03150" "Forwarned" 0 Seeker)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = singleton Insight
+  , cdLevel = 1
+  , cdCriteria = Just
+    $ Criteria.InvestigatorExists (You <> InvestigatorWithAnyClues)
+  , cdFastWindow = Just $ DrawCard
+    Timing.When
+    You
+    (BasicCardMatch NonWeaknessTreachery)
+    EncounterDeck
   }
 
 secondWind :: CardDef

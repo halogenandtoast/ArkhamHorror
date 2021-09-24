@@ -13,6 +13,7 @@ import Arkham.Types.Stats as X
 import Arkham.Types.Token as X
 import Arkham.Types.Trait as X hiding (Cultist)
 
+import qualified Data.Text as T
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
@@ -197,7 +198,7 @@ instance HasTraits InvestigatorAttrs where
   toTraits = investigatorTraits
 
 instance ToGameLoggerFormat InvestigatorAttrs where
-  format = display . toName
+  format attrs = "{investigator:\"" <> T.replace "\"" "\\\"" (display $ toName attrs) <> "\":" <> tshow (toId attrs) <> "}"
 
 instance ToJSON InvestigatorAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "investigator"

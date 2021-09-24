@@ -23,6 +23,7 @@ import Arkham.Types.LocationId
 import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Trait
+import qualified Data.Text as T
 
 data CardBuilder ident a = CardBuilder
   { cbCardCode :: CardCode
@@ -197,4 +198,11 @@ filterLocations :: HasCardDef a => [a] -> [a]
 filterLocations = filterCardType LocationType
 
 instance ToGameLoggerFormat Card where
-  format = display . toName
+  format c =
+    "{card:\""
+      <> T.replace "\"" "\\\"" (display $ toName c)
+      <> "\":"
+      <> tshow (toCardCode c)
+      <> ":\""
+      <> tshow (toCardId c)
+      <> "\"}"

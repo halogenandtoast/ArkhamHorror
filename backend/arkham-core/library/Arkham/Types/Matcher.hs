@@ -504,6 +504,7 @@ data WindowMatcher
   | InvestigatorEliminated Timing Who
   | AnyWindow
   | CommittedCards Timing Who CardListMatcher
+  | CommittedCard Timing Who CardMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

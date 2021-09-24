@@ -17,6 +17,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Card.PlayerCard as X
   (BearerId(..), DiscardedPlayerCard(..), PlayerCard(..))
+import Arkham.Types.Classes.GameLogger
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Matcher
@@ -194,3 +195,6 @@ filterCardType cardType' = filter ((== cardType') . cdCardType . toCardDef)
 
 filterLocations :: HasCardDef a => [a] -> [a]
 filterLocations = filterCardType LocationType
+
+instance ToGameLoggerFormat Card where
+  format = display . toName

@@ -35,6 +35,7 @@ data WindowType
   | EndOfGame
   | ChosenRandomLocation LocationId
   | CommittedCards InvestigatorId [Card]
+  | CommittedCard InvestigatorId Card
   | DealtDamage Source DamageEffect Target
   | DealtHorror Source Target
   | Defeated Source

@@ -1,7 +1,7 @@
 <template>
   <div class="card-row">
     <header>
-      <h2>Committed Skills</h2>
+      <h2>Committed Cards</h2>
     </header>
     <div class="card-row-cards">
       <div v-for="card in cards" :key="card.id" class="card-row-card">

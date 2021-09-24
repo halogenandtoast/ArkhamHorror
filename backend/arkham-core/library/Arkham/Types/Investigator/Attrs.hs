@@ -1767,8 +1767,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           then card { pcBearer = Just iid }
           else card
     pure $ a & deckL .~ Deck shuffled
-  InvestigatorCommittedCard iid cardId | iid == investigatorId ->
-    pure $ a & handL %~ filter ((/= cardId) . toCardId)
+  InvestigatorCommittedCard iid card | iid == investigatorId -> do
+    commitedCardWindows <- Helpers.windows [Window.CommittedCard iid card]
+    pushAll $ FocusCards [card] : commitedCardWindows <> [UnfocusCards]
+    pure $ a & handL %~ filter (/= card)
   ReturnToHand iid (AssetTarget aid) | iid == investigatorId ->
     pure $ a & assetsL %~ deleteSet aid & slotsL %~ removeFromSlots aid
   PlaceUnderneath target cards | isTarget a target ->

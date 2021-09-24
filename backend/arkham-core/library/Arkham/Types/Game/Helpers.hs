@@ -1404,6 +1404,12 @@ windowMatches iid source window' = \case
     Window t (Window.MovedFromHunter eid) | t == timing ->
       member eid <$> select enemyMatcher
     _ -> pure False
+  Matcher.CommittedCard timing whoMatcher cardMatcher -> case window' of
+    Window t (Window.CommittedCard who card) | t == timing -> liftA2
+      (&&)
+      (matchWho iid who whoMatcher)
+      (pure $ cardMatch card cardMatcher)
+    _ -> pure False
   Matcher.CommittedCards timing whoMatcher cardListMatcher -> case window' of
     Window t (Window.CommittedCards who cards) | t == timing -> liftA2
       (&&)

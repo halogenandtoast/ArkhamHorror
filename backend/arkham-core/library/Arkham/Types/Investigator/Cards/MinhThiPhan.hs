@@ -6,7 +6,7 @@ module Arkham.Types.Investigator.Cards.MinhThiPhan
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Card
+import Arkham.Types.Card hiding (CommittedCard)
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
@@ -46,7 +46,7 @@ instance HasAbilities MinhThiPhan where
           1
           Self
           (ReactionAbility
-            (CommittedCards Timing.After (InvestigatorAt YourLocation) AnyCards)
+            (CommittedCard Timing.After (InvestigatorAt YourLocation) AnyCard)
             Free
           )
         & (abilityLimitL .~ PerInvestigatorLimit PerRound 1)
@@ -61,7 +61,7 @@ instance HasTokenValue env MinhThiPhan where
 -- TODO: Should we let card selection for ability
 instance (InvestigatorRunner env) => RunMessage env MinhThiPhan where
   runMessage msg i@(MinhThiPhan attrs) = case msg of
-    UseCardAbility _ source [Window _ (Window.CommittedCards _ (card : _))] 1 _
+    UseCardAbility _ source [Window _ (Window.CommittedCard _ card)] 1 _
       | isSource attrs source -> i <$ push
         (CreateEffect
           (unInvestigatorId $ toId attrs)

@@ -9,9 +9,9 @@
         @choose="$emit('choose', $event)"
       />
       <CommittedSkills
-        v-if="skills.length > 0"
+        v-if="(game.skillTest?.committedCards?.length || 0) > 0"
         :game="game"
-        :cards="skills"
+        :cards="game.skillTest.committedCards"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />

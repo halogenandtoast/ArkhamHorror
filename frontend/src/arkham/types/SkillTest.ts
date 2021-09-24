@@ -1,6 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
+import { Card, cardDecoder} from '@/arkham/types/Card';
 
 export interface Source {
   tag: string;
@@ -18,7 +19,7 @@ export interface SkillTest {
   difficulty: number;
   setAsideTokens: ChaosToken[];
   // result: SkillTestResult;
-  // committedCards: Card[];
+  committedCards: Card[]
   source: Source;
 }
 
@@ -36,7 +37,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     difficulty: JsonDecoder.number,
     setAsideTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     // result: skillTestResultDecoder,
-    // committedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+    committedCards: JsonDecoder.dictionary(JsonDecoder.tuple([JsonDecoder.string, cardDecoder], '[string, Card]'), 'Record<string, [string, Card]>').map((record) => Object.values(record).map(([,card]) => card)),
     source: sourceDecoder,
   },
   'SkillTest',

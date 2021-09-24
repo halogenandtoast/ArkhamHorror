@@ -324,7 +324,7 @@ data Message
       Investigate InvestigatorId LocationId Source (Maybe Target) SkillType Bool
     | -- | uses the internal method and then checks defeat
       InvestigatorAssignDamage InvestigatorId Source DamageStrategy Int Int
-    | InvestigatorCommittedCard InvestigatorId CardId
+    | InvestigatorCommittedCard InvestigatorId Card
     | InvestigatorCommittedSkill InvestigatorId SkillId
     | InvestigatorDamage InvestigatorId Source Int Int
     | InvestigatorDamageEnemy InvestigatorId EnemyId Source

@@ -196,6 +196,9 @@ physicalTraumaL =
 instance HasTraits InvestigatorAttrs where
   toTraits = investigatorTraits
 
+instance ToGameLoggerFormat InvestigatorAttrs where
+  format = display . toName
+
 instance ToJSON InvestigatorAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "investigator"
   toEncoding = genericToEncoding $ aesonOptions $ Just "investigator"
@@ -1516,6 +1519,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
       else pure a
   PlayedCard iid card | iid == investigatorId -> do
+    send $ format a <> " played " <> format card
     pushAll =<< checkWindows [Window Timing.After (Window.PlayCard iid card)]
     pure $ a & handL %~ filter (/= card) & discardL %~ filter
       ((/= card) . PlayerCard)

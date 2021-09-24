@@ -439,3 +439,6 @@ getHasSpendableClues i = (> 0) <$> getSpendableClueCount (toAttrs i)
 
 actionsRemaining :: Investigator -> Int
 actionsRemaining = investigatorRemainingActions . toAttrs
+
+instance ToGameLoggerFormat Investigator where
+  format = display . toName

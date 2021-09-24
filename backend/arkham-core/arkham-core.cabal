@@ -197,6 +197,7 @@ library
       Arkham.Types.Asset.Cards.ConstanceDumaine
       Arkham.Types.Asset.Cards.DaisysToteBag
       Arkham.Types.Asset.Cards.DaisysToteBagAdvanced
+      Arkham.Types.Asset.Cards.DarioElAmin
       Arkham.Types.Asset.Cards.DarkHorse
       Arkham.Types.Asset.Cards.DavidRenfield
       Arkham.Types.Asset.Cards.DigDeep

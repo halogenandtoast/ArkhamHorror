@@ -1472,7 +1472,16 @@ charlesRossEsq = (asset
                  )
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Ally, Patron]
+  , cdUnique = True
   }
+
+darioElAmin :: CardDef
+darioElAmin =
+  (asset "03151" ("Dario El-Amin" <:> "Unscrupulous Investor") 4 Rogue)
+    { cdSkills = [SkillIntellect]
+    , cdCardTraits = setFromList [Ally, Patron]
+    , cdUnique = True
+    }
 
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker

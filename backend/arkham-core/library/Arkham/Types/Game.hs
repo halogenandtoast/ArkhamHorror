@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes hiding (discard)
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -109,6 +109,7 @@ data GameEnv = GameEnv
   { gameEnvGame :: Game
   , gameEnvQueue :: IORef [Message]
   , gameRandomGen :: IORef StdGen
+  , gameLogger :: Text -> IO ()
   }
 
 instance HasStdGen GameEnv where
@@ -120,17 +121,27 @@ instance HasGame GameEnv where
 instance HasQueue GameEnv where
   messageQueue = lens gameEnvQueue $ \m x -> m { gameEnvQueue = x }
 
+instance HasGameLogger GameEnv where
+  gameLoggerL = lens gameLogger $ \m x -> m { gameLogger = x }
+
 instance HasGame Game where
   gameL = lens id $ \_ x -> x
 
 toGameEnv
-  :: (HasGameRef env, HasQueue env, HasStdGen env, MonadReader env m, MonadIO m)
+  :: ( HasGameRef env
+     , HasQueue env
+     , HasStdGen env
+     , HasGameLogger env
+     , MonadReader env m
+     , MonadIO m
+     )
   => m GameEnv
 toGameEnv = do
   game <- readIORef =<< view gameRefL
   gen <- view genL
   queueRef <- view messageQueue
-  pure $ GameEnv game queueRef gen
+  logger <- view gameLoggerL
+  pure $ GameEnv game queueRef gen logger
 
 instance MonadRandom GameEnvT where
   getRandomR lohi = do
@@ -156,9 +167,6 @@ class HasGame a where
 
 class HasStdGen a where
   genL :: Lens' a (IORef StdGen)
-
-class HasMessageLogger a where
-  messageLoggerL :: Lens' a (Message -> IO ())
 
 getGame :: (HasGame env, MonadReader env m) => m Game
 getGame = view gameL
@@ -2843,6 +2851,7 @@ runGameMessage
      , MonadIO m
      , HasGame env
      , HasAbilities env
+     , HasGameLogger env
      )
   => Message
   -> Game

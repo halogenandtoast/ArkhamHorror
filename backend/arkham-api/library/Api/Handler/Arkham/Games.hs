@@ -296,12 +296,10 @@ newtype RawGameJsonPut = RawGameJsonPut
   deriving anyclass FromJSON
 
 handleMessageLog
-  :: MonadIO m => IORef [Text] -> TChan BSL.ByteString -> Message -> m ()
-handleMessageLog logRef writeChannel msg = case toHumanReadable msg of
-  Nothing -> pure ()
-  Just readableMsg -> liftIO $ do
-    atomicModifyIORef' logRef (\logs -> (logs <> [readableMsg], ()))
-    atomically $ writeTChan writeChannel (encode $ GameMessage readableMsg)
+  :: MonadIO m => IORef [Text] -> TChan BSL.ByteString -> Text -> m ()
+handleMessageLog logRef writeChannel msg = liftIO $ do
+  atomicModifyIORef' logRef (\logs -> (logs <> [msg], ()))
+  atomically $ writeTChan writeChannel (encode $ GameMessage msg)
 
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameRawR gameId = do

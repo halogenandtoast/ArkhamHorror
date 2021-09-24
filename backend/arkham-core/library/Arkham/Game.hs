@@ -210,12 +210,11 @@ runMessages
      , HasStdGen env
      , HasQueue env
      , MonadReader env m
-     , HasMessageLogger env
+     , HasGameLogger env
      )
   => Bool
   -> m ()
 runMessages isReplay = do
-  logger <- view messageLoggerL
   gameRef <- view gameRefL
   queueRef <- view messageQueue
   g <- liftIO $ readIORef gameRef
@@ -303,5 +302,4 @@ runMessages isReplay = do
               atomicWriteIORef gameRef g'
               g'' <- toGameEnv >>= flip runGameEnvT (runMessage msg g')
               atomicWriteIORef gameRef g''
-              liftIO $ logger msg
               runMessages isReplay

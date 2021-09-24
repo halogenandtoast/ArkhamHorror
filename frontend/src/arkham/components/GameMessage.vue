@@ -10,7 +10,7 @@ export default defineComponent({
   render() {
     const splits = this.msg.split(/({[^}]+})/)
     const els = splits.map(split => {
-      if (/{card:"([^"]+)":"([^"]+)":"([^"]+)"}/.test(split)) {
+      if (/{card:"((?:[^"]|\\.)+)":"([^"]+)":"([^"]+)"}/.test(split)) {
         const found = split.match(/{card:"([^"]+)":"([^"]+)":"([^"]+)"}/)
         if (found) {
           const [, cardName, cardId] = found
@@ -18,13 +18,14 @@ export default defineComponent({
             return h('span', { 'data-image-id': cardId }, cardName)
           }
         }
-      } else if (/{investigator:"([^"]+)"}/.test(split)) {
-        const found = split.match(/{investigator:"([^"]+)"}/)
+      } else if (/{investigator:"((?:[^"]|\\.)+)":"([^"]+)"}/.test(split)) {
+        console.log(split)
+        console.log(/{investigator:"((?:[^"]|\\.)+)":"([^"]+)"}/.test(split))
+        const found = split.match(/{investigator:"((?:[^"]|\\.)+)":"([^"]+)"}/)
         if (found) {
-          const [, investigatorId ] = found
+          const [, name, investigatorId ] = found
           if (investigatorId) {
-            const name = this.game.investigators[investigatorId]?.contents?.name
-            return name ? h('span', { 'data-image-id': investigatorId }, name.title) : split
+            return name ? h('span', { 'data-image-id': investigatorId }, name.replace(/\\"/g, "\"")) : split
           }
         }
       }

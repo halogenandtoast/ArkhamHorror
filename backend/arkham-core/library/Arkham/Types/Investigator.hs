@@ -441,4 +441,4 @@ actionsRemaining :: Investigator -> Int
 actionsRemaining = investigatorRemainingActions . toAttrs
 
 instance ToGameLoggerFormat Investigator where
-  format = display . toName
+  format = format . toAttrs

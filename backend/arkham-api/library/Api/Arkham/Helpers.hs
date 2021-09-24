@@ -10,7 +10,6 @@ import Arkham.Types.Classes hiding (Entity(..))
 import Arkham.Types.Game
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Control.Lens
 import Control.Monad.Fail
 import Control.Monad.Random (MonadRandom(..), StdGen, mkStdGen)
@@ -34,10 +33,10 @@ data GameApp = GameApp
   { appGame :: IORef Game
   , appQueue :: IORef [Message]
   , appGen :: IORef StdGen
-  , appLogger :: Message -> IO ()
+  , appLogger :: Text -> IO ()
   }
 
-newApp :: MonadIO m => Game -> (Message -> IO ()) -> [Message] -> m GameApp
+newApp :: MonadIO m => Game -> (Text -> IO ()) -> [Message] -> m GameApp
 newApp g logger msgs = do
   gameRef <- newIORef g
   queueRef <- newIORef msgs
@@ -53,13 +52,13 @@ instance HasGameRef GameApp where
 instance HasQueue GameApp where
   messageQueue = lens appQueue $ \m x -> m { appQueue = x }
 
-instance HasMessageLogger GameApp where
-  messageLoggerL = lens appLogger $ \m x -> m { appLogger = x }
+instance HasGameLogger GameApp where
+  gameLoggerL = lens appLogger $ \m x -> m { appLogger = x }
 
 runGameApp :: MonadIO m => GameApp -> GameAppT a -> m a
 runGameApp gameApp = liftIO . flip runReaderT gameApp . unGameAppT
 
-noLogger :: Applicative m => Message -> m ()
+noLogger :: Applicative m => Text -> m ()
 noLogger = const (pure ())
 
 getChannel :: ArkhamGameId -> Handler (TChan BSL.ByteString)
@@ -81,7 +80,7 @@ newtype ArkhamDBDecklistMeta = ArkhamDBDecklistMeta { alternate_front :: Investi
 loadDecklistCards :: ArkhamDBDecklist -> IO [PlayerCard]
 loadDecklistCards decklist =
   flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' ->
-      replicateM count' (genPlayerCard (lookupPlayerCardDef cardCode))
+    replicateM count' (genPlayerCard (lookupPlayerCardDef cardCode))
 
 loadDecklist :: ArkhamDeck -> IO (InvestigatorId, [PlayerCard])
 loadDecklist arkhamDeck = (investigatorId, ) <$> loadDecklistCards decklist
@@ -109,76 +108,3 @@ displayCardType = \case
   EnemyType -> "enemy"
   LocationType -> "location"
   EncounterAssetType -> "asset"
-
-toHumanReadable :: Message -> Maybe Text
-toHumanReadable = \case
-  BeginEnemy -> Just "Begin enemy phase"
-  BeginInvestigation -> Just "Begin investigation phase"
-  BeginMythos -> Just "Begin mythos phase"
-  BeginUpkeep -> Just "Begin upkeep phase"
-  StartScenario name _ -> Just $ "Begin scenario " <> display name
-  PlayedCard iid card' -> Just $ investigator iid <> " played " <> card
-    (toName card')
-    (toCardCode card')
-    (toCardId card')
-  InvestigatorMulligan iid ->
-    Just $ investigator iid <> " deciding on mulligan"
-  FinishedWithMulligan iid -> Just $ investigator iid <> " done with mulligan"
-  TakeStartingResources iid ->
-    Just $ investigator iid <> " took starting resources"
-  ShuffleDiscardBackIn iid ->
-    Just $ investigator iid <> " shuffles discarded cards back into deck"
-  PlacedLocation name cardCode cardId ->
-    Just $ card name cardCode cardId <> " was placed"
-  BeginTurn iid -> Just $ "Begin " <> investigator iid <> "'s turn"
-  After _ -> Nothing
-  FlavorText{} -> Nothing
-  CheckWindow{} -> Nothing
-  EndCheckWindow{} -> Nothing
-  ChoosePlayerOrder{} -> Nothing
-  Continue{} -> Nothing
-  NextCampaignStep{} -> Nothing
-  CampaignStep{} -> Nothing
-  ResetGame -> Nothing
-  LoadDeck{} -> Nothing
-  Run{} -> Nothing
-  ChooseLeadInvestigator{} -> Nothing
-  SetupInvestigators{} -> Nothing
-  PutCardIntoPlay{} -> Nothing
-  InvestigatorPlayAsset{} -> Nothing
-  SetTokensForScenario{} -> Nothing
-  SetTokens{} -> Nothing
-  Setup{} -> Nothing
-  EndSetup{} -> Nothing
-  SetEncounterDeck{} -> Nothing
-  AddAgenda{} -> Nothing
-  AddAct{} -> Nothing
-  PlaceLocation{} -> Nothing
-  AddConnection{} -> Nothing
-  RevealLocation{} -> Nothing
-  RunBag{} -> Nothing
-  NextChaosBagStep{} -> Nothing
-  TriggerSkillTest{} -> Nothing
-  RequestTokens{} -> Nothing
-  FocusTokens{} -> Nothing
-  UnfocusTokens{} -> Nothing
-  When{} -> Nothing
-  RevealSkillTestTokens{} -> Nothing
-  RevealToken{} -> Nothing
-  Will{} -> Nothing
-  AddedConnection{} -> Nothing
-  SetLocationLabel{} -> Nothing
-  CreateStoryAssetAt{} -> Nothing
-  ShuffleIntoEncounterDeck{} -> Nothing
-  CreateEnemyAt{} -> Nothing
-  msg -> Just $ tshow msg
- where
-  investigator iid = "{investigator:" <> tshow iid <> "}"
-  card name cardCode cardId =
-    "{card:\""
-      <> display name
-      <> "\":"
-      <> tshow cardCode
-      <> ":\""
-      <> tshow cardId
-      <> "\"}"

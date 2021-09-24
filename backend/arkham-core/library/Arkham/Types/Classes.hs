@@ -12,6 +12,7 @@ import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes.Entity as X
+import Arkham.Types.Classes.GameLogger as X
 import Arkham.Types.Classes.HasQueue as X
 import Arkham.Types.Classes.HasRecord as X
 import Arkham.Types.Classes.HasTokenValue as X

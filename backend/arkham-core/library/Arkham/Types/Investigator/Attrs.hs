@@ -693,7 +693,7 @@ getAsIfInHandCards attrs = do
     (zip (investigatorDiscard attrs) [0 :: Int ..])
 
 runInvestigatorMessage
-  :: (InvestigatorRunner env, MonadReader env m, MonadRandom m, MonadIO m)
+  :: (InvestigatorRunner env, MonadReader env m, MonadRandom m, MonadIO m, HasGameLogger env)
   => Message
   -> InvestigatorAttrs
   -> m InvestigatorAttrs

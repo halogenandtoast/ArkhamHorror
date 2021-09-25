@@ -121,6 +121,7 @@ data Effect
   | TheKingsEdict' TheKingsEdict
   | MrPeabody' MrPeabody
   | CharlesRossEsq' CharlesRossEsq
+  | StormOfSpirits' StormOfSpirits
   | MeatCleaver' MeatCleaver
   | MindWipe3' MindWipe3
   | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
@@ -251,6 +252,7 @@ allEffects = mapFromList
   , ("03100", TheKingsEdict' . theKingsEdict)
   , ("03141", MrPeabody' . mrPeabody)
   , ("03149", CharlesRossEsq' . charlesRossEsq)
+  , ("03153", StormOfSpirits' . stormOfSpirits)
   , ("05114", MeatCleaver' . meatCleaver)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)

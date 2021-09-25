@@ -19,8 +19,6 @@ export default defineComponent({
           }
         }
       } else if (/{investigator:"((?:[^"]|\\.)+)":"([^"]+)"}/.test(split)) {
-        console.log(split)
-        console.log(/{investigator:"((?:[^"]|\\.)+)":"([^"]+)"}/.test(split))
         const found = split.match(/{investigator:"((?:[^"]|\\.)+)":"([^"]+)"}/)
         if (found) {
           const [, name, investigatorId ] = found

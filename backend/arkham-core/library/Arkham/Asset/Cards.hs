@@ -106,6 +106,7 @@ allPlayerAssetCards = mapFromList $ map
   , beatCop2
   , blackjack
   , bloodPact3
+  , bookOfShadows1
   , bookOfShadows3
   , brotherXavier1
   , bulletproofVest3
@@ -1483,6 +1484,12 @@ darioElAmin =
     , cdCardTraits = setFromList [Ally, Patron]
     , cdUnique = True
     }
+
+bookOfShadows1 :: CardDef
+bookOfShadows1 = (asset "03154" "Book of Shadows" 3 Mystic)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Item, Tome]
+  }
 
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker

@@ -643,7 +643,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
                <> afterWindows
                )
     Successful (Action.Fight, _) iid source target | isTarget a target -> do
-      a <$ push (InvestigatorDamageEnemy iid enemyId WithAdditionalDamage source)
+      a <$ push (InvestigatorDamageEnemy iid enemyId source)
     After (FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ n)
       | isTarget a target
       -> do
@@ -724,15 +724,19 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
     EnemySetDamage eid _ amount | eid == enemyId -> pure $ a & damageL .~ amount
     EnemyDamage eid iid source damageEffect amount | eid == enemyId -> do
       canDamage <- sourceCanDamageEnemy eid source
+      a <$ when canDamage do
+        amount' <- getModifiedDamageAmount a amount
+        push (DirectEnemyDamage eid iid source damageEffect amount')
+    DirectEnemyDamage eid iid source damageEffect amount | eid == enemyId -> do
+      canDamage <- sourceCanDamageEnemy eid source
       if canDamage
        then do
-        amount' <- getModifiedDamageAmount a amount
         modifiedHealth <- getModifiedHealth a
         damageWhenMsgs <- checkWindows
           [Window Timing.When (Window.DealtDamage source damageEffect $ toTarget a)]
         damageAfterMsgs <- checkWindows
           [Window Timing.After (Window.DealtDamage source damageEffect $ toTarget a)]
-        when (a ^. damageL + amount' >= modifiedHealth) $ do
+        when (a ^. damageL + amount >= modifiedHealth) $ do
           whenMsgs <- checkWindows
             [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
           afterMsgs <- checkWindows
@@ -749,7 +753,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
                    (setToList $ toTraits a)
                ]
         pushAll $ damageWhenMsgs <> damageAfterMsgs
-        pure $ a & damageL +~ amount'
+        pure $ a & damageL +~ amount
        else pure a
     DefeatEnemy eid iid source | eid == enemyId -> a <$ push
       (EnemyDefeated

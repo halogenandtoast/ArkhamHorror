@@ -263,6 +263,8 @@ data Message
     | EnemyAttacks [Message]
     | EnemyCheckEngagement EnemyId
     | EnemyDamage EnemyId InvestigatorId Source DamageEffect Int
+    | -- Used after modified amount has been determined
+      DirectEnemyDamage EnemyId InvestigatorId Source DamageEffect Int
     | EnemySetDamage EnemyId Source Int
     | DefeatEnemy EnemyId InvestigatorId Source
     | EnemyDefeated EnemyId InvestigatorId LocationId CardCode Source [Trait]

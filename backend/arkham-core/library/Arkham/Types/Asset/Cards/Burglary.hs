@@ -26,8 +26,8 @@ burglary = asset Burglary Cards.burglary
 instance HasAbilities Burglary where
   getAbilities (Burglary a) =
     [ restrictedAbility a 1 OwnsThis
-      $ ActionAbility (Just Action.Investigate)
-      $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
+        $ ActionAbility (Just Action.Investigate)
+        $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
     ]
 
 instance AssetRunner env => RunMessage env Burglary where
@@ -44,6 +44,6 @@ instance AssetRunner env => RunMessage env Burglary where
                SkillIntellect
                False
              )
-    SuccessfulInvestigation iid _ _ target | isTarget attrs target ->
+    Successful (Action.Investigate, _) iid _ target | isTarget attrs target ->
       a <$ pushAll [TakeResources iid 3 False]
     _ -> Burglary <$> runMessage msg attrs

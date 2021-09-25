@@ -52,14 +52,13 @@ instance HasCount ClueCount env EnemyId => HasModifiersFor env EsotericFormula w
 
 instance AssetRunner env => RunMessage env EsotericFormula where
   runMessage msg a@(EsotericFormula attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a
-        <$ push
-             (ChooseFightEnemy
-               iid
-               source
-               SkillWillpower
-               (singleton Abomination)
-               False
-             )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+      (ChooseFightEnemy
+        iid
+        source
+        Nothing
+        SkillWillpower
+        (singleton Abomination)
+        False
+      )
     _ -> EsotericFormula <$> runMessage msg attrs

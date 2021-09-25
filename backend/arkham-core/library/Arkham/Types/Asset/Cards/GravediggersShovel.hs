@@ -41,7 +41,7 @@ instance AssetRunner env => RunMessage env GravediggersShovel where
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillCombat 2)
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ push (InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing)

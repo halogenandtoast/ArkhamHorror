@@ -195,6 +195,7 @@ data EnemyMatcher
   | NonWeaknessEnemy
   | EnemyMatchAll [EnemyMatcher]
   | EnemyEngagedWithYou
+  | EnemyNotEngagedWithYou
   | EnemyWithMostRemainingHealth EnemyMatcher
   | EnemyWithoutModifier ModifierType
   | UnengagedEnemy

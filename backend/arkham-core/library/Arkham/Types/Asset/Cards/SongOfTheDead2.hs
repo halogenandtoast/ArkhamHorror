@@ -41,6 +41,6 @@ instance AssetRunner env => RunMessage env SongOfTheDead2 where
         (InvestigatorTarget iid)
         (SkillModifier SkillWillpower 1)
       , CreateEffect "02112" Nothing source (InvestigatorTarget iid)
-      , ChooseFightEnemy iid source SkillWillpower mempty False
+      , ChooseFightEnemy iid source Nothing SkillWillpower mempty False
       ]
     _ -> SongOfTheDead2 <$> runMessage msg attrs

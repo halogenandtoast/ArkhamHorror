@@ -54,6 +54,6 @@ instance EnemyRunner env => RunMessage env TheManInThePallidMask where
           SkillIntellect
           False
         ]
-    SuccessfulInvestigation iid _ _ target | isTarget attrs target ->
+    Successful (Action.Investigate, _) iid _ target | isTarget attrs target ->
       e <$ push (DefeatEnemy (toId attrs) iid (toSource attrs))
     _ -> TheManInThePallidMask <$> runMessage msg attrs

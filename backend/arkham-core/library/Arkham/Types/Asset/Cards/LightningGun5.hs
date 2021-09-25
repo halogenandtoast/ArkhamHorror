@@ -44,7 +44,7 @@ instance AssetRunner env => RunMessage env LightningGun5 where
           attrs
           (InvestigatorTarget iid)
           [DamageDealt 2, SkillModifier SkillCombat 5]
-        , ChooseFightEnemy iid source SkillCombat mempty False
+        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
         ]
       pure $ LightningGun5 $ attrs & usesL %~ Resource.use
     _ -> LightningGun5 <$> runMessage msg attrs

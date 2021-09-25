@@ -961,7 +961,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (CardIdTarget cid) ->
     pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
-  ChooseFightEnemy iid source skillType traits isAction
+  ChooseFightEnemy iid source mTarget skillType traits isAction
     | iid == investigatorId -> do
       enemyIds <- map unFightableEnemyId <$> getSetList (iid, source)
       if null traits
@@ -969,7 +969,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           a <$ push
             (chooseOne
               iid
-              [ FightEnemy iid eid source skillType isAction | eid <- enemyIds ]
+              [ FightEnemy iid eid source mTarget skillType isAction | eid <- enemyIds ]
             )
         else do
           validEnemies <- filterM
@@ -978,11 +978,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           a <$ push
             (chooseOne
               iid
-              [ FightEnemy iid eid source skillType isAction
+              [ FightEnemy iid eid source mTarget skillType isAction
               | eid <- validEnemies
               ]
             )
-  ChooseFightEnemyNotEngagedWithInvestigator iid source skillType isAction
+  ChooseFightEnemyNotEngagedWithInvestigator iid source mTarget skillType isAction
     | iid == investigatorId -> do
       enemyIds <- select $ EnemyAt $ LocationWithId investigatorLocation
       aloofEnemyIds <- select $ AloofEnemy <> EnemyAt (LocationWithId investigatorLocation)
@@ -993,7 +993,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       a <$ push
         (chooseOne
           iid
-          [ FightEnemy iid eid source skillType isAction
+          [ FightEnemy iid eid source mTarget skillType isAction
           | eid <- setToList fightableEnemyIds
           ]
         )
@@ -1008,7 +1008,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & engagedEnemiesL %~ insertSet eid
   EngageEnemy iid eid False | iid /= investigatorId ->
     pure $ a & engagedEnemiesL %~ deleteSet eid
-  FightEnemy iid eid source skillType True | iid == investigatorId -> do
+  FightEnemy iid eid source mTarget skillType True | iid == investigatorId -> do
     modifiers' <- getModifiers (EnemySource eid) (toTarget a)
     let
       takenActions = setFromList @(HashSet Action) investigatorActionsTaken
@@ -1027,10 +1027,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         iid
         (Just Action.Fight)
         (foldl' applyFightCostModifiers (ActionCost 1) modifiers')
-      , FightEnemy iid eid source skillType False
+      , FightEnemy iid eid source mTarget skillType False
       ]
-  FightEnemy iid eid source skillType False | iid == investigatorId -> do
-    a <$ push (AttackEnemy iid eid source skillType)
+  FightEnemy iid eid source mTarget skillType False | iid == investigatorId -> do
+    a <$ push (AttackEnemy iid eid source mTarget skillType)
   FailedAttackEnemy iid eid | iid == investigatorId -> do
     doesNotDamageOtherInvestigators <- hasModifier
       a

@@ -43,6 +43,6 @@ instance AssetRunner env => RunMessage env EighteenDerringer where
         (InvestigatorTarget iid)
         [DamageDealt 1, SkillModifier SkillCombat 2]
       , CreateEffect (toCardCode attrs) Nothing source (toTarget attrs)
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     _ -> EighteenDerringer <$> runMessage msg attrs

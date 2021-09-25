@@ -45,6 +45,6 @@ instance AssetRunner env => RunMessage env JennysTwin45s where
         attrs
         (InvestigatorTarget iid)
         [DamageDealt 1, SkillModifier SkillCombat 2]
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     _ -> JennysTwin45s <$> runMessage msg attrs

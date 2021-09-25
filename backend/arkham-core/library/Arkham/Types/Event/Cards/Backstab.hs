@@ -29,7 +29,7 @@ instance HasQueue env => RunMessage env Backstab where
   runMessage msg e@(Backstab attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
       e <$ pushAll
-        [ ChooseFightEnemy iid (EventSource eid) SkillAgility mempty False
+        [ ChooseFightEnemy iid (EventSource eid) Nothing SkillAgility mempty False
         , Discard (EventTarget eid)
         ]
     _ -> Backstab <$> runMessage msg attrs

@@ -43,7 +43,7 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillCombat 3)
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source

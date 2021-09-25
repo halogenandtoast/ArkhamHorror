@@ -59,6 +59,6 @@ instance
       a <$ pushAll
         [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
         , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillWillpower mempty False
+        , ChooseFightEnemy iid source Nothing SkillWillpower mempty False
         ]
     _ -> AlchemicalConcoction <$> runMessage msg attrs

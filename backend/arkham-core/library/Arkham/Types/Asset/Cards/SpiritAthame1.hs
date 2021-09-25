@@ -52,6 +52,6 @@ instance AssetRunner env => RunMessage env SpiritAthame1 where
         source
         (InvestigatorTarget iid)
         (SkillModifier SkillCombat 2)
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     _ -> SpiritAthame1 <$> runMessage msg attrs

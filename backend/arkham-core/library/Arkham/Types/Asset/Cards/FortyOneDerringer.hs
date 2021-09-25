@@ -41,7 +41,7 @@ instance AssetRunner env => RunMessage env FortyOneDerringer where
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillCombat 2)
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ n
       | isSource attrs source && n >= 2

@@ -625,7 +625,9 @@ library
       Arkham.Types.Event.Cards.Shortcut
       Arkham.Types.Event.Cards.SleightOfHand
       Arkham.Types.Event.Cards.SneakAttack
+      Arkham.Types.Event.Cards.SneakAttack2
       Arkham.Types.Event.Cards.StandTogether3
+      Arkham.Types.Event.Cards.StormOfSpirits
       Arkham.Types.Event.Cards.SureGamble3
       Arkham.Types.Event.Cards.Taunt
       Arkham.Types.Event.Cards.Taunt2

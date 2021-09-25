@@ -50,6 +50,6 @@ instance AssetRunner env => RunMessage env TrenchKnife where
           attrs
           (InvestigatorTarget iid)
           (SkillModifier SkillCombat enemyCount)
-        , ChooseFightEnemy iid source SkillCombat mempty False
+        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
         ]
     _ -> TrenchKnife <$> runMessage msg attrs

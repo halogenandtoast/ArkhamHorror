@@ -56,7 +56,7 @@ instance TreacheryRunner env => RunMessage env SpiresOfCarcosa where
                SkillIntellect
                False
              )
-    SuccessfulInvestigation _ _ _ target | isTarget attrs target -> do
+    Successful (Action.Investigate, _) _ _ target | isTarget attrs target -> do
       case treacheryAttachedTarget attrs of
         Just location -> t <$ push (RemoveDoom location 1)
         Nothing -> error "must be attached to location to trigger ability"

@@ -42,13 +42,13 @@ instance (AssetRunner env) => RunMessage env Knife where
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillCombat 1)
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers
         attrs
         (InvestigatorTarget iid)
         [SkillModifier SkillCombat 2, DamageDealt 1]
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     _ -> Knife <$> runMessage msg attrs

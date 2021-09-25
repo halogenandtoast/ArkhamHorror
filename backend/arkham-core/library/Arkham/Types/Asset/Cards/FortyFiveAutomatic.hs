@@ -41,6 +41,6 @@ instance AssetRunner env => RunMessage env FortyFiveAutomatic where
         attrs
         (InvestigatorTarget iid)
         [DamageDealt 1, SkillModifier SkillCombat 1]
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     _ -> FortyFiveAutomatic <$> runMessage msg attrs

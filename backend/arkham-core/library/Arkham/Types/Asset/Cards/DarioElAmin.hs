@@ -26,7 +26,7 @@ newtype DarioElAmin = DarioElAmin AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darioElAmin :: AssetCard DarioElAmin
-darioElAmin = asset DarioElAmin Cards.darioElAmin
+darioElAmin = ally DarioElAmin Cards.darioElAmin (2, 2)
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env DarioElAmin where
   getModifiersFor _ (InvestigatorTarget iid) (DarioElAmin attrs)

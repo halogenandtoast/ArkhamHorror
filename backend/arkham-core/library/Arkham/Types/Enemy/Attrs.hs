@@ -601,13 +601,17 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
           $ map (\iid -> EnemyWillAttack iid enemyId DamageAny)
           $ setToList enemyEngagedInvestigators
         pure a
-    AttackEnemy iid eid source skillType | eid == enemyId -> do
+    AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
       enemyFight' <- modifiedEnemyFight a
       a <$ push
         (BeginSkillTest
           iid
           source
-          (EnemyTarget eid)
+          (maybe
+            (EnemyTarget eid)
+            (ProxyTarget (EnemyTarget eid))
+            mTarget
+          )
           (Just Action.Fight)
           skillType
           enemyFight'
@@ -839,7 +843,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid source _ 100 _ | isSource a source ->
       a <$ push
-        (FightEnemy iid (toId a) (InvestigatorSource iid) SkillCombat False)
+        (FightEnemy iid (toId a) (InvestigatorSource iid) Nothing SkillCombat False)
     UseCardAbility iid source _ 101 _ | isSource a source -> a <$ push
       (EvadeEnemy iid (toId a) (InvestigatorSource iid) SkillAgility False)
     UseCardAbility iid source _ 102 _ | isSource a source ->

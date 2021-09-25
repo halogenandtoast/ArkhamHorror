@@ -433,10 +433,10 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _ _
       | isTarget a target
       -> a <$ push (Successful (Action.Investigate, target) iid source target)
-    PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget proxy@(ProxyTarget target _)) _ _
+    PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget (ProxyTarget target investigationTarget)) _ _
       | isTarget a target
       -> a <$ push
-        (Successful (Action.Investigate, target) iid source proxy)
+        (Successful (Action.Investigate, target) iid source investigationTarget)
     Successful (Action.Investigate, _) iid _ target | isTarget a target -> do
       let lid = toId a
       modifiers' <- getModifiers (InvestigatorSource iid) (LocationTarget lid)

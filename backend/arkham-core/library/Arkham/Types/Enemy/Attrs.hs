@@ -626,9 +626,24 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         a
           <$ pushAll
                (whenWindows
-               <> [InvestigatorDamageEnemy iid enemyId source]
+               <> [Successful (Action.Fight, target) iid source target]
                <> afterWindows
                )
+    After (PassedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget (ProxyTarget target fightTarget)) _ n)
+      | isTarget a target
+      -> do
+        whenWindows <- checkWindows
+          [Window Timing.When (Window.SuccessfulAttackEnemy iid enemyId n)]
+        afterWindows <- checkWindows
+          [Window Timing.After (Window.SuccessfulAttackEnemy iid enemyId n)]
+        a
+          <$ pushAll
+               (whenWindows
+               <> [Successful (Action.Fight, target) iid source fightTarget]
+               <> afterWindows
+               )
+    Successful (Action.Fight, _) iid source target | isTarget a target -> do
+      a <$ push (InvestigatorDamageEnemy iid enemyId WithAdditionalDamage source)
     After (FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ n)
       | isTarget a target
       -> do
@@ -871,6 +886,8 @@ filterOutEnemyMessages eid (Ask iid q) = case q of
     [] -> Nothing
     x -> Just (Ask iid $ ChooseOneAtATime x)
   ChooseUpgradeDeck -> Just (Ask iid ChooseUpgradeDeck)
+  choose@ChoosePaymentAmounts {}-> Just (Ask iid choose)
+  choose@ChooseDynamicCardAmounts {} -> Just (Ask iid choose)
 filterOutEnemyMessages eid msg = case msg of
   EnemyAttack _ eid' _ | eid == eid' -> Nothing
   Discarded (EnemyTarget eid') _ | eid == eid' -> Nothing

@@ -6,11 +6,14 @@ module Arkham.Types.Event.Cards.StormOfSpirits
 import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
+import Arkham.Types.Target
 
 newtype StormOfSpirits = StormOfSpirits EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
@@ -31,4 +34,19 @@ instance EventRunner env => RunMessage env StormOfSpirits where
             mempty
             False
         ]
+    Successful (Action.Fight, EnemyTarget eid) iid _ target
+      | isTarget attrs target -> do
+        enemies <- selectList $ EnemyAt YourLocation
+        let
+          additionalDamage eid' = if eid == eid'
+            then WithAdditionalDamage
+            else WithoutAdditionalDamage
+        e <$ pushAll
+          [ InvestigatorDamageEnemy
+              iid
+              eid'
+              (additionalDamage eid')
+              (toSource attrs)
+          | eid' <- enemies
+          ]
     _ -> StormOfSpirits <$> runMessage msg attrs

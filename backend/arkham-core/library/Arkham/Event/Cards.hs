@@ -791,6 +791,7 @@ sneakAttack2 :: CardDef
 sneakAttack2 = (event "03152" "Sneak Attack" 2 Rogue)
   { cdSkills = [SkillIntellect, SkillCombat, SkillCombat]
   , cdCardTraits = setFromList [Tactic]
+  , cdLevel = 2
   , cdCriteria = Just
     (Criteria.EnemyCriteria
     $ Criteria.EnemyExists

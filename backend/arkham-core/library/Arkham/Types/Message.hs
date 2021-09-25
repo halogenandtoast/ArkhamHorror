@@ -160,7 +160,7 @@ data Message
     | AttachEvent EventId Target
     | AttachStoryTreacheryTo Card Target
     | AttachTreachery TreacheryId Target
-    | AttackEnemy InvestigatorId EnemyId Source SkillType
+    | AttackEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
     | BeforeRevealTokens
     | BeforeSkillTest InvestigatorId SkillType Int
     | BeginEnemy
@@ -189,8 +189,8 @@ data Message
     | ChooseAndDiscardCard InvestigatorId
     | ChooseEndTurn InvestigatorId
     | ChooseEvadeEnemy InvestigatorId Source SkillType Bool
-    | ChooseFightEnemy InvestigatorId Source SkillType (HashSet Trait) Bool
-    | ChooseFightEnemyNotEngagedWithInvestigator InvestigatorId Source SkillType Bool
+    | ChooseFightEnemy InvestigatorId Source (Maybe Target) SkillType (HashSet Trait) Bool
+    | ChooseFightEnemyNotEngagedWithInvestigator InvestigatorId Source (Maybe Target) SkillType Bool
     | ChooseLeadInvestigator
     | StandaloneSetup
     | ChoosePlayer InvestigatorId ChoosePlayerChoice
@@ -284,7 +284,7 @@ data Message
     | FailSkillTest
     | FailedAttackEnemy InvestigatorId EnemyId
     | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int
-    | FightEnemy InvestigatorId EnemyId Source SkillType Bool
+    | FightEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
     | FindAndDrawEncounterCard InvestigatorId CardMatcher
     | FindEncounterCard InvestigatorId Target CardMatcher
     | FinishedWithMulligan InvestigatorId
@@ -518,7 +518,9 @@ data Message
     | StartCampaign
     | StartScenario Name ScenarioId
     | StartSkillTest InvestigatorId
-    | SuccessfulInvestigation InvestigatorId LocationId Source Target
+    | -- There are two targets, one associated to the action and one
+      -- to handle the result
+      Successful (Action, Target) InvestigatorId Source Target
     | SufferTrauma InvestigatorId Int Int
     | Surge InvestigatorId Source
     | TakeAction InvestigatorId (Maybe Action) Cost

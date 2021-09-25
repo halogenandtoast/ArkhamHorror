@@ -40,6 +40,6 @@ instance AssetRunner env => RunMessage env Shrivelling where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers attrs (InvestigatorTarget iid) [DamageDealt 1]
       , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
-      , ChooseFightEnemy iid source SkillWillpower mempty False
+      , ChooseFightEnemy iid source Nothing SkillWillpower mempty False
       ]
     _ -> Shrivelling <$> runMessage msg attrs

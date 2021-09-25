@@ -43,6 +43,6 @@ instance AssetRunner env => RunMessage env Machete where
           attrs
           (InvestigatorTarget iid)
           ([ DamageDealt 1 | criteriaMet ] <> [SkillModifier SkillCombat 1])
-        , ChooseFightEnemy iid source SkillCombat mempty False
+        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
         ]
     _ -> Machete <$> runMessage msg attrs

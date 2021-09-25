@@ -53,7 +53,7 @@ instance LocationRunner env => RunMessage env AlchemyLabs where
         SkillIntellect
         False
       )
-    SuccessfulInvestigation iid _ (AbilitySource source 1) _
+    Successful (Action.Investigate, _) iid (AbilitySource source 1) _
       | isSource attrs source -> do
         maid <- selectOne (assetIs Cards.alchemicalConcoction)
         l <$ case maid of

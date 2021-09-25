@@ -21,8 +21,8 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
-import Arkham.Types.Classes hiding (discard)
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes hiding (discard)
 import qualified Arkham.Types.Deck as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
@@ -1116,6 +1116,9 @@ getEnemiesMatching matcher = do
     EnemyEngagedWithYou -> \enemy -> do
       iid <- view activeInvestigatorIdL <$> getGame
       member iid <$> getSet (toId enemy)
+    EnemyNotEngagedWithYou -> \enemy -> do
+      iid <- view activeInvestigatorIdL <$> getGame
+      notMember iid <$> getSet (toId enemy)
     EnemyWithMostRemainingHealth enemyMatcher -> \enemy -> do
       matches <- getEnemiesMatching enemyMatcher
       elem enemy . maxes <$> traverse (traverseToSnd remainingHealth) matches

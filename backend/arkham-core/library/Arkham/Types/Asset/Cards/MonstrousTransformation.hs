@@ -51,6 +51,6 @@ instance (AssetRunner env) => RunMessage env MonstrousTransformation where
   runMessage msg a@(MonstrousTransformation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     _ -> MonstrousTransformation <$> runMessage msg attrs

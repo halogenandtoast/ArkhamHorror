@@ -39,7 +39,7 @@ instance AssetRunner env => RunMessage env Switchblade2 where
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillCombat 2)
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ n
       | n >= 2 && isSource attrs source

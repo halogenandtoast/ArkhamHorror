@@ -48,6 +48,6 @@ instance AssetRunner env => RunMessage env Shrivelling5 where
         source
         (InvestigatorTarget iid)
       -- ^ reusing shrivelling(0)'s effect with a damage override
-      , ChooseFightEnemy iid source SkillWillpower mempty False
+      , ChooseFightEnemy iid source Nothing SkillWillpower mempty False
       ]
     _ -> Shrivelling5 <$> runMessage msg attrs

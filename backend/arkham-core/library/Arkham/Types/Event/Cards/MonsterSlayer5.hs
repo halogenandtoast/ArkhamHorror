@@ -28,7 +28,7 @@ instance (HasSet Trait env EnemyId, HasSkillTest env) => RunMessage env MonsterS
   runMessage msg e@(MonsterSlayer5 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
       e <$ pushAll
-        [ ChooseFightEnemy iid (EventSource eid) SkillAgility mempty False
+        [ ChooseFightEnemy iid (EventSource eid) Nothing SkillAgility mempty False
         , Discard (EventTarget eid)
         ]
     PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ _

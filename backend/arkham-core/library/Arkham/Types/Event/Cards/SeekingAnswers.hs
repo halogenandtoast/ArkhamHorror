@@ -37,15 +37,16 @@ instance EventRunner env => RunMessage env SeekingAnswers where
           False
         , Discard (toTarget attrs)
         ]
-    SuccessfulInvestigation iid _ _ target | isTarget attrs target -> do
-      lids <- selectList (ConnectedLocation <> LocationWithAnyClues)
-      e <$ push
-        (chooseOne
-          iid
-          [ TargetLabel
-              (LocationTarget lid')
-              [InvestigatorDiscoverClues iid lid' 1 (Just Action.Investigate)]
-          | lid' <- lids
-          ]
-        )
+    Successful (Action.Investigate, _) iid _ target | isTarget attrs target ->
+      do
+        lids <- selectList (ConnectedLocation <> LocationWithAnyClues)
+        e <$ push
+          (chooseOne
+            iid
+            [ TargetLabel
+                (LocationTarget lid')
+                [InvestigatorDiscoverClues iid lid' 1 (Just Action.Investigate)]
+            | lid' <- lids
+            ]
+          )
     _ -> SeekingAnswers <$> runMessage msg attrs

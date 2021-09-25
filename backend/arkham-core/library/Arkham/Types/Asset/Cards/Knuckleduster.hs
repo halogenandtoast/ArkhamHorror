@@ -47,6 +47,6 @@ instance AssetRunner env => RunMessage env Knuckleduster where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ pushAll
         [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
-        , ChooseFightEnemy iid source SkillCombat mempty False
+        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
         ]
     _ -> Knuckleduster <$> runMessage msg attrs

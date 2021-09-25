@@ -47,7 +47,7 @@ enemyAttack i e = EnemyAttack (toId i) (toId e) DamageAny
 
 fightEnemy :: Investigator -> Enemy -> Message
 fightEnemy i e =
-  FightEnemy (toId i) (toId e) (TestSource mempty) SkillCombat False
+  FightEnemy (toId i) (toId e) (TestSource mempty) Nothing SkillCombat False
 
 engageEnemy :: Investigator -> Enemy -> Message
 engageEnemy i e = EngageEnemy (toId i) (toId e) False

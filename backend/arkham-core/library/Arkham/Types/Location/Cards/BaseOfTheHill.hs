@@ -57,7 +57,7 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
         SkillIntellect
         False
       )
-    SuccessfulInvestigation _ _ (AbilitySource source 1) _
+    Successful (Action.Investigate, _) _ (AbilitySource source 1) _
       | isSource attrs source -> do
         setAsideCards <- map unSetAsideCard <$> getList @SetAsideCard ()
         let

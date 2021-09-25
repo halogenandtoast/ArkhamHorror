@@ -35,7 +35,7 @@ instance HasAbilities Switchblade where
 instance (AssetRunner env) => RunMessage env Switchblade where
   runMessage msg a@(Switchblade attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ push (ChooseFightEnemy iid source SkillCombat mempty False)
+      a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)
     PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ n
       | n >= 2 && isSource attrs source
       -> a <$ push

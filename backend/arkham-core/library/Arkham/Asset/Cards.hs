@@ -121,6 +121,7 @@ allPlayerAssetCards = mapFromList $ map
   , combatTraining1
   , daisysToteBag
   , daisysToteBagAdvanced
+  , darioElAmin
   , darkHorse
   , davidRenfield
   , digDeep

@@ -39,6 +39,6 @@ instance (AssetRunner env) => RunMessage env FireExtinguisher1 where
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillCombat 1)
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     _ -> FireExtinguisher1 <$> runMessage msg attrs

@@ -51,6 +51,6 @@ instance AssetRunner env => RunMessage env ChicagoTypewriter4 where
           attrs
           (InvestigatorTarget iid)
           [DamageDealt 2, SkillModifier SkillCombat (2 * actionsSpent)]
-        , ChooseFightEnemy iid source SkillCombat mempty False
+        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
         ]
     _ -> ChicagoTypewriter4 <$> runMessage msg attrs

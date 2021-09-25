@@ -52,7 +52,7 @@ instance EventRunner env => RunMessage env Flare1 where
               attrs
               (InvestigatorTarget iid)
               [SkillModifier SkillCombat 3, DamageDealt 2]
-            , ChooseFightEnemy iid (toSource e) SkillCombat mempty False
+            , ChooseFightEnemy iid (toSource e) Nothing SkillCombat mempty False
             , Exile (toTarget e)
             ]
           , Label "Search for Ally" $ findAllyMessages iid investigatorIds e

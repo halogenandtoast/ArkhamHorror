@@ -43,6 +43,6 @@ instance AssetRunner env => RunMessage env Shrivelling3 where
         [SkillModifier SkillWillpower 2, DamageDealt 1]
       , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
       -- reusing shrivelling(0)'s effect
-      , ChooseFightEnemy iid source SkillWillpower mempty False
+      , ChooseFightEnemy iid source Nothing SkillWillpower mempty False
       ]
     _ -> Shrivelling3 <$> runMessage msg attrs

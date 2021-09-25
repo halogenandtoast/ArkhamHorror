@@ -40,7 +40,7 @@ instance AssetRunner env => RunMessage env Kukri where
         attrs
         (InvestigatorTarget iid)
         (SkillModifier SkillCombat 1)
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do

@@ -56,6 +56,6 @@ instance AssetRunner env => RunMessage env MeatCleaver where
           Nothing
           source
           (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source SkillCombat mempty False
+        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
         ]
     _ -> MeatCleaver <$> runMessage msg attrs

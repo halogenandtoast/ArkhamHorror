@@ -39,6 +39,6 @@ instance AssetRunner env => RunMessage env Blackjack where
         attrs
         (InvestigatorTarget iid)
         [SkillModifier SkillCombat 1, DoesNotDamageOtherInvestigator]
-      , ChooseFightEnemy iid source SkillCombat mempty False
+      , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
     _ -> Blackjack <$> runMessage msg attrs

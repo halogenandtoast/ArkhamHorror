@@ -45,6 +45,6 @@ instance AssetRunner env => RunMessage env SpringfieldM19034 where
         attrs
         (InvestigatorTarget iid)
         [DamageDealt 2, SkillModifier SkillCombat 3]
-      , ChooseFightEnemyNotEngagedWithInvestigator iid source SkillCombat False
+      , ChooseFightEnemyNotEngagedWithInvestigator iid source Nothing SkillCombat False
       ]
     _ -> SpringfieldM19034 <$> runMessage msg attrs

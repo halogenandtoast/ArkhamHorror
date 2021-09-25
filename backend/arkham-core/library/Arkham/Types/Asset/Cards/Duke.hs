@@ -67,7 +67,7 @@ dukeInvestigate attrs iid lid =
 instance AssetRunner env => RunMessage env Duke where
   runMessage msg a@(Duke attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      a <$ push (ChooseFightEnemy iid source SkillCombat mempty False)
+      a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)
     UseCardAbility iid source windows' 2 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
       investigateAbilities :: [Ability] <-

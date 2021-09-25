@@ -126,7 +126,9 @@ allPlayerEventCards = mapFromList $ map
   , shortcut
   , sleightOfHand
   , sneakAttack
+  , sneakAttack2
   , standTogether3
+  , stormOfSpirits
   , sureGamble3
   , taunt
   , taunt2
@@ -772,7 +774,7 @@ ambush1 = (event "03148" "Ambush" 2 Guardian)
   }
 
 forewarned1 :: CardDef
-forewarned1 = (event "03150" "Forwarned" 0 Seeker)
+forewarned1 = (event "03150" "Forewarned" 0 Seeker)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = singleton Insight
   , cdLevel = 1
@@ -783,6 +785,25 @@ forewarned1 = (event "03150" "Forwarned" 0 Seeker)
     You
     (BasicCardMatch NonWeaknessTreachery)
     EncounterDeck
+  }
+
+sneakAttack2 :: CardDef
+sneakAttack2 = (event "03152" "Sneak Attack" 2 Rogue)
+  { cdSkills = [SkillIntellect, SkillCombat, SkillCombat]
+  , cdCardTraits = setFromList [Tactic]
+  , cdCriteria = Just
+    (Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ EnemyAt YourLocation
+    <> EnemyNotEngagedWithYou
+    )
+  }
+
+stormOfSpirits :: CardDef
+stormOfSpirits = (event "03153" "Storm of Spirits" 3 Mystic)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdCardTraits = singleton Spell
+  , cdAction = Just Action.Fight
   }
 
 secondWind :: CardDef

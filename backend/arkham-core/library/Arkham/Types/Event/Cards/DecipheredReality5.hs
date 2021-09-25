@@ -6,6 +6,7 @@ module Arkham.Types.Event.Cards.DecipheredReality5
 import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Helpers
@@ -42,13 +43,16 @@ instance EventRunner env => RunMessage env DecipheredReality5 where
           False
         , Discard (toTarget attrs)
         ]
-    SuccessfulInvestigation iid lid source target | isTarget attrs target -> do
+    Successful (Action.Investigate, actionTarget) iid source target
+      | isTarget attrs target -> do
       -- Deciphered Reality is not a replacement effect; its effect doesn’t use
       -- any form of ‘instead’ or ‘but,’ so its effect is in addition to the
       -- standard rewards for successfully investigating.
-      locationIds <- selectList RevealedLocation
-      e <$ pushAll
-        (SuccessfulInvestigation iid lid source (LocationTarget lid)
-        : [ DiscoverCluesAtLocation iid lid' 1 Nothing | lid' <- locationIds ]
-        )
+        locationIds <- selectList RevealedLocation
+        e <$ pushAll
+          (Successful (Action.Investigate, actionTarget) iid source target
+          : [ DiscoverCluesAtLocation iid lid' 1 Nothing
+            | lid' <- locationIds
+            ]
+          )
     _ -> DecipheredReality5 <$> runMessage msg attrs

@@ -68,6 +68,7 @@ allPlayerEventCards = mapFromList $ map
   , blindingLight2
   , bloodRite
   , buryThemDeep
+  , callingInFavors
   , closeCall2
   , contraband
   , contraband2
@@ -833,6 +834,13 @@ devilsLuck = (event "03157" "Devil's Luck" 1 Survivor)
   , cdCardTraits = singleton Fortune
   , cdFastWindow = Just (DealtDamageOrHorror Timing.When You)
   , cdLevel = 1
+  }
+
+callingInFavors :: CardDef
+callingInFavors = (event "03158" "Calling in Favors" 1 Neutral)
+  { cdSkills = [SkillIntellect, SkillAgility]
+  , cdCardTraits = singleton Favor
+  , cdCriteria = Just (Criteria.AssetExists $ AssetOwnedBy You)
   }
 
 secondWind :: CardDef

@@ -2052,6 +2052,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         traits' = setFromList traits
       push $ EndSearch iid source
       case strategy of
+        DeferAllSearchedToTarget target -> push
+          ( SearchTopOfDeckAll
+              iid
+              target
+              (InvestigatorDeck iid)
+              (map PlayerCard cards))
         DeferSearchedToTarget target -> pushAll
           [ SearchTopOfDeckFound
               iid

@@ -87,7 +87,7 @@ data EncounterCardSource = FromDiscard | FromEncounterDeck | FromTheVoid
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
-data SearchedCardsStrategy = ShuffleBackIn FoundCardStrategy | PutBackInAnyOrder | DeferSearchedToTarget Target
+data SearchedCardsStrategy = ShuffleBackIn FoundCardStrategy | PutBackInAnyOrder | DeferSearchedToTarget Target | DeferAllSearchedToTarget Target
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
@@ -477,12 +477,12 @@ data Message
     | RunBag Source (Maybe InvestigatorId) RequestedTokenStrategy
     | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy
     | RunSkillTest InvestigatorId
-    | RunSkillTestSourceNotification InvestigatorId Source
     | SearchCollectionForRandom InvestigatorId Source CardMatcher
     | SearchDeckForTraits InvestigatorId Target [Trait]
     | SearchDiscard InvestigatorId Target [Trait]
     | SearchTopOfDeck InvestigatorId Source Target Int [Trait] SearchedCardsStrategy
     | SearchTopOfDeckFound InvestigatorId Target DeckSignifier Card
+    | SearchTopOfDeckAll InvestigatorId Target DeckSignifier [Card]
     | SearchTopOfDeckNoneFound InvestigatorId Target
     | SetActions InvestigatorId Source Int
     | SetEncounterDeck (Deck EncounterCard)

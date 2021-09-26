@@ -20,6 +20,7 @@ type EventRunner env
     , Query AssetMatcher env
     , Query LocationMatcher env
     , Query EnemyMatcher env
+    , GetCardDef env AssetId
     , HasCount Shroud env LocationId
     , HasCount ClueCount env InvestigatorId
     , HasCount ClueCount env LocationId

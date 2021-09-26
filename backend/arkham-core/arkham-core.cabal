@@ -410,6 +410,7 @@ library
       Arkham.Types.Effect.Effects.EighteenDerringer
       Arkham.Types.Effect.Effects.ExposeWeakness1
       Arkham.Types.Effect.Effects.Fieldwork
+      Arkham.Types.Effect.Effects.FightOrFlight
       Arkham.Types.Effect.Effects.FireExtinguisher1
       Arkham.Types.Effect.Effects.Improvisation
       Arkham.Types.Effect.Effects.JeremiahPierce
@@ -559,6 +560,7 @@ library
       Arkham.Types.Event.Cards.AnatomicalDiagrams
       Arkham.Types.Event.Cards.AstoundingRevelation
       Arkham.Types.Event.Cards.AstralTravel
+      Arkham.Types.Event.Cards.ATestOfWill1
       Arkham.Types.Event.Cards.Backstab
       Arkham.Types.Event.Cards.BaitAndSwitch
       Arkham.Types.Event.Cards.Barricade
@@ -577,6 +579,7 @@ library
       Arkham.Types.Event.Cards.DarkMemory
       Arkham.Types.Event.Cards.DecipheredReality5
       Arkham.Types.Event.Cards.DelveTooDeep
+      Arkham.Types.Event.Cards.DevilsLuck
       Arkham.Types.Event.Cards.Dodge
       Arkham.Types.Event.Cards.DrawnToTheFlame
       Arkham.Types.Event.Cards.DynamiteBlast
@@ -589,6 +592,7 @@ library
       Arkham.Types.Event.Cards.Evidence
       Arkham.Types.Event.Cards.ExposeWeakness1
       Arkham.Types.Event.Cards.ExtraAmmunition1
+      Arkham.Types.Event.Cards.FightOrFlight
       Arkham.Types.Event.Cards.FirstWatch
       Arkham.Types.Event.Cards.Flare1
       Arkham.Types.Event.Cards.Forewarned1

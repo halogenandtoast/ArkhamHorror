@@ -457,6 +457,7 @@ data Message
     | ResetTokens Source
     | Resign InvestigatorId
     | ResignWith Target
+    | ResolveAmounts InvestigatorId [(Text, Int)] Target
     | ResolveEvent InvestigatorId EventId (Maybe Target)
     | ResolveToken Token TokenFace InvestigatorId -- since tokens can have their face changed we use this to represent that; TODO: use a real modifier
     | ReturnSkillTestRevealedTokens
@@ -584,6 +585,11 @@ chooseN :: InvestigatorId -> Int -> [Message] -> Message
 chooseN _ _ [] = throw $ InvalidState "No messages for chooseN"
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
 
+chooseAmounts
+  :: InvestigatorId -> Text -> Int -> [(Text, (Int, Int))] -> Target -> Message
+chooseAmounts iid label total choiceMap target =
+  Ask iid (ChooseAmounts label total choiceMap target)
+
 chooseUpgradeDeck :: InvestigatorId -> Message
 chooseUpgradeDeck iid = Ask iid ChooseUpgradeDeck
 
@@ -600,6 +606,7 @@ data Question
       -- is a target value. The tuple of ints are the min and max bound for
       -- the specific investigator
       ChoosePaymentAmounts Text (Maybe Int) [(InvestigatorId, (Int, Int), Message)]
+    | ChooseAmounts Text Int [(Text, (Int, Int))] Target
     | ChooseDynamicCardAmounts InvestigatorId CardId (Int, Int) Bool [Message] -- (Int, Int) is (min, max)
     | ChooseUpgradeDeck
     deriving stock (Show, Eq, Generic)

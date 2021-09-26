@@ -53,6 +53,7 @@ allPlayerEventCards :: HashMap CardCode CardDef
 allPlayerEventCards = mapFromList $ map
   (toCardCode &&& id)
   [ aChanceEncounter
+  , aTestOfWill1
   , aceInTheHole3
   , ambush1
   , anatomicalDiagrams
@@ -76,6 +77,7 @@ allPlayerEventCards = mapFromList $ map
   , darkMemory
   , decipheredReality5
   , delveTooDeep
+  , devilsLuck
   , dodge
   , drawnToTheFlame
   , dynamiteBlast
@@ -88,6 +90,7 @@ allPlayerEventCards = mapFromList $ map
   , evidence
   , exposeWeakness1
   , extraAmmunition1
+  , fightOrFlight
   , firstWatch
   , flare1
   , forewarned1
@@ -805,6 +808,31 @@ stormOfSpirits = (event "03153" "Storm of Spirits" 3 Mystic)
   { cdSkills = [SkillWillpower, SkillCombat]
   , cdCardTraits = singleton Spell
   , cdAction = Just Action.Fight
+  }
+
+fightOrFlight :: CardDef
+fightOrFlight = (event "03155" "Fight or Flight" 1 Survivor)
+  { cdCardTraits = singleton Spirit
+  , cdFastWindow = Just $ DuringTurn You
+  }
+
+aTestOfWill1 :: CardDef
+aTestOfWill1 = (event "03156" "A Test of Will" 1 Survivor)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = singleton Spirit
+  , cdFastWindow = Just $ DrawCard
+    Timing.When
+    (InvestigatorAt YourLocation)
+    (BasicCardMatch NonWeaknessTreachery)
+    EncounterDeck
+  }
+
+devilsLuck :: CardDef
+devilsLuck = (event "03157" "Devil's Luck" 1 Survivor)
+  { cdSkills = [SkillAgility]
+  , cdCardTraits = singleton Fortune
+  , cdFastWindow = Just (DealtDamageOrHorror Timing.When You)
+  , cdLevel = 1
   }
 
 secondWind :: CardDef

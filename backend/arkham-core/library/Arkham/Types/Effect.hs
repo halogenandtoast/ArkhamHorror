@@ -6,8 +6,8 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Card
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Effects
@@ -122,6 +122,7 @@ data Effect
   | MrPeabody' MrPeabody
   | CharlesRossEsq' CharlesRossEsq
   | StormOfSpirits' StormOfSpirits
+  | FightOrFlight' FightOrFlight
   | MeatCleaver' MeatCleaver
   | MindWipe3' MindWipe3
   | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
@@ -140,6 +141,7 @@ data Effect
 instance
   ( HasSet ClassSymbol env InvestigatorId
   , HasId Difficulty env ()
+  , HasCount HorrorCount env InvestigatorId
   , HasCount DoomCount env EnemyId
   , HasCount ClueCount env EnemyId
   , HasId LocationId env InvestigatorId
@@ -253,6 +255,7 @@ allEffects = mapFromList
   , ("03141", MrPeabody' . mrPeabody)
   , ("03149", CharlesRossEsq' . charlesRossEsq)
   , ("03153", StormOfSpirits' . stormOfSpirits)
+  , ("03155", FightOrFlight' . fightOrFlight)
   , ("05114", MeatCleaver' . meatCleaver)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)

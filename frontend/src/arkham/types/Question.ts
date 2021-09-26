@@ -2,7 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseDynamicCardAmounts;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseDynamicCardAmounts | ChooseAmounts;
 
 export interface ChooseOne {
   tag: 'ChooseOne';
@@ -34,6 +34,11 @@ export interface ChoosePaymentAmounts {
   contents: [string, number | null, [string, [number, number]][]];
 }
 
+export interface ChooseAmounts {
+  tag: 'ChooseAmounts';
+  contents: [string, number, [string, [number, number]][]];
+}
+
 export interface ChooseDynamicCardAmounts {
   tag: 'ChooseDynamicCardAmounts';
   contents: [string, string, [number, number]]
@@ -52,6 +57,30 @@ export interface ChooseOneFromSource {
 export interface ChooseUpgradeDeck {
   tag: 'ChooseUpgradeDeck';
 }
+
+export const chooseAmountsDecoder = JsonDecoder.object<ChooseAmounts>(
+  {
+    tag: JsonDecoder.isExactly('ChooseAmounts'),
+    contents: JsonDecoder.tuple(
+      [ JsonDecoder.string
+      , JsonDecoder.number
+      , JsonDecoder.array(
+          JsonDecoder.tuple(
+            [ JsonDecoder.string
+            , JsonDecoder.tuple(
+              [ JsonDecoder.number
+              , JsonDecoder.number
+              ]
+              , '[number, number]')
+            ]
+            , '[string, [number, number]]'
+          )
+          , '[string, [number, number]][]')
+      , JsonDecoder.succeed
+      ]
+      , '[string, number, [string, [number, number]]]').map(([label, maxBounds, choices]) => [label,maxBounds, choices])
+  }, 'ChooseAmounts',
+);
 
 export const choosePaymentAmountsDecoder = JsonDecoder.object<ChoosePaymentAmounts>(
   {
@@ -164,6 +193,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseOneAtATimeDecoder,
     chooseOneFromSourceDecoder,
     chooseUpgradeDeckDecoder,
+    chooseAmountsDecoder,
     choosePaymentAmountsDecoder,
     chooseDynamicCardAmountsDecoder,
   ],

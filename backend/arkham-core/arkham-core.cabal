@@ -426,6 +426,7 @@ library
       Arkham.Types.Effect.Effects.MindWipe3
       Arkham.Types.Effect.Effects.MinhThiPhan
       Arkham.Types.Effect.Effects.MrPeabody
+      Arkham.Types.Effect.Effects.NathanielCho
       Arkham.Types.Effect.Effects.OnTheLam
       Arkham.Types.Effect.Effects.Overzealous
       Arkham.Types.Effect.Effects.PayForAbilityEffect

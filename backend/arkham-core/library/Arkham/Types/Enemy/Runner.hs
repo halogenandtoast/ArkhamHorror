@@ -56,4 +56,7 @@ type EnemyRunner env
     , HasSet Trait env Source
     , HasSkillTest env
     , HasStep AgendaStep env ()
+    , HasId (Maybe OwnerId) env AssetId
+    , HasId OwnerId env EventId
+    , HasId OwnerId env SkillId
     )

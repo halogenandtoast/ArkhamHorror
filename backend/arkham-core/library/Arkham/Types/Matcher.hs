@@ -455,7 +455,7 @@ data WindowMatcher
   | AssetLeavesPlay Timing AssetMatcher
   | AssetDealtDamage Timing AssetMatcher
   | LastClueRemovedFromAsset Timing AssetMatcher
-  | EnemyDealtDamage Timing DamageEffectMatcher EnemyMatcher
+  | EnemyDealtDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
   | EnemyLeavesPlay Timing EnemyMatcher
   | LocationLeavesPlay Timing LocationMatcher
   | TookControlOfAsset Timing Who AssetMatcher
@@ -529,8 +529,20 @@ data SourceMatcher
   | SourceIs Source
   | EncounterCardSource
   | SourceMatchesAny [SourceMatcher]
+  | SourceOwnedBy InvestigatorMatcher
+  | SourceIsType CardType
+  | AnySource
+  | SourceMatches [SourceMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup SourceMatcher where
+  AnySource <> x = x
+  x <> AnySource = x
+  SourceMatches xs <> SourceMatches ys = SourceMatches $ xs <> ys
+  SourceMatches xs <> x = SourceMatches $ xs <> [x]
+  x <> SourceMatches xs = SourceMatches $ x : xs
+  x <> y = SourceMatches [x, y]
 
 instance Semigroup SkillTestMatcher where
   AnySkillTest <> x = x

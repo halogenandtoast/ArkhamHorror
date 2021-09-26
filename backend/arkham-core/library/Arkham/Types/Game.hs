@@ -1328,6 +1328,12 @@ instance HasGame env => HasCount StartingUsesCount env (AssetId, UseType) where
 instance HasGame env => HasId (Maybe OwnerId) env AssetId where
   getId = getId <=< getAsset
 
+instance HasGame env => HasId OwnerId env EventId where
+  getId = getId <=< getEvent
+
+instance HasGame env => HasId OwnerId env SkillId where
+  getId = getId <=< getSkill
+
 instance HasGame env => HasId InvestigatorId env EventId where
   getId = getId <=< getEvent
 

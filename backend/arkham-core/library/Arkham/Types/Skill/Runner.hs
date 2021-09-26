@@ -1,5 +1,7 @@
 module Arkham.Types.Skill.Runner where
 
+import Arkham.Prelude
+
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Matcher
@@ -19,4 +21,8 @@ type SkillRunner env
     , HasModifiersFor env ()
     , HasSkillTest env
     , HasCount DamageCount env InvestigatorId
+    , HasId (Maybe OwnerId) env AssetId
+    , HasId OwnerId env EventId
+    , HasId OwnerId env SkillId
+    , Query InvestigatorMatcher env
     )

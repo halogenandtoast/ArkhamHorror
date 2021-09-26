@@ -127,6 +127,7 @@ data Effect
   | MindWipe3' MindWipe3
   | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
   | JeremiahPierce' JeremiahPierce
+  | NathanielCho' NathanielCho
   | EighteenDerringer' EighteenDerringer
   | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
   | CursedShores' CursedShores
@@ -260,6 +261,7 @@ allEffects = mapFromList
   , ("50008", MindWipe3' . mindWipe3)
   , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)
   , ("50044", JeremiahPierce' . jeremiahPierce)
+  , ("60101", NathanielCho' . nathanielCho)
   , ("60505", EighteenDerringer' . eighteenDerringer)
   , ("81001", CurseOfTheRougarouTabletToken' . curseOfTheRougarouTabletToken)
   , ("81007", CursedShores' . cursedShores)

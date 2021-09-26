@@ -910,6 +910,8 @@ type CanCheckPlayable env
     , HasId (Maybe LocationId) env Matcher.LocationMatcher
     , HasId LocationId env AssetId
     , HasId (Maybe OwnerId) env AssetId
+    , HasId OwnerId env EventId
+    , HasId OwnerId env SkillId
     , HasList TakenAction env InvestigatorId
     , HasId CardCode env LocationId
     , HasSet Trait env Source
@@ -1805,13 +1807,14 @@ windowMatches iid source window' = \case
     Window t (Window.DealtDamage _ _ (AssetTarget aid)) | t == timingMatcher ->
       member aid <$> select assetMatcher
     _ -> pure False
-  Matcher.EnemyDealtDamage timingMatcher damageEffectMatcher enemyMatcher ->
+  Matcher.EnemyDealtDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher ->
     case window' of
-      Window t (Window.DealtDamage _ damageEffect (EnemyTarget eid))
-        | t == timingMatcher -> liftA2
-          (&&)
-          (damageEffectMatches damageEffect damageEffectMatcher)
-          (member eid <$> select enemyMatcher)
+      Window t (Window.DealtDamage source' damageEffect (EnemyTarget eid))
+        | t == timingMatcher -> andM
+          [ damageEffectMatches damageEffect damageEffectMatcher
+          , member eid <$> select enemyMatcher
+          , sourceMatches source' sourceMatcher
+          ]
       _ -> pure False
   Matcher.DiscoverClues whenMatcher whoMatcher whereMatcher valueMatcher ->
     case window' of
@@ -1948,7 +1951,13 @@ gameValueMatches n = \case
   Matcher.EqualTo gv -> (n ==) <$> getPlayerCountValue gv
 
 sourceMatches
-  :: (MonadReader env m, HasSet Trait env Source)
+  :: ( MonadReader env m
+     , HasSet Trait env Source
+     , HasId (Maybe OwnerId) env AssetId
+     , HasId OwnerId env EventId
+     , HasId OwnerId env SkillId
+     , Query Matcher.InvestigatorMatcher env
+     )
   => Source
   -> Matcher.SourceMatcher
   -> m Bool
@@ -1956,6 +1965,58 @@ sourceMatches s = \case
   Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms
   Matcher.SourceWithTrait t -> elem t <$> getSet s
   Matcher.SourceIs s' -> pure $ s == s'
+  Matcher.AnySource -> pure True
+  Matcher.SourceMatches ms -> allM (sourceMatches s) ms
+  Matcher.SourceOwnedBy whoMatcher -> case s of
+    AssetSource aid -> do
+      mOwnerId <- fmap unOwnerId <$> getId aid
+      case mOwnerId of
+        Just iid' -> member iid' <$> select whoMatcher
+        _ -> pure False
+    EventSource eid -> do
+      mOwnerId <- unOwnerId <$> getId eid
+      member mOwnerId <$> select whoMatcher
+    SkillSource sid -> do
+      mOwnerId <- unOwnerId <$> getId sid
+      member mOwnerId <$> select whoMatcher
+    _ -> pure False
+  Matcher.SourceIsType t -> pure $ case t of
+    AssetType -> case s of
+      AssetSource _ -> True
+      _ -> False
+    EventType -> case s of
+      EventSource _ -> True
+      _ -> False
+    SkillType -> case s of
+      SkillSource _ -> True
+      _ -> False
+    PlayerTreacheryType -> case s of
+      TreacherySource _ -> True
+      _ -> False
+    PlayerEnemyType -> case s of
+      EnemySource _ -> True
+      _ -> False
+    TreacheryType -> case s of
+      TreacherySource _ -> True
+      _ -> False
+    EnemyType -> case s of
+      EnemySource _ -> True
+      _ -> False
+    LocationType -> case s of
+      LocationSource _ -> True
+      _ -> False
+    EncounterAssetType -> case s of
+      AssetSource _ -> True
+      _ -> False
+    ActType -> case s of
+      ActSource _ -> True
+      _ -> False
+    AgendaType -> case s of
+      AgendaSource _ -> True
+      _ -> False
+    StoryType -> case s of
+      StorySource _ -> True
+      _ -> False
   Matcher.EncounterCardSource -> pure $ case s of
     ActSource _ -> True
     AgendaSource _ -> True
@@ -2096,6 +2157,10 @@ skillTestMatches
      , Query Matcher.EnemyMatcher env
      , Query Matcher.LocationMatcher env
      , Query Matcher.TreacheryMatcher env
+     , Query Matcher.InvestigatorMatcher env
+     , HasId (Maybe OwnerId) env AssetId
+     , HasId OwnerId env EventId
+     , HasId OwnerId env SkillId
      )
   => InvestigatorId
   -> Source
@@ -2230,7 +2295,14 @@ spawnAtOneOf iid eid targetLids = do
       )
 
 sourceCanDamageEnemy
-  :: (MonadReader env m, HasModifiersFor env (), HasSet Trait env Source)
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasSet Trait env Source
+     , HasId (Maybe OwnerId) env AssetId
+     , HasId OwnerId env EventId
+     , HasId OwnerId env SkillId
+     , Query Matcher.InvestigatorMatcher env
+     )
   => EnemyId
   -> Source
   -> m Bool

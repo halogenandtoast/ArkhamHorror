@@ -219,7 +219,10 @@ postApiV1ArkhamGamesR = do
           )
       Nothing -> error "missing either campaign id or scenario id"
 
-data Answer = Answer QuestionResponse | AmountsAnswer AmountsResponse
+data Answer
+  = Answer QuestionResponse
+  | PaymentAmountsAnswer PaymentAmountsResponse
+  | AmountsAnswer AmountsResponse
   deriving stock Generic
   deriving anyclass FromJSON
 
@@ -229,12 +232,19 @@ data QuestionResponse = QuestionResponse
   }
   deriving stock Generic
 
+newtype PaymentAmountsResponse = PaymentAmountsResponse
+  { parAmounts :: HashMap InvestigatorId Int }
+  deriving stock Generic
+
 newtype AmountsResponse = AmountsResponse
-  { arAmounts :: HashMap InvestigatorId Int }
+  { arAmounts :: HashMap Text Int }
   deriving stock Generic
 
 instance FromJSON QuestionResponse where
   parseJSON = genericParseJSON $ aesonOptions $ Just "qr"
+
+instance FromJSON PaymentAmountsResponse where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "par"
 
 instance FromJSON AmountsResponse where
   parseJSON = genericParseJSON $ aesonOptions $ Just "ar"
@@ -352,19 +362,24 @@ answerInvestigator :: Answer -> Maybe InvestigatorId
 answerInvestigator = \case
   Answer response -> qrInvestigatorId response
   AmountsAnswer _ -> Nothing
+  PaymentAmountsAnswer _ -> Nothing
 
 handleAnswer :: Game -> InvestigatorId -> Answer -> [Message]
 handleAnswer Game {..} investigatorId = \case
   AmountsAnswer response -> case lookup investigatorId gameQuestion of
+    Just (ChooseAmounts _ _ _ target) ->
+      [ResolveAmounts investigatorId (mapToList $ arAmounts response) target]
+    _ -> error "Wrong question type"
+  PaymentAmountsAnswer response -> case lookup investigatorId gameQuestion of
     Just (ChoosePaymentAmounts _ _ info) ->
       let
         costMap = mapFromList @(HashMap InvestigatorId Message)
           $ map (\(iid, _, cost) -> (iid, cost)) info
       in
         concatMap (\(iid, n) -> replicate n (findWithDefault Noop iid costMap))
-          $ mapToList (arAmounts response)
+          $ mapToList (parAmounts response)
     Just (ChooseDynamicCardAmounts iid cardId _ isFast beforePlayMessages) ->
-      let amount = findWithDefault 0 iid (arAmounts response)
+      let amount = findWithDefault 0 iid (parAmounts response)
       in beforePlayMessages <> [PayedForDynamicCard iid cardId amount isFast]
     _ -> error "Wrong question type"
   Answer response -> case lookup investigatorId gameQuestion of

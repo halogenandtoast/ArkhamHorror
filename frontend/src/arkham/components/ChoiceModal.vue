@@ -22,13 +22,26 @@
       </button>
     </div>
   </div>
-  <div v-else-if="amountsLabel" class="modal amount-modal">
+  <div v-else-if="paymentAmountsLabel" class="modal amount-modal">
     <div class="modal-contents amount-contents">
-      <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
-        <legend>{{amountsLabel}}</legend>
+      <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
+        <legend>{{paymentAmountsLabel}}</legend>
         <template v-for="[investigator, bounds] in amountsChoices" :key="investigator" class="selection">
           <div v-if="bounds[1] !== 0">
             {{investigatorName(investigator)}} <input type="number" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[investigator]" onclick="this.select()" />
+          </div>
+        </template>
+        <button :disabled="unmetAmountRequirements">Submit</button>
+      </form>
+    </div>
+  </div>
+  <div v-else-if="amountsLabel" class="modal amount-modal">
+    <div class="modal-contents amount-contents">
+      <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
+        <legend>{{paymentAmountsLabel}}</legend>
+        <template v-for="[label, bounds] in amountsChoices" :key="label" class="selection">
+          <div v-if="bounds[1] !== 0">
+            {{label}} <input type="number" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[label]" onclick="this.select()" />
           </div>
         </template>
         <button :disabled="unmetAmountRequirements">Submit</button>
@@ -55,9 +68,10 @@ export default defineComponent({
   setup(props) {
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
     const focusedCards = computed(() => props.game.focusedCards)
+    const choosePaymentAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('choosePaymentAmounts')
     const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('chooseAmounts')
 
-    const amountsLabel = computed(() => {
+    const paymentAmountsLabel = computed(() => {
       const question = props.game.question[props.investigatorId]
       if (question?.tag == 'ChoosePaymentAmounts') {
         return question.contents[0]
@@ -68,14 +82,26 @@ export default defineComponent({
       return null
     })
 
+    const amountsLabel = computed(() => {
+      const question = props.game.question[props.investigatorId]
+      if (question?.tag == 'ChooseAmounts') {
+        return question.contents[0]
+      }
+
+      return null
+    })
+
+    const question = computed(() => props.game.question[props.investigatorId])
+
     const investigatorName = (iid: string) => props.game.investigators[iid].contents.name.title
 
     const amountsChoices = computed(() => {
-      const question = props.game.question[props.investigatorId]
-      if (question?.tag == 'ChoosePaymentAmounts') {
-        return question.contents[2]
-      } else if (question?.tag == 'ChooseDynamicCardAmounts') {
-        return [[question.contents[0], question.contents[2]]]
+      if (question.value?.tag == 'ChoosePaymentAmounts') {
+        return question.value.contents[2]
+      } else if (question.value?.tag == 'ChooseAmounts') {
+        return question.value.contents[2]
+      } else if (question.value?.tag == 'ChooseDynamicCardAmounts') {
+        return [[question.value.contents[0], question.value.contents[2]]]
       }
 
       return null
@@ -84,7 +110,10 @@ export default defineComponent({
     const amountSelections = ref<Record<string, number>>({})
 
     const setInitialAmounts = () => {
-        amountSelections.value = Object.keys(props.game.investigators).reduce<Record<string, number>>((previousValue, currentValue) => {
+        const labels = question.value?.tag == 'ChooseAmounts'
+          ? question.value.contents[2].map(([label]) => label)
+          : Object.keys(props.game.investigators)
+        amountSelections.value = labels.reduce<Record<string, number>>((previousValue, currentValue) => {
           previousValue[currentValue] = 0
           return previousValue
         }, {})
@@ -92,34 +121,45 @@ export default defineComponent({
 
     onMounted(setInitialAmounts)
 
-
     watch(
       () => props.game.question[props.investigatorId],
       setInitialAmounts)
 
     const unmetAmountRequirements = computed(() => {
-      const question = props.game.question[props.investigatorId]
-      if (question?.tag == 'ChoosePaymentAmounts') {
-        const requiredTotal = question.contents[1]
+      if (question.value?.tag == 'ChoosePaymentAmounts') {
+        const requiredTotal = question.value.contents[1]
         if (requiredTotal) {
           const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
           return total !== requiredTotal
         }
 
         return false
-      } else if (question?.tag == 'ChooseDynamicCardAmounts') {
+      } else if (question.value?.tag == 'ChooseAmounts') {
+        const maxBound = question.value.contents[1]
+        if (maxBound) {
+          const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+          return total > maxBound
+        }
+
+        return false
+      } else if (question.value?.tag == 'ChooseDynamicCardAmounts') {
         return false
       }
 
       return true
     })
 
+    const submitPaymentAmounts = async () => {
+      if (choosePaymentAmounts) {
+        choosePaymentAmounts(amountSelections.value)
+      }
+    }
+
     const submitAmounts = async () => {
       if (chooseAmounts) {
         chooseAmounts(amountSelections.value)
       }
     }
-
 
     const resolutions = computed(() => {
       return choices
@@ -128,7 +168,7 @@ export default defineComponent({
         .filter(({ choice }) => choice.tag === MessageType.RESOLUTION);
     })
 
-    return { choices, focusedCards, resolutions, amountsLabel, amountsChoices, amountSelections, investigatorName, submitAmounts, unmetAmountRequirements }
+    return { choices, focusedCards, resolutions, paymentAmountsLabel, amountsLabel, amountsChoices, amountSelections, investigatorName, submitAmounts, submitPaymentAmounts, unmetAmountRequirements }
   }
 })
 </script>

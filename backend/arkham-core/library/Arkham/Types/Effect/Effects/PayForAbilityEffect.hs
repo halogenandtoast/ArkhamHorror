@@ -345,25 +345,39 @@ instance
             selectList
             $ InvestigatorAt locationMatcher
             <> InvestigatorWithAnyClues
-          iidsWithClues <- traverse
-            (traverseToSnd (fmap unSpendableClueCount . getCount))
-            iids
-          let
-            paymentOptions = map
-              (\(iid', clues) ->
-                ( iid'
-                , (0, clues)
-                , PayAbilityCost source iid' mAction True (ClueCost 1)
+          iidsWithClues <-
+            filter ((> 0) . snd)
+              <$> traverse
+                    (traverseToSnd (fmap unSpendableClueCount . getCount))
+                    iids
+          case iidsWithClues of
+            [(iid', _)] ->
+              e
+                <$ push
+                     (PayAbilityCost
+                       source
+                       iid'
+                       mAction
+                       True
+                       (ClueCost totalClues)
+                     )
+            _ -> do
+              let
+                paymentOptions = map
+                  (\(iid', clues) ->
+                    ( iid'
+                    , (0, clues)
+                    , PayAbilityCost source iid' mAction True (ClueCost 1)
+                    )
+                  )
+                  iidsWithClues
+              leadInvestigatorId <- getLeadInvestigatorId
+              e <$ push
+                (Ask leadInvestigatorId $ ChoosePaymentAmounts
+                  (displayCostType cost)
+                  (Just totalClues)
+                  paymentOptions
                 )
-              )
-              iidsWithClues
-          leadInvestigatorId <- getLeadInvestigatorId
-          e <$ push
-            (Ask leadInvestigatorId $ ChoosePaymentAmounts
-              (displayCostType cost)
-              (Just totalClues)
-              paymentOptions
-            )
           -- push (SpendClues totalClues iids)
           -- withPayment $ CluePayment totalClues
         HandDiscardCost x mPlayerCardType traits skillTypes -> do

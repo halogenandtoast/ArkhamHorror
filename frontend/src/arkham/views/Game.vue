@@ -57,7 +57,7 @@
 import { defineComponent, ref, provide, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import * as Arkham from '@/arkham/types/Game'
-import { fetchGame, updateGame, updateGameAmounts, updateGameRaw } from '@/arkham/api'
+import { fetchGame, updateGame, updateGameAmounts, updateGamePaymentAmounts, updateGameRaw } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import Scenario from '@/arkham/components/Scenario.vue'
@@ -138,6 +138,14 @@ export default defineComponent({
         updateGame(props.gameId, idx, investigatorId.value);
       }
     }
+
+    async function choosePaymentAmounts(amounts: Record<string, number>): Promise<void> {
+      if(game.value && !spectate) {
+        updateGamePaymentAmounts(props.gameId, amounts)
+      }
+    }
+
+    provide('choosePaymentAmounts', choosePaymentAmounts)
 
     async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
       if(game.value && !spectate) {

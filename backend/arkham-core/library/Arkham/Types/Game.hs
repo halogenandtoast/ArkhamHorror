@@ -3199,9 +3199,10 @@ runGameMessage msg g = case msg of
   ReturnToHand iid (AssetTarget assetId) -> do
     asset <- getAsset assetId
     if isStory asset
-      then push $ Discard (AssetTarget assetId)
-      else push $ AddToHand iid (toCard asset)
-    pure $ g & assetsL %~ deleteMap assetId
+      then g <$ push (Discard $ AssetTarget assetId)
+      else do
+        push $ AddToHand iid (toCard asset)
+        pure $ g & assetsL %~ deleteMap assetId
   ReturnToHand iid (EventTarget eventId) -> do
     event <- getEvent eventId
     push $ AddToHand iid (toCard event)

@@ -5,6 +5,7 @@ module Arkham.Types.Investigator.Attrs
 
 import Arkham.Prelude
 
+import Data.Monoid
 import Arkham.Types.ClassSymbol as X
 import Arkham.Types.Classes as X hiding (discard)
 import Arkham.Types.Investigator.Runner as X
@@ -1776,10 +1777,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     commitedCardWindows <- Helpers.windows [Window.CommittedCard iid card]
     pushAll $ FocusCards [card] : commitedCardWindows <> [UnfocusCards]
     pure $ a & handL %~ filter (/= card)
-  ReturnToHand iid (AssetTarget aid) | iid == investigatorId ->
-    pure $ a & assetsL %~ deleteSet aid & slotsL %~ removeFromSlots aid
-  PlaceUnderneath target cards | isTarget a target ->
-    pure $ a & cardsUnderneathL <>~ cards
+  PlaceUnderneath target cards | isTarget a target -> do
+    let update = appEndo . mconcat $ map (\card -> Endo $ (assetsL %~ deleteSet (AssetId $ toCardId card)) . (slotsL %~ removeFromSlots (AssetId $ toCardId card))) cards
+    pure $ a & cardsUnderneathL <>~ cards & update
+  PlaceUnderneath _ cards -> do
+    let update = appEndo . mconcat $ map (\card -> Endo $ (assetsL %~ deleteSet (AssetId $ toCardId card)) . (slotsL %~ removeFromSlots (AssetId $ toCardId card))) cards
+    pure $ a & update
   BeforeSkillTest iid skillType skillDifficulty | iid == investigatorId -> do
     modifiers' <- getModifiers (toSource a) (toTarget a)
     committedCardIds <- map unCommittedCardId <$> getSetList iid
@@ -2016,6 +2019,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ a
       & (handL %~ (card :))
       & (cardsUnderneathL %~ filter (/= card))
+      & (assetsL %~ deleteSet (AssetId $ toCardId card))
+      & (slotsL %~ removeFromSlots (AssetId $ toCardId card))
       & (discardL %~ filter ((/= card) . PlayerCard))
   ShuffleCardsIntoDeck iid cards | iid == investigatorId -> do
     deck <- shuffleM (cards <> unDeck investigatorDeck)

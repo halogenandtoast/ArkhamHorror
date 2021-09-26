@@ -39,8 +39,7 @@ instance HasAbilities TheCloverClub where
   getAbilities (TheCloverClub x) =
     [ mkAbility x 1
         $ ForcedAbility
-        $ EnemyDealtDamage Timing.When AnyDamageEffect
-        $ EnemyWithTrait Criminal
+        $ EnemyDealtDamage Timing.When AnyDamageEffect (EnemyWithTrait Criminal) AnySource
     | onSide A x
     ]
 

@@ -34,7 +34,8 @@ instance HasAbilities InsatiableBloodlust where
     [ mkAbility x 1
         $ ForcedAbility
         $ EnemyDealtDamage Timing.After AnyDamageEffect
-        $ enemyIs Cards.theRougarou
+        (enemyIs Cards.theRougarou)
+        (SourceIs $ toSource x)
     ]
 
 instance TreacheryRunner env => RunMessage env InsatiableBloodlust where

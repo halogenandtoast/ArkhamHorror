@@ -28,9 +28,7 @@ instance HasAbilities IshimaruHaruko where
     a
     [ mkAbility a 1
       $ ForcedAbility
-      $ EnemyDealtDamage Timing.After NonAttackDamageEffect
-      $ EnemyWithId
-      $ toId a
+      $ EnemyDealtDamage Timing.After NonAttackDamageEffect (EnemyWithId $ toId a) AnySource
     ]
 
 instance EnemyRunner env => RunMessage env IshimaruHaruko where

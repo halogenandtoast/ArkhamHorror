@@ -401,6 +401,7 @@ library
       Arkham.Types.Effect.Effects.BindMonster2
       Arkham.Types.Effect.Effects.BlindingLight
       Arkham.Types.Effect.Effects.BlindingLight2
+      Arkham.Types.Effect.Effects.CallingInFavors
       Arkham.Types.Effect.Effects.CharlesRossEsq
       Arkham.Types.Effect.Effects.CursedShores
       Arkham.Types.Effect.Effects.CurseOfTheRougarouTabletToken
@@ -571,6 +572,7 @@ library
       Arkham.Types.Event.Cards.BlindingLight2
       Arkham.Types.Event.Cards.BloodRite
       Arkham.Types.Event.Cards.BuryThemDeep
+      Arkham.Types.Event.Cards.CallingInFavors
       Arkham.Types.Event.Cards.CloseCall2
       Arkham.Types.Event.Cards.Contraband
       Arkham.Types.Event.Cards.Contraband2

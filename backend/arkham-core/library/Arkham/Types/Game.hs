@@ -1262,6 +1262,9 @@ instance HasGame env => HasId (Maybe CampaignId) env () where
       These campaign _ -> Just $ toId campaign
       That _ -> Nothing
 
+instance HasGame env => GetCardDef env AssetId where
+  getCardDef = (toCardDef <$>) . getAsset
+
 instance HasGame env => GetCardDef env EnemyId where
   getCardDef = (toCardDef <$>) . getEnemy
 
@@ -3010,6 +3013,13 @@ runGameMessage msg g = case msg of
   SearchTopOfDeck iid _ EncounterDeckTarget n _traits strategy -> do
     let (cards, encounterDeck) = splitAt n $ unDeck (gameEncounterDeck g)
     case strategy of
+      DeferAllSearchedToTarget target -> g <$ push
+        (SearchTopOfDeckAll
+          iid
+          target
+          Deck.EncounterDeck
+          (map EncounterCard cards)
+        )
       DeferSearchedToTarget target -> g <$ pushAll
         [ SearchTopOfDeckFound
             iid
@@ -3188,7 +3198,9 @@ runGameMessage msg g = case msg of
     pure $ g & skillsL %~ deleteMap skillId
   ReturnToHand iid (AssetTarget assetId) -> do
     asset <- getAsset assetId
-    push $ AddToHand iid (toCard asset)
+    if isStory asset
+      then push $ Discard (AssetTarget assetId)
+      else push $ AddToHand iid (toCard asset)
     pure $ g & assetsL %~ deleteMap assetId
   ReturnToHand iid (EventTarget eventId) -> do
     event <- getEvent eventId

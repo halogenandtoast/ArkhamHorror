@@ -13,7 +13,6 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -28,8 +27,8 @@ instance (HasSet Trait env EnemyId, HasSkillTest env) => RunMessage env MonsterS
   runMessage msg e@(MonsterSlayer5 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
       e <$ pushAll
-        [ ChooseFightEnemy iid (EventSource eid) Nothing SkillAgility mempty False
-        , Discard (EventTarget eid)
+        [ ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
+        , Discard (toTarget attrs)
         ]
     PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ _
       | isSource attrs source

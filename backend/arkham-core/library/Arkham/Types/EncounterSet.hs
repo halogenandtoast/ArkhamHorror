@@ -44,6 +44,7 @@ data EncounterSet
   | Hauntings
   | CultOfTheYellowSign
   | EchoesOfThePast
+  | TheUnspeakableOath
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

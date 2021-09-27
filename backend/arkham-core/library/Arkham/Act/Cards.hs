@@ -222,6 +222,23 @@ mistakesOfThePast = act "03125" "Mistakes of the Past" EchoesOfThePast
 theOath :: CardDef
 theOath = act "03126" "The Oath" EchoesOfThePast
 
+arkhamAsylum :: CardDef
+arkhamAsylum = act "03163" "Arkham Asylum" TheUnspeakableOath
+
+theReallyBadOnesV1 :: CardDef
+theReallyBadOnesV1 =
+  act "03164" "\"The Really Bad Ones\" (v. I)" TheUnspeakableOath
+
+theReallyBadOnesV2 :: CardDef
+theReallyBadOnesV2 =
+  act "03165" "\"The Really Bad Ones\" (v. II)" TheUnspeakableOath
+
+planningTheEscape :: CardDef
+planningTheEscape = act "03166" "Planning the Escape" TheUnspeakableOath
+
+noAsylum :: CardDef
+noAsylum = act "03167" "No Asylum" TheUnspeakableOath
+
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" ReturnToTheGathering
 

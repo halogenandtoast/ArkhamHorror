@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 967b71fa9a608e3675adcee1faf4b2bfbff54349803cc2816cdc41aeaa7de522
+-- hash: a1747c10caaad57a6df8486465586bad704260c4238bcb988b360266ad85617d
 
 name:           arkham-api
 version:        0.0.0
@@ -83,6 +83,7 @@ library
       StandaloneDeriving
       TypeApplications
       TypeFamilies
+      ImportQualifiedPost
   build-depends:
       MonadRandom
     , aeson
@@ -176,6 +177,7 @@ executable arkham-api
       StandaloneDeriving
       TypeApplications
       TypeFamilies
+      ImportQualifiedPost
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       arkham-api

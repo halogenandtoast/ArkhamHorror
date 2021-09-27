@@ -273,7 +273,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers (toSource s) (InvestigatorTarget iid)
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
-        then s <$ push RunSkillTest iid
+        then s <$ push (RunSkillTest iid)
         else s <$ pushAll
           [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
     DrawAnotherToken iid -> do

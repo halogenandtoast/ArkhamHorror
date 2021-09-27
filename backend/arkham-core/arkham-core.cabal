@@ -928,6 +928,7 @@ library
       Arkham.Types.Scenario.Scenarios.TheLastKing
       Arkham.Types.Scenario.Scenarios.TheMidnightMasks
       Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum
+      Arkham.Types.Scenario.Scenarios.TheUnspeakableOath
       Arkham.Types.Scenario.Scenarios.UndimensionedAndUnseen
       Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
       Arkham.Types.ScenarioId

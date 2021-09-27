@@ -219,6 +219,15 @@ secretsBetterLeftHidden :: CardDef
 secretsBetterLeftHidden =
   agenda "03123" "Secrets Better Left Hidden" EchoesOfThePast
 
+lockedInside :: CardDef
+lockedInside = agenda "03160" "Locked Inside" TheUnspeakableOath
+
+torturousDescent :: CardDef
+torturousDescent = agenda "03161" "Torturous Descent" TheUnspeakableOath
+
+hisDomain :: CardDef
+hisDomain = agenda "03162" "His Domain" TheUnspeakableOath
+
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =
   agenda "50026" "Predator or Prey?" ReturnToTheMidnightMasks

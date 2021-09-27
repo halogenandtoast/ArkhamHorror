@@ -72,6 +72,10 @@ allLocationCards = mapFromList $ map
   , arkhamWoodsWoodenBridge
   , artGallery
   , ascendingPath
+  , asylumHallsWesternPatientWing_168
+  , asylumHallsWesternPatientWing_169
+  , asylumHallsEasternPatientWing_170
+  , asylumHallsEasternPatientWing_171
   , attic
   , audubonPark
   , backAlley
@@ -79,6 +83,7 @@ allLocationCards = mapFromList $ map
   , balcony
   , ballroom
   , baseOfTheHill
+  , basementHall
   , bathroom
   , bedroom
   , bishopsBrook_202
@@ -141,6 +146,7 @@ allLocationCards = mapFromList $ map
   , foyer
   , frozenSpring
   , gallery
+  , garden
   , gardenDistrict
   , gondola
   , graveyard
@@ -161,12 +167,15 @@ allLocationCards = mapFromList $ map
   , houseInTheReeds_210
   , houseInTheReeds_211
   , humanitiesBuilding
+  , infirmary
+  , kitchen
   , laBellaLuna
   , lightingBox
   , livingRoom
   , lobby
   , lostMemories
   , mainPath
+  , messHall
   , miskatonicQuad
   , miskatonicUniversity
   , miskatonicUniversityMiskatonicMuseum
@@ -185,6 +194,10 @@ allLocationCards = mapFromList $ map
   , passengerCar_169
   , passengerCar_170
   , passengerCar_171
+  , patientConfinementDanielsCell
+  , patientConfinementOccupiedCell
+  , patientConfinementDrearyCell
+  , patientConfinementFamiliarCell
   , prismaticCascade
   , quietHalls_131
   , quietHalls_135
@@ -230,6 +243,7 @@ allLocationCards = mapFromList $ map
   , vipArea
   , whateleyRuins_250
   , whateleyRuins_251
+  , yard
   , yourHouse
   ]
 
@@ -1089,6 +1103,80 @@ hiddenLibrary :: CardDef
 hiddenLibrary = (location "03139" "Hidden Library" mempty EchoesOfThePast)
   { cdVictoryPoints = Just 2
   }
+
+asylumHallsWesternPatientWing_168 :: CardDef
+asylumHallsWesternPatientWing_168 = location
+  "03168"
+  ("Asylum Halls" <:> "Western Patient Wing")
+  mempty
+  TheUnspeakableOath
+
+asylumHallsWesternPatientWing_169 :: CardDef
+asylumHallsWesternPatientWing_169 = location
+  "03169"
+  ("Asylum Halls" <:> "Western Patient Wing")
+  mempty
+  TheUnspeakableOath
+
+asylumHallsEasternPatientWing_170 :: CardDef
+asylumHallsEasternPatientWing_170 = location
+  "03170"
+  ("Asylum Halls" <:> "Eastern Patient Wing")
+  mempty
+  TheUnspeakableOath
+
+asylumHallsEasternPatientWing_171 :: CardDef
+asylumHallsEasternPatientWing_171 = location
+  "03171"
+  ("Asylum Halls" <:> "Eastern Patient Wing")
+  mempty
+  TheUnspeakableOath
+
+kitchen :: CardDef
+kitchen = location "03172" "Kitchen" mempty TheUnspeakableOath
+
+messHall :: CardDef
+messHall = location "03173" "Mess Hall" mempty TheUnspeakableOath
+
+infirmary :: CardDef
+infirmary = location "03174" "Infirmary" mempty TheUnspeakableOath
+
+yard :: CardDef
+yard = location "03175" "Yard" mempty TheUnspeakableOath
+
+garden :: CardDef
+garden = location "03176" "Garden" mempty TheUnspeakableOath
+
+basementHall :: CardDef
+basementHall = location "03177" "Basement Hall" mempty TheUnspeakableOath
+
+patientConfinementDanielsCell :: CardDef
+patientConfinementDanielsCell = location
+  "03178"
+  ("Patient Confinement" <:> "Daniel's Cell")
+  mempty
+  TheUnspeakableOath
+
+patientConfinementOccupiedCell :: CardDef
+patientConfinementOccupiedCell = location
+  "03179"
+  ("Patient Confinement" <:> "Occupied Cell")
+  mempty
+  TheUnspeakableOath
+
+patientConfinementDrearyCell :: CardDef
+patientConfinementDrearyCell = location
+  "03180"
+  ("Patient Confinement" <:> "Dreary Cell")
+  mempty
+  TheUnspeakableOath
+
+patientConfinementFamiliarCell :: CardDef
+patientConfinementFamiliarCell = location
+  "03181"
+  ("Patient Confinement" <:> "Familiar Cell")
+  mempty
+  TheUnspeakableOath
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

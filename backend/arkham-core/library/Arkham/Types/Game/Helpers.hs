@@ -1807,8 +1807,8 @@ windowMatches iid source window' = \case
     Window t (Window.DealtDamage _ _ (AssetTarget aid)) | t == timingMatcher ->
       member aid <$> select assetMatcher
     _ -> pure False
-  Matcher.EnemyDealtDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher ->
-    case window' of
+  Matcher.EnemyDealtDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher
+    -> case window' of
       Window t (Window.DealtDamage source' damageEffect (EnemyTarget eid))
         | t == timingMatcher -> andM
           [ damageEffectMatches damageEffect damageEffectMatcher

@@ -26,6 +26,15 @@ instance (HasList DiscardedPlayerCard env InvestigatorId, HasQueue env) => RunMe
     PassedSkillTest iid _ _ _ _ _ -> do
       discardedCards <- map unDiscardedPlayerCard <$> getList iid
       let events = filter ((== EventType) . toCardType) discardedCards
-      e <$ pushAll [chooseOne iid [TargetLabel (CardIdTarget $ toCardId event) [ReturnToHand iid (CardIdTarget $ toCardId event)] | event <- events], DisableEffect $ toId attrs]
+      e <$ pushAll
+        [ chooseOne
+          iid
+          [ TargetLabel
+              (CardIdTarget $ toCardId event)
+              [ReturnToHand iid (CardIdTarget $ toCardId event)]
+          | event <- events
+          ]
+        , DisableEffect $ toId attrs
+        ]
     SkillTestEnds _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> NathanielCho <$> runMessage msg attrs

@@ -49,8 +49,11 @@ instance HasAbilities TheRougarou where
             attrs
             1
             (ValueIs (damagePerPhase meta) (EqualTo $ PerPlayer 1))
-            (ForcedAbility
-            $ EnemyDealtDamage Timing.After AnyDamageEffect (EnemyWithId $ toId attrs) AnySource
+            (ForcedAbility $ EnemyDealtDamage
+              Timing.After
+              AnyDamageEffect
+              (EnemyWithId $ toId attrs)
+              AnySource
             )
           & (abilityLimitL .~ NoLimit)
     if any isEngage actions'

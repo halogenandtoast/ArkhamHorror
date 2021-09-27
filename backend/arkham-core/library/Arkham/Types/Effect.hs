@@ -6,8 +6,8 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Card
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Difficulty
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Effects

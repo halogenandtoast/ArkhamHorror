@@ -40,9 +40,12 @@ data EncounterSet
   | CurtainCall
   | TheLastKing
   | Delusions
+  | InhabitantsOfCarcosa
   | EvilPortents
   | Hauntings
+  | HastursGift
   | CultOfTheYellowSign
+  | DecayAndFilth
   | EchoesOfThePast
   | TheUnspeakableOath
   | ReturnToTheGathering

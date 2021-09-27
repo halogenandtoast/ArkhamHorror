@@ -5,8 +5,8 @@ module Arkham.Types.Asset.Cards.AshleighClarke
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
-import qualified Arkham.Story.Cards as Story
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Story.Cards qualified as Story
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
@@ -17,7 +17,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype AshleighClarke = AshleighClarke AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)

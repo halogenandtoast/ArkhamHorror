@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.HouseInTheReeds_211
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (houseInTheReeds_211)
+import Arkham.Location.Cards qualified as Cards (houseInTheReeds_211)
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -13,7 +13,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 
 newtype HouseInTheReeds_211 = HouseInTheReeds_211 LocationAttrs

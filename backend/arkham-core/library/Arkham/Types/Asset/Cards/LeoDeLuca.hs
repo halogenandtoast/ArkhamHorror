@@ -2,7 +2,7 @@ module Arkham.Types.Asset.Cards.LeoDeLuca where
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner

@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.StepsOfYhagharl
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (stepsOfYhagharl)
+import Arkham.Location.Cards qualified as Cards (stepsOfYhagharl)
 import Arkham.Types.Ability
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
@@ -16,7 +16,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 
 newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs

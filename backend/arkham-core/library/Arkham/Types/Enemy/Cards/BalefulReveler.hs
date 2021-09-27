@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.BalefulReveler
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Classes
@@ -16,7 +16,7 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Token
 import Control.Monad.Extra (findM)
 

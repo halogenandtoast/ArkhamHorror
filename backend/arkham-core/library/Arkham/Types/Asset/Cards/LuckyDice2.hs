@@ -5,7 +5,7 @@ module Arkham.Types.Asset.Cards.LuckyDice2
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
@@ -15,10 +15,10 @@ import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Token
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype LuckyDice2 = LuckyDice2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)

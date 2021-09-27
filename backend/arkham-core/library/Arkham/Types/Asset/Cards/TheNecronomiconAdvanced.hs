@@ -5,7 +5,7 @@ module Arkham.Types.Asset.Cards.TheNecronomiconAdvanced
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
@@ -17,7 +17,7 @@ import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import qualified Arkham.Types.Token as Token
+import Arkham.Types.Token qualified as Token
 
 newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced AssetAttrs
   deriving anyclass IsAsset

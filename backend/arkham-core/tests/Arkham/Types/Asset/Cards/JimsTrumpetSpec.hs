@@ -4,9 +4,9 @@ module Arkham.Types.Asset.Cards.JimsTrumpetSpec
 
 import TestImport
 
-import qualified Arkham.Asset.Cards as Cards
-import qualified Arkham.Location.Cards as Cards
-import qualified Arkham.Types.Investigator.Attrs as Investigator
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Cards
+import Arkham.Types.Investigator.Attrs qualified as Investigator
 
 spec :: Spec
 spec = describe "Jim's Trumpet" $ do

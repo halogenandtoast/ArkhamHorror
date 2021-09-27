@@ -5,8 +5,8 @@ module Arkham.Types.Asset.Cards.FishingNet
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner

@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.HistoricalSocietyMeetingRoom
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -15,7 +15,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher hiding (DiscoverClues, RevealLocation)
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 
 newtype HistoricalSocietyMeetingRoom = HistoricalSocietyMeetingRoom LocationAttrs

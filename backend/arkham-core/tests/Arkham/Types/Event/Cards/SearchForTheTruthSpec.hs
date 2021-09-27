@@ -4,7 +4,7 @@ module Arkham.Types.Event.Cards.SearchForTheTruthSpec
 
 import TestImport
 
-import qualified Arkham.Types.Investigator.Attrs as Investigator
+import Arkham.Types.Investigator.Attrs qualified as Investigator
 
 spec :: Spec
 spec = describe "Search for the Truth" $ do

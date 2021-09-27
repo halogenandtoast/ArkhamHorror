@@ -5,7 +5,7 @@ module Arkham.Types.Asset.Cards.Aquinnah1
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
@@ -18,7 +18,7 @@ import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message hiding (EnemyAttacks)
 import Arkham.Types.Query
 import Arkham.Types.Source
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype Aquinnah1 = Aquinnah1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)

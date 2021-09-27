@@ -1,7 +1,7 @@
 module Base.Api.Handler.Registration where
 
 import Crypto.BCrypt
-import qualified Data.Text.Encoding as TE
+import Data.Text.Encoding qualified as TE
 import Import
 import Types
 

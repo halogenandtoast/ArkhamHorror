@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (downtownFirstBankOfArkham)
+import Arkham.Location.Cards qualified as Cards (downtownFirstBankOfArkham)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

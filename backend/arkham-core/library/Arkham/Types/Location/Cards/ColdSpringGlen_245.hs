@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.ColdSpringGlen_245
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (coldSpringGlen_245)
+import Arkham.Location.Cards qualified as Cards (coldSpringGlen_245)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -14,11 +14,11 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (ChosenRandomLocation)
-import qualified Arkham.Types.Message as Message
+import Arkham.Types.Message qualified as Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs
   deriving anyclass IsLocation

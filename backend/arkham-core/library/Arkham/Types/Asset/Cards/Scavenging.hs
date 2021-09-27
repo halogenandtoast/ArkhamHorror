@@ -5,7 +5,7 @@ module Arkham.Types.Asset.Cards.Scavenging
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
@@ -17,7 +17,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 
 newtype Scavenging = Scavenging AssetAttrs

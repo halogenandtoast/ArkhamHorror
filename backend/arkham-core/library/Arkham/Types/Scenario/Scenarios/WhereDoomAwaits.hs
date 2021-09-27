@@ -5,11 +5,11 @@ module Arkham.Types.Scenario.Scenarios.WhereDoomAwaits
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Acts
-import qualified Arkham.Agenda.Cards as Agendas
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.EncounterSet (gatherEncounterSet)
-import qualified Arkham.Enemy.Cards as Enemies
-import qualified Arkham.Location.Cards as Locations
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
@@ -17,7 +17,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
-import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.EncounterSet qualified as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Message

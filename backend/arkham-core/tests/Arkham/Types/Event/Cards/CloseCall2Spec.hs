@@ -4,9 +4,9 @@ module Arkham.Types.Event.Cards.CloseCall2Spec
 
 import TestImport.Lifted
 
-import qualified Arkham.Enemy.Cards as Cards
-import qualified Arkham.Event.Cards as Cards
-import qualified Arkham.Types.Investigator.Attrs as Investigator
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Event.Cards qualified as Cards
+import Arkham.Types.Investigator.Attrs qualified as Investigator
 
 spec :: Spec
 spec = describe "Close Call (2)" $ do

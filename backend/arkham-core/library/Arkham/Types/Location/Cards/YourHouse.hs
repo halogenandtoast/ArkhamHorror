@@ -5,8 +5,8 @@ module Arkham.Types.Location.Cards.YourHouse
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -16,9 +16,9 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype YourHouse = YourHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

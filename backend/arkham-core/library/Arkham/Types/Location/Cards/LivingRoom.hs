@@ -5,9 +5,9 @@ module Arkham.Types.Location.Cards.LivingRoom
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -16,7 +16,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (MoveAction)
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype LivingRoom = LivingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

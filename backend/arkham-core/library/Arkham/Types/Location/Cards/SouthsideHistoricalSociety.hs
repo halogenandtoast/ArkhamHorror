@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.SouthsideHistoricalSociety
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (southsideHistoricalSociety)
+import Arkham.Location.Cards qualified as Cards (southsideHistoricalSociety)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

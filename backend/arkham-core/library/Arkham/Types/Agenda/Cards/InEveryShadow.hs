@@ -5,9 +5,9 @@ module Arkham.Types.Agenda.Cards.InEveryShadow
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
-import qualified Arkham.Enemy.Cards as Cards
-import qualified Arkham.Treachery.Cards as Treacheries
+import Arkham.Agenda.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -19,9 +19,9 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher hiding (InvestigatorDefeated)
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype InEveryShadow = InEveryShadow AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env)

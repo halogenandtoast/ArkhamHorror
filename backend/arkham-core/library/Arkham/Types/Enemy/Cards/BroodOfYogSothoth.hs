@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.BroodOfYogSothoth
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs

@@ -5,12 +5,12 @@ module Arkham.Types.Asset.Cards.ScrollOfProphecies
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses (UseType(Secret))
-import qualified Arkham.Types.Asset.Uses as Resource
+import Arkham.Types.Asset.Uses qualified as Resource
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria

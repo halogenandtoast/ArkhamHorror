@@ -5,7 +5,7 @@ module Arkham.Types.Event.Cards.Contraband
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs

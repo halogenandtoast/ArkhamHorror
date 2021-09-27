@@ -5,8 +5,8 @@ module Arkham.Types.Asset.Cards.FineClothes
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
-import qualified Arkham.Types.Action as Action
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner

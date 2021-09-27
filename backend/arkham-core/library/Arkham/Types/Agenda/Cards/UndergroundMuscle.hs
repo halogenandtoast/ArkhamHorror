@@ -5,7 +5,7 @@ module Arkham.Types.Agenda.Cards.UndergroundMuscle
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.EncounterSet
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers

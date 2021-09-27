@@ -4,8 +4,8 @@ module Arkham.Types.Investigator.Cards.AshcanPeteSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Asset.Cards as Assets
-import qualified Arkham.Event.Cards as Events
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Event.Cards qualified as Events
 
 spec :: Spec
 spec = describe "\"Ashcan\" Pete" $ do

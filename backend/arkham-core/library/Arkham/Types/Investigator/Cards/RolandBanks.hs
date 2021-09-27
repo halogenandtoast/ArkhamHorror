@@ -14,7 +14,7 @@ import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Query
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype RolandBanks = RolandBanks InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)

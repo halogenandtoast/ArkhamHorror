@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.UprootedWoods
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (uprootedWoods)
+import Arkham.Location.Cards qualified as Cards (uprootedWoods)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
@@ -14,7 +14,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype UprootedWoods = UprootedWoods LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

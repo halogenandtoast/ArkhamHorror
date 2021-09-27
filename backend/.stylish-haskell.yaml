@@ -13,6 +13,7 @@ steps:
       list_padding: 2
       separate_lists: false
       space_surround: false
+      post_qualify: true
   - language_pragmas:
       style: vertical
       align: false
@@ -49,3 +50,4 @@ language_extensions:
   - TypeApplications
   - TypeFamilies
   - ImportQualifiedPost
+  - PatternSynonyms

@@ -5,8 +5,8 @@ module Arkham.Types.Location.Cards.ExhibitHallRestrictedHall
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs

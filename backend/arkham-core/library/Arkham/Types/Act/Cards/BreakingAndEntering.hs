@@ -5,9 +5,9 @@ module Arkham.Types.Act.Cards.BreakingAndEntering
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Asset.Cards as Assets
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
@@ -18,7 +18,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)

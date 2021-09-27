@@ -2,7 +2,7 @@ module Arkham.Types.Event.Cards.DarkMemory where
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -13,7 +13,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype DarkMemory = DarkMemory EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env)

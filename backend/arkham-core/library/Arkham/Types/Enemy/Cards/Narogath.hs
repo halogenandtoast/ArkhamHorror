@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.Narogath
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Action
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
@@ -18,7 +18,7 @@ import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import qualified Arkham.Types.Trait as Trait
+import Arkham.Types.Trait qualified as Trait
 
 newtype Narogath = Narogath EnemyAttrs
   deriving anyclass IsEnemy

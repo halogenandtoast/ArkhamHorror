@@ -5,8 +5,8 @@ module Arkham.Types.Treachery.Cards.SlitheringBehindYou
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id

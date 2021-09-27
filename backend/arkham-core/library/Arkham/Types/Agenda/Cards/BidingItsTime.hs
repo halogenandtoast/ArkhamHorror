@@ -5,7 +5,7 @@ module Arkham.Types.Agenda.Cards.BidingItsTime
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -21,7 +21,7 @@ import Arkham.Types.Phase
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype BidingItsTime = BidingItsTime AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env)

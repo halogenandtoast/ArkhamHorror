@@ -5,14 +5,14 @@ module Arkham.Types.Location.Cards.BurnedRuins_205
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (burnedRuins_205)
+import Arkham.Location.Cards qualified as Cards (burnedRuins_205)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype BurnedRuins_205 = BurnedRuins_205 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

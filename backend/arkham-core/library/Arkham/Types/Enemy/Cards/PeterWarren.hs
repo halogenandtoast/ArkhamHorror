@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.PeterWarren
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Classes

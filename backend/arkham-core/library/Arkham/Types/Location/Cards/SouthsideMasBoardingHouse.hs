@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (southsideMasBoardingHouse)
+import Arkham.Location.Cards qualified as Cards (southsideMasBoardingHouse)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

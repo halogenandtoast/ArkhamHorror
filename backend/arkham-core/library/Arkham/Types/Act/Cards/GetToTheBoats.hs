@@ -5,8 +5,8 @@ module Arkham.Types.Act.Cards.GetToTheBoats
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Location.Cards as Locations
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -18,7 +18,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Phase
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype GetToTheBoats = GetToTheBoats ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)

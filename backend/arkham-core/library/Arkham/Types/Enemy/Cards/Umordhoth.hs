@@ -5,8 +5,8 @@ module Arkham.Types.Enemy.Cards.Umordhoth
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -19,7 +19,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Resolution
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype Umordhoth = Umordhoth EnemyAttrs
   deriving anyclass IsEnemy

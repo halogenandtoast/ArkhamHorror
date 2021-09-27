@@ -4,7 +4,7 @@ module Arkham.Types.Event.Cards.CunningDistractionSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Types.Card.CardDef as CardDef
+import Arkham.Types.Card.CardDef qualified as CardDef
 import Arkham.Types.Keyword
 
 spec :: Spec

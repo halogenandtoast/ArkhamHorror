@@ -2,7 +2,7 @@ module Arkham.Types.Event.Cards.BlindingLight where
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards (blindingLight)
+import Arkham.Event.Cards qualified as Cards (blindingLight)
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner

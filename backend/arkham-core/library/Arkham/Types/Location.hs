@@ -10,7 +10,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.Id
-import qualified Arkham.Types.Label as L
+import Arkham.Types.Label qualified as L
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards
 import Arkham.Types.Matcher
@@ -19,7 +19,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait (Trait)
-import qualified Data.HashSet as HashSet
+import Data.HashSet qualified as HashSet
 import Data.UUID (nil)
 
 $(buildEntity "Location")

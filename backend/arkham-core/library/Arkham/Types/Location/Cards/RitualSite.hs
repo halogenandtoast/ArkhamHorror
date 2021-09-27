@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.RitualSite where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (ritualSite)
+import Arkham.Location.Cards qualified as Cards (ritualSite)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
@@ -11,7 +11,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype RitualSite = RitualSite LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

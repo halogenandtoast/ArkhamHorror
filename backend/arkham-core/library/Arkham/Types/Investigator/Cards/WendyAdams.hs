@@ -15,9 +15,9 @@ import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealToken)
 import Arkham.Types.Source
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype WendyAdams = WendyAdams InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)

@@ -5,7 +5,7 @@ module Arkham.Types.Asset.Cards.HelplessPassenger
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.Asset.Attrs
@@ -18,7 +18,7 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype HelplessPassenger = HelplessPassenger AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)

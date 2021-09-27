@@ -5,15 +5,15 @@ module Arkham.Types.Enemy.Cards.SwampLeech
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 
 newtype SwampLeech = SwampLeech EnemyAttrs

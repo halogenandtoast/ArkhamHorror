@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.TwistedUnderbrush
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (twistedUnderbrush)
+import Arkham.Location.Cards qualified as Cards (twistedUnderbrush)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

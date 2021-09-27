@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.EasttownArkhamPoliceStation
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (easttownArkhamPoliceStation)
+import Arkham.Location.Cards qualified as Cards (easttownArkhamPoliceStation)
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes

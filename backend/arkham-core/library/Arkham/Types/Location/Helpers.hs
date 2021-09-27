@@ -6,7 +6,7 @@ module Arkham.Types.Location.Helpers
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes.Entity
 import Arkham.Types.Cost
 import Arkham.Types.Criteria

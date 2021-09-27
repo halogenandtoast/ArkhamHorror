@@ -2,8 +2,8 @@ module Arkham.Types.Skill.Cards.Deduction2 where
 
 import Arkham.Prelude
 
-import qualified Arkham.Skill.Cards as Cards
-import qualified Arkham.Types.Action as Action
+import Arkham.Skill.Cards qualified as Cards
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.EffectMetadata

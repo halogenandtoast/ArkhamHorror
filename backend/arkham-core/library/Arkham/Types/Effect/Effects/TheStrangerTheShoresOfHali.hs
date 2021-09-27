@@ -13,7 +13,7 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype TheStrangerTheShoresOfHali = TheStrangerTheShoresOfHali EffectAttrs
   deriving anyclass (HasModifiersFor env)

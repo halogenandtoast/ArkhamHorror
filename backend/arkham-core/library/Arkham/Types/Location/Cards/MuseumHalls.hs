@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.MuseumHalls
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (museumHalls)
+import Arkham.Location.Cards qualified as Cards (museumHalls)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

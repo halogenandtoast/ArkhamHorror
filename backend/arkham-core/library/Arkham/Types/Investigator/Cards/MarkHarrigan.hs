@@ -5,14 +5,14 @@ module Arkham.Types.Investigator.Cards.MarkHarrigan
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Assets
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Types.Ability
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype MarkHarrigan = MarkHarrigan InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)

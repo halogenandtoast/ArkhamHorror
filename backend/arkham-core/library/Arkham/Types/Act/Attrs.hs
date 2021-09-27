@@ -9,7 +9,7 @@ import Arkham.Act.Cards
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Act.Sequence as X
-import qualified Arkham.Types.Act.Sequence as AS
+import Arkham.Types.Act.Sequence qualified as AS
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost as X
@@ -21,7 +21,7 @@ import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window
 
 class IsAct a

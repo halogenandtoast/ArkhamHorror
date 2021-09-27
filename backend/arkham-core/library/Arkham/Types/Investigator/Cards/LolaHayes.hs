@@ -10,7 +10,7 @@ import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype LolaHayes = LolaHayes InvestigatorAttrs
   deriving anyclass IsInvestigator

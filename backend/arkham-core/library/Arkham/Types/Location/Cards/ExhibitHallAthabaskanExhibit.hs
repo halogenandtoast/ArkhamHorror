@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.ExhibitHallAthabaskanExhibit
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (exhibitHallAthabaskanExhibit)
+import Arkham.Location.Cards qualified as Cards (exhibitHallAthabaskanExhibit)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
@@ -16,7 +16,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit LocationAttrs
   deriving anyclass IsLocation

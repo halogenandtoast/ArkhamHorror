@@ -2,9 +2,9 @@ module Arkham.Types.Treachery.Cards.FrozenInFear where
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
@@ -12,7 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner

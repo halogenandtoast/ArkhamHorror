@@ -37,13 +37,13 @@ import Control.Monad.Random.Strict as X (Random)
 import Data.Aeson as X
 import Data.Aeson.Text
 import Data.Coerce as X (coerce)
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
+import Data.HashMap.Strict qualified as HashMap
+import Data.HashSet qualified as HashSet
 import Data.List as X (nub, (\\))
-import qualified Data.List as L
+import Data.List qualified as L
 import Data.List.NonEmpty as X (NonEmpty(..), nonEmpty)
-import qualified Data.List.NonEmpty as NE
-import qualified Data.Text.Lazy as TL
+import Data.List.NonEmpty qualified as NE
+import Data.Text.Lazy qualified as TL
 import Data.Text.Lazy.Builder
 import Data.UUID as X (UUID)
 import GHC.Stack as X

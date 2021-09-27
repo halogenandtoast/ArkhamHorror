@@ -5,7 +5,7 @@ module Arkham.Types.Event.Cards.IveHadWorse4
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Event.Attrs

@@ -4,7 +4,7 @@ module Arkham.Types.Asset where
 import Arkham.Prelude
 
 import Arkham.Types.Asset.Attrs hiding (assetEnemy, assetLocation)
-import qualified Arkham.Types.Asset.Attrs as Attrs
+import Arkham.Types.Asset.Attrs qualified as Attrs
 import Arkham.Types.Asset.Cards
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses

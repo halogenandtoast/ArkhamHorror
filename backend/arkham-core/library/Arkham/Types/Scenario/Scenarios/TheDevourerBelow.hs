@@ -2,15 +2,15 @@ module Arkham.Types.Scenario.Scenarios.TheDevourerBelow where
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Enemies
-import qualified Arkham.Location.Cards as Locations
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenarios.TheDevourerBelow.Story
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
-import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.EncounterSet qualified as EncounterSet
 import Arkham.Types.Id
 import Arkham.Types.Matcher hiding (RevealLocation)
 import Arkham.Types.Message

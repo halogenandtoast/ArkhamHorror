@@ -5,14 +5,14 @@ module Arkham.Types.Event.Cards.IfItBleeds
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Id
 import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Query
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window
 
 newtype IfItBleeds = IfItBleeds EventAttrs

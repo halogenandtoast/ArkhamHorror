@@ -5,8 +5,8 @@ module Arkham.Types.Asset.Cards.BearTrap
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
@@ -19,9 +19,9 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype BearTrap = BearTrap AssetAttrs
   deriving anyclass IsAsset

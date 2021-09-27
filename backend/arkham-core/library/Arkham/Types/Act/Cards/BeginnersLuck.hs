@@ -5,8 +5,8 @@ module Arkham.Types.Act.Cards.BeginnersLuck
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Location.Cards as Locations
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -20,7 +20,7 @@ import Arkham.Types.Message hiding (RevealToken)
 import Arkham.Types.Modifier
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window

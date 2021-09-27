@@ -2,9 +2,9 @@ module Arkham.Scenarios.CurseOfTheRougarou.Helpers where
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Json
-import qualified Arkham.Location.Cards as Locations
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers

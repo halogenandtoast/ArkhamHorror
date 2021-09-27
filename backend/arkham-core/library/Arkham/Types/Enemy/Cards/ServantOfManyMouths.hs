@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.ServantOfManyMouths
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -16,7 +16,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype ServantOfManyMouths = ServantOfManyMouths EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)

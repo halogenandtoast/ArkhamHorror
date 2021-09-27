@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.DunwichVillage_243
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (dunwichVillage_243)
+import Arkham.Location.Cards qualified as Cards (dunwichVillage_243)
 import Arkham.Types.Ability
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes

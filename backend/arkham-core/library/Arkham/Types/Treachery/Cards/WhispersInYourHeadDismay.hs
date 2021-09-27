@@ -5,7 +5,7 @@ module Arkham.Types.Treachery.Cards.WhispersInYourHeadDismay
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card.CardType
 import Arkham.Types.Classes

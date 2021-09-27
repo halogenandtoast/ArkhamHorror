@@ -2,7 +2,7 @@ module Arkham.Types.Treachery.Cards.MaskedHorrors where
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Message

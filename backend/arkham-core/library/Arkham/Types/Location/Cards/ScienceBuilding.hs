@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.ScienceBuilding where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (scienceBuilding)
+import Arkham.Location.Cards qualified as Cards (scienceBuilding)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
@@ -12,7 +12,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.SkillType
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype ScienceBuilding = ScienceBuilding LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

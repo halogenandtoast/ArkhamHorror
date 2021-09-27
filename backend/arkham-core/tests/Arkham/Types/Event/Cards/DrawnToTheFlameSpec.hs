@@ -4,8 +4,8 @@ module Arkham.Types.Event.Cards.DrawnToTheFlameSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Location.Cards as Cards
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Location.Cards qualified as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec

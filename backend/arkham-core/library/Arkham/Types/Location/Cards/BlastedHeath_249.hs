@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.BlastedHeath_249
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (blastedHeath_249)
+import Arkham.Location.Cards qualified as Cards (blastedHeath_249)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
@@ -14,7 +14,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype BlastedHeath_249 = BlastedHeath_249 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

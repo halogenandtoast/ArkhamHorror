@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.SecurityOffice_129
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (securityOffice_129)
+import Arkham.Location.Cards qualified as Cards (securityOffice_129)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

@@ -5,8 +5,8 @@ module Arkham.Types.Treachery.Cards.WatchersGaze
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Assets
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Matcher

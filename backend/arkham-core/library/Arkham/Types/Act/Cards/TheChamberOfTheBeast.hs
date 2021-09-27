@@ -5,9 +5,9 @@ module Arkham.Types.Act.Cards.TheChamberOfTheBeast
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Asset.Cards as Cards
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -17,7 +17,7 @@ import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Resolution
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype TheChamberOfTheBeast = TheChamberOfTheBeast ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)

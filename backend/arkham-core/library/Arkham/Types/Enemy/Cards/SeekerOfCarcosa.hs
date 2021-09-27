@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.SeekerOfCarcosa
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
@@ -15,7 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Phase
 import Arkham.Types.Query
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype SeekerOfCarcosa = SeekerOfCarcosa EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)

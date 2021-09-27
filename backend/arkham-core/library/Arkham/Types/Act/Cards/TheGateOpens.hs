@@ -5,7 +5,7 @@ module Arkham.Types.Act.Cards.TheGateOpens
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes

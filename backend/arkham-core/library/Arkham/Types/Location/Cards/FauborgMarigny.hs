@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.FauborgMarigny
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (fauborgMarigny)
+import Arkham.Location.Cards qualified as Cards (fauborgMarigny)
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue

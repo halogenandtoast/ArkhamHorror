@@ -5,7 +5,7 @@ module Arkham.Types.Asset.Cards.JazzMulligan
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.Asset.Attrs

@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.ArkhamWoodsTangledThicket where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (arkhamWoodsTangledThicket)
+import Arkham.Location.Cards qualified as Cards (arkhamWoodsTangledThicket)
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs

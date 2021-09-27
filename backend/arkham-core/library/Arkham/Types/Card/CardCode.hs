@@ -3,7 +3,7 @@ module Arkham.Types.Card.CardCode where
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Types
-import qualified Data.Text as T
+import Data.Text qualified as T
 
 newtype CardCode = CardCode { unCardCode :: Text }
   deriving newtype (Show, Eq, Hashable, IsString)

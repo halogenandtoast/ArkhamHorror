@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.MiskatonicUniversityMiskatonicMuseum
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Cards qualified as Cards
   (miskatonicUniversityMiskatonicMuseum)
 import Arkham.Types.Ability
 import Arkham.Types.Classes

@@ -46,6 +46,7 @@
   - -XTypeApplications
   - -XTypeFamilies
   - -XImportQualifiedPost
+  - -XPatternSynonyms
 
 - modules:
   - {name: [Data.Set], as: Set}

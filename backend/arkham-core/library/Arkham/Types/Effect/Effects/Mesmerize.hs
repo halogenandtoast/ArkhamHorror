@@ -5,7 +5,7 @@ module Arkham.Types.Effect.Effects.Mesmerize
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Assets
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Effect.Attrs

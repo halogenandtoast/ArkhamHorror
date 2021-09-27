@@ -2,20 +2,20 @@ module Arkham.Event.Cards where
 
 import Arkham.Prelude
 
-import qualified Arkham.Types.Action as Action
-import qualified Arkham.Types.Asset.Uses as Uses
+import Arkham.Types.Action qualified as Action
+import Arkham.Types.Asset.Uses qualified as Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
 import Arkham.Types.Card.Cost
 import Arkham.Types.ClassSymbol
-import qualified Arkham.Types.Criteria as Criteria
+import Arkham.Types.Criteria qualified as Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Modifier (ModifierType(..))
 import Arkham.Types.Name
 import Arkham.Types.SkillType
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef

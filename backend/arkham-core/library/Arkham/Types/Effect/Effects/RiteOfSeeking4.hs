@@ -5,7 +5,7 @@ module Arkham.Types.Effect.Effects.RiteOfSeeking4
 
 import Arkham.Prelude
 
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Message

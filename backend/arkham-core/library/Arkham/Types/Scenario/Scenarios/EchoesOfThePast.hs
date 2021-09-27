@@ -5,18 +5,18 @@ module Arkham.Types.Scenario.Scenarios.EchoesOfThePast
 
 import Arkham.Prelude hiding (replicate)
 
-import qualified Arkham.Act.Cards as Acts
-import qualified Arkham.Agenda.Cards as Agendas
-import qualified Arkham.Asset.Cards as Assets
-import qualified Arkham.Enemy.Cards as Enemies
-import qualified Arkham.Location.Cards as Locations
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenarios.EchoesOfThePast.Story
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
-import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.EncounterSet qualified as EncounterSet
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Matcher

@@ -5,8 +5,8 @@ module Arkham.Types.Act.Cards.Fold
 
 import Arkham.Prelude hiding (fold)
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers

@@ -2,7 +2,7 @@ module Arkham.Types.Asset.Cards.ElderSignAmulet3 where
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes

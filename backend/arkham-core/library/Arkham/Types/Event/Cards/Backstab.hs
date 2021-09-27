@@ -2,7 +2,7 @@ module Arkham.Types.Event.Cards.Backstab where
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Action
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs

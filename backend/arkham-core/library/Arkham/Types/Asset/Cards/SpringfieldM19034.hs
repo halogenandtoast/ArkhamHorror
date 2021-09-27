@@ -5,13 +5,13 @@ module Arkham.Types.Asset.Cards.SpringfieldM19034
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import qualified Arkham.Types.Asset.Uses as Resource
+import Arkham.Types.Asset.Uses qualified as Resource
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria

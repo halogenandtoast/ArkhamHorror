@@ -5,7 +5,6 @@ module Arkham.Types.Investigator.Attrs
 
 import Arkham.Prelude
 
-import Data.Monoid
 import Arkham.Types.ClassSymbol as X
 import Arkham.Types.Classes as X hiding (discard)
 import Arkham.Types.Investigator.Runner as X
@@ -13,24 +12,24 @@ import Arkham.Types.Name as X
 import Arkham.Types.Stats as X
 import Arkham.Types.Token as X
 import Arkham.Types.Trait as X hiding (Cultist)
+import Data.Monoid
 
-import qualified Data.Text as T
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Cost
+import Arkham.Types.DamageEffect
 import Arkham.Types.Deck
 import Arkham.Types.EntityInstance
 import Arkham.Types.Game.Helpers hiding (windows)
-import qualified Arkham.Types.Game.Helpers as Helpers
+import Arkham.Types.Game.Helpers qualified as Helpers
 import Arkham.Types.Helpers
 import Arkham.Types.Id
-import Arkham.Types.DamageEffect
 import Arkham.Types.Matcher
   ( AssetMatcher(..)
   , CardMatcher(..)
@@ -48,10 +47,11 @@ import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
-import qualified Data.HashSet as HashSet
+import Arkham.Types.Window qualified as Window
+import Data.HashSet qualified as HashSet
+import Data.Text qualified as T
 import Data.UUID (nil)
 
 class IsInvestigator a

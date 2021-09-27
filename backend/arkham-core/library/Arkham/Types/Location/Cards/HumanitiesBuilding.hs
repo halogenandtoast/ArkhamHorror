@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.HumanitiesBuilding where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (humanitiesBuilding)
+import Arkham.Location.Cards qualified as Cards (humanitiesBuilding)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
@@ -12,7 +12,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Query
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype HumanitiesBuilding = HumanitiesBuilding LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

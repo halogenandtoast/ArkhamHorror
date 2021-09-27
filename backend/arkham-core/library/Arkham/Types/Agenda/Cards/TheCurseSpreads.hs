@@ -5,8 +5,8 @@ module Arkham.Types.Agenda.Cards.TheCurseSpreads
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Agenda.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -16,7 +16,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Phase
 import Arkham.Types.Resolution
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype TheCurseSpreads = TheCurseSpreads AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env)

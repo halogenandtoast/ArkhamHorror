@@ -4,7 +4,7 @@ module Arkham.Types.Asset.Cards.ArcaneInitiateSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 
 spec :: Spec
 spec = describe "Arcane Initiate" $ do

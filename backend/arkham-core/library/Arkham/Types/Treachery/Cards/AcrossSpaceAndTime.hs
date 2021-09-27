@@ -5,7 +5,7 @@ module Arkham.Types.Treachery.Cards.AcrossSpaceAndTime
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards (acrossSpaceAndTime)
+import Arkham.Treachery.Cards qualified as Cards (acrossSpaceAndTime)
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Treachery.Attrs

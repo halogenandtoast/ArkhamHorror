@@ -4,8 +4,8 @@ module Arkham.Types.Treachery.Cards.CoverUpSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Treachery.Cards as Cards
-import qualified Arkham.Types.Location.Attrs as Location
+import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Types.Location.Attrs qualified as Location
 
 spec :: Spec
 spec = describe "Cover Up" $ do

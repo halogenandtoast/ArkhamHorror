@@ -4,9 +4,9 @@ module Arkham.Types.Asset.Cards.JennysTwin45sSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.AssetId
-import qualified Arkham.Types.Enemy.Attrs as Enemy
+import Arkham.Types.Enemy.Attrs qualified as Enemy
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec

@@ -5,7 +5,7 @@ module Arkham.Types.Event.Cards.AstralTravel
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Event.Attrs
@@ -15,7 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Target
 import Arkham.Types.Token
-import qualified Arkham.Types.Trait as Trait
+import Arkham.Types.Trait qualified as Trait
 
 newtype AstralTravel = AstralTravel EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)

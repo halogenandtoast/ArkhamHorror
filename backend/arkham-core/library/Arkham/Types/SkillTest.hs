@@ -19,11 +19,11 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Token
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
-import qualified Data.HashMap.Strict as HashMap
+import Arkham.Types.Window qualified as Window
+import Data.HashMap.Strict qualified as HashMap
 import Data.Semigroup
 
 class HasSkillTest env where

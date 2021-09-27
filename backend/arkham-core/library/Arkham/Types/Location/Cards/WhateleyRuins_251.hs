@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.WhateleyRuins_251
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (whateleyRuins_251)
+import Arkham.Location.Cards qualified as Cards (whateleyRuins_251)
 import Arkham.Types.Ability
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes

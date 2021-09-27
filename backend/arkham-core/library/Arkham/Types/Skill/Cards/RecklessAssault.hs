@@ -5,7 +5,7 @@ module Arkham.Types.Skill.Cards.RecklessAssault
 
 import Arkham.Prelude
 
-import qualified Arkham.Skill.Cards as Cards
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner

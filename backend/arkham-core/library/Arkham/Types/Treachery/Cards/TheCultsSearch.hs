@@ -5,7 +5,7 @@ module Arkham.Types.Treachery.Cards.TheCultsSearch
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.Matcher

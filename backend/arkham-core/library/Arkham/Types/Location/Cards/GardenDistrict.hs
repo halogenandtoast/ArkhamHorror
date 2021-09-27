@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.GardenDistrict
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (gardenDistrict)
+import Arkham.Location.Cards qualified as Cards (gardenDistrict)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

@@ -4,7 +4,7 @@ module Arkham.Types.Treachery.Cards.SearchingForIzzieSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 
 spec :: Spec
 spec = describe "Searching for Izzie" $ do

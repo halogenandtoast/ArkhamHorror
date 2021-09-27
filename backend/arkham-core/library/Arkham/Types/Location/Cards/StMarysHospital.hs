@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.StMarysHospital
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (stMarysHospital)
+import Arkham.Location.Cards qualified as Cards (stMarysHospital)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

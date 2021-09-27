@@ -5,7 +5,7 @@ module Arkham.Types.Treachery.Cards.ArousingSuspicions
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Message

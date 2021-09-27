@@ -5,7 +5,7 @@ module Arkham.Types.Act.Cards.DiscoveringTheTruth
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -13,7 +13,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (InvestigatorEliminated)
 import Arkham.Types.Query
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype DiscoveringTheTruth = DiscoveringTheTruth ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)

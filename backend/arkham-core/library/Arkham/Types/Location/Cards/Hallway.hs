@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.Hallway where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (hallway)
+import Arkham.Location.Cards qualified as Cards (hallway)
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs

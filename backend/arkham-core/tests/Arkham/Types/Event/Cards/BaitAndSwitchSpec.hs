@@ -4,7 +4,7 @@ module Arkham.Types.Event.Cards.BaitAndSwitchSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
+import Arkham.Types.Enemy.Attrs qualified as EnemyAttrs
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec

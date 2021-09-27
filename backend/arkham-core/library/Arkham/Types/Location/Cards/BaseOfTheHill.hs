@@ -5,9 +5,9 @@ module Arkham.Types.Location.Cards.BaseOfTheHill
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost

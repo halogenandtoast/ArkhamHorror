@@ -5,8 +5,8 @@ module Arkham.Types.Event.Cards.StormOfSpirits
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
-import qualified Arkham.Types.Action as Action
+import Arkham.Event.Cards qualified as Cards
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.DamageEffect

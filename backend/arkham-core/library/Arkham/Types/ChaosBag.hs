@@ -15,10 +15,10 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Source
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Token
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 import Control.Monad.State
 
 isUndecided :: ChaosBagStepState -> Bool

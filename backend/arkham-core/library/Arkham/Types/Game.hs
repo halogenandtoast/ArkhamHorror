@@ -11,7 +11,7 @@ import Arkham.PlayerCard
 import Arkham.Types.Ability
 import Arkham.Types.Act
 import Arkham.Types.Action (Action, TakenAction)
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Uses (UseType)
@@ -23,7 +23,7 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.ChaosBag
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes hiding (discard)
-import qualified Arkham.Types.Deck as Deck
+import Arkham.Types.Deck qualified as Deck
 import Arkham.Types.Decks
 import Arkham.Types.Difficulty
 import Arkham.Types.Direction
@@ -41,8 +41,8 @@ import Arkham.Types.Id
 import Arkham.Types.Investigator
 import Arkham.Types.Investigator.Attrs (getPlayableCards)
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
-import qualified Arkham.Types.Keyword as Keyword
-import qualified Arkham.Types.Label as L
+import Arkham.Types.Keyword qualified as Keyword
+import Arkham.Types.Label qualified as L
 import Arkham.Types.Location
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher hiding
@@ -58,7 +58,7 @@ import Arkham.Types.Matcher hiding
   , PlayCard
   , RevealLocation
   )
-import qualified Arkham.Types.Matcher as M
+import Arkham.Types.Matcher qualified as M
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.ModifierData
@@ -74,20 +74,20 @@ import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Treachery
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM, foldM)
-import qualified Data.Aeson.Diff as Diff
-import qualified Data.HashMap.Strict as HashMap
+import Data.Aeson.Diff qualified as Diff
+import Data.HashMap.Strict qualified as HashMap
 import Data.List.Extra (groupOn)
 import Data.Monoid (First(..))
-import qualified Data.Sequence as Seq
+import Data.Sequence qualified as Seq
 import Data.These
 import Data.These.Lens
 import Data.UUID (nil)

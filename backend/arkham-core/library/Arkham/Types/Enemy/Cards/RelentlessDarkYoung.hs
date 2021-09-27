@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.RelentlessDarkYoung
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
@@ -15,7 +15,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.SkillType
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)

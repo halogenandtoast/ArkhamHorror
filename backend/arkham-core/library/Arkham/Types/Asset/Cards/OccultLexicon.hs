@@ -2,8 +2,8 @@ module Arkham.Types.Asset.Cards.OccultLexicon where
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
-import qualified Arkham.Event.Cards as Events
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Event.Cards qualified as Events
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Card

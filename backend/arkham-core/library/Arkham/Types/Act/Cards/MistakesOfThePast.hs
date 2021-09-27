@@ -5,9 +5,9 @@ module Arkham.Types.Act.Cards.MistakesOfThePast
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Asset.Cards as Assets
-import qualified Arkham.Location.Cards as Locations
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner

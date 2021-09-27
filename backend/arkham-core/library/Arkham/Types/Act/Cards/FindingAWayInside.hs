@@ -5,8 +5,8 @@ module Arkham.Types.Act.Cards.FindingAWayInside
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Asset.Cards as Assets
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner

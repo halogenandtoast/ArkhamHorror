@@ -13,7 +13,7 @@ import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (PassSkillTest)
 import Arkham.Types.Modifier
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)

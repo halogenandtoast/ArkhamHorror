@@ -5,7 +5,7 @@ module Arkham.Types.Treachery.Cards.RottingRemainsBloodOnTheAltar
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards.RottingRemains

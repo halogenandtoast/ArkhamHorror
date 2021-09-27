@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.SavioCorvi
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs

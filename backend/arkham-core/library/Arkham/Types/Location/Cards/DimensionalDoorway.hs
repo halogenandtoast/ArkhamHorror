@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.DimensionalDoorway
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (dimensionalDoorway)
+import Arkham.Location.Cards qualified as Cards (dimensionalDoorway)
 import Arkham.Types.Ability
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
@@ -16,7 +16,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EndTurn)
 import Arkham.Types.Query
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 
 newtype DimensionalDoorway = DimensionalDoorway LocationAttrs

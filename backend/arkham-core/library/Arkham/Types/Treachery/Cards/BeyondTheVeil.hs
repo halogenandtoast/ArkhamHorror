@@ -5,7 +5,7 @@ module Arkham.Types.Treachery.Cards.BeyondTheVeil
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -14,7 +14,7 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (DeckHasNoCards)
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 

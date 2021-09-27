@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.Broadmoor
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (broadmoor)
+import Arkham.Location.Cards qualified as Cards (broadmoor)
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs

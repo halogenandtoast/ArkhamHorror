@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.ArkhamWoodsTwistingPaths where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (arkhamWoodsTwistingPaths)
+import Arkham.Location.Cards qualified as Cards (arkhamWoodsTwistingPaths)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.EffectMetadata
@@ -13,7 +13,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

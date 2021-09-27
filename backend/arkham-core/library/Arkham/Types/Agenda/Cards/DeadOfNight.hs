@@ -2,8 +2,8 @@ module Arkham.Types.Agenda.Cards.DeadOfNight where
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
-import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Agenda.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner

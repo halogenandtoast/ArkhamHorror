@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.ArkhamWoodsCliffside where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (arkhamWoodsCliffside)
+import Arkham.Location.Cards qualified as Cards (arkhamWoodsCliffside)
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs

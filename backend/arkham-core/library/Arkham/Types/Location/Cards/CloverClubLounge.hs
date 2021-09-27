@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.CloverClubLounge
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (cloverClubLounge)
+import Arkham.Location.Cards qualified as Cards (cloverClubLounge)
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes

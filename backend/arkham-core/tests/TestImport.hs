@@ -9,12 +9,12 @@ module TestImport
 
 import Arkham.Prelude as X
 
-import qualified Arkham.Agenda.Cards as Cards
-import qualified Arkham.Asset.Cards as Cards
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Agenda.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Game as X hiding (newGame, runMessages)
-import qualified Arkham.Game as Game
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Game qualified as Game
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.Agenda as X
@@ -26,15 +26,15 @@ import Arkham.Types.Asset.Attrs hiding (body)
 import Arkham.Types.Asset.Cards.Adaptable1
 import Arkham.Types.AssetId
 import Arkham.Types.Card as X
-import qualified Arkham.Types.Card.CardDef as CardDef
+import Arkham.Types.Card.CardDef qualified as CardDef
 import Arkham.Types.Card.EncounterCard as X
 import Arkham.Types.Card.PlayerCard as X
 import Arkham.Types.ChaosBag as X
-import qualified Arkham.Types.ChaosBag as ChaosBag
+import Arkham.Types.ChaosBag qualified as ChaosBag
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Classes as X hiding
   (getCount, getId, getModifiers, getTokenValue)
-import qualified Arkham.Types.Classes as Arkham
-import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes qualified as Arkham
 import Arkham.Types.Cost as X
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
@@ -42,14 +42,14 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards.SwarmOfRats
 import Arkham.Types.Event as X
 import Arkham.Types.Game as X hiding (getAsset)
-import qualified Arkham.Types.Game as Game
+import Arkham.Types.Game qualified as Game
 import Arkham.Types.Game.Helpers as X hiding (getCanAffordCost)
-import qualified Arkham.Types.Game.Helpers as Helpers
+import Arkham.Types.Game.Helpers qualified as Helpers
 import Arkham.Types.GameValue as X
 import Arkham.Types.Helpers as X
 import Arkham.Types.Investigator as X
 import Arkham.Types.Investigator.Attrs
-import qualified Arkham.Types.Investigator.Attrs as Investigator
+import Arkham.Types.Investigator.Attrs qualified as Investigator
 import Arkham.Types.Investigator.Cards.JennyBarnes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location as X
@@ -62,13 +62,13 @@ import Arkham.Types.Phase
 import Arkham.Types.Query as X
 import Arkham.Types.Scenario as X
 import Arkham.Types.Scenario.Attrs
-import qualified Arkham.Types.Scenario.Attrs as Scenario
+import Arkham.Types.Scenario.Attrs qualified as Scenario
 import Arkham.Types.Scenario.Scenarios.TheGathering (TheGathering(..))
 import Arkham.Types.SkillType as X
 import Arkham.Types.Source as X
 import Arkham.Types.Stats as X
 import Arkham.Types.Target as X
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Token as X
 import Arkham.Types.Window as X
   (Window(..), WindowType(DuringTurn, FastPlayerWindow, NonFast))
@@ -76,7 +76,7 @@ import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X
 import Control.Monad.State as X (get)
 import Control.Monad.State hiding (replicateM)
-import qualified Data.HashMap.Strict as HashMap
+import Data.HashMap.Strict qualified as HashMap
 import Data.These
 import Data.UUID.V4 as X
 import Helpers.Matchers as X

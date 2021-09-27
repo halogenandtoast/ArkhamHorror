@@ -5,7 +5,7 @@ module Arkham.Types.Treachery.Cards.CoverUp
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -13,10 +13,10 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher hiding (DiscoverClues)
-import qualified Arkham.Types.Matcher as Matcher
+import Arkham.Types.Matcher qualified as Matcher
 import Arkham.Types.Message hiding (InvestigatorEliminated)
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 

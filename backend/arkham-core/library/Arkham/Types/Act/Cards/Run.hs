@@ -5,7 +5,7 @@ module Arkham.Types.Act.Cards.Run
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -15,7 +15,7 @@ import Arkham.Types.Message hiding (Run)
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype Run = Run ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)

@@ -2,20 +2,20 @@ module Main where
 
 import ClassyPrelude
 
-import qualified Arkham.Asset.Cards as Assets
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterCard
-import qualified Arkham.Enemy.Cards as Enemies
-import qualified Arkham.Event.Cards as Events
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Event.Cards qualified as Events
 import Arkham.PlayerCard
-import qualified Arkham.Skill.Cards as Skills
-import qualified Arkham.Treachery.Cards as Treacheries
+import Arkham.Skill.Cards qualified as Skills
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Attrs (assetHealth, assetSanity)
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.Cost
-import Arkham.Types.Classes.Entity
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes.Entity
 import Arkham.Types.EncounterSet
 import Arkham.Types.Enemy
 import Arkham.Types.Enemy.Attrs
@@ -32,7 +32,7 @@ import Arkham.Types.Treachery
 import Control.Exception
 import Control.Monad.Random.Lazy
 import Data.Aeson
-import qualified Data.Text as T
+import Data.Text qualified as T
 import System.Directory
 import Text.Read (readEither)
 

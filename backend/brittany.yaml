@@ -30,6 +30,7 @@ conf_forward:
     - -XFlexibleInstances
     - -XGADTs
     - -XGeneralizedNewtypeDeriving
+    - -XImportQualifiedPost
     - -XLambdaCase
     - -XMultiParamTypeClasses
     - -XNoImplicitPrelude
@@ -41,6 +42,7 @@ conf_forward:
     - -XStandaloneDeriving
     - -XTypeApplications
     - -XTypeFamilies
+    - -XPatternSynonyms
 conf_errorHandling:
   econf_ExactPrintFallback: ExactPrintFallbackModeInline
   econf_Werror: false

@@ -2,7 +2,7 @@ module Arkham.Types.Event.Cards.BaitAndSwitch where
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards (baitAndSwitch)
+import Arkham.Event.Cards qualified as Cards (baitAndSwitch)
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner

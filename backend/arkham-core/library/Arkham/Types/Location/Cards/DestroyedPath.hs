@@ -5,9 +5,9 @@ module Arkham.Types.Location.Cards.DestroyedPath
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (destroyedPath)
+import Arkham.Location.Cards qualified as Cards (destroyedPath)
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -18,7 +18,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype DestroyedPath = DestroyedPath LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

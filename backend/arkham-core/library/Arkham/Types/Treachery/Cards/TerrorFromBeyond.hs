@@ -5,7 +5,7 @@ module Arkham.Types.Treachery.Cards.TerrorFromBeyond
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes

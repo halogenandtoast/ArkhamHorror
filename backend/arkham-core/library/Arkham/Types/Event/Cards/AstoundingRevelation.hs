@@ -5,7 +5,7 @@ module Arkham.Types.Event.Cards.AstoundingRevelation
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Uses (UseType(..))
 import Arkham.Types.Card

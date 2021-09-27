@@ -5,8 +5,8 @@ module Arkham.Types.Act.Cards.AscendingTheHillV3
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
@@ -20,7 +20,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 
 newtype AscendingTheHillV3 = AscendingTheHillV3 ActAttrs

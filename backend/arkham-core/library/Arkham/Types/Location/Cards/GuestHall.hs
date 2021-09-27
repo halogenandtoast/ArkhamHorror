@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.GuestHall where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (guestHall)
+import Arkham.Location.Cards qualified as Cards (guestHall)
 import Arkham.Types.Action
 import Arkham.Types.Classes
 import Arkham.Types.GameValue

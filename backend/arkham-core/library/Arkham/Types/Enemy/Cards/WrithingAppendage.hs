@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.WrithingAppendage
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Classes
@@ -15,7 +15,7 @@ import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message hiding (EnemyAttacks, EnemyDefeated)
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype WrithingAppendage = WrithingAppendage EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)

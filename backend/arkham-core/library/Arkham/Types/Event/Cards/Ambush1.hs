@@ -5,7 +5,7 @@ module Arkham.Types.Event.Cards.Ambush1
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
@@ -15,9 +15,9 @@ import Arkham.Types.Event.Runner
 import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype Ambush1 = Ambush1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env)

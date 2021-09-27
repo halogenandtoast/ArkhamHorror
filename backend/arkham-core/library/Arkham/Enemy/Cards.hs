@@ -8,7 +8,7 @@ import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
 import Arkham.Types.ClassSymbol
 import Arkham.Types.EncounterSet
-import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.Keyword qualified as Keyword
 import Arkham.Types.Name
 import Arkham.Types.Trait
 

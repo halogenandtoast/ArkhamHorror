@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.NorthsideTrainStation
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (northsideTrainStation)
+import Arkham.Location.Cards qualified as Cards (northsideTrainStation)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

@@ -8,13 +8,13 @@ import Arkham.Types.Game
 import Arkham.Types.Message
 import ClassyPrelude
 import Control.Error.Util (hush)
-import qualified Control.Monad.Fail as Fail
+import Control.Monad.Fail qualified as Fail
 import Data.Aeson
 import Data.Aeson.Types
-import qualified Data.ByteString.Char8 as BS8
-import qualified Data.Text as T
+import Data.ByteString.Char8 qualified as BS8
+import Data.Text qualified as T
 import Data.UUID (UUID)
-import qualified Data.UUID as UUID
+import Data.UUID qualified as UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql
 import Web.HttpApiData

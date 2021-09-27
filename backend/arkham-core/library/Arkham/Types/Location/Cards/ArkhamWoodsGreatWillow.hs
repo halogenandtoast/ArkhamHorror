@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.ArkhamWoodsGreatWillow where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (arkhamWoodsGreatWillow)
+import Arkham.Location.Cards qualified as Cards (arkhamWoodsGreatWillow)
 import Arkham.Types.Ability
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
@@ -15,7 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.SkillTest
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

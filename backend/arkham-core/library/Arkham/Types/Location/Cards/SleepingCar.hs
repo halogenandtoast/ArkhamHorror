@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.SleepingCar
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (sleepingCar)
+import Arkham.Location.Cards qualified as Cards (sleepingCar)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

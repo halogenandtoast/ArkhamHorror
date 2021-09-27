@@ -23,7 +23,7 @@ import Arkham.Types.LocationId
 import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Trait
-import qualified Data.Text as T
+import Data.Text qualified as T
 
 data CardBuilder ident a = CardBuilder
   { cbCardCode :: CardCode

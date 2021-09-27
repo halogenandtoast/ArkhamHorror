@@ -5,10 +5,10 @@ module Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
-import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Agenda.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card

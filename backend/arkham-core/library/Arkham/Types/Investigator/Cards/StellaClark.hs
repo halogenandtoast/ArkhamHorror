@@ -8,7 +8,7 @@ import Arkham.Types.Criteria
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype StellaClark = StellaClark InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)

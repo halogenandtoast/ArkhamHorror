@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.HouseInTheReeds_210
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (houseInTheReeds_210)
+import Arkham.Location.Cards qualified as Cards (houseInTheReeds_210)
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue

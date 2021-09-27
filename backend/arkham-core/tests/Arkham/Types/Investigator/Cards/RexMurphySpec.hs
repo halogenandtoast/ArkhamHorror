@@ -4,7 +4,7 @@ module Arkham.Types.Investigator.Cards.RexMurphySpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Location.Attrs as Location
 
 spec :: Spec

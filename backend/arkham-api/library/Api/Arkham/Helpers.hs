@@ -13,9 +13,9 @@ import Arkham.Types.Message
 import Control.Lens
 import Control.Monad.Fail
 import Control.Monad.Random (MonadRandom(..), StdGen, mkStdGen)
-import qualified Data.ByteString.Lazy as BSL
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.Map.Strict as Map
+import Data.ByteString.Lazy qualified as BSL
+import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 import Json
 
 toPublicGame :: Entity ArkhamGame -> PublicGame ArkhamGameId

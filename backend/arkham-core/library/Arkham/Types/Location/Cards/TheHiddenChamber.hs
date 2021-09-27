@@ -5,8 +5,8 @@ module Arkham.Types.Location.Cards.TheHiddenChamber
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Assets
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue

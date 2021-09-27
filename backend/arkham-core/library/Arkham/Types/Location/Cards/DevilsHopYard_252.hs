@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.DevilsHopYard_252
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (devilsHopYard_252)
+import Arkham.Location.Cards qualified as Cards (devilsHopYard_252)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

@@ -5,13 +5,13 @@ module Arkham.Types.Event.Cards.HeroicRescue
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.DamageEffect
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype HeroicRescue = HeroicRescue EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)

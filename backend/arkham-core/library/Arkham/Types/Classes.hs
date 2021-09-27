@@ -30,11 +30,11 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import qualified Data.Char as C
-import qualified Data.HashSet as HashSet
+import Data.Char qualified as C
+import Data.HashSet qualified as HashSet
 import GHC.Generics
 import Language.Haskell.TH.Syntax hiding (Name)
-import qualified Language.Haskell.TH.Syntax as TH
+import Language.Haskell.TH.Syntax qualified as TH
 
 newtype Distance = Distance { unDistance :: Int }
 

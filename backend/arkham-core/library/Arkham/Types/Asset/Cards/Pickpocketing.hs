@@ -5,7 +5,7 @@ module Arkham.Types.Asset.Cards.Pickpocketing
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
@@ -14,7 +14,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyEvaded)
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype Pickpocketing = Pickpocketing AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)

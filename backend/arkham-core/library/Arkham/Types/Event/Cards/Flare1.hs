@@ -2,7 +2,7 @@ module Arkham.Types.Event.Cards.Flare1 where
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards (flare1)
+import Arkham.Event.Cards qualified as Cards (flare1)
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs

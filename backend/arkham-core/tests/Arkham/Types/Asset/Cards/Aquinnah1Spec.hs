@@ -4,7 +4,7 @@ module Arkham.Types.Asset.Cards.Aquinnah1Spec
 
 import TestImport
 
-import qualified Arkham.Types.Enemy.Attrs as Enemy
+import Arkham.Types.Enemy.Attrs qualified as Enemy
 
 spec :: Spec
 spec = describe "Aquinnah (1)" $ do

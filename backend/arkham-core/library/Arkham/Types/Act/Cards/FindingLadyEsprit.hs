@@ -5,12 +5,12 @@ module Arkham.Types.Act.Cards.FindingLadyEsprit
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Asset.Cards as Assets
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterSet
-import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import qualified Arkham.Treachery.Cards as Treacheries
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
@@ -18,13 +18,13 @@ import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
-import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.EncounterSet qualified as EncounterSet
 import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Trait
-import qualified Data.HashSet as HashSet
+import Data.HashSet qualified as HashSet
 import Data.Maybe (fromJust)
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs

@@ -5,7 +5,7 @@ module Arkham.Types.Agenda.Cards.AllIsOne
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -16,7 +16,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype AllIsOne = AllIsOne AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env)

@@ -5,7 +5,7 @@ module Arkham.Types.Agenda.Cards.SecretsBetterLeftHidden
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
@@ -18,9 +18,9 @@ import Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.Resolution
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype SecretsBetterLeftHidden = SecretsBetterLeftHidden AgendaAttrs
   deriving anyclass IsAgenda

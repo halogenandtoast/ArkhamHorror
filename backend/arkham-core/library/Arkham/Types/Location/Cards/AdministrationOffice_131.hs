@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.AdministrationOffice_131
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (administrationOffice_131)
+import Arkham.Location.Cards qualified as Cards (administrationOffice_131)
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId

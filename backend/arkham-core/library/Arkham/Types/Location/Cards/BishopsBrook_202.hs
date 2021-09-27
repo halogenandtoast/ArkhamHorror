@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.BishopsBrook_202
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (bishopsBrook_202)
+import Arkham.Location.Cards qualified as Cards (bishopsBrook_202)
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue

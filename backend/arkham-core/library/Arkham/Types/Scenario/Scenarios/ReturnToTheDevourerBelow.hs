@@ -2,16 +2,16 @@ module Arkham.Types.Scenario.Scenarios.ReturnToTheDevourerBelow where
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Enemies
-import qualified Arkham.Location.Cards as Locations
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenarios.TheDevourerBelow.Story
-import qualified Arkham.Treachery.Cards as Treacheries
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
-import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.EncounterSet qualified as EncounterSet
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Query

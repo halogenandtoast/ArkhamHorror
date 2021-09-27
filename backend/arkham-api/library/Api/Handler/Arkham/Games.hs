@@ -26,9 +26,9 @@ import Arkham.Types.ScenarioId
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
-import qualified Data.ByteString.Lazy as BSL
+import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
-import qualified Data.Map.Strict as Map
+import Data.Map.Strict qualified as Map
 import Database.Esqueleto.Experimental hiding (update)
 import Entity.Arkham.Player
 import Import hiding (delete, on, (==.))

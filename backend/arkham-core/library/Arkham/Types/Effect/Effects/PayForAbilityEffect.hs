@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability, TakenAction)
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -23,10 +23,10 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype PayForAbilityEffect = PayForAbilityEffect (EffectAttrs `With` Payment)
   deriving anyclass HasAbilities

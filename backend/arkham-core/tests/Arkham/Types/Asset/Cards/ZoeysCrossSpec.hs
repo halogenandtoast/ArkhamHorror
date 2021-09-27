@@ -4,8 +4,8 @@ module Arkham.Types.Asset.Cards.ZoeysCrossSpec
 
 import TestImport
 
-import qualified Arkham.Types.Enemy.Attrs as Enemy
-import qualified Arkham.Types.Investigator.Attrs as Investigator
+import Arkham.Types.Enemy.Attrs qualified as Enemy
+import Arkham.Types.Investigator.Attrs qualified as Investigator
 
 spec :: Spec
 spec = do

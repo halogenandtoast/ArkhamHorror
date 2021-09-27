@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.ArkhamWoodsLakeside where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (arkhamWoodsLakeside)
+import Arkham.Location.Cards qualified as Cards (arkhamWoodsLakeside)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
@@ -11,7 +11,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

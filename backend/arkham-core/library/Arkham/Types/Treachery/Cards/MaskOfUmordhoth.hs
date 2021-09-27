@@ -2,11 +2,11 @@ module Arkham.Types.Treachery.Cards.MaskOfUmordhoth where
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
-import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.Keyword qualified as Keyword
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier

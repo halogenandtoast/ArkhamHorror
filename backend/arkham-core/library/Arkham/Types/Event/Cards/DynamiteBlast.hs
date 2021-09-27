@@ -2,7 +2,7 @@ module Arkham.Types.Event.Cards.DynamiteBlast where
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.DamageEffect
 import Arkham.Types.Event.Attrs

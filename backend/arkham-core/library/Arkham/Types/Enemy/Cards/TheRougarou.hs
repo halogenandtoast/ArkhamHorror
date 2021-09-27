@@ -5,9 +5,9 @@ module Arkham.Types.Enemy.Cards.TheRougarou
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -18,7 +18,7 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype TheRougarouMetadata = TheRougarouMetadata { damagePerPhase :: Int }
   deriving stock (Show, Eq, Generic)

@@ -11,10 +11,10 @@
 module Settings where
 
 import ClassyPrelude.Yesod
-import qualified Control.Exception as Exception
+import Control.Exception qualified as Exception
 import Control.Monad.Fail (MonadFail, fail)
 import Data.Aeson (Result(..), fromJSON, withObject, (.!=), (.:?))
-import qualified Data.ByteString.Char8 as BS8
+import Data.ByteString.Char8 qualified as BS8
 import Data.FileEmbed (embedFile)
 import Data.String.Conversions.Monomorphic (toStrictByteString)
 import Data.Yaml (decodeEither')

@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.EngineCar_175
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (engineCar_175)
+import Arkham.Location.Cards qualified as Cards (engineCar_175)
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.GameValue

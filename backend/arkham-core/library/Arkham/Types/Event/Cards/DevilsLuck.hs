@@ -5,13 +5,13 @@ module Arkham.Types.Event.Cards.DevilsLuck
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 import Arkham.Types.Message
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype DevilsLuck = DevilsLuck EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)

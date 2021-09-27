@@ -5,8 +5,8 @@ module Arkham.Types.Agenda.Cards.BreakingThrough
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
-import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Agenda.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -17,7 +17,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype BreakingThrough = BreakingThrough AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env)

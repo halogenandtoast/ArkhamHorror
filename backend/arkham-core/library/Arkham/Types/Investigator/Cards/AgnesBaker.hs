@@ -13,7 +13,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype AgnesBaker = AgnesBaker InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)

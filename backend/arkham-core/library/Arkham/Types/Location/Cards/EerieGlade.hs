@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.EerieGlade
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (eerieGlade)
+import Arkham.Location.Cards qualified as Cards (eerieGlade)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
@@ -15,7 +15,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.Query
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype EerieGlade = EerieGlade LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

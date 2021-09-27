@@ -11,16 +11,16 @@
 
 module Foundation where
 
-import qualified Auth.JWT as JWT
+import Auth.JWT qualified as JWT
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result(Success), fromJSON)
 import Data.Kind
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Import.NoFoundation
 
-import qualified Data.ByteString.Lazy as BSL
+import Data.ByteString.Lazy qualified as BSL
 import Yesod.Core.Types (Logger)
-import qualified Yesod.Core.Unsafe as Unsafe
+import Yesod.Core.Unsafe qualified as Unsafe
 
 import Orphans ()
 

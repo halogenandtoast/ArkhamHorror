@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.Cnidathqua
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -18,7 +18,7 @@ import Arkham.Types.Message hiding (EnemyDefeated)
 import Arkham.Types.Modifier
 import Arkham.Types.Resolution
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype Cnidathqua = Cnidathqua EnemyAttrs
     deriving anyclass IsEnemy

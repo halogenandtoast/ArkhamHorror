@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.Schoolhouse_212
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (schoolhouse_212)
+import Arkham.Location.Cards qualified as Cards (schoolhouse_212)
 import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.GameValue

@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.OsbornsGeneralStore_206
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (osbornsGeneralStore_206)
+import Arkham.Location.Cards qualified as Cards (osbornsGeneralStore_206)
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue

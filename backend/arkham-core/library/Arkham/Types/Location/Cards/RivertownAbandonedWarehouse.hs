@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (rivertownAbandonedWarehouse)
+import Arkham.Location.Cards qualified as Cards (rivertownAbandonedWarehouse)
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes

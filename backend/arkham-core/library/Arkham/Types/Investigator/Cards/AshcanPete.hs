@@ -5,7 +5,7 @@ module Arkham.Types.Investigator.Cards.AshcanPete
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Assets
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Types.Ability
 import Arkham.Types.Cost
 import Arkham.Types.Criteria

@@ -5,10 +5,10 @@ module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Acts
-import qualified Arkham.Agenda.Cards as Agendas
-import qualified Arkham.Location.Cards as Locations
-import qualified Arkham.Treachery.Cards as Treacheries
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
@@ -17,7 +17,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Direction
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
-import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.EncounterSet qualified as EncounterSet
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -29,7 +29,7 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
-import qualified Arkham.Types.Trait as Trait
+import Arkham.Types.Trait qualified as Trait
 
 newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
   deriving stock Generic

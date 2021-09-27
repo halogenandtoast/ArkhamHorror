@@ -5,9 +5,9 @@ module Arkham.Types.Location.Cards.ArtGallery
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (artGallery)
+import Arkham.Location.Cards qualified as Cards (artGallery)
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
@@ -16,7 +16,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype ArtGallery = ArtGallery LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

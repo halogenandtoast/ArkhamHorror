@@ -5,7 +5,7 @@ module Arkham.Types.Effect.Effects.Deduction2
 
 import Arkham.Prelude
 
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.EffectMetadata

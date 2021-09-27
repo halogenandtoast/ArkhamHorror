@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.OvergrownCairns
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (overgrownCairns)
+import Arkham.Location.Cards qualified as Cards (overgrownCairns)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

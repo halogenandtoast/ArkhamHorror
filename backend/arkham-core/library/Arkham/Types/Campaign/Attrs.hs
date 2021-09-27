@@ -21,7 +21,7 @@ import Arkham.Types.Name
 import Arkham.Types.Resolution
 import Arkham.Types.Token
 import Control.Monad.Writer hiding (filterM)
-import qualified Data.List.NonEmpty as NE
+import Data.List.NonEmpty qualified as NE
 
 class IsCampaign a
 

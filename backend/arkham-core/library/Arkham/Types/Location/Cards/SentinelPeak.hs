@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.SentinelPeak
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (sentinelPeak)
+import Arkham.Location.Cards qualified as Cards (sentinelPeak)
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.GameValue

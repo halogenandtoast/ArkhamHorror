@@ -5,7 +5,7 @@ module Arkham.Types.Asset.Cards.GuardDog
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
@@ -16,9 +16,9 @@ import Arkham.Types.DamageEffect
 import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message
 import Arkham.Types.Source
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype GuardDog = GuardDog AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)

@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.EmergentMonstrosity
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.Enemy.Attrs

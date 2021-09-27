@@ -9,7 +9,7 @@ module Auth.JWT
 
 import ClassyPrelude.Yesod
 import Data.Char (isSpace)
-import Data.Map as Map ((!?), fromList)
+import Data.Map as Map (fromList, (!?))
 import Web.JWT as JWT
 
 -- | Try to lookup token from the Authorization header

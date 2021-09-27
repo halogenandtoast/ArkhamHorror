@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.DeepBelowYourHouse where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (deepBelowYourHouse)
+import Arkham.Location.Cards qualified as Cards (deepBelowYourHouse)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
@@ -12,7 +12,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype DeepBelowYourHouse = DeepBelowYourHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

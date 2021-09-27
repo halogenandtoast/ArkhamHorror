@@ -8,8 +8,8 @@ import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
 import Arkham.Types.ClassSymbol
 import Arkham.Types.EncounterSet hiding (Dunwich)
-import qualified Arkham.Types.EncounterSet as EncounterSet
-import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.EncounterSet qualified as EncounterSet
+import Arkham.Types.Keyword qualified as Keyword
 import Arkham.Types.Name
 import Arkham.Types.Trait
 

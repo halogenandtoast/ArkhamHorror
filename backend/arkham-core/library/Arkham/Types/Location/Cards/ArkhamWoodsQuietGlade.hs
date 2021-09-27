@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.ArkhamWoodsQuietGlade
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (arkhamWoodsQuietGlade)
+import Arkham.Location.Cards qualified as Cards (arkhamWoodsQuietGlade)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

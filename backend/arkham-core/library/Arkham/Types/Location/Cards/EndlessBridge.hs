@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.EndlessBridge
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (endlessBridge)
+import Arkham.Location.Cards qualified as Cards (endlessBridge)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
@@ -15,7 +15,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Name
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Control.Monad.Extra (findM)
 
 newtype EndlessBridge = EndlessBridge LocationAttrs

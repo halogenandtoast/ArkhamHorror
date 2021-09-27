@@ -5,9 +5,9 @@ module Arkham.Types.Location.Cards.TheEdgeOfTheUniverse
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (theEdgeOfTheUniverse)
+import Arkham.Location.Cards qualified as Cards (theEdgeOfTheUniverse)
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers

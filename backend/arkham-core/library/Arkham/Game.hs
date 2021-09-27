@@ -17,7 +17,7 @@ import Arkham.Types.Phase
 import Arkham.Types.Scenario
 import Arkham.Types.ScenarioId
 import Control.Monad.Random (mkStdGen)
-import qualified Data.Aeson.Diff as Diff
+import Data.Aeson.Diff qualified as Diff
 import Data.Align
 import Data.HashMap.Strict (size)
 import Safe (headNote)

@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.YogSothoth
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -19,7 +19,7 @@ import Arkham.Types.Message hiding (EnemyAttacks)
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype YogSothoth = YogSothoth EnemyAttrs
   deriving anyclass IsEnemy

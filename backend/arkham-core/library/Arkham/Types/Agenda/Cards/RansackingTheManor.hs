@@ -5,8 +5,8 @@ module Arkham.Types.Agenda.Cards.RansackingTheManor
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
-import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Agenda.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
@@ -20,9 +20,9 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype RansackingTheManor = RansackingTheManor AgendaAttrs
   deriving anyclass IsAgenda

@@ -12,7 +12,7 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Trait (Trait)
 import Arkham.Types.Treachery.Attrs hiding (treacheryInHandOf, treacheryOwner)
-import qualified Arkham.Types.Treachery.Attrs as Attrs
+import Arkham.Types.Treachery.Attrs qualified as Attrs
 import Arkham.Types.Treachery.Cards
 import Arkham.Types.Treachery.Runner
 

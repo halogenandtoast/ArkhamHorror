@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.StudentUnion
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (studentUnion)
+import Arkham.Location.Cards qualified as Cards (studentUnion)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -16,7 +16,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype StudentUnion = StudentUnion LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

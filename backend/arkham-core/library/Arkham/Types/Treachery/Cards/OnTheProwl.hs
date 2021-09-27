@@ -6,7 +6,7 @@ module Arkham.Types.Treachery.Cards.OnTheProwl
 import Arkham.Prelude
 
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Query

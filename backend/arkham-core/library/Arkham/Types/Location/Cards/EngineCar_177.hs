@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.EngineCar_177
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (engineCar_177)
+import Arkham.Location.Cards qualified as Cards (engineCar_177)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
@@ -18,7 +18,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.Modifier
 import Arkham.Types.Query
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype EngineCar_177 = EngineCar_177 LocationAttrs
   deriving anyclass IsLocation

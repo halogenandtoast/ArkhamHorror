@@ -4,7 +4,7 @@ import Control.Applicative
 import Control.Monad.State
 import Data.Char
 import Data.DList (DList(..))
-import qualified Data.DList as DList
+import Data.DList qualified as DList
 import Data.Foldable (for_)
 import Data.List (groupBy, intercalate, sort, stripPrefix)
 import Data.Maybe

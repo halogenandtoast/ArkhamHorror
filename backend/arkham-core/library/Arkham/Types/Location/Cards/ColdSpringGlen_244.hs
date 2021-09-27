@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.ColdSpringGlen_244
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (coldSpringGlen_244)
+import Arkham.Location.Cards qualified as Cards (coldSpringGlen_244)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

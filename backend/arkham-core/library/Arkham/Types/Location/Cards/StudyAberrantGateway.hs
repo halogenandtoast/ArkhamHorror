@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.StudyAberrantGateway
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (studyAberrantGateway)
+import Arkham.Location.Cards qualified as Cards (studyAberrantGateway)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -15,9 +15,9 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

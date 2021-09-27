@@ -26,12 +26,12 @@ import Arkham.Types.Scenario.Deck as X
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Token
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 import Control.Monad.Writer hiding (filterM)
-import qualified Data.List.NonEmpty as NE
+import Data.List.NonEmpty qualified as NE
 
 class IsScenario a
 

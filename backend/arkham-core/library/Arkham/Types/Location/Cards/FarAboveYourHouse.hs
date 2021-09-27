@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.FarAboveYourHouse where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (farAboveYourHouse)
+import Arkham.Location.Cards qualified as Cards (farAboveYourHouse)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
@@ -12,7 +12,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype FarAboveYourHouse = FarAboveYourHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

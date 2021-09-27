@@ -4,8 +4,8 @@ module Arkham.Types.Treachery.Cards.MysteriousChantingSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Enemy.Cards as Cards
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Treachery.Cards qualified as Cards
 
 spec :: Spec
 spec = describe "Mysterious Chanting" $ do

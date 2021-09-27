@@ -4,7 +4,7 @@ module Arkham.Types.Skill.Cards.DeductionSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Skill.Cards as Cards
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Types.Location.Attrs (LocationAttrs(..))
 

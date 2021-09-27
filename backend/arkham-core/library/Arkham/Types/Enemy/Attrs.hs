@@ -8,20 +8,20 @@ import Arkham.Prelude
 import Arkham.Enemy.Cards
 import Arkham.Json
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.EnemyId
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.EnemyId
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue as X
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
-import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.Keyword qualified as Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.Matcher
   ( EnemyMatcher(..)
@@ -38,11 +38,11 @@ import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 import Data.List.Extra (firstJust)
 import Data.UUID (nil)
 

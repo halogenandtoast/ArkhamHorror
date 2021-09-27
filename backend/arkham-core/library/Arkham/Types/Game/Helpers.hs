@@ -6,16 +6,16 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action, TakenAction(..))
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria (Criterion)
-import qualified Arkham.Types.Criteria as Criteria
+import Arkham.Types.Criteria qualified as Criteria
 import Arkham.Types.DamageEffect
 import Arkham.Types.Deck
 import Arkham.Types.Decks
@@ -26,9 +26,9 @@ import Arkham.Types.GameValue
 import Arkham.Types.History
 import Arkham.Types.Id
 import Arkham.Types.Keyword
-import qualified Arkham.Types.Keyword as Keyword
-import qualified Arkham.Types.Label as Location
-import qualified Arkham.Types.Matcher as Matcher
+import Arkham.Types.Keyword qualified as Keyword
+import Arkham.Types.Label qualified as Location
+import Arkham.Types.Matcher qualified as Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -38,13 +38,13 @@ import {-# SOURCE #-} Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait (Trait, toTraits)
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 import Data.HashSet (size)
-import qualified Data.HashSet as HashSet
+import Data.HashSet qualified as HashSet
 import Data.UUID (nil)
 import System.IO.Unsafe
 

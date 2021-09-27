@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.BackAlley
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (backAlley)
+import Arkham.Location.Cards qualified as Cards (backAlley)
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue

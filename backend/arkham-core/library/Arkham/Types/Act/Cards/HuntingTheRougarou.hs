@@ -2,8 +2,8 @@ module Arkham.Types.Act.Cards.HuntingTheRougarou where
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
@@ -18,10 +18,10 @@ import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype HuntingTheRougarou = HuntingTheRougarou ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)

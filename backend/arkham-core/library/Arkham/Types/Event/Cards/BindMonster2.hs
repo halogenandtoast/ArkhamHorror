@@ -5,7 +5,7 @@ module Arkham.Types.Event.Cards.BindMonster2
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards (bindMonster2)
+import Arkham.Event.Cards qualified as Cards (bindMonster2)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -17,7 +17,7 @@ import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype BindMonster2 = BindMonster2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env)

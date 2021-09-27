@@ -2,10 +2,10 @@ module Arkham.Types.Location.Cards.Parlor where
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria

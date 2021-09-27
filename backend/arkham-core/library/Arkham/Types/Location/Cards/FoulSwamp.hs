@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.FoulSwamp
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (foulSwamp)
+import Arkham.Location.Cards qualified as Cards (foulSwamp)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

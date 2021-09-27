@@ -12,9 +12,9 @@ import Arkham.Types.ClassSymbol
 import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.Id
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Keyword (Keyword)
-import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.Keyword qualified as Keyword
+import Arkham.Types.LocationSymbol
 import {-# SOURCE #-} Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.SkillType

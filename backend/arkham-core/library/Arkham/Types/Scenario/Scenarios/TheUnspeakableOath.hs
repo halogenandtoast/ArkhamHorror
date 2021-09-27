@@ -5,11 +5,11 @@ module Arkham.Types.Scenario.Scenarios.TheUnspeakableOath
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Acts
-import qualified Arkham.Agenda.Cards as Agendas
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
-import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.EncounterSet qualified as EncounterSet
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Scenario.Attrs

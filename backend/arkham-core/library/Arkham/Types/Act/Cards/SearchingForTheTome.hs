@@ -5,8 +5,8 @@ module Arkham.Types.Act.Cards.SearchingForTheTome
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers

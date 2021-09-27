@@ -2,7 +2,7 @@ module Arkham.Types.Campaign.Campaigns.TheDunwichLegacy where
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Assets
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignId

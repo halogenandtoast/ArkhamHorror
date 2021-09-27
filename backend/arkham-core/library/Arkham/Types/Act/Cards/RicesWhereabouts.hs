@@ -5,9 +5,9 @@ module Arkham.Types.Act.Cards.RicesWhereabouts
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Asset.Cards as Assets
-import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
@@ -19,9 +19,9 @@ import Arkham.Types.Exception
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (Discarded)
 import Arkham.Types.ScenarioId
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 import Data.List.Extra (firstJust)
 
 newtype RicesWhereabouts = RicesWhereabouts ActAttrs

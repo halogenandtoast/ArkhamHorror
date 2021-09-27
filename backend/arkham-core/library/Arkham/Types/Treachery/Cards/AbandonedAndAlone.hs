@@ -2,7 +2,7 @@ module Arkham.Types.Treachery.Cards.AbandonedAndAlone where
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards (abandonedAndAlone)
+import Arkham.Treachery.Cards qualified as Cards (abandonedAndAlone)
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Treachery.Attrs

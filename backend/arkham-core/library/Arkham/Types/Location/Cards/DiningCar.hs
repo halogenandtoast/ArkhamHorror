@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.DiningCar
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (diningCar)
+import Arkham.Location.Cards qualified as Cards (diningCar)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
@@ -18,7 +18,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
 import Arkham.Types.Modifier
 import Arkham.Types.Query
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype DiningCar = DiningCar LocationAttrs
   deriving anyclass IsLocation

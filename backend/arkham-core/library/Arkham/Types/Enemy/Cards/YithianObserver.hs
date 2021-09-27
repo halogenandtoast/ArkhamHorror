@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.YithianObserver
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
@@ -16,7 +16,7 @@ import Arkham.Types.Message hiding (EnemyAttacks)
 import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.Query
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype YithianObserver = YithianObserver EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)

@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.TenAcreMeadow_247
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (tenAcreMeadow_247)
+import Arkham.Location.Cards qualified as Cards (tenAcreMeadow_247)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

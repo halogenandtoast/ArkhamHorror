@@ -4,7 +4,7 @@ module Arkham.Types.Investigator.Cards.ZoeySamarasSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Types.Enemy.Attrs as Enemy
+import Arkham.Types.Enemy.Attrs qualified as Enemy
 
 spec :: Spec
 spec = do

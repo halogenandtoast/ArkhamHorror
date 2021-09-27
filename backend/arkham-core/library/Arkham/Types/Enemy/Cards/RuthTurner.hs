@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.RuthTurner
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
@@ -13,7 +13,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyEvaded)
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype RuthTurner = RuthTurner EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)

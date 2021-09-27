@@ -5,7 +5,7 @@ module Arkham.Types.Agenda.Cards.HorrorsUnleashed
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -19,7 +19,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.Resolution
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 
 newtype HorrorsUnleashed = HorrorsUnleashed AgendaAttrs

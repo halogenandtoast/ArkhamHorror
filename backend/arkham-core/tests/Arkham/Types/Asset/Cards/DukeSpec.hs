@@ -4,7 +4,7 @@ module Arkham.Types.Asset.Cards.DukeSpec
 
 import TestImport
 
-import qualified Arkham.Types.Enemy.Attrs as Enemy
+import Arkham.Types.Enemy.Attrs qualified as Enemy
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Types.Location.Attrs (LocationAttrs(..))
 

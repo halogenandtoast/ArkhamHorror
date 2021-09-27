@@ -5,8 +5,8 @@ module Arkham.Types.Act.Cards.Awakening
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card

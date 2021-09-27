@@ -2,7 +2,7 @@ module Arkham.Types.Investigator.Cards.SefinaRousseau where
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Events
+import Arkham.Event.Cards qualified as Events
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Cost

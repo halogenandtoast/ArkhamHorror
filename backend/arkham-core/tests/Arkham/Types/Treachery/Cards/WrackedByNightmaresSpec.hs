@@ -4,8 +4,8 @@ module Arkham.Types.Treachery.Cards.WrackedByNightmaresSpec
 
 import TestImport.Lifted
 
-import qualified Arkham.Treachery.Cards as Cards
-import qualified Arkham.Types.Asset.Attrs as Asset
+import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Types.Asset.Attrs qualified as Asset
 
 spec :: Spec
 spec = describe "Wracked by Nightmares" $ do

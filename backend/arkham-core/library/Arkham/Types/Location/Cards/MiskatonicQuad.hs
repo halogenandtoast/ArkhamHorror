@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.MiskatonicQuad
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (miskatonicQuad)
+import Arkham.Location.Cards qualified as Cards (miskatonicQuad)
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue

@@ -5,7 +5,7 @@ module Arkham.Types.Asset.Cards.JoeyTheRatVigil
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
@@ -15,7 +15,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria hiding (DuringTurn)
 import Arkham.Types.Matcher hiding (DuringTurn, FastPlayerWindow)
 import Arkham.Types.Message
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
 

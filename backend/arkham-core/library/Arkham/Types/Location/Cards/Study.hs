@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.Study where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (study)
+import Arkham.Location.Cards qualified as Cards (study)
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 

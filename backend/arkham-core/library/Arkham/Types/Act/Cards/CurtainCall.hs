@@ -5,12 +5,12 @@ module Arkham.Types.Act.Cards.CurtainCall
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Act.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
-import qualified Arkham.Types.Action as Action
+import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
@@ -19,7 +19,7 @@ import Arkham.Types.Message
 import Arkham.Types.Resolution
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype CurtainCall = CurtainCall ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)

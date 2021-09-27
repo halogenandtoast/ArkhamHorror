@@ -4,7 +4,7 @@ module Arkham.Types.Event.Cards.LuckySpec
 
 import TestImport
 
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec

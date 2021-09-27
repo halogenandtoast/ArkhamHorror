@@ -2,7 +2,7 @@ module Arkham.Types.Location.Cards.HoleInTheWall where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (holeInTheWall)
+import Arkham.Location.Cards qualified as Cards (holeInTheWall)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
@@ -10,7 +10,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype HoleInTheWall = HoleInTheWall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

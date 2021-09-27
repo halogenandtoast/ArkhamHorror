@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.ParlorCar
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (parlorCar)
+import Arkham.Location.Cards qualified as Cards (parlorCar)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost

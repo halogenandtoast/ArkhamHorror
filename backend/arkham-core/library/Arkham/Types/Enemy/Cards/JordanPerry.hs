@@ -5,7 +5,7 @@ module Arkham.Types.Enemy.Cards.JordanPerry
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Criteria
@@ -15,7 +15,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Phase
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 
 newtype JordanPerry = JordanPerry EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)

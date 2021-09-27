@@ -6,7 +6,7 @@ module Arkham.Types.Campaign.Campaigns.ThePathToCarcosa
 import Arkham.Prelude
 
 import Arkham.Campaigns.ThePathToCarcosa.Import
-import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignId

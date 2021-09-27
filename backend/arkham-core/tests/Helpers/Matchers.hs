@@ -14,14 +14,14 @@ import Arkham.Types.EnemyId
 import Arkham.Types.Event
 import Arkham.Types.Game
 import Arkham.Types.Investigator
-import qualified Arkham.Types.Investigator.Attrs as Investigator
+import Arkham.Types.Investigator.Attrs qualified as Investigator
 import Arkham.Types.Location
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Treachery
 import Arkham.Types.TreacheryId
 import Control.Lens
-import qualified Data.List as L
+import Data.List qualified as L
 import Data.Maybe (fromJust)
 
 getTestGame :: (MonadIO m, MonadReader env m, HasGameRef env) => m Game

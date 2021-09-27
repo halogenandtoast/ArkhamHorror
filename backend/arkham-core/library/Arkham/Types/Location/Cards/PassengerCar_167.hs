@@ -5,7 +5,7 @@ module Arkham.Types.Location.Cards.PassengerCar_167
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards (passengerCar_167)
+import Arkham.Location.Cards qualified as Cards (passengerCar_167)
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -19,7 +19,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window
 
 newtype PassengerCar_167 = PassengerCar_167 LocationAttrs

@@ -5,9 +5,9 @@ module Arkham.Types.Agenda.Cards.ChaosAtTheCarnevale
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
-import qualified Arkham.Asset.Cards as Assets
-import qualified Arkham.Enemy.Cards as Enemies
+import Arkham.Agenda.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
@@ -17,9 +17,9 @@ import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import qualified Arkham.Types.Timing as Timing
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
-import qualified Arkham.Types.Window as Window
+import Arkham.Types.Window qualified as Window
 
 newtype ChaosAtTheCarnevale = ChaosAtTheCarnevale AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env)

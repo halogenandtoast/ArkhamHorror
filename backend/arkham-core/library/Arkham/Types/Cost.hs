@@ -13,7 +13,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait (Trait)
-import qualified Data.Text as T
+import Data.Text qualified as T
 
 totalActionCost :: Cost -> Int
 totalActionCost (ActionCost n) = n

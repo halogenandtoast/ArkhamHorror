@@ -6,7 +6,7 @@ import TestImport.Lifted
 
 import Arkham.Types.Trait
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 
 spec :: Spec
 spec = describe "Daisy Walker" $ do

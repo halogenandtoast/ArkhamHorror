@@ -27,6 +27,7 @@ default-extensions:
   - StandaloneDeriving
   - TypeApplications
   - TypeFamilies
+  - ImportQualifiedPost
 
 dependencies:
   - base

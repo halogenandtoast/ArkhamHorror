@@ -32,6 +32,7 @@ data Investigator
   | LolaHayes' LolaHayes
   | MarkHarrigan' MarkHarrigan
   | MinhThiPhan' MinhThiPhan
+  | NathanielCho' NathanielCho
   | RexMurphy' RexMurphy
   | RolandBanks' RolandBanks
   | SefinaRousseau' SefinaRousseau
@@ -228,6 +229,7 @@ allInvestigators = mapFromList $ map
   , LolaHayes' lolaHayes
   , MarkHarrigan' markHarrigan
   , MinhThiPhan' minhThiPhan
+  , NathanielCho' nathanielCho
   , RexMurphy' rexMurphy
   , RolandBanks' rolandBanks
   , SefinaRousseau' sefinaRousseau

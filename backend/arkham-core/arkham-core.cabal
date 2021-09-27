@@ -297,6 +297,7 @@ library
       Arkham.Types.Asset.Cards.ProfessorWarrenRice
       Arkham.Types.Asset.Cards.RabbitsFoot
       Arkham.Types.Asset.Cards.RabbitsFoot3
+      Arkham.Types.Asset.Cards.RandallCho
       Arkham.Types.Asset.Cards.RelicHunter3
       Arkham.Types.Asset.Cards.ResearchLibrarian
       Arkham.Types.Asset.Cards.RiteOfSeeking
@@ -538,6 +539,7 @@ library
       Arkham.Types.Enemy.Cards.TheRougarou
       Arkham.Types.Enemy.Cards.TheThingThatFollows
       Arkham.Types.Enemy.Cards.Thrall
+      Arkham.Types.Enemy.Cards.TommyMalloy
       Arkham.Types.Enemy.Cards.Umordhoth
       Arkham.Types.Enemy.Cards.VictoriaDevereux
       Arkham.Types.Enemy.Cards.Whippoorwill
@@ -620,6 +622,7 @@ library
       Arkham.Types.Event.Cards.MindWipe1
       Arkham.Types.Event.Cards.MindWipe3
       Arkham.Types.Event.Cards.MomentOfRespite3
+      Arkham.Types.Event.Cards.MonsterSlayer
       Arkham.Types.Event.Cards.MonsterSlayer5
       Arkham.Types.Event.Cards.MoonlightRitual
       Arkham.Types.Event.Cards.NoStoneUnturned

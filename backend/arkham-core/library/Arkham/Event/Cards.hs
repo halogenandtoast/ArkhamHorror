@@ -116,6 +116,7 @@ allPlayerEventCards = mapFromList $ map
   , mindWipe1
   , mindWipe3
   , momentOfRespite3
+  , monsterSlayer
   , monsterSlayer5
   , moonlightRitual
   , noStoneUnturned
@@ -917,6 +918,13 @@ contraband2 = (event "51005" "Contraband" 3 Rogue)
     (AssetOwnedBy (InvestigatorAt YourLocation)
     <> AssetOneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
     )
+  }
+
+monsterSlayer :: CardDef
+monsterSlayer = (event "60116" "Monster Slayer" 0 Guardian)
+  { cdCardTraits = singleton Spirit
+  , cdAction = Just $ Action.Fight
+  , cdSkills = [SkillWild]
   }
 
 taunt3 :: CardDef

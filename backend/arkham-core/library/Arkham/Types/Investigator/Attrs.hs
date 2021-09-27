@@ -751,6 +751,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   DrawStartingHand iid | iid == investigatorId -> do
     let (discard, hand, deck) = drawOpeningHand a 5
     pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
+  ReturnToHand iid (CardIdTarget cid) | iid == investigatorId -> do
+    -- Card is assumed to be in your discard
+    -- but since find card can also return cards in your hand
+    -- we filter again just in case
+    let card = findCard cid a
+        discardFilter = case preview _PlayerCard card of
+                          Just pc -> filter (/= pc)
+                          Nothing -> id
+    pure $ a & discardL %~ discardFilter & handL %~ filter (/= card) & handL %~ (card:)
   CheckAdditionalActionCosts iid _ source action msgs | iid == investigatorId ->
     do
       modifiers' <- getModifiers source (toTarget a)

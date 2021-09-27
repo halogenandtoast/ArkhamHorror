@@ -68,6 +68,7 @@ allPlayerEnemyCards = mapFromList $ map
   , graveyardGhouls
   , theThingThatFollows
   , theManInThePallidMask
+  , tommyMalloy
   ]
 
 allEncounterEnemyCards :: HashMap CardCode CardDef
@@ -698,6 +699,12 @@ almaHill = (enemy
   { cdCardTraits = setFromList [Humanoid, Cultist]
   , cdVictoryPoints = Just 1
   , cdUnique = True
+  }
+
+tommyMalloy :: CardDef
+tommyMalloy = (weakness "60103" "Tommy Malloy")
+  { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
+  , cdKeywords = setFromList [Keyword.Hunter]
   }
 
 bogGator :: CardDef

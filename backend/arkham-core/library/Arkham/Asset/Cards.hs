@@ -212,6 +212,7 @@ allPlayerAssetCards = mapFromList $ map
   , professorWarrenRice
   , rabbitsFoot
   , rabbitsFoot3
+  , randallCho
   , relicHunter3
   , researchLibrarian
   , riteOfSeeking
@@ -1563,6 +1564,13 @@ rabbitsFoot3 = (asset "50010" "Rabbit's Foot" 1 Survivor)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Item, Charm]
   , cdLevel = 3
+  }
+
+randallCho :: CardDef
+randallCho = (asset "60102" ("Randall Cho" <:> "Concerned Brother") 2 Guardian)
+  { cdSkills = [SkillWillpower, SkillIntellect, SkillWild]
+  , cdCardTraits = setFromList [Ally, Medic]
+  , cdUnique = True
   }
 
 arcaneEnlightenment :: CardDef

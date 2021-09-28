@@ -2111,6 +2111,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ]
               else choices
             )
+        ShuffleBackIn (PlayFound who) -> do
+          let
+            choices =
+              [ Run
+                  [ PlayCard
+                    iid
+                    (toCardId card)
+                    (InvestigatorTarget who)
+                    True
+                  , ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')
+                  ]
+              | card <- cards
+              , null traits' || notNull (traits' `intersection` toTraits card)
+              ]
+          push
+            (chooseOne iid $ if null choices
+              then
+                [ Label
+                    "No cards found"
+                    [ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')]
+                ]
+              else choices
+            )
         ShuffleBackIn (NotifyTargetOfFound target) -> do
           let
             choices =

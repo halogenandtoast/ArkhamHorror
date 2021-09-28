@@ -17,5 +17,25 @@ newtype RandallCho = RandallCho AssetAttrs
 randallCho :: AssetCard RandallCho
 randallCho = ally RandallCho Cards.randallCho (1, 3)
 
+instance HasAbilities RandallCho where
+  getAbilities (RandallCho x) = [
+    restrictedAbility x 1 OwnsThis $ FastAbility $ Free
+  ]
+
 instance AssetRunner env => RunMessage env RandallCho where
-  runMessage msg (RandallCho attrs) = RandallCho <$> runMessage msg attrs
+  runMessage msg (RandallCho attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ chooseOne
+        iid
+        [ Label
+          "Heal 3 damage"
+          [HealDamage iid 3]
+        , Label
+          "Search your deck and discard pile for a Weapon asset, play it (paying its cost), and shuffle your deck"
+          -- [ SearchDeckAndDiscardForTraits iid source [Weapon]
+          [ SearchDeckForTraits iid source [Weapon]
+            $ ShuffleBackIn
+            $ PlayFound iid
+          ]
+        ]
+    _ -> RandallCho <$> runMessage msg attrs

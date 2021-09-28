@@ -91,7 +91,7 @@ data SearchedCardsStrategy = ShuffleBackIn FoundCardStrategy | PutBackInAnyOrder
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
-data FoundCardStrategy = DrawFound InvestigatorId | NotifyTargetOfFound Target
+data FoundCardStrategy = DrawFound InvestigatorId | PlayFound InvestigatorId | NotifyTargetOfFound Target
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
@@ -479,6 +479,7 @@ data Message
     | RunSkillTest InvestigatorId
     | SearchCollectionForRandom InvestigatorId Source CardMatcher
     | SearchDeckForTraits InvestigatorId Target [Trait]
+    | SearchDeckAndDiscardForTraits InvestigatorId Target [Trait]
     | SearchDiscard InvestigatorId Target [Trait]
     | SearchTopOfDeck InvestigatorId Source Target Int [Trait] SearchedCardsStrategy
     | SearchTopOfDeckFound InvestigatorId Target DeckSignifier Card

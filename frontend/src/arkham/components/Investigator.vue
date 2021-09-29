@@ -97,7 +97,7 @@ export default defineComponent({
     const searchTopOfDeckAction = computed(() => {
       return choices
         .value
-        .findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_DECK
+        .findIndex((c) => c.tag === MessageType.SEARCH
           && c.contents[2].contents === id.value);
     })
 

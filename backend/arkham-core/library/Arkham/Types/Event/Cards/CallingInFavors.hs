@@ -20,6 +20,7 @@ import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window (Window(..))
 import Arkham.Types.Window qualified as Window
+import Arkham.Types.Zone
 
 newtype CallingInFavors = CallingInFavors EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
@@ -49,18 +50,18 @@ instance EventRunner env => RunMessage env CallingInFavors where
                 (Just $ EffectInt cost)
                 (toSource attrs)
                 (InvestigatorTarget iid)
-              , SearchTopOfDeck
+              , Search
                 iid
                 (toSource attrs)
                 (InvestigatorTarget iid)
-                9
+                (FromTopOfDeck 9)
                 []
-                (DeferAllSearchedToTarget $ toTarget attrs)
+                (DeferSearchedToTarget $ toTarget attrs)
               ]
           | (target, cost) <- targetsWithCosts
           ]
       e <$ pushAll [choice, Discard (toTarget attrs)]
-    SearchTopOfDeckAll iid target _ cards | isTarget attrs target -> do
+    SearchFound iid target _ cards | isTarget attrs target -> do
       let
         windows' =
           [ Window Timing.When Window.NonFast

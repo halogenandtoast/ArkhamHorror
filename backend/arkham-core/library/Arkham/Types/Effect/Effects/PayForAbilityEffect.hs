@@ -424,7 +424,7 @@ instance
               FromPlayAreaOf whoMatcher ->
                 map unInPlayCard
                   <$> (selectList whoMatcher >>= concatMapM getList)
-              Zones zs -> concatMapM getCards zs
+              CostZones zs -> concatMapM getCards zs
           cards <- getCards zone
           e <$ push
             (chooseN

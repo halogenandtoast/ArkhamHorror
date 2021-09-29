@@ -52,6 +52,7 @@ export interface InvestigatorContents {
   resigned: boolean;
   tomeActions?: number;
   cardsUnderneath: Card[];
+  foundCards: Record<string, Card[]>;
   xp: number;
 }
 
@@ -84,6 +85,7 @@ export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorConten
   resigned: JsonDecoder.boolean,
   tomeActions: JsonDecoder.optional(JsonDecoder.number),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
+  foundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
   xp: JsonDecoder.number,
 }, 'Attrs');
 

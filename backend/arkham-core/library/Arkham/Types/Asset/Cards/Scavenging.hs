@@ -19,6 +19,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
+import Arkham.Types.Zone qualified as Zone
 
 newtype Scavenging = Scavenging AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -50,6 +51,9 @@ instance HasAbilities Scavenging where
 
 instance AssetRunner env => RunMessage env Scavenging where
   runMessage msg a@(Scavenging attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ push (SearchDiscard iid (InvestigatorTarget iid) [Item])
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+      (Search iid source (InvestigatorTarget iid) Zone.FromDiscard [Item]
+      $ PutBack
+      $ DrawFound iid
+      )
     _ -> Scavenging <$> runMessage msg attrs

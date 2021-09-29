@@ -16,6 +16,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Zone
 
 newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -32,16 +33,18 @@ southsideMasBoardingHouse = location
 
 instance HasAbilities SouthsideMasBoardingHouse where
   getAbilities (SouthsideMasBoardingHouse x) | locationRevealed x =
-    withBaseAbilities x $
-      [ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 1)
-        & abilityLimitL
-        .~ PlayerLimit PerGame 1
-      ]
-  getAbilities (SouthsideMasBoardingHouse attrs) =
-    getAbilities attrs
+    withBaseAbilities x
+      $ [ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 1)
+          & abilityLimitL
+          .~ PlayerLimit PerGame 1
+        ]
+  getAbilities (SouthsideMasBoardingHouse attrs) = getAbilities attrs
 
 instance LocationRunner env => RunMessage env SouthsideMasBoardingHouse where
   runMessage msg l@(SouthsideMasBoardingHouse attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ push (SearchDeckForTraits iid (InvestigatorTarget iid) [Ally])
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (Search iid source (InvestigatorTarget iid) FromDeck [Ally]
+      $ ShuffleBackIn
+      $ DrawFound iid
+      )
     _ -> SouthsideMasBoardingHouse <$> runMessage msg attrs

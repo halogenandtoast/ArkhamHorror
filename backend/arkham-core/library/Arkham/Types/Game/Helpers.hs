@@ -321,7 +321,7 @@ getCanAffordCost iid source mAction windows' = \case
           (Matcher.InHandOf whoMatcher <> Matcher.BasicCardMatch cardMatcher)
         FromPlayAreaOf whoMatcher ->
           map unInPlayCard <$> (selectList whoMatcher >>= concatMapM getList)
-        Zones zs -> concatMapM getCards zs
+        CostZones zs -> concatMapM getCards zs
     (> n) . length <$> getCards zone
   DiscardCost _ -> pure True -- TODO: Make better
   DiscardCardCost _ -> pure True -- TODO: Make better

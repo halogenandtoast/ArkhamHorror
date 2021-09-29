@@ -14,6 +14,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
+import Arkham.Types.Zone
 
 newtype ResearchLibrarian = ResearchLibrarian AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -36,6 +37,9 @@ instance HasAbilities ResearchLibrarian where
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ push (SearchDeckForTraits iid (InvestigatorTarget iid) [Tome])
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
+      (Search iid source (InvestigatorTarget iid) FromDeck [Tome]
+      $ ShuffleBackIn
+      $ DrawFound iid
+      )
     _ -> ResearchLibrarian <$> runMessage msg attrs

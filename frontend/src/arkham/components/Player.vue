@@ -61,7 +61,7 @@
           <span class="deck-size">{{player.deckSize}}</span>
         </div>
         <template v-if="debug">
-          <button @click="debugChoose({tag: 'SearchDeckForTraits', contents: [investigatorId, { tag: 'InvestigatorTarget', contents: investigatorId }, []]})">Select Draw</button>
+          <button @click="debugChoose({tag: 'Search', contents: [investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, {tag: 'FromDeck', contents: []}, [], { 'tag': 'PutBack', contents: {tag: 'DrawFound', contents: investigatorId}}]})">Select Draw</button>
         </template>
       </div>
       <section class="hand">

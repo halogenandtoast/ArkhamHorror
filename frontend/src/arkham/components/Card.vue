@@ -51,8 +51,8 @@ export default defineComponent({
         case MessageType.REMOVE_FROM_GAME:
           return c.contents.contents === id.value;
         case MessageType.ADD_FOCUSED_TO_HAND:
-          return c.contents[2] === id.value;
-        case MessageType.SEARCH_TOP_OF_DECK_FOUND:
+          return c.contents[3] === id.value;
+        case MessageType.SEARCH_FOUND:
           return c.contents[2].contents.id === id.value;
         case MessageType.PLAY_CARD:
           return c.contents[1] === id.value;

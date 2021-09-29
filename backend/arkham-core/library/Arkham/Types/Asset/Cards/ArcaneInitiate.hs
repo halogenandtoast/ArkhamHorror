@@ -17,6 +17,7 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
+import Arkham.Types.Zone
 
 newtype ArcaneInitiate = ArcaneInitiate AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -28,10 +29,10 @@ arcaneInitiate = ally ArcaneInitiate Cards.arcaneInitiate (1, 2)
 instance HasAbilities ArcaneInitiate where
   getAbilities (ArcaneInitiate a) =
     [ restrictedAbility a 1 OwnsThis
-    $ ForcedAbility
-    $ AssetEntersPlay Timing.When
-    $ AssetWithId
-    $ toId a
+      $ ForcedAbility
+      $ AssetEntersPlay Timing.When
+      $ AssetWithId
+      $ toId a
     , restrictedAbility a 2 OwnsThis $ FastAbility $ ExhaustCost $ toTarget a
     ]
 
@@ -42,7 +43,7 @@ instance (AssetRunner env) => RunMessage env ArcaneInitiate where
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
       push $ chooseOne
         iid
-        [ SearchTopOfDeck iid source (InvestigatorTarget iid) 3 [Spell]
+        [ Search iid source (InvestigatorTarget iid) (FromTopOfDeck 3) [Spell]
           $ ShuffleBackIn
           $ DrawFound iid
         ]

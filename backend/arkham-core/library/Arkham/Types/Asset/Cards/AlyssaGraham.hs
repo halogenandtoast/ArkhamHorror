@@ -17,6 +17,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
+import Arkham.Types.Zone
 
 newtype AlyssaGraham = AlyssaGraham AssetAttrs
   deriving anyclass IsAsset
@@ -42,35 +43,34 @@ instance AssetRunner env => RunMessage env AlyssaGraham where
       targets <- map InvestigatorTarget <$> getSetList ()
       a <$ push
         (chooseOne iid
-        $ SearchTopOfDeck
+        $ Search
             iid
             source
             EncounterDeckTarget
-            1
+            (FromTopOfDeck 1)
             []
             (DeferSearchedToTarget $ toTarget attrs)
-        : [ SearchTopOfDeck
+        : [ Search
               iid
               source
               target
-              1
+              (FromTopOfDeck 1)
               []
               (DeferSearchedToTarget $ toTarget attrs)
           | target <- targets
           ]
         )
-    SearchTopOfDeckFound iid target deck card | isTarget attrs target ->
-      a <$ pushAll
-        [ FocusCards [card]
-        , chooseOne
-          iid
-          [ Label
-            "Add 1 Doom to Alyssa to move card to bottom"
-            [ UnfocusCards
-            , PlaceDoom (toTarget attrs) 1
-            , MoveTopOfDeckToBottom (toSource attrs) deck 1
-            ]
-          , Label "Leave card on top" [UnfocusCards]
+    SearchFound iid target deck cards | isTarget attrs target -> a <$ pushAll
+      [ FocusCards cards
+      , chooseOne
+        iid
+        [ Label
+          "Add 1 Doom to Alyssa to move card to bottom"
+          [ UnfocusCards
+          , PlaceDoom (toTarget attrs) 1
+          , MoveTopOfDeckToBottom (toSource attrs) deck 1
           ]
+        , Label "Leave card on top" [UnfocusCards]
         ]
+      ]
     _ -> AlyssaGraham <$> runMessage msg attrs

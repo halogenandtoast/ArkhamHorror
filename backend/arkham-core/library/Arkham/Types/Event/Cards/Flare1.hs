@@ -13,6 +13,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Zone
 
 newtype Flare1 = Flare1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
@@ -26,11 +27,11 @@ findAllyMessages iid investigatorIds e =
   [ CheckAttackOfOpportunity iid False
   , chooseOne
     iid
-    [ SearchTopOfDeck
+    [ Search
         iid'
         (toSource e)
         (InvestigatorTarget iid')
-        9
+        (FromTopOfDeck 9)
         [Ally]
         (ShuffleBackIn $ NotifyTargetOfFound (toTarget e))
     | iid' <- investigatorIds
@@ -57,8 +58,7 @@ instance EventRunner env => RunMessage env Flare1 where
             ]
           , Label "Search for Ally" $ findAllyMessages iid investigatorIds e
           ]
-    SearchTopOfDeckFound iid target _ card | isTarget e target ->
+    SearchFound iid target _ [card] | isTarget e target ->
       e <$ pushAll [PutCardIntoPlay iid card Nothing, Exile target]
-    SearchTopOfDeckNoneFound _ target | isTarget e target ->
-      e <$ push (Discard target)
+    SearchNoneFound _ target | isTarget e target -> e <$ push (Discard target)
     _ -> Flare1 <$> runMessage msg attrs

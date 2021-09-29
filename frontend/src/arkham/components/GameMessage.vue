@@ -11,11 +11,11 @@ export default defineComponent({
     const splits = this.msg.split(/({[^}]+})/)
     const els = splits.map(split => {
       if (/{card:"((?:[^"]|\\.)+)":"([^"]+)":"([^"]+)"}/.test(split)) {
-        const found = split.match(/{card:"([^"]+)":"([^"]+)":"([^"]+)"}/)
+        const found = split.match(/{card:"((?:[^"]|\\.)+)":"([^"]+)":"([^"]+)"}/)
         if (found) {
           const [, cardName, cardId] = found
           if (cardName && cardId) {
-            return h('span', { 'data-image-id': cardId }, cardName)
+            return h('span', { 'data-image-id': cardId }, cardName.replace(/\\"/g, "\""))
           }
         }
       } else if (/{investigator:"((?:[^"]|\\.)+)":"([^"]+)"}/.test(split)) {

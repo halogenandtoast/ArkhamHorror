@@ -11,6 +11,7 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
+import Arkham.Types.Zone
 
 newtype TheYellowSign = TheYellowSign TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
@@ -38,6 +39,12 @@ instance TreacheryRunner env => RunMessage env TheYellowSign where
           DamageAny
           0
           2
-        , SearchDeckForTraits iid (InvestigatorTarget iid) [Madness] -- TODO: We may need to specify weakness
+        , Search
+          iid
+          source
+          (InvestigatorTarget iid)
+          FromDeck
+          [Madness]
+          (ShuffleBackIn $ DrawFound iid)-- TODO: We may need to specify weakness
         ]
     _ -> TheYellowSign <$> runMessage msg attrs

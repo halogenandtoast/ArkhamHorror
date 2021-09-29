@@ -81,9 +81,9 @@ getApiV1ArkhamGameR gameId = do
     (UniquePlayer userId gameId)
   let
     Game {..} = arkhamGameCurrentData ge
-    investigatorId = if arkhamGameMultiplayerVariant ge == Solo
-      then coerce gameActiveInvestigatorId
-      else coerce arkhamPlayerInvestigatorId
+    investigatorId = case arkhamGameMultiplayerVariant ge of
+      Solo -> coerce gameActiveInvestigatorId
+      WithFriends -> coerce arkhamPlayerInvestigatorId
   pure $ GetGameJson
     (Just investigatorId)
     (arkhamGameMultiplayerVariant ge)
@@ -291,9 +291,11 @@ putApiV1ArkhamGameR gameId = do
       (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
       updatedLog
       arkhamGameMultiplayerVariant
-    replace pid $ arkhamPlayer
-      { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
-      }
+    case arkhamGameMultiplayerVariant of
+      Solo -> replace pid $ arkhamPlayer
+        { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
+        }
+      WithFriends -> pure ()
 
   liftIO $ atomically $ writeTChan
     writeChannel

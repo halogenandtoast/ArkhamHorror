@@ -18,6 +18,7 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Zone qualified as Zone
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel InvestigatorAttrs
   deriving anyclass IsInvestigator
@@ -92,8 +93,11 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
                 pairs'
               )
       UseCardAbility iid (TokenEffectSource ElderSign) _ 2 _
-        | iid == investigatorId -> i
-        <$ push (SearchDiscard iid (InvestigatorTarget iid) [Tome])
+        | iid == investigatorId -> i <$ push
+          (Search iid (toSource attrs) (toTarget attrs) Zone.FromDiscard [Tome]
+          $ PutBack
+          $ DrawFound iid
+          )
       ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
         i <$ push
           (chooseOne

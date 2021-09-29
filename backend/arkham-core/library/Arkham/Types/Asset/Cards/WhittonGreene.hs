@@ -22,6 +22,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
+import Arkham.Types.Zone
 
 newtype WhittonGreene = WhittonGreene AssetAttrs
   deriving anyclass IsAsset
@@ -51,11 +52,11 @@ instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor en
 instance AssetRunner env => RunMessage env WhittonGreene where
   runMessage msg a@(WhittonGreene attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
-      (SearchTopOfDeck
+      (Search
         iid
         source
         (InvestigatorTarget iid)
-        6
+        (FromTopOfDeck 6)
         [Tome, Relic]
         (ShuffleBackIn $ DrawFound iid)
       )

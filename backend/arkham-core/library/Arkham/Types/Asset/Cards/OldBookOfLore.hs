@@ -12,9 +12,10 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
+import Arkham.Types.Zone
 
 newtype OldBookOfLore = OldBookOfLore AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -32,18 +33,22 @@ instance HasAbilities OldBookOfLore where
 instance AssetRunner env => RunMessage env OldBookOfLore where
   runMessage msg a@(OldBookOfLore attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationId <- getId @LocationId iid
-      investigatorIds <- getSetList locationId
+      locationId <- getId iid
+      investigatorIds <- selectList $ InvestigatorAt $ LocationWithId locationId
       a <$ push
         (chooseOne
           iid
-          [ SearchTopOfDeck
-              iid'
-              source
+          [ TargetLabel
               (InvestigatorTarget iid')
-              3
-              []
-              (ShuffleBackIn $ DrawFound iid')
+              [ Search
+                iid'
+                source
+                (InvestigatorTarget iid')
+                (FromTopOfDeck 3)
+                []
+                (ShuffleBackIn $ DrawFound iid')
+              , EndSearch iid' source
+              ]
           | iid' <- investigatorIds
           ]
         )

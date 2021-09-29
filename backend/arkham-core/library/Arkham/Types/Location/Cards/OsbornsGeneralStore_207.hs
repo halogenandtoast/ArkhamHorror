@@ -15,6 +15,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Zone
 
 newtype OsbornsGeneralStore_207 = OsbornsGeneralStore_207 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -41,11 +42,11 @@ instance HasAbilities OsbornsGeneralStore_207 where
 instance LocationRunner env => RunMessage env OsbornsGeneralStore_207 where
   runMessage msg l@(OsbornsGeneralStore_207 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
-      (SearchTopOfDeck
+      (Search
         iid
         source
         (InvestigatorTarget iid)
-        3
+        (FromTopOfDeck 3)
         [Item]
         (ShuffleBackIn $ DrawFound iid)
       )

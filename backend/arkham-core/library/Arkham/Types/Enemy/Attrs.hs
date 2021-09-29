@@ -307,6 +307,7 @@ instance TargetEntity EnemyAttrs where
   toTarget = EnemyTarget . toId
   isTarget EnemyAttrs { enemyId } (EnemyTarget eid) = enemyId == eid
   isTarget attrs (CardCodeTarget cardCode) = toCardCode attrs == cardCode
+  isTarget attrs (CardIdTarget cardId) = toCardId attrs == cardId
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
@@ -589,7 +590,11 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         ls -> a <$ pushAll
           (chooseOne
               leadInvestigatorId
-              [TargetLabel (LocationTarget l) [EnemyMove enemyId enemyLocation l] | l <- ls]
+              [ TargetLabel
+                  (LocationTarget l)
+                  [EnemyMove enemyId enemyLocation l]
+              | l <- ls
+              ]
           : [ CheckWindow
                 leadInvestigatorId
                 [Window Timing.After (Window.MovedFromHunter enemyId)]
@@ -607,11 +612,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         (BeginSkillTest
           iid
           source
-          (maybe
-            (EnemyTarget eid)
-            (ProxyTarget (EnemyTarget eid))
-            mTarget
-          )
+          (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
           (Just Action.Fight)
           skillType
           enemyFight'
@@ -623,12 +624,11 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
           [Window Timing.When (Window.SuccessfulAttackEnemy iid enemyId n)]
         afterWindows <- checkWindows
           [Window Timing.After (Window.SuccessfulAttackEnemy iid enemyId n)]
-        a
-          <$ pushAll
-               (whenWindows
-               <> [Successful (Action.Fight, target) iid source target]
-               <> afterWindows
-               )
+        a <$ pushAll
+          (whenWindows
+          <> [Successful (Action.Fight, target) iid source target]
+          <> afterWindows
+          )
     After (PassedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget (ProxyTarget target fightTarget)) _ n)
       | isTarget a target
       -> do
@@ -636,12 +636,11 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
           [Window Timing.When (Window.SuccessfulAttackEnemy iid enemyId n)]
         afterWindows <- checkWindows
           [Window Timing.After (Window.SuccessfulAttackEnemy iid enemyId n)]
-        a
-          <$ pushAll
-               (whenWindows
-               <> [Successful (Action.Fight, target) iid source fightTarget]
-               <> afterWindows
-               )
+        a <$ pushAll
+          (whenWindows
+          <> [Successful (Action.Fight, target) iid source fightTarget]
+          <> afterWindows
+          )
     Successful (Action.Fight, _) iid source target | isTarget a target -> do
       a <$ push (InvestigatorDamageEnemy iid enemyId source)
     After (FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ n)
@@ -649,12 +648,15 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
       -> do
         keywords <- getModifiedKeywords a
         a <$ pushAll
-            ([ FailedAttackEnemy iid enemyId
-            , CheckWindow
-              iid
-              [Window Timing.After (Window.FailAttackEnemy iid enemyId n)]
-            ]
-            <> [EnemyAttack iid enemyId DamageAny | Keyword.Retaliate `elem` keywords])
+          ([ FailedAttackEnemy iid enemyId
+           , CheckWindow
+             iid
+             [Window Timing.After (Window.FailAttackEnemy iid enemyId n)]
+           ]
+          <> [ EnemyAttack iid enemyId DamageAny
+             | Keyword.Retaliate `elem` keywords
+             ]
+          )
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->
         push (EnemyAttack iid enemyId DamageAny)
@@ -703,12 +705,17 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
              ]
           )
     EnemyAttack iid eid damageStrategy | eid == enemyId -> do
-      whenAttacksWindows <- checkWindows [Window Timing.When (Window.EnemyAttacks iid eid)]
-      whenWouldAttackWindows <- checkWindows [Window Timing.When (Window.EnemyWouldAttack iid eid)]
+      whenAttacksWindows <- checkWindows
+        [Window Timing.When (Window.EnemyAttacks iid eid)]
+      whenWouldAttackWindows <- checkWindows
+        [Window Timing.When (Window.EnemyWouldAttack iid eid)]
       a <$ pushAll
-        (whenWouldAttackWindows <> whenAttacksWindows <> [ PerformEnemyAttack iid eid damageStrategy
-        , After (PerformEnemyAttack iid eid damageStrategy)
-        ])
+        (whenWouldAttackWindows
+        <> whenAttacksWindows
+        <> [ PerformEnemyAttack iid eid damageStrategy
+           , After (PerformEnemyAttack iid eid damageStrategy)
+           ]
+        )
     PerformEnemyAttack iid eid damageStrategy | eid == enemyId -> a <$ pushAll
       [ InvestigatorAssignDamage
         iid
@@ -724,37 +731,45 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
     EnemySetDamage eid _ amount | eid == enemyId -> pure $ a & damageL .~ amount
     EnemyDamage eid iid source damageEffect amount | eid == enemyId -> do
       canDamage <- sourceCanDamageEnemy eid source
-      a <$ when canDamage do
-        amount' <- getModifiedDamageAmount a amount
-        push (DirectEnemyDamage eid iid source damageEffect amount')
+      a <$ when
+        canDamage
+        do
+          amount' <- getModifiedDamageAmount a amount
+          push (DirectEnemyDamage eid iid source damageEffect amount')
     DirectEnemyDamage eid iid source damageEffect amount | eid == enemyId -> do
       canDamage <- sourceCanDamageEnemy eid source
       if canDamage
-       then do
-        modifiedHealth <- getModifiedHealth a
-        damageWhenMsgs <- checkWindows
-          [Window Timing.When (Window.DealtDamage source damageEffect $ toTarget a)]
-        damageAfterMsgs <- checkWindows
-          [Window Timing.After (Window.DealtDamage source damageEffect $ toTarget a)]
-        when (a ^. damageL + amount >= modifiedHealth) $ do
-          whenMsgs <- checkWindows
-            [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
-          afterMsgs <- checkWindows
-            [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
-          pushAll
-            $ whenMsgs
-            <> afterMsgs
-            <> [ EnemyDefeated
-                   eid
-                   iid
-                   enemyLocation
-                   (toCardCode a)
-                   source
-                   (setToList $ toTraits a)
-               ]
-        pushAll $ damageWhenMsgs <> damageAfterMsgs
-        pure $ a & damageL +~ amount
-       else pure a
+        then do
+          modifiedHealth <- getModifiedHealth a
+          damageWhenMsgs <- checkWindows
+            [ Window
+                Timing.When
+                (Window.DealtDamage source damageEffect $ toTarget a)
+            ]
+          damageAfterMsgs <- checkWindows
+            [ Window
+                Timing.After
+                (Window.DealtDamage source damageEffect $ toTarget a)
+            ]
+          when (a ^. damageL + amount >= modifiedHealth) $ do
+            whenMsgs <- checkWindows
+              [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
+            afterMsgs <- checkWindows
+              [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
+            pushAll
+              $ whenMsgs
+              <> afterMsgs
+              <> [ EnemyDefeated
+                     eid
+                     iid
+                     enemyLocation
+                     (toCardCode a)
+                     source
+                     (setToList $ toTraits a)
+                 ]
+          pushAll $ damageWhenMsgs <> damageAfterMsgs
+          pure $ a & damageL +~ amount
+        else pure a
     DefeatEnemy eid iid source | eid == enemyId -> a <$ push
       (EnemyDefeated
         eid
@@ -788,7 +803,9 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
     Discard target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       a <$ pushAll
-        (windows' <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)])
+        (windows'
+        <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
+        )
     RemovedFromPlay source | isSource a source -> do
       pushAll =<< checkWindows
         ((`Window` Window.LeavePlay (toTarget a))
@@ -834,8 +851,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
     AdvanceAgenda{} -> pure $ a & doomL .~ 0
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
     RemoveAllDoom -> pure $ a & doomL .~ 0
-    PlaceDoom (CardIdTarget cid) amount | cid == unEnemyId enemyId ->
-      pure $ a & doomL +~ amount
+    PlaceDoom target amount | isTarget a target -> pure $ a & doomL +~ amount
     PlaceClues target n | isTarget a target -> do
       windows' <- windows [Window.PlacedClues (toTarget a) n]
       pushAll windows'
@@ -860,9 +876,15 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         & (doomL .~ 0)
         & (cluesL .~ 0)
     Blanked msg' -> runMessage msg' a
-    UseCardAbility iid source _ 100 _ | isSource a source ->
-      a <$ push
-        (FightEnemy iid (toId a) (InvestigatorSource iid) Nothing SkillCombat False)
+    UseCardAbility iid source _ 100 _ | isSource a source -> a <$ push
+      (FightEnemy
+        iid
+        (toId a)
+        (InvestigatorSource iid)
+        Nothing
+        SkillCombat
+        False
+      )
     UseCardAbility iid source _ 101 _ | isSource a source -> a <$ push
       (EvadeEnemy iid (toId a) (InvestigatorSource iid) SkillAgility False)
     UseCardAbility iid source _ 102 _ | isSource a source ->
@@ -890,8 +912,9 @@ filterOutEnemyMessages eid (Ask iid q) = case q of
     [] -> Nothing
     x -> Just (Ask iid $ ChooseOneAtATime x)
   ChooseUpgradeDeck -> Just (Ask iid ChooseUpgradeDeck)
-  choose@ChoosePaymentAmounts {}-> Just (Ask iid choose)
-  choose@ChooseDynamicCardAmounts {} -> Just (Ask iid choose)
+  choose@ChoosePaymentAmounts{} -> Just (Ask iid choose)
+  choose@ChooseAmounts{} -> Just (Ask iid choose)
+  choose@ChooseDynamicCardAmounts{} -> Just (Ask iid choose)
 filterOutEnemyMessages eid msg = case msg of
   EnemyAttack _ eid' _ | eid == eid' -> Nothing
   Discarded (EnemyTarget eid') _ | eid == eid' -> Nothing

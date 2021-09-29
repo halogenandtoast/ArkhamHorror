@@ -66,5 +66,5 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
         , EncounterSet.DecayAndFilth
         , EncounterSet.AgentsOfHastur
         ]
-      pure s
+      s <$ push (SetEncounterDeck encounterDeck)
     _ -> TheUnspeakableOath <$> runMessage msg attrs

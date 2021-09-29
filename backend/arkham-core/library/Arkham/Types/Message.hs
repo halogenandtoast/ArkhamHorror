@@ -36,6 +36,7 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window (Window)
+import Arkham.Types.Zone
 import Control.Exception
 
 data MessageType
@@ -87,7 +88,7 @@ data EncounterCardSource = FromDiscard | FromEncounterDeck | FromTheVoid
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
-data SearchedCardsStrategy = ShuffleBackIn FoundCardStrategy | PutBackInAnyOrder | DeferSearchedToTarget Target | DeferAllSearchedToTarget Target
+data SearchedCardsStrategy = ShuffleBackIn FoundCardStrategy | PutBackInAnyOrder | DeferSearchedToTarget Target | PutBack FoundCardStrategy
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
@@ -119,7 +120,7 @@ data Message
     | AddCampaignCardToDeck InvestigatorId CardDef
     | AddConnection LocationId LocationSymbol
     | AddDirectConnection LocationId LocationId
-    | AddFocusedToHand InvestigatorId Target CardId
+    | AddFocusedToHand InvestigatorId Target Zone CardId
     | AddFocusedToTopOfDeck InvestigatorId Target CardId
     | AddSkillTestSubscriber Target
     | AddSlot InvestigatorId SlotType Slot
@@ -478,12 +479,9 @@ data Message
     | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy
     | RunSkillTest InvestigatorId
     | SearchCollectionForRandom InvestigatorId Source CardMatcher
-    | SearchDeckForTraits InvestigatorId Target [Trait]
-    | SearchDiscard InvestigatorId Target [Trait]
-    | SearchTopOfDeck InvestigatorId Source Target Int [Trait] SearchedCardsStrategy
-    | SearchTopOfDeckFound InvestigatorId Target DeckSignifier Card
-    | SearchTopOfDeckAll InvestigatorId Target DeckSignifier [Card]
-    | SearchTopOfDeckNoneFound InvestigatorId Target
+    | Search InvestigatorId Source Target Zone [Trait] SearchedCardsStrategy
+    | SearchFound InvestigatorId Target DeckSignifier [Card]
+    | SearchNoneFound InvestigatorId Target
     | SetActions InvestigatorId Source Int
     | SetEncounterDeck (Deck EncounterCard)
     | SetLocationLabel LocationId Text
@@ -497,6 +495,7 @@ data Message
     | SetupInvestigators
     | SetupStep Int
     | ShuffleAllFocusedIntoDeck InvestigatorId Target
+    | PutAllFocusedIntoDiscard InvestigatorId Target
     | ShuffleAllInEncounterDiscardBackIn CardCode
     | ShuffleBackIntoEncounterDeck Target
     | ShuffleCardsIntoDeck InvestigatorId [PlayerCard]

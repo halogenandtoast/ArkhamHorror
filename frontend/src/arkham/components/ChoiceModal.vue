@@ -67,7 +67,7 @@ export default defineComponent({
   },
   setup(props) {
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-    const focusedCards = computed(() => props.game.focusedCards)
+    const focusedCards = computed(() => Object.values(props.game.investigators[props.investigatorId].contents.foundCards).flat())
     const choosePaymentAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('choosePaymentAmounts')
     const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('chooseAmounts')
 

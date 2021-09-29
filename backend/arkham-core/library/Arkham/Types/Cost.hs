@@ -81,7 +81,7 @@ data Cost
   | DirectDamageCost Source InvestigatorMatcher Int
   | DiscardCost Target
   | DiscardCardCost Card
-  | DiscardFromCost Int Zone CardMatcher
+  | DiscardFromCost Int CostZone CardMatcher
   | DiscardDrawnCardCost
   | DoomCost Source Target Int
   | ExileCost Target
@@ -166,12 +166,12 @@ instance Semigroup Payment where
   a <> Payments xs = Payments (a : xs)
   a <> b = Payments [a, b]
 
-data Zone = FromHandOf InvestigatorMatcher | FromPlayAreaOf InvestigatorMatcher | Zones [Zone]
+data CostZone = FromHandOf InvestigatorMatcher | FromPlayAreaOf InvestigatorMatcher | CostZones [CostZone]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-instance Semigroup Zone where
-  Zones xs <> Zones ys = Zones (xs <> ys)
-  Zones xs <> y = Zones (xs <> [y])
-  x <> Zones ys = Zones (x : ys)
-  x <> y = Zones [x, y]
+instance Semigroup CostZone where
+  CostZones xs <> CostZones ys = CostZones (xs <> ys)
+  CostZones xs <> y = CostZones (xs <> [y])
+  x <> CostZones ys = CostZones (x : ys)
+  x <> y = CostZones [x, y]

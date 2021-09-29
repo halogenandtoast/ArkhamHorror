@@ -1100,6 +1100,7 @@ library
       Arkham.Types.Treachery.Runner
       Arkham.Types.TreacheryId
       Arkham.Types.Window
+      Arkham.Types.Zone
   other-modules:
       Paths_arkham_core
   hs-source-dirs:

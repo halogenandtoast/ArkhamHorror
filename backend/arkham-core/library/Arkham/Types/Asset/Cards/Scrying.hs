@@ -16,6 +16,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Message
 import Arkham.Types.Target
+import Arkham.Types.Zone
 
 newtype Scrying = Scrying AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -36,14 +37,14 @@ instance AssetRunner env => RunMessage env Scrying where
       targets <- map InvestigatorTarget <$> getInvestigatorIds
       a <$ push
         (chooseOne iid
-        $ SearchTopOfDeck
+        $ Search
             iid
             source
             EncounterDeckTarget
-            3
+            (FromTopOfDeck 3)
             []
             PutBackInAnyOrder
-        : [ SearchTopOfDeck iid source target 3 [] PutBackInAnyOrder
+        : [ Search iid source target (FromTopOfDeck 3) [] PutBackInAnyOrder
           | target <- targets
           ]
         )

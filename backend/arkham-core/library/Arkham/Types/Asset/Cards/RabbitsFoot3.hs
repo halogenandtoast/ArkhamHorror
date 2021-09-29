@@ -18,6 +18,7 @@ import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
 import Arkham.Types.Window qualified as Window
+import Arkham.Types.Zone
 
 newtype RabbitsFoot3 = RabbitsFoot3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -37,11 +38,11 @@ instance AssetRunner env => RunMessage env RabbitsFoot3 where
   runMessage msg a@(RabbitsFoot3 attrs) = case msg of
     UseCardAbility iid source [Window _ (Window.FailSkillTest _ x)] 1 _
       | isSource attrs source -> a <$ push
-        (SearchTopOfDeck
+        (Search
           iid
           source
           (InvestigatorTarget iid)
-          x
+          (FromTopOfDeck x)
           mempty
           (ShuffleBackIn $ DrawFound iid)
         )

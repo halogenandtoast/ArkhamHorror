@@ -15,6 +15,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Target
+import Arkham.Types.Zone
 
 newtype SecurityOffice_128 = SecurityOffice_128 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -40,11 +41,11 @@ instance HasAbilities SecurityOffice_128 where
 instance LocationRunner env => RunMessage env SecurityOffice_128 where
   runMessage msg l@(SecurityOffice_128 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
-      (SearchTopOfDeck
+      (Search
         iid
         source
         (InvestigatorTarget iid)
-        6
+        (FromTopOfDeck 6)
         mempty
         (ShuffleBackIn $ DrawFound iid)
       )

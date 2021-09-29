@@ -80,6 +80,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Treachery
 import Arkham.Types.Window (Window(..))
 import Arkham.Types.Window qualified as Window
+import Arkham.Types.Zone qualified as Zone
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM, foldM)
@@ -662,6 +663,11 @@ getInvestigatorsMatching = \case
       . toList
       . view investigatorsL
       =<< getGame
+  DiscardWith cardListMatcher ->
+    filterM ((`cardListMatches` cardListMatcher) . map PlayerCard . discardOf)
+      . toList
+      . view investigatorsL
+      =<< getGame
   InvestigatorWithoutModifier modifierType -> do
     is <- toList . view investigatorsL <$> getGame
     flip filterM is $ \i -> do
@@ -681,7 +687,6 @@ getInvestigatorsMatching = \case
   NoDamageDealtThisTurn -> pure []
   UnengagedInvestigator -> pure []
   ContributedMatchingIcons _ -> pure []
-  DiscardWith _ -> pure []
   InvestigatorWithResources _ -> pure []
 
 getTreacheriesMatching
@@ -3004,24 +3009,15 @@ runGameMessage msg g = case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  SearchTopOfDeck iid _ EncounterDeckTarget n _traits strategy -> do
-    let (cards, encounterDeck) = splitAt n $ unDeck (gameEncounterDeck g)
+  Search iid _ EncounterDeckTarget cardSource _traits strategy -> do
+    let
+      (cards, encounterDeck) = case cardSource of
+        Zone.FromTopOfDeck n -> splitAt n $ unDeck (gameEncounterDeck g)
+        Zone.FromDeck -> (unDeck (gameEncounterDeck g), [])
+        _ -> error "Card source not yet handled"
     case strategy of
-      DeferAllSearchedToTarget target -> g <$ push
-        (SearchTopOfDeckAll
-          iid
-          target
-          Deck.EncounterDeck
-          (map EncounterCard cards)
-        )
       DeferSearchedToTarget target -> g <$ pushAll
-        [ SearchTopOfDeckFound
-            iid
-            target
-            Deck.EncounterDeck
-            (EncounterCard card)
-        | card <- cards
-        ]
+        [SearchFound iid target Deck.EncounterDeck (map EncounterCard cards)]
       PutBackInAnyOrder -> do
         pushAll
           [ FocusCards (map EncounterCard cards)
@@ -3033,10 +3029,7 @@ runGameMessage msg g = case msg of
           ]
         pure $ g & encounterDeckL .~ Deck encounterDeck
       ShuffleBackIn _ -> error "this is not handled yet"
-  ShuffleAllFocusedIntoDeck _ (InvestigatorTarget iid') -> do
-    let cards = mapMaybe toPlayerCard (g ^. focusedCardsL)
-    push (ShuffleCardsIntoDeck iid' cards)
-    pure $ g & focusedCardsL .~ mempty
+      PutBack _ -> error "this is not handled yet"
   AddFocusedToTopOfDeck _ EncounterDeckTarget cardId -> do
     let
       card =
@@ -3056,13 +3049,6 @@ runGameMessage msg g = case msg of
           >>= toPlayerCard
       focusedCards = filter ((/= cardId) . toCardId) (g ^. focusedCardsL)
     push (PutOnTopOfDeck iid' card)
-    pure $ g & focusedCardsL .~ focusedCards
-  AddFocusedToHand _ (InvestigatorTarget iid') cardId -> do
-    let
-      card = fromJustNote "missing card"
-        $ find ((== cardId) . toCardId) (g ^. focusedCardsL)
-      focusedCards = filter ((/= cardId) . toCardId) (g ^. focusedCardsL)
-    push (AddToHand iid' card)
     pure $ g & focusedCardsL .~ focusedCards
   GameOver -> do
     clearQueue
@@ -4251,6 +4237,7 @@ runGameMessage msg g = case msg of
     (\(_, Ability {..}, n) -> case abilityLimit of
       NoLimit -> False
       PlayerLimit PerWindow _ -> gameWindowDepth g >= n
+      GroupLimit PerWindow _ -> gameWindowDepth g >= n
       _ -> True
     )
   _ -> pure g

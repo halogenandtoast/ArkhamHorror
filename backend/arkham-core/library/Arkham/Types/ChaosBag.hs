@@ -183,7 +183,7 @@ decideFirstUndecided source miid strategy f = \case
     Draw ->
       ( f $ Undecided Draw
       , [ CheckWindow
-            iid
+            [iid]
             [Window Timing.When (Window.WouldRevealChaosToken source iid)]
         | iid <- maybeToList miid
         ]
@@ -335,7 +335,7 @@ instance
         Resolved tokenFaces' -> do
           checkWindowMsgs <- case miid of
             Nothing -> pure []
-            Just iid -> checkWindows
+            Just iid -> pure <$> checkWindows
               [ Window Timing.When (Window.RevealToken iid token)
               | token <- tokenFaces'
               ]

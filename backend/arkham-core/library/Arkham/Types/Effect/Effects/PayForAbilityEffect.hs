@@ -486,8 +486,9 @@ instance
       case effectMetadata attrs of
         Just (EffectAbility (ability@Ability {..}, windows')) -> do
           afterWindowMsgs <- case abilityAction ability of
-            Just action -> checkWindows
-              [Window Timing.After (Window.PerformAction iid action)]
+            Just action ->
+              pure <$> checkWindows
+                [Window Timing.After (Window.PerformAction iid action)]
             Nothing -> pure []
           e <$ pushAll
             ([ DisableEffect $ toId attrs

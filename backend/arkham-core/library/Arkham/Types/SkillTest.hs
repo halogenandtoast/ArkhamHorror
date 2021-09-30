@@ -293,7 +293,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         pure $ s & (setAsideTokensL %~ (tokenFaces <>))
     RevealToken SkillTestSource{} iid token -> do
       push
-        (CheckWindow iid [Window Timing.After (Window.RevealToken iid token)])
+        (CheckWindow [iid] [Window Timing.After (Window.RevealToken iid token)])
       pure $ s & revealedTokensL %~ (token :)
     RevealSkillTestTokens iid -> do
       revealedTokenFaces <- flip
@@ -352,13 +352,12 @@ instance SkillTestRunner env => RunMessage env SkillTest where
            ]
       pure $ s & resultL .~ FailedBy True difficulty
     StartSkillTest _ -> do
-      windowMsgs <- checkWindows [Window Timing.When Window.FastPlayerWindow]
+      windowMsg <- checkWindows [Window Timing.When Window.FastPlayerWindow]
       s <$ pushAll
         (HashMap.foldMapWithKey
             (\k (i, _) -> [CommitCard i k])
             skillTestCommittedCards
-        <> windowMsgs
-        <> [TriggerSkillTest skillTestInvestigator]
+        <> [windowMsg, TriggerSkillTest skillTestInvestigator]
         )
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (SkillTarget skillId :)

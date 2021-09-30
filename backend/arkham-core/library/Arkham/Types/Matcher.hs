@@ -81,10 +81,13 @@ data InvestigatorMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-replaceYouMatcher :: InvestigatorId -> InvestigatorMatcher -> InvestigatorMatcher
+replaceYouMatcher
+  :: InvestigatorId -> InvestigatorMatcher -> InvestigatorMatcher
 replaceYouMatcher iid You = InvestigatorWithId iid
-replaceYouMatcher iid (InvestigatorMatches matchers) = InvestigatorMatches $ map (replaceYouMatcher iid) matchers
-replaceYouMatcher iid (AnyInvestigator matchers) = AnyInvestigator $ map (replaceYouMatcher iid) matchers
+replaceYouMatcher iid (InvestigatorMatches matchers) =
+  InvestigatorMatches $ map (replaceYouMatcher iid) matchers
+replaceYouMatcher iid (AnyInvestigator matchers) =
+  AnyInvestigator $ map (replaceYouMatcher iid) matchers
 replaceYouMatcher _ m = m
 
 instance Semigroup InvestigatorMatcher where
@@ -159,18 +162,15 @@ pattern NonEliteEnemy <- EnemyWithoutTrait Elite where
   NonEliteEnemy = EnemyWithoutTrait Elite
 
 pattern EnemyWithAnyClues :: EnemyMatcher
-pattern EnemyWithAnyClues <-
-  EnemyWithClues (GreaterThan (Static 0)) where
+pattern EnemyWithAnyClues <- EnemyWithClues (GreaterThan (Static 0)) where
   EnemyWithAnyClues = EnemyWithClues (GreaterThan (Static 0))
 
 pattern EnemyWithAnyDoom :: EnemyMatcher
-pattern EnemyWithAnyDoom <-
-  EnemyWithDoom (GreaterThan (Static 0)) where
+pattern EnemyWithAnyDoom <- EnemyWithDoom (GreaterThan (Static 0)) where
   EnemyWithAnyDoom = EnemyWithDoom (GreaterThan (Static 0))
 
 pattern EnemyWithAnyDamage :: EnemyMatcher
-pattern EnemyWithAnyDamage <-
-  EnemyWithDamage (GreaterThan (Static 0)) where
+pattern EnemyWithAnyDamage <- EnemyWithDamage (GreaterThan (Static 0)) where
   EnemyWithAnyDamage = EnemyWithDamage (GreaterThan (Static 0))
 
 data EnemyMatcher
@@ -516,6 +516,7 @@ data SkillTestMatcher
   | SkillTestWithSkill SkillMatcher
   | SkillTestWithSkillType SkillType
   | AnySkillTest
+  | YourSkillTest SkillTestMatcher
   | SkillTestAtYourLocation
   | SkillTestOnTreachery TreacheryMatcher
   | UsingThis

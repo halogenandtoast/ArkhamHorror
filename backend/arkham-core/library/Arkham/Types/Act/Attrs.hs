@@ -131,7 +131,7 @@ advanceActSideA attrs = do
   leadInvestigatorId <- getLeadInvestigatorId
   pure
     [ CheckWindow
-      leadInvestigatorId
+      [leadInvestigatorId]
       [Window Timing.When (ActAdvance $ toId attrs)]
     , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
     ]
@@ -145,13 +145,13 @@ instance ActAttrsRunner env => RunMessage env ActAttrs where
       pure $ a & treacheriesL %~ insertSet tid
     InvestigatorResigned _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
-      whenMsgs <- checkWindows
+      whenMsg <- checkWindows
         [Window Timing.When AllUndefeatedInvestigatorsResigned]
-      afterMsgs <- checkWindows
+      afterMsg <- checkWindows
         [Window Timing.When AllUndefeatedInvestigatorsResigned]
       a <$ when
         (null investigatorIds)
-        (pushAll $ whenMsgs <> afterMsgs <> [AllInvestigatorsResigned])
+        (pushAll [whenMsg, afterMsg, AllInvestigatorsResigned])
     UseCardAbility iid source _ 100 _ | isSource a source ->
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid))
     PlaceClues (ActTarget aid) n | aid == actId -> do

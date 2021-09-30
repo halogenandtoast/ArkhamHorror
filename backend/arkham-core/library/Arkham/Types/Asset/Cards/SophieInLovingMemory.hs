@@ -33,7 +33,10 @@ sophieInLovingMemory = assetWith
 
 instance HasAbilities SophieInLovingMemory where
   getAbilities (SophieInLovingMemory x) =
-    [ restrictedAbility x 1 (OwnsThis <> DuringSkillTest AnySkillTest)
+    [ restrictedAbility
+        x
+        1
+        (OwnsThis <> DuringSkillTest (YourSkillTest AnySkillTest))
       $ FastAbility
       $ DirectDamageCost (toSource x) You 1
     , restrictedAbility

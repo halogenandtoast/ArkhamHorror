@@ -157,18 +157,20 @@ instance
     AdvanceAgendaIfThresholdSatisfied -> do
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
       totalDoom <- unDoomCount <$> getCount ()
-      when (totalDoom >= perPlayerDoomThreshold) $ do
-        whenMsgs <- checkWindows
-          [ Window
-              Timing.When
-              (Window.AgendaWouldAdvance DoomThreshold $ toId a)
-          ]
-        afterMsgs <- checkWindows
-          [ Window
-              Timing.After
-              (Window.AgendaWouldAdvance DoomThreshold $ toId a)
-          ]
-        pushAll $ whenMsgs <> afterMsgs <> [DoAdvanceAgendaIfThresholdSatisfied]
+      when
+        (totalDoom >= perPlayerDoomThreshold)
+        do
+          whenMsg <- checkWindows
+            [ Window
+                Timing.When
+                (Window.AgendaWouldAdvance DoomThreshold $ toId a)
+            ]
+          afterMsg <- checkWindows
+            [ Window
+                Timing.After
+                (Window.AgendaWouldAdvance DoomThreshold $ toId a)
+            ]
+          pushAll [whenMsg, afterMsg, DoAdvanceAgendaIfThresholdSatisfied]
       pure a
     DoAdvanceAgendaIfThresholdSatisfied -> do
       -- This status can change due to the above windows so we much check again
@@ -178,7 +180,7 @@ instance
         leadInvestigatorId <- getLeadInvestigatorId
         pushAll
           [ CheckWindow
-            leadInvestigatorId
+            [leadInvestigatorId]
             [Window Timing.When (Window.AgendaAdvance agendaId)]
           , AdvanceAgenda agendaId
           , RemoveAllDoom

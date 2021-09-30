@@ -449,6 +449,7 @@ library
       Arkham.Types.Effect.Effects.TheStrangerThePathIsMine
       Arkham.Types.Effect.Effects.TheStrangerTheShoresOfHali
       Arkham.Types.Effect.Effects.TokenEffect
+      Arkham.Types.Effect.Effects.TommyMalloy
       Arkham.Types.Effect.Effects.UncageTheSoul
       Arkham.Types.Effect.Effects.UndimensionedAndUnseenTabletToken
       Arkham.Types.Effect.Effects.WilliamYorick

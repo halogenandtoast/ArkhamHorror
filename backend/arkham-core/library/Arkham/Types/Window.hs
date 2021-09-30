@@ -37,6 +37,7 @@ data WindowType
   | CommittedCards InvestigatorId [Card]
   | CommittedCard InvestigatorId Card
   | DealtDamage Source DamageEffect Target
+  | TakeDamage Source DamageEffect Target
   | DealtHorror Source Target
   | Defeated Source
   | DiscoverClues InvestigatorId LocationId Int

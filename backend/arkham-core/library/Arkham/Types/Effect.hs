@@ -6,8 +6,8 @@ import Arkham.Prelude
 
 import Arkham.Types.Ability
 import Arkham.Types.Card
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Effects
@@ -129,6 +129,7 @@ data Effect
   | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
   | JeremiahPierce' JeremiahPierce
   | NathanielCho' NathanielCho
+  | TommyMalloy' TommyMalloy
   | EighteenDerringer' EighteenDerringer
   | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
   | CursedShores' CursedShores
@@ -264,6 +265,7 @@ allEffects = mapFromList
   , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)
   , ("50044", JeremiahPierce' . jeremiahPierce)
   , ("60101", NathanielCho' . nathanielCho)
+  , ("60103", TommyMalloy' . tommyMalloy)
   , ("60505", EighteenDerringer' . eighteenDerringer)
   , ("81001", CurseOfTheRougarouTabletToken' . curseOfTheRougarouTabletToken)
   , ("81007", CursedShores' . cursedShores)

@@ -230,16 +230,17 @@ modifiedEnemyEvade EnemyAttrs {..} = do
 getModifiedDamageAmount
   :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
   => EnemyAttrs
+  -> Bool
   -> Int
   -> m Int
-getModifiedDamageAmount EnemyAttrs {..} baseAmount = do
+getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <- getModifiers source (EnemyTarget enemyId)
   let updatedAmount = foldr applyModifier baseAmount modifiers'
   pure $ foldr applyModifierCaps updatedAmount modifiers'
  where
-  applyModifier (DamageTaken m) n = max 0 (n + m)
+  applyModifier (DamageTaken m) n | not direct = max 0 (n + m)
   applyModifier _ n = n
   applyModifierCaps (MaxDamageTaken m) n = min m n
   applyModifierCaps _ n = n
@@ -732,42 +733,85 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
       a <$ when
         canDamage
         do
-          amount' <- getModifiedDamageAmount a amount
-          push (DirectEnemyDamage eid iid source damageEffect amount')
-    DirectEnemyDamage eid iid source damageEffect amount | eid == enemyId -> do
-      canDamage <- sourceCanDamageEnemy eid source
-      if canDamage
-        then do
-          modifiedHealth <- getModifiedHealth a
-          damageWhenMsg <- checkWindows
+          dealtDamageWhenMsg <- checkWindows
             [ Window
                 Timing.When
                 (Window.DealtDamage source damageEffect $ toTarget a)
             ]
-          damageAfterMsg <- checkWindows
+          dealtDamageAfterMsg <- checkWindows
             [ Window
                 Timing.After
                 (Window.DealtDamage source damageEffect $ toTarget a)
             ]
-          when (a ^. damageL + amount >= modifiedHealth) $ do
-            whenMsg <- checkWindows
-              [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
-            afterMsg <- checkWindows
-              [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
-            pushAll
-              [ whenMsg
-              , afterMsg
-              , EnemyDefeated
-                eid
-                iid
-                enemyLocation
-                (toCardCode a)
-                source
-                (setToList $ toTraits a)
-              ]
-          pushAll [damageWhenMsg, damageAfterMsg]
-          pure $ a & damageL +~ amount
-        else pure a
+          takeDamageWhenMsg <- checkWindows
+            [ Window
+                Timing.When
+                (Window.TakeDamage source damageEffect $ toTarget a)
+            ]
+          takeDamageAfterMsg <- checkWindows
+            [ Window
+                Timing.After
+                (Window.TakeDamage source damageEffect $ toTarget a)
+            ]
+          pushAll
+            [ dealtDamageWhenMsg
+            , dealtDamageAfterMsg
+            , takeDamageWhenMsg
+            , EnemyDamaged eid iid source damageEffect amount False
+            , takeDamageAfterMsg
+            ]
+    DirectEnemyDamage eid iid source damageEffect amount | eid == enemyId -> do
+      canDamage <- sourceCanDamageEnemy eid source
+      a <$ when
+        canDamage
+        do
+          dealtDamageWhenMsg <- checkWindows
+            [ Window
+                Timing.When
+                (Window.DealtDamage source damageEffect $ toTarget a)
+            ]
+          dealtDamageAfterMsg <- checkWindows
+            [ Window
+                Timing.After
+                (Window.DealtDamage source damageEffect $ toTarget a)
+            ]
+          takeDamageWhenMsg <- checkWindows
+            [ Window
+                Timing.When
+                (Window.TakeDamage source damageEffect $ toTarget a)
+            ]
+          takeDamageAfterMsg <- checkWindows
+            [ Window
+                Timing.After
+                (Window.TakeDamage source damageEffect $ toTarget a)
+            ]
+          pushAll
+            [ dealtDamageWhenMsg
+            , dealtDamageAfterMsg
+            , takeDamageWhenMsg
+            , EnemyDamaged eid iid source damageEffect amount True
+            , takeDamageAfterMsg
+            ]
+    EnemyDamaged eid iid source _ amount direct | eid == enemyId -> do
+      amount' <- getModifiedDamageAmount a direct amount
+      modifiedHealth <- getModifiedHealth a
+      when (a ^. damageL + amount' >= modifiedHealth) $ do
+        whenMsg <- checkWindows
+          [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
+        afterMsg <- checkWindows
+          [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
+        pushAll
+          [ whenMsg
+          , afterMsg
+          , EnemyDefeated
+            eid
+            iid
+            enemyLocation
+            (toCardCode a)
+            source
+            (setToList $ toTraits a)
+          ]
+      pure $ a & damageL +~ amount'
     DefeatEnemy eid iid source | eid == enemyId -> a <$ push
       (EnemyDefeated
         eid

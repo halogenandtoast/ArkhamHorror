@@ -464,6 +464,7 @@ data WindowMatcher
   | AssetDealtDamage Timing AssetMatcher
   | LastClueRemovedFromAsset Timing AssetMatcher
   | EnemyDealtDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
+  | EnemyTakeDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
   | EnemyLeavesPlay Timing EnemyMatcher
   | LocationLeavesPlay Timing LocationMatcher
   | TookControlOfAsset Timing Who AssetMatcher

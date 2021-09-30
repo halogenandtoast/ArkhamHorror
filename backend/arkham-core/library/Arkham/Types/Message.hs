@@ -270,6 +270,8 @@ data Message
     | EnemyAttacks [Message]
     | EnemyCheckEngagement EnemyId
     | EnemyDamage EnemyId InvestigatorId Source DamageEffect Int
+    | -- Bool is for direct damage
+      EnemyDamaged EnemyId InvestigatorId Source DamageEffect Int Bool -- INTERNAL ONLY
     | -- Used after modified amount has been determined
       DirectEnemyDamage EnemyId InvestigatorId Source DamageEffect Int
     | EnemySetDamage EnemyId Source Int

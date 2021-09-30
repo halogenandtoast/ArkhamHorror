@@ -101,6 +101,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameUsedAbilities = mempty
       , gameResignedCardCodes = mempty
       , gameFocusedCards = mempty
+      , gameFoundCards = mempty
       , gameFocusedTargets = mempty
       , gameFocusedTokens = mempty
       , gameActiveCard = Nothing

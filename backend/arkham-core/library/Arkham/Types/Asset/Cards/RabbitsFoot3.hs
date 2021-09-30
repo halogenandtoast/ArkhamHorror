@@ -18,7 +18,6 @@ import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
 import Arkham.Types.Window qualified as Window
-import Arkham.Types.Zone
 
 newtype RabbitsFoot3 = RabbitsFoot3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -42,8 +41,8 @@ instance AssetRunner env => RunMessage env RabbitsFoot3 where
           iid
           source
           (InvestigatorTarget iid)
-          (FromTopOfDeck x)
+          [fromTopOfDeck x]
           mempty
-          (ShuffleBackIn $ DrawFound iid)
+          (DrawFound iid 1)
         )
     _ -> RabbitsFoot3 <$> runMessage msg attrs

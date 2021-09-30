@@ -15,7 +15,6 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Zone
 
 newtype SecurityOffice_128 = SecurityOffice_128 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -45,8 +44,8 @@ instance LocationRunner env => RunMessage env SecurityOffice_128 where
         iid
         source
         (InvestigatorTarget iid)
-        (FromTopOfDeck 6)
+        [fromTopOfDeck 6]
         mempty
-        (ShuffleBackIn $ DrawFound iid)
+        (DrawFound iid 1)
       )
     _ -> SecurityOffice_128 <$> runMessage msg attrs

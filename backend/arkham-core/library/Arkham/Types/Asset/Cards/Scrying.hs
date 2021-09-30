@@ -41,10 +41,16 @@ instance AssetRunner env => RunMessage env Scrying where
             iid
             source
             EncounterDeckTarget
-            (FromTopOfDeck 3)
+            [(FromTopOfDeck 3, PutBackInAnyOrder)]
             []
-            PutBackInAnyOrder
-        : [ Search iid source target (FromTopOfDeck 3) [] PutBackInAnyOrder
+            ReturnCards
+        : [ Search
+              iid
+              source
+              target
+              [(FromTopOfDeck 3, PutBackInAnyOrder)]
+              []
+              ReturnCards
           | target <- targets
           ]
         )

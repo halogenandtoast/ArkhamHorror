@@ -80,6 +80,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Treachery
 import Arkham.Types.Window (Window(..))
 import Arkham.Types.Window qualified as Window
+import Arkham.Types.Zone (Zone)
 import Arkham.Types.Zone qualified as Zone
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 import Control.Monad.Reader (runReader)
@@ -231,6 +232,7 @@ data Game = Game
   , gameUsedAbilities :: [(InvestigatorId, Ability, Int)]
   , gameResignedCardCodes :: [CardCode]
   , gameFocusedCards :: [Card]
+  , gameFoundCards :: HashMap Zone [Card]
   , gameFocusedTargets :: [Target]
   , gameFocusedTokens :: [Token]
   , gameActiveCard :: Maybe Card
@@ -312,6 +314,9 @@ leadInvestigatorIdL =
 
 focusedCardsL :: Lens' Game [Card]
 focusedCardsL = lens gameFocusedCards $ \m x -> m { gameFocusedCards = x }
+
+foundCardsL :: Lens' Game (HashMap Zone [Card])
+foundCardsL = lens gameFoundCards $ \m x -> m { gameFoundCards = x }
 
 playerOrderL :: Lens' Game [InvestigatorId]
 playerOrderL = lens gamePlayerOrder $ \m x -> m { gamePlayerOrder = x }
@@ -478,6 +483,7 @@ instance ToJSON Game where
     , "usedAbilities" .= toJSON gameUsedAbilities
     , "resignedCardCodes" .= toJSON gameResignedCardCodes
     , "focusedCards" .= toJSON gameFocusedCards
+    , "foundCards" .= toJSON gameFoundCards
     , "focusedTargets" .= toJSON gameFocusedTargets
     , "focusedTokens"
       .= toJSON (runReader (traverse withModifiers gameFocusedTokens) g)
@@ -545,6 +551,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       )
     , "resignedCardCodes" .= toJSON gameResignedCardCodes
     , "focusedCards" .= toJSON gameFocusedCards
+    , "foundCards" .= toJSON gameFoundCards
     , "focusedTargets" .= toJSON gameFocusedTargets
     , "focusedTokens"
       .= toJSON (runReader (traverse withModifiers gameFocusedTokens) g)
@@ -3009,47 +3016,88 @@ runGameMessage msg g = case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  Search iid _ EncounterDeckTarget cardSource _traits strategy -> do
+  Search iid source EncounterDeckTarget cardSources _traits foundStrategy -> do
     let
-      (cards, encounterDeck) = case cardSource of
-        Zone.FromTopOfDeck n -> splitAt n $ unDeck (gameEncounterDeck g)
-        Zone.FromDeck -> (unDeck (gameEncounterDeck g), [])
-        _ -> error "Card source not yet handled"
-    case strategy of
-      DeferSearchedToTarget target -> g <$ pushAll
-        [SearchFound iid target Deck.EncounterDeck (map EncounterCard cards)]
-      PutBackInAnyOrder -> do
-        pushAll
-          [ FocusCards (map EncounterCard cards)
-          , chooseOneAtATime
-            iid
-            [ AddFocusedToTopOfDeck iid EncounterDeckTarget (toCardId card)
-            | card <- cards
+      foundCards :: HashMap Zone [Card] = foldl'
+        (\hmap (cardSource, _) -> case cardSource of
+          Zone.FromDeck -> insertWith
+            (<>)
+            Zone.FromDeck
+            (map EncounterCard . unDeck $ gameEncounterDeck g)
+            hmap
+          Zone.FromTopOfDeck n -> insertWith
+            (<>)
+            Zone.FromDeck
+            (map EncounterCard . take n . unDeck $ gameEncounterDeck g)
+            hmap
+          Zone.FromDiscard -> insertWith
+            (<>)
+            Zone.FromDiscard
+            (map EncounterCard $ gameDiscard g)
+            hmap
+          other -> error $ mconcat ["Zone ", show other, " not yet handled"]
+        )
+        mempty
+        cardSources
+      encounterDeck = filter
+        ((`notElem` findWithDefault [] Zone.FromDeck foundCards) . EncounterCard
+        )
+        (unDeck $ gameEncounterDeck g)
+      targetCards = concat $ toList foundCards
+    push $ EndSearch iid source EncounterDeckTarget cardSources
+    case foundStrategy of
+      DrawFound who n -> do
+        let
+          choices =
+            [ InvestigatorDrewEncounterCard who card
+            | card <- mapMaybe (preview _EncounterCard) targetCards
             ]
-          ]
-        pure $ g & encounterDeckL .~ Deck encounterDeck
-      ShuffleBackIn _ -> error "this is not handled yet"
-      PutBack _ -> error "this is not handled yet"
-  AddFocusedToTopOfDeck _ EncounterDeckTarget cardId -> do
-    let
-      card =
-        fromJustNote "missing card"
-          $ find ((== cardId) . toCardId) (g ^. focusedCardsL)
-          >>= toEncounterCard
-      focusedCards = filter ((/= cardId) . toCardId) (g ^. focusedCardsL)
+        push
+          (chooseN iid n
+          $ if null choices then [Label "No cards found" []] else choices
+          )
+      DeferSearchedToTarget searchTarget -> do
+        let
+          choices =
+            [SearchFound iid searchTarget Deck.EncounterDeck targetCards]
+        push
+          (chooseOne iid $ if null targetCards
+            then [Label "No cards found" [SearchNoneFound iid searchTarget]]
+            else choices
+          )
+      ReturnCards -> pure ()
+
     pure
       $ g
-      & (focusedCardsL .~ focusedCards)
-      & (encounterDeckL %~ Deck . (card :) . unDeck)
-  AddFocusedToTopOfDeck _ (InvestigatorTarget iid') cardId -> do
-    let
-      card =
-        fromJustNote "missing card"
-          $ find ((== cardId) . toCardId) (g ^. focusedCardsL)
-          >>= toPlayerCard
-      focusedCards = filter ((/= cardId) . toCardId) (g ^. focusedCardsL)
-    push (PutOnTopOfDeck iid' card)
-    pure $ g & focusedCardsL .~ focusedCards
+      & (encounterDeckL .~ Deck encounterDeck)
+      & (foundCardsL .~ foundCards)
+  AddFocusedToTopOfDeck _ EncounterDeckTarget cardId ->
+    if null (gameFoundCards g)
+      then do
+        let
+          card =
+            fromJustNote "missing card"
+              $ find ((== cardId) . toCardId) (g ^. focusedCardsL)
+              >>= toEncounterCard
+          focusedCards = filter ((/= cardId) . toCardId) (g ^. focusedCardsL)
+        pure
+          $ g
+          & (focusedCardsL .~ focusedCards)
+          & (encounterDeckL %~ Deck . (card :) . unDeck)
+      else do
+        let
+          card =
+            fromJustNote "missing card"
+              $ find
+                  ((== cardId) . toCardId)
+                  (concat . toList $ g ^. foundCardsL)
+              >>= toEncounterCard
+          foundCards =
+            HashMap.map (filter ((/= cardId) . toCardId)) (g ^. foundCardsL)
+        pure
+          $ g
+          & (foundCardsL .~ foundCards)
+          & (encounterDeckL %~ Deck . (card :) . unDeck)
   GameOver -> do
     clearQueue
     pure $ g & gameStateL .~ IsOver
@@ -3163,7 +3211,40 @@ runGameMessage msg g = case msg of
             abilityLimitType abilityLimit /= Just PerTestOrAbility
           )
         )
-  EndSearch _ _ ->
+  EndSearch iid _ target cardSources -> do
+    when
+      (target == EncounterDeckTarget)
+      do
+        let
+          foundKey = \case
+            Zone.FromTopOfDeck _ -> Zone.FromDeck
+            other -> other
+          foundCards = gameFoundCards g
+        for_ cardSources $ \(cardSource, returnStrategy) ->
+          case returnStrategy of
+            PutBackInAnyOrder -> do
+              when
+                (foundKey cardSource /= Zone.FromDeck)
+                (error "Expects a deck")
+              push
+                (chooseOneAtATime iid $ map
+                  (AddFocusedToTopOfDeck iid EncounterDeckTarget . toCardId)
+                  (findWithDefault [] Zone.FromDeck foundCards)
+                )
+            ShuffleBackIn -> do
+              when
+                (foundKey cardSource /= Zone.FromDeck)
+                (error "Expects a deck")
+              push
+                (ShuffleIntoEncounterDeck
+                  (mapMaybe (preview _EncounterCard)
+                  $ findWithDefault [] Zone.FromDeck foundCards
+                  )
+                )
+            PutBack -> when
+              (foundKey cardSource == Zone.FromDeck)
+              (error "Can not take deck")
+
     pure
       $ g
       & (usedAbilitiesL %~ filter

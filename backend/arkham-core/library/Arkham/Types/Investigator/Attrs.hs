@@ -52,6 +52,7 @@ import Arkham.Types.Window (Window(..))
 import Arkham.Types.Window qualified as Window
 import Arkham.Types.Zone (Zone)
 import Arkham.Types.Zone qualified as Zone
+import Data.HashMap.Strict qualified as HashMap
 import Data.HashSet qualified as HashSet
 import Data.Text qualified as T
 import Data.UUID (nil)
@@ -2047,22 +2048,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             toUseAbilities = map (($ windows) . UseAbility iid)
           a <$ pushAll
             (toUseAbilities silent
-            <> [ chooseOne iid $ map
-                   (Run . (: [RunWindow iid windows]))
-                   (toUseAbilities normal)
-               | notNull normal
-               ]
+            <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
+            <> [RunWindow iid windows]
             )
         else do
-          actionsWithMatchingWindows <- for actions $ \ability ->
+          actionsWithMatchingWindows <- for actions $ \ability@Ability {..} ->
             (ability, )
               <$> filterM
-                    (\w -> windowMatches
-                      iid
-                      (abilitySource ability)
-                      w
-                      (abilityWindow ability)
-                    )
+                    (\w -> windowMatches iid abilitySource w abilityWindow)
                     windows
           a <$ push
             (chooseOne iid
@@ -2157,6 +2150,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           if isDeck then ShuffleAllFocusedIntoDeck else PutAllFocusedIntoDiscard
       pushAll [AddToHand iid' card, putBack iid' (InvestigatorTarget iid')]
       pure $ a & foundCardsL .~ foundCards
+  AddFocusedToTopOfDeck _ (InvestigatorTarget iid') cardId
+    | iid' == investigatorId -> do
+      let
+        card =
+          fromJustNote "missing card"
+            $ find
+                ((== cardId) . toCardId)
+                (concat $ toList investigatorFoundCards)
+            >>= toPlayerCard
+        foundCards =
+          HashMap.map (filter ((/= cardId) . toCardId)) investigatorFoundCards
+      push (PutOnTopOfDeck iid' card)
+      pure $ a & foundCardsL .~ foundCards
   ShuffleAllFocusedIntoDeck _ (InvestigatorTarget iid')
     | iid' == investigatorId -> do
       let
@@ -2172,168 +2178,102 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure $ a & foundCardsL %~ deleteMap Zone.FromDiscard & discardL <>~ cards
   DisengageEnemy iid eid | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ deleteSet eid
-  Search iid source (InvestigatorTarget iid') cardSource traits strategy
-    | iid' == investigatorId -> do
+  EndSearch iid _ (InvestigatorTarget iid') cardSources
+    | iid == investigatorId -> do
       let
-        fromDeck = case cardSource of
-          Zone.FromTopOfDeck _ -> True
-          Zone.FromDeck -> True
-          _ -> False
-        (cards, deck, discard) = case cardSource of
-          Zone.FromTopOfDeck n ->
-            uncurry (, , investigatorDiscard) . splitAt n $ unDeck
-              investigatorDeck
-          Zone.FromDeck -> (unDeck investigatorDeck, [], investigatorDiscard)
-          Zone.FromDiscard ->
-            (investigatorDiscard, unDeck investigatorDeck, [])
-          _ -> error "Card source not yet handled"
-        traits' = setFromList traits
-      push $ EndSearch iid source
-      case strategy of
-        DeferSearchedToTarget target ->
-          pushAll
-            [ SearchFound
-                iid
-                target
-                (InvestigatorDeck iid)
-                (map PlayerCard cards)
-            ]
+        foundKey = \case
+          Zone.FromTopOfDeck _ -> Zone.FromDeck
+          other -> other
+      for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
         PutBackInAnyOrder -> do
-          unless fromDeck (error "Expects a deck")
+          when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
           push
             (chooseOneAtATime iid $ map
               (AddFocusedToTopOfDeck iid (InvestigatorTarget iid') . toCardId)
-              cards
+              (findWithDefault [] Zone.FromDeck investigatorFoundCards)
             )
-        ShuffleBackIn foundStrategy -> do
-          let
-            targetCards = if null traits'
-              then cards
-              else filter (notNull . intersection traits' . toTraits) cards
-          unless fromDeck (error "Expects a deck")
-          case foundStrategy of
-            DrawFound who -> do
-              let
-                choices =
-                  [ Run
-                      [ AddFocusedToHand
-                        iid
-                        (InvestigatorTarget who)
-                        Zone.FromDeck
-                        (toCardId card)
-                      , ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')
-                      ]
-                  | card <- targetCards
-                  ]
-              push
-                (chooseOne iid $ if null choices
-                  then
-                    [ Label
-                        "No cards found"
-                        [ ShuffleAllFocusedIntoDeck
-                            iid
-                            (InvestigatorTarget iid')
-                        ]
-                    ]
-                  else choices
-                )
-            NotifyTargetOfFound target -> do
-              let
-                choices =
-                  [ SearchFound
-                    iid
-                    target
-                    (InvestigatorDeck iid)
-                    (map PlayerCard targetCards)
-                  , ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')
-                  ]
-              push
-                (chooseOne iid $ if null targetCards
-                  then
-                    [ Label
-                        "No cards found"
-                        [ SearchNoneFound iid target
-                        , ShuffleAllFocusedIntoDeck
-                          iid
-                          (InvestigatorTarget iid')
-                        ]
-                    ]
-                  else choices
-                )
-        PutBack foundStrategy | fromDeck -> case foundStrategy of
-          DrawFound who -> do
-            let
-              choices =
-                [ Run
-                    [ AddFocusedToHand
-                      iid
-                      (InvestigatorTarget who)
-                      Zone.FromDeck
-                      (toCardId card)
-                    , ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')
-                    ]
-                | card <- cards
-                , null traits' || notNull (traits' `intersection` toTraits card)
-                ]
-            push
-              (chooseOne iid $ if null choices
-                then
-                  [ Label
-                      "No cards found"
-                      [ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')]
-                  ]
-                else choices
+        ShuffleBackIn -> do
+          when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
+          push
+            (ShuffleCardsIntoDeck
+              iid
+              (mapMaybe (preview _PlayerCard)
+              $ findWithDefault [] Zone.FromDeck investigatorFoundCards
               )
-          NotifyTargetOfFound target -> do
-            pushAll
-              [ SearchFound
-                iid
-                target
-                (InvestigatorDiscard iid)
-                (map PlayerCard cards)
-              , ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')
-              ]
-        PutBack foundStrategy -> do
-          case foundStrategy of
-            DrawFound who -> do
-              let
-                choices =
-                  [ Run
-                      [ AddFocusedToHand
-                        iid
-                        (InvestigatorTarget who)
-                        cardSource
-                        (toCardId card)
-                      , PutAllFocusedIntoDiscard iid (InvestigatorTarget iid')
-                      ]
-                  | card <- cards
-                  , null traits'
-                    || notNull (traits' `intersection` toTraits card)
-                  ]
-              push
-                (chooseOne iid $ if null choices
-                  then
-                    [ Label
-                        "No cards found"
-                        [PutAllFocusedIntoDiscard iid (InvestigatorTarget iid')]
-                    ]
-                  else choices
-                )
-            NotifyTargetOfFound target -> do
-              pushAll
-                [ SearchFound
+            )
+        PutBack -> when
+          (foundKey cardSource == Zone.FromDeck)
+          (error "Can not take deck")
+      pure $ a & foundCardsL .~ mempty
+  Search iid source target@(InvestigatorTarget iid') cardSources traits foundStrategy
+    | iid' == investigatorId
+    -> do
+      let
+        foundCards :: HashMap Zone [Card] = foldl'
+          (\hmap (cardSource, _) -> case cardSource of
+            Zone.FromDeck -> insertWith
+              (<>)
+              Zone.FromDeck
+              (map PlayerCard $ unDeck investigatorDeck)
+              hmap
+            Zone.FromTopOfDeck n -> insertWith
+              (<>)
+              Zone.FromDeck
+              (map PlayerCard . take n $ unDeck investigatorDeck)
+              hmap
+            Zone.FromDiscard -> insertWith
+              (<>)
+              Zone.FromDiscard
+              (map PlayerCard investigatorDiscard)
+              hmap
+            other -> error $ mconcat ["Zone ", show other, " not yet handled"]
+          )
+          mempty
+          cardSources
+        deck = filter
+          ((`notElem` findWithDefault [] Zone.FromDeck foundCards) . PlayerCard)
+          (unDeck investigatorDeck)
+        traits' = setFromList traits
+        allFoundCards = concat $ toList foundCards
+        targetCards :: [Card] = if null traits'
+          then allFoundCards
+          else filter (notNull . intersection traits' . toTraits) allFoundCards
+      push $ EndSearch iid source target cardSources
+      case foundStrategy of
+        DrawFound who n -> do
+          let
+            choices =
+              [ AddFocusedToHand
                   iid
-                  target
-                  (InvestigatorDiscard iid)
-                  (map PlayerCard cards)
-                , PutAllFocusedIntoDiscard iid (InvestigatorTarget iid')
-                ]
+                  (InvestigatorTarget who)
+                  Zone.FromDeck
+                  (toCardId card)
+              | card <- targetCards
+              ]
+          push
+            (chooseN iid n
+            $ if null choices then [Label "No cards found" []] else choices
+            )
+        DeferSearchedToTarget searchTarget -> do
+          let
+            choices =
+              [SearchFound iid searchTarget (InvestigatorDeck iid) targetCards]
+          push
+            (chooseOne iid $ if null targetCards
+              then [Label "No cards found" [SearchNoneFound iid searchTarget]]
+              else choices
+            )
+        ReturnCards -> pure ()
 
-      when
-        fromDeck
+      let
+        deckCards = mapMaybe (preview _PlayerCard)
+          $ findWithDefault [] Zone.FromDeck foundCards
+
+      unless
+        (null deckCards)
         do
           let window = Window Timing.When (Window.AmongSearchedCards iid)
-          actions <- fmap concat <$> for cards $ \card' -> filterM
+          actions <- fmap concat <$> for deckCards $ \card' -> filterM
             (windowMatches iid source window . abilityWindow)
             (getAbilities (toCardInstance iid $ PlayerCard card'))
           -- TODO: This is for astounding revelation and only one research action is possible
@@ -2344,15 +2284,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             $ map (($ [window]) . UseAbility iid) actions
             <> [Continue "Skip playing fast cards or using reactions!!!"]
             )
-      -- push (FocusCards $ map PlayerCard cards)
-      pure
-        $ a
-        & (deckL .~ Deck deck)
-        & (discardL .~ discard)
-        & (foundCardsL
-          . at (if fromDeck then Zone.FromDeck else cardSource)
-          ?~ map PlayerCard cards
-          )
+      pure $ a & (deckL .~ Deck deck) & (foundCardsL .~ foundCards)
   RemoveFromDiscard iid cardId | iid == investigatorId ->
     pure $ a & discardL %~ filter ((/= cardId) . toCardId)
   SufferTrauma iid physical mental | iid == investigatorId ->

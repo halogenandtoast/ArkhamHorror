@@ -17,7 +17,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Zone
 
 newtype AlyssaGraham = AlyssaGraham AssetAttrs
   deriving anyclass IsAsset
@@ -47,14 +46,14 @@ instance AssetRunner env => RunMessage env AlyssaGraham where
             iid
             source
             EncounterDeckTarget
-            (FromTopOfDeck 1)
+            [fromTopOfDeck 1]
             []
             (DeferSearchedToTarget $ toTarget attrs)
         : [ Search
               iid
               source
               target
-              (FromTopOfDeck 1)
+              [fromTopOfDeck 1]
               []
               (DeferSearchedToTarget $ toTarget attrs)
           | target <- targets

@@ -38,8 +38,12 @@ instance HasAbilities ResearchLibrarian where
 instance (AssetRunner env) => RunMessage env ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
-      (Search iid source (InvestigatorTarget iid) FromDeck [Tome]
-      $ ShuffleBackIn
-      $ DrawFound iid
+      (Search
+          iid
+          source
+          (InvestigatorTarget iid)
+          [(FromDeck, ShuffleBackIn)]
+          [Tome]
+      $ DrawFound iid 1
       )
     _ -> ResearchLibrarian <$> runMessage msg attrs

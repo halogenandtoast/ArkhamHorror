@@ -20,7 +20,6 @@ import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window (Window(..))
 import Arkham.Types.Window qualified as Window
-import Arkham.Types.Zone
 
 newtype CallingInFavors = CallingInFavors EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
@@ -54,7 +53,7 @@ instance EventRunner env => RunMessage env CallingInFavors where
                 iid
                 (toSource attrs)
                 (InvestigatorTarget iid)
-                (FromTopOfDeck 9)
+                [fromTopOfDeck 9]
                 []
                 (DeferSearchedToTarget $ toTarget attrs)
               ]

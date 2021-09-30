@@ -11,7 +11,6 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Zone
 
 newtype NoStoneUnturned = NoStoneUnturned EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
@@ -31,9 +30,9 @@ instance Query InvestigatorMatcher env => RunMessage env NoStoneUnturned where
               iid'
               (toSource attrs)
               (InvestigatorTarget iid')
-              (FromTopOfDeck 6)
+              [fromTopOfDeck 6]
               []
-              (ShuffleBackIn $ DrawFound iid')
+              (DrawFound iid' 1)
           | iid' <- investigatorIds
           ]
         , Discard (toTarget attrs)

@@ -73,6 +73,11 @@ export default defineComponent({
         return playerCards
       }
 
+      const encounterCards = Object.values(props.game.foundCards).flat()
+      if (encounterCards.length > 0) {
+        return encounterCards
+      }
+
       return props.game.focusedCards
     })
     const choosePaymentAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('choosePaymentAmounts')

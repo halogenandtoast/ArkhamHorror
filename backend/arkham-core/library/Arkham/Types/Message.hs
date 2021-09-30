@@ -183,7 +183,7 @@ data Message
     | CheckAttackOfOpportunity InvestigatorId Bool
     | CheckDefeated Source
     | CheckHandSize InvestigatorId
-    | CheckWindow InvestigatorId [Window]
+    | CheckWindow [InvestigatorId] [Window]
     | ChooseOneRewardByEachPlayer [CardDef] [InvestigatorId]
     | RunWindow InvestigatorId [Window]
     | ChooseAndDiscardAsset InvestigatorId AssetMatcher

@@ -49,12 +49,10 @@ import Data.UUID (nil)
 import System.IO.Unsafe
 
 checkWindows
-  :: (MonadReader env m, HasSet InvestigatorId env ())
-  => [Window]
-  -> m [Message]
+  :: (MonadReader env m, HasSet InvestigatorId env ()) => [Window] -> m Message
 checkWindows windows' = do
   iids <- getInvestigatorIds
-  pure $ [ CheckWindow iid windows' | iid <- iids ]
+  pure $ CheckWindow iids windows'
 
 windows
   :: (MonadReader env m, HasSet InvestigatorId env ())
@@ -64,8 +62,7 @@ windows windows' = do
   iids <- getInvestigatorIds
   pure $ do
     timing <- [Timing.When, Timing.After]
-    iid <- iids
-    [CheckWindow iid $ map (Window timing) windows']
+    [CheckWindow iids $ map (Window timing) windows']
 
 cancelToken :: (HasQueue env, MonadIO m, MonadReader env m) => Token -> m ()
 cancelToken token = withQueue $ \queue ->
@@ -2104,6 +2101,10 @@ skillTestMatches
   -> m Bool
 skillTestMatches iid source st = \case
   Matcher.AnySkillTest -> pure True
+  Matcher.YourSkillTest matcher -> liftA2
+    (&&)
+    (pure $ skillTestInvestigator st == iid)
+    (skillTestMatches iid source st matcher)
   Matcher.UsingThis -> pure $ source == skillTestSource st
   Matcher.SkillTestSourceMatches sourceMatcher ->
     sourceMatches (skillTestSource st) sourceMatcher

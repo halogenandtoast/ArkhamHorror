@@ -278,17 +278,16 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         else pure a
     AllInvestigatorsResigned -> a <$ push (ScenarioResolution NoResolution)
     InvestigatorWhenEliminated _ iid -> do
-      whenMsgs <- checkWindows
+      whenMsg <- checkWindows
         [Window Timing.When (Window.InvestigatorEliminated iid)]
-      afterMsgs <- checkWindows
+      afterMsg <- checkWindows
         [Window Timing.When (Window.InvestigatorEliminated iid)]
       a <$ pushAll
-        (whenMsgs
-        <> [ InvestigatorPlaceAllCluesOnLocation iid
-           , InvestigatorEliminated iid
-           ]
-        <> afterMsgs
-        )
+        [ whenMsg
+        , InvestigatorPlaceAllCluesOnLocation iid
+        , InvestigatorEliminated iid
+        , afterMsg
+        ]
     Remember logKey -> pure $ a & logL %~ insertSet logKey
     ResolveToken _drawnToken token _iid | token == AutoFail ->
       a <$ push FailSkillTest
@@ -320,7 +319,7 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
           randomLocationId <- sample $ h :| t
           a <$ pushAll
             [ CheckWindow
-              leadInvestigatorId
+              [leadInvestigatorId]
               [ Window
                   Timing.When
                   (Window.ChosenRandomLocation randomLocationId)

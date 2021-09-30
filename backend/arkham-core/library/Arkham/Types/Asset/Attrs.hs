@@ -275,11 +275,14 @@ instance
       pure $ a & cluesL %~ max 0 . subtract n
     CheckDefeated _ -> do
       when (defeated a) $ do
-        whenWindows <- checkWindows
+        whenWindow <- checkWindows
           [Window Timing.When (Window.AssetDefeated $ toId a)]
-        afterWindows <- checkWindows
+        afterWindow <- checkWindows
           [Window Timing.When (Window.AssetDefeated $ toId a)]
-        pushAll $ whenWindows <> resolve (AssetDefeated assetId) <> afterWindows
+        pushAll
+          $ [whenWindow]
+          <> resolve (AssetDefeated assetId)
+          <> [afterWindow]
       pure a
     AssetDefeated aid | aid == assetId -> a <$ push (Discard $ toTarget a)
     AssetDamage aid _ health sanity | aid == assetId ->
@@ -321,7 +324,7 @@ instance
     Exile target | a `isTarget` target ->
       a <$ pushAll [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
     RemovedFromPlay source | isSource a source -> do
-      pushAll =<< checkWindows
+      push =<< checkWindows
         ((`Window` Window.LeavePlay (toTarget a))
         <$> [Timing.When, Timing.After]
         )
@@ -336,8 +339,7 @@ instance
         applyModifier (Uses uType m) (AdditionalStartingUses n) =
           Uses uType (n + m)
         applyModifier m _ = m
-      pushAll
-        =<< checkWindows [Window Timing.When (Window.EnterPlay $ toTarget a)]
+      push =<< checkWindows [Window Timing.When (Window.EnterPlay $ toTarget a)]
       pure
         $ a
         & (investigatorL ?~ iid)
@@ -348,7 +350,7 @@ instance
     InvestigatorPlayDynamicAsset iid aid slots traits _ | aid == assetId ->
       a <$ push (InvestigatorPlayAsset iid aid slots traits)
     TakeControlOfAsset iid aid | aid == assetId -> do
-      pushAll =<< checkWindows
+      push =<< checkWindows
         ((`Window` Window.TookControlOfAsset iid aid)
         <$> [Timing.When, Timing.After]
         )

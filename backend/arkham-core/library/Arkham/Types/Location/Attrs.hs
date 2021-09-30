@@ -9,7 +9,6 @@ import Arkham.Json
 import Arkham.Location.Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action qualified as Action
-import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.CardDef as X
 import Arkham.Types.Classes as X
@@ -231,7 +230,16 @@ locationWithRevealedSideConnections
   -> [LocationSymbol]
   -> CardBuilder LocationId a
 locationWithRevealedSideConnections f def shroud' revealClues symbol' connectedSymbols' revealedSymbol' revealedConnectedSymbols'
-  = locationWithRevealedSideConnectionsWith f def shroud' revealClues symbol' connectedSymbols' revealedSymbol' revealedConnectedSymbols' id
+  = locationWithRevealedSideConnectionsWith
+    f
+    def
+    shroud'
+    revealClues
+    symbol'
+    connectedSymbols'
+    revealedSymbol'
+    revealedConnectedSymbols'
+    id
 
 locationWithRevealedSideConnectionsWith
   :: (LocationAttrs -> a)
@@ -253,7 +261,9 @@ locationWithRevealedSideConnectionsWith f def shroud' revealClues symbol' connec
     symbol'
     connectedSymbols'
     (g
-    . (revealedConnectedMatchersL <>~ map LocationWithSymbol revealedConnectedSymbols')
+    . (revealedConnectedMatchersL
+      <>~ map LocationWithSymbol revealedConnectedSymbols'
+      )
     . (revealedSymbolL .~ revealedSymbol')
     )
 
@@ -285,7 +295,9 @@ locationWith f def shroud' revealClues symbol' connectedSymbols' g =
       , locationSymbol = symbol'
       , locationRevealedSymbol = symbol'
       , locationConnectedMatchers = map LocationWithSymbol connectedSymbols'
-      , locationRevealedConnectedMatchers = map LocationWithSymbol connectedSymbols'
+      , locationRevealedConnectedMatchers = map
+        LocationWithSymbol
+        connectedSymbols'
       , locationTreacheries = mempty
       , locationEvents = mempty
       , locationAssets = mempty
@@ -395,7 +407,9 @@ instance HasAbilities LocationAttrs where
       $ ActionAbility (Just Action.Move) moveCost
     ]
    where
-    moveCost = if not (locationRevealed l) then locationCostToEnterUnrevealed l else ActionCost 1
+    moveCost = if not (locationRevealed l)
+      then locationCostToEnterUnrevealed l
+      else ActionCost 1
 
 getShouldSpawnNonEliteAtConnectingInstead
   :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Bool
@@ -435,40 +449,44 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       -> a <$ push (Successful (Action.Investigate, target) iid source target)
     PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget (ProxyTarget target investigationTarget)) _ _
       | isTarget a target
-      -> a <$ push
-        (Successful (Action.Investigate, target) iid source investigationTarget)
+      -> a
+        <$ push
+             (Successful
+               (Action.Investigate, target)
+               iid
+               source
+               investigationTarget
+             )
     Successful (Action.Investigate, _) iid _ target | isTarget a target -> do
       let lid = toId a
       modifiers' <- getModifiers (InvestigatorSource iid) (LocationTarget lid)
-      whenWindowMsgs <- checkWindows
+      whenWindowMsg <- checkWindows
         [Window Timing.When (Window.SuccessfulInvestigation iid lid)]
-      afterWindowMsgs <- checkWindows
+      afterWindowMsg <- checkWindows
         [Window Timing.After (Window.SuccessfulInvestigation iid lid)]
       a <$ unless
         (AlternateSuccessfullInvestigation `elem` modifiers')
         (pushAll
-        $ whenWindowMsgs
-        <> [InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate)]
-        <> afterWindowMsgs
+          [ whenWindowMsg
+          , InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate)
+          , afterWindowMsg
+          ]
         )
     PlaceUnderneath target cards | isTarget a target ->
       pure $ a & cardsUnderneathL <>~ cards
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & labelL .~ label'
     PlacedLocationDirection lid direction lid2 | lid == locationId -> do
-      let reversedDirection = case direction of
-                                LeftOf -> RightOf
-                                RightOf -> LeftOf
-                                Above -> Below
-                                Below -> Above
+      let
+        reversedDirection = case direction of
+          LeftOf -> RightOf
+          RightOf -> LeftOf
+          Above -> Below
+          Below -> Above
 
-      pure
-        $ a
-        & (directionsL %~ insertMap reversedDirection lid2)
+      pure $ a & (directionsL %~ insertMap reversedDirection lid2)
     PlacedLocationDirection lid direction lid2 | lid2 == locationId ->
-      pure
-        $ a
-        & (directionsL %~ insertMap direction lid)
+      pure $ a & (directionsL %~ insertMap direction lid)
     AttachTreachery tid (LocationTarget lid) | lid == locationId ->
       pure $ a & treacheriesL %~ insertSet tid
     AttachEvent eid (LocationTarget lid) | lid == locationId ->
@@ -491,16 +509,21 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
     AddDirectConnection fromLid toLid | fromLid == locationId -> do
-      pure $ a & revealedConnectedMatchersL <>~ [LocationWithId toLid] & connectedMatchersL <>~ [LocationWithId toLid]
+      pure
+        $ a
+        & revealedConnectedMatchersL
+        <>~ [LocationWithId toLid]
+        & connectedMatchersL
+        <>~ [LocationWithId toLid]
     DiscoverCluesAtLocation iid lid n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
-      checkWindowMsgs <- checkWindows
+      checkWindowMsg <- checkWindows
         [Window Timing.When (Window.DiscoverClues iid lid discoveredClues)]
       a <$ pushAll
-        (checkWindowMsgs <> [DiscoverClues iid lid discoveredClues maction])
+        [checkWindowMsg, DiscoverClues iid lid discoveredClues maction]
     AfterDiscoverClues iid lid n | lid == locationId -> do
       let lastClue = locationClues - n <= 0
-      pushAll =<< checkWindows
+      push =<< checkWindows
         (Window Timing.After (Window.DiscoverClues iid lid n)
         : [ Window Timing.After (Window.DiscoveringLastClue iid lid)
           | lastClue
@@ -512,7 +535,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       | lid /= locationId && iid `elem` locationInvestigators
       -> pure $ a & investigatorsL %~ deleteSet iid -- TODO: should we broadcast leaving the location
     WhenEnterLocation iid lid | lid == locationId -> do
-      pushAll =<< checkWindows [Window Timing.When $ Window.Entering iid lid]
+      push =<< checkWindows [Window Timing.When $ Window.Entering iid lid]
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure $ a & investigatorsL %~ insertSet iid
     SetLocationAsIf iid lid | lid == locationId -> do
@@ -584,7 +607,8 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       let n' = min n (clueValue - locationClues)
       a <$ push (PlaceClues (toTarget a) n')
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
-    RemoveDoom target n | isTarget a target -> pure $ a & doomL %~ max 0 . subtract n
+    RemoveDoom target n | isTarget a target ->
+      pure $ a & doomL %~ max 0 . subtract n
     PlaceResources target n | isTarget a target -> pure $ a & resourcesL +~ n
     PlaceHorror target n | isTarget a target -> pure $ a & horrorL +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId ->
@@ -596,17 +620,16 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         then pure 0
         else getPlayerCountValue locationRevealClues
       revealer <- maybe getLeadInvestigatorId pure miid
-      whenWindowMsgs <- checkWindows
-        [ Window Timing.When (Window.RevealLocation revealer lid)
-        ]
+      whenWindowMsg <- checkWindows
+        [Window Timing.When (Window.RevealLocation revealer lid)]
 
-      afterWindowMsgs <- checkWindows
-        [ Window Timing.After (Window.RevealLocation revealer lid)
-        ]
+      afterWindowMsg <- checkWindows
+        [Window Timing.After (Window.RevealLocation revealer lid)]
       pushAll
-        $ AddConnection lid locationRevealedSymbol
-        : whenWindowMsgs
-        <> afterWindowMsgs
+        $ [ AddConnection lid locationRevealedSymbol
+          , whenWindowMsg
+          , afterWindowMsg
+          ]
         <> [ PlaceClues (toTarget a) locationClueCount | locationClueCount > 0 ]
       pure $ a & revealedL .~ True
     LookAtRevealed source target | isTarget a target -> do
@@ -614,18 +637,19 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       pure $ a & revealedL .~ True
     After (LookAtRevealed _ target) | isTarget a target ->
       pure $ a & revealedL .~ False
-    UnrevealLocation lid | lid == locationId ->
-      pure $ a & revealedL .~ False
-    RemoveLocation lid ->
-      pure $ a & directionsL %~ filterMap
-        (/= lid)
+    UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False
+    RemoveLocation lid -> pure $ a & directionsL %~ filterMap (/= lid)
     UseResign iid source | isSource a source -> a <$ push (Resign iid)
     UseDrawCardUnderneath iid source | isSource a source ->
       case locationCardsUnderneath of
         (EncounterCard card : rest) -> do
           push (InvestigatorDrewEncounterCard iid card)
           pure $ a & cardsUnderneathL .~ rest
-        _ -> throwIO $ InvalidState $ "Not expecting a player card or empty set, but got " <> tshow locationCardsUnderneath
+        _ ->
+          throwIO
+            $ InvalidState
+            $ "Not expecting a player card or empty set, but got "
+            <> tshow locationCardsUnderneath
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid source _ 101 _ | isSource a source -> do
       let

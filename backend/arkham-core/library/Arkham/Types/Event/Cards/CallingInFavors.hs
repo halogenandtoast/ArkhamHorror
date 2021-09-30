@@ -11,15 +11,11 @@ import Arkham.Types.Card.Cost
 import Arkham.Types.Classes
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Event.Attrs
-import Arkham.Types.Event.Helpers
 import Arkham.Types.Event.Runner
 import Arkham.Types.Matcher hiding (PlayCard)
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Window (Window(..))
-import Arkham.Types.Window qualified as Window
 
 newtype CallingInFavors = CallingInFavors EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
@@ -54,43 +50,10 @@ instance EventRunner env => RunMessage env CallingInFavors where
                 (toSource attrs)
                 (InvestigatorTarget iid)
                 [fromTopOfDeck 9]
-                AnyCard -- Will be handled by deferral
-                (DeferSearchedToTarget $ toTarget attrs)
+                IsAlly
+                (PlayFound iid 1)
               ]
           | (target, cost) <- targetsWithCosts
           ]
       e <$ pushAll [choice, Discard (toTarget attrs)]
-    SearchFound iid target _ cards | isTarget attrs target -> do
-      let
-        windows' =
-          [ Window Timing.When Window.NonFast
-          , Window Timing.When (Window.DuringTurn iid)
-          ]
-      playableCards <-
-        filterM (getIsPlayable iid (toSource attrs) windows') $ filter
-          (`cardMatch` (CardWithType AssetType <> CardWithTrait Ally))
-          cards
-      if null playableCards
-        then e <$ pushAll
-          [ FocusCards cards
-          , chooseOne iid [Label "No playable allies found" []]
-          , ShuffleCardsIntoDeck iid (mapMaybe (preview _PlayerCard) cards)
-          , UnfocusCards
-          ]
-        else e <$ pushAll
-          [ FocusCards cards
-          , chooseOne
-            iid
-            [ TargetLabel
-                (CardIdTarget $ toCardId card)
-                [ AddToHand iid card
-                , ShuffleCardsIntoDeck
-                  iid
-                  (mapMaybe (preview _PlayerCard) $ filter (/= card) cards)
-                , UnfocusCards
-                , PlayCard iid (toCardId card) Nothing False
-                ]
-            | card <- playableCards
-            ]
-          ]
     _ -> CallingInFavors <$> runMessage msg attrs

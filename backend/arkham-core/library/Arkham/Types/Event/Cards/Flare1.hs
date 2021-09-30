@@ -8,11 +8,11 @@ import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype Flare1 = Flare1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
@@ -31,7 +31,7 @@ findAllyMessages iid investigatorIds e =
         (toSource e)
         (InvestigatorTarget iid')
         [fromTopOfDeck 9]
-        [Ally]
+        IsAlly
         (DeferSearchedToTarget $ toTarget e)
     | iid' <- investigatorIds
     ]

@@ -13,6 +13,7 @@ import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -45,7 +46,7 @@ instance LocationRunner env => RunMessage env MiskatonicUniversity where
         source
         (InvestigatorTarget iid)
         [fromTopOfDeck 6]
-        [Tome, Spell]
+        (CardWithOneOf $ map CardWithTrait [Tome, Spell])
         (DrawFound iid 1)
       )
     _ -> MiskatonicUniversity <$> runMessage msg attrs

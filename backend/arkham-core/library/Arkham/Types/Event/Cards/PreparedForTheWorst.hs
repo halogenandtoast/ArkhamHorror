@@ -6,8 +6,10 @@ module Arkham.Types.Event.Cards.PreparedForTheWorst
 import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
+import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -28,7 +30,7 @@ instance RunMessage env PreparedForTheWorst where
           (toSource attrs)
           (InvestigatorTarget iid)
           [fromTopOfDeck 9]
-          [Weapon]
+          (CardWithType AssetType <> CardWithTrait Weapon)
           (DrawFound iid 1)
         , Discard (toTarget attrs)
         ]

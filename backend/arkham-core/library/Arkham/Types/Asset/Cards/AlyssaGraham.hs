@@ -13,6 +13,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -47,14 +48,14 @@ instance AssetRunner env => RunMessage env AlyssaGraham where
             source
             EncounterDeckTarget
             [fromTopOfDeck 1]
-            []
+            AnyCard
             (DeferSearchedToTarget $ toTarget attrs)
         : [ Search
               iid
               source
               target
               [fromTopOfDeck 1]
-              []
+              AnyCard
               (DeferSearchedToTarget $ toTarget attrs)
           | target <- targets
           ]

@@ -42,7 +42,7 @@ instance AssetRunner env => RunMessage env RabbitsFoot3 where
           source
           (InvestigatorTarget iid)
           [fromTopOfDeck x]
-          mempty
+          AnyCard
           (DrawFound iid 1)
         )
     _ -> RabbitsFoot3 <$> runMessage msg attrs

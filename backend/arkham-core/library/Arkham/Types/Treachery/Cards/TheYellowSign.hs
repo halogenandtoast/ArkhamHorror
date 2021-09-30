@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Classes
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -43,7 +44,7 @@ instance TreacheryRunner env => RunMessage env TheYellowSign where
           source
           (InvestigatorTarget iid)
           [fromDeck]
-          [Madness] -- TODO: We may need to specify weakness, candidate for card matcher
+          (CardWithTrait Madness) -- TODO: We may need to specify weakness, candidate for card matcher
           (DrawFound iid 1)
         ]
     _ -> TheYellowSign <$> runMessage msg attrs

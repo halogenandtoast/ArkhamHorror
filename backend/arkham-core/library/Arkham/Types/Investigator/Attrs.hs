@@ -2205,7 +2205,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (foundKey cardSource == Zone.FromDeck)
           (error "Can not take deck")
       pure $ a & foundCardsL .~ mempty
-  Search iid source target@(InvestigatorTarget iid') cardSources traits foundStrategy
+  Search iid source target@(InvestigatorTarget iid') cardSources cardMatcher foundStrategy
     | iid' == investigatorId
     -> do
       let
@@ -2233,11 +2233,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         deck = filter
           ((`notElem` findWithDefault [] Zone.FromDeck foundCards) . PlayerCard)
           (unDeck investigatorDeck)
-        traits' = setFromList traits
         allFoundCards = concat $ toList foundCards
-        targetCards :: [Card] = if null traits'
-          then allFoundCards
-          else filter (notNull . intersection traits' . toTraits) allFoundCards
+        targetCards = filter (`cardMatch` cardMatcher) allFoundCards
       push $ EndSearch iid source target cardSources
       case foundStrategy of
         DrawFound who n -> do

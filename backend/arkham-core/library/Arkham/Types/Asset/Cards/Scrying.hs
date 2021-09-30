@@ -14,6 +14,7 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Zone
@@ -42,14 +43,14 @@ instance AssetRunner env => RunMessage env Scrying where
             source
             EncounterDeckTarget
             [(FromTopOfDeck 3, PutBackInAnyOrder)]
-            []
+            AnyCard
             ReturnCards
         : [ Search
               iid
               source
               target
               [(FromTopOfDeck 3, PutBackInAnyOrder)]
-              []
+              AnyCard
               ReturnCards
           | target <- targets
           ]

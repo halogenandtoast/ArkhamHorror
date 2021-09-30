@@ -10,6 +10,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -56,7 +57,9 @@ instance AssetRunner env => RunMessage env WhittonGreene where
         source
         (InvestigatorTarget iid)
         [fromTopOfDeck 6]
-        [Tome, Relic]
+        (CardWithType AssetType
+        <> CardWithOneOf (map CardWithTrait [Tome, Relic])
+        )
         (DrawFound iid 1)
       )
     _ -> WhittonGreene <$> runMessage msg attrs

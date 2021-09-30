@@ -92,7 +92,7 @@ data ZoneReturnStrategy = PutBackInAnyOrder | ShuffleBackIn | PutBack
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
-data FoundCardsStrategy = DrawFound InvestigatorId Int | DeferSearchedToTarget Target | ReturnCards
+data FoundCardsStrategy = PlayFound InvestigatorId Int | DrawFound InvestigatorId Int | DeferSearchedToTarget Target | ReturnCards
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 

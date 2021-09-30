@@ -2251,6 +2251,28 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (chooseN iid n
             $ if null choices then [Label "No cards found" []] else choices
             )
+        PlayFound who n -> do
+          let
+            windows' =
+              [ Window Timing.When Window.NonFast
+              , Window Timing.When (Window.DuringTurn iid)
+              ]
+          playableCards <- filterM
+            (getIsPlayable who source windows')
+            targetCards
+          let
+            choices =
+              [ TargetLabel
+                  (CardIdTarget $ toCardId card)
+                  [ AddToHand who card
+                  , PlayCard iid (toCardId card) Nothing False
+                  ]
+              | card <- playableCards
+              ]
+          push
+            (chooseN iid n
+            $ if null choices then [Label "No cards found" []] else choices
+            )
         DeferSearchedToTarget searchTarget -> do
           let
             choices =

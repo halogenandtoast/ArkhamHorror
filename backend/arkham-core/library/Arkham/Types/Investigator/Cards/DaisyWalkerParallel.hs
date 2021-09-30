@@ -6,6 +6,7 @@ module Arkham.Types.Investigator.Cards.DaisyWalkerParallel
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Card.CardType
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Game.Helpers
@@ -99,7 +100,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
               (toSource attrs)
               (toTarget attrs)
               [(Zone.FromDiscard, PutBack)]
-              [Tome]
+              (CardWithType AssetType <> CardWithTrait Tome)
           $ DrawFound iid 1
           )
       ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->

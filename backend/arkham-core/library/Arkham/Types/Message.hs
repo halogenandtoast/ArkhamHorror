@@ -485,7 +485,7 @@ data Message
     | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy
     | RunSkillTest InvestigatorId
     | SearchCollectionForRandom InvestigatorId Source CardMatcher
-    | Search InvestigatorId Source Target [(Zone, ZoneReturnStrategy)] [Trait] FoundCardsStrategy
+    | Search InvestigatorId Source Target [(Zone, ZoneReturnStrategy)] CardMatcher FoundCardsStrategy
     | SearchFound InvestigatorId Target DeckSignifier [Card]
     | SearchNoneFound InvestigatorId Target
     | SetActions InvestigatorId Source Int

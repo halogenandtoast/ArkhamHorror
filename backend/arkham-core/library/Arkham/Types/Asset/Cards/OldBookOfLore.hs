@@ -44,7 +44,7 @@ instance AssetRunner env => RunMessage env OldBookOfLore where
                   source
                   (InvestigatorTarget iid')
                   [fromTopOfDeck 3]
-                  []
+                  AnyCard
                   (DrawFound iid' 1)
               ]
           | iid' <- investigatorIds

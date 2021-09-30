@@ -54,7 +54,7 @@ instance EventRunner env => RunMessage env CallingInFavors where
                 (toSource attrs)
                 (InvestigatorTarget iid)
                 [fromTopOfDeck 9]
-                []
+                AnyCard -- Will be handled by deferral
                 (DeferSearchedToTarget $ toTarget attrs)
               ]
           | (target, cost) <- targetsWithCosts

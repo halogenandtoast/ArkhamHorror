@@ -7,11 +7,13 @@ import Arkham.Prelude
 
 import Arkham.Location.Cards qualified as Cards (osbornsGeneralStore_207)
 import Arkham.Types.Ability
+import Arkham.Types.Card.CardType
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -46,7 +48,7 @@ instance LocationRunner env => RunMessage env OsbornsGeneralStore_207 where
         source
         (InvestigatorTarget iid)
         [fromTopOfDeck 3]
-        [Item]
+        (CardWithType AssetType <> CardWithTrait Item)
         (DrawFound iid 1)
       )
     _ -> OsbornsGeneralStore_207 <$> runMessage msg attrs

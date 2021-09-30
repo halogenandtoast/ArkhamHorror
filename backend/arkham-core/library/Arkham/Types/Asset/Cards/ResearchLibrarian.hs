@@ -43,7 +43,7 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarian where
           source
           (InvestigatorTarget iid)
           [(FromDeck, ShuffleBackIn)]
-          [Tome]
+          (CardWithTrait Tome)
       $ DrawFound iid 1
       )
     _ -> ResearchLibrarian <$> runMessage msg attrs

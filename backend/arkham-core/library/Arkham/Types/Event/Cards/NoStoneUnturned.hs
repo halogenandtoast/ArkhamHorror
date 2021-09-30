@@ -31,7 +31,7 @@ instance Query InvestigatorMatcher env => RunMessage env NoStoneUnturned where
               (toSource attrs)
               (InvestigatorTarget iid')
               [fromTopOfDeck 6]
-              []
+              AnyCard
               (DrawFound iid' 1)
           | iid' <- investigatorIds
           ]

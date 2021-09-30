@@ -42,7 +42,12 @@ instance (AssetRunner env) => RunMessage env ArcaneInitiate where
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
       push $ chooseOne
         iid
-        [ Search iid source (InvestigatorTarget iid) [fromTopOfDeck 3] [Spell]
+        [ Search
+              iid
+              source
+              (InvestigatorTarget iid)
+              [fromTopOfDeck 3]
+              (CardWithTrait Spell)
             $ DrawFound iid 1
         ]
       pure a

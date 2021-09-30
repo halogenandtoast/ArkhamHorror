@@ -57,7 +57,7 @@ instance AssetRunner env => RunMessage env Scavenging where
           source
           (InvestigatorTarget iid)
           [(Zone.FromDiscard, PutBack)]
-          [Item]
+          (CardWithTrait Item)
       $ DrawFound iid 1
       )
     _ -> Scavenging <$> runMessage msg attrs

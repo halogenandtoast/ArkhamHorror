@@ -402,6 +402,11 @@ instance Semigroup ExtendedCardMatcher where
 cardIs :: HasCardCode a => a -> CardMatcher
 cardIs = CardWithCardCode . toCardCode
 
+pattern IsAlly :: CardMatcher
+pattern IsAlly <-
+  CardMatches [CardWithType AssetType, CardWithTrait Ally] where
+  IsAlly = CardMatches [CardWithType AssetType, CardWithTrait Ally]
+
 -- | Only relies on card state, can be used purely with `cardMatch`
 data CardMatcher
   = CardWithType CardType
@@ -429,6 +434,9 @@ instance Semigroup CardMatcher where
   CardMatches xs <> x = CardMatches (x : xs)
   x <> CardMatches xs = CardMatches (x : xs)
   x <> y = CardMatches [x, y]
+
+instance Monoid CardMatcher where
+  mempty = AnyCard
 
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher

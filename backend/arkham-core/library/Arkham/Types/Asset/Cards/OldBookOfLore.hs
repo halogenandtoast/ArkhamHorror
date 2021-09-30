@@ -15,7 +15,6 @@ import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Target
-import Arkham.Types.Zone
 
 newtype OldBookOfLore = OldBookOfLore AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -41,13 +40,12 @@ instance AssetRunner env => RunMessage env OldBookOfLore where
           [ TargetLabel
               (InvestigatorTarget iid')
               [ Search
-                iid'
-                source
-                (InvestigatorTarget iid')
-                (FromTopOfDeck 3)
-                []
-                (ShuffleBackIn $ DrawFound iid')
-              , EndSearch iid' source
+                  iid'
+                  source
+                  (InvestigatorTarget iid')
+                  [fromTopOfDeck 3]
+                  []
+                  (DrawFound iid' 1)
               ]
           | iid' <- investigatorIds
           ]

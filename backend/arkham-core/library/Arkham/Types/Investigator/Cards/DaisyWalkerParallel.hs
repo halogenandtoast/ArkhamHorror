@@ -94,9 +94,13 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
               )
       UseCardAbility iid (TokenEffectSource ElderSign) _ 2 _
         | iid == investigatorId -> i <$ push
-          (Search iid (toSource attrs) (toTarget attrs) Zone.FromDiscard [Tome]
-          $ PutBack
-          $ DrawFound iid
+          (Search
+              iid
+              (toSource attrs)
+              (toTarget attrs)
+              [(Zone.FromDiscard, PutBack)]
+              [Tome]
+          $ DrawFound iid 1
           )
       ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
         i <$ push

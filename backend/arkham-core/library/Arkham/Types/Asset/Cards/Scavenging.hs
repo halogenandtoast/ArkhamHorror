@@ -52,8 +52,12 @@ instance HasAbilities Scavenging where
 instance AssetRunner env => RunMessage env Scavenging where
   runMessage msg a@(Scavenging attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
-      (Search iid source (InvestigatorTarget iid) Zone.FromDiscard [Item]
-      $ PutBack
-      $ DrawFound iid
+      (Search
+          iid
+          source
+          (InvestigatorTarget iid)
+          [(Zone.FromDiscard, PutBack)]
+          [Item]
+      $ DrawFound iid 1
       )
     _ -> Scavenging <$> runMessage msg attrs

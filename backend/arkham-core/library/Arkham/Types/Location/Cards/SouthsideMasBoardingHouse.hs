@@ -16,7 +16,6 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Zone
 
 newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -43,8 +42,7 @@ instance HasAbilities SouthsideMasBoardingHouse where
 instance LocationRunner env => RunMessage env SouthsideMasBoardingHouse where
   runMessage msg l@(SouthsideMasBoardingHouse attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
-      (Search iid source (InvestigatorTarget iid) FromDeck [Ally]
-      $ ShuffleBackIn
-      $ DrawFound iid
+      (Search iid source (InvestigatorTarget iid) [fromDeck] [Ally]
+      $ DrawFound iid 1
       )
     _ -> SouthsideMasBoardingHouse <$> runMessage msg attrs

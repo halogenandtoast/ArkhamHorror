@@ -15,7 +15,6 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Zone
 
 newtype OsbornsGeneralStore_207 = OsbornsGeneralStore_207 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -46,8 +45,8 @@ instance LocationRunner env => RunMessage env OsbornsGeneralStore_207 where
         iid
         source
         (InvestigatorTarget iid)
-        (FromTopOfDeck 3)
+        [fromTopOfDeck 3]
         [Item]
-        (ShuffleBackIn $ DrawFound iid)
+        (DrawFound iid 1)
       )
     _ -> OsbornsGeneralStore_207 <$> runMessage msg attrs

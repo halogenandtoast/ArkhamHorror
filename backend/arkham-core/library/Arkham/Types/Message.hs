@@ -88,13 +88,19 @@ data EncounterCardSource = FromDiscard | FromEncounterDeck | FromTheVoid
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
-data SearchedCardsStrategy = ShuffleBackIn FoundCardStrategy | PutBackInAnyOrder | DeferSearchedToTarget Target | PutBack FoundCardStrategy
+data ZoneReturnStrategy = PutBackInAnyOrder | ShuffleBackIn | PutBack
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
-data FoundCardStrategy = DrawFound InvestigatorId | NotifyTargetOfFound Target
+data FoundCardsStrategy = DrawFound InvestigatorId Int | DeferSearchedToTarget Target | ReturnCards
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
+
+fromTopOfDeck :: Int -> (Zone, ZoneReturnStrategy)
+fromTopOfDeck n = (FromTopOfDeck n, ShuffleBackIn)
+
+fromDeck :: (Zone, ZoneReturnStrategy)
+fromDeck = (FromDeck, ShuffleBackIn)
 
 data ActionType
     = EnemyActionType
@@ -255,7 +261,7 @@ data Message
     | EndOfScenario (Maybe CampaignStep)
     | EndRound
     | EndRoundWindow
-    | EndSearch InvestigatorId Source
+    | EndSearch InvestigatorId Source Target [(Zone, ZoneReturnStrategy)]
     | EndTurn InvestigatorId
     | EndUpkeep
     | EnemiesAttack
@@ -479,7 +485,7 @@ data Message
     | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy
     | RunSkillTest InvestigatorId
     | SearchCollectionForRandom InvestigatorId Source CardMatcher
-    | Search InvestigatorId Source Target Zone [Trait] SearchedCardsStrategy
+    | Search InvestigatorId Source Target [(Zone, ZoneReturnStrategy)] [Trait] FoundCardsStrategy
     | SearchFound InvestigatorId Target DeckSignifier [Card]
     | SearchNoneFound InvestigatorId Target
     | SetActions InvestigatorId Source Int

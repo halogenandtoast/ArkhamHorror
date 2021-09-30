@@ -16,7 +16,6 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Zone
 
 newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -45,8 +44,8 @@ instance LocationRunner env => RunMessage env MiskatonicUniversity where
         iid
         source
         (InvestigatorTarget iid)
-        (FromTopOfDeck 6)
+        [fromTopOfDeck 6]
         [Tome, Spell]
-        (ShuffleBackIn $ DrawFound iid)
+        (DrawFound iid 1)
       )
     _ -> MiskatonicUniversity <$> runMessage msg attrs

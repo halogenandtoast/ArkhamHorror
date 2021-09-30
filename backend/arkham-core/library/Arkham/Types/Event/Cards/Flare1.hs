@@ -13,7 +13,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Zone
 
 newtype Flare1 = Flare1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
@@ -31,9 +30,9 @@ findAllyMessages iid investigatorIds e =
         iid'
         (toSource e)
         (InvestigatorTarget iid')
-        (FromTopOfDeck 9)
+        [fromTopOfDeck 9]
         [Ally]
-        (ShuffleBackIn $ NotifyTargetOfFound (toTarget e))
+        (DeferSearchedToTarget $ toTarget e)
     | iid' <- investigatorIds
     ]
   ]

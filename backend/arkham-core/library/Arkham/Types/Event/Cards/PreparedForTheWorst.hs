@@ -11,7 +11,6 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Zone
 
 newtype PreparedForTheWorst = PreparedForTheWorst EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
@@ -28,9 +27,9 @@ instance RunMessage env PreparedForTheWorst where
           iid
           (toSource attrs)
           (InvestigatorTarget iid)
-          (FromTopOfDeck 9)
+          [fromTopOfDeck 9]
           [Weapon]
-          (ShuffleBackIn $ DrawFound iid)
+          (DrawFound iid 1)
         , Discard (toTarget attrs)
         ]
     _ -> PreparedForTheWorst <$> runMessage msg attrs

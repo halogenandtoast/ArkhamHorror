@@ -17,7 +17,6 @@ import Arkham.Types.Message
 import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
-import Arkham.Types.Zone
 
 newtype ArcaneInitiate = ArcaneInitiate AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -43,9 +42,8 @@ instance (AssetRunner env) => RunMessage env ArcaneInitiate where
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
       push $ chooseOne
         iid
-        [ Search iid source (InvestigatorTarget iid) (FromTopOfDeck 3) [Spell]
-          $ ShuffleBackIn
-          $ DrawFound iid
+        [ Search iid source (InvestigatorTarget iid) [fromTopOfDeck 3] [Spell]
+            $ DrawFound iid 1
         ]
       pure a
     _ -> ArcaneInitiate <$> runMessage msg attrs

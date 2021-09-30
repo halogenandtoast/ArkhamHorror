@@ -3071,6 +3071,7 @@ runGameMessage msg g = case msg of
             then [Label "No cards found" [SearchNoneFound iid searchTarget]]
             else choices
           )
+      PlayFound{} -> error "PlayFound is not a valid EncounterDeck strategy"
       ReturnCards -> pure ()
 
     pure

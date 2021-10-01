@@ -414,6 +414,7 @@ data CardMatcher
   | CardWithTitle Text
   | CardWithTrait Trait
   | CardWithId CardId
+  | CardWithLevel Int
   | CardWithoutKeyword Keyword
   | CardWithClass ClassSymbol
   | CardWithOneOf [CardMatcher]
@@ -482,6 +483,7 @@ data WindowMatcher
   | EnemyWouldBeDiscarded Timing EnemyMatcher
   | InitiatedSkillTest Timing Who SkillTestMatcher ValueMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
+  | SkillTestEnded Timing Who SkillTestMatcher
   | PlacedCounter Timing Who CounterMatcher ValueMatcher
   | PlacedCounterOnLocation Timing Where CounterMatcher ValueMatcher
   | PlacedCounterOnEnemy Timing EnemyMatcher CounterMatcher ValueMatcher
@@ -526,6 +528,7 @@ data SkillTestMatcher
   | SkillTestWithSkill SkillMatcher
   | SkillTestWithSkillType SkillType
   | AnySkillTest
+  | SkillTestWasFailed
   | YourSkillTest SkillTestMatcher
   | SkillTestAtYourLocation
   | SkillTestOnTreachery TreacheryMatcher

@@ -24,7 +24,8 @@ pattern CanDiscoverClues <- Negate (SelfHasModifier CannotDiscoverClues) where
   CanDiscoverClues = Negate (SelfHasModifier CannotDiscoverClues)
 
 pattern CanTakeControlOfClues :: Criterion
-pattern CanTakeControlOfClues <- Negate (SelfHasModifier CannotTakeControlOfClues) where
+pattern CanTakeControlOfClues <-
+  Negate (SelfHasModifier CannotTakeControlOfClues) where
   CanTakeControlOfClues = Negate (SelfHasModifier CannotTakeControlOfClues)
 
 pattern CanDrawCards :: Criterion
@@ -36,7 +37,7 @@ data Criterion
   | InYourHand
   | OnAct Int
   | CardExists CardMatcher
-  | CardInDiscard DiscardSignifier [Trait]
+  | CardInDiscard DiscardSignifier CardMatcher
   | ChargesOnThis ValueMatcher
   | ClueOnLocation
   | CluesOnThis ValueMatcher

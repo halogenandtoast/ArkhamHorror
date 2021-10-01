@@ -73,6 +73,7 @@ cardMatch a = \case
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
   CardWithTrait trait -> trait `member` toTraits a
   CardWithClass role -> cdClassSymbol (toCardDef a) == Just role
+  CardWithLevel n -> cdLevel (toCardDef a) == n
   CardMatches ms -> all (cardMatch a) ms
   CardWithOneOf ms -> any (cardMatch a) ms
   CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)

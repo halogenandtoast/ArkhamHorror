@@ -35,6 +35,7 @@ import Arkham.Types.Name
 import Arkham.Types.Phase
 import Arkham.Types.Query
 import {-# SOURCE #-} Arkham.Types.SkillTest
+import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -1200,7 +1201,7 @@ passesCriteria iid source windows' = \case
         traitsToMatch ->
           filter (any (`elem` traitsToMatch) . toTraits) discards
     pure $ notNull filteredDiscards
-  Criteria.CardInDiscard discardSignifier traits -> do
+  Criteria.CardInDiscard discardSignifier cardMatcher -> do
     let
       investigatorMatcher = case discardSignifier of
         Criteria.DiscardOf matcher -> matcher
@@ -1211,11 +1212,7 @@ passesCriteria iid source windows' = \case
         <$> traverse
               (fmap (map unDiscardedPlayerCard) . getList)
               investigatorIds
-    let
-      filteredDiscards = case traits of
-        [] -> discards
-        traitsToMatch ->
-          filter (any (`elem` traitsToMatch) . toTraits) discards
+    let filteredDiscards = filter (`cardMatch` cardMatcher) discards
     pure $ notNull filteredDiscards
   Criteria.ClueOnLocation -> do
     location <- getId iid
@@ -1612,6 +1609,13 @@ windowMatches iid source window' = \case
           (&&)
           (matchWho iid who whoMatcher)
           (gameValueMatches difficulty valueMatcher)
+      _ -> pure False
+  Matcher.SkillTestEnded whenMatcher whoMatcher skillTestMatcher ->
+    case window' of
+      Window t (Window.SkillTestEnded skillTest) | whenMatcher == t -> liftA2
+        (&&)
+        (matchWho iid (skillTestInvestigator skillTest) whoMatcher)
+        (skillTestMatches iid source skillTest skillTestMatcher)
       _ -> pure False
   Matcher.SkillTestResult whenMatcher whoMatcher skillMatcher skillTestResultMatcher
     -> case skillTestResultMatcher of
@@ -2183,6 +2187,9 @@ skillTestMatches
   -> m Bool
 skillTestMatches iid source st = \case
   Matcher.AnySkillTest -> pure True
+  Matcher.SkillTestWasFailed -> pure $ case skillTestResult st of
+    FailedBy _ _ -> True
+    _ -> False
   Matcher.YourSkillTest matcher -> liftA2
     (&&)
     (pure $ skillTestInvestigator st == iid)

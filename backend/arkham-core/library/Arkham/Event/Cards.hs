@@ -853,10 +853,24 @@ secondWind = (event "04149" "Second Wind" 1 Guardian)
   , cdCriteria = Just Criteria.FirstAction
   }
 
+liveAndLearn :: CardDef
+liveAndLearn = (event "04200" "Live and Learn" 0 Survivor)
+  { cdSkills = [SkillWild]
+  , cdCardTraits = singleton Spirit
+  , cdFastWindow = Just $ SkillTestEnded Timing.After You SkillTestWasFailed
+  }
+
 bloodRite :: CardDef
 bloodRite = (event "05317" "Blood-Rite" 0 Seeker)
   { cdSkills = [SkillWillpower, SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Spell]
+  }
+
+astoundingRevelation :: CardDef
+astoundingRevelation = (event "06023" "Astounding Revelation" 0 Seeker)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Research]
+  , cdCost = Nothing
   }
 
 firstWatch :: CardDef
@@ -866,11 +880,11 @@ firstWatch = (event "06110" "First Watch" 1 Guardian)
   , cdFastWindow = Just $ MythosStep WhenAllDrawEncounterCard
   }
 
-astoundingRevelation :: CardDef
-astoundingRevelation = (event "06023" "Astounding Revelation" 0 Seeker)
-  { cdSkills = [SkillIntellect]
-  , cdCardTraits = setFromList [Research]
-  , cdCost = Nothing
+scroungeForSupplies :: CardDef
+scroungeForSupplies = (event "06165" "Scrounge for Supplies" 0 Survivor)
+  { cdCardTraits = singleton Fortune
+  , cdCriteria = Just
+    $ Criteria.CardInDiscard (Criteria.DiscardOf You) (CardWithLevel 0)
   }
 
 dynamiteBlast2 :: CardDef

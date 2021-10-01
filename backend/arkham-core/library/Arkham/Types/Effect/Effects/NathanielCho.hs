@@ -13,6 +13,7 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
 import Arkham.Types.Window qualified as Window
 
@@ -34,7 +35,8 @@ isTakeDamage attrs window = case effectTarget attrs of
   _ -> False
  where
   go eid = case windowType window of
-    Window.TakeDamage _ _ (EnemyTarget eid') -> eid == eid'
+    Window.TakeDamage _ _ (EnemyTarget eid') ->
+      eid == eid' && windowTiming window == Timing.After
     _ -> False
 
 instance (HasList DiscardedPlayerCard env InvestigatorId, HasQueue env) => RunMessage env NathanielCho where
@@ -43,16 +45,18 @@ instance (HasList DiscardedPlayerCard env InvestigatorId, HasQueue env) => RunMe
       | effectTarget attrs == InvestigatorTarget iid -> do
         discardedCards <- map unDiscardedPlayerCard <$> getList iid
         let events = filter ((== EventType) . toCardType) discardedCards
-        e <$ pushAll
-          [ chooseOne
-            iid
-            [ TargetLabel
-                (CardIdTarget $ toCardId event)
-                [ReturnToHand iid (CardIdTarget $ toCardId event)]
-            | event <- events
+        if null events
+          then e <$ push (DisableEffect $ toId attrs)
+          else e <$ pushAll
+            [ chooseOne
+              iid
+              [ TargetLabel
+                  (CardIdTarget $ toCardId event)
+                  [ReturnToHand iid (CardIdTarget $ toCardId event)]
+              | event <- events
+              ]
+            , DisableEffect $ toId attrs
             ]
-          , DisableEffect $ toId attrs
-          ]
     CheckWindow _ windows' | any (isTakeDamage attrs) windows' ->
       e <$ push (DisableEffect $ toId attrs)
     SkillTestEnds _ -> e <$ push (DisableEffect $ toId attrs)

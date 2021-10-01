@@ -339,7 +339,12 @@ instance
         applyModifier (Uses uType m) (AdditionalStartingUses n) =
           Uses uType (n + m)
         applyModifier m _ = m
-      push =<< checkWindows [Window Timing.When (Window.EnterPlay $ toTarget a)]
+      whenEnterMsg <- checkWindows
+        [Window Timing.When (Window.EnterPlay $ toTarget a)]
+      afterEnterMsg <- checkWindows
+        [Window Timing.After (Window.EnterPlay $ toTarget a)]
+
+      pushAll [whenEnterMsg, afterEnterMsg]
       pure
         $ a
         & (investigatorL ?~ iid)

@@ -10,6 +10,7 @@ import Arkham.Types.Deck
 import Arkham.Types.Id
 import Arkham.Types.Matcher (LocationMatcher)
 import Arkham.Types.Phase (Phase)
+import {-# SOURCE #-} Arkham.Types.SkillTest
 import Arkham.Types.SkillType (SkillType)
 import Arkham.Types.Source (Source)
 import Arkham.Types.Target (Target)
@@ -100,6 +101,7 @@ data WindowType
   | RevealTokenWithNegativeModifier InvestigatorId Token
   | SkillTest SkillType
   | InitiatedSkillTest InvestigatorId (Maybe Action) Int
+  | SkillTestEnded SkillTest
   | SuccessfulAttackEnemy InvestigatorId EnemyId Int
   | SuccessfulEvadeEnemy InvestigatorId EnemyId Int
   | SuccessfulInvestigation InvestigatorId LocationId

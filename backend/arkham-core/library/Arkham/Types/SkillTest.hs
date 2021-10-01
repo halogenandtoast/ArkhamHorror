@@ -60,6 +60,7 @@ data SkillTest = SkillTest
   , skillTestSubscribers :: [Target]
   }
   deriving stock (Show, Eq, Generic)
+  deriving anyclass Hashable
 
 subscribersL :: Lens' SkillTest [Target]
 subscribersL =
@@ -390,9 +391,12 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           Unrun -> error "wat, skill test has to run"
           SucceededBy _ n -> n
           FailedBy _ n -> (-n)
+
+      skillTestEndsWindows <- windows [Window.SkillTestEnded s]
       s <$ pushAll
         (ResetTokens (toSource s)
         : map (uncurry AddToDiscard) discards
+        <> skillTestEndsWindows
         <> [ AfterSkillTestEnds
                skillTestSource
                skillTestTarget

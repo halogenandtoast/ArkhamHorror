@@ -11,6 +11,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
+import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
 import Arkham.Types.Window qualified as Window
 
@@ -32,7 +33,8 @@ isTakeDamage attrs window = case effectTarget attrs of
   _ -> False
  where
   go eid = case windowType window of
-    Window.TakeDamage _ _ (EnemyTarget eid') -> eid == eid'
+    Window.TakeDamage _ _ (EnemyTarget eid') ->
+      eid == eid' && windowTiming window == Timing.After
     _ -> False
 
 instance HasQueue env => RunMessage env TommyMalloy where

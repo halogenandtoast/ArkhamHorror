@@ -778,11 +778,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- Card is assumed to be in your discard
     -- but since find card can also return cards in your hand
     -- we filter again just in case
-    let card = findCard cid a
-        discardFilter = case preview _PlayerCard card of
-                          Just pc -> filter (/= pc)
-                          Nothing -> id
-    pure $ a & discardL %~ discardFilter & handL %~ filter (/= card) & handL %~ (card:)
+    let
+      card = findCard cid a
+      discardFilter = case preview _PlayerCard card of
+        Just pc -> filter (/= pc)
+        Nothing -> id
+    pure
+      $ a
+      & discardL
+      %~ discardFilter
+      & handL
+      %~ filter (/= card)
+      & handL
+      %~ (card :)
   CheckAdditionalActionCosts iid _ source action msgs | iid == investigatorId ->
     do
       modifiers' <- getModifiers source (toTarget a)
@@ -2116,11 +2124,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & deckL %~ Deck . (card :) . unDeck
   AddToHand iid card | iid == investigatorId -> do
     case card of
-      PlayerCard card' ->
+      PlayerCard card' -> do
         when (cdRevelation (toCardDef card'))
           $ if toCardType card' == PlayerTreacheryType
               then push (DrewTreachery iid card)
               else push (Revelation iid (PlayerCardSource $ toCardId card'))
+        when (toCardType card' == PlayerEnemyType)
+          $ push (DrewPlayerEnemy iid card)
       _ -> pure ()
     pure
       $ a
@@ -2274,6 +2284,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               [ TargetLabel
                   (CardIdTarget $ toCardId card)
                   [ AddToHand who card
+                  , PayCardCost iid (toCardId card)
                   , PlayCard iid (toCardId card) Nothing False
                   ]
               | card <- playableCards

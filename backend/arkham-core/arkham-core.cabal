@@ -264,6 +264,7 @@ library
       Arkham.Types.Asset.Cards.LightningGun5
       Arkham.Types.Asset.Cards.LiquidCourage
       Arkham.Types.Asset.Cards.LitaChantler
+      Arkham.Types.Asset.Cards.Lockpicks
       Arkham.Types.Asset.Cards.Lockpicks1
       Arkham.Types.Asset.Cards.LoneWolf
       Arkham.Types.Asset.Cards.LuckyDice2
@@ -283,6 +284,7 @@ library
       Arkham.Types.Asset.Cards.Newspaper
       Arkham.Types.Asset.Cards.OccultLexicon
       Arkham.Types.Asset.Cards.OldBookOfLore
+      Arkham.Types.Asset.Cards.OldKeyring
       Arkham.Types.Asset.Cards.Painkillers
       Arkham.Types.Asset.Cards.Pathfinder1
       Arkham.Types.Asset.Cards.PeterClover
@@ -417,6 +419,7 @@ library
       Arkham.Types.Effect.Effects.Improvisation
       Arkham.Types.Effect.Effects.JeremiahPierce
       Arkham.Types.Effect.Effects.LetMeHandleThis
+      Arkham.Types.Effect.Effects.Lockpicks
       Arkham.Types.Effect.Effects.Lockpicks1
       Arkham.Types.Effect.Effects.Lucky
       Arkham.Types.Effect.Effects.Lucky2

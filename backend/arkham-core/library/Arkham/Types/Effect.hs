@@ -130,6 +130,7 @@ data Effect
   | JeremiahPierce' JeremiahPierce
   | NathanielCho' NathanielCho
   | TommyMalloy' TommyMalloy
+  | Lockpicks' Lockpicks
   | EighteenDerringer' EighteenDerringer
   | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
   | CursedShores' CursedShores
@@ -266,6 +267,7 @@ allEffects = mapFromList
   , ("50044", JeremiahPierce' . jeremiahPierce)
   , ("60101", NathanielCho' . nathanielCho)
   , ("60103", TommyMalloy' . tommyMalloy)
+  , ("60305", Lockpicks' . lockpicks)
   , ("60505", EighteenDerringer' . eighteenDerringer)
   , ("81001", CurseOfTheRougarouTabletToken' . curseOfTheRougarouTabletToken)
   , ("81007", CursedShores' . cursedShores)

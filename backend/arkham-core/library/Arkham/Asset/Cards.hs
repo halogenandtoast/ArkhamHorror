@@ -3,6 +3,7 @@ module Arkham.Asset.Cards where
 import Arkham.Prelude
 
 import Arkham.Types.Asset.Uses hiding (Key)
+import Arkham.Types.Asset.Uses qualified as Uses
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
@@ -181,6 +182,7 @@ allPlayerAssetCards = mapFromList $ map
   , lightningGun5
   , liquidCourage
   , litaChantler
+  , lockpicks
   , lockpicks1
   , loneWolf
   , luckyDice2
@@ -199,6 +201,7 @@ allPlayerAssetCards = mapFromList $ map
   , newspaper
   , occultLexicon
   , oldBookOfLore
+  , oldKeyring
   , painkillers
   , pathfinder1
   , peterSylvestre
@@ -1608,11 +1611,24 @@ whittonGreene =
     , cdUnique = True
     }
 
+lockpicks :: CardDef
+lockpicks = (asset "60305" "Lockpicks" 3 Rogue)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Item, Tool, Illicit]
+  }
+
 eighteenDerringer :: CardDef
 eighteenDerringer = (asset "60505" ".18 Derringer" 3 Survivor)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
   , cdUses = Uses Ammo 2
+  }
+
+oldKeyring :: CardDef
+oldKeyring = (asset "60507" "Old Keyring" 1 Survivor)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Item, Tool]
+  , cdUses = Uses Uses.Key 2
   }
 
 ladyEsprit :: CardDef

@@ -15,6 +15,7 @@ data Trait
   | Altered
   | AncientOne
   | Arkham
+  | ArkhamAsylum
   | Armor
   | Artist
   | Assistant

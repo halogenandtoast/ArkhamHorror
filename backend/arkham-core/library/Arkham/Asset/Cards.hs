@@ -257,6 +257,7 @@ allPlayerAssetCards = mapFromList $ map
   , theTatteredCloak
   , thirtyTwoColt
   , toothOfEztli
+  , trackShoes
   , trenchKnife
   , trueGrit
   , tryAndTryAgain3
@@ -1509,6 +1510,13 @@ toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
                )
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Item, Relic]
+  }
+
+trackShoes :: CardDef
+trackShoes = (asset "05036" "Track Shoes" 3 Survivor)
+  { cdCardTraits = setFromList [Item, Clothing, Footwear]
+  , cdSkills = [SkillAgility]
+  , cdLimits = [LimitPerTrait Footwear 1]
   }
 
 meatCleaver :: CardDef

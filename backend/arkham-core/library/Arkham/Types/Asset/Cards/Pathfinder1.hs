@@ -15,6 +15,7 @@ import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Matcher hiding (MoveAction)
 import Arkham.Types.Message
+import Arkham.Types.Target
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -40,6 +41,8 @@ instance AssetRunner env => RunMessage env Pathfinder1 where
       a <$ push
         (chooseOne
           iid
-          [ MoveAction iid lid Free False | lid <- accessibleLocationIds ]
+          [ TargetLabel (LocationTarget lid) [MoveAction iid lid Free False]
+          | lid <- accessibleLocationIds
+          ]
         )
     _ -> Pathfinder1 <$> runMessage msg attrs

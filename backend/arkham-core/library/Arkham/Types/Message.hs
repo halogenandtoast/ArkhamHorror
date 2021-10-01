@@ -268,6 +268,7 @@ data Message
     | EnemyAttack InvestigatorId EnemyId DamageStrategy
     | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
     | EnemyAttacks [Message]
+    | CheckEnemyEngagement InvestigatorId
     | EnemyCheckEngagement EnemyId
     | EnemyDamage EnemyId InvestigatorId Source DamageEffect Int
     | -- Bool is for direct damage

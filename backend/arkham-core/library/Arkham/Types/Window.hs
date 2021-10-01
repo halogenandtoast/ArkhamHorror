@@ -83,6 +83,7 @@ data WindowType
   | LeavePlay Target
   | MovedFromHunter EnemyId
   | MovedBy Source LocationId InvestigatorId
+  | MovedButBeforeEnemyEngagement InvestigatorId LocationId
   | NonFast
   | PassSkillTest (Maybe Action) Source InvestigatorId Int
   | PassInvestigationSkillTest InvestigatorId LocationId Int

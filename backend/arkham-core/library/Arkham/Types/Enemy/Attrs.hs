@@ -865,8 +865,6 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
       if Keyword.Massive `notElem` keywords && willMove
         then a <$ push (EnemyEntered enemyId lid)
         else a <$ push (DisengageEnemy iid enemyId)
-    AfterEnterLocation _ lid | lid == enemyLocation -> do
-      a <$ push (EnemyCheckEngagement $ toId a)
     CheckAttackOfOpportunity iid isFast
       | not isFast && iid `elem` enemyEngagedInvestigators && not enemyExhausted -> do
         modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)

@@ -5,6 +5,7 @@ module Arkham.Types.Effect.Effects.Lockpicks1
 
 import Arkham.Prelude
 
+import Arkham.Types.Asset.Uses
 import Arkham.Types.Classes
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.EffectMetadata
@@ -33,12 +34,12 @@ instance HasQueue env => RunMessage env Lockpicks1 where
     SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
     PassedSkillTest _ _ _ SkillTestInitiatorTarget{} _ n | n < 2 ->
       case effectSource attrs of
-        AssetSource aid ->
-          e <$ pushAll [Discard $ AssetTarget aid, DisableEffect $ toId attrs]
-        _ -> error "lockpicks is an asset"
+        AssetSource aid -> e <$ pushAll
+          [SpendUses (AssetTarget aid) Supply 1, DisableEffect $ toId attrs]
+        _ -> error "lockpicks1 is an asset"
     FailedSkillTest _ _ _ SkillTestInitiatorTarget{} _ n | n < 2 ->
       case effectSource attrs of
-        AssetSource aid ->
-          e <$ pushAll [Discard $ AssetTarget aid, DisableEffect $ toId attrs]
-        _ -> error "lockpicks is an asset"
+        AssetSource aid -> e <$ pushAll
+          [SpendUses (AssetTarget aid) Supply 1, DisableEffect $ toId attrs]
+        _ -> error "lockpicks1 is an asset"
     _ -> Lockpicks1 <$> runMessage msg attrs

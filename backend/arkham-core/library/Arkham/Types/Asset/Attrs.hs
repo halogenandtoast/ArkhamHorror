@@ -42,9 +42,14 @@ data AssetAttrs = AssetAttrs
   , assetClues :: Int
   , assetHorror :: Maybe Int
   , assetCanLeavePlayByNormalMeans :: Bool
+  , assetDiscardWhenNoUses :: Bool
   , assetIsStory :: Bool
   }
   deriving stock (Show, Eq, Generic)
+
+discardWhenNoUsesL :: Lens' AssetAttrs Bool
+discardWhenNoUsesL =
+  lens assetDiscardWhenNoUses $ \m x -> m { assetDiscardWhenNoUses = x }
 
 canLeavePlayByNormalMeansL :: Lens' AssetAttrs Bool
 canLeavePlayByNormalMeansL = lens assetCanLeavePlayByNormalMeans
@@ -207,6 +212,7 @@ assetWith f cardDef g = CardBuilder
     , assetClues = 0
     , assetHorror = Nothing
     , assetCanLeavePlayByNormalMeans = True
+    , assetDiscardWhenNoUses = False
     , assetIsStory = False
     }
   }
@@ -296,8 +302,12 @@ instance
         pure $ a & usesL .~ Uses useType' (n + m)
       _ -> error "Trying to add the wrong use type"
     SpendUses target useType' n | isTarget a target -> case assetUses of
-      Uses useType'' m | useType' == useType'' ->
-        pure $ a & usesL .~ Uses useType' (max 0 (m - n))
+      Uses useType'' m | useType' == useType'' -> do
+        let remainingUses = max 0 (m - n)
+        when
+          (assetDiscardWhenNoUses && remainingUses == 0)
+          (push $ Discard $ toTarget a)
+        pure $ a & usesL .~ Uses useType' remainingUses
       _ -> error "Trying to use the wrong use type"
     AttachAsset aid target | aid == assetId -> case target of
       LocationTarget lid ->

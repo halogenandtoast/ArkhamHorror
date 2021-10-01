@@ -25,7 +25,8 @@ newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 grotesqueStatue4 :: AssetCard GrotesqueStatue4
-grotesqueStatue4 = hand GrotesqueStatue4 Cards.grotesqueStatue4
+grotesqueStatue4 =
+  handWith GrotesqueStatue4 Cards.grotesqueStatue4 (discardWhenNoUsesL .~ True)
 
 instance HasAbilities GrotesqueStatue4 where
   getAbilities (GrotesqueStatue4 x) =
@@ -42,10 +43,8 @@ instance AssetRunner env => RunMessage env GrotesqueStatue4 where
   runMessage msg a@(GrotesqueStatue4 attrs) = case msg of
     UseCardAbility iid source [Window Timing.When (Window.WouldRevealChaosToken drawSource _)] 1 _
       | isSource attrs source
-      -> do
-        when (useCount (assetUses attrs) == 1) $ push (Discard (toTarget attrs))
-        a <$ push
-          (ReplaceCurrentDraw drawSource iid
-          $ Choose 1 [Undecided Draw, Undecided Draw] []
-          )
+      -> a <$ push
+        (ReplaceCurrentDraw drawSource iid
+        $ Choose 1 [Undecided Draw, Undecided Draw] []
+        )
     _ -> GrotesqueStatue4 <$> runMessage msg attrs

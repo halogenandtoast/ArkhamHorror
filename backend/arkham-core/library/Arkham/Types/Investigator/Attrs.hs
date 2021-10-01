@@ -1702,13 +1702,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ push (MoveTo source investigatorId lid)
   MoveTo source iid lid | iid == investigatorId -> do
     movedByWindows <- Helpers.windows [Window.MovedBy source lid iid]
+    afterMoveButBeforeEnemyEngagement <- Helpers.checkWindows
+      [Window Timing.After (Window.MovedButBeforeEnemyEngagement iid lid)]
     pushAll
       $ movedByWindows
       <> [ WhenWillEnterLocation iid lid
          , WhenEnterLocation iid lid
          , AfterEnterLocation iid lid
+         , afterMoveButBeforeEnemyEngagement
+         , CheckEnemyEngagement iid
          ]
     pure $ a & locationL .~ lid
+  CheckEnemyEngagement iid | iid == investigatorId -> do
+    enemies <- selectList $ EnemyAt $ LocationWithId investigatorLocation
+    a <$ pushAll [ EnemyCheckEngagement eid | eid <- enemies ]
   SetLocationAsIf iid lid | iid == investigatorId ->
     -- In the as if situation we want to avoid callbacks
     -- so this sets the value directly

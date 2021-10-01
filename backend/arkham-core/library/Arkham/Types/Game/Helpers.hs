@@ -1462,6 +1462,14 @@ windowMatches iid source window' = \case
       (matchWho iid who whoMatcher)
       (sourceMatches source' sourceMatcher)
     _ -> pure False
+  Matcher.MovedButBeforeEnemyEngagement timingMatcher whoMatcher whereMatcher
+    -> case window' of
+      Window t (Window.MovedButBeforeEnemyEngagement who locationId)
+        | t == timingMatcher -> liftA2
+          (&&)
+          (matchWho iid who whoMatcher)
+          (locationMatches iid source window' locationId whereMatcher)
+      _ -> pure False
   Matcher.InvestigatorDefeated timingMatcher sourceMatcher whoMatcher ->
     case window' of
       Window t (Window.InvestigatorDefeated source' who) | t == timingMatcher ->

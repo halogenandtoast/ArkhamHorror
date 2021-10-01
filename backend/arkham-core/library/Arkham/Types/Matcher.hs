@@ -447,6 +447,7 @@ data WindowMatcher
   | AmongSearchedCards Who
   | DeckHasNoCards Timing Who
   | MovedBy Timing Who SourceMatcher
+  | MovedButBeforeEnemyEngagement Timing Who Where
   | MovedFromHunter Timing EnemyMatcher
   | ChosenRandomLocation Timing LocationMatcher
   | EnemyWouldBeDefeated Timing EnemyMatcher

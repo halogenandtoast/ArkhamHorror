@@ -187,6 +187,7 @@ allPlayerAssetCards = mapFromList $ map
   , loneWolf
   , luckyDice2
   , machete
+  , madameLabranche
   , magnifyingGlass
   , magnifyingGlass1
   , maskedCarnevaleGoer_17
@@ -1494,6 +1495,14 @@ bookOfShadows1 = (asset "03154" "Book of Shadows" 3 Mystic)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tome]
   }
+
+madameLabranche :: CardDef
+madameLabranche =
+  (asset "03198" ("Madame Labranche" <:> "Mysterious Benefactress") 2 Survivor)
+    { cdSkills = [SkillIntellect]
+    , cdCardTraits = setFromList [Ally, Patron]
+    , cdUnique = True
+    }
 
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker

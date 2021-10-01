@@ -607,6 +607,7 @@ library
       Arkham.Types.Event.Cards.FirstWatch
       Arkham.Types.Event.Cards.Flare1
       Arkham.Types.Event.Cards.Forewarned1
+      Arkham.Types.Event.Cards.GritYourTeeth
       Arkham.Types.Event.Cards.HeroicRescue
       Arkham.Types.Event.Cards.HidingSpot
       Arkham.Types.Event.Cards.HotStreak2

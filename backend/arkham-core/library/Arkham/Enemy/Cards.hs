@@ -705,6 +705,7 @@ tommyMalloy :: CardDef
 tommyMalloy = (weakness "60103" "Tommy Malloy")
   { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
   , cdKeywords = setFromList [Keyword.Hunter]
+  , cdUnique = True
   }
 
 bogGator :: CardDef

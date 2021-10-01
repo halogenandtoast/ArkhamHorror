@@ -95,6 +95,7 @@ allPlayerEventCards = mapFromList $ map
   , firstWatch
   , flare1
   , forewarned1
+  , gritYourTeeth
   , heroicRescue
   , hidingSpot
   , hotStreak2
@@ -827,6 +828,7 @@ aTestOfWill1 = (event "03156" "A Test of Will" 1 Survivor)
     (InvestigatorAt YourLocation)
     (BasicCardMatch NonWeaknessTreachery)
     EncounterDeck
+  , cdLevel = 1
   }
 
 devilsLuck :: CardDef
@@ -941,6 +943,15 @@ iveGotAPlan2 = (event "60225" "\"I've got a plan!\"" 2 Seeker)
   , cdCardTraits = setFromList [Insight, Tactic]
   , cdLevel = 2
   , cdAction = Just Action.Fight
+  }
+
+gritYourTeeth :: CardDef
+gritYourTeeth = (event "60515" "Grit Your Teeth" 1 Survivor)
+  { cdSkills = [SkillWild]
+  , cdCardTraits = singleton Spirit
+  , cdFastWindow =
+    Just $ SkillTestResult Timing.After You AnySkillTest $ FailureResult
+      AnyValue
   }
 
 lookWhatIFound2 :: CardDef

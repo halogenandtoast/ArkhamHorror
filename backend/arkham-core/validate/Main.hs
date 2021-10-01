@@ -340,9 +340,9 @@ runValidations cards = do
             (cdSkills card)
           )
         when
-          (getTraits cardJson
+          (normalizeTraits code (getTraits cardJson)
           /= cdCardTraits card
-          && getTraits cardJson
+          && normalizeTraits code (getTraits cardJson)
           /= cdRevealedCardTraits card
           )
           (throw $ TraitsMismatch
@@ -480,6 +480,14 @@ normalizeImageCardCode other = unCardCode other
 normalizeSkills :: CardCode -> [SkillType] -> [SkillType]
 normalizeSkills "02230" _ = [SkillWillpower, SkillAgility]
 normalizeSkills _ skills = skills
+
+normalizeTraits :: CardCode -> HashSet Trait -> HashSet Trait
+-- Erratum: Each of the Patient Confinement locations should not have the Arkham Asylum trait.
+normalizeTraits "03178" _ = mempty
+normalizeTraits "03179" _ = mempty
+normalizeTraits "03180" _ = mempty
+normalizeTraits "03181" _ = mempty
+normalizeTraits _ traits = traits
 
 runMissingImages :: IO ()
 runMissingImages = do

@@ -1108,47 +1108,54 @@ asylumHallsWesternPatientWing_168 :: CardDef
 asylumHallsWesternPatientWing_168 = location
   "03168"
   ("Asylum Halls" <:> "Western Patient Wing")
-  mempty
+  [ArkhamAsylum]
   TheUnspeakableOath
 
 asylumHallsWesternPatientWing_169 :: CardDef
 asylumHallsWesternPatientWing_169 = location
   "03169"
   ("Asylum Halls" <:> "Western Patient Wing")
-  mempty
+  [ArkhamAsylum]
   TheUnspeakableOath
 
 asylumHallsEasternPatientWing_170 :: CardDef
 asylumHallsEasternPatientWing_170 = location
   "03170"
   ("Asylum Halls" <:> "Eastern Patient Wing")
-  mempty
+  [ArkhamAsylum]
   TheUnspeakableOath
 
 asylumHallsEasternPatientWing_171 :: CardDef
 asylumHallsEasternPatientWing_171 = location
   "03171"
   ("Asylum Halls" <:> "Eastern Patient Wing")
-  mempty
+  [ArkhamAsylum]
   TheUnspeakableOath
 
 kitchen :: CardDef
-kitchen = location "03172" "Kitchen" mempty TheUnspeakableOath
+kitchen = location "03172" "Kitchen" [ArkhamAsylum] TheUnspeakableOath
 
 messHall :: CardDef
-messHall = location "03173" "Mess Hall" mempty TheUnspeakableOath
+messHall = (location "03173" "Mess Hall" [ArkhamAsylum] TheUnspeakableOath)
+  { cdVictoryPoints = Just 1
+  }
 
 infirmary :: CardDef
-infirmary = location "03174" "Infirmary" mempty TheUnspeakableOath
+infirmary = (location "03174" "Infirmary" [ArkhamAsylum] TheUnspeakableOath)
+  { cdVictoryPoints = Just 1
+  }
 
 yard :: CardDef
-yard = location "03175" "Yard" mempty TheUnspeakableOath
+yard = location "03175" "Yard" [ArkhamAsylum] TheUnspeakableOath
 
 garden :: CardDef
-garden = location "03176" "Garden" mempty TheUnspeakableOath
+garden = location "03176" "Garden" [ArkhamAsylum] TheUnspeakableOath
 
 basementHall :: CardDef
-basementHall = location "03177" "Basement Hall" mempty TheUnspeakableOath
+basementHall =
+  (location "03177" "Basement Hall" [ArkhamAsylum] TheUnspeakableOath)
+    { cdVictoryPoints = Just 1
+    }
 
 patientConfinementDanielsCell :: CardDef
 patientConfinementDanielsCell = location

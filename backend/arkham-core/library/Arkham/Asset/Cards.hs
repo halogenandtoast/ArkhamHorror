@@ -1495,6 +1495,7 @@ bookOfShadows1 :: CardDef
 bookOfShadows1 = (asset "03154" "Book of Shadows" 3 Mystic)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tome]
+  , cdLevel = 1
   }
 
 madameLabranche :: CardDef

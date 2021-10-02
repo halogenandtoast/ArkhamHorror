@@ -23,7 +23,7 @@ buryThemDeep = event BuryThemDeep Cards.buryThemDeep
 
 instance RunMessage env BuryThemDeep where
   runMessage msg e@(BuryThemDeep attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ [Window Timing.After (Window.EnemyDefeated _ enemyId)]
+    InvestigatorPlayEvent _ eid _ [Window Timing.After (Window.EnemyDefeated _ enemyId)] _
       | eid == toId attrs
       -> do
         push $ AddToVictory (toTarget attrs)

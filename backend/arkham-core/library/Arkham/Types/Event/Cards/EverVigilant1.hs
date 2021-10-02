@@ -32,7 +32,7 @@ instance HasModifiersFor env EverVigilant1 where
 
 instance CanCheckPlayable env => RunMessage env EverVigilant1 where
   runMessage msg e@(EverVigilant1 attrs) = case msg of
-    InvestigatorPlayEvent iid eid mtarget _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid mtarget _ _ | eid == toId attrs -> do
       e <$ pushAll
         (replicate 3 (ResolveEvent iid eid mtarget)
         <> [Discard (toTarget attrs)]

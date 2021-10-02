@@ -19,7 +19,7 @@ lookWhatIFound2 = event LookWhatIFound2 Cards.lookWhatIFound2
 
 instance EventRunner env => RunMessage env LookWhatIFound2 where
   runMessage msg e@(LookWhatIFound2 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ ResolveEvent iid eid Nothing
         , ResolveEvent iid eid Nothing

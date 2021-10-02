@@ -20,7 +20,7 @@ momentOfRespite3 = event MomentOfRespite3 Cards.momentOfRespite3
 
 instance RunMessage env MomentOfRespite3 where
   runMessage msg e@(MomentOfRespite3 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ HealHorror (InvestigatorTarget iid) 3
         , DrawCards iid 1 False

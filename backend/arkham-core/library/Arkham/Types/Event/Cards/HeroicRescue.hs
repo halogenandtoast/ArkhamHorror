@@ -22,7 +22,7 @@ heroicRescue = event HeroicRescue Cards.heroicRescue
 
 instance RunMessage env HeroicRescue where
   runMessage msg e@(HeroicRescue attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [Window _ (Window.EnemyWouldAttack iid' eid')]
+    InvestigatorPlayEvent iid eid _ [Window _ (Window.EnemyWouldAttack iid' eid')] _
       | eid == toId attrs
       -> do
         popMessageMatching_ \case

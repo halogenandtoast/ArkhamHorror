@@ -22,7 +22,7 @@ letMeHandleThis = event LetMeHandleThis Cards.letMeHandleThis
 
 instance HasQueue env => RunMessage env LetMeHandleThis where
   runMessage msg e@(LetMeHandleThis attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid (Just (TreacheryTarget tid)) _
+    InvestigatorPlayEvent iid eid (Just (TreacheryTarget tid)) _ _
       | eid == eventId -> do
         withQueue_ $ map $ \case
           Revelation _ (TreacherySource tid') | tid == tid' ->

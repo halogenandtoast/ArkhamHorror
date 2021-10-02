@@ -23,7 +23,7 @@ dropUntilDamage = dropWhile (notElem DamageMessage . messageType)
 
 instance RunMessage env IveHadWorse4 where
   runMessage msg e@(IveHadWorse4 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ windows | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ windows _ | eid == toId attrs -> do
       e <$ push (UseCardAbility iid (toSource attrs) windows 0 NoPayment)
     UseCardAbility _ source _ 5 _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)

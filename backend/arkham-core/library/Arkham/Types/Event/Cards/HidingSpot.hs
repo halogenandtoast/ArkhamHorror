@@ -49,7 +49,7 @@ instance HasAbilities HidingSpot where
 
 instance EventRunner env => RunMessage env HidingSpot where
   runMessage msg e@(HidingSpot attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <- selectListMap LocationTarget Anywhere
       e <$ push
         (chooseOne

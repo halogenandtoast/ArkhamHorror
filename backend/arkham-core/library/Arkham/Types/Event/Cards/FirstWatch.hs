@@ -37,7 +37,7 @@ instance
   => RunMessage env FirstWatch where
   runMessage msg e@(FirstWatch (attrs@EventAttrs {..} `With` metadata@FirstWatchMetadata {..}))
     = case msg of
-      InvestigatorPlayEvent _ eid _ _ | eid == eventId -> do
+      InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
         withQueue_ $ \(dropped : rest) -> case dropped of
           AllDrawEncounterCard -> rest
           _ -> error "AllDrawEncounterCard expected"

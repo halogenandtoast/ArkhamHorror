@@ -30,7 +30,7 @@ instance
   )
   => RunMessage env Oops where
   runMessage msg e@(Oops attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [Window Timing.After (Window.FailAttackEnemy _ targetId _)]
+    InvestigatorPlayEvent iid eid _ [Window Timing.After (Window.FailAttackEnemy _ targetId _)] _
       | eid == toId attrs
       -> do
         location <- getId @LocationId iid

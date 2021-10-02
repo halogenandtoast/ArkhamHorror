@@ -19,7 +19,7 @@ cunningDistraction = event CunningDistraction Cards.cunningDistraction
 
 instance EventRunner env => RunMessage env CunningDistraction where
   runMessage msg e@(CunningDistraction attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       locationId <- getId @LocationId iid
       enemyIds <- getSetList locationId
       e <$ pushAll

@@ -23,7 +23,7 @@ preparedForTheWorst = event PreparedForTheWorst Cards.preparedForTheWorst
 
 instance RunMessage env PreparedForTheWorst where
   runMessage msg e@(PreparedForTheWorst attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ Search
           iid

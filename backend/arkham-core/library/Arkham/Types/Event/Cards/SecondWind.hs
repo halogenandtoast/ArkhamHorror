@@ -21,7 +21,7 @@ secondWind = event SecondWind Cards.secondWind
 
 instance (HasQueue env, HasHistory env) => RunMessage env SecondWind where
   runMessage msg e@(SecondWind attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       roundHistory <- getHistory RoundHistory iid
       let
         damageToHeal =

@@ -25,7 +25,7 @@ gritYourTeeth = event GritYourTeeth Cards.gritYourTeeth
 
 instance EventRunner env => RunMessage env GritYourTeeth where
   runMessage msg e@(GritYourTeeth attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ CreateWindowModifierEffect
           EffectRoundWindow

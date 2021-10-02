@@ -964,6 +964,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (assetsL %~ deleteSet aid)
       & (deckL .~ Deck deck')
       & (slotsL %~ removeFromSlots aid)
+  ShuffleIntoDeck iid (EventTarget eid) | iid == investigatorId -> do
+    card <- fromJustNote "missing card" <$> getPlayerCard eid
+    deck' <- shuffleM (card : unDeck investigatorDeck)
+    push $ After msg
+    pure $ a & (deckL .~ Deck deck')
   AddTreacheryToHand iid tid | iid == investigatorId ->
     pure $ a & inHandTreacheriesL %~ insertSet tid
   Discard (TreacheryTarget tid) ->

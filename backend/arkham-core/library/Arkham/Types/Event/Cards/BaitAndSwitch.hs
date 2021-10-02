@@ -22,7 +22,7 @@ baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
 
 instance (EventRunner env) => RunMessage env BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> e <$ pushAll
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ ChooseEvadeEnemy iid (EventSource eid) SkillAgility False
       , Discard (EventTarget eid)
       ]

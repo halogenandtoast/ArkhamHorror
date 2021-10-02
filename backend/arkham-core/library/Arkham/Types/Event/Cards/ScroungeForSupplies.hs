@@ -23,7 +23,7 @@ scroungeForSupplies = event ScroungeForSupplies Cards.scroungeForSupplies
 
 instance EventRunner env => RunMessage env ScroungeForSupplies where
   runMessage msg e@(ScroungeForSupplies attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
         selectList $ InDiscardOf (InvestigatorWithId iid) <> BasicCardMatch
           (CardWithLevel 0)

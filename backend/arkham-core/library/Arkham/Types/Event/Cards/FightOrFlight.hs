@@ -22,7 +22,7 @@ fightOrFlight = event FightOrFlight Cards.fightOrFlight
 
 instance EventRunner env => RunMessage env FightOrFlight where
   runMessage msg e@(FightOrFlight attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ CreateEffect
           (toCardCode attrs)

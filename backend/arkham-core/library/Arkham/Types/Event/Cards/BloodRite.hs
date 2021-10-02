@@ -25,7 +25,7 @@ bloodRite = event BloodRite Cards.bloodRite
 
 instance EventRunner env => RunMessage env BloodRite where
   runMessage msg e@(BloodRite attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ windows | eid == eventId -> e <$ pushAll
+    InvestigatorPlayEvent iid eid _ windows _ | eid == eventId -> e <$ pushAll
       [ DrawCards iid 2 False
       , PayForCardAbility
         iid

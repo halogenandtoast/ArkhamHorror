@@ -22,7 +22,7 @@ devilsLuck = event DevilsLuck Cards.devilsLuck
 
 instance EventRunner env => RunMessage env DevilsLuck where
   runMessage msg e@(DevilsLuck attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [Window _ (Window.WouldTakeDamageOrHorror _ _ damage horror)]
+    InvestigatorPlayEvent iid eid _ [Window _ (Window.WouldTakeDamageOrHorror _ _ damage horror)] _
       | eid == toId attrs
       -> do
         e <$ pushAll

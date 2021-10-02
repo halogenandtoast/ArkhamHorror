@@ -42,7 +42,7 @@ instance HasAbilities Barricade where
 
 instance EventRunner env => RunMessage env Barricade where
   runMessage msg e@(Barricade attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getId iid
       e <$ push (AttachEvent eid (LocationTarget lid))
     UseCardAbility _ source _ 1 _ | isSource attrs source ->

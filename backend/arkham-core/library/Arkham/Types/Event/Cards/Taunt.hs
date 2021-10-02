@@ -21,7 +21,7 @@ taunt = event Taunt Cards.taunt
 
 instance EventRunner env => RunMessage env Taunt where
   runMessage msg e@(Taunt attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       lid <- getId @LocationId iid
       enemyIds <- getSetList lid
       e <$ push

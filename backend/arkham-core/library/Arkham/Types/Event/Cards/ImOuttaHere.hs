@@ -19,6 +19,6 @@ imOuttaHere = event ImOuttaHere Cards.imOuttaHere
 
 instance RunMessage env ImOuttaHere where
   runMessage msg e@(ImOuttaHere attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs ->
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs ->
       e <$ push (Resign iid)
     _ -> ImOuttaHere <$> runMessage msg attrs

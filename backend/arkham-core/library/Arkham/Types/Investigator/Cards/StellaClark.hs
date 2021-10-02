@@ -31,10 +31,16 @@ stellaClark = StellaClark $ baseAttrs
 
 instance HasAbilities StellaClark where
   getAbilities (StellaClark a) =
-    [ restrictedAbility a 1 Self
-        $ ReactionAbility
-            (SkillTestResult Timing.After You AnySkillTest AnyResult)
+    [ restrictedAbility
+          a
+          1
+          Self
+          (ReactionAbility
+            (SkillTestResult Timing.After You SkillTestWasFailed AnyResult)
             Free
+          )
+        & abilityLimitL
+        .~ PlayerLimit PerRound 1
     ]
 
 instance HasTokenValue env StellaClark where

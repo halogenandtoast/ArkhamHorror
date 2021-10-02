@@ -974,6 +974,7 @@ library
       Arkham.Types.Skill.Cards.StrokeOfLuck2
       Arkham.Types.Skill.Cards.SurvivalInstinct
       Arkham.Types.Skill.Cards.SurvivalInstinct2
+      Arkham.Types.Skill.Cards.TakeHeart
       Arkham.Types.Skill.Cards.TheHomeFront
       Arkham.Types.Skill.Cards.TrueUnderstanding
       Arkham.Types.Skill.Cards.UnexpectedCourage

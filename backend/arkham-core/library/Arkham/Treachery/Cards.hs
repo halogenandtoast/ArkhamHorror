@@ -49,6 +49,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdLimits = []
   , cdExceptional = False
   , cdUses = NoUses
+  , cdPlayableFromDiscard = False
   }
 
 weakness :: CardCode -> Name -> CardDef

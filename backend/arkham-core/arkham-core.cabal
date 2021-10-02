@@ -660,6 +660,7 @@ library
       Arkham.Types.Event.Cards.WardOfProtection
       Arkham.Types.Event.Cards.WardOfProtection5
       Arkham.Types.Event.Cards.WillToSurvive3
+      Arkham.Types.Event.Cards.WingingIt
       Arkham.Types.Event.Cards.WorkingAHunch
       Arkham.Types.Event.Helpers
       Arkham.Types.Event.Runner

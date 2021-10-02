@@ -59,6 +59,7 @@ data CardDef = CardDef
   , cdLimits :: [CardLimit]
   , cdExceptional :: Bool
   , cdUses :: Uses
+  , cdPlayableFromDiscard :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -143,4 +144,5 @@ testCardDef cardType cardCode = CardDef
   , cdLimits = []
   , cdExceptional = False
   , cdUses = NoUses
+  , cdPlayableFromDiscard = False
   }

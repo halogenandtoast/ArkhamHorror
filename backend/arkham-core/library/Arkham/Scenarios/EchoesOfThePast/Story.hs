@@ -6,7 +6,7 @@ import Arkham.Types.Message
 
 intro :: Message
 intro = FlavorText
-  (Just "Scenario II: The Last King")
+  (Just "Scenario III: Echoes of the Past")
   [ "Your head throbs with a dull ache as you drive\
     \ through the rainy streets of Arkham toward your\
     \ next destination. The threat of the Stranger looms\

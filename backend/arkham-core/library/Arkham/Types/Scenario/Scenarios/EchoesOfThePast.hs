@@ -12,15 +12,19 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenarios.EchoesOfThePast.Story
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
+import Arkham.Types.Effect.Window
+import Arkham.Types.EffectMetadata
 import Arkham.Types.EncounterSet qualified as EncounterSet
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
@@ -188,22 +192,44 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
             | (location, card) <- zip thirdFloor seekersToSpawn
             ]
 
+      sebastienInterviewed <- elem (Recorded "03079")
+        <$> hasRecordSet VIPsInterviewed
+
+      fledTheDinnerParty <- hasRecord YouFledTheDinnerParty
+
       pushAll
-        ([ story investigatorIds intro
-         , SetEncounterDeck encounterDeck
-         , AddAgenda "03121"
-         , AddAct "03124"
-         , PlaceLocation entryHall
-         , PlaceLocation quietHalls1
-         , SetLocationLabel (toLocationId quietHalls1) "quietHalls1"
-         , PlaceLocation quietHalls2
-         , SetLocationLabel (toLocationId quietHalls2) "quietHalls2"
-         ]
+        ([story investigatorIds intro]
+        <> [ story investigatorIds sebastiensInformation
+           | sebastienInterviewed
+           ]
+        <> [ SetEncounterDeck encounterDeck
+           , AddAgenda "03121"
+           , AddAct "03124"
+           , PlaceLocation entryHall
+           ]
+        <> [ PlaceClues (LocationTarget $ toLocationId entryHall) 1
+           | sebastienInterviewed
+           ]
+        <> [ PlaceLocation quietHalls1
+           , SetLocationLabel (toLocationId quietHalls1) "quietHalls1"
+           , PlaceLocation quietHalls2
+           , SetLocationLabel (toLocationId quietHalls2) "quietHalls2"
+           ]
         <> placeAndLabelLocations "groundFloor" groundFloor
         <> placeAndLabelLocations "secondFloor" secondFloor
         <> placeAndLabelLocations "thirdFloor" thirdFloor
         <> spawnMessages
         <> [MoveAllTo (toSource attrs) (toLocationId entryHall)]
+        <> if fledTheDinnerParty
+             then
+               [ CreateWindowModifierEffect
+                   EffectRoundWindow
+                   (EffectModifiers $ toModifiers attrs [AdditionalActions 1])
+                   (toSource attrs)
+                   (InvestigatorTarget iid)
+               | iid <- investigatorIds
+               ]
+             else []
         )
 
       setAsideCards <- traverse

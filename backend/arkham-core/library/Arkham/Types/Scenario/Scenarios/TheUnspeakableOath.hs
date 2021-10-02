@@ -88,6 +88,24 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
         , EncounterSet.DecayAndFilth
         , EncounterSet.AgentsOfHastur
         ]
+
+      westernPatientWing <- genCard =<< sample
+        (Locations.asylumHallsWesternPatientWing_168
+        :| [Locations.asylumHallsWesternPatientWing_169]
+        )
+
+      easternPatientWing <- genCard =<< sample
+        (Locations.asylumHallsEasternPatientWing_170
+        :| [Locations.asylumHallsEasternPatientWing_171]
+        )
+
+      messHall <- genCard Locations.messHall
+      kitchen <- genCard Locations.kitchen
+      yard <- genCard Locations.yard
+      garden <- genCard Locations.garden
+      infirmary <- genCard Locations.infirmary
+      basementHall <- genCard Locations.basementHall
+
       setAsideCards' <- traverse
         genCard
         [ Assets.danielChesterfield
@@ -104,7 +122,38 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
         encounterDeck = Deck deck''
         setAsideCards =
           map EncounterCard (monsters <> lunatics) <> setAsideCards'
-      push (SetEncounterDeck encounterDeck)
+      investigatorIds <- getInvestigatorIds
+      let
+        spawnMessages = map
+          (\iid -> chooseOne
+            iid
+            [ TargetLabel
+                (LocationTarget $ toLocationId location)
+                [MoveTo (toSource attrs) iid (toLocationId location)]
+            | location <- [westernPatientWing, easternPatientWing]
+            ]
+          )
+          investigatorIds
+      pushAllEnd
+        $ [ SetEncounterDeck encounterDeck
+          , AddAgenda "03160"
+          , AddAct "03163"
+          , PlaceLocation westernPatientWing
+          , SetLocationLabel
+            (toLocationId westernPatientWing)
+            "asylumHallsWesternPatientWing"
+          , PlaceLocation easternPatientWing
+          , SetLocationLabel
+            (toLocationId easternPatientWing)
+            "asylumHallsEasternPatientWing"
+          , PlaceLocation messHall
+          , PlaceLocation kitchen
+          , PlaceLocation yard
+          , PlaceLocation garden
+          , PlaceLocation infirmary
+          , PlaceLocation basementHall
+          ]
+        <> spawnMessages
       TheUnspeakableOath
         <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
     ResolveToken _ tokenFace iid -> case tokenFace of

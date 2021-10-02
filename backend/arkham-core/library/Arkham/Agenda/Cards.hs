@@ -82,6 +82,12 @@ allAgendaCards = mapFromList $ map
   , encore
   , fashionablyLate
   , theTerrifyingTruth
+  , theTruthIsHidden
+  , ransackingTheManor
+  , secretsBetterLeftHidden
+  , lockedInside
+  , torturousDescent
+  , hisDomain
   , returnToPredatorOrPrey
   , aCreatureOfTheBayou
   , theRougarouFeeds

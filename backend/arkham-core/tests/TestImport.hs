@@ -56,6 +56,7 @@ import Arkham.Types.Location as X
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards.Study
 import Arkham.Types.LocationId as X
+import Arkham.Types.Matcher hiding (DuringTurn, FastPlayerWindow)
 import Arkham.Types.Message as X
 import Arkham.Types.Modifier
 import Arkham.Types.Phase
@@ -90,10 +91,11 @@ runMessages
      , HasStdGen env
      , HasQueue env
      , MonadReader env m
-     , HasMessageLogger env
+     , HasGameLogger env
+     , env ~ TestApp
      )
   => m ()
-runMessages = Game.runMessages False
+runMessages = asks testLogger >>= Game.runMessages
 
 shouldSatisfyM
   :: (HasCallStack, Show a, MonadIO m) => m a -> (a -> Bool) -> m ()
@@ -119,6 +121,7 @@ duringTurn = Window Timing.When . DuringTurn
 
 getId
   :: ( HasId id GameEnv a
+     , HasGameLogger env
      , HasGameRef env
      , HasQueue env
      , HasStdGen env
@@ -131,6 +134,7 @@ getId a = toGameEnv >>= runReaderT (Arkham.getId a)
 
 getCount
   :: ( HasCount count GameEnv a
+     , HasGameLogger env
      , HasGameRef env
      , HasQueue env
      , HasStdGen env
@@ -143,6 +147,7 @@ getCount a = toGameEnv >>= runReaderT (Arkham.getCount a)
 
 getAsset
   :: ( HasCallStack
+     , HasGameLogger env
      , MonadReader env m
      , HasGameRef env
      , MonadIO m
@@ -155,6 +160,7 @@ getAsset aid = toGameEnv >>= runReaderT (Game.getAsset aid)
 
 getTokenValue
   :: ( MonadReader env m
+     , HasGameLogger env
      , MonadIO m
      , HasGameRef env
      , HasQueue env
@@ -169,7 +175,13 @@ getTokenValue a iid token =
   toGameEnv >>= runReaderT (Arkham.getTokenValue a iid token)
 
 getCanAffordCost
-  :: (MonadReader env m, HasGameRef env, HasQueue env, MonadIO m, HasStdGen env)
+  :: ( MonadReader env m
+     , HasGameLogger env
+     , HasGameRef env
+     , HasQueue env
+     , MonadIO m
+     , HasStdGen env
+     )
   => InvestigatorId
   -> Source
   -> Maybe Action
@@ -179,7 +191,13 @@ getCanAffordCost iid source maction cost =
   toGameEnv >>= runReaderT (Helpers.getCanAffordCost iid source maction [] cost)
 
 getModifiers
-  :: (MonadReader env m, HasGameRef env, MonadIO m, HasQueue env, HasStdGen env)
+  :: ( MonadReader env m
+     , HasGameLogger env
+     , HasGameRef env
+     , MonadIO m
+     , HasQueue env
+     , HasStdGen env
+     )
   => Source
   -> Target
   -> m [ModifierType]
@@ -189,7 +207,8 @@ data TestApp = TestApp
   { game :: IORef Game
   , messageQueueRef :: IORef [Message]
   , gen :: IORef StdGen
-  , messageLogger :: Message -> IO ()
+  , testLogger :: Maybe (Message -> IO ())
+  , testGameLogger :: Text -> IO ()
   }
 
 newtype TestAppT m a = TestAppT { unTestAppT :: ReaderT TestApp m a }
@@ -207,8 +226,8 @@ instance HasStdGen TestApp where
 instance HasQueue TestApp where
   messageQueue = lens messageQueueRef $ \m x -> m { messageQueueRef = x }
 
-instance HasMessageLogger TestApp where
-  messageLoggerL = lens messageLogger $ \m x -> m { messageLogger = x }
+instance HasGameLogger TestApp where
+  gameLoggerL = lens testGameLogger $ \m x -> m { testGameLogger = x }
 
 testScenario
   :: MonadIO m => CardCode -> (ScenarioAttrs -> ScenarioAttrs) -> m Scenario
@@ -334,16 +353,16 @@ testConnectedLocationsWithDef (defF1, attrsF1) (defF2, attrsF2) = do
     (attrsF1
     . (symbolL .~ Square)
     . (revealedSymbolL .~ Square)
-    . (connectedSymbolsL .~ setFromList [Triangle])
-    . (revealedConnectedSymbolsL .~ setFromList [Triangle])
+    . (connectedMatchersL .~ [LocationWithSymbol Triangle])
+    . (revealedConnectedMatchersL .~ [LocationWithSymbol Triangle])
     )
   location2 <- testLocationWithDef
     defF2
     (attrsF2
     . (symbolL .~ Triangle)
     . (revealedSymbolL .~ Triangle)
-    . (connectedSymbolsL .~ setFromList [Square])
-    . (revealedConnectedSymbolsL .~ setFromList [Square])
+    . (connectedMatchersL .~ [LocationWithSymbol Square])
+    . (revealedConnectedMatchersL .~ [LocationWithSymbol Square])
     )
   pure (location1, location2)
 
@@ -422,8 +441,9 @@ chooseOnlyOption
      , MonadReader env m
      , HasGameRef env
      , HasStdGen env
-     , HasMessageLogger env
+     , HasGameLogger env
      , HasCallStack
+     , env ~ TestApp
      )
   => String
   -> m ()
@@ -444,7 +464,8 @@ chooseFirstOption
      , HasGameRef env
      , HasQueue env
      , HasStdGen env
-     , HasMessageLogger env
+     , HasGameLogger env
+     , env ~ TestApp
      )
   => String
   -> m ()
@@ -464,7 +485,8 @@ chooseOptionMatching
      , HasGameRef env
      , HasQueue env
      , HasStdGen env
-     , HasMessageLogger env
+     , HasGameLogger env
+     , env ~ TestApp
      )
   => String
   -> (Message -> Bool)
@@ -495,7 +517,9 @@ gameTestWithLogger logger investigator queue f body = do
   gameRef <- newIORef (f g)
   queueRef <- newIORef queue
   genRef <- newIORef $ mkStdGen (gameSeed g)
-  runTestApp (TestApp gameRef queueRef genRef logger) body
+  runTestApp
+    (TestApp gameRef queueRef genRef (Just logger) (pure . const ()))
+    body
 
 newGame :: MonadIO m => Investigator -> m Game
 newGame investigator = do
@@ -534,6 +558,7 @@ newGame investigator = do
     , gameGameState = IsActive
     , gameResignedCardCodes = mempty
     , gameUsedAbilities = mempty
+    , gameFoundCards = mempty
     , gameFocusedCards = mempty
     , gameFocusedTargets = mempty
     , gameFocusedTokens = mempty
@@ -541,6 +566,7 @@ newGame investigator = do
     , gamePlayerOrder = [investigatorId]
     , gameVictoryDisplay = mempty
     , gameRemovedFromPlay = mempty
+    , gameEnemyMoving = Nothing
     , gameQuestion = mempty
     }
   where investigatorId = toId investigator

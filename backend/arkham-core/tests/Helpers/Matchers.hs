@@ -140,6 +140,7 @@ hasTrauma n a = getTrauma a == n
 getDoom
   :: ( TargetEntity a
      , HasGameRef env
+     , HasGameLogger env
      , HasQueue env
      , HasStdGen env
      , MonadReader env m

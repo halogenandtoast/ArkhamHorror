@@ -40,7 +40,7 @@ putApiV1ArkhamPendingGameR gameId = do
   genRef <- newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
   runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
     addInvestigator (lookupInvestigator iid) decklist
-    runMessages False
+    runMessages Nothing
 
   updatedGame <- readIORef gameRef
   updatedQueue <- readIORef queueRef

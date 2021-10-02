@@ -108,6 +108,7 @@ allPlayerEventCards = mapFromList $ map
   , iveGotAPlan2
   , iveHadWorse4
   , letMeHandleThis
+  , liveAndLearn
   , lookWhatIFound
   , lookWhatIFound2
   , lucky
@@ -126,6 +127,7 @@ allPlayerEventCards = mapFromList $ map
   , preparedForTheWorst
   , preposterousSketches
   , preposterousSketches2
+  , scroungeForSupplies
   , searchForTheTruth
   , secondWind
   , seekingAnswers

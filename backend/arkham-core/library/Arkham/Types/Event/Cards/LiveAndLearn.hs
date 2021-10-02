@@ -8,9 +8,12 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Helpers
 import Arkham.Types.Event.Runner
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.SkillTest
+import Arkham.Types.Target
 import Arkham.Types.Window (Window(..))
 import Arkham.Types.Window qualified as Window
 
@@ -26,7 +29,8 @@ instance EventRunner env => RunMessage env LiveAndLearn where
     InvestigatorPlayEvent iid eid _ [Window _ (Window.SkillTestEnded st)]
       | eid == toId attrs -> do
         e <$ pushAll
-          [ BeginSkillTest
+          [ skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2)
+          , BeginSkillTest
             iid
             (skillTestSource st)
             (skillTestTarget st)

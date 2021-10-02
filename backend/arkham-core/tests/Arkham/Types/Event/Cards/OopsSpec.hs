@@ -43,7 +43,7 @@ spec = describe "Oops!" $ do
           chooseOptionMatching
             "fight enemy 1"
             (\case
-              FightEnemy _ eid _ _ _ -> eid == toId enemy
+              FightEnemy _ eid _ _ _ _ -> eid == toId enemy
               _ -> False
             )
           chooseOptionMatching
@@ -95,7 +95,7 @@ spec = describe "Oops!" $ do
           chooseOptionMatching
             "fight enemy 1"
             (\case
-              FightEnemy _ eid _ _ _ -> eid == toId enemy
+              FightEnemy _ eid _ _ _ _ -> eid == toId enemy
               _ -> False
             )
           chooseOptionMatching
@@ -147,7 +147,7 @@ spec = describe "Oops!" $ do
           chooseOptionMatching
             "fight enemy 1"
             (\case
-              FightEnemy _ eid _ _ _ -> eid == toId enemy
+              FightEnemy _ eid _ _ _ _ -> eid == toId enemy
               _ -> False
             )
           chooseOptionMatching

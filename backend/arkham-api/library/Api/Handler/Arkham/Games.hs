@@ -162,7 +162,7 @@ postApiV1ArkhamGamesR = do
       gameRef <- newIORef game
       runGameApp
         (GameApp gameRef queueRef genRef $ pure . const ())
-        (runMessages False)
+        (runMessages Nothing)
       ge <- readIORef gameRef
       let
         diffUp = diff game ge
@@ -193,7 +193,7 @@ postApiV1ArkhamGamesR = do
         gameRef <- newIORef game
         runGameApp
           (GameApp gameRef queueRef genRef $ pure . const ())
-          (runMessages False)
+          (runMessages Nothing)
         ge <- readIORef gameRef
         let
           diffUp = diff game ge
@@ -276,7 +276,7 @@ putApiV1ArkhamGameR gameId = do
   writeChannel <- getChannel gameId
   runGameApp
     (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
-    (runMessages False)
+    (runMessages Nothing)
   ge <- readIORef gameRef
   let
     diffUp = diff arkhamGameCurrentData ge
@@ -329,7 +329,7 @@ putApiV1ArkhamGameRawR gameId = do
   writeChannel <- getChannel gameId
   runGameApp
     (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
-    (runMessages False)
+    (runMessages Nothing)
   ge <- readIORef gameRef
   updatedQueue <- readIORef queueRef
   let

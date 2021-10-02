@@ -213,19 +213,16 @@ runMessages
      , MonadReader env m
      , HasGameLogger env
      )
-  => Bool
+  => Maybe (Message -> IO ())
   -> m ()
-runMessages isReplay = do
+runMessages mLogger = do
   gameRef <- view gameRefL
   queueRef <- view messageQueue
   g <- liftIO $ readIORef gameRef
 
-  unless
-    isReplay
-    (liftIO $ whenM
-      (isJust <$> lookupEnv "DEBUG")
-      (readIORef queueRef >>= pPrint >> putStrLn "\n")
-    )
+  liftIO $ whenM
+    (isJust <$> lookupEnv "DEBUG")
+    (readIORef queueRef >>= pPrint >> putStrLn "\n")
 
   if g ^. gameStateL /= IsActive
     then toGameEnv >>= flip
@@ -260,23 +257,24 @@ runMessages isReplay = do
                 case playingInvestigators of
                   [] -> do
                     pushEnd EndInvestigation
-                    runMessages isReplay
+                    runMessages mLogger
                   [x] -> do
                     push (ChoosePlayer x SetTurnPlayer)
-                    runMessages isReplay
+                    runMessages mLogger
                   xs -> do
                     push
                       (chooseOne
                         (g ^. leadInvestigatorIdL)
                         [ ChoosePlayer iid SetTurnPlayer | iid <- xs ]
                       )
-                    runMessages isReplay
+                    runMessages mLogger
               else do
                 let
                   turnPlayer = fromJustNote "verified above" mTurnInvestigator
                 pushAllEnd [PlayerWindow (toId turnPlayer) [] False]
-                  >> runMessages isReplay
+                  >> runMessages mLogger
         Just msg -> do
+          liftIO $ maybe (pure ()) ($ msg) mLogger
           case msg of
             Ask iid q -> do
               push $ SetActiveInvestigator $ g ^. activeInvestigatorIdL
@@ -303,4 +301,4 @@ runMessages isReplay = do
               atomicWriteIORef gameRef g'
               g'' <- toGameEnv >>= flip runGameEnvT (runMessage msg g')
               atomicWriteIORef gameRef g''
-              runMessages isReplay
+              runMessages mLogger

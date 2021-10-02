@@ -79,7 +79,7 @@ putApiV1ArkhamGameDecksR gameId = do
   genRef <- newIORef (mkStdGen gameSeed)
   runGameApp
     (GameApp gameRef queueRef genRef $ pure . const ())
-    (runMessages False)
+    (runMessages Nothing)
   ge <- readIORef gameRef
 
   let
@@ -91,16 +91,15 @@ putApiV1ArkhamGameDecksR gameId = do
   liftIO $ atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedMessages ge)
-  runDB
-    $ replace
-      gameId
-      (ArkhamGame
-        arkhamGameName
-        ge
-        (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
-        updatedMessages
-        arkhamGameMultiplayerVariant
-      )
+  runDB $ replace
+    gameId
+    (ArkhamGame
+      arkhamGameName
+      ge
+      (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
+      updatedMessages
+      arkhamGameMultiplayerVariant
+    )
 
 fromPostData
   :: (MonadIO m) => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)

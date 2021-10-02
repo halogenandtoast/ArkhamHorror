@@ -48,6 +48,7 @@ library
       Arkham.Types.Act.Cards
       Arkham.Types.Act.Cards.AfterHours
       Arkham.Types.Act.Cards.AllIn
+      Arkham.Types.Act.Cards.ArkhamAsylum
       Arkham.Types.Act.Cards.AscendingTheHillV1
       Arkham.Types.Act.Cards.AscendingTheHillV2
       Arkham.Types.Act.Cards.AscendingTheHillV3
@@ -119,6 +120,7 @@ library
       Arkham.Types.Agenda.Cards.FeedTheBeast
       Arkham.Types.Agenda.Cards.HorrorsUnleashed
       Arkham.Types.Agenda.Cards.InEveryShadow
+      Arkham.Types.Agenda.Cards.LockedInside
       Arkham.Types.Agenda.Cards.OutOfTime
       Arkham.Types.Agenda.Cards.PastPresentAndFuture
       Arkham.Types.Agenda.Cards.PredatorOrPrey

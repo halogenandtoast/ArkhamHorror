@@ -86,6 +86,11 @@ allActCards = mapFromList $ map
   , raceForAnswers
   , mistakesOfThePast
   , theOath
+  , arkhamAsylum
+  , theReallyBadOnesV1
+  , theReallyBadOnesV2
+  , planningTheEscape
+  , noAsylum
   , mysteriousGateway
   , findingLadyEsprit
   , huntingTheRougarou

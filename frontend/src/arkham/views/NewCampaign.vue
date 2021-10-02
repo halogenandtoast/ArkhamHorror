@@ -136,6 +136,10 @@ const scenarios = [
     name: 'Echoes of the Past',
   },
   {
+    id: '03159',
+    name: 'The Unspeakable Oath',
+  },
+  {
     id: '81001',
     name: 'Curse of the Rougarou',
   },

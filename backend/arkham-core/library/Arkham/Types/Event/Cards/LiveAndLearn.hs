@@ -26,7 +26,7 @@ liveAndLearn = event LiveAndLearn Cards.liveAndLearn
 
 instance EventRunner env => RunMessage env LiveAndLearn where
   runMessage msg e@(LiveAndLearn attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [Window _ (Window.SkillTestEnded st)]
+    InvestigatorPlayEvent iid eid _ [Window _ (Window.SkillTestEnded st)] _
       | eid == toId attrs -> do
         e <$ pushAll
           [ skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2)

@@ -22,7 +22,7 @@ sneakAttack2 = event SneakAttack2 Cards.sneakAttack2
 
 instance EventRunner env => RunMessage env SneakAttack2 where
   runMessage msg e@(SneakAttack2 attrs) = case msg of
-    InvestigatorPlayEvent you eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent you eid _ _ _ | eid == toId attrs -> do
       yourLocation <- LocationWithId <$> getId you
       enemies <- selectList $ EnemyNotEngagedWithYou <> EnemyAt yourLocation
       e <$ pushAll

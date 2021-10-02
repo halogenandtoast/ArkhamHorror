@@ -21,7 +21,7 @@ dynamiteBlast = event DynamiteBlast Cards.dynamiteBlast
 
 instance EventRunner env => RunMessage env DynamiteBlast where
   runMessage msg e@(DynamiteBlast attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       currentLocationId <- getId @LocationId iid
       connectedLocationIds <- map unConnectedLocationId
         <$> getSetList currentLocationId

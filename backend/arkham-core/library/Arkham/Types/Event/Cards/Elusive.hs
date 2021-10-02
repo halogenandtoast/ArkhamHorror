@@ -19,7 +19,7 @@ elusive = event Elusive Cards.elusive
 
 instance EventRunner env => RunMessage env Elusive where
   runMessage msg e@(Elusive attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- getSetList iid
       emptyLocations <- mapSet unEmptyLocationId <$> getSet ()
       revealedLocations <- mapSet unRevealedLocationId <$> getSet ()

@@ -31,7 +31,7 @@ instance
   )
   => RunMessage env ExposeWeakness1 where
   runMessage msg e@(ExposeWeakness1 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getId @LocationId iid
       enemyIds <- getSetList @EnemyId lid
       enemyIdsWithFight <- traverse

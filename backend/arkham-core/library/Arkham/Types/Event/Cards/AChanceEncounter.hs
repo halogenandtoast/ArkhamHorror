@@ -31,7 +31,7 @@ instance
   )
   => RunMessage env AChanceEncounter where
   runMessage msg e@(AChanceEncounter attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       investigatorIds <-
         filterM
             (fmap (notElem CardsCannotLeaveYourDiscardPile)

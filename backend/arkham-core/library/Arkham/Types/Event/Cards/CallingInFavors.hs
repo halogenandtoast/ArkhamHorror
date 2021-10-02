@@ -26,7 +26,7 @@ callingInFavors = event CallingInFavors Cards.callingInFavors
 
 instance EventRunner env => RunMessage env CallingInFavors where
   runMessage msg e@(CallingInFavors attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       allies <- selectList $ AssetWithTrait Ally <> AssetOwnedBy
         (InvestigatorWithId iid)
       targetsWithCosts <- for

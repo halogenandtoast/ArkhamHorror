@@ -22,7 +22,7 @@ daringManeuver = event DaringManeuver Cards.daringManeuver
 
 instance RunMessage env DaringManeuver where
   runMessage msg e@(DaringManeuver attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> e <$ pushAll
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> e <$ pushAll
       [ skillTestModifier
         (toSource attrs)
         (InvestigatorTarget iid)

@@ -24,7 +24,7 @@ sleightOfHand = event SleightOfHand Cards.sleightOfHand
 
 instance Query ExtendedCardMatcher env => RunMessage env SleightOfHand where
   runMessage msg e@(SleightOfHand attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       cards <- selectList
         (InHandOf (InvestigatorWithId iid)
         <> BasicCardMatch (CardWithTrait Item)

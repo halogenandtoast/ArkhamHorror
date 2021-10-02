@@ -17,7 +17,7 @@ willToSurvive3 = event WillToSurvive3 Cards.willToSurvive3
 
 instance HasQueue env => RunMessage env WillToSurvive3 where
   runMessage msg e@(WillToSurvive3 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       e <$ pushAll
         [ CreateEffect "01085" Nothing (toSource attrs) (InvestigatorTarget iid)
         , Discard (EventTarget eid)

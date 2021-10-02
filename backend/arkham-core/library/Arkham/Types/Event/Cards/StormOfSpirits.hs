@@ -26,7 +26,7 @@ stormOfSpirits = event StormOfSpirits Cards.stormOfSpirits
 
 instance EventRunner env => RunMessage env StormOfSpirits where
   runMessage msg e@(StormOfSpirits attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ CreateEffect
           (toCardCode attrs)

@@ -24,7 +24,7 @@ monsterSlayer = event MonsterSlayer Cards.monsterSlayer
 
 instance EventRunner env => RunMessage env MonsterSlayer where
   runMessage msg e@(MonsterSlayer attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ skillTestModifier
           (toSource attrs)

@@ -34,7 +34,7 @@ instance
   )
   => RunMessage env IfItBleeds where
   runMessage msg e@(IfItBleeds attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ windows | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ windows _ | eid == toId attrs -> do
       let enemyIds = getWindowEnemyIds iid windows
       enemyIdsWithHorrorValue <- traverse
         (traverseToSnd (fmap unSanityDamageCount . getCount))

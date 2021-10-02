@@ -21,7 +21,7 @@ noStoneUnturned = event NoStoneUnturned Cards.noStoneUnturned
 
 instance Query InvestigatorMatcher env => RunMessage env NoStoneUnturned where
   runMessage msg e@(NoStoneUnturned attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       investigatorIds <- selectList $ InvestigatorAt YourLocation
       e <$ pushAll
         [ chooseOne

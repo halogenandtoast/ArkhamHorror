@@ -39,7 +39,7 @@ findAllyMessages iid investigatorIds e =
 
 instance EventRunner env => RunMessage env Flare1 where
   runMessage msg e@(Flare1 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       investigatorIds <- getInvestigatorIds
       fightableEnemies <- getSetList @FightableEnemyId (iid, toSource e)
       e <$ if null fightableEnemies

@@ -93,6 +93,7 @@ type InnerInvestigatorRunner env
     , HasModifiersFor env ()
     , (HasName env AssetId, HasName env LocationId)
     , HasPlayerCard env AssetId
+    , HasPlayerCard env EventId
     , HasRecord env
     , ( ( HasSet AccessibleLocationId env LocationId
         , HasSet ActId env TreacheryCardCode

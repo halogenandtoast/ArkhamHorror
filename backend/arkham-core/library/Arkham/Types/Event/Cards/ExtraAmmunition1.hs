@@ -21,7 +21,7 @@ extraAmmunition1 = event ExtraAmmunition1 Cards.extraAmmunition1
 
 instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
   runMessage msg e@(ExtraAmmunition1 attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       firearms <-
         selectListMap AssetTarget $ AssetWithTrait Firearm <> AssetOwnedBy
           (InvestigatorAt YourLocation)

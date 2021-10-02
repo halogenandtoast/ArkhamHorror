@@ -26,7 +26,7 @@ anatomicalDiagrams = event AnatomicalDiagrams Cards.anatomicalDiagrams
 
 instance EventRunner env => RunMessage env AnatomicalDiagrams where
   runMessage msg e@(AnatomicalDiagrams attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-
         selectListMap EnemyTarget $ EnemyAt YourLocation <> NonEliteEnemy
       e <$ pushAll

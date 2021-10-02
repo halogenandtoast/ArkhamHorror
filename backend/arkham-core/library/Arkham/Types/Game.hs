@@ -1831,6 +1831,9 @@ instance HasGame env => HasStep ActStep env () where
 instance HasGame env => HasPlayerCard env AssetId where
   getPlayerCard aid = preview _PlayerCard . toCard <$> getAsset aid
 
+instance HasGame env => HasPlayerCard env EventId where
+  getPlayerCard eid = preview _PlayerCard . toCard <$> getEvent eid
+
 instance HasGame env => HasList InPlayCard env InvestigatorId where
   getList iid = do
     assetIds <- getSetList =<< getInvestigator iid
@@ -3277,6 +3280,8 @@ runGameMessage msg g = case msg of
     pure $ g & eventsL %~ deleteMap eventId
   After (ShuffleIntoDeck _ (AssetTarget aid)) ->
     pure $ g & assetsL %~ deleteMap aid
+  After (ShuffleIntoDeck _ (EventTarget eid)) ->
+    pure $ g & eventsL %~ deleteMap eid
   ShuffleIntoDeck iid (TreacheryTarget treacheryId) -> do
     treachery <- getTreachery treacheryId
     case toCard treachery of
@@ -3340,8 +3345,8 @@ runGameMessage msg g = case msg of
       , Window Timing.When Window.NonFast
       , Window Timing.When Window.FastPlayerWindow
       ]
-    case find ((== cardId) . toCardId) (playableCards <> handOf investigator) of
-      Nothing -> pure g -- card was discarded before playing
+    case find ((== cardId) . toCardId) playableCards of
+      Nothing -> pure g -- card become unplayable during paying the cost
       Just card -> runGameMessage (PutCardIntoPlay iid card mtarget) g
   PlayFastEvent iid cardId mtarget windows' -> do
     investigator <- getInvestigator iid
@@ -3352,11 +3357,15 @@ runGameMessage msg g = case msg of
         event <- runMessage
           (SetOriginalCardCode $ toOriginalCardCode card)
           (createEvent card iid)
-        let eid = toId event
+        let
+          eid = toId event
+          zone = if card `elem` handOf investigator
+            then Zone.FromHand
+            else Zone.FromDiscard
         pushAll
           [ PayCardCost iid (toCardId card)
           , PlayedCard iid card
-          , InvestigatorPlayEvent iid eid mtarget windows'
+          , InvestigatorPlayEvent iid eid mtarget windows' zone
           , ResolvedCard iid card
           ]
         pure $ g & eventsL %~ insertMap eid event
@@ -3396,10 +3405,15 @@ runGameMessage msg g = case msg of
           event <- runMessage
             (SetOriginalCardCode $ pcOriginalCardCode pc)
             (createEvent pc iid)
-          let eid = toId event
+          investigator <- getInvestigator iid
+          let
+            eid = toId event
+            zone = if card `elem` handOf investigator
+              then Zone.FromHand
+              else Zone.FromDiscard
           pushAll
             [ PlayedCard iid card
-            , InvestigatorPlayEvent iid eid mtarget []
+            , InvestigatorPlayEvent iid eid mtarget [] zone
             , ResolvedCard iid card
             ]
           pure $ g & eventsL %~ insertMap eid event

@@ -28,7 +28,7 @@ instance
   )
   => RunMessage env EmergencyAid where
   runMessage msg e@(EmergencyAid attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       investigatorIds <- getSetList
         (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
       let investigatorTargets = map InvestigatorTarget investigatorIds

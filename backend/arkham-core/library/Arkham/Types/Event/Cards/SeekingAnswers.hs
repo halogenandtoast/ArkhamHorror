@@ -25,7 +25,7 @@ seekingAnswers = event SeekingAnswers Cards.seekingAnswers
 
 instance EventRunner env => RunMessage env SeekingAnswers where
   runMessage msg e@(SeekingAnswers attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       lid <- getId @LocationId iid
       e <$ pushAll
         [ Investigate

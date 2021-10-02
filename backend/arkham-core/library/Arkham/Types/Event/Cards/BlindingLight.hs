@@ -20,7 +20,7 @@ blindingLight = event BlindingLight Cards.blindingLight
 
 instance (EventRunner env) => RunMessage env BlindingLight where
   runMessage msg e@(BlindingLight attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> e <$ pushAll
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ CreateEffect "01066" Nothing (toSource attrs) (InvestigatorTarget iid)
       , CreateEffect "01066" Nothing (toSource attrs) SkillTestTarget
       , ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False

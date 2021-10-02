@@ -18,7 +18,7 @@ mindOverMatter = event MindOverMatter Cards.mindOverMatter
 
 instance EventRunner env => RunMessage env MindOverMatter where
   runMessage msg e@(MindOverMatter attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       e <$ pushAll
         [ CreateEffect "01036" Nothing (toSource attrs) (InvestigatorTarget iid)
         , Discard (EventTarget eid)

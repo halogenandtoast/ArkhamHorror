@@ -142,6 +142,7 @@ allScenarios = mapFromList
   , ("03043", CurtainCall' . curtainCall)
   , ("03061", TheLastKing' . theLastKing)
   , ("03120", EchoesOfThePast' . echoesOfThePast)
+  , ("03159", TheUnspeakableOath' . theUnspeakableOath)
   , ("50011", ReturnToTheGathering' . returnToTheGathering)
   , ("50025", ReturnToTheMidnightMasks' . returnToTheMidnightMasks)
   , ("50032", ReturnToTheDevourerBelow' . returnToTheDevourerBelow)

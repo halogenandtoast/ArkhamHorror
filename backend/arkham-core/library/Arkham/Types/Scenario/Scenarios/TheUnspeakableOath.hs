@@ -7,10 +7,13 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet qualified as EncounterSet
+import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
@@ -77,7 +80,7 @@ instance
 instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
   runMessage msg s@(TheUnspeakableOath attrs) = case msg of
     Setup -> do
-      encounterDeck <- buildEncounterDeck
+      gatheredCards <- buildEncounterDeck
         [ EncounterSet.TheUnspeakableOath
         , EncounterSet.HastursGift
         , EncounterSet.InhabitantsOfCarcosa
@@ -85,7 +88,25 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
         , EncounterSet.DecayAndFilth
         , EncounterSet.AgentsOfHastur
         ]
-      s <$ push (SetEncounterDeck encounterDeck)
+      setAsideCards' <- traverse
+        genCard
+        [ Assets.danielChesterfield
+        , Locations.patientConfinementDrearyCell
+        , Locations.patientConfinementDanielsCell
+        , Locations.patientConfinementOccupiedCell
+        , Locations.patientConfinementFamiliarCell
+        ]
+      let
+        (monsters, deck') =
+          partition (`cardMatch` CardWithTrait Monster) (unDeck gatheredCards)
+        (lunatics, deck'') =
+          partition (`cardMatch` CardWithTrait Lunatic) deck'
+        encounterDeck = Deck deck''
+        setAsideCards =
+          map EncounterCard (monsters <> lunatics) <> setAsideCards'
+      push (SetEncounterDeck encounterDeck)
+      TheUnspeakableOath
+        <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
     ResolveToken _ tokenFace iid -> case tokenFace of
       Skull -> s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)
       ElderThing -> do

@@ -286,6 +286,7 @@ allEncounterAssetCards = mapFromList $ map
   , sebastienMoreau
   , ashleighClarke
   , mrPeabody
+  , danielChesterfield
   ]
 
 rolands38Special :: CardDef
@@ -1497,6 +1498,20 @@ bookOfShadows1 = (asset "03154" "Book of Shadows" 3 Mystic)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tome]
   , cdLevel = 1
+  }
+
+danielChesterfield :: CardDef
+danielChesterfield = (storyAsset
+                       "03182a"
+                       ("Daniel Chesterfield" <:> "He's Not Doing All Too Well"
+                       )
+                       0
+                       TheUnspeakableOath
+                     )
+  { cdCardTraits = setFromList [Ally, Lunatic]
+  , cdCost = Nothing
+  , cdUnique = True
+  , cdCardType = EncounterAssetType
   }
 
 madameLabranche :: CardDef

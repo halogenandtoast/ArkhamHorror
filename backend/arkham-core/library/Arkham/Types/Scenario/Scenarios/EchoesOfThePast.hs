@@ -26,6 +26,7 @@ import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
+import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
@@ -283,4 +284,19 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
             )
         _ -> pure ()
       pure s
+    ScenarioResolution NoResolution -> do
+      investigatorIds <- getInvestigatorIds
+      s
+        <$ pushAll
+             [ story investigatorIds noResolution
+             , ScenarioResolution (Resolution 4)
+             ]
+    ScenarioResolution (Resolution n) -> do
+      investigatorIds <- getInvestigatorIds
+      case n of
+        1 -> s <$ pushAll [story investigatorIds resolution1]
+        2 -> s <$ pushAll [story investigatorIds resolution2]
+        3 -> s <$ pushAll [story investigatorIds resolution3]
+        4 -> s <$ pushAll [story investigatorIds resolution4]
+        _ -> error "Invalid resolution"
     _ -> EchoesOfThePast <$> runMessage msg attrs

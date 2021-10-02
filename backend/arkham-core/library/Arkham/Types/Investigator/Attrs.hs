@@ -1945,6 +1945,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                `elem` cdSkills (toCardDef card)
                || skillType
                `elem` cdSkills (toCardDef card)
+               || (null (cdSkills $ toCardDef card)
+                  && toCardType card
+                  == SkillType
+                  )
                )
             && passesCommitRestrictions
             && not prevented

@@ -74,6 +74,7 @@ allPlayerSkillCards = mapFromList $ map
   , strokeOfLuck2
   , survivalInstinct
   , survivalInstinct2
+  , takeHeart
   , theHomeFront
   , trueUnderstanding
   , unexpectedCourage
@@ -305,6 +306,12 @@ trueUnderstanding :: CardDef
 trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [ScenarioAbility]
+  }
+
+takeHeart :: CardDef
+takeHeart = (skill "04201" "Take Heart" [] Survivor)
+  { cdCardTraits = setFromList [Innate]
+  , cdCommitRestrictions = [MaxOnePerTest]
   }
 
 neitherRainNorSnow :: CardDef

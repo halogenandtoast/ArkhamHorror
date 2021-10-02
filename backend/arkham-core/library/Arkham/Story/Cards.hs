@@ -38,6 +38,7 @@ story cardCode name encounterSet = CardDef
   , cdLimits = []
   , cdExceptional = False
   , cdUses = NoUses
+  , cdPlayableFromDiscard = False
   }
 
 allStoryCards :: HashMap CardCode CardDef

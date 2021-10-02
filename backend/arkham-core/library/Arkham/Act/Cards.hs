@@ -38,6 +38,7 @@ act cardCode name encounterSet = CardDef
   , cdLimits = []
   , cdExceptional = False
   , cdUses = NoUses
+  , cdPlayableFromDiscard = False
   }
 
 allActCards :: HashMap CardCode CardDef

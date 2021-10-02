@@ -47,6 +47,7 @@ event cardCode name cost classSymbol = CardDef
   , cdLimits = []
   , cdExceptional = False
   , cdUses = Uses.NoUses
+  , cdPlayableFromDiscard = False
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef
@@ -148,6 +149,7 @@ allPlayerEventCards = mapFromList $ map
   , wardOfProtection
   , wardOfProtection5
   , willToSurvive3
+  , wingingIt
   , workingAHunch
   ]
 
@@ -862,10 +864,17 @@ liveAndLearn = (event "04200" "Live and Learn" 0 Survivor)
   , cdFastWindow = Just $ SkillTestEnded Timing.After You SkillTestWasFailed
   }
 
+wingingIt :: CardDef
+wingingIt = (event "04272" "Winging It" 1 Survivor)
+  { cdCardTraits = setFromList [Tactic, Improvised]
+  , cdAction = Just Action.Investigate
+  , cdPlayableFromDiscard = True
+  }
+
 bloodRite :: CardDef
 bloodRite = (event "05317" "Blood-Rite" 0 Seeker)
   { cdSkills = [SkillWillpower, SkillIntellect, SkillCombat]
-  , cdCardTraits = setFromList [Spell]
+  , cdCardTraits = singleton Spell
   }
 
 astoundingRevelation :: CardDef

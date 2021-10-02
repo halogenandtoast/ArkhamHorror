@@ -963,8 +963,16 @@ getIsPlayableWithResources iid source availableResources windows' c@(PlayerCard 
       sum <$> traverse ((fmap unResourceCount . getCount) . fst) canHelpPay
     modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
     let
-      notFastWindow =
-        any (`elem` windows') [Window Timing.When (Window.DuringTurn iid)]
+      duringTurnWindow = Window Timing.When (Window.DuringTurn iid)
+      notFastWindow = any (`elem` windows') [duringTurnWindow]
+      canBecomeFast = foldr applyModifier False modifiers
+      canBecomeFastWindow =
+        if canBecomeFast then Just (Matcher.DuringTurn Matcher.You) else Nothing
+      applyModifier (CanBecomeFast (mcardType, traits)) _
+        | maybe True (== cdCardType pcDef) mcardType
+          && notNull (setFromList traits `intersect` toTraits pcDef)
+        = True
+      applyModifier _ val = val
     modifiedCardCost <- getModifiedCardCost iid c
     passesCriterias <- maybe
       (pure True)
@@ -973,7 +981,7 @@ getIsPlayableWithResources iid source availableResources windows' c@(PlayerCard 
     inFastWindow <- maybe
       (pure False)
       (cardInFastWindows iid source c windows')
-      (cdFastWindow pcDef)
+      (cdFastWindow pcDef <|> canBecomeFastWindow)
     canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You)
     canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You)
     passesLimits <- allM passesLimit (cdLimits pcDef)

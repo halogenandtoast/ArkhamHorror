@@ -73,7 +73,9 @@ getChannel gameId = do
         $ \gameChannels' -> (Map.insert gameId chan gameChannels', ())
       pure chan
 
-newtype ArkhamDBDecklistMeta = ArkhamDBDecklistMeta { alternate_front :: InvestigatorId }
+newtype ArkhamDBDecklistMeta = ArkhamDBDecklistMeta
+  { alternate_front :: InvestigatorId
+  }
   deriving stock (Generic, Show)
   deriving anyclass (FromJSON)
 

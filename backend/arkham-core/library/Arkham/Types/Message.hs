@@ -262,6 +262,7 @@ data Message
     | EndRound
     | EndRoundWindow
     | EndSearch InvestigatorId Source Target [(Zone, ZoneReturnStrategy)]
+    | SearchEnded InvestigatorId
     | EndTurn InvestigatorId
     | EndUpkeep
     | EnemiesAttack

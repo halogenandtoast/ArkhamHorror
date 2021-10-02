@@ -561,26 +561,6 @@ getCanAfford a@InvestigatorAttrs {..} actionType = do
   actionCost <- getActionCost a actionType
   pure $ actionCost <= investigatorRemainingActions
 
-getFastIsPlayable
-  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
-  => InvestigatorAttrs
-  -> [Window]
-  -> Card
-  -> m Bool
-getFastIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
-getFastIsPlayable attrs windows c@(PlayerCard _) = do
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
-  isPlayable <- getIsPlayable (toId attrs) (toSource attrs) windows c
-  pure $ (canBecomeFast modifiers || isJust (cdFastWindow pcDef)) && isPlayable
- where
-  pcDef = toCardDef c
-  canBecomeFast modifiers = foldr applyModifier False modifiers
-  applyModifier (CanBecomeFast (mcardType, traits)) _
-    | maybe True (== cdCardType pcDef) mcardType
-      && notNull (setFromList traits `intersect` toTraits pcDef)
-    = True
-  applyModifier _ val = val
-
 drawOpeningHand
   :: InvestigatorAttrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
 drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
@@ -598,8 +578,11 @@ getPlayableCards
   -> [Window]
   -> m [Card]
 getPlayableCards a@InvestigatorAttrs {..} windows = do
+  asIfInHandCards <- getAsIfInHandCards a
   playableDiscards <- getPlayableDiscards a windows
-  playableHandCards <- filterM (getFastIsPlayable a windows) investigatorHand
+  playableHandCards <- filterM
+    (getIsPlayable (toId a) (toSource a) windows)
+    (investigatorHand <> asIfInHandCards)
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards
@@ -617,7 +600,8 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} windows = do
     (canPlayFromDiscard modifiers)
     (zip @_ @Int [0 ..] investigatorDiscard)
   canPlayFromDiscard modifiers (n, card) =
-    any (allowsPlayFromDiscard n card) modifiers
+    cdPlayableFromDiscard (toCardDef card)
+      || any (allowsPlayFromDiscard n card) modifiers
   allowsPlayFromDiscard 0 card (CanPlayTopOfDiscard (mcardType, traits)) =
     maybe True (== cdCardType (toCardDef card)) mcardType
       && (null traits
@@ -2206,6 +2190,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & engagedEnemiesL %~ deleteSet eid
   EndSearch iid _ (InvestigatorTarget iid') cardSources
     | iid == investigatorId -> do
+      push (SearchEnded iid)
       let
         foundKey = \case
           Zone.FromTopOfDeck _ -> Zone.FromDeck
@@ -2230,7 +2215,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         PutBack -> when
           (foundKey cardSource == Zone.FromDeck)
           (error "Can not take deck")
-      pure $ a & foundCardsL .~ mempty
+      pure a
+  SearchEnded iid | iid == investigatorId -> pure $ a & foundCardsL .~ mempty
   Search iid source target@(InvestigatorTarget iid') cardSources cardMatcher foundStrategy
     | iid' == investigatorId
     -> do
@@ -2398,42 +2384,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       windows =
         [ Window Timing.When (Window.DuringTurn iid)
         , Window Timing.When Window.FastPlayerWindow
+        , Window Timing.When Window.NonFast
         ]
-    actions <- getActions iid (Window Timing.When Window.NonFast)
+    actions <- nub <$> concatMapM (getActions iid) windows
     if any isForcedAbility actions
       then a
         <$ push (chooseOne iid $ map (($ windows) . UseAbility iid) actions)
       else do
-        fastActions <- getActions
-          iid
-          (Window Timing.When (Window.DuringTurn iid))
-        playerWindowActions <- getActions
-          iid
-          (Window Timing.When Window.FastPlayerWindow)
         modifiers <- getModifiers
           (InvestigatorSource iid)
           (InvestigatorTarget iid)
         canAffordTakeResources <- getCanAfford a Action.Resource
         canAffordDrawCards <- getCanAfford a Action.Draw
         canAffordPlayCard <- getCanAfford a Action.Play
-        asIfInHandCards <- getAsIfInHandCards a
-        let handCards = investigatorHand <> asIfInHandCards
-        isPlayableMap :: HashMap Card Bool <- mapFromList <$> for
-          handCards
-          (\c -> do
-            isPlayable <- getIsPlayable (toId a) (toSource a) windows c
-            pure (c, isPlayable)
-          )
-        let isPlayable c = findWithDefault False c isPlayableMap
-        fastIsPlayableMap :: HashMap Card Bool <- mapFromList <$> for
-          handCards
-          (\c -> do
-            fastIsPlayable <- getFastIsPlayable a windows c
-            pure (c, fastIsPlayable)
-          )
-        let
-          fastIsPlayable c = findWithDefault False c fastIsPlayableMap
-          usesAction = not isAdditional
+        playableCards <- getPlayableCards a windows
+        let usesAction = not isAdditional
         a <$ push
           (AskPlayer $ chooseOne
             iid
@@ -2451,47 +2416,32 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  `notElem` modifiers
                ]
             <> [ InitiatePlayCard iid (toCardId c) Nothing usesAction
-               | c <- handCards
-               , canAffordPlayCard || fastIsPlayable c
-               , isPlayable c && not (isDynamic c)
+               | c <- playableCards
+               , canAffordPlayCard || isFastEvent c
+               , not (isDynamic c)
                ]
             <> [ InitiatePlayDynamicCard iid (toCardId c) 0 Nothing usesAction
-               | c <- handCards
-               , canAffordPlayCard || fastIsPlayable c
-               , isPlayable c && isDynamic c
+               | c <- playableCards
+               , canAffordPlayCard || isFastEvent c
+               , isDynamic c
                ]
             <> [ChooseEndTurn iid]
-            <> map
-                 (($ windows) . UseAbility iid)
-                 (nub $ actions <> fastActions <> playerWindowActions)
+            <> map (($ windows) . UseAbility iid) actions
             )
           )
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
-    actions <- getActions iid (Window Timing.When Window.NonFast)
+    let
+      windows =
+        [ Window Timing.When (Window.DuringTurn iid)
+        , Window Timing.When Window.FastPlayerWindow
+        , Window Timing.When Window.NonFast
+        ]
+    actions <- nub <$> concatMapM (getActions iid) windows
     if any isForcedAbility actions
       then pure a -- handled by active player
       else do
-        fastActions <- getActions
-          investigatorId
-          (Window Timing.When (Window.DuringTurn iid))
-        playerWindowActions <- getActions
-          investigatorId
-          (Window Timing.When Window.FastPlayerWindow)
-        asIfInHandCards <- getAsIfInHandCards a
+        playableCards <- getPlayableCards a windows
         let
-          handCards = investigatorHand <> asIfInHandCards
-          windows =
-            [ Window Timing.When (Window.DuringTurn iid)
-            , Window Timing.When Window.FastPlayerWindow
-            ]
-        fastIsPlayableMap :: HashMap Card Bool <- mapFromList <$> for
-          handCards
-          (\c -> do
-            fastIsPlayable <- getFastIsPlayable a windows c
-            pure (c, fastIsPlayable)
-          )
-        let
-          fastIsPlayable c = findWithDefault False c fastIsPlayableMap
           usesAction = not isAdditional
           choices =
             additionalActions
@@ -2500,8 +2450,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                      (toCardId c)
                      Nothing
                      usesAction
-                 | c <- handCards
-                 , fastIsPlayable c && not (isDynamic c)
+                 | c <- playableCards
+                 , not (isDynamic c)
                  ]
               <> [ InitiatePlayDynamicCard
                      investigatorId
@@ -2509,12 +2459,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                      0
                      Nothing
                      usesAction
-                 | c <- handCards
-                 , fastIsPlayable c && isDynamic c
+                 | c <- playableCards
+                 , isDynamic c
                  ]
-              <> map
-                   (($ windows) . UseAbility investigatorId)
-                   (nub $ fastActions <> playerWindowActions)
+              <> map (($ windows) . UseAbility investigatorId) actions
         a <$ unless
           (null choices)
           (push $ AskPlayer $ chooseOne investigatorId choices)

@@ -41,7 +41,7 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
               Recorded cCode -> Just $ lookupEncounterCardDef cCode
               CrossedOut _ -> Nothing
             )
-          <$> hasRecordSet CultistsWhoGotAway
+          <$> getRecordSet CultistsWhoGotAway
       cultistsWhoGotAway <- traverse genEncounterCard cultistsWhoGotAwayDefs
       a <$ pushAll
         ([ CreateEnemyAt (EncounterCard card) mainPathId Nothing

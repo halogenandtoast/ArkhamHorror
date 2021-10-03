@@ -29,7 +29,7 @@ import Data.Maybe (fromJust)
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou ScenarioAttrs
   deriving stock Generic
-  deriving anyclass (IsScenario, HasRecord)
+  deriving anyclass (IsScenario, HasRecord env)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 curseOfTheRougarou :: Difficulty -> CurseOfTheRougarou

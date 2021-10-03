@@ -29,7 +29,7 @@ import Arkham.Types.Token
 
 newtype TheHouseAlwaysWins = TheHouseAlwaysWins ScenarioAttrs
   deriving stock Generic
-  deriving anyclass (IsScenario, HasRecord)
+  deriving anyclass (IsScenario, HasRecord env)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theHouseAlwaysWins :: Difficulty -> TheHouseAlwaysWins

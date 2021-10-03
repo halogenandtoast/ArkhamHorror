@@ -289,6 +289,9 @@ allEncounterAssetCards = mapFromList $ map
   , danielChesterfield
   ]
 
+allSpecialPlayerAssetCards :: HashMap CardCode CardDef
+allSpecialPlayerAssetCards = mapFromList $ map (toCardCode &&& id) [courage]
+
 rolands38Special :: CardDef
 rolands38Special = (asset "01006" "Roland's .38 Special" 3 Neutral)
   { cdSkills = [SkillCombat, SkillAgility, SkillWild]
@@ -1786,3 +1789,7 @@ theNecronomiconAdvanced =
     , cdRevelation = True
     , cdCost = Nothing
     }
+
+courage :: CardDef
+courage =
+  (asset "xcourage" "Courage" 0 Neutral) { cdCardTraits = singleton Courage }

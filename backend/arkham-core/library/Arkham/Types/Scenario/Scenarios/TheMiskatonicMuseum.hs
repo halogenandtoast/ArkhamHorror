@@ -26,7 +26,7 @@ import Arkham.Types.Token
 
 newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs
   deriving stock Generic
-  deriving anyclass (IsScenario, HasRecord)
+  deriving anyclass (IsScenario, HasRecord env)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theMiskatonicMuseum :: Difficulty -> TheMiskatonicMuseum

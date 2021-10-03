@@ -25,7 +25,7 @@ import Arkham.Types.Trait (Trait)
 
 $(buildEntity "Scenario")
 
-instance HasRecord Scenario
+instance HasRecord env Scenario
 
 instance
   ( HasSet ClosestAssetId env (InvestigatorId, AssetMatcher)

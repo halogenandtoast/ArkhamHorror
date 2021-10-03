@@ -163,6 +163,16 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
     Record key -> pure $ a & logL . recorded %~ insertSet key
     RecordSet key cardCodes ->
       pure $ a & logL . recordedSets %~ insertMap key (map Recorded cardCodes)
+    RecordSetInsert key cardCodes ->
+      pure $ case a ^. logL . recordedSets . at key of
+        Nothing ->
+          a & logL . recordedSets %~ insertMap key (map Recorded cardCodes)
+        Just set ->
+          let
+            set' =
+              filter ((`notElem` cardCodes) . unrecorded) set
+                <> map Recorded cardCodes
+          in a & logL . recordedSets %~ insertMap key set'
     CrossOutRecordSetEntries key cardCodes ->
       pure
         $ a

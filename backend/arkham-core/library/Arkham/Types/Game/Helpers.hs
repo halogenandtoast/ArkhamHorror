@@ -440,17 +440,19 @@ enemyAtInvestigatorLocation cardCode iid = do
   enemyIds <- getSetList @EnemyId lid
   elem cardCode <$> for enemyIds (getId @CardCode)
 
-getHasRecord :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m Bool
-getHasRecord = hasRecord
+getHasRecord
+  :: (HasRecord env (), MonadReader env m) => CampaignLogKey -> m Bool
+getHasRecord k = hasRecord k ()
 
-getRecordCount :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m Int
-getRecordCount = hasRecordCount
+getRecordCount
+  :: (HasRecord env (), MonadReader env m) => CampaignLogKey -> m Int
+getRecordCount k = hasRecordCount k ()
 
 getRecordSet
-  :: (HasRecord env, MonadReader env m)
+  :: (HasRecord env (), MonadReader env m)
   => CampaignLogKey
   -> m [Recorded CardCode]
-getRecordSet = hasRecordSet
+getRecordSet k = hasRecordSet k ()
 
 getIsUnused'
   :: (HasList UsedAbility env (), MonadReader env m)
@@ -480,7 +482,17 @@ getXp
      , MonadReader env m
      )
   => m [(InvestigatorId, Int)]
-getXp = do
+getXp = getXpWithBonus 0
+
+getXpWithBonus
+  :: ( HasCount XPCount env ()
+     , HasModifiersFor env ()
+     , HasSet InvestigatorId env ()
+     , MonadReader env m
+     )
+  => Int
+  -> m [(InvestigatorId, Int)]
+getXpWithBonus bonus = do
   investigatorIds <- getInvestigatorIds
   for
     investigatorIds
@@ -489,7 +501,7 @@ getXp = do
         (InvestigatorSource iid)
         (InvestigatorTarget iid)
       amount <- unXPCount <$> getCount ()
-      pure (iid, foldl' applyModifier amount modifiers')
+      pure (iid, foldl' applyModifier (amount + bonus) modifiers')
  where
   applyModifier n (XPModifier m) = max 0 (n + m)
   applyModifier n _ = n

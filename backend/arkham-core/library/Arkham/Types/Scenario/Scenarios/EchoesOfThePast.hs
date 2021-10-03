@@ -58,10 +58,10 @@ echoesOfThePast difficulty =
        , "groundFloor1 entryHall   groundFloor2 . ."
        ]
 
-instance HasRecord EchoesOfThePast where
-  hasRecord _ = pure False
-  hasRecordSet _ = pure []
-  hasRecordCount _ = pure 0
+instance HasRecord env EchoesOfThePast where
+  hasRecord _ _ = pure False
+  hasRecordSet _ _ = pure []
+  hasRecordCount _ _ = pure 0
 
 instance
   ( Query EnemyMatcher env
@@ -194,9 +194,9 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
             ]
 
       sebastienInterviewed <- elem (Recorded "03079")
-        <$> hasRecordSet VIPsInterviewed
+        <$> getRecordSet VIPsInterviewed
 
-      fledTheDinnerParty <- hasRecord YouFledTheDinnerParty
+      fledTheDinnerParty <- getHasRecord YouFledTheDinnerParty
 
       pushAll
         ([story investigatorIds intro]
@@ -292,11 +292,79 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
              , ScenarioResolution (Resolution 4)
              ]
     ScenarioResolution (Resolution n) -> do
+      leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
+      gainXp <- map (uncurry GainXP)
+        <$> getXpWithBonus (if n == 4 then 1 else 0)
+      sebastienSlain <- selectOne
+        (VictoryDisplayCardMatch $ cardIs Enemies.sebastienMoreau)
+      conviction <- getRecordCount Conviction
+      doubt <- getRecordCount Doubt
+
+      let
+        updateSlain =
+          [ RecordSetInsert VIPsSlain [toCardCode sebastien]
+          | sebastien <- maybeToList sebastienSlain
+          ]
+        removeTokens =
+          [ RemoveAllTokens Cultist
+          , RemoveAllTokens Tablet
+          , RemoveAllTokens ElderThing
+          ]
+
       case n of
-        1 -> s <$ pushAll [story investigatorIds resolution1]
-        2 -> s <$ pushAll [story investigatorIds resolution2]
-        3 -> s <$ pushAll [story investigatorIds resolution3]
-        4 -> s <$ pushAll [story investigatorIds resolution4]
+        1 ->
+          pushAll
+            $ [ story investigatorIds resolution1
+              , Record YouTookTheOnyxClasp
+              , RecordCount Conviction (conviction + 1)
+              , chooseOne
+                leadInvestigatorId
+                [ TargetLabel
+                    (InvestigatorTarget iid)
+                    [AddCampaignCardToDeck iid Assets.claspOfBlackOnyx]
+                | iid <- investigatorIds
+                ]
+              ]
+            <> gainXp
+            <> updateSlain
+            <> removeTokens
+            <> [AddToken Cultist, AddToken Cultist]
+        2 ->
+          pushAll
+            $ [ story investigatorIds resolution2
+              , Record YouLeftTheOnyxClaspBehind
+              , RecordCount Doubt (doubt + 1)
+              ]
+            <> gainXp
+            <> updateSlain
+            <> removeTokens
+            <> [AddToken Tablet, AddToken Tablet]
+        3 ->
+          pushAll
+            $ [ story investigatorIds resolution3
+              , Record YouDestroyedTheOathspeaker
+              , chooseOne
+                leadInvestigatorId
+                [ TargetLabel
+                    (InvestigatorTarget iid)
+                    [AddCampaignCardToDeck iid Assets.theTatteredCloak]
+                | iid <- investigatorIds
+                ]
+              ]
+            <> gainXp
+            <> updateSlain
+            <> removeTokens
+            <> [AddToken Tablet, AddToken Tablet]
+        4 ->
+          pushAll
+            $ [ story investigatorIds resolution4
+              , Record TheFollowersOfTheSignHaveFoundTheWayForward
+              ]
+            <> gainXp
+            <> updateSlain
+            <> removeTokens
+            <> [AddToken ElderThing, AddToken ElderThing]
         _ -> error "Invalid resolution"
+      pure s
     _ -> EchoesOfThePast <$> runMessage msg attrs

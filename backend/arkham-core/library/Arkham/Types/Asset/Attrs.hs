@@ -3,6 +3,7 @@ module Arkham.Types.Asset.Attrs where
 import Arkham.Prelude
 
 import Arkham.Asset.Cards
+import Arkham.Card
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Uses
@@ -27,6 +28,7 @@ type AssetCard a = CardBuilder AssetId a
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId
   , assetCardCode :: CardCode
+  , assetOriginalCardCode :: CardCode
   , assetInvestigator :: Maybe InvestigatorId
   , assetLocation :: Maybe LocationId
   , assetEnemy :: Maybe EnemyId
@@ -97,8 +99,13 @@ investigatorL = lens assetInvestigator $ \m x -> m { assetInvestigator = x }
 exhaustedL :: Lens' AssetAttrs Bool
 exhaustedL = lens assetExhausted $ \m x -> m { assetExhausted = x }
 
+originalCardCodeL :: Lens' AssetAttrs CardCode
+originalCardCodeL =
+  lens assetOriginalCardCode $ \m x -> m { assetOriginalCardCode = x }
+
 allAssetCards :: HashMap CardCode CardDef
-allAssetCards = allPlayerAssetCards <> allEncounterAssetCards
+allAssetCards =
+  allPlayerAssetCards <> allEncounterAssetCards <> allSpecialPlayerAssetCards
 
 instance HasCardCode AssetAttrs where
   toCardCode = assetCardCode
@@ -117,6 +124,7 @@ instance FromJSON AssetAttrs where
 
 instance IsCard AssetAttrs where
   toCardId = unAssetId . assetId
+  toCard a = lookupCard (assetOriginalCardCode a) (toCardId a)
 
 asset :: (AssetAttrs -> a) -> CardDef -> CardBuilder AssetId a
 asset f cardDef = assetWith f cardDef id
@@ -197,6 +205,7 @@ assetWith f cardDef g = CardBuilder
   , cbCardBuilder = \aid -> f . g $ AssetAttrs
     { assetId = aid
     , assetCardCode = toCardCode cardDef
+    , assetOriginalCardCode = toCardCode cardDef
     , assetInvestigator = Nothing
     , assetLocation = Nothing
     , assetEnemy = Nothing
@@ -263,6 +272,7 @@ instance
   )
   => RunMessage env AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
+    SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     ReadyExhausted -> case assetInvestigator of
       Just iid -> do
         modifiers <- getModifiers (toSource a) (InvestigatorTarget iid)

@@ -141,11 +141,11 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance HasRecord UndimensionedAndUnseen where
-  hasRecord _ = pure False
-  hasRecordSet SacrificedToYogSothoth = pure [Recorded "02040"]
-  hasRecordSet _ = pure []
-  hasRecordCount _ = pure 0
+instance HasRecord env UndimensionedAndUnseen where
+  hasRecord _ _ = pure False
+  hasRecordSet SacrificedToYogSothoth _ = pure [Recorded "02040"]
+  hasRecordSet _ _ = pure []
+  hasRecordCount _ _ = pure 0
 
 instance (Query EnemyMatcher env, HasTokenValue env InvestigatorId) => HasTokenValue env UndimensionedAndUnseen where
   getTokenValue (UndimensionedAndUnseen attrs) iid = \case
@@ -210,7 +210,7 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
 
       sacrificedToYogSothoth <- if standalone
         then pure 3
-        else length <$> hasRecordSet SacrificedToYogSothoth
+        else length <$> getRecordSet SacrificedToYogSothoth
 
       investigatorsWithPowderOfIbnGhazi <- catMaybes <$> for
         investigatorIds

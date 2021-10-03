@@ -1231,28 +1231,28 @@ getTurnInvestigator =
 instance HasGame env => CanBeWeakness env TreacheryId where
   getIsWeakness = getIsWeakness <=< getTreachery
 
-instance {-# OVERLAPPABLE #-} HasGame env => HasRecord env where
-  hasRecord key = do
+instance HasGame env => HasRecord env () where
+  hasRecord key _ = do
     g <- getGame
     case modeCampaign $ g ^. modeL of
       Nothing -> case modeScenario $ g ^. modeL of
-        Just s -> runReaderT (hasRecord key) s
+        Just s -> hasRecord key s
         Nothing -> pure False
-      Just c -> runReaderT (hasRecord key) c
-  hasRecordSet key = do
+      Just c -> hasRecord key c
+  hasRecordSet key _ = do
     g <- getGame
     case modeCampaign $ g ^. modeL of
       Nothing -> case modeScenario $ g ^. modeL of
-        Just s -> runReaderT (hasRecordSet key) s
+        Just s -> hasRecordSet key s
         Nothing -> pure []
-      Just c -> runReaderT (hasRecordSet key) c
-  hasRecordCount key = do
+      Just c -> hasRecordSet key c
+  hasRecordCount key _ = do
     g <- getGame
     case modeCampaign $ g ^. modeL of
       Nothing -> case modeScenario $ g ^. modeL of
-        Just s -> runReaderT (hasRecordCount key) s
+        Just s -> hasRecordCount key s
         Nothing -> pure 0
-      Just c -> runReaderT (hasRecordCount key) c
+      Just c -> hasRecordCount key c
 
 instance HasGame env => HasCard env InvestigatorId where
   getCard cardId = runReaderT (getCard cardId ()) <=< getInvestigator
@@ -3307,12 +3307,14 @@ runGameMessage msg g = case msg of
       PlayerCard pc -> case toCardType pc of
         PlayerTreacheryType -> error "unhandled"
         AssetType -> do
-          let
-            aid = AssetId cardId
-            asset = fromJustNote
-              "could not find asset"
-              (lookup (toCardCode pc) allAssets)
-              aid
+          let aid = AssetId cardId
+            -- asset = fromJustNote
+            --   "could not find asset"
+            --   (lookup (toCardCode pc) allAssets)
+            --   aid
+          asset <- runMessage
+            (SetOriginalCardCode $ pcOriginalCardCode pc)
+            (createAsset pc)
           pushAll
             [ PlayedCard iid card
             , InvestigatorPlayDynamicAsset
@@ -3385,12 +3387,10 @@ runGameMessage msg g = case msg of
             & (treacheriesL %~ insertMap tid treachery)
             & (activeCardL ?~ card)
         AssetType -> do
-          let
-            aid = AssetId cardId
-            asset = fromJustNote
-              "could not find asset"
-              (lookup (toCardCode pc) allAssets)
-              aid
+          let aid = AssetId cardId
+          asset <- runMessage
+            (SetOriginalCardCode $ pcOriginalCardCode pc)
+            (createAsset card)
           pushAll
             [ PlayedCard iid card
             , InvestigatorPlayAsset

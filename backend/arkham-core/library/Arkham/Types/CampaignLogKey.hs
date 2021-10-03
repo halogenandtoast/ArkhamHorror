@@ -6,6 +6,11 @@ data Recorded a = Recorded a | CrossedOut a
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
+unrecorded :: Recorded a -> a
+unrecorded = \case
+  Recorded a -> a
+  CrossedOut a -> a
+
 data CampaignLogKey
   = DrivenInsaneInvestigators
   | GhoulPriestIsStillAlive
@@ -67,6 +72,10 @@ data CampaignLogKey
   | YouIntrudedOnASecretMeeting
   | YouFledTheDinnerParty
   | YouSlayedTheMonstersAtTheDinnerParty
+  | YouTookTheOnyxClasp
+  | YouLeftTheOnyxClaspBehind
+  | YouDestroyedTheOathspeaker
+  | TheFollowersOfTheSignHaveFoundTheWayForward
   -- ^ The Path to Carcosa
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

@@ -36,6 +36,7 @@ library
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
       Arkham.Scenarios.TheLastKing.Story
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+      Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Skill.Cards
       Arkham.Story.Cards
@@ -198,6 +199,7 @@ library
       Arkham.Types.Asset.Cards.ClaspOfBlackOnyx
       Arkham.Types.Asset.Cards.CombatTraining1
       Arkham.Types.Asset.Cards.ConstanceDumaine
+      Arkham.Types.Asset.Cards.Courage
       Arkham.Types.Asset.Cards.DaisysToteBag
       Arkham.Types.Asset.Cards.DaisysToteBagAdvanced
       Arkham.Types.Asset.Cards.DarioElAmin
@@ -746,6 +748,10 @@ library
       Arkham.Types.Location.Cards.ArkhamWoodsWoodenBridge
       Arkham.Types.Location.Cards.ArtGallery
       Arkham.Types.Location.Cards.AscendingPath
+      Arkham.Types.Location.Cards.AsylumHallsEasternPatientWing_170
+      Arkham.Types.Location.Cards.AsylumHallsEasternPatientWing_171
+      Arkham.Types.Location.Cards.AsylumHallsWesternPatientWing_168
+      Arkham.Types.Location.Cards.AsylumHallsWesternPatientWing_169
       Arkham.Types.Location.Cards.ATearInThePath
       Arkham.Types.Location.Cards.Attic
       Arkham.Types.Location.Cards.AudubonPark
@@ -753,6 +759,7 @@ library
       Arkham.Types.Location.Cards.Backstage
       Arkham.Types.Location.Cards.Balcony
       Arkham.Types.Location.Cards.Ballroom
+      Arkham.Types.Location.Cards.BasementHall
       Arkham.Types.Location.Cards.BaseOfTheHill
       Arkham.Types.Location.Cards.Bathroom
       Arkham.Types.Location.Cards.Bedroom
@@ -816,6 +823,7 @@ library
       Arkham.Types.Location.Cards.Foyer
       Arkham.Types.Location.Cards.FrozenSpring
       Arkham.Types.Location.Cards.Gallery
+      Arkham.Types.Location.Cards.Garden
       Arkham.Types.Location.Cards.GardenDistrict
       Arkham.Types.Location.Cards.Gondola
       Arkham.Types.Location.Cards.Graveyard
@@ -836,12 +844,15 @@ library
       Arkham.Types.Location.Cards.HouseInTheReeds_210
       Arkham.Types.Location.Cards.HouseInTheReeds_211
       Arkham.Types.Location.Cards.HumanitiesBuilding
+      Arkham.Types.Location.Cards.Infirmary
+      Arkham.Types.Location.Cards.Kitchen
       Arkham.Types.Location.Cards.LaBellaLuna
       Arkham.Types.Location.Cards.LightingBox
       Arkham.Types.Location.Cards.LivingRoom
       Arkham.Types.Location.Cards.Lobby
       Arkham.Types.Location.Cards.LostMemories
       Arkham.Types.Location.Cards.MainPath
+      Arkham.Types.Location.Cards.MessHall
       Arkham.Types.Location.Cards.MiskatonicQuad
       Arkham.Types.Location.Cards.MiskatonicUniversity
       Arkham.Types.Location.Cards.MiskatonicUniversityMiskatonicMuseum
@@ -860,6 +871,10 @@ library
       Arkham.Types.Location.Cards.PassengerCar_169
       Arkham.Types.Location.Cards.PassengerCar_170
       Arkham.Types.Location.Cards.PassengerCar_171
+      Arkham.Types.Location.Cards.PatientConfinementDanielsCell
+      Arkham.Types.Location.Cards.PatientConfinementDrearyCell
+      Arkham.Types.Location.Cards.PatientConfinementFamiliarCell
+      Arkham.Types.Location.Cards.PatientConfinementOccupiedCell
       Arkham.Types.Location.Cards.PrismaticCascade
       Arkham.Types.Location.Cards.QuietHalls_131
       Arkham.Types.Location.Cards.QuietHalls_135
@@ -905,6 +920,7 @@ library
       Arkham.Types.Location.Cards.VipArea
       Arkham.Types.Location.Cards.WhateleyRuins_250
       Arkham.Types.Location.Cards.WhateleyRuins_251
+      Arkham.Types.Location.Cards.Yard
       Arkham.Types.Location.Cards.YourHouse
       Arkham.Types.Location.Helpers
       Arkham.Types.Location.Runner

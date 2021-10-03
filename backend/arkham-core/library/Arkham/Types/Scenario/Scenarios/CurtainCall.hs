@@ -52,10 +52,10 @@ curtainCall difficulty =
        , "lobbyDoorway2 .     .       .         backstageDoorway2"
        ]
 
-instance HasRecord CurtainCall where
-  hasRecord _ = pure False
-  hasRecordSet _ = pure []
-  hasRecordCount _ = pure 0
+instance HasRecord env CurtainCall where
+  hasRecord _ _ = pure False
+  hasRecordSet _ _ = pure []
+  hasRecordCount _ _ = pure 0
 
 instance
   ( HasTokenValue env InvestigatorId
@@ -135,8 +135,8 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       gainXP <- map (uncurry GainXP) <$> getXp
-      conviction <- hasRecordCount Conviction
-      doubt <- hasRecordCount Doubt
+      conviction <- getRecordCount Conviction
+      doubt <- getRecordCount Doubt
       let
         stoleFromTheBoxOffice =
           member StoleFromTheBoxOffice (scenarioLog attrs)

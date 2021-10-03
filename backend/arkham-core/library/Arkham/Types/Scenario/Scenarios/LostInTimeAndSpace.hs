@@ -64,10 +64,10 @@ lostInTimeAndSpace difficulty =
        , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
        ]
 
-instance HasRecord LostInTimeAndSpace where
-  hasRecord _ = pure False
-  hasRecordSet _ = pure []
-  hasRecordCount _ = pure 0
+instance HasRecord env LostInTimeAndSpace where
+  hasRecord _ _ = pure False
+  hasRecordSet _ _ = pure []
+  hasRecordCount _ _ = pure 0
 
 instance
   ( HasSet LocationId env [Trait]

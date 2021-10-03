@@ -41,7 +41,7 @@ type AssetRunner env
     , HasId ActiveInvestigatorId env ()
     , HasId CardCode env EnemyId
     , HasId LocationId env InvestigatorId
-    , HasRecord env
+    , HasRecord env ()
     , HasSet AccessibleLocationId env LocationId
     , HasSet BlockedLocationId env ()
     , HasSet ConnectedLocationId env LocationId

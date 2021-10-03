@@ -18,12 +18,10 @@ $(buildEntity "Campaign")
 instance CampaignRunner env => RunMessage env Campaign where
   runMessage = genericRunMessage
 
-instance HasRecord Campaign where
-  hasRecord key = ask >>= runReaderT (hasRecord key) . campaignLog . toAttrs
-  hasRecordSet key =
-    ask >>= runReaderT (hasRecordSet key) . campaignLog . toAttrs
-  hasRecordCount key =
-    ask >>= runReaderT (hasRecordCount key) . campaignLog . toAttrs
+instance HasRecord env Campaign where
+  hasRecord key = hasRecord key . campaignLog . toAttrs
+  hasRecordSet key = hasRecordSet key . campaignLog . toAttrs
+  hasRecordCount key = hasRecordCount key . campaignLog . toAttrs
 
 instance HasSet CompletedScenarioId env Campaign where
   getSet = getSet . toAttrs

@@ -32,7 +32,7 @@ type ActRunner env
     , HasId LeadInvestigatorId env ()
     , HasList Token env ()
     , HasList ResignedCardCode env ()
-    , HasRecord env
+    , HasRecord env ()
     , HasSet CompletedScenarioId env ()
     , HasSet EnemyId env LocationId
     , HasSet InvestigatorId env ()

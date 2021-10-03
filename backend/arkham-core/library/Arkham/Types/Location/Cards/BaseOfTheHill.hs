@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action qualified as Action
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -16,7 +15,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Matcher
 import Arkham.Types.Message
-import Arkham.Types.Name
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 
@@ -59,10 +57,8 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
       )
     Successful (Action.Investigate, _) _ (AbilitySource source 1) _
       | isSource attrs source -> do
-        setAsideCards <- map unSetAsideCard <$> getList @SetAsideCard ()
-        let
-          divergingPaths =
-            filter ((== "Diverging Path") . toName) setAsideCards
+        divergingPaths <- getSetAsideCardsMatching
+          $ CardWithTitle "Diverging Path"
         case nonEmpty divergingPaths of
           Just ne -> do
             card <- sample ne

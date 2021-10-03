@@ -890,8 +890,8 @@ type CanCheckPlayable env
     , HasSkillTest env
     , CanCheckFast env
     , HasSet ClassSymbol env AssetId
-    , HasSet SetAsideCardId env Matcher.CardMatcher
     , HasSet TreacheryId env InvestigatorId
+    , HasList SetAsideCard env Matcher.CardMatcher
     , HasList HandCard env InvestigatorId
     , HasList CommittedSkillIcon env InvestigatorId
     , HasList Card env Matcher.ExtendedCardMatcher
@@ -1243,7 +1243,7 @@ passesCriteria iid source windows' = \case
   Criteria.EnemyCriteria enemyCriteria ->
     passesEnemyCriteria iid source windows' enemyCriteria
   Criteria.SetAsideCardExists matcher ->
-    notNull <$> getSet @SetAsideCardId matcher
+    notNull <$> getList @SetAsideCard matcher
   Criteria.OnAct step -> (== step) . unActStep <$> getStep ()
   Criteria.AssetExists matcher -> notNull <$> getSet @AssetId matcher
   Criteria.InvestigatorExists matcher ->

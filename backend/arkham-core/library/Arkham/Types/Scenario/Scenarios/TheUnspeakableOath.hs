@@ -10,6 +10,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet qualified as EncounterSet
@@ -51,10 +52,10 @@ theUnspeakableOath difficulty =
        , ".       .        .                             basementHall                  ."
        ]
 
-instance HasRecord TheUnspeakableOath where
-  hasRecord _ = pure False
-  hasRecordSet _ = pure []
-  hasRecordCount _ = pure 0
+instance HasRecord env TheUnspeakableOath where
+  hasRecord _ _ = pure False
+  hasRecordSet _ _ = pure []
+  hasRecordCount _ _ = pure 0
 
 instance
   ( HasTokenValue env InvestigatorId
@@ -77,8 +78,35 @@ instance
     ElderThing -> pure $ TokenValue ElderThing ZeroModifier
     otherFace -> getTokenValue attrs iid otherFace
 
+standaloneTokens :: [TokenFace]
+standaloneTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusThree
+  , MinusFour
+  , Skull
+  , Skull
+  , Skull
+  , AutoFail
+  , ElderSign
+  ]
+
 instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
   runMessage msg s@(TheUnspeakableOath attrs) = case msg of
+    SetTokensForScenario -> do
+      -- TODO: move to helper since consistent
+      standalone <- getIsStandalone
+      randomToken <- sample (Cultist :| [Tablet, ElderThing])
+      s <$ if standalone
+        then push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+        else pure ()
     Setup -> do
       gatheredCards <- buildEncounterDeck
         [ EncounterSet.TheUnspeakableOath
@@ -123,6 +151,21 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
         setAsideCards =
           map EncounterCard (monsters <> lunatics) <> setAsideCards'
       investigatorIds <- getInvestigatorIds
+      courageMessages <- concat <$> for
+        investigatorIds
+        \iid -> do
+          deck <- map unDeckCard <$> getList iid
+          case deck of
+            (x : _) -> do
+              courageProxy <- genPlayerCard Assets.courage
+              let
+                courage = PlayerCard
+                  (courageProxy { pcOriginalCardCode = toCardCode x })
+              pure
+                [ DrawCards iid 1 False
+                , InitiatePlayCardAs iid (toCardId x) courage [] False
+                ]
+            _ -> error "empty investigator deck"
       let
         spawnMessages = map
           (\iid -> chooseOne
@@ -154,6 +197,7 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
           , PlaceLocation basementHall
           ]
         <> spawnMessages
+        <> courageMessages
       TheUnspeakableOath
         <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
     ResolveToken _ tokenFace iid -> case tokenFace of

@@ -88,6 +88,7 @@ instance HasCardDef Asset where
 
 instance IsCard Asset where
   toCardId = toCardId . toAttrs
+  toCard = toCard . toAttrs
 
 instance HasDamage Asset where
   getDamage = (assetHealthDamage &&& assetSanityDamage) . toAttrs

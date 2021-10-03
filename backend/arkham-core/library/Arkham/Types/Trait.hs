@@ -44,6 +44,7 @@ data Trait
   | Condition
   | Connection
   | Conspirator
+  | Courage
   | Creature
   | Criminal
   | Cultist

@@ -436,6 +436,7 @@ data Message
     | Record CampaignLogKey
     | RecordCount CampaignLogKey Int
     | RecordSet CampaignLogKey [CardCode]
+    | RecordSetInsert CampaignLogKey [CardCode]
     | CrossOutRecordSetEntries CampaignLogKey [CardCode]
     | RefillSlots InvestigatorId SlotType [AssetId]
     | Remember ScenarioLogKey

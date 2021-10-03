@@ -127,13 +127,13 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance HasRecord WhereDoomAwaits where
-  hasRecord NaomiHasTheInvestigatorsBacks = pure False
-  hasRecord TheInvestigatorsPutSilasBishopOutOfHisMisery = pure False
-  hasRecord NoBroodEscapedIntoTheWild = pure True
-  hasRecord _ = pure False
-  hasRecordSet _ = pure []
-  hasRecordCount _ = pure 0
+instance HasRecord env WhereDoomAwaits where
+  hasRecord NaomiHasTheInvestigatorsBacks _ = pure False
+  hasRecord TheInvestigatorsPutSilasBishopOutOfHisMisery _ = pure False
+  hasRecord NoBroodEscapedIntoTheWild _ = pure True
+  hasRecord _ _ = pure False
+  hasRecordSet _ _ = pure []
+  hasRecordCount _ _ = pure 0
 
 instance
   ( HasTokenValue env InvestigatorId
@@ -164,7 +164,7 @@ instance
 instance
   ( HasCount XPCount env ()
   , HasSet LocationId env [Trait]
-  , HasRecord env
+  , HasRecord env ()
   , ScenarioAttrsRunner env
   , HasModifiersFor env ()
   )

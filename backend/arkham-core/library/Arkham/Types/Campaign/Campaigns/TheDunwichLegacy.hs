@@ -169,7 +169,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
           ]
         ]
     CampaignStep (Just (InterludeStep 1)) -> do
-      unconsciousForSeveralHours <- hasRecord
+      unconsciousForSeveralHours <- getHasRecord
         InvestigatorsWereUnconsciousForSeveralHours
       investigatorIds <- getSetList ()
       leadInvestigatorId <- getLeadInvestigatorId
@@ -238,7 +238,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
           , NextCampaignStep Nothing
           ]
     CampaignStep (Just (InterludeStep 2)) -> do
-      sacrificedToYogSothoth <- hasRecordSet SacrificedToYogSothoth
+      sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
       investigatorIds <- getSetList ()
       leadInvestigatorId <- getLeadInvestigatorId
       drHenryArmitageUnowned <- isNothing <$> findOwner "02040"

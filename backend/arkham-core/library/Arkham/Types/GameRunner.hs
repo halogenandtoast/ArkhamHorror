@@ -99,7 +99,7 @@ type GameRunner env
       )
     , HasSkillTest env
     , HasAbilities env
-    , HasRecord env
+    , HasRecord env ()
     , HasTokenValue env InvestigatorId
     , CanBeWeakness env TreacheryId
     , HasStep AgendaStep env ()

@@ -14,7 +14,7 @@ import Arkham.Types.Game.Helpers as X
 import Arkham.Types.Helpers
 
 getHasRecordOrStandalone
-  :: (MonadReader env m, HasRecord env, HasId (Maybe CampaignId) env ())
+  :: (MonadReader env m, HasRecord env (), HasId (Maybe CampaignId) env ())
   => CampaignLogKey
   -> Bool
   -> m Bool

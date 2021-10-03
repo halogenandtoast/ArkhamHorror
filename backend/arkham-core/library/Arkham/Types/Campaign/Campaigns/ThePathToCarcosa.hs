@@ -45,8 +45,8 @@ instance CampaignRunner env => RunMessage env ThePathToCarcosa where
     CampaignStep (Just (InterludeStep 1)) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      doubt <- hasRecordCount Doubt
-      conviction <- hasRecordCount Conviction
+      doubt <- getRecordCount Doubt
+      conviction <- getRecordCount Conviction
       c <$ push
         (chooseOne
           leadInvestigatorId
@@ -97,6 +97,6 @@ instance CampaignRunner env => RunMessage env ThePathToCarcosa where
         & (completedStepsL %~ completeStep (campaignStep a))
     EnemyDefeated _ _ _ cardCode _ _
       | cardCode == toCardCode Enemies.theManInThePallidMask -> do
-        n <- runReaderT (hasRecordCount ChasingTheStranger) (campaignLog a)
+        n <- hasRecordCount ChasingTheStranger (campaignLog a)
         c <$ push (RecordCount ChasingTheStranger (n + 1))
     _ -> ThePathToCarcosa <$> runMessage msg a

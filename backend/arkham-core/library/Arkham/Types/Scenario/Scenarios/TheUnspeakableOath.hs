@@ -9,6 +9,8 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Scenarios.TheUnspeakableOath.Story
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
@@ -25,7 +27,7 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.Trait hiding (Cultist)
+import Arkham.Types.Trait hiding (Cultist, Expert)
 
 newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs
   deriving anyclass IsScenario
@@ -101,12 +103,12 @@ standaloneTokens =
 instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
   runMessage msg s@(TheUnspeakableOath attrs) = case msg of
     SetTokensForScenario -> do
-      -- TODO: move to helper since consistent
       standalone <- getIsStandalone
-      randomToken <- sample (Cultist :| [Tablet, ElderThing])
-      s <$ if standalone
-        then push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
-        else pure ()
+      s <$ when
+        standalone
+        do
+          randomToken <- sample (Cultist :| [Tablet, ElderThing])
+          push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
     Setup -> do
       gatheredCards <- buildEncounterDeck
         [ EncounterSet.TheUnspeakableOath
@@ -151,21 +153,29 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
         setAsideCards =
           map EncounterCard (monsters <> lunatics) <> setAsideCards'
       investigatorIds <- getInvestigatorIds
-      courageMessages <- concat <$> for
-        investigatorIds
-        \iid -> do
-          deck <- map unDeckCard <$> getList iid
-          case deck of
-            (x : _) -> do
-              courageProxy <- genPlayerCard Assets.courage
-              let
-                courage = PlayerCard
-                  (courageProxy { pcOriginalCardCode = toCardCode x })
-              pure
-                [ DrawCards iid 1 False
-                , InitiatePlayCardAs iid (toCardId x) courage [] False
-                ]
-            _ -> error "empty investigator deck"
+      constanceInterviewed <-
+        elem (Recorded $ toCardCode Assets.constanceDumaine)
+          <$> getRecordSet VIPsInterviewed
+      courageMessages <- if constanceInterviewed
+        then concat <$> for
+          investigatorIds
+          \iid -> do
+            deck <- map unDeckCard <$> getList iid
+            case deck of
+              (x : _) -> do
+                courageProxy <- genPlayerCard Assets.courage
+                let
+                  courage = PlayerCard
+                    (courageProxy { pcOriginalCardCode = toCardCode x })
+                pure
+                  [ DrawCards iid 1 False
+                  , InitiatePlayCardAs iid (toCardId x) courage [] False
+                  ]
+              _ -> error "empty investigator deck"
+        else pure []
+      theFollowersOfTheSignHaveFoundTheWayForward <- getHasRecord
+        TheFollowersOfTheSignHaveFoundTheWayForward
+
       let
         spawnMessages = map
           (\iid -> chooseOne
@@ -177,27 +187,38 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
             ]
           )
           investigatorIds
+        intro1Or2 = if theFollowersOfTheSignHaveFoundTheWayForward
+          then intro1
+          else intro2
+        tokenToAdd = case scenarioDifficulty attrs of
+          Easy -> MinusTwo
+          Standard -> MinusThree
+          Hard -> MinusFour
+          Expert -> MinusFive
+
       pushAllEnd
-        $ [ SetEncounterDeck encounterDeck
-          , AddAgenda "03160"
-          , AddAct "03163"
-          , PlaceLocation westernPatientWing
-          , SetLocationLabel
-            (toLocationId westernPatientWing)
-            "asylumHallsWesternPatientWing"
-          , PlaceLocation easternPatientWing
-          , SetLocationLabel
-            (toLocationId easternPatientWing)
-            "asylumHallsEasternPatientWing"
-          , PlaceLocation messHall
-          , PlaceLocation kitchen
-          , PlaceLocation yard
-          , PlaceLocation garden
-          , PlaceLocation infirmary
-          , PlaceLocation basementHall
-          ]
-        <> spawnMessages
+        $ [story investigatorIds intro1Or2, story investigatorIds intro3]
         <> courageMessages
+        <> [ SetEncounterDeck encounterDeck
+           , AddAgenda "03160"
+           , AddAct "03163"
+           , PlaceLocation westernPatientWing
+           , SetLocationLabel
+             (toLocationId westernPatientWing)
+             "asylumHallsWesternPatientWing"
+           , PlaceLocation easternPatientWing
+           , SetLocationLabel
+             (toLocationId easternPatientWing)
+             "asylumHallsEasternPatientWing"
+           , PlaceLocation messHall
+           , PlaceLocation kitchen
+           , PlaceLocation yard
+           , PlaceLocation garden
+           , PlaceLocation infirmary
+           , PlaceLocation basementHall
+           , AddToken tokenToAdd
+           ]
+        <> spawnMessages
       TheUnspeakableOath
         <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
     ResolveToken _ tokenFace iid -> case tokenFace of

@@ -193,8 +193,9 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
             | (location, card) <- zip thirdFloor seekersToSpawn
             ]
 
-      sebastienInterviewed <- elem (Recorded "03079")
-        <$> getRecordSet VIPsInterviewed
+      sebastienInterviewed <-
+        elem (Recorded $ toCardCode Assets.sebastienMoreau)
+          <$> getRecordSet VIPsInterviewed
 
       fledTheDinnerParty <- getHasRecord YouFledTheDinnerParty
 

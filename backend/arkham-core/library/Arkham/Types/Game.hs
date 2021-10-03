@@ -1478,6 +1478,15 @@ instance HasGame env => HasList SetAsideCard env () where
       Just scenario -> getList scenario
       Nothing -> error "missing scenario"
 
+instance HasGame env => HasList SetAsideCard env CardMatcher where
+  getList matcher = do
+    mScenario <- modeScenario . view modeL <$> getGame
+    case mScenario of
+      Just scenario -> do
+        allCards <- getList scenario
+        pure $ filter (`cardMatch` matcher) allCards
+      Nothing -> error "missing scenario"
+
 instance HasGame env => HasList UnderScenarioReferenceCard env () where
   getList _ = do
     mScenario <- modeScenario . view modeL <$> getGame
@@ -2170,20 +2179,6 @@ instance HasGame env => HasList Card env CardMatcher where
       map unUnderneathCard . concat <$> traverse getList investigatorIds
     let allCards' = handCards <> underneathCards
     pure $ filter (`cardMatch` matcher) allCards'
-
-instance HasGame env => HasSet SetAsideCardId env CardMatcher where
-  getSet matcher = do
-    cards <-
-      map unSetAsideCard
-        <$> (getList
-            . fromJustNote "scenario has to be set"
-            . modeScenario
-            . view modeL
-            =<< getGame
-            )
-    pure $ setFromList $ map (SetAsideCardId . toCardId) $ filter
-      (`cardMatch` matcher)
-      cards
 
 instance HasGame env => HasList Card env ExtendedCardMatcher where
   getList matcher = do

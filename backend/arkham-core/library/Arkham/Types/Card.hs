@@ -35,7 +35,7 @@ instance Functor (CardBuilder ident) where
     CardBuilder { cbCardCode = cbCardCode, cbCardBuilder = f . cbCardBuilder }
 
 newtype SetAsideCard = SetAsideCard { unSetAsideCard :: Card }
-  deriving newtype (Show, Eq, ToJSON, FromJSON)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, HasCardCode, HasCardDef, IsCard)
 
 newtype UnderScenarioReferenceCard = UnderScenarioReferenceCard { unUnderScenarioReferenceCard :: Card }
   deriving newtype (Show, Eq, ToJSON, FromJSON)

@@ -1,17 +1,22 @@
-module Arkham.Types.Asset.Attrs where
+module Arkham.Types.Asset.Attrs
+  ( module X
+  , module Arkham.Types.Asset.Attrs
+  ) where
 
 import Arkham.Prelude
+
+import Arkham.Types.Asset.Helpers as X
+import Arkham.Types.Asset.Runner as X
+import Arkham.Types.Asset.Uses as X
+import Arkham.Types.Classes as X
+import Arkham.Types.Message as X
 
 import Arkham.Asset.Cards
 import Arkham.Card
 import Arkham.Json
 import Arkham.Types.Ability
-import Arkham.Types.Asset.Uses
 import Arkham.Types.Card
-import Arkham.Types.Classes
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
-import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Slot
@@ -265,12 +270,7 @@ defeated AssetAttrs {..} =
   maybe False (assetHealthDamage >=) assetHealth
     || maybe False (assetSanityDamage >=) assetSanity
 
-instance
-  ( HasSet InvestigatorId env ()
-  , HasQueue env
-  , HasModifiersFor env ()
-  )
-  => RunMessage env AssetAttrs where
+instance AssetRunner env => RunMessage env AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     ReadyExhausted -> case assetInvestigator of

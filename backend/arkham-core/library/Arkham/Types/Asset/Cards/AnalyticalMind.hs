@@ -8,14 +8,10 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.GameValue
-import Arkham.Types.Id
 import Arkham.Types.Matcher
-import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing
@@ -42,12 +38,7 @@ instance HasModifiersFor env AnalyticalMind where
       [CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation 1]
   getModifiersFor _ _ _ = pure []
 
-instance
-  ( HasSet InvestigatorId env ()
-  , HasQueue env
-  , HasModifiersFor env ()
-  )
-  => RunMessage env AnalyticalMind where
+instance AssetRunner env => RunMessage env AnalyticalMind where
   runMessage msg a@(AnalyticalMind attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DrawCards iid 1 False)

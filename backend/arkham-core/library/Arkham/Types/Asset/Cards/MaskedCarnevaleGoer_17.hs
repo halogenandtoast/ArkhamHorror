@@ -9,15 +9,11 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Id
-import Arkham.Types.Message
 import Arkham.Types.Source
 
 newtype MaskedCarnevaleGoer_17 = MaskedCarnevaleGoer_17 AssetAttrs

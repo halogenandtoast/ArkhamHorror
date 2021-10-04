@@ -8,15 +8,12 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Card.CardType
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Matcher
-import Arkham.Types.Message hiding (RevealLocation)
+import Arkham.Types.Matcher qualified as Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
@@ -35,7 +32,7 @@ instance HasAbilities WhittonGreene where
   getAbilities (WhittonGreene x) =
     [ restrictedAbility x 1 OwnsThis $ ReactionAbility
         (OrWindowMatcher
-          [ RevealLocation Timing.After You Anywhere
+          [ Matcher.RevealLocation Timing.After You Anywhere
           , PutLocationIntoPlay Timing.After You Anywhere
           ]
         )

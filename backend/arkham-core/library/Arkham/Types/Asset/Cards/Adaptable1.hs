@@ -7,8 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Classes
-import Arkham.Types.Id
 
 newtype Adaptable1 = Adaptable1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
@@ -17,10 +15,5 @@ newtype Adaptable1 = Adaptable1 AssetAttrs
 adaptable1 :: AssetCard Adaptable1
 adaptable1 = asset Adaptable1 Cards.adaptable1
 
-instance
-  ( HasSet InvestigatorId env ()
-  , HasQueue env
-  , HasModifiersFor env ()
-  )
-  => RunMessage env Adaptable1 where
+instance AssetRunner env => RunMessage env Adaptable1 where
   runMessage msg (Adaptable1 attrs) = Adaptable1 <$> runMessage msg attrs

@@ -8,13 +8,10 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Card
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria hiding (DuringTurn)
 import Arkham.Types.Matcher hiding (DuringTurn, FastPlayerWindow)
-import Arkham.Types.Message
 import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -39,7 +36,7 @@ instance HasAbilities JoeyTheRatVigil where
         (FastAbility $ ResourceCost 1)
     ]
 
-instance CanCheckPlayable env => RunMessage env JoeyTheRatVigil where
+instance AssetRunner env => RunMessage env JoeyTheRatVigil where
   runMessage msg a@(JoeyTheRatVigil attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       handCards <- map unHandCard <$> getList iid

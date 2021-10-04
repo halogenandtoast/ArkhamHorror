@@ -8,12 +8,10 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
-import Arkham.Types.Message hiding (EnemyEvaded)
+import Arkham.Types.Matcher qualified as Matcher
 import Arkham.Types.Timing qualified as Timing
 
 newtype Pickpocketing = Pickpocketing AssetAttrs
@@ -26,7 +24,7 @@ pickpocketing = asset Pickpocketing Cards.pickpocketing
 instance HasAbilities Pickpocketing where
   getAbilities (Pickpocketing a) =
     [ restrictedAbility a 1 OwnsThis $ ReactionAbility
-        (EnemyEvaded Timing.After You AnyEnemy)
+        (Matcher.EnemyEvaded Timing.After You AnyEnemy)
         (ExhaustCost $ toTarget a)
     ]
 

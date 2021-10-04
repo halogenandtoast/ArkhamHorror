@@ -8,14 +8,11 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
 import Arkham.Types.Card
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
-import Arkham.Types.Message hiding (PlayCard)
+import Arkham.Types.Matcher qualified as Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.Slot
 import Arkham.Types.Target
@@ -34,9 +31,13 @@ daisysToteBagAdvanced = asset DaisysToteBagAdvanced Cards.daisysToteBagAdvanced
 instance HasAbilities DaisysToteBagAdvanced where
   getAbilities (DaisysToteBagAdvanced a) =
     [ restrictedAbility a 1 OwnsThis
-      $ ReactionAbility
-          (PlayCard Timing.When You (BasicCardMatch $ CardWithTrait Tome))
-      $ ExhaustCost (toTarget a)
+        $ ReactionAbility
+            (Matcher.PlayCard
+              Timing.When
+              You
+              (BasicCardMatch $ CardWithTrait Tome)
+            )
+        $ ExhaustCost (toTarget a)
     ]
 
 instance HasModifiersFor env DaisysToteBagAdvanced where

@@ -8,13 +8,10 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
-import Arkham.Types.Message hiding (EnemyEvaded)
+import Arkham.Types.Matcher qualified as Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
@@ -30,7 +27,7 @@ earlSawyer = ally EarlSawyer Cards.earlSawyer (3, 2)
 instance HasAbilities EarlSawyer where
   getAbilities (EarlSawyer attrs) =
     [ restrictedAbility attrs 1 OwnsThis $ ReactionAbility
-        (EnemyEvaded Timing.After You AnyEnemy)
+        (Matcher.EnemyEvaded Timing.After You AnyEnemy)
         (ExhaustCost $ toTarget attrs)
     ]
 

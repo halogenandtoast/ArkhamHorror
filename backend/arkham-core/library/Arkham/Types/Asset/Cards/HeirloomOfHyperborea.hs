@@ -5,12 +5,10 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
-import Arkham.Types.Message hiding (PlayCard)
+import Arkham.Types.Matcher qualified as Matcher
 import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Trait
 
@@ -25,11 +23,15 @@ heirloomOfHyperborea =
 instance HasAbilities HeirloomOfHyperborea where
   getAbilities (HeirloomOfHyperborea x) =
     [ restrictedAbility x 1 OwnsThis $ ReactionAbility
-        (PlayCard Timing.After You (BasicCardMatch $ CardWithTrait Spell))
+        (Matcher.PlayCard
+          Timing.After
+          You
+          (BasicCardMatch $ CardWithTrait Spell)
+        )
         Free
     ]
 
-instance (AssetRunner env) => RunMessage env HeirloomOfHyperborea where
+instance AssetRunner env => RunMessage env HeirloomOfHyperborea where
   runMessage msg a@(HeirloomOfHyperborea attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DrawCards iid 1 False)

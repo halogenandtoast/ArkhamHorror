@@ -9,13 +9,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action qualified as Action
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses qualified as Resource
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
@@ -35,7 +30,7 @@ instance HasAbilities SpringfieldM19034 where
   getAbilities (SpringfieldM19034 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
-        (Costs [ActionCost 1, UseCost (toId a) Resource.Ammo 1])
+        (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
     ]
 
 instance AssetRunner env => RunMessage env SpringfieldM19034 where
@@ -45,6 +40,11 @@ instance AssetRunner env => RunMessage env SpringfieldM19034 where
         attrs
         (InvestigatorTarget iid)
         [DamageDealt 2, SkillModifier SkillCombat 3]
-      , ChooseFightEnemyNotEngagedWithInvestigator iid source Nothing SkillCombat False
+      , ChooseFightEnemyNotEngagedWithInvestigator
+        iid
+        source
+        Nothing
+        SkillCombat
+        False
       ]
     _ -> SpringfieldM19034 <$> runMessage msg attrs

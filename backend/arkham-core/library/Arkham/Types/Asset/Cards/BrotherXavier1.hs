@@ -8,15 +8,12 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.DamageEffect
 import Arkham.Types.Id
 import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Types.Message hiding (AssetDefeated)
+import Arkham.Types.Matcher qualified as Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -46,10 +43,9 @@ instance (HasId LocationId env InvestigatorId) => HasModifiersFor env BrotherXav
 
 instance HasAbilities BrotherXavier1 where
   getAbilities (BrotherXavier1 a) =
-    [ restrictedAbility a 1 OwnsThis
-        $ ReactionAbility
-            (AssetDefeated Timing.When $ AssetWithId $ toId a)
-            Free
+    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+        (Matcher.AssetDefeated Timing.When $ AssetWithId $ toId a)
+        Free
     ]
 
 instance AssetRunner env => RunMessage env BrotherXavier1 where

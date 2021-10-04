@@ -8,13 +8,10 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
-import Arkham.Types.Message hiding (EnemyDefeated)
+import Arkham.Types.Matcher qualified as Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Target
@@ -30,7 +27,7 @@ drFrancisMorgan = ally DrFrancisMorgan Cards.drFrancisMorgan (4, 1)
 instance HasAbilities DrFrancisMorgan where
   getAbilities (DrFrancisMorgan x) =
     [ restrictedAbility x 1 OwnsThis $ ReactionAbility
-        (EnemyDefeated Timing.After You AnyEnemy)
+        (Matcher.EnemyDefeated Timing.After You AnyEnemy)
         (ExhaustCost $ toTarget x)
     ]
 

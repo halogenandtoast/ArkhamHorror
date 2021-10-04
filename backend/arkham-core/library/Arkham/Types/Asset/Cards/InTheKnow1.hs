@@ -9,14 +9,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action qualified as Action
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Matcher
-import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype InTheKnow1 = InTheKnow1 AssetAttrs
@@ -36,7 +32,7 @@ instance HasAbilities InTheKnow1 where
 
 instance AssetRunner env => RunMessage env InTheKnow1 where
   runMessage msg a@(InTheKnow1 attrs) = case msg of
-    UseCardAbility iid source windows 1 _ | isSource attrs source -> do
+    UseCardAbility iid source windows' 1 _ | isSource attrs source -> do
       investigatorLocation <- getId @LocationId iid
       locations <- selectList $ RevealedLocation <> InvestigatableLocation
       locationsWithInvestigate <- concat <$> for
@@ -53,7 +49,7 @@ instance AssetRunner env => RunMessage env InTheKnow1 where
           [ TargetLabel
               (LocationTarget location)
               [ SetLocationAsIf iid location
-              , UseAbility iid investigate windows
+              , UseAbility iid investigate windows'
               , SetLocationAsIf iid investigatorLocation
               ]
           | (location, investigate) <- locationsWithInvestigate

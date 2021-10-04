@@ -6,6 +6,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Direction
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Query
@@ -14,6 +15,7 @@ import Arkham.Types.Trait
 
 type AssetRunner env
   = ( HasQueue env
+    , CanCheckPlayable env
     , Query AssetMatcher env
     , Query AbilityMatcher env
     , Query LocationMatcher env

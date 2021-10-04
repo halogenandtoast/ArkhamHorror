@@ -8,13 +8,9 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Uses
 import Arkham.Types.CampaignLogKey
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Id
-import Arkham.Types.Message
 import Arkham.Types.SkillType
 
 newtype ArchaicGlyphs = ArchaicGlyphs AssetAttrs
@@ -27,17 +23,12 @@ archaicGlyphs = asset ArchaicGlyphs Cards.archaicGlyphs
 instance HasAbilities ArchaicGlyphs where
   getAbilities (ArchaicGlyphs attrs) =
     [ restrictedAbility attrs 1 OwnsThis
-      $ ActionAbility Nothing
-      $ SkillIconCost 1
-      $ singleton SkillIntellect
+        $ ActionAbility Nothing
+        $ SkillIconCost 1
+        $ singleton SkillIntellect
     ]
 
-instance
-  ( HasSet InvestigatorId env ()
-  , HasQueue env
-  , HasModifiersFor env ()
-  )
-  => RunMessage env ArchaicGlyphs where
+instance AssetRunner env => RunMessage env ArchaicGlyphs where
   runMessage msg a@(ArchaicGlyphs attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AddUses (toTarget attrs) Secret 1)

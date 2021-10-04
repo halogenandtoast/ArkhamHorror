@@ -8,12 +8,9 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Id
 import Arkham.Types.Matcher
-import Arkham.Types.Message
 import Arkham.Types.Timing qualified as Timing
 
 newtype ArtStudent = ArtStudent AssetAttrs
@@ -35,12 +32,7 @@ instance HasAbilities ArtStudent where
         )
     ]
 
-instance
-  ( HasSet InvestigatorId env ()
-  , HasQueue env
-  , HasModifiersFor env ()
-  )
-  => RunMessage env ArtStudent where
+instance AssetRunner env => RunMessage env ArtStudent where
   runMessage msg a@(ArtStudent attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing)

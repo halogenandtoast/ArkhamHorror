@@ -8,12 +8,10 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Id
 import Arkham.Types.Matcher hiding (MoveAction)
-import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype AbbessAllegriaDiBiase = AbbessAllegriaDiBiase AssetAttrs
@@ -51,14 +49,7 @@ getAssetLocation AssetAttrs {..} = case assetLocation of
     Just iid -> getId iid
     Nothing -> error "Invalid location for Abbess"
 
-instance
-  ( HasSet ConnectedLocationId env LocationId
-  , HasId LocationId env InvestigatorId
-  , HasSet InvestigatorId env ()
-  , HasQueue env
-  , HasModifiersFor env ()
-  )
-  => RunMessage env AbbessAllegriaDiBiase where
+instance AssetRunner env => RunMessage env AbbessAllegriaDiBiase where
   runMessage msg a@(AbbessAllegriaDiBiase attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       investigatorLocationId <- getId @LocationId iid

@@ -8,14 +8,9 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (UseType(Secret))
-import Arkham.Types.Asset.Uses qualified as Resource
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Id
-import Arkham.Types.Message
 import Arkham.Types.Target
 
 newtype ScrollOfProphecies = ScrollOfProphecies AssetAttrs
@@ -36,11 +31,11 @@ instance HasAbilities ScrollOfProphecies where
     ]
 
 instance AssetRunner env => RunMessage env ScrollOfProphecies where
-  runMessage msg (ScrollOfProphecies attrs) = case msg of
+  runMessage msg a@(ScrollOfProphecies attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId
-      push
+      a <$ push
         (chooseOne
           iid
           [ TargetLabel
@@ -49,11 +44,4 @@ instance AssetRunner env => RunMessage env ScrollOfProphecies where
           | iid' <- investigatorIds
           ]
         )
-      pure
-        $ ScrollOfProphecies
-        $ attrs
-        & exhaustedL
-        .~ True
-        & usesL
-        %~ Resource.use
     _ -> ScrollOfProphecies <$> runMessage msg attrs

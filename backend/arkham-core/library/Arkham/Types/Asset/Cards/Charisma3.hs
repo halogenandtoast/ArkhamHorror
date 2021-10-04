@@ -7,9 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Classes
-import Arkham.Types.Message
 import Arkham.Types.Slot
 
 newtype Charisma3 = Charisma3 AssetAttrs

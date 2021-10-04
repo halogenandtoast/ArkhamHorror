@@ -9,13 +9,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action qualified as Action
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Card
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Id
-import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
@@ -32,8 +29,8 @@ alchemicalConcoction = asset AlchemicalConcoction Cards.alchemicalConcoction
 instance HasAbilities AlchemicalConcoction where
   getAbilities (AlchemicalConcoction a) =
     [ restrictedAbility a 1 OwnsThis
-      $ ActionAbility (Just Action.Fight)
-      $ ActionCost 1
+        $ ActionAbility (Just Action.Fight)
+        $ ActionCost 1
     ]
 
 instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor env AlchemicalConcoction where
@@ -48,12 +45,7 @@ instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor env A
         _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance
-  ( HasSet InvestigatorId env ()
-  , HasQueue env
-  , HasModifiersFor env ()
-  )
-  => RunMessage env AlchemicalConcoction where
+instance AssetRunner env => RunMessage env AlchemicalConcoction where
   runMessage msg a@(AlchemicalConcoction attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ pushAll

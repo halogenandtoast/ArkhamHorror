@@ -9,15 +9,11 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Id
 import Arkham.Types.Matcher
-import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing
@@ -44,12 +40,7 @@ instance HasAbilities InnocentReveler where
       $ toId x
     ]
 
-instance
-  ( HasSet InvestigatorId env ()
-  , HasQueue env
-  , HasModifiersFor env ()
-  )
-  => RunMessage env InnocentReveler where
+instance AssetRunner env => RunMessage env InnocentReveler where
   runMessage msg a@(InnocentReveler attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a

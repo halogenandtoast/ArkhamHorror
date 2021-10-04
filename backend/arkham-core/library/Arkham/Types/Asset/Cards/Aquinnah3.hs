@@ -8,14 +8,12 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
-import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.DamageEffect
 import Arkham.Types.Id
 import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Types.Message hiding (EnemyAttacks)
+import Arkham.Types.Matcher qualified as Matcher
 import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Timing qualified as Timing
@@ -36,7 +34,7 @@ instance HasAbilities Aquinnah3 where
           a
           1
           (OwnsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
-        $ ReactionAbility (EnemyAttacks Timing.When You AnyEnemy)
+        $ ReactionAbility (Matcher.EnemyAttacks Timing.When You AnyEnemy)
         $ Costs
             [ExhaustCost (toTarget a), HorrorCost (toSource a) (toTarget a) 1]
     ]

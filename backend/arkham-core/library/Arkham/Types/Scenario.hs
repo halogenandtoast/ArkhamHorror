@@ -94,8 +94,8 @@ instance Entity Scenario where
 instance HasSet ScenarioLogKey env Scenario where
   getSet = pure . scenarioLog . toAttrs
 
-instance HasCount ScenarioDeckCount env Scenario where
-  getCount = getCount . toAttrs
+instance HasCount ScenarioDeckCount env (Scenario, ScenarioDeckKey) where
+  getCount (scenario, key) = getCount (toAttrs scenario, key)
 
 instance HasCount SetAsideCount env (Scenario, CardCode) where
   getCount = getCount . first toAttrs

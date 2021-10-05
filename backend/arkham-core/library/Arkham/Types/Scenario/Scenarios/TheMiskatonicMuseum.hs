@@ -147,18 +147,16 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
       standalone <- isNothing <$> getId @(Maybe CampaignId) ()
       s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
     UseScenarioSpecificAbility _ _ 1 ->
-      case fromJustNote "must be set" scenarioDeck of
-        ExhibitDeck [] -> pure s
-        ExhibitDeck (x : xs) -> do
+      case fromJustNote "must be set" (lookup ExhibitDeck scenarioDecks) of
+        [] -> pure s
+        (x : xs) -> do
           push (PlaceLocation x)
-          pure $ TheMiskatonicMuseum $ attrs & deckL ?~ ExhibitDeck xs
-        _ -> error "Wrong deck"
+          pure $ TheMiskatonicMuseum $ attrs & decksL . at ExhibitDeck ?~ xs
     LookAtTopOfDeck _ ScenarioDeckTarget n ->
-      case fromJustNote "must be set" scenarioDeck of
-        ExhibitDeck xs -> do
+      case fromJustNote "must be set" (lookup ExhibitDeck scenarioDecks) of
+        xs -> do
           let lids = map (CardCodeTarget . toCardCode) $ take n xs
           s <$ pushAll [FocusTargets lids, Label "Continue" [UnfocusTargets]]
-        _ -> error "Wrong deck"
     Setup -> do
       investigatorIds <- getInvestigatorIds
 
@@ -227,7 +225,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
       TheMiskatonicMuseum <$> runMessage
         msg
         (attrs
-        & (deckL ?~ ExhibitDeck exhibitDeck)
+        & (decksL . at ExhibitDeck ?~ exhibitDeck)
         & (setAsideCardsL .~ setAsideCards)
         )
     PlacedLocation name _ lid -> do

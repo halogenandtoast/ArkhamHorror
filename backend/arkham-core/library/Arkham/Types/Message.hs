@@ -28,6 +28,7 @@ import Arkham.Types.Matcher hiding (EnemyDefeated)
 import Arkham.Types.Name
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Resolution
+import Arkham.Types.Scenario.Deck
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
@@ -135,8 +136,10 @@ data Message
     | AddToHand InvestigatorId Card
     | AddTreacheryToHand InvestigatorId TreacheryId
     | AddToHandFromDeck InvestigatorId CardId
-    | AddToScenarioDeck Target
-    | AddCardToScenarioDeck Card
+    | AddToScenarioDeck ScenarioDeckKey Target
+    | AddCardToScenarioDeck ScenarioDeckKey Card
+    | DrawFromScenarioDeck InvestigatorId ScenarioDeckKey Target Int
+    | DrewFromScenarioDeck InvestigatorId ScenarioDeckKey Target [Card]
     | AddToVictory Target
     | AddToken TokenFace
     | RemoveAllTokens TokenFace

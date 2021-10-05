@@ -30,6 +30,7 @@ type TreacheryRunner env
     , HasHistory env
     , Query AssetMatcher env
     , Query EnemyMatcher env
+    , Query ExtendedCardMatcher env
     , Query LocationMatcher env
     , Query InvestigatorMatcher env
     , HasCount ActsRemainingCount env ()

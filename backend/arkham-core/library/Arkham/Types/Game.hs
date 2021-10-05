@@ -67,6 +67,7 @@ import Arkham.Types.Phase
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Scenario
+import Arkham.Types.Scenario.Deck
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Skill
 import Arkham.Types.SkillTest
@@ -1295,9 +1296,10 @@ instance HasGame env => HasId CardCode env AssetId where
 instance HasGame env => HasId CardCode env TreacheryId where
   getId = (toCardCode <$>) . getTreachery
 
-instance HasGame env => HasCount ScenarioDeckCount env () where
-  getCount _ =
+instance HasGame env => HasCount ScenarioDeckCount env ScenarioDeckKey where
+  getCount key =
     getCount
+      . (, key)
       . fromJustNote "scenario has to be set"
       . modeScenario
       . view modeL

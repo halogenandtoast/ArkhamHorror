@@ -34,12 +34,12 @@
             @choose="$emit('choose', $event)"
           />
         </div>
-        <div class="deck" v-if="scenarioDeck">
+        <div class="deck" :key="scenarioDeck[0]" v-for="[,scenarioDeck] in scenarioDecks">
           <img
-            :src="scenarioDeck"
+            :src="scenarioDeckImage(scenarioDeck)"
             class="card"
           />
-          <span class="deck-size">{{scenarioDeckCount}}</span>
+          <span class="deck-size">{{scenarioDeck[1].length}}</span>
         </div>
         <VictoryDisplay :game="game" @show="doShowCards" />
         <div v-if="topOfEncounterDiscard" class="discard">
@@ -278,31 +278,35 @@ export default defineComponent({
       return `${baseUrl}/img/arkham/cards/${id.replace('c', '')}${difficultySuffix}.jpg`;
     })
 
-    const scenarioDeck = computed(() => {
+    const scenarioDecks = computed(() => {
       const { scenario } = props.game;
-      if (!scenario || !scenario.contents.deck) {
+      if (!scenario || !scenario.contents.decks) {
         return null;
       }
 
-      const { tag } = scenario.contents.deck;
+      return Object.entries(scenario.contents.decks);
 
-      switch(tag) {
+    })
+
+    const scenarioDeckImage = (deck: [string, Card[]]) => {
+      console.log(deck)
+      switch(deck[0]) {
         case 'ExhibitDeck':
           return `${baseUrl}/img/arkham/cards/02132b.jpg`;
         default:
           return null;
       }
-    })
+    }
 
-    const scenarioDeckCount = computed(() => {
-      const { scenario } = props.game;
-      const scenarioDeck = scenario?.contents?.deck
-      if (scenarioDeck) {
-        const { deckSize } = scenarioDeck
-        return deckSize;
-      }
-      return null
-    })
+    // const scenarioDeckCount = computed(() => {
+    //   const { scenario } = props.game;
+    //   const scenarioDeck = scenario?.contents?.decks
+    //   if (scenarioDeck) {
+    //     const { deckSize } = scenarioDeck
+    //     return deckSize;
+    //   }
+    //   return null
+    // })
 
 
     const locationStyles = computed(() => {
@@ -422,8 +426,8 @@ export default defineComponent({
       activeCard,
       locationStyles,
       scenarioGuide,
-      scenarioDeck,
-      scenarioDeckCount,
+      scenarioDecks,
+      scenarioDeckImage,
       topEnemyInVoid,
       enemiesAsLocations,
       cardsUnderAgenda,

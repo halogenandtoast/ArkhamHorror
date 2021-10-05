@@ -11,6 +11,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Scenario.Deck
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing
@@ -79,7 +80,7 @@ instance TreacheryRunner env => RunMessage env Kidnapped where
                 iid
                 [ TargetLabel
                     (AssetTarget aid)
-                    [AddToScenarioDeck (AssetTarget aid)]
+                    [AddToScenarioDeck PotentialSacrifices (AssetTarget aid)]
                 | aid <- allies
                 ]
               , AttachTreachery treacheryId (AgendaTarget agendaId)

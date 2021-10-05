@@ -74,6 +74,14 @@ selectList
   :: (HasCallStack, MonadReader env m, Query a env) => a -> m [QueryElement a]
 selectList = selectListMap id
 
+selectRandom
+  :: (HasCallStack, MonadRandom m, MonadReader env m, Query a env)
+  => a
+  -> m (Maybe (QueryElement a))
+selectRandom matcher = do
+  results <- selectList matcher
+  maybe (pure Nothing) (fmap Just . sample) (nonEmpty results)
+
 selectListMap
   :: (HasCallStack, MonadReader env m, Query a env)
   => (QueryElement a -> b)

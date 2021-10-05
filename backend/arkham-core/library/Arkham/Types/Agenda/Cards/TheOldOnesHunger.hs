@@ -12,6 +12,7 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Arkham.Types.Scenario.Deck
 
 newtype TheOldOnesHunger = TheOldOnesHunger AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
@@ -25,7 +26,7 @@ instance AgendaRunner env => RunMessage env TheOldOnesHunger where
   runMessage msg a@(TheOldOnesHunger attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      scenarioDeckCount <- unScenarioDeckCount <$> getCount ()
+      scenarioDeckCount <- unScenarioDeckCount <$> getCount PotentialSacrifices
       if scenarioDeckCount >= 2
         then a <$ pushAll
           [ UseScenarioSpecificAbility leadInvestigatorId Nothing 1

@@ -50,7 +50,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioCardsNextToActDeck :: [Card]
   , scenarioActStack :: [(Int, [CardDef])]
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
-  , scenarioDeck :: Maybe ScenarioDeck
+  , scenarioDecks :: HashMap ScenarioDeckKey [Card]
   , scenarioLog :: HashSet ScenarioLogKey
   , scenarioSetAsideCards :: [Card]
   , scenarioInResolution :: Bool
@@ -77,8 +77,8 @@ inResolutionL :: Lens' ScenarioAttrs Bool
 inResolutionL =
   lens scenarioInResolution $ \m x -> m { scenarioInResolution = x }
 
-deckL :: Lens' ScenarioAttrs (Maybe ScenarioDeck)
-deckL = lens scenarioDeck $ \m x -> m { scenarioDeck = x }
+decksL :: Lens' ScenarioAttrs (HashMap ScenarioDeckKey [Card])
+decksL = lens scenarioDecks $ \m x -> m { scenarioDecks = x }
 
 actStackL :: Lens' ScenarioAttrs [(Int, [CardDef])]
 actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
@@ -109,12 +109,11 @@ instance HasRecord env ScenarioAttrs where
 instance HasName env ScenarioAttrs where
   getName = pure . scenarioName
 
-instance HasCount ScenarioDeckCount env ScenarioAttrs where
-  getCount ScenarioAttrs { scenarioDeck } = case scenarioDeck of
-    Just (CultistDeck cards) -> pure . ScenarioDeckCount $ length cards
-    Just (ExhibitDeck cards) -> pure . ScenarioDeckCount $ length cards
-    Just (PotentialSacrifices cards) -> pure . ScenarioDeckCount $ length cards
-    Nothing -> pure $ ScenarioDeckCount 0
+instance HasCount ScenarioDeckCount env (ScenarioAttrs, ScenarioDeckKey) where
+  getCount (ScenarioAttrs { scenarioDecks }, key) =
+    case lookup key scenarioDecks of
+      Just cards -> pure . ScenarioDeckCount $ length cards
+      Nothing -> pure $ ScenarioDeckCount 0
 
 instance HasCount SetAsideCount env (ScenarioAttrs, CardCode) where
   getCount (attrs, cardCode) = pure . SetAsideCount $ count
@@ -159,7 +158,7 @@ baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   , scenarioCardsUnderActDeck = mempty
   , scenarioCardsNextToActDeck = mempty
   , scenarioLocationLayout = Nothing
-  , scenarioDeck = Nothing
+  , scenarioDecks = mempty
   , scenarioLog = mempty
   , scenarioSetAsideCards = mempty
   , scenarioCardsUnderScenarioReference = mempty
@@ -309,14 +308,24 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         "The scenario should specify what to do for a scenario specific ability."
     LookAtTopOfDeck _ ScenarioDeckTarget _ ->
       error "The scenario should handle looking at the top of the scenario deck"
+    DrawFromScenarioDeck iid key target n -> case lookup key scenarioDecks of
+      Just [] -> pure a
+      Just xs -> do
+        let (drew, rest) = splitAt n xs
+        push (DrewFromScenarioDeck iid key target drew)
+        pure $ a & decksL . at key ?~ rest
+      _ ->
+        error
+          $ "Invalid scenario deck key "
+          <> show key
+          <> ", could not find deck in scenario"
     ChooseRandomLocation target exclusions -> do
-      locationIds <-
-        setToList . (`difference` exclusions) <$> getSet @LocationId ()
+      locationIds <- setToList . (`difference` exclusions) <$> select Anywhere
       leadInvestigatorId <- getLeadInvestigatorId
-      case locationIds of
-        [] -> error "no locations?"
-        (h : t) -> do
-          randomLocationId <- sample $ h :| t
+      case nonEmpty locationIds of
+        Nothing -> error "no locations?"
+        Just lids -> do
+          randomLocationId <- sample lids
           a <$ pushAll
             [ CheckWindow
               [leadInvestigatorId]

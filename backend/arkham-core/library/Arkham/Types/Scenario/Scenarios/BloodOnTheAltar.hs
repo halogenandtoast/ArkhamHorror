@@ -299,7 +299,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
           msg
           (attrs
           & (setAsideCardsL .~ setAsideCards)
-          & (deckL ?~ PotentialSacrifices potentialSacrifices)
+          & (decksL . at PotentialSacrifices ?~ potentialSacrifices)
           )
       ResolveToken _ Tablet iid -> do
         lid <- getId @LocationId iid
@@ -327,9 +327,10 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
           fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
         xp <- getXp
         let
-          potentialSacrifices = case scenarioDeck of
-            Just (PotentialSacrifices xs) -> xs
-            _ -> error "missing deck"
+          potentialSacrifices =
+            case lookup PotentialSacrifices scenarioDecks of
+              Just xs -> xs
+              _ -> error "missing deck"
           sacrificedToYogSothoth =
             map toCardCode potentialSacrifices <> map toCardCode sacrificed
         removeSacrificedMessages <- getRemoveSacrificedMessages
@@ -460,27 +461,27 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame Nothing]
           )
-      AddCardToScenarioDeck card -> case scenarioDeck of
-        Just (PotentialSacrifices cards) ->
-          pure
-            . BloodOnTheAltar
-            . (`with` metadata)
-            $ attrs
-            & deckL
-            ?~ PotentialSacrifices (card : cards)
-        _ -> throwIO $ InvalidState "incorrect deck"
-      UseScenarioSpecificAbility _ _ 1 -> case scenarioDeck of
-        Just (PotentialSacrifices []) -> pure s
-        Just (PotentialSacrifices cards) -> do
-          result <- shuffleM cards
-          let
-            c = fromJust . headMay $ result
-            cards' = drop 1 result
-          pure
-            . BloodOnTheAltar
-            . (`with` BloodOnTheAltarMetadata (c : sacrificed))
-            $ attrs
-            & deckL
-            ?~ PotentialSacrifices cards'
-        _ -> throwIO $ InvalidState "incorrect deck"
+      AddCardToScenarioDeck PotentialSacrifices card ->
+        case lookup PotentialSacrifices scenarioDecks of
+          Just cards ->
+            pure
+              . BloodOnTheAltar
+              . (`with` metadata)
+              $ attrs
+              & (decksL . at PotentialSacrifices ?~ card : cards)
+          _ -> throwIO $ InvalidState "incorrect deck"
+      UseScenarioSpecificAbility _ _ 1 ->
+        case lookup PotentialSacrifices scenarioDecks of
+          Just [] -> pure s
+          Just cards -> do
+            result <- shuffleM cards
+            let
+              c = fromJust . headMay $ result
+              cards' = drop 1 result
+            pure
+              . BloodOnTheAltar
+              . (`with` BloodOnTheAltarMetadata (c : sacrificed))
+              $ attrs
+              & (decksL . at PotentialSacrifices ?~ cards')
+          _ -> throwIO $ InvalidState "incorrect deck"
       _ -> BloodOnTheAltar . (`with` metadata) <$> runMessage msg attrs

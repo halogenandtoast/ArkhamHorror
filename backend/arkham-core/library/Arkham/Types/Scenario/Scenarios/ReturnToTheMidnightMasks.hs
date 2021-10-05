@@ -35,7 +35,7 @@ returnToTheMidnightMasks difficulty =
           , "miskatonicUniversity rivertown graveyard"
           , "stMarysHospital southside yourHouse"
           ]
-        , scenarioDeck = Just $ CultistDeck []
+        , scenarioDecks = mapFromList [(CultistDeck, [])]
         }
 
 instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), HasCount DoomCount env EnemyId, HasSet EnemyId env Trait) => HasTokenValue env ReturnToTheMidnightMasks where
@@ -139,5 +139,5 @@ instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
           <> spawnAcolyteMessages
         ReturnToTheMidnightMasks . TheMidnightMasks <$> runMessage
           msg
-          (attrs { scenarioDeck = Just $ CultistDeck cultistDeck' })
+          (attrs & decksL . at CultistDeck ?~ cultistDeck')
       _ -> ReturnToTheMidnightMasks <$> runMessage msg theMidnightMasks'

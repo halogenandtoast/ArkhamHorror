@@ -10,6 +10,7 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Query
+import Arkham.Types.Scenario.Deck
 import Arkham.Types.Trait
 
 type AgendaRunner env
@@ -27,7 +28,7 @@ type AgendaRunner env
     , HasCount EnemyCount env (LocationId, [Trait])
     , HasCount EnemyCount env (LocationMatcher, [Trait])
     , HasCount PlayerCount env ()
-    , HasCount ScenarioDeckCount env ()
+    , HasCount ScenarioDeckCount env ScenarioDeckKey
     , HasCount SetAsideCount env CardCode
     , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe LocationId) env (Direction, LocationId)

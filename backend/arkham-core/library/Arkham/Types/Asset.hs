@@ -44,11 +44,7 @@ instance
   => HasModifiersFor env Asset where
   getModifiersFor = genericGetModifiersFor
 
-instance
-  ( CanCheckPlayable env
-  , AssetRunner env
-  )
-  => RunMessage env Asset where
+instance AssetRunner env => RunMessage env Asset where
   runMessage msg x = do
     inPlay <- member (toId x) <$> select AnyAsset
     modifiers' <- if inPlay

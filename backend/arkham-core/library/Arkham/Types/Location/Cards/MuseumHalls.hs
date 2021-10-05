@@ -16,6 +16,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Scenario.Deck
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -77,7 +78,9 @@ instance LocationRunner env => RunMessage env MuseumHalls where
             5
           )
     UseCardAbility iid source _ 1 _ | isSource attrs source && revealed attrs ->
-      l <$ push (UseScenarioSpecificAbility iid Nothing 1)
+      l <$ push (DrawFromScenarioDeck iid ExhibitDeck (toTarget attrs) 1)
+    DrewFromScenarioDeck _ _ target cards | isTarget attrs target ->
+      l <$ pushAll (map PlaceLocation cards)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         actId <- fromJustNote "missing act" . headMay <$> getSetList ()

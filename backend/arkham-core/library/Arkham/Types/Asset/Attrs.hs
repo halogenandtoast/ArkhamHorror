@@ -382,8 +382,9 @@ instance AssetRunner env => RunMessage env AssetAttrs where
       pure $ a & investigatorL ?~ iid
     ReplacedInvestigatorAsset iid aid | aid == assetId ->
       pure $ a & investigatorL ?~ iid
-    AddToScenarioDeck target | isTarget a target -> do
-      pushAll [AddCardToScenarioDeck (toCard a), RemoveFromGame (toTarget a)]
+    AddToScenarioDeck key target | isTarget a target -> do
+      pushAll
+        [AddCardToScenarioDeck key (toCard a), RemoveFromGame (toTarget a)]
       pure $ a & investigatorL .~ Nothing
     Exhaust target | a `isTarget` target -> pure $ a & exhaustedL .~ True
     Ready target | a `isTarget` target -> case assetInvestigator of

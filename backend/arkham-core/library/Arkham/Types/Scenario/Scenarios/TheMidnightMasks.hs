@@ -36,7 +36,7 @@ theMidnightMasks difficulty =
       , "miskatonicUniversity rivertown graveyard"
       , "stMarysHospital southside yourHouse"
       ]
-    , scenarioDeck = Just $ CultistDeck []
+    , scenarioDecks = mapFromList [(CultistDeck, [])]
     }
 
 instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), HasCount DoomCount env EnemyId, HasSet EnemyId env Trait) => HasTokenValue env TheMidnightMasks where
@@ -192,15 +192,13 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         <> ghoulPriestMessages
         <> spawnAcolyteMessages
 
-      pure $ TheMidnightMasks
-        (attrs { scenarioDeck = Just $ CultistDeck cultistDeck' })
+      pure $ TheMidnightMasks $ attrs & decksL . at CultistDeck ?~ cultistDeck'
     UseScenarioSpecificAbility iid _ 1 ->
-      case fromJustNote "must be set" scenarioDeck of
-        CultistDeck [] -> pure s
-        CultistDeck (EncounterCard x : xs) -> do
+      case fromJustNote "must be set" (lookup CultistDeck scenarioDecks) of
+        [] -> pure s
+        (EncounterCard x : xs) -> do
           push (InvestigatorDrewEncounterCard iid x)
-          pure $ TheMidnightMasks
-            (attrs { scenarioDeck = Just $ CultistDeck xs })
+          pure $ TheMidnightMasks $ attrs & decksL . at CultistDeck ?~ xs
         _ -> error "Wrong deck"
     ResolveToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- map unClosestEnemyId

@@ -321,20 +321,12 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
           <> ", could not find deck in scenario"
     ChooseRandomLocation target exclusions -> do
       locationIds <- setToList . (`difference` exclusions) <$> select Anywhere
-      leadInvestigatorId <- getLeadInvestigatorId
       case nonEmpty locationIds of
         Nothing -> error "no locations?"
         Just lids -> do
           randomLocationId <- sample lids
-          a <$ pushAll
-            [ CheckWindow
-              [leadInvestigatorId]
-              [ Window
-                  Timing.When
-                  (Window.ChosenRandomLocation randomLocationId)
-              ]
-            , ChosenRandomLocation target randomLocationId
-            ]
+          msgs <- windows [Window.ChosenRandomLocation randomLocationId]
+          a <$ pushAll (msgs <> [ChosenRandomLocation target randomLocationId])
     PlaceLocation card -> pure $ a & setAsideCardsL %~ delete card
     AddToEncounterDeck card -> do
       pure $ a & setAsideCardsL %~ deleteFirstMatch (== EncounterCard card)

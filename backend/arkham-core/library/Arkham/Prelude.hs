@@ -36,6 +36,7 @@ import Control.Monad.Random.Class as X (getRandom, getRandomR, getRandoms)
 import Control.Monad.Random.Strict as X (Random)
 import Data.Aeson as X
 import Data.Aeson.Text
+import Data.Char qualified as C
 import Data.Coerce as X (coerce)
 import Data.HashMap.Strict qualified as HashMap
 import Data.HashSet qualified as HashSet
@@ -47,8 +48,26 @@ import Data.Text.Lazy qualified as TL
 import Data.Text.Lazy.Builder
 import Data.UUID as X (UUID)
 import GHC.Stack as X
+import Language.Haskell.TH hiding (location)
 import Safe as X (fromJustNote)
 import System.Random.Shuffle as X
+
+suffixedNamer :: FieldNamer
+suffixedNamer _ _ n = case dropWhile C.isLower (nameBase n) of
+  x : xs -> [TopName (mkName ((C.toLower x : xs) ++ "L"))]
+  _ -> []
+
+suffixedWithNamer :: String -> FieldNamer
+suffixedWithNamer str _ _ n = case drop (length str) (nameBase n) of
+  x : xs -> [TopName (mkName ((C.toLower x : xs) ++ "L"))]
+  _ -> []
+
+suffixedWithFields :: String -> LensRules
+suffixedWithFields suffix =
+  defaultFieldRules & lensField .~ suffixedWithNamer suffix
+
+suffixedFields :: LensRules
+suffixedFields = defaultFieldRules & lensField .~ suffixedNamer
 
 guardM :: (Alternative m, Monad m) => m Bool -> m ()
 guardM p = p >>= guard

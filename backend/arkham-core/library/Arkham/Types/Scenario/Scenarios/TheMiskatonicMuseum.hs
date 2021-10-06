@@ -146,12 +146,6 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
     SetTokensForScenario -> do
       standalone <- isNothing <$> getId @(Maybe CampaignId) ()
       s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
-    UseScenarioSpecificAbility _ _ 1 ->
-      case fromJustNote "must be set" (lookup ExhibitDeck scenarioDecks) of
-        [] -> pure s
-        (x : xs) -> do
-          push (PlaceLocation x)
-          pure $ TheMiskatonicMuseum $ attrs & decksL . at ExhibitDeck ?~ xs
     LookAtTopOfDeck _ ScenarioDeckTarget n ->
       case fromJustNote "must be set" (lookup ExhibitDeck scenarioDecks) of
         xs -> do

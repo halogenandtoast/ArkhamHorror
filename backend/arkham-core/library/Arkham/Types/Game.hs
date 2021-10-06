@@ -1,4 +1,5 @@
 {-# LANGUAGE StrictData #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Types.Game where
@@ -174,8 +175,18 @@ class HasStdGen a where
 getGame :: (HasGame env, MonadReader env m) => m Game
 getGame = view gameL
 
-getScenario :: (HasGame env, MonadReader env m) => m (Maybe Scenario)
-getScenario = modeScenario . view modeL <$> getGame
+modeScenario :: GameMode -> Maybe Scenario
+modeScenario = \case
+  That s -> Just s
+  These _ s -> Just s
+  This _ -> Nothing
+
+modeCampaign :: GameMode -> Maybe Campaign
+modeCampaign = \case
+  That _ -> Nothing
+  These c _ -> Just c
+  This c -> Just c
+
 
 data GameChoice
   = AskChoice InvestigatorId Int
@@ -256,133 +267,10 @@ patch g p = case Diff.patch p (toJSON g) of
   Error e -> Error e
   Success a -> fromJSON a
 
-enemyMovingL :: Lens' Game (Maybe EnemyId)
-enemyMovingL = lens gameEnemyMoving $ \m x -> m { gameEnemyMoving = x }
+makeLensesWith suffixedFields ''Game
 
-windowDepthL :: Lens' Game Int
-windowDepthL = lens gameWindowDepth $ \m x -> m { gameWindowDepth = x }
-
-initialSeedL :: Lens' Game Int
-initialSeedL = lens gameInitialSeed $ \m x -> m { gameInitialSeed = x }
-
-paramsL :: Lens' Game GameParams
-paramsL = lens gameParams $ \m x -> m { gameParams = x }
-
-playerCountL :: Lens' Game Int
-playerCountL = lens gamePlayerCount $ \m x -> m { gamePlayerCount = x }
-
-focusedTargetsL :: Lens' Game [Target]
-focusedTargetsL =
-  lens gameFocusedTargets $ \m x -> m { gameFocusedTargets = x }
-
-focusedTokensL :: Lens' Game [Token]
-focusedTokensL = lens gameFocusedTokens $ \m x -> m { gameFocusedTokens = x }
-
-gameStateL :: Lens' Game GameState
-gameStateL = lens gameGameState $ \m x -> m { gameGameState = x }
-
-victoryDisplayL :: Lens' Game [Card]
-victoryDisplayL =
-  lens gameVictoryDisplay $ \m x -> m { gameVictoryDisplay = x }
-
-removedFromPlayL :: Lens' Game [Card]
-removedFromPlayL =
-  lens gameRemovedFromPlay $ \m x -> m { gameRemovedFromPlay = x }
-
-phaseL :: Lens' Game Phase
-phaseL = lens gamePhase $ \m x -> m { gamePhase = x }
-
-phaseHistoryL :: Lens' Game (HashMap InvestigatorId History)
-phaseHistoryL = lens gamePhaseHistory $ \m x -> m { gamePhaseHistory = x }
-
-turnHistoryL :: Lens' Game (HashMap InvestigatorId History)
-turnHistoryL = lens gameTurnHistory $ \m x -> m { gameTurnHistory = x }
-
-roundHistoryL :: Lens' Game (HashMap InvestigatorId History)
-roundHistoryL = lens gameRoundHistory $ \m x -> m { gameRoundHistory = x }
-
-activeInvestigatorIdL :: Lens' Game InvestigatorId
-activeInvestigatorIdL =
-  lens gameActiveInvestigatorId $ \m x -> m { gameActiveInvestigatorId = x }
-
-turnPlayerInvestigatorIdL :: Lens' Game (Maybe InvestigatorId)
-turnPlayerInvestigatorIdL = lens gameTurnPlayerInvestigatorId
-  $ \m x -> m { gameTurnPlayerInvestigatorId = x }
-
-leadInvestigatorIdL :: Lens' Game InvestigatorId
-leadInvestigatorIdL =
-  lens gameLeadInvestigatorId $ \m x -> m { gameLeadInvestigatorId = x }
-
-focusedCardsL :: Lens' Game [Card]
-focusedCardsL = lens gameFocusedCards $ \m x -> m { gameFocusedCards = x }
-
-foundCardsL :: Lens' Game (HashMap Zone [Card])
-foundCardsL = lens gameFoundCards $ \m x -> m { gameFoundCards = x }
-
-playerOrderL :: Lens' Game [InvestigatorId]
-playerOrderL = lens gamePlayerOrder $ \m x -> m { gamePlayerOrder = x }
-
-encounterDeckL :: Lens' Game (Deck EncounterCard)
-encounterDeckL = lens gameEncounterDeck $ \m x -> m { gameEncounterDeck = x }
-
-activeCardL :: Lens' Game (Maybe Card)
-activeCardL = lens gameActiveCard $ \m x -> m { gameActiveCard = x }
-
-resignedCardCodesL :: Lens' Game [CardCode]
-resignedCardCodesL =
-  lens gameResignedCardCodes $ \m x -> m { gameResignedCardCodes = x }
-
-usedAbilitiesL :: Lens' Game [(InvestigatorId, Ability, Int)]
-usedAbilitiesL = lens gameUsedAbilities $ \m x -> m { gameUsedAbilities = x }
-
-chaosBagL :: Lens' Game ChaosBag
-chaosBagL = lens gameChaosBag $ \m x -> m { gameChaosBag = x }
-
-modeL :: Lens' Game GameMode
-modeL = lens gameMode $ \m x -> m { gameMode = x }
-
-locationsL :: Lens' Game (EntityMap Location)
-locationsL = lens gameLocations $ \m x -> m { gameLocations = x }
-
-investigatorsL :: Lens' Game (EntityMap Investigator)
-investigatorsL = lens gameInvestigators $ \m x -> m { gameInvestigators = x }
-
-enemiesL :: Lens' Game (EntityMap Enemy)
-enemiesL = lens gameEnemies $ \m x -> m { gameEnemies = x }
-
-enemiesInVoidL :: Lens' Game (EntityMap Enemy)
-enemiesInVoidL = lens gameEnemiesInVoid $ \m x -> m { gameEnemiesInVoid = x }
-
-assetsL :: Lens' Game (EntityMap Asset)
-assetsL = lens gameAssets $ \m x -> m { gameAssets = x }
-
-actsL :: Lens' Game (EntityMap Act)
-actsL = lens gameActs $ \m x -> m { gameActs = x }
-
-agendasL :: Lens' Game (EntityMap Agenda)
-agendasL = lens gameAgendas $ \m x -> m { gameAgendas = x }
-
-treacheriesL :: Lens' Game (EntityMap Treachery)
-treacheriesL = lens gameTreacheries $ \m x -> m { gameTreacheries = x }
-
-eventsL :: Lens' Game (EntityMap Event)
-eventsL = lens gameEvents $ \m x -> m { gameEvents = x }
-
-effectsL :: Lens' Game (EntityMap Effect)
-effectsL = lens gameEffects $ \m x -> m { gameEffects = x }
-
-skillsL :: Lens' Game (EntityMap Skill)
-skillsL = lens gameSkills $ \m x -> m { gameSkills = x }
-
-skillTestL :: Lens' Game (Maybe SkillTest)
-skillTestL = lens gameSkillTest $ \m x -> m { gameSkillTest = x }
-
-skillTestResultsL :: Lens' Game (Maybe SkillTestResultsData)
-skillTestResultsL =
-  lens gameSkillTestResults $ \m x -> m { gameSkillTestResults = x }
-
-discardL :: Lens' Game [EncounterCard]
-discardL = lens gameDiscard $ \m x -> m { gameDiscard = x }
+getScenario :: (HasGame env, MonadReader env m) => m (Maybe Scenario)
+getScenario = modeScenario . view modeL <$> getGame
 
 withModifiers
   :: ( MonadReader env m
@@ -1752,18 +1640,6 @@ setScenario :: Scenario -> GameMode -> GameMode
 setScenario c (This a) = These a c
 setScenario c (That _) = That c
 setScenario c (These a _) = These a c
-
-modeScenario :: GameMode -> Maybe Scenario
-modeScenario = \case
-  That s -> Just s
-  These _ s -> Just s
-  This _ -> Nothing
-
-modeCampaign :: GameMode -> Maybe Campaign
-modeCampaign = \case
-  That _ -> Nothing
-  These c _ -> Just c
-  This c -> Just c
 
 instance
   (HasGame env

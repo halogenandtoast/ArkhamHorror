@@ -193,13 +193,6 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         <> spawnAcolyteMessages
 
       pure $ TheMidnightMasks $ attrs & decksL . at CultistDeck ?~ cultistDeck'
-    UseScenarioSpecificAbility iid _ 1 ->
-      case fromJustNote "must be set" (lookup CultistDeck scenarioDecks) of
-        [] -> pure s
-        (EncounterCard x : xs) -> do
-          push (InvestigatorDrewEncounterCard iid x)
-          pure $ TheMidnightMasks $ attrs & decksL . at CultistDeck ?~ xs
-        _ -> error "Wrong deck"
     ResolveToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- map unClosestEnemyId
         <$> getSetList (iid, [Trait.Cultist])

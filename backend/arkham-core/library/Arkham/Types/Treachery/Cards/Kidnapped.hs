@@ -86,5 +86,15 @@ instance TreacheryRunner env => RunMessage env Kidnapped where
               , AttachTreachery treacheryId (AgendaTarget agendaId)
               ]
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      t <$ push (UseScenarioSpecificAbility iid Nothing 1)
+      t
+        <$ push
+             (DrawRandomFromScenarioDeck
+               iid
+               PotentialSacrifices
+               (toTarget attrs)
+               1
+             )
+    DrewFromScenarioDeck _ PotentialSacrifices target cards
+      | isTarget attrs target -> t
+      <$ push (PlaceUnderneath AgendaDeckTarget cards)
     _ -> Kidnapped <$> runMessage msg attrs

@@ -30,7 +30,6 @@ import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Data.Maybe (fromJust)
 
 newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata { sacrifices :: [Card]}
   deriving stock (Show, Eq, Generic)
@@ -461,27 +460,4 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame Nothing]
           )
-      AddCardToScenarioDeck PotentialSacrifices card ->
-        case lookup PotentialSacrifices scenarioDecks of
-          Just cards ->
-            pure
-              . BloodOnTheAltar
-              . (`with` metadata)
-              $ attrs
-              & (decksL . at PotentialSacrifices ?~ card : cards)
-          _ -> throwIO $ InvalidState "incorrect deck"
-      UseScenarioSpecificAbility _ _ 1 ->
-        case lookup PotentialSacrifices scenarioDecks of
-          Just [] -> pure s
-          Just cards -> do
-            result <- shuffleM cards
-            let
-              c = fromJust . headMay $ result
-              cards' = drop 1 result
-            pure
-              . BloodOnTheAltar
-              . (`with` BloodOnTheAltarMetadata (c : sacrificed))
-              $ attrs
-              & (decksL . at PotentialSacrifices ?~ cards')
-          _ -> throwIO $ InvalidState "incorrect deck"
       _ -> BloodOnTheAltar . (`with` metadata) <$> runMessage msg attrs

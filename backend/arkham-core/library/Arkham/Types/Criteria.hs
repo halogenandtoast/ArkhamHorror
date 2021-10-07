@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Modifier
+import Arkham.Types.Scenario.Deck
 import Arkham.Types.Trait
 
 data DiscardSignifier = AnyPlayerDiscard | DiscardOf Who
@@ -67,6 +68,7 @@ data Criterion
   | ReturnableCardInDiscard DiscardSignifier [Trait]
   | PlayableCardInDiscard DiscardSignifier CardMatcher
   | ScenarioCardHasResignAbility
+  | ScenarioDeckWithCard ScenarioDeckKey
   | Self
   | SetAsideCardExists CardMatcher
   | Unowned

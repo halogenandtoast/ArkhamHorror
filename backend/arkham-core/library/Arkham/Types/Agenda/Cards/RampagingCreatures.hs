@@ -6,6 +6,7 @@ module Arkham.Types.Agenda.Cards.RampagingCreatures
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Types.Ability
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -44,13 +45,17 @@ instance AgendaRunner env => RunMessage env RampagingCreatures where
           | target <- broodOfYogSothoth
           ]
         )
-    ChosenRandomLocation target@(EnemyTarget _) lid ->
+    ChosenRandomLocation target@(EnemyTarget _) lid | onSide A attrs ->
       a <$ push (MoveToward target (LocationWithId lid))
-    AdvanceAgenda aid | aid == agendaId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      a <$ pushAll
-        [ ShuffleEncounterDiscardBackIn
-        , UseScenarioSpecificAbility leadInvestigatorId Nothing 1
-        , NextAgenda aid "02238"
-        ]
+    ChosenRandomLocation target lid | isTarget attrs target && onSide B attrs ->
+      do
+        setAsideBroodOfYogSothoth <- shuffleM =<< getSetAsideBroodOfYogSothoth
+        case setAsideBroodOfYogSothoth of
+          [] -> pure a
+          (x : _) -> a <$ push (CreateEnemyAt x lid Nothing)
+    AdvanceAgenda aid | aid == agendaId attrs && onSide B attrs -> a <$ pushAll
+      [ ShuffleEncounterDiscardBackIn
+      , ChooseRandomLocation (toTarget attrs) mempty
+      , NextAgenda aid "02238"
+      ]
     _ -> RampagingCreatures <$> runMessage msg attrs

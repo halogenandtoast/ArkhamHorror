@@ -5,6 +5,7 @@ module Arkham.Types.Treachery.Cards.TheCreaturesTracks
 
 import Arkham.Prelude
 
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
@@ -35,7 +36,12 @@ instance TreacheryRunner env => RunMessage env TheCreaturesTracks where
               [InvestigatorAssignDamage iid source DamageAny 0 2]
             , Label
               "Spawn a set aside Brood of Yog-Sothoth at a random location"
-              [UseScenarioSpecificAbility iid Nothing 1]
+              [ChooseRandomLocation (toTarget attrs) mempty]
             ]
           )
+    ChosenRandomLocation target lid | isTarget attrs target -> do
+      setAsideBroodOfYogSothoth <- shuffleM =<< getSetAsideBroodOfYogSothoth
+      case setAsideBroodOfYogSothoth of
+        [] -> pure t
+        (x : _) -> t <$ push (CreateEnemyAt x lid Nothing)
     _ -> TheCreaturesTracks <$> runMessage msg attrs

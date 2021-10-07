@@ -375,20 +375,4 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
         <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
         )
-    UseScenarioSpecificAbility _ Nothing 1 ->
-      s <$ push (ChooseRandomLocation (toTarget attrs) mempty)
-    UseScenarioSpecificAbility _ (Just (LocationTarget lid)) 1 ->
-      case scenarioSetAsideCards attrs of
-        [] -> error "should not call when empty"
-        (x : xs) -> do
-          push (CreateEnemyAt x lid Nothing)
-          pure . UndimensionedAndUnseen $ attrs & setAsideCardsL .~ xs
-    ChosenRandomLocation target randomLocationId | isTarget attrs target -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      s <$ push
-        (UseScenarioSpecificAbility
-          leadInvestigatorId
-          (Just (LocationTarget randomLocationId))
-          1
-        )
     _ -> UndimensionedAndUnseen <$> runMessage msg attrs

@@ -30,7 +30,7 @@ uncoveringTheConspiracy =
 
 instance HasAbilities UncoveringTheConspiracy where
   getAbilities (UncoveringTheConspiracy a) =
-    [ mkAbility a 1
+    [ restrictedAbility a 1 (ScenarioDeckWithCard CultistDeck)
       $ ActionAbility Nothing
       $ ActionCost 1
       <> GroupClueCost (PerPlayer 2) Anywhere

@@ -303,9 +303,6 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         )
     ScenarioResolution _ ->
       error "The scenario should specify what to do for no resolution"
-    UseScenarioSpecificAbility{} ->
-      error
-        "The scenario should specify what to do for a scenario specific ability."
     LookAtTopOfDeck _ ScenarioDeckTarget _ ->
       error "The scenario should handle looking at the top of the scenario deck"
     DrawFromScenarioDeck iid key target n -> case lookup key scenarioDecks of
@@ -314,6 +311,25 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         let (drew, rest) = splitAt n xs
         push (DrewFromScenarioDeck iid key target drew)
         pure $ a & decksL . at key ?~ rest
+      _ ->
+        error
+          $ "Invalid scenario deck key "
+          <> show key
+          <> ", could not find deck in scenario"
+    DrawRandomFromScenarioDeck iid key target n ->
+      case lookup key scenarioDecks of
+        Just [] -> pure a
+        Just xs -> do
+          (drew, rest) <- splitAt n <$> shuffleM xs
+          push (DrewFromScenarioDeck iid key target drew)
+          pure $ a & decksL . at key ?~ rest
+        _ ->
+          error
+            $ "Invalid scenario deck key "
+            <> show key
+            <> ", could not find deck in scenario"
+    AddCardToScenarioDeck key card -> case lookup key scenarioDecks of
+      Just cards -> pure $ a & (decksL . at key ?~ card : cards)
       _ ->
         error
           $ "Invalid scenario deck key "

@@ -187,7 +187,6 @@ modeCampaign = \case
   These c _ -> Just c
   This c -> Just c
 
-
 data GameChoice
   = AskChoice InvestigatorId Int
   | DebugMessage Message

@@ -48,11 +48,14 @@ theUnspeakableOath difficulty =
         ]
         difficulty
     & locationLayoutL
-    ?~ [ ".       .        garden                        .                             ."
-       , ".       .        yard                          .                             ."
-       , "kitchen messHall asylumHallsWesternPatientWing asylumHallsEasternPatientWing infirmary"
-       , ".       .        .                             basementHall                  ."
+    ?~ [ ".       .       .        .        garden                        garden                        .                             .                             .                   ."
+       , ".       .       .        .        yard                          yard                          .                             .                             .                   ."
+       , "kitchen kitchen messHall messHall asylumHallsWesternPatientWing asylumHallsWesternPatientWing asylumHallsEasternPatientWing asylumHallsEasternPatientWing infirmary           infirmary"
+       , ".       .       .        .        patientConfinement1           patientConfinement1           basementHall                  basementHall                  patientConfinement2 patientConfinement2"
+       , ".       .       .        .        .                             patientConfinement3           patientConfinement3           patientConfinement4           patientConfinement4 ."
        ]
+    & decksL
+    .~ mapFromList [(LunaticsDeck, []), (MonstersDeck, [])]
 
 instance HasRecord env TheUnspeakableOath where
   hasRecord _ _ = pure False
@@ -136,7 +139,7 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
       infirmary <- genCard Locations.infirmary
       basementHall <- genCard Locations.basementHall
 
-      setAsideCards' <- traverse
+      setAsideCards <- traverse
         genCard
         [ Assets.danielChesterfield
         , Locations.patientConfinementDrearyCell
@@ -150,8 +153,6 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
         (lunatics, deck'') =
           partition (`cardMatch` CardWithTrait Lunatic) deck'
         encounterDeck = Deck deck''
-        setAsideCards =
-          map EncounterCard (monsters <> lunatics) <> setAsideCards'
       investigatorIds <- getInvestigatorIds
       constanceInterviewed <-
         elem (Recorded $ toCardCode Assets.constanceDumaine)
@@ -219,8 +220,13 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
            , AddToken tokenToAdd
            ]
         <> spawnMessages
-      TheUnspeakableOath
-        <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
+      TheUnspeakableOath <$> runMessage
+        msg
+        (attrs
+        & (setAsideCardsL .~ setAsideCards)
+        & (decksL . at LunaticsDeck ?~ map EncounterCard lunatics)
+        & (decksL . at MonstersDeck ?~ map EncounterCard monsters)
+        )
     ResolveToken _ tokenFace iid -> case tokenFace of
       Skull -> s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)
       ElderThing -> do

@@ -6,9 +6,15 @@ module Arkham.Types.Location.Cards.BasementHall
 import Arkham.Prelude
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Types.Ability
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (RevealLocation)
+import Arkham.Types.Timing qualified as Timing
 
 newtype BasementHall = BasementHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -24,7 +30,30 @@ basementHall = location
   [Hourglass, Moon]
 
 instance HasAbilities BasementHall where
-  getAbilities (BasementHall attrs) = getAbilities attrs
+  getAbilities (BasementHall attrs) =
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ RevealLocation Timing.When Anyone
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance LocationRunner env => RunMessage env BasementHall where
-  runMessage msg (BasementHall attrs) = BasementHall <$> runMessage msg attrs
+  runMessage msg l@(BasementHall attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      patientConfinements <- shuffleM
+        =<< getSetAsideCardsMatching (CardWithTitle "Patient Confinement")
+
+      l <$ pushAll
+        (map PlaceLocation patientConfinements
+        <> [ SetLocationLabel (toLocationId patientConfinement)
+             $ "patientConfinement"
+             <> tshow idx
+           | (idx, patientConfinement) <- zip
+             [1 :: Int ..]
+             patientConfinements
+           ]
+        )
+    _ -> BasementHall <$> runMessage msg attrs

@@ -35,6 +35,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Phase
 import Arkham.Types.Query
+import Arkham.Types.Scenario.Deck
 import {-# SOURCE #-} Arkham.Types.SkillTest
 import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
@@ -906,6 +907,7 @@ type CanCheckPlayable env
     , HasCount ClueCount env AssetId
     , HasCount ClueCount env ActId
     , HasCount ClueCount env InvestigatorId
+    , HasCount ScenarioDeckCount env ScenarioDeckKey
     , HasCount RemainingSanity env InvestigatorId
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
     , HasCount ActionRemainingCount env InvestigatorId
@@ -1130,6 +1132,8 @@ passesCriteria iid source windows' = \case
     AssetSource aid -> do
       (`gameValueMatches` valueMatcher) . unHorrorCount =<< getCount aid
     _ -> error $ "missing HorrorOnThis check for " <> show source
+  Criteria.ScenarioDeckWithCard key ->
+    (> 0) . unScenarioDeckCount <$> getCount key
   Criteria.Unowned -> case source of
     AssetSource aid -> do
       mOwner <- getId @(Maybe OwnerId) aid

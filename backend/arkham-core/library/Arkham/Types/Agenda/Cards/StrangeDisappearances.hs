@@ -13,6 +13,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Deck
+import Arkham.Types.Target
 
 newtype StrangeDisappearances = StrangeDisappearances AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
@@ -29,8 +30,15 @@ instance AgendaRunner env => RunMessage env StrangeDisappearances where
       scenarioDeckCount <- unScenarioDeckCount <$> getCount PotentialSacrifices
       if scenarioDeckCount >= 3
         then a <$ pushAll
-          [ UseScenarioSpecificAbility leadInvestigatorId Nothing 1
+          [ DrawRandomFromScenarioDeck
+            leadInvestigatorId
+            PotentialSacrifices
+            (toTarget attrs)
+            1
           , NextAgenda agendaId "02197"
           ]
         else a <$ push (NextAgenda agendaId "02197")
+    DrewFromScenarioDeck _ PotentialSacrifices target cards
+      | isTarget attrs target -> a
+      <$ push (PlaceUnderneath AgendaDeckTarget cards)
     _ -> StrangeDisappearances <$> runMessage msg attrs

@@ -13,6 +13,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Deck
+import Arkham.Types.Target
 
 newtype TheOldOnesHunger = TheOldOnesHunger AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
@@ -29,8 +30,15 @@ instance AgendaRunner env => RunMessage env TheOldOnesHunger where
       scenarioDeckCount <- unScenarioDeckCount <$> getCount PotentialSacrifices
       if scenarioDeckCount >= 2
         then a <$ pushAll
-          [ UseScenarioSpecificAbility leadInvestigatorId Nothing 1
+          [ DrawRandomFromScenarioDeck
+            leadInvestigatorId
+            PotentialSacrifices
+            (toTarget attrs)
+            1
           , NextAgenda agendaId "02198"
           ]
         else a <$ push (NextAgenda agendaId "02198")
+    DrewFromScenarioDeck _ PotentialSacrifices target cards
+      | isTarget attrs target -> a
+      <$ push (PlaceUnderneath AgendaDeckTarget cards)
     _ -> TheOldOnesHunger <$> runMessage msg attrs

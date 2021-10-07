@@ -39,6 +39,7 @@
             :src="scenarioDeckImage(scenarioDeck)"
             class="card"
           />
+          <span v-if="scenarioDeckLabel" class="deck-label">{{scenarioDeckLabel(scenarioDeck)}}</span>
           <span class="deck-size">{{scenarioDeck[1].length}}</span>
         </div>
         <VictoryDisplay :game="game" @show="doShowCards" />
@@ -289,25 +290,22 @@ export default defineComponent({
     })
 
     const scenarioDeckImage = (deck: [string, Card[]]) => {
-      console.log(deck)
       switch(deck[0]) {
         case 'ExhibitDeck':
           return `${baseUrl}/img/arkham/cards/02132b.jpg`;
         default:
-          return null;
+          return `${baseUrl}/img/arkham/back.png`;
       }
     }
 
-    // const scenarioDeckCount = computed(() => {
-    //   const { scenario } = props.game;
-    //   const scenarioDeck = scenario?.contents?.decks
-    //   if (scenarioDeck) {
-    //     const { deckSize } = scenarioDeck
-    //     return deckSize;
-    //   }
-    //   return null
-    // })
-
+    const scenarioDeckLabel = (deck: [string, Card[]]) => {
+      switch(deck[0]) {
+        case 'CultistDeck':
+          return "Cultists"
+        default:
+          return ""
+      }
+    }
 
     const locationStyles = computed(() => {
       const { scenario } = props.game;
@@ -428,6 +426,7 @@ export default defineComponent({
       scenarioGuide,
       scenarioDecks,
       scenarioDeckImage,
+      scenarioDeckLabel,
       topEnemyInVoid,
       enemiesAsLocations,
       cardsUnderAgenda,
@@ -642,6 +641,17 @@ export default defineComponent({
 
 .deck {
   position: relative;
+}
+
+.deck-label {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  font-weight: bold;
+  border-radius: 3px;
+  padding: 0 2px;
+  transform: translateX(-50%) translateY(50%);
+  background: rgba(255,255,255,0.8);
 }
 
 .deck-size {

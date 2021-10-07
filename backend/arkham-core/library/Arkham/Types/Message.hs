@@ -139,6 +139,7 @@ data Message
     | AddToScenarioDeck ScenarioDeckKey Target
     | AddCardToScenarioDeck ScenarioDeckKey Card
     | DrawFromScenarioDeck InvestigatorId ScenarioDeckKey Target Int
+    | DrawRandomFromScenarioDeck InvestigatorId ScenarioDeckKey Target Int
     | DrewFromScenarioDeck InvestigatorId ScenarioDeckKey Target [Card]
     | AddToVictory Target
     | AddToken TokenFace
@@ -561,7 +562,6 @@ data Message
     | UseCardAbility InvestigatorId Source [Window] Int Payment
     | UseCardAbilityChoice InvestigatorId Source [Window] Int Payment AbilityMetadata
     | UseLimitedAbility InvestigatorId Ability
-    | UseScenarioSpecificAbility InvestigatorId (Maybe Target) Int
     | When Message
     | WhenWillEnterLocation InvestigatorId LocationId
     | WhenEnterLocation InvestigatorId LocationId

@@ -34,14 +34,11 @@
             @choose="$emit('choose', $event)"
           />
         </div>
-        <div class="deck" :key="scenarioDeck[0]" v-for="[,scenarioDeck] in scenarioDecks">
-          <img
-            :src="scenarioDeckImage(scenarioDeck)"
-            class="card"
-          />
-          <span v-if="scenarioDeckLabel" class="deck-label">{{scenarioDeckLabel(scenarioDeck)}}</span>
-          <span class="deck-size">{{scenarioDeck[1].length}}</span>
-        </div>
+        <ScenarioDeck
+          :deck="scenarioDeck"
+          :key="scenarioDeck[0]"
+          v-for="[,scenarioDeck] in scenarioDecks"
+        />
         <VictoryDisplay :game="game" @show="doShowCards" />
         <div v-if="topOfEncounterDiscard" class="discard">
           <img
@@ -163,6 +160,7 @@ import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
 import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
+import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
 import Location from '@/arkham/components/Location.vue';
 
 function handleConnections(investigatorId: string, game: Game) {
@@ -236,6 +234,7 @@ export default defineComponent({
     PlayerOrder,
     PlayerSelector,
     VictoryDisplay,
+    ScenarioDeck,
     Enemy,
   },
   props: {
@@ -288,24 +287,6 @@ export default defineComponent({
       return Object.entries(scenario.contents.decks);
 
     })
-
-    const scenarioDeckImage = (deck: [string, Card[]]) => {
-      switch(deck[0]) {
-        case 'ExhibitDeck':
-          return `${baseUrl}/img/arkham/cards/02132b.jpg`;
-        default:
-          return `${baseUrl}/img/arkham/back.png`;
-      }
-    }
-
-    const scenarioDeckLabel = (deck: [string, Card[]]) => {
-      switch(deck[0]) {
-        case 'CultistDeck':
-          return "Cultists"
-        default:
-          return ""
-      }
-    }
 
     const locationStyles = computed(() => {
       const { scenario } = props.game;
@@ -425,8 +406,6 @@ export default defineComponent({
       locationStyles,
       scenarioGuide,
       scenarioDecks,
-      scenarioDeckImage,
-      scenarioDeckLabel,
       topEnemyInVoid,
       enemiesAsLocations,
       cardsUnderAgenda,
@@ -637,35 +616,5 @@ export default defineComponent({
 .active-phase {
   font-weight: bold;
   background-color: #8e9ca4;
-}
-
-.deck {
-  position: relative;
-}
-
-.deck-label {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  font-weight: bold;
-  border-radius: 3px;
-  padding: 0 2px;
-  transform: translateX(-50%) translateY(50%);
-  background: rgba(255,255,255,0.8);
-}
-
-.deck-size {
-  position: absolute;
-  font-weight: bold;
-  font-size: 1.2em;
-  width: 1.3em;
-  height: 1.3em;
-  border-radius: 1.3em;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.7);
-  background-color: rgba(0, 0, 0, 0.8);
-  left: 50%;
-  bottom: 0%;
-  transform: translateX(-50%) translateY(-50%);
 }
 </style>

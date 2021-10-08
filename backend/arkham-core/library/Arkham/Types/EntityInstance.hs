@@ -81,6 +81,7 @@ type EntityInstanceRunner env
 
 type SomeEntityHasModifiersFor env
   = ( HasCount ResourceCount env TreacheryId
+    , HasCount HorrorCount env InvestigatorId
     , HasId (Maybe OwnerId) env AssetId
     , HasCount ClueCount env LocationId
     , Query AssetMatcher env

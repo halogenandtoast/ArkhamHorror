@@ -6,9 +6,13 @@ module Arkham.Types.Location.Cards.Infirmary
 import Arkham.Prelude
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.Cost
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Message
 
 newtype Infirmary = Infirmary LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -19,7 +23,29 @@ infirmary =
   location Infirmary Cards.infirmary 3 (PerPlayer 1) Heart [Hourglass]
 
 instance HasAbilities Infirmary where
-  getAbilities (Infirmary attrs) = getAbilities attrs
+  getAbilities (Infirmary attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1)
+      & abilityLimitL
+      .~ PlayerLimit PerRound 1
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env Infirmary where
-  runMessage msg (Infirmary attrs) = Infirmary <$> runMessage msg attrs
+  runMessage msg l@(Infirmary attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (chooseOne
+        iid
+        [ Label
+          "Heal 1 damage and take 1 direct horror"
+          [ HealDamage (toTarget attrs) 1
+          , InvestigatorDirectDamage iid (toSource attrs) 0 1
+          ]
+        , Label
+          "Heal 1 horror and take 1 direct damage"
+          [ HealHorror (toTarget attrs) 1
+          , InvestigatorDirectDamage iid (toSource attrs) 1 0
+          ]
+        ]
+      )
+    _ -> Infirmary <$> runMessage msg attrs

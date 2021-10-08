@@ -18,6 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
+import Arkham.Types.SkillTest
 import Arkham.Types.Trait (Trait)
 import Data.HashSet qualified as HashSet
 import Data.UUID (nil)
@@ -44,9 +45,11 @@ instance HasAbilities Location where
 
 instance
   ( HasPhase env
+  , HasSkillTest env
   , HasCount CardCount env InvestigatorId
   , HasCount ClueCount env LocationId
   , HasCount ResourceCount env InvestigatorId
+  , HasCount HorrorCount env InvestigatorId
   , Query AssetMatcher env
   , Query EnemyMatcher env
   )

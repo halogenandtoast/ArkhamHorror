@@ -16,6 +16,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.ScenarioLogKey
+import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype Kitchen = Kitchen LocationAttrs
@@ -41,6 +42,15 @@ instance HasModifiersFor env Kitchen where
 
 instance LocationRunner env => RunMessage env Kitchen where
   runMessage msg l@(Kitchen attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      l <$ push (Remember SetAFireInTheKitchen)
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (BeginSkillTest
+        iid
+        source
+        (LocationTarget $ toId attrs)
+        Nothing
+        SkillWillpower
+        2
+      )
+    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> l <$ push (Remember SetAFireInTheKitchen)
     _ -> Kitchen <$> runMessage msg attrs

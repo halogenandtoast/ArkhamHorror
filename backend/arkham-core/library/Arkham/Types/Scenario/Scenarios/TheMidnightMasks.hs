@@ -104,7 +104,7 @@ introPart2 = FlavorText
 -- "
 
 instance ScenarioRunner env => RunMessage env TheMidnightMasks where
-  runMessage msg s@(TheMidnightMasks attrs@ScenarioAttrs {..}) = case msg of
+  runMessage msg s@(TheMidnightMasks attrs) = case msg of
     Setup -> do
       count' <- getPlayerCount
       investigatorIds <- getInvestigatorIds

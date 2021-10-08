@@ -16,6 +16,10 @@ pattern AnyHorrorOnThis :: Criterion
 pattern AnyHorrorOnThis <- HorrorOnThis (GreaterThan (Static 0)) where
   AnyHorrorOnThis = HorrorOnThis (GreaterThan (Static 0))
 
+pattern NoCluesOnThis :: Criterion
+pattern NoCluesOnThis <- CluesOnThis (EqualTo (Static 0)) where
+  NoCluesOnThis = CluesOnThis (EqualTo (Static 0))
+
 pattern CanGainResources :: Criterion
 pattern CanGainResources <- Negate (SelfHasModifier CannotGainResources) where
   CanGainResources = Negate (SelfHasModifier CannotGainResources)

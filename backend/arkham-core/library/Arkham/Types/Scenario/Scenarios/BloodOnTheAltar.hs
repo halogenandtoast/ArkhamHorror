@@ -18,7 +18,6 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet qualified as EncounterSet
-import Arkham.Types.Exception
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId

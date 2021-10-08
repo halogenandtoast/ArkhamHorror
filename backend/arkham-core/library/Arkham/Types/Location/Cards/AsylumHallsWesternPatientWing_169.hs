@@ -9,9 +9,12 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Modifier
+import Arkham.Types.Target
 
 newtype AsylumHallsWesternPatientWing_169 = AsylumHallsWesternPatientWing_169 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 asylumHallsWesternPatientWing_169
@@ -26,6 +29,12 @@ asylumHallsWesternPatientWing_169 = location
 
 instance HasAbilities AsylumHallsWesternPatientWing_169 where
   getAbilities (AsylumHallsWesternPatientWing_169 attrs) = getAbilities attrs
+
+instance HasModifiersFor env AsylumHallsWesternPatientWing_169 where
+  getModifiersFor _ (EnemyTarget eid) (AsylumHallsWesternPatientWing_169 attrs)
+    | eid `elem` locationEnemies attrs = pure
+    $ toModifiers attrs [ HorrorDealt 1 | locationRevealed attrs ]
+  getModifiersFor _ _ _ = pure []
 
 instance LocationRunner env => RunMessage env AsylumHallsWesternPatientWing_169 where
   runMessage msg (AsylumHallsWesternPatientWing_169 attrs) =

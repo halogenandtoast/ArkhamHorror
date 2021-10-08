@@ -573,6 +573,39 @@ data Message
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
+class IdToTarget a where
+  idToTarget :: a -> Target
+
+instance IdToTarget ActId where
+  idToTarget = ActTarget
+
+instance IdToTarget AgendaId where
+  idToTarget = AgendaTarget
+
+instance IdToTarget LocationId where
+  idToTarget = LocationTarget
+
+instance IdToTarget EnemyId where
+  idToTarget = EnemyTarget
+
+instance IdToTarget TreacheryId where
+  idToTarget = TreacheryTarget
+
+instance IdToTarget InvestigatorId where
+  idToTarget = InvestigatorTarget
+
+instance IdToTarget AssetId where
+  idToTarget = AssetTarget
+
+instance IdToTarget EventId where
+  idToTarget = EventTarget
+
+instance IdToTarget SkillId where
+  idToTarget = SkillTarget
+
+targetLabel :: IdToTarget entityId => entityId -> [Message] -> Message
+targetLabel entityId = TargetLabel (idToTarget entityId)
+
 chooseOrRunOne :: InvestigatorId -> [Message] -> Message
 chooseOrRunOne _ [x] = x
 chooseOrRunOne iid msgs = chooseOne iid msgs

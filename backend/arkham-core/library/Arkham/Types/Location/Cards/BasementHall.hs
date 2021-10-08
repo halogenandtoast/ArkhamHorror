@@ -14,10 +14,12 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (RevealLocation)
+import Arkham.Types.Modifier
+import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing
 
 newtype BasementHall = BasementHall LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 basementHall :: LocationCard BasementHall
@@ -28,6 +30,12 @@ basementHall = location
   (PerPlayer 1)
   Squiggle
   [Hourglass, Moon]
+
+instance HasModifiersFor env BasementHall where
+  getModifiersFor _ (LocationTarget lid) (BasementHall attrs)
+    | lid == toId attrs = pure
+    $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
+  getModifiersFor _ _ _ = pure []
 
 instance HasAbilities BasementHall where
   getAbilities (BasementHall attrs) =

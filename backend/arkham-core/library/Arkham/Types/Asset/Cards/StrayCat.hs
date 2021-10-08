@@ -11,7 +11,8 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Id
-import Arkham.Types.Trait
+import Arkham.Types.Matcher hiding (EnemyEvaded)
+import Arkham.Types.Target
 
 newtype StrayCat = StrayCat AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
@@ -22,21 +23,27 @@ strayCat = ally StrayCat Cards.strayCat (1, 0)
 
 instance HasAbilities StrayCat where
   getAbilities (StrayCat a) =
-    [restrictedAbility a 1 OwnsThis $ FastAbility $ DiscardCost $ toTarget a]
+    [ restrictedAbility
+          a
+          1
+          (OwnsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
+        $ FastAbility
+        $ DiscardCost
+        $ toTarget a
+    ]
 
 instance AssetRunner env => RunMessage env StrayCat where
   runMessage msg a@(StrayCat attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
-      locationEnemyIds <- getSetList locationId
-      nonEliteEnemyIds <- filterM
-        ((notMember Elite <$>) . getSet)
-        locationEnemyIds
+      enemies <- selectList
+        (EnemyAt (LocationWithId locationId) <> NonEliteEnemy)
 
-      a
-        <$ push
-             (chooseOne
-               iid
-               [ EnemyEvaded iid enemyId | enemyId <- nonEliteEnemyIds ]
-             )
+      a <$ push
+        (chooseOne
+          iid
+          [ TargetLabel (EnemyTarget enemyId) [EnemyEvaded iid enemyId]
+          | enemyId <- enemies
+          ]
+        )
     _ -> StrayCat <$> runMessage msg attrs

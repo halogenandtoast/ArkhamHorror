@@ -6,9 +6,17 @@ module Arkham.Types.Location.Cards.AsylumHallsWesternPatientWing_168
 import Arkham.Prelude
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
+import Arkham.Types.Matcher
+import Arkham.Types.Message hiding (EnemyDefeated)
+import Arkham.Types.Timing qualified as Timing
+import Arkham.Types.Trait
 
 newtype AsylumHallsWesternPatientWing_168 = AsylumHallsWesternPatientWing_168 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -25,8 +33,16 @@ asylumHallsWesternPatientWing_168 = location
   [Hourglass, Triangle, Diamond]
 
 instance HasAbilities AsylumHallsWesternPatientWing_168 where
-  getAbilities (AsylumHallsWesternPatientWing_168 attrs) = getAbilities attrs
+  getAbilities (AsylumHallsWesternPatientWing_168 attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility attrs 1 Here
+        $ ReactionAbility
+            (EnemyDefeated Timing.After You $ EnemyWithTrait Lunatic)
+            Free
+    ]
 
 instance LocationRunner env => RunMessage env AsylumHallsWesternPatientWing_168 where
-  runMessage msg (AsylumHallsWesternPatientWing_168 attrs) =
-    AsylumHallsWesternPatientWing_168 <$> runMessage msg attrs
+  runMessage msg l@(AsylumHallsWesternPatientWing_168 attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      l <$ push (DrawCards iid 1 False)
+    _ -> AsylumHallsWesternPatientWing_168 <$> runMessage msg attrs

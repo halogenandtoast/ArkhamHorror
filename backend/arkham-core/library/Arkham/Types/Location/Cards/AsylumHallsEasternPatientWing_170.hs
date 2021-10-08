@@ -39,10 +39,7 @@ instance HasAbilities AsylumHallsEasternPatientWing_170 where
         attrs
         1
         (Here <> EnemyCriteria
-          (EnemyExists
-          $ EnemyAt (LocationWithId $ toId attrs)
-          <> EnemyWithTrait Lunatic
-          )
+          (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Lunatic)
         )
       $ ActionAbility Nothing
       $ Costs [ActionCost 1, HorrorCost (toSource attrs) YouTarget 1]
@@ -52,13 +49,9 @@ instance HasAbilities AsylumHallsEasternPatientWing_170 where
 instance LocationRunner env => RunMessage env AsylumHallsEasternPatientWing_170 where
   runMessage msg l@(AsylumHallsEasternPatientWing_170 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      enemies <- selectList
-        (EnemyAt (LocationWithId $ toId attrs) <> EnemyWithTrait Lunatic)
-      l <$ push
-        (chooseOne
-          iid
-          [ TargetLabel (EnemyTarget eid) [EnemyEvaded iid eid]
-          | eid <- enemies
-          ]
-        )
+      enemies <- selectList (EnemyAt YourLocation <> EnemyWithTrait Lunatic)
+      push $ chooseOne
+        iid
+        [ targetLabel eid [EnemyEvaded iid eid] | eid <- enemies ]
+      pure l
     _ -> AsylumHallsEasternPatientWing_170 <$> runMessage msg attrs

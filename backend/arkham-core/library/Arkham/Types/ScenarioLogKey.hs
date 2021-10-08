@@ -22,6 +22,12 @@ data ScenarioLogKey
   | InterviewedAshleigh
   -- ^ The Last King
   | SetAFireInTheKitchen
+  | IncitedAFightAmongstThePatients
+  | DistractedTheGuards
+  | ReleasedADangerousPatient
+  | KnowTheGuardsPatrols
+  | RecalledTheWayOut
+  | YouTookTheKeysByForce
   -- ^ The Unspeakable Oath
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

@@ -363,6 +363,17 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
       pure $ a & cardsUnderneathActDeckL <>~ cards
     PlaceNextTo ActDeckTarget cards -> do
       pure $ a & cardsNextToActDeckL <>~ cards
+    ShuffleIntoEncounterDeck encounterCards -> do
+      let
+        cards = map EncounterCard encounterCards
+        filterCards = filter (`notElem` cards)
+      pure
+        $ a
+        & (cardsUnderneathAgendaDeckL %~ filterCards)
+        & (cardsUnderneathActDeckL %~ filterCards)
+        & (cardsNextToActDeckL %~ filterCards)
+        & (cardsUnderScenarioReferenceL %~ filterCards)
+        & (setAsideCardsL %~ filterCards)
     RequestSetAsideCard target cardCode -> do
       let
         (before, rest) =

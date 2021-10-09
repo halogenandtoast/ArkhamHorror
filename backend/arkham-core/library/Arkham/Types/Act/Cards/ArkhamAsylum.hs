@@ -19,10 +19,12 @@ import Arkham.Types.SkillType
 import Arkham.Types.Target
 
 newtype Metadata = Metadata { chosenSkills :: HashSet SkillType }
-  deriving newtype (Show, Eq, ToJSON, FromJSON)
+  deriving stock Generic
+  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Eq)
 
 newtype ArkhamAsylum = ArkhamAsylum (ActAttrs `With` Metadata)
-  deriving anyclass (IsAct, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAct, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamAsylum :: ActCard ArkhamAsylum
@@ -31,6 +33,9 @@ arkhamAsylum = act
   (ArkhamAsylum . (`with` Metadata mempty))
   Cards.arkhamAsylum
   (Just $ GroupClueCost (PerPlayer 3) Anywhere)
+
+instance HasAbilities ArkhamAsylum where
+  getAbilities (ArkhamAsylum (attrs `With` _)) = getAbilities attrs
 
 instance ActRunner env => RunMessage env ArkhamAsylum where
   runMessage msg a@(ArkhamAsylum (attrs `With` metadata)) = case msg of

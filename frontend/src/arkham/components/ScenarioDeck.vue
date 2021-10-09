@@ -15,7 +15,7 @@ import { Card } from '@/arkham/types/Card';
 
 export default defineComponent({
   props: {
-    deck: { type: Array as () => [string, Card[]] }
+    deck: { type: Object as () => [string, Card[]], required: true }
   },
   setup(props) {
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';

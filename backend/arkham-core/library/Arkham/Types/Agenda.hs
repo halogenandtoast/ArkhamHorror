@@ -18,14 +18,14 @@ import Arkham.Types.Trait (Trait)
 
 $(buildEntity "Agenda")
 
-lookupAgenda :: AgendaId -> Agenda
+lookupAgenda :: AgendaId -> (Int -> Agenda)
 lookupAgenda agendaId =
   fromJustNote ("Unknown agenda: " <> show agendaId)
     $ lookup agendaId allAgendas
 
-allAgendas :: HashMap AgendaId Agenda
+allAgendas :: HashMap AgendaId (Int -> Agenda)
 allAgendas = mapFromList $ map
-  (\cb -> (AgendaId (cbCardCode cb), cbCardBuilder cb (AgendaId (cbCardCode cb))))
+  (\cb -> (AgendaId (cbCardCode cb), \deckId -> cbCardBuilder cb (deckId, AgendaId (cbCardCode cb))))
   $(buildEntityLookupList "Agenda")
 
 instance HasList UnderneathCard env Agenda where

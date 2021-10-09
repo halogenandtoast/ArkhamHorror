@@ -26,7 +26,7 @@ import Arkham.Types.Window qualified as Window
 
 class IsAgenda a
 
-type AgendaCard a = CardBuilder AgendaId a
+type AgendaCard a = CardBuilder (Int, AgendaId) a
 
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int
@@ -36,6 +36,7 @@ data AgendaAttrs = AgendaAttrs
   , agendaFlipped :: Bool
   , agendaTreacheries :: HashSet TreacheryId
   , agendaCardsUnderneath :: [Card]
+  , agendaDeckId :: Int
   }
   deriving stock (Show, Eq, Generic)
 
@@ -93,7 +94,7 @@ agenda
   -> (AgendaAttrs -> a)
   -> CardDef
   -> GameValue Int
-  -> CardBuilder AgendaId a
+  -> CardBuilder (Int, AgendaId) a
 agenda agendaSeq f cardDef threshold =
   agendaWith agendaSeq f cardDef threshold id
 
@@ -103,10 +104,10 @@ agendaWith
   -> CardDef
   -> GameValue Int
   -> (AgendaAttrs -> AgendaAttrs)
-  -> CardBuilder AgendaId a
+  -> CardBuilder (Int, AgendaId) a
 agendaWith (n, side) f cardDef threshold g = CardBuilder
   { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \aid -> f . g $ AgendaAttrs
+  , cbCardBuilder = \(deckId, aid) -> f . g $ AgendaAttrs
     { agendaDoom = 0
     , agendaDoomThreshold = threshold
     , agendaId = aid
@@ -114,6 +115,7 @@ agendaWith (n, side) f cardDef threshold g = CardBuilder
     , agendaFlipped = False
     , agendaTreacheries = mempty
     , agendaCardsUnderneath = mempty
+    , agendaDeckId = deckId
     }
   }
 

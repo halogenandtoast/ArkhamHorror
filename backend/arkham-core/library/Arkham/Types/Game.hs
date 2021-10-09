@@ -3043,12 +3043,12 @@ runGameMessage msg g = case msg of
   NextAgenda aid1 aid2 ->
     pure $ g & agendasL %~ deleteMap aid1 & agendasL %~ insertMap
       aid2
-      (lookupAgenda aid2)
+      (lookupAgenda aid2 1)
   NextAct aid1 aid2 -> pure $ g & actsL %~ deleteMap aid1 & actsL %~ insertMap
     aid2
-    (lookupAct aid2)
-  AddAct aid -> pure $ g & actsL . at aid ?~ lookupAct aid
-  AddAgenda aid -> pure $ g & agendasL . at aid ?~ lookupAgenda aid
+    (lookupAct aid2 1)
+  AddAct aid -> pure $ g & actsL . at aid ?~ lookupAct aid 1
+  AddAgenda aid -> pure $ g & agendasL . at aid ?~ lookupAgenda aid 1
   CommitCard iid cardId -> do
     investigator <- getInvestigator iid
     let

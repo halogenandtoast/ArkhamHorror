@@ -26,7 +26,7 @@ import Arkham.Types.Window
 
 class IsAct a
 
-type ActCard a = CardBuilder ActId a
+type ActCard a = CardBuilder (Int, ActId) a
 
 data ActAttrs = ActAttrs
   { actId :: ActId
@@ -34,6 +34,7 @@ data ActAttrs = ActAttrs
   , actAdvanceCost :: Maybe Cost
   , actClues :: Maybe Int
   , actTreacheries :: HashSet TreacheryId
+  , actDeckId :: Int
   }
   deriving stock (Show, Eq, Generic)
 
@@ -52,15 +53,16 @@ actWith
   -> CardDef
   -> Maybe Cost
   -> (ActAttrs -> ActAttrs)
-  -> CardBuilder ActId a
+  -> CardBuilder (Int, ActId) a
 actWith (n, side) f cardDef mCost g = CardBuilder
   { cbCardCode = cdCardCode cardDef
-  , cbCardBuilder = \aid -> f . g $ ActAttrs
+  , cbCardBuilder = \(deckId, aid) -> f . g $ ActAttrs
     { actId = aid
     , actSequence = AS.Act n side
     , actClues = Nothing
     , actAdvanceCost = mCost
     , actTreacheries = mempty
+    , actDeckId = deckId
     }
   }
 
@@ -69,7 +71,7 @@ act
   -> (ActAttrs -> a)
   -> CardDef
   -> Maybe Cost
-  -> CardBuilder ActId a
+  -> CardBuilder (Int, ActId) a
 act actSeq f cardDef mCost = actWith actSeq f cardDef mCost id
 
 instance HasCardDef ActAttrs where

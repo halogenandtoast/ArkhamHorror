@@ -264,6 +264,9 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         [] -> pure a
         [x] -> a <$ push (PlaceDoom (AgendaTarget x) 1)
         _ -> error "multiple agendas should be handled by the scenario"
+    NextAct oldId _ -> do
+      pure $ a & actStackL %~ map
+        (second $ filter ((/= unActId oldId) . toCardCode))
     Discard (ActTarget _) -> pure $ a & actStackL .~ []
     -- See: Vengeance Awaits / The Devourer Below - right now the assumption
     -- is that the act deck has been replaced.

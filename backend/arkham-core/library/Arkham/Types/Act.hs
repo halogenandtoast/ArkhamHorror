@@ -53,11 +53,11 @@ instance SourceEntity Act where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-lookupAct :: ActId -> Act
+lookupAct :: ActId -> (Int -> Act)
 lookupAct actId =
   fromJustNote ("Unknown act: " <> show actId) $ lookup actId allActs
 
-allActs :: HashMap ActId Act
+allActs :: HashMap ActId (Int -> Act)
 allActs = mapFromList $ map
-  (\cb -> (ActId (cbCardCode cb), cbCardBuilder cb (ActId (cbCardCode cb))))
+  (\cb -> (ActId (cbCardCode cb), \deckId -> cbCardBuilder cb (deckId, ActId (cbCardCode cb))))
   $(buildEntityLookupList "Act")

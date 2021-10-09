@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Decks
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Name
@@ -16,6 +17,7 @@ type ActRunner env
   = ( HasQueue env
     , Query AssetMatcher env
     , Query EnemyMatcher env
+    , Query InvestigatorMatcher env
     , Query LocationMatcher env
     , Query ExtendedCardMatcher env
     , HasCount ClueCount env AssetId
@@ -32,6 +34,7 @@ type ActRunner env
     , HasId LeadInvestigatorId env ()
     , HasList Token env ()
     , HasList ResignedCardCode env ()
+    , HasList UnderneathCard env ActDeck
     , HasRecord env ()
     , HasSet CompletedScenarioId env ()
     , HasSet EnemyId env LocationId

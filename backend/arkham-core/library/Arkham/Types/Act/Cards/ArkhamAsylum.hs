@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
@@ -39,6 +40,8 @@ instance ActRunner env => RunMessage env ArkhamAsylum where
           `difference` chosenSkills metadata
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
+      youTookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
+      let nextActId = if youTookTheOnyxClasp then "03164" else "03165"
       push
         (chooseOne leadInvestigatorId
         $ map
@@ -46,8 +49,8 @@ instance ActRunner env => RunMessage env ArkhamAsylum where
               ("Any investigator tests " <> tshow sk)
               [ chooseOne
                   leadInvestigatorId
-                  [ TargetLabel
-                      (InvestigatorTarget iid)
+                  [ targetLabel
+                      iid
                       [ BeginSkillTest
                           iid
                           (toSource attrs)
@@ -63,7 +66,7 @@ instance ActRunner env => RunMessage env ArkhamAsylum where
             (setToList skills)
         <> [ Label
                "You knock her over and grab the keys"
-               [Remember YouTookTheKeysByForce, NextAct aid ""]
+               [Remember YouTookTheKeysByForce, NextAct aid nextActId]
            ]
         )
       pure a
@@ -73,5 +76,8 @@ instance ActRunner env => RunMessage env ArkhamAsylum where
         pure $ ArkhamAsylum $ attrs `with` Metadata
           (insertSet st $ chosenSkills metadata)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source -> a <$ push (NextAct (toId attrs) "")
+      | isSource attrs source -> do
+        youTookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
+        let nextActId = if youTookTheOnyxClasp then "03164" else "03165"
+        a <$ push (NextAct (toId attrs) nextActId)
     _ -> ArkhamAsylum . (`with` metadata) <$> runMessage msg attrs

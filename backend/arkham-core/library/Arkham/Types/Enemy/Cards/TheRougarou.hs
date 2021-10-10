@@ -60,7 +60,12 @@ instance HasAbilities TheRougarou where
       then do
         let
           engageAction =
-            mkAbility attrs 102
+            restrictedAbility
+                attrs
+                102
+                (OnSameLocation <> Negate
+                  (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
+                )
               $ ActionAbility (Just Action.Engage)
               $ GroupClueCost (ByPlayerCount 1 1 2 2) Anywhere
               <> ActionCost 1

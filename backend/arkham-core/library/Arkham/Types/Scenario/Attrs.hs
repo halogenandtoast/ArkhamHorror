@@ -290,12 +290,23 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         & (completedAgendaStackL . at n ?~ (oldAgenda : completedAgendaStack))
     ResetAgendaDeckToStage n -> do
       case lookup n scenarioCompletedAgendaStack of
-        Just (x : xs) -> do
-          when (cdStage x /= Just n) (push $ ResetAgendaDeckToStage n)
+        Just xs -> do
+          let
+            go [] as = (as, [])
+            go (y : ys) as =
+              if cdStage y /= Just n then go ys (y : as) else (y : as, ys)
+            (prepend, remaining) = go xs []
+          case (prepend, lookup n scenarioAgendaStack) of
+            (to : _, Just (from : _)) -> do
+              let
+                fromAgendaId = AgendaId (toCardCode from)
+                toAgendaId = AgendaId (toCardCode to)
+              push (ReplaceAgenda fromAgendaId toAgendaId)
+            _ -> error "Could not reset agenda deck to stage"
           pure
             $ a
-            & (agendaStackL . ix n %~ (x :))
-            & (completedAgendaStackL . at n ?~ xs)
+            & (agendaStackL . ix n %~ (prepend <>))
+            & (completedAgendaStackL . at n ?~ remaining)
         _ -> error "Invalid agenda deck to reset"
     AdvanceActDeck n _ -> do
       actStack' <- case lookup n scenarioActStack of

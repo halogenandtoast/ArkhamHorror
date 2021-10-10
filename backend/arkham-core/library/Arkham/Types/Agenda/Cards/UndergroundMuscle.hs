@@ -59,7 +59,9 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
               <> [ EnemyMove eid laBellaLunaId cloverClubLoungeId
                  | eid <- unEngagedEnemiesAtLaBellaLuna
                  ]
-              <> [RemoveLocation laBellaLunaId, NextAgenda agendaId "02065"]
+              <> [ RemoveLocation laBellaLunaId
+                 , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+                 ]
               )
           ]
         )

@@ -37,7 +37,9 @@ instance AgendaRunner env => RunMessage env ReturnToPredatorOrPrey where
       AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
         narogath <- EncounterCard <$> genEncounterCard Enemies.narogath
         a <$ pushAll
-          [CreateEnemyEngagedWithPrey narogath, NextAgenda aid "01122"]
+          [ CreateEnemyEngagedWithPrey narogath
+          , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+          ]
       UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
         push (Resign iid)
         ReturnToPredatorOrPrey <$> runMessage msg attrs

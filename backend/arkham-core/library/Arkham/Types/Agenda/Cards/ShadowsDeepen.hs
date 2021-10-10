@@ -55,7 +55,9 @@ instance AgendaRunner env => RunMessage env ShadowsDeepen where
       mHuntingHorrorId <- getHuntingHorror
       a <$ case mHuntingHorrorId of
         Just eid -> pushAll
-          [PlaceDoom (EnemyTarget eid) 1, NextAgenda (toId attrs) "02121"]
+          [ PlaceDoom (EnemyTarget eid) 1
+          , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+          ]
         Nothing -> push $ FindEncounterCard
           leadInvestigatorId
           (toTarget attrs)
@@ -64,10 +66,14 @@ instance AgendaRunner env => RunMessage env ShadowsDeepen where
       lid <- fromJustNote "Museum Halls missing"
         <$> selectOne (LocationWithTitle "Museum Halls")
       a <$ pushAll
-        [EnemySpawnFromVoid Nothing lid eid, NextAgenda (toId attrs) "02121"]
+        [ EnemySpawnFromVoid Nothing lid eid
+        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+        ]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Museum Halls missing"
         <$> selectOne (LocationWithTitle "Museum Halls")
       a <$ pushAll
-        [SpawnEnemyAt (EncounterCard ec) lid, NextAgenda (toId attrs) "02121"]
+        [ SpawnEnemyAt (EncounterCard ec) lid
+        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+        ]
     _ -> ShadowsDeepen <$> runMessage msg attrs

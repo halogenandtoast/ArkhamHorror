@@ -56,6 +56,6 @@ instance AgendaRunner env => RunMessage env RampagingCreatures where
     AdvanceAgenda aid | aid == agendaId attrs && onSide B attrs -> a <$ pushAll
       [ ShuffleEncounterDiscardBackIn
       , ChooseRandomLocation (toTarget attrs) mempty
-      , NextAgenda aid "02238"
+      , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
       ]
     _ -> RampagingCreatures <$> runMessage msg attrs

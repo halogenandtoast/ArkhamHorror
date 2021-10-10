@@ -37,6 +37,6 @@ instance AgendaRunner env => RunMessage env RollingBackwards where
         (RemoveLocation lid
         : RemoveLocation rlid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
-        <> [NextAgenda agendaId "02163"]
+        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
         )
     _ -> RollingBackwards <$> runMessage msg attrs

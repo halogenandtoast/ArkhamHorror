@@ -24,5 +24,8 @@ instance AgendaRunner env => RunMessage env CallingForthTheOldOnes where
   runMessage msg a@(CallingForthTheOldOnes attrs@AgendaAttrs {..}) =
     case msg of
       AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
-        a <$ pushAll [ShuffleEncounterDiscardBackIn, NextAgenda aid "02276"]
+        a <$ pushAll
+          [ ShuffleEncounterDiscardBackIn
+          , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+          ]
       _ -> CallingForthTheOldOnes <$> runMessage msg attrs

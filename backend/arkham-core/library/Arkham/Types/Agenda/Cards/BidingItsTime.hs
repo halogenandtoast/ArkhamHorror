@@ -58,7 +58,7 @@ instance AgendaRunner env => RunMessage env BidingItsTime where
         : [ RequestSetAsideCard (toSource attrs) (CardCode "02255")
           | broodOfYogSothothCount > 0
           ]
-        <> [NextAgenda aid "02239"]
+        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
         )
     RequestedSetAsideCard source card | isSource attrs source -> do
       when

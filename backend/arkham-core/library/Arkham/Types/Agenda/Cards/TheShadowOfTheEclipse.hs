@@ -31,7 +31,7 @@ instance AgendaRunner env => RunMessage env TheShadowOfTheEclipse where
         (AssetWithTitle "Masked Carnevale-Goer")
       leadInvestigatorId <- getLeadInvestigatorId
       case maskedCarnevaleGoers of
-        [] -> a <$ push (NextAgenda aid "82004")
+        [] -> a <$ push (AdvanceAgendaDeck agendaDeckId (toSource attrs))
         xs -> a <$ pushAll
           [ chooseOne
             leadInvestigatorId

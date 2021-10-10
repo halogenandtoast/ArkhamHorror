@@ -59,7 +59,7 @@ instance AgendaRunner env => RunMessage env PastPresentAndFuture where
            | sacrificedToYogSothoth > 0
            , iid <- investigatorIds
            ]
-        <> [NextAgenda aid "02314"]
+        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
         )
     RequestedEncounterCard source (Just card) | isSource attrs source -> do
       leadInvestigator <- getLeadInvestigatorId

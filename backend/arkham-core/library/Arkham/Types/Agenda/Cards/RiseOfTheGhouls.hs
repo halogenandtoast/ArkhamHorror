@@ -35,11 +35,11 @@ instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
         )
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->
       case mcard of
-        Nothing -> a <$ push (NextAgenda aid "01107")
+        Nothing -> a <$ push (AdvanceAgendaDeck agendaDeckId (toSource attrs))
         Just card -> do
           leadInvestigatorId <- getLeadInvestigatorId
           a <$ pushAll
             [ InvestigatorDrewEncounterCard leadInvestigatorId card
-            , NextAgenda aid "01107"
+            , AdvanceAgendaDeck agendaDeckId (toSource attrs)
             ]
     _ -> RiseOfTheGhouls <$> runMessage msg attrs

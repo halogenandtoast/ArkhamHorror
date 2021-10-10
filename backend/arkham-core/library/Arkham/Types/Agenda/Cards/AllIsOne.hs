@@ -51,7 +51,7 @@ instance AgendaRunner env => RunMessage env AllIsOne where
            | failedToSaveStudents
            , iid <- investigatorIds
            ]
-        <> [NextAgenda aid "02313"]
+        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
         )
     RequestedEncounterCard source (Just card) | isSource attrs source -> do
       leadInvestigator <- getLeadInvestigatorId

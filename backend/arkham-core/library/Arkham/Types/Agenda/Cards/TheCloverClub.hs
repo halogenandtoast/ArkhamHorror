@@ -57,7 +57,9 @@ instance AgendaRunner env => RunMessage env TheCloverClub where
 
       let
         continueMessages =
-          [ShuffleEncounterDiscardBackIn, NextAgenda aid "02064"]
+          [ ShuffleEncounterDiscardBackIn
+            , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+            ]
             <> [ AdvanceCurrentAgenda | completedExtracurricularActivity ]
 
       a <$ pushAll

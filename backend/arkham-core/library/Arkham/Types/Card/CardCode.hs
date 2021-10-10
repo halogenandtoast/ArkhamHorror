@@ -1,7 +1,6 @@
 module Arkham.Types.Card.CardCode where
 
 import Arkham.Prelude
-import Data.Aeson
 import Data.Aeson.Types
 import Data.Text qualified as T
 

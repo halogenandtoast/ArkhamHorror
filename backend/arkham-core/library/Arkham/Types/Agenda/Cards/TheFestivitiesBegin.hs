@@ -30,6 +30,6 @@ instance AgendaRunner env => RunMessage env TheFestivitiesBegin where
       balefulReveler <- genEncounterCard Enemies.balefulReveler
       a <$ pushAll
         [ InvestigatorDrewEncounterCard leadInvestigatorId balefulReveler
-        , NextAgenda aid "82003"
+        , AdvanceAgendaDeck agendaDeckId (toSource attrs)
         ]
     _ -> TheFestivitiesBegin <$> runMessage msg attrs

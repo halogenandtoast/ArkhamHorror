@@ -33,7 +33,7 @@ instance HasAbilities Encore where
 instance AgendaRunner env => RunMessage env Encore where
   runMessage msg a@(Encore attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ pushAll [RemoveAllDoom, NextAgenda (toId attrs) "03044"]
+      a <$ pushAll [RemoveAllDoom, ResetAgendaDeckToStage 1]
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       iids <- getInvestigatorIds
       a <$ pushAll

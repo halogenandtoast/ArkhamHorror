@@ -34,6 +34,6 @@ instance AgendaRunner env => RunMessage env TheThirdAct where
 
       a <$ pushAll
         [ CreateEnemyAtLocationMatching royalEmissary $ locationIs Cards.theatre
-        , NextAgenda aid "03045"
+        , AdvanceAgendaDeck agendaDeckId (toSource attrs)
         ]
     _ -> TheThirdAct <$> runMessage msg attrs

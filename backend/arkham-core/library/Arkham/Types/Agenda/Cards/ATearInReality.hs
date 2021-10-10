@@ -33,6 +33,6 @@ instance AgendaRunner env => RunMessage env ATearInReality where
       a <$ pushAll
         (RemoveLocation lid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
-        <> [NextAgenda agendaId "02161"]
+        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
         )
     _ -> ATearInReality <$> runMessage msg attrs

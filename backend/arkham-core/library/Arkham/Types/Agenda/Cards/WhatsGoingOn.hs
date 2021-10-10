@@ -35,6 +35,6 @@ instance AgendaRunner env => RunMessage env WhatsGoingOn where
                 [AllRandomDiscard]
             | hasDiscardableCards
             ]
-          , NextAgenda aid "01106"
+          , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
           ]
     _ -> WhatsGoingOn <$> runMessage msg attrs

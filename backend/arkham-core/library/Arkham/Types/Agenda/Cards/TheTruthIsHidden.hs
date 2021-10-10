@@ -45,8 +45,10 @@ instance HasAbilities TheTruthIsHidden where
 
 instance AgendaRunner env => RunMessage env TheTruthIsHidden where
   runMessage msg a@(TheTruthIsHidden attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
-      a <$ pushAll [ShuffleEncounterDiscardBackIn, NextAgenda aid "03122"]
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> a <$ pushAll
+      [ ShuffleEncounterDiscardBackIn
+      , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+      ]
     UseCardAbility _ source [Window _ (Window.PlacedClues target n)] 1 _
       | isSource attrs source -> a <$ pushAll [FlipClues target n]
     _ -> TheTruthIsHidden <$> runMessage msg attrs

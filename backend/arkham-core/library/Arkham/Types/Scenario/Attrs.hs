@@ -42,13 +42,13 @@ data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Name
   , scenarioId :: ScenarioId
   , scenarioDifficulty :: Difficulty
-  -- These types are to handle complex scenarios with multiple stacks
-  , scenarioAgendaStack :: [(Int, [CardDef])] -- These types are to handle complex scenarios with multiple stacks
   , scenarioCardsUnderScenarioReference :: [Card]
   , scenarioCardsUnderAgendaDeck :: [Card]
   , scenarioCardsUnderActDeck :: [Card]
   , scenarioCardsNextToActDeck :: [Card]
   , scenarioActStack :: IntMap [CardDef]
+  , scenarioAgendaStack :: IntMap [CardDef]
+  , scenarioCompletedAgendaStack :: IntMap [CardDef]
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDecks :: HashMap ScenarioDeckKey [Card]
   , scenarioLog :: HashSet ScenarioLogKey
@@ -82,6 +82,13 @@ decksL = lens scenarioDecks $ \m x -> m { scenarioDecks = x }
 
 actStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
 actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
+
+agendaStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
+agendaStackL = lens scenarioAgendaStack $ \m x -> m { scenarioAgendaStack = x }
+
+completedAgendaStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
+completedAgendaStackL = lens scenarioCompletedAgendaStack
+  $ \m x -> m { scenarioCompletedAgendaStack = x }
 
 logL :: Lens' ScenarioAttrs (HashSet ScenarioLogKey)
 logL = lens scenarioLog $ \m x -> m { scenarioLog = x }
@@ -152,7 +159,8 @@ baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   { scenarioId = ScenarioId cardCode
   , scenarioName = name
   , scenarioDifficulty = difficulty
-  , scenarioAgendaStack = [(1, agendaStack)]
+  , scenarioAgendaStack = mapFromList [(1, agendaStack)]
+  , scenarioCompletedAgendaStack = mempty
   , scenarioActStack = mapFromList [(1, actStack')]
   , scenarioCardsUnderAgendaDeck = mempty
   , scenarioCardsUnderActDeck = mempty
@@ -264,6 +272,31 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         [] -> pure a
         [x] -> a <$ push (PlaceDoom (AgendaTarget x) 1)
         _ -> error "multiple agendas should be handled by the scenario"
+    AdvanceAgendaDeck n _ -> do
+      let
+        completedAgendaStack =
+          fromMaybe mempty $ lookup n scenarioCompletedAgendaStack
+      (oldAgenda, agendaStack') <- case lookup n scenarioAgendaStack of
+        Just (x : y : ys) -> do
+          let
+            fromAgendaId = AgendaId (toCardCode x)
+            toAgendaId = AgendaId (toCardCode y)
+          push (ReplaceAgenda fromAgendaId toAgendaId)
+          pure (x, y : ys)
+        _ -> error "Can not advance agenda deck"
+      pure
+        $ a
+        & (agendaStackL . at n ?~ agendaStack')
+        & (completedAgendaStackL . at n ?~ (oldAgenda : completedAgendaStack))
+    ResetAgendaDeckToStage n -> do
+      case lookup n scenarioCompletedAgendaStack of
+        Just (x : xs) -> do
+          when (cdStage x /= Just n) (push $ ResetAgendaDeckToStage n)
+          pure
+            $ a
+            & (agendaStackL . ix n %~ (x :))
+            & (completedAgendaStackL . at n ?~ xs)
+        _ -> error "Invalid agenda deck to reset"
     AdvanceActDeck n _ -> do
       actStack' <- case lookup n scenarioActStack of
         Just (x : y : ys) -> do

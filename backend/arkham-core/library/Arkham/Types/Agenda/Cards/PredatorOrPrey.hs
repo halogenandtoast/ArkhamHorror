@@ -39,5 +39,7 @@ instance (AgendaRunner env) => RunMessage env PredatorOrPrey where
       theMaskedHunter <- EncounterCard
         <$> genEncounterCard Enemies.theMaskedHunter
       a <$ pushAll
-        [CreateEnemyEngagedWithPrey theMaskedHunter, NextAgenda aid "01122"]
+        [ CreateEnemyEngagedWithPrey theMaskedHunter
+        , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+        ]
     _ -> PredatorOrPrey <$> runMessage msg attrs

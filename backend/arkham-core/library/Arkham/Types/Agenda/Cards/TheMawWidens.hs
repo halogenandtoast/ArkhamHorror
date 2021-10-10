@@ -33,6 +33,6 @@ instance AgendaRunner env => RunMessage env TheMawWidens where
       a <$ pushAll
         (RemoveLocation lid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
-        <> [NextAgenda agendaId "02162"]
+        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
         )
     _ -> TheMawWidens <$> runMessage msg attrs

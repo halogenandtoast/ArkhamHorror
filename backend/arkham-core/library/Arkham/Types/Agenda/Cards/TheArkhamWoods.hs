@@ -34,12 +34,13 @@ instance AgendaRunner env => RunMessage env TheArkhamWoods where
           ]
         )
     RequestedEncounterCard source mcard | isSource attrs source -> case mcard of
-      Nothing -> a <$ push (NextAgenda (toId a) "01144")
+      Nothing ->
+        a <$ push (AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs))
       Just card -> do
         mainPathId <- getJustLocationIdByName "Main Path"
         a <$ pushAll
           [ SpawnEnemyAt (EncounterCard card) mainPathId
           , PlaceDoom (CardIdTarget $ toCardId card) 1
-          , NextAgenda (toId a) "01144"
+          , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
           ]
     _ -> TheArkhamWoods <$> runMessage msg attrs

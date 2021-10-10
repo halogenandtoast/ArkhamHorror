@@ -44,7 +44,7 @@ instance AgendaRunner env => RunMessage env TheRitualBegins where
              6
          | iid <- iids
          ]
-        <> [NextAgenda agendaId "01145"]
+        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
         )
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> a <$ push

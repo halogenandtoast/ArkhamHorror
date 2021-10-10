@@ -36,6 +36,6 @@ instance AgendaRunner env => RunMessage env DrawnIn where
         (RemoveLocation lid
         : RemoveLocation rlid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
-        <> [NextAgenda agendaId "02164"]
+        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
         )
     _ -> DrawnIn <$> runMessage msg attrs

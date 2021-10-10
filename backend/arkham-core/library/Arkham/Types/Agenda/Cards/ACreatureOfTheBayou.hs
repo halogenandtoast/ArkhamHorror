@@ -31,7 +31,7 @@ instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
       case mrougarou of
         Nothing -> a <$ pushAll
           [ ShuffleEncounterDiscardBackIn
-          , NextAgenda aid "81003"
+          , AdvanceAgendaDeck agendaDeckId (toSource attrs)
           , PlaceDoomOnAgenda
           ]
         Just eid -> do
@@ -53,10 +53,9 @@ instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
                     xs -> chooseOne
                       leadInvestigatorId
                       [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
-          a
-            <$ pushAll
-                 [ ShuffleEncounterDiscardBackIn
-                 , moveMessage
-                 , NextAgenda aid "81003"
-                 ]
+          a <$ pushAll
+            [ ShuffleEncounterDiscardBackIn
+            , moveMessage
+            , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+            ]
     _ -> ACreatureOfTheBayou <$> runMessage msg attrs

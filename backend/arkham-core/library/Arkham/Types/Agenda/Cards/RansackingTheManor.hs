@@ -69,7 +69,7 @@ instance AgendaRunner env => RunMessage env RansackingTheManor where
              (LocationWithTitle "Entry Hall")
          ]
         <> spawnSebastienMoreauMessages
-        <> [NextAgenda aid "03123"]
+        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
         )
     UseCardAbility _ source [Window _ (Window.PlacedClues target n)] 1 _
       | isSource attrs source -> a <$ pushAll [FlipClues target n]

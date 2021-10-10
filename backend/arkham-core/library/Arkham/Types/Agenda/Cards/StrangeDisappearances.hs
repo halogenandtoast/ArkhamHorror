@@ -35,9 +35,9 @@ instance AgendaRunner env => RunMessage env StrangeDisappearances where
             PotentialSacrifices
             (toTarget attrs)
             1
-          , NextAgenda agendaId "02197"
+          , AdvanceAgendaDeck agendaDeckId (toSource attrs)
           ]
-        else a <$ push (NextAgenda agendaId "02197")
+        else a <$ push (AdvanceAgendaDeck agendaDeckId (toSource attrs))
     DrewFromScenarioDeck _ PotentialSacrifices target cards
       | isTarget attrs target -> a
       <$ push (PlaceUnderneath AgendaDeckTarget cards)

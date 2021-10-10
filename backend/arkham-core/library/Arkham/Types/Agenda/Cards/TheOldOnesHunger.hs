@@ -35,9 +35,9 @@ instance AgendaRunner env => RunMessage env TheOldOnesHunger where
             PotentialSacrifices
             (toTarget attrs)
             1
-          , NextAgenda agendaId "02198"
+          , AdvanceAgendaDeck agendaDeckId (toSource attrs)
           ]
-        else a <$ push (NextAgenda agendaId "02198")
+        else a <$ push (AdvanceAgendaDeck agendaDeckId (toSource attrs))
     DrewFromScenarioDeck _ PotentialSacrifices target cards
       | isTarget attrs target -> a
       <$ push (PlaceUnderneath AgendaDeckTarget cards)

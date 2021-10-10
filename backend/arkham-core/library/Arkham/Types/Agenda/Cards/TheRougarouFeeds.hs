@@ -31,7 +31,7 @@ instance AgendaRunner env => RunMessage env TheRougarouFeeds where
       case mrougarou of
         Nothing -> a <$ pushAll
           [ ShuffleAllInEncounterDiscardBackIn "81034"
-          , NextAgenda aid "81004"
+          , AdvanceAgendaDeck agendaDeckId (toSource attrs)
           , PlaceDoomOnAgenda
           ]
         Just eid -> do
@@ -56,6 +56,6 @@ instance AgendaRunner env => RunMessage env TheRougarouFeeds where
           a <$ pushAll
             [ ShuffleAllInEncounterDiscardBackIn "81034"
             , moveMessage
-            , NextAgenda aid "81004"
+            , AdvanceAgendaDeck agendaDeckId (toSource attrs)
             ]
     _ -> TheRougarouFeeds <$> runMessage msg attrs

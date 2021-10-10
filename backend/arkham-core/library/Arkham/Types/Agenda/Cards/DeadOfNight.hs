@@ -47,6 +47,6 @@ instance AgendaRunner env => RunMessage env DeadOfNight where
         <> [ CreateEnemyAt theExperiment scienceBuildingId Nothing
            | isNothing mExperimentId
            ]
-        <> [NextAgenda agendaId "02044"]
+        <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
         )
     _ -> DeadOfNight <$> runMessage msg attrs

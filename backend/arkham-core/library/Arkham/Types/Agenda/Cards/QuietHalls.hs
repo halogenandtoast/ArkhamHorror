@@ -45,8 +45,11 @@ instance AgendaRunner env => RunMessage env QuietHalls where
 
       let
         continueMessages = if completedTheHouseAlwaysWins
-          then [NextAgenda aid "02043", AdvanceCurrentAgenda]
-          else [NextAgenda aid "02043"]
+          then
+            [ AdvanceAgendaDeck agendaDeckId (toSource attrs)
+            , AdvanceCurrentAgenda
+            ]
+          else [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
 
       a <$ push
         (chooseOne leadInvestigatorId [Label "Continue" continueMessages])

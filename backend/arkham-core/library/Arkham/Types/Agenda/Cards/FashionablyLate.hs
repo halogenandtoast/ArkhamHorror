@@ -34,6 +34,6 @@ instance AgendaRunner env => RunMessage env FashionablyLate where
         $ AssetWithFewestClues
         $ AssetWithTrait Bystander
         , ShuffleEncounterDiscardBackIn
-        , NextAgenda aid "03063"
+        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         ]
     _ -> FashionablyLate <$> runMessage msg attrs

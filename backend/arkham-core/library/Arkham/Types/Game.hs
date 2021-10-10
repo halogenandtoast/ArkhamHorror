@@ -3040,7 +3040,7 @@ runGameMessage msg g = case msg of
   AdvanceCurrentAgenda -> do
     let aids = keys $ g ^. agendasL
     g <$ pushAll [ AdvanceAgenda aid | aid <- aids ]
-  NextAgenda aid1 aid2 ->
+  ReplaceAgenda aid1 aid2 ->
     pure $ g & agendasL %~ deleteMap aid1 & agendasL %~ insertMap
       aid2
       (lookupAgenda aid2 1)

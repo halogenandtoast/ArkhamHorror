@@ -22,5 +22,5 @@ lockedInside = agenda (1, A) LockedInside Cards.lockedInside (Static 2)
 instance AgendaRunner env => RunMessage env LockedInside where
   runMessage msg a@(LockedInside attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
-      a <$ pushAll [NextAgenda aid "TODO"]
+      a <$ pushAll [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
     _ -> LockedInside <$> runMessage msg attrs

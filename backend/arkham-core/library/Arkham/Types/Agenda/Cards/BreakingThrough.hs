@@ -46,6 +46,6 @@ instance AgendaRunner env => RunMessage env BreakingThrough where
       yogSothoth <- EncounterCard <$> genEncounterCard Enemies.yogSothoth
       a <$ pushAll
         [ CreateEnemyAt yogSothoth yogSothothSpawnLocation Nothing
-        , NextAgenda aid "02315"
+        , AdvanceAgendaDeck agendaDeckId (toSource attrs)
         ]
     _ -> BreakingThrough <$> runMessage msg attrs

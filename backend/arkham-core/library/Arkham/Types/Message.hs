@@ -132,6 +132,15 @@ data Message
     | AdvanceToAct Int CardDef Source
 
     | AddAgenda AgendaId
+    | AdvanceAgenda AgendaId
+    | AdvanceAgendaIfThresholdSatisfied
+    | DoAdvanceAgendaIfThresholdSatisfied
+    | AdvanceAgendaDeck Int Source
+    | AdvanceCurrentAgenda
+    | ReplaceAgenda AgendaId AgendaId
+    | RevertAgenda AgendaId
+    | ResetAgendaDeckToStage Int
+
     | AddCampaignCardToDeck InvestigatorId CardDef
     | AddConnection LocationId LocationSymbol
     | AddDirectConnection LocationId LocationId
@@ -155,10 +164,6 @@ data Message
     | AddTraits Target [Trait]
     | AddUses Target UseType Int
     | AddedConnection LocationId LocationId
-    | AdvanceAgenda AgendaId
-    | AdvanceAgendaIfThresholdSatisfied
-    | DoAdvanceAgendaIfThresholdSatisfied
-    | AdvanceCurrentAgenda
     | After Message
     | AfterDiscoverClues InvestigatorId LocationId Int
     | AfterEnterLocation InvestigatorId LocationId
@@ -400,7 +405,6 @@ data Message
     | MoveToward Target LocationMatcher
     | MoveTopOfDeckToBottom Source DeckSignifier Int
     | MoveUntil LocationId Target
-    | NextAgenda AgendaId AgendaId
     | NextCampaignStep (Maybe CampaignStep)
     | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
     | Noop
@@ -492,7 +496,6 @@ data Message
     | Revelation InvestigatorId Source
     | RevelationChoice InvestigatorId Source Int
     | RevelationSkillTest InvestigatorId Source SkillType Int
-    | RevertAgenda AgendaId
     | Run [Message]
     | RunBag Source (Maybe InvestigatorId) RequestedTokenStrategy
     | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy

@@ -90,7 +90,7 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
              leadInvestigatorId
              Treacheries.curseOfTheRougarou
            , CreateWeaknessInThreatArea curseOfTheRougarou leadInvestigatorId
-           , NextAct aid "81006"
+           , AdvanceActDeck actDeckId (toSource attrs)
            ]
         )
     _ -> FindingLadyEsprit <$> runMessage msg attrs

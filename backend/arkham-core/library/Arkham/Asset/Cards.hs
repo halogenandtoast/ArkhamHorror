@@ -84,6 +84,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdExceptional = False
   , cdUses = NoUses
   , cdPlayableFromDiscard = False
+  , cdStage = Nothing
   }
 
 allPlayerAssetCards :: HashMap CardCode CardDef

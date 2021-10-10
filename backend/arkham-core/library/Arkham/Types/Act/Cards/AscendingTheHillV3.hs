@@ -53,7 +53,7 @@ instance ActRunner env => RunMessage env AscendingTheHillV3 where
       sethBishop <- EncounterCard <$> genEncounterCard Enemies.sethBishop
       a <$ pushAll
         [ CreateEnemyAt sethBishop sentinelPeak (Just $ toTarget attrs)
-        , NextAct (toId attrs) "02281"
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
     CreatedEnemyAt eid _ target | isTarget attrs target -> do
       damage <- getPlayerCountValue (PerPlayer 1)

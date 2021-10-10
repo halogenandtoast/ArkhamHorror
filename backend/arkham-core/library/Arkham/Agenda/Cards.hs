@@ -39,6 +39,7 @@ agenda cardCode name encounterSet = CardDef
   , cdExceptional = False
   , cdUses = NoUses
   , cdPlayableFromDiscard = False
+  , cdStage = Nothing
   }
 
 allAgendaCards :: HashMap CardCode CardDef

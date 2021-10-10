@@ -51,7 +51,7 @@ instance ActRunner env => RunMessage env TheStrangerTheShoresOfHali where
         <> map (`PlaceHorror` 1) privateLocations
         <> [ CreateEffect "03047c" Nothing (toSource attrs) (toTarget attrs)
            , PlaceNextTo ActDeckTarget [card]
-           , NextAct aid "03048"
+           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
            ]
         )
     _ -> TheStrangerTheShoresOfHali <$> runMessage msg attrs

@@ -35,6 +35,6 @@ instance ActRunner env => RunMessage env RaceForAnswers where
         ([ PlaceCluesUpToClueValue location playerCount
          | location <- locations
          ]
-        <> [NextAct aid "03125"]
+        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
         )
     _ -> RaceForAnswers <$> runMessage msg attrs

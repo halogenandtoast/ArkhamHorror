@@ -189,6 +189,22 @@ instance
         , EncounterSet.ChillingCold
         ]
 
+      useV1 <- getHasRecord TheInvestigatorsRestoredSilasBishop
+      useV2 <- liftA2
+        (||)
+        (getHasRecord TheInvestigatorsFailedToRecoverTheNecronomicon)
+        (getHasRecord TheNecronomiconWasStolen)
+
+      let
+        act2 = case (useV1, useV2) of
+          (True, _) -> Acts.ascendingTheHillV1
+          (False, True) -> Acts.ascendingTheHillV2
+          (False, False) -> Acts.ascendingTheHillV3
+        actStack' =
+          filter (\c -> cdStage c /= Just 2 || c == act2)
+            . fromJustNote "missing act deck"
+            $ lookup 1 (scenarioActStack attrs)
+
       naomiHasTheInvestigatorsBacks <- getHasRecord
         NaomiHasTheInvestigatorsBacks
       noBroodEscaped <- getHasRecord NoBroodEscapedIntoTheWild
@@ -261,6 +277,7 @@ instance
       WhereDoomAwaits <$> runMessage
         msg
         (attrs
+        & (actStackL . at 1 ?~ actStack')
         & (setAsideCardsL
           <>~ (divergingPaths <> alteredPaths <> setAsideCards)
           )

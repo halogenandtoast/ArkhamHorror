@@ -66,9 +66,6 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
         _ -> throwIO $ InvalidState "did not find the correct card"
     UseCardAbility _ source _ 3 _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == toId attrs && onSide A attrs -> do
-      push (AdvanceAct aid $ toSource attrs)
-      pure . RicesWhereabouts $ attrs & sequenceL .~ Act 2 B
     AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
       alchemyLabsInPlay <- isJust
         <$> selectOne (LocationWithTitle "Alchemy Labs")
@@ -78,10 +75,10 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
       theExperiment <- getSetAsideCard Enemies.theExperiment
       alchemicalConcoction <- getSetAsideCard Assets.alchemicalConcoction
 
-      pushAll
-        $ [ PlaceLocationMatching (CardWithTitle "Alchemy Labs")
-          | not alchemyLabsInPlay
-          ]
+      a <$ pushAll
+        ([ PlaceLocationMatching (CardWithTitle "Alchemy Labs")
+         | not alchemyLabsInPlay
+         ]
         <> [ CreateEnemyAtLocationMatching
                theExperiment
                (LocationWithTitle "Alchemy Labs")
@@ -92,7 +89,6 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
                (LocationWithTitle "Alchemy Labs")
            | completedTheHouseAlwaysWins
            ]
-      leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOne leadInvestigatorId [NextAct aid "02047"]
-      pure $ RicesWhereabouts $ attrs & (sequenceL .~ Act 1 B)
+        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+        )
     _ -> RicesWhereabouts <$> runMessage msg attrs

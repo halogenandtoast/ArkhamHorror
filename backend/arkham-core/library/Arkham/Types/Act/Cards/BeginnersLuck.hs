@@ -80,7 +80,7 @@ instance ActRunner env => RunMessage env BeginnersLuck where
         , DiscardEncounterUntilFirst
           (toSource attrs)
           (CardWithType EnemyType <> CardWithTrait Criminal)
-        , NextAct aid "02067"
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
     RequestedEncounterCard source (Just ec) | isSource attrs source -> do
       darkenedHallId <- fromJustNote "missing darkened hall"

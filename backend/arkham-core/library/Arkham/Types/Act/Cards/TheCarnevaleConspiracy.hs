@@ -86,5 +86,8 @@ instance
                 leadInvestigatorId
                 [ Flip (toSource attrs) (AssetTarget x) | x <- xs ]
             ]
-      a <$ pushAll ([CreateEnemy cnidathqua, NextAct actId "82006"] <> flipMsg)
+      a <$ pushAll
+        ([CreateEnemy cnidathqua, AdvanceActDeck actDeckId (toSource attrs)]
+        <> flipMsg
+        )
     _ -> TheCarnevaleConspiracy <$> runMessage msg attrs

@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.FindingAWayInside
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Types.Act.Attrs
@@ -57,10 +58,13 @@ instance ActRunner env => RunMessage env FindingAWayInside where
             | iid <- investigatorIds
             ]
           , RevealLocation Nothing museumHallsId
-          , NextAct aid "02123"
+          , AdvanceToAct actDeckId Acts.nightAtTheMuseum (toSource attrs)
           ]
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       museumHallsId <- fromJustNote "missing museum halls"
         <$> getId (LocationWithTitle "Museum Halls")
-      a <$ pushAll [RevealLocation Nothing museumHallsId, NextAct aid "02124"]
+      a <$ pushAll
+        [ RevealLocation Nothing museumHallsId
+        , AdvanceToAct actDeckId Acts.breakingAndEntering (toSource attrs)
+        ]
     _ -> FindingAWayInside <$> runMessage msg attrs

@@ -60,7 +60,7 @@ instance ActRunner env => RunMessage env Run where
                   3
               ]
             ]
-        : [NextAct (toId attrs) "02166"]
+        : [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
         )
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} SkillAgility _
       | isSource attrs source && onSide B attrs -> a

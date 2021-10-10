@@ -32,13 +32,13 @@ instance HasAbilities GetToTheBoats where
     [ mkAbility x 1 $ ForcedAbility $ PhaseBegins Timing.After $ PhaseIs
       MythosPhase
     , restrictedAbility
-      x
-      2
-      (EachUndefeatedInvestigator $ InvestigatorAt $ LocationWithTitle
-        "Canal-side"
-      )
-    $ Objective
-    $ ForcedAbility AnyWindow
+        x
+        2
+        (EachUndefeatedInvestigator $ InvestigatorAt $ LocationWithTitle
+          "Canal-side"
+        )
+      $ Objective
+      $ ForcedAbility AnyWindow
     ]
 
 instance ActRunner env => RunMessage env GetToTheBoats where
@@ -48,7 +48,7 @@ instance ActRunner env => RunMessage env GetToTheBoats where
       leadInvestigatorId <- getLeadInvestigatorId
       a <$ pushAll
         [ InvestigatorDrewEncounterCard leadInvestigatorId gondola
-        , NextAct (toId attrs) "82007"
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       maskedCarnevaleGoers <- selectListMap

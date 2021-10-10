@@ -55,7 +55,7 @@ instance ActRunner env => RunMessage env MysteriousGateway where
                  ]
              | iid' <- investigatorIds
              ]
-           , NextAct aid "01109"
+           , AdvanceActDeck actDeckId (toSource attrs)
            ]
         )
     FailedSkillTest iid _ (ActSource aid) SkillTestInitiatorTarget{} _ n

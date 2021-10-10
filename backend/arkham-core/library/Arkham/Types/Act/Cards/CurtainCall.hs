@@ -6,6 +6,7 @@ module Arkham.Types.Act.Cards.CurtainCall
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Cards
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
@@ -36,7 +37,12 @@ instance HasAbilities CurtainCall where
           (toSource attrs)
         )
         1
-        Here
+        (Here
+        <> Negate
+             (EnemyCriteria $ EnemyExists $ enemyIs
+               Enemies.theManInThePallidMask
+             )
+        )
       $ ActionAbility (Just Action.Resign)
       $ ActionCost 1
     , restrictedAbility

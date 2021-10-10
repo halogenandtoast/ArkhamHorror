@@ -5,6 +5,7 @@ module Arkham.Types.Act.Cards.SkinGame
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Types.Act.Attrs
@@ -49,11 +50,11 @@ instance ActRunner env => RunMessage env SkinGame where
             leadInvestigatorId
             (toTarget attrs)
             (CardWithType EnemyType <> CardWithTrait Abomination)
-          , NextAct (toId attrs) "02069"
+          , AdvanceToAct (actDeckId attrs) Acts.fold (toSource attrs)
           ]
         else pushAll
           [ CreateStoryAssetAt drFrancisMorgan vipAreaId
-          , NextAct (toId attrs) "02068"
+          , AdvanceToAct (actDeckId attrs) Acts.allIn (toSource attrs)
           ]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"

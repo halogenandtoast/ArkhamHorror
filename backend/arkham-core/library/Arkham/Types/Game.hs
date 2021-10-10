@@ -3044,9 +3044,10 @@ runGameMessage msg g = case msg of
     pure $ g & agendasL %~ deleteMap aid1 & agendasL %~ insertMap
       aid2
       (lookupAgenda aid2 1)
-  NextAct aid1 aid2 -> pure $ g & actsL %~ deleteMap aid1 & actsL %~ insertMap
-    aid2
-    (lookupAct aid2 1)
+  ReplaceAct aid1 aid2 ->
+    pure $ g & actsL %~ deleteMap aid1 & actsL %~ insertMap
+      aid2
+      (lookupAct aid2 1)
   AddAct aid -> pure $ g & actsL . at aid ?~ lookupAct aid 1
   AddAgenda aid -> pure $ g & agendasL . at aid ?~ lookupAgenda aid 1
   CommitCard iid cardId -> do

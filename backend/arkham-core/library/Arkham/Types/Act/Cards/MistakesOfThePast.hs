@@ -50,7 +50,7 @@ instance ActRunner env => RunMessage env MistakesOfThePast where
              | iid <- investigatorIds
              ]
            , PlaceLocation hiddenLibrary
-           , NextAct aid "03126"
+           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
            ]
         )
     _ -> MistakesOfThePast <$> runMessage msg attrs

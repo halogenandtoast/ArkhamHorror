@@ -57,7 +57,7 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
               ]
             , EnemySpawn Nothing lid eid
             , Ready (EnemyTarget eid)
-            , NextAct (toId attrs) "02125"
+            , AdvanceActDeck (actDeckId attrs) (toSource attrs)
             ]
         Nothing -> a <$ pushAll
           [ chooseOne
@@ -76,10 +76,14 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
       a <$ pushAll
-        [EnemySpawnFromVoid Nothing lid eid, NextAct (toId attrs) "02125"]
+        [ EnemySpawnFromVoid Nothing lid eid
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
       a <$ pushAll
-        [SpawnEnemyAt (EncounterCard ec) lid, NextAct (toId attrs) "02125"]
+        [ SpawnEnemyAt (EncounterCard ec) lid
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
     _ -> BreakingAndEntering <$> runMessage msg attrs

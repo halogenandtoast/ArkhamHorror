@@ -901,6 +901,7 @@ type CanCheckPlayable env
     , HasCount ActionTakenCount env InvestigatorId
     , HasCount HorrorCount env AssetId
     , HasCount HorrorCount env LocationId
+    , HasCount DoomCount env LocationId
     , HasCount ResourceCount env LocationId
     , HasCount ResourceCount env TreacheryId
     , HasCount (Maybe ClueCount) env TreacheryId
@@ -2166,6 +2167,8 @@ locationMatches investigatorId source window locationId = \case
     member locationId <$> select Matcher.UnrevealedLocation
   Matcher.LocationWithClues valueMatcher ->
     (`gameValueMatches` valueMatcher) . unClueCount =<< getCount locationId
+  Matcher.LocationWithDoom valueMatcher ->
+    (`gameValueMatches` valueMatcher) . unDoomCount =<< getCount locationId
   Matcher.LocationWithHorror valueMatcher ->
     (`gameValueMatches` valueMatcher) . unHorrorCount =<< getCount locationId
   Matcher.LocationWithMostClues locationMatcher ->

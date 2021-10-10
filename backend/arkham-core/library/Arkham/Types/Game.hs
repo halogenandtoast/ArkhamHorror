@@ -729,6 +729,11 @@ getLocationsMatching = \case
     filterM
       (getCount >=> (`gameValueMatches` gameValueMatcher) . unClueCount)
       allLocations'
+  LocationWithDoom gameValueMatcher -> do
+    allLocations' <- toList . view locationsL <$> getGame
+    filterM
+      (getCount >=> (`gameValueMatches` gameValueMatcher) . unDoomCount)
+      allLocations'
   LocationWithHorror gameValueMatcher -> do
     allLocations' <- toList . view locationsL <$> getGame
     filterM

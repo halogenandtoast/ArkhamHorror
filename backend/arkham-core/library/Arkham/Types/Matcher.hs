@@ -253,6 +253,10 @@ pattern LocationWithoutClues :: LocationMatcher
 pattern LocationWithoutClues <- LocationWithClues (EqualTo (Static 0)) where
   LocationWithoutClues = LocationWithClues (EqualTo (Static 0))
 
+pattern LocationWithoutDoom :: LocationMatcher
+pattern LocationWithoutDoom <- LocationWithDoom (EqualTo (Static 0)) where
+  LocationWithoutDoom = LocationWithDoom (EqualTo (Static 0))
+
 locationIs :: HasCardCode a => a -> LocationMatcher
 locationIs = LocationIs . toCardCode
 
@@ -264,6 +268,7 @@ data LocationMatcher
   | LocationWithLabel Text
   | LocationWithSymbol LocationSymbol
   | LocationLeavingPlay
+  | LocationWithDoom ValueMatcher
   | YourLocation
   | SameLocation
   | NotYourLocation

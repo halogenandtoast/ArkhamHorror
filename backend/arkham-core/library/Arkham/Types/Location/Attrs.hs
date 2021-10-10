@@ -614,6 +614,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     RemoveClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & cluesL %~ max 0 . subtract n
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
+    RemoveAllDoom -> pure $ a & doomL .~ 0
     RevealLocation miid lid | lid == locationId -> do
       modifiers' <- getModifiers (toSource a) (toTarget a)
       locationClueCount <- if CannotPlaceClues `elem` modifiers'

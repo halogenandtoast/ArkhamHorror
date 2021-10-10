@@ -297,10 +297,10 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
               if cdStage y /= Just n then go ys (y : as) else (y : as, ys)
             (prepend, remaining) = go xs []
           case (prepend, lookup n scenarioAgendaStack) of
-            (to : _, Just (from : _)) -> do
+            (toAgenda : _, Just (fromAgenda : _)) -> do
               let
-                fromAgendaId = AgendaId (toCardCode from)
-                toAgendaId = AgendaId (toCardCode to)
+                fromAgendaId = AgendaId (toCardCode fromAgenda)
+                toAgendaId = AgendaId (toCardCode toAgenda)
               push (ReplaceAgenda fromAgendaId toAgendaId)
             _ -> error "Could not reset agenda deck to stage"
           pure

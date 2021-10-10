@@ -51,6 +51,6 @@ instance ActRunner env => RunMessage env TheStrangerThePathIsMine where
         , PlaceHorror (LocationTarget lid) 1
         , PlaceNextTo ActDeckTarget [card]
         , CreateEffect "03047b" Nothing (toSource attrs) (toTarget attrs)
-        , NextAct aid "03048"
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
     _ -> TheStrangerThePathIsMine <$> runMessage msg attrs

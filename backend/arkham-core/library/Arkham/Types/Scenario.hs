@@ -122,7 +122,7 @@ difficultyOfScenario :: Scenario -> Difficulty
 difficultyOfScenario = scenarioDifficulty . toAttrs
 
 scenarioActs :: Scenario -> [CardDef]
-scenarioActs s = case scenarioActStack (toAttrs s) of
+scenarioActs s = case mapToList $ scenarioActStack (toAttrs s) of
   [(_, actIds)] -> actIds
   _ -> error "Not able to handle multiple act stacks yet"
 

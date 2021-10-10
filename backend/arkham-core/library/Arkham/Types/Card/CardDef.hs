@@ -60,6 +60,7 @@ data CardDef = CardDef
   , cdExceptional :: Bool
   , cdUses :: Uses
   , cdPlayableFromDiscard :: Bool
+  , cdStage :: Maybe Int
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -145,4 +146,5 @@ testCardDef cardType cardCode = CardDef
   , cdExceptional = False
   , cdUses = NoUses
   , cdPlayableFromDiscard = False
+  , cdStage = Nothing
   }

@@ -52,6 +52,6 @@ instance ActRunner env => RunMessage env AscendingTheHillV2 where
       sethBishop <- EncounterCard <$> genEncounterCard Enemies.sethBishop
       a <$ pushAll
         [ CreateEnemyAt sethBishop sentinelPeak Nothing
-        , NextAct (toId attrs) "02281"
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
     _ -> AscendingTheHillV2 <$> runMessage msg attrs

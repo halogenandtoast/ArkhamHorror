@@ -46,14 +46,14 @@ instance ActRunner env => RunMessage env IntoTheDarkness where
           , DiscardEncounterUntilFirst
             (ActSource actId)
             (CardWithType EnemyType)
-          , NextAct actId "01148"
+          , AdvanceActDeck actDeckId (toSource attrs)
           ]
         else a <$ pushAll
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (ActSource actId)
             (CardWithType EnemyType)
-          , NextAct actId "01148"
+          , AdvanceActDeck actDeckId (toSource attrs)
           ]
     RequestedEncounterCard (ActSource aid) mcard | aid == actId -> case mcard of
       Nothing -> pure a

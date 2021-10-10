@@ -47,6 +47,6 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
         ([ CreateEnemyAt (EncounterCard card) mainPathId Nothing
          | card <- cultistsWhoGotAway
          ]
-        <> [NextAct aid "01147"]
+        <> [AdvanceActDeck actDeckId (toSource attrs)]
         )
     _ -> InvestigatingTheTrail <$> runMessage msg attrs

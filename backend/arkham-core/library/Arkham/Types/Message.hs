@@ -122,7 +122,15 @@ data Message
     = UseAbility InvestigatorId Ability [Window]
     | ReadStory Card
     | ResolveStory Card
+
     | AddAct ActId
+    | AdvanceAct ActId Source
+    | NextAdvanceActStep ActId Int
+    | ReplaceAct ActId ActId
+    | RevertAct ActId
+    | AdvanceActDeck Int Source
+    | AdvanceToAct Int CardDef Source
+
     | AddAgenda AgendaId
     | AddCampaignCardToDeck InvestigatorId CardDef
     | AddConnection LocationId LocationSymbol
@@ -147,7 +155,6 @@ data Message
     | AddTraits Target [Trait]
     | AddUses Target UseType Int
     | AddedConnection LocationId LocationId
-    | AdvanceAct ActId Source
     | AdvanceAgenda AgendaId
     | AdvanceAgendaIfThresholdSatisfied
     | DoAdvanceAgendaIfThresholdSatisfied
@@ -393,8 +400,6 @@ data Message
     | MoveToward Target LocationMatcher
     | MoveTopOfDeckToBottom Source DeckSignifier Int
     | MoveUntil LocationId Target
-    | NextAct ActId ActId
-    | NextAdvanceActStep ActId Int
     | NextAgenda AgendaId AgendaId
     | NextCampaignStep (Maybe CampaignStep)
     | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
@@ -487,7 +492,6 @@ data Message
     | Revelation InvestigatorId Source
     | RevelationChoice InvestigatorId Source Int
     | RevelationSkillTest InvestigatorId Source SkillType Int
-    | RevertAct ActId
     | RevertAgenda AgendaId
     | Run [Message]
     | RunBag Source (Maybe InvestigatorId) RequestedTokenStrategy

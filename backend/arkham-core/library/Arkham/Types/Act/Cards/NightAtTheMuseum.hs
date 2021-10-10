@@ -47,7 +47,7 @@ instance ActRunner env => RunMessage env NightAtTheMuseum where
           a <$ pushAll
             [ EnemySpawn Nothing lid eid
             , Ready (EnemyTarget eid)
-            , NextAct (toId attrs) "02125"
+            , AdvanceActDeck (actDeckId attrs) (toSource attrs)
             ]
         Nothing -> a <$ push
           (FindEncounterCard
@@ -59,10 +59,14 @@ instance ActRunner env => RunMessage env NightAtTheMuseum where
       lid <- getJustLocationIdByName
         (mkFullName "Exhibit Hall" "Restricted Hall")
       a <$ pushAll
-        [EnemySpawnFromVoid Nothing lid eid, NextAct (toId attrs) "02125"]
+        [ EnemySpawnFromVoid Nothing lid eid
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- getJustLocationIdByName
         (mkFullName "Exhibit Hall" "Restricted Hall")
       a <$ pushAll
-        [SpawnEnemyAt (EncounterCard ec) lid, NextAct (toId attrs) "02125"]
+        [ SpawnEnemyAt (EncounterCard ec) lid
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
     _ -> NightAtTheMuseum <$> runMessage msg attrs

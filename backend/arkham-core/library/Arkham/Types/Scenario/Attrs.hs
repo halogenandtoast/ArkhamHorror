@@ -48,7 +48,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioCardsUnderAgendaDeck :: [Card]
   , scenarioCardsUnderActDeck :: [Card]
   , scenarioCardsNextToActDeck :: [Card]
-  , scenarioActStack :: [(Int, [CardDef])]
+  , scenarioActStack :: IntMap [CardDef]
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDecks :: HashMap ScenarioDeckKey [Card]
   , scenarioLog :: HashSet ScenarioLogKey
@@ -80,7 +80,7 @@ inResolutionL =
 decksL :: Lens' ScenarioAttrs (HashMap ScenarioDeckKey [Card])
 decksL = lens scenarioDecks $ \m x -> m { scenarioDecks = x }
 
-actStackL :: Lens' ScenarioAttrs [(Int, [CardDef])]
+actStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
 actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
 
 logL :: Lens' ScenarioAttrs (HashSet ScenarioLogKey)
@@ -153,7 +153,7 @@ baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   , scenarioName = name
   , scenarioDifficulty = difficulty
   , scenarioAgendaStack = [(1, agendaStack)]
-  , scenarioActStack = [(1, actStack')]
+  , scenarioActStack = mapFromList [(1, actStack')]
   , scenarioCardsUnderAgendaDeck = mempty
   , scenarioCardsUnderActDeck = mempty
   , scenarioCardsNextToActDeck = mempty
@@ -264,10 +264,28 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         [] -> pure a
         [x] -> a <$ push (PlaceDoom (AgendaTarget x) 1)
         _ -> error "multiple agendas should be handled by the scenario"
-    NextAct oldId _ -> do
-      pure $ a & actStackL %~ map
-        (second $ filter ((/= unActId oldId) . toCardCode))
-    Discard (ActTarget _) -> pure $ a & actStackL .~ []
+    AdvanceActDeck n _ -> do
+      actStack' <- case lookup n scenarioActStack of
+        Just (x : y : ys) -> do
+          let
+            fromActId = ActId (toCardCode x)
+            toActId = ActId (toCardCode y)
+          push (ReplaceAct fromActId toActId)
+          pure (y : ys)
+        _ -> error "Can not advance act deck"
+      pure $ a & actStackL . at n ?~ actStack'
+    AdvanceToAct n act _ -> do
+      actStack' <- case lookup n scenarioActStack of
+        Just (x : ys) -> do
+          let
+            fromActId = ActId (toCardCode x)
+            toActId = ActId (toCardCode act)
+          push (ReplaceAct fromActId toActId)
+          pure $ filter (\c -> cdStage c /= cdStage act || c == act) ys
+        _ -> error "Can not advance act deck"
+      pure $ a & actStackL . at n ?~ actStack'
+
+    Discard (ActTarget _) -> pure $ a & actStackL .~ mempty
     -- See: Vengeance Awaits / The Devourer Below - right now the assumption
     -- is that the act deck has been replaced.
     InvestigatorDefeated _ _ -> do

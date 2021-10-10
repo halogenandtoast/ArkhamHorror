@@ -47,6 +47,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdExceptional = False
   , cdUses = NoUses
   , cdPlayableFromDiscard = False
+  , cdStage = Nothing
   }
 
 weakness :: CardCode -> Name -> CardDef

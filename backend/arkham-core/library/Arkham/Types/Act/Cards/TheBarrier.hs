@@ -44,6 +44,6 @@ instance ActRunner env => RunMessage env TheBarrier where
         [ RevealLocation Nothing parlorId
         , CreateStoryAssetAt litaChantler parlorId
         , CreateEnemyAt ghoulPriest hallwayId Nothing
-        , NextAct aid "01110"
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
     _ -> TheBarrier <$> runMessage msg attrs

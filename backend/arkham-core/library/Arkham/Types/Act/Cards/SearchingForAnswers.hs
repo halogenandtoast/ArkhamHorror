@@ -45,7 +45,7 @@ instance ActRunner env => RunMessage env SearchingForAnswers where
         ([ RevealLocation Nothing lid | lid <- unrevealedLocationIds ]
         <> [ MoveAllCluesTo (LocationTarget hiddenChamber)
            , CreateEnemyAt silasBishop hiddenChamber Nothing
-           , NextAct aid "02200"
+           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
            ]
         )
     _ -> SearchingForAnswers <$> runMessage msg attrs

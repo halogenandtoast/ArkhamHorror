@@ -44,5 +44,5 @@ instance ActRunner env => RunMessage env AscendingTheHillV1 where
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source)
     AdvanceAct aid _ | aid == toId attrs && onSide B attrs ->
-      a <$ push (NextAct (toId attrs) "02281")
+      a <$ push (AdvanceActDeck (actDeckId attrs) (toSource attrs))
     _ -> AscendingTheHillV1 <$> runMessage msg attrs

@@ -29,6 +29,6 @@ instance ActRunner env => RunMessage env AfterHours where
       a <$ pushAll
         [ AddToEncounterDeck jazzMulligan
         , ShuffleEncounterDiscardBackIn
-        , NextAct aid "02046"
+        , AdvanceActDeck actDeckId (toSource attrs)
         ]
     _ -> AfterHours <$> runMessage msg attrs

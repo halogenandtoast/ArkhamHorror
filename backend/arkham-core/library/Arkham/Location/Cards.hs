@@ -49,6 +49,7 @@ location cardCode name traits encounterSet = CardDef
   , cdExceptional = False
   , cdUses = NoUses
   , cdPlayableFromDiscard = False
+  , cdStage = Nothing
   }
 
 allLocationCards :: HashMap CardCode CardDef

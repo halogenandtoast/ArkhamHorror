@@ -46,7 +46,8 @@ instance ActRunner env => RunMessage env Trapped where
         <> [ RevealLocation Nothing hallwayId
            , MoveAllTo (toSource attrs) hallwayId
            , RemoveLocation studyId
-           , NextAct aid "01109"
+           , AdvanceActDeck actDeckId (toSource attrs)
+           -- , NextAct aid "01109"
            ]
         )
     _ -> Trapped <$> runMessage msg attrs

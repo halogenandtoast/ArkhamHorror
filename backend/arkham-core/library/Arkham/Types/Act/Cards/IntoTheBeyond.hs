@@ -42,7 +42,7 @@ instance ActRunner env => RunMessage env IntoTheBeyond where
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source)
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
-      a <$ push (NextAct actId "02318")
+      a <$ push (AdvanceActDeck actDeckId (toSource attrs))
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
       let locationCards = filterLocations cards
       a <$ unless

@@ -47,7 +47,7 @@ instance ActRunner env => RunMessage env Awakening where
       theManInThePallidMask <- getSetAsideCard Cards.theManInThePallidMask
 
       -- Advance to one of the 3 copies of act 2a, at random
-      nextActId <- ActId . toCardCode <$> sample
+      nextAct <- sample
         (Cards.theStrangerACityAflame
         :| [Cards.theStrangerThePathIsMine, Cards.theStrangerTheShoresOfHali]
         )
@@ -56,6 +56,6 @@ instance ActRunner env => RunMessage env Awakening where
         [ PlaceLocation location
         , SetLocationLabel locationId label
         , CreateEnemyAt theManInThePallidMask locationId Nothing
-        , NextAct (toId attrs) nextActId
+        , AdvanceToAct (actDeckId attrs) nextAct (toSource attrs)
         ]
     _ -> Awakening <$> runMessage msg attrs

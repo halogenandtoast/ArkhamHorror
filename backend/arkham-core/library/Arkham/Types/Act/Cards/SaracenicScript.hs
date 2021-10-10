@@ -43,6 +43,6 @@ instance ActRunner env => RunMessage env SaracenicScript where
          | (iid, esotericFormula) <- investigatorEsotericFormulaPairs
          ]
         <> [ PlaceDoomOnAgenda | not survived ]
-        <> [NextAct aid "02241"]
+        <> [AdvanceActDeck actDeckId (toSource attrs)]
         )
     _ -> SaracenicScript <$> runMessage msg attrs

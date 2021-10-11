@@ -94,6 +94,7 @@ data WindowType
   | PlacedHorror InvestigatorId Int
   | PlacedDamage InvestigatorId Int
   | PlacedClues Target Int
+  | PlaceUnderneath Target Card
   | PlayCard InvestigatorId Card
   | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId

@@ -12,7 +12,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (PlaceUnderneath)
 import Arkham.Types.Message
 import Arkham.Types.Scenario.Deck
 import Arkham.Types.Target

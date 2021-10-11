@@ -420,6 +420,11 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
     PlaceUnderneath AgendaDeckTarget cards -> do
       pure $ a & cardsUnderneathAgendaDeckL <>~ cards
     PlaceUnderneath ActDeckTarget cards -> do
+      pushAll =<< splitWithWindows
+        (PlacedUnderneath ActDeckTarget cards)
+        (map (Window.PlaceUnderneath ActDeckTarget) cards)
+      pure a
+    PlacedUnderneath ActDeckTarget cards -> do
       pure $ a & cardsUnderneathActDeckL <>~ cards
     PlaceNextTo ActDeckTarget cards -> do
       pure $ a & cardsNextToActDeckL <>~ cards

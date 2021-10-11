@@ -9,7 +9,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (PlaceUnderneath)
 import Arkham.Types.Message
 import Arkham.Types.Scenario.Deck
 import Arkham.Types.SkillType

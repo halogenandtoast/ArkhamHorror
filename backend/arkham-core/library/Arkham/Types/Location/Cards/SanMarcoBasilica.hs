@@ -18,7 +18,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Id
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (PlaceUnderneath)
 import Arkham.Types.Message
 import Arkham.Types.Target
 

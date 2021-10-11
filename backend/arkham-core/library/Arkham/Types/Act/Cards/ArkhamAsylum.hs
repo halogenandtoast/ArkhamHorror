@@ -45,8 +45,6 @@ instance ActRunner env => RunMessage env ArkhamAsylum where
           `difference` chosenSkills metadata
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      -- youTookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
-      -- let nextActId = if youTookTheOnyxClasp then "03164" else "03165"
       push
         (chooseOne leadInvestigatorId
         $ map
@@ -84,7 +82,5 @@ instance ActRunner env => RunMessage env ArkhamAsylum where
           (insertSet st $ chosenSkills metadata)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        -- youTookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
-        -- let nextActId = if youTookTheOnyxClasp then "03164" else "03165"
         a <$ push (AdvanceActDeck (actDeckId attrs) (toSource attrs))
     _ -> ArkhamAsylum . (`with` metadata) <$> runMessage msg attrs

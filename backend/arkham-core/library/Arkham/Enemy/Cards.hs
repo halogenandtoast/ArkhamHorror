@@ -624,6 +624,20 @@ seekerOfCarcosa = (enemy "03144" "Seeker of Carcosa" EchoesOfThePast 3)
   , cdKeywords = singleton Keyword.Aloof
   }
 
+danielChesterfield :: CardDef
+danielChesterfield = (enemy
+                       "03182b"
+                       ("Daniel Chesterfield"
+                       <:> "...Or At Least, What's Left of Him"
+                       )
+                       TheUnspeakableOath
+                       1
+                     )
+  { cdCardTraits = setFromList [Humanoid, Lunatic, Elite]
+  , cdUnique = True
+  , cdVictoryPoints = Just 1
+  }
+
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul = (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering 1
                     )

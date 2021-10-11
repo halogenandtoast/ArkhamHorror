@@ -29,7 +29,7 @@ instance CanCheckPlayable env => RunMessage env ThePaintedWorld where
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       playableCards <-
         filterM
-            (getIsPlayable iid (toSource attrs)
+            (getIsPlayable iid (toSource attrs) UnpaidCost
             $ Window Timing.When (DuringTurn iid)
             : windows'
             )

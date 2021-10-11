@@ -941,27 +941,32 @@ type CanCheckPlayable env
     , HasSet InvestigatorId env ()
     )
 
+data CostStatus = UnpaidCost | PaidCost
+  deriving stock Eq
+
 getIsPlayable
   :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
   => InvestigatorId
   -> Source
+  -> CostStatus
   -> [Window]
   -> Card
   -> m Bool
-getIsPlayable iid source windows' c = do
+getIsPlayable iid source costStatus windows' c = do
   availableResources <- unResourceCount <$> getCount iid
-  getIsPlayableWithResources iid source availableResources windows' c
+  getIsPlayableWithResources iid source availableResources costStatus windows' c
 
 getIsPlayableWithResources
   :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
   => InvestigatorId
   -> Source
   -> Int
+  -> CostStatus
   -> [Window]
   -> Card
   -> m Bool
-getIsPlayableWithResources _ _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
-getIsPlayableWithResources iid source availableResources windows' c@(PlayerCard _)
+getIsPlayableWithResources _ _ _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
+getIsPlayableWithResources iid source availableResources costStatus windows' c@(PlayerCard _)
   = do
     iids <- filter (/= iid) <$> getInvestigatorIds
     iidsWithModifiers <- for iids $ \iid' -> do
@@ -1004,7 +1009,9 @@ getIsPlayableWithResources iid source availableResources windows' c@(PlayerCard 
     passesLimits <- allM passesLimit (cdLimits pcDef)
     pure
       $ (cdCardType pcDef /= SkillType)
-      && (modifiedCardCost <= (availableResources + additionalResources))
+      && ((costStatus == PaidCost)
+         || (modifiedCardCost <= (availableResources + additionalResources))
+         )
       && none prevents modifiers
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
       && (cdAction pcDef /= Just Action.Evade || canEvade)
@@ -1170,11 +1177,17 @@ passesCriteria iid source windows' = \case
     availableResources <- unResourceCount <$> getCount iid
     results <- getList @Card cardMatcher
     anyM
-      (getIsPlayableWithResources iid source (availableResources + n) windows')
+      (getIsPlayableWithResources
+        iid
+        source
+        (availableResources + n)
+        UnpaidCost
+        windows'
+      )
       results
   Criteria.PlayableCardExists cardMatcher -> do
     results <- getList @Card cardMatcher
-    anyM (getIsPlayable iid source windows') results
+    anyM (getIsPlayable iid source UnpaidCost windows') results
   Criteria.PlayableCardInDiscard discardSignifier cardMatcher -> do
     let
       investigatorMatcher = case discardSignifier of
@@ -1195,7 +1208,7 @@ passesCriteria iid source windows' = \case
       filter (`cardMatch` cardMatcher)
       . concat
       <$> traverse (fmap (map unDiscardedPlayerCard) . getList) investigatorIds
-    anyM (getIsPlayable iid source windows'' . PlayerCard) discards
+    anyM (getIsPlayable iid source UnpaidCost windows'' . PlayerCard) discards
   Criteria.FirstAction -> do
     n <- unActionTakenCount <$> getCount iid
     pure $ n == 0
@@ -1564,7 +1577,7 @@ windowMatches iid source window' = \case
     -- TODO: do we need to grab the card source?
     -- cards <- filter (/= c) <$> getList cardMatcher
     cards <- getList cardMatcher
-    anyM (getIsPlayable iid source [window']) cards
+    anyM (getIsPlayable iid source UnpaidCost [window']) cards
   Matcher.PhaseBegins whenMatcher phaseMatcher -> case window' of
     Window t Window.AnyPhaseBegins | whenMatcher == t ->
       pure $ phaseMatcher == Matcher.AnyPhase

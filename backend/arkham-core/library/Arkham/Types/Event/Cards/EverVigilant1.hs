@@ -46,6 +46,7 @@ instance CanCheckPlayable env => RunMessage env EverVigilant1 where
         (getIsPlayable
           iid
           (toSource attrs)
+          UnpaidCost
           [Window Timing.When (DuringTurn iid), Window Timing.When NonFast]
         )
         cards

@@ -72,6 +72,7 @@ instance (InvestigatorRunner env) => RunMessage env WilliamYorick where
         (getIsPlayable
             iid
             source
+            UnpaidCost
             [ Window Timing.When Window.NonFast
             , Window Timing.When (Window.DuringTurn iid)
             ]

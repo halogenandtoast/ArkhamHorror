@@ -3221,6 +3221,7 @@ runGameMessage msg g = case msg of
     investigator <- getInvestigator iid
     playableCards <- getPlayableCards
       (toAttrs investigator)
+      PaidCost
       [ Window Timing.When (Window.DuringTurn iid)
       , Window Timing.When Window.NonFast
       , Window Timing.When Window.FastPlayerWindow
@@ -3230,7 +3231,7 @@ runGameMessage msg g = case msg of
       Just card -> runGameMessage (PutCardIntoPlay iid card mtarget) g
   PlayFastEvent iid cardId mtarget windows' -> do
     investigator <- getInvestigator iid
-    playableCards <- getPlayableCards (toAttrs investigator) windows'
+    playableCards <- getPlayableCards (toAttrs investigator) PaidCost windows'
     case find ((== cardId) . toCardId) (playableCards <> handOf investigator) of
       Nothing -> pure g -- card was discarded before playing
       Just card -> do

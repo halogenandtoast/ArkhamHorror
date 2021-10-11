@@ -418,10 +418,8 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
     CreateEnemyAt card _ _ -> do
       pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
     PlaceUnderneath AgendaDeckTarget cards -> do
-      push (After msg)
       pure $ a & cardsUnderneathAgendaDeckL <>~ cards
     PlaceUnderneath ActDeckTarget cards -> do
-      push (After msg)
       pure $ a & cardsUnderneathActDeckL <>~ cards
     PlaceNextTo ActDeckTarget cards -> do
       pure $ a & cardsNextToActDeckL <>~ cards

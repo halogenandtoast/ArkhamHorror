@@ -510,6 +510,11 @@ getInvestigatorsMatching = \case
     filterM
       ((`gameValueMatches` gameValueMatcher) . unClueCount <=< getCount)
       allInvestigators'
+  InvestigatorWithResources gameValueMatcher -> do
+    allInvestigators' <- toList . view investigatorsL <$> getGame
+    filterM
+      ((`gameValueMatches` gameValueMatcher) . unResourceCount <=< getCount)
+      allInvestigators'
   InvestigatorWithActionsRemaining gameValueMatcher -> do
     allInvestigators' <- toList . view investigatorsL <$> getGame
     filterM
@@ -582,7 +587,6 @@ getInvestigatorsMatching = \case
   NoDamageDealtThisTurn -> pure []
   UnengagedInvestigator -> pure []
   ContributedMatchingIcons _ -> pure []
-  InvestigatorWithResources _ -> pure []
 
 getTreacheriesMatching
   :: (MonadReader env m, HasGame env) => TreacheryMatcher -> m [Treachery]

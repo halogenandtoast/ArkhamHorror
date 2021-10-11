@@ -44,6 +44,7 @@ instance CanCheckPlayable env => RunMessage env UncageTheSoul where
           iid
           (InvestigatorSource iid)
           (availableResources + 3)
+          UnpaidCost
           windows'
         )
         results

@@ -575,25 +575,27 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
 getPlayableCards
   :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
   => InvestigatorAttrs
+  -> CostStatus
   -> [Window]
   -> m [Card]
-getPlayableCards a@InvestigatorAttrs {..} windows = do
+getPlayableCards a@InvestigatorAttrs {..} costStatus windows = do
   asIfInHandCards <- getAsIfInHandCards a
-  playableDiscards <- getPlayableDiscards a windows
+  playableDiscards <- getPlayableDiscards a costStatus windows
   playableHandCards <- filterM
-    (getIsPlayable (toId a) (toSource a) windows)
+    (getIsPlayable (toId a) (toSource a) costStatus windows)
     (investigatorHand <> asIfInHandCards)
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards
   :: (MonadReader env m, CanCheckPlayable env)
   => InvestigatorAttrs
+  -> CostStatus
   -> [Window]
   -> m [Card]
-getPlayableDiscards attrs@InvestigatorAttrs {..} windows = do
+getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   filterM
-    (getIsPlayable (toId attrs) (toSource attrs) windows)
+    (getIsPlayable (toId attrs) (toSource attrs) costStatus windows)
     (possibleCards modifiers)
  where
   possibleCards modifiers = map (PlayerCard . snd) $ filter
@@ -2055,7 +2057,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ push (RunWindow investigatorId windows)
   RunWindow iid windows | iid == investigatorId -> do
     actions <- nub . concat <$> traverse (getActions iid) windows
-    playableCards <- getPlayableCards a windows
+    playableCards <- getPlayableCards a UnpaidCost windows
     if notNull playableCards || notNull actions
       then if any isForcedAbility actions
         then do
@@ -2279,7 +2281,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               , Window Timing.When (Window.DuringTurn iid)
               ]
           playableCards <- filterM
-            (getIsPlayable who source windows')
+            (getIsPlayable who source UnpaidCost windows')
             targetCards
           let
             choices =
@@ -2406,7 +2408,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         canAffordTakeResources <- getCanAfford a Action.Resource
         canAffordDrawCards <- getCanAfford a Action.Draw
         canAffordPlayCard <- getCanAfford a Action.Play
-        playableCards <- getPlayableCards a windows
+        playableCards <- getPlayableCards a UnpaidCost windows
         let usesAction = not isAdditional
         a <$ push
           (AskPlayer $ chooseOne
@@ -2449,7 +2451,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     if any isForcedAbility actions
       then pure a -- handled by active player
       else do
-        playableCards <- getPlayableCards a windows
+        playableCards <- getPlayableCards a UnpaidCost windows
         let
           usesAction = not isAdditional
           choices =

@@ -45,6 +45,7 @@ instance AssetRunner env => RunMessage env JoeyTheRatVigil where
         (getIsPlayable
           iid
           source
+          UnpaidCost
           [ Window Timing.When (DuringTurn iid)
           , Window Timing.When FastPlayerWindow
           ]

@@ -19,6 +19,7 @@ import {-# SOURCE #-} Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.SkillType
 import {-# SOURCE #-} Arkham.Types.Source
+import {-# SOURCE #-} Arkham.Types.Target
 import Arkham.Types.Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
@@ -456,6 +457,7 @@ data WindowMatcher
   | MovedButBeforeEnemyEngagement Timing Who Where
   | MovedFromHunter Timing EnemyMatcher
   | ChosenRandomLocation Timing LocationMatcher
+  | PlaceUnderneath Timing TargetMatcher CardMatcher
   | EnemyWouldBeDefeated Timing EnemyMatcher
   | EnemyWouldReady Timing EnemyMatcher
   | EnemyEnters Timing Where EnemyMatcher
@@ -562,6 +564,22 @@ instance Semigroup SourceMatcher where
   SourceMatches xs <> x = SourceMatches $ xs <> [x]
   x <> SourceMatches xs = SourceMatches $ x : xs
   x <> y = SourceMatches [x, y]
+
+data TargetMatcher
+  = TargetIs Target
+  | TargetMatchesAny [TargetMatcher]
+  | AnyTarget
+  | TargetMatches [TargetMatcher]
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup TargetMatcher where
+  AnyTarget <> x = x
+  x <> AnyTarget = x
+  TargetMatches xs <> TargetMatches ys = TargetMatches $ xs <> ys
+  TargetMatches xs <> x = TargetMatches $ xs <> [x]
+  x <> TargetMatches xs = TargetMatches $ x : xs
+  x <> y = TargetMatches [x, y]
 
 instance Semigroup SkillTestMatcher where
   AnySkillTest <> x = x

@@ -13,7 +13,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (PlaceUnderneath)
 import Arkham.Types.SkillType
 import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing

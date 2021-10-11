@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
-
 module Arkham.Types.Game.Helpers where
 
 import Arkham.Prelude
@@ -66,6 +64,18 @@ windows windows' = do
   pure $ do
     timing <- [Timing.When, Timing.After]
     [CheckWindow iids $ map (Window timing) windows']
+
+splitWithWindows
+  :: (MonadReader env m, HasSet InvestigatorId env ())
+  => Message
+  -> [Window.WindowType]
+  -> m [Message]
+splitWithWindows msg windows' = do
+  iids <- getInvestigatorIds
+  pure
+    $ [CheckWindow iids $ map (Window Timing.When) windows']
+    <> [msg]
+    <> [CheckWindow iids $ map (Window Timing.After) windows']
 
 cancelToken :: (HasQueue env, MonadIO m, MonadReader env m) => Token -> m ()
 cancelToken token = withQueue $ \queue ->
@@ -1440,6 +1450,12 @@ windowMatches iid source window' = \case
     Window t (Window.MovedFromHunter eid) | t == timing ->
       member eid <$> select enemyMatcher
     _ -> pure False
+  Matcher.PlaceUnderneath timing targetMatcher cardMatcher -> case window' of
+    Window t (Window.PlaceUnderneath target' card) | t == timing -> liftA2
+      (&&)
+      (targetMatches target' targetMatcher)
+      (pure $ cardMatch card cardMatcher)
+    _ -> pure False
   Matcher.CommittedCard timing whoMatcher cardMatcher -> case window' of
     Window t (Window.CommittedCard who card) | t == timing -> liftA2
       (&&)
@@ -2114,6 +2130,13 @@ sourceMatches s = \case
     LocationSource _ -> True
     TreacherySource _ -> True
     _ -> False
+
+targetMatches :: MonadReader env m => Target -> Matcher.TargetMatcher -> m Bool
+targetMatches s = \case
+  Matcher.TargetMatchesAny ms -> anyM (targetMatches s) ms
+  Matcher.TargetIs s' -> pure $ s == s'
+  Matcher.AnyTarget -> pure True
+  Matcher.TargetMatches ms -> allM (targetMatches s) ms
 
 enemyMatches
   :: (MonadReader env m, CanCheckPlayable env)

@@ -23,7 +23,6 @@ hisDomain = agenda (3, A) HisDomain Cards.hisDomain (Static 8)
 instance AgendaRunner env => RunMessage env HisDomain where
   runMessage msg a@(HisDomain attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      investigatorIds <- selectList $ UneliminatedInvestigator
-      a <$ pushAll
-        [ InvestigatorDefeated (toSource attrs) iid | iid <- investigatorIds ]
+      investigatorIds <- selectList UneliminatedInvestigator
+      a <$ pushAll (map (InvestigatorDefeated (toSource attrs)) investigatorIds)
     _ -> HisDomain <$> runMessage msg attrs

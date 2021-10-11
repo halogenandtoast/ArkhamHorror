@@ -18,7 +18,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet qualified as EncounterSet
 import Arkham.Types.Helpers
 import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Types.Matcher hiding (PlaceUnderneath)
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs

@@ -17,7 +17,11 @@ import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Location as X
 import Arkham.Types.Matcher hiding
-  (ChosenRandomLocation, InvestigatorDefeated, InvestigatorEliminated)
+  ( ChosenRandomLocation
+  , InvestigatorDefeated
+  , InvestigatorEliminated
+  , PlaceUnderneath
+  )
 import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Query
@@ -420,12 +424,12 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
     PlaceUnderneath AgendaDeckTarget cards -> do
       pure $ a & cardsUnderneathAgendaDeckL <>~ cards
     PlaceUnderneath ActDeckTarget cards -> do
-      pushAll =<< splitWithWindows
-        (PlacedUnderneath ActDeckTarget cards)
-        (map (Window.PlaceUnderneath ActDeckTarget) cards)
+      for_ cards $ \card -> pushAll =<< splitWithWindows
+        (PlacedUnderneath ActDeckTarget card)
+        [Window.PlaceUnderneath ActDeckTarget card]
       pure a
-    PlacedUnderneath ActDeckTarget cards -> do
-      pure $ a & cardsUnderneathActDeckL <>~ cards
+    PlacedUnderneath ActDeckTarget card -> do
+      pure $ a & cardsUnderneathActDeckL %~ (card :)
     PlaceNextTo ActDeckTarget cards -> do
       pure $ a & cardsNextToActDeckL <>~ cards
     ShuffleIntoEncounterDeck encounterCards -> do

@@ -430,7 +430,7 @@ data Message
     | PlaceLocationMatching CardMatcher
     | PlaceResources Target Int
     | PlaceUnderneath Target [Card]
-    | PlacedUnderneath Target [Card]
+    | PlacedUnderneath Target Card
     | PlaceNextTo Target [Card]
     | PlacedLocation Name CardCode LocationId
     | PlacedLocationDirection LocationId Direction LocationId

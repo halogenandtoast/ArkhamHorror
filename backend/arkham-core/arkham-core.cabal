@@ -120,6 +120,7 @@ library
       Arkham.Types.Agenda.Cards.Encore
       Arkham.Types.Agenda.Cards.FashionablyLate
       Arkham.Types.Agenda.Cards.FeedTheBeast
+      Arkham.Types.Agenda.Cards.HisDomain
       Arkham.Types.Agenda.Cards.HorrorsUnleashed
       Arkham.Types.Agenda.Cards.InEveryShadow
       Arkham.Types.Agenda.Cards.LockedInside
@@ -152,6 +153,7 @@ library
       Arkham.Types.Agenda.Cards.TheTruthIsHidden
       Arkham.Types.Agenda.Cards.TheyreGettingOut
       Arkham.Types.Agenda.Cards.TimeIsRunningShort
+      Arkham.Types.Agenda.Cards.TorturousDescent
       Arkham.Types.Agenda.Cards.UndergroundMuscle
       Arkham.Types.Agenda.Cards.VengeanceAwaits
       Arkham.Types.Agenda.Cards.WhatsGoingOn

@@ -9,14 +9,11 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.Matcher hiding (PlaceUnderneath)
 import Arkham.Types.Message
 import Arkham.Types.Scenario.Deck
 import Arkham.Types.Target
-import Arkham.Types.Trait
 
 newtype LockedInside = LockedInside AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
@@ -29,10 +26,8 @@ instance AgendaRunner env => RunMessage env LockedInside where
   runMessage msg a@(LockedInside attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      lunatics <- mapMaybe (preview _EncounterCard) <$> getSetAsideCardsMatching
-        (CardWithTrait Lunatic <> CardWithType EnemyType)
       a <$ pushAll
-        [ ShuffleIntoEncounterDeck lunatics
+        [ ShuffleScenarioDeckIntoEncounterDeck LunaticsDeck
         , ShuffleEncounterDiscardBackIn
         , DrawRandomFromScenarioDeck
           leadInvestigatorId

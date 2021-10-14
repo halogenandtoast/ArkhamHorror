@@ -397,6 +397,20 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
             $ "Invalid scenario deck key "
             <> show key
             <> ", could not find deck in scenario"
+    ShuffleScenarioDeckIntoEncounterDeck key ->
+      case lookup key scenarioDecks of
+        Just [] -> pure a
+        Just xs -> do
+          push
+            $ ShuffleIntoEncounterDeck
+            $ mapMaybe (preview _EncounterCard)
+            $ traceShowId xs
+          pure $ a & decksL %~ deleteMap key
+        _ ->
+          error
+            $ "Invalid scenario deck key "
+            <> show key
+            <> ", could not find deck in scenario"
     AddCardToScenarioDeck key card -> case lookup key scenarioDecks of
       Just cards -> pure $ a & (decksL . at key ?~ card : cards)
       _ ->

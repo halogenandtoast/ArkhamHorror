@@ -155,6 +155,7 @@ data Message
     | AddToHandFromDeck InvestigatorId CardId
     | AddToScenarioDeck ScenarioDeckKey Target
     | AddCardToScenarioDeck ScenarioDeckKey Card
+    | ShuffleScenarioDeckIntoEncounterDeck ScenarioDeckKey
     | DrawFromScenarioDeck InvestigatorId ScenarioDeckKey Target Int
     | DrawRandomFromScenarioDeck InvestigatorId ScenarioDeckKey Target Int
     | DrewFromScenarioDeck InvestigatorId ScenarioDeckKey Target [Card]

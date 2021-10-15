@@ -37,6 +37,7 @@ instance FromJSON Modifier where
 
 data ModifierType
   = ActionCostOf ActionTarget Int
+  | TraitRestrictedModifier Trait ModifierType
   | ActionCostModifier Int
   | ActionCostSetToModifier Int
   | ActionSkillModifier Action SkillType Int

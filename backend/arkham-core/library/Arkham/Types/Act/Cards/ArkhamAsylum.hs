@@ -77,10 +77,15 @@ instance ActRunner env => RunMessage env ArkhamAsylum where
       pure a
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} st _
       | isSource attrs source -> do
-        push (AdvanceAct (toId attrs) source)
+        replaceMessageMatching
+          (== SkillTestApplyResultsAfter)
+          (\m -> [m, AdvanceAct (toId attrs) source])
         pure $ ArkhamAsylum $ attrs `with` Metadata
           (insertSet st $ chosenSkills metadata)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        a <$ push (AdvanceActDeck (actDeckId attrs) (toSource attrs))
+        replaceMessageMatching
+          (== SkillTestApplyResultsAfter)
+          (\m -> [m, AdvanceActDeck (actDeckId attrs) (toSource attrs)])
+        pure a
     _ -> ArkhamAsylum . (`with` metadata) <$> runMessage msg attrs

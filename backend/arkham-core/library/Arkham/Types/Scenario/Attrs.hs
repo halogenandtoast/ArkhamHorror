@@ -401,10 +401,7 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
       case lookup key scenarioDecks of
         Just [] -> pure a
         Just xs -> do
-          push
-            $ ShuffleIntoEncounterDeck
-            $ mapMaybe (preview _EncounterCard)
-            $ traceShowId xs
+          push $ ShuffleIntoEncounterDeck $ mapMaybe (preview _EncounterCard) xs
           pure $ a & decksL %~ deleteMap key
         _ ->
           error

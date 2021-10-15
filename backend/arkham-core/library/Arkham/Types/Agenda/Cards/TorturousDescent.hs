@@ -31,7 +31,7 @@ instance AgendaRunner env => RunMessage env TorturousDescent where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       spawnConstanceDumaine <-
-        elem (Recorded $ toCardCode Enemies.constanceDumaine)
+        notElem (Recorded $ toCardCode Enemies.constanceDumaine)
           <$> getRecordSet VIPsSlain
 
       spawnConstanceDumaineMessages <- if spawnConstanceDumaine

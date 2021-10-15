@@ -51,7 +51,7 @@ instance AgendaRunner env => RunMessage env RansackingTheManor where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       possessedOathspeaker <- getSetAsideCard Enemies.possessedOathspeaker
       spawnSebastienMoreau <-
-        elem (Recorded $ toCardCode Enemies.sebastienMoreau)
+        notElem (Recorded $ toCardCode Enemies.sebastienMoreau)
           <$> getRecordSet VIPsSlain
       spawnSebastienMoreauMessages <- if spawnSebastienMoreau
         then do

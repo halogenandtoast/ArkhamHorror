@@ -24,6 +24,10 @@ import Arkham.Types.Timing
 import Arkham.Types.Token
 import Arkham.Types.Trait
 
+data Matcher = MatchInvestigator InvestigatorMatcher | MatchLocation LocationMatcher
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
 type Who = InvestigatorMatcher
 
 pattern InvestigatorWithoutActionsRemaining :: InvestigatorMatcher

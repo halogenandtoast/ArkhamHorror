@@ -15,7 +15,6 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers
 import Arkham.Types.GameValue
-import Arkham.Types.LocationId
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -31,10 +30,9 @@ ascendingTheHillV3 :: ActCard AscendingTheHillV3
 ascendingTheHillV3 =
   act (2, A) AscendingTheHillV3 Cards.ascendingTheHillV3 Nothing
 
-instance HasSet Trait env LocationId => HasModifiersFor env AscendingTheHillV3 where
-  getModifiersFor _ (LocationTarget lid) (AscendingTheHillV3 attrs) = do
-    traits <- getSet lid
-    pure $ toModifiers attrs [ CannotPlaceClues | Altered `notMember` traits ]
+instance HasModifiersFor env AscendingTheHillV3 where
+  getModifiersFor _ (LocationTarget _) (AscendingTheHillV3 attrs) = do
+    pure $ toModifiers attrs [TraitRestrictedModifier Altered CannotPlaceClues]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities AscendingTheHillV3 where

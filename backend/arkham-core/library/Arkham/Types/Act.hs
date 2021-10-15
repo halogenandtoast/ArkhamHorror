@@ -15,7 +15,6 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.Query
-import Arkham.Types.Trait
 
 $(buildEntity "Act")
 
@@ -30,7 +29,7 @@ instance
   => RunMessage env Act where
   runMessage = genericRunMessage
 
-instance (Query LocationMatcher env, HasSet Trait env LocationId) => HasModifiersFor env Act where
+instance Query LocationMatcher env => HasModifiersFor env Act where
   getModifiersFor = genericGetModifiersFor
 
 instance HasStep ActStep env Act where

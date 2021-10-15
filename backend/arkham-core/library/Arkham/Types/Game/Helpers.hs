@@ -380,6 +380,7 @@ getActions
      , HasCostPayment env
      , HasList UsedAbility env ()
      , CanCheckPlayable env
+     , HasCallStack
      )
   => InvestigatorId
   -> Window
@@ -2146,7 +2147,7 @@ enemyMatches
 enemyMatches !enemyId !mtchr = member enemyId <$> getSet mtchr
 
 locationMatches
-  :: (MonadReader env m, CanCheckPlayable env)
+  :: (MonadReader env m, CanCheckPlayable env, HasCallStack)
   => InvestigatorId
   -> Source
   -> Window

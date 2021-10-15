@@ -11,7 +11,6 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
-import Arkham.Types.Id
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name
@@ -26,10 +25,9 @@ theReallyBadOnesV2 :: ActCard TheReallyBadOnesV2
 theReallyBadOnesV2 =
   act (2, A) TheReallyBadOnesV2 Cards.theReallyBadOnesV2 Nothing
 
-instance HasSet Trait env LocationId => HasModifiersFor env TheReallyBadOnesV2 where
-  getModifiersFor _ (LocationTarget lid) (TheReallyBadOnesV2 attrs) = do
-    traits <- getSet lid
-    pure [ toModifier attrs Blank | ArkhamAsylum `member` traits ]
+instance HasModifiersFor env TheReallyBadOnesV2 where
+  getModifiersFor _ (LocationTarget _) (TheReallyBadOnesV2 attrs) = do
+    pure [toModifier attrs (TraitRestrictedModifier ArkhamAsylum Blank)]
   getModifiersFor _ _ _ = pure []
 
 instance ActRunner env => RunMessage env TheReallyBadOnesV2 where

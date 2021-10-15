@@ -1676,7 +1676,7 @@ instance HasGame env => HasTokenValue env InvestigatorId where
 instance HasGame env => HasModifiersFor env () where
   getModifiersFor source target _ = do
     g <- getGame
-    allModifiers <- concat <$> sequence
+    allModifiers' <- concat <$> sequence
       [ concat
         <$> traverse (getModifiersFor source target) (g ^. enemiesL . to toList)
       , concat
@@ -1702,6 +1702,13 @@ instance HasGame env => HasModifiersFor env () where
         (g ^. investigatorsL . to toList)
       , maybe (pure []) (getModifiersFor source target) (g ^. skillTestL)
       ]
+    traits <- getSet target
+    let
+      applyTraitRestrictedModifiers m = case modifierType m of
+        TraitRestrictedModifier trait modifierType' ->
+          m { modifierType = modifierType' } <$ guard (trait `member` traits)
+        _ -> Just m
+      allModifiers = mapMaybe applyTraitRestrictedModifiers allModifiers'
     pure $ if any ((== Blank) . modifierType) allModifiers
       then filter ((/= targetToSource target) . modifierSource) allModifiers
       else allModifiers
@@ -1940,6 +1947,41 @@ instance HasGame env => HasSet Trait env Source where
     AssetMatcherSource{} -> pure mempty -- should have been replaced
     LocationMatcherSource{} -> pure mempty -- should have been replaced
     StorySource{} -> pure mempty
+
+instance HasGame env => HasSet Trait env Target where
+  getSet = \case
+    YouTarget -> pure mempty
+    ActDeckTarget{} -> pure mempty
+    AgendaDeckTarget{} -> pure mempty
+    AssetTarget aid -> toTraits <$> getAsset aid
+    EventTarget eid -> toTraits <$> getEvent eid
+    EffectTarget eid -> getSet =<< getEffect eid
+    EnemyTarget eid -> toTraits <$> getEnemy eid
+    ScenarioTarget _ -> pure mempty
+    InvestigatorTarget iid -> toTraits <$> getInvestigator iid
+    CardCodeTarget _ -> pure mempty
+    CardIdTarget _ -> pure mempty -- has traits, but not used
+    TokenTarget _ -> pure mempty
+    AgendaTarget _ -> pure mempty
+    LocationTarget lid -> toTraits <$> getLocation lid
+    SkillTestTarget{} -> pure mempty
+    AfterSkillTestTarget -> pure mempty
+    TreacheryTarget tid -> toTraits <$> getTreachery tid
+    SkillTarget _ -> pure mempty -- TODO: should this return traits
+    ActTarget _ -> pure mempty
+    TestTarget -> pure mempty
+    ProxyTarget _ _ -> pure mempty
+    ResourceTarget -> pure mempty
+    StoryTarget{} -> pure mempty
+    SetAsideLocationsTarget _ -> pure mempty
+    EncounterDeckTarget -> pure mempty
+    ScenarioDeckTarget -> pure mempty
+    CardTarget c -> pure $ toTraits c
+    SearchedCardTarget _ -> pure mempty
+    SkillTestInitiatorTarget _ -> pure mempty
+    PhaseTarget _ -> pure mempty
+    TokenFaceTarget _ -> pure mempty
+    InvestigationTarget _ _ -> pure mempty
 
 instance HasGame env => HasSet Trait env (InvestigatorId, CardId) where
   getSet (iid, cid) =

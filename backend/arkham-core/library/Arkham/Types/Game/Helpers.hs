@@ -1241,11 +1241,9 @@ passesCriteria iid source windows' = \case
           . InvestigatorTarget
           )
         =<< selectList investigatorMatcher
-    discards <-
-      concat
-        <$> traverse
-              (fmap (map unDiscardedPlayerCard) . getList)
-              investigatorIds
+    discards <- concatMapM
+      (fmap (map unDiscardedPlayerCard) . getList)
+      investigatorIds
     let
       filteredDiscards = case traits of
         [] -> discards

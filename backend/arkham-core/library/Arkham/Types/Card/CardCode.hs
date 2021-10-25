@@ -5,7 +5,23 @@ import Data.Aeson.Types
 import Data.Text qualified as T
 
 newtype CardCode = CardCode { unCardCode :: Text }
-  deriving newtype (Show, Eq, Hashable, IsString)
+  deriving newtype (Show, Hashable, IsString)
+
+instance Eq CardCode where
+  (CardCode a) == (CardCode b) =
+    a == b || (toBase a == toBase b && complements (sideOf a) (sideOf b))
+   where
+    sideSuffixes = "abcd" :: [Char]
+    isSideSuffix = (`elem` sideSuffixes)
+    toBase = T.dropWhileEnd isSideSuffix
+    sideOf = listToMaybe . T.unpack . T.takeWhileEnd isSideSuffix
+    complements (Just x) (Just y) = case x of
+      'a' -> y == 'b'
+      'b' -> y == 'a'
+      'c' -> y == 'd'
+      'd' -> y == 'c'
+      n -> error $ n : " is not a valid side"
+    complements _ _ = False
 
 instance ToJSON CardCode where
   toJSON = toJSON . T.cons 'c' . unCardCode

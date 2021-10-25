@@ -272,6 +272,7 @@ getIsPrey
      , HasSet Int env SkillType -- hmmm
      , HasSet InvestigatorId env ()
      , Query AssetMatcher env
+     , Query InvestigatorMatcher env
      , HasModifiersFor env ()
      )
   => Prey
@@ -282,9 +283,8 @@ getIsPrey AnyPrey _ = pure True
 getIsPrey (HighestSkill skillType) i = do
   highestSkill <- fromMaybe 0 . maximumMay <$> getSetList skillType
   pure $ highestSkill == skillValueFor skillType Nothing [] (toAttrs i)
-getIsPrey (LowestSkill skillType) i = do
-  lowestSkillValue <- fromMaybe 100 . minimumMay <$> getSetList skillType
-  pure $ lowestSkillValue == skillValueFor skillType Nothing [] (toAttrs i)
+getIsPrey (LowestSkill skillType) i =
+  member (toId i) <$> select (InvestigatorWithLowestSkill skillType)
 getIsPrey LowestRemainingHealth i = do
   remainingHealth <- getRemainingHealth i
   lowestRemainingHealth <-

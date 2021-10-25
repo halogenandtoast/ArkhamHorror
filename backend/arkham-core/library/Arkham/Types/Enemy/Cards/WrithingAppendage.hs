@@ -11,8 +11,6 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.DamageEffect
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Helpers
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message hiding (EnemyAttacks, EnemyDefeated)
 import Arkham.Types.Timing qualified as Timing

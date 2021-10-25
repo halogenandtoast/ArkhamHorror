@@ -3,6 +3,7 @@ module Arkham.Types.Act.Runner where
 import Arkham.Prelude
 
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Classes
 import Arkham.Types.Decks
 import Arkham.Types.Id
@@ -35,6 +36,7 @@ type ActRunner env
     , HasList Token env ()
     , HasList ResignedCardCode env ()
     , HasList UnderneathCard env ActDeck
+    , HasList DiscardedEncounterCard env ()
     , HasRecord env ()
     , HasSet CompletedScenarioId env ()
     , HasSet EnemyId env LocationId

@@ -17,6 +17,7 @@ import Arkham.Types.Keyword qualified as Keyword
 import Arkham.Types.LocationSymbol
 import {-# SOURCE #-} Arkham.Types.Modifier
 import Arkham.Types.Phase
+import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillType
 import {-# SOURCE #-} Arkham.Types.Source
 import {-# SOURCE #-} Arkham.Types.Target
@@ -80,6 +81,7 @@ data InvestigatorMatcher
   | InvestigatorWithId InvestigatorId
   | InvestigatorWithTitle Text
   | InvestigatorMatches [InvestigatorMatcher]
+  | InvestigatorWithLowestSkill SkillType
   | AnyInvestigator [InvestigatorMatcher]
   | TurnInvestigator
   | NoDamageDealtThisTurn
@@ -196,6 +198,7 @@ data EnemyMatcher
   | CanFightEnemy
   | CanEvadeEnemy
   | CanEngageEnemy
+  | ReadyEnemy
   | ExhaustedEnemy
   | NonWeaknessEnemy
   | EnemyMatchAll [EnemyMatcher]
@@ -515,6 +518,7 @@ data WindowMatcher
   | OrWindowMatcher [WindowMatcher]
   | DealtDamage Timing Who
   | DealtHorror Timing Who
+  | AssignedHorror Timing Who TargetListMatcher
   | DealtDamageOrHorror Timing Who
   | WouldDrawEncounterCard Timing Who
   | DrawCard Timing Who ExtendedCardMatcher DeckMatcher
@@ -584,6 +588,13 @@ instance Semigroup TargetMatcher where
   TargetMatches xs <> x = TargetMatches $ xs <> [x]
   x <> TargetMatches xs = TargetMatches $ x : xs
   x <> y = TargetMatches [x, y]
+
+data TargetListMatcher
+  = HasTarget TargetMatcher
+  | ExcludesTarget TargetMatcher
+  | AnyTargetList
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup SkillTestMatcher where
   AnySkillTest <> x = x
@@ -671,6 +682,10 @@ instance Monoid AbilityMatcher where
   mempty = AnyAbility
 
 data CardListMatcher = LengthIs ValueMatcher | HasCard CardMatcher | AnyCards
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data ScenarioLogKeyListMatcher = RememberedLengthIs ValueMatcher | HasRemembered ScenarioLogKey
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

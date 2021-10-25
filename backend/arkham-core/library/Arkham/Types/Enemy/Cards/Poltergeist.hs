@@ -13,8 +13,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.DamageEffect
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Helpers
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Types.Message
 import Arkham.Types.Modifier

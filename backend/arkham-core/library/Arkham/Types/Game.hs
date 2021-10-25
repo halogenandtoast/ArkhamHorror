@@ -500,6 +500,12 @@ getInvestigatorsMatching = \case
         =<< traverse getSetList
         =<< selectList locationMatcher
   InvestigatorWithId iid -> pure <$> getInvestigator iid
+  InvestigatorWithLowestSkill skillType -> do
+    lowestSkillValue <- fromMaybe 100 . minimumMay <$> getSetList skillType
+    filterM (fmap (== lowestSkillValue) . getSkillValue skillType)
+      . toList
+      . view investigatorsL
+      =<< getGame
   InvestigatorCanMove -> do
     investigators <- toList . view investigatorsL <$> getGame
     filterM
@@ -1015,6 +1021,7 @@ getEnemiesMatching matcher = do
     EnemyWithDamage gameValueMatcher ->
       (`gameValueMatches` gameValueMatcher) . fst . getDamage
     ExhaustedEnemy -> pure . isExhausted
+    ReadyEnemy -> pure . not . isExhausted
     AnyEnemy -> pure . const True
     EnemyIs cardCode -> pure . (== cardCode) . toCardCode
     NonWeaknessEnemy -> pure . isNothing . cdCardSubType . toCardDef
@@ -3839,7 +3846,7 @@ runGameMessage msg g = case msg of
     let
       asset = createAsset card
       assetId = toId asset
-    push (TakeControlOfAsset iid assetId)
+    pushAll [TakeControlOfAsset iid assetId]
     pure $ g & assetsL . at assetId ?~ asset
   ReplaceInvestigatorAsset iid card -> do
     let

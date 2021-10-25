@@ -58,13 +58,13 @@ instance ActRunner env => RunMessage env FindingAWayInside where
             | iid <- investigatorIds
             ]
           , RevealLocation Nothing museumHallsId
-          , AdvanceToAct actDeckId Acts.nightAtTheMuseum (toSource attrs)
+          , AdvanceToAct actDeckId Acts.nightAtTheMuseum A (toSource attrs)
           ]
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       museumHallsId <- fromJustNote "missing museum halls"
         <$> getId (LocationWithTitle "Museum Halls")
       a <$ pushAll
         [ RevealLocation Nothing museumHallsId
-        , AdvanceToAct actDeckId Acts.breakingAndEntering (toSource attrs)
+        , AdvanceToAct actDeckId Acts.breakingAndEntering A (toSource attrs)
         ]
     _ -> FindingAWayInside <$> runMessage msg attrs

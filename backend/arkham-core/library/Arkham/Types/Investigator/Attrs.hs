@@ -1300,6 +1300,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [ Window Timing.When (Window.DealtHorror source target)
          | target <- nub horrorTargets
          ]
+      <> [Window Timing.When (Window.AssignedHorror source iid horrorTargets)]
       )
   InvestigatorDoAssignDamage iid source strategy health sanity damageTargets horrorTargets
     | iid == investigatorId

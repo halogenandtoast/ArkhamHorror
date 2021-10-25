@@ -10,8 +10,6 @@ import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Helpers
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.Id
 import Arkham.Types.Matcher
 import Arkham.Types.Message hiding (EnemyDefeated)

@@ -463,6 +463,14 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         (x : xs) -> do
           push (RequestedSetAsideCard target x)
           pure $ a & setAsideCardsL .~ (before <> xs)
+    TakeControlOfSetAsideAsset iid card -> do
+      let
+        cardCode = toCardCode card
+        (before, rest) =
+          break ((== cardCode) . toCardCode) scenarioSetAsideCards
+      case rest of
+        [] -> pure a
+        (x : xs) -> pure $ a & setAsideCardsL .~ (before <> xs)
     ReadStory card -> do
       leadInvestigatorId <- getLeadInvestigatorId
       push

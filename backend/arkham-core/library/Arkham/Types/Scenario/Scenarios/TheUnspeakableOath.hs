@@ -106,12 +106,10 @@ standaloneTokens =
 instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
   runMessage msg s@(TheUnspeakableOath attrs) = case msg of
     SetTokensForScenario -> do
-      standalone <- getIsStandalone
-      s <$ when
-        standalone
-        do
-          randomToken <- sample (Cultist :| [Tablet, ElderThing])
-          push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+      whenM getIsStandalone $ do
+        randomToken <- sample (Cultist :| [Tablet, ElderThing])
+        push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+      pure s
     Setup -> do
       gatheredCards <- buildEncounterDeck
         [ EncounterSet.TheUnspeakableOath

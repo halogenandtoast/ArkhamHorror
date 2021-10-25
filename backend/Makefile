@@ -13,6 +13,15 @@ api.watch:
 tags:
 	stack exec -- fast-tags --qualified -Rv --nomerge .
 
+.PHONY: core
+core:
+	cd arkham-core && \
+	stack build --fast arkham-core \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+	  --file-watch \
+		$(EXTRA_STACK_FLAGS)
+
 data:
 	cd data && \
 	curl https://arkhamdb.com/api/public/cards > cards.json && \

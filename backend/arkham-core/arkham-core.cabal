@@ -206,6 +206,7 @@ library
       Arkham.Types.Asset.Cards.Courage
       Arkham.Types.Asset.Cards.DaisysToteBag
       Arkham.Types.Asset.Cards.DaisysToteBagAdvanced
+      Arkham.Types.Asset.Cards.DanielChesterfield
       Arkham.Types.Asset.Cards.DarioElAmin
       Arkham.Types.Asset.Cards.DarkHorse
       Arkham.Types.Asset.Cards.DavidRenfield
@@ -1172,6 +1173,7 @@ library
       TypeOperators
       UndecidableInstances
       ImportQualifiedPost
+      FunctionalDependencies
   build-depends:
       MonadRandom
     , aeson >=1.5.4.1
@@ -1231,6 +1233,7 @@ executable validate
       TypeOperators
       UndecidableInstances
       ImportQualifiedPost
+      FunctionalDependencies
   ghc-options: -threaded -O2 "-with-rtsopts=-N -T -I0"
   build-depends:
       MonadRandom
@@ -1341,6 +1344,7 @@ test-suite spec
       TypeOperators
       UndecidableInstances
       ImportQualifiedPost
+      FunctionalDependencies
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-depends:
       MonadRandom

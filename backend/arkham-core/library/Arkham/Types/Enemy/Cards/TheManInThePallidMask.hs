@@ -12,8 +12,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Helpers
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier

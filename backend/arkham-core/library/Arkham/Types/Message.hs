@@ -5,6 +5,7 @@ module Arkham.Types.Message
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Act.Sequence
 import Arkham.Types.Action
 import Arkham.Types.Asset.Uses
 import Arkham.Types.CampaignLogKey
@@ -129,7 +130,7 @@ data Message
     | ReplaceAct ActId ActId
     | RevertAct ActId
     | AdvanceActDeck Int Source
-    | AdvanceToAct Int CardDef Source
+    | AdvanceToAct Int CardDef ActSide Source
 
     | AddAgenda AgendaId
     | AdvanceAgenda AgendaId
@@ -140,6 +141,9 @@ data Message
     | ReplaceAgenda AgendaId AgendaId
     | RevertAgenda AgendaId
     | ResetAgendaDeckToStage Int
+
+    | SetNoRemainingInvestigatorsHandler Target
+    | HandleNoRemainingInvestigators Target
 
     | AddCampaignCardToDeck InvestigatorId CardDef
     | AddConnection LocationId LocationSymbol

@@ -10,7 +10,6 @@ import Arkham.Types.Ability
 import Arkham.Types.Action qualified as Action
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Timing qualified as Timing

@@ -9,7 +9,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Direction
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.Matcher
 
 newtype EmergentMonstrosity = EmergentMonstrosity EnemyAttrs

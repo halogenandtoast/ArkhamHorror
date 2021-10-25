@@ -56,6 +56,6 @@ instance ActRunner env => RunMessage env Awakening where
         [ PlaceLocation location
         , SetLocationLabel locationId label
         , CreateEnemyAt theManInThePallidMask locationId Nothing
-        , AdvanceToAct (actDeckId attrs) nextAct (toSource attrs)
+        , AdvanceToAct (actDeckId attrs) nextAct A (toSource attrs)
         ]
     _ -> Awakening <$> runMessage msg attrs

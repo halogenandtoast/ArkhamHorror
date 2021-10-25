@@ -34,6 +34,7 @@ import Arkham.Types.Name
 import Arkham.Types.Phase
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Deck
+import Arkham.Types.ScenarioLogKey
 import {-# SOURCE #-} Arkham.Types.SkillTest
 import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
@@ -883,6 +884,7 @@ type CanCheckPlayable env
   = ( HasModifiersFor env ()
     , HasCostPayment env
     , HasHistory env
+    , HasSet ScenarioLogKey env ()
     , HasStep ActStep env ()
     , HasList UnderneathCard env ActDeck
     , HasList UnderneathCard env AgendaDeck
@@ -1309,6 +1311,9 @@ passesCriteria iid source windows' = \case
       \ability -> case abilityType ability of
         ActionAbility (Just Action.Resign) _ -> True
         _ -> False
+  Criteria.Remembered rememberedListMatcher logKeys -> do
+    filtered <- filter (`elem` logKeys) <$> getSetList ()
+    rememberedListMatches filtered rememberedListMatcher
 
 -- | Build a matcher and check the list
 passesEnemyCriteria
@@ -1899,6 +1904,14 @@ windowMatches iid source window' = \case
     Window t (Window.DealtHorror _ (InvestigatorTarget iid'))
       | t == whenMatcher -> matchWho iid iid' whoMatcher
     _ -> pure False
+  Matcher.AssignedHorror whenMatcher whoMatcher targetListMatcher ->
+    case window' of
+      Window t (Window.AssignedHorror _ who targets) | t == whenMatcher ->
+        liftA2
+          (&&)
+          (matchWho iid who whoMatcher)
+          (targetListMatches targets targetListMatcher)
+      _ -> pure False
   Matcher.AssetDealtDamage timingMatcher assetMatcher -> case window' of
     Window t (Window.DealtDamage _ _ (AssetTarget aid)) | t == timingMatcher ->
       member aid <$> select assetMatcher
@@ -2039,6 +2052,8 @@ matchWho you who = \case
   Matcher.InvestigatorWithResources valueMatcher ->
     (`gameValueMatches` valueMatcher) . unResourceCount =<< getCount who
   Matcher.InvestigatorWithId iid' -> pure $ who == iid'
+  Matcher.InvestigatorWithLowestSkill skillType ->
+    member who <$> select (Matcher.InvestigatorWithLowestSkill skillType)
   Matcher.InvestigatorMatches is -> allM (matchWho you who) is
   Matcher.AnyInvestigator is -> anyM (matchWho you who) is
 
@@ -2368,6 +2383,25 @@ cardListMatches cards = \case
   Matcher.AnyCards -> pure True
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
   Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards
+
+targetListMatches
+  :: MonadReader env m => [Target] -> Matcher.TargetListMatcher -> m Bool
+targetListMatches targets = \case
+  Matcher.AnyTargetList -> pure True
+  Matcher.HasTarget targetMatcher ->
+    anyM (`targetMatches` targetMatcher) targets
+  Matcher.ExcludesTarget targetMatcher ->
+    noneM (`targetMatches` targetMatcher) targets
+
+rememberedListMatches
+  :: (MonadReader env m, HasCount PlayerCount env ())
+  => [ScenarioLogKey]
+  -> Matcher.ScenarioLogKeyListMatcher
+  -> m Bool
+rememberedListMatches targets = \case
+  Matcher.HasRemembered k -> pure $ k `elem` targets
+  Matcher.RememberedLengthIs valueMatcher ->
+    gameValueMatches (length targets) valueMatcher
 
 deckMatch
   :: (MonadReader env m, CanCheckPlayable env)

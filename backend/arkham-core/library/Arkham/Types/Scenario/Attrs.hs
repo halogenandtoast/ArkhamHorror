@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Json
 import Arkham.PlayerCard
+import Arkham.Types.Act.Sequence
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
@@ -58,6 +59,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioLog :: HashSet ScenarioLogKey
   , scenarioSetAsideCards :: [Card]
   , scenarioInResolution :: Bool
+  , scenarioNoRemainingInvestigatorsHandler :: Target
   }
   deriving stock (Show, Generic, Eq)
 
@@ -80,6 +82,10 @@ locationLayoutL =
 inResolutionL :: Lens' ScenarioAttrs Bool
 inResolutionL =
   lens scenarioInResolution $ \m x -> m { scenarioInResolution = x }
+
+noRemainingInvestigatorsHandlerL :: Lens' ScenarioAttrs Target
+noRemainingInvestigatorsHandlerL = lens scenarioNoRemainingInvestigatorsHandler
+  $ \m x -> m { scenarioNoRemainingInvestigatorsHandler = x }
 
 decksL :: Lens' ScenarioAttrs (HashMap ScenarioDeckKey [Card])
 decksL = lens scenarioDecks $ \m x -> m { scenarioDecks = x }
@@ -175,6 +181,8 @@ baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   , scenarioSetAsideCards = mempty
   , scenarioCardsUnderScenarioReference = mempty
   , scenarioInResolution = False
+  , scenarioNoRemainingInvestigatorsHandler = ScenarioTarget
+    (ScenarioId cardCode)
   }
 
 instance Entity ScenarioAttrs where
@@ -322,12 +330,13 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
           pure (y : ys)
         _ -> error "Can not advance act deck"
       pure $ a & actStackL . at n ?~ actStack'
-    AdvanceToAct n act _ -> do
+    AdvanceToAct n act actSide _ -> do
       actStack' <- case lookup n scenarioActStack of
         Just (x : ys) -> do
           let
             fromActId = ActId (toCardCode x)
             toActId = ActId (toCardCode act)
+          when (actSide == B) (push (AdvanceAct toActId $ toSource a))
           push (ReplaceAct fromActId toActId)
           pure $ filter (\c -> cdStage c /= cdStage act || c == act) ys
         _ -> error "Can not advance act deck"
@@ -338,13 +347,19 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
     -- is that the act deck has been replaced.
     InvestigatorDefeated _ _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
-      if null investigatorIds && not scenarioInResolution
-        then do
-          clearQueue
-          push (ScenarioResolution NoResolution)
-          pure $ a & inResolutionL .~ True -- must set to avoid redundancy when scenario kills investigator
-        else pure a
-    AllInvestigatorsResigned -> a <$ push (ScenarioResolution NoResolution)
+      a <$ when
+        (null investigatorIds && not scenarioInResolution)
+        (push $ HandleNoRemainingInvestigators
+          scenarioNoRemainingInvestigatorsHandler
+        )
+    AllInvestigatorsResigned -> a <$ push
+      (HandleNoRemainingInvestigators scenarioNoRemainingInvestigatorsHandler)
+    SetNoRemainingInvestigatorsHandler target -> do
+      pure $ a & noRemainingInvestigatorsHandlerL .~ target
+    HandleNoRemainingInvestigators target | isTarget a target -> do
+      clearQueue
+      push (ScenarioResolution NoResolution)
+      pure $ a & inResolutionL .~ True -- must set to avoid redundancy when scenario kills investigator
     InvestigatorWhenEliminated _ iid -> do
       whenMsg <- checkWindows
         [Window Timing.When (Window.InvestigatorEliminated iid)]
@@ -463,14 +478,14 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         (x : xs) -> do
           push (RequestedSetAsideCard target x)
           pure $ a & setAsideCardsL .~ (before <> xs)
-    TakeControlOfSetAsideAsset iid card -> do
+    TakeControlOfSetAsideAsset _ card -> do
       let
         cardCode = toCardCode card
         (before, rest) =
           break ((== cardCode) . toCardCode) scenarioSetAsideCards
       case rest of
         [] -> pure a
-        (x : xs) -> pure $ a & setAsideCardsL .~ (before <> xs)
+        (_ : xs) -> pure $ a & setAsideCardsL .~ (before <> xs)
     ReadStory card -> do
       leadInvestigatorId <- getLeadInvestigatorId
       push

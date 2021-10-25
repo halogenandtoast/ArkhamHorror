@@ -9,8 +9,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Helpers
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Name

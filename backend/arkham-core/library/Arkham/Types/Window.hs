@@ -40,6 +40,7 @@ data WindowType
   | DealtDamage Source DamageEffect Target
   | TakeDamage Source DamageEffect Target
   | DealtHorror Source Target
+  | AssignedHorror Source InvestigatorId [Target]
   | Defeated Source
   | DiscoverClues InvestigatorId LocationId Int
   | GainsClues InvestigatorId Int

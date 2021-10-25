@@ -113,9 +113,12 @@ countM = (fmap length .) . filterM
 none :: MonoFoldable mono => (Element mono -> Bool) -> mono -> Bool
 none = (not .) . any
 
+noneM
+  :: (Monad m, MonoFoldable mono) => (Element mono -> m Bool) -> mono -> m Bool
+noneM f xs = not <$> anyM f (otoList xs)
+
 notNull :: MonoFoldable mono => mono -> Bool
 notNull = not . null
-
 
 sample :: MonadRandom m => NonEmpty a -> m a
 sample xs = do

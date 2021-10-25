@@ -6,6 +6,7 @@ import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.Scenario.Deck
+import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
 data DiscardSignifier = AnyPlayerDiscard | DiscardOf Who
@@ -79,6 +80,7 @@ data Criterion
   | SelfHasModifier ModifierType
   | ValueIs Int ValueMatcher
   | UnderneathCardCount ValueMatcher UnderZone CardMatcher
+  | Remembered ScenarioLogKeyListMatcher [ScenarioLogKey]
   -- Special Criterion
   | Criteria [Criterion]
   | AnyCriterion [Criterion]

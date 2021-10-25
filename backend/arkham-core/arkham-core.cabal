@@ -74,7 +74,9 @@ library
       Arkham.Types.Act.Cards.MistakesOfThePast
       Arkham.Types.Act.Cards.MysteriousGateway
       Arkham.Types.Act.Cards.NightAtTheMuseum
+      Arkham.Types.Act.Cards.NoAsylum
       Arkham.Types.Act.Cards.OutOfThisWorld
+      Arkham.Types.Act.Cards.PlanningTheEscape
       Arkham.Types.Act.Cards.RaceForAnswers
       Arkham.Types.Act.Cards.RicesWhereabouts
       Arkham.Types.Act.Cards.Row

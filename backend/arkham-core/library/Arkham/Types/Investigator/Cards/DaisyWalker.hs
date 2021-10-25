@@ -36,6 +36,7 @@ instance HasTokenValue env DaisyWalker where
     pure $ TokenValue ElderSign (PositiveModifier 0)
   getTokenValue _ _ token = pure $ TokenValue token mempty
 
+-- Passing a skill test effect
 instance InvestigatorRunner env => RunMessage env DaisyWalker where
   runMessage msg i@(DaisyWalker attrs@InvestigatorAttrs {..}) = case msg of
     ResetGame -> do

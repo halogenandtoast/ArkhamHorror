@@ -50,11 +50,11 @@ instance ActRunner env => RunMessage env SkinGame where
             leadInvestigatorId
             (toTarget attrs)
             (CardWithType EnemyType <> CardWithTrait Abomination)
-          , AdvanceToAct (actDeckId attrs) Acts.fold (toSource attrs)
+          , AdvanceToAct (actDeckId attrs) Acts.fold A (toSource attrs)
           ]
         else pushAll
           [ CreateStoryAssetAt drFrancisMorgan vipAreaId
-          , AdvanceToAct (actDeckId attrs) Acts.allIn (toSource attrs)
+          , AdvanceToAct (actDeckId attrs) Acts.allIn A (toSource attrs)
           ]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"

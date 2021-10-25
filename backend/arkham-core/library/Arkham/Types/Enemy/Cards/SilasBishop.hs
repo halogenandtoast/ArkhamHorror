@@ -8,8 +8,6 @@ import Arkham.Prelude
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Runner
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Modifier
 
 newtype SilasBishop = SilasBishop EnemyAttrs

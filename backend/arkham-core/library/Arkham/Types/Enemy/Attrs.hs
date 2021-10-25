@@ -5,6 +5,10 @@ module Arkham.Types.Enemy.Attrs
 
 import Arkham.Prelude
 
+import Arkham.Types.Enemy.Helpers as X
+import Arkham.Types.Enemy.Runner as X
+import Arkham.Types.GameValue as X
+
 import Arkham.Enemy.Cards
 import Arkham.Json
 import Arkham.Types.Ability
@@ -15,10 +19,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
-import Arkham.Types.Game.Helpers
-import Arkham.Types.GameValue as X
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import Arkham.Types.Keyword qualified as Keyword

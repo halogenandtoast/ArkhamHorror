@@ -312,7 +312,6 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         & (subscribersL
           %~ (<> [ TokenTarget token' | token' <- skillTestRevealedTokens ])
           )
-    AddSkillTestSubscriber target -> pure $ s & subscribersL %~ (target :)
     PassSkillTest -> do
       stats <- getStats (skillTestInvestigator, skillTestAction) (toSource s)
       iconCount <- skillIconCount s

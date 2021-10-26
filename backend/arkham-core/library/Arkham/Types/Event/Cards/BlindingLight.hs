@@ -6,6 +6,7 @@ import Arkham.Event.Cards qualified as Cards (blindingLight)
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -18,12 +19,18 @@ newtype BlindingLight = BlindingLight EventAttrs
 blindingLight :: EventCard BlindingLight
 blindingLight = event BlindingLight Cards.blindingLight
 
-instance (EventRunner env) => RunMessage env BlindingLight where
+instance EventRunner env => RunMessage env BlindingLight where
   runMessage msg e@(BlindingLight attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ CreateEffect "01066" Nothing (toSource attrs) (InvestigatorTarget iid)
       , CreateEffect "01066" Nothing (toSource attrs) SkillTestTarget
-      , ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False
+      , ChooseEvadeEnemy
+        iid
+        (EventSource eid)
+        Nothing
+        SkillWillpower
+        AnyEnemy
+        False
       , Discard (EventTarget eid)
       ]
     _ -> BlindingLight <$> runMessage msg attrs

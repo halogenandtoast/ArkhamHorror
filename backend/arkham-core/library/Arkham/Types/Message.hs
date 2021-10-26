@@ -31,9 +31,9 @@ import Arkham.Types.EncounterCard.Source
 import Arkham.Types.Exception
 import Arkham.Types.Helpers
 import Arkham.Types.Id
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Matcher hiding (EnemyDefeated)
 import Arkham.Types.Name
+import Arkham.Types.Phase
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Deck
@@ -83,9 +83,14 @@ story iids msg = AskMap
 
 data Message
     = UseAbility InvestigatorId Ability [Window]
+
+    -- Story Card Messages
     | ReadStory Card
     | ResolveStory Card
 
+    | Do Message
+
+    -- Act Deck Messages
     | SetActDeck
     | AddAct CardDef
     | AdvanceAct ActId Source
@@ -95,76 +100,99 @@ data Message
     | AdvanceActDeck Int Source
     | AdvanceToAct Int CardDef ActSide Source
 
+    -- Agenda Deck Messages
     | SetAgendaDeck
     | AddAgenda CardDef
     | AdvanceAgenda AgendaId
     | AdvanceAgendaIfThresholdSatisfied
-    | DoAdvanceAgendaIfThresholdSatisfied
     | AdvanceAgendaDeck Int Source
     | AdvanceCurrentAgenda
     | ReplaceAgenda AgendaId AgendaId
     | RevertAgenda AgendaId
     | ResetAgendaDeckToStage Int
 
+    -- No Remaining Investigator Messages
     | SetNoRemainingInvestigatorsHandler Target
     | HandleNoRemainingInvestigators Target
     | CheckForRemainingInvestigators
 
-    | AddCampaignCardToDeck InvestigatorId CardDef
-    | AddConnection LocationId LocationSymbol
     | AddDirectConnection LocationId LocationId
+
+    | AddCampaignCardToDeck InvestigatorId CardDef
+
+    -- Adding Cards to Hand
     | AddFocusedToHand InvestigatorId Target Zone CardId
-    | AddFocusedToTopOfDeck InvestigatorId Target CardId
-    | AddSkillTestSubscriber Target
-    | AddSlot InvestigatorId SlotType Slot
-    | AddToDiscard InvestigatorId PlayerCard
-    | AddToEncounterDeck EncounterCard
     | AddToHand InvestigatorId Card
     | AddTreacheryToHand InvestigatorId TreacheryId
-    | AddToHandFromDeck InvestigatorId CardId
+    | ReturnToHand InvestigatorId Target
+
+    -- Adding Cards to Deck
+    | AddFocusedToTopOfDeck InvestigatorId Target CardId
+
+    -- Adding Cards to Player Discard
+    | AddToDiscard InvestigatorId PlayerCard
+
+    -- Slot Messages
+    | AddSlot InvestigatorId SlotType Slot
+
+    -- Adding Cards to Encounter Deck
+    | AddToEncounterDeck EncounterCard
+
+    -- Scenario Deck Messages
     | AddToScenarioDeck ScenarioDeckKey Target
     | AddCardToScenarioDeck ScenarioDeckKey Card
     | ShuffleScenarioDeckIntoEncounterDeck ScenarioDeckKey
     | DrawFromScenarioDeck InvestigatorId ScenarioDeckKey Target Int
     | DrawRandomFromScenarioDeck InvestigatorId ScenarioDeckKey Target Int
     | DrewFromScenarioDeck InvestigatorId ScenarioDeckKey Target [Card]
+
+    -- Victory
     | AddToVictory Target
+
+    -- Tokens
     | AddToken TokenFace
     | RemoveAllTokens TokenFace
-    | AddTraits Target [Trait]
+
+    -- Asset Uses
     | AddUses Target UseType Int
-    | AddedConnection LocationId LocationId
-    | After Message
-    | AfterDiscoverClues InvestigatorId LocationId Int
-    | AfterEnterLocation InvestigatorId LocationId
+
+    -- Asks
+    | AskPlayer Message
+    | Ask InvestigatorId Question
+    | AskMap (HashMap InvestigatorId Question)
+
+    | After Message -- TODO: REMOVE
+
     | AfterEvadeEnemy InvestigatorId EnemyId
     | AfterRevelation InvestigatorId TreacheryId
+
     | AllCheckHandSize
     | AllDrawCardAndResource
     | AllDrawEncounterCard
     | AllInvestigatorsResigned
     | AllRandomDiscard
-    | AskPlayer Message
-    | Ask InvestigatorId Question
-    | AskMap (HashMap InvestigatorId Question)
+
     | AssetDamage AssetId Source Int Int
     | AssetDefeated AssetId
+
+    -- Attach
     | AttachAsset AssetId Target
     | AttachEvent EventId Target
     | AttachStoryTreacheryTo Card Target
     | AttachTreachery TreacheryId Target
+
     | AttackEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
     | BeforeRevealTokens
     | BeforeSkillTest InvestigatorId SkillType Int
-    | BeginEnemy
-    | BeginInvestigation
-    | BeginMythos
+
+    -- Game State Control
+    | Begin Phase
+
     | BeginRound
     | BeginSkillTest InvestigatorId Source Target (Maybe Action) SkillType Int
     | BeginSkillTestAfterFast InvestigatorId Source Target (Maybe Action) SkillType Int
     | BeginTrade InvestigatorId Target [InvestigatorId]
     | BeginTurn InvestigatorId
-    | BeginUpkeep
     | Blanked Message
     | CampaignStep (Maybe CampaignStep)
     | CancelNext MessageType
@@ -181,9 +209,8 @@ data Message
     | ChooseAndDiscardAsset InvestigatorId AssetMatcher
     | ChooseAndDiscardCard InvestigatorId
     | ChooseEndTurn InvestigatorId
-    | ChooseEvadeEnemy InvestigatorId Source SkillType Bool
-    | ChooseFightEnemy InvestigatorId Source (Maybe Target) SkillType (HashSet Trait) Bool
-    | ChooseFightEnemyNotEngagedWithInvestigator InvestigatorId Source (Maybe Target) SkillType Bool
+    | ChooseEvadeEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool
+    | ChooseFightEnemy InvestigatorId Source (Maybe Target) SkillType EnemyMatcher Bool
     | ChooseLeadInvestigator
     | StandaloneSetup
     | ChoosePlayer InvestigatorId ChoosePlayerChoice
@@ -278,7 +305,7 @@ data Message
     | EnemySpawnedAt LocationId EnemyId
     | EnemyWillAttack InvestigatorId EnemyId DamageStrategy
     | EngageEnemy InvestigatorId EnemyId Bool
-    | EvadeEnemy InvestigatorId EnemyId Source SkillType Bool
+    | EvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
     | Exhaust Target
     | FailSkillTest
     | FailedAttackEnemy InvestigatorId EnemyId
@@ -457,7 +484,6 @@ data Message
     | ResolveEvent InvestigatorId EventId (Maybe Target)
     | ResolveToken Token TokenFace InvestigatorId -- since tokens can have their face changed we use this to represent that; TODO: use a real modifier
     | ReturnSkillTestRevealedTokens
-    | ReturnToHand InvestigatorId Target
     | ReturnTokens [Token]
     | RevealInHand CardId
     | RevealLocation (Maybe InvestigatorId) LocationId
@@ -531,7 +557,7 @@ data Message
     | EvadeLabel EnemyId [Message]
     | ChosenEvadeEnemy Source EnemyId
     | TriggerSkillTest InvestigatorId
-    | TryEvadeEnemy InvestigatorId EnemyId Source SkillType
+    | TryEvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
     | UnengageNonMatching InvestigatorId [Trait]
     | UnfocusCards
     | UnfocusTargets
@@ -542,7 +568,7 @@ data Message
     | UseLimitedAbility InvestigatorId Ability
     | When Message
     | WhenWillEnterLocation InvestigatorId LocationId
-    | WhenEnterLocation InvestigatorId LocationId
+    | EnterLocation InvestigatorId LocationId
     | SetLocationAsIf InvestigatorId LocationId
     | Will Message
     | WillMoveEnemy EnemyId Message

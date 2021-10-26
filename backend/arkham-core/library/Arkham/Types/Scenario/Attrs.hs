@@ -25,6 +25,7 @@ import Arkham.Types.Matcher hiding
   )
 import Arkham.Types.Message
 import Arkham.Types.Name
+import Arkham.Types.Phase
 import Arkham.Types.Query
 import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Deck as X
@@ -250,7 +251,7 @@ addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
 
 instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
   runMessage msg a@ScenarioAttrs {..} = case msg of
-    Setup -> a <$ pushEnd BeginInvestigation
+    Setup -> a <$ pushEnd (Begin InvestigationPhase)
     StartCampaign -> do
       standalone <- getIsStandalone
       a <$ when standalone (push $ StartScenario scenarioName scenarioId)

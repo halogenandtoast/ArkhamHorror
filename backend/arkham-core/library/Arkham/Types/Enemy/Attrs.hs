@@ -334,6 +334,9 @@ getModifiedHealth EnemyAttrs {..} = do
 emptyLocationMap :: HashMap LocationId [LocationId]
 emptyLocationMap = mempty
 
+isActionTarget :: EnemyAttrs -> Target -> Bool
+isActionTarget attrs = isTarget attrs . toProxyTarget
+
 instance EnemyRunner env => RunMessage env EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
@@ -619,8 +622,8 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
           skillType
           enemyFight'
         )
-    After (PassedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget target) _ n)
-      | isTarget a target
+    PassedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget target) _ n
+      | isActionTarget a target
       -> do
         whenWindow <- checkWindows
           [Window Timing.When (Window.SuccessfulAttackEnemy iid enemyId n)]
@@ -628,24 +631,16 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
           [Window Timing.After (Window.SuccessfulAttackEnemy iid enemyId n)]
         a <$ pushAll
           [ whenWindow
-          , Successful (Action.Fight, target) iid source target
-          , afterWindow
-          ]
-    After (PassedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget (ProxyTarget target fightTarget)) _ n)
-      | isTarget a target
-      -> do
-        whenWindow <- checkWindows
-          [Window Timing.When (Window.SuccessfulAttackEnemy iid enemyId n)]
-        afterWindow <- checkWindows
-          [Window Timing.After (Window.SuccessfulAttackEnemy iid enemyId n)]
-        a <$ pushAll
-          [ whenWindow
-          , Successful (Action.Fight, target) iid source fightTarget
+          , Successful
+            (Action.Fight, toProxyTarget target)
+            iid
+            source
+            (toActionTarget target)
           , afterWindow
           ]
     Successful (Action.Fight, _) iid source target | isTarget a target -> do
       a <$ push (InvestigatorDamageEnemy iid enemyId source)
-    After (FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ n)
+    FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ n
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a
@@ -667,30 +662,37 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         [ EnemyAttack iid enemyId DamageAny
         | iid <- setToList enemyEngagedInvestigators
         ]
-    EnemyEvaded iid eid | eid == enemyId -> do
-      modifiers' <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
-      pure $ if AlternateSuccessfullEvasion `elem` modifiers'
-        then a
-        else a & engagedInvestigatorsL %~ deleteSet iid & exhaustedL .~ True
-    TryEvadeEnemy iid eid source skillType | eid == enemyId -> do
+    EnemyEvaded iid eid | eid == enemyId ->
+      pure $ a & engagedInvestigatorsL %~ deleteSet iid & exhaustedL .~ True
+    TryEvadeEnemy iid eid source mTarget skillType | eid == enemyId -> do
       enemyEvade' <- modifiedEnemyEvade a
       a <$ push
         (BeginSkillTest
           iid
           source
-          (EnemyTarget eid)
+          (maybe (EnemyTarget eid) (ProxyTarget (EnemyTarget eid)) mTarget)
           (Just Action.Evade)
           skillType
           enemyEvade'
         )
-    PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ n
-      | isTarget a target
+    PassedSkillTest iid (Just Action.Evade) source (SkillTestInitiatorTarget target) _ n
+      | isActionTarget a target
       -> do
         whenWindow <- checkWindows
           [Window Timing.When (Window.SuccessfulEvadeEnemy iid enemyId n)]
         afterWindow <- checkWindows
           [Window Timing.After (Window.SuccessfulEvadeEnemy iid enemyId n)]
-        a <$ pushAll [whenWindow, afterWindow, EnemyEvaded iid enemyId]
+        a <$ pushAll
+          [ whenWindow
+          , Successful
+            (Action.Evade, toProxyTarget target)
+            iid
+            source
+            (toActionTarget target)
+          , afterWindow
+          ]
+    Successful (Action.Evade, _) iid _ target | isTarget a target -> do
+      a <$ push (EnemyEvaded iid enemyId)
     FailedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ n
       | isTarget a target
       -> do
@@ -926,7 +928,14 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         False
       )
     UseCardAbility iid source _ 101 _ | isSource a source -> a <$ push
-      (EvadeEnemy iid (toId a) (InvestigatorSource iid) SkillAgility False)
+      (EvadeEnemy
+        iid
+        (toId a)
+        (InvestigatorSource iid)
+        Nothing
+        SkillAgility
+        False
+      )
     UseCardAbility iid source _ 102 _ | isSource a source ->
       a <$ push (EngageEnemy iid (toId a) False)
     _ -> pure a

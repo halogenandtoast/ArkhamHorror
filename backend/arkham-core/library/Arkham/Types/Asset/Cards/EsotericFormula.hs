@@ -54,7 +54,7 @@ instance AssetRunner env => RunMessage env EsotericFormula where
         source
         Nothing
         SkillWillpower
-        (singleton Abomination)
+        (EnemyWithTrait Abomination)
         False
       )
     _ -> EsotericFormula <$> runMessage msg attrs

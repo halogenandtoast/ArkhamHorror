@@ -2877,9 +2877,6 @@ runGameMessage msg g = case msg of
   After (MoveFrom _ iid lid) -> do
     window <- checkWindows [Window Timing.After (Window.Leaving iid lid)]
     g <$ push window
-  AfterEnterLocation iid lid -> do
-    window <- checkWindows [Window Timing.After (Window.Entering iid lid)]
-    g <$ push window
   CreateEffect cardCode meffectMetadata source target -> do
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
     push (CreatedEffect effectId meffectMetadata source target)
@@ -3582,7 +3579,7 @@ runGameMessage msg g = case msg of
       & (eventsL %~ deleteMap eid) -- we might not want to remove here?
       & (victoryDisplayL %~ (toCard event :))
   PlayerWindow iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
-  BeginInvestigation -> do
+  Begin InvestigationPhase -> do
     investigatorIds <- getInvestigatorIds
     phaseBeginsWindow <- checkWindows
       [ Window Timing.When Window.AnyPhaseBegins
@@ -3635,9 +3632,9 @@ runGameMessage msg g = case msg of
   EndPhase -> do
     clearQueue
     case g ^. phaseL of
-      MythosPhase -> pushEnd BeginInvestigation
-      InvestigationPhase -> pushEnd BeginEnemy
-      EnemyPhase -> pushEnd BeginUpkeep
+      MythosPhase -> pushEnd $ Begin InvestigationPhase
+      InvestigationPhase -> pushEnd $ Begin EnemyPhase
+      EnemyPhase -> pushEnd $ Begin UpkeepPhase
       UpkeepPhase -> pushAllEnd [EndRoundWindow, EndRound]
       ResolutionPhase -> error "should not be called in this situation"
       CampaignPhase -> error "should not be called in this situation"
@@ -3658,7 +3655,7 @@ runGameMessage msg g = case msg of
         )
       & (phaseHistoryL .~ mempty)
       & (turnPlayerInvestigatorIdL .~ Nothing)
-  BeginEnemy -> do
+  Begin EnemyPhase -> do
     phaseBeginsWindow <- checkWindows
       [ Window Timing.When Window.AnyPhaseBegins
       , Window Timing.When (Window.PhaseBegins EnemyPhase)
@@ -3679,7 +3676,7 @@ runGameMessage msg g = case msg of
              )
         )
       & (phaseHistoryL .~ mempty)
-  BeginUpkeep -> do
+  Begin UpkeepPhase -> do
     phaseBeginsWindow <- checkWindows
       [ Window Timing.When Window.AnyPhaseBegins
       , Window Timing.When (Window.PhaseBegins UpkeepPhase)
@@ -3720,8 +3717,8 @@ runGameMessage msg g = case msg of
              )
         )
       & (roundHistoryL .~ mempty)
-  BeginRound -> g <$ pushEnd BeginMythos
-  BeginMythos -> do
+  BeginRound -> g <$ pushEnd (Begin MythosPhase)
+  Begin MythosPhase -> do
     phaseBeginsWindow <- checkWindows
       [ Window Timing.When Window.AnyPhaseBegins
       , Window Timing.When (Window.PhaseBegins MythosPhase)

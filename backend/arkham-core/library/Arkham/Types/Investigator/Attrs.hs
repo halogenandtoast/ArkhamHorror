@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Types.Investigator.Attrs
   ( module Arkham.Types.Investigator.Attrs
   , module X
@@ -12,7 +13,6 @@ import Arkham.Types.Name as X
 import Arkham.Types.Stats as X
 import Arkham.Types.Token as X
 import Arkham.Types.Trait as X hiding (Cultist)
-import Data.Monoid
 
 import Arkham.Json
 import Arkham.Types.Ability
@@ -37,10 +37,10 @@ import Arkham.Types.Matcher
   , InvestigatorMatcher(..)
   , LocationMatcher(..)
   , assetIs
-  , pattern AloofEnemy
   )
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Phase
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
@@ -54,6 +54,7 @@ import Arkham.Types.Zone (Zone)
 import Arkham.Types.Zone qualified as Zone
 import Data.HashMap.Strict qualified as HashMap
 import Data.HashSet qualified as HashSet
+import Data.Monoid
 import Data.Text qualified as T
 import Data.UUID (nil)
 
@@ -103,105 +104,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   }
   deriving stock (Show, Generic)
 
-foundCardsL :: Lens' InvestigatorAttrs (HashMap Zone [Card])
-foundCardsL =
-  lens investigatorFoundCards $ \m x -> m { investigatorFoundCards = x }
-
-startsWithL :: Lens' InvestigatorAttrs [CardDef]
-startsWithL =
-  lens investigatorStartsWith $ \m x -> m { investigatorStartsWith = x }
-
-willpowerL :: Lens' InvestigatorAttrs Int
-willpowerL =
-  lens investigatorWillpower $ \m x -> m { investigatorWillpower = x }
-
-intellectL :: Lens' InvestigatorAttrs Int
-intellectL =
-  lens investigatorIntellect $ \m x -> m { investigatorIntellect = x }
-
-combatL :: Lens' InvestigatorAttrs Int
-combatL = lens investigatorCombat $ \m x -> m { investigatorCombat = x }
-
-agilityL :: Lens' InvestigatorAttrs Int
-agilityL = lens investigatorAgility $ \m x -> m { investigatorAgility = x }
-
-treacheriesL :: Lens' InvestigatorAttrs (HashSet TreacheryId)
-treacheriesL =
-  lens investigatorTreacheries $ \m x -> m { investigatorTreacheries = x }
-
-inHandTreacheriesL :: Lens' InvestigatorAttrs (HashSet TreacheryId)
-inHandTreacheriesL = lens investigatorInHandTreacheries
-  $ \m x -> m { investigatorInHandTreacheries = x }
-
-assetsL :: Lens' InvestigatorAttrs (HashSet AssetId)
-assetsL = lens investigatorAssets $ \m x -> m { investigatorAssets = x }
-
-healthDamageL :: Lens' InvestigatorAttrs Int
-healthDamageL =
-  lens investigatorHealthDamage $ \m x -> m { investigatorHealthDamage = x }
-
-sanityDamageL :: Lens' InvestigatorAttrs Int
-sanityDamageL =
-  lens investigatorSanityDamage $ \m x -> m { investigatorSanityDamage = x }
-
-locationL :: Lens' InvestigatorAttrs LocationId
-locationL = lens investigatorLocation $ \m x -> m { investigatorLocation = x }
-
-slotsL :: Lens' InvestigatorAttrs (HashMap SlotType [Slot])
-slotsL = lens investigatorSlots $ \m x -> m { investigatorSlots = x }
-
-endedTurnL :: Lens' InvestigatorAttrs Bool
-endedTurnL =
-  lens investigatorEndedTurn $ \m x -> m { investigatorEndedTurn = x }
-
-defeatedL :: Lens' InvestigatorAttrs Bool
-defeatedL = lens investigatorDefeated $ \m x -> m { investigatorDefeated = x }
-
-resignedL :: Lens' InvestigatorAttrs Bool
-resignedL = lens investigatorResigned $ \m x -> m { investigatorResigned = x }
-
-resourcesL :: Lens' InvestigatorAttrs Int
-resourcesL =
-  lens investigatorResources $ \m x -> m { investigatorResources = x }
-
-remainingActionsL :: Lens' InvestigatorAttrs Int
-remainingActionsL = lens investigatorRemainingActions
-  $ \m x -> m { investigatorRemainingActions = x }
-
-actionsTakenL :: Lens' InvestigatorAttrs [Action]
-actionsTakenL =
-  lens investigatorActionsTaken $ \m x -> m { investigatorActionsTaken = x }
-
-handL :: Lens' InvestigatorAttrs [Card]
-handL = lens investigatorHand $ \m x -> m { investigatorHand = x }
-
-engagedEnemiesL :: Lens' InvestigatorAttrs (HashSet EnemyId)
-engagedEnemiesL =
-  lens investigatorEngagedEnemies $ \m x -> m { investigatorEngagedEnemies = x }
-
-deckL :: Lens' InvestigatorAttrs (Deck PlayerCard)
-deckL = lens investigatorDeck $ \m x -> m { investigatorDeck = x }
-
-cardsUnderneathL :: Lens' InvestigatorAttrs [Card]
-cardsUnderneathL = lens investigatorCardsUnderneath
-  $ \m x -> m { investigatorCardsUnderneath = x }
-
-discardL :: Lens' InvestigatorAttrs [PlayerCard]
-discardL = lens investigatorDiscard $ \m x -> m { investigatorDiscard = x }
-
-cluesL :: Lens' InvestigatorAttrs Int
-cluesL = lens investigatorClues $ \m x -> m { investigatorClues = x }
-
-xpL :: Lens' InvestigatorAttrs Int
-xpL = lens investigatorXp $ \m x -> m { investigatorXp = x }
-
-mentalTraumaL :: Lens' InvestigatorAttrs Int
-mentalTraumaL =
-  lens investigatorMentalTrauma $ \m x -> m { investigatorMentalTrauma = x }
-
-physicalTraumaL :: Lens' InvestigatorAttrs Int
-physicalTraumaL =
-  lens investigatorPhysicalTrauma $ \m x -> m { investigatorPhysicalTrauma = x }
+makeLensesWith suffixedFields ''InvestigatorAttrs
 
 instance HasTraits InvestigatorAttrs where
   toTraits = investigatorTraits
@@ -1000,44 +903,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (CardIdTarget cid) ->
     pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
-  ChooseFightEnemy iid source mTarget skillType traits isAction
+  ChooseFightEnemy iid source mTarget skillType enemyMatcher isAction
     | iid == investigatorId -> do
-      enemyIds <- map unFightableEnemyId <$> getSetList (iid, source)
-      if null traits
-        then do
-          a <$ push
-            (chooseOne
-              iid
-              [ FightEnemy iid eid source mTarget skillType isAction
-              | eid <- enemyIds
-              ]
-            )
-        else do
-          validEnemies <- filterM
-            (fmap (notNull . intersection traits) . getSet @Trait)
-            enemyIds
-          a <$ push
-            (chooseOne
-              iid
-              [ FightEnemy iid eid source mTarget skillType isAction
-              | eid <- validEnemies
-              ]
-            )
-  ChooseFightEnemyNotEngagedWithInvestigator iid source mTarget skillType isAction
-    | iid == investigatorId
-    -> do
-      enemyIds <- select $ EnemyAt $ LocationWithId investigatorLocation
-      aloofEnemyIds <- select $ AloofEnemy <> EnemyAt
-        (LocationWithId investigatorLocation)
-      let
-        fightableEnemyIds =
-          enemyIds
-            `difference` (investigatorEngagedEnemies `union` aloofEnemyIds)
+      enemyIds <- selectList (CanFightEnemy <> enemyMatcher)
       a <$ push
         (chooseOne
           iid
           [ FightEnemy iid eid source mTarget skillType isAction
-          | eid <- setToList fightableEnemyIds
+          | eid <- enemyIds
           ]
         )
   EngageEnemy iid eid True | iid == investigatorId -> do
@@ -1103,26 +976,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     damage <- damageValueFor 1 a
     a <$ push (EnemyDamage eid iid source AttackDamageEffect damage)
   EnemyEvaded iid eid | iid == investigatorId -> do
-    modifiers' <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
     push =<< checkWindows [Window Timing.After (Window.EnemyEvaded iid eid)]
-    pure $ if AlternateSuccessfullEvasion `elem` modifiers'
-      then a
-      else a & engagedEnemiesL %~ deleteSet eid
+    pure $ a & engagedEnemiesL %~ deleteSet eid
   AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
   -- TODO: WARNING: HERE BE DRAGONS
-  ChooseEvadeEnemy iid source skillType isAction | iid == investigatorId ->
-    a <$ push
-      (chooseOne
-        iid
-        [ EvadeLabel
-            eid
-            [ ChosenEvadeEnemy source eid
-            , EvadeEnemy iid eid source skillType isAction
-            ]
-        | eid <- setToList investigatorEngagedEnemies
-        ]
-      )
-  EvadeEnemy iid eid source skillType True | iid == investigatorId -> do
+  ChooseEvadeEnemy iid source mTarget skillType enemyMatcher isAction
+    | iid == investigatorId -> do
+      enemyIds <- selectList (CanEvadeEnemy <> enemyMatcher)
+      a <$ push
+        (chooseOne
+          iid
+          [ EvadeLabel
+              eid
+              [ ChosenEvadeEnemy source eid
+              , EvadeEnemy iid eid source mTarget skillType isAction
+              ]
+          | eid <- enemyIds
+          ]
+        )
+  EvadeEnemy iid eid source mTarget skillType True | iid == investigatorId -> do
     modifiers' <- getModifiers (EnemySource eid) (toTarget a)
     let
       takenActions = setFromList @(HashSet Action) investigatorActionsTaken
@@ -1141,11 +1013,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         iid
         (Just Action.Evade)
         (foldl' applyEvadeCostModifiers (ActionCost 1) modifiers')
-      , EvadeEnemy iid eid source skillType False
+      , EvadeEnemy iid eid source mTarget skillType False
       ]
-  EvadeEnemy iid eid source skillType False | iid == investigatorId ->
+  EvadeEnemy iid eid source mTarget skillType False | iid == investigatorId ->
     a <$ pushAll
-      [TryEvadeEnemy iid eid source skillType, AfterEvadeEnemy iid eid]
+      [TryEvadeEnemy iid eid source mTarget skillType, AfterEvadeEnemy iid eid]
   MoveAction iid lid cost True | iid == investigatorId -> a <$ pushAll
     [TakeAction iid (Just Action.Move) cost, MoveAction iid lid cost False]
   MoveAction iid lid _cost False | iid == investigatorId -> do
@@ -1428,9 +1300,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [window, PlaceClues (InvestigatorTarget iid) n, After (GainClues iid n)]
   PlaceClues (InvestigatorTarget iid) n | iid == investigatorId -> do
     pure $ a & cluesL +~ n
-  DiscoverClues iid lid n _ | iid == investigatorId ->
-    a <$ push (AfterDiscoverClues iid lid n)
-  AfterDiscoverClues iid _ n | iid == investigatorId -> do
+  DiscoverClues iid lid n maction | iid == investigatorId ->
+    a <$ push (Do $ DiscoverClues iid lid n maction)
+  Do (DiscoverClues iid _ n _) | iid == investigatorId -> do
     push (After (GainClues iid n))
     pure $ a & cluesL +~ n
   InvestigatorDiscardAllClues iid | iid == investigatorId ->
@@ -1698,11 +1570,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     movedByWindows <- Helpers.windows [Window.MovedBy source lid iid]
     afterMoveButBeforeEnemyEngagement <- Helpers.checkWindows
       [Window Timing.After (Window.MovedButBeforeEnemyEngagement iid lid)]
+    afterEnterWindow <- checkWindows
+      [Window Timing.After (Window.Entering iid lid)]
     pushAll
       $ movedByWindows
       <> [ WhenWillEnterLocation iid lid
-         , WhenEnterLocation iid lid
-         , AfterEnterLocation iid lid
+         , EnterLocation iid lid
+         , afterEnterWindow
          , afterMoveButBeforeEnemyEngagement
          , CheckEnemyEngagement iid
          ]
@@ -1751,7 +1625,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           )
         pure a
   ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurnL .~ True
-  BeginInvestigation -> do
+  Begin InvestigationPhase -> do
     actionsForTurn <- getAbilitiesForTurn a
     pure
       $ a
@@ -2149,16 +2023,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & deckL .~ Deck deck
   PlaceOnBottomOfDeck iid card | iid == investigatorId ->
     pure $ a & deckL %~ Deck . (<> [card]) . unDeck
-  AddToHandFromDeck iid cardId | iid == investigatorId -> do
-    let
-      card = fromJustNote "card did not exist"
-        $ find ((== cardId) . toCardId) (unDeck investigatorDeck)
-    deck <- shuffleM $ filter ((/= cardId) . toCardId) (unDeck investigatorDeck)
-    when (toCardType card == PlayerTreacheryType)
-      $ push (DrewTreachery iid $ PlayerCard card)
-    when (toCardType card == PlayerEnemyType)
-      $ push (DrewPlayerEnemy iid $ PlayerCard card)
-    pure $ a & deckL .~ Deck deck & handL %~ (PlayerCard card :)
   AddFocusedToHand _ (InvestigatorTarget iid') cardSource cardId
     | iid' == investigatorId -> do
       let

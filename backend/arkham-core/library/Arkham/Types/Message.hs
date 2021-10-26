@@ -1,8 +1,14 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Types.Message
   ( module Arkham.Types.Message
+  , module X
   ) where
 
 import Arkham.Prelude
+
+import Arkham.Types.Message.Type as X
+import Arkham.Types.Question as X
+import Arkham.Types.Strategy as X
 
 import Arkham.Types.Ability
 import Arkham.Types.Act.Sequence
@@ -21,6 +27,7 @@ import Arkham.Types.Direction
 import Arkham.Types.Effect.Window
 import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
+import Arkham.Types.EncounterCard.Source
 import Arkham.Types.Exception
 import Arkham.Types.Helpers
 import Arkham.Types.Id
@@ -40,20 +47,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Window (Window)
 import Arkham.Types.Zone
 import Control.Exception
-
-data MessageType
-    = RevelationMessage
-    | AttackMessage
-    | DrawTokenMessage
-    | RevealTokenMessage
-    | ResolveTokenMessage
-    | RunWindowMessage
-    | EnemySpawnMessage
-    | EnemyDefeatedMessage
-    | DamageMessage
-    | DrawEncounterCardMessage
-    deriving stock (Eq, Show, Generic)
-    deriving anyclass (ToJSON, FromJSON)
+import Data.Aeson.TH
 
 messageType :: Message -> Maybe MessageType
 messageType PerformEnemyAttack{} = Just AttackMessage
@@ -82,38 +76,6 @@ story iids msg = AskMap
     [ (iid, ChooseOne [Run [Continue "Continue", msg]]) | iid <- iids ]
   )
 
-data DamageStrategy = DamageAny | DamageAssetsFirst | DamageFirst CardDef
-    deriving stock (Show, Eq, Generic)
-    deriving anyclass (ToJSON, FromJSON)
-
-data EncounterCardSource = FromDiscard | FromEncounterDeck | FromTheVoid
-    deriving stock (Show, Eq, Generic)
-    deriving anyclass (ToJSON, FromJSON)
-
-data ZoneReturnStrategy = PutBackInAnyOrder | ShuffleBackIn | PutBack
-    deriving stock (Show, Eq, Generic)
-    deriving anyclass (ToJSON, FromJSON)
-
-data FoundCardsStrategy = PlayFound InvestigatorId Int | DrawFound InvestigatorId Int | DeferSearchedToTarget Target | ReturnCards
-    deriving stock (Show, Eq, Generic)
-    deriving anyclass (ToJSON, FromJSON)
-
-fromTopOfDeck :: Int -> (Zone, ZoneReturnStrategy)
-fromTopOfDeck n = (FromTopOfDeck n, ShuffleBackIn)
-
-fromDeck :: (Zone, ZoneReturnStrategy)
-fromDeck = (FromDeck, ShuffleBackIn)
-
-data ActionType
-    = EnemyActionType
-    | LocationActionType
-    | AssetActionType
-    | TreacheryActionType
-    | ActActionType
-    | AgendaActionType
-    | InvestigatorActionType
-    deriving stock (Bounded, Enum, Show)
-
 -- TODO: Better handle in play and out of play
 -- Out of play refers to player's hand, in any deck,
 -- in any discard pile, the victory display, and
@@ -124,7 +86,8 @@ data Message
     | ReadStory Card
     | ResolveStory Card
 
-    | AddAct ActId
+    | SetActDeck
+    | AddAct CardDef
     | AdvanceAct ActId Source
     | NextAdvanceActStep ActId Int
     | ReplaceAct ActId ActId
@@ -132,7 +95,8 @@ data Message
     | AdvanceActDeck Int Source
     | AdvanceToAct Int CardDef ActSide Source
 
-    | AddAgenda AgendaId
+    | SetAgendaDeck
+    | AddAgenda CardDef
     | AdvanceAgenda AgendaId
     | AdvanceAgendaIfThresholdSatisfied
     | DoAdvanceAgendaIfThresholdSatisfied
@@ -144,6 +108,7 @@ data Message
 
     | SetNoRemainingInvestigatorsHandler Target
     | HandleNoRemainingInvestigators Target
+    | CheckForRemainingInvestigators
 
     | AddCampaignCardToDeck InvestigatorId CardDef
     | AddConnection LocationId LocationSymbol
@@ -583,38 +548,9 @@ data Message
     | WillMoveEnemy EnemyId Message
     -- must be called on instance directly
     | SetOriginalCardCode CardCode
-    deriving stock (Show, Eq, Generic)
-    deriving anyclass (ToJSON, FromJSON)
+    deriving stock (Show, Eq)
 
-class IdToTarget a where
-  idToTarget :: a -> Target
-
-instance IdToTarget ActId where
-  idToTarget = ActTarget
-
-instance IdToTarget AgendaId where
-  idToTarget = AgendaTarget
-
-instance IdToTarget LocationId where
-  idToTarget = LocationTarget
-
-instance IdToTarget EnemyId where
-  idToTarget = EnemyTarget
-
-instance IdToTarget TreacheryId where
-  idToTarget = TreacheryTarget
-
-instance IdToTarget InvestigatorId where
-  idToTarget = InvestigatorTarget
-
-instance IdToTarget AssetId where
-  idToTarget = AssetTarget
-
-instance IdToTarget EventId where
-  idToTarget = EventTarget
-
-instance IdToTarget SkillId where
-  idToTarget = SkillTarget
+$(deriveJSON defaultOptions ''Message)
 
 targetLabel :: IdToTarget entityId => entityId -> [Message] -> Message
 targetLabel entityId = TargetLabel (idToTarget entityId)
@@ -651,26 +587,3 @@ chooseAmounts iid label total choiceMap target =
 
 chooseUpgradeDeck :: InvestigatorId -> Message
 chooseUpgradeDeck iid = Ask iid ChooseUpgradeDeck
-
-data Question
-    = ChooseOne [Message]
-    | ChooseN Int [Message]
-    | ChooseSome [Message]
-    | ChooseUpToN Int [Message]
-    | ChooseOneAtATime [Message]
-    | -- | Choosing payment amounts
-      -- The core idea is that costs get broken up into unitary costs and we
-      -- let the players decide how many times an individual player will pay
-      -- the cost. The @Maybe Int@ is used to designate whether or not there
-      -- is a target value. The tuple of ints are the min and max bound for
-      -- the specific investigator
-      ChoosePaymentAmounts Text (Maybe Int) [(InvestigatorId, (Int, Int), Message)]
-    | ChooseAmounts Text Int [(Text, (Int, Int))] Target
-    | ChooseDynamicCardAmounts InvestigatorId CardId (Int, Int) Bool [Message] -- (Int, Int) is (min, max)
-    | ChooseUpgradeDeck
-    deriving stock (Show, Eq, Generic)
-    deriving anyclass (FromJSON, ToJSON)
-
-data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)

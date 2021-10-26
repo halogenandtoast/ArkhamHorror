@@ -48,15 +48,7 @@ bloodOnTheAltar difficulty =
       , ". burnedRuinsHiddenChamber burnedRuinsHiddenChamber burnedRuins burnedRuins bishopsBrook bishopsBrook bishopsBrookHiddenChamber bishopsBrookHiddenChamber ."
       ]
     }
- where
-  base = baseAttrs
-    "02195"
-    "Blood on the Altar"
-    [ Agendas.strangeDisappearances
-    , Agendas.theOldOnesHunger
-    , Agendas.feedTheBeast
-    ]
-    difficulty
+  where base = baseAttrs "02195" "Blood on the Altar" difficulty
 
 bloodOnTheAltarIntro :: Message
 bloodOnTheAltarIntro = FlavorText
@@ -268,10 +260,10 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
         pushAll
           $ [ story investigatorIds bloodOnTheAltarIntro
             , SetEncounterDeck (Deck encounterDeck)
-            , AddAgenda "02196"
+            , SetAgendaDeck
             ]
           <> [ PlaceDoomOnAgenda | delayedOnTheirWayToDunwich ]
-          <> [AddAct "02199", PlaceLocation villageCommons]
+          <> [SetActDeck, PlaceLocation villageCommons]
           <> concat
                [ [ PlaceLocation location
                  , PlaceUnderneath
@@ -300,6 +292,13 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
           & (actStackL
             . at 1
             ?~ [Acts.searchingForAnswers, Acts.theChamberOfTheBeast]
+            )
+          & (agendaStackL
+            . at 1
+            ?~ [ Agendas.strangeDisappearances
+               , Agendas.theOldOnesHunger
+               , Agendas.feedTheBeast
+               ]
             )
           )
       ResolveToken _ Tablet iid -> do

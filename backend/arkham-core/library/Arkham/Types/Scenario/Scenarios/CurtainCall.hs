@@ -35,11 +35,7 @@ newtype CurtainCall = CurtainCall ScenarioAttrs
 curtainCall :: Difficulty -> CurtainCall
 curtainCall difficulty =
   CurtainCall
-    $ baseAttrs
-        "03043"
-        "Curtain Call"
-        [Agendas.theThirdAct, Agendas.encore]
-        difficulty
+    $ baseAttrs "03043" "Curtain Call" difficulty
     & locationLayoutL
     ?~ [ "lobbyDoorway1 .     balcony .         backstageDoorway1"
        , "lobbyDoorway3 lobby theatre backstage backstageDoorway3"
@@ -101,8 +97,8 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
       pushAll
         ([ story investigatorIds intro
          , SetEncounterDeck encounterDeck
-         , AddAgenda "03044"
-         , AddAct "03046"
+         , SetAgendaDeck
+         , SetActDeck
          , PlaceLocation theatre
          , PlaceLocation lobby
          , PlaceLocation balcony
@@ -137,6 +133,7 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
              , Acts.curtainCall
              ]
           )
+        & (agendaStackL . at 1 ?~ [Agendas.theThirdAct, Agendas.encore])
         )
     ScenarioResolution resolution -> do
       leadInvestigatorId <- getLeadInvestigatorId

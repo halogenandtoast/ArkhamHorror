@@ -892,9 +892,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ((`Window` Window.InvestigatorDefeated source iid)
       <$> [Timing.When, Timing.After]
       )
-    a <$ pushAll [windowMsg, InvestigatorWhenEliminated (toSource a) iid]
-  InvestigatorResigned iid | iid == investigatorId ->
-    a <$ push (InvestigatorWhenEliminated (toSource a) iid)
+    pushAll [windowMsg, InvestigatorWhenEliminated (toSource a) iid]
+    pure $ a & defeatedL .~ True
+  InvestigatorResigned iid | iid == investigatorId -> do
+    push (InvestigatorWhenEliminated (toSource a) iid)
+    pure $ a & resignedL .~ True
   -- InvestigatorWhenEliminated is handled by the scenario
   InvestigatorEliminated iid | iid == investigatorId -> do
     push (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
@@ -1876,7 +1878,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & handL %~ filter (/= card)
   PlaceUnderneath target cards | isTarget a target -> do
     let
-      update = appEndo . mconcat $ map
+      update = appEndo $ foldMap
         (\card ->
           Endo
             $ (assetsL %~ deleteSet (AssetId $ toCardId card))

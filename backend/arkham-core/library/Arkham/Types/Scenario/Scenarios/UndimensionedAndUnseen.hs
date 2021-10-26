@@ -39,14 +39,7 @@ newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
 undimensionedAndUnseen :: Difficulty -> UndimensionedAndUnseen
 undimensionedAndUnseen difficulty =
   UndimensionedAndUnseen
-    $ baseAttrs
-        "02236"
-        "Undimensioned and Unseen"
-        [ Agendas.rampagingCreatures
-        , Agendas.bidingItsTime
-        , Agendas.horrorsUnleashed
-        ]
-        difficulty
+    $ baseAttrs "02236" "Undimensioned and Unseen" difficulty
     & locationLayoutL
     ?~ [ ". blastedHeath devilsHopYard"
        , ". blastedHeath devilsHopYard"
@@ -268,8 +261,8 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
           , Record
             (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
           , SetEncounterDeck encounterDeck
-          , AddAgenda "02237"
-          , AddAct "02240"
+          , SetAgendaDeck
+          , SetActDeck
           ]
         <> [ PlaceLocation location | location <- locations ]
         <> [ RevealLocation Nothing dunwichVillageId
@@ -302,6 +295,13 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
         & (actStackL
           . at 1
           ?~ [Acts.saracenicScript, Acts.theyMustBeDestroyed]
+          )
+        & (agendaStackL
+          . at 1
+          ?~ [ Agendas.rampagingCreatures
+             , Agendas.bidingItsTime
+             , Agendas.horrorsUnleashed
+             ]
           )
         )
     ResolveToken drawnToken Tablet _ -> s <$ push

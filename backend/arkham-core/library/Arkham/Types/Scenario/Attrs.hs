@@ -163,14 +163,14 @@ isHardExpert :: ScenarioAttrs -> Bool
 isHardExpert ScenarioAttrs { scenarioDifficulty } =
   scenarioDifficulty `elem` [Hard, Expert]
 
-baseAttrs :: CardCode -> Name -> [CardDef] -> Difficulty -> ScenarioAttrs
-baseAttrs cardCode name agendaStack difficulty = ScenarioAttrs
+baseAttrs :: CardCode -> Name -> Difficulty -> ScenarioAttrs
+baseAttrs cardCode name difficulty = ScenarioAttrs
   { scenarioId = ScenarioId cardCode
   , scenarioName = name
   , scenarioDifficulty = difficulty
-  , scenarioAgendaStack = mapFromList [(1, agendaStack)]
   , scenarioCompletedAgendaStack = mempty
-  , scenarioActStack = mempty -- mapFromList [(1, actStack')]
+  , scenarioAgendaStack = mempty
+  , scenarioActStack = mempty
   , scenarioCardsUnderAgendaDeck = mempty
   , scenarioCardsUnderActDeck = mempty
   , scenarioCardsNextToActDeck = mempty
@@ -344,7 +344,7 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
     Discard (ActTarget _) -> pure $ a & actStackL .~ mempty
     -- See: Vengeance Awaits / The Devourer Below - right now the assumption
     -- is that the act deck has been replaced.
-    InvestigatorDefeated _ _ -> do
+    CheckForRemainingInvestigators -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
       a <$ when
         (null investigatorIds && not scenarioInResolution)
@@ -368,6 +368,7 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         [ whenMsg
         , InvestigatorPlaceAllCluesOnLocation iid
         , InvestigatorEliminated iid
+        , CheckForRemainingInvestigators
         , afterMsg
         ]
     Remember logKey -> pure $ a & logL %~ insertSet logKey
@@ -493,4 +494,14 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
           [CardLabel (toCardCode card) [ResolveStory card]]
         )
       pure $ a & cardsUnderScenarioReferenceL %~ filter (/= card)
+    SetActDeck -> do
+      case a ^. actStackL . at 1 of
+        Just (x : _) -> push (AddAct x)
+        _ -> pure ()
+      pure a
+    SetAgendaDeck -> do
+      case a ^. agendaStackL . at 1 of
+        Just (x : _) -> push (AddAgenda x)
+        _ -> pure ()
+      pure a
     _ -> pure a

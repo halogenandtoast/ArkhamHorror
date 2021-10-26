@@ -35,15 +35,7 @@ newtype LostInTimeAndSpace = LostInTimeAndSpace ScenarioAttrs
 lostInTimeAndSpace :: Difficulty -> LostInTimeAndSpace
 lostInTimeAndSpace difficulty =
   LostInTimeAndSpace
-    $ baseAttrs
-        "02311"
-        "Lost in Time and Space"
-        [ Agendas.allIsOne
-        , Agendas.pastPresentAndFuture
-        , Agendas.breakingThrough
-        , Agendas.theEndOfAllThings
-        ]
-        difficulty
+    $ baseAttrs "02311" "Lost in Time and Space" difficulty
     & locationLayoutL
     ?~ [ ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
        , ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
@@ -195,8 +187,8 @@ instance
       pushAll
         [ story investigatorIds lostInTimeAndSpaceIntro
         , SetEncounterDeck encounterDeck
-        , AddAgenda "02312"
-        , AddAct "02316"
+        , SetAgendaDeck
+        , SetActDeck
         , PlaceLocation anotherDimension
         , RevealLocation Nothing anotherDimensionId
         , MoveAllTo (toSource attrs) anotherDimensionId
@@ -219,6 +211,14 @@ instance
              , Acts.intoTheBeyond
              , Acts.closeTheRift
              , Acts.findingANewWay
+             ]
+          )
+        & (actStackL
+          . at 1
+          ?~ [ Agendas.allIsOne
+             , Agendas.pastPresentAndFuture
+             , Agendas.breakingThrough
+             , Agendas.theEndOfAllThings
              ]
           )
         )

@@ -36,11 +36,7 @@ newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs
 theUnspeakableOath :: Difficulty -> TheUnspeakableOath
 theUnspeakableOath difficulty =
   TheUnspeakableOath
-    $ baseAttrs
-        "03159"
-        "The Unspeakable Oath"
-        [Agendas.lockedInside, Agendas.torturousDescent, Agendas.hisDomain]
-        difficulty
+    $ baseAttrs "03159" "The Unspeakable Oath" difficulty
     & locationLayoutL
     ?~ [ ".       .       .        .        garden                        garden                        .                             .                             .                   ."
        , ".       .       .        .        yard                          yard                          .                             .                             .                   ."
@@ -193,8 +189,8 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
         $ [story investigatorIds intro1Or2, story investigatorIds intro3]
         <> courageMessages
         <> [ SetEncounterDeck encounterDeck
-           , AddAgenda "03160"
-           , AddAct "03163"
+           , SetAgendaDeck
+           , SetActDeck
            , PlaceLocation westernPatientWing
            , SetLocationLabel
              (toLocationId westernPatientWing)
@@ -231,6 +227,13 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
              , theReallyBadOnes
              , Acts.planningTheEscape
              , Acts.noAsylum
+             ]
+          )
+        & (agendaStackL
+          . at 1
+          ?~ [ Agendas.lockedInside
+             , Agendas.torturousDescent
+             , Agendas.hisDomain
              ]
           )
         )

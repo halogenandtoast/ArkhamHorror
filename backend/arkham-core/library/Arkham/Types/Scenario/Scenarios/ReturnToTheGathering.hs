@@ -3,7 +3,6 @@ module Arkham.Types.Scenario.Scenarios.ReturnToTheGathering where
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
@@ -29,14 +28,7 @@ returnToTheGathering :: Difficulty -> ReturnToTheGathering
 returnToTheGathering difficulty =
   ReturnToTheGathering
     . TheGathering
-    $ baseAttrs
-        "50011"
-        "Return To The Gathering"
-        [ Agendas.whatsGoingOn
-        , Agendas.riseOfTheGhouls
-        , Agendas.theyreGettingOut
-        ]
-        difficulty
+    $ baseAttrs "50011" "Return To The Gathering" difficulty
     & locationLayoutL
     ?~ [ ".     .         farAboveYourHouse  ."
        , ".     bedroom   attic              ."
@@ -75,8 +67,8 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
 
         pushAllEnd
           [ SetEncounterDeck encounterDeck
-          , AddAgenda "01105"
-          , AddAct "50012"
+          , SetAgendaDeck
+          , SetActDeck
           , PlaceLocation studyAberrantGateway
           , PlaceLocation guestHall
           , PlaceLocation bedroom
@@ -112,5 +104,6 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
                , Acts.whatHaveYouDone
                ]
             )
+          & (actStackL . at 1 ?~ theGatheringAgendaDeck)
           )
       _ -> ReturnToTheGathering <$> runMessage msg theGathering'

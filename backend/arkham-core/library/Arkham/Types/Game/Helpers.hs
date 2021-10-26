@@ -997,6 +997,12 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     additionalResources <-
       sum <$> traverse ((fmap unResourceCount . getCount) . fst) canHelpPay
     modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
+    let title = nameTitle (cdName pcDef)
+    passesUnique <- case cdCardType pcDef of
+      AssetType -> not <$> case nameSubtitle (cdName pcDef) of
+        Nothing -> selectAny (Matcher.AssetWithTitle title)
+        Just subtitle -> selectAny (Matcher.AssetWithFullTitle title subtitle)
+      _ -> pure True
     let
       duringTurnWindow = Window Timing.When (Window.DuringTurn iid)
       notFastWindow = any (`elem` windows') [duringTurnWindow]
@@ -1031,6 +1037,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       && (cdAction pcDef /= Just Action.Fight || canFight)
       && passesCriterias
       && passesLimits
+      && passesUnique
  where
   pcDef = toCardDef c
   prevents (CanOnlyUseCardsInRole role) =

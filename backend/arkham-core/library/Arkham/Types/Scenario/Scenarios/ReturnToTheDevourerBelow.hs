@@ -32,7 +32,7 @@ returnToTheDevourerBelow :: Difficulty -> ReturnToTheDevourerBelow
 returnToTheDevourerBelow difficulty =
   ReturnToTheDevourerBelow
     . TheDevourerBelow
-    $ (baseAttrs "01142" "The Devourer Below" [] difficulty)
+    $ (baseAttrs "01142" "The Devourer Below" difficulty)
         { scenarioLocationLayout = Just
           [ "woods1     .     woods2"
           , "woods1 mainPath woods2"
@@ -109,8 +109,8 @@ instance ScenarioRunner env => RunMessage env ReturnToTheDevourerBelow where
           $ [ story investigatorIds intro
             , SetEncounterDeck encounterDeck
             , AddToken ElderThing
-            , AddAgenda "01143"
-            , AddAct "01146"
+            , SetAgendaDeck
+            , SetActDeck
             , PlaceLocation mainPath
             ]
           <> [ PlaceLocation card | card <- woodsLocations ]
@@ -133,6 +133,7 @@ instance ScenarioRunner env => RunMessage env ReturnToTheDevourerBelow where
           (attrs
           & (setAsideCardsL .~ setAsideEncounterCards)
           & (actStackL . at 1 ?~ actDeck)
+          & (agendaStackL . at 1 ?~ agendaDeck)
           )
       CreateEnemyAt card lid _ | toCardCode card == "01157" -> do
         name <- getName lid

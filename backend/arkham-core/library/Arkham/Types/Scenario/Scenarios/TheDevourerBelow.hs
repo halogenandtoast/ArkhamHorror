@@ -3,6 +3,7 @@ module Arkham.Types.Scenario.Scenarios.TheDevourerBelow where
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenarios.TheDevourerBelow.Story
@@ -32,7 +33,7 @@ newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
 
 theDevourerBelow :: Difficulty -> TheDevourerBelow
 theDevourerBelow difficulty =
-  TheDevourerBelow $ (baseAttrs "01142" "The Devourer Below" [] difficulty)
+  TheDevourerBelow $ (baseAttrs "01142" "The Devourer Below" difficulty)
     { scenarioLocationLayout = Just
       [ "woods1     .     woods2"
       , "woods1 mainPath woods2"
@@ -55,6 +56,10 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env [Trait]) => 
 actDeck :: [CardDef]
 actDeck =
   [Acts.investigatingTheTrail, Acts.intoTheDarkness, Acts.disruptingTheRitual]
+
+agendaDeck :: [CardDef]
+agendaDeck =
+  [Agendas.theArkhamWoods, Agendas.theRitualBegins, Agendas.vengeanceAwaits]
 
 instance ScenarioRunner env => RunMessage env TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs) = case msg of
@@ -111,8 +116,8 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
         $ [ story investigatorIds intro
           , SetEncounterDeck encounterDeck
           , AddToken ElderThing
-          , AddAgenda "01143"
-          , AddAct "01146"
+          , SetAgendaDeck
+          , SetActDeck
           , PlaceLocation mainPath
           ]
         <> [ PlaceLocation card | card <- woodsLocations ]
@@ -135,6 +140,7 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
         (attrs
         & (setAsideCardsL .~ setAsideCards)
         & (actStackL . at 1 ?~ actDeck)
+        & (agendaStackL . at 1 ?~ agendaDeck)
         )
     ResolveToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2

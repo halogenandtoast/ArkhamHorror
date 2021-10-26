@@ -39,14 +39,7 @@ newtype CarnevaleOfHorrors = CarnevaleOfHorrors ScenarioAttrs
 carnevaleOfHorrors :: Difficulty -> CarnevaleOfHorrors
 carnevaleOfHorrors difficulty =
   CarnevaleOfHorrors
-    $ baseAttrs
-        "82001"
-        "Carnevale of Horrors"
-        [ Agendas.theFestivitiesBegin
-        , Agendas.theShadowOfTheEclipse
-        , Agendas.chaosAtTheCarnevale
-        ]
-        difficulty
+    $ baseAttrs "82001" "Carnevale of Horrors" difficulty
     & locationLayoutL
     ?~ [ ".         .         .         location1  .         .         ."
        , ".         location8 location8 location1  location2 location2 ."
@@ -208,7 +201,7 @@ instance
       abbess <- genCard Assets.abbessAllegriaDiBiase
 
       pushAllEnd
-        $ [SetEncounterDeck encounterDeck, AddAgenda "82002", AddAct "82005"]
+        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
         <> [ PlaceLocation cardDef | cardDef <- toList locations ]
         <> [ SetLocationLabel (LocationId $ toCardId location) label
            | (label, location) <- zip locationLabels (toList locations)
@@ -279,6 +272,13 @@ instance
         & (actStackL
           . at 1
           ?~ [Acts.theCarnevaleConspiracy, Acts.getToTheBoats, Acts.row]
+          )
+        & (agendaStackL
+          . at 1
+          ?~ [ Agendas.theFestivitiesBegin
+             , Agendas.theShadowOfTheEclipse
+             , Agendas.chaosAtTheCarnevale
+             ]
           )
         )
     SetTokensForScenario -> do

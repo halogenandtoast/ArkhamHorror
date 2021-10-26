@@ -637,6 +637,7 @@ danielChesterfield = (enemy
   { cdCardTraits = setFromList [Humanoid, Lunatic, Elite]
   , cdUnique = True
   , cdVictoryPoints = Just 1
+  , cdDoubleSided = True
   }
 
 corpseHungryGhoul :: CardDef

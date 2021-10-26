@@ -1516,6 +1516,7 @@ danielChesterfield = (storyAsset
   , cdCost = Nothing
   , cdUnique = True
   , cdCardType = EncounterAssetType
+  , cdDoubleSided = True
   }
 
 madameLabranche :: CardDef

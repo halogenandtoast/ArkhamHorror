@@ -100,6 +100,14 @@ selectJust
 selectJust matcher = fromJustNote errorNote <$> selectOne matcher
   where errorNote = "Could not find any matches for: " <> show matcher
 
+-- | Get a set aside card
+--
+-- Some cards may be double sided and completely different types
+-- like Daniel Chesterfield. In these cases, we want to consider
+-- the card a match, but "flip" it to the correct side.
+--
+-- This logic is a bit too generous and we may want to specify
+-- on double sided cards which card code is on the other side.
 getSetAsideCard
   :: (HasCallStack, MonadReader env m, Query ExtendedCardMatcher env)
   => CardDef

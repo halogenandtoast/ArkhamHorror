@@ -94,6 +94,7 @@ allEncounterEnemyCards = mapFromList $ map
   , corpseHungryGhoul
   , corpseTaker
   , crazedShoggoth
+  , danielChesterfield
   , darkYoungHost
   , devoteeOfTheKey
   , dianneDevine

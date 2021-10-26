@@ -7,6 +7,7 @@ module Arkham.Types.Classes
 
 import Arkham.Prelude hiding (to)
 
+import Arkham.Card
 import Arkham.Types.Ability
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Card
@@ -103,7 +104,11 @@ getSetAsideCard
   :: (HasCallStack, MonadReader env m, Query ExtendedCardMatcher env)
   => CardDef
   -> m Card
-getSetAsideCard = selectJust . SetAsideCardMatch . cardIs
+getSetAsideCard def = do
+  card <- selectJust . SetAsideCardMatch $ cardIs def
+  pure $ if cardCodeExactEq (toCardCode card) (toCardCode def)
+    then card
+    else lookupCard (toCardCode def) (toCardId card)
 
 getSetAsideEncounterCard
   :: (HasCallStack, MonadReader env m, Query ExtendedCardMatcher env)

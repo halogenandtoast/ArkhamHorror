@@ -41,5 +41,8 @@ instance ActRunner env => RunMessage env TheReallyBadOnesV2 where
       danielsCell <- getJustLocationIdByName
         ("Patient Confinement" <:> "Daniel's Cell")
       danielChesterfield <- getSetAsideCard Enemies.danielChesterfield
-      a <$ push (CreateEnemyAt danielChesterfield danielsCell Nothing)
+      a <$ pushAll
+        [ CreateEnemyAt danielChesterfield danielsCell Nothing
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
     _ -> TheReallyBadOnesV2 <$> runMessage msg attrs

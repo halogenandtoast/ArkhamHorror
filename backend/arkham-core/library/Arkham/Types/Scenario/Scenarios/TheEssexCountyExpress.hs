@@ -48,7 +48,6 @@ theEssexCountyExpress difficulty =
         , Agendas.drawnIn
         , Agendas.outOfTime
         ]
-        [Acts.run, Acts.getTheEngineRunning]
         difficulty
     & locationLayoutL
     ?~ ["trainCar6 trainCar5 trainCar4 trainCar3 trainCar2 trainCar1 engineCar"]
@@ -284,8 +283,12 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
           , Treacheries.acrossSpaceAndTime
           ]
 
-        TheEssexCountyExpress
-          <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
+        TheEssexCountyExpress <$> runMessage
+          msg
+          (attrs
+          & (setAsideCardsL .~ setAsideCards)
+          & (actStackL . at 1 ?~ [Acts.run, Acts.getTheEngineRunning])
+          )
       ResolveToken _ Tablet iid | isEasyStandard attrs -> do
         closestCultists <- map unClosestEnemyId
           <$> getSetList (iid, [Trait.Cultist])

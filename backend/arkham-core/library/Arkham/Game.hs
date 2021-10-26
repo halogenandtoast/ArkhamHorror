@@ -217,12 +217,7 @@ runMessages
   -> m ()
 runMessages mLogger = do
   gameRef <- view gameRefL
-  queueRef <- view messageQueue
   g <- liftIO $ readIORef gameRef
-
-  liftIO $ whenM
-    (isJust <$> lookupEnv "DEBUG")
-    (readIORef queueRef >>= pPrint >> putStrLn "\n")
 
   if g ^. gameStateL /= IsActive
     then toGameEnv >>= flip
@@ -274,6 +269,10 @@ runMessages mLogger = do
                 pushAllEnd [PlayerWindow (toId turnPlayer) [] False]
                   >> runMessages mLogger
         Just msg -> do
+          liftIO $ whenM
+            (isJust <$> lookupEnv "DEBUG")
+            (pPrint msg >> putStrLn "\n")
+
           liftIO $ maybe (pure ()) ($ msg) mLogger
           case msg of
             Ask iid q -> do

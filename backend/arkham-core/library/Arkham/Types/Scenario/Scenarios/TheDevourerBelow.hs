@@ -2,6 +2,7 @@ module Arkham.Types.Scenario.Scenarios.TheDevourerBelow where
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenarios.TheDevourerBelow.Story
@@ -31,7 +32,7 @@ newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
 
 theDevourerBelow :: Difficulty -> TheDevourerBelow
 theDevourerBelow difficulty =
-  TheDevourerBelow $ (baseAttrs "01142" "The Devourer Below" [] [] difficulty)
+  TheDevourerBelow $ (baseAttrs "01142" "The Devourer Below" [] difficulty)
     { scenarioLocationLayout = Just
       [ "woods1     .     woods2"
       , "woods1 mainPath woods2"
@@ -50,6 +51,10 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env [Trait]) => 
     Tablet -> pure $ toTokenValue attrs Tablet 3 5
     ElderThing -> pure $ toTokenValue attrs ElderThing 5 7
     otherFace -> getTokenValue attrs iid otherFace
+
+actDeck :: [CardDef]
+actDeck =
+  [Acts.investigatingTheTrail, Acts.intoTheDarkness, Acts.disruptingTheRitual]
 
 instance ScenarioRunner env => RunMessage env TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs) = case msg of
@@ -125,8 +130,12 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
         genCard
         [Locations.ritualSite, Enemies.umordhoth]
 
-      TheDevourerBelow
-        <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
+      TheDevourerBelow <$> runMessage
+        msg
+        (attrs
+        & (setAsideCardsL .~ setAsideCards)
+        & (actStackL . at 1 ?~ actDeck)
+        )
     ResolveToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
       closestEnemyIds <- map unClosestEnemyId <$> getSetList iid

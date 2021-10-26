@@ -2,6 +2,7 @@ module Arkham.Types.Scenario.Scenarios.TheMidnightMasks where
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
 import Arkham.EncounterSet (gatherEncounterSet)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
@@ -30,7 +31,7 @@ newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
 
 theMidnightMasks :: Difficulty -> TheMidnightMasks
 theMidnightMasks difficulty =
-  TheMidnightMasks $ (baseAttrs "01120" "The Midnight Masks" [] [] difficulty)
+  TheMidnightMasks $ (baseAttrs "01120" "The Midnight Masks" [] difficulty)
     { scenarioLocationLayout = Just
       [ "northside downtown easttown"
       , "miskatonicUniversity rivertown graveyard"
@@ -192,7 +193,12 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         <> ghoulPriestMessages
         <> spawnAcolyteMessages
 
-      pure $ TheMidnightMasks $ attrs & decksL . at CultistDeck ?~ cultistDeck'
+      TheMidnightMasks <$> runMessage
+        msg
+        (attrs
+        & (decksL . at CultistDeck ?~ cultistDeck')
+        & (actStackL . at 1 ?~ [Acts.uncoveringTheConspiracy])
+        )
     ResolveToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- map unClosestEnemyId
         <$> getSetList (iid, [Trait.Cultist])

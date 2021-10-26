@@ -36,7 +36,6 @@ returnToTheGathering difficulty =
         , Agendas.riseOfTheGhouls
         , Agendas.theyreGettingOut
         ]
-        [Acts.mysteriousGateway, Acts.theBarrier, Acts.whatHaveYouDone]
         difficulty
     & locationLayoutL
     ?~ [ ".     .         farAboveYourHouse  ."
@@ -104,5 +103,14 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
 
         ReturnToTheGathering . TheGathering <$> runMessage
           msg
-          (attrs & setAsideCardsL .~ setAsideCards)
+          (attrs
+          & (setAsideCardsL .~ setAsideCards)
+          & (actStackL
+            . at 1
+            ?~ [ Acts.mysteriousGateway
+               , Acts.theBarrier
+               , Acts.whatHaveYouDone
+               ]
+            )
+          )
       _ -> ReturnToTheGathering <$> runMessage msg theGathering'

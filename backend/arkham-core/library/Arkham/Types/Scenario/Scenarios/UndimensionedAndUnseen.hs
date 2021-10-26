@@ -46,7 +46,6 @@ undimensionedAndUnseen difficulty =
         , Agendas.bidingItsTime
         , Agendas.horrorsUnleashed
         ]
-        [Acts.saracenicScript, Acts.theyMustBeDestroyed]
         difficulty
     & locationLayoutL
     ?~ [ ". blastedHeath devilsHopYard"
@@ -298,7 +297,13 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
 
       UndimensionedAndUnseen <$> runMessage
         msg
-        (attrs & (setAsideCardsL .~ setAsideBroodOfYogSothoth <> setAsideCards))
+        (attrs
+        & (setAsideCardsL .~ setAsideBroodOfYogSothoth <> setAsideCards)
+        & (actStackL
+          . at 1
+          ?~ [Acts.saracenicScript, Acts.theyMustBeDestroyed]
+          )
+        )
     ResolveToken drawnToken Tablet _ -> s <$ push
       (CreateEffect
         "02236"

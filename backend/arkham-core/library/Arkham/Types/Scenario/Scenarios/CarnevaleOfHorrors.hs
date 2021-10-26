@@ -46,7 +46,6 @@ carnevaleOfHorrors difficulty =
         , Agendas.theShadowOfTheEclipse
         , Agendas.chaosAtTheCarnevale
         ]
-        [Acts.theCarnevaleConspiracy, Acts.getToTheBoats, Acts.row]
         difficulty
     & locationLayoutL
     ?~ [ ".         .         .         location1  .         .         ."
@@ -273,8 +272,15 @@ instance
         , Assets.gildedVolto
         ]
 
-      CarnevaleOfHorrors
-        <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
+      CarnevaleOfHorrors <$> runMessage
+        msg
+        (attrs
+        & (setAsideCardsL .~ setAsideCards)
+        & (actStackL
+          . at 1
+          ?~ [Acts.theCarnevaleConspiracy, Acts.getToTheBoats, Acts.row]
+          )
+        )
     SetTokensForScenario -> do
       let
         tokens = if isEasyStandard attrs

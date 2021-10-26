@@ -42,7 +42,6 @@ curseOfTheRougarou difficulty =
         , Agendas.theRougarouFeeds
         , Agendas.theCurseSpreads
         ]
-        [Acts.findingLadyEsprit, Acts.huntingTheRougarou]
         difficulty
     & locationLayoutL
     ?~ [ "     .       unhallowed1      newOrleans1       ."
@@ -134,7 +133,13 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
 
       CurseOfTheRougarou <$> runMessage
         msg
-        (attrs & setAsideCardsL .~ setAsideLocations <> setAsideCards)
+        (attrs
+        & (setAsideCardsL .~ setAsideLocations <> setAsideCards)
+        & (actStackL
+          . at 1
+          ?~ [Acts.findingLadyEsprit, Acts.huntingTheRougarou]
+          )
+        )
     SetTokensForScenario -> do
       let
         tokens = if isEasyStandard attrs

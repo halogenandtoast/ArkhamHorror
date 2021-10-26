@@ -476,6 +476,7 @@ library
       Arkham.Types.Effect.Window
       Arkham.Types.EffectId
       Arkham.Types.EffectMetadata
+      Arkham.Types.EncounterCard.Source
       Arkham.Types.EncounterSet
       Arkham.Types.Enemy
       Arkham.Types.Enemy.Attrs
@@ -936,12 +937,14 @@ library
       Arkham.Types.LocationSymbol
       Arkham.Types.Matcher
       Arkham.Types.Message
+      Arkham.Types.Message.Type
       Arkham.Types.Modifier
       Arkham.Types.ModifierData
       Arkham.Types.Name
       Arkham.Types.Phase
       Arkham.Types.Prey
       Arkham.Types.Query
+      Arkham.Types.Question
       Arkham.Types.RequestedTokenStrategy
       Arkham.Types.Resolution
       Arkham.Types.Scenario
@@ -1015,6 +1018,7 @@ library
       Arkham.Types.Slot
       Arkham.Types.Source
       Arkham.Types.Stats
+      Arkham.Types.Strategy
       Arkham.Types.Target
       Arkham.Types.Timing
       Arkham.Types.Token

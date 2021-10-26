@@ -39,11 +39,7 @@ newtype WhereDoomAwaits = WhereDoomAwaits ScenarioAttrs
 whereDoomAwaits :: Difficulty -> WhereDoomAwaits
 whereDoomAwaits difficulty =
   WhereDoomAwaits
-    $ baseAttrs
-        "02274"
-        "Where Doom Awaits"
-        [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
-        difficulty
+    $ baseAttrs "02274" "Where Doom Awaits" difficulty
     & locationLayoutL
     ?~ [ "divergingPath1 divergingPath2 divergingPath3"
        , "baseOfTheHill ascendingPath sentinelPeak"
@@ -252,8 +248,8 @@ instance
         <> [ GainClues leadInvestigatorId 1 | naomiHasTheInvestigatorsBacks ]
         <> [ AddToken token
            , SetEncounterDeck encounterDeck
-           , AddAgenda "02275"
-           , AddAct "02277"
+           , SetAgendaDeck
+           , SetActDeck
            ]
         <> replicate broodEscapedCount PlaceDoomOnAgenda
         <> [ PlaceLocation card | card <- inPlayLocations ]
@@ -270,6 +266,10 @@ instance
         & (actStackL
           . at 1
           ?~ [Acts.thePathToTheHill, ascendingTheHill, Acts.theGateOpens]
+          )
+        & (agendaStackL
+          . at 1
+          ?~ [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
           )
         & (setAsideCardsL
           <>~ (divergingPaths <> alteredPaths <> setAsideCards)

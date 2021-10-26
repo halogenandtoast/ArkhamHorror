@@ -3,6 +3,7 @@ module Arkham.Types.Scenario.Scenarios.TheMidnightMasks where
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.EncounterSet (gatherEncounterSet)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
@@ -31,7 +32,7 @@ newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
 
 theMidnightMasks :: Difficulty -> TheMidnightMasks
 theMidnightMasks difficulty =
-  TheMidnightMasks $ (baseAttrs "01120" "The Midnight Masks" [] difficulty)
+  TheMidnightMasks $ (baseAttrs "01120" "The Midnight Masks" difficulty)
     { scenarioLocationLayout = Just
       [ "northside downtown easttown"
       , "miskatonicUniversity rivertown graveyard"
@@ -178,8 +179,8 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         $ [ story investigatorIds (introPart1 intro1or2)
           , story investigatorIds introPart2
           , SetEncounterDeck encounterDeck
-          , AddAgenda "01121"
-          , AddAct "01123"
+          , SetAgendaDeck
+          , SetActDeck
           , PlaceLocation rivertown
           , PlaceLocation southside
           , PlaceLocation stMarysHospital
@@ -198,6 +199,10 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         (attrs
         & (decksL . at CultistDeck ?~ cultistDeck')
         & (actStackL . at 1 ?~ [Acts.uncoveringTheConspiracy])
+        & (agendaStackL
+          . at 1
+          ?~ [Agendas.predatorOrPrey, Agendas.timeIsRunningShort]
+          )
         )
     ResolveToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- map unClosestEnemyId

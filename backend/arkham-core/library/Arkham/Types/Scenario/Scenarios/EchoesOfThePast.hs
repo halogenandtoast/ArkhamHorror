@@ -43,14 +43,7 @@ newtype EchoesOfThePast = EchoesOfThePast ScenarioAttrs
 echoesOfThePast :: Difficulty -> EchoesOfThePast
 echoesOfThePast difficulty =
   EchoesOfThePast
-    $ baseAttrs
-        "03120"
-        "Echoes of the Past"
-        [ Agendas.theTruthIsHidden
-        , Agendas.ransackingTheManor
-        , Agendas.secretsBetterLeftHidden
-        ]
-        difficulty
+    $ baseAttrs "03120" "Echoes of the Past" difficulty
     & locationLayoutL
     ?~ [ "thirdFloor1  quietHalls2 thirdFloor2  . ."
        , "secondFloor1 quietHalls1 secondFloor2 . hiddenLibrary"
@@ -204,8 +197,8 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
            | sebastienInterviewed
            ]
         <> [ SetEncounterDeck encounterDeck
-           , AddAgenda "03121"
-           , AddAct "03124"
+           , SetAgendaDeck
+           , SetActDeck
            , PlaceLocation entryHall
            ]
         <> [ PlaceClues (LocationTarget $ toLocationId entryHall) 1
@@ -249,6 +242,13 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
         & (actStackL
           . at 1
           ?~ [Acts.raceForAnswers, Acts.mistakesOfThePast, Acts.theOath]
+          )
+        & (agendaStackL
+          . at 1
+          ?~ [ Agendas.theTruthIsHidden
+             , Agendas.ransackingTheManor
+             , Agendas.secretsBetterLeftHidden
+             ]
           )
         )
     ResolveToken _ token iid -> s <$ case token of

@@ -31,11 +31,7 @@ newtype ExtracurricularActivity = ExtracurricularActivity ScenarioAttrs
 extracurricularActivity :: Difficulty -> ExtracurricularActivity
 extracurricularActivity difficulty =
   ExtracurricularActivity
-    $ baseAttrs
-        "02041"
-        "Extracurricular Activity"
-        [Agendas.quietHalls, Agendas.deadOfNight, Agendas.theBeastUnleashed]
-        difficulty
+    $ baseAttrs "02041" "Extracurricular Activity" difficulty
     & locationLayoutL
     ?~ [ "orneLibrary        miskatonicQuad scienceBuilding alchemyLabs"
        , "humanitiesBuilding studentUnion   administrationBuilding ."
@@ -97,8 +93,8 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
 
       pushAllEnd
         [ SetEncounterDeck encounterDeck
-        , AddAgenda "02042"
-        , AddAct "02045"
+        , SetAgendaDeck
+        , SetActDeck
         , PlaceLocation miskatonicQuad
         , PlaceLocation orneLibrary
         , PlaceLocation humanitiesBuilding
@@ -130,6 +126,13 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
         & (actStackL
           . at 1
           ?~ [Acts.afterHours, Acts.ricesWhereabouts, Acts.campusSafety]
+          )
+        & (agendaStackL
+          . at 1
+          ?~ [ Agendas.quietHalls
+             , Agendas.deadOfNight
+             , Agendas.theBeastUnleashed
+             ]
           )
         )
     ResolveToken drawnToken ElderThing iid -> s <$ push

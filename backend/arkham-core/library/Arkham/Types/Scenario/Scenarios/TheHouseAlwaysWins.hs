@@ -35,14 +35,7 @@ newtype TheHouseAlwaysWins = TheHouseAlwaysWins ScenarioAttrs
 theHouseAlwaysWins :: Difficulty -> TheHouseAlwaysWins
 theHouseAlwaysWins difficulty =
   TheHouseAlwaysWins
-    $ baseAttrs
-        "02062"
-        "The House Always Wins"
-        [ Agendas.theCloverClub
-        , Agendas.undergroundMuscle
-        , Agendas.chaosInTheCloverClub
-        ]
-        difficulty
+    $ baseAttrs "02062" "The House Always Wins" difficulty
     & locationLayoutL
     ?~ [ ".           .                .                  backHallDoorway1 ."
        , ".           .                cloverClubCardroom backHallDoorway1 ."
@@ -100,8 +93,8 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
 
       pushAllEnd
         [ SetEncounterDeck encounterDeck
-        , AddAgenda "02063"
-        , AddAct "02066"
+        , SetAgendaDeck
+        , SetActDeck
         , PlaceLocation laBellaLuna
         , PlaceLocation cloverClubLounge
         , PlaceLocation cloverClubBar
@@ -129,6 +122,13 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         & (actStackL
           . at 1
           ?~ [Acts.beginnersLuck, Acts.skinGame, Acts.allIn, Acts.fold]
+          )
+        & (agendaStackL
+          . at 1
+          ?~ [ Agendas.theCloverClub
+             , Agendas.undergroundMuscle
+             , Agendas.chaosInTheCloverClub
+             ]
           )
         )
     ResolveToken _ Tablet iid -> s <$ push (SpendResources iid 3)

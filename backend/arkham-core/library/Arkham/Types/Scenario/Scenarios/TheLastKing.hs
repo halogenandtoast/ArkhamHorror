@@ -44,11 +44,7 @@ newtype TheLastKing = TheLastKing ScenarioAttrs
 theLastKing :: Difficulty -> TheLastKing
 theLastKing difficulty =
   TheLastKing
-    $ baseAttrs
-        "03061"
-        "The Last King"
-        [Agendas.fashionablyLate, Agendas.theTerrifyingTruth]
-        difficulty
+    $ baseAttrs "03061" "The Last King" difficulty
     & locationLayoutL
     ?~ [ "diningRoom .         gallery"
        , "ballroom   courtyard livingRoom"
@@ -151,8 +147,8 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
       pushAll
         ([ story investigatorIds intro
          , SetEncounterDeck encounterDeck
-         , AddAgenda "03062"
-         , AddAct "03064"
+         , SetAgendaDeck
+         , SetActDeck
          , PlaceLocation foyer
          , PlaceLocation courtyard
          , PlaceLocation livingRoom
@@ -184,6 +180,10 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
         & (setAsideCardsL .~ setAsideEncounterCards)
         & (cardsUnderScenarioReferenceL .~ storyCards)
         & (actStackL . at 1 ?~ [Acts.discoveringTheTruth])
+        & (agendaStackL
+          . at 1
+          ?~ [Agendas.fashionablyLate, Agendas.theTerrifyingTruth]
+          )
         )
     ResolveToken _ token iid -> s <$ case token of
       Skull -> push (DrawAnotherToken iid)

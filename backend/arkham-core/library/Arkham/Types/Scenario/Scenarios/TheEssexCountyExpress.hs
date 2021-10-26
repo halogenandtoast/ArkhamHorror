@@ -39,16 +39,7 @@ newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
 theEssexCountyExpress :: Difficulty -> TheEssexCountyExpress
 theEssexCountyExpress difficulty =
   TheEssexCountyExpress
-    $ baseAttrs
-        "02159"
-        "The Essex County Express"
-        [ Agendas.aTearInReality
-        , Agendas.theMawWidens
-        , Agendas.rollingBackwards
-        , Agendas.drawnIn
-        , Agendas.outOfTime
-        ]
-        difficulty
+    $ baseAttrs "02159" "The Essex County Express" difficulty
     & locationLayoutL
     ?~ ["trainCar6 trainCar5 trainCar4 trainCar3 trainCar2 trainCar1 engineCar"]
 
@@ -247,8 +238,8 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
           $ [ story investigatorIds theEssexCountyExpressIntro
             , AddToken token
             , SetEncounterDeck encounterDeck
-            , AddAgenda "02160"
-            , AddAct "02165"
+            , SetAgendaDeck
+            , SetActDeck
             ]
           <> concat
                [ [ PlaceLocation card
@@ -288,6 +279,15 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
           (attrs
           & (setAsideCardsL .~ setAsideCards)
           & (actStackL . at 1 ?~ [Acts.run, Acts.getTheEngineRunning])
+          & (agendaStackL
+            . at 1
+            ?~ [ Agendas.aTearInReality
+               , Agendas.theMawWidens
+               , Agendas.rollingBackwards
+               , Agendas.drawnIn
+               , Agendas.outOfTime
+               ]
+            )
           )
       ResolveToken _ Tablet iid | isEasyStandard attrs -> do
         closestCultists <- map unClosestEnemyId

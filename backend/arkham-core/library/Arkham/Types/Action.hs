@@ -2,6 +2,16 @@ module Arkham.Types.Action where
 
 import Arkham.Prelude
 
+data ActionType
+    = EnemyActionType
+    | LocationActionType
+    | AssetActionType
+    | TreacheryActionType
+    | ActActionType
+    | AgendaActionType
+    | InvestigatorActionType
+    deriving stock (Bounded, Enum, Show)
+
 newtype TakenAction = TakenAction { unTakenAction :: Action }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

@@ -34,14 +34,7 @@ newtype TheGathering = TheGathering ScenarioAttrs
 theGathering :: Difficulty -> TheGathering
 theGathering difficulty =
   TheGathering
-    $ baseAttrs
-        "01104"
-        "The Gathering"
-        [ Agendas.whatsGoingOn
-        , Agendas.riseOfTheGhouls
-        , Agendas.theyreGettingOut
-        ]
-        difficulty
+    $ baseAttrs "01104" "The Gathering" difficulty
     & locationLayoutL
     ?~ [ "   .   attic   .     "
        , " study hallway parlor"
@@ -72,6 +65,10 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (Investigato
     Tablet -> pure $ toTokenValue attrs Tablet 2 4
     otherFace -> getTokenValue attrs iid otherFace
 
+theGatheringAgendaDeck :: [CardDef]
+theGatheringAgendaDeck =
+  [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
+
 instance ScenarioRunner env => RunMessage env TheGathering where
   runMessage msg s@(TheGathering attrs) = case msg of
     Setup -> do
@@ -90,8 +87,8 @@ instance ScenarioRunner env => RunMessage env TheGathering where
 
       pushAllEnd
         [ SetEncounterDeck encounterDeck
-        , AddAgenda "01105"
-        , AddAct "01108"
+        , SetAgendaDeck
+        , SetActDeck
         , PlaceLocation study
         , RevealLocation Nothing studyId
         , MoveAllTo (toSource attrs) studyId
@@ -116,6 +113,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
           . at 1
           ?~ [Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
           )
+        & (agendaStackL . at 1 ?~ theGatheringAgendaDeck)
         )
     ResolveToken _ Cultist iid ->
       s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)

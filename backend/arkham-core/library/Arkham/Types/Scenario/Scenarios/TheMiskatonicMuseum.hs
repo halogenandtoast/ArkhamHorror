@@ -32,11 +32,7 @@ newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs
 theMiskatonicMuseum :: Difficulty -> TheMiskatonicMuseum
 theMiskatonicMuseum difficulty =
   TheMiskatonicMuseum
-    $ baseAttrs
-        "02118"
-        "The Miskatonic Museum"
-        [Agendas.restrictedAccess, Agendas.shadowsDeepen, Agendas.inEveryShadow]
-        difficulty
+    $ baseAttrs "02118" "The Miskatonic Museum" difficulty
     & locationLayoutL
     ?~ [ ".     .     .                    .                    hall3 hall3          hall4          hall4 .                  .              .     ."
        , ".     .     hall2                hall2                hall3 hall3          hall4          hall4 hall5              hall5          .     ."
@@ -193,8 +189,8 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         [ story investigatorIds theMiskatonicMuseumIntro1
         , story investigatorIds (theMiskatonicMuseumIntro2 armitageKidnapped)
         , SetEncounterDeck encounterDeck
-        , AddAgenda "02119"
-        , AddAct "02122"
+        , SetAgendaDeck
+        , SetActDeck
         , PlaceLocation securityOffice
         , PlaceLocation administrationOffice
         , PlaceLocation museumEntrance
@@ -222,6 +218,13 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
              , Acts.nightAtTheMuseum
              , Acts.breakingAndEntering
              , Acts.searchingForTheTome
+             ]
+          )
+        & (agendaStackL
+          . at 1
+          ?~ [ Agendas.restrictedAccess
+             , Agendas.shadowsDeepen
+             , Agendas.inEveryShadow
              ]
           )
         )

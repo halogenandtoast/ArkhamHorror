@@ -30,6 +30,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Direction
 import Arkham.Types.Effect
 import Arkham.Types.EffectMetadata
+import Arkham.Types.EncounterCard.Source
 import Arkham.Types.Enemy
 import Arkham.Types.EntityInstance
 import Arkham.Types.Event
@@ -3106,8 +3107,12 @@ runGameMessage msg g = case msg of
     pure $ g & actsL %~ deleteMap aid1 & actsL %~ insertMap
       aid2
       (lookupAct aid2 1)
-  AddAct aid -> pure $ g & actsL . at aid ?~ lookupAct aid 1
-  AddAgenda aid -> pure $ g & agendasL . at aid ?~ lookupAgenda aid 1
+  AddAct def -> do
+    let aid = ActId $ toCardCode def
+    pure $ g & actsL . at aid ?~ lookupAct aid 1
+  AddAgenda def -> do
+    let aid = AgendaId $ toCardCode def
+    pure $ g & agendasL . at aid ?~ lookupAgenda aid 1
   CommitCard iid cardId -> do
     investigator <- getInvestigator iid
     let

@@ -3,6 +3,7 @@ module Arkham.Types.Scenario.Scenarios.ReturnToTheMidnightMasks where
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.EncounterSet (gatherEncounterSet)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
@@ -30,7 +31,7 @@ returnToTheMidnightMasks :: Difficulty -> ReturnToTheMidnightMasks
 returnToTheMidnightMasks difficulty =
   ReturnToTheMidnightMasks
     . TheMidnightMasks
-    $ (baseAttrs "50025" "Return to the Midnight Masks" [] difficulty)
+    $ (baseAttrs "50025" "Return to the Midnight Masks" difficulty)
         { scenarioLocationLayout = Just
           [ "northside downtown easttown"
           , "miskatonicUniversity rivertown graveyard"
@@ -79,7 +80,8 @@ instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
           genCard =<< sample
             (Locations.northside :| [Locations.northsideTrainStation])
 
-        predatorOrPrey <- sample $ "01121" :| ["50026"]
+        predatorOrPrey <-
+          sample $ Agendas.predatorOrPrey :| [Agendas.returnToPredatorOrPrey]
 
         houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
         ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
@@ -124,8 +126,8 @@ instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
           $ [ story investigatorIds (introPart1 intro1or2)
             , story investigatorIds introPart2
             , SetEncounterDeck encounterDeck
-            , AddAgenda predatorOrPrey
-            , AddAct "01123"
+            , SetAgendaDeck
+            , SetActDeck
             , PlaceLocation rivertown
             , PlaceLocation southside
             , PlaceLocation stMarysHospital
@@ -143,5 +145,9 @@ instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
           (attrs
           & (decksL . at CultistDeck ?~ cultistDeck')
           & (actStackL . at 1 ?~ [Acts.uncoveringTheConspiracy])
+          & (agendaStackL
+            . at 1
+            ?~ [predatorOrPrey, Agendas.timeIsRunningShort]
+            )
           )
       _ -> ReturnToTheMidnightMasks <$> runMessage msg theMidnightMasks'

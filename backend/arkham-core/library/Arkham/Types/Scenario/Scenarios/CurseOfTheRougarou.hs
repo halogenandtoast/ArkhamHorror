@@ -35,14 +35,7 @@ newtype CurseOfTheRougarou = CurseOfTheRougarou ScenarioAttrs
 curseOfTheRougarou :: Difficulty -> CurseOfTheRougarou
 curseOfTheRougarou difficulty =
   CurseOfTheRougarou
-    $ baseAttrs
-        "81001"
-        "Curse of the Rougarou"
-        [ Agendas.aCreatureOfTheBayou
-        , Agendas.theRougarouFeeds
-        , Agendas.theCurseSpreads
-        ]
-        difficulty
+    $ baseAttrs "81001" "Curse of the Rougarou" difficulty
     & locationLayoutL
     ?~ [ "     .       unhallowed1      newOrleans1       ."
        , "unhallowed2 unhallowedBayou newOrleansBayou newOrleans2"
@@ -89,7 +82,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
           break (elem Bayou . toTraits . snd) startingLocationsWithLabel
         bayouId = LocationId $ toCardId bayou
       pushAllEnd
-        $ [SetEncounterDeck encounterDeck, AddAgenda "81002", AddAct "81005"]
+        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
         <> concat
              [ [ PlaceLocation card
                , SetLocationLabel (LocationId $ toCardId card) label
@@ -138,6 +131,13 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
         & (actStackL
           . at 1
           ?~ [Acts.findingLadyEsprit, Acts.huntingTheRougarou]
+          )
+        & (agendaStackL
+          . at 1
+          ?~ [ Agendas.aCreatureOfTheBayou
+             , Agendas.theRougarouFeeds
+             , Agendas.theCurseSpreads
+             ]
           )
         )
     SetTokensForScenario -> do

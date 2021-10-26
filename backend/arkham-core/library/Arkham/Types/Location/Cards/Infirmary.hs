@@ -9,6 +9,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
+import Arkham.Types.Criteria
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -25,7 +26,7 @@ infirmary =
 instance HasAbilities Infirmary where
   getAbilities (Infirmary attrs) = withBaseAbilities
     attrs
-    [ mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1)
+    [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
       & abilityLimitL
       .~ PlayerLimit PerRound 1
     | locationRevealed attrs

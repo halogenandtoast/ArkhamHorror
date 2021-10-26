@@ -48,7 +48,6 @@ theLastKing difficulty =
         "03061"
         "The Last King"
         [Agendas.fashionablyLate, Agendas.theTerrifyingTruth]
-        [Acts.discoveringTheTruth]
         difficulty
     & locationLayoutL
     ?~ [ "diningRoom .         gallery"
@@ -184,6 +183,7 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
         (attrs
         & (setAsideCardsL .~ setAsideEncounterCards)
         & (cardsUnderScenarioReferenceL .~ storyCards)
+        & (actStackL . at 1 ?~ [Acts.discoveringTheTruth])
         )
     ResolveToken _ token iid -> s <$ case token of
       Skull -> push (DrawAnotherToken iid)

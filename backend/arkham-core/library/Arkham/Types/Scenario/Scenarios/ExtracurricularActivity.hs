@@ -35,7 +35,6 @@ extracurricularActivity difficulty =
         "02041"
         "Extracurricular Activity"
         [Agendas.quietHalls, Agendas.deadOfNight, Agendas.theBeastUnleashed]
-        [Acts.afterHours, Acts.ricesWhereabouts, Acts.campusSafety]
         difficulty
     & locationLayoutL
     ?~ [ "orneLibrary        miskatonicQuad scienceBuilding alchemyLabs"
@@ -124,8 +123,15 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
         , Assets.professorWarrenRice
         ]
 
-      ExtracurricularActivity
-        <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
+      ExtracurricularActivity <$> runMessage
+        msg
+        (attrs
+        & (setAsideCardsL .~ setAsideCards)
+        & (actStackL
+          . at 1
+          ?~ [Acts.afterHours, Acts.ricesWhereabouts, Acts.campusSafety]
+          )
+        )
     ResolveToken drawnToken ElderThing iid -> s <$ push
       (DiscardTopOfDeck
         iid

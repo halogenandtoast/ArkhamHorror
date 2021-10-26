@@ -43,11 +43,6 @@ lostInTimeAndSpace difficulty =
         , Agendas.breakingThrough
         , Agendas.theEndOfAllThings
         ]
-        [ Acts.outOfThisWorld
-        , Acts.intoTheBeyond
-        , Acts.closeTheRift
-        , Acts.findingANewWay
-        ]
         difficulty
     & locationLayoutL
     ?~ [ ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
@@ -214,8 +209,19 @@ instance
         , Enemies.yogSothoth
         ]
 
-      LostInTimeAndSpace
-        <$> runMessage msg (attrs & (setAsideCardsL .~ setAsideCards))
+      LostInTimeAndSpace <$> runMessage
+        msg
+        (attrs
+        & (setAsideCardsL .~ setAsideCards)
+        & (actStackL
+          . at 1
+          ?~ [ Acts.outOfThisWorld
+             , Acts.intoTheBeyond
+             , Acts.closeTheRift
+             , Acts.findingANewWay
+             ]
+          )
+        )
     After (PassedSkillTest iid _ _ (TokenTarget token) _ _) ->
       s <$ case (isHardExpert attrs, tokenFace token) of
         (True, Cultist) ->

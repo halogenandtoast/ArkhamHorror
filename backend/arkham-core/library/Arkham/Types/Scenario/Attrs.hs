@@ -163,15 +163,14 @@ isHardExpert :: ScenarioAttrs -> Bool
 isHardExpert ScenarioAttrs { scenarioDifficulty } =
   scenarioDifficulty `elem` [Hard, Expert]
 
-baseAttrs
-  :: CardCode -> Name -> [CardDef] -> [CardDef] -> Difficulty -> ScenarioAttrs
-baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
+baseAttrs :: CardCode -> Name -> [CardDef] -> Difficulty -> ScenarioAttrs
+baseAttrs cardCode name agendaStack difficulty = ScenarioAttrs
   { scenarioId = ScenarioId cardCode
   , scenarioName = name
   , scenarioDifficulty = difficulty
   , scenarioAgendaStack = mapFromList [(1, agendaStack)]
   , scenarioCompletedAgendaStack = mempty
-  , scenarioActStack = mapFromList [(1, actStack')]
+  , scenarioActStack = mempty -- mapFromList [(1, actStack')]
   , scenarioCardsUnderAgendaDeck = mempty
   , scenarioCardsUnderActDeck = mempty
   , scenarioCardsNextToActDeck = mempty
@@ -330,13 +329,13 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
           pure (y : ys)
         _ -> error "Can not advance act deck"
       pure $ a & actStackL . at n ?~ actStack'
-    AdvanceToAct n act actSide _ -> do
+    AdvanceToAct n act newActSide _ -> do
       actStack' <- case lookup n scenarioActStack of
         Just (x : ys) -> do
           let
             fromActId = ActId (toCardCode x)
             toActId = ActId (toCardCode act)
-          when (actSide == B) (push (AdvanceAct toActId $ toSource a))
+          when (newActSide == B) (push (AdvanceAct toActId $ toSource a))
           push (ReplaceAct fromActId toActId)
           pure $ filter (\c -> cdStage c /= cdStage act || c == act) ys
         _ -> error "Can not advance act deck"

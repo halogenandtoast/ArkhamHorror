@@ -36,11 +36,6 @@ theMiskatonicMuseum difficulty =
         "02118"
         "The Miskatonic Museum"
         [Agendas.restrictedAccess, Agendas.shadowsDeepen, Agendas.inEveryShadow]
-        [ Acts.findingAWayInside
-        , Acts.nightAtTheMuseum
-        , Acts.breakingAndEntering
-        , Acts.searchingForTheTome
-        ]
         difficulty
     & locationLayoutL
     ?~ [ ".     .     .                    .                    hall3 hall3          hall4          hall4 .                  .              .     ."
@@ -221,6 +216,14 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         (attrs
         & (decksL . at ExhibitDeck ?~ exhibitDeck)
         & (setAsideCardsL .~ setAsideCards)
+        & (actStackL
+          . at 1
+          ?~ [ Acts.findingAWayInside
+             , Acts.nightAtTheMuseum
+             , Acts.breakingAndEntering
+             , Acts.searchingForTheTome
+             ]
+          )
         )
     PlacedLocation name _ lid -> do
       s <$ if nameTitle name == "Exhibit Hall"

@@ -40,12 +40,6 @@ theUnspeakableOath difficulty =
         "03159"
         "The Unspeakable Oath"
         [Agendas.lockedInside, Agendas.torturousDescent, Agendas.hisDomain]
-        [ Acts.arkhamAsylum
-        , Acts.theReallyBadOnesV1
-        , Acts.theReallyBadOnesV2
-        , Acts.planningTheEscape
-        , Acts.noAsylum
-        ]
         difficulty
     & locationLayoutL
     ?~ [ ".       .       .        .        garden                        garden                        .                             .                             .                   ."
@@ -218,12 +212,27 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
            , AddToken tokenToAdd
            ]
         <> spawnMessages
+
+      tookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
+      let
+        theReallyBadOnes = if tookTheOnyxClasp
+          then Acts.theReallyBadOnesV1
+          else Acts.theReallyBadOnesV2
+
       TheUnspeakableOath <$> runMessage
         msg
         (attrs
         & (setAsideCardsL .~ setAsideCards)
         & (decksL . at LunaticsDeck ?~ map EncounterCard lunatics)
         & (decksL . at MonstersDeck ?~ map EncounterCard monsters)
+        & (actStackL
+          . at 1
+          ?~ [ Acts.arkhamAsylum
+             , theReallyBadOnes
+             , Acts.planningTheEscape
+             , Acts.noAsylum
+             ]
+          )
         )
     ResolveToken _ tokenFace iid -> case tokenFace of
       Skull -> s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)

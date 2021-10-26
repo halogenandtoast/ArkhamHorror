@@ -42,7 +42,6 @@ theHouseAlwaysWins difficulty =
         , Agendas.undergroundMuscle
         , Agendas.chaosInTheCloverClub
         ]
-        [Acts.beginnersLuck, Acts.skinGame, Acts.allIn, Acts.fold]
         difficulty
     & locationLayoutL
     ?~ [ ".           .                .                  backHallDoorway1 ."
@@ -123,8 +122,15 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         , Locations.backAlley
         ]
 
-      TheHouseAlwaysWins
-        <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
+      TheHouseAlwaysWins <$> runMessage
+        msg
+        (attrs
+        & (setAsideCardsL .~ setAsideCards)
+        & (actStackL
+          . at 1
+          ?~ [Acts.beginnersLuck, Acts.skinGame, Acts.allIn, Acts.fold]
+          )
+        )
     ResolveToken _ Tablet iid -> s <$ push (SpendResources iid 3)
     ResolveToken drawnToken Skull iid -> do
       let requiredResources = if isEasyStandard attrs then 2 else 3

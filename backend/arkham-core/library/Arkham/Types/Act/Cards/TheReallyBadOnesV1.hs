@@ -60,6 +60,7 @@ instance ActRunner env => RunMessage env TheReallyBadOnesV1 where
             ]
         : [ ShuffleIntoEncounterDeck enemiesUnderAct
           , ShuffleEncounterDiscardBackIn
+          , AdvanceActDeck (actDeckId attrs) (toSource attrs)
           ]
         )
       pure a

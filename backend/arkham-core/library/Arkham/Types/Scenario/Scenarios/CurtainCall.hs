@@ -39,12 +39,6 @@ curtainCall difficulty =
         "03043"
         "Curtain Call"
         [Agendas.theThirdAct, Agendas.encore]
-        [ Acts.awakening
-        , Acts.theStrangerACityAflame
-        , Acts.theStrangerThePathIsMine
-        , Acts.theStrangerTheShoresOfHali
-        , Acts.curtainCall
-        ]
         difficulty
     & locationLayoutL
     ?~ [ "lobbyDoorway1 .     balcony .         backstageDoorway1"
@@ -130,7 +124,20 @@ instance ScenarioRunner env => RunMessage env CurtainCall where
         , Locations.trapRoom
         ]
 
-      CurtainCall <$> runMessage msg (attrs & (setAsideCardsL .~ setAsideCards))
+      CurtainCall <$> runMessage
+        msg
+        (attrs
+        & (setAsideCardsL .~ setAsideCards)
+        & (actStackL
+          . at 1
+          ?~ [ Acts.awakening
+             , Acts.theStrangerACityAflame
+             , Acts.theStrangerThePathIsMine
+             , Acts.theStrangerTheShoresOfHali
+             , Acts.curtainCall
+             ]
+          )
+        )
     ScenarioResolution resolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds

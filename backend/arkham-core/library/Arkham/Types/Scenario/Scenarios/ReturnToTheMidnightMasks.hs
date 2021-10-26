@@ -2,6 +2,7 @@ module Arkham.Types.Scenario.Scenarios.ReturnToTheMidnightMasks where
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
 import Arkham.EncounterSet (gatherEncounterSet)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
@@ -29,7 +30,7 @@ returnToTheMidnightMasks :: Difficulty -> ReturnToTheMidnightMasks
 returnToTheMidnightMasks difficulty =
   ReturnToTheMidnightMasks
     . TheMidnightMasks
-    $ (baseAttrs "50025" "Return to the Midnight Masks" [] [] difficulty)
+    $ (baseAttrs "50025" "Return to the Midnight Masks" [] difficulty)
         { scenarioLocationLayout = Just
           [ "northside downtown easttown"
           , "miskatonicUniversity rivertown graveyard"
@@ -139,5 +140,8 @@ instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
           <> spawnAcolyteMessages
         ReturnToTheMidnightMasks . TheMidnightMasks <$> runMessage
           msg
-          (attrs & decksL . at CultistDeck ?~ cultistDeck')
+          (attrs
+          & (decksL . at CultistDeck ?~ cultistDeck')
+          & (actStackL . at 1 ?~ [Acts.uncoveringTheConspiracy])
+          )
       _ -> ReturnToTheMidnightMasks <$> runMessage msg theMidnightMasks'

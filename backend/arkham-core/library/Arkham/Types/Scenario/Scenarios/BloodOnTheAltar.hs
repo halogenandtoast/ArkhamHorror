@@ -56,7 +56,6 @@ bloodOnTheAltar difficulty =
     , Agendas.theOldOnesHunger
     , Agendas.feedTheBeast
     ]
-    [Acts.searchingForAnswers, Acts.theChamberOfTheBeast]
     difficulty
 
 bloodOnTheAltarIntro :: Message
@@ -298,6 +297,10 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
           (attrs
           & (setAsideCardsL .~ setAsideCards)
           & (decksL . at PotentialSacrifices ?~ potentialSacrifices)
+          & (actStackL
+            . at 1
+            ?~ [Acts.searchingForAnswers, Acts.theChamberOfTheBeast]
+            )
           )
       ResolveToken _ Tablet iid -> do
         lid <- getId @LocationId iid

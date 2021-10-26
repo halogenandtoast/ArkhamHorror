@@ -41,7 +41,6 @@ theGathering difficulty =
         , Agendas.riseOfTheGhouls
         , Agendas.theyreGettingOut
         ]
-        [Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
         difficulty
     & locationLayoutL
     ?~ [ "   .   attic   .     "
@@ -109,7 +108,15 @@ instance ScenarioRunner env => RunMessage env TheGathering where
         , Locations.parlor
         ]
 
-      TheGathering <$> runMessage msg (attrs & setAsideCardsL .~ setAsideCards)
+      TheGathering <$> runMessage
+        msg
+        (attrs
+        & (setAsideCardsL .~ setAsideCards)
+        & (actStackL
+          . at 1
+          ?~ [Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
+          )
+        )
     ResolveToken _ Cultist iid ->
       s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)
     ResolveToken _ Tablet iid -> do

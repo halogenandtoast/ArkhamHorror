@@ -50,7 +50,7 @@ instance ActRunner env => RunMessage env ArkhamAsylum where
         $ map
             (\sk -> Label
               ("Any investigator tests " <> tshow sk)
-              [ chooseOne
+              [ chooseOrRunOne
                   leadInvestigatorId
                   [ targetLabel
                       iid

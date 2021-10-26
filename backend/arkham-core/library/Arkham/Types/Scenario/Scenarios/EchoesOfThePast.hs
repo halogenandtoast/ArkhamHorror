@@ -50,7 +50,6 @@ echoesOfThePast difficulty =
         , Agendas.ransackingTheManor
         , Agendas.secretsBetterLeftHidden
         ]
-        [Acts.raceForAnswers, Acts.mistakesOfThePast, Acts.theOath]
         difficulty
     & locationLayoutL
     ?~ [ "thirdFloor1  quietHalls2 thirdFloor2  . ."
@@ -243,8 +242,15 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
         , Assets.claspOfBlackOnyx
         ]
 
-      EchoesOfThePast
-        <$> runMessage msg (attrs & (setAsideCardsL .~ setAsideCards))
+      EchoesOfThePast <$> runMessage
+        msg
+        (attrs
+        & (setAsideCardsL .~ setAsideCards)
+        & (actStackL
+          . at 1
+          ?~ [Acts.raceForAnswers, Acts.mistakesOfThePast, Acts.theOath]
+          )
+        )
     ResolveToken _ token iid -> s <$ case token of
       Cultist -> do
         matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)

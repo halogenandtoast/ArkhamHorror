@@ -43,12 +43,6 @@ whereDoomAwaits difficulty =
         "02274"
         "Where Doom Awaits"
         [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
-        [ Acts.thePathToTheHill
-        , Acts.ascendingTheHillV1
-        , Acts.ascendingTheHillV2
-        , Acts.ascendingTheHillV3
-        , Acts.theGateOpens
-        ]
         difficulty
     & locationLayoutL
     ?~ [ "divergingPath1 divergingPath2 divergingPath3"
@@ -196,14 +190,10 @@ instance
         (getHasRecord TheNecronomiconWasStolen)
 
       let
-        act2 = case (useV1, useV2) of
+        ascendingTheHill = case (useV1, useV2) of
           (True, _) -> Acts.ascendingTheHillV1
           (False, True) -> Acts.ascendingTheHillV2
           (False, False) -> Acts.ascendingTheHillV3
-        actStack' =
-          filter (\c -> cdStage c /= Just 2 || c == act2)
-            . fromJustNote "missing act deck"
-            $ lookup 1 (scenarioActStack attrs)
 
       naomiHasTheInvestigatorsBacks <- getHasRecord
         NaomiHasTheInvestigatorsBacks
@@ -277,7 +267,10 @@ instance
       WhereDoomAwaits <$> runMessage
         msg
         (attrs
-        & (actStackL . at 1 ?~ actStack')
+        & (actStackL
+          . at 1
+          ?~ [Acts.thePathToTheHill, ascendingTheHill, Acts.theGateOpens]
+          )
         & (setAsideCardsL
           <>~ (divergingPaths <> alteredPaths <> setAsideCards)
           )

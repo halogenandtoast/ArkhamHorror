@@ -23,6 +23,9 @@ instance Eq CardCode where
       n -> error $ n : " is not a valid side"
     complements _ _ = False
 
+cardCodeExactEq :: CardCode -> CardCode -> Bool
+cardCodeExactEq (CardCode a) (CardCode b) = a == b
+
 instance ToJSON CardCode where
   toJSON = toJSON . T.cons 'c' . unCardCode
 

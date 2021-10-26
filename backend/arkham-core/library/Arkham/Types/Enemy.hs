@@ -21,7 +21,7 @@ import Arkham.Types.Trait (Trait, toTraits)
 
 $(buildEntity "Enemy")
 
-createEnemy :: IsCard a => a -> Enemy
+createEnemy :: (HasCallStack, IsCard a) => a -> Enemy
 createEnemy a = lookupEnemy (toCardCode a) (EnemyId $ toCardId a)
 
 instance HasCardDef Enemy where
@@ -133,7 +133,7 @@ instance IsCard Enemy where
 instance HasDamage Enemy where
   getDamage = (, 0) . enemyDamage . toAttrs
 
-lookupEnemy :: CardCode -> (EnemyId -> Enemy)
+lookupEnemy :: HasCallStack => CardCode -> (EnemyId -> Enemy)
 lookupEnemy cardCode =
   fromJustNote ("Unknown enemy: " <> pack (show cardCode))
     $ lookup cardCode allEnemies

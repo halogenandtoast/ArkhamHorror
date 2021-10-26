@@ -11,6 +11,7 @@ import Arkham.Types.Action qualified as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -27,8 +28,8 @@ strangeSolutionFreezingVariant4 =
 instance HasAbilities StrangeSolutionFreezingVariant4 where
   getAbilities (StrangeSolutionFreezingVariant4 attrs) =
     [ restrictedAbility attrs 1 OwnsThis
-      $ ActionAbility (Just Action.Evade)
-      $ Costs [ActionCost 1, UseCost (toId attrs) Supply 1]
+        $ ActionAbility (Just Action.Evade)
+        $ Costs [ActionCost 1, UseCost (toId attrs) Supply 1]
     ]
 
 instance HasModifiersFor env StrangeSolutionFreezingVariant4 where
@@ -40,5 +41,6 @@ instance HasModifiersFor env StrangeSolutionFreezingVariant4 where
 instance AssetRunner env => RunMessage env StrangeSolutionFreezingVariant4 where
   runMessage msg a@(StrangeSolutionFreezingVariant4 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      a <$ push (ChooseEvadeEnemy iid source SkillAgility False)
+      a <$ push
+        (ChooseEvadeEnemy iid source Nothing SkillAgility AnyEnemy False)
     _ -> StrangeSolutionFreezingVariant4 <$> runMessage msg attrs

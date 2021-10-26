@@ -11,6 +11,7 @@ import Arkham.Types.Action qualified as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
+import Arkham.Types.Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
@@ -40,11 +41,12 @@ instance AssetRunner env => RunMessage env SpringfieldM19034 where
         attrs
         (InvestigatorTarget iid)
         [DamageDealt 2, SkillModifier SkillCombat 3]
-      , ChooseFightEnemyNotEngagedWithInvestigator
+      , ChooseFightEnemy
         iid
         source
         Nothing
         SkillCombat
+        EnemyNotEngagedWithYou
         False
       ]
     _ -> SpringfieldM19034 <$> runMessage msg attrs

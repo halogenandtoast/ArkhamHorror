@@ -172,9 +172,9 @@ instance
                 Timing.After
                 (Window.AgendaWouldAdvance DoomThreshold $ toId a)
             ]
-          pushAll [whenMsg, afterMsg, DoAdvanceAgendaIfThresholdSatisfied]
+          pushAll [whenMsg, afterMsg, Do AdvanceAgendaIfThresholdSatisfied]
       pure a
-    DoAdvanceAgendaIfThresholdSatisfied -> do
+    Do AdvanceAgendaIfThresholdSatisfied -> do
       -- This status can change due to the above windows so we much check again
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
       totalDoom <- unDoomCount <$> getCount ()

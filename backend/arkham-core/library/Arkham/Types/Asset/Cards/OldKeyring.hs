@@ -25,7 +25,8 @@ oldKeyring = handWith OldKeyring Cards.oldKeyring (discardWhenNoUsesL .~ True)
 instance HasAbilities OldKeyring where
   getAbilities (OldKeyring attrs) =
     [ restrictedAbility attrs 1 OwnsThis
-        $ ActionAbility (Just Action.Investigate) Free
+        $ ActionAbility (Just Action.Investigate)
+        $ ActionCost 1
     ]
 
 instance AssetRunner env => RunMessage env OldKeyring where

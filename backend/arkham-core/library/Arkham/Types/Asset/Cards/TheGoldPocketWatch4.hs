@@ -11,7 +11,6 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
-import Arkham.Types.Phase
 import Arkham.Types.Timing qualified as Timing
 import Arkham.Types.Window (Window(..))
 import Arkham.Types.Window qualified as Window
@@ -35,16 +34,8 @@ instance AssetRunner env => RunMessage env TheGoldPocketWatch4 where
   runMessage msg a@(TheGoldPocketWatch4 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ pushAll [RemoveFromGame (toTarget attrs), EndPhase]
-    UseCardAbility _ source [Window _ (Window.PhaseEnds p)] 2 _
+    UseCardAbility _ source [Window _ (Window.PhaseEnds phase)] 2 _
       | isSource attrs source -> do
-        let
-          phaseMsg = case p of
-            MythosPhase -> BeginMythos
-            InvestigationPhase -> BeginInvestigation
-            EnemyPhase -> BeginEnemy
-            UpkeepPhase -> BeginUpkeep
-            ResolutionPhase -> error "should not be called in this situation"
-            CampaignPhase -> error "should not be called in this situation"
         clearQueue
-        a <$ pushAll [RemoveFromGame (toTarget attrs), phaseMsg]
+        a <$ pushAll [RemoveFromGame (toTarget attrs), Begin phase]
     _ -> TheGoldPocketWatch4 <$> runMessage msg attrs

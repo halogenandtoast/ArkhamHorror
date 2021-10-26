@@ -80,3 +80,11 @@ instance IdToTarget EventId where
 
 instance IdToTarget SkillId where
   idToTarget = SkillTarget
+
+toActionTarget :: Target -> Target
+toActionTarget (ProxyTarget _ actionTarget) = actionTarget
+toActionTarget target = target
+
+toProxyTarget :: Target -> Target
+toProxyTarget (ProxyTarget proxyTarget _) = proxyTarget
+toProxyTarget target = target

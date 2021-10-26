@@ -521,7 +521,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         [Window Timing.When (Window.DiscoverClues iid lid discoveredClues)]
       a <$ pushAll
         [checkWindowMsg, DiscoverClues iid lid discoveredClues maction]
-    AfterDiscoverClues iid lid n | lid == locationId -> do
+    Do (DiscoverClues iid lid n _) | lid == locationId -> do
       let lastClue = locationClues - n <= 0
       push =<< checkWindows
         (Window Timing.After (Window.DiscoverClues iid lid n)
@@ -531,10 +531,10 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         )
       pure $ a & cluesL %~ max 0 . subtract n
     InvestigatorEliminated iid -> pure $ a & investigatorsL %~ deleteSet iid
-    WhenEnterLocation iid lid
+    EnterLocation iid lid
       | lid /= locationId && iid `elem` locationInvestigators
       -> pure $ a & investigatorsL %~ deleteSet iid -- TODO: should we broadcast leaving the location
-    WhenEnterLocation iid lid | lid == locationId -> do
+    EnterLocation iid lid | lid == locationId -> do
       push =<< checkWindows [Window Timing.When $ Window.Entering iid lid]
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure $ a & investigatorsL %~ insertSet iid
@@ -627,10 +627,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
       afterWindowMsg <- checkWindows
         [Window Timing.After (Window.RevealLocation revealer lid)]
       pushAll
-        $ [ AddConnection lid locationRevealedSymbol
-          , whenWindowMsg
-          , afterWindowMsg
-          ]
+        $ [whenWindowMsg, afterWindowMsg]
         <> [ PlaceClues (toTarget a) locationClueCount | locationClueCount > 0 ]
       pure $ a & revealedL .~ True
     LookAtRevealed source target | isTarget a target -> do

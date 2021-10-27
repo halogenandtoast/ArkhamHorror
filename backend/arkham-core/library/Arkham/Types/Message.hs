@@ -565,7 +565,6 @@ data Message
     | UnsetActiveCard
     | UseCardAbility InvestigatorId Source [Window] Int Payment
     | UseCardAbilityChoice InvestigatorId Source [Window] Int Payment AbilityMetadata
-    | UseLimitedAbility InvestigatorId Ability
     | When Message
     | WhenWillEnterLocation InvestigatorId LocationId
     | EnterLocation InvestigatorId LocationId

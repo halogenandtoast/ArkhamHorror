@@ -3355,8 +3355,6 @@ runGameMessage msg g = case msg of
       EncounterCard _ -> pure g
   UseAbility iid ability _ ->
     pure $ g & usedAbilitiesL %~ ((iid, ability, gameWindowDepth g) :)
-  UseLimitedAbility iid ability ->
-    pure $ g & usedAbilitiesL %~ ((iid, ability, gameWindowDepth g) :)
   DrewPlayerEnemy iid card -> do
     lid <- locationFor iid
     let

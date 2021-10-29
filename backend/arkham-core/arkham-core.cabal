@@ -681,6 +681,7 @@ library
       Arkham.Types.Exception
       Arkham.Types.Game
       Arkham.Types.Game.Helpers
+      Arkham.Types.GameEnv
       Arkham.Types.GameRunner
       Arkham.Types.GameValue
       Arkham.Types.Helpers

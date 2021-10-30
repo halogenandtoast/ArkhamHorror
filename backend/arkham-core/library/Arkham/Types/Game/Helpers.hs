@@ -998,8 +998,8 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       sum <$> traverse ((fmap unResourceCount . getCount) . fst) canHelpPay
     modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
     let title = nameTitle (cdName pcDef)
-    passesUnique <- case cdCardType pcDef of
-      AssetType -> not <$> case nameSubtitle (cdName pcDef) of
+    passesUnique <- case (cdUnique pcDef, cdCardType pcDef) of
+      (True, AssetType) -> not <$> case nameSubtitle (cdName pcDef) of
         Nothing -> selectAny (Matcher.AssetWithTitle title)
         Just subtitle -> selectAny (Matcher.AssetWithFullTitle title subtitle)
       _ -> pure True
@@ -1026,6 +1026,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You)
     canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You)
     passesLimits <- allM passesLimit (cdLimits pcDef)
+
     pure
       $ (cdCardType pcDef /= SkillType)
       && ((costStatus == PaidCost)

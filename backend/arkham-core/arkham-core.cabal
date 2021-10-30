@@ -34,6 +34,7 @@ library
       Arkham.Scenarios.EchoesOfThePast.Story
       Arkham.Scenarios.TheDevourerBelow.Story
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
+      Arkham.Scenarios.TheGathering.Story
       Arkham.Scenarios.TheLastKing.Story
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers
       Arkham.Scenarios.TheUnspeakableOath.Story

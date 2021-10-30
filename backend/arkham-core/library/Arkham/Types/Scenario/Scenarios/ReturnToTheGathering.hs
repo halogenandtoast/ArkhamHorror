@@ -6,6 +6,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Scenarios.TheGathering.Story
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty

@@ -5,13 +5,16 @@ module Arkham.Types.Exception
 import Arkham.Prelude
 
 import Arkham.Types.Card.CardCode
+import Arkham.Types.Resolution
 
 newtype InvalidState = InvalidState Text
-  deriving stock Typeable
+  deriving stock (Typeable, Show)
   deriving anyclass Exception
-  deriving newtype Show
 
 newtype MissingCard = MissingCard CardCode
-  deriving stock Typeable
+  deriving stock (Typeable, Show)
   deriving anyclass Exception
-  deriving newtype Show
+
+newtype UnknownResolution = UnknownResolution Resolution
+  deriving stock (Typeable, Show)
+  deriving anyclass Exception

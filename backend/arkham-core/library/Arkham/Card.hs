@@ -10,9 +10,6 @@ import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 
-buildCard :: MonadRandom m => CardCode -> m Card
-buildCard cardCode = lookupCard cardCode <$> getRandom
-
 lookupCard :: CardCode -> CardId -> Card
 lookupCard cardCode cardId =
   case (lookup cardCode allEncounterCards, lookup cardCode allPlayerCards) of

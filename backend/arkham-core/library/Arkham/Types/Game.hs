@@ -989,7 +989,10 @@ getEnemiesMatching matcher = do
       anyM
         (andM . sequence
           [ pure . (`abilityIs` Action.Fight)
-          , getCanPerformAbility iid (InvestigatorSource iid) window
+          , -- Because ChooseFightEnemy happens after taking a fight action we
+            -- need to decrement the action cost
+            getCanPerformAbility iid (InvestigatorSource iid) window
+            . (`applyAbilityModifiers` [ActionCostModifier (-1)])
           ]
         )
         (getAbilities enemy)

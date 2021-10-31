@@ -4,7 +4,8 @@ import Arkham.Prelude
 
 import Arkham.Types.Classes.GameLogger
 import Arkham.Types.Classes.HasQueue
-import Arkham.Types.Game
+import Arkham.Types.Game.Classes
+import Arkham.Types.Game.Types
 import Arkham.Types.Message
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 

@@ -1,5 +1,4 @@
 {-# LANGUAGE StrictData #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Types.Game where
@@ -35,7 +34,9 @@ import Arkham.Types.Enemy
 import Arkham.Types.EntityInstance
 import Arkham.Types.Event
 import Arkham.Types.Event.Attrs (eventAttachedTarget)
+import Arkham.Types.Game.Classes
 import Arkham.Types.Game.Helpers
+import Arkham.Types.Game.Types
 import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
 import Arkham.Types.History
@@ -85,7 +86,6 @@ import Arkham.Types.Window (Window(..))
 import Arkham.Types.Window qualified as Window
 import Arkham.Types.Zone (Zone)
 import Arkham.Types.Zone qualified as Zone
-import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM, foldM)
 import Data.Aeson.Diff qualified as Diff
@@ -97,24 +97,6 @@ import Data.These
 import Data.These.Lens
 import Data.UUID (nil)
 
-type GameMode = These Campaign Scenario
-type EntityMap a = HashMap (EntityId a) a
-
-data GameState = IsPending | IsActive | IsOver
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-class HasGameRef a where
-  gameRefL :: Lens' a (IORef Game)
-
-class HasGame a where
-  gameL :: Lens' a Game
-
-instance HasGame Game where
-  gameL = lens id $ \_ x -> x
-
-class HasStdGen a where
-  genL :: Lens' a (IORef StdGen)
 
 getGame :: (HasGame env, MonadReader env m) => m Game
 getGame = view gameL
@@ -131,69 +113,6 @@ modeCampaign = \case
   These c _ -> Just c
   This c -> Just c
 
-data GameParams = GameParams
-  (Either ScenarioId CampaignId)
-  Int
-  [(Investigator, [PlayerCard])] -- Map for order
-  Difficulty
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-data Game = Game
-  { gamePhaseHistory :: HashMap InvestigatorId History
-  , gameTurnHistory :: HashMap InvestigatorId History
-  , gameRoundHistory :: HashMap InvestigatorId History
-  , gameInitialSeed :: Int
-  , gameSeed :: Int
-  , gameParams :: GameParams
-  , gameWindowDepth :: Int
-
-  -- Active Scenario/Campaign
-  , gameMode :: GameMode
-
-  -- Entities
-  , gameLocations :: EntityMap Location
-  , gameInvestigators :: EntityMap Investigator
-  , gameEnemies :: EntityMap Enemy
-  , gameEnemiesInVoid :: EntityMap Enemy
-  , gameAssets :: EntityMap Asset
-  , gameActs :: EntityMap Act
-  , gameAgendas :: EntityMap Agenda
-  , gameTreacheries :: EntityMap Treachery
-  , gameEvents :: EntityMap Event
-  , gameEffects :: EntityMap Effect
-  , gameSkills :: EntityMap Skill
-
-  -- Player Details
-  , gamePlayerCount :: Int -- used for determining if game should start
-  , gameActiveInvestigatorId :: InvestigatorId
-  , gameTurnPlayerInvestigatorId :: Maybe InvestigatorId
-  , gameLeadInvestigatorId :: InvestigatorId
-  , gamePlayerOrder :: [InvestigatorId] -- For "in player order"
-
-  -- Game Details
-  , gamePhase :: Phase
-  , gameEncounterDeck :: Deck EncounterCard
-  , gameDiscard :: [EncounterCard]
-  , gameChaosBag :: ChaosBag
-  , gameSkillTest :: Maybe SkillTest
-  , gameUsedAbilities :: [(InvestigatorId, Ability, Int)]
-  , gameResignedCardCodes :: [CardCode]
-  , gameFocusedCards :: [Card]
-  , gameFoundCards :: HashMap Zone [Card]
-  , gameFocusedTargets :: [Target]
-  , gameFocusedTokens :: [Token]
-  , gameActiveCard :: Maybe Card
-  , gameVictoryDisplay :: [Card]
-  , gameRemovedFromPlay :: [Card]
-  , gameGameState :: GameState
-  , gameSkillTestResults :: Maybe SkillTestResultsData
-  , gameEnemyMoving :: Maybe EnemyId
-
-  -- Active questions
-  , gameQuestion :: HashMap InvestigatorId Question
-  }
-  deriving stock (Eq, Show, Generic)
 
 diff :: Game -> Game -> Diff.Patch
 diff a b = Diff.diff (toJSON a) (toJSON b)
@@ -202,8 +121,6 @@ patch :: Game -> Diff.Patch -> Result Game
 patch g p = case Diff.patch p (toJSON g) of
   Error e -> Error e
   Success a -> fromJSON a
-
-makeLensesWith suffixedFields ''Game
 
 getScenario :: (HasGame env, MonadReader env m) => m (Maybe Scenario)
 getScenario = modeScenario . view modeL <$> getGame

@@ -9,8 +9,6 @@ import Arkham.Types.ChaosBag
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Game
-import Arkham.Types.Game.Classes
-import Arkham.Types.Game.Types
 import Arkham.Types.GameEnv
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator

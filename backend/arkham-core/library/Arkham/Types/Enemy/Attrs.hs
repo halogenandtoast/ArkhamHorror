@@ -71,8 +71,13 @@ data EnemyAttrs = EnemyAttrs
   , enemyClues :: Int
   , enemySpawnAt :: Maybe LocationMatcher
   , enemyAsSelfLocation :: Maybe Text
+  , enemyMovedFromHunterKeyword :: Bool
   }
   deriving stock (Show, Eq, Generic)
+
+movedFromHunterKeywordL :: Lens' EnemyAttrs Bool
+movedFromHunterKeywordL = lens enemyMovedFromHunterKeyword
+  $ \m x -> m { enemyMovedFromHunterKeyword = x }
 
 spawnAtL :: Lens' EnemyAttrs (Maybe LocationMatcher)
 spawnAtL = lens enemySpawnAt $ \m x -> m { enemySpawnAt = x }
@@ -189,6 +194,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       , enemyClues = 0
       , enemySpawnAt = Nothing
       , enemyAsSelfLocation = Nothing
+      , enemyMovedFromHunterKeyword = False
       }
     }
 
@@ -339,6 +345,7 @@ isActionTarget attrs = isTarget attrs . toProxyTarget
 
 instance EnemyRunner env => RunMessage env EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
+    EndPhase -> pure $ a & movedFromHunterKeywordL .~ False
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       preyIds <- map unPreyId <$> getSetList enemyPrey
       preyIdsWithLocation <- for preyIds
@@ -586,28 +593,34 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
               destinationLocationIds
       case pathIds of
         [] -> pure a
-        [lid] -> a <$ pushAll
-          [ EnemyMove enemyId enemyLocation lid
-          , CheckWindow
-            [leadInvestigatorId]
-            [Window Timing.After (Window.MovedFromHunter enemyId)]
-          ]
-        ls -> a <$ pushAll
-          (chooseOne
-              leadInvestigatorId
-              [ TargetLabel
-                  (LocationTarget l)
-                  [EnemyMove enemyId enemyLocation l]
-              | l <- ls
-              ]
-          : [ CheckWindow
-                [leadInvestigatorId]
-                [Window Timing.After (Window.MovedFromHunter enemyId)]
+        [lid] -> do
+          pushAll
+            [ EnemyMove enemyId enemyLocation lid
+            , CheckWindow
+              [leadInvestigatorId]
+              [Window Timing.After (Window.MovedFromHunter enemyId)]
             ]
-          )
+          pure $ a & movedFromHunterKeywordL .~ True
+        ls -> do
+          pushAll
+            (chooseOne
+                leadInvestigatorId
+                [ TargetLabel
+                    (LocationTarget l)
+                    [EnemyMove enemyId enemyLocation l]
+                | l <- ls
+                ]
+            : [ CheckWindow
+                  [leadInvestigatorId]
+                  [Window Timing.After (Window.MovedFromHunter enemyId)]
+              ]
+            )
+          pure $ a & movedFromHunterKeywordL .~ True
     EnemiesAttack | notNull enemyEngagedInvestigators && not enemyExhausted ->
       do
-        pushAll
+        modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
+        unless (CannotAttack `elem` modifiers')
+          $ pushAll
           $ map (\iid -> EnemyWillAttack iid enemyId DamageAny)
           $ setToList enemyEngagedInvestigators
         pure a

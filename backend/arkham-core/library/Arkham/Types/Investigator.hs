@@ -301,6 +301,14 @@ getIsPrey LowestRemainingSanity i = do
     . map unRemainingSanity
     <$> getSetList ()
   pure $ lowestRemainingSanity == remainingSanity
+getIsPrey MostRemainingSanity i = do
+  remainingSanity <- getRemainingSanity i
+  mostRemainingSanity <-
+    fromJustNote "has to be"
+    . maximumMay
+    . map unRemainingSanity
+    <$> getSetList ()
+  pure $ mostRemainingSanity == remainingSanity
 getIsPrey (Bearer bid) i = pure $ unBearerId bid == toId i
 getIsPrey MostClues i = do
   clueCount <- unClueCount <$> getCount i

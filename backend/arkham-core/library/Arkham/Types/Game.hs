@@ -1,7 +1,10 @@
 {-# LANGUAGE StrictData #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Types.Game where
+module Arkham.Types.Game
+  ( module Arkham.Types.Game
+  , module X
+  ) where
 
 import Arkham.Prelude
 
@@ -34,9 +37,9 @@ import Arkham.Types.Enemy
 import Arkham.Types.EntityInstance
 import Arkham.Types.Event
 import Arkham.Types.Event.Attrs (eventAttachedTarget)
-import Arkham.Types.Game.Classes
+import Arkham.Types.Game.Classes as X
 import Arkham.Types.Game.Helpers
-import Arkham.Types.Game.Types
+import Arkham.Types.Game.Types as X
 import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
 import Arkham.Types.History

@@ -66,6 +66,7 @@ data ModifierType
   | CanPlayTopOfDiscard (Maybe CardType, [Trait])
   | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
   | CancelSkills
+  | CannotAttack
   | CannotBeAttackedByNonElite
   | CannotBeDamaged
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher

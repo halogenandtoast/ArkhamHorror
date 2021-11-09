@@ -81,6 +81,7 @@ allEncounterEnemyCards = mapFromList $ map
   , agentOfTheKing
   , almaHill
   , ashleighClarke
+  , asylumGorger
   , avianThrall
   , balefulReveler
   , billyCooper
@@ -119,6 +120,7 @@ allEncounterEnemyCards = mapFromList $ map
   , jeremiahPierce
   , jordanPerry
   , lupineThrall
+  , madPatient
   , marshGug
   , mobster
   , narogath
@@ -638,6 +640,17 @@ danielChesterfield = (enemy
   , cdUnique = True
   , cdVictoryPoints = Just 1
   , cdDoubleSided = True
+  }
+
+asylumGorger :: CardDef
+asylumGorger = (enemy "03183" "Asylum Gorger" TheUnspeakableOath 2)
+  { cdCardTraits = setFromList [Monster, Abomination]
+  , cdKeywords = singleton Keyword.Hunter
+  }
+
+madPatient :: CardDef
+madPatient = (enemy "03184" "Mad Patient" TheUnspeakableOath 3)
+  { cdCardTraits = setFromList [Humanoid, Lunatic]
   }
 
 corpseHungryGhoul :: CardDef

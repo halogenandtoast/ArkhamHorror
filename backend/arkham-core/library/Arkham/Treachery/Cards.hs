@@ -51,6 +51,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdUses = NoUses
   , cdPlayableFromDiscard = False
   , cdStage = Nothing
+  , cdSlots = []
   }
 
 weakness :: CardCode -> Name -> CardDef
@@ -185,6 +186,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , vaultOfEarthlyDemise
   , visionsOfFuturesPast
   , vortexOfTime
+  , wallsClosingIn
   , watchersGaze
   , whispersInYourHeadDismay
   , whispersInYourHeadDread
@@ -648,6 +650,11 @@ theKingsEdict = (treachery "03100" "The King's Edict" CultOfTheYellowSign 2)
 straitjacket :: CardDef
 straitjacket = (treachery "03185" "Straitjacket" TheUnspeakableOath 2)
   { cdCardTraits = setFromList [Item, Clothing]
+  }
+
+wallsClosingIn :: CardDef
+wallsClosingIn = (treachery "03186" "Walls ClosingIn" TheUnspeakableOath 3)
+  { cdCardTraits = singleton Terror
   }
 
 theZealotsSeal :: CardDef

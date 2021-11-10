@@ -21,7 +21,7 @@ newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced AssetAttrs
 
 theNecronomiconAdvanced :: AssetCard TheNecronomiconAdvanced
 theNecronomiconAdvanced =
-  handWith TheNecronomiconAdvanced Cards.theNecronomiconAdvanced
+  assetWith TheNecronomiconAdvanced Cards.theNecronomiconAdvanced
     $ (horrorL ?~ 3)
     . (canLeavePlayByNormalMeansL .~ False)
 

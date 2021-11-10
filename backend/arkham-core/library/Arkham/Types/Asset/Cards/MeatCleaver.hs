@@ -22,7 +22,7 @@ newtype MeatCleaver = MeatCleaver AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 meatCleaver :: AssetCard MeatCleaver
-meatCleaver = hand MeatCleaver Cards.meatCleaver
+meatCleaver = asset MeatCleaver Cards.meatCleaver
 
 instance HasAbilities MeatCleaver where
   getAbilities (MeatCleaver attrs) =

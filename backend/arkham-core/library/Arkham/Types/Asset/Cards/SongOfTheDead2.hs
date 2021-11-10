@@ -20,7 +20,7 @@ newtype SongOfTheDead2 = SongOfTheDead2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 songOfTheDead2 :: AssetCard SongOfTheDead2
-songOfTheDead2 = arcane SongOfTheDead2 Cards.songOfTheDead2
+songOfTheDead2 = asset SongOfTheDead2 Cards.songOfTheDead2
 
 instance HasAbilities SongOfTheDead2 where
   getAbilities (SongOfTheDead2 x) =

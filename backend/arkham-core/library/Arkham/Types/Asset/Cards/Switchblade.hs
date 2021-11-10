@@ -20,7 +20,7 @@ newtype Switchblade = Switchblade AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 switchblade :: AssetCard Switchblade
-switchblade = hand Switchblade Cards.switchblade
+switchblade = asset Switchblade Cards.switchblade
 
 instance HasAbilities Switchblade where
   getAbilities (Switchblade a) =

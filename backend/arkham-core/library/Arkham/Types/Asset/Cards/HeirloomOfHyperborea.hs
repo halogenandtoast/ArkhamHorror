@@ -17,8 +17,7 @@ newtype HeirloomOfHyperborea = HeirloomOfHyperborea AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 heirloomOfHyperborea :: AssetCard HeirloomOfHyperborea
-heirloomOfHyperborea =
-  accessory HeirloomOfHyperborea Cards.heirloomOfHyperborea
+heirloomOfHyperborea = asset HeirloomOfHyperborea Cards.heirloomOfHyperborea
 
 instance HasAbilities HeirloomOfHyperborea where
   getAbilities (HeirloomOfHyperborea x) =

@@ -22,7 +22,7 @@ newtype ToothOfEztli = ToothOfEztli AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 toothOfEztli :: AssetCard ToothOfEztli
-toothOfEztli = accessory ToothOfEztli Cards.toothOfEztli
+toothOfEztli = asset ToothOfEztli Cards.toothOfEztli
 
 instance HasModifiersFor env ToothOfEztli where
   getModifiersFor (SkillTestSource _ _ (TreacherySource _) _ _) (InvestigatorTarget iid) (ToothOfEztli a)

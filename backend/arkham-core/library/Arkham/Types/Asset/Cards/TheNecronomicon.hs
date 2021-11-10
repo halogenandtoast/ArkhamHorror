@@ -22,7 +22,7 @@ newtype TheNecronomicon = TheNecronomicon AssetAttrs
 
 theNecronomicon :: AssetCard TheNecronomicon
 theNecronomicon =
-  handWith TheNecronomicon Cards.theNecronomicon
+  assetWith TheNecronomicon Cards.theNecronomicon
     $ (horrorL ?~ 3)
     . (canLeavePlayByNormalMeansL .~ False)
 

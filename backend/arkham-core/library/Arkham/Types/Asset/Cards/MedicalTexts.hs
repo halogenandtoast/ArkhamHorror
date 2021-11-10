@@ -19,7 +19,7 @@ newtype MedicalTexts = MedicalTexts AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 medicalTexts :: AssetCard MedicalTexts
-medicalTexts = hand MedicalTexts Cards.medicalTexts
+medicalTexts = asset MedicalTexts Cards.medicalTexts
 
 instance HasAbilities MedicalTexts where
   getAbilities (MedicalTexts a) =

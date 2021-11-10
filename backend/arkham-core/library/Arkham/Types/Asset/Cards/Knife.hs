@@ -20,7 +20,7 @@ newtype Knife = Knife AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 knife :: AssetCard Knife
-knife = hand Knife Cards.knife
+knife = asset Knife Cards.knife
 
 instance HasAbilities Knife where
   getAbilities (Knife a) =

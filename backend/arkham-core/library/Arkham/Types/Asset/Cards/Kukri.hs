@@ -21,7 +21,7 @@ newtype Kukri = Kukri AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 kukri :: AssetCard Kukri
-kukri = hand Kukri Cards.kukri
+kukri = asset Kukri Cards.kukri
 
 instance HasAbilities Kukri where
   getAbilities (Kukri a) =

@@ -17,7 +17,7 @@ newtype FireExtinguisher1 = FireExtinguisher1 AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 fireExtinguisher1 :: AssetCard FireExtinguisher1
-fireExtinguisher1 = hand FireExtinguisher1 Cards.fireExtinguisher1
+fireExtinguisher1 = asset FireExtinguisher1 Cards.fireExtinguisher1
 
 instance HasAbilities FireExtinguisher1 where
   getAbilities (FireExtinguisher1 a) =

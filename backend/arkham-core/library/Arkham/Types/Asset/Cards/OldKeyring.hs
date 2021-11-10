@@ -20,7 +20,7 @@ newtype OldKeyring = OldKeyring AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oldKeyring :: AssetCard OldKeyring
-oldKeyring = handWith OldKeyring Cards.oldKeyring (discardWhenNoUsesL .~ True)
+oldKeyring = assetWith OldKeyring Cards.oldKeyring (discardWhenNoUsesL .~ True)
 
 instance HasAbilities OldKeyring where
   getAbilities (OldKeyring attrs) =

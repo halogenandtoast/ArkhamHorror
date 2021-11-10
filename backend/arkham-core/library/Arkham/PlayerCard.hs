@@ -73,5 +73,6 @@ randomWeakness = CardDef
   , cdUses = NoUses
   , cdPlayableFromDiscard = False
   , cdStage = Nothing
+  , cdSlots = []
   }
 

@@ -18,7 +18,7 @@ newtype ScrollOfProphecies = ScrollOfProphecies AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scrollOfProphecies :: AssetCard ScrollOfProphecies
-scrollOfProphecies = hand ScrollOfProphecies Cards.scrollOfProphecies
+scrollOfProphecies = asset ScrollOfProphecies Cards.scrollOfProphecies
 
 instance HasAbilities ScrollOfProphecies where
   getAbilities (ScrollOfProphecies x) =

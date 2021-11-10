@@ -15,7 +15,7 @@ newtype Bandolier = Bandolier AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bandolier :: AssetCard Bandolier
-bandolier = bodyWith Bandolier Cards.bandolier (healthL ?~ 1)
+bandolier = assetWith Bandolier Cards.bandolier (healthL ?~ 1)
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing

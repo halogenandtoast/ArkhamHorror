@@ -13,7 +13,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype LightningGun5 = LightningGun5 AssetAttrs
@@ -21,8 +20,7 @@ newtype LightningGun5 = LightningGun5 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lightningGun5 :: AssetCard LightningGun5
-lightningGun5 =
-  assetWith LightningGun5 Cards.lightningGun5 (slotsL .~ [HandSlot, HandSlot])
+lightningGun5 = asset LightningGun5 Cards.lightningGun5
 
 instance HasAbilities LightningGun5 where
   getAbilities (LightningGun5 a) =

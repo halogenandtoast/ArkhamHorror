@@ -18,7 +18,7 @@ newtype MagnifyingGlass1 = MagnifyingGlass1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 magnifyingGlass1 :: AssetCard MagnifyingGlass1
-magnifyingGlass1 = hand MagnifyingGlass1 Cards.magnifyingGlass1
+magnifyingGlass1 = asset MagnifyingGlass1 Cards.magnifyingGlass1
 
 instance HasModifiersFor env MagnifyingGlass1 where
   getModifiersFor _ (InvestigatorTarget iid) (MagnifyingGlass1 a) = pure

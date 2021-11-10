@@ -18,7 +18,7 @@ newtype DiscOfItzamna2 = DiscOfItzamna2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 discOfItzamna2 :: AssetCard DiscOfItzamna2
-discOfItzamna2 = accessory DiscOfItzamna2 Cards.discOfItzamna2
+discOfItzamna2 = asset DiscOfItzamna2 Cards.discOfItzamna2
 
 instance HasAbilities DiscOfItzamna2 where
   getAbilities (DiscOfItzamna2 a) =

@@ -22,7 +22,7 @@ newtype LuckyDice2 = LuckyDice2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 luckyDice2 :: AssetCard LuckyDice2
-luckyDice2 = accessory LuckyDice2 Cards.luckyDice2
+luckyDice2 = asset LuckyDice2 Cards.luckyDice2
 
 instance HasAbilities LuckyDice2 where
   getAbilities (LuckyDice2 a) =

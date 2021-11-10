@@ -24,7 +24,7 @@ newtype FireAxe = FireAxe AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fireAxe :: AssetCard FireAxe
-fireAxe = hand FireAxe Cards.fireAxe
+fireAxe = asset FireAxe Cards.fireAxe
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAxe where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)

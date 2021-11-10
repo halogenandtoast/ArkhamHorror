@@ -19,7 +19,7 @@ newtype Scrying = Scrying AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 scrying :: AssetCard Scrying
-scrying = arcane Scrying Cards.scrying
+scrying = asset Scrying Cards.scrying
 
 instance HasAbilities Scrying where
   getAbilities (Scrying a) =

@@ -11,7 +11,7 @@ newtype CherishedKeepsake = CherishedKeepsake AssetAttrs
 
 cherishedKeepsake :: AssetCard CherishedKeepsake
 cherishedKeepsake =
-  accessoryWith CherishedKeepsake Cards.cherishedKeepsake (sanityL ?~ 2)
+  assetWith CherishedKeepsake Cards.cherishedKeepsake (sanityL ?~ 2)
 
 instance AssetRunner env => RunMessage env CherishedKeepsake where
   runMessage msg (CherishedKeepsake attrs) =

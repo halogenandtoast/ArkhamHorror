@@ -13,7 +13,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 
@@ -22,8 +21,7 @@ newtype BaseballBat = BaseballBat AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 baseballBat :: AssetCard BaseballBat
-baseballBat =
-  assetWith BaseballBat Cards.baseballBat (slotsL .~ [HandSlot, HandSlot])
+baseballBat = asset BaseballBat Cards.baseballBat
 
 instance HasModifiersFor env BaseballBat where
   getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (BaseballBat a)

@@ -13,7 +13,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype JennysTwin45s = JennysTwin45s AssetAttrs
@@ -21,8 +20,7 @@ newtype JennysTwin45s = JennysTwin45s AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jennysTwin45s :: AssetCard JennysTwin45s
-jennysTwin45s =
-  assetWith JennysTwin45s Cards.jennysTwin45s (slotsL .~ [HandSlot, HandSlot])
+jennysTwin45s = asset JennysTwin45s Cards.jennysTwin45s
 
 instance HasAbilities JennysTwin45s where
   getAbilities (JennysTwin45s a) =

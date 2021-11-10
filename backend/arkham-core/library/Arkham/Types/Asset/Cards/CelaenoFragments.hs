@@ -15,7 +15,7 @@ newtype CelaenoFragments = CelaenoFragments AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 celaenoFragments :: AssetCard CelaenoFragments
-celaenoFragments = hand CelaenoFragments Cards.celaenoFragments
+celaenoFragments = asset CelaenoFragments Cards.celaenoFragments
 
 instance HasCount CardCount env InvestigatorId => HasModifiersFor env CelaenoFragments where
   getModifiersFor _ (InvestigatorTarget iid) (CelaenoFragments attrs)

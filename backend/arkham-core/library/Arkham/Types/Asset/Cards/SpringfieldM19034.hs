@@ -14,7 +14,6 @@ import Arkham.Types.Criteria
 import Arkham.Types.Matcher
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
@@ -22,10 +21,7 @@ newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 springfieldM19034 :: AssetCard SpringfieldM19034
-springfieldM19034 = assetWith
-  SpringfieldM19034
-  Cards.springfieldM19034
-  (slotsL .~ [HandSlot, HandSlot])
+springfieldM19034 = asset SpringfieldM19034 Cards.springfieldM19034
 
 instance HasAbilities SpringfieldM19034 where
   getAbilities (SpringfieldM19034 a) =

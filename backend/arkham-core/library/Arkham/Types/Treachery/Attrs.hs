@@ -85,7 +85,6 @@ instance SourceEntity TreacheryAttrs where
   toSource = TreacherySource . toId
   isSource TreacheryAttrs { treacheryId } (TreacherySource tid) =
     treacheryId == tid
-  isSource attrs (PlayerCardSource cardId) = toCardId attrs == cardId
   isSource _ _ = False
 
 instance IsCard TreacheryAttrs where

@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Types.Action (Action)
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
+import {-# SOURCE #-} Arkham.Types.Card.PlayerCard
 import Arkham.Types.EffectId
 import Arkham.Types.Id
 import Arkham.Types.Matcher
@@ -36,7 +37,7 @@ data Source
   | InHandSource
   | CardIdSource CardId
   | ActSource ActId
-  | PlayerCardSource CardId
+  | PlayerCardSource PlayerCard
   | EncounterCardSource CardId
   | TestSource (HashSet Trait)
   | ProxySource Source Source

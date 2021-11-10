@@ -21,7 +21,7 @@ newtype ZoeysCross = ZoeysCross AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 zoeysCross :: AssetCard ZoeysCross
-zoeysCross = accessory ZoeysCross Cards.zoeysCross
+zoeysCross = asset ZoeysCross Cards.zoeysCross
 
 instance HasAbilities ZoeysCross where
   getAbilities (ZoeysCross x) =

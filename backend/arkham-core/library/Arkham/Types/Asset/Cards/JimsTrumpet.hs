@@ -22,7 +22,7 @@ newtype JimsTrumpet = JimsTrumpet AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 jimsTrumpet :: AssetCard JimsTrumpet
-jimsTrumpet = hand JimsTrumpet Cards.jimsTrumpet
+jimsTrumpet = asset JimsTrumpet Cards.jimsTrumpet
 
 instance HasAbilities JimsTrumpet where
   getAbilities (JimsTrumpet x) =

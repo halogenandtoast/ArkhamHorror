@@ -19,7 +19,7 @@ newtype AlchemicalTransmutation = AlchemicalTransmutation AssetAttrs
 
 alchemicalTransmutation :: AssetCard AlchemicalTransmutation
 alchemicalTransmutation =
-  arcane AlchemicalTransmutation Cards.alchemicalTransmutation
+  asset AlchemicalTransmutation Cards.alchemicalTransmutation
 
 instance HasAbilities AlchemicalTransmutation where
   getAbilities (AlchemicalTransmutation a) =

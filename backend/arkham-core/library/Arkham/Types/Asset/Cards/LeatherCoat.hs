@@ -10,7 +10,7 @@ newtype LeatherCoat = LeatherCoat AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 leatherCoat :: AssetCard LeatherCoat
-leatherCoat = bodyWith LeatherCoat Cards.leatherCoat (healthL ?~ 2)
+leatherCoat = assetWith LeatherCoat Cards.leatherCoat (healthL ?~ 2)
 
 instance AssetRunner env => RunMessage env LeatherCoat where
   runMessage msg (LeatherCoat attrs) = LeatherCoat <$> runMessage msg attrs

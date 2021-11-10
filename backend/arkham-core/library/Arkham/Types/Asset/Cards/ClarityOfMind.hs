@@ -18,18 +18,18 @@ newtype ClarityOfMind = ClarityOfMind AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 clarityOfMind :: AssetCard ClarityOfMind
-clarityOfMind = arcane ClarityOfMind Cards.clarityOfMind
+clarityOfMind = asset ClarityOfMind Cards.clarityOfMind
 
 instance HasAbilities ClarityOfMind where
   getAbilities (ClarityOfMind a) =
     [ restrictedAbility
-        a
-        1
-        (OwnsThis <> InvestigatorExists
-          (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
-        )
-      $ ActionAbility Nothing
-      $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
+          a
+          1
+          (OwnsThis <> InvestigatorExists
+            (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
+          )
+        $ ActionAbility Nothing
+        $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
     ]
 
 instance AssetRunner env => RunMessage env ClarityOfMind where

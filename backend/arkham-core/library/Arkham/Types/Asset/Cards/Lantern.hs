@@ -22,20 +22,20 @@ newtype Lantern = Lantern AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lantern :: AssetCard Lantern
-lantern = hand Lantern Cards.lantern
+lantern = asset Lantern Cards.lantern
 
 instance HasAbilities Lantern where
   getAbilities (Lantern x) =
     [ restrictedAbility x 1 OwnsThis
-    $ ActionAbility (Just Action.Investigate)
-    $ ActionCost 1
+      $ ActionAbility (Just Action.Investigate)
+      $ ActionCost 1
     , restrictedAbility
-      x
-      2
-      (OwnsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
-    $ ActionAbility Nothing
-    $ DiscardCost
-    $ toTarget x
+        x
+        2
+        (OwnsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
+      $ ActionAbility Nothing
+      $ DiscardCost
+      $ toTarget x
     ]
 
 instance AssetRunner env => RunMessage env Lantern where

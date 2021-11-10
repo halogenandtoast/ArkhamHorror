@@ -35,7 +35,7 @@ instance EventRunner env => RunMessage env DarkMemory where
       [ RevealInHand $ toCardId attrs
       , InvestigatorAssignDamage
         iid
-        (PlayerCardSource $ toCardId attrs)
+        (CardIdSource $ toCardId attrs)
         DamageAny
         0
         2

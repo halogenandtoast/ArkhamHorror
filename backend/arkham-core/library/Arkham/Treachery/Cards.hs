@@ -653,7 +653,7 @@ straitjacket = (treachery "03185" "Straitjacket" TheUnspeakableOath 2)
   }
 
 wallsClosingIn :: CardDef
-wallsClosingIn = (treachery "03186" "Walls ClosingIn" TheUnspeakableOath 3)
+wallsClosingIn = (treachery "03188" "Walls ClosingIn" TheUnspeakableOath 3)
   { cdCardTraits = singleton Terror
   }
 

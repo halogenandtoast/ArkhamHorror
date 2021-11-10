@@ -19,7 +19,7 @@ newtype TheTatteredCloak = TheTatteredCloak AssetAttrs
 
 theTatteredCloak :: AssetCard TheTatteredCloak
 theTatteredCloak =
-  bodyWith TheTatteredCloak Cards.theTatteredCloak (healthL ?~ 1)
+  assetWith TheTatteredCloak Cards.theTatteredCloak (healthL ?~ 1)
 
 instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env TheTatteredCloak where
   getModifiersFor _ (InvestigatorTarget iid) (TheTatteredCloak attrs)

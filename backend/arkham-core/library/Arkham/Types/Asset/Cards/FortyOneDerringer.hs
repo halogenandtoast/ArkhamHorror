@@ -20,7 +20,7 @@ newtype FortyOneDerringer = FortyOneDerringer AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortyOneDerringer :: AssetCard FortyOneDerringer
-fortyOneDerringer = hand FortyOneDerringer Cards.fortyOneDerringer
+fortyOneDerringer = asset FortyOneDerringer Cards.fortyOneDerringer
 
 instance HasAbilities FortyOneDerringer where
   getAbilities (FortyOneDerringer a) =

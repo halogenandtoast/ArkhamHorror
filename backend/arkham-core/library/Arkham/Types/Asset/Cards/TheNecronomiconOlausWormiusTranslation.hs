@@ -20,7 +20,7 @@ newtype TheNecronomiconOlausWormiusTranslation = TheNecronomiconOlausWormiusTran
 
 theNecronomiconOlausWormiusTranslation
   :: AssetCard TheNecronomiconOlausWormiusTranslation
-theNecronomiconOlausWormiusTranslation = hand
+theNecronomiconOlausWormiusTranslation = asset
   TheNecronomiconOlausWormiusTranslation
   Cards.theNecronomiconOlausWormiusTranslation
 

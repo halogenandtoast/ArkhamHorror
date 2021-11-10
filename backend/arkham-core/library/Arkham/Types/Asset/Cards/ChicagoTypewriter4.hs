@@ -13,7 +13,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype ChicagoTypewriter4 = ChicagoTypewriter4 AssetAttrs
@@ -21,10 +20,7 @@ newtype ChicagoTypewriter4 = ChicagoTypewriter4 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chicagoTypewriter4 :: AssetCard ChicagoTypewriter4
-chicagoTypewriter4 = assetWith
-  ChicagoTypewriter4
-  Cards.chicagoTypewriter4
-  (slotsL .~ [HandSlot, HandSlot])
+chicagoTypewriter4 = asset ChicagoTypewriter4 Cards.chicagoTypewriter4
 
 instance HasAbilities ChicagoTypewriter4 where
   getAbilities (ChicagoTypewriter4 a) =

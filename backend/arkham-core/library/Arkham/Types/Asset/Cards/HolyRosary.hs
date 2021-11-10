@@ -13,7 +13,7 @@ newtype HolyRosary = HolyRosary AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 holyRosary :: AssetCard HolyRosary
-holyRosary = accessoryWith HolyRosary Cards.holyRosary (sanityL ?~ 2)
+holyRosary = assetWith HolyRosary Cards.holyRosary (sanityL ?~ 2)
 
 instance HasModifiersFor env  HolyRosary where
   getModifiersFor _ (InvestigatorTarget iid) (HolyRosary a) =

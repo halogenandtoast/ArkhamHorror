@@ -22,7 +22,7 @@ newtype Encyclopedia = Encyclopedia AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 encyclopedia :: AssetCard Encyclopedia
-encyclopedia = hand Encyclopedia Cards.encyclopedia
+encyclopedia = asset Encyclopedia Cards.encyclopedia
 
 instance HasAbilities Encyclopedia where
   getAbilities (Encyclopedia a) =

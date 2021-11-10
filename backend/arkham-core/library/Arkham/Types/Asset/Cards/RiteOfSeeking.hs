@@ -20,7 +20,7 @@ newtype RiteOfSeeking = RiteOfSeeking AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riteOfSeeking :: AssetCard RiteOfSeeking
-riteOfSeeking = arcane RiteOfSeeking Cards.riteOfSeeking
+riteOfSeeking = asset RiteOfSeeking Cards.riteOfSeeking
 
 instance HasAbilities RiteOfSeeking where
   getAbilities (RiteOfSeeking a) =

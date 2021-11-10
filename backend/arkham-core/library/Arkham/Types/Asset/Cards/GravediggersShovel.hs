@@ -20,7 +20,7 @@ newtype GravediggersShovel = GravediggersShovel AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gravediggersShovel :: AssetCard GravediggersShovel
-gravediggersShovel = hand GravediggersShovel Cards.gravediggersShovel
+gravediggersShovel = asset GravediggersShovel Cards.gravediggersShovel
 
 instance HasAbilities GravediggersShovel where
   getAbilities (GravediggersShovel x) =

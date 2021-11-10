@@ -21,7 +21,7 @@ newtype Lockpicks = Lockpicks AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lockpicks :: AssetCard Lockpicks
-lockpicks = hand Lockpicks Cards.lockpicks
+lockpicks = asset Lockpicks Cards.lockpicks
 
 instance HasAbilities Lockpicks where
   getAbilities (Lockpicks a) =

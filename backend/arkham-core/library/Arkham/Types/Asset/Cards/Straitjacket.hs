@@ -11,17 +11,16 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Card
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
-import Arkham.Types.Slot
 
 newtype Straitjacket = Straitjacket AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 straitjacket :: AssetCard Straitjacket
-straitjacket =
-  assetWith Straitjacket Cards.straitjacket
-    $ (slotsL .~ [BodySlot, HandSlot, HandSlot])
-    . (canLeavePlayByNormalMeansL .~ False)
+straitjacket = assetWith
+  Straitjacket
+  Cards.straitjacket
+  (canLeavePlayByNormalMeansL .~ False)
 
 instance HasAbilities Straitjacket where
   getAbilities (Straitjacket a) =

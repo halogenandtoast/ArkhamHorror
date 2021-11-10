@@ -13,7 +13,7 @@ newtype OccultLexicon = OccultLexicon AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 occultLexicon :: AssetCard OccultLexicon
-occultLexicon = hand OccultLexicon Cards.occultLexicon
+occultLexicon = asset OccultLexicon Cards.occultLexicon
 
 instance AssetRunner env => RunMessage env OccultLexicon where
   runMessage msg (OccultLexicon attrs) = case msg of

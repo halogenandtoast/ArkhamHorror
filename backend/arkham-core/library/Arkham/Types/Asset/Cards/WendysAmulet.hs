@@ -14,7 +14,7 @@ newtype WendysAmulet = WendysAmulet AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wendysAmulet :: AssetCard WendysAmulet
-wendysAmulet = accessory WendysAmulet Cards.wendysAmulet
+wendysAmulet = asset WendysAmulet Cards.wendysAmulet
 
 instance HasId InvestigatorId env EventId => HasModifiersFor env WendysAmulet where
   getModifiersFor _ (InvestigatorTarget iid) (WendysAmulet a) =

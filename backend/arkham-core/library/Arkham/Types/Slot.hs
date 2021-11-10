@@ -21,6 +21,8 @@ instance Ord Slot where
   Slot{} <= Slot{} = True
   Slot{} <= _ = False
 
+newtype PotentialSlot = PotentialSlot { unPotentialSlot :: SlotType }
+
 data SlotType
   = HandSlot
   | BodySlot

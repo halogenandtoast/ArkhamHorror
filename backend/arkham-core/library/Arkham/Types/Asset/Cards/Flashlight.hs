@@ -20,7 +20,7 @@ newtype Flashlight = Flashlight AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 flashlight :: AssetCard Flashlight
-flashlight = hand Flashlight Cards.flashlight
+flashlight = asset Flashlight Cards.flashlight
 
 instance HasAbilities Flashlight where
   getAbilities (Flashlight x) =

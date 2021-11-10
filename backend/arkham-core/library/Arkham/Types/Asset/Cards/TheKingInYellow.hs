@@ -24,7 +24,7 @@ newtype TheKingInYellow = TheKingInYellow AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theKingInYellow :: AssetCard TheKingInYellow
-theKingInYellow = handWith
+theKingInYellow = assetWith
   TheKingInYellow
   Cards.theKingInYellow
   (canLeavePlayByNormalMeansL .~ False)
@@ -55,7 +55,7 @@ instance HasSet CommittedCardId env InvestigatorId => HasModifiersFor env TheKin
 instance AssetRunner env => RunMessage env TheKingInYellow where
   runMessage msg a@(TheKingInYellow attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      a <$ push (PlayCard iid (toCardId attrs) Nothing False)
+      a <$ push (PutCardIntoPlay iid (toCard attrs) Nothing)
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (Discard $ toTarget attrs)
     _ -> TheKingInYellow <$> runMessage msg attrs

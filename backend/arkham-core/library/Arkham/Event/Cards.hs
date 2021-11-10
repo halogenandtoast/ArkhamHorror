@@ -49,6 +49,7 @@ event cardCode name cost classSymbol = CardDef
   , cdUses = Uses.NoUses
   , cdPlayableFromDiscard = False
   , cdStage = Nothing
+  , cdSlots = []
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef

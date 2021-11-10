@@ -38,6 +38,7 @@ import Arkham.Types.ScenarioLogKey
 import {-# SOURCE #-} Arkham.Types.SkillTest
 import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
+import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Timing qualified as Timing
@@ -780,7 +781,7 @@ sourceToTarget = \case
   DeckSource -> error "not implemented"
   GameSource -> error "not implemented"
   ActSource aid -> ActTarget aid
-  PlayerCardSource cid -> CardIdTarget cid
+  PlayerCardSource _ -> error "not implemented"
   EncounterCardSource _ -> error "not implemented"
   TestSource{} -> TestTarget
   ProxySource _ source -> sourceToTarget source
@@ -886,13 +887,20 @@ type CanCheckPlayable env
     , HasHistory env
     , HasSet ScenarioLogKey env ()
     , HasStep ActStep env ()
-    , HasList UnderneathCard env ActDeck
-    , HasList UnderneathCard env AgendaDeck
-    , HasList DiscardedEncounterCard env ()
+    , ( HasList PotentialSlot env (InvestigatorId, HashSet Trait)
+      , HasList UnderneathCard env ActDeck
+      , HasList UnderneathCard env AgendaDeck
+      , HasList SetAsideCard env Matcher.CardMatcher
+      , HasList HandCard env InvestigatorId
+      , HasList CommittedSkillIcon env InvestigatorId
+      , HasList Card env Matcher.ExtendedCardMatcher
+      , HasList DiscardedEncounterCard env ()
+      )
     , HasSet VictoryDisplayCard env ()
-    , HasId (Maybe LocationId) env (Direction, LocationId)
-    , HasId (Maybe LocationId) env TreacheryId
-    , HasId (Maybe LocationId) env EventId
+    , ( HasId (Maybe LocationId) env (Direction, LocationId)
+      , HasId (Maybe LocationId) env TreacheryId
+      , HasId (Maybe LocationId) env EventId
+      )
     , ( Query Matcher.AssetMatcher env
       , Query Matcher.EventMatcher env
       , Query Matcher.InvestigatorMatcher env
@@ -907,10 +915,6 @@ type CanCheckPlayable env
     , CanCheckFast env
     , HasSet ClassSymbol env AssetId
     , HasSet TreacheryId env InvestigatorId
-    , HasList SetAsideCard env Matcher.CardMatcher
-    , HasList HandCard env InvestigatorId
-    , HasList CommittedSkillIcon env InvestigatorId
-    , HasList Card env Matcher.ExtendedCardMatcher
     , HasCount ActionTakenCount env InvestigatorId
     , HasCount HorrorCount env AssetId
     , HasCount HorrorCount env LocationId
@@ -1027,6 +1031,13 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You)
     passesLimits <- allM passesLimit (cdLimits pcDef)
 
+    passesSlots <- if null (cdSlots pcDef)
+      then pure True
+      else do
+        possibleSlots <- map unPotentialSlot
+          <$> getList (iid, cdCardTraits pcDef)
+        pure $ null $ cdSlots pcDef \\ possibleSlots
+
     pure
       $ (cdCardType pcDef /= SkillType)
       && ((costStatus == PaidCost)
@@ -1039,6 +1050,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       && passesCriterias
       && passesLimits
       && passesUnique
+      && passesSlots
  where
   pcDef = toCardDef c
   prevents (CanOnlyUseCardsInRole role) =

@@ -11,7 +11,7 @@ newtype ElderSignAmulet3 = ElderSignAmulet3 AssetAttrs
 
 elderSignAmulet3 :: AssetCard ElderSignAmulet3
 elderSignAmulet3 =
-  accessoryWith ElderSignAmulet3 Cards.elderSignAmulet3 (sanityL ?~ 4)
+  assetWith ElderSignAmulet3 Cards.elderSignAmulet3 (sanityL ?~ 4)
 
 instance AssetRunner env => RunMessage env ElderSignAmulet3 where
   runMessage msg (ElderSignAmulet3 attrs) =

@@ -11,7 +11,7 @@ newtype BulletproofVest3 = BulletproofVest3 AssetAttrs
 
 bulletproofVest3 :: AssetCard BulletproofVest3
 bulletproofVest3 =
-  bodyWith BulletproofVest3 Cards.bulletproofVest3 (healthL ?~ 4)
+  assetWith BulletproofVest3 Cards.bulletproofVest3 (healthL ?~ 4)
 
 instance AssetRunner env => RunMessage env BulletproofVest3 where
   runMessage msg (BulletproofVest3 attrs) =

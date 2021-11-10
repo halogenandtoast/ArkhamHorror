@@ -40,6 +40,7 @@ story cardCode name encounterSet = CardDef
   , cdUses = NoUses
   , cdPlayableFromDiscard = False
   , cdStage = Nothing
+  , cdSlots = []
   }
 
 allStoryCards :: HashMap CardCode CardDef

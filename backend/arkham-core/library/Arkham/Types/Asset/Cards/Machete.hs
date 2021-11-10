@@ -21,13 +21,13 @@ newtype Machete = Machete AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 machete :: AssetCard Machete
-machete = hand Machete Cards.machete
+machete = asset Machete Cards.machete
 
 instance HasAbilities Machete where
   getAbilities (Machete a) =
     [ restrictedAbility a 1 OwnsThis
-      $ ActionAbility (Just Action.Fight)
-      $ ActionCost 1
+        $ ActionAbility (Just Action.Fight)
+        $ ActionCost 1
     ]
 
 instance AssetRunner env => RunMessage env Machete where

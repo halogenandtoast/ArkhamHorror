@@ -21,7 +21,7 @@ newtype RiteOfSeeking4 = RiteOfSeeking4 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riteOfSeeking4 :: AssetCard RiteOfSeeking4
-riteOfSeeking4 = arcane RiteOfSeeking4 Cards.riteOfSeeking4
+riteOfSeeking4 = asset RiteOfSeeking4 Cards.riteOfSeeking4
 
 instance HasAbilities RiteOfSeeking4 where
   getAbilities (RiteOfSeeking4 a) =

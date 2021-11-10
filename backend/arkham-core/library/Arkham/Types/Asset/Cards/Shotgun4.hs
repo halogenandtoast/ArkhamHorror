@@ -15,7 +15,6 @@ import Arkham.Types.Effect.Window
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype Shotgun4 = Shotgun4 AssetAttrs
@@ -23,7 +22,7 @@ newtype Shotgun4 = Shotgun4 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shotgun4 :: AssetCard Shotgun4
-shotgun4 = assetWith Shotgun4 Cards.shotgun4 (slotsL .~ [HandSlot, HandSlot])
+shotgun4 = asset Shotgun4 Cards.shotgun4
 
 instance HasAbilities Shotgun4 where
   getAbilities (Shotgun4 a) =

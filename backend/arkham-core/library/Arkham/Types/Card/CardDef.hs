@@ -17,6 +17,7 @@ import Arkham.Types.Keyword (HasKeywords(..), Keyword)
 import Arkham.Types.Matcher
 import Arkham.Types.Name
 import Arkham.Types.SkillType
+import Arkham.Types.Slot
 import Arkham.Types.Trait
 
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
@@ -61,6 +62,7 @@ data CardDef = CardDef
   , cdUses :: Uses
   , cdPlayableFromDiscard :: Bool
   , cdStage :: Maybe Int
+  , cdSlots :: [SlotType]
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -147,4 +149,5 @@ testCardDef cardType cardCode = CardDef
   , cdUses = NoUses
   , cdPlayableFromDiscard = False
   , cdStage = Nothing
+  , cdSlots = []
   }

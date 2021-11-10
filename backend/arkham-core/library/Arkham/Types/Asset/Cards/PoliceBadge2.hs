@@ -20,7 +20,7 @@ newtype PoliceBadge2 = PoliceBadge2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 policeBadge2 :: AssetCard PoliceBadge2
-policeBadge2 = accessory PoliceBadge2 Cards.policeBadge2
+policeBadge2 = asset PoliceBadge2 Cards.policeBadge2
 
 instance HasModifiersFor env PoliceBadge2 where
   getModifiersFor _ (InvestigatorTarget iid) (PoliceBadge2 a) =

@@ -22,18 +22,18 @@ newtype SpiritAthame1 = SpiritAthame1 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 spiritAthame1 :: AssetCard SpiritAthame1
-spiritAthame1 = hand SpiritAthame1 Cards.spiritAthame1
+spiritAthame1 = asset SpiritAthame1 Cards.spiritAthame1
 
 instance HasAbilities SpiritAthame1 where
   getAbilities (SpiritAthame1 x) =
     [ restrictedAbility
-      x
-      1
-      (OwnsThis
-      <> DuringSkillTest (SkillTestSourceMatches $ SourceWithTrait Spell)
-      )
-    $ FastAbility
-    $ ExhaustCost (toTarget x)
+        x
+        1
+        (OwnsThis
+        <> DuringSkillTest (SkillTestSourceMatches $ SourceWithTrait Spell)
+        )
+      $ FastAbility
+      $ ExhaustCost (toTarget x)
     , restrictedAbility x 2 OwnsThis $ ActionAbility
       (Just Action.Fight)
       (Costs [ActionCost 1, ExhaustCost (toTarget x)])

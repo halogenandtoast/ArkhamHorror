@@ -18,7 +18,7 @@ newtype OldBookOfLore = OldBookOfLore AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oldBookOfLore :: AssetCard OldBookOfLore
-oldBookOfLore = hand OldBookOfLore Cards.oldBookOfLore
+oldBookOfLore = asset OldBookOfLore Cards.oldBookOfLore
 
 instance HasAbilities OldBookOfLore where
   getAbilities (OldBookOfLore a) =

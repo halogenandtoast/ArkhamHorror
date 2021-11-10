@@ -20,7 +20,7 @@ newtype Blackjack = Blackjack AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blackjack :: AssetCard Blackjack
-blackjack = hand Blackjack Cards.blackjack
+blackjack = asset Blackjack Cards.blackjack
 
 instance HasAbilities Blackjack where
   getAbilities (Blackjack a) =

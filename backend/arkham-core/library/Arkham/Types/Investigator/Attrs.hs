@@ -312,15 +312,10 @@ availableSlotTypesFor slotType traits a = case lookup slotType (a ^. slotsL) of
     replicate (length (filter (canPutIntoSlot traits) slots)) slotType
 
 placeInAvailableSlot :: AssetId -> [Trait] -> [Slot] -> [Slot]
-placeInAvailableSlot _ _ [] = error "could not find empty slot"
+placeInAvailableSlot _ _ [] = []
 placeInAvailableSlot aid traits (x : xs) = if canPutIntoSlot traits x
   then putIntoSlot aid x : xs
   else x : placeInAvailableSlot aid traits xs
-
-discardableAssets :: SlotType -> InvestigatorAttrs -> [AssetId]
-discardableAssets slotType a = case lookup slotType (a ^. slotsL) of
-  Nothing -> []
-  Just slots -> mapMaybe slotItem slots
 
 discardableCards :: InvestigatorAttrs -> [Card]
 discardableCards InvestigatorAttrs {..} =
@@ -818,7 +813,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ChooseAndDiscardAsset iid assetMatcher | iid == investigatorId -> do
     discardableAssetIds <- selectList
       (assetMatcher <> DiscardableAsset <> AssetOwnedBy You)
-    a <$ push (chooseOne iid $ map (Discard . AssetTarget) discardableAssetIds)
+    a <$ push
+      (chooseOrRunOne iid $ map (Discard . AssetTarget) discardableAssetIds)
   AttachAsset aid _ | aid `member` investigatorAssets ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   AttachTreachery tid (InvestigatorTarget iid) | iid == investigatorId ->
@@ -888,12 +884,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Discarded (EnemyTarget eid) _ -> pure $ a & engagedEnemiesL %~ deleteSet eid
   PlaceEnemyInVoid eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   Discarded (AssetTarget aid) (PlayerCard card)
-    | aid `elem` investigatorAssets
-    -> pure
-      $ a
-      & (assetsL %~ deleteSet aid)
-      & (discardL %~ (card :))
-      & (slotsL %~ removeFromSlots aid)
+    | aid `elem` investigatorAssets -> do
+      let
+        slotTypes = cdSlots $ toCardDef card
+        slots slotType = findWithDefault [] slotType investigatorSlots
+        assetIds slotType = mapMaybe slotItem $ slots slotType
+      pushAll
+        [ RefillSlots investigatorId slotType (assetIds slotType)
+        | slotType <- slotTypes
+        ]
+      pure
+        $ a
+        & (assetsL %~ deleteSet aid)
+        & (discardL %~ (card :))
+        & (slotsL %~ removeFromSlots aid)
   Discarded (AssetTarget aid) (EncounterCard _)
     | aid `elem` investigatorAssets
     -> pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
@@ -1421,7 +1425,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let card = findCard cardId a
     a <$ pushAll
       [ CheckWindow [iid] [Window Timing.When (Window.PlayCard iid card)]
-      , if isFastEvent card
+      , if isFastCard card && toCardType card == EventType
         then PlayFastEvent
           iid
           cardId
@@ -1499,18 +1503,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           missingSlotTypes = slotTypes \\ concatMap
             (\slotType -> availableSlotTypesFor slotType traits a)
             (nub slotTypes)
-          assetsThatCanProvideSlots =
-            nub $ concatMap (`discardableAssets` a) missingSlotTypes
-        push
-          (chooseOne
-            iid
-            [ Run
-                [ Discard (AssetTarget aid')
-                , InvestigatorPlayAsset iid aid slotTypes traits
-                ]
-            | aid' <- assetsThatCanProvideSlots
-            ]
-          )
+        assetsThatCanProvideSlots <-
+          selectList
+          $ AssetOwnedBy (InvestigatorWithId iid)
+          <> DiscardableAsset
+          <> AssetOneOf (map AssetInSlot missingSlotTypes)
+        if null assetsThatCanProvideSlots
+          then push $ InvestigatorPlayedAsset iid aid slotTypes traits
+          else push
+            (chooseOne
+              iid
+              [ Run
+                  [ Discard (AssetTarget aid')
+                  , InvestigatorPlayAsset iid aid slotTypes traits
+                  ]
+              | aid' <- assetsThatCanProvideSlots
+              ]
+            )
   InvestigatorPlayedAsset iid aid slotTypes traits | iid == investigatorId -> do
     let assetsUpdate = assetsL %~ insertSet aid
     pure $ foldl'
@@ -1677,7 +1686,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 (toCardType card /= PlayerTreacheryType && isJust
                   (cdCardSubType $ toCardDef card)
                 )
-              $ push (Revelation iid (PlayerCardSource $ toCardId card))
+              $ push (Revelation iid $ PlayerCardSource card)
           Nothing -> pure ()
 
         windowMsgs <- if null deck
@@ -2007,7 +2016,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         when (cdRevelation (toCardDef card'))
           $ if toCardType card' == PlayerTreacheryType
               then push (DrewTreachery iid card)
-              else push (Revelation iid (PlayerCardSource $ toCardId card'))
+              else push (Revelation iid $ PlayerCardSource card')
         when (toCardType card' == PlayerEnemyType)
           $ push (DrewPlayerEnemy iid card)
       _ -> pure ()
@@ -2295,12 +2304,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                ]
             <> [ InitiatePlayCard iid (toCardId c) Nothing usesAction
                | c <- playableCards
-               , canAffordPlayCard || isFastEvent c
+               , canAffordPlayCard || isFastCard c
                , not (isDynamic c)
                ]
             <> [ InitiatePlayDynamicCard iid (toCardId c) 0 Nothing usesAction
                | c <- playableCards
-               , canAffordPlayCard || isFastEvent c
+               , canAffordPlayCard || isFastCard c
                , isDynamic c
                ]
             <> [ChooseEndTurn iid]

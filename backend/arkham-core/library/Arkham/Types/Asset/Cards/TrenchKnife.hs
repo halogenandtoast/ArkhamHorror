@@ -21,7 +21,7 @@ newtype TrenchKnife = TrenchKnife AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trenchKnife :: AssetCard TrenchKnife
-trenchKnife = hand TrenchKnife Cards.trenchKnife
+trenchKnife = asset TrenchKnife Cards.trenchKnife
 
 instance HasModifiersFor env TrenchKnife where
   getModifiersFor _ (InvestigatorTarget iid) (TrenchKnife attrs)

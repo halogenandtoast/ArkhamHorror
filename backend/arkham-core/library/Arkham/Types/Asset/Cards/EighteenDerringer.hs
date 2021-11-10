@@ -21,7 +21,7 @@ newtype EighteenDerringer = EighteenDerringer AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eighteenDerringer :: AssetCard EighteenDerringer
-eighteenDerringer = hand EighteenDerringer Cards.eighteenDerringer
+eighteenDerringer = asset EighteenDerringer Cards.eighteenDerringer
 
 instance HasAbilities EighteenDerringer where
   getAbilities (EighteenDerringer attrs) =

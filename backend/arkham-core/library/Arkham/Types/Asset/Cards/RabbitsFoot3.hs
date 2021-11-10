@@ -21,7 +21,7 @@ newtype RabbitsFoot3 = RabbitsFoot3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rabbitsFoot3 :: AssetCard RabbitsFoot3
-rabbitsFoot3 = accessory RabbitsFoot3 Cards.rabbitsFoot3
+rabbitsFoot3 = asset RabbitsFoot3 Cards.rabbitsFoot3
 
 instance HasAbilities RabbitsFoot3 where
   getAbilities (RabbitsFoot3 a) =

@@ -143,62 +143,13 @@ allyWith
   -> (Int, Int)
   -> (AssetAttrs -> AssetAttrs)
   -> CardBuilder AssetId a
-allyWith f cardDef (health, sanity) g = slotWith
-  AllySlot
+allyWith f cardDef (health, sanity) g = assetWith
   f
   cardDef
   (g . setSanity . setHealth)
  where
   setHealth = healthL .~ (health <$ guard (health > 0))
   setSanity = sanityL .~ (sanity <$ guard (sanity > 0))
-
-arcane :: (AssetAttrs -> a) -> CardDef -> CardBuilder AssetId a
-arcane f cardDef = arcaneWith f cardDef id
-
-arcaneWith
-  :: (AssetAttrs -> a)
-  -> CardDef
-  -> (AssetAttrs -> AssetAttrs)
-  -> CardBuilder AssetId a
-arcaneWith = slotWith ArcaneSlot
-
-body :: (AssetAttrs -> a) -> CardDef -> CardBuilder AssetId a
-body f cardDef = bodyWith f cardDef id
-
-bodyWith
-  :: (AssetAttrs -> a)
-  -> CardDef
-  -> (AssetAttrs -> AssetAttrs)
-  -> CardBuilder AssetId a
-bodyWith = slotWith BodySlot
-
-accessory :: (AssetAttrs -> a) -> CardDef -> CardBuilder AssetId a
-accessory f cardDef = accessoryWith f cardDef id
-
-accessoryWith
-  :: (AssetAttrs -> a)
-  -> CardDef
-  -> (AssetAttrs -> AssetAttrs)
-  -> CardBuilder AssetId a
-accessoryWith = slotWith AccessorySlot
-
-hand :: (AssetAttrs -> a) -> CardDef -> CardBuilder AssetId a
-hand f cardDef = handWith f cardDef id
-
-handWith
-  :: (AssetAttrs -> a)
-  -> CardDef
-  -> (AssetAttrs -> AssetAttrs)
-  -> CardBuilder AssetId a
-handWith = slotWith HandSlot
-
-slotWith
-  :: SlotType
-  -> (AssetAttrs -> a)
-  -> CardDef
-  -> (AssetAttrs -> AssetAttrs)
-  -> CardBuilder AssetId a
-slotWith slot f cardDef g = assetWith f cardDef (g . (slotsL .~ [slot]))
 
 assetWith
   :: (AssetAttrs -> a)
@@ -215,7 +166,7 @@ assetWith f cardDef g = CardBuilder
     , assetLocation = Nothing
     , assetEnemy = Nothing
     , assetActions = mempty
-    , assetSlots = mempty
+    , assetSlots = cdSlots cardDef
     , assetHealth = Nothing
     , assetSanity = Nothing
     , assetHealthDamage = 0
@@ -252,7 +203,6 @@ instance TargetEntity AssetAttrs where
 instance SourceEntity AssetAttrs where
   toSource = AssetSource . toId
   isSource AssetAttrs { assetId } (AssetSource aid) = assetId == aid
-  isSource attrs (PlayerCardSource cid) = toCardId attrs == cid
   isSource _ _ = False
 
 ownedBy :: AssetAttrs -> InvestigatorId -> Bool

@@ -1152,6 +1152,9 @@ instance HasGame env => HasId (Maybe LocationId) env LocationMatcher where
 instance HasGame env => HasList SlotType env AssetId where
   getList = fmap slotsOf . getAsset
 
+instance HasGame env => HasList PotentialSlot env (InvestigatorId, HashSet Trait) where
+  getList (iid, traits) = getPotentialSlots traits =<< getInvestigator iid
+
 instance HasGame env => HasSet ClassSymbol env AssetId where
   getSet assetId =
     maybe mempty singleton . cdClassSymbol . toCardDef <$> getAsset assetId
@@ -4003,6 +4006,16 @@ runGameMessage msg g = case msg of
       difficulty
     pure $ g & (activeCardL ?~ card)
   RemoveFromEncounterDiscard ec -> pure $ g & discardL %~ filter (/= ec)
+  Revelation iid (PlayerCardSource card) -> case toCardType card of
+    AssetType -> do
+      let
+        asset = createAsset card
+        assetId = toId asset
+      -- Asset is assumed to have a revelation ability if drawn from encounter deck
+      pushAll $ resolve $ Revelation iid (AssetSource assetId)
+      pure $ g & (assetsL . at assetId ?~ asset)
+    other ->
+      error $ "Currently not handling Revelations from type " <> show other
   InvestigatorDrewEncounterCard iid card -> case toCardType card of
     EnemyType -> do
       let enemy = createEnemy card

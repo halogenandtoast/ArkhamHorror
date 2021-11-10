@@ -18,7 +18,7 @@ newtype FineClothes = FineClothes AssetAttrs
 
 fineClothes :: AssetCard FineClothes
 fineClothes =
-  bodyWith FineClothes Cards.fineClothes $ (healthL ?~ 1) . (sanityL ?~ 1)
+  assetWith FineClothes Cards.fineClothes $ (healthL ?~ 1) . (sanityL ?~ 1)
 
 instance HasModifiersFor env FineClothes where
   getModifiersFor (SkillTestSource iid _ _ _ (Just Action.Parley)) (InvestigatorTarget iid') (FineClothes a)

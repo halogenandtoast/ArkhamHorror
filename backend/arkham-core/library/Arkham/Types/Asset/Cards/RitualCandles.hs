@@ -21,7 +21,7 @@ newtype RitualCandles = RitualCandles AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ritualCandles :: AssetCard RitualCandles
-ritualCandles = hand RitualCandles Cards.ritualCandles
+ritualCandles = asset RitualCandles Cards.ritualCandles
 
 instance HasAbilities RitualCandles where
   getAbilities (RitualCandles x) =

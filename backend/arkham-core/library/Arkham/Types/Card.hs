@@ -90,8 +90,11 @@ instance IsCard EncounterCard where
 data Card
   = PlayerCard PlayerCard
   | EncounterCard EncounterCard
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Eq Card where
+  a == b = toCardId a == toCardId b
 
 flipCard :: Card -> Card
 flipCard (EncounterCard ec) =
@@ -174,11 +177,10 @@ isDynamic (PlayerCard card) = case cdCost (toCardDef card) of
   _ -> False
 isDynamic (EncounterCard _) = False
 
-isFastEvent :: Card -> Bool
-isFastEvent (PlayerCard card) =
-  let CardDef {..} = toCardDef card
-  in isJust cdFastWindow && cdCardType == EventType
-isFastEvent (EncounterCard _) = False
+isFastCard :: Card -> Bool
+isFastCard (PlayerCard card) =
+  let CardDef {..} = toCardDef card in isJust cdFastWindow
+isFastCard (EncounterCard _) = False
 
 toPlayerCard :: Card -> Maybe PlayerCard
 toPlayerCard (PlayerCard pc) = Just pc

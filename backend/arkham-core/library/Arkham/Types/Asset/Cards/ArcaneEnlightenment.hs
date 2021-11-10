@@ -17,7 +17,7 @@ newtype ArcaneEnlightenment = ArcaneEnlightenment AssetAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 arcaneEnlightenment :: AssetCard ArcaneEnlightenment
-arcaneEnlightenment = arcane ArcaneEnlightenment Cards.arcaneEnlightenment
+arcaneEnlightenment = asset ArcaneEnlightenment Cards.arcaneEnlightenment
 
 instance HasModifiersFor env ArcaneEnlightenment where
   getModifiersFor _ (InvestigatorTarget iid) (ArcaneEnlightenment attrs) =

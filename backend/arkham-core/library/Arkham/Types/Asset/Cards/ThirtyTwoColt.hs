@@ -13,7 +13,6 @@ import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Slot
 import Arkham.Types.Target
 
 newtype ThirtyTwoColt = ThirtyTwoColt AssetAttrs
@@ -21,8 +20,7 @@ newtype ThirtyTwoColt = ThirtyTwoColt AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thirtyTwoColt :: AssetCard ThirtyTwoColt
-thirtyTwoColt =
-  assetWith ThirtyTwoColt Cards.thirtyTwoColt (slotsL .~ [HandSlot])
+thirtyTwoColt = asset ThirtyTwoColt Cards.thirtyTwoColt
 
 instance HasAbilities ThirtyTwoColt where
   getAbilities (ThirtyTwoColt a) =

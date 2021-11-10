@@ -19,7 +19,7 @@ newtype Newspaper = Newspaper AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 newspaper :: AssetCard Newspaper
-newspaper = hand Newspaper Cards.newspaper
+newspaper = asset Newspaper Cards.newspaper
 
 instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Newspaper where
   getModifiersFor _ (InvestigatorTarget iid) (Newspaper a) | ownedBy a iid = do

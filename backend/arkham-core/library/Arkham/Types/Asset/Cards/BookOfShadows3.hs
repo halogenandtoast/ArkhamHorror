@@ -21,7 +21,7 @@ newtype BookOfShadows3 = BookOfShadows3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bookOfShadows3 :: AssetCard BookOfShadows3
-bookOfShadows3 = hand BookOfShadows3 Cards.bookOfShadows3
+bookOfShadows3 = asset BookOfShadows3 Cards.bookOfShadows3
 
 slot :: AssetAttrs -> Slot
 slot AssetAttrs { assetId } = Slot (AssetSource assetId) Nothing

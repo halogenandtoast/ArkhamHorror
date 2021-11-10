@@ -291,7 +291,8 @@ allEncounterAssetCards = mapFromList $ map
   ]
 
 allSpecialPlayerAssetCards :: HashMap CardCode CardDef
-allSpecialPlayerAssetCards = mapFromList $ map (toCardCode &&& id) [courage]
+allSpecialPlayerAssetCards =
+  mapFromList $ map (toCardCode &&& id) [courage, straitjacket]
 
 rolands38Special :: CardDef
 rolands38Special = (asset "01006" "Roland's .38 Special" 3 Neutral)
@@ -1517,6 +1518,12 @@ danielChesterfield = (storyAsset
   , cdUnique = True
   , cdCardType = EncounterAssetType
   , cdDoubleSided = True
+  }
+
+straitjacket :: CardDef
+straitjacket = (storyAsset "03185" "Straitjacket" 0 TheUnspeakableOath)
+  { cdCardTraits = setFromList [Item, Clothing]
+  , cdCardType = EncounterAssetType
   }
 
 madameLabranche :: CardDef

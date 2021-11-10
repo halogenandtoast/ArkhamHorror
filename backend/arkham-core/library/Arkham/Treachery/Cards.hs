@@ -166,6 +166,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , spiresOfCarcosa
   , spiritsTorment
   , stalkedInTheDark
+  , straitjacket
   , strangeSigns
   , terrorFromBeyond
   , theCreaturesTracks
@@ -642,6 +643,11 @@ spiritsTorment = (treachery "03094" "Spirit's Torment" Hauntings 2)
 theKingsEdict :: CardDef
 theKingsEdict = (treachery "03100" "The King's Edict" CultOfTheYellowSign 2)
   { cdCardTraits = singleton Pact
+  }
+
+straitjacket :: CardDef
+straitjacket = (treachery "03185" "Straitjacket" TheUnspeakableOath 2)
+  { cdCardTraits = setFromList [Item, Clothing]
   }
 
 theZealotsSeal :: CardDef

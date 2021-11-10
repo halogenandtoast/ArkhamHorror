@@ -14,7 +14,6 @@ lookupCard :: CardCode -> CardId -> Card
 lookupCard cardCode cardId =
   case (lookup cardCode allEncounterCards, lookup cardCode allPlayerCards) of
     (Nothing, Nothing) -> error $ "Missing card " <> show cardCode
-    (Just _, Just _) ->
-      error $ "card is both encounter and player " <> show cardCode
-    (Just def, Nothing) -> EncounterCard $ lookupEncounterCard def cardId
+    (Just def, _) -> EncounterCard $ lookupEncounterCard def cardId
+    -- we prefer encounter cards over player cards to handle cases like straitjacket
     (Nothing, Just def) -> PlayerCard $ lookupPlayerCard def cardId

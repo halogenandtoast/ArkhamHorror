@@ -39,8 +39,8 @@ instance HasModifiersFor env TheNecronomiconAdvanced where
 instance HasAbilities TheNecronomiconAdvanced where
   getAbilities (TheNecronomiconAdvanced a) =
     [ restrictedAbility a 1 (OwnsThis <> AnyHorrorOnThis)
-      $ ActionAbility Nothing
-      $ ActionCost 1
+        $ ActionAbility Nothing
+        $ ActionCost 1
     ]
 
 instance (AssetRunner env) => RunMessage env TheNecronomiconAdvanced where

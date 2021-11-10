@@ -19,6 +19,7 @@ import {-# SOURCE #-} Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillType
+import {-# SOURCE #-} Arkham.Types.Slot
 import {-# SOURCE #-} Arkham.Types.Source
 import {-# SOURCE #-} Arkham.Types.Target
 import Arkham.Types.Timing
@@ -117,10 +118,12 @@ data AssetMatcher
   | AssetNonStory
   | AssetReady
   | AssetExhausted
+  | AssetCanLeavePlayByNormalMeans
   | AssetWithModifier ModifierType
   | AssetWithoutModifier ModifierType
   | AssetWithUseType UseType
   | AssetWithUses UseType
+  | AssetInSlot SlotType
   | AssetIs CardCode
   | AssetCardMatch CardMatcher
   | AnyAsset

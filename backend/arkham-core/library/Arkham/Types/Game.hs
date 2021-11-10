@@ -734,6 +734,8 @@ getAssetsMatching matcher = do
     AssetWithDamage -> pure $ filter ((> 0) . fst . getDamage) as
     AssetWithHorror -> pure $ filter ((> 0) . snd . getDamage) as
     AssetWithTrait t -> filterM (fmap (member t) . getSet . toId) as
+    AssetInSlot slot -> pure $ filter (elem slot . slotsOf) as
+    AssetCanLeavePlayByNormalMeans -> pure $ filter canBeDiscarded as
     AssetOwnedBy investigatorMatcher -> do
       iids <- map (OwnerId . toId)
         <$> getInvestigatorsMatching investigatorMatcher
@@ -4100,7 +4102,10 @@ runGameMessage msg g = case msg of
   ResignWith (AssetTarget aid) -> do
     asset <- getAsset aid
     pure $ g & resignedCardCodesL %~ (toCardCode asset :)
+  Discarded (AssetTarget aid) (EncounterCard ec) ->
+    pure $ g & assetsL %~ deleteMap aid & discardL %~ (ec :)
   Discarded (AssetTarget aid) _ -> pure $ g & assetsL %~ deleteMap aid
+  Discarded (TreacheryTarget aid) _ -> pure $ g & treacheriesL %~ deleteMap aid
   Exiled (AssetTarget aid) _ -> pure $ g & assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
     -- an event might need to be converted back to its original card

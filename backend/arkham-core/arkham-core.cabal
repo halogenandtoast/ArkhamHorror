@@ -337,6 +337,7 @@ library
       Arkham.Types.Asset.Cards.SpiritSpeaker
       Arkham.Types.Asset.Cards.SpringfieldM19034
       Arkham.Types.Asset.Cards.Stealth
+      Arkham.Types.Asset.Cards.Straitjacket
       Arkham.Types.Asset.Cards.StrangeSolution
       Arkham.Types.Asset.Cards.StrangeSolutionAcidicIchor4
       Arkham.Types.Asset.Cards.StrangeSolutionFreezingVariant4
@@ -1122,6 +1123,7 @@ library
       Arkham.Types.Treachery.Cards.SpiritsTorment
       Arkham.Types.Treachery.Cards.StalkedInTheDark
       Arkham.Types.Treachery.Cards.StarsOfHyades
+      Arkham.Types.Treachery.Cards.Straitjacket
       Arkham.Types.Treachery.Cards.StrangeSigns
       Arkham.Types.Treachery.Cards.TerrorFromBeyond
       Arkham.Types.Treachery.Cards.TheCreaturesTracks

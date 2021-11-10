@@ -27,10 +27,7 @@ instance TreacheryRunner env => RunMessage env WallsClosingIn where
   runMessage msg t@(WallsClosingIn attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       shroud <- fmap unShroud . getCount =<< getId @LocationId iid
-      t <$ pushAll
-        [ RevelationSkillTest iid source SkillWillpower shroud
-        , Discard $ toTarget attrs
-        ]
+      t <$ push (RevelationSkillTest iid source SkillWillpower shroud)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
 

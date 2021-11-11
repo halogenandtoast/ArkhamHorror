@@ -84,6 +84,7 @@ data ModifierType
   | CannotInvestigate
   | CannotMakeAttacksOfOpportunity
   | ActionDoesNotCauseAttacksOfOpportunity Action
+  | CannotFight EnemyMatcher
   | CannotMove
   | CannotMoveMoreThanOnceEachTurn
   | CannotMulligan

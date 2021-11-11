@@ -907,17 +907,28 @@ getEnemiesMatching matcher = do
       liftA2 member (getId @LocationId $ toId enemy) (select locationMatcher)
     CanFightEnemy -> \enemy -> do
       iid <- view activeInvestigatorIdL <$> getGame
-      let window = Window Timing.When Window.NonFast
-      anyM
-        (andM . sequence
-          [ pure . (`abilityIs` Action.Fight)
-          , -- Because ChooseFightEnemy happens after taking a fight action we
-            -- need to decrement the action cost
-            getCanPerformAbility iid (InvestigatorSource iid) window
-            . (`applyAbilityModifiers` [ActionCostModifier (-1)])
-          ]
-        )
-        (getAbilities enemy)
+      modifiers' <- getModifiers (toSource enemy) (InvestigatorTarget iid)
+      let
+        enemyFilter = mconcat $ mapMaybe
+          (\case
+            CannotFight m -> Just m
+            _ -> Nothing
+          )
+          modifiers'
+        window = Window Timing.When Window.NonFast
+      excluded <- member (toId enemy) <$> select enemyFilter
+      if excluded
+        then pure False
+        else anyM
+          (andM . sequence
+            [ pure . (`abilityIs` Action.Fight)
+            , -- Because ChooseFightEnemy happens after taking a fight action we
+              -- need to decrement the action cost
+              getCanPerformAbility iid (InvestigatorSource iid) window
+              . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+            ]
+          )
+          (getAbilities enemy)
     CanEvadeEnemy -> \enemy -> do
       iid <- view activeInvestigatorIdL <$> getGame
       let window = Window Timing.When Window.NonFast

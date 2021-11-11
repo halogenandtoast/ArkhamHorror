@@ -1,4 +1,4 @@
-FROM node:latest as frontend
+FROM node:lts as frontend
 
 # Frontend
 

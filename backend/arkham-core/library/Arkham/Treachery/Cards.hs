@@ -132,6 +132,8 @@ allEncounterTreacheryCards = mapFromList $ map
   , falseLead
   , fineDining
   , frozenInFear
+  , giftOfMadnessMisery
+  , giftOfMadnessPity
   , graspingHands
   , huntedDown
   , huntingShadow
@@ -651,6 +653,20 @@ straitjacket :: CardDef
 straitjacket = (treachery "03185" "Straitjacket" TheUnspeakableOath 2)
   { cdCardTraits = setFromList [Item, Clothing]
   }
+
+giftOfMadnessPity :: CardDef
+giftOfMadnessPity =
+  (treachery "03186" "Gift of Madness (Pity)" TheUnspeakableOath 1)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+giftOfMadnessMisery :: CardDef
+giftOfMadnessMisery =
+  (treachery "03187" "Gift of Madness (Misery)" TheUnspeakableOath 1)
+    { cdCardTraits = singleton Terror
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
 
 wallsClosingIn :: CardDef
 wallsClosingIn = (treachery "03188" "Walls ClosingIn" TheUnspeakableOath 3)

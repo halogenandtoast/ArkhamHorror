@@ -42,6 +42,13 @@ abilityAction = abilityTypeAction . abilityType
 abilityIs :: Ability -> Action -> Bool
 abilityIs a = (== abilityAction a) . Just
 
+abilityIsActionAbility :: Ability -> Bool
+abilityIsActionAbility a = case abilityType a of
+  ActionAbility{} -> True
+  ActionAbilityWithSkill{} -> True
+  ActionAbilityWithBefore{} -> True
+  _ -> False
+
 abilityLimitL :: Lens' Ability AbilityLimit
 abilityLimitL = lens abilityLimit $ \m x -> m { abilityLimit = x }
 

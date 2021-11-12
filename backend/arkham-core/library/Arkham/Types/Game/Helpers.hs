@@ -388,7 +388,22 @@ getActions
   -> Window
   -> m [Ability]
 getActions iid window = do
-  actions' <- nub <$> asks getAbilities
+  modifiersForFilter <- getModifiers
+    (InvestigatorSource iid)
+    (InvestigatorTarget iid)
+  let
+    abilityFilters = mapMaybe
+      (\case
+        CannotTriggerAbilityMatching m -> Just m
+        _ -> Nothing
+      )
+      modifiersForFilter
+  unfilteredActions <- nub <$> asks getAbilities
+  actions' <- if null abilityFilters
+    then pure unfilteredActions
+    else do
+      ignored <- select (mconcat abilityFilters)
+      pure $ filter (`member` ignored) unfilteredActions
   actionsWithSources <- concat <$> for
     actions'
     \action -> do

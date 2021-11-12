@@ -40,7 +40,7 @@ instance AssetRunner env => RunMessage env InTheKnow1 where
         \lid -> do
           investigateActions <-
             selectList
-            $ AbilityOnLocation lid
+            $ AbilityOnLocation (LocationWithId lid)
             <> AbilityIsAction Action.Investigate
           pure $ map (lid, ) investigateActions
       a <$ push

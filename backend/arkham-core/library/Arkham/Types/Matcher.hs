@@ -664,9 +664,10 @@ newtype ActionMatcher = ActionIs Action
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data AbilityMatcher
-  = AbilityOnLocation LocationId
+  = AbilityOnLocation LocationMatcher
   | AbilityWindow WindowMatcher
   | AbilityIsAction Action
+  | AbilityIsActionAbility
   | AbilityMatches [AbilityMatcher]
   | AnyAbility
   | AbilityOnScenarioCard

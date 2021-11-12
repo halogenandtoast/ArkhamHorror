@@ -488,9 +488,12 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   let abilities = getAbilities g
   case matcher of
     AnyAbility -> pure abilities
-    AbilityOnLocation lid -> getAbilities <$> getLocation lid
+    AbilityOnLocation locationMatcher ->
+      concatMap getAbilities
+        <$> (traverse getLocation =<< selectList locationMatcher)
     AbilityIsAction action ->
       pure $ filter ((== Just action) . abilityAction) abilities
+    AbilityIsActionAbility -> pure $ filter abilityIsActionAbility abilities
     AbilityWindow windowMatcher ->
       pure $ filter ((== windowMatcher) . abilityWindow) abilities
     AbilityMatches [] -> pure []
@@ -909,14 +912,16 @@ getEnemiesMatching matcher = do
       iid <- view activeInvestigatorIdL <$> getGame
       modifiers' <- getModifiers (toSource enemy) (InvestigatorTarget iid)
       let
-        enemyFilter = mconcat $ mapMaybe
+        enemyFilters = mapMaybe
           (\case
             CannotFight m -> Just m
             _ -> Nothing
           )
           modifiers'
         window = Window Timing.When Window.NonFast
-      excluded <- member (toId enemy) <$> select enemyFilter
+      excluded <- if null enemyFilters
+        then pure False
+        else member (toId enemy) <$> select (mconcat enemyFilters)
       if excluded
         then pure False
         else anyM

@@ -47,6 +47,7 @@ data ModifierType
   | AddSkillIcons [SkillType]
   | AdditionalActions Int
   | AdditionalStartingUses Int
+  | CannotTriggerAbilityMatching AbilityMatcher
   | ConnectedToWhen LocationMatcher LocationMatcher
   | AlternateSuccessfullEvasion
   | AlternateSuccessfullInvestigation

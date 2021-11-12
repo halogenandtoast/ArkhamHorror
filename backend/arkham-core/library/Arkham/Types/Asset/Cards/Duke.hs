@@ -74,7 +74,7 @@ instance AssetRunner env => RunMessage env Duke where
                 . (`applyAbilityModifiers` [ActionCostModifier (-1)])
               ]
             )
-          =<< selectList (AbilityOnLocation lid)
+          =<< selectList (AbilityOnLocation $ LocationWithId lid)
       let
         investigateActions :: [Message] = map
           (($ windows')

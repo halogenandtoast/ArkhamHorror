@@ -123,6 +123,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , cryptChill
   , cursedLuck
   , cursedSwamp
+  , danceOfTheYellowKing
   , descentIntoMadness
   , dissonantVoices
   , draggedUnder
@@ -627,6 +628,12 @@ twistedToHisWill :: CardDef
 twistedToHisWill = (treachery "03092" "Twisted to His Will" EvilPortents 2)
   { cdCardTraits = singleton Pact
   }
+
+danceOfTheYellowKing :: CardDef
+danceOfTheYellowKing =
+  (treachery "03097" "Dance of the Yellow King" HastursGift 2)
+    { cdCardTraits = singleton Pact
+    }
 
 ledAstray :: CardDef
 ledAstray = (treachery "03145" "Led Astray" EchoesOfThePast 3)

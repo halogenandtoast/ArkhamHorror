@@ -223,7 +223,6 @@
       "import qualified Arkham.Enemy.Cards as Cards",
       "import Arkham.Types.Classes",
       "import Arkham.Types.Enemy.Attrs",
-      "import Arkham.Types.Enemy.Runner",
       "",
       "newtype {dot} = {dot} EnemyAttrs",
       "  deriving anyclass (IsEnemy, HasModifiersFor env)",

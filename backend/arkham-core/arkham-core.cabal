@@ -529,6 +529,7 @@ library
       Arkham.Types.Enemy.Cards.JordanPerry
       Arkham.Types.Enemy.Cards.LupineThrall
       Arkham.Types.Enemy.Cards.MadPatient
+      Arkham.Types.Enemy.Cards.Maniac
       Arkham.Types.Enemy.Cards.MarshGug
       Arkham.Types.Enemy.Cards.MobEnforcer
       Arkham.Types.Enemy.Cards.Mobster
@@ -574,6 +575,7 @@ library
       Arkham.Types.Enemy.Cards.YithianStarseeker
       Arkham.Types.Enemy.Cards.YogSothoth
       Arkham.Types.Enemy.Cards.YoungDeepOne
+      Arkham.Types.Enemy.Cards.YoungPsychopath
       Arkham.Types.Enemy.Helpers
       Arkham.Types.Enemy.Runner
       Arkham.Types.EnemyId
@@ -1064,6 +1066,7 @@ library
       Arkham.Types.Treachery.Cards.CursedLuck
       Arkham.Types.Treachery.Cards.CursedSwamp
       Arkham.Types.Treachery.Cards.CurseOfTheRougarou
+      Arkham.Types.Treachery.Cards.DanceOfTheYellowKing
       Arkham.Types.Treachery.Cards.DescentIntoMadness
       Arkham.Types.Treachery.Cards.DissonantVoices
       Arkham.Types.Treachery.Cards.DraggedUnder

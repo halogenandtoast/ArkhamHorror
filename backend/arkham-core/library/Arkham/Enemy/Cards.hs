@@ -122,6 +122,7 @@ allEncounterEnemyCards = mapFromList $ map
   , jordanPerry
   , lupineThrall
   , madPatient
+  , maniac
   , marshGug
   , mobster
   , narogath
@@ -161,6 +162,7 @@ allEncounterEnemyCards = mapFromList $ map
   , yithianStarseeker
   , yogSothoth
   , youngDeepOne
+  , youngPsychopath
   ]
 
 mobEnforcer :: CardDef
@@ -596,6 +598,16 @@ dianneDevine =
 poltergeist :: CardDef
 poltergeist = (enemy "03093" "Poltergeist" Hauntings 2)
   { cdCardTraits = setFromList [Monster, Geist]
+  }
+
+maniac :: CardDef
+maniac = (enemy "03095" "Maniac" HastursGift 2)
+  { cdCardTraits = setFromList [Humanoid, Lunatic]
+  }
+
+youngPsychopath :: CardDef
+youngPsychopath = (enemy "03096" "Young Psychopath" HastursGift 2)
+  { cdCardTraits = setFromList [Humanoid, Lunatic]
   }
 
 fanatic :: CardDef

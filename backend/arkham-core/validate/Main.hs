@@ -247,15 +247,17 @@ runMissing mPackCode cards = do
         . toList
         $ keysSet (filterOutIrrelevant mPackCode cards)
         `difference` keysSet allCards
-  case cardCodes of
+  case filter (not . ignoreCardCode) cardCodes of
     [] -> putStrLn "Complete!"
-    xs -> for_ (mapMaybe (`lookup` cards) xs) $ \card -> do
-      let
-        suffix = maybe
-          ""
-          (\level -> if level == 0 then "" else "(" <> tshow level <> ")")
-          (xp card)
-      putStrLn $ unCardCode (code card) <> ": " <> name card <> suffix
+    xs -> do
+      print xs
+      for_ (mapMaybe (`lookup` cards) xs) $ \card -> do
+        let
+          suffix = maybe
+            ""
+            (\level -> if level == 0 then "" else "(" <> tshow level <> ")")
+            (xp card)
+        putStrLn $ unCardCode (code card) <> ": " <> name card <> suffix
 
 filterOutIrrelevant
   :: Maybe Text -> HashMap CardCode CardJson -> HashMap CardCode CardJson

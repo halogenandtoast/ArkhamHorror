@@ -120,6 +120,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , chillFromBelow
   , clawsOfSteam
   , collapsingReality
+  , corrosion
   , cryptChill
   , cursedLuck
   , cursedSwamp
@@ -153,6 +154,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , offerOfPower
   , onTheProwl
   , onWingsOfDarkness
+  , oozeAndFilth
   , passageIntoTheVeil
   , psychopompsSong
   , pushedIntoTheBeyond
@@ -654,6 +656,16 @@ spiritsTorment = (treachery "03094" "Spirit's Torment" Hauntings 2)
 theKingsEdict :: CardDef
 theKingsEdict = (treachery "03100" "The King's Edict" CultOfTheYellowSign 2)
   { cdCardTraits = singleton Pact
+  }
+
+oozeAndFilth :: CardDef
+oozeAndFilth = (treachery "03101" "Ooze and Filth" DecayAndFilth 2)
+  { cdCardTraits = singleton Hazard
+  }
+
+corrosion :: CardDef
+corrosion = (treachery "03102" "Corrosion" DecayAndFilth 2)
+  { cdCardTraits = singleton Hazard
   }
 
 straitjacket :: CardDef

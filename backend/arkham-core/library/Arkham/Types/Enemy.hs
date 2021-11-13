@@ -54,6 +54,7 @@ instance
     , HasCount RemainingSanity env InvestigatorId
     , HasCount CardCount env InvestigatorId
     , HasCount PlayerCount env ()
+    , HasCount Shroud env LocationId
     , HasSet InvestigatorId env LocationId
     , HasSet ConnectedLocationId env LocationId
     , HasSet Trait env AssetId

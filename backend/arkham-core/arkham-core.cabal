@@ -542,6 +542,7 @@ library
       Arkham.Types.Enemy.Cards.PossessedOathspeaker
       Arkham.Types.Enemy.Cards.RavenousGhoul
       Arkham.Types.Enemy.Cards.RelentlessDarkYoung
+      Arkham.Types.Enemy.Cards.RoachSwarm
       Arkham.Types.Enemy.Cards.RoyalEmissary
       Arkham.Types.Enemy.Cards.RuthTurner
       Arkham.Types.Enemy.Cards.SalvatoreNeri

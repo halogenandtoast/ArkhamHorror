@@ -134,6 +134,7 @@ allEncounterEnemyCards = mapFromList $ map
   , possessedOathspeaker
   , ravenousGhoul
   , relentlessDarkYoung
+  , roachSwarm
   , royalEmissary
   , ruthTurner
   , salvatoreNeri
@@ -633,6 +634,11 @@ agentOfTheKing = (enemy "03099" "Agent of the King" CultOfTheYellowSign 1)
   { cdCardTraits = setFromList [Humanoid, Cultist]
   , cdKeywords = singleton Keyword.Hunter
   , cdVictoryPoints = Just 1
+  }
+
+roachSwarm :: CardDef
+roachSwarm = (enemy "03103" "Roach Swarm" DecayAndFilth 2)
+  { cdCardTraits = singleton Creature
   }
 
 possessedOathspeaker :: CardDef

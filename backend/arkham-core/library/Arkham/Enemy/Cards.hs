@@ -602,6 +602,12 @@ beastOfAldebaran = (enemy "03088" "Beast of Aldebaran" InhabitantsOfCarcosa 1)
   , cdVictoryPoints = Just 1
   }
 
+spawnOfHali :: CardDef
+spawnOfHali = (enemy "03089" "Spawn of Hali" InhabitantsOfCarcosa 2)
+  { cdCardTraits = singleton Monster
+  , cdKeywords = singleton Keyword.Retaliate
+  }
+
 poltergeist :: CardDef
 poltergeist = (enemy "03093" "Poltergeist" Hauntings 2)
   { cdCardTraits = setFromList [Monster, Geist]

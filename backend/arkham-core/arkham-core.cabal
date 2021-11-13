@@ -555,6 +555,7 @@ library
       Arkham.Types.Enemy.Cards.SilasBishop
       Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
       Arkham.Types.Enemy.Cards.SlimeCoveredDhole
+      Arkham.Types.Enemy.Cards.SpawnOfHali
       Arkham.Types.Enemy.Cards.StubbornDetective
       Arkham.Types.Enemy.Cards.SwampLeech
       Arkham.Types.Enemy.Cards.SwarmOfRats

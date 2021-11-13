@@ -195,6 +195,9 @@ instance HasCount CardCount env Investigator where
 instance HasCount ClueCount env Investigator where
   getCount = pure . ClueCount . investigatorClues . toAttrs
 
+instance HasCount HorrorCount env Investigator where
+  getCount = pure . HorrorCount . investigatorSanityDamage . toAttrs
+
 instance HasCount DamageCount env Investigator where
   getCount = pure . DamageCount . investigatorHealthDamage . toAttrs
 
@@ -268,6 +271,7 @@ getIsPrey
      , HasList (InvestigatorId, Distance) env EnemyTrait
      , HasSet CardCount env ()
      , HasSet ClueCount env ()
+     , HasSet HorrorCount env ()
      , HasSet RemainingSanity env ()
      , HasSet RemainingHealth env ()
      , HasSet Int env SkillType -- hmmm
@@ -315,6 +319,10 @@ getIsPrey MostClues i = do
   clueCount <- unClueCount <$> getCount i
   mostClueCount <- fromMaybe 0 . maximumMay . map unClueCount <$> getSetList ()
   pure $ mostClueCount == clueCount
+getIsPrey MostHorror i = do
+  horrorCount <- unHorrorCount <$> getCount i
+  mostHorrorCount <- fromMaybe 0 . maximumMay . map unHorrorCount <$> getSetList ()
+  pure $ mostHorrorCount == horrorCount
 getIsPrey FewestCards i = do
   cardCount <- unCardCount <$> getCount i
   minCardCount <- fromMaybe 100 . minimumMay . map unCardCount <$> getSetList ()

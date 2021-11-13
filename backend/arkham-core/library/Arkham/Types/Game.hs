@@ -1935,6 +1935,11 @@ instance HasGame env => HasSet ClueCount env () where
     investigators <- toList . view investigatorsL <$> getGame
     setFromList <$> traverse getCount investigators
 
+instance HasGame env => HasSet HorrorCount env () where
+  getSet _ = do
+    investigators <- toList . view investigatorsL <$> getGame
+    setFromList <$> traverse getCount investigators
+
 instance HasGame env => HasSet CardCount env () where
   getSet _ = do
     investigators <- toList . view investigatorsL <$> getGame

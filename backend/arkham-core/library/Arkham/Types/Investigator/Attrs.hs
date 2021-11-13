@@ -2258,6 +2258,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorPlaceAllCluesOnLocation iid | iid == investigatorId -> do
     push (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
     pure $ a & cluesL .~ 0
+  RemoveFromBearersDeckOrDiscard card -> do
+    if pcBearer card == Just investigatorId
+      then
+        pure
+        $ a
+        & (discardL %~ filter (/= card))
+        & (deckL %~ Deck . filter (/= card) . unDeck)
+      else pure a
   RemoveDiscardFromGame iid | iid == investigatorId -> do
     pushAll $ map (RemovedFromGame . PlayerCard) investigatorDiscard
     pure $ a & discardL .~ []

@@ -1098,6 +1098,7 @@ library
       Arkham.Types.Treachery.Cards.LightOfAforgomon
       Arkham.Types.Treachery.Cards.LockedDoor
       Arkham.Types.Treachery.Cards.LostInVenice
+      Arkham.Types.Treachery.Cards.MarkedByTheSign
       Arkham.Types.Treachery.Cards.MaskedHorrors
       Arkham.Types.Treachery.Cards.MaskOfUmordhoth
       Arkham.Types.Treachery.Cards.MassHysteria
@@ -1139,6 +1140,7 @@ library
       Arkham.Types.Treachery.Cards.TheCreaturesTracks
       Arkham.Types.Treachery.Cards.TheCultsSearch
       Arkham.Types.Treachery.Cards.TheKingsEdict
+      Arkham.Types.Treachery.Cards.ThePaleMaskBeckons
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.TheZealotsSeal
       Arkham.Types.Treachery.Cards.ToughCrowd

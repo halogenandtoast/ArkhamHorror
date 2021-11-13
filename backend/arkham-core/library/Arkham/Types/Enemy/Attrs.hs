@@ -72,8 +72,13 @@ data EnemyAttrs = EnemyAttrs
   , enemySpawnAt :: Maybe LocationMatcher
   , enemyAsSelfLocation :: Maybe Text
   , enemyMovedFromHunterKeyword :: Bool
+  , enemyDamageStrategy :: DamageStrategy
   }
   deriving stock (Show, Eq, Generic)
+
+damageStrategyL :: Lens' EnemyAttrs DamageStrategy
+damageStrategyL =
+  lens enemyDamageStrategy $ \m x -> m { enemyDamageStrategy = x }
 
 movedFromHunterKeywordL :: Lens' EnemyAttrs Bool
 movedFromHunterKeywordL = lens enemyMovedFromHunterKeyword
@@ -195,6 +200,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       , enemySpawnAt = Nothing
       , enemyAsSelfLocation = Nothing
       , enemyMovedFromHunterKeyword = False
+      , enemyDamageStrategy = DamageAny
       }
     }
 
@@ -621,7 +627,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
         unless (CannotAttack `elem` modifiers')
           $ pushAll
-          $ map (\iid -> EnemyWillAttack iid enemyId DamageAny)
+          $ map (\iid -> EnemyWillAttack iid enemyId $ enemyDamageStrategy)
           $ setToList enemyEngagedInvestigators
         pure a
     AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
@@ -663,16 +669,16 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
              [iid]
              [Window Timing.After (Window.FailAttackEnemy iid enemyId n)]
            ]
-          <> [ EnemyAttack iid enemyId DamageAny
+          <> [ EnemyAttack iid enemyId enemyDamageStrategy
              | Keyword.Retaliate `elem` keywords
              ]
           )
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->
-        push (EnemyAttack iid enemyId DamageAny)
+        push (EnemyAttack iid enemyId enemyDamageStrategy)
       Just _ -> pure ()
       Nothing -> pushAll
-        [ EnemyAttack iid enemyId DamageAny
+        [ EnemyAttack iid enemyId enemyDamageStrategy
         | iid <- setToList enemyEngagedInvestigators
         ]
     EnemyEvaded iid eid | eid == enemyId ->
@@ -716,7 +722,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
           [Window Timing.After (Window.FailEvadeEnemy iid enemyId n)]
         a <$ pushAll
           ([whenWindow, afterWindow]
-          <> [ EnemyAttack iid enemyId DamageAny
+          <> [ EnemyAttack iid enemyId enemyDamageStrategy
              | Keyword.Alert `elem` keywords
              ]
           )
@@ -886,7 +892,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
         a <$ unless
           (CannotMakeAttacksOfOpportunity `elem` modifiers')
-          (push (EnemyWillAttack iid enemyId DamageAny))
+          (push (EnemyWillAttack iid enemyId enemyDamageStrategy))
     InvestigatorDrawEnemy iid lid eid | eid == enemyId ->
       a
         <$ (case enemySpawnAt of

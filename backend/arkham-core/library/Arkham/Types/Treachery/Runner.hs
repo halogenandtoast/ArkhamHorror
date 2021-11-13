@@ -20,6 +20,7 @@ type TreacheryRunner env
     , HasSet EventId env EventMatcher
     , HasSet ClassSymbol env InvestigatorId
     , HasName env (Unrevealed LocationId)
+    , GetCardDef env AssetId
     , GetCardDef env LocationId
     , HasId (Maybe OwnerId) env AssetId
     , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
@@ -28,26 +29,28 @@ type TreacheryRunner env
     , HasList UnderneathCard env InvestigatorId
     , HasList DeckCard env InvestigatorId
     , HasHistory env
-    , Query AssetMatcher env
-    , Query EnemyMatcher env
-    , Query ExtendedCardMatcher env
-    , Query LocationMatcher env
-    , Query InvestigatorMatcher env
-    , HasCount ActsRemainingCount env ()
-    , HasCount DoomCount env ()
-    , HasCount DoomCount env EnemyId
-    , HasCount CardCount env InvestigatorId
-    , HasCount ClueCount env InvestigatorId
-    , HasCount HorrorCount env InvestigatorId
-    , HasCount ClueCount env LocationId
-    , HasCount DoomCount env LocationId
-    , HasCount DamageCount env InvestigatorId
-    , HasCount PlayerCount env ()
-    , HasCount ResourceCount env InvestigatorId
-    , HasCount SetAsideCount env CardCode
-    , HasCount Shroud env LocationId
-    , HasCount SpendableClueCount env InvestigatorId
-    , HasCount TreacheryCount env (LocationId, CardCode)
+    , ( Query AssetMatcher env
+      , Query EnemyMatcher env
+      , Query ExtendedCardMatcher env
+      , Query LocationMatcher env
+      , Query InvestigatorMatcher env
+      )
+    , ( HasCount ActsRemainingCount env ()
+      , HasCount DoomCount env ()
+      , HasCount DoomCount env EnemyId
+      , HasCount CardCount env InvestigatorId
+      , HasCount ClueCount env InvestigatorId
+      , HasCount HorrorCount env InvestigatorId
+      , HasCount ClueCount env LocationId
+      , HasCount DoomCount env LocationId
+      , HasCount DamageCount env InvestigatorId
+      , HasCount PlayerCount env ()
+      , HasCount ResourceCount env InvestigatorId
+      , HasCount SetAsideCount env CardCode
+      , HasCount Shroud env LocationId
+      , HasCount SpendableClueCount env InvestigatorId
+      , HasCount TreacheryCount env (LocationId, CardCode)
+      )
     , HasId CardCode env AssetId
     , HasId CardCode env EnemyId
     , HasId LocationId env EnemyId

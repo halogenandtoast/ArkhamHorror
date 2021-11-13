@@ -145,6 +145,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , lightOfAforgomon
   , lockedDoor
   , lostInVenice
+  , markedByTheSign
   , maskOfUmordhoth
   , maskedHorrors
   , massHysteria
@@ -666,6 +667,17 @@ oozeAndFilth = (treachery "03101" "Ooze and Filth" DecayAndFilth 2)
 corrosion :: CardDef
 corrosion = (treachery "03102" "Corrosion" DecayAndFilth 2)
   { cdCardTraits = singleton Hazard
+  }
+
+markedByTheSign :: CardDef
+markedByTheSign = (treachery "03104" "Marked by the Sign" TheStranger 2)
+  { cdCardTraits = singleton Pact
+  , cdKeywords = singleton Keyword.Peril
+  }
+
+thePaleMaskBeckons :: CardDef
+thePaleMaskBeckons = (treachery "03105" "The Pale Mask Beckons" TheStranger 1)
+  { cdCardTraits = setFromList [Omen, Pact]
   }
 
 straitjacket :: CardDef

@@ -61,6 +61,8 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioSetAsideCards :: [Card]
   , scenarioInResolution :: Bool
   , scenarioNoRemainingInvestigatorsHandler :: Target
+  -- for standalone
+  , scenarioStoryCards :: HashMap InvestigatorId [PlayerCard]
   }
   deriving stock (Show, Generic, Eq)
 
@@ -111,6 +113,9 @@ setAsideCardsL =
 cardsUnderScenarioReferenceL :: Lens' ScenarioAttrs [Card]
 cardsUnderScenarioReferenceL = lens scenarioCardsUnderScenarioReference
   $ \m x -> m { scenarioCardsUnderScenarioReference = x }
+
+storyCardsL :: Lens' ScenarioAttrs (HashMap InvestigatorId [PlayerCard])
+storyCardsL = lens scenarioStoryCards $ \m x -> m { scenarioStoryCards = x }
 
 instance ToJSON ScenarioAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "scenario"
@@ -183,6 +188,7 @@ baseAttrs cardCode name difficulty = ScenarioAttrs
   , scenarioInResolution = False
   , scenarioNoRemainingInvestigatorsHandler = ScenarioTarget
     (ScenarioId cardCode)
+  , scenarioStoryCards = mempty
   }
 
 instance Entity ScenarioAttrs where
@@ -505,4 +511,14 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
         Just (x : _) -> push (AddAgenda x)
         _ -> pure ()
       pure a
+    AddCampaignCardToDeck iid cardDef -> do
+      standalone <- getIsStandalone
+      if standalone
+        then do
+          card <- lookupPlayerCard cardDef <$> getRandom
+          pure $ a & storyCardsL %~ insertWith
+            (<>)
+            iid
+            [card { pcBearer = Just iid }]
+        else pure a
     _ -> pure a

@@ -122,7 +122,10 @@ instance CampaignRunner env => RunMessage env CampaignAttrs where
     SetTokensForScenario -> a <$ push (SetTokens campaignChaosBag)
     AddCampaignCardToDeck iid cardDef -> do
       card <- lookupPlayerCard cardDef <$> getRandom
-      pure $ a & storyCardsL %~ insertWith (<>) iid [card]
+      pure $ a & storyCardsL %~ insertWith
+        (<>)
+        iid
+        [card { pcBearer = Just iid }]
     RemoveCampaignCardFromDeck iid cardCode ->
       pure
         $ a

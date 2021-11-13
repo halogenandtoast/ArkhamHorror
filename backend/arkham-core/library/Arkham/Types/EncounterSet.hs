@@ -46,6 +46,7 @@ data EncounterSet
   | HastursGift
   | CultOfTheYellowSign
   | DecayAndFilth
+  | TheStranger
   | EchoesOfThePast
   | TheUnspeakableOath
   | ReturnToTheGathering

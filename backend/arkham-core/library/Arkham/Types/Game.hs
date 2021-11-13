@@ -1039,6 +1039,14 @@ instance HasGame env => HasRecord env () where
 instance HasGame env => HasCard env InvestigatorId where
   getCard cardId = runReaderT (getCard cardId ()) <=< getInvestigator
 
+instance HasGame env => HasCampaignStoryCard env () where
+  getCampaignStoryCard def _ = do
+    mode <- view modeL <$> getGame
+    case mode of
+      This campaign -> getCampaignStoryCard def campaign
+      These campaign _ -> getCampaignStoryCard def campaign
+      That scenario -> getCampaignStoryCard def scenario
+
 instance HasGame env => HasId LocationSymbol env LocationId where
   getId = getId <=< getLocation
 

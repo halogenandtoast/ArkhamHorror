@@ -118,7 +118,12 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
     Setup -> do
       encounterDeck <- buildEncounterDeckExcluding
         [Enemies.dianneDevine]
-        [EncounterSet.TheLastKing, EncounterSet.AncientEvils]
+        [ EncounterSet.TheLastKing
+        , EncounterSet.HastursGift
+        , EncounterSet.DecayAndFilth
+        , EncounterSet.TheStranger
+        , EncounterSet.AncientEvils
+        ]
 
       foyer <- genCard Locations.foyer
       courtyard <- genCard Locations.courtyard

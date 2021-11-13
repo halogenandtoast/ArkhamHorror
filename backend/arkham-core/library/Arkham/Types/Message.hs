@@ -497,6 +497,7 @@ data Message
     | RunBag Source (Maybe InvestigatorId) RequestedTokenStrategy
     | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy
     | RunSkillTest InvestigatorId
+    | RemoveFromBearersDeckOrDiscard PlayerCard
     | SearchCollectionForRandom InvestigatorId Source CardMatcher
     | Search InvestigatorId Source Target [(Zone, ZoneReturnStrategy)] CardMatcher FoundCardsStrategy
     | SearchFound InvestigatorId Target DeckSignifier [Card]

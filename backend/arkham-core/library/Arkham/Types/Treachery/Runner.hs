@@ -29,6 +29,7 @@ type TreacheryRunner env
     , HasList UnderneathCard env InvestigatorId
     , HasList DeckCard env InvestigatorId
     , HasHistory env
+    , HasCampaignStoryCard env ()
     , ( Query AssetMatcher env
       , Query EnemyMatcher env
       , Query ExtendedCardMatcher env

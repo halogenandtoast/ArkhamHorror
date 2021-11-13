@@ -186,6 +186,7 @@ normalizeName _ a = a
 
 normalizeSubname :: CardCode -> Maybe Text -> Maybe Text
 normalizeSubname "02230" _ = Just "... Or Are They?"
+normalizeSubname "03182a" _ = Just "He's Not Doing All Too Well"
 normalizeSubname _ a = a
 
 normalizeCost :: CardCode -> Maybe Int -> Maybe CardCost
@@ -232,13 +233,17 @@ toGameVal :: Bool -> Int -> GameValue Int
 toGameVal True n = PerPlayer n
 toGameVal False n = Static n
 
+normalizeCardCode :: CardCode -> CardCode
+normalizeCardCode "03076a" = "03076"
+normalizeCardCode c = c
+
 runMissing :: Maybe Text -> HashMap CardCode CardJson -> IO ()
 runMissing mPackCode cards = do
   let
     cardCodes =
       map CardCode
         . sort
-        . map unCardCode
+        . map (unCardCode . normalizeCardCode)
         . toList
         $ keysSet (filterOutIrrelevant mPackCode cards)
         `difference` keysSet allCards
@@ -262,6 +267,14 @@ filterOutIrrelevant mPackCode = filterMap
       && maybe True ((== pack_code card) . unpack) mPackCode
   )
 
+normalizeClassSymbol :: Maybe ClassSymbol -> Maybe ClassSymbol
+normalizeClassSymbol (Just Mythos) = Nothing
+normalizeClassSymbol c = c
+
+ignoreCardCode :: CardCode -> Bool
+ignoreCardCode "03076" = True
+ignoreCardCode x = T.isPrefixOf "x" (unCardCode x)
+
 runValidations :: HashMap CardCode CardJson -> IO ()
 runValidations cards = do
   -- validate card defs
@@ -270,7 +283,7 @@ runValidations cards = do
       (ccode /= cdCardCode card)
       (throw $ InternalCardCodeMismatch ccode (cdCardCode card))
     case lookup ccode cards of
-      Nothing -> when (ccode /= "03076") (throw $ UnknownCard ccode)
+      Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
       Just cardJson@CardJson {..} -> do
         if type_code == "location"
           then do
@@ -322,7 +335,9 @@ runValidations cards = do
           (normalizeCost code cost /= cdCost card)
           (throw $ CardCostMismatch code (cdName card) cost (cdCost card))
         when
-          (toClassSymbol faction_name /= cdClassSymbol card)
+          (toClassSymbol faction_name
+          /= normalizeClassSymbol (cdClassSymbol card)
+          )
           (throw $ ClassMismatch
             code
             (cdName card)
@@ -429,7 +444,7 @@ runValidations cards = do
   for_ (filterTestEntities $ mapToList allAssets) $ \(ccode, builder) -> do
     attrs <- toAttrs . builder <$> getRandom
     case lookup ccode cards of
-      Nothing -> when (ccode /= "03076") (throw $ UnknownCard ccode)
+      Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
       Just CardJson {..} -> do
         let
           cardStats = (health, sanity)

@@ -708,7 +708,7 @@ giftOfMadnessMisery =
     }
 
 wallsClosingIn :: CardDef
-wallsClosingIn = (treachery "03188" "Walls ClosingIn" TheUnspeakableOath 3)
+wallsClosingIn = (treachery "03188" "Walls Closing In" TheUnspeakableOath 3)
   { cdCardTraits = singleton Terror
   }
 

@@ -1625,6 +1625,9 @@ straitjacket = (storyAsset "03185" "Straitjacket" 0 TheUnspeakableOath)
   { cdCardTraits = setFromList [Item, Clothing]
   , cdCardType = EncounterAssetType
   , cdSlots = [BodySlot, HandSlot, HandSlot]
+  , cdEncounterSetQuantity = Just 2
+  , cdCost = Nothing
+  , cdClassSymbol = Just Mythos
   }
 
 madameLabranche :: CardDef

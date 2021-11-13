@@ -7,7 +7,8 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
 import Arkham.Types.ClassSymbol
-import Arkham.Types.EncounterSet
+import Arkham.Types.EncounterSet hiding (Byakhee)
+import Arkham.Types.EncounterSet qualified as EncounterSet
 import Arkham.Types.Keyword qualified as Keyword
 import Arkham.Types.Name
 import Arkham.Types.Trait
@@ -150,6 +151,7 @@ allEncounterEnemyCards = mapFromList $ map
   , spawnOfHali
   , swampLeech
   , swarmOfRats
+  , swiftByakhee
   , theExperiment
   , theMaskedHunter
   , theRougarou
@@ -596,6 +598,12 @@ dianneDevine =
     , cdKeywords = singleton Keyword.Aloof
     , cdUnique = True
     }
+
+swiftByakhee :: CardDef
+swiftByakhee = (enemy "03086" "Swift Byakhee" EncounterSet.Byakhee 2)
+  { cdCardTraits = setFromList [Monster, Byakhee]
+  , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+  }
 
 beastOfAldebaran :: CardDef
 beastOfAldebaran = (enemy "03088" "Beast of Aldebaran" InhabitantsOfCarcosa 1)

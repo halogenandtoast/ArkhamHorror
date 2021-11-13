@@ -40,6 +40,7 @@ data EncounterSet
   | CurtainCall
   | TheLastKing
   | Delusions
+  | Byakhee
   | InhabitantsOfCarcosa
   | EvilPortents
   | Hauntings

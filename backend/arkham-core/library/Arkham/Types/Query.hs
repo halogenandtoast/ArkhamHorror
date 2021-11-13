@@ -33,7 +33,7 @@ newtype RemainingHealth = RemainingHealth { unRemainingHealth :: Int }
 newtype RemainingSanity = RemainingSanity { unRemainingSanity :: Int }
   deriving newtype (Eq, Hashable)
 newtype HorrorCount = HorrorCount { unHorrorCount :: Int }
-  deriving newtype (Eq)
+  deriving newtype (Eq, Hashable)
 newtype DamageCount = DamageCount { unDamageCount :: Int }
   deriving newtype (Eq)
 newtype ScenarioDeckCount = ScenarioDeckCount { unScenarioDeckCount :: Int }

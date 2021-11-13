@@ -20,6 +20,7 @@ data Prey
   | Bearer BearerId
   | SetToBearer
   | MostClues
+  | MostHorror
   | NearestToEnemyWithTrait Trait
   | OnlyPrey Prey
   | HasMostMatchingAsset AssetMatcher

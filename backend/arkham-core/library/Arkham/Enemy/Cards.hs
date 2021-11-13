@@ -147,6 +147,7 @@ allEncounterEnemyCards = mapFromList $ map
   , sethBishop
   , silasBishop
   , slimeCoveredDhole
+  , spawnOfHali
   , swampLeech
   , swarmOfRats
   , theExperiment

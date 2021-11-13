@@ -550,7 +550,14 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         )
     HuntersMove | null enemyEngagedInvestigators && not enemyExhausted -> do
       keywords <- getModifiedKeywords a
-      a <$ when (Keyword.Hunter `elem` keywords) (push $ HunterMove (toId a))
+      leadInvestigatorId <- getLeadInvestigatorId
+      when (Keyword.Hunter `elem` keywords) $ pushAll
+        [ CheckWindow
+          [leadInvestigatorId]
+          [Window Timing.When (Window.MovedFromHunter enemyId)]
+        , HunterMove (toId a)
+        ]
+      pure a
     HunterMove eid | eid == toId a && not enemyExhausted -> do
       modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
       let

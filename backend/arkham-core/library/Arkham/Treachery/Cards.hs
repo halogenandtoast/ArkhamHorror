@@ -7,7 +7,7 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.CardDef
 import Arkham.Types.Card.CardType
 import Arkham.Types.ClassSymbol
-import Arkham.Types.EncounterSet hiding (Dunwich)
+import Arkham.Types.EncounterSet hiding (Byakhee, Dunwich)
 import Arkham.Types.EncounterSet qualified as EncounterSet
 import Arkham.Types.Keyword qualified as Keyword
 import Arkham.Types.Name
@@ -137,6 +137,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , giftOfMadnessMisery
   , giftOfMadnessPity
   , graspingHands
+  , huntedByByakhee
   , huntedDown
   , huntingShadow
   , insatiableBloodlust
@@ -616,6 +617,12 @@ descentIntoMadness :: CardDef
 descentIntoMadness = (treachery "03085" "Descent into Madness" Delusions 2)
   { cdCardTraits = singleton Terror
   , cdKeywords = singleton Keyword.Surge
+  }
+
+huntedByByakhee :: CardDef
+huntedByByakhee = (treachery "03087" "Hunted by Byakhee" EncounterSet.Byakhee 2
+                  )
+  { cdCardTraits = singleton Pact
   }
 
 blackStarsRise :: CardDef

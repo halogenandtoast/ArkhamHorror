@@ -179,6 +179,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , theCreaturesTracks
   , theCultsSearch
   , theKingsEdict
+  , thePaleMaskBeckons
   , theYellowSign
   , theZealotsSeal
   , toughCrowd

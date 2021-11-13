@@ -1963,6 +1963,16 @@ instance HasGame env => HasCount RemainingHealth env InvestigatorId where
     investigator <- getInvestigator iid
     RemainingHealth <$> getRemainingHealth investigator
 
+instance HasGame env => HasCount RemainingSanity env AssetId where
+  getCount aid = do
+    asset <- getAsset aid
+    pure . RemainingSanity $ getRemainingAssetSanity asset
+
+instance HasGame env => HasCount RemainingHealth env AssetId where
+  getCount aid = do
+    asset <- getAsset aid
+    pure . RemainingHealth $ getRemainingAssetHealth asset
+
 instance HasGame env => HasCount RemainingSanity env InvestigatorId where
   getCount iid = do
     investigator <- getInvestigator iid

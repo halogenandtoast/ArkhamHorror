@@ -85,6 +85,7 @@ allEncounterEnemyCards = mapFromList $ map
   , asylumGorger
   , avianThrall
   , balefulReveler
+  , beastOfAldebaran
   , billyCooper
   , bogGator
   , broodOfYogSothoth
@@ -594,6 +595,12 @@ dianneDevine =
     , cdUnique = True
     }
 
+beastOfAldebaran :: CardDef
+beastOfAldebaran = (enemy "03088" "Beast of Aldebaran" InhabitantsOfCarcosa 1)
+  { cdCardTraits = setFromList [Monster, Elite]
+  , cdKeywords = singleton Keyword.Massive
+  , cdVictoryPoints = Just 1
+  }
 
 poltergeist :: CardDef
 poltergeist = (enemy "03093" "Poltergeist" Hauntings 2)

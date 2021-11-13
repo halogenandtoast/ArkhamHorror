@@ -6,9 +6,13 @@ import Arkham.Types.Id
 import Arkham.Types.Target
 import Arkham.Types.Zone
 
-data DamageStrategy = DamageAny | DamageAssetsFirst | DamageFirst CardDef
-    deriving stock (Show, Eq, Generic)
-    deriving anyclass (ToJSON, FromJSON)
+data DamageStrategy
+  = DamageAny
+  | DamageAssetsFirst
+  | DamageFirst CardDef
+  | SingleTarget
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 data ZoneReturnStrategy = PutBackInAnyOrder | ShuffleBackIn | PutBack
     deriving stock (Show, Eq, Generic)

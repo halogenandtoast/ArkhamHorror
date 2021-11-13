@@ -516,6 +516,7 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
       if standalone
         then do
           card <- lookupPlayerCard cardDef <$> getRandom
+          push (ShuffleCardsIntoDeck iid [card])
           pure $ a & storyCardsL %~ insertWith
             (<>)
             iid

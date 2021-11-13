@@ -1180,6 +1180,46 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          ]
       <> [Window Timing.When (Window.AssignedHorror source iid horrorTargets)]
       )
+
+  InvestigatorDoAssignDamage iid source SingleTarget health sanity damageTargets horrorTargets
+    | iid == investigatorId
+    -> do
+      healthDamageableAssets <- if health > 0
+        then select (AssetCanBeAssignedDamageBy iid)
+        else pure mempty
+      sanityDamageableAssets <- if sanity > 0
+        then select (AssetCanBeAssignedHorrorBy iid)
+        else pure mempty
+      let
+        damageableAssets =
+          toList $ healthDamageableAssets `union` sanityDamageableAssets
+        continue h s t = InvestigatorDoAssignDamage
+          iid
+          source
+          SingleTarget
+          (max 0 $ health - h)
+          (max 0 $ sanity - s)
+          (damageTargets <> [ t | h > 0 ])
+          (horrorTargets <> [ t | s > 0 ])
+        toAssetMessage (asset, (h, s)) = TargetLabel
+          (AssetTarget asset)
+          [ AssetDamage asset source (min h health) (min s sanity)
+          , continue h s (AssetTarget asset)
+          ]
+      assetsWithCounts <- for damageableAssets $ \asset -> do
+        health' <- unRemainingHealth <$> getCount asset
+        sanity' <- unRemainingSanity <$> getCount asset
+        pure (asset, (health', sanity'))
+
+      push
+        $ chooseOne iid
+        $ TargetLabel
+            (toTarget a)
+            [ InvestigatorDamage investigatorId source health sanity
+            , continue health sanity (toTarget a)
+            ]
+        : map toAssetMessage assetsWithCounts
+      pure a
   InvestigatorDoAssignDamage iid source strategy health sanity damageTargets horrorTargets
     | iid == investigatorId
     -> do
@@ -1220,6 +1260,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               pure $ if null validAssets
                 then damageInvestigator : map damageAsset healthDamageableAssets
                 else map damageAsset validAssets
+            SingleTarget -> error "handled elsewhere"
         else pure []
       sanityDamageMessages <- if sanity > 0
         then do
@@ -1266,6 +1307,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               pure $ if null validAssets
                 then damageInvestigator : map damageAsset sanityDamageableAssets
                 else map damageAsset validAssets
+            SingleTarget -> error "handled elsewhere"
         else pure []
       a <$ push (chooseOne iid $ healthDamageMessages <> sanityDamageMessages)
   Investigate iid lid source mTarget skillType True | iid == investigatorId ->

@@ -491,6 +491,7 @@ library
       Arkham.Types.Enemy.Cards.AsylumGorger
       Arkham.Types.Enemy.Cards.AvianThrall
       Arkham.Types.Enemy.Cards.BalefulReveler
+      Arkham.Types.Enemy.Cards.BeastOfAldebaran
       Arkham.Types.Enemy.Cards.BillyCooper
       Arkham.Types.Enemy.Cards.BogGator
       Arkham.Types.Enemy.Cards.BroodOfYogSothoth

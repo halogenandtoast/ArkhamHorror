@@ -55,6 +55,8 @@ type InnerInvestigatorRunner env
       , HasCount HorrorCount env InvestigatorId
       , HasCount PlayerCount env ()
       , HasCount RemainingSanity env InvestigatorId
+      , HasCount RemainingSanity env AssetId
+      , HasCount RemainingHealth env AssetId
       , HasCount ResourceCount env InvestigatorId
       , HasCount SanityDamageCount env EnemyId
       , HasCount SetAsideCount env CardCode

@@ -150,6 +150,18 @@ isSanityDamageable a = case assetSanity (toAttrs a) of
   Nothing -> False
   Just n -> n > assetSanityDamage (toAttrs a)
 
+getRemainingAssetSanity :: Asset -> Int
+getRemainingAssetSanity a = case assetSanity attrs of
+  Nothing -> 0
+  Just n -> max 0 $ n - assetSanityDamage attrs
+  where attrs = toAttrs a
+
+getRemainingAssetHealth :: Asset -> Int
+getRemainingAssetHealth a = case assetHealth attrs of
+  Nothing -> 0
+  Just n -> max 0 $ n - assetHealthDamage attrs
+  where attrs = toAttrs a
+
 isStory :: Asset -> Bool
 isStory = assetIsStory . toAttrs
 

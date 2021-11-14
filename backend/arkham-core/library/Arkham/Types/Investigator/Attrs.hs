@@ -2283,7 +2283,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                     Timing.After
                     (Window.FailInvestigationSkillTest iid lid n)
                 ]
-              _ -> error "expected location source for investigate"
+              _ ->
+                [ Window
+                    Timing.After
+                    (Window.FailInvestigationSkillTest
+                      iid
+                      investigatorLocation
+                      n
+                    )
+                ]
             _ -> []
           )
           mAction

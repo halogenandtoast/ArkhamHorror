@@ -117,3 +117,102 @@ lunacysReward3 = FlavorText
     \ head back to your vehicle and tear off toward Southside, full of grim\
     \ determination."
   ]
+
+danielSurvived :: Message
+danielSurvived = FlavorText
+  (Just "Daniel Survived")
+  [ "You decide to lay low for some time in Ma’s\
+    \ Boarding House and hide Daniel from the authorities, although you’re\
+    \ unsure how long you’ll be able to stay in Arkham with an escaped\
+    \ asylum patient. Daniel is a loose cannon, dazed and unresponsive one\
+    \ moment, and screaming for his life the next. It takes several days for him\
+    \ to realize he’s no longer institutionalized, which for some reason makes\
+    \ him even more terrified. “He’s coming for me, he’s coming for me!” he\
+    \ rambles, sometimes for hours at a time. Finally, during an unusually\
+    \ warm and starry night, Daniel is calm enough to open up to you. “The\
+    \ King in Yellow, it’s not just a play,” he explains. “It’s a being named\
+    \ Hastur, and He’s already claimed me. But there’s still time for you. You\
+    \ are not yet possessed. You have yet to speak the Oath. Whatever you\
+    \ do, speak not his name. Do not give in.” You ask him about the strange\
+    \ events that have been happening across town, and of the cultists and\
+    \ creatures you’ve encountered. “They are trying to find Carcosa,” he\
+    \ says matter-of-factly. You recognize the name as the fictional city from\
+    \ the play, the one The King in Yellow rules over. “They want to release\
+    \ Hastur from His prison. But you!—You can open the way to Carcosa\
+    \ before they do! You can seal Hastur for good!” He grips you tightly as he\
+    \ rants. “Quickly, before the Stranger discovers our plan!”"
+  , "Hours later, Daniel is incoherent and unresponsive once more. You take\
+    \ a long walk to ease your thoughts, mulling over this new information.\
+    \ You’re unsure what to make of his wild claims. Before you can make a\
+    \ decision about what to do next, you return to find the door to your room\
+    \ broken open. Daniel lies in a heap on the ground, his face colorless and\
+    \ body limp. Judging from the bruising around his neck, you surmise that\
+    \ he has been choked to death."
+  ]
+
+danielDidNotSurvive :: Message
+danielDidNotSurvive = FlavorText
+  (Just "Daniel Did Not Survive")
+  [ "You decide to lay low for some time in Ma’s\
+    \ Boarding House, unsure whether news of the events at the asylum will\
+    \ get out to the general public. You take this time to make extensive notes\
+    \ of the events you’ve experienced thus far, including the brief dialogue\
+    \ between you and Daniel. He’d spoke of The King in Yellow as if it\
+    \ were an actual being, and even named it. “Hastur.” He’d rambled and\
+    \ muttered and screeched other phrases, as well. You doubt you’ll ever\
+    \ forget them. “He made us speak the Oath.” “The price was paid.” “They\
+    \ are opening the path to Carcosa.” For hours, you think about Daniel’s\
+    \ warning to you, which he begged you to heed: “Do not speak His name.”\
+    \ His final moments play out in your mind over and over again."
+  ]
+
+danielWasPossessed :: Message
+danielWasPossessed = FlavorText
+  (Just "Daniel Was Possessed")
+  [ "You decide to lay low for some time in Ma’s\
+    \ Boarding House, unsure whether news of the events at the asylum will\
+    \ get out to the general public. You take this time to make extensive notes\
+    \ of the events you’ve experienced thus far, including the brief dialogue\
+    \ between you and Daniel. He’d spoke of The King in Yellow as if it\
+    \ were an actual being, and even named it. “Hastur.” He’d rambled and\
+    \ muttered and screeched other phrases, as well. You doubt you’ll ever\
+    \ forget them. “He made us speak the Oath.” “The price was paid.” “They\
+    \ are opening the path to Carcosa.”"
+  , "On the third night, you return to your room to find the door broken\
+    \ open. You enter cautiously, wondering if the police are onto you. Or\
+    \ worse, the Stranger. You are surprised to find the body of Daniel\
+    \ Chesterfield instead, lying on the ground with a pained, wide-eyed\
+    \ expression on his face. He is dead. His eyes are bloodshot and yellow,\
+    \ and he clutches a copy of The King in Yellow in his stiff hands. You\
+    \ pry the playbook from his deathly grasp and examine it. Daniel has\
+    \ scribbled notes in the margins of each page, mostly incomprehensible,\
+    \ but with a few lucid standouts. The first time the fictional city of\
+    \ Carcosa is mentioned, scrawled next to it Daniel has written:"
+  , "*Carcosa is real"
+  , "Do not let them open the path"
+  , "When Cassilda speaks of the tattered king, Daniel has written:"
+  , "Hastur is the king in tatters"
+  , "locked in his prison in the stars"
+  , "seal him away and stop this madness!"
+  , "Your mind swims with questions. How did he escape the asylum? How\
+    \ did he die? And why does he appear human to your eyes now? With\
+    \ little time to spare, you clean the room of your belongings and flee.\
+    \ Daniel’s words, which he begged you to heed, play out in your mind over\
+    \ and over again."
+  ]
+
+ignoreTheWarning :: Message
+ignoreTheWarning = FlavorText
+  (Just "Ignore the Warning")
+  [ "For hours, you struggle with this insight into\
+    \ The King in Yellow. What is true? What is real? Only you can sort\
+    \ through this madness."
+  ]
+
+headTheWarning :: Message
+headTheWarning = FlavorText
+  (Just "Head the Warning")
+  [ "For hours, you struggle with this insight into\
+    \ The King in Yellow. What is true? What is real? Only you can sort\
+    \ through this madness."
+  ]

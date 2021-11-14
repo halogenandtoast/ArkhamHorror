@@ -168,7 +168,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
             [NextCampaignStep (Just $ ScenarioStep "02062")]
           ]
         ]
-    CampaignStep (Just (InterludeStep 1)) -> do
+    CampaignStep (Just (InterludeStep 1 _)) -> do
       unconsciousForSeveralHours <- getHasRecord
         InvestigatorsWereUnconsciousForSeveralHours
       investigatorIds <- getSetList ()
@@ -237,7 +237,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
             Assets.drHenryArmitage
           , NextCampaignStep Nothing
           ]
-    CampaignStep (Just (InterludeStep 2)) -> do
+    CampaignStep (Just (InterludeStep 2 _)) -> do
       sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
       investigatorIds <- getSetList ()
       leadInvestigatorId <- getLeadInvestigatorId
@@ -453,13 +453,13 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
             Just PrologueStep -> error "must be handled"
             Just (ScenarioStep "02041") ->
               if ScenarioStep "02062" `elem` campaignCompletedSteps
-                then Just $ InterludeStep 1
+                then Just $ InterludeStep 1 Nothing
                 else Just (UpgradeDeckStep $ ScenarioStep "02062")
             Just (ScenarioStep "02062") ->
               if ScenarioStep "02041" `elem` campaignCompletedSteps
-                then Just $ InterludeStep 1
+                then Just $ InterludeStep 1 Nothing
                 else Just (UpgradeDeckStep $ ScenarioStep "02041")
-            Just (InterludeStep 1) ->
+            Just (InterludeStep 1 _) ->
               Just (UpgradeDeckStep $ ScenarioStep "02118")
             Just (ScenarioStep "02118") ->
               Just (UpgradeDeckStep $ ScenarioStep "02159")
@@ -469,8 +469,8 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
               case lookup "02195" campaignResolutions of
                 Just NoResolution ->
                   Just (UpgradeDeckStep $ ScenarioStep "02236")
-                _ -> Just $ InterludeStep 2
-            Just (InterludeStep 2) ->
+                _ -> Just $ InterludeStep 2 Nothing
+            Just (InterludeStep 2 _) ->
               Just (UpgradeDeckStep $ ScenarioStep "02236")
             Just (ScenarioStep "02236") ->
               Just (UpgradeDeckStep $ ScenarioStep "02274")

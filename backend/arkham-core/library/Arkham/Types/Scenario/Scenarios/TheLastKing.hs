@@ -332,7 +332,7 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
           pushAll
             $ [story investigatorIds resolution1]
             <> gainXp
-            <> [EndOfGame (Just $ InterludeStep 1)]
+            <> [EndOfGame (Just $ InterludeStep 1 Nothing)]
         2 ->
           pushAll
             $ [story investigatorIds resolution2]

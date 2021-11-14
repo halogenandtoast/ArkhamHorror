@@ -360,7 +360,7 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
             <> updateSlain
             <> removeTokens
             <> [AddToken Tablet, AddToken Tablet]
-            <> [EndOfGame (Just $ InterludeStep 2)]
+            <> [EndOfGame (Just $ InterludeStep 2 Nothing)]
         3 ->
           pushAll
             $ msgs
@@ -370,7 +370,7 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
             <> updateSlain
             <> removeTokens
             <> [AddToken ElderThing, AddToken ElderThing]
-            <> [EndOfGame (Just $ InterludeStep 2)]
+            <> [EndOfGame (Just $ InterludeStep 2 Nothing)]
         _ -> error "invalid resolution"
       pure s
     _ -> TheUnspeakableOath <$> runMessage msg attrs

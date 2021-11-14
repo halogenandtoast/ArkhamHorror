@@ -83,5 +83,6 @@ export default defineComponent({
   left: 50%;
   bottom: 0%;
   transform: translateX(-50%) translateY(-50%);
+  pointer-events: none;
 }
 </style>

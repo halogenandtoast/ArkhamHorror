@@ -25,12 +25,13 @@ youngPsychopath =
   enemy YoungPsychopath Cards.youngPsychopath (2, Static 2, 3) (1, 1)
 
 instance HasAbilities YoungPsychopath where
-  getAbilities (YoungPsychopath a) =
+  getAbilities (YoungPsychopath a) = withBaseAbilities
+    a
     [ mkAbility a 1
-        $ ForcedAbility
-        $ EnemyEngaged Timing.After You
-        $ EnemyWithId
-        $ toId a
+      $ ForcedAbility
+      $ EnemyEngaged Timing.After You
+      $ EnemyWithId
+      $ toId a
     ]
 
 instance EnemyRunner env => RunMessage env YoungPsychopath where

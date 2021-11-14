@@ -45,5 +45,5 @@ instance TreacheryRunner env => RunMessage env TheCultsSearch where
                 )
                 cultistsWithDoomCount
               <> [AdvanceAgendaIfThresholdSatisfied]
-      t <$ pushAll (revelation <> [Discard $ toTarget attrs])
+      t <$ pushAll revelation
     _ -> TheCultsSearch <$> runMessage msg attrs

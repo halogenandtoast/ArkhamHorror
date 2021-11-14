@@ -338,6 +338,7 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
             <> updateSlain
             <> removeTokens
             <> [AddToken Cultist, AddToken Cultist]
+            <> [EndOfGame Nothing]
         2 ->
           pushAll
             $ [ story investigatorIds resolution2
@@ -348,6 +349,7 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
             <> updateSlain
             <> removeTokens
             <> [AddToken Tablet, AddToken Tablet]
+            <> [EndOfGame Nothing]
         3 ->
           pushAll
             $ [ story investigatorIds resolution3
@@ -364,6 +366,7 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
             <> updateSlain
             <> removeTokens
             <> [AddToken Tablet, AddToken Tablet]
+            <> [EndOfGame Nothing]
         4 ->
           pushAll
             $ [ story investigatorIds resolution4
@@ -373,6 +376,7 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
             <> updateSlain
             <> removeTokens
             <> [AddToken ElderThing, AddToken ElderThing]
+            <> [EndOfGame Nothing]
         _ -> error "Invalid resolution"
       pure s
     _ -> EchoesOfThePast <$> runMessage msg attrs

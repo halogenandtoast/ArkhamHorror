@@ -27,7 +27,6 @@ instance HasModifiersFor env HuntingNightgaunt where
     = pure $ toModifiers a [DoubleNegativeModifiersOnTokens]
   getModifiersFor _ _ _ = pure []
 
--- TODO: Move this to a modifier somehow
 instance EnemyRunner env => RunMessage env HuntingNightgaunt where
   runMessage msg (HuntingNightgaunt attrs) =
     HuntingNightgaunt <$> runMessage msg attrs

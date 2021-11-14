@@ -37,14 +37,15 @@ instance HasStep AgendaStep env () => HasModifiersFor env PossessedOathspeaker w
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities PossessedOathspeaker where
-  getAbilities (PossessedOathspeaker a) =
+  getAbilities (PossessedOathspeaker a) = withBaseAbilities
+    a
     [ mkAbility a 1 $ ForcedAbility $ PhaseBegins Timing.When $ PhaseIs
       EnemyPhase
     , mkAbility a 2
-      $ ForcedAbility
-      $ EnemyDefeated Timing.When Anyone
-      $ EnemyWithId
-      $ toId a
+    $ ForcedAbility
+    $ EnemyDefeated Timing.When Anyone
+    $ EnemyWithId
+    $ toId a
     ]
 
 instance EnemyRunner env => RunMessage env PossessedOathspeaker where

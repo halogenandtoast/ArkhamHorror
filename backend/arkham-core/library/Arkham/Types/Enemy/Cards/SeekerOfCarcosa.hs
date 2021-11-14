@@ -29,7 +29,8 @@ seekerOfCarcosa = enemyWith
   (spawnAtL ?~ EmptyLocation <> LocationWithTitle "Historical Society")
 
 instance HasAbilities SeekerOfCarcosa where
-  getAbilities (SeekerOfCarcosa attrs) =
+  getAbilities (SeekerOfCarcosa attrs) = withBaseAbilities
+    attrs
     [ mkAbility attrs 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
         MythosPhase
     ]

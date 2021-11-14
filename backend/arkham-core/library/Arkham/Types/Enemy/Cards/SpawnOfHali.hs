@@ -27,7 +27,8 @@ spawnOfHali = enemyWith
   (preyL .~ MostHorror)
 
 instance HasAbilities SpawnOfHali where
-  getAbilities (SpawnOfHali a) =
+  getAbilities (SpawnOfHali a) = withBaseAbilities
+    a
     [ mkAbility a 1 $ ForcedAbility $ SkillTestResult
         Timing.After
         You

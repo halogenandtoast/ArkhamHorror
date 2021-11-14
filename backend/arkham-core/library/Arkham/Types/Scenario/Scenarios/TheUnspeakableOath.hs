@@ -281,7 +281,7 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
                 , Label "This test automatically fails" [FailSkillTest]
                 ]
               )
-      _ -> pure s
+      _ -> TheUnspeakableOath <$> runMessage msg attrs
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
       case tokenFace token of
         Skull -> do

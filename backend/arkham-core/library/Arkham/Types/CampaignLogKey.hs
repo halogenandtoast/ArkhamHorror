@@ -76,6 +76,9 @@ data CampaignLogKey
   | YouLeftTheOnyxClaspBehind
   | YouDestroyedTheOathspeaker
   | TheFollowersOfTheSignHaveFoundTheWayForward
+  | TheKingClaimedItsVictims
+  | TheInvestigatorsWereAttackedAsTheyEscapedTheAsylum
+  | TheInvestigatorsEscapedTheAsylum
   -- ^ The Path to Carcosa
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

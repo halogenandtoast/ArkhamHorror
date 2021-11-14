@@ -132,3 +132,31 @@ resolution3 = FlavorText
     \ those final words, the skin melts off the man’s bones, and he\
     \ rattles to the floor."
   ]
+
+defeat :: Message
+defeat = FlavorText
+  (Just "Investigator Defeat")
+  [ "“Doctor Mintz, the patient has been\
+    \ medicated and is ready to see you now.” Nurse Heather\
+    \ opened the file on the desk nearby, taking a moment to review\
+    \ the patient’s records."
+  , "“Any changes in the patient’s condition?” Doctor Mintz asked\
+    \ in a monotone voice. A formality. Both knew the patient was\
+    \ beyond repair."
+  , "“None. The patient’s delusions remain. Demanding to speak\
+    \ with the Warden, claiming they are only guests, and rambling\
+    \ about that play that aired the other night, The King in Yellow.”"
+  , "“And their other crimes? The incident in the theatre? What\
+    \ about 1452 Atlantic Ave?”"
+  , "“They believe they were attacked, and were defending\
+    \ themselves.” Her voice was thick with pity. What could\
+    \ have caused somebody to snap like this so quickly? None\
+    \ of the patient’s records showed any prior history of mental\
+    \ instability. “Can you make any sense of it, Doctor?”"
+  , "“Who could?” Doctor Mintz sighed and stood, grabbing the\
+    \ file from his desk. “My job is not to understand. It is to cure.\
+    \ Perhaps my experimental procedures will prove fruitful\
+    \ on this one.” The nurse winced and felt goosebumps on her\
+    \ arm. She knew how his procedures would turn out, and she\
+    \ doubted it would prove anything."
+  ]

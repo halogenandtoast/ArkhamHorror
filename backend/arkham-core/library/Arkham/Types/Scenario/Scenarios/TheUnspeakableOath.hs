@@ -93,6 +93,32 @@ standaloneTokens =
   , ElderSign
   ]
 
+investigatorDefeat
+  :: ( MonadReader env m
+     , HasSet DefeatedInvestigatorId env ()
+     , HasSet InvestigatorId env ()
+     , HasId LeadInvestigatorId env ()
+     )
+  => ScenarioAttrs
+  -> m [Message]
+investigatorDefeat a = do
+  leadInvestigatorId <- getLeadInvestigatorId
+  investigatorIds <- getInvestigatorIds
+  defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
+  if null defeatedInvestigatorIds
+    then pure []
+    else
+      pure
+      $ story investigatorIds defeat
+      : map DrivenInsane defeatedInvestigatorIds
+      <> [ GameOver
+         | null
+           (setFromList @(HashSet InvestigatorId) investigatorIds
+           `difference` setFromList @(HashSet InvestigatorId)
+                          defeatedInvestigatorIds
+           )
+         ]
+
 instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
   runMessage msg s@(TheUnspeakableOath attrs) = case msg of
     SetTokensForScenario -> do
@@ -272,4 +298,27 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
           push $ InvestigatorAssignDamage iid (TokenSource token) DamageAny 0 1
         _ -> pure ()
       pure s
+    ScenarioResolution NoResolution -> do
+      push (ScenarioResolution $ Resolution 1)
+      pure . TheUnspeakableOath $ attrs & inResolutionL .~ True
+    ScenarioResolution (Resolution n) -> do
+      msgs <- investigatorDefeat attrs
+      leadInvestigatorId <- getLeadInvestigatorId
+      gainXp <- map (uncurry GainXP) <$> getXp
+      case n of
+        1 -> do
+          youTookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
+          claspMessages <- if youTookTheOnyxClasp
+            then do
+              onyxClasp <- fromJust "missing card" <$> getCampaignStoryCard Assets.claspOfBlackOnyx
+              [RemoveCampaignCardFromDeck (pcBearer onyxClasp) (toCardCode onyxClasp)
+              , chooseOne
+                leadInvestigatorId
+                [ TargetLabel
+                    (InvestigatorTarget iid)
+                    [AddCampaignCardToDeck iid Assets.claspOfBlackOnyx]
+                  | iid <- investigatorIds
+                ]
+            else pure []
+          pushAll $ msgs <> [Record TheKingClaimedItsVictims] <> gainXp <> claspMessages
     _ -> TheUnspeakableOath <$> runMessage msg attrs

@@ -190,16 +190,23 @@ instance ScenarioRunner env => RunMessage env TheLastKing where
           ?~ [Agendas.fashionablyLate, Agendas.theTerrifyingTruth]
           )
         )
-    ResolveToken _ token iid -> s <$ case token of
-      Skull -> push (DrawAnotherToken iid)
-      Cultist | isHardExpert attrs -> do
-        clueCount <- unClueCount <$> getCount iid
-        when (clueCount > 0) (push $ InvestigatorPlaceCluesOnLocation iid 1)
+    ResolveToken _ token iid | token `elem` [Skull, Cultist, Tablet] ->
+      s <$ case token of
+        Skull -> push (DrawAnotherToken iid)
+        Cultist | isHardExpert attrs -> do
+          clueCount <- unClueCount <$> getCount iid
+          when (clueCount > 0) (push $ InvestigatorPlaceCluesOnLocation iid 1)
 
-      Tablet | isHardExpert attrs ->
-        push
-          (InvestigatorAssignDamage iid (TokenEffectSource token) DamageAny 0 1)
-      _ -> pure ()
+        Tablet | isHardExpert attrs ->
+          push
+            (InvestigatorAssignDamage
+              iid
+              (TokenEffectSource token)
+              DamageAny
+              0
+              1
+            )
+        _ -> pure ()
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of
         Skull -> do

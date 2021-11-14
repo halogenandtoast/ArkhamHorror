@@ -251,25 +251,26 @@ instance ScenarioRunner env => RunMessage env EchoesOfThePast where
              ]
           )
         )
-    ResolveToken _ token iid -> s <$ case token of
-      Cultist -> do
-        matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
-        push $ chooseOne
-          iid
-          [ TargetLabel target [PlaceDoom target 1] | target <- matches ]
-      Tablet -> push $ RandomDiscard iid
-      ElderThing -> do
-        triggers <- notNull <$> select (EnemyAt YourLocation)
-        when
-          triggers
-          (push $ InvestigatorAssignDamage
+    ResolveToken _ token iid | token `elem` [Cultist, Tablet, ElderThing] ->
+      s <$ case token of
+        Cultist -> do
+          matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
+          push $ chooseOne
             iid
-            (TokenEffectSource token)
-            DamageAny
-            0
-            1
-          )
-      _ -> pure ()
+            [ TargetLabel target [PlaceDoom target 1] | target <- matches ]
+        Tablet -> push $ RandomDiscard iid
+        ElderThing -> do
+          triggers <- notNull <$> select (EnemyAt YourLocation)
+          when
+            triggers
+            (push $ InvestigatorAssignDamage
+              iid
+              (TokenEffectSource token)
+              DamageAny
+              0
+              1
+            )
+        _ -> pure ()
     FailedSkillTest iid _ _ (TokenTarget token) _ _ | isEasyStandard attrs -> do
       case tokenFace token of
         Cultist -> do

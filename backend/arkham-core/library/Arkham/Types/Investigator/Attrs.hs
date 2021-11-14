@@ -889,7 +889,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         slots slotType = findWithDefault [] slotType investigatorSlots
         assetIds slotType = mapMaybe slotItem $ slots slotType
       pushAll
-        [ RefillSlots investigatorId slotType (assetIds slotType)
+        [ RefillSlots
+            investigatorId
+            slotType
+            (filter (/= aid) $ assetIds slotType)
         | slotType <- slotTypes
         ]
       pure

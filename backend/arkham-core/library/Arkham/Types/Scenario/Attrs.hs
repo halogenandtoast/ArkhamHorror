@@ -344,7 +344,12 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
             toActId = ActId (toCardCode act)
           when (newActSide == B) (push (AdvanceAct toActId $ toSource a))
           push (ReplaceAct fromActId toActId)
-          pure $ filter (\c -> cdStage c /= cdStage act || c == act) ys
+          pure $ filter
+            (\c ->
+              (cdStage c /= cdStage act)
+                || (cdCardCode c `cardCodeExactEq` cdCardCode act)
+            )
+            ys
         _ -> error "Can not advance act deck"
       pure $ a & actStackL . at n ?~ actStack'
 

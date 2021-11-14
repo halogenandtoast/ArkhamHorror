@@ -63,7 +63,7 @@ instance CampaignRunner env => RunMessage env ThePathToCarcosa where
             , NextCampaignStep Nothing
             ]
           , Label
-            "I donbt trust this place one bit. Letbs block the door and get the hell out of here!"
+            "I don't trust this place one bit. Letbs block the door and get the hell out of here!"
             [ story investigatorIds lunacysReward2
             , Record YouFledTheDinnerParty
             , RemoveAllTokens Cultist

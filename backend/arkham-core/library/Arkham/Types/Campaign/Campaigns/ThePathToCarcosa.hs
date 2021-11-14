@@ -42,7 +42,7 @@ instance CampaignRunner env => RunMessage env ThePathToCarcosa where
         <> [ story investigatorIds lolaPrologue | lolaHayesChosen ]
         <> [NextCampaignStep Nothing]
         )
-    CampaignStep (Just (InterludeStep 1)) -> do
+    CampaignStep (Just (InterludeStep 1 _)) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       doubt <- getRecordCount Doubt
@@ -87,6 +87,46 @@ instance CampaignRunner env => RunMessage env ThePathToCarcosa where
             ]
           ]
         )
+    CampaignStep (Just (InterludeStep 2 mInterludeKey)) -> do
+      investigatorIds <- getInvestigatorIds
+      leadInvestigatorId <- getLeadInvestigatorId
+      conviction <- getRecordCount Conviction
+      doubt <- getRecordCount Doubt
+      let
+        respondToWarning = chooseOne
+          leadInvestigatorId
+          [ Label
+            "Possession? Oaths? There must be another explanation for all of this. Proceed to Ignore the Warning."
+            [ story investigatorIds ignoreTheWarning
+            , Record YouIgnoredDanielsWarning
+            , RecordCount Doubt (doubt + 2)
+            , NextCampaignStep Nothing
+            ]
+          , Label
+            "We must heed Daniel’s warning. We must not speak the name of the King in Yellow. Proceed to Heed the Warning."
+            ([ story investigatorIds headTheWarning
+             , Record YouHeadedDanielsWarning
+             , RecordCount Conviction (conviction + 2)
+             ]
+            <> map (`GainXP` 1) investigatorIds
+            <> [NextCampaignStep Nothing]
+            )
+          ]
+      case mInterludeKey of
+        Nothing -> error "Missing key from The Unspeakable Oath"
+        Just DanielSurvived -> do
+          pushAll
+            $ [story investigatorIds danielSurvived]
+            <> map (`GainXP` 2) investigatorIds
+            <> [respondToWarning]
+          pure c
+        Just DanielDidNotSurvive -> do
+          c <$ pushAll
+            [story investigatorIds danielDidNotSurvive, respondToWarning]
+        Just DanielWasPossessed -> do
+          c <$ pushAll
+            [story investigatorIds danielWasPossessed, respondToWarning]
+        -- Just _ -> error "Invalid key for The Unspeakable Oath"
     NextCampaignStep _ -> do
       let step = nextStep a
       push (CampaignStep step)

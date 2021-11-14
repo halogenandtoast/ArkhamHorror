@@ -79,6 +79,8 @@ data CampaignLogKey
   | TheKingClaimedItsVictims
   | TheInvestigatorsWereAttackedAsTheyEscapedTheAsylum
   | TheInvestigatorsEscapedTheAsylum
+  | YouIgnoredDanielsWarning
+  | YouHeadedDanielsWarning
   -- ^ The Path to Carcosa
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

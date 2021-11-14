@@ -40,7 +40,6 @@ import Arkham.Types.Matcher
   )
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Phase
 import Arkham.Types.Query
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
@@ -1676,7 +1675,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           )
         pure a
   ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurnL .~ True
-  Begin InvestigationPhase -> do
+  BeginRound -> do
     actionsForTurn <- getAbilitiesForTurn a
     pure
       $ a

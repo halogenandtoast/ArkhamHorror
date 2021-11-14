@@ -17,18 +17,20 @@ type ScenarioRunner env
     , Query EnemyMatcher env
     , Query ExtendedCardMatcher env
     , Query InvestigatorMatcher env
-    , HasCount DoomCount env ()
-    , HasCount HorrorCount env LocationId
     , HasModifiersFor env ()
-    , HasCount DoomCount env EnemyId
-    , HasCount EnemyCount env [Trait]
-    , HasCount PlayerCount env ()
-    , HasCount ResourceCount env InvestigatorId
-    , HasCount ClueCount env InvestigatorId
-    , HasCount ClueCount env AssetId
-    , HasCount ClueCount env ActId
-    , HasCount XPCount env ()
-    , HasCount EnemyCount env (InvestigatorLocation, [Trait])
+    , HasCampaignStoryCard env ()
+    , ( HasCount DoomCount env ()
+      , HasCount HorrorCount env LocationId
+      , HasCount DoomCount env EnemyId
+      , HasCount EnemyCount env [Trait]
+      , HasCount PlayerCount env ()
+      , HasCount ResourceCount env InvestigatorId
+      , HasCount ClueCount env InvestigatorId
+      , HasCount ClueCount env AssetId
+      , HasCount ClueCount env ActId
+      , HasCount XPCount env ()
+      , HasCount EnemyCount env (InvestigatorLocation, [Trait])
+      )
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId

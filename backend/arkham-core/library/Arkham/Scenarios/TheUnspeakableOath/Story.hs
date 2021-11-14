@@ -82,55 +82,38 @@ constancesInformation = FlavorText
     \ him about this."
   ]
 
-noResolution :: Message
-noResolution = FlavorText
-  (Just
-    "If no resolution was reached (each investigator resigned or was defeated)"
-  )
-  [ "You barely escape the building with your body and mind intact, and flee to safety. Read Resolution 4."
-  ]
-
 resolution1 :: Message
 resolution1 = FlavorText
   (Just "Resolution 1")
-  [ "There are no coincidences when it comes to The\
-    \ King in Yellow. There is no doubt in your mind that the object\
-    \ you’ve found is important. You decide to take it with you before\
-    \ continuing your investigation. The last record you find related to\
-    \ the original production of The King in Yellow is a psychiatric\
-    \ evaluation of one Daniel Chesterfield, a stagehand who lost his\
-    \ wits after the final show. It seems he was admitted to the asylum\
-    \ after the production ended. Perhaps he’s still there…"
-  ]
+  ["…And so ended the madness of The King in\
+    \ Yellow."]
 
 resolution2 :: Message
 resolution2 = FlavorText
   (Just "Resolution 2")
-  [ "This investigation would make anybody\
-    \ paranoid. Attributing some greater meaning to everything you\
-    \ find can be a dangerous proposition. You’re sure that this clasp\
-    \ is meaningless, perhaps even a prop from the original play. You\
-    \ leave it behind and continue your investigation. The last record\
-    \ you find related to the original production of The King in\
-    \ Yellow is a psychiatric evaluation of one Daniel Chesterfield, a\
-    \ stagehand who lost his wits after the final show. It seems he was\
-    \ admitted to the asylum after the production ended. Perhaps\
-    \ he’s still there..."
+  [ "You are confronted by a number\
+    \ of orderlies and security guards, who bar your escape. Feeling\
+    \ cornered and trapped, you have no choice but to fight your\
+    \ way through them. As you struggle to escape, several of the\
+    \ patients nearby see their opportunity, and attack the guards\
+    \ with a crazed fury. Nurse Heather shrieks and retreats, and\
+    \ in the ruckus you are able to escape, bruised and battered but\
+    \ free once more. It will take some time for your wounds to heal,\
+    \ but you have no time for that yet."
   ]
 
 resolution3 :: Message
 resolution3 = FlavorText
   (Just "Resolution 3")
-  [ "The figure collapses to the ground, its warped,\
-    \ melting body writhing in agony. It wheezes and cries out, a\
-    \ yellow glow emanating from inside its mouth and behind\
-    \ its eyes. “Daniel,” the thing says in its cracking voice. “Seek\
-    \ Daniel... Daniel Chesterfield, the stagehand, he remembers!”\
-    \ Deep inside the man’s words, there is another voice behind it,\
-    \ whispering faintly in a melodic language. “Find him... He too\
-    \ has spoken the oath... The oath that doomed us all...!” With\
-    \ those final words, the skin melts off the man’s bones, and he\
-    \ rattles to the floor."
+  [ "With the asylum staff distracted\
+    \ and patients running amok, you are able to slip away without\
+    \ being noticed. You escape deeper into the garden behind the\
+    \ asylum, where a two-story tall fence topped with barbed wire\
+    \ is all that separates you from the outside world. You have little\
+    \ time, and need to make it far away from the asylum before the\
+    \ guards return and spot you. Using a straitjacket you’d found\
+    \ inside to cover the barbed wire, you scale the fence quickly,\
+    \ breaking into a run as you make it to the other side."
   ]
 
 defeat :: Message

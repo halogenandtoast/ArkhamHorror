@@ -8,9 +8,11 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenarios.TheUnspeakableOath.Story
 import Arkham.Types.CampaignLogKey
+import Arkham.Types.CampaignStep
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
@@ -21,6 +23,7 @@ import Arkham.Types.Id
 import Arkham.Types.Matcher hiding (PlaceUnderneath)
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Arkham.Types.Resolution
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
@@ -97,12 +100,9 @@ investigatorDefeat
   :: ( MonadReader env m
      , HasSet DefeatedInvestigatorId env ()
      , HasSet InvestigatorId env ()
-     , HasId LeadInvestigatorId env ()
      )
-  => ScenarioAttrs
-  -> m [Message]
-investigatorDefeat a = do
-  leadInvestigatorId <- getLeadInvestigatorId
+  => m [Message]
+investigatorDefeat = do
   investigatorIds <- getInvestigatorIds
   defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
   if null defeatedInvestigatorIds
@@ -302,23 +302,75 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
       push (ScenarioResolution $ Resolution 1)
       pure . TheUnspeakableOath $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution n) -> do
-      msgs <- investigatorDefeat attrs
+      msgs <- investigatorDefeat
       leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
       gainXp <- map (uncurry GainXP) <$> getXp
+      constanceSlain <- selectOne
+        (VictoryDisplayCardMatch $ cardIs Enemies.constanceDumaine)
+
+      let
+        updateSlain =
+          [ RecordSetInsert VIPsSlain [toCardCode constance]
+          | constance <- maybeToList constanceSlain
+          ]
+        removeTokens =
+          [ RemoveAllTokens Cultist
+          , RemoveAllTokens Tablet
+          , RemoveAllTokens ElderThing
+          ]
+
       case n of
         1 -> do
           youTookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
           claspMessages <- if youTookTheOnyxClasp
             then do
-              onyxClasp <- fromJust "missing card" <$> getCampaignStoryCard Assets.claspOfBlackOnyx
-              [RemoveCampaignCardFromDeck (pcBearer onyxClasp) (toCardCode onyxClasp)
-              , chooseOne
-                leadInvestigatorId
-                [ TargetLabel
-                    (InvestigatorTarget iid)
-                    [AddCampaignCardToDeck iid Assets.claspOfBlackOnyx]
+              onyxClasp <- getCampaignStoryCard Assets.claspOfBlackOnyx ()
+              pure
+                [ RemoveCampaignCardFromDeck
+                  (fromJustNote "must have bearer" $ pcBearer onyxClasp)
+                  (toCardCode onyxClasp)
+                , chooseOne
+                  leadInvestigatorId
+                  [ TargetLabel
+                      (InvestigatorTarget iid)
+                      [AddCampaignCardToDeck iid Assets.claspOfBlackOnyx]
                   | iid <- investigatorIds
+                  ]
                 ]
             else pure []
-          pushAll $ msgs <> [Record TheKingClaimedItsVictims] <> gainXp <> claspMessages
+          pushAll
+            $ msgs
+            <> [ story investigatorIds resolution1
+               , Record TheKingClaimedItsVictims
+               ]
+            <> gainXp
+            <> claspMessages
+            <> updateSlain
+            <> removeTokens
+            <> [AddToken Cultist, AddToken Cultist]
+            <> [EndOfGame Nothing]
+        2 ->
+          pushAll
+            $ msgs
+            <> [story investigatorIds resolution2]
+            <> [Record TheInvestigatorsWereAttackedAsTheyEscapedTheAsylum]
+            <> [ SufferTrauma iid 1 0 | iid <- investigatorIds ]
+            <> gainXp
+            <> updateSlain
+            <> removeTokens
+            <> [AddToken Tablet, AddToken Tablet]
+            <> [EndOfGame (Just $ InterludeStep 2)]
+        3 ->
+          pushAll
+            $ msgs
+            <> [story investigatorIds resolution3]
+            <> [Record TheInvestigatorsEscapedTheAsylum]
+            <> gainXp
+            <> updateSlain
+            <> removeTokens
+            <> [AddToken ElderThing, AddToken ElderThing]
+            <> [EndOfGame (Just $ InterludeStep 2)]
+        _ -> error "invalid resolution"
+      pure s
     _ -> TheUnspeakableOath <$> runMessage msg attrs

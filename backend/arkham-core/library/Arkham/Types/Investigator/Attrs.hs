@@ -574,9 +574,11 @@ hasModifier InvestigatorAttrs { investigatorId } m = elem m <$> getModifiers
 
 findCard :: CardId -> InvestigatorAttrs -> Card
 findCard cardId a =
-  fromJustNote "not in hand or discard" $ findMatch $ (a ^. handL) <> map
-    PlayerCard
-    (a ^. discardL)
+  fromJustNote "not in hand or discard or deck"
+    $ findMatch
+    $ (a ^. handL)
+    <> map PlayerCard (a ^. discardL)
+    <> map PlayerCard (unDeck $ a ^. deckL)
   where findMatch = find ((== cardId) . toCardId)
 
 getAsIfInHandCards
@@ -584,19 +586,34 @@ getAsIfInHandCards
   => InvestigatorAttrs
   -> m [Card]
 getAsIfInHandCards attrs = do
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
+  modifiers <- traceShowId <$> getModifiers (toSource attrs) (toTarget attrs)
   let
-    modifiersPermitPlay c = any (modifierPermitsPlay c) modifiers
-    modifierPermitsPlay (c, depth) = \case
+    modifiersPermitPlayOfDiscard c =
+      any (modifierPermitsPlayOfDiscard c) modifiers
+    modifierPermitsPlayOfDiscard (c, depth) = \case
       CanPlayTopOfDiscard (mType, traits) | depth == 0 ->
         maybe True (== toCardType c) mType
           && (null traits || notNull
                (setFromList traits `intersection` toTraits c)
              )
       _ -> False
-  pure $ map (PlayerCard . fst) $ filter
-    modifiersPermitPlay
-    (zip (investigatorDiscard attrs) [0 :: Int ..])
+    modifiersPermitPlayOfDeck c = any (modifierPermitsPlayOfDeck c) modifiers
+    modifierPermitsPlayOfDeck (c, depth) = \case
+      CanPlayTopOfDeck cardMatcher | depth == 0 -> cardMatch c cardMatcher
+      _ -> False
+  pure
+    $ map
+        (PlayerCard . fst)
+        (filter
+          modifiersPermitPlayOfDiscard
+          (zip (investigatorDiscard attrs) [0 :: Int ..])
+        )
+    <> map
+         (PlayerCard . fst)
+         (filter
+           modifiersPermitPlayOfDeck
+           (zip (unDeck $ investigatorDeck attrs) [0 :: Int ..])
+         )
 
 runInvestigatorMessage
   :: ( InvestigatorRunner env
@@ -1537,8 +1554,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlayedCard iid card | iid == investigatorId -> do
     send $ format a <> " played " <> format card
     push =<< checkWindows [Window Timing.After (Window.PlayCard iid card)]
-    pure $ a & handL %~ filter (/= card) & discardL %~ filter
-      ((/= card) . PlayerCard)
+    pure
+      $ a
+      & (handL %~ filter (/= card))
+      & (discardL %~ filter ((/= card) . PlayerCard))
+      & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
   InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
     a <$ if fitsAvailableSlots slotTypes traits a
       then push (InvestigatorPlayedAsset iid aid slotTypes traits)
@@ -2054,7 +2074,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakenAction iid action | iid == investigatorId ->
     pure $ a & actionsTakenL %~ (<> [action])
   PutOnTopOfDeck iid card | iid == investigatorId ->
-    pure $ a & deckL %~ Deck . (card :) . unDeck
+    pure $ a & deckL %~ Deck . (card :) . unDeck & handL %~ filter
+      ((/= Just card) . preview _PlayerCard)
   AddToHand iid card | iid == investigatorId -> do
     case card of
       PlayerCard card' -> do

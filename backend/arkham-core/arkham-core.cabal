@@ -276,6 +276,7 @@ library
       Arkham.Types.Asset.Cards.LightningGun5
       Arkham.Types.Asset.Cards.LiquidCourage
       Arkham.Types.Asset.Cards.LitaChantler
+      Arkham.Types.Asset.Cards.LivreDeibon
       Arkham.Types.Asset.Cards.Lockpicks
       Arkham.Types.Asset.Cards.Lockpicks1
       Arkham.Types.Asset.Cards.LoneWolf
@@ -1141,6 +1142,7 @@ library
       Arkham.Types.Treachery.Cards.TerrorFromBeyond
       Arkham.Types.Treachery.Cards.TheCreaturesTracks
       Arkham.Types.Treachery.Cards.TheCultsSearch
+      Arkham.Types.Treachery.Cards.TheHarbinger
       Arkham.Types.Treachery.Cards.TheKingsEdict
       Arkham.Types.Treachery.Cards.ThePaleMaskBeckons
       Arkham.Types.Treachery.Cards.TheYellowSign

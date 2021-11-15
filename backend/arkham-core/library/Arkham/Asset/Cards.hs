@@ -186,6 +186,7 @@ allPlayerAssetCards = mapFromList $ map
   , lightningGun5
   , liquidCourage
   , litaChantler
+  , livreDeibon
   , lockpicks
   , lockpicks1
   , loneWolf
@@ -1681,6 +1682,15 @@ keenEye = (asset "07152" "Keen Eye" 2 Guardian)
   { cdCardTraits = setFromList [Talent]
   , cdSkills = [SkillIntellect, SkillCombat]
   }
+
+livreDeibon :: CardDef
+livreDeibon =
+  (asset "08005" ("Livre d'Eibon" <:> "Hyperborean Grimoire") 2 Neutral)
+    { cdCardTraits = setFromList [Item, Relic, Tome]
+    , cdSkills = [SkillWillpower, SkillWillpower, SkillWild]
+    , cdUnique = True
+    , cdSlots = [HandSlot]
+    }
 
 physicalTraining2 :: CardDef
 physicalTraining2 = (asset "50001" "Physical Training" 0 Guardian)

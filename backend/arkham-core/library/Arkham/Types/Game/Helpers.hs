@@ -903,6 +903,7 @@ type CanCheckPlayable env
     , HasSet ScenarioLogKey env ()
     , HasStep ActStep env ()
     , ( HasList PotentialSlot env (InvestigatorId, HashSet Trait)
+      , HasList DeckCard env InvestigatorId
       , HasList UnderneathCard env ActDeck
       , HasList UnderneathCard env AgendaDeck
       , HasList SetAsideCard env Matcher.CardMatcher
@@ -2043,6 +2044,11 @@ matchWho you who = \case
   Matcher.UnengagedInvestigator -> null <$> getSet @EnemyId who
   Matcher.NoDamageDealtThisTurn ->
     null . historyDealtDamageTo <$> getHistory TurnHistory who
+  Matcher.TopCardOfDeckIs cardMatcher -> do
+    deck <- getList who
+    pure $ case deck of
+      [] -> False
+      x : _ -> cardMatch (unDeckCard x) cardMatcher
   Matcher.TurnInvestigator -> do
     mTurn <- selectOne Matcher.TurnInvestigator
     pure $ Just who == mTurn

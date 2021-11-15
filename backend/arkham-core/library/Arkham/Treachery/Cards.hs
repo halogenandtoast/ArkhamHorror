@@ -99,6 +99,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , shellShock
   , smiteTheWicked
   , starsOfHyades
+  , theHarbinger
   , wrackedByNightmares
   ]
 
@@ -710,6 +711,11 @@ giftOfMadnessMisery =
 wallsClosingIn :: CardDef
 wallsClosingIn = (treachery "03188" "Walls Closing In" TheUnspeakableOath 3)
   { cdCardTraits = singleton Terror
+  }
+
+theHarbinger :: CardDef
+theHarbinger = (weakness "08006" "The Harbinger")
+  { cdCardTraits = setFromList [Omen, Endtimes]
   }
 
 theZealotsSeal :: CardDef

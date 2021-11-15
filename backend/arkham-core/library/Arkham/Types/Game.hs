@@ -446,6 +446,13 @@ getInvestigatorsMatching = \case
     enemyIds <- select enemyMatcher
     is <- toList . view investigatorsL <$> getGame
     filterM (fmap (any (`member` enemyIds)) . getSet) is
+  TopCardOfDeckIs cardMatcher -> do
+    is <- toList . view investigatorsL <$> getGame
+    flip filterM is $ \i -> do
+      deck <- getList i
+      pure $ case deck of
+        [] -> False
+        x : _ -> cardMatch (unDeckCard x) cardMatcher
   -- TODO: too lazy to do these right now
   NoDamageDealtThisTurn -> pure []
   UnengagedInvestigator -> pure []
@@ -2014,9 +2021,13 @@ instance HasGame env => HasList Card env CardMatcher where
   getList matcher = do
     investigatorIds <- getInvestigatorIds
     handCards <- map unHandCard . concat <$> traverse getList investigatorIds
+    deckCards <-
+      map (PlayerCard . unDeckCard)
+      . concat
+      <$> traverse getList investigatorIds
     underneathCards <-
       map unUnderneathCard . concat <$> traverse getList investigatorIds
-    let allCards' = handCards <> underneathCards
+    let allCards' = handCards <> underneathCards <> deckCards
     pure $ filter (`cardMatch` matcher) allCards'
 
 instance HasGame env => HasList Card env ExtendedCardMatcher where
@@ -2059,6 +2070,21 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
         iids <- selectList who
         cards <- map unHandCard . concat <$> traverse getList iids
         pure $ c `elem` cards
+      TopOfDeckOf who -> do
+        iids <- selectList who
+        cards <- map unDeckCard . concatMap (take 1) <$> traverse getList iids
+        pure $ c `elem` cards
+      EligibleForCurrentSkillTest -> do
+        mSkillTest <- getSkillTest
+        case mSkillTest of
+          Nothing -> pure False
+          Just st -> pure
+            (SkillWild
+            `elem` cdSkills (toCardDef c)
+            || skillTestSkillType st
+            `elem` cdSkills (toCardDef c)
+            || (null (cdSkills $ toCardDef c) && toCardType card == SkillType)
+            )
       InDiscardOf who -> do
         iids <- selectList who
         discards <- getDiscards iids

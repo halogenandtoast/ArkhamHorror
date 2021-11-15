@@ -2,25 +2,25 @@ module Arkham.Types.Investigator
   ( module Arkham.Types.Investigator
   ) where
 
-import Arkham.Prelude
+import           Arkham.Prelude
 
-import Arkham.Types.Action (Action, TakenAction)
-import Arkham.Types.Asset.Uses
-import Arkham.Types.Card
-import Arkham.Types.EntityInstance
-import Arkham.Types.Game.Helpers (getInvestigatorIds)
-import Arkham.Types.Helpers
-import Arkham.Types.Id
-import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Investigator.Cards
-import Arkham.Types.Matcher
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Prey
-import Arkham.Types.Query
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Source
+import           Arkham.Types.Action             (Action, TakenAction)
+import           Arkham.Types.Asset.Uses
+import           Arkham.Types.Card
+import           Arkham.Types.EntityInstance
+import           Arkham.Types.Game.Helpers       (getInvestigatorIds)
+import           Arkham.Types.Helpers
+import           Arkham.Types.Id
+import           Arkham.Types.Investigator.Attrs
+import           Arkham.Types.Investigator.Cards
+import           Arkham.Types.Matcher
+import           Arkham.Types.Message
+import           Arkham.Types.Modifier
+import           Arkham.Types.Prey
+import           Arkham.Types.Query
+import           Arkham.Types.SkillType
+import           Arkham.Types.Slot
+import           Arkham.Types.Source
 
 data Investigator
   = AgnesBaker' AgnesBaker
@@ -34,6 +34,7 @@ data Investigator
   | MarkHarrigan' MarkHarrigan
   | MinhThiPhan' MinhThiPhan
   | NathanielCho' NathanielCho
+  | NormanWithers' NormanWithers
   | RexMurphy' RexMurphy
   | RolandBanks' RolandBanks
   | SefinaRousseau' SefinaRousseau
@@ -151,7 +152,7 @@ instance HasList DiscardableHandCard env Investigator where
       . toAttrs
    where
     isWeakness = \case
-      PlayerCard pc -> isJust $ cdCardSubType $ toCardDef pc
+      PlayerCard pc   -> isJust $ cdCardSubType $ toCardDef pc
       EncounterCard _ -> True -- maybe?
 
 instance HasCount MentalTraumaCount env Investigator where
@@ -234,6 +235,7 @@ allInvestigators = mapFromList $ map
   , MarkHarrigan' markHarrigan
   , MinhThiPhan' minhThiPhan
   , NathanielCho' nathanielCho
+  , NormanWithers' normanWithers
   , RexMurphy' rexMurphy
   , RolandBanks' rolandBanks
   , SefinaRousseau' sefinaRousseau
@@ -260,7 +262,7 @@ lookupInvestigator iid =
 lookupPromoInvestigator :: InvestigatorId -> Investigator
 lookupPromoInvestigator "98001" = lookupInvestigator "02003" -- Jenny Barnes
 lookupPromoInvestigator "98004" = lookupInvestigator "01001" -- Roland Banks
-lookupPromoInvestigator iid = error $ "Unknown investigator: " <> show iid
+lookupPromoInvestigator iid     = error $ "Unknown investigator: " <> show iid
 
 getEngagedEnemies :: Investigator -> HashSet EnemyId
 getEngagedEnemies = investigatorEngagedEnemies . toAttrs
@@ -370,7 +372,7 @@ getSkillValueOf skillType i = do
     mBaseValue = foldr
       (\modifier current -> case modifier of
         BaseSkillOf stype n | stype == skillType -> Just n
-        _ -> current
+        _                                        -> current
       )
       Nothing
       modifiers'
@@ -379,9 +381,9 @@ getSkillValueOf skillType i = do
 skillValueOf :: SkillType -> Investigator -> Int
 skillValueOf SkillWillpower = investigatorWillpower . toAttrs
 skillValueOf SkillIntellect = investigatorIntellect . toAttrs
-skillValueOf SkillCombat = investigatorCombat . toAttrs
-skillValueOf SkillAgility = investigatorAgility . toAttrs
-skillValueOf SkillWild = error "should not look this up"
+skillValueOf SkillCombat    = investigatorCombat . toAttrs
+skillValueOf SkillAgility   = investigatorAgility . toAttrs
+skillValueOf SkillWild      = error "should not look this up"
 
 handOf :: Investigator -> [Card]
 handOf = investigatorHand . toAttrs
@@ -477,11 +479,11 @@ getPotentialSlots traits investigator = do
             let
               passesRestriction = case slot of
                            TraitRestrictedSlot _ t _ -> t `member` traits
-                           Slot{} -> True
+                           Slot{}                    -> True
 
              in if passesRestriction
                   then case slotItem slot of
-                    Nothing -> pure True
+                    Nothing  -> pure True
                     Just aid -> member aid <$> select DiscardableAsset
                   else pure False
           )

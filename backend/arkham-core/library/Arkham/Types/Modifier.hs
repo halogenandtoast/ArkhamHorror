@@ -65,6 +65,7 @@ data ModifierType
   | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
   | CanOnlyUseCardsInRole ClassSymbol
   | CanPlayTopOfDiscard (Maybe CardType, [Trait])
+  | CanPlayTopOfDeck CardMatcher
   | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
   | CancelSkills
   | CannotAttack
@@ -84,6 +85,7 @@ data ModifierType
   | CannotHealHorror
   | CannotInvestigate
   | CannotMakeAttacksOfOpportunity
+  | CannotManipulateDeck
   | ActionDoesNotCauseAttacksOfOpportunity Action
   | CannotFight EnemyMatcher
   | CannotMove
@@ -142,6 +144,7 @@ data ModifierType
   | StartingResources Int
   | TokenFaceModifier [TokenFace]
   | TokenValueModifier Int
+  | TopCardOfDeckIsRevealed
   | TreatAllDamageAsDirect
   | UseSkillInPlaceOf SkillType SkillType
   | XPModifier Int

@@ -86,6 +86,7 @@ data InvestigatorMatcher
   | AnyInvestigator [InvestigatorMatcher]
   | TurnInvestigator
   | NoDamageDealtThisTurn
+  | TopCardOfDeckIs CardMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -400,6 +401,8 @@ data ExtendedCardMatcher
   | CardIsBeneathInvestigator Who
   | InHandOf Who
   | InDiscardOf Who
+  | InDeckOf Who
+  | EligbleForCurrentSkillTest
   | SetAsideCardMatch CardMatcher
   | UnderScenarioReferenceMatch CardMatcher
   | VictoryDisplayCardMatch CardMatcher
@@ -439,6 +442,7 @@ data CardMatcher
   | IsEncounterCard
   | CardIsUnique
   | NonWeakness
+  | WeaknessCard
   | NonExceptional
   | AnyCard
   deriving stock (Show, Eq, Generic)
@@ -548,6 +552,7 @@ data SkillTestMatcher
   | AnySkillTest
   | SkillTestWasFailed
   | YourSkillTest SkillTestMatcher
+  | SkillTest SkillTestMatcher
   | SkillTestAtYourLocation
   | SkillTestOnTreachery TreacheryMatcher
   | UsingThis

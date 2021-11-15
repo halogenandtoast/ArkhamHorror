@@ -308,6 +308,14 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
       gainXp <- map (uncurry GainXP) <$> getXp
       constanceSlain <- selectOne
         (VictoryDisplayCardMatch $ cardIs Enemies.constanceDumaine)
+      danielWasAlly <- selectAny (assetIs Assets.danielChesterfield)
+      danielWasEnemy <- selectAny (enemyIs Enemies.danielChesterfield)
+
+      let
+        interludeResult
+          | danielWasAlly = DanielSurvived
+          | danielWasEnemy = DanielWasPossessed
+          | otherwise = DanielDidNotSurvive
 
       let
         updateSlain =
@@ -360,7 +368,7 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
             <> updateSlain
             <> removeTokens
             <> [AddToken Tablet, AddToken Tablet]
-            <> [EndOfGame (Just $ InterludeStep 2 Nothing)]
+            <> [EndOfGame (Just $ InterludeStep 2 (Just interludeResult))]
         3 ->
           pushAll
             $ msgs
@@ -370,7 +378,7 @@ instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
             <> updateSlain
             <> removeTokens
             <> [AddToken ElderThing, AddToken ElderThing]
-            <> [EndOfGame (Just $ InterludeStep 2 Nothing)]
+            <> [EndOfGame (Just $ InterludeStep 2 (Just interludeResult))]
         _ -> error "invalid resolution"
       pure s
     _ -> TheUnspeakableOath <$> runMessage msg attrs

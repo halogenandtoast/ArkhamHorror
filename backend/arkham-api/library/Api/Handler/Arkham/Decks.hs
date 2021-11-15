@@ -9,14 +9,16 @@ import Import hiding (delete, on, (==.))
 
 import Api.Arkham.Helpers
 import Arkham.Game
+import Arkham.PlayerCard
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Game
 import Arkham.Types.Helpers
 import Arkham.Types.Id
 import Arkham.Types.Message
 import Control.Monad.Random (mkStdGen)
+import Control.Monad.Validate (dispute, runValidate)
 import Data.Coerce
-import Database.Esqueleto.Experimental
+import Database.Esqueleto.Experimental hiding (isNothing)
 import Json
 import Network.HTTP.Conduit (simpleHttp)
 import Safe (fromJustNote)
@@ -45,12 +47,33 @@ newtype UpgradeDeckPost = UpgradeDeckPost
 instance FromJSON UpgradeDeckPost where
   parseJSON = genericParseJSON $ aesonOptions $ Just "udp"
 
+newtype DeckError = UnimplementedCard CardCode
+  deriving stock (Show, Eq, Generic)
+
+instance ToJSON DeckError where
+  toJSON = genericToJSON $ defaultOptions { tagSingleConstructors = True }
+
+validateDeck :: ArkhamDeck -> Either [DeckError] ArkhamDeck
+validateDeck deck = runValidate $ do
+  for_ cardCodes $ \cardCode -> when
+    (isNothing $ lookup cardCode allPlayerCards)
+    (dispute [UnimplementedCard cardCode])
+  pure deck
+ where
+  decklist = arkhamDeckList deck
+  cardCodes = keys $ slots decklist
+
 postApiV1ArkhamDecksR :: Handler (Entity ArkhamDeck)
 postApiV1ArkhamDecksR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   postData <- requireCheckJsonBody
   edeck <- fromPostData userId postData
-  runDB $ either error insertEntity edeck
+  case edeck of
+    Left err -> error err
+    Right deck -> do
+      case validateDeck deck of
+        Left err -> sendStatusJSON status400 err
+        Right deck' -> runDB $ insertEntity deck'
 
 putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameDecksR gameId = do

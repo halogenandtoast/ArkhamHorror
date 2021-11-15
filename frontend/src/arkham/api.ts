@@ -61,7 +61,7 @@ export const newDeck = (
     deckName,
     deckUrl,
   })
-  .then((resp) => deckDecoder.decodePromise(resp.data));
+  .then((resp) => deckDecoder.decodePromise(resp.data))
 
 export const deleteDeck = (deckId: string): Promise<void> => api
   .delete(`arkham/decks/${deckId}`);

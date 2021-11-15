@@ -3,17 +3,30 @@
     <div>
       <h2>New Deck</h2>
       <div class="new-deck">
-        <img v-if="investigator" class="portrait" :src="`${baseUrl}/img/arkham/portraits/${investigator.replace('c', '')}.jpg`" />
-        <div class="fields">
-          <input
-            type="url"
-            v-model="deck"
-            @change="loadDeck"
-            @paste.prevent="pasteDeck($event)"
-            placeholder="ArkhamDB deck url"
-          />
-          <input v-if="investigator" v-model="deckName" />
-          <button :disabled="!investigator" @click.prevent="createDeck">Create</button>
+        <div class="form-body">
+          <img v-if="investigator" class="portrait" :src="`${baseUrl}/img/arkham/portraits/${investigator.replace('c', '')}.jpg`" />
+          <div class="fields">
+            <input
+              type="url"
+              v-model="deck"
+              @change="loadDeck"
+              @paste.prevent="pasteDeck($event)"
+              placeholder="ArkhamDB deck url"
+            />
+            <input v-if="investigator" v-model="deckName" />
+            <button :disabled="!investigator" @click.prevent="createDeck">Create</button>
+          </div>
+        </div>
+        <div class="errors" v-if="investigatorError">
+          {{investigatorError}}
+        </div>
+        <div class="errors" v-if="errors.length > 0">
+          <p>Could not create deck, the following cards are unimplemented:</p>
+          <ul>
+            <li class="error" v-for="(error, idx) in errors" :key="idx">
+              {{error}}
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -35,19 +48,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import * as Arkham from '@/arkham/types/Deck';
-import Prompt from '@/components/Prompt.vue';
-import { fetchDecks, newDeck, deleteDeck } from '@/arkham/api';
+import { defineComponent, ref } from 'vue'
+import * as Arkham from '@/arkham/types/Deck'
+import Prompt from '@/components/Prompt.vue'
+import { fetchInvestigators, fetchDecks, newDeck, deleteDeck } from '@/arkham/api'
+import * as Investigator from '@/arkham/types/Investigator';
+
+interface UnimplementedCardError {
+  tag: string
+  contents: string
+}
+
+interface ArkhamDBCard {
+  name: string
+  code: string
+  xp?: string
+}
 
 export default defineComponent({
   components: { Prompt },
   setup() {
     const ready = ref(false)
     const decks = ref<Arkham.Deck[]>([])
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : ''
+    const errors = ref([])
+    const investigatorError = ref<string | null>(null)
 
     const deck = ref<string | null>(null)
+    const investigators = ref<Investigator.Investigator[]>([])
     const investigator = ref<string | null>(null)
     const deckId = ref<string | null>(null)
     const deckName = ref<string | null>(null)
@@ -58,68 +86,90 @@ export default defineComponent({
       const { value } = deleteId
       if (value) {
         deleteDeck(value).then(() => {
-          decks.value = decks.value.filter((deck) => deck.id !== value);
-          deleteId.value = null;
-        });
+          decks.value = decks.value.filter((deck) => deck.id !== value)
+          deleteId.value = null
+        })
       }
     }
 
-    fetchDecks().then((response) => {
+    fetchDecks().then(async (response) => {
       decks.value = response
+      await fetchInvestigators().then((response) => investigators.value = response)
       ready.value = true
     })
 
     function loadDeck() {
       if (!deck.value) {
-        return;
+        return
       }
 
-      const matches = deck.value.match(/\/(deck(list)?)(\/view)?\/([^/]+)/);
+      const matches = deck.value.match(/\/(deck(list)?)(\/view)?\/([^/]+)/)
       if (matches) {
         deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
         fetch(deckUrl.value)
           .then((response) => response.json(), () => {
-            investigator.value = null;
+            investigator.value = null
             deckId.value = null
             deckName.value = null
-            deckUrl.value = null;
+            deckUrl.value = null
           })
           .then((data) => {
-            if(data.meta && data.meta.alternate_front) {
-              investigator.value = data.meta.alternate_front
+            investigator.value = null
+            investigatorError.value = null
+            if (investigators.value.map(i => i.contents.id.replace(/^c/, '')).includes(data.investigator_code)) {
+              if(data.meta && data.meta.alternate_front) {
+                investigator.value = data.meta.alternate_front
+              } else {
+                investigator.value = data.investigator_code
+              }
             } else {
-              investigator.value = data.investigator_code
+              investigatorError.value = `${data.investigator_name} is not yet implemented, please use a different deck`
             }
             deckId.value = matches[4]
             deckName.value = data.name
           })
       } else {
-        investigator.value = null;
+        investigator.value = null
         deckId.value = null
         deckName.value = null
-        deckUrl.value = null;
+        deckUrl.value = null
       }
     }
 
     function pasteDeck(evt: ClipboardEvent) {
       if (evt.clipboardData) {
-        deck.value = evt.clipboardData.getData('text');
-        loadDeck();
+        deck.value = evt.clipboardData.getData('text')
+        loadDeck()
       }
     }
 
     async function createDeck() {
+      errors.value = []
       if (deckId.value && deckName.value && deckUrl.value) {
-        newDeck(deckId.value, deckName.value, deckUrl.value).then((deck) => decks.value.push(deck));
-        deckId.value = null;
-        deckName.value = null;
-        deckUrl.value = null;
-        investigator.value = null;
-        deck.value = null;
+        newDeck(deckId.value, deckName.value, deckUrl.value).then((newDeck) => {
+          decks.value.push(newDeck)
+          deckId.value = null
+          deckName.value = null
+          deckUrl.value = null
+          investigator.value = null
+          deck.value = null
+        }).catch((error) => {
+          fetch("https://arkhamdb.com/api/public/cards/")
+            .then((response) => response.json()).then((data) => {
+              errors.value = error.response.data.map((error: UnimplementedCardError) => {
+                let match = data.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))
+                if (match) {
+                  let { name, xp } = match
+                  return xp ? `${name} (${xp})` : name
+                }
+                return "Unknown card"
+              })
+            })
+        })
       }
     }
 
-    return { baseUrl, pasteDeck, createDeck, deleteDeckEvent, deleteId, deck, decks, loadDeck, investigator, deckName }
+    return { baseUrl, pasteDeck, createDeck, deleteDeckEvent, deleteId, deck, decks, loadDeck, investigator, deckName, errors, investigators, investigatorError }
   }
 })
 </script>
@@ -145,6 +195,13 @@ export default defineComponent({
     flex-direction: column;
     flex-flow: wrap;
   }
+  .errors {
+    background-color: #660000;
+    width: 100%;
+    margin-top: 10px;
+    padding: 15px;
+    box-sizing: border-box;
+  }
   button {
     outline: 0;
     padding: 15px;
@@ -165,6 +222,7 @@ export default defineComponent({
     }
   }
   display: flex;
+  flex-direction: column;
   color: #FFF;
   background-color: #15192C;
   margin: 10px;
@@ -174,6 +232,10 @@ export default defineComponent({
     color: #365488;
     font-weight: bolder;
   }
+}
+
+.form-body {
+  display: flex;
 }
 
 .deck {

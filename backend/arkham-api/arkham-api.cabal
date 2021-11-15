@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a1747c10caaad57a6df8486465586bad704260c4238bcb988b360266ad85617d
+-- hash: 672e7a9097aad8731192a02ea4ef9bd9ac327de0fd6f662cc781108f6fb0fda5
 
 name:           arkham-api
 version:        0.0.0
@@ -110,6 +110,7 @@ library
     , jwt
     , lens
     , monad-logger
+    , monad-validate
     , path-pieces
     , persistent
     , persistent-postgresql

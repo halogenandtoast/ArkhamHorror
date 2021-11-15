@@ -7,11 +7,26 @@ import {
   cardDecoder,
 } from '@/arkham/types/Card';
 
+export interface ModifierType {
+  tag: string
+}
+
+export const modifierTypeDecoder = JsonDecoder.object<ModifierType>(
+  { tag: JsonDecoder.string}, 'ModifierType')
+
+export interface Modifier {
+  type: ModifierType
+}
+
+export const modifierDecoder = JsonDecoder.object<Modifier>(
+  { type: modifierTypeDecoder}, 'Modifier')
+
 export interface Investigator {
   tag: string;
   contents: InvestigatorContents;
   deckSize?: number;
   connectedLocations: string[];
+  modifiers: Modifier[];
 }
 
 type ClassSymbol = 'Guardian' | 'Seeker' | 'Rogue' | 'Mystic' | 'Survivor' | 'Neutral';
@@ -46,6 +61,7 @@ export interface InvestigatorContents {
   assets: string[];
   discard: PlayerCardContents[];
   hand: Card[];
+  deck: PlayerCardContents[];
   treacheries: string[];
   inHandTreacheries: string[];
   defeated: boolean;
@@ -78,6 +94,7 @@ export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorConten
   // deck: Deck PlayerCard,
   discard: JsonDecoder.array<PlayerCardContents>(playerCardContentsDecoder, 'PlayerCardContents[]'),
   hand: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+  deck: JsonDecoder.array<PlayerCardContents>(playerCardContentsDecoder, 'PlayerCardContents[]'),
   // traits: HashSet Trait,
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
   inHandTreacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
@@ -94,4 +111,5 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   contents: investigatorContentsDecoder,
   deckSize: JsonDecoder.optional(JsonDecoder.number),
   connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
+  modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
 }, 'Investigator');

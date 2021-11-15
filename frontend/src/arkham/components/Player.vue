@@ -52,13 +52,14 @@
       <div class="deck-container">
         <div class="top-of-deck">
           <img
-            :class="{ 'deck--can-draw': drawCardsAction !== -1 }"
+            :class="{ 'deck--can-draw': drawCardsAction !== -1, 'card': topOfDeckRevealed }"
             class="deck"
-            :src="`${baseUrl}/img/arkham/player_back.jpg`"
+            :src="topOfDeck"
             width="150px"
             @click="$emit('choose', drawCardsAction)"
           />
           <span class="deck-size">{{player.deckSize}}</span>
+          <button v-if="playTopOfDeckAction !== -1" @click="$emit('choose', playTopOfDeckAction)">Play</button>
         </div>
         <template v-if="debug">
           <button @click="debugChoose({tag: 'Search', contents: [investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'AnyCard', contents: []}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">Select Draw</button>
@@ -141,6 +142,24 @@ export default defineComponent({
 
     const topOfDiscard = computed(() => discards.value[0])
 
+    const topOfDeckRevealed = computed(() => props.player.modifiers.some((m) => m.type.tag === "TopCardOfDeckIsRevealed"))
+
+    const topOfDeck = computed(() => {
+      if  (topOfDeckRevealed.value) {
+        return `${baseUrl}/img/arkham/cards/${props.player.contents.deck[0].cardCode.replace(/^c/, '')}.jpg`
+      }
+      return `${baseUrl}/img/arkham/player_back.jpg`
+    })
+
+    const playTopOfDeckAction = computed(() =>
+      choices.value.findIndex((c) => {
+        if (c.tag === MessageType.PLAY_CARD) {
+          console.log(c.contents[1])
+          console.log(props.player.contents.deck[0].id)
+        }
+        return c.tag === MessageType.PLAY_CARD && c.contents[1] === props.player.contents.deck[0].id
+      })
+    )
 
     const viewingDiscard = ref(false)
     const viewDiscardLabel = computed(() => viewingDiscard.value ? "Close" : `${discards.value.length} Cards`)
@@ -173,7 +192,7 @@ export default defineComponent({
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    return { id, cardRowTitle, debug, debugChoose, doShowCards, showCards, baseUrl, discards, topOfDiscard, drawCardsAction, hideCards, showDiscards, viewingDiscard, viewDiscardLabel }
+    return { id, cardRowTitle, debug, debugChoose, doShowCards, showCards, baseUrl, discards, topOfDiscard, topOfDeck, topOfDeckRevealed, playTopOfDeckAction, drawCardsAction, hideCards, showDiscards, viewingDiscard, viewDiscardLabel }
   }
 })
 </script>
@@ -274,6 +293,8 @@ export default defineComponent({
 
 .top-of-deck {
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .deck-size {
@@ -283,6 +304,9 @@ export default defineComponent({
   color: rgba(255, 255, 255, 0.6);
   left: 50%;
   top: 43%;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px;
+  border-radius: 20px;
   transform: translateX(-50%) translateY(-50%);
 }
 </style>

@@ -552,7 +552,6 @@ data SkillTestMatcher
   | AnySkillTest
   | SkillTestWasFailed
   | YourSkillTest SkillTestMatcher
-  | SkillTest SkillTestMatcher
   | SkillTestAtYourLocation
   | SkillTestOnTreachery TreacheryMatcher
   | UsingThis

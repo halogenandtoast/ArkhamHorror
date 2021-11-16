@@ -2034,6 +2034,10 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
   getList matcher = do
     investigatorIds <- getInvestigatorIds
     handCards <- map unHandCard . concat <$> traverse getList investigatorIds
+    deckCards <-
+      map (PlayerCard . unDeckCard)
+      . concat
+      <$> traverse getList investigatorIds
     discards <- getDiscards investigatorIds
     setAsideCards <- map unSetAsideCard <$> getList ()
     victoryDisplayCards <- map unVictoryDisplayCard <$> getSetList ()
@@ -2044,6 +2048,7 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
     filterM
       (`matches` matcher)
       (handCards
+      <> deckCards
       <> underneathCards
       <> underScenarioReferenceCards
       <> discards
@@ -2072,7 +2077,10 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
         pure $ c `elem` cards
       TopOfDeckOf who -> do
         iids <- selectList who
-        cards <- map unDeckCard . concatMap (take 1) <$> traverse getList iids
+        cards <-
+          map (PlayerCard . unDeckCard)
+          . concatMap (take 1)
+          <$> traverse getList iids
         pure $ c `elem` cards
       EligibleForCurrentSkillTest -> do
         mSkillTest <- getSkillTest
@@ -2083,7 +2091,7 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
             `elem` cdSkills (toCardDef c)
             || skillTestSkillType st
             `elem` cdSkills (toCardDef c)
-            || (null (cdSkills $ toCardDef c) && toCardType card == SkillType)
+            || (null (cdSkills $ toCardDef c) && toCardType c == SkillType)
             )
       InDiscardOf who -> do
         iids <- selectList who
@@ -3042,8 +3050,9 @@ runGameMessage msg g = case msg of
   CommitCard iid cardId -> do
     investigator <- getInvestigator iid
     let
-      card = fromJustNote "could not find card in hand"
-        $ find ((== cardId) . toCardId) (handOf investigator)
+      card = fromJustNote "could not find card in hand" $ find
+        ((== cardId) . toCardId)
+        (handOf investigator <> map PlayerCard (deckOf investigator))
     push $ InvestigatorCommittedCard iid card
     case card of
       PlayerCard pc -> case toCardType pc of

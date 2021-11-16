@@ -586,7 +586,7 @@ getAsIfInHandCards
   => InvestigatorAttrs
   -> m [Card]
 getAsIfInHandCards attrs = do
-  modifiers <- traceShowId <$> getModifiers (toSource attrs) (toTarget attrs)
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   let
     modifiersPermitPlayOfDiscard c =
       any (modifierPermitsPlayOfDiscard c) modifiers
@@ -1823,7 +1823,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorCommittedCard iid card | iid == investigatorId -> do
     commitedCardWindows <- Helpers.windows [Window.CommittedCard iid card]
     pushAll $ FocusCards [card] : commitedCardWindows <> [UnfocusCards]
-    pure $ a & handL %~ filter (/= card)
+    pure
+      $ a
+      & handL
+      %~ filter (/= card)
+      & deckL
+      %~ Deck
+      . filter ((/= card) . PlayerCard)
+      . unDeck
   PlaceUnderneath target cards | isTarget a target -> do
     let
       update = appEndo $ foldMap

@@ -2390,6 +2390,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  `notElem` modifiers
                  && CannotDrawCards
                  `notElem` modifiers
+                 && CannotManipulateDeck
+                 `notElem` modifiers
                ]
             <> [ InitiatePlayCard iid (toCardId c) Nothing usesAction
                | c <- playableCards

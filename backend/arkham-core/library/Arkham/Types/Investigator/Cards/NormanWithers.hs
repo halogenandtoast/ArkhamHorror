@@ -56,7 +56,10 @@ instance HasAbilities NormanWithers where
     [ restrictedAbility
           a
           1
-          (Self <> InvestigatorExists (TopCardOfDeckIs WeaknessCard))
+          (Self
+          <> InvestigatorExists (TopCardOfDeckIs WeaknessCard)
+          <> CanManipulateDeck
+          )
         $ ForcedAbility AnyWindow
     ]
 

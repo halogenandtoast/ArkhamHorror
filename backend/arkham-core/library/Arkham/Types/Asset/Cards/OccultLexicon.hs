@@ -7,6 +7,8 @@ import Arkham.Event.Cards qualified as Events
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Modifier
+import Arkham.Types.Target
 
 newtype OccultLexicon = OccultLexicon AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
@@ -20,8 +22,12 @@ instance AssetRunner env => RunMessage env OccultLexicon where
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       handBloodRite <- PlayerCard <$> genPlayerCard Events.bloodRite
       deckBloodRites <- replicateM 2 (genPlayerCard Events.bloodRite)
+      modifiers <- getModifiers (toSource attrs) (InvestigatorTarget iid)
       pushAll
-        [AddToHand iid handBloodRite, ShuffleCardsIntoDeck iid deckBloodRites]
+        $ AddToHand iid handBloodRite
+        : [ ShuffleCardsIntoDeck iid deckBloodRites
+          | CannotManipulateDeck `notElem` modifiers
+          ]
       OccultLexicon <$> runMessage msg attrs
     RemovedFromPlay source | isSource attrs source -> do
       for_ (assetInvestigator attrs)

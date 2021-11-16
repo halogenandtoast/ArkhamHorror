@@ -2,25 +2,25 @@ module Arkham.Types.Investigator
   ( module Arkham.Types.Investigator
   ) where
 
-import           Arkham.Prelude
+import Arkham.Prelude
 
-import           Arkham.Types.Action             (Action, TakenAction)
-import           Arkham.Types.Asset.Uses
-import           Arkham.Types.Card
-import           Arkham.Types.EntityInstance
-import           Arkham.Types.Game.Helpers       (getInvestigatorIds)
-import           Arkham.Types.Helpers
-import           Arkham.Types.Id
-import           Arkham.Types.Investigator.Attrs
-import           Arkham.Types.Investigator.Cards
-import           Arkham.Types.Matcher
-import           Arkham.Types.Message
-import           Arkham.Types.Modifier
-import           Arkham.Types.Prey
-import           Arkham.Types.Query
-import           Arkham.Types.SkillType
-import           Arkham.Types.Slot
-import           Arkham.Types.Source
+import Arkham.Types.Action (Action, TakenAction)
+import Arkham.Types.Asset.Uses
+import Arkham.Types.Card
+import Arkham.Types.EntityInstance
+import Arkham.Types.Game.Helpers (getInvestigatorIds)
+import Arkham.Types.Helpers
+import Arkham.Types.Id
+import Arkham.Types.Investigator.Attrs
+import Arkham.Types.Investigator.Cards
+import Arkham.Types.Matcher
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Prey
+import Arkham.Types.Query
+import Arkham.Types.SkillType
+import Arkham.Types.Slot
+import Arkham.Types.Source
 
 data Investigator
   = AgnesBaker' AgnesBaker
@@ -123,8 +123,10 @@ instance HasCard Investigator () where
     asks
       $ fromJustNote "player does not have this card"
       . find ((== cardId) . toCardId)
-      . investigatorHand
+      . allCards
       . toAttrs
+   where
+     allCards a = investigatorHand a <> map PlayerCard (unDeck $ investigatorDeck a)
 
 instance HasDamage Investigator where
   getDamage i = (investigatorHealthDamage, investigatorSanityDamage)

@@ -29,8 +29,7 @@ instance HasAbilities LivreDeibon where
         2
         (OwnsThis
         <> DuringSkillTest SkillTestAtYourLocation
-        <> ExtendedCardMatches
-             (TopOfDeckOf You <> EligibleForCurrentSkillTest)
+        <> ExtendedCardExists (TopOfDeckOf You <> EligibleForCurrentSkillTest)
         )
       $ FastAbility
       $ ExhaustCost
@@ -49,5 +48,10 @@ instance AssetRunner env => RunMessage env LivreDeibon where
           | c <- mapMaybe (preview _PlayerCard) handCards
           ]
         )
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> pure a
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+      deckCards <- map unDeckCard <$> getList iid
+      case deckCards of
+        [] -> error "Missing deck card"
+        x : _ -> push (SkillTestCommitCard iid (toCardId x))
+      pure a
     _ -> LivreDeibon <$> runMessage msg attrs

@@ -401,8 +401,8 @@ data ExtendedCardMatcher
   | CardIsBeneathInvestigator Who
   | InHandOf Who
   | InDiscardOf Who
-  | InDeckOf Who
-  | EligbleForCurrentSkillTest
+  | TopOfDeckOf Who
+  | EligibleForCurrentSkillTest
   | SetAsideCardMatch CardMatcher
   | UnderScenarioReferenceMatch CardMatcher
   | VictoryDisplayCardMatch CardMatcher

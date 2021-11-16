@@ -87,7 +87,7 @@ instance InvestigatorRunner env => RunMessage env NormanWithers where
     BeginRound -> NormanWithers . (`with` Metadata False) <$> runMessage msg a
     PlayCard iid cardId _ False | iid == toId a ->
       case unDeck (investigatorDeck a) of
-        c : _ | traceShowId (toCardId c == cardId) ->
+        c : _ | toCardId c == cardId ->
           NormanWithers . (`with` Metadata True) <$> runMessage msg a
         _ -> NormanWithers . (`with` metadata) <$> runMessage msg a
     _ -> NormanWithers . (`with` metadata) <$> runMessage msg a

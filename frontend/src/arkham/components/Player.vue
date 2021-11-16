@@ -142,7 +142,7 @@ export default defineComponent({
 
     const topOfDiscard = computed(() => discards.value[0])
 
-    const topOfDeckRevealed = computed(() => props.player.modifiers.some((m) => m.type.tag === "TopCardOfDeckIsRevealed"))
+    const topOfDeckRevealed = computed(() => props.player.modifiers?.some((m) => m.type.tag === "TopCardOfDeckIsRevealed") || false)
 
     const topOfDeck = computed(() => {
       if  (topOfDeckRevealed.value) {

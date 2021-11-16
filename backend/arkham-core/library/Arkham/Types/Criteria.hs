@@ -36,7 +36,21 @@ pattern CanTakeControlOfClues <-
 
 pattern CanDrawCards :: Criterion
 pattern CanDrawCards <- Negate (SelfHasModifier CannotDrawCards) where
-  CanDrawCards = Negate (SelfHasModifier CannotDrawCards)
+  CanDrawCards =
+    Criteria [Negate (SelfHasModifier CannotDrawCards), CanManipulateDeck]
+
+pattern CanSearchDeck :: Criterion
+pattern CanSearchDeck <- CanManipulateDeck where
+  CanSearchDeck = CanManipulateDeck
+
+pattern CanShuffleDeck :: Criterion
+pattern CanShuffleDeck <- CanManipulateDeck where
+  CanShuffleDeck = CanManipulateDeck
+
+pattern CanManipulateDeck :: Criterion
+pattern CanManipulateDeck <-
+  Negate (SelfHasModifier CannotManipulateDeck) where
+  CanManipulateDeck = Negate (SelfHasModifier CannotManipulateDeck)
 
 data Criterion
   = AssetExists AssetMatcher

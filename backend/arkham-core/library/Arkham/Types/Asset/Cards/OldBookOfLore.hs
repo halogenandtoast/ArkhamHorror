@@ -11,6 +11,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
 import Arkham.Types.Matcher
+import Arkham.Types.Modifier
 import Arkham.Types.Target
 
 newtype OldBookOfLore = OldBookOfLore AssetAttrs
@@ -22,8 +23,16 @@ oldBookOfLore = asset OldBookOfLore Cards.oldBookOfLore
 
 instance HasAbilities OldBookOfLore where
   getAbilities (OldBookOfLore a) =
-    [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
-        [ActionCost 1, ExhaustCost $ toTarget a]
+    [ restrictedAbility
+          a
+          1
+          (OwnsThis <> InvestigatorExists
+            (InvestigatorAt YourLocation
+            <> InvestigatorWithoutModifier CannotManipulateDeck
+            )
+          )
+        $ ActionAbility Nothing
+        $ Costs [ActionCost 1, ExhaustCost $ toTarget a]
     ]
 
 instance AssetRunner env => RunMessage env OldBookOfLore where

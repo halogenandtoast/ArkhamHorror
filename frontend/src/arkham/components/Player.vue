@@ -142,11 +142,12 @@ export default defineComponent({
 
     const topOfDiscard = computed(() => discards.value[0])
 
-    const topOfDeckRevealed = computed(() => props.player.modifiers?.some((m) => m.type.tag === "TopCardOfDeckIsRevealed") || false)
+    const topOfDeckRevealed = computed(() => props.player.modifiers?.some((m) => m.type.tag === "TopCardOfDeckIsRevealed"))
 
     const topOfDeck = computed(() => {
-      if  (topOfDeckRevealed.value) {
-        return `${baseUrl}/img/arkham/cards/${props.player.contents.deck[0].cardCode.replace(/^c/, '')}.jpg`
+      const topCard = props.player.contents.deck[0]
+      if  (topOfDeckRevealed.value && topCard) {
+        return `${baseUrl}/img/arkham/cards/${topCard.cardCode.replace(/^c/, '')}.jpg`
       }
       return `${baseUrl}/img/arkham/player_back.jpg`
     })

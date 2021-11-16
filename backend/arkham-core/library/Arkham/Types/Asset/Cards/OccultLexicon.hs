@@ -22,12 +22,10 @@ instance AssetRunner env => RunMessage env OccultLexicon where
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       handBloodRite <- PlayerCard <$> genPlayerCard Events.bloodRite
       deckBloodRites <- replicateM 2 (genPlayerCard Events.bloodRite)
-      modifiers <- getModifiers (toSource attrs) (InvestigatorTarget iid)
+      canShuffleDeck <- getCanShuffleDeck iid
       pushAll
         $ AddToHand iid handBloodRite
-        : [ ShuffleCardsIntoDeck iid deckBloodRites
-          | CannotManipulateDeck `notElem` modifiers
-          ]
+        : [ ShuffleCardsIntoDeck iid deckBloodRites | canShuffleDeck ]
       OccultLexicon <$> runMessage msg attrs
     RemovedFromPlay source | isSource attrs source -> do
       for_ (assetInvestigator attrs)

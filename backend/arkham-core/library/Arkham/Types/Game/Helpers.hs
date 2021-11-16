@@ -2512,3 +2512,9 @@ sourceCanDamageEnemy eid source = do
       (Matcher.SourceMatchesAny [Matcher.EncounterCardSource, matcher])
     CannotBeDamaged -> pure True
     _ -> pure False
+
+getCanShuffleDeck
+  :: (HasModifiersFor env (), MonadReader env m) => InvestigatorId -> m Bool
+getCanShuffleDeck iid = do
+  modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
+  pure $ CannotManipulateDeck `notElem` modifiers

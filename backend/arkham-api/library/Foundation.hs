@@ -30,7 +30,6 @@ import Orphans ()
 -- access to the data present here.
 data App = App
   { appSettings :: AppSettings
-  , appStatic :: Static -- ^ Settings for static file serving.
   , appConnPool :: ConnectionPool -- ^ Database connection pool.
   , appHttpManager :: Manager
   , appLogger :: Logger
@@ -94,7 +93,6 @@ instance Yesod App where
     -> Handler AuthResult
   -- Routes not requiring authentication.
   isAuthorized HealthR _ = pure Authorized
-  isAuthorized (StaticR _) _ = pure Authorized
   isAuthorized (ApiP _) _ = pure Authorized
 
   -- What messages should be logged. The following includes all messages when
@@ -138,7 +136,6 @@ unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
 -- links:
 --
 -- https://github.com/yesodweb/yesod/wiki/Sending-email
--- https://github.com/yesodweb/yesod/wiki/Serve-static-files-from-a-separate-domain
 -- https://github.com/yesodweb/yesod/wiki/i18n-messages-in-the-scaffolding
 
 userIdToToken :: UserId -> HandlerFor App Text

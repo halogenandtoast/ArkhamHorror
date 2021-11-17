@@ -46,6 +46,16 @@ please file a bug.
 
 ### Local Setup
 
+#### Running via Docker
+
+The image is setup to use an external database passed via the `DATABASE_URL` environment variable. Follow the steps below to setup the database and then run the following commands
+
+```
+docker build -t arkham .
+docker run -t -i -e PORT=3000 -e DATABASE_URL="postgres://docker:docker@host.docker.internal:5432/arkham-horror-backend" -p 3000:3000 arkham
+```
+
+
 #### Backend
 
 Run `stack setup` in the `backend` directory, then run `stack build --fast` (note: this will still take a long time)

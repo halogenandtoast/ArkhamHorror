@@ -29,8 +29,7 @@ RUN mkdir -p \
   /opt/arkham/bin \
   /opt/arkham/src/backend/arkham-api \
   /opt/arkham/src/backend/arkham-core \
-  /opt/arkham/src/backend/cards-discover \
-  /opt/arkham/src/frontend
+  /opt/arkham/src/backend/cards-discover
 
 WORKDIR /opt/arkham/src/backend
 COPY ./backend/stack.yaml /opt/arkham/src/backend/stack.yaml
@@ -49,11 +48,9 @@ ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
 
 RUN mkdir -p \
   /opt/arkham/src/backend \
-  /opt/arkham/src/frontend \
   /opt/arkham/bin
 
 COPY ./backend /opt/arkham/src/backend
-COPY --from=frontend /opt/arkham/src/frontend/dist /opt/arkham/src/frontend/dist
 COPY --from=dependencies /root/.stack /root/.stack
 
 WORKDIR /opt/arkham/src/backend/cards-discover
@@ -71,24 +68,30 @@ ENV LC_ALL=en_US.UTF-8
 
 RUN apt-get update && \
   apt-get upgrade -y --assume-yes && \
-  apt-get install -y --assume-yes libpq-dev ca-certificates && \
+  apt-get install -y --assume-yes libpq-dev ca-certificates nginx && \
   rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \
   /opt/arkham/bin \
   /opt/arkham/src/backend/arkham-api \
-  /opt/arkham/src/frontend
+  /opt/arkham/src/frontend \
+  /var/log/nginx \
+  /var/lib/nginx \
+  /run
 
 COPY --from=frontend /opt/arkham/src/frontend/dist /opt/arkham/src/frontend/dist
 COPY --from=api /opt/arkham/bin/arkham-api /opt/arkham/bin/arkham-api
 COPY ./backend/arkham-api/config /opt/arkham/src/backend/arkham-api/config
+COPY ./prod.nginxconf /opt/arkham/src/backend/prod.nginxconf
+COPY ./start.sh /opt/arkham/src/backend/arkham-api/start.sh
 
 RUN useradd -ms /bin/bash yesod && \
-  chown -R yesod:yesod /opt/arkham
+  chown -R yesod:yesod /opt/arkham /var/log/nginx /var/lib/nginx /run && \
+  chmod a+x /opt/arkham/src/backend/arkham-api/start.sh
 USER yesod
 ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
 
 EXPOSE 3000
 
 WORKDIR /opt/arkham/src/backend/arkham-api
-CMD ["/opt/arkham/bin/arkham-api"]
+CMD ["./start.sh"]

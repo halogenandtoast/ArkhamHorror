@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 672e7a9097aad8731192a02ea4ef9bd9ac327de0fd6f662cc781108f6fb0fda5
+-- hash: 87472655582d940f0e31bb0403f494c8827e7b0e3a4578f87d865bc4d4585267
 
 name:           arkham-api
 version:        0.0.0
@@ -51,7 +51,6 @@ library
       Model
       Orphans
       Settings
-      Settings.StaticFiles
       Types
   other-modules:
       Paths_arkham_api
@@ -128,14 +127,12 @@ library
     , uuid
     , vector
     , wai
-    , wai-app-static
     , wai-extra
     , wai-logger
     , warp
     , websockets
     , yaml
     , yesod-core
-    , yesod-static
     , yesod-test
     , yesod-websockets
   if (flag(dev)) || (flag(library-only))

@@ -21,5 +21,3 @@
           /decks ApiV1ArkhamGameDecksR PUT
           /undo ApiV1ArkhamGameUndoR PUT
           /spectate ApiV1ArkhamGameSpectateR GET
-
-!/ StaticR Static appStatic

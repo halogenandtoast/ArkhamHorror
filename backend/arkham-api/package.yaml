@@ -90,14 +90,12 @@ library:
     - uuid
     - vector
     - wai
-    - wai-app-static
     - wai-extra
     - wai-logger
     - warp
     - websockets
     - yaml
     - yesod-core
-    - yesod-static
     - yesod-test
     - yesod-websockets
 

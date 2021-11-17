@@ -47,7 +47,6 @@ import Network.Wai.Middleware.RequestLogger
   )
 import System.Log.FastLogger (defaultBufSize, newStdoutLoggerSet, toLogStr)
 import Text.Regex.Posix ((=~))
-import WaiAppStatic.Types (StaticSettings(..), unsafeToPiece)
 
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
@@ -79,13 +78,6 @@ makeFoundation appSettings = do
     -- subsite.
   appHttpManager <- getGlobalManager
   appLogger <- newStdoutLoggerSet defaultBufSize >>= makeYesodLogger
-  Static staticSettings <-
-    (if appMutableStatic appSettings then staticDevel else static)
-      (appStaticDir appSettings)
-
-  let
-    appStatic =
-      Static (staticSettings { ssIndices = [unsafeToPiece "index.html"] })
 
   -- appBroadcastChannel <- atomically newBroadcastTChan
   appGameChannels <- newIORef mempty

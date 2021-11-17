@@ -137,6 +137,7 @@ allPlayerAssetCards = mapFromList $ map
   , drHenryArmitage
   , drMilanChristopher
   , drWilliamTMaleson
+  , drawingThin
   , duke
   , earlSawyer
   , eighteenDerringer
@@ -1660,6 +1661,12 @@ meatCleaver = (asset "05114" "Meat Cleaver" 3 Survivor)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Item, Weapon, Melee]
   , cdSlots = [HandSlot]
+  }
+
+drawingThin :: CardDef
+drawingThin = (asset "05159" "Drawing Thin" 0 Survivor)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = singleton Talent
   }
 
 occultLexicon :: CardDef

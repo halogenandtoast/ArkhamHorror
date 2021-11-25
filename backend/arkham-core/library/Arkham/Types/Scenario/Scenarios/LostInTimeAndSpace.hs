@@ -213,7 +213,7 @@ instance
              , Acts.findingANewWay
              ]
           )
-        & (actStackL
+        & (agendaStackL
           . at 1
           ?~ [ Agendas.allIsOne
              , Agendas.pastPresentAndFuture

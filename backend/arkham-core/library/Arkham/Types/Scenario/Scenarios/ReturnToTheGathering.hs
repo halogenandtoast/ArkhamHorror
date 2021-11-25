@@ -105,6 +105,6 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
                , Acts.whatHaveYouDone
                ]
             )
-          & (actStackL . at 1 ?~ theGatheringAgendaDeck)
+          & (agendaStackL . at 1 ?~ theGatheringAgendaDeck)
           )
       _ -> ReturnToTheGathering <$> runMessage msg theGathering'

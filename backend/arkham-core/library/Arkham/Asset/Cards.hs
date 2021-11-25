@@ -1632,6 +1632,15 @@ straitjacket = (storyAsset "03185" "Straitjacket" 0 TheUnspeakableOath)
   , cdClassSymbol = Just Mythos
   }
 
+fortyFiveAutomatic2 :: CardDef
+fortyFiveAutomatic2 = (asset "03190" ".45 Automatic" 4 Guardian)
+  { cdSkills = [SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm]
+  , cdSlots = [HandSlot]
+  , cdUses = Uses Ammo 4
+  , cdLevel = 2
+  }
+
 madameLabranche :: CardDef
 madameLabranche =
   (asset "03198" ("Madame Labranche" <:> "Mysterious Benefactress") 2 Survivor)

@@ -670,6 +670,9 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a
+        modifiers' <- getModifiers
+          (InvestigatorSource iid)
+          (InvestigatorTarget iid)
         a <$ pushAll
           ([ FailedAttackEnemy iid enemyId
            , CheckWindow
@@ -677,7 +680,10 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
              [Window Timing.After (Window.FailAttackEnemy iid enemyId n)]
            ]
           <> [ EnemyAttack iid enemyId enemyDamageStrategy
-             | Keyword.Retaliate `elem` keywords
+             | Keyword.Retaliate
+               `elem` keywords
+               && IgnoreRetaliate
+               `notElem` modifiers'
              ]
           )
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of

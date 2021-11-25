@@ -237,6 +237,7 @@ library
       Arkham.Types.Asset.Cards.Flashlight
       Arkham.Types.Asset.Cards.ForbiddenKnowledge
       Arkham.Types.Asset.Cards.FortyFiveAutomatic
+      Arkham.Types.Asset.Cards.FortyFiveAutomatic2
       Arkham.Types.Asset.Cards.FortyOneDerringer
       Arkham.Types.Asset.Cards.GravediggersShovel
       Arkham.Types.Asset.Cards.GrotesqueStatue4
@@ -639,6 +640,7 @@ library
       Arkham.Types.Event.Cards.HotStreak4
       Arkham.Types.Event.Cards.HypnoticGaze
       Arkham.Types.Event.Cards.IfItBleeds
+      Arkham.Types.Event.Cards.IllSeeYouInHell
       Arkham.Types.Event.Cards.ImOuttaHere
       Arkham.Types.Event.Cards.Improvisation
       Arkham.Types.Event.Cards.IveGotAPlan

@@ -105,6 +105,7 @@ allPlayerEventCards = mapFromList $ map
   , hotStreak4
   , hypnoticGaze
   , ifItBleeds
+  , illSeeYouInHell
   , imOuttaHere
   , improvisation
   , iveGotAPlan
@@ -850,6 +851,13 @@ callingInFavors = (event "03158" "Calling in Favors" 1 Neutral)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = singleton Favor
   , cdCriteria = Just (Criteria.AssetExists $ AssetOwnedBy You)
+  }
+
+illSeeYouInHell :: CardDef
+illSeeYouInHell = (event "03189" "\"I'll see you in hell!\"" 0 Guardian)
+  { cdSkills = [SkillCombat, SkillCombat]
+  , cdCardTraits = singleton Spirit
+  , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
   }
 
 secondWind :: CardDef

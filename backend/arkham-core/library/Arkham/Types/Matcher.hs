@@ -360,10 +360,11 @@ data TreacheryMatcher
   | TreacheryWithId TreacheryId
   | TreacheryWithTrait Trait
   | TreacheryInHandOf InvestigatorMatcher
+  | TreacheryInThreatAreaOf InvestigatorMatcher
   | TreacheryIs CardCode
   | TreacheryAt LocationMatcher
   | AnyTreachery
-  | TreacheryOwnedBy InvestigatorId
+  | TreacheryOwnedBy InvestigatorMatcher
   | TreacheryMatches [TreacheryMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

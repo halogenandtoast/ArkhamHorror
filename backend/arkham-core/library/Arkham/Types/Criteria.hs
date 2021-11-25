@@ -90,6 +90,7 @@ data Criterion
   | ScenarioDeckWithCard ScenarioDeckKey
   | Self
   | SetAsideCardExists CardMatcher
+  | TreacheryExists TreacheryMatcher
   | Unowned
   | SelfHasModifier ModifierType
   | ValueIs Int ValueMatcher

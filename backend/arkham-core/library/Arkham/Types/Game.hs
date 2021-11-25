@@ -481,9 +481,14 @@ getTreacheriesMatching matcher = do
       pure $ case treacheryInHandOf treachery of
         Just iid -> iid `member` iids
         Nothing -> False
-    TreacheryOwnedBy iid -> \treachery -> do
+    TreacheryInThreatAreaOf investigatorMatcher -> \treachery -> do
+      iids <- selectList investigatorMatcher
+      matches <- concat <$> traverse getSetList iids
+      pure $ toId treachery `elem` matches
+    TreacheryOwnedBy investigatorMatcher -> \treachery -> do
+      iids <- select investigatorMatcher
       pure $ case treacheryOwner treachery of
-        Just iid' -> iid == iid'
+        Just iid -> iid `member` iids
         Nothing -> False
     TreacheryMatches matchers ->
       \treachery -> allM (`matcherFilter` treachery) matchers
@@ -2600,6 +2605,9 @@ instance HasGame env => HasSet EnemyAccessibleLocationId env (EnemyId, LocationI
 
 instance HasGame env => HasSet TreacheryId env LocationId where
   getSet = getSet <=< getLocation
+
+instance HasGame env => HasSet TreacheryId env TreacheryMatcher where
+  getSet = (setFromList . map toId <$>) . getTreacheriesMatching
 
 instance HasGame env => HasSet EventId env LocationId where
   getSet = getSet <=< getLocation

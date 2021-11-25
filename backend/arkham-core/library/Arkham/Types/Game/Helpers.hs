@@ -948,6 +948,7 @@ type CanCheckPlayable env
     , HasSet InvestigatorId env LocationId
     , HasSet EnemyId env LocationId
     , HasSet EnemyId env Matcher.EnemyMatcher
+    , HasSet TreacheryId env Matcher.TreacheryMatcher
     , HasSet LocationId env Matcher.LocationMatcher
     , HasSet Trait env EnemyId
     , HasSet Trait env EnemyId
@@ -1313,6 +1314,7 @@ passesCriteria iid source windows' = \case
     notNull <$> getList @SetAsideCard matcher
   Criteria.OnAct step -> (== step) . unActStep <$> getStep ()
   Criteria.AssetExists matcher -> notNull <$> getSet @AssetId matcher
+  Criteria.TreacheryExists matcher -> notNull <$> getSet @TreacheryId matcher
   Criteria.InvestigatorExists matcher ->
     -- Because the matcher can't tell who is asking, we need to replace
     -- The You matcher by the Id of the investigator asking

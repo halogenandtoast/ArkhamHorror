@@ -113,6 +113,7 @@ allPlayerEventCards = mapFromList $ map
   , iveHadWorse4
   , letMeHandleThis
   , liveAndLearn
+  , logicalReasoning
   , lookWhatIFound
   , lookWhatIFound2
   , lucky
@@ -858,6 +859,23 @@ illSeeYouInHell = (event "03189" "\"I'll see you in hell!\"" 0 Guardian)
   { cdSkills = [SkillCombat, SkillCombat]
   , cdCardTraits = singleton Spirit
   , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+  }
+
+logicalReasoning :: CardDef
+logicalReasoning = (event "03191" "Logical Reasoning" 2 Seeker)
+  { cdSkills = [SkillWillpower, SkillWillpower]
+  , cdCardTraits = singleton Insight
+  , cdCriteria = Just
+    (Criteria.InvestigatorExists (You <> InvestigatorWithAnyClues)
+    <> Criteria.AnyCriterion
+         [ Criteria.InvestigatorExists
+           (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
+         , Criteria.TreacheryExists
+           (TreacheryWithTrait Terror
+           <> TreacheryInThreatAreaOf (InvestigatorAt YourLocation)
+           )
+         ]
+    )
   }
 
 secondWind :: CardDef

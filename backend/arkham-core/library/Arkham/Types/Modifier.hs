@@ -120,6 +120,7 @@ data ModifierType
   | HealthModifier Int
   | HorrorDealt Int
   | HunterConnectedTo LocationId
+  | IgnoreRetaliate
   | IgnoreText
   | IgnoreToken
   | IgnoreTokenEffects

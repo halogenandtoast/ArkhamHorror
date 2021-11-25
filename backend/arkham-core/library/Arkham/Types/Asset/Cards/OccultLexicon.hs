@@ -7,8 +7,6 @@ import Arkham.Event.Cards qualified as Events
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Card
 import Arkham.Types.Card.PlayerCard
-import Arkham.Types.Modifier
-import Arkham.Types.Target
 
 newtype OccultLexicon = OccultLexicon AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)

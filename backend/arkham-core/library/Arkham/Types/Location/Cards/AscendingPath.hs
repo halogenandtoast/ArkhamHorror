@@ -63,7 +63,7 @@ instance LocationRunner env => RunMessage env AscendingPath where
         SkillIntellect
         False
       )
-    Successful (Action.Investigate, _) _ (AbilitySource source 1) _
+    Successful (Action.Investigate, _) _ (AbilitySource source 1) _ _
       | isSource attrs source -> do
         alteredPaths <- getSetAsideCardsMatching $ CardWithTitle "Altered Path"
         case nonEmpty alteredPaths of

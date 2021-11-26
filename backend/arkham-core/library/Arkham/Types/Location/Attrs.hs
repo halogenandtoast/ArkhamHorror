@@ -444,10 +444,10 @@ instance LocationRunner env => RunMessage env LocationAttrs where
               shroudValue'
             )
         else pure a
-    PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _ _
+    PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _ n
       | isTarget a target
-      -> a <$ push (Successful (Action.Investigate, target) iid source target)
-    PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget (ProxyTarget target investigationTarget)) _ _
+      -> a <$ push (Successful (Action.Investigate, target) iid source target n)
+    PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget (ProxyTarget target investigationTarget)) _ n
       | isTarget a target
       -> a
         <$ push
@@ -456,8 +456,9 @@ instance LocationRunner env => RunMessage env LocationAttrs where
                iid
                source
                investigationTarget
+               n
              )
-    Successful (Action.Investigate, _) iid _ target | isTarget a target -> do
+    Successful (Action.Investigate, _) iid _ target _ | isTarget a target -> do
       let lid = toId a
       modifiers' <- getModifiers (InvestigatorSource iid) (LocationTarget lid)
       whenWindowMsg <- checkWindows

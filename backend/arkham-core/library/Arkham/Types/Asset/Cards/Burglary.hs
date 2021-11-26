@@ -41,6 +41,6 @@ instance AssetRunner env => RunMessage env Burglary where
                SkillIntellect
                False
              )
-    Successful (Action.Investigate, _) iid _ target | isTarget attrs target ->
+    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->
       a <$ pushAll [TakeResources iid 3 False]
     _ -> Burglary <$> runMessage msg attrs

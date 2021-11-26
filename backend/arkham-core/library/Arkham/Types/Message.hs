@@ -542,7 +542,7 @@ data Message
     | StartSkillTest InvestigatorId
     | -- There are two targets, one associated to the action and one
       -- to handle the result
-      Successful (Action, Target) InvestigatorId Source Target
+      Successful (Action, Target) InvestigatorId Source Target Int
     | SufferTrauma InvestigatorId Int Int
     | Surge InvestigatorId Source
     | TakeAction InvestigatorId (Maybe Action) Cost

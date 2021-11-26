@@ -37,7 +37,7 @@ instance EventRunner env => RunMessage env SeekingAnswers where
           False
         , Discard (toTarget attrs)
         ]
-    Successful (Action.Investigate, _) iid _ target | isTarget attrs target ->
+    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->
       do
         lids <- selectList (ConnectedLocation <> LocationWithAnyClues)
         e <$ push

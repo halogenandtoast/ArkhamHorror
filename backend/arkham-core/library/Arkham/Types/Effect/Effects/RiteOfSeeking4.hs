@@ -36,8 +36,8 @@ instance (HasQueue env) => RunMessage env RiteOfSeeking4 where
     SkillTestEnds _ -> e <$ case effectTarget of
       InvestigatorTarget iid -> pushAll [DisableEffect effectId, EndTurn iid]
       _ -> push (DisableEffect effectId)
-    Successful (Action.Investigate, _) iid source _ | effectSource == source ->
-      case effectTarget of
+    Successful (Action.Investigate, _) iid source _ _
+      | effectSource == source -> case effectTarget of
         InvestigationTarget _ lid' ->
           e <$ push
             (InvestigatorDiscoverClues iid lid' 2 (Just Action.Investigate))

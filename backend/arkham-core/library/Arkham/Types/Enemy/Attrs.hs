@@ -662,9 +662,10 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
             iid
             source
             (toActionTarget target)
+            n
           , afterWindow
           ]
-    Successful (Action.Fight, _) iid source target | isTarget a target -> do
+    Successful (Action.Fight, _) iid source target _ | isTarget a target -> do
       a <$ push (InvestigatorDamageEnemy iid enemyId source)
     FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ n
       | isTarget a target
@@ -721,9 +722,10 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
             iid
             source
             (toActionTarget target)
+            n
           , afterWindow
           ]
-    Successful (Action.Evade, _) iid _ target | isTarget a target -> do
+    Successful (Action.Evade, _) iid _ target _ | isTarget a target -> do
       a <$ push (EnemyEvaded iid enemyId)
     FailedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ n
       | isTarget a target

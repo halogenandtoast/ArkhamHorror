@@ -65,6 +65,6 @@ instance LocationRunner env => RunMessage env DestroyedPath where
         SkillIntellect
         False
       )
-    Successful (Action.Investigate, _) _ (AbilitySource source 2) _
+    Successful (Action.Investigate, _) _ (AbilitySource source 2) _ _
       | isSource attrs source -> l <$ push (RemoveDoom (toTarget attrs) 1)
     _ -> DestroyedPath <$> runMessage msg attrs

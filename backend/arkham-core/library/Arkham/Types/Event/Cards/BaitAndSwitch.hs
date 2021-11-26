@@ -33,12 +33,12 @@ instance (EventRunner env) => RunMessage env BaitAndSwitch where
         False
       , Discard (EventTarget eid)
       ]
-    Successful (Action.Evade, EnemyTarget eid) iid _ target
+    Successful (Action.Evade, EnemyTarget eid) iid _ target _
       | isTarget attrs target -> do
         nonElite <- notMember eid <$> select EliteEnemy
         let msgs = EnemyEvaded iid eid : [ WillMoveEnemy eid msg | nonElite ]
         e <$ pushAll msgs
-    WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target)
+    WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _)
       | isTarget attrs target -> do
         lid <- getId @LocationId iid
         connectedLocationIds <- selectList ConnectedLocation

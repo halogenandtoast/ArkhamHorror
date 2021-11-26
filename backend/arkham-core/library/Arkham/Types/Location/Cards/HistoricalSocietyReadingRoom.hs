@@ -70,7 +70,7 @@ instance LocationRunner env => RunMessage env HistoricalSocietyReadingRoom where
     UseCardAbility _ source _ 1 _
       | isSource attrs source && not (locationRevealed attrs) -> l
       <$ push (RevealLocation Nothing $ toId attrs)
-    Successful (Action.Investigate, _) iid (AbilitySource source 1) _
+    Successful (Action.Investigate, _) iid (AbilitySource source 1) _ _
       | isSource attrs source -> do
         enemies <- selectListMap EnemyTarget $ EnemyWithDoom $ AtLeast $ Static
           1

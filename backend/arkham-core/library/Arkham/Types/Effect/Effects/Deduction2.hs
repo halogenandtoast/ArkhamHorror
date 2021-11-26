@@ -23,7 +23,7 @@ instance HasModifiersFor env Deduction2
 
 instance HasQueue env => RunMessage env Deduction2 where
   runMessage msg e@(Deduction2 attrs@EffectAttrs {..}) = case msg of
-    Successful (Action.Investigate, _) iid _ (LocationTarget lid) ->
+    Successful (Action.Investigate, _) iid _ (LocationTarget lid) _ ->
       case effectMetadata of
         Just (EffectMetaTarget (LocationTarget lid')) | lid == lid' ->
           e <$ push

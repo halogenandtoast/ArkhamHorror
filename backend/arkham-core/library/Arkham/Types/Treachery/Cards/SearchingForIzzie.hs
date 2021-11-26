@@ -62,7 +62,7 @@ instance TreacheryRunner env => RunMessage env SearchingForIzzie where
           SkillIntellect
           False
         )
-    Successful (Action.Investigate, _) _ _ target | isTarget attrs target ->
+    Successful (Action.Investigate, _) _ _ target _ | isTarget attrs target ->
       t <$ push (Discard target)
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       let investigator = fromJustNote "missing investigator" treacheryOwner

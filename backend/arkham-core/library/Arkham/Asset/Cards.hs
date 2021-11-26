@@ -104,6 +104,8 @@ allPlayerAssetCards = mapFromList $ map
   , arcaneStudies
   , arcaneStudies2
   , archaicGlyphs
+  , archaicGlyphsGuidingStones3
+  , archaicGlyphsProphecyForetold3
   , artStudent
   , bandolier
   , baseballBat
@@ -153,6 +155,7 @@ allPlayerAssetCards = mapFromList $ map
   , flashlight
   , forbiddenKnowledge
   , fortyFiveAutomatic
+  , fortyFiveAutomatic2
   , fortyOneDerringer
   , gravediggersShovel
   , grotesqueStatue4
@@ -1640,6 +1643,26 @@ fortyFiveAutomatic2 = (asset "03190" ".45 Automatic" 4 Guardian)
   , cdUses = Uses Ammo 4
   , cdLevel = 2
   }
+
+archaicGlyphsGuidingStones3 :: CardDef
+archaicGlyphsGuidingStones3 =
+  (asset "03192" ("Archaic Glyphs" <:> "Guiding Stones") 2 Seeker)
+    { cdSkills = [SkillWillpower, SkillIntellect]
+    , cdCardTraits = singleton Spell
+    , cdSlots = [ArcaneSlot]
+    , cdUses = Uses Charge 3
+    , cdLevel = 3
+    }
+
+archaicGlyphsProphecyForetold3 :: CardDef
+archaicGlyphsProphecyForetold3 =
+  (asset "03192" ("Archaic Glyphs" <:> "Prophecy Foretold") 2 Seeker)
+    { cdSkills = [SkillIntellect, SkillAgility]
+    , cdCardTraits = singleton Spell
+    , cdSlots = [ArcaneSlot]
+    , cdUses = Uses Charge 3
+    , cdLevel = 3
+    }
 
 madameLabranche :: CardDef
 madameLabranche =

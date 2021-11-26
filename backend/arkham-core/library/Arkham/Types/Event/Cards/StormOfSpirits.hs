@@ -41,7 +41,7 @@ instance EventRunner env => RunMessage env StormOfSpirits where
           mempty
           False
         ]
-    Successful (Action.Fight, EnemyTarget eid) iid _ target
+    Successful (Action.Fight, EnemyTarget eid) iid _ target _
       | isTarget attrs target -> do
         let
           toMsg eid' = if eid == eid'

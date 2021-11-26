@@ -55,7 +55,7 @@ instance LocationRunner env => RunMessage env BaseOfTheHill where
         SkillIntellect
         False
       )
-    Successful (Action.Investigate, _) _ (AbilitySource source 1) _
+    Successful (Action.Investigate, _) _ (AbilitySource source 1) _ _
       | isSource attrs source -> do
         divergingPaths <- getSetAsideCardsMatching
           $ CardWithTitle "Diverging Path"

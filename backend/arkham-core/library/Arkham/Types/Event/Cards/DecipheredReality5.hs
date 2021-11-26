@@ -43,14 +43,14 @@ instance EventRunner env => RunMessage env DecipheredReality5 where
           False
         , Discard (toTarget attrs)
         ]
-    Successful (Action.Investigate, actionTarget) iid source target
+    Successful (Action.Investigate, actionTarget) iid source target n
       | isTarget attrs target -> do
       -- Deciphered Reality is not a replacement effect; its effect doesn’t use
       -- any form of ‘instead’ or ‘but,’ so its effect is in addition to the
       -- standard rewards for successfully investigating.
         locationIds <- selectList RevealedLocation
         e <$ pushAll
-          (Successful (Action.Investigate, actionTarget) iid source target
+          (Successful (Action.Investigate, actionTarget) iid source target n
           : [ DiscoverCluesAtLocation iid lid' 1 Nothing
             | lid' <- locationIds
             ]

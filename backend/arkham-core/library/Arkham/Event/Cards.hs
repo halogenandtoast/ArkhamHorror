@@ -878,6 +878,13 @@ logicalReasoning = (event "03191" "Logical Reasoning" 2 Seeker)
     )
   }
 
+cheapShot :: CardDef
+cheapShot = (event "03194" "Cheap Shot" 2 Rogue)
+  { cdSkills = [SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Trick]
+  , cdAction = Just Action.Fight
+  }
+
 secondWind :: CardDef
 secondWind = (event "04149" "Second Wind" 1 Guardian)
   { cdSkills = [SkillWillpower]

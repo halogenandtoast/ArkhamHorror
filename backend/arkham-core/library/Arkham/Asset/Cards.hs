@@ -219,6 +219,7 @@ allPlayerAssetCards = mapFromList $ map
   , physicalTraining
   , physicalTraining2
   , pickpocketing
+  , pickpocketing2
   , plucky1
   , policeBadge2
   , powderOfIbnGhazi
@@ -1656,13 +1657,20 @@ archaicGlyphsGuidingStones3 =
 
 archaicGlyphsProphecyForetold3 :: CardDef
 archaicGlyphsProphecyForetold3 =
-  (asset "03192" ("Archaic Glyphs" <:> "Prophecy Foretold") 2 Seeker)
+  (asset "03193" ("Archaic Glyphs" <:> "Prophecy Foretold") 2 Seeker)
     { cdSkills = [SkillIntellect, SkillAgility]
     , cdCardTraits = singleton Spell
     , cdSlots = [ArcaneSlot]
     , cdUses = Uses Charge 3
     , cdLevel = 3
     }
+
+pickpocketing2 :: CardDef
+pickpocketing2 = fast $ (asset "03195" "Pickpocketing" 2 Rogue)
+  { cdSkills = [SkillAgility, SkillAgility]
+  , cdCardTraits = setFromList [Talent, Illicit]
+  , cdLevel = 2
+  }
 
 madameLabranche :: CardDef
 madameLabranche =

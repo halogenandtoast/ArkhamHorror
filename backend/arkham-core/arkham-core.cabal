@@ -311,6 +311,7 @@ library
       Arkham.Types.Asset.Cards.PhysicalTraining
       Arkham.Types.Asset.Cards.PhysicalTraining2
       Arkham.Types.Asset.Cards.Pickpocketing
+      Arkham.Types.Asset.Cards.Pickpocketing2
       Arkham.Types.Asset.Cards.Plucky1
       Arkham.Types.Asset.Cards.PoliceBadge2
       Arkham.Types.Asset.Cards.PowderOfIbnGhazi
@@ -609,6 +610,7 @@ library
       Arkham.Types.Event.Cards.BloodRite
       Arkham.Types.Event.Cards.BuryThemDeep
       Arkham.Types.Event.Cards.CallingInFavors
+      Arkham.Types.Event.Cards.CheapShot
       Arkham.Types.Event.Cards.CloseCall2
       Arkham.Types.Event.Cards.Contraband
       Arkham.Types.Event.Cards.Contraband2

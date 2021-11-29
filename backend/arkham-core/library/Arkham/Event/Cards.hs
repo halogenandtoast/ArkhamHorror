@@ -134,12 +134,14 @@ allPlayerEventCards = mapFromList $ map
   , preposterousSketches
   , preposterousSketches2
   , quantumFlux
+  , recharge2
   , scroungeForSupplies
   , searchForTheTruth
   , secondWind
   , seekingAnswers
   , shortcut
   , sleightOfHand
+  , snareTrap2
   , sneakAttack
   , sneakAttack2
   , standTogether3
@@ -891,6 +893,29 @@ quantumFlux :: CardDef
 quantumFlux = (event "03196" "Quantum Flux" 1 Mystic)
   { cdSkills = [SkillWild]
   , cdCardTraits = singleton Insight
+  }
+
+recharge2 :: CardDef
+recharge2 = (event "03197" "Recharge" 0 Mystic)
+  { cdSkills = [SkillWillpower, SkillWillpower]
+  , cdCardTraits = singleton Spell
+  , cdCriteria = Just
+    (Criteria.AssetExists
+    $ AssetOwnedBy (InvestigatorAt YourLocation)
+    <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
+    )
+  }
+
+snareTrap2 :: CardDef
+snareTrap2 = (event "03199" "Snare Trap" 2 Survivor)
+  { cdSkills = [SkillWillpower, SkillAgility]
+  , cdCardTraits = setFromList [Trap, Improvised]
+  , cdCriteria = Just
+    (Criteria.Negate
+    $ Criteria.AssetExists
+    $ AssetIs "03199"
+    <> AssetAt YourLocation
+    )
   }
 
 secondWind :: CardDef

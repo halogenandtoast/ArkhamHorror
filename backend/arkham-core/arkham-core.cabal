@@ -672,12 +672,14 @@ library
       Arkham.Types.Event.Cards.PreposterousSketches
       Arkham.Types.Event.Cards.PreposterousSketches2
       Arkham.Types.Event.Cards.QuantumFlux
+      Arkham.Types.Event.Cards.Recharge2
       Arkham.Types.Event.Cards.ScroungeForSupplies
       Arkham.Types.Event.Cards.SearchForTheTruth
       Arkham.Types.Event.Cards.SecondWind
       Arkham.Types.Event.Cards.SeekingAnswers
       Arkham.Types.Event.Cards.Shortcut
       Arkham.Types.Event.Cards.SleightOfHand
+      Arkham.Types.Event.Cards.SnareTrap2
       Arkham.Types.Event.Cards.SneakAttack
       Arkham.Types.Event.Cards.SneakAttack2
       Arkham.Types.Event.Cards.StandTogether3

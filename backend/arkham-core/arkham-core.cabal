@@ -671,6 +671,7 @@ library
       Arkham.Types.Event.Cards.PreparedForTheWorst
       Arkham.Types.Event.Cards.PreposterousSketches
       Arkham.Types.Event.Cards.PreposterousSketches2
+      Arkham.Types.Event.Cards.QuantumFlux
       Arkham.Types.Event.Cards.ScroungeForSupplies
       Arkham.Types.Event.Cards.SearchForTheTruth
       Arkham.Types.Event.Cards.SecondWind

@@ -15,7 +15,6 @@ import Arkham.Types.Matcher qualified as Matcher
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillTestResult
 import Arkham.Types.Timing qualified as Timing
-import Arkham.Types.Window qualified as W
 
 newtype Pickpocketing2 = Pickpocketing2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)

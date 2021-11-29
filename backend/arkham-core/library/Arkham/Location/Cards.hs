@@ -99,6 +99,7 @@ allLocationCards = mapFromList $ map
   , broadmoor
   , burnedRuins_204
   , burnedRuins_205
+  , canalSaintMartin
   , canalSide
   , cellar
   , cloverClubBar
@@ -151,7 +152,10 @@ allLocationCards = mapFromList $ map
   , gallery
   , garden
   , gardenDistrict
+  , gardensOfLuxembourg
+  , gareDOrsay
   , gondola
+  , grandGuignol
   , graveyard
   , greenRoom
   , guestHall
@@ -173,6 +177,8 @@ allLocationCards = mapFromList $ map
   , infirmary
   , kitchen
   , laBellaLuna
+  , leMarais217
+  , leMarais218
   , lightingBox
   , livingRoom
   , lobby
@@ -182,10 +188,16 @@ allLocationCards = mapFromList $ map
   , miskatonicQuad
   , miskatonicUniversity
   , miskatonicUniversityMiskatonicMuseum
+  , montmartre209
+  , montmartre210
+  , montparnasse
   , museumEntrance
   , museumHalls
   , northside
   , northsideTrainStation
+  , notreDame
+  , operaGarnier212
+  , operaGarnier213
   , orneLibrary
   , osbornsGeneralStore_206
   , osbornsGeneralStore_207
@@ -201,6 +213,7 @@ allLocationCards = mapFromList $ map
   , patientConfinementOccupiedCell
   , patientConfinementDrearyCell
   , patientConfinementFamiliarCell
+  , pereLachaiseCemetery
   , prismaticCascade
   , quietHalls_131
   , quietHalls_135
@@ -1187,6 +1200,63 @@ patientConfinementFamiliarCell = location
   ("Patient Confinement" <:> "Familiar Cell")
   mempty
   TheUnspeakableOath
+
+montparnasse :: CardDef
+montparnasse = location "03208" "Montparnasse" [Paris, Rail] APhantomOfTruth
+
+montmartre209 :: CardDef
+montmartre209 = location "03209" "Montmartre" [Paris, Rail] APhantomOfTruth
+
+montmartre210 :: CardDef
+montmartre210 = location "03210" "Montmartre" [Paris, Rail] APhantomOfTruth
+
+grandGuignol :: CardDef
+grandGuignol = (location
+                 "03211"
+                 ("Grand Guignol" <:> "Theatre of the Great Puppet")
+                 [Paris]
+                 APhantomOfTruth
+               )
+  { cdVictoryPoints = Just 1
+  }
+
+operaGarnier212 :: CardDef
+operaGarnier212 =
+  location "03212" "Opéra Garnier" [Paris, Rail] APhantomOfTruth
+
+operaGarnier213 :: CardDef
+operaGarnier213 =
+  location "03213" "Opéra Garnier" [Paris, Rail] APhantomOfTruth
+
+gareDOrsay :: CardDef
+gareDOrsay = location "03214" "Gare d'Orsay" [Paris, Rail] APhantomOfTruth
+
+pereLachaiseCemetery :: CardDef
+pereLachaiseCemetery =
+  (location "03215" "Pére Lachaise Cemetery" [Paris] APhantomOfTruth)
+    { cdVictoryPoints = Just 1
+    }
+
+canalSaintMartin :: CardDef
+canalSaintMartin =
+  (location "03216" "Canal Saint-Martin" [Paris] APhantomOfTruth)
+    { cdVictoryPoints = Just 1
+    }
+
+leMarais217 :: CardDef
+leMarais217 = location "03217" "Le Marais" [Paris, Rail] APhantomOfTruth
+
+leMarais218 :: CardDef
+leMarais218 = location "03218" "Le Marais" [Paris, Rail] APhantomOfTruth
+
+notreDame :: CardDef
+notreDame = location "03219" "Notre-Dame" [Paris, Rail] APhantomOfTruth
+
+gardensOfLuxembourg :: CardDef
+gardensOfLuxembourg =
+  (location "03220" "Gardens of Luxembourg" [Paris] APhantomOfTruth)
+    { cdVictoryPoints = Just 1
+    }
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

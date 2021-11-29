@@ -90,6 +90,9 @@ allAgendaCards = mapFromList $ map
   , lockedInside
   , torturousDescent
   , hisDomain
+  , theFirstNight
+  , theSecondNight
+  , theThirdNight
   , returnToPredatorOrPrey
   , aCreatureOfTheBayou
   , theRougarouFeeds
@@ -237,6 +240,15 @@ torturousDescent = agenda "03161" "Torturous Descent" 2 TheUnspeakableOath
 
 hisDomain :: CardDef
 hisDomain = agenda "03162" "His Domain" 3 TheUnspeakableOath
+
+theFirstNight :: CardDef
+theFirstNight = agenda "03201" "The First Night" 1 APhantomOfTruth
+
+theSecondNight :: CardDef
+theSecondNight = agenda "03202" "The Second Night" 2 APhantomOfTruth
+
+theThirdNight :: CardDef
+theThirdNight = agenda "03203" "The Third Night" 3 APhantomOfTruth
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

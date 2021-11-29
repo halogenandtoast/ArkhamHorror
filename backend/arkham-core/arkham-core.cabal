@@ -27,6 +27,7 @@ library
       Arkham.Location.Cards
       Arkham.PlayerCard
       Arkham.Prelude
+      Arkham.Scenarios.APhantomOfTruth.Story
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.CurtainCall.Helpers
@@ -78,6 +79,7 @@ library
       Arkham.Types.Act.Cards.NoAsylum
       Arkham.Types.Act.Cards.OutOfThisWorld
       Arkham.Types.Act.Cards.PlanningTheEscape
+      Arkham.Types.Act.Cards.PursuingShadows
       Arkham.Types.Act.Cards.RaceForAnswers
       Arkham.Types.Act.Cards.RicesWhereabouts
       Arkham.Types.Act.Cards.Row
@@ -86,11 +88,14 @@ library
       Arkham.Types.Act.Cards.SearchingForAnswers
       Arkham.Types.Act.Cards.SearchingForTheTome
       Arkham.Types.Act.Cards.SkinGame
+      Arkham.Types.Act.Cards.StalkedByShadows
       Arkham.Types.Act.Cards.TheBarrier
       Arkham.Types.Act.Cards.TheCarnevaleConspiracy
       Arkham.Types.Act.Cards.TheChamberOfTheBeast
       Arkham.Types.Act.Cards.TheGateOpens
       Arkham.Types.Act.Cards.TheOath
+      Arkham.Types.Act.Cards.TheParisianConspiracyV1
+      Arkham.Types.Act.Cards.TheParisianConspiracyV2
       Arkham.Types.Act.Cards.ThePathToTheHill
       Arkham.Types.Act.Cards.TheReallyBadOnesV1
       Arkham.Types.Act.Cards.TheReallyBadOnesV2
@@ -147,13 +152,16 @@ library
       Arkham.Types.Agenda.Cards.TheCurseSpreads
       Arkham.Types.Agenda.Cards.TheEndOfAllThings
       Arkham.Types.Agenda.Cards.TheFestivitiesBegin
+      Arkham.Types.Agenda.Cards.TheFirstNight
       Arkham.Types.Agenda.Cards.TheMawWidens
       Arkham.Types.Agenda.Cards.TheOldOnesHunger
       Arkham.Types.Agenda.Cards.TheRitualBegins
       Arkham.Types.Agenda.Cards.TheRougarouFeeds
+      Arkham.Types.Agenda.Cards.TheSecondNight
       Arkham.Types.Agenda.Cards.TheShadowOfTheEclipse
       Arkham.Types.Agenda.Cards.TheTerrifyingTruth
       Arkham.Types.Agenda.Cards.TheThirdAct
+      Arkham.Types.Agenda.Cards.TheThirdNight
       Arkham.Types.Agenda.Cards.TheTruthIsHidden
       Arkham.Types.Agenda.Cards.TheyreGettingOut
       Arkham.Types.Agenda.Cards.TimeIsRunningShort
@@ -563,6 +571,7 @@ library
       Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
       Arkham.Types.Enemy.Cards.SlimeCoveredDhole
       Arkham.Types.Enemy.Cards.SpawnOfHali
+      Arkham.Types.Enemy.Cards.StealthyByakhee
       Arkham.Types.Enemy.Cards.StubbornDetective
       Arkham.Types.Enemy.Cards.SwampLeech
       Arkham.Types.Enemy.Cards.SwarmOfRats
@@ -570,6 +579,8 @@ library
       Arkham.Types.Enemy.Cards.TheExperiment
       Arkham.Types.Enemy.Cards.TheManInThePallidMask
       Arkham.Types.Enemy.Cards.TheMaskedHunter
+      Arkham.Types.Enemy.Cards.TheOrganistDrapedInMystery
+      Arkham.Types.Enemy.Cards.TheOrganistHopelessIDefiedHim
       Arkham.Types.Enemy.Cards.TheRougarou
       Arkham.Types.Enemy.Cards.TheThingThatFollows
       Arkham.Types.Enemy.Cards.Thrall
@@ -807,6 +818,7 @@ library
       Arkham.Types.Location.Cards.Broadmoor
       Arkham.Types.Location.Cards.BurnedRuins_204
       Arkham.Types.Location.Cards.BurnedRuins_205
+      Arkham.Types.Location.Cards.CanalSaintMartin
       Arkham.Types.Location.Cards.CanalSide
       Arkham.Types.Location.Cards.Cellar
       Arkham.Types.Location.Cards.CloverClubBar
@@ -859,7 +871,10 @@ library
       Arkham.Types.Location.Cards.Gallery
       Arkham.Types.Location.Cards.Garden
       Arkham.Types.Location.Cards.GardenDistrict
+      Arkham.Types.Location.Cards.GardensOfLuxembourg
+      Arkham.Types.Location.Cards.GareDOrsay
       Arkham.Types.Location.Cards.Gondola
+      Arkham.Types.Location.Cards.GrandGuignol
       Arkham.Types.Location.Cards.Graveyard
       Arkham.Types.Location.Cards.GreenRoom
       Arkham.Types.Location.Cards.GuestHall
@@ -881,6 +896,8 @@ library
       Arkham.Types.Location.Cards.Infirmary
       Arkham.Types.Location.Cards.Kitchen
       Arkham.Types.Location.Cards.LaBellaLuna
+      Arkham.Types.Location.Cards.LeMarais217
+      Arkham.Types.Location.Cards.LeMarais218
       Arkham.Types.Location.Cards.LightingBox
       Arkham.Types.Location.Cards.LivingRoom
       Arkham.Types.Location.Cards.Lobby
@@ -890,10 +907,16 @@ library
       Arkham.Types.Location.Cards.MiskatonicQuad
       Arkham.Types.Location.Cards.MiskatonicUniversity
       Arkham.Types.Location.Cards.MiskatonicUniversityMiskatonicMuseum
+      Arkham.Types.Location.Cards.Montmartre209
+      Arkham.Types.Location.Cards.Montmartre210
+      Arkham.Types.Location.Cards.Montparnasse
       Arkham.Types.Location.Cards.MuseumEntrance
       Arkham.Types.Location.Cards.MuseumHalls
       Arkham.Types.Location.Cards.Northside
       Arkham.Types.Location.Cards.NorthsideTrainStation
+      Arkham.Types.Location.Cards.NotreDame
+      Arkham.Types.Location.Cards.OperaGarnier212
+      Arkham.Types.Location.Cards.OperaGarnier213
       Arkham.Types.Location.Cards.OrneLibrary
       Arkham.Types.Location.Cards.OsbornsGeneralStore_206
       Arkham.Types.Location.Cards.OsbornsGeneralStore_207
@@ -909,6 +932,7 @@ library
       Arkham.Types.Location.Cards.PatientConfinementDrearyCell
       Arkham.Types.Location.Cards.PatientConfinementFamiliarCell
       Arkham.Types.Location.Cards.PatientConfinementOccupiedCell
+      Arkham.Types.Location.Cards.PereLachaiseCemetery
       Arkham.Types.Location.Cards.PrismaticCascade
       Arkham.Types.Location.Cards.QuietHalls_131
       Arkham.Types.Location.Cards.QuietHalls_135
@@ -978,6 +1002,7 @@ library
       Arkham.Types.Scenario.Helpers
       Arkham.Types.Scenario.Runner
       Arkham.Types.Scenario.Scenarios
+      Arkham.Types.Scenario.Scenarios.APhantomOfTruth
       Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
       Arkham.Types.Scenario.Scenarios.CarnevaleOfHorrors
       Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
@@ -1084,6 +1109,7 @@ library
       Arkham.Types.Treachery.Cards.CursedSwamp
       Arkham.Types.Treachery.Cards.CurseOfTheRougarou
       Arkham.Types.Treachery.Cards.DanceOfTheYellowKing
+      Arkham.Types.Treachery.Cards.DeadlyFate
       Arkham.Types.Treachery.Cards.DescentIntoMadness
       Arkham.Types.Treachery.Cards.DissonantVoices
       Arkham.Types.Treachery.Cards.DraggedUnder
@@ -1095,6 +1121,7 @@ library
       Arkham.Types.Treachery.Cards.FinalRhapsody
       Arkham.Types.Treachery.Cards.FineDining
       Arkham.Types.Treachery.Cards.FrozenInFear
+      Arkham.Types.Treachery.Cards.FrozenInFearAPhantomOfTruth
       Arkham.Types.Treachery.Cards.GiftOfMadnessMisery
       Arkham.Types.Treachery.Cards.GiftOfMadnessPity
       Arkham.Types.Treachery.Cards.GraspingHands
@@ -1158,8 +1185,10 @@ library
       Arkham.Types.Treachery.Cards.ThePaleMaskBeckons
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.TheZealotsSeal
+      Arkham.Types.Treachery.Cards.TorturousChords
       Arkham.Types.Treachery.Cards.ToughCrowd
       Arkham.Types.Treachery.Cards.ToweringBeasts
+      Arkham.Types.Treachery.Cards.TwinSuns
       Arkham.Types.Treachery.Cards.TwistedToHisWill
       Arkham.Types.Treachery.Cards.TwistOfFate
       Arkham.Types.Treachery.Cards.UmordhothsHunger

@@ -72,6 +72,7 @@ allPlayerEventCards = mapFromList $ map
   , bloodRite
   , buryThemDeep
   , callingInFavors
+  , cheapShot
   , closeCall2
   , contraband
   , contraband2
@@ -132,6 +133,7 @@ allPlayerEventCards = mapFromList $ map
   , preparedForTheWorst
   , preposterousSketches
   , preposterousSketches2
+  , quantumFlux
   , scroungeForSupplies
   , searchForTheTruth
   , secondWind
@@ -883,6 +885,12 @@ cheapShot = (event "03194" "Cheap Shot" 2 Rogue)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Trick]
   , cdAction = Just Action.Fight
+  }
+
+quantumFlux :: CardDef
+quantumFlux = (event "03196" "Quantum Flux" 1 Mystic)
+  { cdSkills = [SkillWild]
+  , cdCardTraits = singleton Insight
   }
 
 secondWind :: CardDef

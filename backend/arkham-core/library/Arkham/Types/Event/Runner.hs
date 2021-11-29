@@ -39,4 +39,5 @@ type EventRunner env
     , HasSet Trait env AssetId
     , HasSet Trait env EnemyId
     , HasSkillTest env
+    , HasSkillValue env InvestigatorId
     )

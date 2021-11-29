@@ -93,6 +93,10 @@ allActCards = mapFromList $ map
   , theReallyBadOnesV2
   , planningTheEscape
   , noAsylum
+  , theParisianConspiracyV1
+  , theParisianConspiracyV2
+  , pursuingShadows
+  , stalkedByShadows
   , mysteriousGateway
   , findingLadyEsprit
   , huntingTheRougarou
@@ -249,6 +253,20 @@ planningTheEscape = act "03166" "Planning the Escape" 3 TheUnspeakableOath
 
 noAsylum :: CardDef
 noAsylum = act "03167" "No Asylum" 4 TheUnspeakableOath
+
+theParisianConspiracyV1 :: CardDef
+theParisianConspiracyV1 =
+  act "03204" "The Parisian Conspiracy (v. I)" 1 APhantomOfTruth
+
+theParisianConspiracyV2 :: CardDef
+theParisianConspiracyV2 =
+  act "03205" "The Parisian Conspiracy (v. II)" 1 APhantomOfTruth
+
+pursuingShadows :: CardDef
+pursuingShadows = act "03206" "Pursuing Shadows" 2 APhantomOfTruth
+
+stalkedByShadows :: CardDef
+stalkedByShadows = act "03207" "Stalked by Shadows" 3 APhantomOfTruth
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

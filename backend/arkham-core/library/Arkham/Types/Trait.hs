@@ -111,6 +111,7 @@ data Trait
   | Otherworld
   | Pact
   | Paradox
+  | Paris
   | Passageway
   | Patron
   | Performer
@@ -119,6 +120,7 @@ data Trait
   | Power
   | Practiced
   | Private
+  | Rail
   | Ranged
   | Relic
   | Reporter

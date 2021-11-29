@@ -126,6 +126,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , cursedLuck
   , cursedSwamp
   , danceOfTheYellowKing
+  , deadlyFate
   , descentIntoMadness
   , dissonantVoices
   , draggedUnder
@@ -135,6 +136,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , falseLead
   , fineDining
   , frozenInFear
+  , frozenInFearAPhantomOfTruth
   , giftOfMadnessMisery
   , giftOfMadnessPity
   , graspingHands
@@ -184,8 +186,10 @@ allEncounterTreacheryCards = mapFromList $ map
   , thePaleMaskBeckons
   , theYellowSign
   , theZealotsSeal
+  , torturousChords
   , toughCrowd
   , toweringBeasts
+  , twinSuns
   , twistOfFate
   , twistedToHisWill
   , umordhothsHunger
@@ -712,6 +716,27 @@ wallsClosingIn :: CardDef
 wallsClosingIn = (treachery "03188" "Walls Closing In" TheUnspeakableOath 3)
   { cdCardTraits = singleton Terror
   }
+
+twinSuns :: CardDef
+twinSuns = (treachery "03223" "Twin Suns" APhantomOfTruth 2)
+  { cdCardTraits = singleton Omen
+  }
+
+deadlyFate :: CardDef
+deadlyFate = (treachery "03224" "Deadly Fate" APhantomOfTruth 3)
+  { cdCardTraits = singleton Omen
+  }
+
+torturousChords :: CardDef
+torturousChords = (treachery "03225" "Torturous Chords" APhantomOfTruth 3)
+  { cdCardTraits = setFromList [Hex, Terror]
+  }
+
+frozenInFearAPhantomOfTruth :: CardDef
+frozenInFearAPhantomOfTruth =
+  (treachery "03226" "Frozen in Fear" APhantomOfTruth 2)
+    { cdCardTraits = singleton Terror
+    }
 
 theHarbinger :: CardDef
 theHarbinger = (weakness "08006" "The Harbinger")

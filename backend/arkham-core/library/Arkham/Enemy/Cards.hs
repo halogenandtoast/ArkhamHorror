@@ -149,11 +149,14 @@ allEncounterEnemyCards = mapFromList $ map
   , silasBishop
   , slimeCoveredDhole
   , spawnOfHali
+  , stealthyByakhee
   , swampLeech
   , swarmOfRats
   , swiftByakhee
   , theExperiment
   , theMaskedHunter
+  , theOrganistDrapedInMystery
+  , theOrganistHopelessIDefiedHim
   , theRougarou
   , thrall
   , umordhoth
@@ -692,6 +695,35 @@ asylumGorger = (enemy "03183" "Asylum Gorger" TheUnspeakableOath 2)
 madPatient :: CardDef
 madPatient = (enemy "03184" "Mad Patient" TheUnspeakableOath 3)
   { cdCardTraits = setFromList [Humanoid, Lunatic]
+  }
+
+theOrganistHopelessIDefiedHim :: CardDef
+theOrganistHopelessIDefiedHim =
+  (enemy
+      "03221a"
+      ("The Organist" <:> "Hopeless, I Defied Him")
+      APhantomOfTruth
+      1
+    )
+    { cdCardTraits = setFromList [Humanoid, Avatar, Elite]
+    , cdKeywords = singleton Keyword.Hunter
+    , cdUnique = True
+    , cdDoubleSided = True
+    }
+
+theOrganistDrapedInMystery :: CardDef
+theOrganistDrapedInMystery =
+  (enemy "03221b" ("The Organist" <:> "Draped in Mystery") APhantomOfTruth 1)
+    { cdCardTraits = setFromList [Humanoid, Avatar, Elite]
+    , cdKeywords = singleton Keyword.Aloof
+    , cdUnique = True
+    , cdDoubleSided = True
+    }
+
+stealthyByakhee :: CardDef
+stealthyByakhee = (enemy "03222" "Stealthy Byakhee" APhantomOfTruth 2)
+  { cdCardTraits = setFromList [Monster, Byakhee]
+  , cdKeywords = singleton Keyword.Hunter
   }
 
 corpseHungryGhoul :: CardDef

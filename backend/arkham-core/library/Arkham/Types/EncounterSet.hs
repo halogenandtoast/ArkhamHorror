@@ -50,6 +50,7 @@ data EncounterSet
   | TheStranger
   | EchoesOfThePast
   | TheUnspeakableOath
+  | APhantomOfTruth
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

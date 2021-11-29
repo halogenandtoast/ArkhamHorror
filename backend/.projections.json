@@ -169,7 +169,7 @@
       "  runMessage msg a@({dot} attrs) =",
       "    case msg of",
       "      AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->",
-      "        a <$ pushAll [NextAgenda aid \"TODO\"]",
+      "        a <$ pushAll [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]",
       "      _ -> {dot} <$> runMessage msg attrs"
     ]
   },

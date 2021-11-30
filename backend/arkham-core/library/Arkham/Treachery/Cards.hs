@@ -149,6 +149,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , lightOfAforgomon
   , lockedDoor
   , lostInVenice
+  , lostSoul
   , markedByTheSign
   , maskOfUmordhoth
   , maskedHorrors
@@ -737,6 +738,13 @@ frozenInFearAPhantomOfTruth =
   (treachery "03226" "Frozen in Fear" APhantomOfTruth 2)
     { cdCardTraits = singleton Terror
     }
+
+lostSoul :: CardDef
+lostSoul = (weakness "03227" "Lost Soul")
+  { cdCardTraits = setFromList [Madness, Pact]
+  , cdEncounterSet = Just APhantomOfTruth
+  , cdEncounterSetQuantity = Just 4
+  }
 
 theHarbinger :: CardDef
 theHarbinger = (weakness "08006" "The Harbinger")

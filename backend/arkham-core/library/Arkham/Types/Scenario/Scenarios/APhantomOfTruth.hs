@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenarios.APhantomOfTruth.Story
@@ -14,6 +15,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCard
+import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet qualified as EncounterSet
@@ -24,6 +26,7 @@ import Arkham.Types.Message
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
+import Arkham.Types.Target
 import Arkham.Types.Token
 
 newtype APhantomOfTruth = APhantomOfTruth ScenarioAttrs
@@ -97,8 +100,83 @@ instance ScenarioRunner env => RunMessage env APhantomOfTruth where
         randomToken <- sample (Cultist :| [Tablet, ElderThing])
         push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
       pure s
+    StandaloneSetup -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      push
+        (chooseOne
+          leadInvestigatorId
+          [ Label "Conviction" [RecordCount Conviction 1]
+          , Label "Doubt" [RecordCount Doubt 1]
+          ]
+        )
+      pure s
     Setup -> do
+      investigatorIds <- getInvestigatorIds
+      leadInvestigatorId <- getLeadInvestigatorId
 
+      theKingClaimedItsVictims <- getHasRecord TheKingClaimedItsVictims
+      youIntrudedOnASecretMeeting <- getHasRecord YouIntrudedOnASecretMeeting
+      youSlayedTheMonstersAtTheDinnerParty <- getHasRecord
+        YouSlayedTheMonstersAtTheDinnerParty
+      thePoliceAreSuspiciousOfYou <- getHasRecord ThePoliceAreSuspiciousOfYou
+      chasingTheStranger <- getRecordCount ChasingTheStranger
+
+      let
+        showDream4 =
+          not theKingClaimedItsVictims
+            && not youIntrudedOnASecretMeeting
+            && youSlayedTheMonstersAtTheDinnerParty
+        showDream7 =
+          not theKingClaimedItsVictims && thePoliceAreSuspiciousOfYou
+
+      let
+        intro = if theKingClaimedItsVictims then intro1 else intro2
+        dreamPath = catMaybes
+          [ Just dream1
+          , Just dream2
+          , dream3 <$ guard
+            (not theKingClaimedItsVictims && youIntrudedOnASecretMeeting)
+          , dream4 <$ guard showDream4
+          , dream6 <$ guard (not theKingClaimedItsVictims)
+          , dream7 <$ guard showDream7
+          , Just dream8
+          , dream9 <$ guard (chasingTheStranger <= 3)
+          , dream10 <$ guard (chasingTheStranger > 3)
+          ]
+
+      paranoia <- genPlayerCard Treacheries.paranoia
+      lostSouls <- replicateM 4 (genPlayerCard Treacheries.lostSoul)
+      standalone <- getIsStandalone
+
+      pushAll
+        $ story investigatorIds intro
+        : map (story investigatorIds) dreamPath
+        <> [ ShuffleCardsIntoDeck iid [lostSoul]
+           | not standalone
+           , (iid, lostSoul) <- zip investigatorIds lostSouls
+           ]
+        <> [ chooseOne
+               leadInvestigatorId
+               [ TargetLabel
+                   (InvestigatorTarget iid)
+                   [ShuffleCardsIntoDeck iid [paranoia]]
+               | iid <- investigatorIds
+               ]
+           | showDream4
+           ]
+        <> [ SufferTrauma iid 0 1 | showDream7, iid <- investigatorIds ]
+        <> [ chooseOne
+               leadInvestigatorId
+               [ Label
+                 "“How could any of this be beautiful to you?”"
+                 [SetupStep 11]
+               , Label "“What exactly am I looking at?”" [SetupStep 12]
+               ]
+           | chasingTheStranger > 3
+           ]
+        <> [ SetupStep 13 | chasingTheStranger <= 3 ]
+      APhantomOfTruth <$> runMessage msg attrs
+    SetupStep n -> do
       conviction <- getRecordCount Conviction
       doubt <- getRecordCount Doubt
 
@@ -140,10 +218,24 @@ instance ScenarioRunner env => RunMessage env APhantomOfTruth where
       notreDame <- genCard Locations.notreDame
       gardensOfLuxembourg <- genCard Locations.gardensOfLuxembourg
 
+      jordanInterviewed <- elem (Recorded $ toCardCode Assets.jordanPerry)
+        <$> getRecordSet VIPsInterviewed
       investigatorIds <- getInvestigatorIds
 
+      let
+        startingLocation =
+          if jordanInterviewed then montparnasse else gareDOrsay
+
       pushAll
-        ([story investigatorIds intro1]
+        ([ story investigatorIds dream11 | n == 11 ]
+        <> [ story investigatorIds dream12 | n == 12 ]
+        <> [ RecordCount Doubt (doubt + 1) | n == 12 ]
+        <> [story investigatorIds dream13, story investigatorIds awakening]
+        <> [ story investigatorIds jordansInformation | jordanInterviewed ]
+        <> [ TakeResources iid 3 False
+           | jordanInterviewed
+           , iid <- investigatorIds
+           ]
         <> [ SetEncounterDeck encounterDeck
            , SetAgendaDeck
            , SetActDeck
@@ -157,7 +249,7 @@ instance ScenarioRunner env => RunMessage env APhantomOfTruth where
            , PlaceLocation pereLachaiseCemetery
            , PlaceLocation notreDame
            , PlaceLocation gardensOfLuxembourg
-           , MoveAllTo (toSource attrs) (toLocationId gareDOrsay)
+           , MoveAllTo (toSource attrs) (toLocationId startingLocation)
            ]
         )
 

@@ -110,6 +110,7 @@ data ModifierType
   | DoubleDifficulty
   | DoubleNegativeModifiersOnTokens
   | DoubleSuccess
+  | DoubleBaseSkillValue
   | DuringEnemyPhaseMustMoveToward Target
   | EnemyCannotEngage InvestigatorId
   | EnemyEvade Int

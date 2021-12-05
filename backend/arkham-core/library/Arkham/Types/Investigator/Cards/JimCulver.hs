@@ -2,6 +2,7 @@ module Arkham.Types.Investigator.Cards.JimCulver where
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.EffectMetadata
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
@@ -12,13 +13,12 @@ import Arkham.Types.Target
 
 newtype JimCulver = JimCulver InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-jimCulver :: JimCulver
-jimCulver = JimCulver $ baseAttrs
-  "02004"
-  "Jim Culver"
-  Mystic
+jimCulver :: InvestigatorCard JimCulver
+jimCulver = investigator
+  JimCulver
+  Cards.jimCulver
   Stats
     { health = 7
     , sanity = 8
@@ -27,7 +27,6 @@ jimCulver = JimCulver $ baseAttrs
     , combat = 3
     , agility = 2
     }
-  [Performer]
 
 instance HasModifiersFor env JimCulver where
   getModifiersFor (SkillTestSource iid _ _ _ _) (TokenTarget token) (JimCulver attrs)

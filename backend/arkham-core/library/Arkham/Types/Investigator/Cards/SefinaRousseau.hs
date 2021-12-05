@@ -3,6 +3,7 @@ module Arkham.Types.Investigator.Cards.SefinaRousseau where
 import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Events
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Cost
@@ -14,13 +15,12 @@ import Arkham.Types.Target
 
 newtype SefinaRousseau = SefinaRousseau InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-sefinaRousseau :: SefinaRousseau
-sefinaRousseau = SefinaRousseau $ baseAttrs
-  "03003"
-  "Sefina Rousseau"
-  Rogue
+sefinaRousseau :: InvestigatorCard SefinaRousseau
+sefinaRousseau = investigator
+  SefinaRousseau
+  Cards.sefinaRousseau
   Stats
     { health = 5
     , sanity = 9
@@ -29,7 +29,6 @@ sefinaRousseau = SefinaRousseau $ baseAttrs
     , combat = 2
     , agility = 4
     }
-  [Artist]
 
 instance HasTokenValue env SefinaRousseau where
   getTokenValue (SefinaRousseau attrs) iid ElderSign

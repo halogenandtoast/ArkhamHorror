@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Game.Types where
 
 import Arkham.Prelude
@@ -38,11 +39,12 @@ data GameState = IsPending | IsActive | IsOver
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data GameParams = GameParams
-  (Either ScenarioId CampaignId)
-  Int
-  [(Investigator, [PlayerCard])] -- Map for order
-  Difficulty
+data GameParams
+  = GameParams
+      (Either ScenarioId CampaignId)
+      Int
+      [(Investigator, [PlayerCard])] -- Map for order
+      Difficulty
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -54,12 +56,10 @@ data Game = Game
   , gameSeed :: Int
   , gameParams :: GameParams
   , gameWindowDepth :: Int
-
-  -- Active Scenario/Campaign
-  , gameMode :: GameMode
-
-  -- Entities
-  , gameLocations :: EntityMap Location
+  , -- Active Scenario/Campaign
+    gameMode :: GameMode
+  , -- Entities
+    gameLocations :: EntityMap Location
   , gameInvestigators :: EntityMap Investigator
   , gameEnemies :: EntityMap Enemy
   , gameEnemiesInVoid :: EntityMap Enemy
@@ -70,16 +70,14 @@ data Game = Game
   , gameEvents :: EntityMap Event
   , gameEffects :: EntityMap Effect
   , gameSkills :: EntityMap Skill
-
-  -- Player Details
-  , gamePlayerCount :: Int -- used for determining if game should start
+  , -- Player Details
+    gamePlayerCount :: Int -- used for determining if game should start
   , gameActiveInvestigatorId :: InvestigatorId
   , gameTurnPlayerInvestigatorId :: Maybe InvestigatorId
   , gameLeadInvestigatorId :: InvestigatorId
   , gamePlayerOrder :: [InvestigatorId] -- For "in player order"
-
-  -- Game Details
-  , gamePhase :: Phase
+  , -- Game Details
+    gamePhase :: Phase
   , gameEncounterDeck :: Deck EncounterCard
   , gameDiscard :: [EncounterCard]
   , gameChaosBag :: ChaosBag
@@ -96,11 +94,9 @@ data Game = Game
   , gameGameState :: GameState
   , gameSkillTestResults :: Maybe SkillTestResultsData
   , gameEnemyMoving :: Maybe EnemyId
-
-  -- Active questions
-  , gameQuestion :: HashMap InvestigatorId Question
+  , -- Active questions
+    gameQuestion :: HashMap InvestigatorId Question
   }
   deriving stock (Eq, Show, Generic)
 
 makeLensesWith suffixedFields ''Game
-

@@ -2,6 +2,7 @@ module Arkham.Types.Investigator.Cards.StellaClark where
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -12,13 +13,12 @@ import Arkham.Types.Timing qualified as Timing
 
 newtype StellaClark = StellaClark InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-stellaClark :: StellaClark
-stellaClark = StellaClark $ baseAttrs
-  "60501"
-  ("Stella Clark" <:> "The Letter Carrier")
-  Survivor
+stellaClark :: InvestigatorCard StellaClark
+stellaClark = investigator
+  StellaClark
+  Cards.stellaClark
   Stats
     { health = 8
     , sanity = 8
@@ -27,7 +27,6 @@ stellaClark = StellaClark $ baseAttrs
     , combat = 3
     , agility = 4
     }
-  [Chosen, Civic]
 
 instance HasAbilities StellaClark where
   getAbilities (StellaClark a) =

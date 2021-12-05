@@ -5,6 +5,7 @@ module Arkham.Types.Investigator.Cards.MinhThiPhan
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card hiding (CommittedCard)
 import Arkham.Types.Cost
@@ -22,13 +23,12 @@ import Arkham.Types.Window qualified as Window
 
 newtype MinhThiPhan = MinhThiPhan InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-minhThiPhan :: MinhThiPhan
-minhThiPhan = MinhThiPhan $ baseAttrs
-  "03002"
-  "Minh Thi Phan"
-  Seeker
+minhThiPhan :: InvestigatorCard MinhThiPhan
+minhThiPhan = investigator
+  MinhThiPhan
+  Cards.minhThiPhan
   Stats
     { health = 7
     , sanity = 7
@@ -37,7 +37,6 @@ minhThiPhan = MinhThiPhan $ baseAttrs
     , combat = 2
     , agility = 2
     }
-  [Assistant]
 
 instance HasAbilities MinhThiPhan where
   getAbilities (MinhThiPhan attrs) =

@@ -14,6 +14,7 @@ import Arkham.Types.Stats as X
 import Arkham.Types.Token as X
 import Arkham.Types.Trait as X hiding (Cultist)
 
+import Arkham.Investigator.Cards (allInvestigatorCards)
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
@@ -62,10 +63,13 @@ class IsInvestigator a
 type InvestigatorRunner env
   = (InnerInvestigatorRunner env, EntityInstanceRunner env)
 
+type InvestigatorCard a = CardBuilder () a
+
 data InvestigatorAttrs = InvestigatorAttrs
-  { investigatorName :: Name
+  { investigatorId :: InvestigatorId
+  , investigatorName :: Name
+  , investigatorCardCode :: CardCode
   , investigatorClass :: ClassSymbol
-  , investigatorId :: InvestigatorId
   , investigatorHealth :: Int
   , investigatorSanity :: Int
   , investigatorWillpower :: Int
@@ -101,7 +105,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   -- investigator-specific fields
   , investigatorTomeActions :: Maybe Int
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 makeLensesWith suffixedFields ''InvestigatorAttrs
 
@@ -134,6 +138,11 @@ instance Entity InvestigatorAttrs where
   type EntityAttrs InvestigatorAttrs = InvestigatorAttrs
   toId = investigatorId
   toAttrs = id
+
+instance HasCardDef InvestigatorAttrs where
+  toCardDef e = case lookup (investigatorCardCode e) allInvestigatorCards of
+    Just def -> def
+    Nothing -> error $ "missing card def for enemy " <> show (investigatorCardCode e)
 
 instance Named InvestigatorAttrs where
   toName = investigatorName
@@ -332,65 +341,76 @@ getAttrStats InvestigatorAttrs {..} = Stats
   , agility = investigatorAgility
   }
 
-baseAttrs
-  :: InvestigatorId
-  -> Name
-  -> ClassSymbol
+investigatorWith
+  :: (InvestigatorAttrs -> a)
+  -> CardDef
   -> Stats
-  -> [Trait]
-  -> InvestigatorAttrs
-baseAttrs iid name classSymbol Stats {..} traits = InvestigatorAttrs
-  { investigatorName = name
-  , investigatorId = iid
-  , investigatorClass = classSymbol
-  , investigatorHealth = health
-  , investigatorSanity = sanity
-  , investigatorWillpower = willpower
-  , investigatorIntellect = intellect
-  , investigatorCombat = combat
-  , investigatorAgility = agility
-  , investigatorHealthDamage = 0
-  , investigatorSanityDamage = 0
-  , investigatorClues = 0
-  , investigatorDoom = 0
-  , investigatorResources = 0
-  , investigatorLocation = LocationId $ CardId nil
-  , investigatorActionsTaken = mempty
-  , investigatorRemainingActions = 3
-  , investigatorEndedTurn = False
-  , investigatorEngagedEnemies = mempty
-  , investigatorAssets = mempty
-  , investigatorDeck = mempty
-  , investigatorDiscard = mempty
-  , investigatorHand = mempty
-  , investigatorTraits = setFromList traits
-  , investigatorTreacheries = mempty
-  , investigatorInHandTreacheries = mempty
-  , investigatorDefeated = False
-  , investigatorResigned = False
-  , investigatorSlots = mapFromList
-    [ (AccessorySlot, [Slot (InvestigatorSource iid) Nothing])
-    , (BodySlot, [Slot (InvestigatorSource iid) Nothing])
-    , (AllySlot, [Slot (InvestigatorSource iid) Nothing])
-    , ( HandSlot
-      , [ Slot (InvestigatorSource iid) Nothing
-        , Slot (InvestigatorSource iid) Nothing
+  -> (InvestigatorAttrs -> InvestigatorAttrs)
+  -> CardBuilder () a
+investigatorWith f cardDef stats g = investigator (f . g) cardDef stats
+
+investigator
+  :: (InvestigatorAttrs -> a)
+  -> CardDef
+  -> Stats
+  -> CardBuilder () a
+investigator f cardDef Stats {..} = let iid = InvestigatorId (cdCardCode cardDef) in
+  CardBuilder
+    { cbCardCode = cdCardCode cardDef
+    , cbCardBuilder = \_ -> f $ InvestigatorAttrs
+      { investigatorId = iid
+      , investigatorName = cdName cardDef
+      , investigatorCardCode = cdCardCode cardDef
+      , investigatorClass = fromJustNote "missing class symbol" $ cdClassSymbol cardDef
+      , investigatorHealth = health
+      , investigatorSanity = sanity
+      , investigatorWillpower = willpower
+      , investigatorIntellect = intellect
+      , investigatorCombat = combat
+      , investigatorAgility = agility
+      , investigatorHealthDamage = 0
+      , investigatorSanityDamage = 0
+      , investigatorClues = 0
+      , investigatorDoom = 0
+      , investigatorResources = 0
+      , investigatorLocation = LocationId $ CardId nil
+      , investigatorActionsTaken = mempty
+      , investigatorRemainingActions = 3
+      , investigatorEndedTurn = False
+      , investigatorEngagedEnemies = mempty
+      , investigatorAssets = mempty
+      , investigatorDeck = mempty
+      , investigatorDiscard = mempty
+      , investigatorHand = mempty
+      , investigatorTraits = cdCardTraits cardDef
+      , investigatorTreacheries = mempty
+      , investigatorInHandTreacheries = mempty
+      , investigatorDefeated = False
+      , investigatorResigned = False
+      , investigatorSlots = mapFromList
+        [ (AccessorySlot, [Slot (InvestigatorSource iid) Nothing])
+        , (BodySlot, [Slot (InvestigatorSource iid) Nothing])
+        , (AllySlot, [Slot (InvestigatorSource iid) Nothing])
+        , ( HandSlot
+          , [ Slot (InvestigatorSource iid) Nothing
+            , Slot (InvestigatorSource iid) Nothing
+            ]
+          )
+        , ( ArcaneSlot
+          , [ Slot (InvestigatorSource iid) Nothing
+            , Slot (InvestigatorSource iid) Nothing
+            ]
+          )
         ]
-      )
-    , ( ArcaneSlot
-      , [ Slot (InvestigatorSource iid) Nothing
-        , Slot (InvestigatorSource iid) Nothing
-        ]
-      )
-    ]
-  , investigatorXp = 0
-  , investigatorPhysicalTrauma = 0
-  , investigatorMentalTrauma = 0
-  , investigatorStartsWith = []
-  , investigatorCardsUnderneath = []
-  , investigatorFoundCards = mempty
-  , investigatorTomeActions = Nothing
-  }
+      , investigatorXp = 0
+      , investigatorPhysicalTrauma = 0
+      , investigatorMentalTrauma = 0
+      , investigatorStartsWith = []
+      , investigatorCardsUnderneath = []
+      , investigatorFoundCards = mempty
+      , investigatorTomeActions = Nothing
+      }
+    }
 
 matchTarget :: InvestigatorAttrs -> ActionTarget -> Action -> Bool
 matchTarget attrs (FirstOneOf as) action =
@@ -626,13 +646,7 @@ runInvestigatorMessage
   -> InvestigatorAttrs
   -> m InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
-  ResetGame -> pure $ (baseAttrs
-                        investigatorId
-                        investigatorName
-                        investigatorClass
-                        (getAttrStats a)
-                        (setToList investigatorTraits)
-                      )
+  ResetGame ->pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) ())
     { investigatorXp = investigatorXp
     , investigatorPhysicalTrauma = investigatorPhysicalTrauma
     , investigatorMentalTrauma = investigatorMentalTrauma

@@ -2,6 +2,7 @@ module Arkham.Types.Investigator.Cards.ZoeySamaras where
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -17,13 +18,12 @@ import Arkham.Types.Timing qualified as Timing
 
 newtype ZoeySamaras = ZoeySamaras InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-zoeySamaras :: ZoeySamaras
-zoeySamaras = ZoeySamaras $ baseAttrs
-  "02001"
-  "Zoey Samaras"
-  Guardian
+zoeySamaras :: InvestigatorCard ZoeySamaras
+zoeySamaras = investigator
+  ZoeySamaras
+  Cards.zoeySamaras
   Stats
     { health = 9
     , sanity = 6
@@ -32,7 +32,6 @@ zoeySamaras = ZoeySamaras $ baseAttrs
     , combat = 4
     , agility = 2
     }
-  [Believer, Hunter]
 
 instance HasAbilities ZoeySamaras where
   getAbilities (ZoeySamaras x) =

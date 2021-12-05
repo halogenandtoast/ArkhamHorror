@@ -2,6 +2,7 @@ module Arkham.Types.Investigator.Cards.NathanielCho where
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Action qualified as Action
 import Arkham.Types.Card.CardType
@@ -19,13 +20,12 @@ import Arkham.Types.Window qualified as Window
 
 newtype NathanielCho = NathanielCho InvestigatorAttrs
   deriving anyclass (HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-nathanielCho :: NathanielCho
-nathanielCho = NathanielCho $ baseAttrs
-  "60101"
-  "Nathaniel Cho"
-  Guardian
+nathanielCho :: InvestigatorCard NathanielCho
+nathanielCho = investigator
+  NathanielCho
+  Cards.nathanielCho
   Stats
     { health = 9
     , sanity = 6
@@ -34,7 +34,6 @@ nathanielCho = NathanielCho $ baseAttrs
     , combat = 5
     , agility = 2
     }
-  [Criminal, Warden]
 
 instance HasAbilities NathanielCho where
   getAbilities (NathanielCho x) =

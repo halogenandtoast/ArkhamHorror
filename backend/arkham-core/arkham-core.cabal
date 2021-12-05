@@ -23,6 +23,7 @@ library
       Arkham.Enemy.Cards
       Arkham.Event.Cards
       Arkham.Game
+      Arkham.Investigator.Cards
       Arkham.Json
       Arkham.Location.Cards
       Arkham.PlayerCard
@@ -727,46 +728,23 @@ library
       Arkham.Types.Investigator.Cards
       Arkham.Types.Investigator.Cards.AgnesBaker
       Arkham.Types.Investigator.Cards.AkachiOnyele
-      Arkham.Types.Investigator.Cards.AmandaSharpe
       Arkham.Types.Investigator.Cards.AshcanPete
-      Arkham.Types.Investigator.Cards.CalvinWright
-      Arkham.Types.Investigator.Cards.CarolynFern
       Arkham.Types.Investigator.Cards.DaisyWalker
       Arkham.Types.Investigator.Cards.DaisyWalkerParallel
-      Arkham.Types.Investigator.Cards.DexterDrake
-      Arkham.Types.Investigator.Cards.DianaStanley
-      Arkham.Types.Investigator.Cards.FatherMateo
-      Arkham.Types.Investigator.Cards.FinnEdwards
-      Arkham.Types.Investigator.Cards.HarveyWalters
-      Arkham.Types.Investigator.Cards.JacquelineFine
       Arkham.Types.Investigator.Cards.JennyBarnes
       Arkham.Types.Investigator.Cards.JimCulver
-      Arkham.Types.Investigator.Cards.JoeDiamond
-      Arkham.Types.Investigator.Cards.LeoAnderson
       Arkham.Types.Investigator.Cards.LolaHayes
-      Arkham.Types.Investigator.Cards.LukeRobinson
-      Arkham.Types.Investigator.Cards.MandyThompson
-      Arkham.Types.Investigator.Cards.MarieLambeau
       Arkham.Types.Investigator.Cards.MarkHarrigan
       Arkham.Types.Investigator.Cards.MinhThiPhan
       Arkham.Types.Investigator.Cards.NathanielCho
       Arkham.Types.Investigator.Cards.NormanWithers
-      Arkham.Types.Investigator.Cards.PatriceHathaway
-      Arkham.Types.Investigator.Cards.PrestonFairmont
       Arkham.Types.Investigator.Cards.RexMurphy
-      Arkham.Types.Investigator.Cards.RitaYoung
       Arkham.Types.Investigator.Cards.RolandBanks
       Arkham.Types.Investigator.Cards.SefinaRousseau
-      Arkham.Types.Investigator.Cards.SilasMarsh
-      Arkham.Types.Investigator.Cards.SisterMary
       Arkham.Types.Investigator.Cards.SkidsOToole
       Arkham.Types.Investigator.Cards.StellaClark
-      Arkham.Types.Investigator.Cards.TommyMuldoon
-      Arkham.Types.Investigator.Cards.TonyMorgan
-      Arkham.Types.Investigator.Cards.UrsulaDowns
       Arkham.Types.Investigator.Cards.WendyAdams
       Arkham.Types.Investigator.Cards.WilliamYorick
-      Arkham.Types.Investigator.Cards.WinifredHabbamock
       Arkham.Types.Investigator.Cards.ZoeySamaras
       Arkham.Types.Investigator.Runner
       Arkham.Types.InvestigatorId

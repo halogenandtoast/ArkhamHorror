@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Types.Investigator
   ( module Arkham.Types.Investigator
   ) where
@@ -22,29 +23,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
 
-data Investigator
-  = AgnesBaker' AgnesBaker
-  | AkachiOnyele' AkachiOnyele
-  | AshcanPete' AshcanPete
-  | DaisyWalker' DaisyWalker
-  | DaisyWalkerParallel' DaisyWalkerParallel
-  | JennyBarnes' JennyBarnes
-  | JimCulver' JimCulver
-  | LolaHayes' LolaHayes
-  | MarkHarrigan' MarkHarrigan
-  | MinhThiPhan' MinhThiPhan
-  | NathanielCho' NathanielCho
-  | NormanWithers' NormanWithers
-  | RexMurphy' RexMurphy
-  | RolandBanks' RolandBanks
-  | SefinaRousseau' SefinaRousseau
-  | SkidsOToole' SkidsOToole
-  | StellaClark' StellaClark
-  | WendyAdams' WendyAdams
-  | WilliamYorick' WilliamYorick
-  | ZoeySamaras' ZoeySamaras
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+$(buildEntity "Investigator")
 
 instance
   ( HasCount StartingUsesCount env (AssetId, UseType)
@@ -60,9 +39,6 @@ instance
     pure $ base <> hand
 
 deriving anyclass instance HasCount ClueCount env LocationId => HasTokenValue env Investigator
-
-instance Eq Investigator where
-  a == b = toId a == toId b
 
 isEliminated :: Investigator -> Bool
 isEliminated = uncurry (||) . (isResigned &&& isDefeated)
@@ -225,28 +201,8 @@ instance HasSkillValue env Investigator where
 
 allInvestigators :: HashMap InvestigatorId Investigator
 allInvestigators = mapFromList $ map
-  (toFst $ investigatorId . toAttrs)
-  [ AgnesBaker' agnesBaker
-  , AkachiOnyele' akachiOnyele
-  , AshcanPete' ashcanPete
-  , DaisyWalker' daisyWalker
-  , DaisyWalkerParallel' daisyWalkerParallel
-  , JennyBarnes' jennyBarnes
-  , JimCulver' jimCulver
-  , LolaHayes' lolaHayes
-  , MarkHarrigan' markHarrigan
-  , MinhThiPhan' minhThiPhan
-  , NathanielCho' nathanielCho
-  , NormanWithers' normanWithers
-  , RexMurphy' rexMurphy
-  , RolandBanks' rolandBanks
-  , SefinaRousseau' sefinaRousseau
-  , SkidsOToole' skidsOToole
-  , StellaClark' stellaClark
-  , WendyAdams' wendyAdams
-  , WilliamYorick' williamYorick
-  , ZoeySamaras' zoeySamaras
-  ]
+  (InvestigatorId . cbCardCode &&& ($ ()) . cbCardBuilder)
+  $(buildEntityLookupList "Investigator")
 
 lookupInvestigator :: InvestigatorId -> Investigator
 lookupInvestigator iid =
@@ -468,13 +424,13 @@ getPotentialSlots
   => HashSet Trait
   -> Investigator
   -> m [PotentialSlot]
-getPotentialSlots traits investigator = do
+getPotentialSlots traits i = do
   let
     slots :: [(SlotType, Slot)] =
       concatMap (\(slotType, slots') -> map (slotType, ) slots')
         . mapToList
         . investigatorSlots
-        $ toAttrs investigator
+        $ toAttrs i
   map (PotentialSlot . fst)
     <$> filterM
           (\(_, slot) -> do

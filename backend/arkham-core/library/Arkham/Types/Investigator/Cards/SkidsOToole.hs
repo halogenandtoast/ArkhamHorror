@@ -5,6 +5,7 @@ module Arkham.Types.Investigator.Cards.SkidsOToole
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -15,13 +16,12 @@ import Arkham.Types.Target
 
 newtype SkidsOToole = SkidsOToole InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-skidsOToole :: SkidsOToole
-skidsOToole = SkidsOToole $ baseAttrs
-  "01003"
-  "\"Skids\" O'Toole"
-  Rogue
+skidsOToole :: InvestigatorCard SkidsOToole
+skidsOToole = investigator
+  SkidsOToole
+  Cards.skidsOToole
   Stats
     { health = 8
     , sanity = 6
@@ -30,7 +30,6 @@ skidsOToole = SkidsOToole $ baseAttrs
     , combat = 3
     , agility = 4
     }
-  [Criminal]
 
 instance HasAbilities SkidsOToole where
   getAbilities (SkidsOToole a) =

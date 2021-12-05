@@ -2,18 +2,18 @@ module Arkham.Types.Investigator.Cards.JennyBarnes where
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Message
 
 newtype JennyBarnes = JennyBarnes InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env, HasAbilities)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-jennyBarnes :: JennyBarnes
-jennyBarnes = JennyBarnes $ baseAttrs
-  "02003"
-  "Jenny Barnes"
-  Rogue
+jennyBarnes :: InvestigatorCard JennyBarnes
+jennyBarnes = investigator
+  JennyBarnes
+  Cards.jennyBarnes
   Stats
     { health = 8
     , sanity = 7
@@ -22,7 +22,6 @@ jennyBarnes = JennyBarnes $ baseAttrs
     , combat = 3
     , agility = 3
     }
-  [Drifter]
 
 instance HasTokenValue env JennyBarnes where
   getTokenValue (JennyBarnes attrs) iid ElderSign

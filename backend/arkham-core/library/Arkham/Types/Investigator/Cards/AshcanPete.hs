@@ -6,6 +6,7 @@ module Arkham.Types.Investigator.Cards.AshcanPete
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -17,24 +18,21 @@ import Arkham.Types.Target
 
 newtype AshcanPete = AshcanPete InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-ashcanPete :: AshcanPete
-ashcanPete = AshcanPete $ base & startsWithL .~ [Assets.duke]
- where
-  base = baseAttrs
-    "02005"
-    "\"Ashcan\" Pete"
-    Survivor
-    Stats
-      { health = 6
-      , sanity = 5
-      , willpower = 4
-      , intellect = 2
-      , combat = 2
-      , agility = 3
-      }
-    [Drifter]
+ashcanPete :: InvestigatorCard AshcanPete
+ashcanPete = investigatorWith
+  AshcanPete
+  Cards.ashcanPete
+  Stats
+    { health = 6
+    , sanity = 5
+    , willpower = 4
+    , intellect = 2
+    , combat = 2
+    , agility = 3
+    }
+  (startsWithL .~ [Assets.duke])
 
 instance HasAbilities AshcanPete where
   getAbilities (AshcanPete x) =

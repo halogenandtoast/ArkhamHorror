@@ -1,12 +1,12 @@
-module Arkham.Types.Trait
-  ( Trait(..)
-  , EnemyTrait(..)
-  , HasTraits(..)
-  ) where
+module Arkham.Types.Trait (
+  Trait (..),
+  EnemyTrait (..),
+  HasTraits (..),
+) where
 
 import Arkham.Prelude
 
-newtype EnemyTrait = EnemyTrait { unEnemyTrait :: Trait }
+newtype EnemyTrait = EnemyTrait {unEnemyTrait :: Trait}
 
 data Trait
   = Abomination
@@ -158,7 +158,9 @@ data Trait
   | Train
   | Trap
   | Trick
+  | Unhallowed
   | Upgrade
+  | Venice
   | Veteran
   | Warden
   | Wayfarer
@@ -166,8 +168,6 @@ data Trait
   | Wilderness
   | Witch
   | Woods
-  | Unhallowed
-  | Venice
   | Yithian
   deriving stock (Show, Eq, Generic, Read)
   deriving anyclass (ToJSON, FromJSON, Hashable)

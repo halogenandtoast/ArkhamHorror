@@ -5,6 +5,7 @@ module Arkham.Types.Investigator.Cards.DaisyWalkerParallel
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card.CardType
 import Arkham.Types.Cost
@@ -23,13 +24,13 @@ import Arkham.Types.Zone qualified as Zone
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel InvestigatorAttrs
   deriving anyclass IsInvestigator
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-daisyWalkerParallel :: DaisyWalkerParallel
-daisyWalkerParallel = DaisyWalkerParallel
-  $ baseAttrs "90001" "Daisy Walker" Seeker stats [Miskatonic]
- where
-  stats = Stats
+daisyWalkerParallel :: InvestigatorCard DaisyWalkerParallel
+daisyWalkerParallel = investigator
+  DaisyWalkerParallel
+  Cards.daisyWalkerParallel
+  Stats
     { health = 5
     , sanity = 7
     , willpower = 1

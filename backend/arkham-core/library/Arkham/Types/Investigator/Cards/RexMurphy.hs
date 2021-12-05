@@ -5,6 +5,7 @@ module Arkham.Types.Investigator.Cards.RexMurphy
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -17,13 +18,12 @@ import Arkham.Types.Timing qualified as Timing
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-rexMurphy :: RexMurphy
-rexMurphy = RexMurphy $ baseAttrs
-  "02002"
-  "Rex Murphy"
-  Seeker
+rexMurphy :: InvestigatorCard RexMurphy
+rexMurphy = investigator
+  RexMurphy
+  Cards.rexMurphy
   Stats
     { health = 6
     , sanity = 9
@@ -32,7 +32,6 @@ rexMurphy = RexMurphy $ baseAttrs
     , combat = 2
     , agility = 3
     }
-  [Reporter]
 
 instance HasAbilities RexMurphy where
   getAbilities (RexMurphy x) =

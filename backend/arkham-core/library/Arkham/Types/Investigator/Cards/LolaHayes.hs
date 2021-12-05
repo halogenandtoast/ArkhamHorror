@@ -2,6 +2,7 @@ module Arkham.Types.Investigator.Cards.LolaHayes where
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -14,18 +15,17 @@ import Arkham.Types.Timing qualified as Timing
 
 newtype LolaHayes = LolaHayes InvestigatorAttrs
   deriving anyclass IsInvestigator
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env LolaHayes where
   getModifiersFor _ target (LolaHayes attrs) | isTarget attrs target =
     pure $ toModifiers attrs [CanOnlyUseCardsInRole $ investigatorClass attrs]
   getModifiersFor _ _ _ = pure []
 
-lolaHayes :: LolaHayes
-lolaHayes = LolaHayes $ baseAttrs
-  "03006"
-  "Lola Hayes"
-  Neutral
+lolaHayes :: InvestigatorCard LolaHayes
+lolaHayes = investigator
+  LolaHayes
+  Cards.lolaHayes
   Stats
     { health = 6
     , sanity = 6
@@ -34,7 +34,6 @@ lolaHayes = LolaHayes $ baseAttrs
     , combat = 3
     , agility = 3
     }
-  [Performer]
 
 instance HasTokenValue env LolaHayes where
   getTokenValue (LolaHayes attrs) iid ElderSign | iid == investigatorId attrs =

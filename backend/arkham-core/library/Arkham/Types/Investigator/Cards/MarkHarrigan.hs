@@ -6,6 +6,7 @@ module Arkham.Types.Investigator.Cards.MarkHarrigan
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -16,25 +17,21 @@ import Arkham.Types.Timing qualified as Timing
 
 newtype MarkHarrigan = MarkHarrigan InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-markHarrigan :: MarkHarrigan
-markHarrigan =
-  MarkHarrigan $ base & startsWithL .~ [Assets.sophieInLovingMemory]
- where
-  base = baseAttrs
-    "03001"
-    "Mark Harrigan"
-    Guardian
-    Stats
-      { willpower = 3
-      , intellect = 2
-      , combat = 5
-      , agility = 3
-      , health = 9
-      , sanity = 5
-      }
-    [Veteran]
+markHarrigan :: InvestigatorCard MarkHarrigan
+markHarrigan = investigatorWith
+  MarkHarrigan
+  Cards.markHarrigan
+  Stats
+    { willpower = 3
+    , intellect = 2
+    , combat = 5
+    , agility = 3
+    , health = 9
+    , sanity = 5
+    }
+  (startsWithL .~ [Assets.sophieInLovingMemory])
 
 instance HasAbilities MarkHarrigan where
   getAbilities (MarkHarrigan attrs) =

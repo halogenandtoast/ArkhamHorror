@@ -2,6 +2,7 @@ module Arkham.Types.Investigator.Cards.WilliamYorick where
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Cost
@@ -19,13 +20,12 @@ import Arkham.Types.Window qualified as Window
 
 newtype WilliamYorick = WilliamYorick InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-williamYorick :: WilliamYorick
-williamYorick = WilliamYorick $ baseAttrs
-  "03005"
-  "William Yorick"
-  Survivor
+williamYorick :: InvestigatorCard WilliamYorick
+williamYorick = investigator
+  WilliamYorick
+  Cards.williamYorick
   Stats
     { health = 8
     , sanity = 6
@@ -34,7 +34,6 @@ williamYorick = WilliamYorick $ baseAttrs
     , combat = 4
     , agility = 3
     }
-  [Warden]
 
 instance HasTokenValue env WilliamYorick where
   getTokenValue (WilliamYorick attrs) iid ElderSign

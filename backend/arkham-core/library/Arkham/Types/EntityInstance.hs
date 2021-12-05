@@ -62,57 +62,59 @@ toCardInstance iid card = case toCardType card of
   ActType -> error "Unhandled"
   AgendaType -> error "Unhandled"
   StoryType -> error "Unhandled"
+  InvestigatorType -> error "Unhandled"
 
--- | Masking rules
--- UseCardAbility: Because some abilities have a discard self cost, the card of the ability will have already been discarded when we go to resolve this. While we could use InDiscard in the RunMessage instance for that card's entity, there may be cases where we can trigger abilities without paying the cost, so we want it to be accessible from both.
+{- | Masking rules
+ UseCardAbility: Because some abilities have a discard self cost, the card of the ability will have already been discarded when we go to resolve this. While we could use InDiscard in the RunMessage instance for that card's entity, there may be cases where we can trigger abilities without paying the cost, so we want it to be accessible from both.
+-}
 doNotMask :: Message -> Bool
-doNotMask UseCardAbility{} = True
+doNotMask UseCardAbility {} = True
 doNotMask _ = False
 
-type EntityInstanceRunner env
-  = ( EnemyRunner env
-    , LocationRunner env
-    , AssetRunner env
-    , TreacheryRunner env
-    , LocationRunner env
-    , SkillRunner env
-    , EventRunner env
-    )
+type EntityInstanceRunner env =
+  ( EnemyRunner env
+  , LocationRunner env
+  , AssetRunner env
+  , TreacheryRunner env
+  , LocationRunner env
+  , SkillRunner env
+  , EventRunner env
+  )
 
-type SomeEntityHasModifiersFor env
-  = ( HasCount ResourceCount env TreacheryId
-    , HasCount HorrorCount env InvestigatorId
-    , HasCount Shroud env LocationId
-    , HasId (Maybe OwnerId) env AssetId
-    , HasCount ClueCount env LocationId
-    , Query AssetMatcher env
-    , Query EnemyMatcher env
-    , HasPhase env
-    , HasSkillTest env
-    , HasModifiersFor env ()
-    , HasName env AssetId
-    , HasId CardCode env EnemyId
-    , HasStep AgendaStep env ()
-    , HasId InvestigatorId env EventId
-    , HasId LocationId env InvestigatorId
-    , HasSkillValue env InvestigatorId
-    , HasId (Maybe LocationId) env AssetId
-    , HasSet CommittedCardId env InvestigatorId
-    , HasSet InvestigatorId env LocationId
-    , HasSet Trait env LocationId
-    , HasSet ConnectedLocationId env LocationId
-    , HasCount ClueCount env InvestigatorId
-    , HasSet LocationId env ()
-    , HasCount ClueCount env EnemyId
-    , HasCount CardCount env InvestigatorId
-    , HasCount RemainingSanity env InvestigatorId
-    , HasCount AssetCount env (InvestigatorId, [Trait])
-    , HasSet Trait env AssetId
-    , HasCount PlayerCount env ()
-    , HasCount ResourceCount env InvestigatorId
-    , HasId LocationId env AssetId
-    , Query LocationMatcher env
-    )
+type SomeEntityHasModifiersFor env =
+  ( HasCount ResourceCount env TreacheryId
+  , HasCount HorrorCount env InvestigatorId
+  , HasCount Shroud env LocationId
+  , HasId (Maybe OwnerId) env AssetId
+  , HasCount ClueCount env LocationId
+  , Query AssetMatcher env
+  , Query EnemyMatcher env
+  , HasPhase env
+  , HasSkillTest env
+  , HasModifiersFor env ()
+  , HasName env AssetId
+  , HasId CardCode env EnemyId
+  , HasStep AgendaStep env ()
+  , HasId InvestigatorId env EventId
+  , HasId LocationId env InvestigatorId
+  , HasSkillValue env InvestigatorId
+  , HasId (Maybe LocationId) env AssetId
+  , HasSet CommittedCardId env InvestigatorId
+  , HasSet InvestigatorId env LocationId
+  , HasSet Trait env LocationId
+  , HasSet ConnectedLocationId env LocationId
+  , HasCount ClueCount env InvestigatorId
+  , HasSet LocationId env ()
+  , HasCount ClueCount env EnemyId
+  , HasCount CardCount env InvestigatorId
+  , HasCount RemainingSanity env InvestigatorId
+  , HasCount AssetCount env (InvestigatorId, [Trait])
+  , HasSet Trait env AssetId
+  , HasCount PlayerCount env ()
+  , HasCount ResourceCount env InvestigatorId
+  , HasId LocationId env AssetId
+  , Query LocationMatcher env
+  )
 
 instance SomeEntityHasModifiersFor env => HasModifiersFor env EntityInstance where
   getModifiersFor s t = \case

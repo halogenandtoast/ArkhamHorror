@@ -15,6 +15,7 @@ data CardType
   | ActType
   | AgendaType
   | StoryType
+  | InvestigatorType
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

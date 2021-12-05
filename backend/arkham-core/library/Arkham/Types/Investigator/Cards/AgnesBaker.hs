@@ -5,6 +5,7 @@ module Arkham.Types.Investigator.Cards.AgnesBaker
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Cost
 import Arkham.Types.Criteria
@@ -17,13 +18,10 @@ import Arkham.Types.Timing qualified as Timing
 
 newtype AgnesBaker = AgnesBaker InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-agnesBaker :: AgnesBaker
-agnesBaker = AgnesBaker $ baseAttrs
-  "01004"
-  "Agnes Baker"
-  Mystic
+agnesBaker :: InvestigatorCard AgnesBaker
+agnesBaker = investigator AgnesBaker Cards.agnesBaker
   Stats
     { health = 6
     , sanity = 8
@@ -32,7 +30,6 @@ agnesBaker = AgnesBaker $ baseAttrs
     , combat = 2
     , agility = 3
     }
-  [Sorcerer]
 
 instance HasAbilities AgnesBaker where
   getAbilities (AgnesBaker x) =

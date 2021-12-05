@@ -2,6 +2,7 @@ module Arkham.Types.Investigator.Cards.NormanWithers where
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
@@ -20,13 +21,12 @@ newtype Metadata = Metadata { playedFromTopOfDeck :: Bool }
 
 newtype NormanWithers = NormanWithers (InvestigatorAttrs `With` Metadata)
   deriving anyclass IsInvestigator
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-normanWithers :: NormanWithers
-normanWithers = NormanWithers . (`with` Metadata False) $ baseAttrs
-  "08004"
-  ("Norman Withers" <:> "The Astronomer")
-  Seeker
+normanWithers :: InvestigatorCard NormanWithers
+normanWithers = investigator
+  (NormanWithers . (`with` Metadata False))
+  Cards.normanWithers
   Stats
     { health = 6
     , sanity = 8
@@ -35,7 +35,6 @@ normanWithers = NormanWithers . (`with` Metadata False) $ baseAttrs
     , combat = 2
     , agility = 1
     }
-  [Miskatonic]
 
 instance HasModifiersFor env NormanWithers where
   getModifiersFor _ target (NormanWithers (a `With` metadata))

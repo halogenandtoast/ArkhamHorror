@@ -5,6 +5,7 @@ module Arkham.Types.Investigator.Cards.WendyAdams
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -21,13 +22,12 @@ import Arkham.Types.Window qualified as Window
 
 newtype WendyAdams = WendyAdams InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-wendyAdams :: WendyAdams
-wendyAdams = WendyAdams $ baseAttrs
-  "01005"
-  "Wendy Adams"
-  Survivor
+wendyAdams :: InvestigatorCard WendyAdams
+wendyAdams = investigator
+  WendyAdams
+  Cards.wendyAdams
   Stats
     { health = 7
     , sanity = 7
@@ -36,7 +36,6 @@ wendyAdams = WendyAdams $ baseAttrs
     , combat = 1
     , agility = 4
     }
-  [Drifter]
 
 instance HasTokenValue env WendyAdams where
   getTokenValue (WendyAdams attrs) iid ElderSign | iid == investigatorId attrs =

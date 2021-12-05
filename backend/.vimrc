@@ -3,8 +3,10 @@ au BufWritePost *.hs            silent !init-tags %
 au BufWritePost *.hsc           silent !init-tags %
 augroup END
 
+let g:ale_haskell_ormolu_executable='fourmolu'
+
 let g:ale_fixers = {
-  \ 'haskell': ['brittany', 'hlint', 'stylish-haskell'],
+  \ 'haskell': ['ormolu', 'hlint', 'stylish-haskell'],
   \ 'javascript': ['eslint', 'prettier'],
   \ 'ruby': ['rubocop'],
   \ 'sh': ['shfmt'],

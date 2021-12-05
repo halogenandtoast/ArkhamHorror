@@ -5,6 +5,7 @@ module Arkham.Types.Investigator.Cards.RolandBanks
 
 import Arkham.Prelude
 
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Cost
@@ -18,13 +19,10 @@ import Arkham.Types.Timing qualified as Timing
 
 newtype RolandBanks = RolandBanks InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-rolandBanks :: RolandBanks
-rolandBanks = RolandBanks $ baseAttrs
-  "01001"
-  ("Roland Banks" <:> "The Fed")
-  Guardian
+rolandBanks :: InvestigatorCard RolandBanks
+rolandBanks = investigator RolandBanks Cards.rolandBanks
   Stats
     { health = 9
     , sanity = 5
@@ -33,15 +31,11 @@ rolandBanks = RolandBanks $ baseAttrs
     , combat = 4
     , agility = 2
     }
-  [Agency, Detective]
 
 instance HasAbilities RolandBanks where
   getAbilities (RolandBanks a) =
-    [ restrictedAbility
-          a
-          1
-          (Self <> OnLocation LocationWithAnyClues)
-          (ReactionAbility (EnemyDefeated Timing.After You AnyEnemy) Free)
+    [ reaction a 1 (OnLocation LocationWithAnyClues) Free
+        (EnemyDefeated Timing.After You AnyEnemy)
         & (abilityLimitL .~ PlayerLimit PerRound 1)
     ]
 

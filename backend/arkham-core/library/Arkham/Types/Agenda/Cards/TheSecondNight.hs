@@ -17,13 +17,21 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Matcher
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 
 newtype TheSecondNight = TheSecondNight AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theSecondNight :: AgendaCard TheSecondNight
 theSecondNight = agenda (2, A) TheSecondNight Cards.theSecondNight (Static 5)
+
+instance HasRecord env () => HasModifiersFor env TheSecondNight where
+  getModifiersFor _ target (TheSecondNight a) | not (isTarget a target) = do
+    conviction <- getRecordCount Conviction
+    doubt <- getRecordCount Doubt
+    pure $ toModifiers a $ [DoomSubtracts | conviction > doubt]
+  getModifiersFor _ _ _ = pure []
 
 instance AgendaRunner env => RunMessage env TheSecondNight where
   runMessage msg a@(TheSecondNight attrs) = case msg of

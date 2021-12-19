@@ -458,6 +458,16 @@ getInvestigatorsMatching = \case
   UnengagedInvestigator -> pure []
   ContributedMatchingIcons _ -> pure []
 
+getActsMatching
+  :: (MonadReader env m, HasGame env) => ActMatcher -> m [Act]
+getActsMatching matcher = do
+  allGameActs <- toList . view actsL <$> getGame
+  filterM (matcherFilter matcher) allGameActs
+ where
+  matcherFilter = \case
+    AnyAct -> pure . const True
+    ActWithId actId -> pure . (== actId) . toId
+
 getTreacheriesMatching
   :: (MonadReader env m, HasGame env) => TreacheryMatcher -> m [Treachery]
 getTreacheriesMatching matcher = do
@@ -2670,6 +2680,9 @@ instance HasGame env => HasSet InvestigatorId env (HashSet LocationId) where
 locationFor
   :: (HasGame env, MonadReader env m) => InvestigatorId -> m LocationId
 locationFor iid = locationOf <$> getInvestigator iid
+
+instance HasGame env => Query ActMatcher env where
+  select = fmap (setFromList . map toId) . getActsMatching
 
 instance HasGame env => Query AbilityMatcher env where
   select = fmap setFromList . getAbilitiesMatching

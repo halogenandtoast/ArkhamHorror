@@ -56,15 +56,16 @@ library:
     - bcrypt
     - bytestring
     - case-insensitive
-    - classy-prelude
-    - classy-prelude-yesod
+    - relude
     - conduit
     - containers
+    - data-default
     - directory
     - errors
     - esqueleto
     - fast-logger
     - file-embed
+    - hashable
     - http-api-data
     - http-client-tls
     - http-conduit
@@ -78,6 +79,7 @@ library:
     - persistent-postgresql
     - regex-posix
     - safe
+    - stm
     - string-conversions
     - template-haskell
     - text
@@ -96,6 +98,7 @@ library:
     - websockets
     - yaml
     - yesod-core
+    - yesod-persistent
     - yesod-test
     - yesod-websockets
 

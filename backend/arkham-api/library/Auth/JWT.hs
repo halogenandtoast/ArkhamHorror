@@ -1,16 +1,20 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Auth.JWT
-  ( lookupToken
-  , jsonToToken
-  , tokenToJson
-  ) where
+module Auth.JWT (
+  lookupToken,
+  jsonToToken,
+  tokenToJson,
+) where
 
-import ClassyPrelude.Yesod
+import Relude
+
+import Data.Aeson
 import Data.Char (isSpace)
 import Data.Map as Map (fromList, (!?))
+import Data.Text qualified as T
 import Web.JWT as JWT
+import Yesod.Core
 
 -- | Try to lookup token from the Authorization header
 lookupToken :: MonadHandler m => m (Maybe Text)
@@ -20,10 +24,11 @@ lookupToken = do
 
 -- | Create a token out of a given JSON 'Value'
 jsonToToken :: Text -> Value -> Text
-jsonToToken jwtSecret userId = encodeSigned
-  (JWT.hmacSecret jwtSecret)
-  mempty
-  (mempty { unregisteredClaims = ClaimsMap $ Map.fromList [(jwtKey, userId)] })
+jsonToToken jwtSecret userId =
+  encodeSigned
+    (JWT.hmacSecret jwtSecret)
+    mempty
+    (mempty {unregisteredClaims = ClaimsMap $ Map.fromList [(jwtKey, userId)]})
 
 -- | Extract a JSON 'Value' out of a token
 tokenToJson :: Text -> Text -> Maybe Value
@@ -36,6 +41,7 @@ jwtKey = "jwt"
 
 extractToken :: Text -> Maybe Text
 extractToken auth
-  | toLower x == "token" = Just $ dropWhile isSpace y
+  | T.toLower x == "token" = Just $ T.dropWhile isSpace y
   | otherwise = Nothing
-  where (x, y) = break isSpace auth
+ where
+  (x, y) = T.break isSpace auth

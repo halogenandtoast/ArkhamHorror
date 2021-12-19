@@ -13,7 +13,6 @@ module Api.Handler.Arkham.Games
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Game
-import Arkham.Prelude ((!!?))
 import Arkham.Types.CampaignId
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes.Entity
@@ -23,18 +22,22 @@ import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.ScenarioId
+import Conduit
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
 import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
+import Data.HashMap.Strict qualified as HashMap
 import Data.Map.Strict qualified as Map
+import Data.Traversable (for)
 import Database.Esqueleto.Experimental hiding (update)
 import Entity.Arkham.Player
 import Import hiding (delete, on, (==.))
 import Json
 import Network.WebSockets (ConnectionException)
 import Safe (fromJustNote)
+import UnliftIO.Exception hiding (Handler)
 import Yesod.WebSockets
 
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
@@ -62,7 +65,7 @@ gameStream gameId = catchingConnectionException $ do
 
 catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
 catchingConnectionException f =
-  f `catch` \e -> $(logWarn) $ pack $ show (e :: ConnectionException)
+  f `catch` \e -> $(logWarn) $ tshow (e :: ConnectionException)
 
 data GetGameJson = GetGameJson
   { investigatorId :: Maybe InvestigatorId
@@ -368,23 +371,23 @@ answerInvestigator = \case
 
 handleAnswer :: Game -> InvestigatorId -> Answer -> [Message]
 handleAnswer Game {..} investigatorId = \case
-  AmountsAnswer response -> case lookup investigatorId gameQuestion of
+  AmountsAnswer response -> case HashMap.lookup investigatorId gameQuestion of
     Just (ChooseAmounts _ _ _ target) ->
-      [ResolveAmounts investigatorId (mapToList $ arAmounts response) target]
+      [ResolveAmounts investigatorId (HashMap.toList $ arAmounts response) target]
     _ -> error "Wrong question type"
-  PaymentAmountsAnswer response -> case lookup investigatorId gameQuestion of
+  PaymentAmountsAnswer response -> case HashMap.lookup investigatorId gameQuestion of
     Just (ChoosePaymentAmounts _ _ info) ->
       let
-        costMap = mapFromList @(HashMap InvestigatorId Message)
+        costMap = HashMap.fromList
           $ map (\(iid, _, cost) -> (iid, cost)) info
       in
-        concatMap (\(iid, n) -> replicate n (findWithDefault Noop iid costMap))
-          $ mapToList (parAmounts response)
+        concatMap (\(iid, n) -> replicate n (HashMap.findWithDefault Noop iid costMap))
+          $ HashMap.toList (parAmounts response)
     Just (ChooseDynamicCardAmounts iid cardId _ isFast beforePlayMessages) ->
-      let amount = findWithDefault 0 iid (parAmounts response)
+      let amount = HashMap.findWithDefault 0 iid (parAmounts response)
       in beforePlayMessages <> [PayedForDynamicCard iid cardId amount isFast]
     _ -> error "Wrong question type"
-  Answer response -> case lookup investigatorId gameQuestion of
+  Answer response -> case HashMap.lookup investigatorId gameQuestion of
     Just (ChooseOne qs) -> case qs !!? qrChoice response of
       Nothing -> [Ask investigatorId $ ChooseOne qs]
       Just msg -> [msg]

@@ -1,8 +1,8 @@
-module Handler.Health
-  ( getHealthR
-  ) where
+module Handler.Health (
+  getHealthR,
+) where
 
-import Import hiding (delete, on, (==.))
+import Import
 
 getHealthR :: Handler ()
 getHealthR = pure ()

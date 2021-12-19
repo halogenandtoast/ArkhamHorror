@@ -1,17 +1,19 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
-module Entity.Arkham.Game
-  ( module Entity.Arkham.Game
-  ) where
 
-import ClassyPrelude
+module Entity.Arkham.Game (
+  module Entity.Arkham.Game,
+) where
+
+import Relude
 
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Types.Game
 import Arkham.Types.Message
 import Data.Aeson.Diff
 import Data.Aeson.Types
+import Data.Text qualified as T
 import Data.UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql
@@ -33,12 +35,14 @@ instance PersistFieldSql [Choice] where
 instance PersistField [Choice] where
   toPersistValue = toPersistValue . toJSON
   fromPersistValue val =
-    fromPersistValue val >>= fmapLeft pack . parseEither parseJSON
+    fromPersistValue val >>= fmapLeft T.pack . parseEither parseJSON
    where
     fmapLeft f (Left a) = Left (f a)
     fmapLeft _ (Right a) = Right a -- Rewrap to fix types.
 
-share [mkPersist sqlSettings] [persistLowerCase|
+share
+  [mkPersist sqlSettings]
+  [persistLowerCase|
 ArkhamGame sql=arkham_games
   Id UUID default=uuid_generate_v4()
   name Text

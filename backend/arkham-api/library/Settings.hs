@@ -10,17 +10,18 @@
 -- declared in the Foundation.hs file.
 module Settings where
 
-import ClassyPrelude.Yesod
 import Control.Exception qualified as Exception
-import Control.Monad.Fail (MonadFail, fail)
-import Data.Aeson (Result(..), fromJSON, withObject, (.!=), (.:?))
+import Data.Aeson
+  (FromJSON(..), Result(..), Value, fromJSON, withObject, (.!=), (.:), (.:?))
 import Data.ByteString.Char8 qualified as BS8
 import Data.FileEmbed (embedFile)
 import Data.String.Conversions.Monomorphic (toStrictByteString)
+import Data.Text qualified as T
 import Data.Yaml (decodeEither')
 import Data.Yaml.Config (applyEnvValue)
 import Database.Persist.Postgresql (PostgresConf(..))
 import Network.Wai.Handler.Warp (HostPreference)
+import Relude
 import URI.ByteString
   ( Authority(..)
   , Host(..)
@@ -43,7 +44,7 @@ fromDatabaseUrl size url = do
   uri <- abortLeft $ parseURI strictURIParserOptions $ toStrictByteString url
   auth <- abortNothing "authority" $ uriAuthority uri
   port <- abortNothing "port" $ authorityPort auth
-  dbName <- abortNothing "path" $ snd <$> uncons (uriPath uri)
+  dbName <- abortNothing "path" $ snd <$> BS8.uncons (uriPath uri)
   unless (schemeBS (uriScheme uri) == "postgres") $ fail "DATABASE_URL has unknown scheme"
   pure PostgresConf
     { pgConnStr =
@@ -122,5 +123,5 @@ configSettingsYmlValue = either Exception.throw id
 compileTimeAppSettings :: AppSettings
 compileTimeAppSettings =
     case fromJSON $ applyEnvValue False mempty configSettingsYmlValue of
-        Error e -> error e
+        Error e -> error . T.pack $ e
         Success settings -> settings

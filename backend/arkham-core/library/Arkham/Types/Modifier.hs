@@ -1,8 +1,8 @@
-module Arkham.Types.Modifier
-  ( Modifier(..)
-  , ModifierType(..)
-  , ActionTarget(..)
-  ) where
+module Arkham.Types.Modifier (
+  Modifier (..),
+  ModifierType (..),
+  ActionTarget (..),
+) where
 
 import Arkham.Prelude
 
@@ -26,7 +26,7 @@ data Modifier = Modifier
   , modifierType :: ModifierType
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass Hashable
+  deriving anyclass (Hashable)
 
 instance ToJSON Modifier where
   toJSON = genericToJSON $ aesonOptions $ Just "modifier"
@@ -107,6 +107,7 @@ data ModifierType
   | DiscoveredClues Int
   | DoNotDrawChaosTokensForSkillChecks
   | DoesNotDamageOtherInvestigator
+  | DoomSubtracts
   | DoubleDifficulty
   | DoubleNegativeModifiersOnTokens
   | DoubleSuccess

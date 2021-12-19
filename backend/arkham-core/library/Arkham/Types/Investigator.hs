@@ -136,8 +136,11 @@ instance HasList DiscardableHandCard env Investigator where
 instance HasCount MentalTraumaCount env Investigator where
   getCount = pure . MentalTraumaCount . investigatorMentalTrauma . toAttrs
 
-instance HasCount DoomCount env Investigator where
-  getCount = pure . DoomCount . investigatorDoom . toAttrs
+instance HasModifiersFor env () => HasCount DoomCount env Investigator where
+  getCount i = do
+    modifiers <- getModifiers (toSource i) (toTarget i)
+    let f = if DoomSubtracts `elem` modifiers then negate else id
+    pure . DoomCount . f . investigatorDoom $ toAttrs i
 
 instance HasCount ActionTakenCount env Investigator where
   getCount =
@@ -228,7 +231,7 @@ getEngagedEnemies = investigatorEngagedEnemies . toAttrs
 -- TODO: This does not work for more than 2 players
 getIsPrey
   :: ( MonadReader env m
-     , HasList (InvestigatorId, Distance) env EnemyTrait
+     , HasList (InvestigatorId, Distance) env EnemyMatcher
      , HasSet CardCount env ()
      , HasSet ClueCount env ()
      , HasSet HorrorCount env ()
@@ -287,8 +290,8 @@ getIsPrey FewestCards i = do
   cardCount <- unCardCount <$> getCount i
   minCardCount <- fromMaybe 100 . minimumMay . map unCardCount <$> getSetList ()
   pure $ minCardCount == cardCount
-getIsPrey (NearestToEnemyWithTrait trait) i = do
-  mappings :: [(InvestigatorId, Distance)] <- getList (EnemyTrait trait)
+getIsPrey (NearestToEnemy matcher) i = do
+  mappings :: [(InvestigatorId, Distance)] <- getList matcher
   let
     mappingsMap :: HashMap InvestigatorId Distance = mapFromList mappings
     minDistance :: Int =

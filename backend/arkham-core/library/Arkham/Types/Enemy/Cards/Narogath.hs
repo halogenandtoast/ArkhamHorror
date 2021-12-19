@@ -10,6 +10,7 @@ import Arkham.Types.Action
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Id
+import Arkham.Types.Matcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Prey
@@ -28,7 +29,7 @@ narogath = enemyWith
   Cards.narogath
   (3, Static 4, 3)
   (1, 2)
-  (preyL .~ NearestToEnemyWithTrait Trait.Cultist)
+  (preyL .~ NearestToEnemy (EnemyWithTrait Trait.Cultist <> NotEnemy (enemyIs Cards.narogath)))
 
 instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env LocationId) => HasModifiersFor env Narogath where
   getModifiersFor _ (InvestigatorTarget iid) (Narogath a@EnemyAttrs {..})

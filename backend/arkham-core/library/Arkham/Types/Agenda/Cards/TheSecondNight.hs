@@ -17,7 +17,7 @@ newtype TheSecondNight = TheSecondNight AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theSecondNight :: AgendaCard TheSecondNight
-theSecondNight = agenda (1, A) TheSecondNight Cards.theSecondNight (Static 12)
+theSecondNight = agenda (2, A) TheSecondNight Cards.theSecondNight (Static 5)
 
 instance AgendaRunner env => RunMessage env TheSecondNight where
   runMessage msg a@(TheSecondNight attrs) = case msg of

@@ -6,17 +6,18 @@ module Orphans where
 
 import Arkham.Types.Game
 import Arkham.Types.Message
-import ClassyPrelude
 import Control.Error.Util (hush)
 import Control.Monad.Fail qualified as Fail
 import Data.Aeson
 import Data.Aeson.Types
 import Data.ByteString.Char8 qualified as BS8
+import Data.Hashable (Hashable(hash))
 import Data.Text qualified as T
 import Data.UUID (UUID)
 import Data.UUID qualified as UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql
+import Relude
 import Web.HttpApiData
 import Web.PathPieces
 import Yesod.Core.Content
@@ -32,7 +33,7 @@ instance PersistFieldSql Game where
 instance PersistField Game where
   toPersistValue = toPersistValue . toJSON
   fromPersistValue val =
-    fromPersistValue val >>= fmapLeft pack . parseEither parseJSON
+    fromPersistValue val >>= fmapLeft T.pack . parseEither parseJSON
 
 instance PersistFieldSql [Message] where
   sqlType _ = SqlString
@@ -40,7 +41,7 @@ instance PersistFieldSql [Message] where
 instance PersistField [Message] where
   toPersistValue = toPersistValue . toJSON
   fromPersistValue val =
-    fromPersistValue val >>= fmapLeft pack . parseEither parseJSON
+    fromPersistValue val >>= fmapLeft T.pack . parseEither parseJSON
 
 instance PathPiece UUID where
   toPathPiece = toUrlPiece

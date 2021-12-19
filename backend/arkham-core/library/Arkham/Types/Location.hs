@@ -109,8 +109,11 @@ instance HasCount ClueCount env Location where
 instance HasCount Shroud env Location where
   getCount = pure . Shroud . locationShroud . toAttrs
 
-instance HasCount DoomCount env Location where
-  getCount = pure . DoomCount . locationDoom . toAttrs
+instance HasModifiersFor env () => HasCount DoomCount env Location where
+  getCount l = do
+    modifiers <- getModifiers (toSource l) (toTarget l)
+    let f = if DoomSubtracts `elem` modifiers then negate else id
+    pure . DoomCount . f . locationDoom $ toAttrs l
 
 instance HasList UnderneathCard env Location where
   getList = getList . toAttrs

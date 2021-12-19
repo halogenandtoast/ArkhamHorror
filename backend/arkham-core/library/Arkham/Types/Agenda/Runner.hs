@@ -21,6 +21,7 @@ type AgendaRunner env =
   , Query ExtendedCardMatcher env
   , Query InvestigatorMatcher env
   , Query LocationMatcher env
+  , Query ActMatcher env
   , HasCount ClueCount env InvestigatorId
   , HasCount ClueCount env LocationId
   , HasCount DiscardCount env InvestigatorId

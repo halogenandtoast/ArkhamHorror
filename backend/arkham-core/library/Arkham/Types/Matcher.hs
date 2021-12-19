@@ -707,6 +707,10 @@ data AgendaMatcher = AgendaWithId AgendaId | AnyAgenda
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+data ActMatcher = ActWithId ActId | AnyAct
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
 data DamageEffectMatcher = AttackDamageEffect | NonAttackDamageEffect | AnyDamageEffect
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

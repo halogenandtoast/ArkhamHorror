@@ -1,10 +1,11 @@
 module Entity.Arkham.ArkhamDBDecklist where
 
-import ClassyPrelude
+import Relude
 
 import Arkham.Types.Card
 import Arkham.Types.InvestigatorId
 import Data.Aeson.Types
+import Data.Text qualified as T
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql
 
@@ -27,4 +28,4 @@ instance PersistFieldSql ArkhamDBDecklist where
 instance PersistField ArkhamDBDecklist where
   toPersistValue = toPersistValue . toJSON
   fromPersistValue val =
-    fromPersistValue val >>= fmapLeft pack . parseEither parseJSON
+    fromPersistValue val >>= fmapLeft T.pack . parseEither parseJSON

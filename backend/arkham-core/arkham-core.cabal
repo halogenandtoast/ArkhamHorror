@@ -28,6 +28,7 @@ library
       Arkham.Location.Cards
       Arkham.PlayerCard
       Arkham.Prelude
+      Arkham.Scenarios.APhantomOfTruth.Helpers
       Arkham.Scenarios.APhantomOfTruth.Story
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
       Arkham.Scenarios.CurseOfTheRougarou.Helpers

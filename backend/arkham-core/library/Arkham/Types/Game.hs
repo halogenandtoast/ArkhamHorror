@@ -885,6 +885,7 @@ getEnemiesMatching matcher = do
     EnemyWithId enemyId -> pure . (== enemyId) . toId
     NonEliteEnemy -> fmap (notElem Elite) . getSet . toId
     EnemyMatchAll ms -> \enemy -> allM (`matcherFilter` enemy) ms
+    EnemyOneOf ms -> \enemy -> anyM (`matcherFilter` enemy) ms
     EnemyWithTrait t -> fmap (member t) . getSet . toId
     EnemyWithoutTrait t -> fmap (notMember t) . getSet . toId
     EnemyWithKeyword k -> fmap (elem k) . getSet . toId
@@ -1456,6 +1457,7 @@ instance HasGame env => HasCount DoomCount env () where
     investigatorDoomCount <- traverse getCount . toList $ g ^. investigatorsL
     pure
       $ DoomCount
+      . max 0
       . sum
       . map unDoomCount
       $ enemyDoomCount
@@ -2504,18 +2506,24 @@ instance HasGame env => HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait) 
                 (anyM enemyMatches' <=< enemyIdsForLocation)
           )
 
-instance HasGame env => HasList (InvestigatorId, Distance) env EnemyTrait where
-  getList enemyTrait = do
+instance HasGame env => HasList (InvestigatorId, Distance) env EnemyMatcher where
+  getList matcher = do
     iids <- keys . view investigatorsL <$> getGame
-    for iids $ \iid -> (iid, ) <$> (getDistance =<< locationFor iid)
+    traverse (traverseToSnd (getDistance <=< locationFor)) iids
    where
-    hasMatchingEnemy lid =
-      anyM (\eid -> elem (unEnemyTrait enemyTrait) . toTraits <$> getEnemy eid)
-        =<< (getSetList =<< getLocation lid)
+    hasMatchingEnemy lid = selectAny $ EnemyAt (LocationWithId lid) <> matcher
     getDistance start =
       Distance . fromJustNote "error" . minimumMay . keys <$> evalStateT
         (markDistances start hasMatchingEnemy mempty)
         (LPState (pure start) (singleton start) mempty)
+
+instance HasGame env => HasList (LocationId, Distance) env InvestigatorId where
+  getList iid = do
+    start <- locationFor iid
+    rs <- mapToList <$> evalStateT
+      (markDistances start (pure . const True) mempty)
+      (LPState (pure start) (singleton start) mempty)
+    pure $ [(lid, Distance d) | (d, lids) <- rs, lid <- lids]
 
 distanceSingletons :: HashMap Int [LocationId] -> HashMap LocationId Int
 distanceSingletons hmap = foldr

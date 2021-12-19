@@ -11,14 +11,15 @@
 
 module Foundation where
 
+import Import.NoFoundation
+
 import Auth.JWT qualified as JWT
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result(Success), fromJSON)
-import Data.Kind
-import Database.Persist.Sql (ConnectionPool, runSqlPool)
-import Import.NoFoundation
-
 import Data.ByteString.Lazy qualified as BSL
+import Database.Persist.Sql
+  (ConnectionPool, SqlBackend, SqlPersistT, runSqlPool)
+import Network.HTTP.Client.Conduit (HasHttpManager(..), Manager)
 import Yesod.Core.Types (Logger)
 import Yesod.Core.Unsafe qualified as Unsafe
 
@@ -50,9 +51,6 @@ data App = App
 -- type Handler = HandlerT App IO
 -- type Widget = WidgetT App IO ()
 mkYesodData "App" $(parseRoutesFile "config/routes")
-
--- | A convenient synonym for creating forms.
-type Form x = Html -> MForm (HandlerFor App) (FormResult x, Widget)
 
 -- | A convenient synonym for database access functions.
 type DB a = forall (m :: Type -> Type) . (MonadIO m) => ReaderT SqlBackend m a

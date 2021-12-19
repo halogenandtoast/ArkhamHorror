@@ -38,6 +38,7 @@ import Language.Haskell.TH.Syntax hiding (Name)
 import Language.Haskell.TH.Syntax qualified as TH
 
 newtype Distance = Distance { unDistance :: Int }
+  deriving newtype (Ord, Eq)
 
 class HasPhase env where
   getPhase :: MonadReader env m => m Phase

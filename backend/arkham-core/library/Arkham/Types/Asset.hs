@@ -97,8 +97,11 @@ instance HasId (Maybe OwnerId) env Asset where
 instance HasId (Maybe LocationId) env Asset where
   getId = pure . Attrs.assetLocation . toAttrs
 
-instance HasCount DoomCount env Asset where
-  getCount = pure . DoomCount . assetDoom . toAttrs
+instance HasModifiersFor env () => HasCount DoomCount env Asset where
+  getCount a = do
+    modifiers <- getModifiers (toSource a) (toTarget a)
+    let f = if DoomSubtracts `elem` modifiers then negate else id
+    pure . DoomCount . f . assetDoom $ toAttrs a
 
 instance HasCount HorrorCount env Asset where
   getCount = pure . HorrorCount . fromMaybe 0 . assetHorror . toAttrs

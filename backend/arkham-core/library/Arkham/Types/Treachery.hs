@@ -7,6 +7,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Matcher
+import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -64,8 +65,11 @@ instance SourceEntity Treachery where
 instance IsCard Treachery where
   toCardId = toCardId . toAttrs
 
-instance HasCount DoomCount env Treachery where
-  getCount = pure . DoomCount . treacheryDoom . toAttrs
+instance HasModifiersFor env () => HasCount DoomCount env Treachery where
+  getCount t = do
+    modifiers <- getModifiers (toSource t) (toTarget t)
+    let f = if DoomSubtracts `elem` modifiers then negate else id
+    pure . DoomCount . f . treacheryDoom $ toAttrs t
 
 instance HasCount ResourceCount env Treachery where
   getCount = getCount . toAttrs

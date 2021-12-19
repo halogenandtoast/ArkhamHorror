@@ -9,7 +9,7 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Game
 import Arkham.Types.Id
 import Control.Lens (view)
-import Data.Coerce
+import Data.Text qualified as T
 import Json
 import Safe (fromJustNote)
 
@@ -26,7 +26,7 @@ putApiV1ArkhamGameUndoR gameId = do
       writeChannel <- getChannel gameId
 
       case patch arkhamGameCurrentData (choicePatchDown choice) of
-        Error e -> error e
+        Error e -> error $ T.pack e
         Success ge -> do
           liftIO $ atomically $ writeTChan
             writeChannel

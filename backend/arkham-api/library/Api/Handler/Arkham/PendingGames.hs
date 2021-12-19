@@ -12,7 +12,7 @@ import Arkham.Types.Id
 import Arkham.Types.Investigator
 import Control.Monad.Random (mkStdGen)
 import Data.Aeson
-import Data.Coerce
+import Data.HashMap.Strict qualified as HashMap
 import Safe (fromJustNote)
 
 newtype JoinGameJson = JoinGameJson { deckId :: ArkhamDeckId }
@@ -28,7 +28,7 @@ putApiV1ArkhamPendingGameR gameId = do
   deck <- runDB $ get404 deckId
   when (arkhamDeckUserId deck /= userId) notFound
   (iid, decklist) <- liftIO $ loadDecklist deck
-  when (iid `member` gameInvestigators arkhamGameCurrentData)
+  when (iid `HashMap.member` gameInvestigators arkhamGameCurrentData)
     $ invalidArgs ["Investigator already taken"]
 
   runDB $ insert_ $ ArkhamPlayer userId gameId (coerce iid)

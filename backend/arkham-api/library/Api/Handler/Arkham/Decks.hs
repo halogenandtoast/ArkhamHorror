@@ -17,10 +17,12 @@ import Arkham.Types.Id
 import Arkham.Types.Message
 import Control.Monad.Random (mkStdGen)
 import Control.Monad.Validate (dispute, runValidate)
-import Data.Coerce
+import Data.HashMap.Strict qualified as HashMap
+import Data.Text qualified as T
 import Database.Esqueleto.Experimental hiding (isNothing)
 import Json
 import Network.HTTP.Conduit (simpleHttp)
+import Network.HTTP.Types
 import Safe (fromJustNote)
 
 getApiV1ArkhamDecksR :: Handler [Entity ArkhamDeck]
@@ -56,12 +58,12 @@ instance ToJSON DeckError where
 validateDeck :: ArkhamDeck -> Either [DeckError] ArkhamDeck
 validateDeck deck = runValidate $ do
   for_ cardCodes $ \cardCode -> when
-    (isNothing $ lookup cardCode allPlayerCards)
+    (isNothing $ HashMap.lookup cardCode allPlayerCards)
     (dispute [UnimplementedCard cardCode])
   pure deck
  where
   decklist = arkhamDeckList deck
-  cardCodes = keys $ slots decklist
+  cardCodes = HashMap.keys $ slots decklist
 
 postApiV1ArkhamDecksR :: Handler (Entity ArkhamDeck)
 postApiV1ArkhamDecksR = do
@@ -69,7 +71,7 @@ postApiV1ArkhamDecksR = do
   postData <- requireCheckJsonBody
   edeck <- fromPostData userId postData
   case edeck of
-    Left err -> error err
+    Left err -> error $ T.pack err
     Right deck -> do
       case validateDeck deck of
         Left err -> sendStatusJSON status400 err
@@ -138,7 +140,7 @@ fromPostData userId CreateDeckPost {..} = do
       }
 
 getDeckList :: MonadIO m => Text -> m (Either String ArkhamDBDecklist)
-getDeckList url = liftIO $ eitherDecode <$> simpleHttp (unpack url)
+getDeckList url = liftIO $ eitherDecode <$> simpleHttp (T.unpack url)
 
 deleteApiV1ArkhamDeckR :: ArkhamDeckId -> Handler ()
 deleteApiV1ArkhamDeckR deckId = do

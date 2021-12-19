@@ -11,7 +11,6 @@ import Arkham.Types.Game
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Control.Lens
-import Control.Monad.Fail
 import Control.Monad.Random (MonadRandom(..), StdGen, mkStdGen)
 import Data.ByteString.Lazy qualified as BSL
 import Data.HashMap.Strict qualified as HashMap

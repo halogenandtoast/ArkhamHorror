@@ -206,6 +206,7 @@ data EnemyMatcher
   | ExhaustedEnemy
   | NonWeaknessEnemy
   | EnemyMatchAll [EnemyMatcher]
+  | EnemyOneOf [EnemyMatcher]
   | EnemyEngagedWithYou
   | EnemyNotEngagedWithYou
   | EnemyWithMostRemainingHealth EnemyMatcher

@@ -104,8 +104,11 @@ instance EnemyRunner env => RunMessage env Enemy where
 instance HasVictoryPoints Enemy where
   getVictoryPoints = getEnemyVictory
 
-instance HasCount DoomCount env Enemy where
-  getCount = pure . DoomCount . enemyDoom . toAttrs
+instance HasModifiersFor env () => HasCount DoomCount env Enemy where
+  getCount e = do
+    modifiers <- getModifiers (toSource e) (toTarget e)
+    let f = if DoomSubtracts `elem` modifiers then negate else id
+    pure . DoomCount . f . enemyDoom $ toAttrs e
 
 instance HasCount ClueCount env Enemy where
   getCount = pure . ClueCount . enemyClues . toAttrs

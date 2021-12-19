@@ -2,7 +2,7 @@
 require-stack-version: ">= 2.3.1"
 concurrent-tests: false
 
-resolver: lts-18.14
+resolver: lts-18.18
 
 ghc-options:
   "$locals":
@@ -29,9 +29,9 @@ ghc-options:
     -hiedir=.hie
 
 packages:
+  - cards-discover
   - arkham-core
   - arkham-api
-  - cards-discover
 
 extra-deps:
   - classy-prelude-yesod-1.5.0@sha256:8f7e183bdfd6d2ea9674284c4f285294ab086aff60d9be4e5d7d2f3c1a2b05b7,1330

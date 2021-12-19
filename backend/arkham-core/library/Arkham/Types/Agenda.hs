@@ -1,7 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Types.Agenda
-  ( module Arkham.Types.Agenda
-  ) where
+
+module Arkham.Types.Agenda (
+  module Arkham.Types.Agenda,
+) where
 
 import Arkham.Prelude
 
@@ -12,6 +13,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Id
 import Arkham.Types.Matcher
+import Arkham.Types.Modifier
 import Arkham.Types.Name
 import Arkham.Types.Query
 import Arkham.Types.Trait (Trait)
@@ -20,19 +22,24 @@ $(buildEntity "Agenda")
 
 lookupAgenda :: AgendaId -> (Int -> Agenda)
 lookupAgenda agendaId =
-  fromJustNote ("Unknown agenda: " <> show agendaId)
-    $ lookup agendaId allAgendas
+  fromJustNote ("Unknown agenda: " <> show agendaId) $
+    lookup agendaId allAgendas
 
 allAgendas :: HashMap AgendaId (Int -> Agenda)
-allAgendas = mapFromList $ map
-  (\cb -> (AgendaId (cbCardCode cb), \deckId -> cbCardBuilder cb (deckId, AgendaId (cbCardCode cb))))
-  $(buildEntityLookupList "Agenda")
+allAgendas =
+  mapFromList $
+    map
+      (\cb -> (AgendaId (cbCardCode cb), \deckId -> cbCardBuilder cb (deckId, AgendaId (cbCardCode cb))))
+      $(buildEntityLookupList "Agenda")
 
 instance HasList UnderneathCard env Agenda where
   getList = getList . toAttrs
 
-instance HasCount DoomCount env Agenda where
-  getCount = getCount . toAttrs
+instance HasModifiersFor env () => HasCount DoomCount env Agenda where
+  getCount a = do
+    modifiers <- getModifiers (toSource a) (toTarget a)
+    let f = if DoomSubtracts `elem` modifiers then negate else id
+    DoomCount . f . unDoomCount <$> getCount (toAttrs a)
 
 instance HasStep AgendaStep env Agenda where
   getStep = getStep . toAttrs
@@ -43,7 +50,7 @@ instance HasAbilities Agenda where
 instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessage env Agenda where
   runMessage = genericRunMessage
 
-instance (Query EnemyMatcher env, HasSet Trait env EnemyId) => HasModifiersFor env Agenda where
+instance (Query EnemyMatcher env, HasSet Trait env EnemyId, HasRecord env ()) => HasModifiersFor env Agenda where
   getModifiersFor = genericGetModifiersFor
 
 instance Entity Agenda where

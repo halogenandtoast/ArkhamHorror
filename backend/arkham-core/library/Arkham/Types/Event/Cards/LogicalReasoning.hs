@@ -46,9 +46,9 @@ instance EventRunner env => RunMessage env LogicalReasoning where
           )
       let
         choices = map
-          (\(iid', choices) -> TargetLabel
+          (\(iid', choices') -> TargetLabel
             (InvestigatorTarget iid')
-            [chooseOrRunOne iid' choices]
+            [chooseOrRunOne iid' choices']
           )
           options
       e <$ pushAll [chooseOrRunOne iid choices, Discard (toTarget attrs)]

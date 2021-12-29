@@ -934,6 +934,7 @@ type CanCheckPlayable env
     , HasCount ActionTakenCount env InvestigatorId
     , HasCount HorrorCount env AssetId
     , HasCount HorrorCount env LocationId
+    , HasCount DoomCount env ()
     , HasCount DoomCount env LocationId
     , HasCount ResourceCount env LocationId
     , HasCount ResourceCount env TreacheryId
@@ -1102,6 +1103,9 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid source windows' = \case
+  Criteria.DoomCountIs valueMatcher -> do
+    doomCount <- unDoomCount <$> getCount ()
+    gameValueMatches doomCount valueMatcher
   Criteria.Negate restriction ->
     not <$> passesCriteria iid source windows' restriction
   Criteria.AllUndefeatedInvestigatorsResigned ->

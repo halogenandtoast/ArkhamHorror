@@ -55,6 +55,7 @@ pattern CanManipulateDeck <-
 data Criterion
   = AssetExists AssetMatcher
   | InYourHand
+  | DoomCountIs ValueMatcher
   | OnAct Int
   | CardExists CardMatcher
   | CardInDiscard DiscardSignifier CardMatcher

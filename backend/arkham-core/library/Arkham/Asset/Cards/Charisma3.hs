@@ -6,7 +6,7 @@ module Arkham.Asset.Cards.Charisma3
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 import Arkham.Slot
 
 newtype Charisma3 = Charisma3 AssetAttrs

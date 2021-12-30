@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria

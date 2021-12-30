@@ -6,7 +6,7 @@ module Arkham.Asset.Cards.TrueGrit
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 import Arkham.Id
 import Arkham.Modifier
 import Arkham.Source

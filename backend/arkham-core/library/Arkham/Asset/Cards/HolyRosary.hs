@@ -3,7 +3,7 @@ module Arkham.Asset.Cards.HolyRosary where
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target

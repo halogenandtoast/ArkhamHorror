@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Cost

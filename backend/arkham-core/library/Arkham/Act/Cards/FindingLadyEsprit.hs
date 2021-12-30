@@ -5,25 +5,24 @@ module Arkham.Act.Cards.FindingLadyEsprit
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Assets
-import Arkham.EncounterSet
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Trait
+import Arkham.Treachery.Cards qualified as Treacheries
 import Data.HashSet qualified as HashSet
 import Data.Maybe (fromJust)
 

@@ -6,7 +6,7 @@ module Arkham.Asset.Cards.Courage
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 
 newtype Courage = Courage AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)

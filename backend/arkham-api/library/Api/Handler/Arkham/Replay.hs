@@ -1,9 +1,8 @@
-module Api.Handler.Arkham.Replay
-  ( getApiV1ArkhamGameReplayR
-  ) where
+module Api.Handler.Arkham.Replay (
+  getApiV1ArkhamGameReplayR,
+) where
 
 import Api.Arkham.Helpers
-import Arkham.Game
 import Arkham.Game
 import Control.Monad.Random (mkStdGen)
 import Import hiding (delete, on, (==.))
@@ -14,11 +13,11 @@ data GetReplayJson = GetReplayJson
   , game :: PublicGame ArkhamGameId
   }
   deriving stock (Show, Generic)
-  deriving anyclass ToJSON
+  deriving anyclass (ToJSON)
 
-newtype ReplayId = ReplayId { id :: ArkhamGameId }
+newtype ReplayId = ReplayId {id :: ArkhamGameId}
   deriving stock (Show, Generic)
-  deriving anyclass ToJSON
+  deriving anyclass (ToJSON)
 
 getApiV1ArkhamGameReplayR :: ArkhamGameId -> Int -> Handler GetReplayJson
 getApiV1ArkhamGameReplayR gameId step = do
@@ -36,15 +35,17 @@ getApiV1ArkhamGameReplayR gameId step = do
     (replayChoices $ map choicePatchUp choices)
 
   ge' <- readIORef gameRef
-  pure $ GetReplayJson
-    (length choices)
-    (toPublicGame $ Entity
-      gameId
-      (ArkhamGame
-        (arkhamGameName ge)
-        ge'
-        (arkhamGameChoices ge)
-        []
-        (arkhamGameMultiplayerVariant ge)
+  pure $
+    GetReplayJson
+      (length choices)
+      ( toPublicGame $
+          Entity
+            gameId
+            ( ArkhamGame
+                (arkhamGameName ge)
+                ge'
+                (arkhamGameChoices ge)
+                []
+                (arkhamGameMultiplayerVariant ge)
+            )
       )
-    )

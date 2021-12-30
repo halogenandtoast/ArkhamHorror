@@ -6,7 +6,7 @@ module Arkham.Asset.Cards.ArcaneEnlightenment
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 import Arkham.Modifier
 import Arkham.Slot
 import Arkham.Target

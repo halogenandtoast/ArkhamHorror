@@ -6,7 +6,7 @@ module Arkham.Asset.Cards.Adaptable1
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 
 newtype Adaptable1 = Adaptable1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)

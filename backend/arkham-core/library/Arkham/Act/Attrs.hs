@@ -1,28 +1,19 @@
-module Arkham.Act.Attrs
-  ( module Arkham.Act.Attrs
-  , module X
-  ) where
+module Arkham.Act.Attrs where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act.Cards
-import Arkham.Json
-import Arkham.Act.Sequence as X
+import Arkham.Act.Sequence
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Cost as X
-import Arkham.Game.Helpers
+import Arkham.Cost
 import Arkham.Id
-import Arkham.Matcher hiding (FastPlayerWindow)
-import Arkham.Message
+import Arkham.Json
 import Arkham.Name
-import Arkham.Query
 import Arkham.Source
 import Arkham.Target
-import Arkham.Timing qualified as Timing
-import Arkham.Window
 
 class IsAct a
 
@@ -115,49 +106,3 @@ instance HasAbilities ActAttrs where
   getAbilities attrs@ActAttrs {..} = case actAdvanceCost of
     Just cost -> [mkAbility attrs 100 (Objective $ FastAbility cost)]
     Nothing -> []
-
-type ActAttrsRunner env
-  = ( HasSet InScenarioInvestigatorId env ()
-    , HasSet InvestigatorId env ()
-    , HasCount PlayerCount env ()
-    , HasId LeadInvestigatorId env ()
-    , HasId (Maybe LocationId) env LocationMatcher
-    , HasSet InvestigatorId env LocationId
-    )
-
-advanceActSideA
-  :: (MonadReader env m, HasId LeadInvestigatorId env ())
-  => ActAttrs
-  -> m [Message]
-advanceActSideA attrs = do
-  leadInvestigatorId <- getLeadInvestigatorId
-  pure
-    [ CheckWindow
-      [leadInvestigatorId]
-      [Window Timing.When (ActAdvance $ toId attrs)]
-    , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
-    ]
-
-instance ActAttrsRunner env => RunMessage env ActAttrs where
-  runMessage msg a@ActAttrs {..} = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A a -> do
-      pushAll =<< advanceActSideA a
-      pure $ a & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
-    AttachTreachery tid (ActTarget aid) | aid == actId ->
-      pure $ a & treacheriesL %~ insertSet tid
-    Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
-    InvestigatorResigned _ -> do
-      investigatorIds <- getSet @InScenarioInvestigatorId ()
-      whenMsg <- checkWindows
-        [Window Timing.When AllUndefeatedInvestigatorsResigned]
-      afterMsg <- checkWindows
-        [Window Timing.When AllUndefeatedInvestigatorsResigned]
-      a <$ when
-        (null investigatorIds)
-        (pushAll [whenMsg, afterMsg, AllInvestigatorsResigned])
-    UseCardAbility iid source _ 100 _ | isSource a source ->
-      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid))
-    PlaceClues (ActTarget aid) n | aid == actId -> do
-      let totalClues = n + fromMaybe 0 actClues
-      pure $ a { actClues = Just totalClues }
-    _ -> pure a

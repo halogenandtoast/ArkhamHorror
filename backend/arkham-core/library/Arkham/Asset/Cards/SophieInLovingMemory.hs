@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Cost

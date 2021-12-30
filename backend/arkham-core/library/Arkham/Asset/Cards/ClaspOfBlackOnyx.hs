@@ -6,7 +6,7 @@ module Arkham.Asset.Cards.ClaspOfBlackOnyx
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
 import Arkham.Modifier

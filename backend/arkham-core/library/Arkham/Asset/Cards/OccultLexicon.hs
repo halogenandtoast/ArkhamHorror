@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Event.Cards qualified as Events
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Card.PlayerCard
 

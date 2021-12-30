@@ -3,7 +3,7 @@ module Arkham.Asset.Cards.ElderSignAmulet3 where
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 
 newtype ElderSignAmulet3 = ElderSignAmulet3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)

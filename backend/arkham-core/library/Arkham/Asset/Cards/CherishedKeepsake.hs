@@ -3,7 +3,7 @@ module Arkham.Asset.Cards.CherishedKeepsake where
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 
 newtype CherishedKeepsake = CherishedKeepsake AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)

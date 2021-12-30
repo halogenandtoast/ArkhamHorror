@@ -6,7 +6,7 @@ module Arkham.Asset.Cards.RelicHunter3
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 import Arkham.Slot
 
 newtype RelicHunter3 = RelicHunter3 AssetAttrs

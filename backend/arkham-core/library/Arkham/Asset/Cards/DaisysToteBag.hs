@@ -6,7 +6,7 @@ module Arkham.Asset.Cards.DaisysToteBag
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Runner
 import Arkham.Slot
 import Arkham.Trait
 

@@ -9,69 +9,69 @@ module TestImport
 
 import Arkham.Prelude as X
 
+import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Game as X hiding (newGame, runMessages)
 import Arkham.Game qualified as Game
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Types.Ability
-import Arkham.Types.Action
-import Arkham.Types.Agenda as X
-import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Cards.WhatsGoingOn
-import Arkham.Types.AgendaId
-import Arkham.Types.Asset as X (Asset(Adaptable1'), createAsset, lookupAsset)
-import Arkham.Types.Asset.Attrs hiding (body)
-import Arkham.Types.Asset.Cards.Adaptable1
-import Arkham.Types.AssetId
-import Arkham.Types.Card as X
-import Arkham.Types.Card.CardDef qualified as CardDef
-import Arkham.Types.Card.EncounterCard as X
-import Arkham.Types.Card.PlayerCard as X
-import Arkham.Types.ChaosBag as X
-import Arkham.Types.ChaosBag qualified as ChaosBag
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes as X hiding
+import Arkham.Action
+import Arkham.Agenda as X
+import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards.WhatsGoingOn
+import Arkham.AgendaId
+import Arkham.Asset as X (Asset(Adaptable1'), createAsset, lookupAsset)
+import Arkham.Asset.Attrs hiding (body)
+import Arkham.Asset.Cards.Adaptable1
+import Arkham.AssetId
+import Arkham.Card as X
+import Arkham.Card.CardDef qualified as CardDef
+import Arkham.Card.EncounterCard as X
+import Arkham.Card.PlayerCard as X
+import Arkham.ChaosBag as X
+import Arkham.ChaosBag qualified as ChaosBag
+import Arkham.ClassSymbol
+import Arkham.Classes as X hiding
   (getCount, getId, getModifiers, getTokenValue)
-import Arkham.Types.Classes qualified as Arkham
-import Arkham.Types.Cost as X
-import Arkham.Types.Difficulty
-import Arkham.Types.Enemy as X
-import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Cards.SwarmOfRats
-import Arkham.Types.Event as X
-import Arkham.Types.Game as X hiding (getAsset)
-import Arkham.Types.Game qualified as Game
-import Arkham.Types.Game.Helpers as X hiding (getCanAffordCost)
-import Arkham.Types.Game.Helpers qualified as Helpers
-import Arkham.Types.GameValue as X
-import Arkham.Types.Helpers as X
-import Arkham.Types.Investigator as X
-import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Investigator.Attrs qualified as Investigator
-import Arkham.Types.Investigator.Cards.JennyBarnes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Location as X
-import Arkham.Types.Location.Attrs
-import Arkham.Types.Location.Cards.Study
-import Arkham.Types.LocationId as X
-import Arkham.Types.Matcher hiding (DuringTurn, FastPlayerWindow)
-import Arkham.Types.Message as X
-import Arkham.Types.Modifier
-import Arkham.Types.Phase
-import Arkham.Types.Query as X
-import Arkham.Types.Scenario as X
-import Arkham.Types.Scenario.Attrs
-import Arkham.Types.Scenario.Attrs qualified as Scenario
-import Arkham.Types.Scenario.Scenarios.TheGathering (TheGathering(..))
-import Arkham.Types.SkillType as X
-import Arkham.Types.Source as X
-import Arkham.Types.Stats as X
-import Arkham.Types.Target as X
-import Arkham.Types.Timing qualified as Timing
-import Arkham.Types.Token as X
-import Arkham.Types.Window as X
+import Arkham.Classes qualified as Arkham
+import Arkham.Cost as X
+import Arkham.Difficulty
+import Arkham.Enemy as X
+import Arkham.Enemy.Attrs
+import Arkham.Enemy.Cards.SwarmOfRats
+import Arkham.Event as X
+import Arkham.Game as X hiding (getAsset)
+import Arkham.Game qualified as Game
+import Arkham.Game.Helpers as X hiding (getCanAffordCost)
+import Arkham.Game.Helpers qualified as Helpers
+import Arkham.GameValue as X
+import Arkham.Helpers as X
+import Arkham.Investigator as X
+import Arkham.Investigator.Attrs
+import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Investigator.Cards.JennyBarnes
+import Arkham.InvestigatorId
+import Arkham.Location as X
+import Arkham.Location.Attrs
+import Arkham.Location.Cards.Study
+import Arkham.LocationId as X
+import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)
+import Arkham.Message as X
+import Arkham.Modifier
+import Arkham.Phase
+import Arkham.Query as X
+import Arkham.Scenario as X
+import Arkham.Scenario.Attrs
+import Arkham.Scenario.Attrs qualified as Scenario
+import Arkham.Scenario.Scenarios.TheGathering (TheGathering(..))
+import Arkham.SkillType as X
+import Arkham.Source as X
+import Arkham.Stats as X
+import Arkham.Target as X
+import Arkham.Timing qualified as Timing
+import Arkham.Token as X
+import Arkham.Window as X
   (Window(..), WindowType(DuringTurn, FastPlayerWindow, NonFast))
 import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X

@@ -2,20 +2,20 @@ module Arkham.Asset.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Types.Asset.Uses hiding (Key)
-import Arkham.Types.Asset.Uses qualified as Uses
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.CardType
-import Arkham.Types.Card.Cost
-import Arkham.Types.ClassSymbol
-import Arkham.Types.EncounterSet hiding (Dunwich)
-import Arkham.Types.Keyword qualified as Keyword
-import Arkham.Types.Matcher
-import Arkham.Types.Name
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Trait hiding (Supply)
+import Arkham.Asset.Uses hiding (Key)
+import Arkham.Asset.Uses qualified as Uses
+import Arkham.Card.CardCode
+import Arkham.Card.CardDef
+import Arkham.Card.CardType
+import Arkham.Card.Cost
+import Arkham.ClassSymbol
+import Arkham.EncounterSet hiding (Dunwich)
+import Arkham.Keyword qualified as Keyword
+import Arkham.Matcher
+import Arkham.Name
+import Arkham.SkillType
+import Arkham.Slot
+import Arkham.Trait hiding (Supply)
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =

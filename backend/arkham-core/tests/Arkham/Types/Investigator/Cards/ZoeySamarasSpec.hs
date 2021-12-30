@@ -1,10 +1,10 @@
-module Arkham.Types.Investigator.Cards.ZoeySamarasSpec
+module Arkham.Investigator.Cards.ZoeySamarasSpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
-import Arkham.Types.Enemy.Attrs qualified as Enemy
+import Arkham.Enemy.Attrs qualified as Enemy
 
 spec :: Spec
 spec = do

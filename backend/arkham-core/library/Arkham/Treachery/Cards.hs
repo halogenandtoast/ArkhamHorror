@@ -2,16 +2,16 @@ module Arkham.Treachery.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Types.Asset.Uses
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.CardType
-import Arkham.Types.ClassSymbol
-import Arkham.Types.EncounterSet hiding (Byakhee, Dunwich)
-import Arkham.Types.EncounterSet qualified as EncounterSet
-import Arkham.Types.Keyword qualified as Keyword
-import Arkham.Types.Name
-import Arkham.Types.Trait
+import Arkham.Asset.Uses
+import Arkham.Card.CardCode
+import Arkham.Card.CardDef
+import Arkham.Card.CardType
+import Arkham.ClassSymbol
+import Arkham.EncounterSet hiding (Byakhee, Dunwich)
+import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Keyword qualified as Keyword
+import Arkham.Name
+import Arkham.Trait
 
 baseTreachery
   :: CardCode

@@ -7,8 +7,8 @@ import Arkham.Enemy.Cards
 import Arkham.Location.Cards
 import Arkham.Story.Cards
 import Arkham.Treachery.Cards
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
+import Arkham.Card.CardCode
+import Arkham.Card.CardDef
 
 lookupEncounterCardDef :: CardCode -> CardDef
 lookupEncounterCardDef cardCode =

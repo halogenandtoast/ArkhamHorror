@@ -1,12 +1,12 @@
-module Arkham.Types.Asset.Cards.BandolierSpec
+module Arkham.Asset.Cards.BandolierSpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
-import Arkham.Types.Investigator.Attrs qualified as Investigator
-import Arkham.Types.Slot
-import Arkham.Types.Trait
+import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Slot
+import Arkham.Trait
 
 spec :: Spec
 spec = describe "Bandolier" $ do

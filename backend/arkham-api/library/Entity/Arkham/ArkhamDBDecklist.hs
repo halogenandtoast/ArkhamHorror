@@ -2,8 +2,8 @@ module Entity.Arkham.ArkhamDBDecklist where
 
 import Relude
 
-import Arkham.Types.Card
-import Arkham.Types.InvestigatorId
+import Arkham.Card
+import Arkham.InvestigatorId
 import Data.Aeson.Types
 import Data.Text qualified as T
 import Database.Persist.Postgresql.JSON ()

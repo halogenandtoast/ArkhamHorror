@@ -1,13 +1,13 @@
-module Arkham.Types.Asset.Cards.JennysTwin45sSpec
+module Arkham.Asset.Cards.JennysTwin45sSpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Types.AssetId
-import Arkham.Types.Enemy.Attrs qualified as Enemy
-import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.AssetId
+import Arkham.Enemy.Attrs qualified as Enemy
+import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Jenny's Twin .45s" $ do

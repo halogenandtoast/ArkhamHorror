@@ -10,11 +10,11 @@ import Import hiding (delete, on, (==.))
 import Api.Arkham.Helpers
 import Arkham.Game
 import Arkham.PlayerCard
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Game
-import Arkham.Types.Helpers
-import Arkham.Types.Id
-import Arkham.Types.Message
+import Arkham.Card.CardCode
+import Arkham.Game
+import Arkham.Helpers
+import Arkham.Id
+import Arkham.Message
 import Control.Monad.Random (mkStdGen)
 import Control.Monad.Validate (dispute, runValidate)
 import Data.HashMap.Strict qualified as HashMap

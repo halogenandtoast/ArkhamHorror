@@ -1,12 +1,12 @@
-module Arkham.Types.Asset.Cards.Rolands38SpecialSpec
+module Arkham.Asset.Cards.Rolands38SpecialSpec
   ( spec
   ) where
 
 import TestImport
 
-import Arkham.Types.Enemy.Attrs (EnemyAttrs(..))
-import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
-import Arkham.Types.Location.Attrs (LocationAttrs(..))
+import Arkham.Enemy.Attrs (EnemyAttrs(..))
+import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Location.Attrs (LocationAttrs(..))
 
 spec :: Spec
 spec = describe "Roland's .39 Special" $ do

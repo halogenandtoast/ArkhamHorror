@@ -2,24 +2,24 @@ module Helpers.Matchers where
 
 import Arkham.Prelude
 
-import Arkham.Types.Agenda
-import Arkham.Types.Asset
-import Arkham.Types.AssetId
-import Arkham.Types.Card
-import Arkham.Types.Card.EncounterCard
-import Arkham.Types.Card.PlayerCard
-import Arkham.Types.Classes
-import Arkham.Types.Enemy
-import Arkham.Types.EnemyId
-import Arkham.Types.Event
-import Arkham.Types.Game
-import Arkham.Types.Investigator
-import Arkham.Types.Investigator.Attrs qualified as Investigator
-import Arkham.Types.Location
-import Arkham.Types.Query
-import Arkham.Types.Target
-import Arkham.Types.Treachery
-import Arkham.Types.TreacheryId
+import Arkham.Agenda
+import Arkham.Asset
+import Arkham.AssetId
+import Arkham.Card
+import Arkham.Card.EncounterCard
+import Arkham.Card.PlayerCard
+import Arkham.Classes
+import Arkham.Enemy
+import Arkham.EnemyId
+import Arkham.Event
+import Arkham.Game
+import Arkham.Investigator
+import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Location
+import Arkham.Query
+import Arkham.Target
+import Arkham.Treachery
+import Arkham.TreacheryId
 import Control.Lens
 import Data.List qualified as L
 import Data.Maybe (fromJust)

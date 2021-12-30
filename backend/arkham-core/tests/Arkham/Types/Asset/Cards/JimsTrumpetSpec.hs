@@ -1,4 +1,4 @@
-module Arkham.Types.Asset.Cards.JimsTrumpetSpec
+module Arkham.Asset.Cards.JimsTrumpetSpec
   ( spec
   ) where
 
@@ -6,7 +6,7 @@ import TestImport
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Types.Investigator.Attrs qualified as Investigator
+import Arkham.Investigator.Attrs qualified as Investigator
 
 spec :: Spec
 spec = describe "Jim's Trumpet" $ do

@@ -1,0 +1,38 @@
+module Arkham.Enemy.Cards.StubbornDetective
+  ( StubbornDetective(..)
+  , stubbornDetective
+  ) where
+
+import Arkham.Prelude
+
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Classes
+import Arkham.Enemy.Attrs
+import Arkham.Id
+import Arkham.Modifier
+import Arkham.Prey
+import Arkham.Target
+
+newtype StubbornDetective = StubbornDetective EnemyAttrs
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+stubbornDetective :: EnemyCard StubbornDetective
+stubbornDetective = enemyWith
+  StubbornDetective
+  Cards.stubbornDetective
+  (3, Static 2, 2)
+  (1, 0)
+  (preyL .~ SetToBearer)
+
+instance HasId LocationId env InvestigatorId => HasModifiersFor env StubbornDetective where
+  getModifiersFor _ (InvestigatorTarget iid) (StubbornDetective a@EnemyAttrs {..})
+    | spawned a
+    = do
+      locationId <- getId @LocationId iid
+      pure $ toModifiers a [ Blank | locationId == enemyLocation ]
+  getModifiersFor _ _ _ = pure []
+
+instance EnemyRunner env => RunMessage env StubbornDetective where
+  runMessage msg (StubbornDetective attrs) =
+    StubbornDetective <$> runMessage msg attrs

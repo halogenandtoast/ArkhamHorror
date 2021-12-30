@@ -2,17 +2,17 @@ module Arkham.Skill.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Types.Asset.Uses
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.CardType
-import Arkham.Types.ClassSymbol
-import Arkham.Types.CommitRestriction
-import Arkham.Types.GameValue
-import Arkham.Types.Matcher
-import Arkham.Types.Name
-import Arkham.Types.SkillType
-import Arkham.Types.Trait
+import Arkham.Asset.Uses
+import Arkham.Card.CardCode
+import Arkham.Card.CardDef
+import Arkham.Card.CardType
+import Arkham.ClassSymbol
+import Arkham.CommitRestriction
+import Arkham.GameValue
+import Arkham.Matcher
+import Arkham.Name
+import Arkham.SkillType
+import Arkham.Trait
 
 skill :: CardCode -> Name -> [SkillType] -> ClassSymbol -> CardDef
 skill cardCode name skills classSymbol = CardDef

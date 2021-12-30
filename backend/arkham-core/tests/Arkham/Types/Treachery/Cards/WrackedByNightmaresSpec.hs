@@ -1,11 +1,11 @@
-module Arkham.Types.Treachery.Cards.WrackedByNightmaresSpec
+module Arkham.Treachery.Cards.WrackedByNightmaresSpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Types.Asset.Attrs qualified as Asset
+import Arkham.Asset.Attrs qualified as Asset
 
 spec :: Spec
 spec = describe "Wracked by Nightmares" $ do

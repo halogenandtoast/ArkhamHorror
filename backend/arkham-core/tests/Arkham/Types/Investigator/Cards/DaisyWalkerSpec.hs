@@ -1,10 +1,10 @@
-module Arkham.Types.Investigator.Cards.DaisyWalkerSpec
+module Arkham.Investigator.Cards.DaisyWalkerSpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
-import Arkham.Types.Trait
+import Arkham.Trait
 
 import Arkham.Asset.Cards qualified as Cards
 

@@ -1,4 +1,4 @@
-module Arkham.Types.Event.Cards.CloseCall2Spec
+module Arkham.Event.Cards.CloseCall2Spec
   ( spec
   ) where
 
@@ -6,7 +6,7 @@ import TestImport.Lifted
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Types.Investigator.Attrs qualified as Investigator
+import Arkham.Investigator.Attrs qualified as Investigator
 
 spec :: Spec
 spec = describe "Close Call (2)" $ do

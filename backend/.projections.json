@@ -54,11 +54,11 @@
        "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Types/Scenario/Scenarios/*.hs": {
+  "arkham-core/library/Arkham/Scenario/Scenarios/*.hs": {
     "type": "scenario",
-    "alternate": "arkham-core/tests/Arkham/Types/Scenario/Scenarios/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Scenario/Scenarios/{}Spec.hs",
     "template": [
-      "module Arkham.Types.Scenario.Scenarios.{dot}",
+      "module Arkham.Scenario.Scenarios.{dot}",
       "  ( {dot}(..)",
       "  , {dot|snakecase|camelcase}",
       "  ) where",
@@ -68,7 +68,7 @@
       "import Arkham.Types.Classes",
       "import Arkham.Types.Difficulty",
       "import Arkham.Types.InvestigatorId",
-      "import Arkham.Types.Scenario.Attrs",
+      "import Arkham.Scenario.Attrs",
       "import Arkham.Types.Token",
       "",
       "newtype {dot} = {dot} ScenarioAttrs",

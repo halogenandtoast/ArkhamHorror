@@ -1,10 +1,10 @@
-module Arkham.Types.Asset.Cards.GrotesqueStatue4Spec
+module Arkham.Asset.Cards.GrotesqueStatue4Spec
   ( spec
   ) where
 
 import TestImport
 
-import Arkham.Types.ChaosBagStepState
+import Arkham.ChaosBagStepState
 
 spec :: Spec
 spec = describe "Grotesque Statue (4)" $ do

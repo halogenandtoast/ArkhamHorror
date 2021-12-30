@@ -2,14 +2,14 @@ module Arkham.Location.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Types.Asset.Uses
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.CardType
-import Arkham.Types.EncounterSet hiding (Dunwich)
-import Arkham.Types.Keyword qualified as Keyword
-import Arkham.Types.Name
-import Arkham.Types.Trait
+import Arkham.Asset.Uses
+import Arkham.Card.CardCode
+import Arkham.Card.CardDef
+import Arkham.Card.CardType
+import Arkham.EncounterSet hiding (Dunwich)
+import Arkham.Keyword qualified as Keyword
+import Arkham.Name
+import Arkham.Trait
 
 locationWithUnrevealed
   :: CardCode -> Name -> [Trait] -> Name -> [Trait] -> EncounterSet -> CardDef

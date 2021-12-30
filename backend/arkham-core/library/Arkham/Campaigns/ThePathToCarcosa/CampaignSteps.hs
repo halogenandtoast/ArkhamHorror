@@ -2,8 +2,8 @@ module Arkham.Campaigns.ThePathToCarcosa.CampaignSteps where
 
 import Arkham.Prelude
 
-import Arkham.Types.Campaign.Attrs
-import Arkham.Types.CampaignStep
+import Arkham.Campaign.Attrs
+import Arkham.CampaignStep
 
 nextStep :: CampaignAttrs -> Maybe CampaignStep
 nextStep a = case campaignStep a of

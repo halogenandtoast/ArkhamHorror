@@ -3,9 +3,9 @@ module Arkham.Scenarios.CarnevaleOfHorrors.Helpers where
 import Arkham.Prelude
 
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Types.Classes
-import Arkham.Types.Id
-import Arkham.Types.Matcher
+import Arkham.Classes
+import Arkham.Id
+import Arkham.Matcher
 
 getCnidathqua
   :: (MonadReader env m, Query EnemyMatcher env) => m (Maybe EnemyId)

@@ -1,10 +1,10 @@
-module Arkham.Types.Event.Cards.BarricadeSpec
+module Arkham.Event.Cards.BarricadeSpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
-import Arkham.Types.Modifier
+import Arkham.Modifier
 
 spec :: Spec
 spec = do

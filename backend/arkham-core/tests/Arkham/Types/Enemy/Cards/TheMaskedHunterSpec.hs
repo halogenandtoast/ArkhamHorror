@@ -1,10 +1,10 @@
-module Arkham.Types.Enemy.Cards.TheMaskedHunterSpec
+module Arkham.Enemy.Cards.TheMaskedHunterSpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
-import Arkham.Types.Modifier
+import Arkham.Modifier
 
 spec :: Spec
 spec = describe "The Masked Hunter" $ do

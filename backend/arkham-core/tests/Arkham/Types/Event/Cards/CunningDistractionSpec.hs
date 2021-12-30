@@ -1,11 +1,11 @@
-module Arkham.Types.Event.Cards.CunningDistractionSpec
+module Arkham.Event.Cards.CunningDistractionSpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
-import Arkham.Types.Card.CardDef qualified as CardDef
-import Arkham.Types.Keyword
+import Arkham.Card.CardDef qualified as CardDef
+import Arkham.Keyword
 
 spec :: Spec
 spec = do

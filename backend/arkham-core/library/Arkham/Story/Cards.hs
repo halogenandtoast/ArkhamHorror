@@ -2,12 +2,12 @@ module Arkham.Story.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Types.Asset.Uses
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.CardType
-import Arkham.Types.EncounterSet
-import Arkham.Types.Name
+import Arkham.Asset.Uses
+import Arkham.Card.CardCode
+import Arkham.Card.CardDef
+import Arkham.Card.CardType
+import Arkham.EncounterSet
+import Arkham.Name
 
 story :: CardCode -> Name -> EncounterSet -> CardDef
 story cardCode name encounterSet = CardDef

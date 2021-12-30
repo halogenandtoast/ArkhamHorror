@@ -2,9 +2,9 @@ module Arkham.Scenarios.TheEssexCountyExpress.Helpers where
 
 import Arkham.Prelude
 
-import Arkham.Types.Classes
-import Arkham.Types.Direction
-import Arkham.Types.Id
+import Arkham.Classes
+import Arkham.Direction
+import Arkham.Id
 
 leftmostLocation
   :: ( MonadReader env m

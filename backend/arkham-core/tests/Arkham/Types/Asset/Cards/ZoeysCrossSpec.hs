@@ -1,11 +1,11 @@
-module Arkham.Types.Asset.Cards.ZoeysCrossSpec
+module Arkham.Asset.Cards.ZoeysCrossSpec
   ( spec
   ) where
 
 import TestImport
 
-import Arkham.Types.Enemy.Attrs qualified as Enemy
-import Arkham.Types.Investigator.Attrs qualified as Investigator
+import Arkham.Enemy.Attrs qualified as Enemy
+import Arkham.Investigator.Attrs qualified as Investigator
 
 spec :: Spec
 spec = do

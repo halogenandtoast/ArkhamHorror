@@ -2,7 +2,7 @@ module Arkham.Scenarios.APhantomOfTruth.Story where
 
 import Arkham.Prelude
 
-import Arkham.Types.Message
+import Arkham.Message
 
 intro1 :: Message
 intro1 = FlavorText

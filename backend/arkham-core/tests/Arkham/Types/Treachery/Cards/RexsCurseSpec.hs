@@ -1,4 +1,4 @@
-module Arkham.Types.Treachery.Cards.RexsCurseSpec
+module Arkham.Treachery.Cards.RexsCurseSpec
   ( spec
   ) where
 

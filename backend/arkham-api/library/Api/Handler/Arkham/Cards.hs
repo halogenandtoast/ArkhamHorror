@@ -5,8 +5,8 @@ module Api.Handler.Arkham.Cards
 import Import
 
 import Arkham.PlayerCard
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
+import Arkham.Card.CardCode
+import Arkham.Card.CardDef
 
 getApiV1ArkhamCardsR :: Handler [CardDef]
 getApiV1ArkhamCardsR =

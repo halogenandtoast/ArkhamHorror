@@ -2,7 +2,7 @@ module Arkham.Scenarios.TheGathering.Story where
 
 import Arkham.Prelude
 
-import Arkham.Types.Message
+import Arkham.Message
 
 theGatheringIntro :: Message
 theGatheringIntro = FlavorText

@@ -1,4 +1,4 @@
-module Arkham.Types.Event.Cards.DrawnToTheFlameSpec
+module Arkham.Event.Cards.DrawnToTheFlameSpec
   ( spec
   ) where
 
@@ -6,7 +6,7 @@ import TestImport.Lifted
 
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Drawn to the flame" $ do

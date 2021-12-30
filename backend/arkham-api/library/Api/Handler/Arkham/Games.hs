@@ -12,16 +12,15 @@ module Api.Handler.Arkham.Games
 
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
+import Arkham.CampaignId
+import Arkham.Card.CardCode
+import Arkham.Classes.Entity
+import Arkham.Difficulty
 import Arkham.Game
-import Arkham.Types.CampaignId
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Classes.Entity
-import Arkham.Types.Difficulty
-import Arkham.Types.Game
-import Arkham.Types.Investigator
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.ScenarioId
+import Arkham.Investigator
+import Arkham.InvestigatorId
+import Arkham.Message
+import Arkham.ScenarioId
 import Conduit
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)

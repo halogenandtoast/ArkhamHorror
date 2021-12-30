@@ -2,7 +2,7 @@ module Arkham.Scenarios.TheLastKing.Story where
 
 import Arkham.Prelude
 
-import Arkham.Types.Message
+import Arkham.Message
 
 intro :: Message
 intro = FlavorText

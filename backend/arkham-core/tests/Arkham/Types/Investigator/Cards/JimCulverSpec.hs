@@ -1,4 +1,4 @@
-module Arkham.Types.Investigator.Cards.JimCulverSpec
+module Arkham.Investigator.Cards.JimCulverSpec
   ( spec
   ) where
 

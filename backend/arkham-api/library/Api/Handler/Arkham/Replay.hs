@@ -4,7 +4,7 @@ module Api.Handler.Arkham.Replay
 
 import Api.Arkham.Helpers
 import Arkham.Game
-import Arkham.Types.Game
+import Arkham.Game
 import Control.Monad.Random (mkStdGen)
 import Import hiding (delete, on, (==.))
 import Safe (fromJustNote)

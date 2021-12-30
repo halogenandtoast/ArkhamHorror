@@ -1,0 +1,44 @@
+module Arkham.Location.Cards.MiskatonicUniversityMiskatonicMuseum
+  ( MiskatonicUniversityMiskatonicMuseum(..)
+  , miskatonicUniversityMiskatonicMuseum
+  ) where
+
+import Arkham.Prelude
+
+import Arkham.Ability
+import Arkham.Location.Cards qualified as Cards
+  (miskatonicUniversityMiskatonicMuseum)
+import Arkham.Classes
+import Arkham.Cost
+import Arkham.GameValue
+import Arkham.Location.Attrs
+import Arkham.Location.Helpers
+import Arkham.Message
+
+newtype MiskatonicUniversityMiskatonicMuseum = MiskatonicUniversityMiskatonicMuseum LocationAttrs
+  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+miskatonicUniversityMiskatonicMuseum
+  :: LocationCard MiskatonicUniversityMiskatonicMuseum
+miskatonicUniversityMiskatonicMuseum = location
+  MiskatonicUniversityMiskatonicMuseum
+  Cards.miskatonicUniversityMiskatonicMuseum
+  3
+  (PerPlayer 1)
+  Diamond
+  [T, Plus, Circle, Square]
+
+instance HasAbilities MiskatonicUniversityMiskatonicMuseum where
+  getAbilities (MiskatonicUniversityMiskatonicMuseum attrs) =
+    withBaseAbilities attrs $
+      [ mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1)
+          & (abilityLimitL .~ PlayerLimit PerGame 1)
+      | locationRevealed attrs
+      ]
+
+instance (LocationRunner env) => RunMessage env MiskatonicUniversityMiskatonicMuseum where
+  runMessage msg l@(MiskatonicUniversityMiskatonicMuseum attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
+      [InvestigatorAssignDamage iid source DamageAny 0 2, GainClues iid 1]
+    _ -> MiskatonicUniversityMiskatonicMuseum <$> runMessage msg attrs

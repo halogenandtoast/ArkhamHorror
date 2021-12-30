@@ -2,21 +2,21 @@ module Helpers.Message where
 
 import Arkham.Prelude
 
-import Arkham.Types.Action (Action)
-import Arkham.Types.Asset
-import Arkham.Types.Card
-import Arkham.Types.Classes
-import Arkham.Types.Enemy
-import Arkham.Types.Event
-import Arkham.Types.Helpers
-import Arkham.Types.Investigator
-import Arkham.Types.Location
-import Arkham.Types.Message
-import Arkham.Types.Name
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Trait (toTraits)
+import Arkham.Action (Action)
+import Arkham.Asset
+import Arkham.Card
+import Arkham.Classes
+import Arkham.Enemy
+import Arkham.Event
+import Arkham.Helpers
+import Arkham.Investigator
+import Arkham.Location
+import Arkham.Message
+import Arkham.Name
+import Arkham.SkillType
+import Arkham.Source
+import Arkham.Target
+import Arkham.Trait (toTraits)
 
 playEvent :: Investigator -> Event -> Message
 playEvent i e = InvestigatorPlayEvent (toId i) (toId e) Nothing [] FromHand

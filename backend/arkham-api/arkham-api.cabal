@@ -3,8 +3,6 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: e9ee8b7a73d4248595312c579a09ac1bff19231fa95cc59a062e4599c3c19e6d
 
 name:           arkham-api
 version:        0.0.0

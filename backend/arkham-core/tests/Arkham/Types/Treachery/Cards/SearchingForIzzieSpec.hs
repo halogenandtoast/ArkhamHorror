@@ -1,4 +1,4 @@
-module Arkham.Types.Treachery.Cards.SearchingForIzzieSpec
+module Arkham.Treachery.Cards.SearchingForIzzieSpec
   ( spec
   ) where
 

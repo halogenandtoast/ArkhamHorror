@@ -1,4 +1,4 @@
-module Arkham.Types.Investigator.Cards.AshcanPeteSpec
+module Arkham.Investigator.Cards.AshcanPeteSpec
   ( spec
   ) where
 

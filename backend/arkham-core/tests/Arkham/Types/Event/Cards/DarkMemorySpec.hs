@@ -1,11 +1,11 @@
-module Arkham.Types.Event.Cards.DarkMemorySpec
+module Arkham.Event.Cards.DarkMemorySpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Types.Agenda.Attrs qualified as Agenda
+import Arkham.Agenda.Attrs qualified as Agenda
 
 spec :: Spec
 spec = do

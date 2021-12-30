@@ -1,4 +1,4 @@
-module Arkham.Types.Investigator.Cards.WendyAdamsSpec
+module Arkham.Investigator.Cards.WendyAdamsSpec
   ( spec
   ) where
 

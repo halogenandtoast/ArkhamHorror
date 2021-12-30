@@ -1,12 +1,12 @@
-module Arkham.Types.Skill.Cards.DeductionSpec
+module Arkham.Skill.Cards.DeductionSpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
-import Arkham.Types.Location.Attrs (LocationAttrs(..))
+import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Location.Attrs (LocationAttrs(..))
 
 spec :: Spec
 spec = describe "Deduction" $ do

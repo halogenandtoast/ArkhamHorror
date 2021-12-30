@@ -1,4 +1,4 @@
-module Arkham.Types.GameSpec
+module Arkham.GameSpec
   ( spec
   ) where
 

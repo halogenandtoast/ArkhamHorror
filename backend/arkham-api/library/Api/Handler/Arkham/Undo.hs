@@ -5,9 +5,9 @@ module Api.Handler.Arkham.Undo
 import Import hiding (delete, on, (==.))
 
 import Api.Arkham.Helpers
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Game
-import Arkham.Types.Id
+import Arkham.Card.CardCode
+import Arkham.Game
+import Arkham.Id
 import Control.Lens (view)
 import Data.Text qualified as T
 import Json

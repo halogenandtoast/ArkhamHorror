@@ -1,10 +1,10 @@
-module Arkham.Types.Investigator.Cards.AgnesBakerSpec
+module Arkham.Investigator.Cards.AgnesBakerSpec
   ( spec
   ) where
 
 import TestImport
 
-import Arkham.Types.Enemy.Attrs (EnemyAttrs(..))
+import Arkham.Enemy.Attrs (EnemyAttrs(..))
 
 spec :: Spec
 spec = describe "Agnes Baker" $ do

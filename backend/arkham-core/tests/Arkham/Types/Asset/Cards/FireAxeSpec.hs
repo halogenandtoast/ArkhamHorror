@@ -1,11 +1,11 @@
-module Arkham.Types.Asset.Cards.FireAxeSpec
+module Arkham.Asset.Cards.FireAxeSpec
   ( spec
   ) where
 
 import TestImport
 
-import Arkham.Types.Enemy.Attrs (EnemyAttrs(..))
-import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Enemy.Attrs (EnemyAttrs(..))
+import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Fire Axe" $ do

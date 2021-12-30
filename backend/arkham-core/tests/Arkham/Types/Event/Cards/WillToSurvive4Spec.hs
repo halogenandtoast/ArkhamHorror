@@ -1,10 +1,10 @@
-module Arkham.Types.Event.Cards.WillToSurvive4Spec
+module Arkham.Event.Cards.WillToSurvive4Spec
   ( spec
   ) where
 
 import TestImport
 
-import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Will to Survive (4)" $ do

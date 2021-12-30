@@ -2,33 +2,33 @@ module Main where
 
 import ClassyPrelude
 
+import Arkham.Asset
+import Arkham.Asset.Attrs (assetHealth, assetSanity)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterCard
+import Arkham.Enemy
+import Arkham.Enemy.Attrs
+  (enemyEvade, enemyFight, enemyHealth, enemyHealthDamage, enemySanityDamage)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Event.Cards qualified as Events
+import Arkham.Location
+import Arkham.Location.Attrs (locationRevealClues, locationShroud)
 import Arkham.PlayerCard
+import Arkham.Skill
 import Arkham.Skill.Cards qualified as Skills
+import Arkham.SkillType
+import Arkham.Treachery
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Types.Asset
-import Arkham.Types.Asset.Attrs (assetHealth, assetSanity)
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.Cost
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Classes.Entity
-import Arkham.Types.EncounterSet
-import Arkham.Types.Enemy
-import Arkham.Types.Enemy.Attrs
-  (enemyEvade, enemyFight, enemyHealth, enemyHealthDamage, enemySanityDamage)
-import Arkham.Types.Event
-import Arkham.Types.GameValue
-import Arkham.Types.Location
-import Arkham.Types.Location.Attrs (locationRevealClues, locationShroud)
-import Arkham.Types.Name
-import Arkham.Types.Skill
-import Arkham.Types.SkillType
-import Arkham.Types.Trait hiding (Dunwich)
-import Arkham.Types.Treachery
+import Arkham.Card.CardCode
+import Arkham.Card.CardDef
+import Arkham.Card.Cost
+import Arkham.ClassSymbol
+import Arkham.Classes.Entity
+import Arkham.EncounterSet
+import Arkham.Event
+import Arkham.GameValue
+import Arkham.Name
+import Arkham.Trait hiding (Dunwich)
 import Control.Exception
 import Control.Monad.Random.Lazy
 import Data.Aeson

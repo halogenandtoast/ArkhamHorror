@@ -1,11 +1,11 @@
-module Arkham.Types.Event.Cards.BaitAndSwitchSpec
+module Arkham.Event.Cards.BaitAndSwitchSpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
-import Arkham.Types.Enemy.Attrs qualified as EnemyAttrs
-import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Enemy.Attrs qualified as EnemyAttrs
+import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Bait and Switch" $ do

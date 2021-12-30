@@ -1,4 +1,4 @@
-module Arkham.Types.Treachery.Cards.MysteriousChantingSpec
+module Arkham.Treachery.Cards.MysteriousChantingSpec
   ( spec
   ) where
 

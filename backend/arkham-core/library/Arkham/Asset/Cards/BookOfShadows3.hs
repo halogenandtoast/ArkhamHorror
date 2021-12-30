@@ -28,8 +28,12 @@ slot AssetAttrs { assetId } = Slot (AssetSource assetId) Nothing
 
 instance HasAbilities BookOfShadows3 where
   getAbilities (BookOfShadows3 a) =
-    [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
-        [ActionCost 1, ExhaustCost (toTarget a)]
+    [ restrictedAbility
+          a
+          1
+          (OwnsThis <> AssetExists (AssetOwnedBy You <> AssetWithTrait Spell))
+        $ ActionAbility Nothing
+        $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
     ]
 
 instance AssetRunner env => RunMessage env BookOfShadows3 where

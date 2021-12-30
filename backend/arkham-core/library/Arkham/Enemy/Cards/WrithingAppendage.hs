@@ -10,7 +10,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Classes
 import Arkham.DamageEffect
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message hiding (EnemyAttacks, EnemyDefeated)
 import Arkham.Timing qualified as Timing

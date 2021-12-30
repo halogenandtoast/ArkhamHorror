@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Runner
 
 newtype TheOrganistHopelessIDefiedHim = TheOrganistHopelessIDefiedHim EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)

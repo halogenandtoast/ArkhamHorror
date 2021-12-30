@@ -11,7 +11,7 @@ import Arkham.Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Runner
 import Arkham.Message
 import Arkham.Prey
 import Arkham.Source

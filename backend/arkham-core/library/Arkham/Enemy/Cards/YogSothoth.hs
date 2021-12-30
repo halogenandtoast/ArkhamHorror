@@ -11,7 +11,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.EffectMetadata
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyAttacks)
 import Arkham.Modifier

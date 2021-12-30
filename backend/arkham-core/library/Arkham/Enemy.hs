@@ -7,10 +7,10 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Action
-import Arkham.Enemy.Attrs
-import Arkham.Enemy.Enemies
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Enemies
+import Arkham.Enemy.Runner
 import Arkham.Id
 import Arkham.Message
 import Arkham.Modifier

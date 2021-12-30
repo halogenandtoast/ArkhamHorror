@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 
 newtype Montmartre210 = Montmartre210 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

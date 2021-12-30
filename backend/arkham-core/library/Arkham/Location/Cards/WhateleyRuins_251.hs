@@ -14,7 +14,7 @@ import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.SkillType

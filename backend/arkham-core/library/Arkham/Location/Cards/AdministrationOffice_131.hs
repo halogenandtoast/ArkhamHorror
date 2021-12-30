@@ -9,7 +9,7 @@ import Arkham.Location.Cards qualified as Cards (administrationOffice_131)
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.InvestigatorId
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Modifier
 import Arkham.Query

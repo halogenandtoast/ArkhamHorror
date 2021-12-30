@@ -10,7 +10,7 @@ import Arkham.Location.Cards qualified as Cards (stepsOfYhagharl)
 import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher
 import Arkham.Message

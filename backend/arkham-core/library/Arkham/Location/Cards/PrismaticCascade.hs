@@ -11,7 +11,7 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Message hiding (DiscoverClues)
 import Arkham.Name

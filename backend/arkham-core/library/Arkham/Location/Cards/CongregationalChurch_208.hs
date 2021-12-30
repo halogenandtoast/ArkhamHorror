@@ -10,7 +10,7 @@ import Arkham.Location.Cards qualified as Cards (congregationalChurch_208)
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (RevealLocation)
 import Arkham.Timing qualified as Timing

@@ -9,7 +9,7 @@ import Arkham.Location.Cards qualified as Cards (villageCommons)
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 
 newtype VillageCommons = VillageCommons LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

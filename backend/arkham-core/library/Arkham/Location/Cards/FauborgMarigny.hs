@@ -9,7 +9,7 @@ import Arkham.Location.Cards qualified as Cards (fauborgMarigny)
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher
 import Arkham.Modifier

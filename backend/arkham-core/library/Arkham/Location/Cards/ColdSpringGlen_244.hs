@@ -13,7 +13,7 @@ import Arkham.Criteria
 import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier

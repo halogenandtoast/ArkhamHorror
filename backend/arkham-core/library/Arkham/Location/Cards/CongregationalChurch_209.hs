@@ -11,7 +11,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Message
 
 newtype CongregationalChurch_209 = CongregationalChurch_209 LocationAttrs

@@ -9,7 +9,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Modifier
 import Arkham.Source

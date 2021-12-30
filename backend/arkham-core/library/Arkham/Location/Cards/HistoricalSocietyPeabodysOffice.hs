@@ -10,7 +10,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message

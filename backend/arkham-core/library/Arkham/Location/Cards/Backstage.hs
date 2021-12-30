@@ -13,7 +13,7 @@ import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Keyword
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Matcher

@@ -6,7 +6,7 @@ import Arkham.Location.Cards qualified as Cards (guestHall)
 import Arkham.Action
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Modifier
 import Arkham.Target

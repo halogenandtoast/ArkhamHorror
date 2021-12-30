@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Location.Cards qualified as Cards (hallway)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 
 newtype Hallway = Hallway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

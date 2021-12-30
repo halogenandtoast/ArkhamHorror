@@ -14,7 +14,7 @@ import Arkham.Criteria
 import Arkham.EnemyId
 import Arkham.Exception
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target

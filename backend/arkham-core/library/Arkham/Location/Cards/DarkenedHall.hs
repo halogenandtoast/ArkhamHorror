@@ -12,7 +12,7 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (RevealLocation)
 import Arkham.Timing qualified as Timing

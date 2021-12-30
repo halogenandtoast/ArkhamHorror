@@ -1,11 +1,11 @@
-module Arkham.Types.Treachery.Cards.CoverUpSpec
+module Arkham.Treachery.Cards.CoverUpSpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Types.Location.Attrs qualified as Location
+import Arkham.Location.Attrs qualified as Location
 
 spec :: Spec
 spec = describe "Cover Up" $ do

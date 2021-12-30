@@ -1,11 +1,11 @@
-module Arkham.Types.Investigator.Cards.RolandBanksSpec
+module Arkham.Investigator.Cards.RolandBanksSpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
-import Arkham.Types.Enemy.Attrs (EnemyAttrs(..))
-import Arkham.Types.Location.Attrs (LocationAttrs(..))
+import Arkham.Enemy.Attrs (EnemyAttrs(..))
+import Arkham.Location.Attrs (LocationAttrs(..))
 
 spec :: Spec
 spec = describe "Roland Banks" $ do

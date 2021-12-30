@@ -1,4 +1,4 @@
-module Arkham.Types.Event.Cards.EmergencyCacheSpec where
+module Arkham.Event.Cards.EmergencyCacheSpec where
 
 import TestImport.Lifted
 

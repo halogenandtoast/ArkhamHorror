@@ -1,11 +1,11 @@
-module Arkham.Types.Event.Cards.BlindingLight2Spec
+module Arkham.Event.Cards.BlindingLight2Spec
   ( spec
   ) where
 
 import TestImport.Lifted
 
-import Arkham.Types.Enemy.Attrs qualified as EnemyAttrs
-import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Enemy.Attrs qualified as EnemyAttrs
+import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = do

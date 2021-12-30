@@ -1,11 +1,11 @@
-module Arkham.Types.Investigator.Cards.RexMurphySpec
+module Arkham.Investigator.Cards.RexMurphySpec
   ( spec
   ) where
 
 import TestImport.Lifted
 
-import Arkham.Types.Action qualified as Action
-import Arkham.Types.Location.Attrs as Location
+import Arkham.Action qualified as Action
+import Arkham.Location.Attrs as Location
 
 spec :: Spec
 spec = describe "Rex Murphy" $ do

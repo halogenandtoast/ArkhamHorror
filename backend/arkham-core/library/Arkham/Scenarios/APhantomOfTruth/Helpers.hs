@@ -3,14 +3,14 @@ module Arkham.Scenarios.APhantomOfTruth.Helpers where
 import Arkham.Prelude
 
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Types.Classes
-import Arkham.Types.Cost
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Id
-import Arkham.Types.Matcher hiding (MoveAction)
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Target
+import Arkham.Classes
+import Arkham.Cost
+import Arkham.Game.Helpers
+import Arkham.Id
+import Arkham.Matcher hiding (MoveAction)
+import Arkham.Message
+import Arkham.Query
+import Arkham.Target
 
 investigatorsNearestToTheOrganist ::
   (HasList (InvestigatorId, Distance) env EnemyMatcher, MonadReader env m) =>

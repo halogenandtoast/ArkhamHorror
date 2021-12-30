@@ -6,10 +6,10 @@ import Import hiding (on, (==.))
 
 import Api.Arkham.Helpers
 import Arkham.Game
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Game
-import Arkham.Types.Id
-import Arkham.Types.Investigator
+import Arkham.Card.CardCode
+import Arkham.Game
+import Arkham.Id
+import Arkham.Investigator
 import Control.Monad.Random (mkStdGen)
 import Data.Aeson
 import Data.HashMap.Strict qualified as HashMap

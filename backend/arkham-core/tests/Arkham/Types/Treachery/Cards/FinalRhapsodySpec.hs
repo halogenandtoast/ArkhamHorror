@@ -1,4 +1,4 @@
-module Arkham.Types.Treachery.Cards.FinalRhapsodySpec
+module Arkham.Treachery.Cards.FinalRhapsodySpec
   ( spec
   ) where
 

@@ -5,12 +5,12 @@ import Arkham.Prelude
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Json
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Types.Card
-import Arkham.Types.Classes
-import Arkham.Types.Game.Helpers
-import Arkham.Types.Id
-import Arkham.Types.Matcher
-import Arkham.Types.Trait
+import Arkham.Card
+import Arkham.Classes
+import Arkham.Game.Helpers
+import Arkham.Id
+import Arkham.Matcher
+import Arkham.Trait
 
 bayouLocations
   :: (MonadReader env m, HasSet LocationId env [Trait])

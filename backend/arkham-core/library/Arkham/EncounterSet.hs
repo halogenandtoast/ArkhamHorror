@@ -1,20 +1,65 @@
-module Arkham.EncounterSet
-  ( module X
-  , gatherEncounterSet
-  ) where
+module Arkham.EncounterSet where
 
 import Arkham.Prelude
 
-import Arkham.EncounterCard
-import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.EncounterCard
-import Arkham.Types.EncounterSet as X
-
-gatherEncounterSet :: MonadRandom m => EncounterSet -> m [EncounterCard]
-gatherEncounterSet encounterSet = concat <$> for
-  defs
-  \def -> traverse genEncounterCard
-    $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
- where
-  defs =
-    filter ((== Just encounterSet) . cdEncounterSet) $ toList allEncounterCards
+data EncounterSet
+  = TheGathering
+  | TheMidnightMasks
+  | TheDevourerBelow
+  | CultOfUmordhoth
+  | Rats
+  | Ghouls
+  | StrikingFear
+  | AncientEvils
+  | ChillingCold
+  | Nightgaunts
+  | DarkCult
+  | LockedDoors
+  | AgentsOfHastur
+  | AgentsOfYogSothoth
+  | AgentsOfShubNiggurath
+  | AgentsOfCthulhu
+  | ExtracurricularActivity
+  | TheHouseAlwaysWins
+  | ArmitagesFate
+  | TheMiskatonicMuseum
+  | TheEssexCountyExpress
+  | BloodOnTheAltar
+  | UndimensionedAndUnseen
+  | WhereDoomAwaits
+  | LostInTimeAndSpace
+  | Sorcery
+  | BishopsThralls
+  | Dunwich
+  | Whippoorwills
+  | BadLuck
+  | BeastThralls
+  | NaomisCrew
+  | TheBeyond
+  | HideousAbominations
+  | CurtainCall
+  | TheLastKing
+  | Delusions
+  | Byakhee
+  | InhabitantsOfCarcosa
+  | EvilPortents
+  | Hauntings
+  | HastursGift
+  | CultOfTheYellowSign
+  | DecayAndFilth
+  | TheStranger
+  | EchoesOfThePast
+  | TheUnspeakableOath
+  | APhantomOfTruth
+  | ReturnToTheGathering
+  | ReturnToTheMidnightMasks
+  | ReturnToTheDevourerBelow
+  | GhoulsOfUmordhoth
+  | TheDevourersCult
+  | ReturnCultOfUmordhoth
+  | TheBayou
+  | CurseOfTheRougarou
+  | CarnevaleOfHorrors
+  | Test
+  deriving stock (Show, Eq, Generic, Bounded, Enum)
+  deriving anyclass (ToJSON, FromJSON, Hashable)

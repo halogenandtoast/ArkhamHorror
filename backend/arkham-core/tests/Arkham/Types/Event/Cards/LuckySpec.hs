@@ -1,11 +1,11 @@
-module Arkham.Types.Event.Cards.LuckySpec
+module Arkham.Event.Cards.LuckySpec
   ( spec
   ) where
 
 import TestImport
 
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Lucky!" $ do

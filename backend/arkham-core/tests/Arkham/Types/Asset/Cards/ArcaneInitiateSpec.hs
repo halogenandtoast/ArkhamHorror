@@ -1,4 +1,4 @@
-module Arkham.Types.Asset.Cards.ArcaneInitiateSpec
+module Arkham.Asset.Cards.ArcaneInitiateSpec
   ( spec
   ) where
 

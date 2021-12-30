@@ -1,0 +1,48 @@
+module Arkham.Enemy.Cards.ConglomerationOfSpheres
+  ( conglomerationOfSpheres
+  , ConglomerationOfSpheres(..)
+  ) where
+
+import Arkham.Prelude
+
+import Arkham.Ability
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Classes
+import Arkham.Enemy.Attrs
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Prey
+import Arkham.SkillType
+import Arkham.Timing qualified as Timing
+import Arkham.Trait
+import Arkham.Window (Window(..))
+import Arkham.Window qualified as Window
+
+newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
+  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+conglomerationOfSpheres :: EnemyCard ConglomerationOfSpheres
+conglomerationOfSpheres = enemyWith
+  ConglomerationOfSpheres
+  Cards.conglomerationOfSpheres
+  (1, Static 6, 4)
+  (1, 1)
+  (preyL .~ LowestSkill SkillWillpower)
+
+instance HasAbilities ConglomerationOfSpheres where
+  getAbilities (ConglomerationOfSpheres x) = withBaseAbilities
+    x
+    [ mkAbility x 1
+      $ ForcedAbility
+      $ EnemyAttacked Timing.After You (SourceWithTrait Melee)
+      $ EnemyWithId
+      $ toId x
+    ]
+
+instance EnemyRunner env => RunMessage env ConglomerationOfSpheres where
+  runMessage msg e@(ConglomerationOfSpheres attrs) = case msg of
+    UseCardAbility _ source [Window _ (Window.EnemyAttacked _ attackSource _)] 1 _
+      | isSource attrs source
+      -> e <$ push (Discard $ sourceToTarget attackSource)
+    _ -> ConglomerationOfSpheres <$> runMessage msg attrs

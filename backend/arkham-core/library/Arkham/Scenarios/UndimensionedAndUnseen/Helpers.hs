@@ -3,11 +3,11 @@ module Arkham.Scenarios.UndimensionedAndUnseen.Helpers where
 import Arkham.Prelude
 
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Types.Card (Card)
-import Arkham.Types.Classes
-import Arkham.Types.Id
-import Arkham.Types.Matcher
-import Arkham.Types.Name
+import Arkham.Card (Card)
+import Arkham.Classes
+import Arkham.Id
+import Arkham.Matcher
+import Arkham.Name
 
 broodTitle :: Text
 broodTitle = nameTitle . toName $ Cards.broodOfYogSothoth

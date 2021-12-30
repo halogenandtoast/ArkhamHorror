@@ -4,12 +4,12 @@ module Api.Arkham.Helpers where
 import Import hiding (appLogger)
 
 import Arkham.PlayerCard
-import Arkham.Types.Card
-import Arkham.Types.Card.PlayerCard
-import Arkham.Types.Classes hiding (Entity(..))
-import Arkham.Types.Game
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
+import Arkham.Card
+import Arkham.Card.PlayerCard
+import Arkham.Classes hiding (Entity(..))
+import Arkham.Game
+import Arkham.InvestigatorId
+import Arkham.Message
 import Control.Lens
 import Control.Monad.Random (MonadRandom(..), StdGen, mkStdGen)
 import Data.ByteString.Lazy qualified as BSL

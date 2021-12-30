@@ -13,12 +13,12 @@ import Arkham.Enemy.Cards (allPlayerEnemyCards)
 import Arkham.Event.Cards (allPlayerEventCards)
 import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Treachery.Cards (allPlayerTreacheryCards)
-import Arkham.Types.Asset.Uses
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.CardType
-import Arkham.Types.ClassSymbol
-import Arkham.Types.Name
+import Arkham.Asset.Uses
+import Arkham.Card.CardCode
+import Arkham.Card.CardDef
+import Arkham.Card.CardType
+import Arkham.ClassSymbol
+import Arkham.Name
 
 lookupPlayerCardName :: CardCode -> Name
 lookupPlayerCardName = cdName . lookupPlayerCardDef

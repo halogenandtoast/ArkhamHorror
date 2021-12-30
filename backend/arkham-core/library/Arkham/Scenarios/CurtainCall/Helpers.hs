@@ -3,12 +3,12 @@ module Arkham.Scenarios.CurtainCall.Helpers where
 import Arkham.Prelude
 
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Types.Classes
-import Arkham.Types.Id
-import Arkham.Types.Matcher hiding (Discarded)
-import Arkham.Types.Message
-import Arkham.Types.Source
-import Arkham.Types.Target
+import Arkham.Classes
+import Arkham.Id
+import Arkham.Matcher hiding (Discarded)
+import Arkham.Message
+import Arkham.Source
+import Arkham.Target
 
 moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
   :: ( MonadIO m

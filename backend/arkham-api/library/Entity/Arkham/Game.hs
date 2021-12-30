@@ -9,8 +9,8 @@ module Entity.Arkham.Game (
 import Relude
 
 import Api.Arkham.Types.MultiplayerVariant
-import Arkham.Types.Game
-import Arkham.Types.Message
+import Arkham.Game
+import Arkham.Message
 import Data.Aeson.Diff
 import Data.Aeson.Types
 import Data.Text qualified as T

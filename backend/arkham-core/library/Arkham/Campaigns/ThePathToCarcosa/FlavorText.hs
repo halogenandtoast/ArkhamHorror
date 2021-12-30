@@ -2,7 +2,7 @@ module Arkham.Campaigns.ThePathToCarcosa.FlavorText where
 
 import Arkham.Prelude
 
-import Arkham.Types.Message
+import Arkham.Message
 
 lolaPrologue :: Message
 lolaPrologue = FlavorText

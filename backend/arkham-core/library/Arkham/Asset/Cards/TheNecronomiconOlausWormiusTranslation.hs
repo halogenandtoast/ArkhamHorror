@@ -1,0 +1,40 @@
+module Arkham.Asset.Cards.TheNecronomiconOlausWormiusTranslation
+  ( theNecronomiconOlausWormiusTranslation
+  , TheNecronomiconOlausWormiusTranslation(..)
+  ) where
+
+import Arkham.Prelude
+
+import Arkham.Ability
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Asset.Attrs
+import Arkham.Cost
+import Arkham.Criteria
+import Arkham.Modifier
+import Arkham.SkillType
+import Arkham.Target
+
+newtype TheNecronomiconOlausWormiusTranslation = TheNecronomiconOlausWormiusTranslation AssetAttrs
+  deriving anyclass IsAsset
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+theNecronomiconOlausWormiusTranslation
+  :: AssetCard TheNecronomiconOlausWormiusTranslation
+theNecronomiconOlausWormiusTranslation = asset
+  TheNecronomiconOlausWormiusTranslation
+  Cards.theNecronomiconOlausWormiusTranslation
+
+instance HasAbilities TheNecronomiconOlausWormiusTranslation where
+  getAbilities (TheNecronomiconOlausWormiusTranslation a) =
+    [restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ ActionCost 1]
+
+instance HasModifiersFor env TheNecronomiconOlausWormiusTranslation where
+  getModifiersFor _ (InvestigatorTarget iid) (TheNecronomiconOlausWormiusTranslation a)
+    = pure $ toModifiers a [ SkillModifier SkillIntellect 1 | ownedBy a iid ]
+  getModifiersFor _ _ _ = pure []
+
+instance AssetRunner env => RunMessage env TheNecronomiconOlausWormiusTranslation where
+  runMessage msg a@(TheNecronomiconOlausWormiusTranslation attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      a <$ push (TakeResources iid 2 False)
+    _ -> TheNecronomiconOlausWormiusTranslation <$> runMessage msg attrs

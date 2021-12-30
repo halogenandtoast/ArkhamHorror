@@ -2,12 +2,12 @@ module Arkham.Agenda.Cards where
 
 import Arkham.Prelude hiding (fold)
 
-import Arkham.Types.Asset.Uses
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.CardDef
-import Arkham.Types.Card.CardType
-import Arkham.Types.EncounterSet
-import Arkham.Types.Name
+import Arkham.Asset.Uses
+import Arkham.Card.CardCode
+import Arkham.Card.CardDef
+import Arkham.Card.CardType
+import Arkham.EncounterSet
+import Arkham.Name
 
 agenda :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 agenda cardCode name stage encounterSet = CardDef

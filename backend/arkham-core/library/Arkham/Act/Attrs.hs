@@ -1,0 +1,163 @@
+module Arkham.Act.Attrs
+  ( module Arkham.Act.Attrs
+  , module X
+  ) where
+
+import Arkham.Prelude
+
+import Arkham.Ability
+import Arkham.Act.Cards
+import Arkham.Json
+import Arkham.Act.Sequence as X
+import Arkham.Act.Sequence qualified as AS
+import Arkham.Card
+import Arkham.Classes
+import Arkham.Cost as X
+import Arkham.Game.Helpers
+import Arkham.Id
+import Arkham.Matcher hiding (FastPlayerWindow)
+import Arkham.Message
+import Arkham.Name
+import Arkham.Query
+import Arkham.Source
+import Arkham.Target
+import Arkham.Timing qualified as Timing
+import Arkham.Window
+
+class IsAct a
+
+type ActCard a = CardBuilder (Int, ActId) a
+
+data ActAttrs = ActAttrs
+  { actId :: ActId
+  , actSequence :: ActSequence
+  , actAdvanceCost :: Maybe Cost
+  , actClues :: Maybe Int
+  , actTreacheries :: HashSet TreacheryId
+  , actDeckId :: Int
+  }
+  deriving stock (Show, Eq, Generic)
+
+sequenceL :: Lens' ActAttrs ActSequence
+sequenceL = lens actSequence $ \m x -> m { actSequence = x }
+
+cluesL :: Lens' ActAttrs (Maybe Int)
+cluesL = lens actClues $ \m x -> m { actClues = x }
+
+treacheriesL :: Lens' ActAttrs (HashSet TreacheryId)
+treacheriesL = lens actTreacheries $ \m x -> m { actTreacheries = x }
+
+actWith
+  :: (Int, ActSide)
+  -> (ActAttrs -> a)
+  -> CardDef
+  -> Maybe Cost
+  -> (ActAttrs -> ActAttrs)
+  -> CardBuilder (Int, ActId) a
+actWith (n, side) f cardDef mCost g = CardBuilder
+  { cbCardCode = cdCardCode cardDef
+  , cbCardBuilder = \(deckId, aid) -> f . g $ ActAttrs
+    { actId = aid
+    , actSequence = AS.Act n side
+    , actClues = Nothing
+    , actAdvanceCost = mCost
+    , actTreacheries = mempty
+    , actDeckId = deckId
+    }
+  }
+
+act
+  :: (Int, ActSide)
+  -> (ActAttrs -> a)
+  -> CardDef
+  -> Maybe Cost
+  -> CardBuilder (Int, ActId) a
+act actSeq f cardDef mCost = actWith actSeq f cardDef mCost id
+
+instance HasCardDef ActAttrs where
+  toCardDef e = case lookup (unActId $ actId e) allActCards of
+    Just def -> def
+    Nothing -> error $ "missing card def for act " <> show (unActId $ actId e)
+
+instance ToJSON ActAttrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "act"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "act"
+
+instance FromJSON ActAttrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "act"
+
+instance HasStep ActStep env ActAttrs where
+  getStep = pure . actStep . actSequence
+
+instance Entity ActAttrs where
+  type EntityId ActAttrs = ActId
+  type EntityAttrs ActAttrs = ActAttrs
+  toId = actId
+  toAttrs = id
+
+instance Named ActAttrs where
+  toName = toName . toCardDef
+
+instance TargetEntity ActAttrs where
+  toTarget = ActTarget . toId
+  isTarget ActAttrs { actId } (ActTarget aid) = actId == aid
+  isTarget _ _ = False
+
+instance SourceEntity ActAttrs where
+  toSource = ActSource . toId
+  isSource ActAttrs { actId } (ActSource aid) = actId == aid
+  isSource _ _ = False
+
+onSide :: ActSide -> ActAttrs -> Bool
+onSide side ActAttrs {..} = actSide actSequence == side
+
+instance HasAbilities ActAttrs where
+  getAbilities attrs@ActAttrs {..} = case actAdvanceCost of
+    Just cost -> [mkAbility attrs 100 (Objective $ FastAbility cost)]
+    Nothing -> []
+
+type ActAttrsRunner env
+  = ( HasSet InScenarioInvestigatorId env ()
+    , HasSet InvestigatorId env ()
+    , HasCount PlayerCount env ()
+    , HasId LeadInvestigatorId env ()
+    , HasId (Maybe LocationId) env LocationMatcher
+    , HasSet InvestigatorId env LocationId
+    )
+
+advanceActSideA
+  :: (MonadReader env m, HasId LeadInvestigatorId env ())
+  => ActAttrs
+  -> m [Message]
+advanceActSideA attrs = do
+  leadInvestigatorId <- getLeadInvestigatorId
+  pure
+    [ CheckWindow
+      [leadInvestigatorId]
+      [Window Timing.When (ActAdvance $ toId attrs)]
+    , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
+    ]
+
+instance ActAttrsRunner env => RunMessage env ActAttrs where
+  runMessage msg a@ActAttrs {..} = case msg of
+    AdvanceAct aid _ | aid == actId && onSide A a -> do
+      pushAll =<< advanceActSideA a
+      pure $ a & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
+    AttachTreachery tid (ActTarget aid) | aid == actId ->
+      pure $ a & treacheriesL %~ insertSet tid
+    Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
+    InvestigatorResigned _ -> do
+      investigatorIds <- getSet @InScenarioInvestigatorId ()
+      whenMsg <- checkWindows
+        [Window Timing.When AllUndefeatedInvestigatorsResigned]
+      afterMsg <- checkWindows
+        [Window Timing.When AllUndefeatedInvestigatorsResigned]
+      a <$ when
+        (null investigatorIds)
+        (pushAll [whenMsg, afterMsg, AllInvestigatorsResigned])
+    UseCardAbility iid source _ 100 _ | isSource a source ->
+      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid))
+    PlaceClues (ActTarget aid) n | aid == actId -> do
+      let totalClues = n + fromMaybe 0 actClues
+      pure $ a { actClues = Just totalClues }
+    _ -> pure a

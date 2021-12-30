@@ -1,11 +1,11 @@
-module Arkham.Types.Event.Cards.Lucky2Spec
+module Arkham.Event.Cards.Lucky2Spec
   ( spec
   ) where
 
 import TestImport.Lifted
 
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Types.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Lucky! (2)" $ do

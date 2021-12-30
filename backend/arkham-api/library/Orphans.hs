@@ -4,8 +4,8 @@
 
 module Orphans where
 
-import Arkham.Types.Game
-import Arkham.Types.Message
+import Arkham.Game
+import Arkham.Message
 import Control.Error.Util (hush)
 import Control.Monad.Fail qualified as Fail
 import Data.Aeson

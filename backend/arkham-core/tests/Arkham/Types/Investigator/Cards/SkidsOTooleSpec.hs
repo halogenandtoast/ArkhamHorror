@@ -1,4 +1,4 @@
-module Arkham.Types.Investigator.Cards.SkidsOTooleSpec
+module Arkham.Investigator.Cards.SkidsOTooleSpec
   ( spec
   ) where
 

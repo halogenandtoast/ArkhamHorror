@@ -1,4 +1,4 @@
-module Arkham.Types.Treachery.Cards.SmiteTheWickedSpec
+module Arkham.Treachery.Cards.SmiteTheWickedSpec
   ( spec
   ) where
 

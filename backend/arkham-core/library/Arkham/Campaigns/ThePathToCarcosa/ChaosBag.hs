@@ -1,7 +1,7 @@
 module Arkham.Campaigns.ThePathToCarcosa.ChaosBag where
 
-import Arkham.Types.Difficulty
-import Arkham.Types.Token
+import Arkham.Difficulty
+import Arkham.Token
 
 chaosBagContents :: Difficulty -> [TokenFace]
 chaosBagContents = \case

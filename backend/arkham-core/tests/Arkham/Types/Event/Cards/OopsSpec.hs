@@ -1,12 +1,12 @@
-module Arkham.Types.Event.Cards.OopsSpec
+module Arkham.Event.Cards.OopsSpec
   ( spec
   ) where
 
 import TestImport
 
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Types.Enemy.Attrs qualified as Enemy
-import Arkham.Types.Investigator.Attrs qualified as Investigator
+import Arkham.Enemy.Attrs qualified as Enemy
+import Arkham.Investigator.Attrs qualified as Investigator
 
 spec :: Spec
 spec = describe "Oops!" $ do

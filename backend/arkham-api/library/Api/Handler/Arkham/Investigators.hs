@@ -5,8 +5,8 @@ module Api.Handler.Arkham.Investigators
 import Import
 
 import Arkham.Prelude (With(..), with)
-import Arkham.Types.Investigator
-import Arkham.Types.ModifierData
+import Arkham.Investigator
+import Arkham.ModifierData
 
 getApiV1ArkhamInvestigatorsR :: Handler [With Investigator ConnectionData]
 getApiV1ArkhamInvestigatorsR =

@@ -11,7 +11,7 @@ import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher
 import Arkham.Message hiding (EndTurn)

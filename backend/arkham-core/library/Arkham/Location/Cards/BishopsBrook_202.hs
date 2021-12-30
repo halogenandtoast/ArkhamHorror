@@ -9,7 +9,7 @@ import Arkham.Location.Cards qualified as Cards (bishopsBrook_202)
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Modifier
 import Arkham.Target
 

@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Location.Cards qualified as Cards (broadmoor)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 
 newtype Broadmoor = Broadmoor LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

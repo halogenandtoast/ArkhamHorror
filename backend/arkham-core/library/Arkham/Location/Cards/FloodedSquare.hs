@@ -14,7 +14,7 @@ import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message

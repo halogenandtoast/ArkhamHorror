@@ -9,7 +9,7 @@ import Arkham.Location.Cards qualified as Cards (sentinelPeak)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Matcher (LocationMatcher(..))
 import Arkham.Message
 import Arkham.Trait

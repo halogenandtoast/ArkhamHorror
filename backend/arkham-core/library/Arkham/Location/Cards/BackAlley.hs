@@ -9,7 +9,7 @@ import Arkham.Location.Cards qualified as Cards (backAlley)
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 
 newtype BackAlley = BackAlley LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

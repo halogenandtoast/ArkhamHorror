@@ -9,7 +9,7 @@ import Arkham.Location.Cards qualified as Cards (miskatonicQuad)
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 
 newtype MiskatonicQuad = MiskatonicQuad LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

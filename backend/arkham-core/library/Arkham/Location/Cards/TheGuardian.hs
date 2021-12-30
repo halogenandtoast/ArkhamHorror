@@ -11,7 +11,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher
 import Arkham.Message

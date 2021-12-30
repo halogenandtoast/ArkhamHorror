@@ -12,7 +12,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.ScenarioLogKey
 

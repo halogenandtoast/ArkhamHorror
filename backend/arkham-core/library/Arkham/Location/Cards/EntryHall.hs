@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Trait
 

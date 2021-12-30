@@ -11,7 +11,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (ChosenRandomLocation)
 import Arkham.Message qualified as Message

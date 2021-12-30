@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Location.Cards qualified as Cards (study)
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 
 newtype Study = Study LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)

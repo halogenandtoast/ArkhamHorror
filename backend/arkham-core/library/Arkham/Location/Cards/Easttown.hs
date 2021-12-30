@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Location.Cards qualified as Cards (easttown)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Attrs
+import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher
 import Arkham.Modifier

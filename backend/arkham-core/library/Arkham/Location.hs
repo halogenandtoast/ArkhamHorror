@@ -11,8 +11,8 @@ import Arkham.Classes
 import Arkham.Direction
 import Arkham.Id
 import Arkham.Label qualified as L
-import Arkham.Location.Attrs
 import Arkham.Location.Locations
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier

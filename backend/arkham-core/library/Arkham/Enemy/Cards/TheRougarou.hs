@@ -11,7 +11,7 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message

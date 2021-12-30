@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Classes
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message

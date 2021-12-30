@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.DamageEffect
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
 import Arkham.Timing qualified as Timing

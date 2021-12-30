@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Runner
 import Arkham.Prey
 
 newtype RavenousGhoul = RavenousGhoul EnemyAttrs

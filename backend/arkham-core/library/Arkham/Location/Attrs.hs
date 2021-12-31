@@ -16,13 +16,10 @@ import Arkham.Location.Cards
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher(..))
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Name
 import Arkham.Projection
-import Arkham.Query
 import Arkham.Source
 import Arkham.Target
-import Arkham.Trait
 import Data.Kind
 
 class IsLocation a

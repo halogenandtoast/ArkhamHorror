@@ -15,6 +15,7 @@
     <div class="pool">
       <PoolItem type="health" :amount="enemy.contents.damage" />
       <PoolItem v-if="enemy.contents.doom > 0" type="doom" :amount="enemy.contents.doom" />
+      <PoolItem v-if="enemy.contents.clues > 0" type="clue" :amount="enemy.contents.clues" />
     </div>
     <Treachery
       v-for="treacheryId in enemy.contents.treacheries"

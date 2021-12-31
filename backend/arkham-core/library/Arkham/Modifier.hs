@@ -13,7 +13,7 @@ import Arkham.ClassSymbol
 import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword
-import Arkham.Matcher
+import {-# SOURCE #-} Arkham.Matcher
 import Arkham.Phase
 import Arkham.SkillType
 import {-# SOURCE #-} Arkham.Source

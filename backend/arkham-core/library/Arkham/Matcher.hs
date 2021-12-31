@@ -15,7 +15,7 @@ import Arkham.Id
 import Arkham.Keyword (Keyword)
 import Arkham.Keyword qualified as Keyword
 import Arkham.LocationSymbol
-import {-# SOURCE #-} Arkham.Modifier
+import Arkham.Modifier
 import Arkham.Phase
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
@@ -59,6 +59,11 @@ pattern InvestigatorWithAnyClues <-
   InvestigatorWithClues (GreaterThan (Static 0)) where
   InvestigatorWithAnyClues = InvestigatorWithClues (GreaterThan (Static 0))
 
+pattern InvestigatorCanMove :: InvestigatorMatcher
+pattern InvestigatorCanMove <-
+  InvestigatorWithoutModifier CannotMove where
+  InvestigatorCanMove = InvestigatorWithoutModifier CannotMove
+
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | You
@@ -67,7 +72,6 @@ data InvestigatorMatcher
   | Anyone
   | UneliminatedInvestigator
   | ResignedInvestigator
-  | InvestigatorCanMove
   | ContributedMatchingIcons ValueMatcher
   | HandWith CardListMatcher
   | DiscardWith CardListMatcher

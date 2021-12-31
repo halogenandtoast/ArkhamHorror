@@ -14,6 +14,7 @@ import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Card.Id
 import Arkham.Cost
+import Arkham.Criteria
 import Arkham.Direction
 import Arkham.Exception
 import Arkham.Id
@@ -321,3 +322,120 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         True
       )
     _ -> pure a
+
+locationEnemiesWithTrait
+  :: (MonadReader env m, HasSet Trait env EnemyId)
+  => LocationAttrs
+  -> Trait
+  -> m [EnemyId]
+locationEnemiesWithTrait LocationAttrs { locationEnemies } trait =
+  filterM (fmap (member trait) . getSet) (setToList locationEnemies)
+
+locationInvestigatorsWithClues
+  :: (MonadReader env m, HasCount ClueCount env InvestigatorId)
+  => LocationAttrs
+  -> m [InvestigatorId]
+locationInvestigatorsWithClues LocationAttrs { locationInvestigators } =
+  filterM
+    (fmap ((> 0) . unClueCount) . getCount)
+    (setToList locationInvestigators)
+
+getModifiedShroudValueFor
+  :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Int
+getModifiedShroudValueFor attrs = do
+  modifiers' <- getModifiers (toSource attrs) (toTarget attrs)
+  pure $ foldr applyModifier (locationShroud attrs) modifiers'
+ where
+  applyModifier (ShroudModifier m) n = max 0 (n + m)
+  applyModifier _ n = n
+
+getInvestigateAllowed
+  :: (MonadReader env m, HasModifiersFor env ())
+  => InvestigatorId
+  -> LocationAttrs
+  -> m Bool
+getInvestigateAllowed iid attrs = do
+  modifiers1' <- getModifiers (toSource attrs) (toTarget attrs)
+  modifiers2' <- getModifiers (InvestigatorSource iid) (toTarget attrs)
+  pure $ not (any isCannotInvestigate $ modifiers1' <> modifiers2')
+ where
+  isCannotInvestigate CannotInvestigate{} = True
+  isCannotInvestigate _ = False
+
+canEnterLocation
+  :: (MonadReader env m, HasModifiersFor env (), HasSet Trait env EnemyId)  => EnemyId -> LocationId -> m Bool
+canEnterLocation eid lid = do
+  traits' <- getSet eid
+  modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid)
+  pure $ not $ flip any modifiers' $ \case
+    CannotBeEnteredByNonElite{} -> Elite `notMember` traits'
+    _ -> False
+
+withResignAction
+  :: (Entity location, EntityAttrs location ~ LocationAttrs)
+  => location
+  -> [Ability]
+  -> [Ability]
+withResignAction x body = do
+  let other = withBaseAbilities attrs body
+  locationResignAction attrs : other
+  where attrs = toAttrs x
+
+withDrawCardUnderneathAction
+  :: (Entity location, EntityAttrs location ~ LocationAttrs)
+  => location
+  -> [Ability]
+withDrawCardUnderneathAction x = withBaseAbilities
+  attrs
+  [ drawCardUnderneathAction attrs | locationRevealed attrs ]
+  where attrs = toAttrs x
+
+instance HasAbilities LocationAttrs where
+  getAbilities l =
+    [ restrictedAbility l 101 (OnLocation $ LocationWithId $ toId l)
+      $ ActionAbility (Just Action.Investigate) (ActionCost 1)
+    , restrictedAbility
+        l
+        102
+        (OnLocation $ AccessibleTo $ LocationWithId $ toId l)
+      $ ActionAbility (Just Action.Move) moveCost
+    ]
+   where
+    moveCost = if not (locationRevealed l)
+      then locationCostToEnterUnrevealed l
+      else ActionCost 1
+
+getShouldSpawnNonEliteAtConnectingInstead
+  :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Bool
+getShouldSpawnNonEliteAtConnectingInstead attrs = do
+  modifiers' <- getModifiers (toSource attrs) (toTarget attrs)
+  pure $ flip any modifiers' $ \case
+    SpawnNonEliteAtConnectingInstead{} -> True
+    _ -> False
+
+instance Named LocationAttrs where
+  toName l = if locationRevealed l
+    then fromMaybe baseName (cdRevealedName $ toCardDef l)
+    else baseName
+    where baseName = toName (toCardDef l)
+
+instance Named (Unrevealed LocationAttrs) where
+  toName (Unrevealed l) = toName (toCardDef l)
+
+instance IsCard LocationAttrs where
+  toCardId = unLocationId . locationId
+
+instance HasName env LocationAttrs where
+  getName = pure . toName
+
+instance HasName env (Unrevealed LocationAttrs) where
+  getName = pure . toName
+
+instance HasId (Maybe LocationId) env (Direction, LocationAttrs) where
+  getId (dir, LocationAttrs {..}) = pure $ lookup dir locationDirections
+
+instance HasId LocationSymbol env LocationAttrs where
+  getId = pure . locationSymbol
+
+instance HasList UnderneathCard env LocationAttrs where
+  getList = pure . map UnderneathCard . locationCardsUnderneath

@@ -33,6 +33,7 @@ default-extensions:
 - UndecidableInstances
 - ImportQualifiedPost
 - FunctionalDependencies
+- ViewPatterns
 
 library:
   source-dirs: library

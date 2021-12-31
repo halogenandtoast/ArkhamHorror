@@ -42,7 +42,7 @@ pattern InvestigatorWithAnyActionsRemaining :: InvestigatorMatcher
 pattern InvestigatorWithAnyActionsRemaining <-
   InvestigatorWithActionsRemaining (GreaterThan (Static 0)) where
   InvestigatorWithAnyActionsRemaining =
-    InvestigatorWithActionsRemaining (EqualTo (Static 0))
+    InvestigatorWithActionsRemaining (GreaterThan (Static 0))
 
 pattern InvestigatorWithAnyDamage :: InvestigatorMatcher
 pattern InvestigatorWithAnyDamage <-

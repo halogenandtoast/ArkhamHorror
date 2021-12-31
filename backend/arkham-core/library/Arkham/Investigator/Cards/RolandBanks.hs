@@ -10,11 +10,11 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
 import Arkham.Investigator.Runner
+import Arkham.Location.Attrs
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype RolandBanks = RolandBanks InvestigatorAttrs
@@ -34,19 +34,20 @@ rolandBanks = investigator RolandBanks Cards.rolandBanks
 
 instance HasAbilities RolandBanks where
   getAbilities (RolandBanks a) =
-    [ reaction a 1 (OnLocation LocationWithAnyClues) Free
+    [ reaction a 1 (OnLocation LocationWithAnyClues <> CanDiscoverClues) Free
         (EnemyDefeated Timing.After You AnyEnemy)
         & (abilityLimitL .~ PlayerLimit PerRound 1)
     ]
 
-instance HasCount ClueCount env LocationId => HasTokenValue env RolandBanks where
+instance HasTokenValue env RolandBanks where
   getTokenValue (RolandBanks attrs) iid ElderSign | iid == toId attrs = do
-    locationClueCount <- unClueCount <$> getCount (investigatorLocation attrs)
+    locationClueCount <- field LocationClues (investigatorLocation attrs)
     pure $ TokenValue ElderSign (PositiveModifier locationClueCount)
   getTokenValue _ _ token = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks a) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource a source -> rb <$ push
-      (DiscoverCluesAtLocation (toId a) (investigatorLocation a) 1 Nothing)
+    UseCardAbility _ (isSource a -> True) _ 1 _ -> do
+      push (DiscoverCluesAtLocation (toId a) (investigatorLocation a) 1 Nothing)
+      pure rb
     _ -> RolandBanks <$> runMessage msg a

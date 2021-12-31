@@ -45,7 +45,7 @@ import Arkham.Keyword (HasKeywords(..), Keyword)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Label qualified as L
 import Arkham.Location
-import Arkham.Location.Attrs (LocationAttrs(..), Field(..))
+import Arkham.Location.Attrs (Field(..), LocationAttrs(..))
 import Arkham.LocationSymbol
 import Arkham.Matcher hiding
   ( AssetDefeated
@@ -663,7 +663,7 @@ getInvestigatorsMatching matcher = do
       case mSkillTest of
         Nothing -> pure False
         Just st -> do
-          skillTestCount <- getList @CommittedSkillIcon (toId i, st)
+          skillTestCount <- length <$> getList @CommittedSkillIcon (toId i, st)
           gameValueMatches skillTestCount valueMatcher
 
 getActsMatching

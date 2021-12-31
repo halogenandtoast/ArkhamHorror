@@ -13,8 +13,10 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Id
+import Arkham.Location.Attrs
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.RequestedTokenStrategy
 import Arkham.Source
 import Arkham.Stats
@@ -36,6 +38,7 @@ type SkillTestRunner env =
   , HasId LocationId env InvestigatorId
   , HasSet ConnectedLocationId env LocationId
   , HasSet InvestigatorId env ()
+  , Projection env LocationAttrs
   )
 
 skillIconCount ::
@@ -79,7 +82,7 @@ getModifiedSkillTestDifficulty s = do
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
 getModifiedTokenValue ::
-  (MonadReader env m, HasModifiersFor env (), HasTokenValue env ()) =>
+  (MonadReader env m, HasModifiersFor env (), HasTokenValue env (), Projection env LocationAttrs) =>
   SkillTest ->
   Token ->
   m Int

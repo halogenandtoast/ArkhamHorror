@@ -24,7 +24,7 @@ bookOfShadows3 :: AssetCard BookOfShadows3
 bookOfShadows3 = asset BookOfShadows3 Cards.bookOfShadows3
 
 slot :: AssetAttrs -> Slot
-slot AssetAttrs { assetId } = Slot (AssetSource assetId) Nothing
+slot attrs = Slot (toSource attrs) Nothing
 
 instance HasAbilities BookOfShadows3 where
   getAbilities (BookOfShadows3 a) =

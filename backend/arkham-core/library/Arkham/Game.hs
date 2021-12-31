@@ -45,6 +45,7 @@ import Arkham.Keyword (HasKeywords(..), Keyword)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Label qualified as L
 import Arkham.Location
+import Arkham.Location.Attrs (LocationAttrs(..), Field(..))
 import Arkham.LocationSymbol
 import Arkham.Matcher hiding
   ( AssetDefeated
@@ -67,6 +68,7 @@ import Arkham.Name
 import Arkham.Phase
 import Arkham.PlayerCard
 import Arkham.Prey
+import Arkham.Projection
 import Arkham.Query
 import Arkham.Scenario
 import Arkham.Scenario.Deck
@@ -1497,6 +1499,12 @@ instance HasGame env => HasSet EventId env EventMatcher where
 
 instance HasGame env => HasSet SkillId env SkillMatcher where
   getSet = fmap (setFromList . map toId) . getSkillsMatching
+
+instance HasGame env => Projection env LocationAttrs where
+  field f lid = do
+    l <- getLocation lid
+    case f of
+      LocationClues -> pure . locationClues $ toAttrs l
 
 instance HasGame env => Query AssetMatcher env where
   select = fmap (setFromList . map toId) . getAssetsMatching

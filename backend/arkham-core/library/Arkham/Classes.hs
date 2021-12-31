@@ -8,7 +8,6 @@ module Arkham.Classes
 import Arkham.Prelude hiding (to)
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Action hiding (Ability)
 import Arkham.Card
 import Arkham.Card.Id

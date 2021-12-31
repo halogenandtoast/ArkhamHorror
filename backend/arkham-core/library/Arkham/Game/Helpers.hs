@@ -6,6 +6,8 @@ import Arkham.Ability
 import Arkham.Action (Action, TakenAction(..))
 import Arkham.Action qualified as Action
 import Arkham.CampaignLogKey
+import Arkham.Projection
+import Arkham.Location.Attrs hiding (location)
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
@@ -940,6 +942,7 @@ type CanCheckPlayable env
       , Query Matcher.SkillMatcher env
       , Query Matcher.ExtendedCardMatcher env
       )
+    , Projection env LocationAttrs
     , HasSkillTest env
     , CanCheckFast env
     , HasSet ClassSymbol env AssetId
@@ -2398,7 +2401,7 @@ skillTestMatches iid source st = \case
   Matcher.SkillTestMatches ms -> allM (skillTestMatches iid source st) ms
 
 matchToken
-  :: (HasTokenValue env (), MonadReader env m)
+  :: (HasTokenValue env (), MonadReader env m, Projection env LocationAttrs)
   => InvestigatorId
   -> Token
   -> Matcher.TokenMatcher

@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Message (
   module Arkham.Message,
   module X,
@@ -48,7 +46,6 @@ import Arkham.Trait
 import {-# SOURCE #-} Arkham.Window (Window)
 import Arkham.Zone
 import Control.Exception
-import Data.Aeson.TH
 
 messageType :: Message -> Maybe MessageType
 messageType PerformEnemyAttack {} = Just AttackMessage
@@ -552,9 +549,8 @@ data Message
   | WillMoveEnemy EnemyId Message
   | -- must be called on instance directly
     SetOriginalCardCode CardCode
-  deriving stock (Show, Eq)
-
-$(deriveJSON defaultOptions ''Message)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 targetLabel :: IdToTarget entityId => entityId -> [Message] -> Message
 targetLabel entityId = TargetLabel (idToTarget entityId)

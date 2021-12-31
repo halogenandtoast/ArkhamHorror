@@ -5,30 +5,25 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Card
-import Arkham.Card.CardDef
-import Arkham.Classes
+import Arkham.Classes.Entity
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
-import Arkham.Exception
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
 import Arkham.Location.Cards
-import Arkham.Location.Helpers
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher(..))
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
+import Arkham.Projection
 import Arkham.Query
-import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window (Window(..))
-import Arkham.Window qualified as Window
+import Data.Kind
 
 class IsLocation a
 
@@ -43,6 +38,9 @@ pattern UseDrawCardUnderneath :: InvestigatorId -> Source -> Message
 pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source _ 100 _
 
 type LocationCard a = CardBuilder LocationId a
+
+data instance Field LocationAttrs :: Type -> Type where
+  LocationClues :: Field LocationAttrs Int
 
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId
@@ -134,36 +132,11 @@ cardsUnderneathL :: Lens' LocationAttrs [Card]
 cardsUnderneathL =
   lens locationCardsUnderneath $ \m x -> m { locationCardsUnderneath = x }
 
-instance HasCardCode LocationAttrs where
-  toCardCode = locationCardCode
-
-instance HasCardDef LocationAttrs where
-  toCardDef a = case lookup (locationCardCode a) allLocationCards of
-    Just def -> def
-    Nothing ->
-      error $ "missing card def for location " <> show (locationCardCode a)
-
-instance ToJSON LocationAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "location"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "location"
-
-instance FromJSON LocationAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "location"
-
 instance Entity LocationAttrs where
   type EntityId LocationAttrs = LocationId
   type EntityAttrs LocationAttrs = LocationAttrs
   toId = locationId
   toAttrs = id
-
-instance Named LocationAttrs where
-  toName l = if locationRevealed l
-    then fromMaybe baseName (cdRevealedName $ toCardDef l)
-    else baseName
-    where baseName = toName (toCardDef l)
-
-instance Named (Unrevealed LocationAttrs) where
-  toName (Unrevealed l) = toName (toCardDef l)
 
 instance TargetEntity LocationAttrs where
   toTarget = LocationTarget . toId
@@ -180,23 +153,22 @@ instance SourceEntity LocationAttrs where
     locationId == lid
   isSource _ _ = False
 
-instance IsCard LocationAttrs where
-  toCardId = unLocationId . locationId
 
-instance HasName env LocationAttrs where
-  getName = pure . toName
+instance HasCardCode LocationAttrs where
+  toCardCode = locationCardCode
 
-instance HasName env (Unrevealed LocationAttrs) where
-  getName = pure . toName
+instance HasCardDef LocationAttrs where
+  toCardDef a = case lookup (locationCardCode a) allLocationCards of
+    Just def -> def
+    Nothing ->
+      error $ "missing card def for location " <> show (locationCardCode a)
 
-instance HasId (Maybe LocationId) env (Direction, LocationAttrs) where
-  getId (dir, LocationAttrs {..}) = pure $ lookup dir locationDirections
+instance ToJSON LocationAttrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "location"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "location"
 
-instance HasId LocationSymbol env LocationAttrs where
-  getId = pure . locationSymbol
-
-instance HasList UnderneathCard env LocationAttrs where
-  getList = pure . map UnderneathCard . locationCardsUnderneath
+instance FromJSON LocationAttrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "location"
 
 unrevealed :: LocationAttrs -> Bool
 unrevealed = not . locationRevealed
@@ -304,66 +276,8 @@ locationWith f def shroud' revealClues symbol' connectedSymbols' g =
       }
     }
 
-locationEnemiesWithTrait
-  :: (MonadReader env m, HasSet Trait env EnemyId)
-  => LocationAttrs
-  -> Trait
-  -> m [EnemyId]
-locationEnemiesWithTrait LocationAttrs { locationEnemies } trait =
-  filterM (fmap (member trait) . getSet) (setToList locationEnemies)
-
-locationInvestigatorsWithClues
-  :: (MonadReader env m, HasCount ClueCount env InvestigatorId)
-  => LocationAttrs
-  -> m [InvestigatorId]
-locationInvestigatorsWithClues LocationAttrs { locationInvestigators } =
-  filterM
-    (fmap ((> 0) . unClueCount) . getCount)
-    (setToList locationInvestigators)
-
-getModifiedShroudValueFor
-  :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Int
-getModifiedShroudValueFor attrs = do
-  modifiers' <- getModifiers (toSource attrs) (toTarget attrs)
-  pure $ foldr applyModifier (locationShroud attrs) modifiers'
- where
-  applyModifier (ShroudModifier m) n = max 0 (n + m)
-  applyModifier _ n = n
-
-getInvestigateAllowed
-  :: (MonadReader env m, HasModifiersFor env ())
-  => InvestigatorId
-  -> LocationAttrs
-  -> m Bool
-getInvestigateAllowed iid attrs = do
-  modifiers1' <- getModifiers (toSource attrs) (toTarget attrs)
-  modifiers2' <- getModifiers (InvestigatorSource iid) (toTarget attrs)
-  pure $ not (any isCannotInvestigate $ modifiers1' <> modifiers2')
- where
-  isCannotInvestigate CannotInvestigate{} = True
-  isCannotInvestigate _ = False
-
-canEnterLocation
-  :: (MonadReader env m, HasModifiersFor env (), HasSet Trait env EnemyId)  => EnemyId -> LocationId -> m Bool
-canEnterLocation eid lid = do
-  traits' <- getSet eid
-  modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid)
-  pure $ not $ flip any modifiers' $ \case
-    CannotBeEnteredByNonElite{} -> Elite `notMember` traits'
-    _ -> False
-
-withResignAction
-  :: (Entity location, EntityAttrs location ~ LocationAttrs)
-  => location
-  -> [Ability]
-  -> [Ability]
-withResignAction x body = do
-  let other = withBaseAbilities attrs body
-  locationResignAction attrs : other
-  where attrs = toAttrs x
-
 locationResignAction :: LocationAttrs -> Ability
-locationResignAction attrs = toLocationAbility attrs (resignAction attrs)
+locationResignAction attrs = toLocationAbility attrs (mkAbility attrs 99 $ ActionAbility (Just Action.Resign) (ActionCost 1))
 
 toLocationAbility :: LocationAttrs -> Ability -> Ability
 toLocationAbility attrs ability = ability
@@ -382,38 +296,6 @@ locationAbility ability = case abilitySource ability of
       )
     }
   _ -> ability
-
-withDrawCardUnderneathAction
-  :: (Entity location, EntityAttrs location ~ LocationAttrs)
-  => location
-  -> [Ability]
-withDrawCardUnderneathAction x = withBaseAbilities
-  attrs
-  [ drawCardUnderneathAction attrs | locationRevealed attrs ]
-  where attrs = toAttrs x
-
-instance HasAbilities LocationAttrs where
-  getAbilities l =
-    [ restrictedAbility l 101 (OnLocation $ LocationWithId $ toId l)
-      $ ActionAbility (Just Action.Investigate) (ActionCost 1)
-    , restrictedAbility
-        l
-        102
-        (OnLocation $ AccessibleTo $ LocationWithId $ toId l)
-      $ ActionAbility (Just Action.Move) moveCost
-    ]
-   where
-    moveCost = if not (locationRevealed l)
-      then locationCostToEnterUnrevealed l
-      else ActionCost 1
-
-getShouldSpawnNonEliteAtConnectingInstead
-  :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Bool
-getShouldSpawnNonEliteAtConnectingInstead attrs = do
-  modifiers' <- getModifiers (toSource attrs) (toTarget attrs)
-  pure $ flip any modifiers' $ \case
-    SpawnNonEliteAtConnectingInstead{} -> True
-    _ -> False
 
 on :: InvestigatorId -> LocationAttrs -> Bool
 on iid LocationAttrs { locationInvestigators } =

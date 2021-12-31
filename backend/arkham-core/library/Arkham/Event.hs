@@ -5,7 +5,6 @@ module Arkham.Event where
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Attrs
 import Arkham.Event.Events

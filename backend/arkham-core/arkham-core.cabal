@@ -949,6 +949,7 @@ library
       Arkham.PlayerCard
       Arkham.Prelude
       Arkham.Prey
+      Arkham.Projection
       Arkham.Query
       Arkham.Question
       Arkham.RequestedTokenStrategy
@@ -1220,6 +1221,7 @@ library
       UndecidableInstances
       ImportQualifiedPost
       FunctionalDependencies
+      ViewPatterns
   build-depends:
       MonadRandom
     , aeson >=1.5.4.1
@@ -1280,6 +1282,7 @@ executable validate
       UndecidableInstances
       ImportQualifiedPost
       FunctionalDependencies
+      ViewPatterns
   ghc-options: -threaded -O2 "-with-rtsopts=-N -T -I0"
   build-depends:
       MonadRandom
@@ -1391,6 +1394,7 @@ test-suite spec
       UndecidableInstances
       ImportQualifiedPost
       FunctionalDependencies
+      ViewPatterns
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-depends:
       MonadRandom

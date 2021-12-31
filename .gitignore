@@ -26,3 +26,5 @@ yarn-error.log*
 *.dump-hi
 *.hie
 *.hie-boot
+.tmp
+logfile

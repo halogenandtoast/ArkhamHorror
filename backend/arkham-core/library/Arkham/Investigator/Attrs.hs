@@ -18,6 +18,7 @@ import Arkham.Helpers
 import Arkham.Id
 import Arkham.Modifier
 import Arkham.Name
+import Arkham.Projection
 import Arkham.Query
 import Arkham.Slot
 import Arkham.Source
@@ -29,10 +30,14 @@ import Arkham.Zone (Zone)
 import Data.HashSet qualified as HashSet
 import Data.Text qualified as T
 import Data.UUID (nil)
+import Data.Kind
 
 class IsInvestigator a
 
 type InvestigatorCard a = CardBuilder () a
+
+data instance Field InvestigatorAttrs :: Type -> Type where
+  InvestigatorRemainingActions :: Field InvestigatorAttrs Int
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId

@@ -111,12 +111,11 @@ data GameState = IsPending | IsActive | IsOver
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data GameParams
-  = GameParams
-      (Either ScenarioId CampaignId)
-      Int
-      [(Investigator, [PlayerCard])] -- Map for order
-      Difficulty
+data GameParams = GameParams
+  (Either ScenarioId CampaignId)
+  Int
+  [(Investigator, [PlayerCard])] -- Map for order
+  Difficulty
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -601,7 +600,7 @@ getInvestigatorsMatching matcher = do
   investigators <- toList . view investigatorsL <$> getGame
   filterM (go matcher) investigators
  where
-   go = \case
+  go = \case
     You -> \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
       pure $ you == i
@@ -609,8 +608,7 @@ getInvestigatorsMatching matcher = do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
       pure $ you /= i
     Anyone -> pure . const True
-    TurnInvestigator -> \i ->
-      maybe False (== i) <$> getTurnInvestigator
+    TurnInvestigator -> \i -> maybe False (== i) <$> getTurnInvestigator
     InvestigatorWithTitle title -> pure . (== title) . nameTitle . toName
     InvestigatorAt locationMatcher -> \i ->
       if locationOf i == LocationId (CardId nil)
@@ -621,39 +619,38 @@ getInvestigatorsMatching matcher = do
       lowestSkillValue <- fromMaybe 100 . minimumMay <$> getSetList skillType
       skillValue <- getSkillValue skillType i
       pure $ lowestSkillValue == skillValue
-    InvestigatorWithClues gameValueMatcher -> getCount >=>
-      (`gameValueMatches` gameValueMatcher) . unClueCount
-    InvestigatorWithResources gameValueMatcher -> getCount >=>
-      (`gameValueMatches` gameValueMatcher) . unResourceCount
+    InvestigatorWithClues gameValueMatcher ->
+      getCount >=> (`gameValueMatches` gameValueMatcher) . unClueCount
+    InvestigatorWithResources gameValueMatcher ->
+      getCount >=> (`gameValueMatches` gameValueMatcher) . unResourceCount
     InvestigatorWithActionsRemaining gameValueMatcher ->
-      getCount >=>
-        (`gameValueMatches` gameValueMatcher)
+      getCount
+        >=> (`gameValueMatches` gameValueMatcher)
         . unActionRemainingCount
     InvestigatorWithDamage gameValueMatcher ->
-        (`gameValueMatches` gameValueMatcher) . fst . getDamage
+      (`gameValueMatches` gameValueMatcher) . fst . getDamage
     InvestigatorWithHorror gameValueMatcher ->
-        (`gameValueMatches` gameValueMatcher) . snd . getDamage
+      (`gameValueMatches` gameValueMatcher) . snd . getDamage
     InvestigatorWithRemainingSanity gameValueMatcher ->
-        getRemainingSanity >=> (`gameValueMatches` gameValueMatcher)
+      getRemainingSanity >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorMatches xs -> \i -> allM (`go` i) xs
     AnyInvestigator xs -> \i -> anyM (`go` i) xs
-    HandWith cardListMatcher ->
-      (`cardListMatches` cardListMatcher) . handOf
+    HandWith cardListMatcher -> (`cardListMatches` cardListMatcher) . handOf
     DiscardWith cardListMatcher ->
       (`cardListMatches` cardListMatcher) . map PlayerCard . discardOf
     InvestigatorWithoutModifier modifierType -> \i -> do
-        modifiers' <- getModifiers (toSource i) (toTarget i)
-        pure $ modifierType `notElem` modifiers'
+      modifiers' <- getModifiers (toSource i) (toTarget i)
+      pure $ modifierType `notElem` modifiers'
     UneliminatedInvestigator -> pure . not . isEliminated
     ResignedInvestigator -> pure . isResigned
     InvestigatorEngagedWith enemyMatcher -> \i -> do
       enemyIds <- select enemyMatcher
       any (`member` enemyIds) <$> getSet i
     TopCardOfDeckIs cardMatcher -> \i -> do
-        deck <- getList i
-        pure $ case deck of
-          [] -> False
-          x : _ -> cardMatch (unDeckCard x) cardMatcher
+      deck <- getList i
+      pure $ case deck of
+        [] -> False
+        x : _ -> cardMatch (unDeckCard x) cardMatcher
     UnengagedInvestigator -> fmap null . getSet @EnemyId
     NoDamageDealtThisTurn -> \i -> do
       history <- getHistory TurnHistory (toId i)
@@ -666,8 +663,7 @@ getInvestigatorsMatching matcher = do
           skillTestCount <- length <$> getList @CommittedSkillIcon (toId i, st)
           gameValueMatches skillTestCount valueMatcher
 
-getActsMatching
-  :: (MonadReader env m, HasGame env) => ActMatcher -> m [Act]
+getActsMatching :: (MonadReader env m, HasGame env) => ActMatcher -> m [Act]
 getActsMatching matcher = do
   allGameActs <- toList . view actsL <$> getGame
   filterM (matcherFilter matcher) allGameActs
@@ -2747,7 +2743,7 @@ instance HasGame env => HasList (LocationId, Distance) env InvestigatorId where
     rs <- mapToList <$> evalStateT
       (markDistances start (pure . const True) mempty)
       (LPState (pure start) (singleton start) mempty)
-    pure $ [(lid, Distance d) | (d, lids) <- rs, lid <- lids]
+    pure $ [ (lid, Distance d) | (d, lids) <- rs, lid <- lids ]
 
 distanceSingletons :: HashMap Int [LocationId] -> HashMap LocationId Int
 distanceSingletons hmap = foldr

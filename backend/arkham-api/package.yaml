@@ -73,7 +73,6 @@ library:
     - jwt
     - lens
     - monad-logger
-    - monad-validate
     - path-pieces
     - persistent
     - persistent-postgresql

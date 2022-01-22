@@ -15,11 +15,10 @@ import Arkham.Id
 import Arkham.Message
 import Arkham.PlayerCard
 import Control.Monad.Random (mkStdGen)
-import Control.Monad.Validate (dispute, runValidate)
 import Data.HashMap.Strict qualified as HashMap
 import Data.Text qualified as T
 import Database.Esqueleto.Experimental hiding (isNothing)
-import Json
+import Json hiding (Success)
 import Network.HTTP.Conduit (simpleHttp)
 import Network.HTTP.Types
 import Safe (fromJustNote)
@@ -54,12 +53,10 @@ newtype DeckError = UnimplementedCard CardCode
 instance ToJSON DeckError where
   toJSON = genericToJSON $ defaultOptions { tagSingleConstructors = True }
 
-validateDeck :: ArkhamDeck -> Either [DeckError] ArkhamDeck
-validateDeck deck = runValidate $ do
-  for_ cardCodes $ \cardCode -> when
-    (isNothing $ HashMap.lookup cardCode allPlayerCards)
-    (dispute [UnimplementedCard cardCode])
-  pure deck
+toDeckErrors :: ArkhamDeck -> [DeckError]
+toDeckErrors deck =
+  flip mapMaybe cardCodes $ \cardCode ->
+    maybe (Just $ UnimplementedCard cardCode) (const Nothing) (HashMap.lookup cardCode allPlayerCards)
  where
   decklist = arkhamDeckList deck
   cardCodes = HashMap.keys $ slots decklist
@@ -71,10 +68,9 @@ postApiV1ArkhamDecksR = do
   edeck <- fromPostData userId postData
   case edeck of
     Left err -> error $ T.pack err
-    Right deck -> do
-      case validateDeck deck of
-        Left err -> sendStatusJSON status400 err
-        Right deck' -> runDB $ insertEntity deck'
+    Right deck -> case toDeckErrors deck of
+      [] -> runDB $ insertEntity deck
+      err -> sendStatusJSON status400 err
 
 putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameDecksR gameId = do

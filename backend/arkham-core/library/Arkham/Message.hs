@@ -15,7 +15,6 @@ import Arkham.Action
 import Arkham.Asset.Uses
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
-import Arkham.SkillType
 import Arkham.Card
 import Arkham.Card.Id
 import Arkham.ChaosBagStepState
@@ -38,6 +37,7 @@ import Arkham.RequestedTokenStrategy
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
+import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
@@ -80,6 +80,10 @@ story iids msg =
 -- in any discard pile, the victory display, and
 -- cards that have been set aside
 
+data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
+  deriving stock (Generic, Eq, Show)
+  deriving anyclass (FromJSON, ToJSON)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | -- Story Card Messages
@@ -89,7 +93,7 @@ data Message
   | -- Act Deck Messages
     SetActDeck
   | AddAct CardDef
-  | AdvanceAct ActId Source
+  | AdvanceAct ActId Source AdvancementMethod
   | NextAdvanceActStep ActId Int
   | ReplaceAct ActId ActId
   | RevertAct ActId

@@ -5,12 +5,12 @@ module Arkham.Act.Cards.FindingAWayInside
 
 import Arkham.Prelude
 
+import Arkham.Act.Attrs
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Assets
-import Arkham.Act.Attrs
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
@@ -33,16 +33,16 @@ findingAWayInside = act
 
 instance ActRunner env => RunMessage env FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid source@(LocationSource _) | aid == actId && onSide A attrs ->
+    AdvanceAct aid source@(LocationSource _) advanceMode | aid == actId && onSide A attrs ->
       do
       -- When advanced from Museum Halls we don't spend clues
         leadInvestigatorId <- getLeadInvestigatorId
-        push (chooseOne leadInvestigatorId [AdvanceAct aid source])
+        push (chooseOne leadInvestigatorId [AdvanceAct aid source advanceMode])
         pure $ FindingAWayInside $ attrs & sequenceL .~ Act 1 B
-    AdvanceAct aid _ | aid == actId && onSide A attrs ->
+    AdvanceAct aid _ _ | aid == actId && onSide A attrs ->
       -- otherwise we do the default
       FindingAWayInside <$> runMessage msg attrs
-    AdvanceAct aid source
+    AdvanceAct aid source _
       | aid == actId && onSide B attrs && isSource attrs source -> do
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
@@ -60,7 +60,7 @@ instance ActRunner env => RunMessage env FindingAWayInside where
           , RevealLocation Nothing museumHallsId
           , AdvanceToAct actDeckId Acts.nightAtTheMuseum A (toSource attrs)
           ]
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       museumHallsId <- fromJustNote "missing museum halls"
         <$> getId (LocationWithTitle "Museum Halls")
       a <$ pushAll

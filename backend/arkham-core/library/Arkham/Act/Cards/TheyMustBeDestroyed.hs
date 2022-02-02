@@ -6,8 +6,8 @@ module Arkham.Act.Cards.TheyMustBeDestroyed
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Criteria
@@ -39,8 +39,8 @@ instance HasAbilities TheyMustBeDestroyed where
 
 instance ActRunner env => RunMessage env TheyMustBeDestroyed where
   runMessage msg a@(TheyMustBeDestroyed attrs) = case msg of
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs ->
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 2)
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     _ -> TheyMustBeDestroyed <$> runMessage msg attrs

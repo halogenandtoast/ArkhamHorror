@@ -5,8 +5,8 @@ module Arkham.Act.Cards.RaceForAnswers
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
@@ -27,7 +27,7 @@ raceForAnswers = act
 
 instance ActRunner env => RunMessage env RaceForAnswers where
   runMessage msg a@(RaceForAnswers attrs) = case msg of
-    AdvanceAct aid _ | aid == toId a && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       locations <- selectList $ RevealedLocation <> LocationWithTitle
         "Historical Society"
       playerCount <- getPlayerCount

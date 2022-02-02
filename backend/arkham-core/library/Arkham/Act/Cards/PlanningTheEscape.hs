@@ -6,8 +6,8 @@ module Arkham.Act.Cards.PlanningTheEscape
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Card.EncounterCard
@@ -63,8 +63,8 @@ instance HasAbilities PlanningTheEscape where
 instance ActRunner env => RunMessage env PlanningTheEscape where
   runMessage msg a@(PlanningTheEscape attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId a) (toSource attrs))
-    AdvanceAct aid _ | aid == toId a && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId a) (toSource attrs) AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       enemyCards <-
         filter ((== EnemyType) . toCardType)
         . mapMaybe (preview _EncounterCard . unUnderneathCard)

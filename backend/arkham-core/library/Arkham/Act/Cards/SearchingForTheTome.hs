@@ -6,13 +6,13 @@ module Arkham.Act.Cards.SearchingForTheTome
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
@@ -41,8 +41,8 @@ instance HasAbilities SearchingForTheTome where
 instance ActRunner env => RunMessage env SearchingForTheTome where
   runMessage msg a@(SearchingForTheTome attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       a <$ push
         (chooseOne

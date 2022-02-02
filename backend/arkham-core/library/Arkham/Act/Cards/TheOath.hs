@@ -5,13 +5,13 @@ module Arkham.Act.Cards.TheOath
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -42,7 +42,7 @@ instance HasModifiersFor env TheOath where
 
 instance ActRunner env => RunMessage env TheOath where
   runMessage msg a@(TheOath attrs) = case msg of
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       a <$ push
         (chooseOne

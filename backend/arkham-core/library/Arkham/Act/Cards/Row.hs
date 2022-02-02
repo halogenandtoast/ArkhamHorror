@@ -6,13 +6,13 @@ module Arkham.Act.Cards.Row
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
@@ -51,8 +51,8 @@ instance
         _ -> False
       a <$ push (DiscardTopOfEncounterDeck iid 5 (Just $ toTarget attrs))
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs ->
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
       lid <- getId @LocationId iid

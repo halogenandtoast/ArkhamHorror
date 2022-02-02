@@ -6,15 +6,15 @@ module Arkham.Act.Cards.TheStrangerACityAflame
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (Discarded)
 import Arkham.Message
+import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -39,8 +39,8 @@ instance HasAbilities TheStrangerACityAflame where
 instance ActRunner env => RunMessage env TheStrangerACityAflame where
   runMessage msg a@(TheStrangerACityAflame attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
       theatre <- fromJustNote "theatre must be in play"
         <$> selectOne (LocationWithTitle "Theatre")

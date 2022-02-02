@@ -6,8 +6,8 @@ module Arkham.Act.Cards.Run
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Matcher
@@ -34,8 +34,8 @@ instance ActRunner env => RunMessage env Run where
   runMessage msg a@(Run attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       -- We need to know the investigator who entered
-      a <$ push (AdvanceAct (toId attrs) (InvestigatorSource iid))
-    AdvanceAct aid (InvestigatorSource iid)
+      a <$ push (AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther)
+    AdvanceAct aid (InvestigatorSource iid) _
       | aid == toId attrs && onSide B attrs -> a <$ pushAll
         (chooseOne
             iid

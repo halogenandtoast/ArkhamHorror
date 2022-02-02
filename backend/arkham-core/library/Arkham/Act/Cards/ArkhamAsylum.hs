@@ -5,8 +5,8 @@ module Arkham.Act.Cards.ArkhamAsylum
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 -- import Arkham.CampaignLogKey
 import Arkham.Classes
@@ -39,7 +39,7 @@ instance HasAbilities ArkhamAsylum where
 
 instance ActRunner env => RunMessage env ArkhamAsylum where
   runMessage msg a@(ArkhamAsylum (attrs `With` metadata)) = case msg of
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       let
         skills = setFromList [SkillCombat, SkillAgility, SkillIntellect]
           `difference` chosenSkills metadata
@@ -79,7 +79,7 @@ instance ActRunner env => RunMessage env ArkhamAsylum where
       | isSource attrs source -> do
         replaceMessageMatching
           (== SkillTestApplyResultsAfter)
-          (\m -> [m, AdvanceAct (toId attrs) source])
+          (\m -> [m, AdvanceAct (toId attrs) source AdvancedWithClues])
         pure $ ArkhamAsylum $ attrs `with` Metadata
           (insertSet st $ chosenSkills metadata)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _

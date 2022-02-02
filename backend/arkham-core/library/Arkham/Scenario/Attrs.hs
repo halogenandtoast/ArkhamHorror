@@ -5,8 +5,6 @@ module Arkham.Scenario.Attrs
 
 import Arkham.Prelude
 
-import Arkham.Json
-import Arkham.PlayerCard
 import Arkham.Act.Sequence
 import Arkham.Card
 import Arkham.Card.PlayerCard
@@ -16,6 +14,7 @@ import Arkham.Difficulty
 import Arkham.Game.Helpers
 import Arkham.Helpers
 import Arkham.Id
+import Arkham.Json
 import Arkham.Location as X
 import Arkham.Matcher hiding
   ( ChosenRandomLocation
@@ -26,6 +25,7 @@ import Arkham.Matcher hiding
 import Arkham.Message
 import Arkham.Name
 import Arkham.Phase
+import Arkham.PlayerCard
 import Arkham.Query
 import Arkham.Resolution
 import Arkham.Scenario.Deck as X
@@ -342,7 +342,7 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
           let
             fromActId = ActId (toCardCode x)
             toActId = ActId (toCardCode act)
-          when (newActSide == B) (push (AdvanceAct toActId $ toSource a))
+          when (newActSide == B) (push $ AdvanceAct toActId (toSource a) AdvancedWithOther)
           push (ReplaceAct fromActId toActId)
           pure $ filter
             (\c ->

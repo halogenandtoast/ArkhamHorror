@@ -5,14 +5,14 @@ module Arkham.Act.Cards.MistakesOfThePast
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Assets
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -30,7 +30,7 @@ mistakesOfThePast = act
 
 instance ActRunner env => RunMessage env MistakesOfThePast where
   runMessage msg a@(MistakesOfThePast attrs) = case msg of
-    AdvanceAct aid _ | aid == toId a && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       locations <- selectList $ RevealedLocation <> LocationWithTitle
         "Historical Society"
       hiddenLibrary <- getSetAsideCard Locations.hiddenLibrary

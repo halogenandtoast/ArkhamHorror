@@ -2,17 +2,17 @@ module Arkham.Act.Cards.InvestigatingTheTrail where
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
-import Arkham.EncounterCard
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
+import Arkham.EncounterCard
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 
@@ -29,7 +29,7 @@ investigatingTheTrail = act
 
 instance ActRunner env => RunMessage env InvestigatingTheTrail where
   runMessage msg a@(InvestigatingTheTrail attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       mRitualSiteId <- getLocationIdByName "Ritual Site"
       mainPathId <- getJustLocationIdByName "Main Path"
       when (isNothing mRitualSiteId) $ do

@@ -6,14 +6,14 @@ module Arkham.Act.Cards.TheChamberOfTheBeast
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Resolution
@@ -47,7 +47,7 @@ instance HasAbilities TheChamberOfTheBeast where
 
 instance ActRunner env => RunMessage env TheChamberOfTheBeast where
   runMessage msg a@(TheChamberOfTheBeast attrs) = case msg of
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       resolution <- maybe 3 (const 2)
         <$> selectOne (assetIs Cards.theNecronomiconOlausWormiusTranslation)
@@ -62,5 +62,5 @@ instance ActRunner env => RunMessage env TheChamberOfTheBeast where
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (ScenarioResolution $ Resolution 1)
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     _ -> TheChamberOfTheBeast <$> runMessage msg attrs

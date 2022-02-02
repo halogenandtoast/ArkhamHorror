@@ -6,8 +6,8 @@ module Arkham.Enemy.Cards.TheExperiment
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
@@ -48,5 +48,5 @@ instance EnemyRunner env => RunMessage env TheExperiment where
       e <$ push (Ready $ toTarget attrs)
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       actId <- fromJustNote "missing act" . headMay <$> getSetList ()
-      e <$ push (AdvanceAct actId $ toSource attrs)
+      e <$ push (AdvanceAct actId (toSource attrs) AdvancedWithOther)
     _ -> TheExperiment <$> runMessage msg attrs

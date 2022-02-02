@@ -5,12 +5,12 @@ module Arkham.Act.Cards.Awakening
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
@@ -30,7 +30,7 @@ awakening = act
 
 instance ActRunner env => RunMessage env Awakening where
   runMessage msg a@(Awakening attrs) = case msg of
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       -- Choose one of the set-aside locations, at random.
       -- Put that location into play
       locations <- selectList (SetAsideCardMatch $ CardWithType LocationType)

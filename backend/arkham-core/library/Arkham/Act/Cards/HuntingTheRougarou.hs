@@ -3,20 +3,20 @@ module Arkham.Act.Cards.HuntingTheRougarou where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Query
 import Arkham.Resolution
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
@@ -56,8 +56,8 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       a <$ push (ScenarioResolution $ Resolution 2)
     UseCardAbility _ source _ 3 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == toId attrs && onSide A attrs -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       rougarou <- fromJustNote "must be" <$> getTheRougarou

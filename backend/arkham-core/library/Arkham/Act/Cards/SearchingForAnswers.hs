@@ -6,13 +6,13 @@ module Arkham.Act.Cards.SearchingForAnswers
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 import Arkham.Target
@@ -35,8 +35,8 @@ instance HasAbilities SearchingForAnswers where
 instance ActRunner env => RunMessage env SearchingForAnswers where
   runMessage msg a@(SearchingForAnswers attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       unrevealedLocationIds <- selectList UnrevealedLocation
       hiddenChamber <- fromJustNote "must exist"
         <$> getId (LocationWithTitle "The Hidden Chamber")

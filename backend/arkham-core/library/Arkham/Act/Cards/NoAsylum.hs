@@ -6,14 +6,14 @@ module Arkham.Act.Cards.NoAsylum
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -61,8 +61,8 @@ instance Query LocationMatcher env => HasModifiersFor env NoAsylum where
 instance ActRunner env => RunMessage env NoAsylum where
   runMessage msg a@(NoAsylum attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       tookKeysByForce <- member YouTookTheKeysByForce <$> getSet ()
       a <$ push
         (ScenarioResolution $ Resolution $ if tookKeysByForce then 2 else 3)

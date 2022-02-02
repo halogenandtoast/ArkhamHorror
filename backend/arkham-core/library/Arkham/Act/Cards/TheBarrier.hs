@@ -3,13 +3,13 @@ module Arkham.Act.Cards.TheBarrier where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
@@ -34,8 +34,8 @@ instance HasAbilities TheBarrier where
 instance ActRunner env => RunMessage env TheBarrier where
   runMessage msg a@(TheBarrier attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid))
-    AdvanceAct aid _ | aid == toId a && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
+    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       hallwayId <- getJustLocationIdByName "Hallway"
       parlorId <- getJustLocationIdByName "Parlor"
       ghoulPriest <- getSetAsideCard Enemies.ghoulPriest

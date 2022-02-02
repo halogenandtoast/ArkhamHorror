@@ -6,13 +6,13 @@ module Arkham.Act.Cards.AscendingTheHillV2
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
@@ -43,8 +43,8 @@ instance HasAbilities AscendingTheHillV2 where
 instance ActRunner env => RunMessage env AscendingTheHillV2 where
   runMessage msg a@(AscendingTheHillV2 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       sentinelPeak <- fromJustNote "must exist"
         <$> selectOne (LocationWithTitle "Sentinel Peak")
       sethBishop <- EncounterCard <$> genEncounterCard Enemies.sethBishop

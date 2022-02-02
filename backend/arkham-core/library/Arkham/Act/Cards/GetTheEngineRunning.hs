@@ -6,8 +6,8 @@ module Arkham.Act.Cards.GetTheEngineRunning
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Criteria
@@ -36,8 +36,8 @@ instance HasAbilities GetTheEngineRunning where
 
 instance ActRunner env => RunMessage env GetTheEngineRunning where
   runMessage msg a@(GetTheEngineRunning attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs ->
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     _ -> GetTheEngineRunning <$> runMessage msg attrs

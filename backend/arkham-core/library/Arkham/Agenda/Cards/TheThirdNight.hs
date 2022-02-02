@@ -5,8 +5,8 @@ module Arkham.Agenda.Cards.TheThirdNight (
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.CampaignLogKey
@@ -40,6 +40,6 @@ instance AgendaRunner env => RunMessage env TheThirdNight where
       push $
         if doubt >= conviction
           then ScenarioResolution $ Resolution 3
-          else AdvanceAct actId (toSource attrs)
+          else AdvanceAct actId (toSource attrs) AdvancedWithOther
       pure a
     _ -> TheThirdNight <$> runMessage msg attrs

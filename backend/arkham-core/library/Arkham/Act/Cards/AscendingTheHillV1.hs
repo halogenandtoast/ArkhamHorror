@@ -6,8 +6,8 @@ module Arkham.Act.Cards.AscendingTheHillV1
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Game.Helpers
@@ -40,7 +40,7 @@ instance HasAbilities AscendingTheHillV1 where
 instance ActRunner env => RunMessage env AscendingTheHillV1 where
   runMessage msg a@(AscendingTheHillV1 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs ->
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
       a <$ push (AdvanceActDeck (actDeckId attrs) (toSource attrs))
     _ -> AscendingTheHillV1 <$> runMessage msg attrs

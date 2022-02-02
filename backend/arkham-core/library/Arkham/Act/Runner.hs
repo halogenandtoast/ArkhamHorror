@@ -77,20 +77,21 @@ type ActAttrsRunner env
 advanceActSideA
   :: (MonadReader env m, HasId LeadInvestigatorId env ())
   => ActAttrs
+  -> AdvancementMethod
   -> m [Message]
-advanceActSideA attrs = do
+advanceActSideA attrs advanceMode = do
   leadInvestigatorId <- getLeadInvestigatorId
   pure
     [ CheckWindow
       [leadInvestigatorId]
       [Window Timing.When (ActAdvance $ toId attrs)]
-    , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs)]
+    , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs) advanceMode]
     ]
 
 instance ActAttrsRunner env => RunMessage env ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
-    AdvanceAct aid _ | aid == actId && onSide A a -> do
-      pushAll =<< advanceActSideA a
+    AdvanceAct aid _ advanceMode | aid == actId && onSide A a -> do
+      pushAll =<< advanceActSideA a advanceMode
       pure $ a & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AttachTreachery tid (ActTarget aid) | aid == actId ->
       pure $ a & treacheriesL %~ insertSet tid
@@ -104,8 +105,9 @@ instance ActAttrsRunner env => RunMessage env ActAttrs where
       a <$ when
         (null investigatorIds)
         (pushAll [whenMsg, afterMsg, AllInvestigatorsResigned])
-    UseCardAbility iid source _ 100 _ | isSource a source ->
-      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid))
+    UseCardAbility iid source _ 999 _ | isSource a source ->
+      -- This is assumed to be advancement via spending clues
+      a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
     PlaceClues (ActTarget aid) n | aid == actId -> do
       let totalClues = n + fromMaybe 0 actClues
       pure $ a { actClues = Just totalClues }

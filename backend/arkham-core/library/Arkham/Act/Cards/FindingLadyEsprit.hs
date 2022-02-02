@@ -39,7 +39,7 @@ findingLadyEsprit = act
 
 instance ActRunner env => RunMessage env FindingLadyEsprit where
   runMessage msg a@(FindingLadyEsprit attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       ladyEspritSpawnLocation <-
         fromJust . headMay . setToList <$> bayouLocations
       ladyEsprit <- PlayerCard <$> genPlayerCard Assets.ladyEsprit

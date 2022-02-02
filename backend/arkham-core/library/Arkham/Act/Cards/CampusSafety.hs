@@ -2,8 +2,8 @@ module Arkham.Act.Cards.CampusSafety where
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Message
@@ -22,6 +22,6 @@ campusSafety = act (3, A) CampusSafety Cards.campusSafety Nothing
 
 instance ActRunner env => RunMessage env CampusSafety where
   runMessage msg a@(CampusSafety attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       a <$ push (ScenarioResolution $ Resolution 3)
     _ -> CampusSafety <$> runMessage msg attrs

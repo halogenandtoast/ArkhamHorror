@@ -6,12 +6,12 @@ module Arkham.Act.Cards.AllIn
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
@@ -51,8 +51,8 @@ instance HasAbilities AllIn where
 instance ActRunner env => RunMessage env AllIn where
   runMessage msg a@(AllIn attrs@ActAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       resignedWithDrFrancisMorgan <- elem (ResignedCardCode $ CardCode "02080")
         <$> getList ()
       let resolution = if resignedWithDrFrancisMorgan then 2 else 1

@@ -6,8 +6,8 @@ module Arkham.Act.Cards.FindingANewWay
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
@@ -37,8 +37,8 @@ instance ActRunner env => RunMessage env FindingANewWay where
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       a <$ push (ScenarioResolution $ Resolution 1)
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
       let locationCards = filterLocations cards

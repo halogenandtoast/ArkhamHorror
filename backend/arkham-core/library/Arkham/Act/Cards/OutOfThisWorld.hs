@@ -6,14 +6,14 @@ module Arkham.Act.Cards.OutOfThisWorld
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -35,7 +35,7 @@ instance HasAbilities OutOfThisWorld where
 
 instance ActRunner env => RunMessage env OutOfThisWorld where
   runMessage msg a@(OutOfThisWorld attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       theEdgeOfTheUniverse <- getSetAsideCard Locations.theEdgeOfTheUniverse
       a <$ pushAll
         [ PlaceLocation theEdgeOfTheUniverse

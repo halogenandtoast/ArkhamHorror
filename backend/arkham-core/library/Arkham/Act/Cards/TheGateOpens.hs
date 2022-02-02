@@ -5,8 +5,8 @@ module Arkham.Act.Cards.TheGateOpens
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.GameValue
@@ -27,6 +27,6 @@ theGateOpens = act
 
 instance ActRunner env => RunMessage env TheGateOpens where
   runMessage msg a@(TheGateOpens attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs ->
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)
     _ -> TheGateOpens <$> runMessage msg attrs

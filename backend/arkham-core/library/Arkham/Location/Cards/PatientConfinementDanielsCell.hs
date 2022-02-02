@@ -6,12 +6,12 @@ module Arkham.Location.Cards.PatientConfinementDanielsCell
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (RevealLocation)
 import Arkham.Timing qualified as Timing
@@ -44,5 +44,5 @@ instance LocationRunner env => RunMessage env PatientConfinementDanielsCell wher
   runMessage msg l@(PatientConfinementDanielsCell attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       actIds <- getSetList ()
-      l <$ pushAll (map (`AdvanceAct` source) actIds)
+      l <$ pushAll (map (\aid -> AdvanceAct aid source AdvancedWithOther) actIds)
     _ -> PatientConfinementDanielsCell <$> runMessage msg attrs

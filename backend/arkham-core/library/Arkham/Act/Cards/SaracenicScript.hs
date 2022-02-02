@@ -5,10 +5,10 @@ module Arkham.Act.Cards.SaracenicScript
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Assets
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.PlayerCard
@@ -32,7 +32,7 @@ saracenicScript = act
 
 instance ActRunner env => RunMessage env SaracenicScript where
   runMessage msg a@(SaracenicScript attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       survived <- getHasRecord DrHenryArmitageSurvivedTheDunwichLegacy
       investigatorIds <- map unInScenarioInvestigatorId
         <$> getSetList @InScenarioInvestigatorId ()

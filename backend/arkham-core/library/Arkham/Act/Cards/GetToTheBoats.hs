@@ -6,14 +6,14 @@ module Arkham.Act.Cards.GetToTheBoats
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
@@ -43,7 +43,7 @@ instance HasAbilities GetToTheBoats where
 
 instance ActRunner env => RunMessage env GetToTheBoats where
   runMessage msg a@(GetToTheBoats attrs) = case msg of
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       gondola <- genEncounterCard Locations.gondola
       leadInvestigatorId <- getLeadInvestigatorId
       a <$ pushAll
@@ -58,5 +58,5 @@ instance ActRunner env => RunMessage env GetToTheBoats where
         [] -> pure a
         xs -> a <$ pushAll [chooseOne iid [ Flip source x | x <- xs ]]
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
-      a <$ push (AdvanceAct (toId attrs) source)
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     _ -> GetToTheBoats <$> runMessage msg attrs

@@ -5,12 +5,12 @@ module Arkham.Act.Cards.TheReallyBadOnesV2
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -37,7 +37,7 @@ instance Query LocationMatcher env => HasModifiersFor env TheReallyBadOnesV2 whe
 
 instance ActRunner env => RunMessage env TheReallyBadOnesV2 where
   runMessage msg a@(TheReallyBadOnesV2 attrs) = case msg of
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       danielsCell <- getJustLocationIdByName
         ("Patient Confinement" <:> "Daniel's Cell")
       danielChesterfield <- getSetAsideCard Enemies.danielChesterfield

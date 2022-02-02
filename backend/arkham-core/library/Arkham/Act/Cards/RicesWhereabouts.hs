@@ -6,15 +6,15 @@ module Arkham.Act.Cards.RicesWhereabouts
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.AgendaId
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Matcher
 import Arkham.Message hiding (Discarded)
@@ -65,8 +65,8 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
                  ]
         _ -> throwIO $ InvalidState "did not find the correct card"
     UseCardAbility _ source _ 3 _ | isSource attrs source -> do
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       alchemyLabsInPlay <- isJust
         <$> selectOne (LocationWithTitle "Alchemy Labs")
       agendaStep <- unAgendaStep <$> getStep ()

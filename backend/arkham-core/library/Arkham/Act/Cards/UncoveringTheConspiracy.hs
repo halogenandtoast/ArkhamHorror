@@ -6,8 +6,8 @@ module Arkham.Act.Cards.UncoveringTheConspiracy
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
@@ -55,7 +55,7 @@ instance ActRunner env => RunMessage env UncoveringTheConspiracy where
         $ mapMaybe (preview _EncounterCard) cards
         )
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) (InvestigatorSource iid))
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs ->
+      a <$ push (AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)
     _ -> UncoveringTheConspiracy <$> runMessage msg attrs

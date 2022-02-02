@@ -2,10 +2,10 @@ module Arkham.Act.Cards.AfterHours where
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Assets
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Matcher
@@ -24,7 +24,7 @@ afterHours = act
 
 instance ActRunner env => RunMessage env AfterHours where
   runMessage msg a@(AfterHours attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       jazzMulligan <- getSetAsideEncounterCard Assets.jazzMulligan
       a <$ pushAll
         [ AddToEncounterDeck jazzMulligan

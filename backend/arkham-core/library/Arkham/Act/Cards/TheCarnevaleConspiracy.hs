@@ -6,14 +6,14 @@ module Arkham.Act.Cards.TheCarnevaleConspiracy
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
@@ -72,8 +72,8 @@ instance
               [ LookAtRevealed (toSource attrs) (AssetTarget x) | x <- xs ]
           ]
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       cnidathqua <- getSetAsideCard Enemies.cnidathqua
       maskedCarnevaleGoers <- selectList

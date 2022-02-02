@@ -2,15 +2,15 @@ module Arkham.Act.Cards.MysteriousGateway where
 
 import Arkham.Prelude
 
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Id
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -30,7 +30,7 @@ mysteriousGateway = act
 
 instance ActRunner env => RunMessage env MysteriousGateway where
   runMessage msg a@(MysteriousGateway attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getSetList @InvestigatorId
         (LocationWithTitle "Guest Hall")

@@ -5,9 +5,8 @@ module Arkham.Agenda.Cards.TheFirstNight (
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Scenarios.APhantomOfTruth.Helpers
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.CampaignLogKey
@@ -15,13 +14,14 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheFirstNight = TheFirstNight AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theFirstNight :: AgendaCard TheFirstNight
-theFirstNight = agenda (1, A) TheFirstNight Cards.theFirstNight (Static 12)
+theFirstNight = agenda (1, A) TheFirstNight Cards.theFirstNight (Static 6)
 
 instance HasRecord env () => HasModifiersFor env TheFirstNight where
   getModifiersFor _ target (TheFirstNight a) | not (isTarget a target) = do

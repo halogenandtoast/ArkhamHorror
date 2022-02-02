@@ -5,12 +5,12 @@ module Arkham.Act.Cards.SkinGame
 
 import Arkham.Prelude
 
+import Arkham.Act.Attrs
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Assets
-import Arkham.Act.Attrs
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
@@ -35,7 +35,7 @@ skinGame = act
 
 instance ActRunner env => RunMessage env SkinGame where
   runMessage msg a@(SkinGame attrs) = case msg of
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       completedExtracurricularActivity <-
         elem "02041" . map unCompletedScenarioId <$> getSetList ()
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()

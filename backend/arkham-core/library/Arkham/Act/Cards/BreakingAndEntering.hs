@@ -6,17 +6,17 @@ module Arkham.Act.Cards.BreakingAndEntering
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Assets
-import Arkham.Location.Cards qualified as Cards
-import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -37,8 +37,8 @@ instance HasAbilities BreakingAndEntering where
 instance ActRunner env => RunMessage env BreakingAndEntering where
   runMessage msg a@(BreakingAndEntering attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId attrs) source)
-    AdvanceAct aid _ | aid == toId attrs && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       mHuntingHorror <- getHuntingHorror

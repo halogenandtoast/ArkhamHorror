@@ -104,5 +104,5 @@ onSide side ActAttrs {..} = actSide actSequence == side
 
 instance HasAbilities ActAttrs where
   getAbilities attrs@ActAttrs {..} = case actAdvanceCost of
-    Just cost -> [mkAbility attrs 100 (Objective $ FastAbility cost)]
+    Just cost -> [mkAbility attrs 999 (Objective $ FastAbility cost)]
     Nothing -> []

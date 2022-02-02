@@ -3,8 +3,8 @@ module Arkham.Act.Cards.DisruptingTheRitual where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Criteria
@@ -46,8 +46,8 @@ instance ActRunner env => RunMessage env DisruptingTheRitual where
         ]
       )
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
-      a <$ push (AdvanceAct (toId a) source)
-    AdvanceAct aid _ | aid == actId && onSide B attrs ->
+      a <$ push (AdvanceAct (toId a) source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> a <$ push (PlaceClues (toTarget attrs) 1)

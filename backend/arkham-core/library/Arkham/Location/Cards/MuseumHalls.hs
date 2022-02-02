@@ -6,13 +6,13 @@ module Arkham.Location.Cards.MuseumHalls
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (museumHalls)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards (museumHalls)
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -84,5 +84,5 @@ instance LocationRunner env => RunMessage env MuseumHalls where
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         actId <- fromJustNote "missing act" . headMay <$> getSetList ()
-        l <$ push (AdvanceAct actId source)
+        l <$ push (AdvanceAct actId source AdvancedWithOther)
     _ -> MuseumHalls <$> runMessage msg attrs

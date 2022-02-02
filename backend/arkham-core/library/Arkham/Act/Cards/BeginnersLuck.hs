@@ -6,15 +6,15 @@ module Arkham.Act.Cards.BeginnersLuck
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.EffectMetadata
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message hiding (RevealToken)
 import Arkham.Modifier
@@ -72,8 +72,8 @@ instance ActRunner env => RunMessage env BeginnersLuck where
           , Remember Cheated
           ]
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
-      a <$ push (AdvanceAct (toId a) source)
-    AdvanceAct aid _ | aid == toId a && onSide B attrs -> do
+      a <$ push (AdvanceAct (toId a) source AdvancedWithClues)
+    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       darkenedHall <- getSetAsideCard Locations.darkenedHall
       a <$ pushAll
         [ PlaceLocation darkenedHall

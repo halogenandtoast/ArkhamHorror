@@ -6,14 +6,14 @@ module Arkham.Act.Cards.CloseTheRift
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -40,7 +40,7 @@ instance ActRunner env => RunMessage env CloseTheRift where
   runMessage msg a@(CloseTheRift attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       theEdgeOfTheUniverseId <- getJustLocationIdByName
         "The Edge of the Universe"
       tearThroughTime <- getSetAsideCard Locations.tearThroughTime

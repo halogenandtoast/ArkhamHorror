@@ -3,8 +3,8 @@ module Arkham.Act.Cards.IntoTheDarkness where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Card
@@ -34,8 +34,8 @@ instance HasAbilities IntoTheDarkness where
 instance ActRunner env => RunMessage env IntoTheDarkness where
   runMessage msg a@(IntoTheDarkness attrs@ActAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      a <$ push (AdvanceAct actId source)
-    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
+      a <$ push (AdvanceAct actId source AdvancedWithOther)
+    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       playerCount <- getPlayerCount
       if playerCount > 3
         then a <$ pushAll

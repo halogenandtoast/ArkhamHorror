@@ -40,7 +40,6 @@ import Arkham.History
 import Arkham.Id
 import Arkham.Investigator
 import Arkham.Investigator.Attrs (getPlayableCards)
-import Arkham.Json
 import Arkham.Keyword (HasKeywords(..), Keyword)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Label qualified as L
@@ -119,6 +118,37 @@ data GameParams = GameParams
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+data Entities = Entities
+  { entitiesLocations :: EntityMap Location
+  , entitiesInvestigators :: EntityMap Investigator
+  , entitiesEnemies :: EntityMap Enemy
+  , entitiesAssets :: EntityMap Asset
+  , entitiesActs :: EntityMap Act
+  , entitiesAgendas :: EntityMap Agenda
+  , entitiesTreacheries :: EntityMap Treachery
+  , entitiesEvents :: EntityMap Event
+  , entitiesEffects :: EntityMap Effect
+  , entitiesSkills :: EntityMap Skill
+  }
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+makeLensesWith suffixedFields ''Entities
+
+defaultEntities :: Entities
+defaultEntities = Entities
+  { entitiesLocations = mempty
+  , entitiesInvestigators = mempty
+  , entitiesEnemies = mempty
+  , entitiesAssets = mempty
+  , entitiesActs = mempty
+  , entitiesAgendas = mempty
+  , entitiesTreacheries = mempty
+  , entitiesEvents = mempty
+  , entitiesEffects = mempty
+  , entitiesSkills = mempty
+  }
+
 data Game = Game
   { gamePhaseHistory :: HashMap InvestigatorId History
   , gameTurnHistory :: HashMap InvestigatorId History
@@ -130,17 +160,8 @@ data Game = Game
   , -- Active Scenario/Campaign
     gameMode :: GameMode
   , -- Entities
-    gameLocations :: EntityMap Location
-  , gameInvestigators :: EntityMap Investigator
-  , gameEnemies :: EntityMap Enemy
+    gameEntities :: Entities
   , gameEnemiesInVoid :: EntityMap Enemy
-  , gameAssets :: EntityMap Asset
-  , gameActs :: EntityMap Act
-  , gameAgendas :: EntityMap Agenda
-  , gameTreacheries :: EntityMap Treachery
-  , gameEvents :: EntityMap Event
-  , gameEffects :: EntityMap Effect
-  , gameSkills :: EntityMap Skill
   , -- Player Details
     gamePlayerCount :: Int -- used for determining if game should start
   , gameActiveInvestigatorId :: InvestigatorId
@@ -169,6 +190,7 @@ data Game = Game
     gameQuestion :: HashMap InvestigatorId Question
   }
   deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 makeLensesWith suffixedFields ''Game
 
@@ -238,11 +260,8 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameSeed = seed
       , gameMode = mode
       , gamePlayerCount = playerCount
-      , gameLocations = mempty
-      , gameEnemies = mempty
+      , gameEntities = defaultEntities { entitiesInvestigators = investigatorsMap }
       , gameEnemiesInVoid = mempty
-      , gameAssets = mempty
-      , gameInvestigators = investigatorsMap
       , gameActiveInvestigatorId = initialInvestigatorId
       , gameTurnPlayerInvestigatorId = Nothing
       , gameLeadInvestigatorId = initialInvestigatorId
@@ -250,12 +269,6 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameEncounterDeck = mempty
       , gameDiscard = mempty
       , gameSkillTest = Nothing
-      , gameAgendas = mempty
-      , gameTreacheries = mempty
-      , gameEvents = mempty
-      , gameEffects = mempty
-      , gameSkills = mempty
-      , gameActs = mempty
       , gameChaosBag = emptyChaosBag
       , gameGameState = state
       , gameUsedAbilities = mempty
@@ -301,8 +314,8 @@ addInvestigator i d = do
 
   let
     iid = toId i
-    g' = game & (investigatorsL %~ insertEntity i) & (playerOrderL <>~ [iid])
-    gameState = if size (g' ^. investigatorsL) < g' ^. playerCountL
+    g' = game & (entitiesL . investigatorsL %~ insertEntity i) & (playerOrderL <>~ [iid])
+    gameState = if size (g' ^. entitiesL . investigatorsL) < g' ^. playerCountL
       then IsPending
       else IsActive
 
@@ -444,65 +457,35 @@ withSkillTestModifiers st a = do
   modifiers' <- getModifiersFor (toSource st) (toTarget a) ()
   pure $ a `with` ModifierData modifiers'
 
-instance ToJSON Game where
-  toJSON g@Game {..} = object
-    [ "windowDepth" .= toJSON gameWindowDepth
-    , "params" .= toJSON gameParams
-    , "roundHistory" .= toJSON gameRoundHistory
-    , "turnHistory" .= toJSON gameTurnHistory
-    , "phaseHistory" .= toJSON gamePhaseHistory
-    , "initialSeed" .= toJSON gameInitialSeed
-    , "seed" .= toJSON gameSeed
-    , "mode" .= toJSON gameMode
-    , "locations" .= toJSON (runReader (traverse withModifiers gameLocations) g)
-    , "investigators" .= toJSON
-      (runReader (traverse (withModifiers . WithDeckSize) gameInvestigators) g)
-    , "enemies" .= toJSON (runReader (traverse withModifiers gameEnemies) g)
-    , "enemiesInVoid"
-      .= toJSON (runReader (traverse withModifiers gameEnemiesInVoid) g)
-    , "assets" .= toJSON (runReader (traverse withModifiers gameAssets) g)
-    , "acts" .= toJSON (runReader (traverse withModifiers gameActs) g)
-    , "agendas" .= toJSON (runReader (traverse withModifiers gameAgendas) g)
-    , "treacheries"
-      .= toJSON (runReader (traverse withModifiers gameTreacheries) g)
-    , "events" .= toJSON (runReader (traverse withModifiers gameEvents) g)
-    , "effects" .= toJSON gameEffects -- no need for modifiers
-    , "skills" .= toJSON gameSkills -- no need for modifiers... yet
-    , "playerCount" .= toJSON gamePlayerCount
-    , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
-    , "turnPlayerInvestigatorId" .= toJSON gameTurnPlayerInvestigatorId
-    , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
-    , "playerOrder" .= toJSON gamePlayerOrder
-    , "phase" .= toJSON gamePhase
-    , "encounterDeck" .= toJSON gameEncounterDeck
-    , "discard" .= toJSON gameDiscard
-    , "chaosBag" .= toJSON gameChaosBag
-    , "skillTest" .= toJSON gameSkillTest
-    , "skillTestTokens" .= toJSON
-      (runReader
-        (maybe
-          (pure [])
-          (\st ->
-            traverse (withSkillTestModifiers st) (skillTestSetAsideTokens st)
-          )
-          gameSkillTest
-        )
-        g
-      )
-    , "usedAbilities" .= toJSON gameUsedAbilities
-    , "resignedCardCodes" .= toJSON gameResignedCardCodes
-    , "focusedCards" .= toJSON gameFocusedCards
-    , "foundCards" .= toJSON gameFoundCards
-    , "focusedTargets" .= toJSON gameFocusedTargets
-    , "focusedTokens"
-      .= toJSON (runReader (traverse withModifiers gameFocusedTokens) g)
-    , "activeCard" .= toJSON gameActiveCard
-    , "victoryDisplay" .= toJSON gameVictoryDisplay
-    , "removedFromPlay" .= toJSON gameRemovedFromPlay
-    , "gameState" .= toJSON gameGameState
-    , "skillTestResults" .= toJSON gameSkillTestResults
-    , "question" .= toJSON gameQuestion
-    ]
+gameSkills :: Game -> EntityMap Skill
+gameSkills = entitiesSkills . gameEntities
+
+gameEvents :: Game -> EntityMap Event
+gameEvents = entitiesEvents . gameEntities
+
+gameEffects :: Game -> EntityMap Effect
+gameEffects = entitiesEffects . gameEntities
+
+gameActs :: Game -> EntityMap Act
+gameActs = entitiesActs . gameEntities
+
+gameAgendas :: Game -> EntityMap Agenda
+gameAgendas = entitiesAgendas . gameEntities
+
+gameEnemies :: Game -> EntityMap Enemy
+gameEnemies = entitiesEnemies . gameEntities
+
+gameLocations :: Game -> EntityMap Location
+gameLocations = entitiesLocations . gameEntities
+
+gameInvestigators :: Game -> EntityMap Investigator
+gameInvestigators = entitiesInvestigators . gameEntities
+
+gameAssets :: Game -> EntityMap Asset
+gameAssets = entitiesAssets . gameEntities
+
+gameTreacheries :: Game -> EntityMap Treachery
+gameTreacheries = entitiesTreacheries . gameEntities
 
 data PublicGame gid = PublicGame gid Text [Text] Game
   deriving stock Show
@@ -517,27 +500,27 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "locations" .= toJSON
       (runReader
         (traverse withLocationConnectionData
-        =<< traverse withModifiers gameLocations
+        =<< traverse withModifiers (gameLocations g)
         )
         g
       )
     , "investigators" .= toJSON
       (runReader
         (traverse withInvestigatorConnectionData
-        =<< traverse (withModifiers . WithDeckSize) gameInvestigators
+        =<< traverse (withModifiers . WithDeckSize) (gameInvestigators g)
         )
         g
       )
-    , "enemies" .= toJSON (runReader (traverse withModifiers gameEnemies) g)
+    , "enemies" .= toJSON (runReader (traverse withModifiers (gameEnemies g)) g)
     , "enemiesInVoid"
       .= toJSON (runReader (traverse withModifiers gameEnemiesInVoid) g)
-    , "assets" .= toJSON (runReader (traverse withModifiers gameAssets) g)
-    , "acts" .= toJSON (runReader (traverse withModifiers gameActs) g)
-    , "agendas" .= toJSON (runReader (traverse withModifiers gameAgendas) g)
+    , "assets" .= toJSON (runReader (traverse withModifiers (gameAssets g)) g)
+    , "acts" .= toJSON (runReader (traverse withModifiers (gameActs g)) g)
+    , "agendas" .= toJSON (runReader (traverse withModifiers (gameAgendas g)) g)
     , "treacheries"
-      .= toJSON (runReader (traverse withModifiers gameTreacheries) g)
-    , "events" .= toJSON (runReader (traverse withModifiers gameEvents) g)
-    , "skills" .= toJSON gameSkills -- no need for modifiers... yet
+      .= toJSON (runReader (traverse withModifiers (gameTreacheries g)) g)
+    , "events" .= toJSON (runReader (traverse withModifiers (gameEvents g)) g)
+    , "skills" .= toJSON (gameSkills g) -- no need for modifiers... yet
     , "playerCount" .= toJSON gamePlayerCount
     , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
     , "turnPlayerInvestigatorId" .= toJSON gameTurnPlayerInvestigatorId
@@ -572,24 +555,20 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "question" .= toJSON gameQuestion
     ]
 
-
-instance FromJSON Game where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "game"
-
 getInvestigator
   :: (HasCallStack, MonadReader env m, HasGame env)
   => InvestigatorId
   -> m Investigator
 getInvestigator iid =
   fromJustNote missingInvestigator
-    . preview (investigatorsL . ix iid)
+    . preview (entitiesL . investigatorsL . ix iid)
     <$> getGame
   where missingInvestigator = "Unknown investigator: " <> show iid
 
 getLocation
   :: (HasCallStack, MonadReader env m, HasGame env) => LocationId -> m Location
 getLocation lid =
-  fromJustNote missingLocation . preview (locationsL . ix lid) <$> getGame
+  fromJustNote missingLocation . preview (entitiesL . locationsL . ix lid) <$> getGame
   where missingLocation = "Unknown location: " <> show lid
 
 getInvestigatorsMatching
@@ -597,7 +576,7 @@ getInvestigatorsMatching
   => InvestigatorMatcher
   -> m [Investigator]
 getInvestigatorsMatching matcher = do
-  investigators <- toList . view investigatorsL <$> getGame
+  investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
   filterM (go matcher) investigators
  where
   go = \case
@@ -665,7 +644,7 @@ getInvestigatorsMatching matcher = do
 
 getActsMatching :: (MonadReader env m, HasGame env) => ActMatcher -> m [Act]
 getActsMatching matcher = do
-  allGameActs <- toList . view actsL <$> getGame
+  allGameActs <- toList . view (entitiesL . actsL) <$> getGame
   filterM (matcherFilter matcher) allGameActs
  where
   matcherFilter = \case
@@ -675,7 +654,7 @@ getActsMatching matcher = do
 getTreacheriesMatching
   :: (MonadReader env m, HasGame env) => TreacheryMatcher -> m [Treachery]
 getTreacheriesMatching matcher = do
-  allGameTreacheries <- toList . view treacheriesL <$> getGame
+  allGameTreacheries <- toList . view (entitiesL . treacheriesL) <$> getGame
   filterM (matcherFilter matcher) allGameTreacheries
  where
   matcherFilter = \case
@@ -760,78 +739,78 @@ getLocationsMatching = \case
   LocationWithLabel label ->
     filter ((== label) . L.unLabel . toLocationLabel)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       <$> getGame
   LocationWithTitle title ->
     filter ((== title) . nameTitle . toName)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       <$> getGame
   LocationWithFullTitle title subtitle ->
     filter ((== Name title (Just subtitle)) . toName)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       <$> getGame
   LocationWithUnrevealedTitle title ->
     filter ((== title) . nameTitle . toName . Unrevealed)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       <$> getGame
   LocationWithId locationId ->
-    filter ((== locationId) . toId) . toList . view locationsL <$> getGame
+    filter ((== locationId) . toId) . toList . view (entitiesL . locationsL) <$> getGame
   LocationWithSymbol locationSymbol ->
     filter ((== locationSymbol) . toLocationSymbol)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       <$> getGame
   LocationNotInPlay -> pure [] -- TODO: Should this check out of play locations
-  Anywhere -> toList . view locationsL <$> getGame
+  Anywhere -> toList . view (entitiesL . locationsL) <$> getGame
   Unblocked -> do
     filterM (\l -> notElem Blocked <$> getModifiers (toSource l) (toTarget l))
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       =<< getGame
   LocationIs cardCode ->
-    filter ((== cardCode) . toCardCode) . toList . view locationsL <$> getGame
+    filter ((== cardCode) . toCardCode) . toList . view (entitiesL . locationsL) <$> getGame
   EmptyLocation ->
-    filter isEmptyLocation . toList . view locationsL <$> getGame
+    filter isEmptyLocation . toList . view (entitiesL . locationsL) <$> getGame
   LocationWithoutInvestigators ->
-    filter noInvestigatorsAtLocation . toList . view locationsL <$> getGame
+    filter noInvestigatorsAtLocation . toList . view (entitiesL . locationsL) <$> getGame
   LocationWithoutEnemies ->
-    filter noEnemiesAtLocation . toList . view locationsL <$> getGame
+    filter noEnemiesAtLocation . toList . view (entitiesL . locationsL) <$> getGame
   LocationWithEnemy enemyMatcher -> do
     enemies <- select enemyMatcher
     filterM (fmap (notNull . intersection enemies) . getSet . toId)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       =<< getGame
   LocationWithAsset assetMatcher -> do
     assets <- select assetMatcher
     filterM (fmap (notNull . intersection assets) . getSet . toId)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       =<< getGame
   LocationWithInvestigator whoMatcher -> do
     investigators <- select whoMatcher
     filterM (fmap (notNull . intersection investigators) . getSet . toId)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       =<< getGame
-  RevealedLocation -> filter isRevealed . toList . view locationsL <$> getGame
+  RevealedLocation -> filter isRevealed . toList . view (entitiesL . locationsL) <$> getGame
   UnrevealedLocation ->
-    filter (not . isRevealed) . toList . view locationsL <$> getGame
+    filter (not . isRevealed) . toList . view (entitiesL . locationsL) <$> getGame
   LocationWithClues gameValueMatcher -> do
-    allLocations' <- toList . view locationsL <$> getGame
+    allLocations' <- toList . view (entitiesL . locationsL) <$> getGame
     filterM
       (getCount >=> (`gameValueMatches` gameValueMatcher) . unClueCount)
       allLocations'
   LocationWithDoom gameValueMatcher -> do
-    allLocations' <- toList . view locationsL <$> getGame
+    allLocations' <- toList . view (entitiesL . locationsL) <$> getGame
     filterM
       (getCount >=> (`gameValueMatches` gameValueMatcher) . unDoomCount)
       allLocations'
   LocationWithHorror gameValueMatcher -> do
-    allLocations' <- toList . view locationsL <$> getGame
+    allLocations' <- toList . view (entitiesL . locationsL) <$> getGame
     filterM
       (getCount >=> (`gameValueMatches` gameValueMatcher) . unHorrorCount)
       allLocations'
@@ -842,22 +821,22 @@ getLocationsMatching = \case
     treacheryIds <- select matcher
     filterM (fmap (none (`elem` treacheryIds)) . getSetList @TreacheryId)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       =<< getGame
   LocationWithTreachery matcher -> do
     treacheryIds <- select matcher
     filterM (fmap (any (`elem` treacheryIds)) . getSetList @TreacheryId)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       =<< getGame
   LocationInDirection direction matcher -> do
     starts <- getLocationsMatching matcher
     matches <- catMaybes <$> traverse (getId . (direction, ) . toId) starts
-    filter ((`elem` matches) . toId) . toList . view locationsL <$> getGame
+    filter ((`elem` matches) . toId) . toList . view (entitiesL . locationsL) <$> getGame
   FarthestLocationFromYou matcher -> guardYourLocation $ \start -> do
     matchingLocationIds <- map toId <$> getLocationsMatching matcher
     matches <- getLongestPath start (pure . (`elem` matchingLocationIds))
-    filter ((`elem` matches) . toId) . toList . view locationsL <$> getGame
+    filter ((`elem` matches) . toId) . toList . view (entitiesL . locationsL) <$> getGame
   FarthestLocationFromAll matcher -> do
     iids <- getInvestigatorIds
     candidates <- map toId <$> getLocationsMatching matcher
@@ -883,27 +862,27 @@ getLocationsMatching = \case
       start
       (pure . (`elem` matchingLocationIds))
       mempty
-    filter ((`elem` matches) . toId) . toList . view locationsL <$> getGame
+    filter ((`elem` matches) . toId) . toList . view (entitiesL . locationsL) <$> getGame
   AccessibleLocation -> guardYourLocation $ \yourLocation -> do
     accessibleLocations <- getSet yourLocation
     filter ((`member` accessibleLocations) . AccessibleLocationId . toId)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       <$> getGame
   ConnectedLocation -> guardYourLocation $ \yourLocation -> do
     connectedLocations <- getSet yourLocation
     filter ((`member` connectedLocations) . ConnectedLocationId . toId)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       <$> getGame
   YourLocation -> guardYourLocation $ fmap pure . getLocation
   NotYourLocation -> guardYourLocation $ \yourLocation ->
-    filter ((/= yourLocation) . toId) . toList . view locationsL <$> getGame
+    filter ((/= yourLocation) . toId) . toList . view (entitiesL . locationsL) <$> getGame
   LocationWithTrait trait ->
-    filterM hasMatchingTrait . toList . view locationsL =<< getGame
+    filterM hasMatchingTrait . toList . view (entitiesL . locationsL) =<< getGame
     where hasMatchingTrait = fmap (trait `member`) . getSet
   LocationWithoutTrait trait ->
-    filter missingTrait . toList . view locationsL <$> getGame
+    filter missingTrait . toList . view (entitiesL . locationsL) <$> getGame
     where missingTrait = (trait `notMember`) . toTraits
   LocationMatchAll [] -> pure []
   LocationMatchAll (x : xs) -> do
@@ -911,26 +890,26 @@ getLocationsMatching = \case
       foldl' intersection
       <$> (setFromList . map toId <$> getLocationsMatching x)
       <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
-    filter ((`member` matches) . toId) . toList . view locationsL <$> getGame
+    filter ((`member` matches) . toId) . toList . view (entitiesL . locationsL) <$> getGame
   LocationMatchAny [] -> pure []
   LocationMatchAny (x : xs) -> do
     matches :: HashSet LocationId <-
       foldl' union
       <$> (setFromList . map toId <$> getLocationsMatching x)
       <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
-    filter ((`member` matches) . toId) . toList . view locationsL <$> getGame
-  InvestigatableLocation -> toList . view locationsL <$> getGame
+    filter ((`member` matches) . toId) . toList . view (entitiesL . locationsL) <$> getGame
+  InvestigatableLocation -> toList . view (entitiesL . locationsL) <$> getGame
   AccessibleFrom matcher -> do
     -- returns locations which are accessible from locations found by the matcher
     accessibleLocations <- map AccessibleLocationId <$> getSetList matcher
     filter ((`elem` accessibleLocations) . AccessibleLocationId . toId)
       . toList
-      . view locationsL
+      . view (entitiesL . locationsL)
       <$> getGame
   AccessibleTo matcher -> do
     -- returns locations which have access to the locations found by the matcher
     targets <- map AccessibleLocationId <$> getSetList matcher
-    locations <- toList . view locationsL <$> getGame
+    locations <- toList . view (entitiesL . locationsL) <$> getGame
     filterM
       (fmap (\set -> all (`member` set) targets) . getSet . toId)
       locations
@@ -950,7 +929,7 @@ guardYourLocation body = do
 getAssetsMatching
   :: (HasCallStack, MonadReader env m, HasGame env) => AssetMatcher -> m [Asset]
 getAssetsMatching matcher = do
-  assets <- toList . view assetsL <$> getGame
+  assets <- toList . view (entitiesL . assetsL) <$> getGame
   filterMatcher assets matcher
  where
   filterMatcher as = \case
@@ -1029,7 +1008,7 @@ getAssetsMatching matcher = do
 getEventsMatching
   :: (MonadReader env m, HasGame env) => EventMatcher -> m [Event]
 getEventsMatching matcher = do
-  events <- toList . view eventsL <$> getGame
+  events <- toList . view (entitiesL . eventsL) <$> getGame
   filterMatcher events matcher
  where
   filterMatcher as = \case
@@ -1048,7 +1027,7 @@ getEventsMatching matcher = do
 getSkillsMatching
   :: (MonadReader env m, HasGame env) => SkillMatcher -> m [Skill]
 getSkillsMatching matcher = do
-  skills <- toList . view skillsL <$> getGame
+  skills <- toList . view (entitiesL . skillsL) <$> getGame
   filterMatcher skills matcher
  where
   filterMatcher as = \case
@@ -1068,13 +1047,13 @@ getSkillsMatching matcher = do
 getSkill
   :: (HasCallStack, MonadReader env m, HasGame env) => SkillId -> m Skill
 getSkill sid =
-  fromJustNote missingSkill . preview (skillsL . ix sid) <$> getGame
+  fromJustNote missingSkill . preview (entitiesL . skillsL . ix sid) <$> getGame
   where missingSkill = "Unknown skill: " <> show sid
 
 getEnemy
   :: (HasCallStack, MonadReader env m, HasGame env) => EnemyId -> m Enemy
 getEnemy eid =
-  fromJustNote missingEnemy . preview (enemiesL . ix eid) <$> getGame
+  fromJustNote missingEnemy . preview (entitiesL . enemiesL . ix eid) <$> getGame
   where missingEnemy = "Unknown enemy: " <> show eid
 
 getEnemyMatching
@@ -1088,7 +1067,7 @@ getEnemiesMatching
   => EnemyMatcher
   -> m [Enemy]
 getEnemiesMatching matcher = do
-  allGameEnemies <- toList . view enemiesL <$> getGame
+  allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
   filterM (matcherFilter matcher) allGameEnemies
  where
   matcherFilter = \case
@@ -1193,19 +1172,19 @@ getEnemiesMatching matcher = do
         else (`elem` matches) <$> getId enemy
 
 getAct :: (HasCallStack, MonadReader env m, HasGame env) => ActId -> m Act
-getAct aid = fromJustNote missingAct . preview (actsL . ix aid) <$> getGame
+getAct aid = fromJustNote missingAct . preview (entitiesL . actsL . ix aid) <$> getGame
   where missingAct = "Unknown act: " <> show aid
 
 getAgenda
   :: (HasCallStack, MonadReader env m, HasGame env) => AgendaId -> m Agenda
 getAgenda aid =
-  fromJustNote missingAgenda . preview (agendasL . ix aid) <$> getGame
+  fromJustNote missingAgenda . preview (entitiesL . agendasL . ix aid) <$> getGame
   where missingAgenda = "Unknown agenda: " <> show aid
 
 getAsset
   :: (HasCallStack, MonadReader env m, HasGame env) => AssetId -> m Asset
 getAsset aid =
-  fromJustNote missingAsset . preview (assetsL . ix aid) <$> getGame
+  fromJustNote missingAsset . preview (entitiesL . assetsL . ix aid) <$> getGame
   where missingAsset = "Unknown asset: " <> show aid
 
 getTreachery
@@ -1213,19 +1192,19 @@ getTreachery
   => TreacheryId
   -> m Treachery
 getTreachery tid =
-  fromJustNote missingTreachery . preview (treacheriesL . ix tid) <$> getGame
+  fromJustNote missingTreachery . preview (entitiesL . treacheriesL . ix tid) <$> getGame
   where missingTreachery = "Unknown treachery: " <> show tid
 
 getEvent
   :: (HasCallStack, MonadReader env m, HasGame env) => EventId -> m Event
 getEvent eid =
-  fromJustNote missingEvent . preview (eventsL . ix eid) <$> getGame
+  fromJustNote missingEvent . preview (entitiesL . eventsL . ix eid) <$> getGame
   where missingEvent = "Unknown event: " <> show eid
 
 getEffect
   :: (HasCallStack, MonadReader env m, HasGame env) => EffectId -> m Effect
 getEffect eid =
-  fromJustNote missingEffect . preview (effectsL . ix eid) <$> getGame
+  fromJustNote missingEffect . preview (entitiesL . effectsL . ix eid) <$> getGame
   where missingEffect = "Unknown effect: " <> show eid
 
 getActiveInvestigator :: (HasGame env, MonadReader env m) => m Investigator
@@ -1533,7 +1512,7 @@ instance HasGame env => HasId (Maybe AssetId) env CardCode where
     (fst <$>)
       . find ((cardCode ==) . toCardCode . snd)
       . mapToList
-      . view assetsL
+      . view (entitiesL . assetsL)
       <$> getGame
 
 instance HasGame env => HasId (Maybe TreacheryId) env CardCode where
@@ -1541,7 +1520,7 @@ instance HasGame env => HasId (Maybe TreacheryId) env CardCode where
     (fst <$>)
       . find ((cardCode ==) . toCardCode . snd)
       . mapToList
-      . view treacheriesL
+      . view (entitiesL . treacheriesL)
       <$> getGame
 
 instance HasGame env => HasSet EnemyId env CardCode where
@@ -1550,7 +1529,7 @@ instance HasGame env => HasSet EnemyId env CardCode where
       . map fst
       . filter ((cardCode ==) . toCardCode . snd)
       . mapToList
-      . view enemiesL
+      . view (entitiesL . enemiesL)
       <$> getGame
 
 instance HasGame env => HasId (Maybe EnemyId) env CardCode where
@@ -1558,7 +1537,7 @@ instance HasGame env => HasId (Maybe EnemyId) env CardCode where
     (fst <$>)
       . find ((cardCode ==) . toCardCode . snd)
       . mapToList
-      . view enemiesL
+      . view (entitiesL . enemiesL)
       <$> getGame
 
 instance HasGame env => HasId LocationId env InvestigatorId where
@@ -1578,7 +1557,7 @@ instance HasGame env => HasCount ActsRemainingCount env () where
       . modeScenario
       . view modeL
       <$> getGame
-    activeActIds <- keys . view actsL <$> getGame
+    activeActIds <- keys . view (entitiesL . actsL) <$> getGame
     let
       currentActId = case activeActIds of
         [aid] -> aid
@@ -1630,7 +1609,7 @@ instance HasGame env => HasCount TreacheryCount env (LocationId, CardCode) where
    where
     cardCodes g treacheries =
       [ toCardCode c
-      | (i, c) <- mapToList (g ^. treacheriesL)
+      | (i, c) <- mapToList (g ^. entitiesL . treacheriesL)
       , i `member` treacheries
       ]
 
@@ -1664,17 +1643,17 @@ instance HasGame env => HasCount XPCount env () where
     pure
       $ XPCount
       $ (sum . mapMaybe getVictoryPoints $ g ^. victoryDisplayL)
-      + (sum . mapMaybe getVictoryPoints . toList $ g ^. locationsL)
+      + (sum . mapMaybe getVictoryPoints . toList $ g ^. entitiesL . locationsL)
 
 instance HasGame env => HasCount DoomCount env () where
   getCount _ = do
     g <- getGame
-    enemyDoomCount <- traverse getCount . toList $ g ^. enemiesL
-    locationDoomCount <- traverse getCount . toList $ g ^. locationsL
-    assetDoomCount <- traverse getCount . toList $ g ^. assetsL
-    treacheryDoomCount <- traverse getCount . toList $ g ^. treacheriesL
-    agendaDoomCount <- traverse getCount . toList $ g ^. agendasL
-    investigatorDoomCount <- traverse getCount . toList $ g ^. investigatorsL
+    enemyDoomCount <- traverse getCount . toList $ g ^. entitiesL . enemiesL
+    locationDoomCount <- traverse getCount . toList $ g ^. entitiesL . locationsL
+    assetDoomCount <- traverse getCount . toList $ g ^. entitiesL . assetsL
+    treacheryDoomCount <- traverse getCount . toList $ g ^. entitiesL . treacheriesL
+    agendaDoomCount <- traverse getCount . toList $ g ^. entitiesL . agendasL
+    investigatorDoomCount <- traverse getCount . toList $ g ^. entitiesL . investigatorsL
     pure
       $ DoomCount
       . max 0
@@ -1715,7 +1694,7 @@ instance HasGame env => HasCount SpendableClueCount env () where
       . map unSpendableClueCount
       <$> (traverse getInvestigatorSpendableClueCount
           . toList
-          . view investigatorsL
+          . view (entitiesL . investigatorsL)
           =<< getGame
           )
 
@@ -1729,7 +1708,7 @@ instance HasGame env => HasCount ResourceCount env TreacheryId where
   getCount = getCount <=< getTreachery
 
 instance HasGame env => HasCount PlayerCount env () where
-  getCount _ = PlayerCount . length . view investigatorsL <$> getGame
+  getCount _ = PlayerCount . length . view (entitiesL . investigatorsL) <$> getGame
 
 instance HasGame env => HasCount EnemyCount env InvestigatorId where
   getCount = getCount <=< getInvestigator
@@ -1745,7 +1724,7 @@ instance HasGame env => HasCount AssetCount env (InvestigatorId, [Trait]) where
 
 instance HasGame env => HasCount EnemyCount env [Trait] where
   getCount traits =
-    EnemyCount . length . filterMap enemyMatcher . view enemiesL <$> getGame
+    EnemyCount . length . filterMap enemyMatcher . view (entitiesL . enemiesL) <$> getGame
     where enemyMatcher enemy = any (`member` toTraits enemy) traits
 
 instance HasGame env => HasCount EnemyCount env (LocationMatcher, [Trait]) where
@@ -1755,7 +1734,7 @@ instance HasGame env => HasCount EnemyCount env (LocationMatcher, [Trait]) where
 
 instance HasGame env => HasCount EnemyCount env (LocationId, [Trait]) where
   getCount (lid, traits) = do
-    mlocation <- preview (locationsL . ix lid) <$> getGame
+    mlocation <- preview (entitiesL . locationsL . ix lid) <$> getGame
     case mlocation of
       Just location -> do
         locationEnemies <- getSetList location
@@ -1808,28 +1787,28 @@ instance HasGame env => HasModifiersFor env () where
     g <- getGame
     allModifiers' <- concat <$> sequence
       [ concat
-        <$> traverse (getModifiersFor source target) (g ^. enemiesL . to toList)
+        <$> traverse (getModifiersFor source target) (g ^. entitiesL . enemiesL . to toList)
       , concat
-        <$> traverse (getModifiersFor source target) (g ^. assetsL . to toList)
+        <$> traverse (getModifiersFor source target) (g ^. entitiesL . assetsL . to toList)
       , concat
-        <$> traverse (getModifiersFor source target) (g ^. agendasL . to toList)
+        <$> traverse (getModifiersFor source target) (g ^. entitiesL . agendasL . to toList)
       , concat
-        <$> traverse (getModifiersFor source target) (g ^. actsL . to toList)
+        <$> traverse (getModifiersFor source target) (g ^. entitiesL . actsL . to toList)
       , concat <$> traverse
         (getModifiersFor source target)
-        (g ^. locationsL . to toList)
+        (g ^. entitiesL . locationsL . to toList)
       , concat
-        <$> traverse (getModifiersFor source target) (g ^. effectsL . to toList)
+        <$> traverse (getModifiersFor source target) (g ^. entitiesL . effectsL . to toList)
       , concat
-        <$> traverse (getModifiersFor source target) (g ^. eventsL . to toList)
+        <$> traverse (getModifiersFor source target) (g ^. entitiesL . eventsL . to toList)
       , concat
-        <$> traverse (getModifiersFor source target) (g ^. skillsL . to toList)
+        <$> traverse (getModifiersFor source target) (g ^. entitiesL . skillsL . to toList)
       , concat <$> traverse
         (getModifiersFor source target)
-        (g ^. treacheriesL . to toList)
+        (g ^. entitiesL . treacheriesL . to toList)
       , concat <$> traverse
         (getModifiersFor source target)
-        (g ^. investigatorsL . to toList)
+        (g ^. entitiesL . investigatorsL . to toList)
       , maybe (pure []) (getModifiersFor source target) (g ^. skillTestL)
       ]
     traits <- getSet target
@@ -1848,14 +1827,14 @@ instance HasGame env => HasPhase env where
 
 instance HasGame env => HasStep AgendaStep env () where
   getStep _ = do
-    agendas <- toList . view agendasL <$> getGame
+    agendas <- toList . view (entitiesL . agendasL) <$> getGame
     case agendas of
       [agenda] -> getStep agenda
       _ -> error "wrong number of agendas"
 
 instance HasGame env => HasStep ActStep env () where
   getStep _ = do
-    acts <- toList . view actsL <$> getGame
+    acts <- toList . view (entitiesL . actsL) <$> getGame
     case acts of
       [act] -> getStep act
       _ -> error "wrong number of agendas"
@@ -1916,14 +1895,14 @@ instance HasGame env => HasHistory env where
     pure $ roundH <> phaseH
 
 instance HasGame env => HasList Location env () where
-  getList _ = toList . view locationsL <$> getGame
+  getList _ = toList . view (entitiesL . locationsL) <$> getGame
 
 instance HasGame env => HasList UsedAbility env () where
   getList _ =
     map (\(a, b, _) -> UsedAbility (a, b)) . view usedAbilitiesL <$> getGame
 
 instance HasGame env => HasList Enemy env () where
-  getList _ = toList . view enemiesL <$> getGame
+  getList _ = toList . view (entitiesL . enemiesL) <$> getGame
 
 instance HasGame env => HasSkillTest env where
   getSkillTest = view skillTestL <$> getGame
@@ -2160,10 +2139,10 @@ instance HasGame env => HasSet EnemyId env InvestigatorId where
   getSet iid = getEngagedEnemies <$> getInvestigator iid
 
 instance HasGame env => HasSet AgendaId env () where
-  getSet _ = keysSet . view agendasL <$> getGame
+  getSet _ = keysSet . view (entitiesL . agendasL) <$> getGame
 
 instance HasGame env => HasSet ActId env () where
-  getSet _ = keysSet . view actsL <$> getGame
+  getSet _ = keysSet . view (entitiesL . actsL) <$> getGame
 
 instance HasGame env => HasSet VictoryDisplayCardCode env () where
   getSet _ =
@@ -2174,17 +2153,17 @@ instance HasGame env => HasSet VictoryDisplayCard env () where
 
 instance HasGame env => HasSet ClueCount env () where
   getSet _ = do
-    investigators <- toList . view investigatorsL <$> getGame
+    investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
     setFromList <$> traverse getCount investigators
 
 instance HasGame env => HasSet HorrorCount env () where
   getSet _ = do
-    investigators <- toList . view investigatorsL <$> getGame
+    investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
     setFromList <$> traverse getCount investigators
 
 instance HasGame env => HasSet CardCount env () where
   getSet _ = do
-    investigators <- toList . view investigatorsL <$> getGame
+    investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
     setFromList <$> traverse getCount investigators
 
 instance HasGame env => HasSet RemainingHealth env () where
@@ -2192,7 +2171,7 @@ instance HasGame env => HasSet RemainingHealth env () where
     setFromList
       <$> (traverse (fmap RemainingHealth . getRemainingHealth)
           . toList
-          . view investigatorsL
+          . view (entitiesL . investigatorsL)
           =<< getGame
           )
 
@@ -2201,7 +2180,7 @@ instance HasGame env => HasSet RemainingSanity env () where
     setFromList
       <$> (traverse (fmap RemainingSanity . getRemainingSanity)
           . toList
-          . view investigatorsL
+          . view (entitiesL . investigatorsL)
           =<< getGame
           )
 
@@ -2226,13 +2205,13 @@ instance HasGame env => HasCount RemainingSanity env InvestigatorId where
     RemainingSanity <$> getRemainingSanity investigator
 
 instance HasGame env => HasSet LocationId env () where
-  getSet _ = keysSet . view locationsL <$> getGame
+  getSet _ = keysSet . view (entitiesL . locationsL) <$> getGame
 
 instance HasGame env => HasSet LocationId env (HashSet LocationSymbol) where
   getSet locationSymbols =
     keysSet
       . filterMap ((`member` locationSymbols) . toLocationSymbol)
-      . view locationsL
+      . view (entitiesL . locationsL)
       <$> getGame
 
 instance HasGame env => HasSet LocationId env LocationMatcher where
@@ -2339,14 +2318,14 @@ instance HasGame env => HasId (Maybe EnemyId) env EnemyMatcher where
 
 instance HasGame env => HasList LocationName env () where
   getList _ =
-    map (LocationName . toName) . toList . view locationsL <$> getGame
+    map (LocationName . toName) . toList . view (entitiesL . locationsL) <$> getGame
 
 instance HasGame env => HasSet EmptyLocationId env () where
   getSet _ =
     mapSet EmptyLocationId
       . keysSet
       . filterMap isEmptyLocation
-      . view locationsL
+      . view (entitiesL . locationsL)
       <$> getGame
 
 instance HasGame env => HasSet RevealedLocationId env () where
@@ -2354,7 +2333,7 @@ instance HasGame env => HasSet RevealedLocationId env () where
     mapSet RevealedLocationId
       . keysSet
       . filterMap isRevealed
-      . view locationsL
+      . view (entitiesL . locationsL)
       <$> getGame
 
 instance HasGame env => HasSet UnrevealedLocationId env () where
@@ -2362,7 +2341,7 @@ instance HasGame env => HasSet UnrevealedLocationId env () where
     mapSet UnrevealedLocationId
       . keysSet
       . filterMap (not . isRevealed)
-      . view locationsL
+      . view (entitiesL . locationsL)
       <$> getGame
 
 instance HasGame env => HasSet UnrevealedLocationId env LocationMatcher where
@@ -2381,7 +2360,7 @@ findTreacheries f (TreacheryCardCode cc) =
     . mapMaybe (f <=< treacheryTarget)
     . toList
     . filterMap ((== cc) . toCardCode)
-    . view treacheriesL
+    . view (entitiesL . treacheriesL)
     <$> getGame
 
 instance HasGame env => HasSet ActId env TreacheryCardCode where
@@ -2406,7 +2385,7 @@ instance HasGame env => HasSet InvestigatorId env TreacheryCardCode where
 
 instance HasGame env => HasSet LocationId env [Trait] where
   getSet traits =
-    keysSet . filterMap hasMatchingTrait . view locationsL <$> getGame
+    keysSet . filterMap hasMatchingTrait . view (entitiesL . locationsL) <$> getGame
    where
     hasMatchingTrait = notNull . (setFromList traits `intersection`) . toTraits
 
@@ -2415,12 +2394,12 @@ instance HasGame env => HasSet InScenarioInvestigatorId env () where
     mapSet InScenarioInvestigatorId
       . keysSet
       . filterMap (not . (\i -> hasResigned i || isDefeated i))
-      . view investigatorsL
+      . view (entitiesL . investigatorsL)
       <$> getGame
 
 instance HasGame env => HasSet EnemyId env Trait where
   getSet trait =
-    keysSet . filterMap ((trait `elem`) . toTraits) . view enemiesL <$> getGame
+    keysSet . filterMap ((trait `elem`) . toTraits) . view (entitiesL . enemiesL) <$> getGame
 
 instance HasGame env => HasSet CommittedCardId env InvestigatorId where
   getSet iid =
@@ -2446,7 +2425,7 @@ instance HasGame env => HasSet BlockedLocationId env () where
     g <- getGame
     let
       source = InvestigatorSource (g ^. activeInvestigatorIdL)
-      locations = mapToList (g ^. locationsL)
+      locations = mapToList (g ^. entitiesL . locationsL)
     setFromList
       . map (BlockedLocationId . fst)
       <$> filterM (isBlocked source) locations
@@ -2728,7 +2707,7 @@ instance HasGame env => HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait) 
 
 instance HasGame env => HasList (InvestigatorId, Distance) env EnemyMatcher where
   getList matcher = do
-    iids <- keys . view investigatorsL <$> getGame
+    iids <- keys . view (entitiesL . investigatorsL) <$> getGame
     traverse (traverseToSnd (getDistance <=< locationFor)) iids
    where
     hasMatchingEnemy lid = selectAny $ EnemyAt (LocationWithId lid) <> matcher
@@ -2779,7 +2758,7 @@ instance HasGame env => HasSet Int env SkillType where
     setFromList
       <$> (traverse (getSkillValue skillType)
           . toList
-          . view investigatorsL
+          . view (entitiesL . investigatorsL)
           =<< getGame
           )
 
@@ -2841,10 +2820,10 @@ instance HasGame env => HasSet EventId env LocationId where
   getSet = getSet <=< getLocation
 
 instance HasGame env => HasSet EventId env () where
-  getSet _ = keysSet . view eventsL <$> getGame
+  getSet _ = keysSet . view (entitiesL . eventsL) <$> getGame
 
 instance HasGame env => HasSet EnemyId env () where
-  getSet _ = keysSet . view enemiesL <$> getGame
+  getSet _ = keysSet . view (entitiesL . enemiesL) <$> getGame
 
 instance HasGame env => HasSet EnemyId env LocationId where
   getSet = getSet <=< getLocation
@@ -2863,14 +2842,14 @@ instance HasGame env => HasSet EnemyId env ([Trait], LocationId) where
             enemyIds
 
 instance HasGame env => HasSet InvestigatorId env () where
-  getSet _ = keysSet . view investigatorsL <$> getGame
+  getSet _ = keysSet . view (entitiesL . investigatorsL) <$> getGame
 
 instance HasGame env => HasSet DefeatedInvestigatorId env () where
   getSet _ =
     mapSet DefeatedInvestigatorId
       . keysSet
       . filterMap isDefeated
-      . view investigatorsL
+      . view (entitiesL . investigatorsL)
       <$> getGame
 
 instance HasGame env => HasSet InvestigatorId env LocationId where
@@ -2915,27 +2894,27 @@ instance {-# OVERLAPPABLE #-} HasGame env => HasAbilities env where
         pure $ Blank `notElem` modifiers
     in flip runReader env $ do
       enemyAbilities <- concatMap getAbilities
-        <$> filterM unblanked (toList $ g ^. enemiesL)
+        <$> filterM unblanked (toList $ g ^. entitiesL . enemiesL)
       blankedEnemyAbilities <- concatMap (getAbilities . toAttrs)
-        <$> filterM blanked (toList $ g ^. enemiesL)
+        <$> filterM blanked (toList $ g ^. entitiesL . enemiesL)
       locationAbilities <- concatMap getAbilities
-        <$> filterM unblanked (toList $ g ^. locationsL)
+        <$> filterM unblanked (toList $ g ^. entitiesL . locationsL)
       blankedLocationAbilities <- concatMap (getAbilities . toAttrs)
-        <$> filterM blanked (toList $ g ^. locationsL)
+        <$> filterM blanked (toList $ g ^. entitiesL . locationsL)
       assetAbilities <- concatMap getAbilities
-        <$> filterM unblanked (toList $ g ^. assetsL)
+        <$> filterM unblanked (toList $ g ^. entitiesL . assetsL)
       treacheryAbilities <- concatMap getAbilities
-        <$> filterM unblanked (toList $ g ^. treacheriesL)
+        <$> filterM unblanked (toList $ g ^. entitiesL . treacheriesL)
       actAbilities <- concatMap getAbilities
-        <$> filterM unblanked (toList $ g ^. actsL)
+        <$> filterM unblanked (toList $ g ^. entitiesL . actsL)
       agendaAbilities <- concatMap getAbilities
-        <$> filterM unblanked (toList $ g ^. agendasL)
+        <$> filterM unblanked (toList $ g ^. entitiesL . agendasL)
       eventAbilities <- concatMap getAbilities
-        <$> filterM unblanked (toList $ g ^. eventsL)
+        <$> filterM unblanked (toList $ g ^. entitiesL . eventsL)
       effectAbilities <- concatMap getAbilities
-        <$> filterM unblanked (toList $ g ^. effectsL)
+        <$> filterM unblanked (toList $ g ^. entitiesL . effectsL)
       investigatorAbilities <- concatMap getAbilities
-        <$> filterM unblanked (toList $ g ^. investigatorsL)
+        <$> filterM unblanked (toList $ g ^. entitiesL . investigatorsL)
       pure
         $ enemyAbilities
         <> blankedEnemyAbilities
@@ -3104,27 +3083,27 @@ runGameMessage msg g = case msg of
   ResetGame ->
     pure
       $ g
-      & (locationsL .~ mempty)
-      & (enemiesL .~ mempty)
+      & (entitiesL . locationsL .~ mempty)
+      & (entitiesL . enemiesL .~ mempty)
       & (enemiesInVoidL .~ mempty)
-      & (assetsL .~ mempty)
+      & (entitiesL . assetsL .~ mempty)
       & (encounterDeckL .~ mempty)
       & (discardL .~ mempty)
       & (chaosBagL .~ emptyChaosBag)
       & (skillTestL .~ Nothing)
       & (skillTestResultsL .~ Nothing)
-      & (actsL .~ mempty)
-      & (agendasL .~ mempty)
-      & (treacheriesL .~ mempty)
-      & (eventsL .~ mempty)
-      & (skillsL .~ mempty)
+      & (entitiesL . actsL .~ mempty)
+      & (entitiesL . agendasL .~ mempty)
+      & (entitiesL . treacheriesL .~ mempty)
+      & (entitiesL . eventsL .~ mempty)
+      & (entitiesL . skillsL .~ mempty)
       & (gameStateL .~ IsActive)
       & (usedAbilitiesL .~ mempty)
       & (turnPlayerInvestigatorIdL .~ Nothing)
       & (focusedCardsL .~ mempty)
       & (activeCardL .~ Nothing)
       & (victoryDisplayL .~ mempty)
-      & (playerOrderL .~ (g ^. investigatorsL . to keys))
+      & (playerOrderL .~ (g ^. entitiesL . investigatorsL . to keys))
   StartScenario _ sid -> do
     let
       difficulty = these
@@ -3159,7 +3138,7 @@ runGameMessage msg g = case msg of
   CreateEffect cardCode meffectMetadata source target -> do
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
     push (CreatedEffect effectId meffectMetadata source target)
-    pure $ g & effectsL %~ insertMap effectId effect
+    pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   CreateTokenValueEffect n source target -> do
     (effectId, effect) <- createTokenValueEffect n source target
     push
@@ -3169,7 +3148,7 @@ runGameMessage msg g = case msg of
         source
         target
       )
-    pure $ g & effectsL %~ insertMap effectId effect
+    pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   CreatePayAbilityCostEffect ability source target windows' -> do
     (effectId, effect) <- createPayForAbilityEffect
       ability
@@ -3183,7 +3162,7 @@ runGameMessage msg g = case msg of
         source
         target
       )
-    pure $ g & effectsL %~ insertMap effectId effect
+    pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   CreateWindowModifierEffect effectWindow effectMetadata source target -> do
     (effectId, effect) <- createWindowModifierEffect
       effectWindow
@@ -3191,26 +3170,26 @@ runGameMessage msg g = case msg of
       source
       target
     push (CreatedEffect effectId (Just effectMetadata) source target)
-    pure $ g & effectsL %~ insertMap effectId effect
+    pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   CreateTokenEffect effectMetadata source token -> do
     (effectId, effect) <- createTokenEffect effectMetadata source token
     push
       (CreatedEffect effectId (Just effectMetadata) source (TokenTarget token))
-    pure $ g & effectsL %~ insertMap effectId effect
-  DisableEffect effectId -> pure $ g & effectsL %~ deleteMap effectId
+    pure $ g & entitiesL . effectsL %~ insertMap effectId effect
+  DisableEffect effectId -> pure $ g & entitiesL . effectsL %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
   FocusTargets targets -> pure $ g & focusedTargetsL .~ targets
   UnfocusTargets -> pure $ g & focusedTargetsL .~ mempty
   FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens
   UnfocusTokens -> pure $ g & focusedTokensL .~ mempty
-  ChooseLeadInvestigator -> if length (g ^. investigatorsL) == 1
+  ChooseLeadInvestigator -> if length (g ^. entitiesL . investigatorsL) == 1
     then pure g
     else g <$ push
       (chooseOne
         (g ^. leadInvestigatorIdL)
         [ ChoosePlayer iid SetLeadInvestigator
-        | iid <- g ^. investigatorsL . to keys
+        | iid <- g ^. entitiesL . investigatorsL . to keys
         ]
       )
   ChoosePlayer iid SetLeadInvestigator -> do
@@ -3318,16 +3297,16 @@ runGameMessage msg g = case msg of
   GameOver -> do
     clearQueue
     pure $ g & gameStateL .~ IsOver
-  PlaceLocation card -> if isNothing $ g ^. locationsL . at (toLocationId card)
+  PlaceLocation card -> if isNothing $ g ^. entitiesL . locationsL . at (toLocationId card)
     then do
       let
         lid = toLocationId card
         location = lookupLocation (toCardCode card) lid
       push (PlacedLocation (toName location) (toCardCode card) lid)
-      pure $ g & locationsL . at lid ?~ location
+      pure $ g & entitiesL . locationsL . at lid ?~ location
     else pure g
   SetEncounterDeck encounterDeck -> pure $ g & encounterDeckL .~ encounterDeck
-  RemoveEnemy eid -> pure $ g & enemiesL %~ deleteMap eid
+  RemoveEnemy eid -> pure $ g & entitiesL . enemiesL %~ deleteMap eid
   When (RemoveLocation lid) -> do
     window <- checkWindows
       [Window Timing.When (Window.LeavePlay $ LocationTarget lid)]
@@ -3345,11 +3324,11 @@ runGameMessage msg g = case msg of
     pushAll $ concatMap
       (resolve . InvestigatorDefeated (LocationSource lid))
       investigatorIds
-    pure $ g & locationsL %~ deleteMap lid
+    pure $ g & entitiesL . locationsL %~ deleteMap lid
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
     investigatorsWithClues <- catMaybes <$> for
-      (mapToList $ g ^. investigatorsL)
+      (mapToList $ g ^. entitiesL . investigatorsL)
       (\(iid, i) -> do
         hasSpendableClues <- getHasSpendableClues i
         if hasSpendableClues && iid `elem` iids
@@ -3373,22 +3352,22 @@ runGameMessage msg g = case msg of
             , SpendClues (n - 1) (map fst investigatorsWithClues)
             ]
   AdvanceCurrentAgenda -> do
-    let aids = keys $ g ^. agendasL
+    let aids = keys $ g ^. entitiesL . agendasL
     g <$ pushAll [ AdvanceAgenda aid | aid <- aids ]
   ReplaceAgenda aid1 aid2 ->
-    pure $ g & agendasL %~ deleteMap aid1 & agendasL %~ insertMap
+    pure $ g & entitiesL . agendasL %~ deleteMap aid1 & entitiesL . agendasL %~ insertMap
       aid2
       (lookupAgenda aid2 1)
   ReplaceAct aid1 aid2 ->
-    pure $ g & actsL %~ deleteMap aid1 & actsL %~ insertMap
+    pure $ g & entitiesL . actsL %~ deleteMap aid1 & entitiesL . actsL %~ insertMap
       aid2
       (lookupAct aid2 1)
   AddAct def -> do
     let aid = ActId $ toCardCode def
-    pure $ g & actsL . at aid ?~ lookupAct aid 1
+    pure $ g & entitiesL . actsL . at aid ?~ lookupAct aid 1
   AddAgenda def -> do
     let aid = AgendaId $ toCardCode def
-    pure $ g & agendasL . at aid ?~ lookupAgenda aid 1
+    pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid 1
   CommitCard iid cardId -> do
     investigator <- getInvestigator iid
     let
@@ -3403,7 +3382,7 @@ runGameMessage msg g = case msg of
             skill = createSkill pc iid
             skillId = toId skill
           push (InvestigatorCommittedSkill iid skillId)
-          pure $ g & skillsL %~ insertMap skillId skill
+          pure $ g & entitiesL . skillsL %~ insertMap skillId skill
         _ -> pure g
       _ -> pure g
   SkillTestResults skillValue iconValue tokenValue' skillDifficulty ->
@@ -3412,7 +3391,7 @@ runGameMessage msg g = case msg of
       & skillTestResultsL
       ?~ SkillTestResultsData skillValue iconValue tokenValue' skillDifficulty
   SkillTestEnds _ -> do
-    skillPairs <- for (mapToList $ g ^. skillsL) $ \(skillId, skill) -> do
+    skillPairs <- for (mapToList $ g ^. entitiesL . skillsL) $ \(skillId, skill) -> do
       modifiers' <- getModifiers GameSource (SkillTarget skillId)
       pure $ if ReturnToHandAfterTest `elem` modifiers'
         then (ReturnToHand (ownerOfSkill skill) (SkillTarget skillId), Nothing)
@@ -3426,7 +3405,7 @@ runGameMessage msg g = case msg of
     let skillsToRemove = mapMaybe snd skillPairs
     pure
       $ g
-      & (skillsL %~ HashMap.filterWithKey (\k _ -> k `notElem` skillsToRemove))
+      & (entitiesL . skillsL %~ HashMap.filterWithKey (\k _ -> k `notElem` skillsToRemove))
       & (skillTestL .~ Nothing)
       & (skillTestResultsL .~ Nothing)
       & (usedAbilitiesL %~ filter
@@ -3479,35 +3458,35 @@ runGameMessage msg g = case msg of
   ReturnToHand iid (SkillTarget skillId) -> do
     skill <- getSkill skillId
     push $ AddToHand iid (toCard skill)
-    pure $ g & skillsL %~ deleteMap skillId
+    pure $ g & entitiesL . skillsL %~ deleteMap skillId
   ReturnToHand iid (AssetTarget assetId) -> do
     asset <- getAsset assetId
     if isStory asset
       then g <$ push (Discard $ AssetTarget assetId)
       else do
         push $ AddToHand iid (toCard asset)
-        pure $ g & assetsL %~ deleteMap assetId
+        pure $ g & entitiesL . assetsL %~ deleteMap assetId
   ReturnToHand iid (EventTarget eventId) -> do
     event <- getEvent eventId
     push $ AddToHand iid (toCard event)
-    pure $ g & eventsL %~ deleteMap eventId
+    pure $ g & entitiesL . eventsL %~ deleteMap eventId
   After (ShuffleIntoDeck _ (AssetTarget aid)) ->
-    pure $ g & assetsL %~ deleteMap aid
+    pure $ g & entitiesL . assetsL %~ deleteMap aid
   After (ShuffleIntoDeck _ (EventTarget eid)) ->
-    pure $ g & eventsL %~ deleteMap eid
+    pure $ g & entitiesL . eventsL %~ deleteMap eid
   ShuffleIntoDeck iid (TreacheryTarget treacheryId) -> do
     treachery <- getTreachery treacheryId
     case toCard treachery of
       PlayerCard card -> push (ShuffleCardsIntoDeck iid [card])
       EncounterCard _ -> error "Unhandled"
-    pure $ g & treacheriesL %~ deleteMap treacheryId
+    pure $ g & entitiesL . treacheriesL %~ deleteMap treacheryId
   ShuffleIntoDeck iid (EnemyTarget enemyId) -> do
     -- The Thing That Follows
     enemy <- getEnemy enemyId
     case toCard enemy of
       PlayerCard card -> push (ShuffleCardsIntoDeck iid [card])
       EncounterCard _ -> error "Unhandled"
-    pure $ g & enemiesL %~ deleteMap enemyId
+    pure $ g & entitiesL . enemiesL %~ deleteMap enemyId
   ShuffleIntoEncounterDeck cards -> do
     deck' <- Deck <$> shuffleM (unDeck (g ^. encounterDeckL) <> cards)
     pure $ g & encounterDeckL .~ deck'
@@ -3538,7 +3517,7 @@ runGameMessage msg g = case msg of
               n
             , ResolvedCard iid card
             ]
-          pure $ g & assetsL %~ insertMap aid asset
+          pure $ g & entitiesL . assetsL %~ insertMap aid asset
         EventType -> do
           event <- runMessage
             (SetOriginalCardCode $ pcOriginalCardCode pc)
@@ -3549,7 +3528,7 @@ runGameMessage msg g = case msg of
             , InvestigatorPlayDynamicEvent iid eid n
             , ResolvedCard iid card
             ]
-          pure $ g & eventsL %~ insertMap eid event
+          pure $ g & entitiesL . eventsL %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
   PlayCard iid cardId mtarget False -> do
@@ -3584,7 +3563,7 @@ runGameMessage msg g = case msg of
           , InvestigatorPlayEvent iid eid mtarget windows' zone
           , ResolvedCard iid card
           ]
-        pure $ g & eventsL %~ insertMap eid event
+        pure $ g & entitiesL . eventsL %~ insertMap eid event
   PutCardIntoPlay iid card mtarget -> do
     let cardId = toCardId card
     case card of
@@ -3598,7 +3577,7 @@ runGameMessage msg g = case msg of
             <> [UnsetActiveCard]
           pure
             $ g
-            & (treacheriesL %~ insertMap tid treachery)
+            & (entitiesL . treacheriesL %~ insertMap tid treachery)
             & (activeCardL ?~ card)
         AssetType -> do
           let aid = AssetId cardId
@@ -3614,7 +3593,7 @@ runGameMessage msg g = case msg of
               (toList $ toTraits asset)
             , ResolvedCard iid card
             ]
-          pure $ g & assetsL %~ insertMap aid asset
+          pure $ g & entitiesL . assetsL %~ insertMap aid asset
         EventType -> do
           event <- runMessage
             (SetOriginalCardCode $ pcOriginalCardCode pc)
@@ -3630,7 +3609,7 @@ runGameMessage msg g = case msg of
             , InvestigatorPlayEvent iid eid mtarget [] zone
             , ResolvedCard iid card
             ]
-          pure $ g & eventsL %~ insertMap eid event
+          pure $ g & entitiesL . eventsL %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
   UseAbility iid ability _ ->
@@ -3651,7 +3630,7 @@ runGameMessage msg g = case msg of
         , InvestigatorDrawEnemy iid lid eid
         ]
       )
-    pure $ g & enemiesL %~ insertMap eid enemy
+    pure $ g & entitiesL . enemiesL %~ insertMap eid enemy
   CancelNext msgType -> do
     withQueue_ $ \queue ->
       let
@@ -3785,18 +3764,18 @@ runGameMessage msg g = case msg of
       [Window Timing.When (Window.Defeated (AssetSource aid))]
     g <$ push defeatedWindow
   Flipped (AssetSource aid) card | toCardType card /= AssetType ->
-    pure $ g & assetsL %~ deleteMap aid
+    pure $ g & entitiesL . assetsL %~ deleteMap aid
   RemoveFromGame (AssetTarget aid) -> do
     asset <- getAsset aid
-    pure $ g & assetsL %~ deleteMap aid & removedFromPlayL %~ (toCard asset :)
+    pure $ g & entitiesL . assetsL %~ deleteMap aid & removedFromPlayL %~ (toCard asset :)
   RemoveFromGame (EventTarget eid) -> do
     event <- getEvent eid
-    pure $ g & eventsL %~ deleteMap eid & removedFromPlayL %~ (toCard event :)
+    pure $ g & entitiesL . eventsL %~ deleteMap eid & removedFromPlayL %~ (toCard event :)
   RemovedFromGame card -> pure $ g & removedFromPlayL %~ (card :)
   PlaceEnemyInVoid eid -> do
     withQueue_ $ filter (/= Discard (EnemyTarget eid))
     enemy <- getEnemy eid
-    pure $ g & enemiesL %~ deleteMap eid & enemiesInVoidL %~ insertMap eid enemy
+    pure $ g & entitiesL . enemiesL %~ deleteMap eid & enemiesInVoidL %~ insertMap eid enemy
   EnemySpawnFromVoid miid lid eid -> do
     pushAll (resolve $ EnemySpawn miid lid eid)
     case lookup eid (g ^. enemiesInVoidL) of
@@ -3806,7 +3785,7 @@ runGameMessage msg g = case msg of
           & (activeCardL .~ Nothing)
           & (focusedCardsL .~ mempty)
           & (enemiesInVoidL %~ deleteMap eid)
-          & (enemiesL %~ insertMap eid enemy)
+          & (entitiesL . enemiesL %~ insertMap eid enemy)
       Nothing -> error "enemy was not in void"
   Discard (SearchedCardTarget cardId) -> do
     let
@@ -3818,7 +3797,7 @@ runGameMessage msg g = case msg of
         push (AddToDiscard iid pc)
         pure $ g & focusedCardsL %~ filter (/= card)
       _ -> error "should not be an option for other cards"
-  Discard (ActTarget _) -> pure $ g & actsL .~ mempty
+  Discard (ActTarget _) -> pure $ g & entitiesL . actsL .~ mempty
   Discarded (EnemyTarget eid) _ -> do
     enemy <- getEnemy eid
     let card = toCard enemy
@@ -3828,9 +3807,9 @@ runGameMessage msg g = case msg of
           Nothing -> push (RemoveFromGame $ EnemyTarget eid)
           -- The Man in the Pallid Mask has not bearer in Curtain Call
           Just iid' -> push (AddToDiscard iid' pc)
-        pure $ g & enemiesL %~ deleteMap eid
+        pure $ g & entitiesL . enemiesL %~ deleteMap eid
       EncounterCard ec ->
-        pure $ g & (enemiesL %~ deleteMap eid) & (discardL %~ (ec :))
+        pure $ g & (entitiesL . enemiesL %~ deleteMap eid) & (discardL %~ (ec :))
   AddToVictory (EnemyTarget eid) -> do
     enemy <- getEnemy eid
     let
@@ -3844,7 +3823,7 @@ runGameMessage msg g = case msg of
         pure
           $ g
           & (victoryDisplayL %~ (EncounterCard ec :))
-          & (enemiesL %~ deleteMap eid)
+          & (entitiesL . enemiesL %~ deleteMap eid)
   AddToVictory (EventTarget eid) -> do
     event <- getEvent eid
     let
@@ -3854,7 +3833,7 @@ runGameMessage msg g = case msg of
     pushAll windowMsgs
     pure
       $ g
-      & (eventsL %~ deleteMap eid) -- we might not want to remove here?
+      & (entitiesL . eventsL %~ deleteMap eid) -- we might not want to remove here?
       & (victoryDisplayL %~ (toCard event :))
   PlayerWindow iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
   Begin InvestigationPhase -> do
@@ -4109,31 +4088,31 @@ runGameMessage msg g = case msg of
       asset = createAsset card
       assetId = toId asset
     push $ AttachAsset assetId (LocationTarget lid)
-    pure $ g & assetsL . at assetId ?~ asset
+    pure $ g & entitiesL . assetsL . at assetId ?~ asset
   CreateWeaknessInThreatArea card iid -> do
     let
       treachery = createTreachery card iid
       treacheryId = toId treachery
     push (AttachTreachery treacheryId (InvestigatorTarget iid))
-    pure $ g & treacheriesL . at treacheryId ?~ treachery
+    pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   AttachStoryTreacheryTo card target -> do
     let
       treachery = createTreachery card (g ^. leadInvestigatorIdL)
       treacheryId = toId treachery
     push (AttachTreachery treacheryId target)
-    pure $ g & treacheriesL . at treacheryId ?~ treachery
+    pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   TakeControlOfSetAsideAsset iid card -> do
     let
       asset = createAsset card
       assetId = toId asset
     pushAll [TakeControlOfAsset iid assetId]
-    pure $ g & assetsL . at assetId ?~ asset
+    pure $ g & entitiesL . assetsL . at assetId ?~ asset
   ReplaceInvestigatorAsset iid card -> do
     let
       asset = createAsset card
       assetId = toId asset
     push (ReplacedInvestigatorAsset iid assetId)
-    pure $ g & assetsL . at assetId ?~ asset
+    pure $ g & entitiesL . assetsL . at assetId ?~ asset
   When (EnemySpawn _ lid eid) -> do
     windowMsg <- checkWindows [Window Timing.When (Window.EnemySpawns eid lid)]
     g <$ push windowMsg
@@ -4149,7 +4128,7 @@ runGameMessage msg g = case msg of
       , When (EnemySpawn Nothing lid eid)
       , EnemySpawn Nothing lid eid
       ]
-    pure $ g & enemiesL . at eid ?~ enemy
+    pure $ g & entitiesL . enemiesL . at eid ?~ enemy
   SpawnEnemyAtEngagedWith card lid iid -> do
     let
       enemy = createEnemy card
@@ -4159,12 +4138,12 @@ runGameMessage msg g = case msg of
       , When (EnemySpawn (Just iid) lid eid)
       , EnemySpawn (Just iid) lid eid
       ]
-    pure $ g & enemiesL . at eid ?~ enemy
+    pure $ g & entitiesL . enemiesL . at eid ?~ enemy
   CreateEnemy card -> do
     let
       enemy = createEnemy card
       enemyId = toId enemy
-    pure $ g & enemiesL . at enemyId ?~ enemy
+    pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   CreateEnemyAtLocationMatching cardCode locationMatcher -> do
     matches <- selectList locationMatcher
     when (null matches) (error "No matching locations")
@@ -4186,7 +4165,7 @@ runGameMessage msg g = case msg of
       <> [ CreatedEnemyAt enemyId lid target | target <- maybeToList mtarget ]
     pure
       $ g
-      & (enemiesL . at enemyId ?~ enemy)
+      & (entitiesL . enemiesL . at enemyId ?~ enemy)
       & (victoryDisplayL %~ delete card)
   CreateEnemyEngagedWithPrey card -> do
     let
@@ -4196,7 +4175,7 @@ runGameMessage msg g = case msg of
       [ Will (EnemySpawnEngagedWithPrey enemyId)
       , EnemySpawnEngagedWithPrey enemyId
       ]
-    pure $ g & enemiesL . at enemyId ?~ enemy
+    pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   EnemySpawnEngagedWithPrey eid ->
     pure $ g & activeCardL .~ Nothing & enemiesInVoidL %~ deleteMap eid
   DiscardTopOfEncounterDeck iid n mtarget ->
@@ -4429,7 +4408,7 @@ runGameMessage msg g = case msg of
         assetId = toId asset
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
       pushAll $ resolve $ Revelation iid (AssetSource assetId)
-      pure $ g & (assetsL . at assetId ?~ asset)
+      pure $ g & (entitiesL . assetsL . at assetId ?~ asset)
     other ->
       error $ "Currently not handling Revelations from type " <> show other
   InvestigatorDrewEncounterCard iid card -> case toCardType card of
@@ -4439,7 +4418,7 @@ runGameMessage msg g = case msg of
       pushAll [InvestigatorDrawEnemy iid lid $ toId enemy, UnsetActiveCard]
       pure
         $ g
-        & (enemiesL . at (toId enemy) ?~ enemy)
+        & (entitiesL . enemiesL . at (toId enemy) ?~ enemy)
         & (activeCardL ?~ EncounterCard card)
     TreacheryType -> g <$ push (DrewTreachery iid $ EncounterCard card)
     EncounterAssetType -> do
@@ -4448,7 +4427,7 @@ runGameMessage msg g = case msg of
         assetId = toId asset
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
       pushAll $ resolve $ Revelation iid (AssetSource assetId)
-      pure $ g & (assetsL . at assetId ?~ asset)
+      pure $ g & (entitiesL . assetsL . at assetId ?~ asset)
     LocationType -> do
       let
         location = createLocation card
@@ -4458,7 +4437,7 @@ runGameMessage msg g = case msg of
           , RevealLocation (Just iid) locationId
           ]
         <> resolve (Revelation iid (LocationSource locationId))
-      pure $ g & (locationsL . at locationId ?~ location)
+      pure $ g & (entitiesL . locationsL . at locationId ?~ location)
     _ ->
       error
         $ "Unhandled card type: "
@@ -4486,7 +4465,7 @@ runGameMessage msg g = case msg of
 
     pure
       $ g
-      & (treacheriesL . at treacheryId ?~ treachery)
+      & (entitiesL . treacheriesL . at treacheryId ?~ treachery)
       & (activeCardL ?~ EncounterCard card)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
@@ -4522,7 +4501,7 @@ runGameMessage msg g = case msg of
 
     pure
       $ g
-      & (treacheriesL %~ insertMap treacheryId treachery)
+      & (entitiesL . treacheriesL %~ insertMap treacheryId treachery)
       & (activeCardL ?~ PlayerCard card)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
@@ -4532,10 +4511,10 @@ runGameMessage msg g = case msg of
     asset <- getAsset aid
     pure $ g & resignedCardCodesL %~ (toCardCode asset :)
   Discarded (AssetTarget aid) (EncounterCard ec) ->
-    pure $ g & assetsL %~ deleteMap aid & discardL %~ (ec :)
-  Discarded (AssetTarget aid) _ -> pure $ g & assetsL %~ deleteMap aid
-  Discarded (TreacheryTarget aid) _ -> pure $ g & treacheriesL %~ deleteMap aid
-  Exiled (AssetTarget aid) _ -> pure $ g & assetsL %~ deleteMap aid
+    pure $ g & entitiesL . assetsL %~ deleteMap aid & discardL %~ (ec :)
+  Discarded (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid
+  Discarded (TreacheryTarget aid) _ -> pure $ g & entitiesL . treacheriesL %~ deleteMap aid
+  Exiled (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
     -- an event might need to be converted back to its original card
     event <- getEvent eid
@@ -4549,7 +4528,7 @@ runGameMessage msg g = case msg of
               then push $ PlaceOnBottomOfDeck (ownerOfEvent event) pc
               else push $ AddToDiscard (ownerOfEvent event) pc
           EncounterCard _ -> error "Unhandled"
-        pure $ g & eventsL %~ deleteMap eid
+        pure $ g & entitiesL . eventsL %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do
     withQueue_ $ filter (/= msg)
     treachery <- getTreachery tid
@@ -4559,9 +4538,9 @@ runGameMessage msg g = case msg of
         let
           ownerId = fromJustNote "owner was not set" $ treacheryOwner treachery
         push (AddToDiscard ownerId pc { pcBearer = Just ownerId })
-        pure $ g & treacheriesL %~ deleteMap tid
+        pure $ g & entitiesL . treacheriesL %~ deleteMap tid
       EncounterCard ec ->
-        pure $ g & treacheriesL %~ deleteMap tid & discardL %~ (ec :)
+        pure $ g & entitiesL . treacheriesL %~ deleteMap tid & discardL %~ (ec :)
   EndCheckWindow -> pure $ g & usedAbilitiesL %~ filter
     (\(_, Ability {..}, n) -> case abilityLimit of
       NoLimit -> False
@@ -4577,17 +4556,8 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
       >>= traverseOf chaosBagL (runMessage msg)
       >>= traverseOf (modeL . here) (runMessage msg)
       >>= traverseOf (modeL . there) (runMessage msg)
-      >>= traverseOf (actsL . traverse) (runMessage msg)
-      >>= traverseOf (agendasL . traverse) (runMessage msg)
-      >>= traverseOf (treacheriesL . traverse) (runMessage msg)
-      >>= traverseOf (eventsL . traverse) (runMessage msg)
-      >>= traverseOf (locationsL . traverse) (runMessage msg)
-      >>= traverseOf (enemiesL . traverse) (runMessage msg)
-      >>= traverseOf (effectsL . traverse) (runMessage msg)
-      >>= traverseOf (assetsL . traverse) (runMessage msg)
+      >>= traverseOf entitiesL (runMessage msg)
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
-      >>= traverseOf (skillsL . traverse) (runMessage msg)
-      >>= traverseOf (investigatorsL . traverse) (runMessage msg)
       >>= traverseOf
             (discardL . traverse)
             (\c -> c <$ runMessage
@@ -4597,3 +4567,16 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
       >>= runGameMessage msg
       >>= (\g' -> pure $ g' & enemyMovingL .~ Nothing)
     where maskedMsg f = f msg
+
+instance (HasQueue env, HasGame env) => RunMessage env Entities where
+  runMessage msg entities =
+    traverseOf (actsL . traverse) (runMessage msg) entities
+      >>= traverseOf (agendasL . traverse) (runMessage msg)
+      >>= traverseOf (treacheriesL . traverse) (runMessage msg)
+      >>= traverseOf (eventsL . traverse) (runMessage msg)
+      >>= traverseOf (locationsL . traverse) (runMessage msg)
+      >>= traverseOf (enemiesL . traverse) (runMessage msg)
+      >>= traverseOf (effectsL . traverse) (runMessage msg)
+      >>= traverseOf (assetsL . traverse) (runMessage msg)
+      >>= traverseOf (skillsL . traverse) (runMessage msg)
+      >>= traverseOf (investigatorsL . traverse) (runMessage msg)

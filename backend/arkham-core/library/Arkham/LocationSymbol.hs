@@ -1,7 +1,6 @@
 module Arkham.LocationSymbol where
 
-import ClassyPrelude
-import Data.Aeson
+import Arkham.Prelude
 
 data LocationSymbol
   = Circle

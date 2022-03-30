@@ -3,10 +3,28 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: esqueleto-3.5.3.1@sha256:6295ebf2877ddad652f4fd329d609748815c40c2f92ddebcf59f6c38891215f8,4858
+    pantry-tree:
+      size: 2356
+      sha256: dadceb0f715d42ffb54f47eaebe5d35ff8b8f48a565c317f7eb680f5a39510ba
+  original:
+    hackage: esqueleto-3.5.3.1@sha256:6295ebf2877ddad652f4fd329d609748815c40c2f92ddebcf59f6c38891215f8,4858
+- completed:
+    size: 531103
+    url: https://github.com/TeofilC/relude/archive/3077e34a5b4996430dc5907f951b39371e10e6dc.tar.gz
+    name: relude
+    version: 1.0.0.1
+    sha256: 793ab5b09ef14a6c57ac9202c67a50710ac44c0152a3558b928d7aa224509555
+    pantry-tree:
+      size: 4976
+      sha256: ddbbc8e46eebd93b7d114b29d90bcbf72d9f79a3c52fd6352ef2d9078cdc5227
+  original:
+    url: https://github.com/TeofilC/relude/archive/3077e34a5b4996430dc5907f951b39371e10e6dc.tar.gz
 snapshots:
 - completed:
-    size: 586120
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/22.yaml
-    sha256: f9970d6f25c63e3e4265aa8e9c69a047ba8919d1107e4996bdd7555b75aad0eb
-  original: lts-18.22
+    size: 538913
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/3/28.yaml
+    sha256: b4fda0a9cf410660b08bdc7485925e7e89aa77071a14d3f67eeace63ce602a86
+  original: nightly-2022-03-28

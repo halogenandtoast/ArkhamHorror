@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Slot
-import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
 

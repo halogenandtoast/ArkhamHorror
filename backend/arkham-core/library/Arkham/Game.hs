@@ -5,6 +5,7 @@ module Arkham.Game where
 
 import Arkham.Prelude
 
+import Data.Aeson.KeyMap qualified as KeyMap
 import Arkham.Ability
 import Arkham.Act
 import Arkham.Action (Action, TakenAction)
@@ -445,7 +446,7 @@ newtype WithDeckSize = WithDeckSize Investigator
 instance ToJSON WithDeckSize where
   toJSON (WithDeckSize i) = case toJSON i of
     Object o ->
-      Object $ HashMap.insert "deckSize" (toJSON $ length $ deckOf i) o
+      Object $ KeyMap.insert "deckSize" (toJSON $ length $ deckOf i) o
     _ -> error "failed to serialize investigator"
 
 withSkillTestModifiers
@@ -588,6 +589,7 @@ getInvestigatorsMatching matcher = do
       pure $ you /= i
     Anyone -> pure . const True
     TurnInvestigator -> \i -> maybe False (== i) <$> getTurnInvestigator
+    LeadInvestigator -> \i -> (== toId i) <$> getLeadInvestigatorId
     InvestigatorWithTitle title -> pure . (== title) . nameTitle . toName
     InvestigatorAt locationMatcher -> \i ->
       if locationOf i == LocationId (CardId nil)

@@ -1222,6 +1222,8 @@ library
       ImportQualifiedPost
       FunctionalDependencies
       ViewPatterns
+      StarIsType
+      StandaloneKindSignatures
   build-depends:
       MonadRandom
     , aeson >=1.5.4.1
@@ -1283,6 +1285,8 @@ executable validate
       ImportQualifiedPost
       FunctionalDependencies
       ViewPatterns
+      StarIsType
+      StandaloneKindSignatures
   ghc-options: -threaded -O2 "-with-rtsopts=-N -T -I0"
   build-depends:
       MonadRandom
@@ -1395,6 +1399,8 @@ test-suite spec
       ImportQualifiedPost
       FunctionalDependencies
       ViewPatterns
+      StarIsType
+      StandaloneKindSignatures
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-depends:
       MonadRandom

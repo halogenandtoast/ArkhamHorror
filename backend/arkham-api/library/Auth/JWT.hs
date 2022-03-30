@@ -33,7 +33,7 @@ jsonToToken jwtSecret userId =
 -- | Extract a JSON 'Value' out of a token
 tokenToJson :: Text -> Text -> Maybe Value
 tokenToJson jwtSecret token = do
-  jwt <- JWT.decodeAndVerifySignature (JWT.hmacSecret jwtSecret) token
+  jwt <- JWT.decodeAndVerifySignature (JWT.toVerify $ JWT.hmacSecret jwtSecret) token
   unClaimsMap (JWT.unregisteredClaims (JWT.claims jwt)) !? jwtKey
 
 jwtKey :: Text

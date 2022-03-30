@@ -2,7 +2,7 @@
 require-stack-version: ">= 2.3.1"
 concurrent-tests: false
 
-resolver: lts-18.22
+resolver: nightly-2022-03-28
 
 ghc-options:
   "$locals":
@@ -17,11 +17,11 @@ ghc-options:
     -Wno-monomorphism-restriction
     -Wno-missing-import-lists
     -Wno-missing-export-lists
+    -Wno-missing-kind-signatures
     -Wno-incomplete-uni-patterns
     -Wno-partial-fields
     -Wno-implicit-prelude
     -Wno-deriving-typeable
-    -Wno-missing-monadfail-instances
     -fignore-optim-changes
     -Wno-missing-safe-haskell-mode
     -Wno-prepositive-qualified-module
@@ -32,3 +32,10 @@ packages:
   - cards-discover
   - arkham-core
   - arkham-api
+
+extra-deps:
+- esqueleto-3.5.3.1@sha256:6295ebf2877ddad652f4fd329d609748815c40c2f92ddebcf59f6c38891215f8,4858
+- github: TeofilC/relude
+  commit: 3077e34a5b4996430dc5907f951b39371e10e6dc
+
+allow-newer: true

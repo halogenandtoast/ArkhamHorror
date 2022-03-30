@@ -8,8 +8,8 @@ import Arkham.Game
 import Arkham.Message
 import Control.Error.Util (hush)
 import Control.Monad.Fail qualified as Fail
-import Data.Aeson
-import Data.Aeson.Types
+import Data.Aeson hiding (Key)
+import Data.Aeson.Types hiding (Key)
 import Data.ByteString.Char8 qualified as BS8
 import Data.Hashable (Hashable(hash))
 import Data.Text qualified as T
@@ -81,7 +81,7 @@ instance (ToBackendKey SqlBackend a) => ToJSONKey (Key a) where
 instance (ToBackendKey SqlBackend a) => FromJSONKey (Key a) where
   fromJSONKey = toSqlKey <$> fromJSONKey
 
-instance (ToBackendKey SqlBackend a) => Hashable (Key a) where
+instance (ToBackendKey SqlBackend a, Eq (Key a)) => Hashable (Key a) where
   hash = hash . fromSqlKey
   hashWithSalt n = hashWithSalt n . fromSqlKey
 

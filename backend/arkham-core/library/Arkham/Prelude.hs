@@ -38,6 +38,7 @@ import Data.Aeson as X
 import Data.Aeson.Text
 import Data.Char qualified as C
 import Data.Coerce as X (coerce)
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.HashMap.Strict qualified as HashMap
 import Data.HashSet qualified as HashSet
 import Data.List as X (nub, (\\))
@@ -158,7 +159,7 @@ instance (Eq a, Eq b) => Eq (With a b) where
 
 instance (ToJSON a, ToJSON b) => ToJSON (a `With` b) where
   toJSON (a `With` b) = case (toJSON a, toJSON b) of
-    (Object o, Object m) -> Object $ HashMap.union m o
+    (Object o, Object m) -> Object $ KeyMap.union m o
     (a', b') -> metadataError a' b'
    where
     metadataError a' b' =

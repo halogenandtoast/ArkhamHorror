@@ -8,11 +8,11 @@ import Language.Haskell.TH
 import Language.Haskell.TH.Syntax
 import Prelude
 
-findCardFiles :: FilePath -> Q (TExp [FilePath])
-findCardFiles root = do
+findCardFiles :: FilePath -> Code Q [FilePath]
+findCardFiles root = liftCode $ do
   projectRoot <- makeRelativeToProject root
   files <- runIO $ filter isHaskellFile <$> getFilesRecursive projectRoot
-  liftTyped files
+  examineCode $ liftTyped files
  where
   isHaskellFile filename = case stripSuffix ".hs" filename of
     Just _ -> True

@@ -13,6 +13,7 @@ import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Matcher
+import Arkham.Message hiding (When)
 import Arkham.Timing
 
 newtype TheParisianConspiracyV1 = TheParisianConspiracyV1 ActAttrs
@@ -36,5 +37,11 @@ instance HasAbilities TheParisianConspiracyV1 where
     ]
 
 instance ActRunner env => RunMessage env TheParisianConspiracyV1 where
-  runMessage msg (TheParisianConspiracyV1 attrs) =
-    TheParisianConspiracyV1 <$> runMessage msg attrs
+  runMessage msg a@(TheParisianConspiracyV1 attrs) = case msg of
+    AdvanceAct aid _ advanceMode | aid == actId attrs && onSide B attrs -> case advanceMode of
+      AdvancedWithClues -> do
+        locationId <- selectJust LeadInvestigatorLocation
+        theOrganist <- fromJustNote "The Organist was not set aside" . listToMaybe <$> getSetAsideCardsMatching (CardWithTitle "The Organist")
+        a <$ pushAll [CreateEnemyAt theOrganist locationId Nothing, AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+      _ -> pure a
+    _ -> TheParisianConspiracyV1 <$> runMessage msg attrs

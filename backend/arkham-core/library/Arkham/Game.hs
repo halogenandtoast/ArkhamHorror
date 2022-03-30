@@ -588,6 +588,7 @@ getInvestigatorsMatching matcher = do
       pure $ you /= i
     Anyone -> pure . const True
     TurnInvestigator -> \i -> maybe False (== i) <$> getTurnInvestigator
+    LeadInvestigator -> \i -> (== toId i) <$> getLeadInvestigatorId
     InvestigatorWithTitle title -> pure . (== title) . nameTitle . toName
     InvestigatorAt locationMatcher -> \i ->
       if locationOf i == LocationId (CardId nil)

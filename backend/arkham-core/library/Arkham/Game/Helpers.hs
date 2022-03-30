@@ -2063,6 +2063,8 @@ matchWho you who = \case
   Matcher.Anyone -> pure True
   Matcher.You -> pure $ who == you
   Matcher.NotYou -> pure $ who /= you
+  Matcher.LeadInvestigator ->
+    member who <$> getSet Matcher.LeadInvestigator
   Matcher.UnengagedInvestigator -> null <$> getSet @EnemyId who
   Matcher.NoDamageDealtThisTurn ->
     null . historyDealtDamageTo <$> getHistory TurnHistory who

@@ -89,6 +89,7 @@ data InvestigatorMatcher
   | InvestigatorWithLowestSkill SkillType
   | AnyInvestigator [InvestigatorMatcher]
   | TurnInvestigator
+  | LeadInvestigator
   | NoDamageDealtThisTurn
   | TopCardOfDeckIs CardMatcher
   deriving stock (Show, Eq, Generic)
@@ -273,6 +274,10 @@ pattern LocationWithoutClues <- LocationWithClues (EqualTo (Static 0)) where
 pattern LocationWithoutDoom :: LocationMatcher
 pattern LocationWithoutDoom <- LocationWithDoom (EqualTo (Static 0)) where
   LocationWithoutDoom = LocationWithDoom (EqualTo (Static 0))
+
+pattern LeadInvestigatorLocation :: LocationMatcher
+pattern LeadInvestigatorLocation <- LocationWithInvestigator LeadInvestigator where
+  LeadInvestigatorLocation = LocationWithInvestigator LeadInvestigator
 
 locationIs :: HasCardCode a => a -> LocationMatcher
 locationIs = LocationIs . toCardCode

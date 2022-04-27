@@ -12,11 +12,9 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.Investigator.Runner
-import Arkham.InvestigatorId
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -39,11 +37,11 @@ daisyWalkerParallel = investigator
     , agility = 2
     }
 
-instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env DaisyWalkerParallel where
+instance Query AssetMatcher env => HasModifiersFor env DaisyWalkerParallel where
   getModifiersFor _ (InvestigatorTarget iid) (DaisyWalkerParallel attrs@InvestigatorAttrs {..})
     | iid == investigatorId
     = do
-      tomeCount <- unAssetCount <$> getCount (investigatorId, [Tome])
+      tomeCount <- selectCount $ AssetOwnedBy (InvestigatorWithId investigatorId) <> AssetWithTrait Tome
       pure
         $ toModifiers attrs
         $ SkillModifier SkillWillpower tomeCount

@@ -22,7 +22,6 @@ type GameRunner env =
   , Query AssetMatcher env
   , ( HasCount ActsRemainingCount env ()
     , HasCount ActionTakenCount env InvestigatorId
-    , HasCount AssetCount env (InvestigatorId, [Trait])
     , HasCount CardCount env InvestigatorId
     , HasCount ClueCount env InvestigatorId
     , HasCount ClueCount env LocationId

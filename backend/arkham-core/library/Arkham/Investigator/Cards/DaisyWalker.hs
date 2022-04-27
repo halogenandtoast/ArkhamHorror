@@ -7,8 +7,8 @@ import Arkham.Prelude
 
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
+import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
 import Arkham.Source
 import Arkham.Target
 
@@ -60,7 +60,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalker where
     PassedSkillTest iid _ _ (TokenTarget token) _ _ | iid == investigatorId ->
       case tokenFace token of
         ElderSign -> do
-          tomeCount <- unAssetCount <$> getCount (iid, [Tome])
+          tomeCount <- selectCount $ AssetOwnedBy (InvestigatorWithId investigatorId) <> AssetWithTrait Tome
           i <$ when (tomeCount > 0) (push $ DrawCards iid tomeCount False)
         _ -> pure i
     BeginRound ->

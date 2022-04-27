@@ -106,7 +106,6 @@ type SomeEntityHasModifiersFor env =
   , HasCount ClueCount env EnemyId
   , HasCount CardCount env InvestigatorId
   , HasCount RemainingSanity env InvestigatorId
-  , HasCount AssetCount env (InvestigatorId, [Trait])
   , HasSet Trait env AssetId
   , HasCount PlayerCount env ()
   , HasCount ResourceCount env InvestigatorId

@@ -219,7 +219,6 @@ type ActionRunner env
           (Maybe Action, [Trait], InvestigatorId)
       , HasCount ActionRemainingCount env InvestigatorId
       , HasCount ActionTakenCount env InvestigatorId
-      , HasCount AssetCount env (InvestigatorId, [Trait])
       , HasCount CardCount env InvestigatorId
       , HasCount ClueCount env InvestigatorId
       , HasCount ClueCount env LocationId

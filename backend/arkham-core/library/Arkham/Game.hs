@@ -1714,15 +1714,6 @@ instance HasGame env => HasCount PlayerCount env () where
 instance HasGame env => HasCount EnemyCount env InvestigatorId where
   getCount = getCount <=< getInvestigator
 
-instance HasGame env => HasCount AssetCount env (InvestigatorId, [Trait]) where
-  getCount (iid, traits) = do
-    investigator <- getInvestigator iid
-    investigatorAssets <- getSetList investigator
-    AssetCount <$> countM assetMatcher investigatorAssets
-   where
-    assetMatcher aid =
-      anyM (\trait -> (trait `member`) . toTraits <$> getAsset aid) traits
-
 instance HasGame env => HasCount EnemyCount env [Trait] where
   getCount traits =
     EnemyCount . length . filterMap enemyMatcher . view (entitiesL . enemiesL) <$> getGame

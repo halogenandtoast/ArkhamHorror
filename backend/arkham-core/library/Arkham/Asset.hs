@@ -33,12 +33,12 @@ instance
   , HasCount CardCount env InvestigatorId
   , HasCount ClueCount env EnemyId
   , HasCount ClueCount env InvestigatorId
-  , HasCount AssetCount env (InvestigatorId, [Trait])
   , HasSet Trait env LocationId
   , HasSet CommittedCardId env InvestigatorId
   , HasCount RemainingSanity env InvestigatorId
   , HasId LocationId env AssetId
   , Query LocationMatcher env
+  , Query AssetMatcher env
   , HasSkillTest env
   )
   => HasModifiersFor env Asset where

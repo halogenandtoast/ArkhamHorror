@@ -27,8 +27,8 @@ $(buildEntity "Investigator")
 
 instance
   ( HasCount StartingUsesCount env (AssetId, UseType)
-  , HasCount AssetCount env (InvestigatorId, [Trait])
   , HasModifiersFor env EntityInstance
+  , Query AssetMatcher env
   )
   => HasModifiersFor env Investigator where
   getModifiersFor s t i = do

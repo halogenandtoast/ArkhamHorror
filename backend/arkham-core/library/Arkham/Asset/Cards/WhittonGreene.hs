@@ -11,11 +11,9 @@ import Arkham.Asset.Runner
 import Arkham.Card.CardType
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.InvestigatorId
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
-import Arkham.Query
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -39,10 +37,11 @@ instance HasAbilities WhittonGreene where
         (ExhaustCost $ toTarget x)
     ]
 
-instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env WhittonGreene where
+instance Query AssetMatcher env => HasModifiersFor env WhittonGreene where
   getModifiersFor _ (InvestigatorTarget iid) (WhittonGreene a) | ownedBy a iid =
     do
-      active <- (> 0) . unAssetCount <$> getCount (iid, [Tome, Relic])
+      active <- selectAny (AssetOwnedBy (InvestigatorWithId iid) <> AssetOneOf [AssetWithTrait Tome, AssetWithTrait Relic])
+      -- active <- (> 0) . unAssetCount <$> getCount (iid, [Tome, Relic])
       pure $ toModifiers a [ SkillModifier SkillIntellect 1 | active ]
   getModifiersFor _ _ _ = pure []
 

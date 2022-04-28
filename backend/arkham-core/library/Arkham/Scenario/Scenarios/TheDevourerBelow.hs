@@ -16,7 +16,6 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Id
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
-import Arkham.Query
 import Arkham.Resolution
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
@@ -43,10 +42,10 @@ theDevourerBelow difficulty =
       ]
     }
 
-instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env [Trait]) => HasTokenValue env TheDevourerBelow where
+instance (HasTokenValue env InvestigatorId, Query EnemyMatcher env) => HasTokenValue env TheDevourerBelow where
   getTokenValue (TheDevourerBelow attrs) iid = \case
     Skull -> do
-      monsterCount <- unEnemyCount <$> getCount [Monster]
+      monsterCount <- selectCount $ EnemyWithTrait Monster
       pure $ toTokenValue attrs Skull monsterCount 3
     Cultist -> pure $ toTokenValue attrs Cultist 2 4
     Tablet -> pure $ toTokenValue attrs Tablet 3 5
@@ -152,8 +151,7 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
       pure s
     ResolveToken _ Tablet iid -> do
       let horror = if isEasyStandard attrs then 0 else 1
-      monsterCount <- unEnemyCount
-        <$> getCount (InvestigatorLocation iid, [Monster])
+      monsterCount <- selectCount $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid) <> EnemyWithTrait Monster
       s <$ when
         (monsterCount > 0)
         (push $ InvestigatorAssignDamage
@@ -164,7 +162,7 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
           horror
         )
     ResolveToken _ ElderThing iid -> do
-      ancientOneCount <- unEnemyCount <$> getCount [AncientOne]
+      ancientOneCount <- selectCount $ EnemyWithTrait AncientOne
       s <$ when (ancientOneCount > 0) (push $ DrawAnotherToken iid)
     FailedSkillTest iid _ _ (TokenTarget token) _ _
       | isHardExpert attrs && tokenFace token == Skull -> s <$ push

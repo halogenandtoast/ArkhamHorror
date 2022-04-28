@@ -61,8 +61,6 @@ instance
   ( HasCount DiscardCount env InvestigatorId
   , HasCount DoomCount env ()
   , HasCount DoomCount env EnemyId
-  , HasCount EnemyCount env (InvestigatorLocation, [Trait])
-  , HasCount EnemyCount env [Trait]
   , HasCount Shroud env LocationId
   , Query EnemyMatcher env
   , HasSet EnemyId env Trait

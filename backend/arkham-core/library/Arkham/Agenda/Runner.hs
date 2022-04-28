@@ -36,8 +36,6 @@ type AgendaRunner env =
   , HasCount ClueCount env LocationId
   , HasCount DiscardCount env InvestigatorId
   , HasCount DoomCount env ()
-  , HasCount EnemyCount env (LocationId, [Trait])
-  , HasCount EnemyCount env (LocationMatcher, [Trait])
   , HasCount PlayerCount env ()
   , HasCount ScenarioDeckCount env ScenarioDeckKey
   , HasCount SetAsideCount env CardCode

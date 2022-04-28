@@ -48,7 +48,6 @@ type AssetRunner env =
   , HasCount CardCount env InvestigatorId
   , HasCount ClueCount env LocationId
   , HasCount DamageCount env InvestigatorId
-  , HasCount EnemyCount env InvestigatorId
   , HasCount HealthDamageCount env EnemyId
   , HasCount HorrorCount env InvestigatorId
   , HasCount ResourceCount env InvestigatorId

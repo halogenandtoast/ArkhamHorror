@@ -28,9 +28,6 @@ type GameRunner env =
     , HasCount DoomCount env ()
     , HasCount XPCount env ()
     , HasCount DoomCount env EnemyId
-    , HasCount EnemyCount env InvestigatorId
-    , HasCount EnemyCount env (InvestigatorLocation, [Trait])
-    , HasCount EnemyCount env [Trait]
     , HasCount HealthDamageCount env EnemyId
     , HasCount HorrorCount env InvestigatorId
     , HasCount PlayerCount env ()
@@ -39,7 +36,6 @@ type GameRunner env =
     , HasCount SanityDamageCount env EnemyId
     , HasCount Shroud env LocationId
     , HasCount SpendableClueCount env InvestigatorId
-    , HasCount TreacheryCount env (LocationId, CardCode)
     )
   , ( HasId (Maybe AssetId) env CardCode
     , HasId (Maybe OwnerId) env AssetId

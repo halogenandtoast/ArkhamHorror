@@ -12,13 +12,12 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Id
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
-import Arkham.Query
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheGathering
-import Arkham.Trait (Trait)
 
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
   deriving stock Generic
@@ -38,7 +37,7 @@ returnToTheGathering difficulty =
        , ".     .         deepBelowYourHouse ."
        ]
 
-instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (InvestigatorLocation, [Trait])) => HasTokenValue env ReturnToTheGathering where
+instance (HasTokenValue env InvestigatorId, Query EnemyMatcher env) => HasTokenValue env ReturnToTheGathering where
   getTokenValue (ReturnToTheGathering theGathering') iid =
     getTokenValue theGathering' iid
 

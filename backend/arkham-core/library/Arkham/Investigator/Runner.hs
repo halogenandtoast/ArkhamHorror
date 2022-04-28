@@ -85,7 +85,6 @@ type InnerInvestigatorRunner env
       , HasCount DiscardCount env InvestigatorId
       , HasCount DoomCount env AssetId
       , HasCount DoomCount env InvestigatorId
-      , HasCount EnemyCount env InvestigatorId
       , HasCount FightCount env EnemyId
       , HasCount HealthDamageCount env EnemyId
       , HasCount HorrorCount env InvestigatorId
@@ -99,7 +98,6 @@ type InnerInvestigatorRunner env
       , HasCount Shroud env LocationId
       , HasCount SpendableClueCount env InvestigatorId
       , HasCount SpendableClueCount env ()
-      , HasCount TreacheryCount env (LocationId, CardCode)
       , HasCount UsesCount env AssetId
       )
     , ( HasId (Maybe AssetId) env CardCode

@@ -1601,19 +1601,6 @@ instance HasGame env => HasCount DamageCount env EnemyId where
 instance HasGame env => HasCount DamageCount env InvestigatorId where
   getCount = getCount <=< getInvestigator
 
-instance HasGame env => HasCount TreacheryCount env (LocationId, CardCode) where
-  getCount (lid, cardCode) = do
-    g <- getGame
-    location <- getLocation lid
-    treacheries <- getSet location
-    pure . TreacheryCount $ count (== cardCode) (cardCodes g treacheries)
-   where
-    cardCodes g treacheries =
-      [ toCardCode c
-      | (i, c) <- mapToList (g ^. entitiesL . treacheriesL)
-      , i `member` treacheries
-      ]
-
 instance HasGame env => HasCount ClueCount env ActId where
   getCount = getCount <=< getAct
 
@@ -1711,36 +1698,6 @@ instance HasGame env => HasCount ResourceCount env TreacheryId where
 instance HasGame env => HasCount PlayerCount env () where
   getCount _ = PlayerCount . length . view (entitiesL . investigatorsL) <$> getGame
 
-instance HasGame env => HasCount EnemyCount env InvestigatorId where
-  getCount = getCount <=< getInvestigator
-
-instance HasGame env => HasCount EnemyCount env [Trait] where
-  getCount traits =
-    EnemyCount . length . filterMap enemyMatcher . view (entitiesL . enemiesL) <$> getGame
-    where enemyMatcher enemy = any (`member` toTraits enemy) traits
-
-instance HasGame env => HasCount EnemyCount env (LocationMatcher, [Trait]) where
-  getCount (locationMatcher, traits) =
-    maybe (pure (EnemyCount 0)) (getCount . (, traits) . toId)
-      =<< getLocationMatching locationMatcher
-
-instance HasGame env => HasCount EnemyCount env (LocationId, [Trait]) where
-  getCount (lid, traits) = do
-    mlocation <- preview (entitiesL . locationsL . ix lid) <$> getGame
-    case mlocation of
-      Just location -> do
-        locationEnemies <- getSetList location
-        EnemyCount <$> countM enemyMatcher locationEnemies
-      Nothing -> pure $ EnemyCount 0
-   where
-    enemyMatcher eid =
-      anyM (\trait -> (trait `member`) . toTraits <$> getEnemy eid) traits
-
-instance HasGame env => HasCount EnemyCount env (InvestigatorLocation, [Trait]) where
-  getCount (InvestigatorLocation iid, traits) = do
-    locationId <- locationFor iid
-    getCount (locationId, traits)
-
 instance HasGame env => HasStats env (InvestigatorId, Maybe Action) where
   getStats (iid, maction) source =
     modifiedStatsOf source maction =<< getInvestigator iid
@@ -1755,8 +1712,6 @@ instance
   , HasCount DiscardCount env InvestigatorId
   , HasCount DoomCount env ()
   , HasCount DoomCount env EnemyId
-  , HasCount EnemyCount env (InvestigatorLocation, [Trait])
-  , HasCount EnemyCount env [Trait]
   , HasSet EnemyId env Trait
   , HasSet Trait env LocationId
   , HasTokenValue env InvestigatorId

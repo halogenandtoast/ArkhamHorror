@@ -35,6 +35,7 @@ type TreacheryRunner env =
     , Query ExtendedCardMatcher env
     , Query LocationMatcher env
     , Query InvestigatorMatcher env
+    , Query TreacheryMatcher env
     )
   , ( HasCount ActsRemainingCount env ()
     , HasCount DoomCount env ()
@@ -50,7 +51,6 @@ type TreacheryRunner env =
     , HasCount SetAsideCount env CardCode
     , HasCount Shroud env LocationId
     , HasCount SpendableClueCount env InvestigatorId
-    , HasCount TreacheryCount env (LocationId, CardCode)
     )
   , HasId CardCode env AssetId
   , HasId CardCode env EnemyId

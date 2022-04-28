@@ -11,8 +11,8 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Query
 import Arkham.SkillType
 import Arkham.Target
 
@@ -33,7 +33,7 @@ instance HasAbilities Machete where
 instance AssetRunner env => RunMessage env Machete where
   runMessage msg a@(Machete attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      criteriaMet <- (== 1) . unEnemyCount <$> getCount iid
+      criteriaMet <- (== 1) <$> selectCount (EnemyIsEngagedWith $ InvestigatorWithId iid)
       a <$ pushAll
         [ skillTestModifiers
           attrs

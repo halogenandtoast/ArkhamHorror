@@ -13,15 +13,14 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Id
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
-import Arkham.Query
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheDevourerBelow
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait hiding (Cultist)
 
 newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
   deriving stock Generic
@@ -42,7 +41,7 @@ returnToTheDevourerBelow difficulty =
           ]
         }
 
-instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env [Trait]) => HasTokenValue env ReturnToTheDevourerBelow where
+instance (HasTokenValue env InvestigatorId, Query EnemyMatcher env) => HasTokenValue env ReturnToTheDevourerBelow where
   getTokenValue (ReturnToTheDevourerBelow theDevourerBelow') iid =
     getTokenValue theDevourerBelow' iid
 

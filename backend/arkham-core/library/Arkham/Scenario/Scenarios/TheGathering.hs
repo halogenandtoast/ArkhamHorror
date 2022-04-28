@@ -17,7 +17,6 @@ import Arkham.Exception
 import Arkham.Id
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
-import Arkham.Query
 import Arkham.Resolution
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
@@ -25,7 +24,6 @@ import Arkham.Scenario.Runner
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait (Trait)
 import Arkham.Trait qualified as Trait
 
 newtype TheGathering = TheGathering ScenarioAttrs
@@ -43,11 +41,10 @@ theGathering difficulty =
        , "   .   cellar  .     "
        ]
 
-instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (InvestigatorLocation, [Trait])) => HasTokenValue env TheGathering where
+instance (Query EnemyMatcher env, HasTokenValue env InvestigatorId) => HasTokenValue env TheGathering where
   getTokenValue (TheGathering attrs) iid = \case
     Skull -> do
-      ghoulCount <- unEnemyCount
-        <$> getCount (InvestigatorLocation iid, [Trait.Ghoul])
+      ghoulCount <- selectCount $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid) <> EnemyWithTrait Trait.Ghoul
       pure $ toTokenValue attrs Skull ghoulCount 2
     Cultist -> pure $ TokenValue
       Cultist
@@ -108,8 +105,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
     ResolveToken _ Cultist iid ->
       s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)
     ResolveToken _ Tablet iid -> do
-      ghoulCount <- unEnemyCount
-        <$> getCount (InvestigatorLocation iid, [Trait.Ghoul])
+      ghoulCount <- selectCount $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid) <> EnemyWithTrait Trait.Ghoul
       s <$ when
         (ghoulCount > 0)
         (push $ InvestigatorAssignDamage

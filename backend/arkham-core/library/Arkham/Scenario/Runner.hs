@@ -22,14 +22,12 @@ type ScenarioRunner env =
   , ( HasCount DoomCount env ()
     , HasCount HorrorCount env LocationId
     , HasCount DoomCount env EnemyId
-    , HasCount EnemyCount env [Trait]
     , HasCount PlayerCount env ()
     , HasCount ResourceCount env InvestigatorId
     , HasCount ClueCount env InvestigatorId
     , HasCount ClueCount env AssetId
     , HasCount ClueCount env ActId
     , HasCount XPCount env ()
-    , HasCount EnemyCount env (InvestigatorLocation, [Trait])
     )
   , HasId CardCode env EnemyId
   , HasId LeadInvestigatorId env ()

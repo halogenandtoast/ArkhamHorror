@@ -4,8 +4,6 @@ import Arkham.Prelude
 
 import Arkham.InvestigatorId
 
-newtype TreacheryCount = TreacheryCount { unTreacheryCount :: Int }
-newtype EnemyCount = EnemyCount { unEnemyCount :: Int }
 newtype ActsRemainingCount = ActsRemainingCount { unActsRemainingCount :: Int }
 newtype ActionRemainingCount = ActionRemainingCount { unActionRemainingCount :: Int }
 newtype ActionTakenCount = ActionTakenCount { unActionTakenCount :: Int }

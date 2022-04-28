@@ -4,12 +4,10 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
@@ -44,8 +42,7 @@ instance TreacheryRunner env => RunMessage env ObscuringFog where
   runMessage msg t@(ObscuringFog attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       currentLocationId <- getId iid
-      obscuringFogCount <- unTreacheryCount
-        <$> getCount (currentLocationId, toCardCode attrs)
+      obscuringFogCount <- selectCount $ TreacheryAt (LocationWithId currentLocationId) <> treacheryIs Cards.obscuringFog
       if obscuringFogCount > 0
         then pure t
         else do

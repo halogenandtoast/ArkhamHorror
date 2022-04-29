@@ -447,6 +447,7 @@ data CardMatcher
   | CardWithLevel Int
   | CardWithoutKeyword Keyword
   | CardWithClass ClassSymbol
+  | CardWithSkill SkillType
   | CardWithOneOf [CardMatcher]
   | CardMatches [CardMatcher]
   | NotCard CardMatcher

@@ -6,10 +6,10 @@ module Arkham.Investigator.Cards.AshcanPete
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Assets
-import Arkham.Investigator.Cards qualified as Cards
+import qualified Arkham.Asset.Cards as Assets
 import Arkham.Cost
 import Arkham.Criteria
+import qualified Arkham.Investigator.Cards as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Message
@@ -42,7 +42,7 @@ instance HasAbilities AshcanPete where
           (Self <> AssetExists (AssetOwnedBy You <> AssetExhausted) <> Negate
             (SelfHasModifier ControlledAssetsCannotReady)
           )
-          (FastAbility $ HandDiscardCost 1 Nothing mempty mempty)
+          (FastAbility $ HandDiscardCost 1 AnyCard)
         & abilityLimitL
         .~ PlayerLimit PerRound 1
     ]

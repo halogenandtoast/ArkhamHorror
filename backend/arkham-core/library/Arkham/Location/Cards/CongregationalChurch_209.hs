@@ -12,6 +12,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Location.Runner
+import Arkham.Matcher
 import Arkham.Message
 
 newtype CongregationalChurch_209 = CongregationalChurch_209 LocationAttrs
@@ -31,7 +32,7 @@ instance HasAbilities CongregationalChurch_209 where
   getAbilities (CongregationalChurch_209 attrs) = do
     let rest = withDrawCardUnderneathAction attrs
     [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
-            [ActionCost 1, HandDiscardCost 1 Nothing mempty mempty]
+            [ActionCost 1, HandDiscardCost 1 AnyCard]
         | locationRevealed attrs
         ]
       <> rest

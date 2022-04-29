@@ -5,9 +5,13 @@ module Arkham.Location.Cards.Montmartre209
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Ability
 import Arkham.Classes
+import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
+import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Runner
 
 newtype Montmartre209 = Montmartre209 LocationAttrs
@@ -24,7 +28,14 @@ montmartre209 = location
   [Diamond, Triangle, Equals, Moon]
 
 instance HasAbilities Montmartre209 where
-  getAbilities (Montmartre209 attrs) = getAbilities attrs
+  getAbilities (Montmartre209 attrs) = withBaseAbilities
+    attrs
+    [ limitedAbility (GroupLimit PerRound 1)
+      $ restrictedAbility attrs 1 Here
+      $ ActionAbility Nothing
+      $ ActionCost 1
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env Montmartre209 where
   runMessage msg (Montmartre209 attrs) = Montmartre209 <$> runMessage msg attrs

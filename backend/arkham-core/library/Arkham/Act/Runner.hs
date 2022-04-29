@@ -26,6 +26,7 @@ import Arkham.Window
 
 type ActRunner env
   = ( HasQueue env
+    , Query AgendaMatcher env
     , Query AssetMatcher env
     , Query EnemyMatcher env
     , Query InvestigatorMatcher env

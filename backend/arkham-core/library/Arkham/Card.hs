@@ -1,4 +1,7 @@
-module Arkham.Card (module Arkham.Card, module X) where
+module Arkham.Card
+  ( module Arkham.Card
+  , module X
+  ) where
 
 import Arkham.Prelude
 
@@ -20,8 +23,9 @@ import Arkham.LocationId
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.PlayerCard
+import Arkham.SkillType
 import Arkham.Trait
-import Data.Text qualified as T
+import qualified Data.Text as T
 
 lookupCard :: CardCode -> CardId -> Card
 lookupCard cardCode cardId =
@@ -74,6 +78,8 @@ cardMatch a = \case
   IsEncounterCard -> toCardType a `elem` encounterCardTypes
   CardIsUnique -> cdUnique $ toCardDef a
   CardWithType cardType' -> toCardType a == cardType'
+  CardWithSkill skillType ->
+    skillType `member` setFromList @(HashSet SkillType) (cdSkills $ toCardDef a)
   CardWithCardCode cardCode -> toCardCode a == cardCode
   CardWithId cardId -> toCardId a == cardId
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title

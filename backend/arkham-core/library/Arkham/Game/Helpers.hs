@@ -4,10 +4,8 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Action (Action, TakenAction(..))
-import Arkham.Action qualified as Action
+import qualified Arkham.Action as Action
 import Arkham.CampaignLogKey
-import Arkham.Projection
-import Arkham.Location.Attrs hiding (location)
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
@@ -16,7 +14,7 @@ import Arkham.ClassSymbol
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria (Criterion)
-import Arkham.Criteria qualified as Criteria
+import qualified Arkham.Criteria as Criteria
 import Arkham.DamageEffect
 import Arkham.Deck
 import Arkham.Decks
@@ -29,13 +27,15 @@ import Arkham.GameValue
 import Arkham.History
 import Arkham.Id
 import Arkham.Keyword
-import Arkham.Keyword qualified as Keyword
-import Arkham.Label qualified as Location
-import Arkham.Matcher qualified as Matcher
+import qualified Arkham.Keyword as Keyword
+import qualified Arkham.Label as Location
+import Arkham.Location.Attrs hiding (location)
+import qualified Arkham.Matcher as Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase
+import Arkham.Projection
 import Arkham.Query
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
@@ -45,23 +45,21 @@ import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 import Arkham.Token
 import Arkham.Trait (Trait, toTraits)
 import Arkham.Window (Window(..))
-import Arkham.Window qualified as Window
+import qualified Arkham.Window as Window
 import Data.HashSet (size)
-import Data.HashSet qualified as HashSet
+import qualified Data.HashSet as HashSet
 import Data.UUID (nil)
 import System.IO.Unsafe
 
 gatherEncounterSet :: MonadRandom m => EncounterSet -> m [EncounterCard]
-gatherEncounterSet encounterSet =
-  concat <$> for
-    defs
-    \def ->
-      traverse genEncounterCard $
-        replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
+gatherEncounterSet encounterSet = concat <$> for
+  defs
+  \def -> traverse genEncounterCard
+    $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
  where
   defs =
     filter ((== Just encounterSet) . cdEncounterSet) $ toList allEncounterCards
@@ -366,31 +364,9 @@ getCanAffordCost iid source mAction windows' = \case
         (count (`member` insertSet SkillWild skillTypes) . cdSkills . toCardDef)
         handCards
     pure $ total >= n
-  HandDiscardCost n mCardType traits skillTypes -> do
+  HandDiscardCost n cardMatcher -> do
     cards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
-    let
-      cardTypeFilter = case mCardType of
-        Nothing -> const True
-        Just cardType' -> (== cardType') . cdCardType . toCardDef
-      traitFilter = if null traits
-        then const True
-        else notNull . intersect traits . toTraits
-      skillTypeFilter = if null skillTypes
-        then const True
-        else
-          not
-          . null
-          . intersect (insertSet SkillWild skillTypes)
-          . setFromList
-          . cdSkills
-          . toCardDef
-    pure
-      $ length
-          (filter
-            (and . sequence [traitFilter, cardTypeFilter, skillTypeFilter])
-            cards
-          )
-      >= n
+    pure $ length (filter (`cardMatch` cardMatcher) cards) >= n
 
 getActions
   :: ( MonadReader env m
@@ -2063,8 +2039,7 @@ matchWho you who = \case
   Matcher.Anyone -> pure True
   Matcher.You -> pure $ who == you
   Matcher.NotYou -> pure $ who /= you
-  Matcher.LeadInvestigator ->
-    member who <$> getSet Matcher.LeadInvestigator
+  Matcher.LeadInvestigator -> member who <$> getSet Matcher.LeadInvestigator
   Matcher.UnengagedInvestigator -> null <$> getSet @EnemyId who
   Matcher.NoDamageDealtThisTurn ->
     null . historyDealtDamageTo <$> getHistory TurnHistory who

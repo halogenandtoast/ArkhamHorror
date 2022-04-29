@@ -12,7 +12,6 @@ import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Trait (Trait)
 import Data.Text qualified as T
 
 totalActionCost :: Cost -> Int
@@ -85,7 +84,7 @@ data Cost
   | DiscardDrawnCardCost
   | DoomCost Source Target Int
   | ExileCost Target
-  | HandDiscardCost Int (Maybe CardType) (HashSet Trait) (HashSet SkillType)
+  | HandDiscardCost Int CardMatcher
   | SkillIconCost Int (HashSet SkillType)
   | HorrorCost Source Target Int
   | Free
@@ -128,7 +127,7 @@ displayCostType = \case
   DiscardDrawnCardCost -> "Discard Drawn Card"
   DoomCost _ _ n -> pluralize n "Doom"
   ExileCost _ -> "Exile"
-  HandDiscardCost n _ _ _ -> "Discard " <> tshow n <> " from Hand"
+  HandDiscardCost n _ -> "Discard " <> tshow n <> " from Hand"
   SkillIconCost n _ -> tshow n <> " Matching Icons"
   HorrorCost _ _ n -> tshow n <> " Horror"
   Free -> "Free"

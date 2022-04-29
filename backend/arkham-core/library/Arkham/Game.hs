@@ -644,6 +644,15 @@ getInvestigatorsMatching matcher = do
           skillTestCount <- length <$> getList @CommittedSkillIcon (toId i, st)
           gameValueMatches skillTestCount valueMatcher
 
+getAgendasMatching :: (MonadReader env m, HasGame env) => AgendaMatcher -> m [Agenda]
+getAgendasMatching matcher = do
+  allGameAgendas <- toList . view (entitiesL . agendasL) <$> getGame
+  filterM (matcherFilter matcher) allGameAgendas
+ where
+  matcherFilter = \case
+    AnyAgenda -> pure . const True
+    AgendaWithId agendaId -> pure . (== agendaId) . toId
+
 getActsMatching :: (MonadReader env m, HasGame env) => ActMatcher -> m [Act]
 getActsMatching matcher = do
   allGameActs <- toList . view (entitiesL . actsL) <$> getGame
@@ -2821,6 +2830,9 @@ instance HasGame env => HasSet InvestigatorId env (HashSet LocationId) where
 locationFor
   :: (HasGame env, MonadReader env m) => InvestigatorId -> m LocationId
 locationFor iid = locationOf <$> getInvestigator iid
+
+instance HasGame env => Query AgendaMatcher env where
+  select = fmap (setFromList . map toId) . getAgendasMatching
 
 instance HasGame env => Query ActMatcher env where
   select = fmap (setFromList . map toId) . getActsMatching

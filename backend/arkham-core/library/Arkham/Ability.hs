@@ -52,6 +52,9 @@ abilityIsActionAbility a = case abilityType a of
 abilityLimitL :: Lens' Ability AbilityLimit
 abilityLimitL = lens abilityLimit $ \m x -> m {abilityLimit = x}
 
+limitedAbility :: AbilityLimit -> Ability -> Ability
+limitedAbility l a = a & abilityLimitL .~ l
+
 abilityMetadataL :: Lens' Ability (Maybe AbilityMetadata)
 abilityMetadataL = lens abilityMetadata $ \m x -> m {abilityMetadata = x}
 

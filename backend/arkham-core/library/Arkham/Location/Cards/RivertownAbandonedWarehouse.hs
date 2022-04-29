@@ -6,13 +6,14 @@ module Arkham.Location.Cards.RivertownAbandonedWarehouse
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (rivertownAbandonedWarehouse)
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import qualified Arkham.Location.Cards as Cards (rivertownAbandonedWarehouse)
 import Arkham.Location.Runner
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
@@ -33,18 +34,19 @@ rivertownAbandonedWarehouse = location
 
 instance HasAbilities RivertownAbandonedWarehouse where
   getAbilities (RivertownAbandonedWarehouse attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility
-            attrs
-            1
-            (ActionAbility Nothing $ Costs
-              [ ActionCost 1
-              , HandDiscardCost 1 Nothing mempty (singleton SkillWillpower)
-              ]
-            )
-          & (abilityLimitL .~ GroupLimit PerGame 1)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility
+              attrs
+              1
+              (ActionAbility Nothing
+              $ Costs
+                  [ ActionCost 1
+                  , HandDiscardCost 1 $ CardWithSkill SkillWillpower
+                  ]
+              )
+            & (abilityLimitL .~ GroupLimit PerGame 1)
+        | locationRevealed attrs
+        ]
 
 willpowerCount :: Payment -> Int
 willpowerCount (DiscardCardPayment cards) =

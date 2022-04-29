@@ -32,7 +32,7 @@ instance HasAbilities HermanCollins where
     attrs
     [ restrictedAbility attrs 1 OnSameLocation $ ActionAbility
         (Just Parley)
-        (Costs [ActionCost 1, HandDiscardCost 4 Nothing mempty mempty])
+        (Costs [ActionCost 1, HandDiscardCost 4 AnyCard])
     ]
 
 instance EnemyRunner env => RunMessage env HermanCollins where

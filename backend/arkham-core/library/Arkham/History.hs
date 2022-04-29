@@ -2,8 +2,10 @@ module Arkham.History where
 
 import Arkham.Prelude
 
+import Arkham.Id
 import Arkham.Card.CardCode
 import Arkham.Target
+import Data.HashMap.Strict qualified as HashMap
 
 data HistoryType = PhaseHistory | RoundHistory | TurnHistory
 
@@ -25,3 +27,11 @@ instance Semigroup History where
 
 instance Monoid History where
   mempty = History [] [] False
+
+insertHistory
+  :: InvestigatorId
+  -> History
+  -> HashMap InvestigatorId History
+  -> HashMap InvestigatorId History
+insertHistory = HashMap.insertWith (<>)
+

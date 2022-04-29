@@ -365,6 +365,7 @@ library
       Arkham.Campaigns.ThePathToCarcosa.CampaignSteps
       Arkham.Campaigns.ThePathToCarcosa.ChaosBag
       Arkham.Campaigns.ThePathToCarcosa.FlavorText
+      Arkham.Campaigns.ThePathToCarcosa.Helpers
       Arkham.Campaigns.ThePathToCarcosa.Import
       Arkham.CampaignStep
       Arkham.Card
@@ -1231,11 +1232,9 @@ library
     , classy-prelude
     , containers
     , extra
-    , hashable
     , lens
     , mtl
     , pretty-simple
-    , random
     , random-shuffle
     , safe
     , semialign
@@ -1245,7 +1244,6 @@ library
     , these-lens
     , unordered-containers >=0.2.12.0
     , uuid
-    , vector
   default-language: Haskell2010
 
 executable validate

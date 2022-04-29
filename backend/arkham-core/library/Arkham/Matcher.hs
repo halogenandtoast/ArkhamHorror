@@ -720,6 +720,11 @@ data ActMatcher = ActWithId ActId | AnyAct
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+newtype RemainingActMatcher = RemainingActMatcher { unRemainingActMatcher :: ActMatcher }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Hashable)
+
 data DamageEffectMatcher = AttackDamageEffect | NonAttackDamageEffect | AnyDamageEffect
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

@@ -77,7 +77,6 @@ type InnerInvestigatorRunner env
           ActionRemainingCount
           env
           (Maybe Action, [Trait], InvestigatorId)
-      , HasCount ActsRemainingCount env ()
       , HasCount CardCount env InvestigatorId
       , HasCount ClueCount env InvestigatorId
       , HasCount ClueCount env LocationId

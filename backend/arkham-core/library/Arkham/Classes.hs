@@ -68,6 +68,7 @@ type family QueryElement a where
   QueryElement SkillMatcher = SkillId
   QueryElement EventMatcher = EventId
   QueryElement ActMatcher = ActId
+  QueryElement RemainingActMatcher = CardCode
 
 selectCount :: (HasCallStack, MonadReader env m, Query a env) => a -> m Int
 selectCount = fmap HashSet.size . select

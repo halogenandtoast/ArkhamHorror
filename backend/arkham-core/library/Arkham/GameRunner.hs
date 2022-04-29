@@ -20,8 +20,7 @@ import Arkham.Trait
 type GameRunner env =
   ( HasQueue env
   , Query AssetMatcher env
-  , ( HasCount ActsRemainingCount env ()
-    , HasCount ActionTakenCount env InvestigatorId
+  , ( HasCount ActionTakenCount env InvestigatorId
     , HasCount CardCount env InvestigatorId
     , HasCount ClueCount env InvestigatorId
     , HasCount ClueCount env LocationId

@@ -1,4 +1,4 @@
-module Arkham.Scenarios.APhantomOfTruth.Helpers where
+module Arkham.Scenarios.APhantomOfTruth.Helpers (module Arkham.Scenarios.APhantomOfTruth.Helpers, module X) where
 
 import Arkham.Prelude
 
@@ -11,6 +11,7 @@ import Arkham.Matcher hiding (MoveAction)
 import Arkham.Message
 import Arkham.Query
 import Arkham.Target
+import Arkham.Campaigns.ThePathToCarcosa.Helpers as X
 
 investigatorsNearestToTheOrganist ::
   (HasList (InvestigatorId, Distance) env EnemyMatcher, MonadReader env m) =>

@@ -9,7 +9,6 @@ import Arkham.Agenda.Attrs
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
-import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message
@@ -25,9 +24,8 @@ theFirstNight = agenda (1, A) TheFirstNight Cards.theFirstNight (Static 6)
 
 instance HasRecord env () => HasModifiersFor env TheFirstNight where
   getModifiersFor _ target (TheFirstNight a) | not (isTarget a target) = do
-    conviction <- getRecordCount Conviction
-    doubt <- getRecordCount Doubt
-    pure $ toModifiers a $ [DoomSubtracts | conviction > doubt]
+    moreConvictionThanDoubt <- getMoreConvictionThanDoubt
+    pure $ toModifiers a $ [DoomSubtracts | moreConvictionThanDoubt ]
   getModifiersFor _ _ _ = pure []
 
 instance AgendaRunner env => RunMessage env TheFirstNight where
@@ -38,5 +36,6 @@ instance AgendaRunner env => RunMessage env TheFirstNight where
       pure a
     NextAdvanceAgendaStep aid 2 | aid == toId attrs && onSide B attrs -> do
       organistMsg <- moveOrganistAwayFromNearestInvestigator
-      a <$ pushAll (organistMsg : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)])
+      pushAll (organistMsg : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)])
+      pure a
     _ -> TheFirstNight <$> runMessage msg attrs

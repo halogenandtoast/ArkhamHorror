@@ -92,6 +92,7 @@ import Control.Monad.State.Strict hiding (filterM, foldM, state)
 import Data.Aeson.Diff qualified as Diff
 import Data.Align hiding (nil)
 import Data.HashMap.Strict (size)
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.HashMap.Strict qualified as HashMap
 import Data.List.Extra (groupOn)
 import Data.Monoid (First(..))
@@ -445,7 +446,7 @@ newtype WithDeckSize = WithDeckSize Investigator
 instance ToJSON WithDeckSize where
   toJSON (WithDeckSize i) = case toJSON i of
     Object o ->
-      Object $ HashMap.insert "deckSize" (toJSON $ length $ deckOf i) o
+      Object $ KeyMap.insert "deckSize" (toJSON $ length $ deckOf i) o
     _ -> error "failed to serialize investigator"
 
 withSkillTestModifiers
@@ -2890,13 +2891,6 @@ instance HasGame env => HasId Difficulty env () where
       difficultyOfScenario
       (const . difficultyOf)
       (g ^. modeL)
-
-insertHistory
-  :: InvestigatorId
-  -> History
-  -> HashMap InvestigatorId History
-  -> HashMap InvestigatorId History
-insertHistory = HashMap.insertWith (<>)
 
 runMessages
   :: ( MonadIO m

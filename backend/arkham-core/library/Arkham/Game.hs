@@ -652,6 +652,27 @@ getActsMatching matcher = do
     AnyAct -> pure . const True
     ActWithId actId -> pure . (== actId) . toId
 
+getRemainingActsMatching :: (MonadReader env m, HasGame env) => RemainingActMatcher -> m [CardDef]
+getRemainingActsMatching matcher = do
+  acts <-
+    scenarioActs
+    . fromJustNote "scenario has to be set"
+    . modeScenario
+    . view modeL
+    <$> getGame
+  activeActIds <- keys . view (entitiesL . actsL) <$> getGame
+  let
+    currentActId = case activeActIds of
+      [aid] -> aid
+      _ -> error "Cannot handle multiple acts"
+    (_, _ : remainingActs) =
+      break ((== currentActId) . ActId . toCardCode) acts
+  filterM (matcherFilter $ unRemainingActMatcher matcher) remainingActs
+ where
+  matcherFilter = \case
+    AnyAct -> pure . const True
+    ActWithId _ -> pure . const False
+
 getTreacheriesMatching
   :: (MonadReader env m, HasGame env) => TreacheryMatcher -> m [Treachery]
 getTreacheriesMatching matcher = do
@@ -1549,23 +1570,6 @@ instance HasGame env => HasId LocationId env EnemyId where
 
 instance HasGame env => HasCount FightCount env EnemyId where
   getCount = getCount <=< getEnemy
-
-instance HasGame env => HasCount ActsRemainingCount env () where
-  getCount _ = do
-    acts <-
-      scenarioActs
-      . fromJustNote "scenario has to be set"
-      . modeScenario
-      . view modeL
-      <$> getGame
-    activeActIds <- keys . view (entitiesL . actsL) <$> getGame
-    let
-      currentActId = case activeActIds of
-        [aid] -> aid
-        _ -> error "Cannot handle multiple acts"
-      (_, _ : remainingActs) =
-        break ((== currentActId) . ActId . toCardCode) acts
-    pure $ ActsRemainingCount $ length remainingActs
 
 instance HasGame env => HasCount ActionTakenCount env InvestigatorId where
   getCount = getCount <=< getInvestigator
@@ -2819,6 +2823,9 @@ locationFor iid = locationOf <$> getInvestigator iid
 
 instance HasGame env => Query ActMatcher env where
   select = fmap (setFromList . map toId) . getActsMatching
+
+instance HasGame env => Query RemainingActMatcher env where
+  select = fmap (setFromList . map toCardCode) . getRemainingActsMatching
 
 instance HasGame env => Query AbilityMatcher env where
   select = fmap setFromList . getAbilitiesMatching

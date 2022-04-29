@@ -44,7 +44,7 @@ instance HasCount PlayerCount env () => HasModifiersFor env VaultOfEarthlyDemise
 instance TreacheryRunner env => RunMessage env VaultOfEarthlyDemise where
   runMessage msg t@(VaultOfEarthlyDemise attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      actsRemaining <- unActsRemainingCount <$> getCount ()
+      actsRemaining <- selectCount $ RemainingActMatcher AnyAct
       t <$ push (PlaceResources (toTarget attrs) actsRemaining)
     Discard (TreacheryTarget tid) | tid == toId attrs ->
       error "this cannot leave play"

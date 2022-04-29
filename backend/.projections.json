@@ -1,17 +1,17 @@
 {
-  "arkham-core/library/Arkham/Types/Effect/Effects/*.hs": {
+  "arkham-core/library/Arkham/Effect/Effects/*.hs": {
     "type": "effect",
-    "alternate": "arkham-core/tests/Arkham/Types/Effect/Cards/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Effect/Cards/{}Spec.hs",
     "template": [
-      "module Arkham.Types.Effect.Effects.{dot}",
+      "module Arkham.Effect.Effects.{dot}",
       "  ( {dot}(..)",
       "  , {dot|snakecase|camelcase}",
       "  ) where",
       "",
       "import Arkham.Prelude",
       "",
-      "import Arkham.Types.Classes",
-      "import Arkham.Types.Effect.Attrs",
+      "import Arkham.Classes",
+      "import Arkham.Effect.Attrs",
       "",
       "newtype {dot} = {dot} EffectAttrs",
       "  deriving anyclass HasAbilities",
@@ -27,11 +27,11 @@
       "    {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Types/Act/Cards/*.hs": {
+  "arkham-core/library/Arkham/Act/Cards/*.hs": {
     "type": "act",
-    "alternate": "arkham-core/tests/Arkham/Types/Act/Cards/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Act/Cards/{}Spec.hs",
     "template": [
-       "module Arkham.Types.Act.Cards.{dot}",
+       "module Arkham.Act.Cards.{dot}",
        "  ( {dot}(..)",
        "  , {dot|snakecase|camelcase}",
        "  ) where",
@@ -39,9 +39,9 @@
        "import Arkham.Prelude",
        "",
        "import qualified Arkham.Act.Cards as Cards",
-       "import Arkham.Types.Act.Attrs",
-       "import Arkham.Types.Act.Runner",
-       "import Arkham.Types.Classes",
+       "import Arkham.Act.Attrs",
+       "import Arkham.Act.Runner",
+       "import Arkham.Classes",
        "",
        "newtype {dot} = {dot} ActAttrs",
        "  deriving anyclass (IsAct, HasModifiersFor env, HasAbilities)",
@@ -65,11 +65,11 @@
       "",
       "import Arkham.Prelude",
       "",
-      "import Arkham.Types.Classes",
-      "import Arkham.Types.Difficulty",
-      "import Arkham.Types.InvestigatorId",
+      "import Arkham.Classes",
+      "import Arkham.Difficulty",
+      "import Arkham.InvestigatorId",
       "import Arkham.Scenario.Attrs",
-      "import Arkham.Types.Token",
+      "import Arkham.Token",
       "",
       "newtype {dot} = {dot} ScenarioAttrs",
       "  deriving anyclass IsScenario",
@@ -101,23 +101,23 @@
       "    {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Types/Campaign/Campaigns/*.hs": {
+  "arkham-core/library/Arkham/Campaign/Campaigns/*.hs": {
     "type": "campaign",
-    "alternate": "arkham-core/tests/Arkham/Types/Campaign/Campaigns/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Campaign/Campaigns/{}Spec.hs",
     "template": [
-       "module Arkham.Types.Campaign.Campaigns.{dot}",
+       "module Arkham.Campaign.Campaigns.{dot}",
        "  ( {dot}(..)",
        "  , {dot|snakecase|camelcase}",
        "  ) where",
        "",
        "import Arkham.Prelude",
        "",
-       "import Arkham.Types.Campaign.Attrs",
-       "import Arkham.Types.Campaign.Runner",
-       "import Arkham.Types.CampaignId",
-       "import Arkham.Types.Classes",
-       "import Arkham.Types.Difficulty",
-       "import Arkham.Types.Token",
+       "import Arkham.Campaign.Attrs",
+       "import Arkham.Campaign.Runner",
+       "import Arkham.CampaignId",
+       "import Arkham.Classes",
+       "import Arkham.Difficulty",
+       "import Arkham.Token",
        "",
        "newtype {dot} = {dot} CampaignAttrs",
        "  deriving anyclass IsCampaign",
@@ -140,11 +140,11 @@
        "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Types/Agenda/Cards/*.hs": {
+  "arkham-core/library/Arkham/Agenda/Cards/*.hs": {
     "type": "agenda",
-    "alternate": "arkham-core/tests/Arkham/Types/Agenda/Cards/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Agenda/Cards/{}Spec.hs",
     "template": [
-      "module Arkham.Types.Agenda.Cards.{dot}",
+      "module Arkham.Agenda.Cards.{dot}",
       "  ( {dot}",
       "  , {dot|snakecase|camelcase}",
       "  ) where",
@@ -152,11 +152,11 @@
       "import Arkham.Prelude",
       "",
       "import qualified Arkham.Agenda.Cards as Cards",
-      "import Arkham.Types.Agenda.Attrs",
-      "import Arkham.Types.Agenda.Runner",
-      "import Arkham.Types.Classes",
-      "import Arkham.Types.GameValue",
-      "import Arkham.Types.Message",
+      "import Arkham.Agenda.Attrs",
+      "import Arkham.Agenda.Runner",
+      "import Arkham.Classes",
+      "import Arkham.GameValue",
+      "import Arkham.Message",
       "",
       "newtype {dot} = {dot} AgendaAttrs",
       "  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)",
@@ -173,11 +173,11 @@
       "      _ -> {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Types/Treachery/Cards/*.hs": {
+  "arkham-core/library/Arkham/Treachery/Cards/*.hs": {
     "type": "treachery",
-    "alternate": "arkham-core/tests/Arkham/Types/Treachery/Cards/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Treachery/Cards/{}Spec.hs",
     "template": [
-      "module Arkham.Types.Treachery.Cards.{dot}",
+      "module Arkham.Treachery.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",
       "  )",
@@ -186,10 +186,10 @@
       "import Arkham.Prelude",
       "",
       "import qualified Arkham.Treachery.Cards as Cards",
-      "import Arkham.Types.Classes",
-      "import Arkham.Types.Message",
-      "import Arkham.Types.Treachery.Attrs",
-      "import Arkham.Types.Treachery.Runner",
+      "import Arkham.Classes",
+      "import Arkham.Message",
+      "import Arkham.Treachery.Attrs",
+      "import Arkham.Treachery.Runner",
       "",
       "newtype {dot} = {dot} TreacheryAttrs",
       "  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)",
@@ -204,15 +204,15 @@
       "    _ -> {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Types/Investigator/Cards/*.hs": {
+  "arkham-core/library/Arkham/Investigator/Cards/*.hs": {
     "type": "investigator",
-    "alternate": "arkham-core/tests/Arkham/Types/Investigator/Cards/{}Spec.hs"
+    "alternate": "arkham-core/tests/Arkham/Investigator/Cards/{}Spec.hs"
   },
-  "arkham-core/library/Arkham/Types/Enemy/Cards/*.hs": {
+  "arkham-core/library/Arkham/Enemy/Cards/*.hs": {
     "type": "enemy",
-    "alternate": "arkham-core/tests/Arkham/Types/Enemy/Cards/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Enemy/Cards/{}Spec.hs",
     "template": [
-      "module Arkham.Types.Enemy.Cards.{dot}",
+      "module Arkham.Enemy.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",
       "  )",
@@ -221,8 +221,8 @@
       "import Arkham.Prelude",
       "",
       "import qualified Arkham.Enemy.Cards as Cards",
-      "import Arkham.Types.Classes",
-      "import Arkham.Types.Enemy.Attrs",
+      "import Arkham.Classes",
+      "import Arkham.Enemy.Attrs",
       "",
       "newtype {dot} = {dot} EnemyAttrs",
       "  deriving anyclass (IsEnemy, HasModifiersFor env)",
@@ -236,11 +236,11 @@
       "    {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Types/Asset/Cards/*.hs": {
+  "arkham-core/library/Arkham/Asset/Cards/*.hs": {
     "type": "asset",
-    "alternate": "arkham-core/tests/Arkham/Types/Asset/Cards/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Asset/Cards/{}Spec.hs",
     "template": [
-      "module Arkham.Types.Asset.Cards.{dot}",
+      "module Arkham.Asset.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",
       "  )",
@@ -249,7 +249,7 @@
       "import Arkham.Prelude",
       "",
       "import qualified Arkham.Asset.Cards as Cards",
-      "import Arkham.Types.Asset.Attrs",
+      "import Arkham.Asset.Attrs",
       "",
       "newtype {dot} = {dot} AssetAttrs",
       "  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)",
@@ -263,11 +263,11 @@
       "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Types/Event/Cards/*.hs": {
+  "arkham-core/library/Arkham/Event/Cards/*.hs": {
     "type": "event",
-    "alternate": "arkham-core/tests/Arkham/Types/Events/Cards/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Events/Cards/{}Spec.hs",
     "template": [
-      "module Arkham.Types.Event.Cards.{dot}",
+      "module Arkham.Event.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",
       "  )",
@@ -276,10 +276,10 @@
       "import Arkham.Prelude",
       "",
       "import qualified Arkham.Event.Cards as Cards",
-      "import Arkham.Types.Classes",
-      "import Arkham.Types.Event.Attrs",
-      "import Arkham.Types.Event.Runner",
-      "import Arkham.Types.Message",
+      "import Arkham.Classes",
+      "import Arkham.Event.Attrs",
+      "import Arkham.Event.Runner",
+      "import Arkham.Message",
       "",
       "newtype {dot} = {dot} EventAttrs",
       "  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)",
@@ -296,11 +296,11 @@
       "    _ -> {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Types/Location/Cards/*.hs": {
+  "arkham-core/library/Arkham/Location/Cards/*.hs": {
     "type": "location",
-    "alternate": "arkham-core/tests/Arkham/Types/Location/Cards/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Location/Cards/{}Spec.hs",
     "template": [
-      "module Arkham.Types.Location.Cards.{dot}",
+      "module Arkham.Location.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",
       "  )",
@@ -309,9 +309,9 @@
       "import Arkham.Prelude",
       "",
       "import qualified Arkham.Location.Cards as Cards",
-      "import Arkham.Types.Classes",
-      "import Arkham.Types.GameValue",
-      "import Arkham.Types.Location.Attrs",
+      "import Arkham.Classes",
+      "import Arkham.GameValue",
+      "import Arkham.Location.Attrs",
       "",
       "newtype {dot} = {dot} LocationAttrs",
       "  deriving anyclass (IsLocation, HasModifiersFor env)",
@@ -329,11 +329,11 @@
       "    {dot} <$> runMessage msg attrs"
       ]
   },
-  "arkham-core/library/Arkham/Types/Skill/Cards/*.hs": {
+  "arkham-core/library/Arkham/Skill/Cards/*.hs": {
     "type": "skill",
-    "alternate": "arkham-core/tests/Arkham/Types/Skill/Cards/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Skill/Cards/{}Spec.hs",
     "template": [
-      "module Arkham.Types.Skill.Cards.{dot}",
+      "module Arkham.Skill.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",
       "  )",
@@ -342,9 +342,9 @@
       "import Arkham.Prelude",
       "",
       "import qualified Arkham.Skill.Cards as Cards",
-      "import Arkham.Types.Classes",
-      "import Arkham.Types.Skill.Attrs",
-      "import Arkham.Types.Skill.Runner",
+      "import Arkham.Classes",
+      "import Arkham.Skill.Attrs",
+      "import Arkham.Skill.Runner",
       "",
       "newtype {dot} = {dot} SkillAttrs",
       "  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)",
@@ -358,11 +358,11 @@
       "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Types/*.hs": {
+  "arkham-core/library/Arkham/*.hs": {
     "type": "core",
-    "alternate": "arkham-core/tests/Arkham/Types/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/{}Spec.hs",
     "template": [
-      "module Arkham.Types.{dot}",
+      "module Arkham.{dot}",
       "  ( undefined",
       "  )",
       "where",
@@ -370,10 +370,10 @@
       "import Arkham.Prelude"
     ]
   },
-  "arkham-core/tests/Arkham/Types/*Spec.hs": {
-    "alternate": "arkham-core/library/Arkham/Types/{}.hs",
+  "arkham-core/tests/Arkham/*Spec.hs": {
+    "alternate": "arkham-core/library/Arkham/{}.hs",
     "template": [
-      "module Arkham.Types.{dot}Spec",
+      "module Arkham.{dot}Spec",
       "  ( spec",
       "  )",
       "where",

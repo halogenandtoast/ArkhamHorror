@@ -49,7 +49,7 @@ instance HasAbilities WendyAdams where
           1
           Self
           (ReactionAbility (RevealChaosToken Timing.When You AnyToken)
-          $ HandDiscardCost 1 Nothing mempty mempty
+          $ HandDiscardCost 1 AnyCard
           )
         & (abilityLimitL .~ PlayerLimit PerTestOrAbility 1)
     ]

@@ -240,10 +240,18 @@ instance ScenarioRunner env => RunMessage env APhantomOfTruth where
             if conviction > doubt
               then Acts.theParisianConspiracyV2
               else Acts.theParisianConspiracyV1
+          act2 =
+            if conviction > doubt
+               then Acts.stalkedByShadows
+               else Acts.pursuingShadows
           excludes =
             if conviction > doubt
               then [Treacheries.blackStarsRise]
               else [Treacheries.twinSuns]
+          theOrganist =
+            if conviction > doubt
+               then Enemies.theOrganistHopelessIDefiedHim
+               else Enemies.theOrganistDrapedInMystery
 
       gatheredCards <-
         buildEncounterDeckExcluding
@@ -257,7 +265,7 @@ instance ScenarioRunner env => RunMessage env APhantomOfTruth where
       midnightMasks <- gatherTheMidnightMasks conviction doubt
       encounterDeck <- Deck <$> shuffleM (unDeck gatheredCards <> midnightMasks)
 
-      setAsideCards <- traverse genCard [Enemies.theOrganistHopelessIDefiedHim]
+      setAsideCards <- traverse genCard [theOrganist]
 
       montmartre <-
         genCard
@@ -321,7 +329,7 @@ instance ScenarioRunner env => RunMessage env APhantomOfTruth where
               & (setAsideCardsL .~ setAsideCards)
               & ( actStackL
                     . at 1
-                    ?~ [act1, Acts.pursuingShadows, Acts.stalkedByShadows]
+                    ?~ [act1, act2]
                 )
               & ( agendaStackL
                     . at 1

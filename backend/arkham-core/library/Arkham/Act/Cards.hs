@@ -266,7 +266,7 @@ pursuingShadows :: CardDef
 pursuingShadows = act "03206" "Pursuing Shadows" 2 APhantomOfTruth
 
 stalkedByShadows :: CardDef
-stalkedByShadows = act "03207" "Stalked by Shadows" 3 APhantomOfTruth
+stalkedByShadows = act "03207" "Stalked by Shadows" 2 APhantomOfTruth
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

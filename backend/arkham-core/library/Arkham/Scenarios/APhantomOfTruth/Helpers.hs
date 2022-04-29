@@ -13,6 +13,9 @@ import Arkham.Query
 import Arkham.Target
 import Arkham.Campaigns.ThePathToCarcosa.Helpers as X
 
+getTheOrganist :: (Query EnemyMatcher env, MonadReader env m) => m EnemyId
+getTheOrganist = selectJust $ EnemyWithTitle "The Organist"
+
 investigatorsNearestToTheOrganist ::
   (HasList (InvestigatorId, Distance) env EnemyMatcher, MonadReader env m) =>
   m (Distance, [InvestigatorId])

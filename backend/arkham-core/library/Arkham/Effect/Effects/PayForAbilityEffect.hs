@@ -380,26 +380,10 @@ instance
                 )
           -- push (SpendClues totalClues iids)
           -- withPayment $ CluePayment totalClues
-        HandDiscardCost x mPlayerCardType traits skillTypes -> do
+        HandDiscardCost x cardMatcher -> do
           handCards <- mapMaybe (preview _PlayerCard . unHandCard)
             <$> getList iid
-          let
-            cards = filter
-              (and . sequence
-                [ maybe (const True) (==) mPlayerCardType
-                . cdCardType
-                . toCardDef
-                , (|| null traits) . notNull . intersection traits . toTraits
-                , (|| null skillTypes)
-                . not
-                . null
-                . intersection (insertSet SkillWild skillTypes)
-                . setFromList
-                . cdSkills
-                . toCardDef
-                ]
-              )
-              handCards
+          let cards = filter (`cardMatch` cardMatcher) handCards
           e <$ push
             (chooseN
               iid

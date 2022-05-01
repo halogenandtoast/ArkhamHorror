@@ -13,8 +13,8 @@ import Arkham.Effect.Attrs
 import Arkham.Effect.Effects
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
+import Arkham.Game.Helpers
 import Arkham.Id
-import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Query
@@ -72,9 +72,9 @@ createPayForAbilityEffect ::
   Target ->
   [Window] ->
   m (EffectId, Effect)
-createPayForAbilityEffect ability source target windows = do
+createPayForAbilityEffect ability source target windows' = do
   eid <- getRandom
-  pure (eid, buildPayForAbilityEffect eid ability source target windows)
+  pure (eid, buildPayForAbilityEffect eid ability source target windows')
 
 data Effect
   = OnTheLam' OnTheLam
@@ -124,7 +124,7 @@ data Effect
   | StormOfSpirits' StormOfSpirits
   | FightOrFlight' FightOrFlight
   | CallingInFavors' CallingInFavors
-  | Montmartre' Montmartre
+  | Montmartre209' Montmartre209
   | MeatCleaver' MeatCleaver
   | MindWipe3' MindWipe3
   | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
@@ -161,23 +161,12 @@ instance HasAbilities Effect where
 
 instance
   ( HasQueue env
-  , HasId (Maybe OwnerId) env AssetId
-  , HasSet Trait env EnemyId
   , HasCostPayment env
-  , HasSet Trait env Source
-  , HasModifiersFor env ()
   , HasId Difficulty env ()
   , HasCount ClueCount env EnemyId
-  , HasSet EnemyId env InvestigatorId
-  , HasSet InvestigatorId env ()
-  , HasList DiscardedPlayerCard env InvestigatorId
-  , HasCount ActionRemainingCount env InvestigatorId
   , HasSet ClassSymbol env InvestigatorId
-  , Query EnemyMatcher env
   , HasId LeadInvestigatorId env ()
-  , HasId LocationId env InvestigatorId
-  , HasId LocationId env AssetId
-  , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
+  , CanCheckPlayable env
   ) =>
   RunMessage env Effect
   where
@@ -268,7 +257,7 @@ allEffects =
     , ("03153", StormOfSpirits' . stormOfSpirits)
     , ("03155", FightOrFlight' . fightOrFlight)
     , ("03158", CallingInFavors' . callingInFavors)
-    , ("03209", Montmartre' . montmartre)
+    , ("03209", Montmartre209' . montmartre209)
     , ("05114", MeatCleaver' . meatCleaver)
     , ("50008", MindWipe3' . mindWipe3)
     , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)
@@ -309,5 +298,5 @@ buildTokenEffect eid metadata source token =
 
 buildPayForAbilityEffect ::
   EffectId -> Ability -> Source -> Target -> [Window] -> Effect
-buildPayForAbilityEffect eid ability source target windows =
-  PayForAbilityEffect' $ payForAbilityEffect eid ability source target windows
+buildPayForAbilityEffect eid ability source target windows' =
+  PayForAbilityEffect' $ payForAbilityEffect eid ability source target windows'

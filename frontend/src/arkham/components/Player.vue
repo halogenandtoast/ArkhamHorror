@@ -152,15 +152,11 @@ export default defineComponent({
       return `${baseUrl}/img/arkham/player_back.jpg`
     })
 
-    const playTopOfDeckAction = computed(() =>
-      choices.value.findIndex((c) => {
-        if (c.tag === MessageType.PLAY_CARD) {
-          console.log(c.contents[1])
-          console.log(props.player.contents.deck[0].id)
-        }
+    const playTopOfDeckAction = computed(() => {
+      return choices.value.findIndex((c) => {
         return c.tag === MessageType.PLAY_CARD && c.contents[1] === props.player.contents.deck[0].id
       })
-    )
+    })
 
     const viewingDiscard = ref(false)
     const viewDiscardLabel = computed(() => viewingDiscard.value ? "Close" : `${discards.value.length} Cards`)

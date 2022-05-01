@@ -124,6 +124,7 @@ data Effect
   | StormOfSpirits' StormOfSpirits
   | FightOrFlight' FightOrFlight
   | CallingInFavors' CallingInFavors
+  | Montmartre' Montmartre
   | MeatCleaver' MeatCleaver
   | MindWipe3' MindWipe3
   | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
@@ -267,6 +268,7 @@ allEffects =
     , ("03153", StormOfSpirits' . stormOfSpirits)
     , ("03155", FightOrFlight' . fightOrFlight)
     , ("03158", CallingInFavors' . callingInFavors)
+    , ("03209", Montmartre' . montmartre)
     , ("05114", MeatCleaver' . meatCleaver)
     , ("50008", MindWipe3' . mindWipe3)
     , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)

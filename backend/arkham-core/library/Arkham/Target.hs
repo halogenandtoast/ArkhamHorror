@@ -59,6 +59,9 @@ instance IdToTarget ActId where
 instance IdToTarget AgendaId where
   idToTarget = AgendaTarget
 
+instance IdToTarget CardId where
+  idToTarget = CardIdTarget
+
 instance IdToTarget LocationId where
   idToTarget = LocationTarget
 

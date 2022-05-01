@@ -26,7 +26,7 @@ montmartre209 = Montmartre209 . uncurry4 (baseAttrs "03209")
 
 instance HasModifiersFor env Montmartre209 where
   getModifiersFor _ (InvestigatorTarget _) (Montmartre209 a) =
-    pure $ toModifiers a [TopCardOfDeckIsRevealed]
+    pure $ toModifiers a [TopCardOfDeckIsRevealed, CanPlayTopOfDeck AnyCard]
   getModifiersFor _ _ _ = pure []
 
 instance (CanCheckPlayable env, HasQueue env) => RunMessage env Montmartre209 where
@@ -45,7 +45,7 @@ instance (CanCheckPlayable env, HasQueue env) => RunMessage env Montmartre209 wh
       pushAll
         [ chooseOne iid
         $ Label "Play no cards" []
-        : [ InitiatePlayCard iid card Nothing True | card <- cards ]
+        : [ InitiatePlayCard iid card Nothing False | card <- cards ]
         , DisableEffect eid
         ]
       pure e

@@ -36,6 +36,7 @@ import Arkham.Window qualified as Window
 
 type LocationRunner env =
   ( HasQueue env
+  , CanCheckPlayable env
   , HasSkillTest env
   , HasSet EnemyId env EnemyMatcher
   , Query AssetMatcher env

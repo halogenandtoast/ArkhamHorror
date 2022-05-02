@@ -909,6 +909,7 @@ type CanCheckPlayable env
       , HasId (Maybe LocationId) env EventId
       )
     , ( Query Matcher.AssetMatcher env
+      , Query Matcher.AgendaMatcher env
       , Query Matcher.EventMatcher env
       , Query Matcher.InvestigatorMatcher env
       , Query Matcher.AbilityMatcher env
@@ -1545,7 +1546,7 @@ windowMatches iid source window' = \case
     _ -> pure False
   Matcher.AgendaAdvances timingMatcher agendaMatcher -> case window' of
     Window t (Window.AgendaAdvance aid) | t == timingMatcher ->
-      pure $ agendaMatches aid agendaMatcher
+      agendaMatches aid agendaMatcher
     _ -> pure False
   Matcher.MovedBy timingMatcher whoMatcher sourceMatcher -> case window' of
     Window t (Window.MovedBy source' _ who) | t == timingMatcher -> liftA2
@@ -1573,7 +1574,7 @@ windowMatches iid source window' = \case
     case window' of
       Window t (Window.AgendaWouldAdvance advancementReason' aid)
         | t == timingMatcher && advancementReason == advancementReason'
-        -> pure $ agendaMatches aid agendaMatcher
+        -> agendaMatches aid agendaMatcher
       _ -> pure False
   Matcher.PlacedCounter whenMatcher whoMatcher counterMatcher valueMatcher ->
     case window' of
@@ -2457,9 +2458,8 @@ deckMatch iid deckSignifier = \case
   Matcher.DeckOf investigatorMatcher -> matchWho iid iid investigatorMatcher
   Matcher.AnyDeck -> pure True
 
-agendaMatches :: AgendaId -> Matcher.AgendaMatcher -> Bool
-agendaMatches _ Matcher.AnyAgenda = True
-agendaMatches aid (Matcher.AgendaWithId aid') = aid == aid'
+agendaMatches :: (MonadReader env m, Query Matcher.AgendaMatcher env) => AgendaId -> Matcher.AgendaMatcher -> m Bool
+agendaMatches !agendaId !mtchr = member agendaId <$> select mtchr
 
 actionMatches :: Applicative m => Action -> Matcher.ActionMatcher -> m Bool
 actionMatches a (Matcher.ActionIs a') = pure $ a == a'

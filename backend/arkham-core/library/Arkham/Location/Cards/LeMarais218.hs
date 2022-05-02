@@ -5,10 +5,18 @@ module Arkham.Location.Cards.LeMarais218
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Ability
+import Arkham.Card
 import Arkham.Classes
+import Arkham.Criteria
 import Arkham.GameValue
+import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Target
+import qualified Arkham.Timing as Timing
 
 newtype LeMarais218 = LeMarais218 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -24,7 +32,23 @@ leMarais218 = location
   [Square, Equals, T, Plus]
 
 instance HasAbilities LeMarais218 where
-  getAbilities (LeMarais218 attrs) = getAbilities attrs
+  getAbilities (LeMarais218 attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+        attrs
+        1
+        Here
+        (ForcedAbility $ Enters Timing.After You $ LocationWithId $ toId attrs)
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env LeMarais218 where
-  runMessage msg (LeMarais218 attrs) = LeMarais218 <$> runMessage msg attrs
+  runMessage msg l@(LeMarais218 attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ CreateEffect
+        (toCardCode attrs)
+        Nothing
+        source
+        (InvestigatorTarget iid)
+      pure l
+    _ -> LeMarais218 <$> runMessage msg attrs

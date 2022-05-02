@@ -652,6 +652,7 @@ getAgendasMatching matcher = do
   matcherFilter = \case
     AnyAgenda -> pure . const True
     AgendaWithId agendaId -> pure . (== agendaId) . toId
+    AgendaWithDoom gameValueMatcher -> getCount >=> (`gameValueMatches` gameValueMatcher) . unDoomCount
 
 getActsMatching :: (MonadReader env m, HasGame env) => ActMatcher -> m [Act]
 getActsMatching matcher = do

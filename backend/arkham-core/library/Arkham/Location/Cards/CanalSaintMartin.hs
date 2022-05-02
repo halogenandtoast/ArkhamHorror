@@ -7,15 +7,17 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Criteria
 import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
 import qualified Arkham.Location.Cards as Cards
-import Arkham.Matcher
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Matcher qualified as Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Matcher
+import qualified Arkham.Matcher as Matcher
+import Arkham.Message
+import Arkham.Target
+import qualified Arkham.Timing as Timing
 
 newtype CanalSaintMartin = CanalSaintMartin LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -46,5 +48,14 @@ instance HasAbilities CanalSaintMartin where
 instance LocationRunner env => RunMessage env CanalSaintMartin where
   runMessage msg a@(CanalSaintMartin attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      enemies <- selectListMap EnemyTarget
+        $ EnemyAt (LocationWithId $ toId attrs)
+      connectingLocations <- selectList $ AccessibleFrom $ LocationWithId $ toId
+        attrs
+      push $ chooseOrRunOne iid $ do
+        e <- enemies
+        pure $ TargetLabel e $ do
+          l <- connectingLocations
+          pure $ chooseOrRunOne iid [targetLabel l [MoveUntil l e]]
       pure a
     _ -> CanalSaintMartin <$> runMessage msg attrs

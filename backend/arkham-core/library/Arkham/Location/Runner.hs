@@ -20,7 +20,7 @@ import Arkham.Exception
 import Arkham.Id
 import Arkham.Location.Helpers
 import Arkham.Matcher
-  (AssetMatcher, EnemyMatcher, ExtendedCardMatcher, LocationMatcher(..))
+  (AgendaMatcher, AssetMatcher, EnemyMatcher, ExtendedCardMatcher, LocationMatcher(..))
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
@@ -39,6 +39,7 @@ type LocationRunner env =
   , CanCheckPlayable env
   , HasSkillTest env
   , HasSet EnemyId env EnemyMatcher
+  , Query AgendaMatcher env
   , Query AssetMatcher env
   , Query LocationMatcher env
   , Query EnemyMatcher env

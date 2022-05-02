@@ -5,13 +5,30 @@ module Arkham.Enemy.Cards.TheOrganistDrapedInMystery
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Ability
 import Arkham.Classes
+import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Helpers
 import Arkham.Enemy.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Modifier
+import Arkham.Phase
+import Arkham.Timing qualified as Timing
 
 newtype TheOrganistDrapedInMystery = TheOrganistDrapedInMystery EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor env TheOrganistDrapedInMystery where
+  getModifiersFor _ target (TheOrganistDrapedInMystery attrs)
+    | isTarget attrs target = pure $ toModifiers attrs [CannotBeDamaged]
+  getModifiersFor _ _ _ = pure []
+
+instance HasAbilities TheOrganistDrapedInMystery where
+  getAbilities (TheOrganistDrapedInMystery attrs) = withBaseAbilities
+    attrs
+    [mkAbility attrs 1 $ ForcedAbility $ PhaseEnds Timing.After $ PhaseIs EnemyPhase]
 
 theOrganistDrapedInMystery :: EnemyCard TheOrganistDrapedInMystery
 theOrganistDrapedInMystery = enemy
@@ -21,5 +38,6 @@ theOrganistDrapedInMystery = enemy
   (0, 1)
 
 instance EnemyRunner env => RunMessage env TheOrganistDrapedInMystery where
-  runMessage msg (TheOrganistDrapedInMystery attrs) =
-    TheOrganistDrapedInMystery <$> runMessage msg attrs
+  runMessage msg e@(TheOrganistDrapedInMystery attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> pure e
+    _ -> TheOrganistDrapedInMystery <$> runMessage msg attrs

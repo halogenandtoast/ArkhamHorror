@@ -110,6 +110,7 @@ data ModifierType
   | DoomSubtracts
   | DoubleDifficulty
   | DoubleNegativeModifiersOnTokens
+  | DoubleSkillIcons
   | DoubleSuccess
   | DoubleBaseSkillValue
   | DuringEnemyPhaseMustMoveToward Target

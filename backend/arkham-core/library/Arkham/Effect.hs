@@ -125,6 +125,7 @@ data Effect
   | FightOrFlight' FightOrFlight
   | CallingInFavors' CallingInFavors
   | Montmartre209' Montmartre209
+  | PereLachaiseCemetery' PereLachaiseCemetery
   | MeatCleaver' MeatCleaver
   | MindWipe3' MindWipe3
   | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
@@ -258,6 +259,7 @@ allEffects =
     , ("03155", FightOrFlight' . fightOrFlight)
     , ("03158", CallingInFavors' . callingInFavors)
     , ("03209", Montmartre209' . montmartre209)
+    , ("03215", PereLachaiseCemetery' . pereLachaiseCemetery)
     , ("05114", MeatCleaver' . meatCleaver)
     , ("50008", MindWipe3' . mindWipe3)
     , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)

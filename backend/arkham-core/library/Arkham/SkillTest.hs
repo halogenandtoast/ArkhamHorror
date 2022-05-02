@@ -138,10 +138,12 @@ instance HasModifiersFor env () => HasList CommittedSkillIcon env (InvestigatorI
    where
     iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
       modifiers' <- getModifiers (toSource st) (CardIdTarget pcId)
-      pure $ foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers'
+      pure $ foldr applyAfterSkillModifiers (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers') modifiers'
     iconsForCard _ = pure []
     applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
     applySkillModifiers _ ys = ys
+    applyAfterSkillModifiers DoubleSkillIcons ys = ys <> ys
+    applyAfterSkillModifiers _ ys = ys
 
 instance HasSet CommittedCardCode env SkillTest where
   getSet =

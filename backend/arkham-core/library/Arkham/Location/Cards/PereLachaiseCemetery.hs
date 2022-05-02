@@ -5,10 +5,18 @@ module Arkham.Location.Cards.PereLachaiseCemetery
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Ability
+import Arkham.Card
+import Arkham.Target
 import Arkham.Classes
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Matcher
+import Arkham.Message
+import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Timing qualified as Timing
 
 newtype PereLachaiseCemetery = PereLachaiseCemetery LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -24,8 +32,26 @@ pereLachaiseCemetery = location
   [Equals, Moon]
 
 instance HasAbilities PereLachaiseCemetery where
-  getAbilities (PereLachaiseCemetery attrs) = getAbilities attrs
+  getAbilities (PereLachaiseCemetery attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+        attrs
+        1
+        Here
+        (ForcedAbility
+          (SkillTestResult
+            Timing.After
+            You
+            (WhileInvestigating $ LocationWithId $ toId attrs)
+            (SuccessResult AnyValue)
+          )
+        )
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env PereLachaiseCemetery where
-  runMessage msg (PereLachaiseCemetery attrs) =
-    PereLachaiseCemetery <$> runMessage msg attrs
+  runMessage msg a@(PereLachaiseCemetery attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ CreateEffect (toCardCode attrs) Nothing source (InvestigatorTarget iid)
+      pure a
+    _ -> PereLachaiseCemetery <$> runMessage msg attrs

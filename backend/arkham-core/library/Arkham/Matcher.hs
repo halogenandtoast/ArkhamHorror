@@ -713,7 +713,11 @@ data DeckMatcher = EncounterDeck | DeckOf InvestigatorMatcher | AnyDeck
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data AgendaMatcher = AgendaWithId AgendaId | AnyAgenda
+pattern AgendaWithAnyDoom :: AgendaMatcher
+pattern AgendaWithAnyDoom <- AgendaWithDoom (GreaterThan (Static 0)) where
+  AgendaWithAnyDoom = AgendaWithDoom (GreaterThan (Static 0))
+
+data AgendaMatcher = AgendaWithId AgendaId | AgendaWithDoom ValueMatcher | AnyAgenda
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

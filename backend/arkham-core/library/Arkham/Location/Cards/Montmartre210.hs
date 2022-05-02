@@ -5,10 +5,18 @@ module Arkham.Location.Cards.Montmartre210
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Ability
+import Arkham.Asset.Uses
 import Arkham.Classes
+import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
+import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Target
 
 newtype Montmartre210 = Montmartre210 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -24,7 +32,33 @@ montmartre210 = location
   [Diamond, Triangle, Equals, Moon]
 
 instance HasAbilities Montmartre210 where
-  getAbilities (Montmartre210 attrs) = getAbilities attrs
+  getAbilities (Montmartre210 attrs) = withBaseAbilities
+    attrs
+    [ limitedAbility (PlayerLimit PerRound 1)
+      $ restrictedAbility
+          attrs
+          1
+          (Here <> AssetExists
+            (AssetOwnedBy You
+            <> AssetOneOf [AssetWithUses Ammo, AssetWithUses Supply]
+            )
+          )
+      $ ActionAbility Nothing
+      $ ActionCost 1
+      <> ResourceCost 1
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env Montmartre210 where
-  runMessage msg (Montmartre210 attrs) = Montmartre210 <$> runMessage msg attrs
+  runMessage msg a@(Montmartre210 attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      ammoAssets <-
+        selectListMap AssetTarget $ AssetOwnedBy You <> AssetWithUses Ammo
+      supplyAssets <-
+        selectListMap AssetTarget $ AssetOwnedBy You <> AssetWithUses Supply
+      push
+        $ chooseOne iid
+        $ [ AddUses target Ammo 1 | target <- ammoAssets ]
+        <> [ AddUses target Supply 1 | target <- supplyAssets ]
+      pure a
+    _ -> Montmartre210 <$> runMessage msg attrs

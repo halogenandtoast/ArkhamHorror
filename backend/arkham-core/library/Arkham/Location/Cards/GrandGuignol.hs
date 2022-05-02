@@ -5,10 +5,17 @@ module Arkham.Location.Cards.GrandGuignol
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Ability
+import Arkham.Card
 import Arkham.Classes
+import Arkham.Criteria
 import Arkham.GameValue
+import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message hiding (RevealLocation)
+import qualified Arkham.Timing as Timing
 
 newtype GrandGuignol = GrandGuignol LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
@@ -24,7 +31,32 @@ grandGuignol = location
   [Diamond, Square]
 
 instance HasAbilities GrandGuignol where
-  getAbilities (GrandGuignol attrs) = getAbilities attrs
+  getAbilities (GrandGuignol attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility attrs 1 Here
+      $ ForcedAbility
+      $ RevealLocation Timing.After You
+      $ LocationWithId
+      $ toId attrs
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env GrandGuignol where
-  runMessage msg (GrandGuignol attrs) = GrandGuignol <$> runMessage msg attrs
+  runMessage msg a@(GrandGuignol attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      nonWeaknessCards <- selectListMap toCardId (BasicCardMatch NonWeakness <> InHandOf
+        (InvestigatorWithId iid))
+      push
+        $ chooseOrRunOne iid
+        $ Label
+            "Take 2 Horror"
+            [InvestigatorAssignDamage iid source DamageAny 0 2]
+        : [ Label
+              "Shuffle all non-weakness cards from your hand into your deck, then draw an equal number of cards"
+              (map (DiscardCard iid) nonWeaknessCards
+              <> [DrawCards iid (length nonWeaknessCards) False]
+              )
+          | not (null nonWeaknessCards)
+          ]
+      pure a
+    _ -> GrandGuignol <$> runMessage msg attrs

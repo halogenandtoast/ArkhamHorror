@@ -323,6 +323,7 @@
       "instance HasAbilities {dot} where",
       "  getAbilities ({dot} attrs) =",
       "    getAbilities attrs",
+      "    -- withBaseAbilities attrs []",
       "",
       "instance LocationRunner env => RunMessage env {dot} where",
       "  runMessage msg ({dot} attrs) =",

@@ -3493,7 +3493,7 @@ runGameMessage msg g = case msg of
       EncounterCard _ -> pure g
   PlayCard iid cardId mtarget False -> do
     investigator <- getInvestigator iid
-    playableCards <- traceShowId <$> getPlayableCards
+    playableCards <- getPlayableCards
       (toAttrs investigator)
       PaidCost
       [ Window Timing.When (Window.DuringTurn iid)

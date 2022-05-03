@@ -302,6 +302,7 @@ data LocationMatcher
   | AccessibleFrom LocationMatcher
   | AccessibleTo LocationMatcher
   | ConnectedLocation
+  | LocationWithDistanceFrom Int LocationMatcher
   | LocationWithResources ValueMatcher
   | LocationWithClues ValueMatcher
   | LocationWithHorror ValueMatcher

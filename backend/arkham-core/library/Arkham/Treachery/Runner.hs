@@ -31,6 +31,7 @@ type TreacheryRunner env =
   , HasHistory env
   , HasCampaignStoryCard env ()
   , ( Query AssetMatcher env
+    , Query AgendaMatcher env
     , Query EnemyMatcher env
     , Query ExtendedCardMatcher env
     , Query LocationMatcher env

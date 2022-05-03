@@ -2296,6 +2296,8 @@ locationMatches investigatorId source window locationId = \case
     member (FarthestLocationId locationId) <$> getSet (investigatorId, matcher')
   Matcher.FarthestLocationFromAll matcher' -> do
     member locationId <$> select (Matcher.FarthestLocationFromAll matcher')
+  Matcher.LocationWithDistanceFrom distance matcher' ->
+    member locationId <$> select (Matcher.LocationWithDistanceFrom distance matcher')
   Matcher.NearestLocationToYou matcher' ->
     member (ClosestLocationId locationId) <$> getSet (investigatorId, matcher')
   Matcher.LocationWithTrait t -> member t <$> getSet locationId

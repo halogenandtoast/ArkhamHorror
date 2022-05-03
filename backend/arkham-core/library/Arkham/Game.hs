@@ -162,6 +162,7 @@ data Game = Game
     gameMode :: GameMode
   , -- Entities
     gameEntities :: Entities
+  , gameEncounterDiscardEntities :: Entities
   , gameEnemiesInVoid :: EntityMap Enemy
   , -- Player Details
     gamePlayerCount :: Int -- used for determining if game should start
@@ -262,6 +263,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameMode = mode
       , gamePlayerCount = playerCount
       , gameEntities = defaultEntities { entitiesInvestigators = investigatorsMap }
+      , gameEncounterDiscardEntities = defaultEntities
       , gameEnemiesInVoid = mempty
       , gameActiveInvestigatorId = initialInvestigatorId
       , gameTurnPlayerInvestigatorId = Nothing
@@ -869,6 +871,16 @@ getLocationsMatching = \case
   FarthestLocationFromYou matcher -> guardYourLocation $ \start -> do
     matchingLocationIds <- map toId <$> getLocationsMatching matcher
     matches <- getLongestPath start (pure . (`elem` matchingLocationIds))
+    filter ((`elem` matches) . toId) . toList . view (entitiesL . locationsL) <$> getGame
+  LocationWithDistanceFrom distance matcher -> do
+    iids <- getInvestigatorIds
+    candidates <- map toId <$> getLocationsMatching matcher
+    distances <- for iids $ \iid -> do
+      start <- locationFor iid
+      distanceSingletons <$> evalStateT
+        (markDistances start (pure . (`elem` candidates)) mempty)
+        (LPState (pure start) (singleton start) mempty)
+    let matches = HashMap.findWithDefault [] distance (foldr (unionWith (<>)) mempty $ map distanceAggregates distances)
     filter ((`elem` matches) . toId) . toList . view (entitiesL . locationsL) <$> getGame
   FarthestLocationFromAll matcher -> do
     iids <- getInvestigatorIds
@@ -4105,6 +4117,11 @@ runGameMessage msg g = case msg of
       enemy = createEnemy card
       enemyId = toId enemy
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
+  -- CreateDiscardEnemy card -> do
+  --   let
+  --     enemy = createEnemy card
+  --     enemyId = toId enemy
+  --   pure $ g & encounterDiscardEntitiesL . enemiesL . at enemyId ?~ enemy
   CreateEnemyAtLocationMatching cardCode locationMatcher -> do
     matches <- selectList locationMatcher
     when (null matches) (error "No matching locations")

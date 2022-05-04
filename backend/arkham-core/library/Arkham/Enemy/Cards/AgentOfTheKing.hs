@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyAttacks, EnemyDefeated)
-import Arkham.Prey
 import Arkham.Timing qualified as Timing
 
 newtype AgentOfTheKing = AgentOfTheKing EnemyAttrs
@@ -24,7 +23,7 @@ agentOfTheKing = enemyWith
   Cards.agentOfTheKing
   (4, Static 4, 2)
   (1, 2)
-  (preyL .~ MostClues)
+  (preyL .~ Prey MostClues)
 
 instance HasAbilities AgentOfTheKing where
   getAbilities (AgentOfTheKing a) = withBaseAbilities

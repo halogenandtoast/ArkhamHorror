@@ -43,7 +43,7 @@ instance HasAbilities SanMarcoBasilica where
             attrs
             1
             (Here <> AssetExists
-              (AssetOwnedBy You <> assetIs Assets.innocentReveler)
+              (AssetControlledBy You <> assetIs Assets.innocentReveler)
             )
           $ ActionAbility Nothing
           $ ActionCost 1
@@ -54,7 +54,7 @@ instance LocationRunner env => RunMessage env SanMarcoBasilica where
   runMessage msg l@(SanMarcoBasilica attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       innocentRevelerIds <-
-        selectList $ AssetOwnedBy You <> assetIs Assets.innocentReveler
+        selectList $ AssetControlledBy You <> assetIs Assets.innocentReveler
       l <$ push
         (chooseOne
           iid

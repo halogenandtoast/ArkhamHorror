@@ -30,7 +30,7 @@ instance
   runMessage msg e@(MoonlightRitual attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       -- we assume that the only cards that are relevant here are assets and investigators
-      assetIds <- selectList (AssetOwnedBy You)
+      assetIds <- selectList (AssetControlledBy You)
       investigatorDoomCount <- unDoomCount <$> getCount iid
       assetsWithDoomCount <-
         filter ((> 0) . snd)

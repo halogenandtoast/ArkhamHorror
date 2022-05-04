@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Prey
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
@@ -28,7 +27,7 @@ conglomerationOfSpheres = enemyWith
   Cards.conglomerationOfSpheres
   (1, Static 6, 4)
   (1, 1)
-  (preyL .~ LowestSkill SkillWillpower)
+  (preyL .~ Prey (InvestigatorWithLowestSkill SkillWillpower))
 
 instance HasAbilities ConglomerationOfSpheres where
   getAbilities (ConglomerationOfSpheres x) = withBaseAbilities

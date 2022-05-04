@@ -15,7 +15,7 @@ import Arkham.Card.EncounterCard as X (EncounterCard(..))
 import Arkham.Card.Id
 import Arkham.Card.PlayerCard
 import Arkham.Card.PlayerCard as X
-  (BearerId(..), DiscardedPlayerCard(..), PlayerCard(..))
+  (DiscardedPlayerCard(..), PlayerCard(..))
 import Arkham.Classes.GameLogger
 import Arkham.EncounterCard
 import Arkham.InvestigatorId
@@ -57,11 +57,15 @@ instance IsCard Card where
   toCardId = \case
     PlayerCard pc -> toCardId pc
     EncounterCard ec -> toCardId ec
+  toCardOwner = \case
+    PlayerCard pc -> toCardOwner pc
+    EncounterCard ec -> toCardOwner ec
 
 class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCard :: a -> Card
   toCard a = lookupCard (cdCardCode $ toCardDef a) (toCardId a)
   toCardId :: a -> CardId
+  toCardOwner :: a -> Maybe InvestigatorId
 
 toLocationId :: IsCard a => a -> LocationId
 toLocationId = LocationId . toCardId
@@ -96,9 +100,11 @@ cardMatch a = \case
 
 instance IsCard PlayerCard where
   toCardId = pcId
+  toCardOwner = pcBearer
 
 instance IsCard EncounterCard where
   toCardId = ecId
+  toCardOwner = const Nothing
 
 data Card
   = PlayerCard PlayerCard

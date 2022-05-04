@@ -10,7 +10,6 @@ import Arkham.Asset.Uses
 import Arkham.SkillType
 import Arkham.Card
 import Arkham.EntityInstance
-import Arkham.Game.Helpers (getInvestigatorIds)
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Investigators
@@ -18,7 +17,6 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Prey
 import Arkham.Query
 import Arkham.Slot
 import Arkham.Source
@@ -225,92 +223,68 @@ lookupPromoInvestigator iid     = error $ "Unknown investigator: " <> show iid
 getEngagedEnemies :: Investigator -> HashSet EnemyId
 getEngagedEnemies = investigatorEngagedEnemies . toAttrs
 
--- TODO: This does not work for more than 2 players
-getIsPrey
-  :: ( MonadReader env m
-     , HasList (InvestigatorId, Distance) env EnemyMatcher
-     , HasSet CardCount env ()
-     , HasSet ClueCount env ()
-     , HasSet HorrorCount env ()
-     , HasSet RemainingSanity env ()
-     , HasSet RemainingHealth env ()
-     , HasSet Int env SkillType -- hmmm
-     , HasSet InvestigatorId env ()
-     , Query AssetMatcher env
-     , Query InvestigatorMatcher env
-     , HasModifiersFor env ()
-     )
-  => Prey
-  -> Investigator
-  -> m Bool
-getIsPrey (OnlyPrey prey) i = getIsPrey prey i
-getIsPrey AnyPrey _ = pure True
-getIsPrey (HighestSkill skillType) i = do
-  highestSkill <- fromMaybe 0 . maximumMay <$> getSetList skillType
-  pure $ highestSkill == skillValueFor skillType Nothing [] (toAttrs i)
-getIsPrey (LowestSkill skillType) i =
-  member (toId i) <$> select (InvestigatorWithLowestSkill skillType)
-getIsPrey LowestRemainingHealth i = do
-  remainingHealth <- getRemainingHealth i
-  lowestRemainingHealth <-
-    fromJustNote "has to be"
-    . minimumMay
-    . map unRemainingHealth
-    <$> getSetList ()
-  pure $ lowestRemainingHealth == remainingHealth
-getIsPrey LowestRemainingSanity i = do
-  remainingSanity <- getRemainingSanity i
-  lowestRemainingSanity <-
-    fromJustNote "has to be"
-    . minimumMay
-    . map unRemainingSanity
-    <$> getSetList ()
-  pure $ lowestRemainingSanity == remainingSanity
-getIsPrey MostRemainingSanity i = do
-  remainingSanity <- getRemainingSanity i
-  mostRemainingSanity <-
-    fromJustNote "has to be"
-    . maximumMay
-    . map unRemainingSanity
-    <$> getSetList ()
-  pure $ mostRemainingSanity == remainingSanity
-getIsPrey (Bearer bid) i = pure $ unBearerId bid == toId i
-getIsPrey MostClues i = do
-  clueCount <- unClueCount <$> getCount i
-  mostClueCount <- fromMaybe 0 . maximumMay . map unClueCount <$> getSetList ()
-  pure $ mostClueCount == clueCount
-getIsPrey MostHorror i = do
-  horrorCount <- unHorrorCount <$> getCount i
-  mostHorrorCount <- fromMaybe 0 . maximumMay . map unHorrorCount <$> getSetList ()
-  pure $ mostHorrorCount == horrorCount
-getIsPrey FewestCards i = do
-  cardCount <- unCardCount <$> getCount i
-  minCardCount <- fromMaybe 100 . minimumMay . map unCardCount <$> getSetList ()
-  pure $ minCardCount == cardCount
-getIsPrey (NearestToEnemy matcher) i = do
-  mappings :: [(InvestigatorId, Distance)] <- getList matcher
-  let
-    mappingsMap :: HashMap InvestigatorId Distance = mapFromList mappings
-    minDistance :: Int =
-      fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
-    investigatorDistance :: Int = unDistance $ findWithDefault
-      (error "investigator not found")
-      (investigatorId $ toAttrs i)
-      mappingsMap
-  pure $ investigatorDistance == minDistance
-getIsPrey (HasMostMatchingAsset assetMatcher) i = do
-  selfCount <- length <$> selectList
-    (assetMatcher <> AssetOwnedBy (InvestigatorWithId $ toId i))
-  allCounts <-
-    traverse
-        (\iid' ->
-          length <$> selectList
-            (assetMatcher <> AssetOwnedBy (InvestigatorWithId iid'))
-        )
-      =<< getInvestigatorIds
-  pure $ selfCount == maximum (ncons selfCount allCounts)
-
-getIsPrey SetToBearer _ = error "The bearer was not correctly set"
+--   highestSkill <- fromMaybe 0 . maximumMay <$> getSetList skillType
+--   pure $ highestSkill == skillValueFor skillType Nothing [] (toAttrs i)
+-- getIsPrey (LowestSkill skillType) i =
+--   member (toId i) <$> select (InvestigatorWithLowestSkill skillType)
+-- getIsPrey LowestRemainingHealth i = do
+--   remainingHealth <- getRemainingHealth i
+--   lowestRemainingHealth <-
+--     fromJustNote "has to be"
+--     . minimumMay
+--     . map unRemainingHealth
+--     <$> getSetList ()
+--   pure $ lowestRemainingHealth == remainingHealth
+-- getIsPrey LowestRemainingSanity i = do
+--   remainingSanity <- getRemainingSanity i
+--   lowestRemainingSanity <-
+--     fromJustNote "has to be"
+--     . minimumMay
+--     . map unRemainingSanity
+--     <$> getSetList ()
+--   pure $ lowestRemainingSanity == remainingSanity
+-- getIsPrey MostRemainingSanity i = do
+--   remainingSanity <- getRemainingSanity i
+--   mostRemainingSanity <-
+--     fromJustNote "has to be"
+--     . maximumMay
+--     . map unRemainingSanity
+--     <$> getSetList ()
+--   pure $ mostRemainingSanity == remainingSanity
+-- getIsPrey MostClues i = do
+--   clueCount <- unClueCount <$> getCount i
+--   mostClueCount <- fromMaybe 0 . maximumMay . map unClueCount <$> getSetList ()
+--   pure $ mostClueCount == clueCount
+-- getIsPrey MostHorror i = do
+--   horrorCount <- unHorrorCount <$> getCount i
+--   mostHorrorCount <- fromMaybe 0 . maximumMay . map unHorrorCount <$> getSetList ()
+--   pure $ mostHorrorCount == horrorCount
+-- getIsPrey FewestCards i = do
+--   cardCount <- unCardCount <$> getCount i
+--   minCardCount <- fromMaybe 100 . minimumMay . map unCardCount <$> getSetList ()
+--   pure $ minCardCount == cardCount
+-- getIsPrey (NearestToEnemy matcher) i = do
+--   mappings :: [(InvestigatorId, Distance)] <- getList matcher
+--   let
+--     mappingsMap :: HashMap InvestigatorId Distance = mapFromList mappings
+--     minDistance :: Int =
+--       fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
+--     investigatorDistance :: Int = unDistance $ findWithDefault
+--       (error "investigator not found")
+--       (investigatorId $ toAttrs i)
+--       mappingsMap
+--   pure $ investigatorDistance == minDistance
+-- getIsPrey (HasMostMatchingAsset assetMatcher) i = do
+--   selfCount <- length <$> selectList
+--     (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
+--   allCounts <-
+--     traverse
+--         (\iid' ->
+--           length <$> selectList
+--             (assetMatcher <> AssetControlledBy (InvestigatorWithId iid'))
+--         )
+--       =<< getInvestigatorIds
+--   pure $ selfCount == maximum (ncons selfCount allCounts)
 
 getAvailableSkillsFor
   :: (MonadReader env m, HasModifiersFor env ())

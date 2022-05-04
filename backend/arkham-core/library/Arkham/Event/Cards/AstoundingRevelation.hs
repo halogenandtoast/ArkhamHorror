@@ -39,7 +39,7 @@ instance HasAbilities AstoundingRevelation where
 instance (Query AssetMatcher env, HasQueue env) => RunMessage env AstoundingRevelation where
   runMessage msg e@(AstoundingRevelation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      secretAssetIds <- selectList (AssetOwnedBy You <> AssetWithUseType Secret)
+      secretAssetIds <- selectList (AssetControlledBy You <> AssetWithUseType Secret)
       e <$ push
         (chooseOne
           iid

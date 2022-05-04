@@ -26,7 +26,7 @@ instance AssetRunner env => RunMessage env OccultLexicon where
         : [ ShuffleCardsIntoDeck iid deckBloodRites | canShuffleDeck ]
       OccultLexicon <$> runMessage msg attrs
     RemovedFromPlay source | isSource attrs source -> do
-      for_ (assetInvestigator attrs)
+      for_ (assetController attrs)
         $ \iid -> push (RemoveAllCopiesOfCardFromGame iid "05317")
       OccultLexicon <$> runMessage msg attrs
     _ -> OccultLexicon <$> runMessage msg attrs

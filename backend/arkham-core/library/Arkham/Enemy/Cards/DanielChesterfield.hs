@@ -15,7 +15,6 @@ import Arkham.Criteria
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Prey
 import Arkham.SkillType
 
 newtype DanielChesterfield = DanielChesterfield EnemyAttrs
@@ -28,7 +27,7 @@ danielChesterfield = enemyWith
   Cards.danielChesterfield
   (3, Static 4, 3)
   (1, 1)
-  (preyL .~ HighestSkill SkillCombat)
+  (preyL .~ Prey (InvestigatorWithHighestSkill SkillCombat))
 
 instance HasAbilities DanielChesterfield where
   getAbilities (DanielChesterfield x) = withBaseAbilities
@@ -37,7 +36,7 @@ instance HasAbilities DanielChesterfield where
           x
           1
           (OnSameLocation <> AssetExists
-            (AssetOwnedBy You <> assetIs Assets.claspOfBlackOnyx)
+            (AssetControlledBy You <> assetIs Assets.claspOfBlackOnyx)
           )
         $ ActionAbility (Just Action.Parley) (ActionCost 1)
     ]

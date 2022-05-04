@@ -6,8 +6,8 @@ module Arkham.Enemy.Cards.SeekerOfCarcosa
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -37,14 +37,17 @@ instance HasAbilities SeekerOfCarcosa where
 
 instance EnemyRunner env => RunMessage env SeekerOfCarcosa where
   runMessage msg e@(SeekerOfCarcosa attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      clueCount <- unClueCount <$> getCount (enemyLocation attrs)
-      e <$ pushAll
-        (if clueCount > 0
-          then
-            [ RemoveClues (LocationTarget $ enemyLocation attrs) 1
-            , PlaceClues (toTarget attrs) 1
-            ]
-          else [PlaceDoom (toTarget attrs) 1]
-        )
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      case enemyLocation attrs of
+        Nothing -> pure e
+        Just loc -> do
+          clueCount <- unClueCount <$> getCount loc
+          e <$ pushAll
+            (if clueCount > 0
+              then
+                [ RemoveClues (LocationTarget loc) 1
+                , PlaceClues (toTarget attrs) 1
+                ]
+              else [PlaceDoom (toTarget attrs) 1]
+            )
     _ -> SeekerOfCarcosa <$> runMessage msg attrs

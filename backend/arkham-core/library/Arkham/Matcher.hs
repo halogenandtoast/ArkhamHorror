@@ -71,6 +71,17 @@ data InvestigatorMatcher
   | NoOne
   | NotYou
   | Anyone
+  | FewestCardsInHand
+  | LowestRemainingHealth
+  | LowestRemainingSanity
+  | MostRemainingSanity
+  | MostHorror
+  | NearestToEnemy EnemyMatcher
+  | HasMostMatchingAsset AssetMatcher
+  | HasMatchingAsset AssetMatcher
+  | HasMatchingEvent EventMatcher
+  | HasMatchingSkill SkillMatcher
+  | MostClues
   | UneliminatedInvestigator
   | ResignedInvestigator
   | ContributedMatchingIcons ValueMatcher
@@ -88,6 +99,7 @@ data InvestigatorMatcher
   | InvestigatorWithTitle Text
   | InvestigatorMatches [InvestigatorMatcher]
   | InvestigatorWithLowestSkill SkillType
+  | InvestigatorWithHighestSkill SkillType
   | AnyInvestigator [InvestigatorMatcher]
   | TurnInvestigator
   | LeadInvestigator
@@ -112,13 +124,22 @@ instance Semigroup InvestigatorMatcher where
   x <> InvestigatorMatches xs = InvestigatorMatches (x : xs)
   x <> y = InvestigatorMatches [x, y]
 
+data PreyMatcher = Prey InvestigatorMatcher | OnlyPrey InvestigatorMatcher | Bearer
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+preyWith :: PreyMatcher -> InvestigatorMatcher -> PreyMatcher
+preyWith (Prey m1) m2 = Prey $ m1 <> m2
+preyWith (OnlyPrey m1) m2 = OnlyPrey $ m1 <> m2
+preyWith Bearer _ = Bearer
+
 data AssetMatcher
   = AssetWithTitle Text
   | AssetWithFullTitle Text Text
   | AssetWithId AssetId
   | AssetWithClass ClassSymbol
   | AssetWithTrait Trait
-  | AssetOwnedBy InvestigatorMatcher
+  | AssetControlledBy InvestigatorMatcher
   | AssetMatches [AssetMatcher]
   | AssetOneOf [AssetMatcher]
   | AssetAtLocation LocationId
@@ -241,10 +262,10 @@ data EventMatcher
   | EventWithId EventId
   | EventWithTrait Trait
   | EventWithClass ClassSymbol
-  | EventOwnedBy InvestigatorMatcher
+  | EventControlledBy InvestigatorMatcher
   | EventMatches [EventMatcher]
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup EventMatcher where
   EventMatches xs <> EventMatches ys = EventMatches (xs <> ys)
@@ -287,6 +308,10 @@ locationIs = LocationIs . toCardCode
 locationWithEnemy :: EnemyId -> LocationMatcher
 locationWithEnemy = LocationWithEnemy . EnemyWithId
 {-# INLINE locationWithEnemy #-}
+
+locationWithInvestigator :: InvestigatorId -> LocationMatcher
+locationWithInvestigator = LocationWithInvestigator . InvestigatorWithId
+{-# INLINE locationWithInvestigator #-}
 
 data LocationMatcher
   = LocationWithTitle Text
@@ -350,7 +375,7 @@ data SkillMatcher
   | SkillWithId SkillId
   | SkillWithTrait Trait
   | SkillWithClass ClassSymbol
-  | SkillOwnedBy InvestigatorId
+  | SkillControlledBy InvestigatorMatcher
   | SkillMatches [SkillMatcher]
   | YourSkill
   | AnySkill

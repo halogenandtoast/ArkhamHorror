@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Prey
 import Arkham.Timing qualified as Timing
 
 newtype SpawnOfHali = SpawnOfHali EnemyAttrs
@@ -24,7 +23,7 @@ spawnOfHali = enemyWith
   Cards.spawnOfHali
   (4, Static 4, 2)
   (1, 2)
-  (preyL .~ MostHorror)
+  (preyL .~ Prey MostHorror)
 
 instance HasAbilities SpawnOfHali where
   getAbilities (SpawnOfHali a) = withBaseAbilities

@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Prey
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -25,7 +24,7 @@ relentlessDarkYoung = enemyWith
   Cards.relentlessDarkYoung
   (4, Static 5, 2)
   (2, 1)
-  (preyL .~ LowestSkill SkillAgility)
+  (preyL .~ Prey (InvestigatorWithLowestSkill SkillAgility))
 
 instance HasAbilities RelentlessDarkYoung where
   getAbilities (RelentlessDarkYoung attrs) = withBaseAbilities

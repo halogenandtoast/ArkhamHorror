@@ -34,10 +34,10 @@ instance (HasId LocationId env InvestigatorId) => HasModifiersFor env BrotherXav
     | isTarget a target = do
       locationId <- getId @LocationId iid
       assetLocationId <- getId @LocationId
-        $ fromJustNote "unowned" (assetInvestigator a)
+        $ fromJustNote "uncontroller" (assetController a)
       pure
         [ toModifier a CanBeAssignedDamage
-        | locationId == assetLocationId && Just iid /= assetInvestigator a
+        | locationId == assetLocationId && Just iid /= assetController a
         ]
   getModifiersFor _ _ _ = pure []
 

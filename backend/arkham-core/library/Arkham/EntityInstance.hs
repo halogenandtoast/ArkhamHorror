@@ -13,7 +13,7 @@ import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Location
 import Arkham.Location.Runner
-import Arkham.Matcher (AssetMatcher, EnemyMatcher, LocationMatcher)
+import Arkham.Matcher (AssetMatcher, EnemyMatcher, LocationMatcher, InvestigatorMatcher)
 import Arkham.Query
 import Arkham.Skill
 import Arkham.Skill.Runner
@@ -63,7 +63,11 @@ toCardInstance iid card = case toCardType card of
   InvestigatorType -> error "Unhandled"
 
 {- | Masking rules
- UseCardAbility: Because some abilities have a discard self cost, the card of the ability will have already been discarded when we go to resolve this. While we could use InDiscard in the RunMessage instance for that card's entity, there may be cases where we can trigger abilities without paying the cost, so we want it to be accessible from both.
+UseCardAbility: Because some abilities have a discard self cost, the card of
+the ability will have already been discarded when we go to resolve this. While
+we could use InDiscard in the RunMessage instance for that card's entity, there
+may be cases where we can trigger abilities without paying the cost, so we want
+it to be accessible from both.
 -}
 doNotMask :: Message -> Bool
 doNotMask UseCardAbility {} = True
@@ -83,10 +87,10 @@ type SomeEntityHasModifiersFor env =
   ( HasCount ResourceCount env TreacheryId
   , HasCount HorrorCount env InvestigatorId
   , HasCount Shroud env LocationId
-  , HasId (Maybe OwnerId) env AssetId
   , HasCount ClueCount env LocationId
   , Query AssetMatcher env
   , Query EnemyMatcher env
+  , Query InvestigatorMatcher env
   , HasPhase env
   , HasSkillTest env
   , HasModifiersFor env ()

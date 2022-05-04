@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyAttacks)
-import Arkham.Prey
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -25,7 +24,7 @@ servantOfTheLurker = enemyWith
   Cards.servantOfTheLurker
   (4, Static 5, 2)
   (2, 2)
-  (preyL .~ LowestSkill SkillAgility)
+  (preyL .~ Prey (InvestigatorWithLowestSkill SkillAgility))
 
 instance HasAbilities ServantOfTheLurker where
   getAbilities (ServantOfTheLurker x) = withBaseAbilities

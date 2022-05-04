@@ -26,16 +26,16 @@ instance HasAbilities SpiritSpeaker where
     [ restrictedAbility
         attrs
         1
-        (OwnsThis <> AssetExists (AssetOwnedBy You <> AssetWithUseType Charge))
+        (OwnsThis <> AssetExists (AssetControlledBy You <> AssetWithUseType Charge))
         (FastAbility $ ExhaustCost $ toTarget attrs)
     ]
 
 instance AssetRunner env => RunMessage env SpiritSpeaker where
   runMessage msg a@(SpiritSpeaker attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      assetIds <- selectList (AssetOwnedBy You <> AssetWithUseType Charge)
+      assetIds <- selectList (AssetControlledBy You <> AssetWithUseType Charge)
       discardableAssetIds <- selectList
-        (AssetOwnedBy You <> AssetWithUseType Charge <> DiscardableAsset)
+        (AssetControlledBy You <> AssetWithUseType Charge <> DiscardableAsset)
       assetIdsWithChargeCounts <- traverse
         (traverseToSnd (fmap unUsesCount . getCount))
         assetIds

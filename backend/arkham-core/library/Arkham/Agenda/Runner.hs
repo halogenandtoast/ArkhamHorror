@@ -44,7 +44,6 @@ type AgendaRunner env =
   , HasId (Maybe StoryTreacheryId) env CardCode
   , HasId CardCode env EnemyId
   , HasId LeadInvestigatorId env ()
-  , HasId LocationId env EnemyId
   , HasId LocationId env InvestigatorId
   , HasList LocationName env ()
   , HasList (InvestigatorId, Distance) env EnemyMatcher

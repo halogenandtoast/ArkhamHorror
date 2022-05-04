@@ -46,7 +46,7 @@ instance AssetRunner env => RunMessage env Stealth where
     ChosenEvadeEnemy source eid | isSource attrs source ->
       a <$ push (skillTestModifier source (EnemyTarget eid) (EnemyEvade (-2)))
     AfterSkillTestEnds source target@(EnemyTarget eid) n
-      | isSource attrs source && n >= 0 -> case assetInvestigator attrs of
+      | isSource attrs source && n >= 0 -> case assetController attrs of
         Just iid -> a <$ pushAll
           [ CreateWindowModifierEffect
             EffectTurnWindow

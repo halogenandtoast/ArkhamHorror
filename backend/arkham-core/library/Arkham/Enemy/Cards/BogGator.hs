@@ -10,7 +10,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Prey
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait
@@ -25,7 +24,7 @@ bogGator = enemyWith
   Cards.bogGator
   (2, Static 2, 2)
   (1, 1)
-  (preyL .~ LowestSkill SkillAgility)
+  (preyL .~ Prey (InvestigatorWithLowestSkill SkillAgility))
 
 instance Query LocationMatcher env => HasModifiersFor env BogGator where
   getModifiersFor _ (EnemyTarget eid) (BogGator a@EnemyAttrs {..})

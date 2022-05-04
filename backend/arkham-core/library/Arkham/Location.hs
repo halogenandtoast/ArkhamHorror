@@ -39,6 +39,7 @@ instance HasCardCode Location where
 
 instance IsCard Location where
   toCardId = toCardId . toAttrs
+  toCardOwner = toCardOwner . toAttrs
 
 instance HasAbilities Location where
   getAbilities = genericGetAbilities

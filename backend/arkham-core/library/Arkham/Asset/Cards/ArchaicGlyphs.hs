@@ -33,13 +33,13 @@ instance AssetRunner env => RunMessage env ArchaicGlyphs where
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AddUses (toTarget attrs) Secret 1)
     AddUses target Secret _ | isTarget attrs target -> do
-      let ownerId = fromJustNote "must be owned" $ assetInvestigator attrs
+      let controllerId = fromJustNote "must be controller" $ assetController attrs
       attrs' <- runMessage msg attrs
       ArchaicGlyphs attrs' <$ when
         (useCount (assetUses attrs') >= 3)
         (pushAll
           [ Discard (toTarget attrs)
-          , TakeResources ownerId 5 False
+          , TakeResources controllerId 5 False
           , Record YouHaveTranslatedTheGlyphs
           ]
         )

@@ -11,13 +11,13 @@ steps:
       long_list_align: new_line_multiline
       empty_list_align: right_after
       list_padding: 2
-      separate_lists: false
-      space_surround: false
+      separate_lists: true
+      space_surround: true
       post_qualify: true
   - language_pragmas:
       style: vertical
       align: false
-      remove_redundant: false
+      remove_redundant: true
   - trailing_whitespace: {}
 columns: 80
 newline: native
@@ -40,8 +40,6 @@ language_extensions:
   - GeneralizedNewtypeDeriving
   - LambdaCase
   - MultiParamTypeClasses
-  - NoImplicitPrelude
-  - NoMonomorphismRestriction
   - OverloadedStrings
   - RankNTypes
   - RecordWildCards

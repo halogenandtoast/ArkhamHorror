@@ -24,7 +24,7 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env Whippoorwill
     locationId <- getId iid
     pure $ toModifiers
       attrs
-      [ AnySkillValue (-1) | locationId == enemyLocation attrs ]
+      [ AnySkillValue (-1) | Just locationId == enemyLocation attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env Whippoorwill where

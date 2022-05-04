@@ -12,10 +12,10 @@ import Arkham.Classes
 import Arkham.Enemy.Enemies
 import Arkham.Enemy.Runner
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
-import Arkham.Prey
 import Arkham.Query
 import Arkham.Trait (Trait, toTraits)
 
@@ -58,7 +58,6 @@ instance
     , HasSet InvestigatorId env LocationId
     , HasSet ConnectedLocationId env LocationId
     , HasSet Trait env AssetId
-    , HasSet Trait env LocationId
     , HasSet LocationId env ()
     , HasModifiersFor env ()
     , HasName env AssetId
@@ -66,6 +65,7 @@ instance
     , HasStep AgendaStep env ()
     , HasId (Maybe LocationId) env AssetId
     , HasSkillValue env InvestigatorId
+    , Query LocationMatcher env
     ) =>
     HasModifiersFor env Enemy
     where
@@ -122,7 +122,7 @@ instance HasCount HealthDamageCount env Enemy where
 instance HasCount SanityDamageCount env Enemy where
   getCount = pure . SanityDamageCount . enemySanityDamage . toAttrs
 
-instance HasId LocationId env Enemy where
+instance HasId (Maybe LocationId) env Enemy where
   getId = pure . enemyLocation . toAttrs
 
 instance HasSet TreacheryId env Enemy where
@@ -133,6 +133,7 @@ instance HasSet AssetId env Enemy where
 
 instance IsCard Enemy where
   toCardId = toCardId . toAttrs
+  toCardOwner = toCardOwner . toAttrs
 
 instance HasDamage Enemy where
   getDamage = (, 0) . enemyDamage . toAttrs
@@ -169,7 +170,5 @@ getEngagedInvestigators = enemyEngagedInvestigators . toAttrs
 getEnemyVictory :: Enemy -> Maybe Int
 getEnemyVictory = cdVictoryPoints . toCardDef
 
-getBearer :: Enemy -> Maybe InvestigatorId
-getBearer x = case enemyPrey (toAttrs x) of
-  Bearer iid -> Just (unBearerId iid)
-  _ -> Nothing
+getEnemyBearer :: Enemy -> Maybe InvestigatorId
+getEnemyBearer = enemyBearer . toAttrs

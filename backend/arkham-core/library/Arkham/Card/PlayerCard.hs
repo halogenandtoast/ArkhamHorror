@@ -11,9 +11,6 @@ import Arkham.Card.Cost
 import Arkham.Card.Id
 import Arkham.InvestigatorId
 
-newtype BearerId = BearerId { unBearerId :: InvestigatorId }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
-
 newtype DiscardedPlayerCard = DiscardedPlayerCard { unDiscardedPlayerCard :: PlayerCard }
 
 data PlayerCard = MkPlayerCard

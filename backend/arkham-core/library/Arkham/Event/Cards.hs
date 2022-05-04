@@ -206,7 +206,7 @@ extraAmmunition1 = (event "01026" "Extra Ammunition" 2 Guardian)
   , cdLevel = 1
   , cdCriteria = Just
     (Criteria.AssetExists
-    $ AssetOwnedBy (InvestigatorAt YourLocation)
+    $ AssetControlledBy (InvestigatorAt YourLocation)
     <> AssetWithTrait Firearm
     )
   }
@@ -467,7 +467,7 @@ emergencyAid = (event "02105" "Emergency Aid" 2 Guardian)
   , cdCardTraits = setFromList [Insight, Science]
   , cdCriteria = Just $ Criteria.AnyCriterion
     [ Criteria.AssetExists
-      (AssetOwnedBy (InvestigatorAt YourLocation)
+      (AssetControlledBy (InvestigatorAt YourLocation)
       <> AssetWithDamage
       <> AssetWithTrait Ally
       )
@@ -488,7 +488,7 @@ contraband = (event "02109" "Contraband" 4 Rogue)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = setFromList [Supply, Illicit]
   , cdCriteria = Just $ Criteria.AssetExists
-    (AssetOwnedBy (InvestigatorAt YourLocation)
+    (AssetControlledBy (InvestigatorAt YourLocation)
     <> AssetOneOf [AssetWithUses Uses.Ammo, AssetWithUses Uses.Supply]
     )
   }
@@ -855,7 +855,7 @@ callingInFavors :: CardDef
 callingInFavors = (event "03158" "Calling in Favors" 1 Neutral)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = singleton Favor
-  , cdCriteria = Just (Criteria.AssetExists $ AssetOwnedBy You)
+  , cdCriteria = Just (Criteria.AssetExists $ AssetControlledBy You)
   }
 
 illSeeYouInHell :: CardDef
@@ -901,7 +901,7 @@ recharge2 = (event "03197" "Recharge" 0 Mystic)
   , cdCardTraits = singleton Spell
   , cdCriteria = Just
     (Criteria.AssetExists
-    $ AssetOwnedBy (InvestigatorAt YourLocation)
+    $ AssetControlledBy (InvestigatorAt YourLocation)
     <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
     )
   }
@@ -1010,7 +1010,7 @@ contraband2 = (event "51005" "Contraband" 3 Rogue)
   , cdCardTraits = setFromList [Supply, Illicit]
   , cdLevel = 2
   , cdCriteria = Just $ Criteria.AssetExists
-    (AssetOwnedBy (InvestigatorAt YourLocation)
+    (AssetControlledBy (InvestigatorAt YourLocation)
     <> AssetOneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
     )
   }

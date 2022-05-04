@@ -953,7 +953,6 @@ library
       Arkham.Phase
       Arkham.PlayerCard
       Arkham.Prelude
-      Arkham.Prey
       Arkham.Projection
       Arkham.Query
       Arkham.Question

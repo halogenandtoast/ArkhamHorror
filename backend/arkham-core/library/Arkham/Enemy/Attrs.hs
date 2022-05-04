@@ -6,7 +6,6 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.AssetId
 import Arkham.Card
-import Arkham.Card.Id
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
@@ -20,6 +19,7 @@ import Arkham.Keyword (HasKeywords(..), Keyword)
 import Arkham.LocationId
 import Arkham.Matcher
   ( EnemyMatcher(..)
+  , PreyMatcher(..)
   , InvestigatorMatcher(Anyone, You)
   , LocationMatcher
   , pattern AloofEnemy
@@ -27,7 +27,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
-import Arkham.Prey
 import Arkham.Query
 import Arkham.SkillTest
 import Arkham.Source
@@ -35,7 +34,6 @@ import Arkham.Target
 import Arkham.Trait
 import Arkham.TreacheryId
 import Arkham.Window qualified as Window
-import Data.UUID (nil)
 
 class IsEnemy a
 
@@ -54,7 +52,7 @@ data EnemyAttrs = EnemyAttrs
   , enemySanityDamage :: Int
   , enemyTreacheries :: HashSet TreacheryId
   , enemyAssets :: HashSet AssetId
-  , enemyPrey :: Prey
+  , enemyPrey :: PreyMatcher
   , enemyModifiers :: HashMap Source [Modifier]
   , enemyExhausted :: Bool
   , enemyDoom :: Int
@@ -63,6 +61,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyAsSelfLocation :: Maybe Text
   , enemyMovedFromHunterKeyword :: Bool
   , enemyDamageStrategy :: DamageStrategy
+  , enemyBearer :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
 
@@ -73,6 +72,9 @@ damageStrategyL =
 movedFromHunterKeywordL :: Lens' EnemyAttrs Bool
 movedFromHunterKeywordL = lens enemyMovedFromHunterKeyword
   $ \m x -> m { enemyMovedFromHunterKeyword = x }
+
+bearerL :: Lens' EnemyAttrs (Maybe InvestigatorId)
+bearerL = lens enemyBearer $ \m x -> m { enemyBearer = x }
 
 spawnAtL :: Lens' EnemyAttrs (Maybe LocationMatcher)
 spawnAtL = lens enemySpawnAt $ \m x -> m { enemySpawnAt = x }
@@ -99,7 +101,7 @@ asSelfLocationL :: Lens' EnemyAttrs (Maybe Text)
 asSelfLocationL =
   lens enemyAsSelfLocation $ \m x -> m { enemyAsSelfLocation = x }
 
-preyL :: Lens' EnemyAttrs Prey
+preyL :: Lens' EnemyAttrs PreyMatcher
 preyL = lens enemyPrey $ \m x -> m { enemyPrey = x }
 
 treacheriesL :: Lens' EnemyAttrs (HashSet TreacheryId)
@@ -150,6 +152,7 @@ instance FromJSON EnemyAttrs where
 
 instance IsCard EnemyAttrs where
   toCardId = unEnemyId . enemyId
+  toCardOwner = enemyBearer
 
 enemy
   :: (EnemyAttrs -> a)
@@ -182,7 +185,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       , enemySanityDamage = sanityDamage
       , enemyTreacheries = mempty
       , enemyAssets = mempty
-      , enemyPrey = AnyPrey
+      , enemyPrey = Prey Anyone
       , enemyModifiers = mempty
       , enemyExhausted = False
       , enemyDoom = 0
@@ -191,6 +194,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       , enemyAsSelfLocation = Nothing
       , enemyMovedFromHunterKeyword = False
       , enemyDamageStrategy = DamageAny
+      , enemyBearer = Nothing
       }
     }
 

@@ -12,7 +12,6 @@ import Arkham.Criteria
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Prey
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
@@ -26,7 +25,7 @@ wizardOfYogSothoth = enemyWith
   Cards.wizardOfYogSothoth
   (4, Static 3, 3)
   (1, 2)
-  (preyL .~ FewestCards)
+  (preyL .~ Prey FewestCardsInHand)
 
 instance HasAbilities WizardOfYogSothoth where
   getAbilities (WizardOfYogSothoth x) = withBaseAbilities

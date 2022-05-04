@@ -9,7 +9,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Prey
 
 newtype Poleman = Poleman EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
@@ -22,7 +21,7 @@ poleman = enemyWith
   (4, Static 4, 2)
   (1, 1)
   ((spawnAtL ?~ LocationWithTitle "Canal-side")
-  . (preyL .~ HasMostMatchingAsset (AssetWithTitle "Innocent Reveler"))
+  . (preyL .~ Prey (HasMostMatchingAsset (AssetWithTitle "Innocent Reveler")))
   )
 
 instance EnemyRunner env => RunMessage env Poleman where

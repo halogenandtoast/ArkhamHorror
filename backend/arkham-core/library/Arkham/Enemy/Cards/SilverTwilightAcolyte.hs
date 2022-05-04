@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyAttacks)
-import Arkham.Prey
 import Arkham.Timing qualified as Timing
 
 newtype SilverTwilightAcolyte = SilverTwilightAcolyte EnemyAttrs
@@ -24,7 +23,7 @@ silverTwilightAcolyte = enemyWith
   Cards.silverTwilightAcolyte
   (2, Static 3, 3)
   (1, 0)
-  (preyL .~ SetToBearer)
+  (preyL .~ Bearer)
 
 instance HasAbilities SilverTwilightAcolyte where
   getAbilities (SilverTwilightAcolyte a) = withBaseAbilities

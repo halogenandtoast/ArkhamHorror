@@ -28,7 +28,8 @@ instance HasAbilities MedicalTexts where
 instance AssetRunner env => RunMessage env MedicalTexts where
   runMessage msg a@(MedicalTexts attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationId <- getId @LocationId (getInvestigator attrs)
+      let controllerId = fromJustNote "must be controlled" (assetController attrs)
+      locationId <- getId @LocationId controllerId
       locationInvestigatorIds <- getSetList locationId
       push
         (chooseOne

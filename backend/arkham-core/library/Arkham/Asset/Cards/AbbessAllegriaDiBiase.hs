@@ -45,7 +45,7 @@ getAssetLocation
   -> m LocationId
 getAssetLocation AssetAttrs {..} = case assetLocation of
   Just location -> pure location
-  Nothing -> case assetInvestigator of
+  Nothing -> case assetController of
     Just iid -> getId iid
     Nothing -> error "Invalid location for Abbess"
 

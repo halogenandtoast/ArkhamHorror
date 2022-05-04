@@ -5,12 +5,12 @@ module Arkham.Enemy.Cards.AvianThrall
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Prey
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Trait
@@ -25,7 +25,7 @@ avianThrall = enemyWith
   Cards.avianThrall
   (5, Static 4, 3)
   (1, 1)
-  (preyL .~ LowestSkill SkillIntellect)
+  (preyL .~ Prey (InvestigatorWithLowestSkill SkillIntellect))
 
 instance HasSet Trait env AssetId => HasModifiersFor env AvianThrall where
   getModifiersFor (AssetSource aid) target (AvianThrall attrs)

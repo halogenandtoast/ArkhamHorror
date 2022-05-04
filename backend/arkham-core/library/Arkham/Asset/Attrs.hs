@@ -22,7 +22,8 @@ data AssetAttrs = AssetAttrs
   { assetId :: AssetId
   , assetCardCode :: CardCode
   , assetOriginalCardCode :: CardCode
-  , assetInvestigator :: Maybe InvestigatorId
+  , assetOwner :: Maybe InvestigatorId
+  , assetController :: Maybe InvestigatorId
   , assetLocation :: Maybe LocationId
   , assetEnemy :: Maybe EnemyId
   , assetSlots :: [SlotType]
@@ -85,8 +86,11 @@ locationL = lens assetLocation $ \m x -> m {assetLocation = x}
 enemyL :: Lens' AssetAttrs (Maybe EnemyId)
 enemyL = lens assetEnemy $ \m x -> m {assetEnemy = x}
 
-investigatorL :: Lens' AssetAttrs (Maybe InvestigatorId)
-investigatorL = lens assetInvestigator $ \m x -> m {assetInvestigator = x}
+ownerL :: Lens' AssetAttrs (Maybe InvestigatorId)
+ownerL = lens assetOwner $ \m x -> m {assetOwner = x}
+
+controllerL :: Lens' AssetAttrs (Maybe InvestigatorId)
+controllerL = lens assetController $ \m x -> m {assetController = x}
 
 exhaustedL :: Lens' AssetAttrs Bool
 exhaustedL = lens assetExhausted $ \m x -> m {assetExhausted = x}
@@ -117,6 +121,7 @@ instance FromJSON AssetAttrs where
 instance IsCard AssetAttrs where
   toCardId = unAssetId . assetId
   toCard a = lookupCard (assetOriginalCardCode a) (toCardId a)
+  toCardOwner = assetOwner
 
 asset :: (AssetAttrs -> a) -> CardDef -> CardBuilder AssetId a
 asset f cardDef = assetWith f cardDef id
@@ -153,7 +158,8 @@ assetWith f cardDef g =
             { assetId = aid
             , assetCardCode = toCardCode cardDef
             , assetOriginalCardCode = toCardCode cardDef
-            , assetInvestigator = Nothing
+            , assetOwner = Nothing
+            , assetController = Nothing
             , assetLocation = Nothing
             , assetEnemy = Nothing
             , assetSlots = cdSlots cardDef
@@ -196,14 +202,17 @@ instance SourceEntity AssetAttrs where
   isSource _ _ = False
 
 ownedBy :: AssetAttrs -> InvestigatorId -> Bool
-ownedBy AssetAttrs {..} = (== assetInvestigator) . Just
+ownedBy AssetAttrs {..} = (== assetOwner) . Just
 
 whenOwnedBy ::
   Applicative m => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
 whenOwnedBy a iid f = if ownedBy a iid then f else pure []
 
-getInvestigator :: HasCallStack => AssetAttrs -> InvestigatorId
-getInvestigator = fromJustNote "asset must be owned" . view investigatorL
+getOwner :: HasCallStack => AssetAttrs -> InvestigatorId
+getOwner = fromJustNote "asset must be owned" . view ownerL
+
+getController :: HasCallStack => AssetAttrs -> InvestigatorId
+getController = fromJustNote "asset must be owned" . view controllerL
 
 defeated :: AssetAttrs -> Bool
 defeated AssetAttrs {..} =

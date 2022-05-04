@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Prey
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -25,7 +24,7 @@ youngDeepOne = enemyWith
   Cards.youngDeepOne
   (3, Static 3, 3)
   (1, 1)
-  (preyL .~ LowestSkill SkillCombat)
+  (preyL .~ Prey (InvestigatorWithLowestSkill SkillCombat))
 
 instance HasAbilities YoungDeepOne where
   getAbilities (YoungDeepOne a) = withBaseAbilities

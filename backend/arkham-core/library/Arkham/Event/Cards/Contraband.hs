@@ -37,7 +37,7 @@ instance
 
       ammoAssets <- selectList
         (AssetWithUseType Ammo <> AssetOneOf
-          (map (AssetOwnedBy . InvestigatorWithId) investigatorIds)
+          (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
         )
 
       ammoAssetsWithUseCount <- map (\(c, aid) -> (Ammo, c, aid))
@@ -45,7 +45,7 @@ instance
 
       supplyAssets <- selectList
         (AssetWithUseType Supply <> AssetOneOf
-          (map (AssetOwnedBy . InvestigatorWithId) investigatorIds)
+          (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
         )
 
       supplyAssetsWithUseCount <- map (\(c, aid) -> (Supply, c, aid))

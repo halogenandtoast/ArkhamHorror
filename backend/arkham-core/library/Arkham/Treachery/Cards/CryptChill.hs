@@ -24,7 +24,7 @@ instance TreacheryRunner env => RunMessage env CryptChill where
       t <$ push (RevelationSkillTest iid source SkillWillpower 4)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        assetCount <- length <$> select (DiscardableAsset <> AssetOwnedBy You)
+        assetCount <- length <$> select (DiscardableAsset <> AssetControlledBy You)
         if assetCount > 0
           then t <$ push (ChooseAndDiscardAsset iid AnyAsset)
           else t <$ push (InvestigatorAssignDamage iid source DamageAny 2 0)

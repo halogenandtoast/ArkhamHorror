@@ -6,17 +6,15 @@ module Arkham.Enemy.Cards.SwiftByakhee
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Prey
-import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype SwiftByakhee = SwiftByakhee EnemyAttrs
@@ -29,7 +27,7 @@ swiftByakhee = enemyWith
   Cards.swiftByakhee
   (2, Static 3, 2)
   (1, 1)
-  (preyL .~ LowestRemainingSanity)
+  (preyL .~ Prey LowestRemainingSanity)
 
 instance HasAbilities SwiftByakhee where
   getAbilities (SwiftByakhee a) = withBaseAbilities
@@ -41,45 +39,30 @@ instance HasAbilities SwiftByakhee where
       $ toId a
     ]
 
+choosePrey :: EnemyAttrs -> (InvestigatorId, LocationId, Distance) -> Message
+choosePrey attrs (iid, pathId, distance) =
+  targetLabel iid
+    $ [ noAttack | unDistance distance <= 1 ]
+    <> [MoveUntil pathId (toTarget attrs)]
+ where
+  noAttack = CreateWindowModifierEffect
+    EffectPhaseWindow
+    (EffectModifiers $ toModifiers attrs [CannotAttack])
+    (toSource attrs)
+    (toTarget attrs)
+
 instance EnemyRunner env => RunMessage env SwiftByakhee where
   runMessage msg e@(SwiftByakhee attrs) = case msg of
-    UseCardAbility iid source windows' 1 payment | isSource attrs source -> do
-      closestPathIds <- map unClosestPathLocationId
-        <$> getSetList (enemyLocation attrs, enemyPrey attrs)
-      push $ chooseOrRunOne
-        iid
-        [ TargetLabel
-            (LocationTarget pathId)
-            [ EnemyMove (toId attrs) (enemyLocation attrs) pathId
-            , UseCardAbilityChoice iid source windows' 1 payment $ IntMetadata 0
-            ]
-        | pathId <- closestPathIds
-        ]
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      for_ (enemyLocation attrs) $ \loc -> do
+        prey <- selectList (enemyPrey attrs)
+        preyWithLocationsAndDistances <- fmap catMaybes $ for prey $ \preyId -> do
+          mlid <- selectOne $ locationWithInvestigator preyId
+          case mlid of
+            Nothing -> pure Nothing
+            Just lid -> do
+              distance <- fromMaybe (Distance 1000) <$> getDistance loc lid
+              pure $ Just (preyId, lid, distance)
+        push $ chooseOrRunOne iid $ map (choosePrey attrs) preyWithLocationsAndDistances
       pure e
-    UseCardAbilityChoice iid source windows' 1 payment (IntMetadata n)
-      | isSource attrs source -> do
-        preyIds <- mapSet unPreyId <$> getSet (enemyPrey attrs)
-        when (null $ enemyEngagedInvestigators attrs `intersect` preyIds) $ do
-          closestPathIds <- map unClosestPathLocationId
-            <$> getSetList (enemyLocation attrs, enemyPrey attrs)
-          pushAll
-            $ [ CreateWindowModifierEffect
-                  EffectPhaseWindow
-                  (EffectModifiers $ toModifiers attrs [CannotAttack])
-                  source
-                  (toTarget attrs)
-              | n == 0
-              ]
-            <> [ chooseOrRunOne
-                   iid
-                   [ TargetLabel
-                       (LocationTarget pathId)
-                       [ EnemyMove (toId attrs) (enemyLocation attrs) pathId
-                       , UseCardAbilityChoice iid source windows' 1 payment
-                         $ IntMetadata (n + 1)
-                       ]
-                   | pathId <- closestPathIds
-                   ]
-               ]
-        pure e
     _ -> SwiftByakhee <$> runMessage msg attrs

@@ -89,6 +89,7 @@ instance SourceEntity TreacheryAttrs where
 
 instance IsCard TreacheryAttrs where
   toCardId = unTreacheryId . treacheryId
+  toCardOwner = treacheryOwner
 
 -- ownedBy :: Attrs -> InvestigatorId -> Bool
 -- ownedBy Attrs { treacheryOwner } iid = treacheryOwner == Just iid

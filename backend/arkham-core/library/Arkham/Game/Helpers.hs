@@ -561,7 +561,6 @@ getCanFight
      , HasSet Keyword env EnemyId
      , HasSet Trait env Source
      , HasId LocationId env InvestigatorId
-     , HasId LocationId env EnemyId
      , HasModifiersFor env ()
      )
   => EnemyId
@@ -604,7 +603,6 @@ getCanEngage
      , HasSet InvestigatorId env EnemyId
      , HasSet Trait env Source
      , HasId LocationId env InvestigatorId
-     , HasId LocationId env EnemyId
      , HasModifiersFor env ()
      )
   => EnemyId
@@ -952,9 +950,6 @@ type CanCheckPlayable env
     , HasCount UsesCount env AssetId
     , HasId (Maybe LocationId) env Matcher.LocationMatcher
     , HasId LocationId env AssetId
-    , HasId (Maybe OwnerId) env AssetId
-    , HasId OwnerId env EventId
-    , HasId OwnerId env SkillId
     , HasList TakenAction env InvestigatorId
     , HasId CardCode env LocationId
     , HasSet Trait env Source
@@ -1077,7 +1072,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
   passesLimit (LimitPerInvestigator m) = case toCardType c of
     AssetType -> do
       n <- size <$> getSet @AssetId
-        (Matcher.AssetOwnedBy (Matcher.InvestigatorWithId iid)
+        (Matcher.AssetControlledBy (Matcher.InvestigatorWithId iid)
         <> Matcher.AssetWithTitle (nameTitle $ toName c)
         )
       pure $ m > n
@@ -1151,9 +1146,9 @@ passesCriteria iid source windows' = \case
     _ -> pure False
   Criteria.OwnsThis -> case source of
     AssetSource aid -> member aid
-      <$> select (Matcher.AssetOwnedBy $ Matcher.InvestigatorWithId iid)
+      <$> select (Matcher.AssetControlledBy $ Matcher.InvestigatorWithId iid)
     EventSource eid -> member eid
-      <$> select (Matcher.EventOwnedBy $ Matcher.InvestigatorWithId iid)
+      <$> select (Matcher.EventControlledBy $ Matcher.InvestigatorWithId iid)
     _ -> pure False
   Criteria.DuringSkillTest skillTestMatcher -> do
     mSkillTest <- getSkillTest
@@ -1191,17 +1186,17 @@ passesCriteria iid source windows' = \case
     (> 0) . unScenarioDeckCount <$> getCount key
   Criteria.Unowned -> case source of
     AssetSource aid -> do
-      mOwner <- getId @(Maybe OwnerId) aid
-      pure $ isNothing mOwner
+      mController <- selectAssetController aid
+      pure $ isNothing mController
     ProxySource (AssetSource aid) _ -> do
-      mOwner <- getId @(Maybe OwnerId) aid
-      pure $ isNothing mOwner
+      mController <- selectAssetController aid
+      pure $ isNothing mController
     _ -> error $ "missing OwnsThis check for source: " <> show source
   Criteria.OnSameLocation -> case source of
     AssetSource aid ->
       liftA2 (==) (getId @LocationId aid) (getId @LocationId iid)
     EnemySource eid ->
-      liftA2 (==) (getId @LocationId eid) (getId @LocationId iid)
+      liftA2 (==) (selectOne $ Matcher.LocationWithEnemy $ Matcher.EnemyWithId eid) (Just <$> getId @LocationId iid)
     TreacherySource tid -> getId tid >>= \case
       Just lid -> (== lid) <$> getId @LocationId iid
       Nothing -> pure False
@@ -1332,7 +1327,7 @@ passesCriteria iid source windows' = \case
       filter (`cardMatch` cardMatcher) <$> getSetListMap unVictoryDisplayCard ()
     gameValueMatches (length vCards) valueMatcher
   Criteria.OwnCardWithDoom -> do
-    assetIds <- selectList (Matcher.AssetOwnedBy Matcher.You)
+    assetIds <- selectList (Matcher.AssetControlledBy Matcher.You)
     investigatorDoomCount <- unDoomCount <$> getCount iid
     assetsWithDoomCount <- filterM
       (fmap ((> 0) . unDoomCount) . getCount)
@@ -1442,7 +1437,6 @@ type CanCheckFast env
     , HasSet EnemyId env LocationId
     , HasSet TreacheryId env LocationId
     , HasId LocationId env InvestigatorId
-    , HasId LocationId env EnemyId
     , HasId CardCode env TreacheryId
     , HasId CardCode env EnemyId
     , HasSet Trait env LocationId
@@ -2036,11 +2030,24 @@ matchWho
   -> InvestigatorId
   -> Matcher.InvestigatorMatcher
   -> m Bool
-matchWho you who = \case
+matchWho you who matcher = case matcher of
+  Matcher.NoOne -> pure False
   Matcher.Anyone -> pure True
   Matcher.You -> pure $ who == you
   Matcher.NotYou -> pure $ who /= you
-  Matcher.LeadInvestigator -> member who <$> getSet Matcher.LeadInvestigator
+
+  Matcher.HasMatchingAsset _ -> member who <$> select matcher
+  Matcher.HasMatchingEvent _ -> member who <$> select matcher
+  Matcher.HasMatchingSkill _ -> member who <$> select matcher
+  Matcher.NearestToEnemy _ -> member who <$> select matcher
+  Matcher.HasMostMatchingAsset _ -> member who <$> select matcher
+  Matcher.FewestCardsInHand -> member who <$> select matcher
+  Matcher.LowestRemainingHealth -> member who <$> select matcher
+  Matcher.MostRemainingSanity -> member who <$> select matcher
+  Matcher.LowestRemainingSanity -> member who <$> select matcher
+  Matcher.MostHorror -> member who <$> select matcher
+  Matcher.MostClues -> member who <$> select matcher
+  Matcher.LeadInvestigator -> member who <$> select matcher
   Matcher.UnengagedInvestigator -> null <$> getSet @EnemyId who
   Matcher.NoDamageDealtThisTurn ->
     null . historyDealtDamageTo <$> getHistory TurnHistory who
@@ -2065,9 +2072,9 @@ matchWho you who = \case
     notElem modifier'
       <$> getModifiers (InvestigatorSource who) (InvestigatorTarget who)
   Matcher.UneliminatedInvestigator ->
-    member who <$> getSet Matcher.UneliminatedInvestigator
+    member who <$> select Matcher.UneliminatedInvestigator
   Matcher.ResignedInvestigator ->
-    member who <$> getSet Matcher.ResignedInvestigator
+    member who <$> select Matcher.ResignedInvestigator
   Matcher.InvestigatorEngagedWith enemyMatcher -> do
     engagedInvestigators <- select
       (Matcher.InvestigatorEngagedWith enemyMatcher)
@@ -2075,8 +2082,8 @@ matchWho you who = \case
   Matcher.InvestigatorAt locationMatcher -> do
     lid <- getId @LocationId who
     member lid <$> select locationMatcher
-  Matcher.InvestigatorWithTitle title -> do
-    member who <$> select (Matcher.InvestigatorWithTitle title)
+  Matcher.InvestigatorWithTitle _ -> do
+    member who <$> select matcher
   Matcher.InvestigatorCanMove -> do
     notElem CannotMove
       <$> getModifiers (InvestigatorSource who) (InvestigatorTarget who)
@@ -2093,8 +2100,10 @@ matchWho you who = \case
   Matcher.InvestigatorWithResources valueMatcher ->
     (`gameValueMatches` valueMatcher) . unResourceCount =<< getCount who
   Matcher.InvestigatorWithId iid' -> pure $ who == iid'
-  Matcher.InvestigatorWithLowestSkill skillType ->
-    member who <$> select (Matcher.InvestigatorWithLowestSkill skillType)
+  Matcher.InvestigatorWithLowestSkill _ ->
+    member who <$> select matcher
+  Matcher.InvestigatorWithHighestSkill _ ->
+    member who <$> select matcher
   Matcher.InvestigatorMatches is -> allM (matchWho you who) is
   Matcher.AnyInvestigator is -> anyM (matchWho you who) is
 
@@ -2114,9 +2123,6 @@ gameValueMatches n = \case
 sourceMatches
   :: ( MonadReader env m
      , HasSet Trait env Source
-     , HasId (Maybe OwnerId) env AssetId
-     , HasId OwnerId env EventId
-     , HasId OwnerId env SkillId
      , Query Matcher.InvestigatorMatcher env
      )
   => Source
@@ -2130,16 +2136,16 @@ sourceMatches s = \case
   Matcher.SourceMatches ms -> allM (sourceMatches s) ms
   Matcher.SourceOwnedBy whoMatcher -> case s of
     AssetSource aid -> do
-      mOwnerId <- fmap unOwnerId <$> getId aid
-      case mOwnerId of
+      mControllerId <- selectAssetController aid
+      case mControllerId of
         Just iid' -> member iid' <$> select whoMatcher
         _ -> pure False
     EventSource eid -> do
-      mOwnerId <- unOwnerId <$> getId eid
-      member mOwnerId <$> select whoMatcher
+      mControllerId <- fromJustNote "must have a controller" <$> selectEventController eid
+      member mControllerId <$> select whoMatcher
     SkillSource sid -> do
-      mOwnerId <- unOwnerId <$> getId sid
-      member mOwnerId <$> select whoMatcher
+      mControllerId <- fromJustNote "must have a controller" <$> selectSkillController sid
+      member mControllerId <$> select whoMatcher
     _ -> pure False
   Matcher.SourceIsType t -> pure $ case t of
     AssetType -> case s of
@@ -2274,11 +2280,11 @@ locationMatches investigatorId source window locationId = \case
       pure $ locationId == lid
     _ -> error "invalid window for LocationLeavingPlay"
   Matcher.SameLocation -> do
-    lid' <- case source of
-      EnemySource eid -> getId @LocationId eid
-      AssetSource eid -> getId @LocationId eid
+    mlid' <- case source of
+      EnemySource eid -> selectOne $ Matcher.LocationWithEnemy $ Matcher.EnemyWithId eid
+      AssetSource aid -> selectOne $ Matcher.LocationWithAsset $ Matcher.AssetWithId aid
       _ -> error $ "can't detect same location for source " <> show source
-    pure $ locationId == lid'
+    pure $ Just locationId == mlid'
   Matcher.YourLocation -> do
     yourLocationId <- getId @LocationId investigatorId
     pure $ locationId == yourLocationId
@@ -2333,9 +2339,6 @@ skillTestMatches
      , Query Matcher.LocationMatcher env
      , Query Matcher.TreacheryMatcher env
      , Query Matcher.InvestigatorMatcher env
-     , HasId (Maybe OwnerId) env AssetId
-     , HasId OwnerId env EventId
-     , HasId OwnerId env SkillId
      )
   => InvestigatorId
   -> Source
@@ -2498,9 +2501,6 @@ sourceCanDamageEnemy
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasSet Trait env Source
-     , HasId (Maybe OwnerId) env AssetId
-     , HasId OwnerId env EventId
-     , HasId OwnerId env SkillId
      , Query Matcher.InvestigatorMatcher env
      )
   => EnemyId

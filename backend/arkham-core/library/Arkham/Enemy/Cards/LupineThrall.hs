@@ -9,7 +9,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Prey
 import Arkham.SkillType
 
 newtype LupineThrall = LupineThrall EnemyAttrs
@@ -22,7 +21,7 @@ lupineThrall = enemyWith
   Cards.lupineThrall
   (4, Static 3, 4)
   (1, 1)
-  ((preyL .~ LowestSkill SkillAgility)
+  ((preyL .~ Prey (InvestigatorWithLowestSkill SkillAgility))
   . (spawnAtL ?~ FarthestLocationFromYou Anywhere)
   )
 

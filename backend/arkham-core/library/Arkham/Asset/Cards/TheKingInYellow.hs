@@ -43,7 +43,7 @@ instance HasAbilities TheKingInYellow where
 
 instance HasSet CommittedCardId env InvestigatorId => HasModifiersFor env TheKingInYellow where
   getModifiersFor _ SkillTestTarget (TheKingInYellow attrs) = do
-    let minhId = fromJustNote "not owned" $ assetInvestigator attrs
+    let minhId = fromJustNote "not owned" $ assetController attrs
     commitedCardsCount <- length <$> getSetList @CommittedCardId minhId
     pure $ toModifiers
       attrs

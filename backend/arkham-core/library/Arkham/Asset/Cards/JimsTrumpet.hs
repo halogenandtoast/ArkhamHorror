@@ -44,8 +44,8 @@ instance HasAbilities JimsTrumpet where
 instance AssetRunner env => RunMessage env JimsTrumpet where
   runMessage msg a@(JimsTrumpet attrs@AssetAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      let ownerId = fromJustNote "must be owned" assetInvestigator
-      locationId <- getId ownerId
+      let controllerId = fromJustNote "must be controller" assetController
+      locationId <- getId controllerId
       connectedLocationIds <- map unConnectedLocationId
         <$> getSetList locationId
       investigatorIds <-
@@ -55,7 +55,7 @@ instance AssetRunner env => RunMessage env JimsTrumpet where
       let choices = map fst $ filter ((> 0) . snd) pairings
       a <$ push
         (chooseOne
-          ownerId
+          controllerId
           [ HealHorror (InvestigatorTarget iid) 1 | iid <- choices ]
         )
     _ -> JimsTrumpet <$> runMessage msg attrs

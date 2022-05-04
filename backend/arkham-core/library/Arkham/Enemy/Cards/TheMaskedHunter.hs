@@ -8,8 +8,8 @@ import Arkham.Prelude
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
+import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Prey
 import Arkham.Query
 import Arkham.Target
 
@@ -23,7 +23,7 @@ theMaskedHunter = enemyWith
   Cards.theMaskedHunter
   (4, Static 4, 2)
   (2, 1)
-  (preyL .~ MostClues)
+  (preyL .~ Prey MostClues)
 
 instance HasCount PlayerCount env () => HasModifiersFor env TheMaskedHunter where
   getModifiersFor _ target (TheMaskedHunter a) | isTarget a target = do

@@ -16,12 +16,10 @@ moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
      , HasQueue env
      , Query LocationMatcher env
      , Query EnemyMatcher env
-     , HasId LocationId env EnemyId
      )
   => m ()
 moveTheManInThePalidMaskToLobbyInsteadOfDiscarding = do
   theManInThePallidMask <- getTheManInThePallidMask
-  lid <- getId theManInThePallidMask
   lobbyId <- fromJustNote "Lobby must be in play"
     <$> selectOne (LocationWithTitle "Lobby")
   popMessageMatching_ \case
@@ -31,7 +29,7 @@ moveTheManInThePalidMaskToLobbyInsteadOfDiscarding = do
     \case
       Discarded (EnemyTarget eid) _ -> eid == theManInThePallidMask
       _ -> False
-    (const [EnemyMove theManInThePallidMask lid lobbyId])
+    (const [EnemyMove theManInThePallidMask lobbyId])
 
 getTheManInThePallidMask
   :: (MonadReader env m, Query EnemyMatcher env) => m EnemyId

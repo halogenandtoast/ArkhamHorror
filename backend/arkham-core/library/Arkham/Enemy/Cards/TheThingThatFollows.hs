@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Prey
 import Arkham.Timing qualified as Timing
 
 newtype TheThingThatFollows = TheThingThatFollows EnemyAttrs
@@ -24,7 +23,7 @@ theThingThatFollows = enemyWith
   Cards.theThingThatFollows
   (3, Static 2, 3)
   (1, 1)
-  ((preyL .~ SetToBearer) . (spawnAtL ?~ FarthestLocationFromYou Anywhere))
+  ((preyL .~ Bearer) . (spawnAtL ?~ FarthestLocationFromYou Anywhere))
 
 instance HasAbilities TheThingThatFollows where
   getAbilities (TheThingThatFollows x) = withBaseAbilities

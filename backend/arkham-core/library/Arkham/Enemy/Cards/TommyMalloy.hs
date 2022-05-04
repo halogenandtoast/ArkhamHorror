@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Prey
 import Arkham.Timing qualified as Timing
 
 newtype TommyMalloy = TommyMalloy EnemyAttrs
@@ -25,7 +24,7 @@ tommyMalloy = enemyWith
   Cards.tommyMalloy
   (2, Static 3, 3)
   (2, 0)
-  (preyL .~ SetToBearer)
+  (preyL .~ Bearer)
 
 instance HasAbilities TommyMalloy where
   getAbilities (TommyMalloy attrs) = withBaseAbilities

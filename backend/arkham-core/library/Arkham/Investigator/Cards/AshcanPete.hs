@@ -39,7 +39,7 @@ instance HasAbilities AshcanPete where
     [ restrictedAbility
           x
           1
-          (Self <> AssetExists (AssetOwnedBy You <> AssetExhausted) <> Negate
+          (Self <> AssetExists (AssetControlledBy You <> AssetExhausted) <> Negate
             (SelfHasModifier ControlledAssetsCannotReady)
           )
           (FastAbility $ HandDiscardCost 1 AnyCard)
@@ -57,6 +57,6 @@ instance InvestigatorRunner env => RunMessage env AshcanPete where
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs ->
       i <$ push (Ready $ CardCodeTarget "02014")
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      targets <- selectListMap AssetTarget (AssetOwnedBy You <> AssetExhausted)
+      targets <- selectListMap AssetTarget (AssetControlledBy You <> AssetExhausted)
       i <$ push (chooseOne (toId attrs) [ Ready target | target <- targets ])
     _ -> AshcanPete <$> runMessage msg attrs

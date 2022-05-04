@@ -35,11 +35,11 @@ instance TreacheryRunner env => RunMessage env Treachery where
 instance
   ( HasCount PlayerCount env ()
   , HasId LocationId env InvestigatorId
-  , HasId (Maybe OwnerId) env AssetId
   , HasSet Trait env AssetId
   , HasSet Trait env LocationId
   , HasCount ResourceCount env TreacheryId
   , Query EnemyMatcher env
+  , Query InvestigatorMatcher env
   )
   => HasModifiersFor env Treachery where
   getModifiersFor = genericGetModifiersFor
@@ -64,6 +64,7 @@ instance SourceEntity Treachery where
 
 instance IsCard Treachery where
   toCardId = toCardId . toAttrs
+  toCardOwner = toCardOwner . toAttrs
 
 instance HasModifiersFor env () => HasCount DoomCount env Treachery where
   getCount t = do
@@ -76,9 +77,6 @@ instance HasCount ResourceCount env Treachery where
 
 instance HasCount (Maybe ClueCount) env Treachery where
   getCount = pure . (ClueCount <$>) . treacheryClues . toAttrs
-
-instance HasId (Maybe OwnerId) env Treachery where
-  getId = pure . (OwnerId <$>) . Attrs.treacheryOwner . toAttrs
 
 lookupTreachery :: CardCode -> (InvestigatorId -> TreacheryId -> Treachery)
 lookupTreachery cardCode =

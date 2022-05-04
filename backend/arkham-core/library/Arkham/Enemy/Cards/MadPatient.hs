@@ -10,7 +10,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Prey
 import Arkham.Timing qualified as Timing
 
 newtype MadPatient = MadPatient EnemyAttrs
@@ -23,7 +22,7 @@ madPatient = enemyWith
   Cards.madPatient
   (2, Static 2, 3)
   (1, 0)
-  ((preyL .~ MostRemainingSanity)
+  ((preyL .~ Prey MostRemainingSanity)
   . (spawnAtL ?~ NearestLocationToYou (LocationWithTitle "Asylum Halls"))
   )
 

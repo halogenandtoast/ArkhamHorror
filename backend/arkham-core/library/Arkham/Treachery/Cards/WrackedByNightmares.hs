@@ -43,7 +43,7 @@ instance TreacheryRunner env => RunMessage env WrackedByNightmares where
   runMessage msg t@(WrackedByNightmares attrs@TreacheryAttrs {..}) =
     case msg of
       Revelation iid source | isSource attrs source -> do
-        assetIds <- selectList (AssetOwnedBy $ InvestigatorWithId iid)
+        assetIds <- selectList (AssetControlledBy $ InvestigatorWithId iid)
         t <$ pushAll
           ([ Exhaust (AssetTarget aid) | aid <- assetIds ]
           <> [AttachTreachery treacheryId $ InvestigatorTarget iid]

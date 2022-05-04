@@ -7,7 +7,6 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Event.Attrs
 import Arkham.Event.Runner
-import Arkham.Id
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message
 import Arkham.SkillType
@@ -40,13 +39,12 @@ instance (EventRunner env) => RunMessage env BaitAndSwitch where
         e <$ pushAll msgs
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _)
       | isTarget attrs target -> do
-        lid <- getId @LocationId iid
         connectedLocationIds <- selectList ConnectedLocation
         e <$ unless
           (null connectedLocationIds)
           (withQueue_ \queue ->
             let
-              enemyMoves = map (EnemyMove enemyId lid) connectedLocationIds
+              enemyMoves = map (EnemyMove enemyId) connectedLocationIds
               (before, rest) = break
                 (\case
                   AfterEvadeEnemy{} -> True

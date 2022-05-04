@@ -57,12 +57,10 @@ instance SourceEntity Event where
 instance IsCard Event where
   toCardId = toCardId . toAttrs
   toCard e = lookupCard (eventOriginalCardCode . toAttrs $ e) (toCardId e)
+  toCardOwner = toCardOwner . toAttrs
 
 instance HasId InvestigatorId env Event where
   getId = pure . eventOwner . toAttrs
-
-instance HasId OwnerId env Event where
-  getId = fmap OwnerId . getId
 
 getEventId :: Event -> EventId
 getEventId = eventId . toAttrs

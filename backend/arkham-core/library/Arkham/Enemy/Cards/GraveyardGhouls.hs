@@ -8,8 +8,8 @@ import Arkham.Prelude
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
+import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Prey
 import Arkham.Target
 
 newtype GraveyardGhouls = GraveyardGhouls EnemyAttrs
@@ -22,7 +22,7 @@ graveyardGhouls = enemyWith
   Cards.graveyardGhouls
   (3, Static 3, 2)
   (1, 1)
-  (preyL .~ SetToBearer)
+  (preyL .~ Bearer)
 
 instance HasModifiersFor env GraveyardGhouls where
   getModifiersFor _ (InvestigatorTarget iid) (GraveyardGhouls attrs)

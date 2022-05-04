@@ -50,6 +50,6 @@ instance LocationRunner env => RunMessage env AnotherDimension where
         enemyIds <- selectList $ UnengagedEnemy <> EnemyAt (LocationWithId lid)
         l <$ pushAll
           ([ MoveTo (toSource attrs) iid (toId attrs) | iid <- investigatorIds ]
-          <> [ EnemyMove eid lid (toId attrs) | eid <- enemyIds ]
+          <> [ EnemyMove eid (toId attrs) | eid <- enemyIds ]
           )
     _ -> AnotherDimension <$> runMessage msg attrs

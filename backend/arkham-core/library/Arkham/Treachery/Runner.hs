@@ -1,7 +1,5 @@
 module Arkham.Treachery.Runner where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Card.Id
@@ -22,7 +20,6 @@ type TreacheryRunner env =
   , HasName env (Unrevealed LocationId)
   , GetCardDef env AssetId
   , GetCardDef env LocationId
-  , HasId (Maybe OwnerId) env AssetId
   , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
   , HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)
   , HasSet EnemyId env EnemyMatcher
@@ -33,6 +30,8 @@ type TreacheryRunner env =
   , ( Query AssetMatcher env
     , Query AgendaMatcher env
     , Query EnemyMatcher env
+    , Query EventMatcher env
+    , Query SkillMatcher env
     , Query ExtendedCardMatcher env
     , Query LocationMatcher env
     , Query InvestigatorMatcher env
@@ -56,7 +55,6 @@ type TreacheryRunner env =
     )
   , HasId CardCode env AssetId
   , HasId CardCode env EnemyId
-  , HasId LocationId env EnemyId
   , HasId LocationId env InvestigatorId
   , HasList UsedAbility env ()
   , HasList DiscardedPlayerCard env InvestigatorId

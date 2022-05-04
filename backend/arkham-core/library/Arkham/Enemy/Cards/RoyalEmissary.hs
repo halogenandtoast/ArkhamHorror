@@ -13,7 +13,6 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
-import Arkham.Prey
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -27,10 +26,10 @@ royalEmissary = enemyWith
   Cards.royalEmissary
   (4, Static 4, 2)
   (2, 0)
-  (preyL .~ LowestSkill SkillWillpower)
+  (preyL .~ Prey (InvestigatorWithLowestSkill SkillWillpower))
 
 investigatorMatcher :: EnemyAttrs -> InvestigatorMatcher
-investigatorMatcher a = case enemyLocaton a of
+investigatorMatcher a = case enemyLocation a of
   Nothing -> NoOne
   Just loc -> AnyInvestigator
     [ InvestigatorAt $ LocationWithId loc

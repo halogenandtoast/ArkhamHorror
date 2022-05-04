@@ -5,7 +5,6 @@ module Arkham.Treachery.Cards.RuinAndDestruction
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Id
@@ -13,6 +12,7 @@ import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Attrs
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype RuinAndDestruction = RuinAndDestruction TreacheryAttrs
@@ -25,13 +25,9 @@ ruinAndDestruction = treachery RuinAndDestruction Cards.ruinAndDestruction
 instance TreacheryRunner env => RunMessage env RuinAndDestruction where
   runMessage msg t@(RuinAndDestruction attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      broodOfYogSothoth <- getSetList @EnemyId (CardCode "02255")
-      broodOfYogSothothLocations <- traverse
-        (getId @LocationId)
-        broodOfYogSothoth
       targetInvestigators <-
-        concat
-          <$> traverse (getSetList @InvestigatorId) broodOfYogSothothLocations
+        selectList $ InvestigatorAt $ LocationWithEnemy $ EnemyWithTitle
+          "Brood of Yog-Sothoth"
       t <$ pushAll
         ([ BeginSkillTest
              iid'

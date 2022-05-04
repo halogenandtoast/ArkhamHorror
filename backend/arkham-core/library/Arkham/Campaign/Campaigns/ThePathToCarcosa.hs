@@ -135,7 +135,7 @@ instance CampaignRunner env => RunMessage env ThePathToCarcosa where
         $ a
         & (stepL .~ step)
         & (completedStepsL %~ completeStep (campaignStep a))
-    EnemyDefeated _ _ _ cardCode _ _
+    EnemyDefeated _ _ cardCode _ _
       | cardCode == toCardCode Enemies.theManInThePallidMask -> do
         n <- hasRecordCount ChasingTheStranger (campaignLog a)
         c <$ push (RecordCount ChasingTheStranger (n + 1))

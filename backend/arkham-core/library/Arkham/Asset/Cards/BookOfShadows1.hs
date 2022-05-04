@@ -26,7 +26,7 @@ instance HasAbilities BookOfShadows1 where
     [ restrictedAbility
           a
           1
-          (OwnsThis <> AssetExists (AssetOwnedBy You <> AssetWithTrait Spell))
+          (OwnsThis <> AssetExists (AssetControlledBy You <> AssetWithTrait Spell))
         $ ActionAbility Nothing
         $ Costs [ActionCost 1, ResourceCost 1, ExhaustCost (toTarget a)]
     ]
@@ -34,7 +34,7 @@ instance HasAbilities BookOfShadows1 where
 instance AssetRunner env => RunMessage env BookOfShadows1 where
   runMessage msg a@(BookOfShadows1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      spellAssetIds <- selectList (AssetOwnedBy You <> AssetWithTrait Spell)
+      spellAssetIds <- selectList (AssetControlledBy You <> AssetWithTrait Spell)
       a <$ unless
         (null spellAssetIds)
         (push $ chooseOne

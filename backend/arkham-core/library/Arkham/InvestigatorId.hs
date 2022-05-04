@@ -12,9 +12,3 @@ newtype InScenarioInvestigatorId = InScenarioInvestigatorId { unInScenarioInvest
 
 newtype DefeatedInvestigatorId = DefeatedInvestigatorId { unDefeatedInvestigatorId :: InvestigatorId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
-
-newtype PreyId = PreyId { unPreyId :: InvestigatorId }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
-
-newtype OwnerId = OwnerId { unOwnerId :: InvestigatorId }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)

@@ -46,7 +46,6 @@ import Arkham.Matcher
   )
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Prey
 import Arkham.Query
 import Arkham.Slot
 import Arkham.Source
@@ -103,13 +102,11 @@ type InnerInvestigatorRunner env
       , HasId (Maybe LocationId) env (Direction, LocationId)
       , HasId (Maybe LocationId) env AssetId
       , HasId (Maybe LocationId) env LocationMatcher
-      , HasId (Maybe OwnerId) env AssetId
       , HasId ActiveInvestigatorId env ()
       , HasId CardCode env AssetId
       , HasId CardCode env EnemyId
       , GetCardDef env LocationId
       , HasId LeadInvestigatorId env ()
-      , HasId LocationId env EnemyId
       , HasId LocationId env InvestigatorId
       )
     , ( HasList CommittedCard env InvestigatorId
@@ -144,15 +141,10 @@ type InnerInvestigatorRunner env
         , HasSet ClosestLocationId env (LocationId, [Trait])
         , HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)
         , HasSet ClosestPathLocationId env (LocationId, LocationId)
-        , HasSet ClosestPathLocationId env (LocationId, Prey)
         , HasSet
             ClosestPathLocationId
             env
             (LocationId, LocationId, HashMap LocationId [LocationId])
-        , HasSet
-            ClosestPathLocationId
-            env
-            (LocationId, Prey, HashMap LocationId [LocationId])
         , HasSet CommittedCardCode env ()
         , HasSet CommittedCardId env InvestigatorId
         , HasSet CommittedSkillId env InvestigatorId
@@ -187,8 +179,6 @@ type InnerInvestigatorRunner env
         , HasSet LocationId env (HashSet LocationSymbol)
         , HasSet LocationId env [Trait]
         , HasSet LocationId env ()
-        , HasSet PreyId env Prey
-        , HasSet PreyId env (Prey, LocationId)
         , HasSet RevealedLocationId env ()
         , HasSet ScenarioLogKey env ()
         , HasSet Trait env AssetId
@@ -422,7 +412,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorEliminated iid | iid == investigatorId -> do
     push (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
     pure $ a & cluesL .~ 0 & resourcesL .~ 0
-  EnemyMove eid _ lid | lid /= investigatorLocation ->
+  EnemyMove eid lid | lid /= investigatorLocation ->
     pure $ a & engagedEnemiesL %~ deleteSet eid
   EnemyEngageInvestigator eid iid | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ insertSet eid
@@ -435,7 +425,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   ChooseAndDiscardAsset iid assetMatcher | iid == investigatorId -> do
     discardableAssetIds <- selectList
-      (assetMatcher <> DiscardableAsset <> AssetOwnedBy You)
+      (assetMatcher <> DiscardableAsset <> AssetControlledBy You)
     a <$ push
       (chooseOrRunOne iid $ map (Discard . AssetTarget) discardableAssetIds)
   AttachAsset aid _ | aid `member` investigatorAssets ->
@@ -882,7 +872,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               validAssets <-
                 setToList
                 . intersection (setFromList healthDamageableAssets)
-                <$> select (AssetOwnedBy You <> assetIs def)
+                <$> select (AssetControlledBy You <> assetIs def)
               pure $ if null validAssets
                 then damageInvestigator : map damageAsset healthDamageableAssets
                 else map damageAsset validAssets
@@ -929,7 +919,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               validAssets <-
                 setToList
                 . intersection (setFromList sanityDamageableAssets)
-                <$> select (AssetOwnedBy You <> assetIs def)
+                <$> select (AssetControlledBy You <> assetIs def)
               pure $ if null validAssets
                 then damageInvestigator : map damageAsset sanityDamageableAssets
                 else map damageAsset validAssets
@@ -1176,7 +1166,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (nub slotTypes)
         assetsThatCanProvideSlots <-
           selectList
-          $ AssetOwnedBy (InvestigatorWithId iid)
+          $ AssetControlledBy (InvestigatorWithId iid)
           <> DiscardableAsset
           <> AssetOneOf (map AssetInSlot missingSlotTypes)
         if null assetsThatCanProvideSlots

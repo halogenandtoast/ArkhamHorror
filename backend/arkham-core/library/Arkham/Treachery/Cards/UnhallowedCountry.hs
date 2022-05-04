@@ -29,7 +29,7 @@ newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
 unhallowedCountry :: TreacheryCard UnhallowedCountry
 unhallowedCountry = treachery UnhallowedCountry Cards.unhallowedCountry
 
-instance (HasSet Trait env AssetId, HasId (Maybe OwnerId) env AssetId) => HasModifiersFor env UnhallowedCountry where
+instance (HasSet Trait env AssetId, Query InvestigatorMatcher env) => HasModifiersFor env UnhallowedCountry where
   getModifiersFor _ (InvestigatorTarget iid) (UnhallowedCountry attrs) =
     pure $ toModifiers
       attrs
@@ -38,7 +38,7 @@ instance (HasSet Trait env AssetId, HasId (Maybe OwnerId) env AssetId) => HasMod
       ]
   getModifiersFor _ (AssetTarget aid) (UnhallowedCountry attrs) = do
     traits <- getSet @Trait aid
-    miid <- fmap unOwnerId <$> getId aid
+    miid <- selectAssetController aid
     pure $ case miid of
       Just iid -> toModifiers
         attrs

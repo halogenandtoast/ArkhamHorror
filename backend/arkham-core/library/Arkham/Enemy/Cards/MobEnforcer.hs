@@ -6,14 +6,14 @@ module Arkham.Enemy.Cards.MobEnforcer
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Matcher
 import Arkham.Message
-import Arkham.Prey
 import Arkham.Source
 
 newtype MobEnforcer = MobEnforcer EnemyAttrs
@@ -26,7 +26,7 @@ mobEnforcer = enemyWith
   Cards.mobEnforcer
   (4, Static 3, 3)
   (1, 0)
-  (preyL .~ SetToBearer)
+  (preyL .~ Bearer)
 
 instance HasAbilities MobEnforcer where
   getAbilities (MobEnforcer attrs) = withBaseAbilities

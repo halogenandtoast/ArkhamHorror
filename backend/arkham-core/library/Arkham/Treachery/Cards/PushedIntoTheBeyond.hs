@@ -25,7 +25,7 @@ pushedIntoTheBeyond = treachery PushedIntoTheBeyond Cards.pushedIntoTheBeyond
 instance TreacheryRunner env => RunMessage env PushedIntoTheBeyond where
   runMessage msg t@(PushedIntoTheBeyond attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      validAssets <- selectList (AssetOwnedBy You <> AssetNonStory)
+      validAssets <- selectList (AssetControlledBy You <> AssetNonStory)
       targets <- traverse (traverseToSnd getId) validAssets
       t <$ when
         (notNull targets)

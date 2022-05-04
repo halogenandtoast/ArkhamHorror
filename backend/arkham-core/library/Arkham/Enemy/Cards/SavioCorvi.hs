@@ -22,9 +22,11 @@ savioCorvi = enemy SavioCorvi Cards.savioCorvi (3, Static 5, 3) (1, 1)
 
 instance (HasSet ConnectedLocationId env LocationId, HasSet LocationId env ()) => HasModifiersFor env SavioCorvi where
   getModifiersFor _ (EnemyTarget eid) (SavioCorvi attrs) | eid == toId attrs =
-    do
-      acrossLocationId <- getAcrossLocation (enemyLocation attrs)
-      pure $ toModifiers attrs [HunterConnectedTo acrossLocationId]
+    case enemyLocation attrs of
+      Nothing -> pure []
+      Just loc -> do
+        acrossLocationId <- getAcrossLocation loc
+        pure $ toModifiers attrs [HunterConnectedTo acrossLocationId]
   getModifiersFor _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env SavioCorvi where

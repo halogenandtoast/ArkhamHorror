@@ -75,7 +75,7 @@ type AssetRunner env =
 instance AssetRunner env => RunMessage env AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
-    ReadyExhausted -> case assetInvestigator of
+    ReadyExhausted -> case assetController of
       Just iid -> do
         modifiers <- getModifiers (toSource a) (InvestigatorTarget iid)
         if ControlledAssetsCannotReady `elem` modifiers
@@ -105,9 +105,9 @@ instance AssetRunner env => RunMessage env AssetAttrs where
     AssetDefeated aid | aid == assetId -> a <$ push (Discard $ toTarget a)
     AssetDamage aid _ health sanity | aid == assetId ->
       pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
-    When (InvestigatorResigned iid) | assetInvestigator == Just iid ->
+    When (InvestigatorResigned iid) | assetController == Just iid ->
       a <$ push (ResignWith (AssetTarget assetId))
-    InvestigatorEliminated iid | assetInvestigator == Just iid ->
+    InvestigatorEliminated iid | assetController == Just iid ->
       a <$ push (Discard (AssetTarget assetId))
     AddUses target useType' n | a `isTarget` target -> case assetUses of
       Uses useType'' m | useType' == useType'' ->
@@ -125,13 +125,13 @@ instance AssetRunner env => RunMessage env AssetAttrs where
       LocationTarget lid ->
         pure
           $ a
-          & (investigatorL .~ Nothing)
+          & (controllerL .~ Nothing)
           . (enemyL .~ Nothing)
           . (locationL ?~ lid)
       EnemyTarget eid ->
         pure
           $ a
-          & (investigatorL .~ Nothing)
+          & (controllerL .~ Nothing)
           . (locationL .~ Nothing)
           . (enemyL ?~ eid)
       _ -> error "Cannot attach asset to that type"
@@ -169,7 +169,7 @@ instance AssetRunner env => RunMessage env AssetAttrs where
       pushAll [whenEnterMsg, afterEnterMsg]
       pure
         $ a
-        & (investigatorL ?~ iid)
+        & (controllerL ?~ iid)
         & (usesL .~ if assetUses == NoUses
             then foldl' applyModifier startingUses modifiers
             else assetUses
@@ -181,15 +181,15 @@ instance AssetRunner env => RunMessage env AssetAttrs where
         ((`Window` Window.TookControlOfAsset iid aid)
         <$> [Timing.When, Timing.After]
         )
-      pure $ a & investigatorL ?~ iid
+      pure $ a & controllerL ?~ iid
     ReplacedInvestigatorAsset iid aid | aid == assetId ->
-      pure $ a & investigatorL ?~ iid
+      pure $ a & controllerL ?~ iid
     AddToScenarioDeck key target | isTarget a target -> do
       pushAll
         [AddCardToScenarioDeck key (toCard a), RemoveFromGame (toTarget a)]
-      pure $ a & investigatorL .~ Nothing
+      pure $ a & controllerL .~ Nothing
     Exhaust target | a `isTarget` target -> pure $ a & exhaustedL .~ True
-    Ready target | a `isTarget` target -> case assetInvestigator of
+    Ready target | a `isTarget` target -> case assetController of
       Just iid -> do
         modifiers <- getModifiers (toSource a) (InvestigatorTarget iid)
         if ControlledAssetsCannotReady `elem` modifiers

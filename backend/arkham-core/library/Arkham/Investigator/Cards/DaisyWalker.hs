@@ -60,7 +60,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalker where
     PassedSkillTest iid _ _ (TokenTarget token) _ _ | iid == investigatorId ->
       case tokenFace token of
         ElderSign -> do
-          tomeCount <- selectCount $ AssetOwnedBy (InvestigatorWithId investigatorId) <> AssetWithTrait Tome
+          tomeCount <- selectCount $ AssetControlledBy (InvestigatorWithId investigatorId) <> AssetWithTrait Tome
           i <$ when (tomeCount > 0) (push $ DrawCards iid tomeCount False)
         _ -> pure i
     BeginRound ->

@@ -12,7 +12,6 @@ import Arkham.Criteria
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Prey
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -26,7 +25,7 @@ cloverClubPitBoss = enemyWith
   Cards.cloverClubPitBoss
   (3, Static 4, 3)
   (2, 0)
-  (preyL .~ HighestSkill SkillIntellect)
+  (preyL .~ Prey (InvestigatorWithHighestSkill SkillIntellect))
 
 instance HasAbilities CloverClubPitBoss where
   getAbilities (CloverClubPitBoss x) = withBaseAbilities

@@ -66,7 +66,6 @@ import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
 import Arkham.PlayerCard
-import Arkham.Prey
 import Arkham.Projection
 import Arkham.Query
 import Arkham.Scenario
@@ -988,10 +987,9 @@ getAssetsMatching matcher = do
     AssetWithTrait t -> filterM (fmap (member t) . getSet . toId) as
     AssetInSlot slot -> pure $ filter (elem slot . slotsOf) as
     AssetCanLeavePlayByNormalMeans -> pure $ filter canBeDiscarded as
-    AssetOwnedBy investigatorMatcher -> do
-      iids <- map (OwnerId . toId)
-        <$> getInvestigatorsMatching investigatorMatcher
-      filterM (fmap (maybe False (`elem` iids)) . getId) as
+    AssetControlledBy investigatorMatcher -> do
+      iids <- selectList investigatorMatcher
+      pure $ filter (maybe False (`elem` iids) . assetController) as
     AssetAtLocation lid -> filterM (fmap (== Just lid) . getId) as
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AssetNonStory -> pure $ filter (not . isStory) as
@@ -1023,7 +1021,7 @@ getAssetsMatching matcher = do
     AssetCanBeAssignedDamageBy iid -> do
       investigatorAssets <- filterMatcher
         as
-        (AssetOwnedBy $ InvestigatorWithId iid)
+        (AssetControlledBy $ InvestigatorWithId iid)
       let otherAssets = filter (`notElem` investigatorAssets) as
       otherDamageableAssets <-
         map fst
@@ -1037,7 +1035,7 @@ getAssetsMatching matcher = do
     AssetCanBeAssignedHorrorBy iid -> do
       investigatorAssets <- filterMatcher
         as
-        (AssetOwnedBy $ InvestigatorWithId iid)
+        (AssetControlledBy $ InvestigatorWithId iid)
       let otherAssets = filter (`notElem` investigatorAssets) as
       otherDamageableAssets <-
         map fst
@@ -1062,10 +1060,9 @@ getEventsMatching matcher = do
     EventWithId eventId -> pure $ filter ((== eventId) . toId) as
     EventWithClass role -> filterM (fmap (member role) . getSet . toId) as
     EventWithTrait t -> filterM (fmap (member t) . getSet . toId) as
-    EventOwnedBy investigatorMatcher -> do
-      iids <- map (OwnerId . toId)
-        <$> getInvestigatorsMatching investigatorMatcher
-      filterM (fmap (`elem` iids) . getId) as
+    EventControlledBy investigatorMatcher -> do
+      iids <- map toId <$> selectList investigatorMatcher
+      pure $ filter ((`elem` iids) . ownerOfEvent) as
     EventMatches ms -> foldM filterMatcher as ms
 
 getSkillsMatching
@@ -1081,7 +1078,9 @@ getSkillsMatching matcher = do
     SkillWithId skillId -> pure $ filter ((== skillId) . toId) as
     SkillWithClass role -> filterM (fmap (member role) . getSet . toId) as
     SkillWithTrait t -> filterM (fmap (member t) . getSet . toId) as
-    SkillOwnedBy iid -> filterM (fmap (== OwnerId iid) . getId) as
+    SkillControlledBy investigatorMatcher -> do
+      iids <- map toId <$> selectList investigatorMatcher
+      pure $ filter ((`elem` iids) . ownerOfSkill) as
     SkillMatches ms -> foldM filterMatcher as ms
     AnySkill -> pure as
     YourSkill -> do
@@ -1381,15 +1380,6 @@ instance HasGame env => HasCount UsesCount env (AssetId, UseType) where
 instance HasGame env => HasCount StartingUsesCount env (AssetId, UseType) where
   getCount (aid, uType) = getCount . (, uType) =<< getAsset aid
 
-instance HasGame env => HasId (Maybe OwnerId) env AssetId where
-  getId = getId <=< getAsset
-
-instance HasGame env => HasId OwnerId env EventId where
-  getId = getId <=< getEvent
-
-instance HasGame env => HasId OwnerId env SkillId where
-  getId = getId <=< getSkill
-
 instance HasGame env => HasId InvestigatorId env EventId where
   getId = getId <=< getEvent
 
@@ -1482,6 +1472,12 @@ instance HasGame env => Query EnemyMatcher env where
 
 instance HasGame env => Query InvestigatorMatcher env where
   select = fmap (setFromList . map toId) . getInvestigatorsMatching
+
+instance HasGame env => Query PreyMatcher env where
+  select = \case
+    Prey matcher -> select matcher
+    OnlyPrey matcher -> select matcher
+    Bearer -> error "can not be matched here"
 
 instance HasGame env => Query ExtendedCardMatcher env where
   select = fmap setFromList . getList
@@ -1586,9 +1582,6 @@ instance HasGame env => HasId (Maybe EnemyId) env CardCode where
 
 instance HasGame env => HasId LocationId env InvestigatorId where
   getId = locationFor
-
-instance HasGame env => HasId LocationId env EnemyId where
-  getId = getId <=< getEnemy
 
 instance HasGame env => HasCount FightCount env EnemyId where
   getCount = getCount <=< getEnemy
@@ -2499,17 +2492,6 @@ markDistances initialLocation target extraConnectionsMap = do
       Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
       Just parent -> unwindPath parentsMap (parent : currentPath)
 
-instance HasGame env => HasSet ClosestPathLocationId env (LocationId, Prey) where
-  getSet (start, prey) = getSet (start, prey, emptyConnectionsMap)
-   where
-    emptyConnectionsMap :: HashMap LocationId [LocationId]
-    emptyConnectionsMap = mempty
-
-instance HasGame env => HasSet ClosestPathLocationId env (LocationId, Prey, HashMap LocationId [LocationId]) where
-  getSet (start, prey, extraConnectionsMap) = do
-    let matcher lid = notNull <$> getSet @PreyId (prey, lid)
-    setFromList . coerce <$> getShortestPath start matcher extraConnectionsMap
-
 instance HasGame env => HasSet ClosestAssetId env (InvestigatorId, AssetMatcher) where
   getSet (iid, assetMatcher) = do
     start <- locationFor iid
@@ -2650,6 +2632,12 @@ instance HasGame env => HasSet ClosestPathLocationId env (LocationId, LocationId
           . groupOn snd
           $ sortOn snd candidates
 
+instance HasGame env => HasCount (Maybe Distance) env (LocationId, LocationId) where
+  getCount (start, fin) = do
+    let !state' = LPState (pure start) (singleton start) mempty
+    result <- evalStateT (markDistances start (pure . (== fin)) mempty) state'
+    pure $ fmap Distance . headMay . drop 1 . map fst . sortOn fst . mapToList $ result
+
 instance HasGame env => HasSet FarthestLocationId env InvestigatorId where
   getSet iid = do
     start <- locationFor iid
@@ -2738,19 +2726,19 @@ instance HasGame env => HasSet Int env SkillType where
 instance HasGame env => HasSkillValue env InvestigatorId where
   getSkillValue skillType = getSkillValue skillType <=< getInvestigator
 
-instance HasGame env => HasSet PreyId env Prey where
-  getSet preyType = do
-    investigatorIds <- getSetList ()
-    let matcher = getIsPrey preyType <=< getInvestigator
-    setFromList . coerce <$> filterM matcher investigatorIds
+-- instance HasGame env => HasSet PreyId env Prey where
+--   getSet preyType = do
+--     investigatorIds <- getSetList ()
+--     let matcher = getIsPrey preyType <=< getInvestigator
+--     setFromList . coerce <$> filterM matcher investigatorIds
 
-instance HasGame env => HasSet PreyId env (Prey, LocationId) where
-  getSet (preyType, lid) = do
-    location <- getLocation lid
-    investigators <- getSetList location
-    setFromList
-      . coerce
-      <$> filterM (getIsPrey preyType <=< getInvestigator) investigators
+-- instance HasGame env => HasSet PreyId env (Prey, LocationId) where
+--   getSet (preyType, lid) = do
+--     location <- getLocation lid
+--     investigators <- getSetList location
+--     setFromList
+--       . coerce
+--       <$> filterM (getIsPrey preyType <=< getInvestigator) investigators
 
 instance HasGame env => HasSet ConnectedLocationId env LocationId where
   getSet lid = do
@@ -3592,17 +3580,11 @@ runGameMessage msg g = case msg of
     let
       enemy = createEnemy card
       eid = toId enemy
-      bearerMessage = case card of
-        PlayerCard MkPlayerCard {..} -> case pcBearer of
-          Just iid' -> EnemySetBearer eid (BearerId iid')
-          Nothing -> error "The bearer was not set for a player enemy"
-        _ -> error "this should definitely be a player card"
     pushAll
-      (bearerMessage
-      : [ RemoveCardFromHand iid (toCardId card)
-        , InvestigatorDrawEnemy iid lid eid
-        ]
-      )
+      [ SetBearer (toTarget enemy) iid
+      , RemoveCardFromHand iid (toCardId card)
+      , InvestigatorDrawEnemy iid lid eid
+      ]
     pure $ g & entitiesL . enemiesL %~ insertMap eid enemy
   CancelNext msgType -> do
     withQueue_ $ \queue ->
@@ -3776,7 +3758,7 @@ runGameMessage msg g = case msg of
     let card = toCard enemy
     case card of
       PlayerCard pc -> do
-        case getBearer enemy of
+        case getEnemyBearer enemy of
           Nothing -> push (RemoveFromGame $ EnemyTarget eid)
           -- The Man in the Pallid Mask has not bearer in Curtain Call
           Just iid' -> push (AddToDiscard iid' pc)

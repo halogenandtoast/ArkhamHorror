@@ -37,7 +37,6 @@ investigatorsNearestToTheOrganist = do
 moveOrganistAwayFromNearestInvestigator ::
   ( MonadReader env m
   , HasId LeadInvestigatorId env ()
-  , HasId LocationId env EnemyId
   , HasList (LocationId, Distance) env InvestigatorId
   , HasList (InvestigatorId, Distance) env EnemyMatcher
   , Query LocationMatcher env
@@ -51,7 +50,6 @@ moveOrganistAwayFromNearestInvestigator = do
         [ enemyIs Cards.theOrganistDrapedInMystery
         , enemyIs Cards.theOrganistHopelessIDefiedHim
         ]
-  from <- getId organist
   leadInvestigatorId <- getLeadInvestigatorId
   (minDistance, iids) <- investigatorsNearestToTheOrganist
   lids <-
@@ -68,7 +66,7 @@ moveOrganistAwayFromNearestInvestigator = do
   pure $
     chooseOne
       leadInvestigatorId
-      [ TargetLabel (LocationTarget lid) [EnemyMove organist from lid]
+      [ TargetLabel (LocationTarget lid) [EnemyMove organist lid]
       | lid <- targets
       ]
 

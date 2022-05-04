@@ -12,7 +12,6 @@ import Arkham.Keyword (Keyword)
 import Arkham.Location
 import Arkham.Matcher
 import Arkham.Name
-import Arkham.Prey
 import Arkham.Query
 import Arkham.SkillTest
 import Arkham.Trait
@@ -37,12 +36,10 @@ type GameRunner env =
     , HasCount SpendableClueCount env InvestigatorId
     )
   , ( HasId (Maybe AssetId) env CardCode
-    , HasId (Maybe OwnerId) env AssetId
     , HasId ActiveInvestigatorId env ()
     , HasId LeadInvestigatorId env ()
     , HasId CardCode env AssetId
     , HasId CardCode env EnemyId
-    , HasId LocationId env EnemyId
     , HasId LocationId env InvestigatorId
     )
   , ( HasList Enemy env ()
@@ -59,7 +56,6 @@ type GameRunner env =
     , HasSet ClosestEnemyId env InvestigatorId
     , HasSet ClosestEnemyId env (InvestigatorId, [Trait])
     , HasSet ClosestPathLocationId env (LocationId, LocationId)
-    , HasSet ClosestPathLocationId env (LocationId, Prey)
     , HasSet CommittedCardCode env ()
     , HasSet CommittedCardId env InvestigatorId
     , HasSet ConnectedLocationId env LocationId
@@ -83,8 +79,6 @@ type GameRunner env =
     , HasSet LocationId env ()
     , HasSet LocationId env [Trait]
     , HasSet LocationId env TreacheryCardCode
-    , HasSet PreyId env (Prey, LocationId)
-    , HasSet PreyId env Prey
     , HasSet Trait env AssetId
     , HasSet Trait env EnemyId
     , HasSet Trait env LocationId

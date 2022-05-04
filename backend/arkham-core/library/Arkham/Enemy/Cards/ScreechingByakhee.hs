@@ -9,8 +9,8 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Prey
 import Arkham.Query
 
 newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
@@ -23,7 +23,7 @@ screechingByakhee = enemyWith
   Cards.screechingByakhee
   (3, Static 4, 3)
   (1, 2)
-  (preyL .~ LowestRemainingSanity)
+  (preyL .~ Prey LowestRemainingSanity)
 
 instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env ScreechingByakhee where
   getModifiersFor _ target (ScreechingByakhee attrs) | isTarget attrs target =

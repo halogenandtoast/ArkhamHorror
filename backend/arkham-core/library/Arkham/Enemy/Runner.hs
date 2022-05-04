@@ -15,10 +15,9 @@ import Arkham.Direction
 import Arkham.EnemyId
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
-import Arkham.Matcher (EnemyMatcher(..), InvestigatorMatcher(..), LocationMatcher(..))
+import Arkham.Matcher (PreyMatcher(..), EnemyMatcher(..), InvestigatorMatcher(..), LocationMatcher(..), preyWith, locationWithInvestigator)
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Prey
 import Arkham.Query
 import Arkham.SkillTest
 import Arkham.SkillType
@@ -37,6 +36,8 @@ type EnemyRunner env
     , Query LocationMatcher env
     , Query EnemyMatcher env
     , Query InvestigatorMatcher env
+    , Query PreyMatcher env
+    , HasCount (Maybe Distance) env (LocationId, LocationId)
     , HasCount CardCount env InvestigatorId
     , HasCount ClueCount env LocationId
     , HasCount PlayerCount env ()
@@ -52,12 +53,7 @@ type EnemyRunner env
         ClosestPathLocationId
         env
         (LocationId, LocationId, HashMap LocationId [LocationId])
-    , HasSet
-        ClosestPathLocationId
-        env
-        (LocationId, Prey, HashMap LocationId [LocationId])
     , HasSet ConnectedLocationId env LocationId
-    , HasSet ClosestPathLocationId env (LocationId, Prey)
     , HasSet EmptyLocationId env ()
     , HasSet FarthestLocationId env InvestigatorId
     , HasSet FarthestLocationId env [InvestigatorId]
@@ -65,8 +61,6 @@ type EnemyRunner env
     , HasSet InvestigatorId env LocationId
     , HasSet LocationId env ()
     , HasSet LocationId env [Trait]
-    , HasSet PreyId env (Prey, LocationId)
-    , HasSet PreyId env Prey
     , HasSet Trait env EnemyId
     , HasSet Trait env InvestigatorId
     , HasSet Trait env SkillId
@@ -76,9 +70,6 @@ type EnemyRunner env
     , HasSet Trait env Source
     , HasSkillTest env
     , HasStep AgendaStep env ()
-    , HasId (Maybe OwnerId) env AssetId
-    , HasId OwnerId env EventId
-    , HasId OwnerId env SkillId
     )
 
 -- | Handle when enemy no longer exists
@@ -119,16 +110,14 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
     EndPhase -> pure $ a & movedFromHunterKeywordL .~ False
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
-      preyIds <- map unPreyId <$> getSetList enemyPrey
+      preyIds <- selectList enemyPrey
       preyIdsWithLocation <- for preyIds
-        $ \iid -> (iid, ) <$> getId @LocationId iid
+        $ traverseToSnd (selectJust . locationWithInvestigator)
       leadInvestigatorId <- getLeadInvestigatorId
       a <$ case preyIdsWithLocation of
         [] -> pure ()
-        [(iid, lid)] ->
-          pushAll [EnemySpawnedAt lid eid, EnemyEngageInvestigator eid iid]
         iids -> push
-          (chooseOne
+          (chooseOrRunOne
             leadInvestigatorId
             [ Run [EnemySpawnedAt lid eid, EnemyEngageInvestigator eid iid]
             | (iid, lid) <- iids
@@ -147,9 +136,9 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
             && not enemyExhausted
           then
             do
-              preyIds <- map unPreyId <$> getSetList (enemyPrey, lid)
+              preyIds <- selectList $ preyWith enemyPrey $ InvestigatorAt $ LocationWithId lid
               investigatorIds <- if null preyIds
-                then getSetList @InvestigatorId lid
+                then selectList $ InvestigatorAt $ LocationWithId lid
                 else pure []
               leadInvestigatorId <- getLeadInvestigatorId
               let
@@ -338,11 +327,11 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
             DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
             _ -> Nothing
           forcedTargetLocation = firstJust matchForcedTargetLocation modifiers'
-          applyConnectionMapModifier connectionMap (HunterConnectedTo lid') =
-            unionWith (<>) connectionMap $ singletonMap loc [lid']
-          applyConnectionMapModifier connectionMap _ = connectionMap
-          extraConnectionsMap :: HashMap LocationId [LocationId] =
-            foldl' applyConnectionMapModifier mempty modifiers'
+          -- applyConnectionMapModifier connectionMap (HunterConnectedTo lid') =
+          --   unionWith (<>) connectionMap $ singletonMap loc [lid']
+          -- applyConnectionMapModifier connectionMap _ = connectionMap
+          -- extraConnectionsMap :: HashMap LocationId [LocationId] =
+          --   foldl' applyConnectionMapModifier mempty modifiers'
 
         -- The logic here is an artifact of doing this incorrect
         -- Prey is only used for breaking ties unless we're dealing
@@ -350,15 +339,14 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         -- to AnyPrey and then find if there are any investigators
         -- who qualify as prey to filter
         matchingClosestLocationIds <- case (forcedTargetLocation, enemyPrey) of
-          (Just forcedTargetLocationId, _) ->
-            map unClosestPathLocationId <$> getSetList
-              (loc, forcedTargetLocationId, extraConnectionsMap)
-          (Nothing, OnlyPrey prey) -> map unClosestPathLocationId
-            <$> getSetList (loc, prey, extraConnectionsMap)
-          (Nothing, _prey) -> map unClosestPathLocationId
-            <$> getSetList (loc, AnyPrey, extraConnectionsMap)
+          (Just forcedTargetLocationId, _) -> error "TODO: MUST FIX"
+            -- map unClosestPathLocationId <$> getSetList
+            --   (loc, forcedTargetLocationId, extraConnectionsMap)
+          (Nothing, Bearer) -> selectList $ locationWithInvestigator $ fromJustNote "must have bearer" enemyBearer
+          (Nothing, OnlyPrey prey) -> selectList $ LocationWithInvestigator $ prey <> NearestToEnemy (EnemyWithId eid)
+          (Nothing, _prey) -> selectList $ LocationWithInvestigator $ NearestToEnemy $ EnemyWithId eid
 
-        preyIds <- setFromList . map unPreyId <$> getSetList enemyPrey
+        preyIds <- select enemyPrey
 
         filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
           $ \lid -> notNull . intersect preyIds <$> getSet lid
@@ -694,7 +682,6 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
       -> a <$ push (DisengageEnemy iid enemyId)
     DisengageEnemy iid eid | eid == enemyId ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid
-    EnemySetBearer eid bid | eid == enemyId -> pure $ a & preyL .~ Bearer bid
     AdvanceAgenda{} -> pure $ a & doomL .~ 0
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
     RemoveAllDoom -> pure $ a & doomL .~ 0

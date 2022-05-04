@@ -34,11 +34,13 @@ instance TreacheryRunner env => RunMessage env TheKingsEdict where
           msgs <- concat <$> for
             xs
             \enemy -> do
-              lid <- getId enemy
-              pure
-                [ RemoveClues (LocationTarget lid) 1
-                , PlaceClues (EnemyTarget enemy) 1
-                ]
+              mlid <- selectOne $ locationWithEnemy enemy
+              pure $ case mlid of
+                Nothing -> []
+                Just lid ->
+                  [ RemoveClues (LocationTarget lid) 1
+                  , PlaceClues (EnemyTarget enemy) 1
+                  ]
           pushAll
             $ msgs
             <> map

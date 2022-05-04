@@ -40,7 +40,7 @@ instance HasAbilities Umordhoth where
       attrs
       2
       (OnSameLocation
-      <> AssetExists (AssetOwnedBy You <> assetIs Cards.litaChantler)
+      <> AssetExists (AssetControlledBy You <> assetIs Cards.litaChantler)
       )
     $ ActionAbility Nothing
     $ ActionCost 1

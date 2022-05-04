@@ -42,9 +42,9 @@ instance LocationRunner env => RunMessage env EasttownArkhamPoliceStation where
   runMessage msg l@(EasttownArkhamPoliceStation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       ammoAssets <- map (Ammo, )
-        <$> selectList (AssetOwnedBy You <> AssetWithUseType Ammo)
+        <$> selectList (AssetControlledBy You <> AssetWithUseType Ammo)
       supplyAssets <- map (Supply, )
-        <$> selectList (AssetOwnedBy You <> AssetWithUseType Supply)
+        <$> selectList (AssetControlledBy You <> AssetWithUseType Supply)
       l <$ push
         (chooseOne
           iid

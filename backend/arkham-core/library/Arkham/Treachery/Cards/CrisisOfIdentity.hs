@@ -5,14 +5,14 @@ module Arkham.Treachery.Cards.CrisisOfIdentity
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card.CardDef
-import Arkham.ClassSymbol
 import Arkham.Classes
+import Arkham.ClassSymbol
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 import Arkham.Treachery.Attrs
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype CrisisOfIdentity = CrisisOfIdentity TreacheryAttrs
@@ -30,10 +30,18 @@ instance TreacheryRunner env => RunMessage env CrisisOfIdentity where
         [] -> error "role has to be set"
         role : _ -> do
           assets <- selectList
-            (AssetOwnedBy You <> AssetWithClass role <> DiscardableAsset)
-          events <- getSetList
-            (EventOwnedBy (InvestigatorWithId iid) <> EventWithClass role)
-          skills <- getSetList (SkillOwnedBy iid <> SkillWithClass role)
+            (AssetControlledBy (InvestigatorWithId iid)
+            <> AssetWithClass role
+            <> DiscardableAsset
+            )
+          events <-
+            selectList
+              (EventControlledBy (InvestigatorWithId iid) <> EventWithClass role
+              )
+          skills <-
+            selectList
+              (SkillControlledBy (InvestigatorWithId iid) <> SkillWithClass role
+              )
           pushAll
             $ [ Discard $ AssetTarget aid | aid <- assets ]
             <> [ Discard $ EventTarget eid | eid <- events ]

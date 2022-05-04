@@ -35,7 +35,7 @@ instance EventRunner env => RunMessage env Recharge2 where
       lid <- getId @LocationId iid
       assets <-
         selectListMap AssetTarget
-        $ AssetOwnedBy (InvestigatorAt $ LocationWithId lid)
+        $ AssetControlledBy (InvestigatorAt $ LocationWithId lid)
         <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
       e <$ push
         (chooseOne

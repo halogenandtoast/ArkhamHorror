@@ -80,6 +80,7 @@ instance HasCardDef Asset where
 instance IsCard Asset where
   toCardId = toCardId . toAttrs
   toCard = toCard . toAttrs
+  toCardOwner = toCardOwner . toAttrs
 
 instance HasDamage Asset where
   getDamage = (assetHealthDamage &&& assetSanityDamage) . toAttrs
@@ -90,9 +91,6 @@ instance Exhaustable Asset where
 instance Discardable Asset where
   canBeDiscarded = and . sequence
     [assetCanLeavePlayByNormalMeans . toAttrs, not . cdPermanent . toCardDef]
-
-instance HasId (Maybe OwnerId) env Asset where
-  getId = pure . coerce . assetInvestigator . toAttrs
 
 instance HasId (Maybe LocationId) env Asset where
   getId = pure . Attrs.assetLocation . toAttrs
@@ -175,4 +173,7 @@ assetLocation :: Asset -> Maybe LocationId
 assetLocation = Attrs.assetLocation . toAttrs
 
 assetOwner :: Asset -> Maybe InvestigatorId
-assetOwner = Attrs.assetInvestigator . toAttrs
+assetOwner = Attrs.assetOwner . toAttrs
+
+assetController :: Asset -> Maybe InvestigatorId
+assetController = Attrs.assetController . toAttrs

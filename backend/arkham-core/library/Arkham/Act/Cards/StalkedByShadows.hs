@@ -16,7 +16,6 @@ import Arkham.Criteria
 import Arkham.Resolution
 import Arkham.GameValue
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Window hiding (EnemyEvaded)
 import Arkham.Message
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 import Arkham.Target

@@ -20,7 +20,7 @@ import Arkham.Exception
 import Arkham.Id
 import Arkham.Location.Helpers
 import Arkham.Matcher
-  (AgendaMatcher, AssetMatcher, EnemyMatcher, ExtendedCardMatcher, LocationMatcher(..))
+  (AgendaMatcher, AssetMatcher, EnemyMatcher, ExtendedCardMatcher, LocationMatcher(..), locationWithEnemy)
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
@@ -50,11 +50,9 @@ type LocationRunner env =
   , HasCount HorrorCount env InvestigatorId
   , HasCount PlayerCount env ()
   , HasId (Maybe LocationId) env LocationMatcher
-  , HasId (Maybe OwnerId) env AssetId
   , HasId ActiveInvestigatorId env ()
   , HasId CardCode env EnemyId
   , HasId LeadInvestigatorId env ()
-  , HasId LocationId env EnemyId
   , HasId LocationId env InvestigatorId
   , HasList DiscardedEncounterCard env ()
   , HasList HandCard env InvestigatorId
@@ -206,12 +204,16 @@ instance LocationRunner env => RunMessage env LocationAttrs where
     EnemyEngageInvestigator eid iid -> do
       lid <- getId @LocationId iid
       if lid == locationId then pure $ a & enemiesL %~ insertSet eid else pure a
-    EnemyMove eid fromLid lid | fromLid == locationId -> do
-      willMove <- canEnterLocation eid lid
-      pure $ if willMove then a & enemiesL %~ deleteSet eid else a
-    EnemyMove eid _ lid | lid == locationId -> do
+    EnemyMove eid lid | lid == locationId -> do
       willMove <- canEnterLocation eid lid
       pure $ if willMove then a & enemiesL %~ insertSet eid else a
+    EnemyMove eid lid -> do
+      mLocationId <- selectOne $ locationWithEnemy eid
+      if mLocationId == Just locationId
+         then do
+           willMove <- canEnterLocation eid lid
+           pure $ if willMove then a & enemiesL %~ deleteSet eid else a
+         else pure a
     EnemyEntered eid lid | lid == locationId -> do
       pure $ a & enemiesL %~ insertSet eid
     EnemyEntered eid lid | lid /= locationId -> do
@@ -426,6 +428,7 @@ instance Named (Unrevealed LocationAttrs) where
 
 instance IsCard LocationAttrs where
   toCardId = unLocationId . locationId
+  toCardOwner = const Nothing
 
 instance HasName env LocationAttrs where
   getName = pure . toName

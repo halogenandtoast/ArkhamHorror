@@ -60,6 +60,7 @@ getSetListMap f a = map f <$> getSetList a
 type family QueryElement a where
   QueryElement AssetMatcher = AssetId
   QueryElement InvestigatorMatcher = InvestigatorId
+  QueryElement PreyMatcher = InvestigatorId
   QueryElement LocationMatcher = LocationId
   QueryElement EnemyMatcher = EnemyId
   QueryElement TreacheryMatcher = TreacheryId
@@ -145,6 +146,15 @@ selectOne matcher = do
     [] -> Nothing
     x : _ -> Just x
 
+selectAssetController :: (Query InvestigatorMatcher env, MonadReader env m) => AssetId -> m (Maybe InvestigatorId)
+selectAssetController = selectOne . HasMatchingAsset . AssetWithId
+
+selectEventController :: (Query InvestigatorMatcher env, MonadReader env m) => EventId -> m (Maybe InvestigatorId)
+selectEventController = selectOne . HasMatchingEvent . EventWithId
+
+selectSkillController :: (Query InvestigatorMatcher env, MonadReader env m) => SkillId -> m (Maybe InvestigatorId)
+selectSkillController = selectOne . HasMatchingSkill . SkillWithId
+
 class (Hashable (QueryElement a), Eq (QueryElement a)) => Query a env where
   select :: (HasCallStack, MonadReader env m) => a -> m (HashSet (QueryElement a))
 
@@ -156,6 +166,9 @@ class HasId id env a where
 
 class HasCount count env a where
   getCount :: MonadReader env m => a -> m count
+
+getDistance :: (HasCount (Maybe Distance) env (LocationId, LocationId), MonadReader env m) => LocationId -> LocationId -> m (Maybe Distance)
+getDistance lid1 lid2 = getCount (lid1, lid2)
 
 class HasName env a where
   getName :: MonadReader env m => a -> m Name
@@ -231,10 +244,8 @@ type ActionRunner env
       , HasCount SetAsideCount env CardCode
       )
     , HasId (Maybe LocationId) env AssetId
-    , HasId (Maybe OwnerId) env AssetId
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
-    , HasId LocationId env EnemyId
     , HasId LocationId env InvestigatorId
     , HasList CommittedCard env InvestigatorId
     , HasList CommittedSkillIcon env InvestigatorId

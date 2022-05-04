@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -27,10 +26,10 @@ instance TreacheryRunner env => RunMessage env WatchersGaze where
   runMessage msg t@(WatchersGaze attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       innocentRevelerIds <- selectList
-        (AssetOwnedBy You <> assetIs Assets.innocentReveler)
+        (AssetControlledBy You <> assetIs Assets.innocentReveler)
       investigatorsWithRevelers <-
         catMaybes
-          <$> traverse (fmap (fmap unOwnerId) . getId) innocentRevelerIds
+          <$> traverse (selectOne . HasMatchingAsset . AssetWithId) innocentRevelerIds
       t <$ pushAll
         [ RevelationSkillTest iid' source SkillWillpower 4
         | iid' <- nub (iid : investigatorsWithRevelers)

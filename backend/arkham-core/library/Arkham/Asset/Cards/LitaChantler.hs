@@ -29,10 +29,10 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler
   getModifiersFor _ (InvestigatorTarget iid) (LitaChantler a@AssetAttrs {..}) =
     do
       locationId <- getId @LocationId iid
-      case assetInvestigator of
+      case assetController of
         Nothing -> pure []
-        Just ownerId -> do
-          sameLocation <- (== locationId) <$> getId ownerId
+        Just controllerId -> do
+          sameLocation <- (== locationId) <$> getId controllerId
           pure [ toModifier a (SkillModifier SkillCombat 1) | sameLocation ]
   getModifiersFor _ _ _ = pure []
 

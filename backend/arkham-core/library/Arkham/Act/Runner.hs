@@ -39,8 +39,6 @@ type ActRunner env
     , HasCount SpendableClueCount env InvestigatorId
     , HasCount SpendableClueCount env ()
     , HasId (Maybe LocationId) env LocationMatcher
-    , HasId (Maybe OwnerId) env AssetId
-    , HasId LocationId env EnemyId
     , HasId CardCode env AssetId
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()

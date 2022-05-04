@@ -50,6 +50,6 @@ instance AssetRunner env => RunMessage env SophieItWasAllMyFault where
       let
         sophieInLovingMemory = PlayerCard
           $ lookupPlayerCard Cards.sophieInLovingMemory (toCardId attrs)
-        markId = fromJustNote "invalid" (assetInvestigator attrs)
+        markId = fromJustNote "invalid" (assetController attrs)
       a <$ pushAll [ReplaceInvestigatorAsset markId sophieInLovingMemory]
     _ -> SophieItWasAllMyFault <$> runMessage msg attrs

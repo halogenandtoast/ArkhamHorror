@@ -41,7 +41,7 @@ instance Query AssetMatcher env => HasModifiersFor env DaisyWalkerParallel where
   getModifiersFor _ (InvestigatorTarget iid) (DaisyWalkerParallel attrs@InvestigatorAttrs {..})
     | iid == investigatorId
     = do
-      tomeCount <- selectCount $ AssetOwnedBy (InvestigatorWithId investigatorId) <> AssetWithTrait Tome
+      tomeCount <- selectCount $ AssetControlledBy (InvestigatorWithId investigatorId) <> AssetWithTrait Tome
       pure
         $ toModifiers attrs
         $ SkillModifier SkillWillpower tomeCount
@@ -59,7 +59,7 @@ instance HasAbilities DaisyWalkerParallel where
     [ restrictedAbility
           attrs
           1
-          (Self <> AssetExists (AssetOwnedBy You <> AssetWithTrait Tome))
+          (Self <> AssetExists (AssetControlledBy You <> AssetWithTrait Tome))
           (FastAbility Free)
         & (abilityLimitL .~ PlayerLimit PerGame 1)
     ]

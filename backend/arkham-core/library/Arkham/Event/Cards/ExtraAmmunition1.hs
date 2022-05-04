@@ -23,7 +23,7 @@ instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
   runMessage msg e@(ExtraAmmunition1 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       firearms <-
-        selectListMap AssetTarget $ AssetWithTrait Firearm <> AssetOwnedBy
+        selectListMap AssetTarget $ AssetWithTrait Firearm <> AssetControlledBy
           (InvestigatorAt YourLocation)
       e <$ pushAll
         [ chooseOrRunOne iid [ AddUses firearm Ammo 3 | firearm <- firearms ]

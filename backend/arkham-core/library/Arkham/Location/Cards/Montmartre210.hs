@@ -39,7 +39,7 @@ instance HasAbilities Montmartre210 where
           attrs
           1
           (Here <> AssetExists
-            (AssetOwnedBy You
+            (AssetControlledBy You
             <> AssetOneOf [AssetWithUses Ammo, AssetWithUses Supply]
             )
           )
@@ -53,9 +53,9 @@ instance LocationRunner env => RunMessage env Montmartre210 where
   runMessage msg a@(Montmartre210 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       ammoAssets <-
-        selectListMap AssetTarget $ AssetOwnedBy You <> AssetWithUses Ammo
+        selectListMap AssetTarget $ AssetControlledBy You <> AssetWithUses Ammo
       supplyAssets <-
-        selectListMap AssetTarget $ AssetOwnedBy You <> AssetWithUses Supply
+        selectListMap AssetTarget $ AssetControlledBy You <> AssetWithUses Supply
       push
         $ chooseOne iid
         $ [ AddUses target Ammo 1 | target <- ammoAssets ]

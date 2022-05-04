@@ -12,7 +12,6 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyAttacks)
 import Arkham.Modifier
-import Arkham.Prey
 import Arkham.Query
 import Arkham.Timing qualified as Timing
 
@@ -26,7 +25,7 @@ yithianObserver = enemyWith
   Cards.yithianObserver
   (4, Static 4, 3)
   (1, 1)
-  (preyL .~ FewestCards)
+  (preyL .~ Prey FewestCardsInHand)
 
 instance HasAbilities YithianObserver where
   getAbilities (YithianObserver a) = withBaseAbilities

@@ -36,6 +36,7 @@ instance HasCardDef SkillAttrs where
 
 instance IsCard SkillAttrs where
   toCardId = unSkillId . skillId
+  toCardOwner = Just . skillOwner
 
 instance ToJSON SkillAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "skill"

@@ -55,7 +55,7 @@ instance LocationRunner env => RunMessage env WhateleyRuins_251 where
       | isSource attrs source -> do
         abominations <- getSetList @EnemyId (CardCode "02255")
         abominationsWithLocation <- traverse (traverseToSnd getId) abominations
-        abominationsWithLocationAndAccessibleLocations <-
+        abominationsWithLocationAndAccessibleLocations :: [(EnemyId, LocationId, [LocationId])] <-
           for abominationsWithLocation $ \(abomination, locationId) ->
             (abomination, locationId, )
               . map unEnemyAccessibleLocationId
@@ -70,11 +70,11 @@ instance LocationRunner env => RunMessage env WhateleyRuins_251 where
                     iid
                     [ TargetLabel
                         (LocationTarget destination)
-                        [EnemyMove eid from destination]
+                        [EnemyMove eid destination]
                     ]
                 | destination <- destinations
                 ]
-            | (eid, from, destinations) <-
+            | (eid, _, destinations) <-
               abominationsWithLocationAndAccessibleLocations
             ]
           )

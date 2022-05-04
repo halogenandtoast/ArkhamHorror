@@ -51,9 +51,7 @@ instance SourceEntity Skill where
 
 instance IsCard Skill where
   toCardId = toCardId . toAttrs
-
-instance HasId OwnerId env Skill where
-  getId = pure . OwnerId . ownerOfSkill
+  toCardOwner = toCardOwner . toAttrs
 
 lookupSkill :: CardCode -> (InvestigatorId -> SkillId -> Skill)
 lookupSkill cardCode =

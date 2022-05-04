@@ -6,8 +6,8 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Prey
 import Arkham.Query
 import Arkham.Target
 
@@ -21,7 +21,7 @@ acolyteOfUmordhoth = enemyWith
   Cards.acolyteOfUmordhoth
   (3, Static 3, 2)
   (1, 1)
-  (preyL .~ FewestCards)
+  (preyL .~ Prey FewestCardsInHand)
 
 instance HasCount CardCount env InvestigatorId => HasModifiersFor env AcolyteOfUmordhoth where
   getModifiersFor _ (EnemyTarget eid) (AcolyteOfUmordhoth a@EnemyAttrs {..})

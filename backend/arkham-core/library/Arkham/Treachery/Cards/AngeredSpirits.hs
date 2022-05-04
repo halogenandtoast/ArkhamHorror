@@ -38,7 +38,7 @@ instance HasAbilities AngeredSpirits where
         (FastAbility
         $ ExhaustAssetCost
         $ AssetWithTrait Spell
-        <> AssetOwnedBy You
+        <> AssetControlledBy You
         )
       : [ restrictedAbility a 2 (ChargesOnThis $ EqualTo $ Static 0)
           $ ForcedAbility

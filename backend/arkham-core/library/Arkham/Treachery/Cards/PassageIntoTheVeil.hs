@@ -37,7 +37,7 @@ instance TreacheryRunner env => RunMessage env PassageIntoTheVeil where
         )
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        assetIds <- selectList (AssetOwnedBy You)
+        assetIds <- selectList (AssetControlledBy You)
         t <$ push
           (chooseOne
             iid

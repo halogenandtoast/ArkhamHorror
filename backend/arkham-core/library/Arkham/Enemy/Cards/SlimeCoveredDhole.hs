@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Prey
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
@@ -25,7 +24,7 @@ slimeCoveredDhole = enemyWith
   Cards.slimeCoveredDhole
   (2, Static 3, 3)
   (1, 1)
-  ((preyL .~ LowestRemainingHealth) . (spawnAtL ?~ LocationWithoutTrait Bayou))
+  ((preyL .~ Prey LowestRemainingHealth) . (spawnAtL ?~ LocationWithoutTrait Bayou))
 
 instance HasAbilities SlimeCoveredDhole where
   getAbilities (SlimeCoveredDhole attrs) = withBaseAbilities
@@ -40,8 +39,7 @@ instance HasAbilities SlimeCoveredDhole where
 instance EnemyRunner env => RunMessage env SlimeCoveredDhole where
   runMessage msg e@(SlimeCoveredDhole attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      investigatorIds <-
-        selectList $ InvestigatorAt $ LocationWithId $ enemyLocation attrs
+      investigatorIds <- getInvestigatorsAtSameLocation attrs
       e <$ pushAll
         [ InvestigatorAssignDamage iid source DamageAny 0 1
         | iid <- investigatorIds

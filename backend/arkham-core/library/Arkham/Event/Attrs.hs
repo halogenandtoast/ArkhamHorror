@@ -54,6 +54,7 @@ instance FromJSON EventAttrs where
 
 instance IsCard EventAttrs where
   toCardId = unEventId . eventId
+  toCardOwner = Just . eventOwner
 
 unshiftEffect ::
   (HasQueue env, MonadReader env m, MonadIO m) =>

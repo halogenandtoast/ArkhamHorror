@@ -38,7 +38,7 @@ instance Query AssetMatcher env => HasModifiersFor env HistoricalSocietyPeabodys
     | toId attrs == lid = do
       modifierIsActive <- notNull <$> select
         (assetIs Assets.mrPeabody
-        <> AssetOwnedBy (InvestigatorAt $ LocationWithId lid)
+        <> AssetControlledBy (InvestigatorAt $ LocationWithId lid)
         )
       pure $ toModifiers attrs [ ShroudModifier (-2) | modifierIsActive ]
   getModifiersFor _ _ _ = pure []

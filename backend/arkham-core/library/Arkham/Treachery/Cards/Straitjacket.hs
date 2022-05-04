@@ -29,14 +29,14 @@ instance TreacheryRunner env => RunMessage env Straitjacket where
     Revelation iid source | isSource attrs source -> do
       alreadyInStraitJacket <-
         selectAny
-        $ AssetOwnedBy (InvestigatorWithId iid)
+        $ AssetControlledBy (InvestigatorWithId iid)
         <> assetIs Assets.straitjacket
       if alreadyInStraitJacket
         then t <$ push (Discard $ toTarget attrs)
         else do
           returnableAssets <-
             selectList
-            $ AssetOwnedBy (InvestigatorWithId iid)
+            $ AssetControlledBy (InvestigatorWithId iid)
             <> AssetCanLeavePlayByNormalMeans
             <> AssetOneOf [AssetInSlot BodySlot, AssetInSlot HandSlot]
           let asset = lookupPlayerCard Assets.straitjacket (toCardId attrs)

@@ -6,12 +6,12 @@ module Arkham.Enemy.Cards.BillyCooper
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 import Arkham.Trait
 
 newtype BillyCooper = BillyCooper EnemyAttrs
@@ -32,8 +32,9 @@ instance HasAbilities BillyCooper where
     [ mkAbility attrs 1
       $ ForcedAbility
       $ EnemyDefeated Timing.After Anyone
-      $ EnemyAt (LocationWithId $ enemyLocation attrs)
+      $ EnemyAt (LocationWithId loc)
       <> EnemyWithTrait Monster
+    | loc <- maybeToList (enemyLocation attrs)
     ]
 
 instance EnemyRunner env => RunMessage env BillyCooper where

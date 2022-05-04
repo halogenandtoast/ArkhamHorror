@@ -30,10 +30,12 @@ royalEmissary = enemyWith
   (preyL .~ LowestSkill SkillWillpower)
 
 investigatorMatcher :: EnemyAttrs -> InvestigatorMatcher
-investigatorMatcher a = AnyInvestigator
-  [ InvestigatorAt $ LocationWithId $ enemyLocation a
-  , InvestigatorAt $ AccessibleFrom $ LocationWithId $ enemyLocation a
-  ]
+investigatorMatcher a = case enemyLocaton a of
+  Nothing -> NoOne
+  Just loc -> AnyInvestigator
+    [ InvestigatorAt $ LocationWithId loc
+    , InvestigatorAt $ AccessibleFrom $ LocationWithId loc
+    ]
 
 instance HasAbilities RoyalEmissary where
   getAbilities (RoyalEmissary a) = withBaseAbilities

@@ -5,10 +5,10 @@ module Arkham.Enemy.Cards.BogGator
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
-import Arkham.Id
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Prey
 import Arkham.SkillType
@@ -27,10 +27,10 @@ bogGator = enemyWith
   (1, 1)
   (preyL .~ LowestSkill SkillAgility)
 
-instance HasSet Trait env LocationId => HasModifiersFor env BogGator where
+instance Query LocationMatcher env => HasModifiersFor env BogGator where
   getModifiersFor _ (EnemyTarget eid) (BogGator a@EnemyAttrs {..})
     | spawned a && eid == enemyId = do
-      bayouLocation <- member Bayou <$> getSet enemyLocation
+      bayouLocation <- selectAny $ LocationWithTrait Bayou <> locationWithEnemy eid
       pure $ toModifiers a $ if bayouLocation
         then [EnemyFight 2, EnemyEvade 2]
         else []

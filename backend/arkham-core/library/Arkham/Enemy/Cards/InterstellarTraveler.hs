@@ -40,9 +40,10 @@ instance HasAbilities InterstellarTraveler where
 
 instance EnemyRunner env => RunMessage env InterstellarTraveler where
   runMessage msg e@(InterstellarTraveler attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      let lid = enemyLocation attrs
-      clueCount <- unClueCount <$> getCount lid
-      push (PlaceDoom (toTarget attrs) 1)
-      e <$ when (clueCount > 0) (push $ RemoveClues (LocationTarget lid) 1)
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> case enemyLocation attrs of
+      Nothing -> pure e
+      Just loc -> do
+        clueCount <- unClueCount <$> getCount loc
+        push (PlaceDoom (toTarget attrs) 1)
+        e <$ when (clueCount > 0) (push $ RemoveClues (LocationTarget loc) 1)
     _ -> InterstellarTraveler <$> runMessage msg attrs

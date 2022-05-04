@@ -45,7 +45,7 @@ data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
   , enemyCardCode :: CardCode
   , enemyEngagedInvestigators :: HashSet InvestigatorId
-  , enemyLocation :: LocationId
+  , enemyLocation :: Maybe LocationId
   , enemyFight :: Int
   , enemyHealth :: GameValue Int
   , enemyEvade :: Int
@@ -92,7 +92,7 @@ fightL = lens enemyFight $ \m x -> m { enemyFight = x }
 evadeL :: Lens' EnemyAttrs Int
 evadeL = lens enemyEvade $ \m x -> m { enemyEvade = x }
 
-locationL :: Lens' EnemyAttrs LocationId
+locationL :: Lens' EnemyAttrs (Maybe LocationId)
 locationL = lens enemyLocation $ \m x -> m { enemyLocation = x }
 
 asSelfLocationL :: Lens' EnemyAttrs (Maybe Text)
@@ -139,7 +139,7 @@ instance HasCardDef EnemyAttrs where
     Nothing -> error $ "missing card def for enemy " <> show (enemyCardCode e)
 
 spawned :: EnemyAttrs -> Bool
-spawned EnemyAttrs { enemyLocation } = enemyLocation /= LocationId (CardId nil)
+spawned EnemyAttrs { enemyLocation } = enemyLocation /= Nothing
 
 instance ToJSON EnemyAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "enemy"
@@ -173,7 +173,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       { enemyId = eid
       , enemyCardCode = toCardCode cardDef
       , enemyEngagedInvestigators = mempty
-      , enemyLocation = LocationId $ CardId nil
+      , enemyLocation = Nothing
       , enemyFight = fight
       , enemyHealth = health
       , enemyEvade = evade

@@ -270,11 +270,11 @@ data Message
     DirectEnemyDamage EnemyId InvestigatorId Source DamageEffect Int
   | EnemySetDamage EnemyId Source Int
   | DefeatEnemy EnemyId InvestigatorId Source
-  | EnemyDefeated EnemyId InvestigatorId LocationId CardCode Source [Trait]
+  | EnemyDefeated EnemyId InvestigatorId CardCode Source [Trait]
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | EnemyEvaded InvestigatorId EnemyId
-  | EnemyMove EnemyId LocationId LocationId
-  | EngagedEnemyMove EnemyId LocationId LocationId
+  | EnemyMove EnemyId LocationId
+  | EngagedEnemyMove EnemyId LocationId
   | EnemyEntered EnemyId LocationId
   | EnemySetBearer EnemyId BearerId
   | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId

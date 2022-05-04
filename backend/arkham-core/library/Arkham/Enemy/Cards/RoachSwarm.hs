@@ -20,9 +20,11 @@ roachSwarm :: EnemyCard RoachSwarm
 roachSwarm = enemy RoachSwarm Cards.roachSwarm (0, Static 2, 3) (1, 0)
 
 instance HasCount Shroud env LocationId => HasModifiersFor env RoachSwarm where
-  getModifiersFor _ target (RoachSwarm a) | isTarget a target = do
-    x <- unShroud <$> getCount (enemyLocation a)
-    pure $ toModifiers a [EnemyFight x]
+  getModifiersFor _ target (RoachSwarm a) | isTarget a target = case enemyLocation a of
+    Nothing -> pure []
+    Just loc -> do
+      x <- unShroud <$> getCount loc
+      pure $ toModifiers a [EnemyFight x]
   getModifiersFor _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env RoachSwarm where

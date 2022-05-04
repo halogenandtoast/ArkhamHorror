@@ -6,8 +6,8 @@ module Arkham.Enemy.Cards.DianneDevine
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
 import Arkham.Id
 import Arkham.Matcher
@@ -15,7 +15,7 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Target
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 import Arkham.Trait
 
 newtype DianneDevine = DianneDevine EnemyAttrs
@@ -28,7 +28,7 @@ dianneDevine = enemy DianneDevine Cards.dianneDevine (2, Static 3, 2) (0, 0)
 instance HasId LocationId env InvestigatorId => HasModifiersFor env DianneDevine where
   getModifiersFor _ (InvestigatorTarget iid) (DianneDevine a) = do
     lid <- getId iid
-    pure $ toModifiers a $ if lid == enemyLocation a
+    pure $ toModifiers a $ if Just lid == enemyLocation a
       then [CannotDiscoverClues, CannotTakeControlOfClues]
       else []
   getModifiersFor _ _ _ = pure []
@@ -51,9 +51,7 @@ instance EnemyRunner env => RunMessage env DianneDevine where
         (notNull locations)
         (push $ chooseOne
           leadInvestigatorId
-          [ TargetLabel
-              (LocationTarget location)
-              [EnemyMove (toId attrs) (enemyLocation attrs) location]
+          [ targetLabel location [EnemyMove (toId attrs) location]
           | location <- locations
           ]
         )

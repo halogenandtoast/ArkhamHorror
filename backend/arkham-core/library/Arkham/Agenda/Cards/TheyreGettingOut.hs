@@ -3,8 +3,8 @@ module Arkham.Agenda.Cards.TheyreGettingOut where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Attrs
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Game.Helpers
@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
 import Arkham.Resolution
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 import Arkham.Trait
 
 newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs
@@ -50,15 +50,18 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
       messages <- catMaybes <$> for
         enemiesToMove
         \eid -> do
-          locationId <- getId eid
-          closestLocationIds <- map unClosestPathLocationId
-            <$> getSetList (locationId, LocationWithTitle "Parlor")
-          case closestLocationIds of
-            [] -> pure Nothing
-            [x] -> pure $ Just $ EnemyMove eid locationId x
-            xs -> pure $ Just $ chooseOne leadInvestigatorId $ map
-              (EnemyMove eid locationId)
-              xs
+          mLocationId <- selectOne $ LocationWithEnemy $ EnemyWithId eid
+          case mLocationId of
+            Nothing -> pure Nothing
+            Just loc -> do
+              closestLocationIds <- map unClosestPathLocationId
+                <$> getSetList (loc, LocationWithTitle "Parlor")
+              case closestLocationIds of
+                [] -> pure Nothing
+                [x] -> pure $ Just $ EnemyMove eid x
+                xs -> pure $ Just $ chooseOne leadInvestigatorId $ map
+                  (EnemyMove eid)
+                  xs
       a <$ unless
         (null messages)
         (push $ chooseOneAtATime leadInvestigatorId messages)

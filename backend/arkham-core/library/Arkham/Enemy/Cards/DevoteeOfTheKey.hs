@@ -6,14 +6,14 @@ module Arkham.Enemy.Cards.DevoteeOfTheKey
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 
 newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
@@ -40,24 +40,26 @@ instance
   )
   => RunMessage env DevoteeOfTheKey where
   runMessage msg e@(DevoteeOfTheKey attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      sentinelPeak <- fromJustNote "missing location"
-        <$> selectOne (LocationWithTitle "Sentinel Peak")
-      if enemyLocation == sentinelPeak
-        then
-          e <$ pushAll
-            [Discard (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
-        else do
-          choices <- map unClosestPathLocationId
-            <$> getSetList (enemyLocation, sentinelPeak, emptyLocationMap)
-          case choices of
-            [] -> error "should not happen"
-            [x] -> e <$ push (EnemyMove enemyId enemyLocation x)
-            xs ->
-              e
-                <$ push
-                     (chooseOne leadInvestigatorId
-                     $ map (EnemyMove enemyId enemyLocation) xs
-                     )
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      case enemyLocation of
+        Nothing -> pure e
+        Just loc -> do
+          leadInvestigatorId <- getLeadInvestigatorId
+          sentinelPeak <- selectJust (LocationWithTitle "Sentinel Peak")
+          if loc == sentinelPeak
+            then
+              e <$ pushAll
+                [Discard (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
+            else do
+              choices <- map unClosestPathLocationId
+                <$> getSetList (loc, sentinelPeak, emptyLocationMap)
+              case choices of
+                [] -> error "should not happen"
+                [x] -> e <$ push (EnemyMove enemyId x)
+                xs ->
+                  e
+                    <$ push
+                         (chooseOne leadInvestigatorId
+                         $ map (EnemyMove enemyId) xs
+                         )
     _ -> DevoteeOfTheKey <$> runMessage msg attrs

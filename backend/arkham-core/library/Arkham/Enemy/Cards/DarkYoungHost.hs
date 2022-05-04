@@ -6,16 +6,16 @@ module Arkham.Enemy.Cards.DarkYoungHost
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Target
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 import Arkham.Trait
 import Arkham.Window (Window(..))
-import Arkham.Window qualified as Window
+import qualified Arkham.Window as Window
 
 newtype DarkYoungHost = DarkYoungHost EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
@@ -30,26 +30,30 @@ darkYoungHost = enemyWith
   (spawnAtL ?~ LocationWithTrait Bayou)
 
 instance HasAbilities DarkYoungHost where
-  getAbilities (DarkYoungHost attrs) = withBaseAbilities
-    attrs
-    [ mkAbility attrs 1 $ ForcedAbility $ PlacedCounterOnLocation
-      Timing.When
-      (LocationWithId $ enemyLocation attrs)
-      ClueCounter
-      (AtLeast $ Static 1)
-    , mkAbility attrs 2
-    $ ForcedAbility
-    $ EnemyDefeated Timing.When Anyone
-    $ EnemyWithId
-    $ toId attrs
-    ]
+  getAbilities (DarkYoungHost attrs) =
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1 $ ForcedAbility $ PlacedCounterOnLocation
+            Timing.When
+            (LocationWithId loc)
+            ClueCounter
+            (AtLeast $ Static 1)
+        | loc <- maybeToList (enemyLocation attrs)
+        ]
+      <> [ mkAbility attrs 2
+           $ ForcedAbility
+           $ EnemyDefeated Timing.When Anyone
+           $ EnemyWithId
+           $ toId attrs
+         ]
 
 instance EnemyRunner env => RunMessage env DarkYoungHost where
   runMessage msg e@(DarkYoungHost attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.PlacedClues target n)] 1 _
       | isSource attrs source -> do
         e <$ pushAll [RemoveClues target n, PlaceClues (toTarget attrs) n]
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
-      e <$ push
-        (PlaceClues (LocationTarget $ enemyLocation attrs) (enemyClues attrs))
+    UseCardAbility _ source _ 2 _ | isSource attrs source ->
+      case enemyLocation attrs of
+        Nothing -> pure e
+        Just loc ->
+          e <$ push (PlaceClues (LocationTarget loc) (enemyClues attrs))
     _ -> DarkYoungHost <$> runMessage msg attrs

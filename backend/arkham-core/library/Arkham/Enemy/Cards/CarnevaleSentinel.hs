@@ -29,7 +29,7 @@ instance (HasName env AssetId, HasId (Maybe LocationId) env AssetId) => HasModif
   getModifiersFor _ (AssetTarget aid) (CarnevaleSentinel attrs) = do
     mlid <- getId @(Maybe LocationId) aid
     case mlid of
-      Just lid | lid == enemyLocation attrs -> do
+      Just lid | Just lid == enemyLocation attrs -> do
         name <- getName aid
         pure $ toModifiers
           attrs

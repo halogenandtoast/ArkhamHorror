@@ -68,6 +68,7 @@ data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | You
   | UnengagedInvestigator
+  | NoOne
   | NotYou
   | Anyone
   | UneliminatedInvestigator
@@ -281,6 +282,11 @@ pattern LeadInvestigatorLocation <- LocationWithInvestigator LeadInvestigator wh
 
 locationIs :: HasCardCode a => a -> LocationMatcher
 locationIs = LocationIs . toCardCode
+{-# INLINE locationIs #-}
+
+locationWithEnemy :: EnemyId -> LocationMatcher
+locationWithEnemy = LocationWithEnemy . EnemyWithId
+{-# INLINE locationWithEnemy #-}
 
 data LocationMatcher
   = LocationWithTitle Text

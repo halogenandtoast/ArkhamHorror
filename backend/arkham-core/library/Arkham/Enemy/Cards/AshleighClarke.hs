@@ -27,7 +27,7 @@ instance (HasId LocationId env InvestigatorId, HasPhase env) => HasModifiersFor 
     phase <- getPhase
     pure $ toModifiers
       attrs
-      [ CannotDrawCards | phase == UpkeepPhase && lid == enemyLocation attrs ]
+      [ CannotDrawCards | phase == UpkeepPhase && Just lid == enemyLocation attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env AshleighClarke where

@@ -56,7 +56,7 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
               <> [ MoveAction iid cloverClubLoungeId Free False
                  | iid <- laBellaLunaInvestigators
                  ]
-              <> [ EnemyMove eid laBellaLunaId cloverClubLoungeId
+              <> [ EnemyMove eid cloverClubLoungeId
                  | eid <- unEngagedEnemiesAtLaBellaLuna
                  ]
               <> [ RemoveLocation laBellaLunaId

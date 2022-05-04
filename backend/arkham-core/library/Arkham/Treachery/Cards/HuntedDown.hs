@@ -31,23 +31,26 @@ instance TreacheryRunner env => RunMessage env HuntedDown where
         then t <$ push (Surge iid $ toSource attrs)
         else do
           messages <- for (setToList enemiesToMove) $ \eid -> do
-            locationId <- getId eid
-            closestLocationIds <- map unClosestPathLocationId
-              <$> getSetList (locationId, destinationId)
-            case closestLocationIds of
-              [] -> pure Nothing
-              [x] -> pure $ Just $ TargetLabel
-                (EnemyTarget eid)
-                ([ EnemyMove eid locationId x | locationId /= x ]
-                <> [EnemyAttackIfEngaged eid (Just iid)]
-                )
-              xs -> pure $ Just $ TargetLabel
-                (EnemyTarget eid)
-                [ chooseOne
-                  iid
-                  [ EnemyMove eid locationId x | x <- xs, x /= locationId ]
-                , EnemyAttackIfEngaged eid (Just iid)
-                ]
+            mLocationId <- selectOne $ LocationWithEnemy $ EnemyWithId  eid
+            case mLocationId of
+              Nothing -> pure Nothing
+              Just locationId -> do
+                closestLocationIds <- map unClosestPathLocationId
+                  <$> getSetList (locationId, destinationId)
+                case closestLocationIds of
+                  [] -> pure Nothing
+                  [x] -> pure $ Just $ TargetLabel
+                    (EnemyTarget eid)
+                    ([ EnemyMove eid x | locationId /= x ]
+                    <> [EnemyAttackIfEngaged eid (Just iid)]
+                    )
+                  xs -> pure $ Just $ TargetLabel
+                    (EnemyTarget eid)
+                    [ chooseOne
+                      iid
+                      [ EnemyMove eid x | x <- xs, x /= locationId ]
+                    , EnemyAttackIfEngaged eid (Just iid)
+                    ]
 
           t <$ unless
             (null enemiesToMove || null (catMaybes messages))

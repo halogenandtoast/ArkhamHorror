@@ -39,7 +39,7 @@ instance TreacheryRunner env => RunMessage env SpacesBetween where
 
           pure
             $ [ MoveTo source iid destination | iid <- investigatorIds ]
-            <> [ EnemyMove eid flipLocation destination | eid <- enemyIds ]
+            <> [ EnemyMove eid destination | eid <- enemyIds ]
             <> [UnrevealLocation flipLocation]
         )
         nonSentinelHillLocations

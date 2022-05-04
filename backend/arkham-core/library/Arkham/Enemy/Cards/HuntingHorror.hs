@@ -7,17 +7,14 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Card.Id
 import Arkham.Classes
 import Arkham.Enemy.Runner
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
 import Arkham.RequestedTokenStrategy
 import Arkham.Timing qualified as Timing
 import Arkham.Token
-import Data.UUID (nil)
 
 newtype HuntingHorror = HuntingHorror EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor env)
@@ -59,5 +56,5 @@ instance EnemyRunner env => RunMessage env HuntingHorror where
         & (doomL .~ 0)
         & (cluesL .~ 0)
         & (engagedInvestigatorsL .~ mempty)
-        & (locationL .~ LocationId (CardId nil))
+        & (locationL .~ Nothing)
     _ -> HuntingHorror <$> runMessage msg attrs

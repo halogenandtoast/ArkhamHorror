@@ -37,6 +37,9 @@ instance TreacheryRunner env => RunMessage env DeadlyFate where
         Nothing ->
           t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
         Just c -> do
+          -- tricky, we must create an enemy that has been discaded, have it
+          -- attack,  and then remove it
+          -- This technically means we have an enemy at no location
           pushAll
             [ FocusCards [EncounterCard c]
             , chooseOne

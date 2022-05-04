@@ -43,12 +43,13 @@ instance HasAbilities Fanatic where
 
 instance EnemyRunner env => RunMessage env Fanatic where
   runMessage msg e@(Fanatic attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      e <$ pushAll
-        [ RemoveClues (LocationTarget $ enemyLocation attrs) 1
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> case enemyLocation attrs of
+      Nothing -> pure e
+      Just loc -> e <$ pushAll
+        [ RemoveClues (LocationTarget loc) 1
         , PlaceClues (toTarget attrs) 1
         ]
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    UseCardAbility iid source _ 2 _ | isSource attrs source ->
       e <$ pushAll
         [ RemoveClues (toTarget attrs) (enemyClues attrs)
         , GainClues iid (enemyClues attrs)

@@ -33,7 +33,7 @@ instance HasAbilities GoatSpawn where
 instance EnemyRunner env => RunMessage env GoatSpawn where
   runMessage msg e@(GoatSpawn attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      investigatorIds <- getSetList $ enemyLocation attrs
+      investigatorIds <- getInvestigatorsAtSameLocation attrs
       e <$ pushAll
         [ InvestigatorAssignDamage iid source DamageAny 0 1
         | iid <- investigatorIds

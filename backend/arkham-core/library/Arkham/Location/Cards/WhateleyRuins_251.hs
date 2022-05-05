@@ -15,6 +15,7 @@ import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Location.Runner
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.SkillType
@@ -54,7 +55,7 @@ instance LocationRunner env => RunMessage env WhateleyRuins_251 where
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         abominations <- getSetList @EnemyId (CardCode "02255")
-        abominationsWithLocation <- traverse (traverseToSnd getId) abominations
+        abominationsWithLocation <- traverse (traverseToSnd (selectJust . LocationWithEnemy . EnemyWithId)) abominations
         abominationsWithLocationAndAccessibleLocations :: [(EnemyId, LocationId, [LocationId])] <-
           for abominationsWithLocation $ \(abomination, locationId) ->
             (abomination, locationId, )

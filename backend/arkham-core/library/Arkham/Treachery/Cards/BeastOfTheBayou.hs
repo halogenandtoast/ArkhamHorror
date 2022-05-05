@@ -6,6 +6,7 @@ import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target
@@ -26,7 +27,7 @@ instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
       t <$ case mrougarou of
         Nothing -> pushAll [PlaceDoomOnAgenda]
         Just eid -> do
-          locationId <- getId @LocationId eid
+          locationId <- selectJust $ LocationWithEnemy $ EnemyWithId eid
           connectedLocationIds <- map unConnectedLocationId
             <$> getSetList locationId
           investigatorIds <- concat <$> traverse

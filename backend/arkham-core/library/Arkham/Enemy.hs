@@ -172,3 +172,6 @@ getEnemyVictory = cdVictoryPoints . toCardDef
 
 getEnemyBearer :: Enemy -> Maybe InvestigatorId
 getEnemyBearer = enemyBearer . toAttrs
+
+getEnemyLocation :: Enemy -> Maybe LocationId
+getEnemyLocation = enemyLocation . toAttrs

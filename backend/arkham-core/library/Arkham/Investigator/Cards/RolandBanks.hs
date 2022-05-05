@@ -6,14 +6,14 @@ module Arkham.Investigator.Cards.RolandBanks
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Location.Attrs
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
@@ -22,7 +22,9 @@ newtype RolandBanks = RolandBanks InvestigatorAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rolandBanks :: InvestigatorCard RolandBanks
-rolandBanks = investigator RolandBanks Cards.rolandBanks
+rolandBanks = investigator
+  RolandBanks
+  Cards.rolandBanks
   Stats
     { health = 9
     , sanity = 5
@@ -34,15 +36,19 @@ rolandBanks = investigator RolandBanks Cards.rolandBanks
 
 instance HasAbilities RolandBanks where
   getAbilities (RolandBanks a) =
-    [ reaction a 1 (OnLocation LocationWithAnyClues <> CanDiscoverClues) Free
-        (EnemyDefeated Timing.After You AnyEnemy)
-        & (abilityLimitL .~ PlayerLimit PerRound 1)
+    [ limitedAbility (PlayerLimit PerRound 1)
+        $ reaction
+            a
+            1
+            (OnLocation LocationWithAnyClues <> CanDiscoverClues)
+            Free
+        $ EnemyDefeated Timing.After You AnyEnemy
     ]
 
 instance HasTokenValue env RolandBanks where
   getTokenValue (RolandBanks attrs) iid ElderSign | iid == toId attrs = do
-    locationClueCount <- field LocationClues (investigatorLocation attrs)
-    pure $ TokenValue ElderSign (PositiveModifier locationClueCount)
+    clues <- field LocationClues (investigatorLocation attrs)
+    pure $ TokenValue ElderSign (PositiveModifier clues)
   getTokenValue _ _ token = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env RolandBanks where

@@ -20,7 +20,7 @@ import Arkham.Card.Id
 import Arkham.Card.PlayerCard
 import Arkham.ChaosBag
 import Arkham.ClassSymbol
-import Arkham.Classes
+import Arkham.Classes hiding (getDistance)
 import Arkham.Deck qualified as Deck
 import Arkham.Decks
 import Arkham.Difficulty
@@ -39,7 +39,7 @@ import Arkham.Helpers
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator
-import Arkham.Investigator.Attrs (getPlayableCards)
+import Arkham.Investigator.Attrs (getPlayableCards, InvestigatorAttrs(..), Field(..))
 import Arkham.Keyword (HasKeywords(..), Keyword)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Label qualified as L
@@ -67,7 +67,7 @@ import Arkham.Name
 import Arkham.Phase
 import Arkham.PlayerCard
 import Arkham.Projection
-import Arkham.Query
+import Arkham.Query hiding (InvestigatorLocation)
 import Arkham.Scenario
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
@@ -581,6 +581,71 @@ getInvestigatorsMatching matcher = do
   filterM (go matcher) investigators
  where
   go = \case
+    NoOne -> pure . const False
+    FewestCardsInHand -> \i -> do
+      cardCount <- unCardCount <$> getCount i
+      minCardCount <- fromMaybe 100 . minimumMay . map unCardCount <$> getSetList ()
+      pure $ minCardCount == cardCount
+    LowestRemainingHealth -> \i -> do
+      h <- getRemainingHealth i
+      lowestRemainingHealth <-
+        fromJustNote "has to be"
+        . minimumMay
+        . map unRemainingHealth
+        <$> getSetList ()
+      pure $ lowestRemainingHealth == h
+    LowestRemainingSanity -> \i -> do
+      remainingSanity <- getRemainingSanity i
+      lowestRemainingSanity <-
+        fromJustNote "has to be"
+        . minimumMay
+        . map unRemainingSanity
+        <$> getSetList ()
+      pure $ lowestRemainingSanity == remainingSanity
+    MostRemainingSanity -> \i -> do
+      remainingSanity <- getRemainingSanity i
+      mostRemainingSanity <-
+        fromJustNote "has to be"
+        . maximumMay
+        . map unRemainingSanity
+        <$> getSetList ()
+      pure $ mostRemainingSanity == remainingSanity
+    MostHorror -> \i -> do
+      horrorCount <- unHorrorCount <$> getCount i
+      mostHorrorCount <- fromMaybe 0 . maximumMay . map unHorrorCount <$> getSetList ()
+      pure $ mostHorrorCount == horrorCount
+    NearestToEnemy enemyMatcher -> \i -> do
+      mappings :: [(InvestigatorId, Distance)] <- getList enemyMatcher
+      let
+        mappingsMap :: HashMap InvestigatorId Distance = mapFromList mappings
+        minDistance :: Int =
+          fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
+        investigatorDistance :: Int = unDistance $ findWithDefault
+          (error "investigator not found")
+          (toId i)
+          mappingsMap
+      pure $ investigatorDistance == minDistance
+    HasMostMatchingAsset assetMatcher -> \i -> do
+      selfCount <- length <$> selectList
+        (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
+      allCounts <-
+        traverse
+            (\iid' ->
+              length <$> selectList
+                (assetMatcher <> AssetControlledBy (InvestigatorWithId iid'))
+            )
+          =<< getInvestigatorIds
+      pure $ selfCount == maximum (ncons selfCount allCounts)
+    HasMatchingAsset assetMatcher -> \i ->
+      selectAny (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
+    HasMatchingEvent eventMatcher -> \i ->
+      selectAny (eventMatcher <> EventControlledBy (InvestigatorWithId $ toId i))
+    HasMatchingSkill skillMatcher -> \i ->
+      selectAny (skillMatcher <> SkillControlledBy (InvestigatorWithId $ toId i))
+    MostClues -> \i -> do
+      clueCount <- unClueCount <$> getCount i
+      mostClueCount <- fromMaybe 0 . maximumMay . map unClueCount <$> getSetList ()
+      pure $ mostClueCount == clueCount
     You -> \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
       pure $ you == i
@@ -600,6 +665,10 @@ getInvestigatorsMatching matcher = do
       lowestSkillValue <- fromMaybe 100 . minimumMay <$> getSetList skillType
       skillValue <- getSkillValue skillType i
       pure $ lowestSkillValue == skillValue
+    InvestigatorWithHighestSkill skillType -> \i -> do
+      highestSkillValue <- fromMaybe 0 . maximumMay <$> getSetList skillType
+      skillValue <- getSkillValue skillType i
+      pure $ highestSkillValue == skillValue
     InvestigatorWithClues gameValueMatcher ->
       getCount >=> (`gameValueMatches` gameValueMatcher) . unClueCount
     InvestigatorWithResources gameValueMatcher ->
@@ -1061,7 +1130,7 @@ getEventsMatching matcher = do
     EventWithClass role -> filterM (fmap (member role) . getSet . toId) as
     EventWithTrait t -> filterM (fmap (member t) . getSet . toId) as
     EventControlledBy investigatorMatcher -> do
-      iids <- map toId <$> selectList investigatorMatcher
+      iids <- selectList investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as
     EventMatches ms -> foldM filterMatcher as ms
 
@@ -1079,7 +1148,7 @@ getSkillsMatching matcher = do
     SkillWithClass role -> filterM (fmap (member role) . getSet . toId) as
     SkillWithTrait t -> filterM (fmap (member t) . getSet . toId) as
     SkillControlledBy investigatorMatcher -> do
-      iids <- map toId <$> selectList investigatorMatcher
+      iids <- selectList investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfSkill) as
     SkillMatches ms -> foldM filterMatcher as ms
     AnySkill -> pure as
@@ -1155,8 +1224,9 @@ getEnemiesMatching matcher = do
     UniqueEnemy -> pure . isUnique
     MovingEnemy ->
       \enemy -> (== Just (toId enemy)) . view enemyMovingL <$> getGame
-    M.EnemyAt locationMatcher -> \enemy ->
-      liftA2 member (getId @LocationId $ toId enemy) (select locationMatcher)
+    M.EnemyAt locationMatcher -> \enemy -> case getEnemyLocation enemy of
+      Nothing -> pure False
+      Just loc -> member loc <$> select locationMatcher
     CanFightEnemy -> \enemy -> do
       iid <- view activeInvestigatorIdL <$> getGame
       modifiers' <- getModifiers (toSource enemy) (InvestigatorTarget iid)
@@ -1212,7 +1282,7 @@ getEnemiesMatching matcher = do
           mempty
       if null matches
         then pure $ toId enemy `elem` matchingEnemyIds
-        else (`elem` matches) <$> getId enemy
+        else pure $ maybe False (`elem` matches) (getEnemyLocation enemy)
 
 getAct :: (HasCallStack, MonadReader env m, HasGame env) => ActId -> m Act
 getAct aid = fromJustNote missingAct . preview (entitiesL . actsL . ix aid) <$> getGame
@@ -1457,6 +1527,13 @@ instance HasGame env => Projection env LocationAttrs where
     l <- getLocation lid
     case f of
       LocationClues -> pure . locationClues $ toAttrs l
+
+instance HasGame env => Projection env InvestigatorAttrs where
+  field f iid = do
+    i <- getInvestigator iid
+    case f of
+      InvestigatorRemainingActions -> pure . investigatorRemainingActions $ toAttrs i
+      InvestigatorLocation -> pure . Just . investigatorLocation $ toAttrs i
 
 instance HasGame env => Query AssetMatcher env where
   select = fmap (setFromList . map toId) . getAssetsMatching

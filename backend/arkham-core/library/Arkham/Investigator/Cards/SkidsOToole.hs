@@ -6,11 +6,11 @@ module Arkham.Investigator.Cards.SkidsOToole
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
-import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Matcher hiding ( DuringTurn )
 import Arkham.Message
 import Arkham.Target
 
@@ -33,12 +33,10 @@ skidsOToole = investigator
 
 instance HasAbilities SkidsOToole where
   getAbilities (SkidsOToole a) =
-    [ restrictedAbility
-          a
-          1
-          (Self <> DuringTurn You)
-          (FastAbility $ ResourceCost 2)
-        & (abilityLimitL .~ PlayerLimit PerTurn 1)
+    [ limitedAbility (PlayerLimit PerTurn 1)
+        $ restrictedAbility a 1 (Self <> DuringTurn You)
+        $ FastAbility
+        $ ResourceCost 2
     ]
 
 instance HasTokenValue env SkidsOToole where

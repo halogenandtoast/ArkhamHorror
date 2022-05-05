@@ -6,18 +6,17 @@ module Arkham.Treachery.Cards.CoverUp
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Matcher hiding (DiscoverClues)
+import Arkham.Matcher hiding ( DiscoverClues )
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message hiding (InvestigatorEliminated)
+import Arkham.Message hiding ( InvestigatorEliminated )
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype CoverUp = CoverUp TreacheryAttrs
@@ -54,11 +53,9 @@ instance HasAbilities CoverUp where
 
 instance TreacheryRunner env => RunMessage env CoverUp where
   runMessage msg t@(CoverUp attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ pushAll
-      [ RemoveCardFromHand iid (toCardId attrs)
-      , AttachTreachery treacheryId (InvestigatorTarget iid)
-      ]
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) ->
+      t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
+    UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
       cluesToRemove <- withQueue $ \queue -> do
         let
           (before, after) = flip break queue $ \case
@@ -71,7 +68,6 @@ instance TreacheryRunner env => RunMessage env CoverUp where
       let remainingClues = max 0 (coverUpClues attrs - cluesToRemove)
       pure $ CoverUp (attrs { treacheryClues = Just remainingClues })
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
-      withTreacheryInvestigator
-        attrs
-        \tormented -> t <$ push (SufferTrauma tormented 0 1)
+      withTreacheryInvestigator attrs
+        $ \tormented -> t <$ push (SufferTrauma tormented 0 1)
     _ -> CoverUp <$> runMessage msg attrs

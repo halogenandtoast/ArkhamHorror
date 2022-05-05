@@ -6,14 +6,16 @@ module Arkham.Asset.Cards.Rolands38Special
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
-import Arkham.Action qualified as Action
+import qualified Arkham.Action as Action
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
+import Arkham.Investigator.Attrs
+import Arkham.Location.Attrs
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -34,13 +36,14 @@ instance HasAbilities Rolands38Special where
 instance AssetRunner env => RunMessage env Rolands38Special where
   runMessage msg a@(Rolands38Special attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationId <- getId @LocationId iid
-      anyClues <- (> 0) . unClueCount <$> getCount locationId
-      a <$ pushAll
+      mLocationId <- field InvestigatorLocation iid
+      anyClues <- maybe (pure False) (fmap (> 0) . field LocationClues) mLocationId
+      pushAll
         [ skillTestModifiers
           attrs
           (InvestigatorTarget iid)
           [DamageDealt 1, SkillModifier SkillCombat (if anyClues then 3 else 1)]
         , ChooseFightEnemy iid source Nothing SkillCombat mempty False
         ]
+      pure a
     _ -> Rolands38Special <$> runMessage msg attrs

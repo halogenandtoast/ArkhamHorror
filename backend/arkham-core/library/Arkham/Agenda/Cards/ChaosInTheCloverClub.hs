@@ -40,7 +40,7 @@ instance AgendaRunner env => RunMessage env ChaosInTheCloverClub where
   runMessage msg a@(ChaosInTheCloverClub attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       abominations <- getSetList @EnemyId Abomination
-      abominationLocations <- traverse (getId @LocationId) abominations
+      abominationLocations <- traverse (selectJust . LocationWithEnemy . EnemyWithId) abominations
       criminals <-
         concat <$> traverse (getSetList . ([Criminal], )) abominationLocations
       a <$ pushAll [ Discard $ EnemyTarget eid | eid <- criminals ]

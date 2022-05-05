@@ -1370,7 +1370,7 @@ instance HasGame env => HasId LocationId env AssetId where
       mOwnerId = assetOwner asset
     case (mLocationId, mEnemyId, mOwnerId) of
       (Just lid, _, _) -> pure lid
-      (_, Just eid, _) -> getId eid
+      (_, Just eid, _) -> selectJust $ LocationWithEnemy $ EnemyWithId eid
       (_, _, Just iid) -> getId iid
       _ -> error $ "Do not know where asset is at: " <> show asset
 
@@ -2088,7 +2088,7 @@ instance HasGame env => HasId (Maybe LocationId) env TreacheryId where
     t <- getTreachery tid
     case treacheryTarget t of
       Just (InvestigatorTarget iid) -> Just <$> getId iid
-      Just (EnemyTarget eid) -> Just <$> getId eid
+      Just (EnemyTarget eid) -> selectOne $ LocationWithEnemy $ EnemyWithId eid
       Just (LocationTarget lid) -> pure $ Just lid
       _ -> pure Nothing
 
@@ -2097,7 +2097,7 @@ instance HasGame env => HasId (Maybe LocationId) env EventId where
     e <- getEvent eid
     case eventAttachedTarget (toAttrs e) of
       Just (InvestigatorTarget investigator) -> Just <$> getId investigator
-      Just (EnemyTarget enemy) -> Just <$> getId enemy
+      Just (EnemyTarget enemy) -> selectOne $ LocationWithEnemy $ EnemyWithId enemy
       Just (LocationTarget location) -> pure $ Just location
       _ -> pure Nothing
 

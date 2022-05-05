@@ -5,9 +5,8 @@ module Arkham.Treachery.Cards.RuinAndDestruction
 
 import Arkham.Prelude
 
-import Arkham.Card.CardCode
 import Arkham.Classes
-import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target

@@ -10,6 +10,7 @@ import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Target
@@ -37,7 +38,7 @@ instance TreacheryRunner env => RunMessage env ToweringBeasts where
         [] -> pure t
         xs -> do
           locationId <- getId @LocationId iid
-          broodWithLocationIds <- for xs $ \x -> (x, ) <$> getId @LocationId x
+          broodWithLocationIds <- for xs $ \x -> (x, ) <$> selectJust (LocationWithEnemy $ EnemyWithId x)
           t <$ push
             (chooseOne
               iid

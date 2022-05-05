@@ -561,6 +561,7 @@ getCanFight
      , HasSet Keyword env EnemyId
      , HasSet Trait env Source
      , HasId LocationId env InvestigatorId
+     , Query Matcher.LocationMatcher env
      , HasModifiersFor env ()
      )
   => EnemyId
@@ -569,7 +570,7 @@ getCanFight
 getCanFight eid iid = do
   locationId <- getId @LocationId iid
   enemyModifiers <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
-  sameLocation <- (== locationId) <$> getId @LocationId eid
+  sameLocation <- (== Just locationId) <$> selectOne (Matcher.locationWithEnemy eid)
   modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
   takenActions <- setFromList . map unTakenAction <$> getList iid
   keywords <- getSet eid
@@ -603,6 +604,7 @@ getCanEngage
      , HasSet InvestigatorId env EnemyId
      , HasSet Trait env Source
      , HasId LocationId env InvestigatorId
+     , Query Matcher.LocationMatcher env
      , HasModifiersFor env ()
      )
   => EnemyId
@@ -610,7 +612,7 @@ getCanEngage
   -> m Bool
 getCanEngage eid iid = do
   locationId <- getId @LocationId iid
-  sameLocation <- (== locationId) <$> getId @LocationId eid
+  sameLocation <- (== Just locationId) <$> selectOne (Matcher.locationWithEnemy eid)
   notEngaged <- notElem iid <$> getSet eid
   canAffordActions <- getCanAffordCost
     iid

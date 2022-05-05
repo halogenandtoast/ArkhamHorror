@@ -43,14 +43,16 @@ instance ActRunner env => RunMessage env TheStrangerThePathIsMine where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       theManInThePallidMask <- getTheManInThePallidMask
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
-      lid <- getId theManInThePallidMask
+      mlid <- selectOne $ LocationWithEnemy $ EnemyWithId theManInThePallidMask
       card <- flipCard <$> genCard (toCardDef attrs)
-      a <$ pushAll
-        [ AddToken Tablet
-        , AddToken Tablet
-        , PlaceHorror (LocationTarget lid) 1
-        , PlaceNextTo ActDeckTarget [card]
-        , CreateEffect "03047b" Nothing (toSource attrs) (toTarget attrs)
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+      for mlid $ \lid ->
+        pushAll
+          [ AddToken Tablet
+          , AddToken Tablet
+          , PlaceHorror (LocationTarget lid) 1
+          , PlaceNextTo ActDeckTarget [card]
+          , CreateEffect "03047b" Nothing (toSource attrs) (toTarget attrs)
+          , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+          ]
+      pure a
     _ -> TheStrangerThePathIsMine <$> runMessage msg attrs

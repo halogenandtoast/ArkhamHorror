@@ -169,6 +169,9 @@ data AssetMatcher
 assetIs :: HasCardCode a => a -> AssetMatcher
 assetIs = AssetIs . toCardCode
 
+assetControlledBy :: InvestigatorId -> AssetMatcher
+assetControlledBy = AssetControlledBy . InvestigatorWithId
+
 instance Semigroup AssetMatcher where
   AnyAsset <> x = x
   x <> AnyAsset = x

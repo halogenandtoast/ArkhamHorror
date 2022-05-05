@@ -6,18 +6,15 @@ module Arkham.Investigator.Cards.WendyAdams
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Investigator.Cards qualified as Cards
-import Arkham.AssetId
-import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealToken)
-import Arkham.Source
+import Arkham.Message hiding ( RevealToken )
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype WendyAdams = WendyAdams InvestigatorAttrs
@@ -39,25 +36,20 @@ wendyAdams = investigator
 
 instance HasTokenValue env WendyAdams where
   getTokenValue (WendyAdams attrs) iid ElderSign | iid == investigatorId attrs =
-    pure $ TokenValue ElderSign (PositiveModifier 0)
+    pure $ TokenValue ElderSign $ PositiveModifier 0
   getTokenValue _ _ token = pure $ TokenValue token mempty
 
 instance HasAbilities WendyAdams where
   getAbilities (WendyAdams attrs) =
-    [ restrictedAbility
-          attrs
-          1
-          Self
-          (ReactionAbility (RevealChaosToken Timing.When You AnyToken)
-          $ HandDiscardCost 1 AnyCard
-          )
-        & (abilityLimitL .~ PlayerLimit PerTestOrAbility 1)
+    [ limitedAbility (PlayerLimit PerTestOrAbility 1)
+        $ restrictedAbility attrs 1 Self
+        $ ReactionAbility (RevealChaosToken Timing.When You AnyToken)
+        $ HandDiscardCost 1 AnyCard
     ]
 
 instance (InvestigatorRunner env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@InvestigatorAttrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) [Window _ (Window.RevealToken _ token)] 1 _
-      | iid == investigatorId
+    UseCardAbility _ (isSource attrs -> True) [Window _ (Window.RevealToken _ token)] 1 _
       -> do
         cancelToken token
         i <$ pushAll
@@ -66,16 +58,9 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
           , CancelNext RevealTokenMessage
           , ReturnTokens [token]
           , UnfocusTokens
-          , DrawAnotherToken iid
+          , DrawAnotherToken (toId attrs)
           ]
-    -- When (DrawToken iid token) | iid == investigatorId -> i <$ pushAll
-    --   [ FocusTokens [token]
-    --   , CheckWindow
-    --     investigatorId
-    --     [Window Timing.When (Window.DrawToken investigatorId token)]
-    --   , UnfocusTokens
-    --   ]
-    ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> do
-      maid <- getId @(Maybe AssetId) (CardCode "01014")
+    ResolveToken _ ElderSign iid | iid == investigatorId -> do
+      maid <- selectOne $ AssetWithTitle "Wendy's Amulet"
       i <$ when (isJust maid) (push PassSkillTest)
     _ -> WendyAdams <$> runMessage msg attrs

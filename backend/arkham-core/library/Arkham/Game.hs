@@ -162,6 +162,7 @@ data Game = Game
   , -- Entities
     gameEntities :: Entities
   , gameEncounterDiscardEntities :: Entities
+  , gameInHandEntities :: Entities
   , gameEnemiesInVoid :: EntityMap Enemy
   , -- Player Details
     gamePlayerCount :: Int -- used for determining if game should start
@@ -263,6 +264,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gamePlayerCount = playerCount
       , gameEntities = defaultEntities { entitiesInvestigators = investigatorsMap }
       , gameEncounterDiscardEntities = defaultEntities
+      , gameInHandEntities = defaultEntities
       , gameEnemiesInVoid = mempty
       , gameActiveInvestigatorId = initialInvestigatorId
       , gameTurnPlayerInvestigatorId = Nothing
@@ -4587,9 +4589,17 @@ runGameMessage msg g = case msg of
     )
   _ -> pure g
 
+preloadEntities :: Applicative m => Game -> m Game
+preloadEntities g = do
+  -- let investigators = view (entitiesL . investigatorsL) g
+  --     cards = filter (cdCardInHandEffects . toCardDef) $ concatMap handOf investigators
+  -- entities <- foldMapM addEntity mempty cards
+  pure g
+
 instance (HasQueue env, HasGame env) => RunMessage env Game where
   runMessage msg g = do
-    runPreGameMessage msg g
+    preloadEntities g
+      >>= runPreGameMessage msg
       >>= traverseOf chaosBagL (runMessage msg)
       >>= traverseOf (modeL . here) (runMessage msg)
       >>= traverseOf (modeL . there) (runMessage msg)

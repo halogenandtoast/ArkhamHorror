@@ -98,7 +98,7 @@ import Data.Monoid (First(..))
 import Data.Sequence qualified as Seq
 import Data.These
 import Data.These.Lens
-import Control.Lens (each) -- (itraverseOf, itraversed)
+import Control.Lens (each, itraverseOf, itraversed)
 import Data.UUID (nil)
 import Safe (headNote)
 import System.Environment
@@ -4626,7 +4626,7 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
       >>= traverseOf (modeL . here) (runMessage msg)
       >>= traverseOf (modeL . there) (runMessage msg)
       >>= traverseOf entitiesL (runMessage msg)
-      -- >>= itraverseOf (inHandEntitiesL . itraversed) (\i e -> runMessage (InHand i msg) e)
+      >>= itraverseOf (inHandEntitiesL . itraversed) (\i e -> runMessage (InHand i msg) e)
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= traverseOf
             (discardL . traverse)

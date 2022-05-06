@@ -31,6 +31,7 @@ operaGarnier212 = location
 instance HasModifiersFor env OperaGarnier212 where
   getModifiersFor (SkillTestSource _ _ _ target (Just Action.Investigate)) (CardIdTarget _) (OperaGarnier212 attrs) | isTarget attrs target =
     pure $ toModifiers attrs [DoubleSkillIcons]
+  getModifiersFor _ _ _ = pure []
 
 instance HasAbilities OperaGarnier212 where
   getAbilities (OperaGarnier212 attrs) = getAbilities attrs

@@ -20,6 +20,8 @@ data Target
   | ScenarioTarget ScenarioId
   | EffectTarget EffectId
   | InvestigatorTarget InvestigatorId
+  | InvestigatorHandTarget InvestigatorId -- used for cards in hand
+  | InvestigatorDiscardTarget InvestigatorId -- used for cards in discard
   | LocationTarget LocationId
   | SetAsideLocationsTarget [Trait]
   | SkillTestTarget

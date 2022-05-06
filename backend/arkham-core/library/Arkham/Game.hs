@@ -29,7 +29,6 @@ import Arkham.Effect
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Enemy
-import Arkham.EntityInstance
 import Arkham.Event
 import Arkham.Event.Attrs (eventAttachedTarget)
 import Arkham.Game.Helpers
@@ -164,6 +163,7 @@ data Game = Game
     gameEntities :: Entities
   , gameEncounterDiscardEntities :: Entities
   , gameInHandEntities :: HashMap InvestigatorId Entities
+  , gameInDiscardEntities :: HashMap InvestigatorId Entities
   , gameEnemiesInVoid :: EntityMap Enemy
   , -- Player Details
     gamePlayerCount :: Int -- used for determining if game should start
@@ -266,6 +266,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameEntities = defaultEntities { entitiesInvestigators = investigatorsMap }
       , gameEncounterDiscardEntities = defaultEntities
       , gameInHandEntities = mempty
+      , gameInDiscardEntities = mempty
       , gameEnemiesInVoid = mempty
       , gameActiveInvestigatorId = initialInvestigatorId
       , gameTurnPlayerInvestigatorId = Nothing
@@ -1832,29 +1833,13 @@ instance HasGame env => HasModifiersFor env () where
   getModifiersFor source target _ = do
     g <- getGame
     allModifiers' <- concat <$> sequence
-      [ concat
-        <$> traverse (getModifiersFor source target) (g ^. entitiesL . enemiesL . to toList)
-      , concat
-        <$> traverse (getModifiersFor source target) (g ^. entitiesL . assetsL . to toList)
-      , concat
-        <$> traverse (getModifiersFor source target) (g ^. entitiesL . agendasL . to toList)
-      , concat
-        <$> traverse (getModifiersFor source target) (g ^. entitiesL . actsL . to toList)
-      , concat <$> traverse
-        (getModifiersFor source target)
-        (g ^. entitiesL . locationsL . to toList)
-      , concat
-        <$> traverse (getModifiersFor source target) (g ^. entitiesL . effectsL . to toList)
-      , concat
-        <$> traverse (getModifiersFor source target) (g ^. entitiesL . eventsL . to toList)
-      , concat
-        <$> traverse (getModifiersFor source target) (g ^. entitiesL . skillsL . to toList)
-      , concat <$> traverse
-        (getModifiersFor source target)
-        (g ^. entitiesL . treacheriesL . to toList)
-      , concat <$> traverse
-        (getModifiersFor source target)
-        (g ^. entitiesL . investigatorsL . to toList)
+      [ getModifiersFor source target (g ^. entitiesL)
+      , case target of
+          InvestigatorTarget i -> maybe (pure []) (getModifiersFor source (InvestigatorHandTarget i)) (g ^. inHandEntitiesL . at i)
+          _ -> pure []
+      , case target of
+          InvestigatorTarget i -> maybe (pure []) (getModifiersFor source (InvestigatorDiscardTarget i)) (g ^. inDiscardEntitiesL . at i)
+          _ -> pure []
       , maybe (pure []) (getModifiersFor source target) (g ^. skillTestL)
       ]
     traits <- getSet target
@@ -1867,6 +1852,32 @@ instance HasGame env => HasModifiersFor env () where
     pure $ if any ((== Blank) . modifierType) allModifiers
       then filter ((/= targetToSource target) . modifierSource) allModifiers
       else allModifiers
+
+instance HasGame env => HasModifiersFor env Entities where
+  getModifiersFor source target e = concat <$> sequence
+    [ concat
+      <$> traverse (getModifiersFor source target) (e ^. enemiesL . to toList)
+    , concat
+      <$> traverse (getModifiersFor source target) (e ^. assetsL . to toList)
+    , concat
+      <$> traverse (getModifiersFor source target) (e ^. agendasL . to toList)
+    , concat
+      <$> traverse (getModifiersFor source target) (e ^. actsL . to toList)
+    , concat
+      <$> traverse (getModifiersFor source target) (e ^. locationsL . to toList)
+    , concat
+      <$> traverse (getModifiersFor source target) (e ^. effectsL . to toList)
+    , concat
+      <$> traverse (getModifiersFor source target) (e ^. eventsL . to toList)
+    , concat
+      <$> traverse (getModifiersFor source target) (e ^. skillsL . to toList)
+    , concat <$> traverse
+      (getModifiersFor source target)
+      (e ^. treacheriesL . to toList)
+    , concat <$> traverse
+      (getModifiersFor source target)
+      (e ^. investigatorsL . to toList)
+    ]
 
 instance HasGame env => HasPhase env where
   getPhase = view phaseL <$> getGame
@@ -2092,7 +2103,6 @@ instance HasGame env => HasSet Trait env Source where
     EmptyDeckSource -> pure mempty
     DeckSource -> pure mempty
     GameSource -> pure mempty
-    InHandSource -> pure mempty -- Only meant for HasModifiersFor
     ActSource _ -> pure mempty
     PlayerCardSource _ -> pure mempty
     EncounterCardSource _ -> pure mempty
@@ -2114,6 +2124,8 @@ instance HasGame env => HasSet Trait env Target where
     EnemyTarget eid -> toTraits <$> getEnemy eid
     ScenarioTarget _ -> pure mempty
     InvestigatorTarget iid -> toTraits <$> getInvestigator iid
+    InvestigatorHandTarget iid -> toTraits <$> getInvestigator iid
+    InvestigatorDiscardTarget iid -> toTraits <$> getInvestigator iid
     CardCodeTarget _ -> pure mempty
     CardIdTarget _ -> pure mempty -- has traits, but not used
     TokenTarget _ -> pure mempty
@@ -4601,22 +4613,37 @@ addEntity i e card = case card of
     EventType -> do
       let event = createEvent card (toId i)
       pure $ e & eventsL %~ insertMap (toId event) event
+    AssetType -> do
+      let asset = createAsset card
+      pure $ e & assetsL %~ insertMap (toId asset) asset
     _ -> error "Unhandled"
-  EncounterCard _ -> error "Unhandled"
+  EncounterCard ec -> case toCardType ec of
+    TreacheryType -> do
+      let treachery = createTreachery card (toId i)
+      pure $ e & treacheriesL %~ insertMap (toId treachery) treachery
+    _ -> error "Unhandled"
 
 preloadEntities :: Monad m => Game -> m Game
 preloadEntities g = do
   let
     investigators = view (entitiesL . investigatorsL) g
     preloadHandEntities entities investigator = do
-      let cards = filter (cdCardInHandEffects . toCardDef) $ handOf investigator
-      if null cards
+      let handEffectCards = filter (cdCardInHandEffects . toCardDef) $ handOf investigator
+      if null handEffectCards
          then pure entities
          else do
-           handEntities <- foldM (addEntity investigator) defaultEntities cards
+           handEntities <- foldM (addEntity investigator) defaultEntities handEffectCards
            pure $ insertMap (toId investigator) handEntities entities
-  entities <- foldM preloadHandEntities mempty investigators
-  pure $ g { gameInHandEntities = entities }
+    preloadDiscardEntities entities investigator = do
+      let discardEffectCards = filter (cdCardInDiscardEffects . toCardDef) $ map PlayerCard $ discardOf investigator
+      if null discardEffectCards
+         then pure entities
+         else do
+           discardEntities <- foldM (addEntity investigator ) defaultEntities discardEffectCards
+           pure $ insertMap (toId investigator) discardEntities entities
+  handEntities <- foldM preloadHandEntities mempty investigators
+  discardEntities <- foldM preloadDiscardEntities mempty investigators
+  pure $ g { gameInHandEntities = handEntities, gameInDiscardEntities = discardEntities }
 
 instance (HasQueue env, HasGame env) => RunMessage env Game where
   runMessage msg g = do
@@ -4627,16 +4654,10 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
       >>= traverseOf (modeL . there) (runMessage msg)
       >>= traverseOf entitiesL (runMessage msg)
       >>= itraverseOf (inHandEntitiesL . itraversed) (\i e -> runMessage (InHand i msg) e)
+      >>= itraverseOf (inDiscardEntitiesL . itraversed) (\i e -> runMessage (InDiscard i msg) e)
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
-      >>= traverseOf
-            (discardL . traverse)
-            (\c -> c <$ runMessage
-              (maskedMsg (InDiscard (gameLeadInvestigatorId g)))
-              (toCardInstance (gameLeadInvestigatorId g) (EncounterCard c))
-            )
       >>= runGameMessage msg
       >>= (\g' -> pure $ g' & enemyMovingL .~ Nothing)
-    where maskedMsg f = f msg
 
 instance (HasQueue env, HasGame env) => RunMessage env Entities where
   runMessage msg entities =

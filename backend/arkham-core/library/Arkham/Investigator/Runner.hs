@@ -28,7 +28,6 @@ import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
 import Arkham.Direction
-import Arkham.EntityInstance
 import Arkham.Game.Helpers hiding (windows)
 import Arkham.Game.Helpers qualified as Helpers
 import Arkham.Helpers
@@ -59,11 +58,9 @@ import Data.HashMap.Strict qualified as HashMap
 import Data.Monoid
 
 type InvestigatorRunner env
-  = (InnerInvestigatorRunner env, EntityInstanceRunner env)
-
-type InnerInvestigatorRunner env
   = ( HasQueue env
     , CanBeWeakness env TreacheryId
+    , CanCheckPlayable env
     , HasTokenValue env ()
     , Query AssetMatcher env
     , Query InvestigatorMatcher env
@@ -196,30 +193,8 @@ type InnerInvestigatorRunner env
     , GetCardDef env EnemyId
     )
 
-instance (EntityInstanceRunner env, InvestigatorRunner env) => RunMessage env InvestigatorAttrs where
-  runMessage msg i | doNotMask msg = do
-    traverseOf_
-      (handL . traverse . _PlayerCard)
-      (runMessage msg . toCardInstance (toId i) . PlayerCard)
-      i
-    traverseOf_
-      (discardL . traverse)
-      (runMessage msg . toCardInstance (toId i) . PlayerCard)
-      i
-    runInvestigatorMessage msg i
-  runMessage msg i = do
-    traverseOf_
-      (handL . traverse . _PlayerCard)
-      (runMessage (InHand (toId i) msg) . toCardInstance (toId i) . PlayerCard)
-      i
-    traverseOf_
-      (discardL . traverse)
-      (runMessage (InDiscard (toId i) msg)
-      . toCardInstance (toId i)
-      . PlayerCard
-      )
-      i
-    runInvestigatorMessage msg i
+instance InvestigatorRunner env => RunMessage env InvestigatorAttrs where
+  runMessage = runInvestigatorMessage
 
 runInvestigatorMessage
   :: ( InvestigatorRunner env
@@ -1862,9 +1837,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         (null deckCards)
         do
           let window = Window Timing.When (Window.AmongSearchedCards iid)
-          actions <- fmap concat <$> for deckCards $ \card' -> filterM
+          actions <- filterM
             (windowMatches iid source window . abilityWindow)
-            (getAbilities (toCardInstance iid $ PlayerCard card'))
+            =<< asks getAbilities
           -- TODO: This is for astounding revelation and only one research action is possible
           -- so we are able to short circuit here, but we may have additional cards in the
           -- future so we may want to make this more versatile

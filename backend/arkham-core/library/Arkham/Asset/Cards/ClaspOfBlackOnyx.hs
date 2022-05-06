@@ -7,10 +7,8 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Source
 import Arkham.Target
 
 newtype ClaspOfBlackOnyx = ClaspOfBlackOnyx AssetAttrs
@@ -18,9 +16,10 @@ newtype ClaspOfBlackOnyx = ClaspOfBlackOnyx AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env ClaspOfBlackOnyx where
-  getModifiersFor InHandSource (CardIdTarget cardId) (ClaspOfBlackOnyx attrs)
-    | toCardId attrs /= cardId = pure
-    $ toModifiers attrs [IncreaseCostOf (CardWithId cardId) 1]
+  getModifiersFor _ (InvestigatorHandTarget _) (ClaspOfBlackOnyx attrs) =
+    pure $ toModifiers
+      attrs
+      [IncreaseCostOf (NotCard $ CardWithTitle "Clasp of Black Onyx") 1]
   getModifiersFor _ _ _ = pure []
 
 claspOfBlackOnyx :: AssetCard ClaspOfBlackOnyx

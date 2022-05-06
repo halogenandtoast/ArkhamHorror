@@ -88,6 +88,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdStage = Nothing
   , cdSlots = []
   , cdCardInHandEffects = False
+  , cdCardInDiscardEffects = False
   }
 
 allPlayerAssetCards :: HashMap CardCode CardDef
@@ -1561,6 +1562,7 @@ claspOfBlackOnyx = (storyWeakness
   { cdCardTraits = setFromList [Item, Relic]
   , cdCost = Just (StaticCost 1)
   , cdRevelation = False
+  , cdCardInHandEffects = True
   }
 
 theTatteredCloak :: CardDef

@@ -733,6 +733,8 @@ toModifiers = map . toModifier
 targetToSource :: Target -> Source
 targetToSource = \case
   InvestigatorTarget iid -> InvestigatorSource iid
+  InvestigatorHandTarget iid -> InvestigatorSource iid
+  InvestigatorDiscardTarget iid -> InvestigatorSource iid
   AssetTarget aid -> AssetSource aid
   EnemyTarget eid -> EnemySource eid
   ScenarioTarget sid -> ScenarioSource sid
@@ -800,7 +802,6 @@ sourceToTarget = \case
   LocationMatcherSource{} -> error "not converted"
   AttackSource a -> EnemyTarget a
   StorySource code -> StoryTarget code
-  InHandSource -> error "not converted"
 
 addCampaignCardToDeckChoice
   :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message

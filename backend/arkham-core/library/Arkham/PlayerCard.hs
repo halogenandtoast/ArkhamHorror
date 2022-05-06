@@ -75,5 +75,6 @@ randomWeakness = CardDef
   , cdStage = Nothing
   , cdSlots = []
   , cdCardInHandEffects = False
+  , cdCardInDiscardEffects = False
   }
 

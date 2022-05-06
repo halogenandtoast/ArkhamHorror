@@ -52,6 +52,7 @@ location cardCode name traits encounterSet = CardDef
   , cdStage = Nothing
   , cdSlots = []
   , cdCardInHandEffects = False
+  , cdCardInDiscardEffects = False
   }
 
 allLocationCards :: HashMap CardCode CardDef

@@ -53,6 +53,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdStage = Nothing
   , cdSlots = []
   , cdCardInHandEffects = False
+  , cdCardInDiscardEffects = False
   }
 
 weakness :: CardCode -> Name -> CardDef
@@ -597,6 +598,7 @@ whispersInYourHeadDismay =
   (treachery "03084a" "Whispers in Your Head (Dismay)" Delusions 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    , cdCardInHandEffects = True
     }
 
 whispersInYourHeadDread :: CardDef
@@ -604,6 +606,7 @@ whispersInYourHeadDread =
   (treachery "03084b" "Whispers in Your Head (Dread)" Delusions 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    , cdCardInHandEffects = True
     }
 
 whispersInYourHeadAnxiety :: CardDef
@@ -611,6 +614,7 @@ whispersInYourHeadAnxiety =
   (treachery "03084c" "Whispers in Your Head (Anxiety)" Delusions 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    , cdCardInHandEffects = True
     }
 
 whispersInYourHeadDoubt :: CardDef
@@ -618,6 +622,7 @@ whispersInYourHeadDoubt =
   (treachery "03084d" "Whispers in Your Head (Doubt)" Delusions 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    , cdCardInHandEffects = True
     }
 
 descentIntoMadness :: CardDef
@@ -705,6 +710,7 @@ giftOfMadnessPity =
   (treachery "03186" "Gift of Madness (Pity)" TheUnspeakableOath 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    , cdCardInHandEffects = True
     }
 
 giftOfMadnessMisery :: CardDef
@@ -712,6 +718,7 @@ giftOfMadnessMisery =
   (treachery "03187" "Gift of Madness (Misery)" TheUnspeakableOath 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    , cdCardInHandEffects = True
     }
 
 wallsClosingIn :: CardDef

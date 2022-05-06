@@ -26,9 +26,7 @@ whispersInYourHeadAnxiety =
   treachery WhispersInYourHeadAnxiety Cards.whispersInYourHeadAnxiety
 
 instance HasModifiersFor env WhispersInYourHeadAnxiety where
-  getModifiersFor _ (InvestigatorTarget iid) (WhispersInYourHeadAnxiety a)
-    | Just iid == treacheryInHandOf a = pure
-    $ toModifiers a [CannotTriggerFastAbilities]
+  getModifiersFor _ (InvestigatorHandTarget _) (WhispersInYourHeadAnxiety a) = pure $ toModifiers a [CannotTriggerFastAbilities]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities WhispersInYourHeadAnxiety where

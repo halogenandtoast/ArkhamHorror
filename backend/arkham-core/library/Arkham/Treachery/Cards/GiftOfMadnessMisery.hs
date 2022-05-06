@@ -28,9 +28,7 @@ giftOfMadnessMisery :: TreacheryCard GiftOfMadnessMisery
 giftOfMadnessMisery = treachery GiftOfMadnessMisery Cards.giftOfMadnessMisery
 
 instance HasModifiersFor env GiftOfMadnessMisery where
-  getModifiersFor _ (InvestigatorTarget iid) (GiftOfMadnessMisery a)
-    | Just iid == treacheryInHandOf a = pure
-    $ toModifiers a [CannotFight (EnemyWithTrait Lunatic)]
+  getModifiersFor _ (InvestigatorHandTarget _) (GiftOfMadnessMisery a) = pure $ toModifiers a [CannotFight (EnemyWithTrait Lunatic)]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities GiftOfMadnessMisery where

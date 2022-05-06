@@ -51,6 +51,7 @@ event cardCode name cost classSymbol = CardDef
   , cdStage = Nothing
   , cdSlots = []
   , cdCardInHandEffects = False
+  , cdCardInDiscardEffects = False
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef

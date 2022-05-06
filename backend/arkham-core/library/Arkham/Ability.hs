@@ -12,7 +12,7 @@ import Arkham.Action (Action)
 import Arkham.Card.EncounterCard
 import Arkham.Classes.Entity.Source
 import Arkham.Cost
-import Arkham.Criteria (Criterion)
+import Arkham.Criteria (Criterion(InYourHand, AnyCriterion, Criteria))
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
@@ -32,6 +32,15 @@ data Ability = Ability
   }
   deriving stock (Show, Generic)
   deriving anyclass (Hashable)
+
+inHandAbility :: Ability -> Bool
+inHandAbility = maybe False inHandCriteria . abilityCriteria
+  where
+    inHandCriteria = \case
+      InYourHand -> True
+      Criteria xs -> any inHandCriteria xs
+      AnyCriterion xs -> any inHandCriteria xs
+      _ -> False
 
 abilityCost :: Ability -> Cost
 abilityCost = abilityTypeCost . abilityType

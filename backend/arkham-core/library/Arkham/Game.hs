@@ -98,6 +98,7 @@ import Data.Monoid (First(..))
 import Data.Sequence qualified as Seq
 import Data.These
 import Data.These.Lens
+import Control.Lens (each) -- (itraverseOf, itraversed)
 import Data.UUID (nil)
 import Safe (headNote)
 import System.Environment
@@ -162,7 +163,7 @@ data Game = Game
   , -- Entities
     gameEntities :: Entities
   , gameEncounterDiscardEntities :: Entities
-  , gameInHandEntities :: Entities
+  , gameInHandEntities :: HashMap InvestigatorId Entities
   , gameEnemiesInVoid :: EntityMap Enemy
   , -- Player Details
     gamePlayerCount :: Int -- used for determining if game should start
@@ -264,7 +265,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gamePlayerCount = playerCount
       , gameEntities = defaultEntities { entitiesInvestigators = investigatorsMap }
       , gameEncounterDiscardEntities = defaultEntities
-      , gameInHandEntities = defaultEntities
+      , gameInHandEntities = mempty
       , gameEnemiesInVoid = mempty
       , gameActiveInvestigatorId = initialInvestigatorId
       , gameTurnPlayerInvestigatorId = Nothing
@@ -2961,6 +2962,8 @@ instance {-# OVERLAPPABLE #-} HasGame env => HasAbilities env where
         <$> filterM unblanked (toList $ g ^. entitiesL . effectsL)
       investigatorAbilities <- concatMap getAbilities
         <$> filterM unblanked (toList $ g ^. entitiesL . investigatorsL)
+      inHandEventAbilities <- filter inHandAbility . concatMap getAbilities
+        <$> filterM unblanked (toList $ g ^. inHandEntitiesL . each . eventsL)
       pure
         $ enemyAbilities
         <> blankedEnemyAbilities
@@ -2969,6 +2972,7 @@ instance {-# OVERLAPPABLE #-} HasGame env => HasAbilities env where
         <> assetAbilities
         <> treacheryAbilities
         <> eventAbilities
+        <> inHandEventAbilities
         <> actAbilities
         <> agendaAbilities
         <> effectAbilities
@@ -4589,12 +4593,30 @@ runGameMessage msg g = case msg of
     )
   _ -> pure g
 
-preloadEntities :: Applicative m => Game -> m Game
+-- Entity id generation should be random, so even though this is pure now
+-- this is using a Monad
+addEntity :: Monad m => Investigator -> Entities -> Card -> m Entities
+addEntity i e card = case card of
+  PlayerCard pc -> case toCardType pc of
+    EventType -> do
+      let event = createEvent card (toId i)
+      pure $ e & eventsL %~ insertMap (toId event) event
+    _ -> error "Unhandled"
+  EncounterCard _ -> error "Unhandled"
+
+preloadEntities :: Monad m => Game -> m Game
 preloadEntities g = do
-  -- let investigators = view (entitiesL . investigatorsL) g
-  --     cards = filter (cdCardInHandEffects . toCardDef) $ concatMap handOf investigators
-  -- entities <- foldMapM addEntity mempty cards
-  pure g
+  let
+    investigators = view (entitiesL . investigatorsL) g
+    preloadHandEntities entities investigator = do
+      let cards = filter (cdCardInHandEffects . toCardDef) $ handOf investigator
+      if null cards
+         then pure entities
+         else do
+           handEntities <- foldM (addEntity investigator) defaultEntities cards
+           pure $ insertMap (toId investigator) handEntities entities
+  entities <- foldM preloadHandEntities mempty investigators
+  pure $ g { gameInHandEntities = entities }
 
 instance (HasQueue env, HasGame env) => RunMessage env Game where
   runMessage msg g = do
@@ -4604,6 +4626,7 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
       >>= traverseOf (modeL . here) (runMessage msg)
       >>= traverseOf (modeL . there) (runMessage msg)
       >>= traverseOf entitiesL (runMessage msg)
+      -- >>= itraverseOf (inHandEntitiesL . itraversed) (\i e -> runMessage (InHand i msg) e)
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= traverseOf
             (discardL . traverse)

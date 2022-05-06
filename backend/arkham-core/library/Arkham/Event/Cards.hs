@@ -50,6 +50,7 @@ event cardCode name cost classSymbol = CardDef
   , cdPlayableFromDiscard = False
   , cdStage = Nothing
   , cdSlots = []
+  , cdCardInHandEffects = False
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef
@@ -172,6 +173,7 @@ darkMemory :: CardDef
 darkMemory = (event "01013" "Dark Memory" 2 Neutral)
   { cdCardTraits = setFromList [Spell]
   , cdCardSubType = Just Weakness
+  , cdCardInHandEffects = True
   }
 
 evidence :: CardDef

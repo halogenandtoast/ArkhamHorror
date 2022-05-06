@@ -46,6 +46,7 @@ skill cardCode name skills classSymbol = CardDef
   , cdPlayableFromDiscard = False
   , cdStage = Nothing
   , cdSlots = []
+  , cdCardInHandEffects = False
   }
 
 allPlayerSkillCards :: HashMap CardCode CardDef

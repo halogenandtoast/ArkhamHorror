@@ -4,6 +4,7 @@ import type { Card } from '@/arkham/types/Card'
 import type { Game } from '@/arkham/types/Game'
 import type { Message } from '@/arkham/types/Message'
 import { MessageType} from '@/arkham/types/Message'
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as ArkhamGame from '@/arkham/types/Game'
 
 const props = defineProps<{
@@ -106,6 +107,34 @@ const cardAction = computed(() => {
   return commitCardAction.value
 })
 
+function isActivate(v: Message) {
+  if (v.tag !== 'UseAbility') {
+    return false
+  }
+
+  const { contents } = v.contents[1].source;
+
+  if (contents === id.value) {
+    return true
+  }
+
+  return false
+}
+
+const abilities = computed(() => {
+  return choices
+    .value
+    .reduce<number[]>((acc, v, i) => {
+      if (v.tag === 'Run' && isActivate(v.contents[0])) {
+        return [...acc, i];
+      } else if (isActivate(v)) {
+        return [...acc, i];
+      }
+
+      return acc;
+    }, []);
+})
+
 const classObject = computed(() => {
   return {
     'card--can-interact': cardAction.value !== -1,
@@ -129,6 +158,14 @@ const image = computed(() => {
       @click="$emit('choose', cardAction)"
     />
 
+    <AbilityButton
+      v-for="ability in abilities"
+      :key="ability"
+      :ability="choices[ability]"
+      :data-image="image"
+      @click="$emit('choose', ability)"
+      />
+
   </div>
 </template>
 
@@ -141,7 +178,7 @@ const image = computed(() => {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;
   margin: 2px;
-  display: inline-block;
+  display: flex;
 
   &--can-interact {
     border: 2px solid $select;

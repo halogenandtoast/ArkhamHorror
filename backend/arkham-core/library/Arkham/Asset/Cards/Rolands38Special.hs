@@ -11,7 +11,6 @@ import qualified Arkham.Asset.Cards as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
 import Arkham.Investigator.Attrs
 import Arkham.Location.Attrs
 import Arkham.Modifier

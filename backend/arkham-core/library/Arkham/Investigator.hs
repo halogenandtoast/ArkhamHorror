@@ -9,7 +9,6 @@ import Arkham.Action (Action, TakenAction)
 import Arkham.Asset.Uses
 import Arkham.SkillType
 import Arkham.Card
-import Arkham.EntityInstance
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Investigators
@@ -25,16 +24,10 @@ $(buildEntity "Investigator")
 
 instance
   ( HasCount StartingUsesCount env (AssetId, UseType)
-  , HasModifiersFor env EntityInstance
   , Query AssetMatcher env
   )
   => HasModifiersFor env Investigator where
-  getModifiersFor s t i = do
-    base <- genericGetModifiersFor s t i
-    hand <- concatMapM
-      (getModifiersFor InHandSource t . toCardInstance (toId i) . PlayerCard)
-      (mapMaybe (preview _PlayerCard) $ view handL (toAttrs i))
-    pure $ base <> hand
+  getModifiersFor s t i = genericGetModifiersFor s t i
 
 deriving anyclass instance HasCount ClueCount env LocationId => HasTokenValue env Investigator
 

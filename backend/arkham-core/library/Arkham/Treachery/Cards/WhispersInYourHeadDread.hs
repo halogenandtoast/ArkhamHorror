@@ -26,9 +26,7 @@ whispersInYourHeadDread =
   treachery WhispersInYourHeadDread Cards.whispersInYourHeadDread
 
 instance HasModifiersFor env WhispersInYourHeadDread where
-  getModifiersFor _ (InvestigatorTarget iid) (WhispersInYourHeadDread a)
-    | Just iid == treacheryInHandOf a = pure
-    $ toModifiers a [CannotMoveMoreThanOnceEachTurn]
+  getModifiersFor _ (InvestigatorHandTarget _) (WhispersInYourHeadDread a) = pure $ toModifiers a [CannotMoveMoreThanOnceEachTurn]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities WhispersInYourHeadDread where
@@ -39,6 +37,6 @@ instance TreacheryRunner env => RunMessage env WhispersInYourHeadDread where
   runMessage msg t@(WhispersInYourHeadDread attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AddTreacheryToHand iid $ toId attrs)
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+    InHand _ (UseCardAbility _ (isSource attrs -> True) _ 1 _) ->
       t <$ push (Discard $ toTarget attrs)
     _ -> WhispersInYourHeadDread <$> runMessage msg attrs

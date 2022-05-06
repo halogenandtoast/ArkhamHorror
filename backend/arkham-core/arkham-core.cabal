@@ -581,7 +581,6 @@ library
       Arkham.Enemy.Helpers
       Arkham.Enemy.Runner
       Arkham.EnemyId
-      Arkham.EntityInstance
       Arkham.Event
       Arkham.Event.Attrs
       Arkham.Event.Cards

@@ -45,7 +45,7 @@ instance ActRunner env => RunMessage env TheStrangerThePathIsMine where
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
       mlid <- selectOne $ LocationWithEnemy $ EnemyWithId theManInThePallidMask
       card <- flipCard <$> genCard (toCardDef attrs)
-      for mlid $ \lid ->
+      for_ mlid $ \lid ->
         pushAll
           [ AddToken Tablet
           , AddToken Tablet

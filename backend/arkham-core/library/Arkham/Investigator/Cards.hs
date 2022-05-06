@@ -49,6 +49,7 @@ investigator cardCode name classSymbol traits =
     , cdStage = Nothing
     , cdSlots = []
     , cdCardInHandEffects = False
+    , cdCardInDiscardEffects = False
     }
 
 allInvestigatorCards :: HashMap CardCode CardDef

@@ -2087,7 +2087,7 @@ instance HasGame env => HasSet Trait env Source where
     EventSource eid -> toTraits <$> getEvent eid
     EffectSource eid -> getSet =<< getEffect eid
     EnemySource eid -> toTraits <$> getEnemy eid
-    AttackSource source -> getSet source
+    EnemyAttackSource eid -> toTraits <$> getEnemy eid
     ScenarioSource _ -> pure mempty
     InvestigatorSource iid -> toTraits <$> getInvestigator iid
     CardCodeSource _ -> pure mempty

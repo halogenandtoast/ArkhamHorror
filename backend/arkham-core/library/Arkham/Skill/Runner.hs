@@ -20,4 +20,5 @@ type SkillRunner env
     , HasSkillTest env
     , HasCount DamageCount env InvestigatorId
     , Query InvestigatorMatcher env
+    , Query EnemyMatcher env
     )

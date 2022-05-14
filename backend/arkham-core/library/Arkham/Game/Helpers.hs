@@ -800,7 +800,7 @@ sourceToTarget = \case
   AgendaDeckSource -> AgendaDeckTarget
   AssetMatcherSource{} -> error "not converted"
   LocationMatcherSource{} -> error "not converted"
-  AttackSource a -> EnemyTarget a
+  EnemyAttackSource a -> EnemyTarget a
   StorySource code -> StoryTarget code
 
 addCampaignCardToDeckChoice
@@ -2127,6 +2127,7 @@ sourceMatches
   :: ( MonadReader env m
      , HasSet Trait env Source
      , Query Matcher.InvestigatorMatcher env
+     , Query Matcher.EnemyMatcher env
      )
   => Source
   -> Matcher.SourceMatcher
@@ -2134,7 +2135,9 @@ sourceMatches
 sourceMatches s = \case
   Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms
   Matcher.SourceWithTrait t -> elem t <$> getSet s
-  Matcher.SourceIs s' -> pure $ s == s'
+  Matcher.SourceIsEnemyAttack em -> case s of
+    EnemyAttackSource eid -> member eid <$> select em
+    _ -> pure False
   Matcher.AnySource -> pure True
   Matcher.SourceMatches ms -> allM (sourceMatches s) ms
   Matcher.SourceOwnedBy whoMatcher -> case s of
@@ -2505,6 +2508,7 @@ sourceCanDamageEnemy
      , HasModifiersFor env ()
      , HasSet Trait env Source
      , Query Matcher.InvestigatorMatcher env
+     , Query Matcher.EnemyMatcher env
      )
   => EnemyId
   -> Source

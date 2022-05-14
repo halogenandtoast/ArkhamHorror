@@ -46,7 +46,7 @@ data Source
   | ActDeckSource
   | AgendaDeckSource
   | YouSource
-  | AttackSource EnemyId
+  | EnemyAttackSource EnemyId
   | AssetMatcherSource AssetMatcher
   | LocationMatcherSource LocationMatcher
   | StorySource CardCode

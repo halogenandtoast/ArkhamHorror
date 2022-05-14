@@ -20,7 +20,6 @@ import Arkham.Phase
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import {-# SOURCE #-} Arkham.Slot
-import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Timing
 import Arkham.Token
@@ -609,7 +608,7 @@ data SkillTestMatcher
 
 data SourceMatcher
   = SourceWithTrait Trait
-  | SourceIs Source
+  | SourceIsEnemyAttack EnemyMatcher
   | EncounterCardSource
   | SourceMatchesAny [SourceMatcher]
   | SourceOwnedBy InvestigatorMatcher

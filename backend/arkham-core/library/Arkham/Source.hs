@@ -12,7 +12,6 @@ import Arkham.EffectId
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.SkillType
-import {-# SOURCE #-} Arkham.Target
 import Arkham.Token
 import Arkham.Trait
 
@@ -26,7 +25,7 @@ data Source
   | TokenEffectSource TokenFace
   | AgendaSource AgendaId
   | LocationSource LocationId
-  | SkillTestSource InvestigatorId SkillType Source Target (Maybe Action)
+  | SkillTestSource InvestigatorId SkillType Source (Maybe Action)
   | AfterSkillTestSource
   | TreacherySource TreacheryId
   | EventSource EventId

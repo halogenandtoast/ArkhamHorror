@@ -13,13 +13,14 @@ import Arkham.Message
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Arkham.Window (Window)
 
 newtype TokenEffect = TokenEffect EffectAttrs
   deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tokenEffect
-  :: EffectId -> EffectMetadata Message -> Source -> Token -> TokenEffect
+  :: EffectId -> EffectMetadata Window Message -> Source -> Token -> TokenEffect
 tokenEffect eid metadata source token = TokenEffect $ EffectAttrs
   { effectId = eid
   , effectSource = source

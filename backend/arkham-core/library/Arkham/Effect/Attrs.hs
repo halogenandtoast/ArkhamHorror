@@ -14,6 +14,7 @@ import Arkham.Message
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
+import Arkham.Window (Window)
 
 data EffectAttrs = EffectAttrs
   { effectId :: EffectId
@@ -21,17 +22,17 @@ data EffectAttrs = EffectAttrs
   , effectTarget :: Target
   , effectSource :: Source
   , effectTraits :: HashSet Trait
-  , effectMetadata :: Maybe (EffectMetadata Message)
+  , effectMetadata :: Maybe (EffectMetadata Window Message)
   , effectWindow :: Maybe EffectWindow
   }
   deriving stock (Show, Eq, Generic)
 
-type EffectArgs = (EffectId, Maybe (EffectMetadata Message), Source, Target)
+type EffectArgs = (EffectId, Maybe (EffectMetadata Window Message), Source, Target)
 
 baseAttrs
   :: CardCode
   -> EffectId
-  -> Maybe (EffectMetadata Message)
+  -> Maybe (EffectMetadata Window Message)
   -> Source
   -> Target
   -> EffectAttrs

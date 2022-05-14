@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Action (Action)
 import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)
-import Arkham.SkillTest
+import Arkham.SkillTest.Base
 import Arkham.SkillType (SkillType)
 import Arkham.Card (Card)
 import Arkham.DamageEffect (DamageEffect)

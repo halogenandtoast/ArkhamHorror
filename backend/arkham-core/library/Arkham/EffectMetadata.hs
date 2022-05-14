@@ -8,15 +8,14 @@ import Arkham.Ability
 import Arkham.Card.CardCode
 import Arkham.Modifier
 import Arkham.Target
-import {-# SOURCE #-} Arkham.Window (Window)
 
-data EffectMetadata a
+data EffectMetadata window a
   = EffectInt Int
   | EffectMessages [a]
   | EffectModifiers [Modifier]
   | EffectCardCode CardCode
   | EffectMetaTarget Target
-  | EffectAbility (Ability, [Window])
+  | EffectAbility (Ability, [window])
   | FailedByEffectModifiers [Modifier]
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

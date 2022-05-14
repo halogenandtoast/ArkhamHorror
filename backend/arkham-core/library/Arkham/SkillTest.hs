@@ -1,4 +1,6 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.SkillTest (
+  module X,
   module Arkham.SkillTest,
 ) where
 
@@ -7,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Action (Action)
 import Arkham.Json
 import Arkham.SkillTestResult
+import Arkham.SkillTest.Base as X
 import Arkham.SkillType
 import Arkham.Card
 import Arkham.Card.Id
@@ -34,24 +37,6 @@ data SkillTestResultsData = SkillTestResultsData
   }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
-
-data SkillTest = SkillTest
-  { skillTestInvestigator :: InvestigatorId
-  , skillTestSkillType :: SkillType
-  , skillTestDifficulty :: Int
-  , skillTestSetAsideTokens :: [Token]
-  , skillTestRevealedTokens :: [Token] -- tokens may change from physical representation
-  , skillTestResolvedTokens :: [Token]
-  , skillTestValueModifier :: Int
-  , skillTestResult :: SkillTestResult
-  , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
-  , skillTestSource :: Source
-  , skillTestTarget :: Target
-  , skillTestAction :: Maybe Action
-  , skillTestSubscribers :: [Target]
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (Hashable)
 
 subscribersL :: Lens' SkillTest [Target]
 subscribersL =
@@ -95,13 +80,6 @@ instance SourceEntity SkillTest where
       skillTestAction
   isSource _ SkillTestSource {} = True
   isSource _ _ = False
-
-instance ToJSON SkillTest where
-  toJSON = genericToJSON $ aesonOptions $ Just "skillTest"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "skillTest"
-
-instance FromJSON SkillTest where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
 
 -- TODO: Cursed Swamp would apply to anyone trying to commit skill cards
 instance HasModifiersFor env SkillTest

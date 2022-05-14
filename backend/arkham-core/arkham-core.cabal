@@ -1039,6 +1039,7 @@ library
       Arkham.Skill.Skills
       Arkham.SkillId
       Arkham.SkillTest
+      Arkham.SkillTest.Base
       Arkham.SkillTest.Runner
       Arkham.SkillTestResult
       Arkham.SkillType

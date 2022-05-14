@@ -189,7 +189,7 @@ data Game = Game
   , gameSkillTestResults :: Maybe SkillTestResultsData
   , gameEnemyMoving :: Maybe EnemyId
   , -- Active questions
-    gameQuestion :: HashMap InvestigatorId Question
+    gameQuestion :: HashMap InvestigatorId (Question Message)
   }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -351,7 +351,7 @@ addInvestigator i d = do
 
 -- TODO: Rename this
 toExternalGame
-  :: MonadRandom m => Game -> HashMap InvestigatorId Question -> m Game
+  :: MonadRandom m => Game -> HashMap InvestigatorId (Question Message) -> m Game
 toExternalGame g mq = do
   newGameSeed <- getRandom
   pure $ g { gameQuestion = mq, gameSeed = newGameSeed }
@@ -395,7 +395,6 @@ modeCampaign = \case
   That _ -> Nothing
   These c _ -> Just c
   This c -> Just c
-
 
 diff :: Game -> Game -> Diff.Patch
 diff a b = Diff.diff (toJSON a) (toJSON b)
@@ -3058,6 +3057,7 @@ runGameMessage msg g = case msg of
       $ g
       & (entitiesL . locationsL .~ mempty)
       & (entitiesL . enemiesL .~ mempty)
+      & (encounterDiscardEntitiesL .~ defaultEntities)
       & (enemiesInVoidL .~ mempty)
       & (entitiesL . assetsL .~ mempty)
       & (encounterDeckL .~ mempty)

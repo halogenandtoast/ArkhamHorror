@@ -145,8 +145,8 @@ data Message
     AddUses Target UseType Int
   | -- Asks
     AskPlayer Message
-  | Ask InvestigatorId Question
-  | AskMap (HashMap InvestigatorId Question)
+  | Ask InvestigatorId (Question Message)
+  | AskMap (HashMap InvestigatorId (Question Message))
   | After Message -- TODO: REMOVE
   | AfterEvadeEnemy InvestigatorId EnemyId
   | AfterRevelation InvestigatorId TreacheryId

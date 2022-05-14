@@ -4,24 +4,23 @@ import Arkham.Prelude
 
 import Arkham.Card.Id
 import Arkham.Id
-import {-# SOURCE #-} Arkham.Message
 import Arkham.Target
 
-data Question
-    = ChooseOne [Message]
-    | ChooseN Int [Message]
-    | ChooseSome [Message]
-    | ChooseUpToN Int [Message]
-    | ChooseOneAtATime [Message]
+data Question msg
+    = ChooseOne [msg]
+    | ChooseN Int [msg]
+    | ChooseSome [msg]
+    | ChooseUpToN Int [msg]
+    | ChooseOneAtATime [msg]
     | -- | Choosing payment amounts
       -- The core idea is that costs get broken up into unitary costs and we
       -- let the players decide how many times an individual player will pay
       -- the cost. The @Maybe Int@ is used to designate whether or not there
       -- is a target value. The tuple of ints are the min and max bound for
       -- the specific investigator
-      ChoosePaymentAmounts Text (Maybe Int) [(InvestigatorId, (Int, Int), Message)]
+      ChoosePaymentAmounts Text (Maybe Int) [(InvestigatorId, (Int, Int), msg)]
     | ChooseAmounts Text Int [(Text, (Int, Int))] Target
-    | ChooseDynamicCardAmounts InvestigatorId CardId (Int, Int) Bool [Message] -- (Int, Int) is (min, max)
+    | ChooseDynamicCardAmounts InvestigatorId CardId (Int, Int) Bool [msg] -- (Int, Int) is (min, max)
     | ChooseUpgradeDeck
     deriving stock (Show, Eq, Generic)
     deriving anyclass (FromJSON, ToJSON)

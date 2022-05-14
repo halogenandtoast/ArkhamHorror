@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorDefeated)
-import Arkham.Source
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
@@ -32,7 +31,7 @@ instance HasAbilities CrazedShoggoth where
     attrs
     [ mkAbility attrs 1 $ ForcedAbility $ InvestigatorDefeated
         Timing.When
-        (SourceIs $ AttackSource $ toId attrs)
+        (SourceIsEnemyAttack $ EnemyWithId $ toId attrs)
         You
     ]
 

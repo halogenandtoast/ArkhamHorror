@@ -43,7 +43,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
-import {-# SOURCE #-} Arkham.Window (Window)
+import Arkham.Window (Window)
 import Arkham.Zone
 import Control.Exception
 
@@ -210,20 +210,20 @@ data Message
   | ChooseTokenGroups Source InvestigatorId ChaosBagStep
   | CommitCard InvestigatorId CardId
   | Continue Text
-  | CreateEffect CardCode (Maybe (EffectMetadata Message)) Source Target
+  | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
   | CreateEnemy Card
   | CreateEnemyAt Card LocationId (Maybe Target)
   | CreatedEnemyAt EnemyId LocationId Target
   | CreateEnemyAtLocationMatching Card LocationMatcher
   | CreateEnemyEngagedWithPrey Card
   | CreatePayAbilityCostEffect Ability Source Target [Window]
-  | CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
-  | CreateTokenEffect (EffectMetadata Message) Source Token
+  | CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
+  | CreateTokenEffect (EffectMetadata Window Message) Source Token
   | CreateStoryAssetAt Card LocationId
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
   | CreateTokenValueEffect Int Source Target
   | CreateWeaknessInThreatArea Card InvestigatorId
-  | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target
+  | CreatedEffect EffectId (Maybe (EffectMetadata Window Message)) Source Target
   | CrossOutRecord CampaignLogKey
   | Damage Target Source Int
   | DeckHasNoCards InvestigatorId (Maybe Target)

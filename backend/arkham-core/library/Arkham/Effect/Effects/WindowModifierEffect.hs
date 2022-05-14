@@ -13,6 +13,7 @@ import Arkham.EffectMetadata
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target
+import Arkham.Window (Window)
 
 newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
   deriving anyclass HasAbilities
@@ -20,7 +21,7 @@ newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
 
 windowModifierEffect
   :: EffectId
-  -> EffectMetadata Message
+  -> EffectMetadata Window Message
   -> EffectWindow
   -> Source
   -> Target

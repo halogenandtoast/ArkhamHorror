@@ -27,7 +27,7 @@ import Arkham.Window (Window)
 createEffect ::
   MonadRandom m =>
   CardCode ->
-  Maybe (EffectMetadata Message) ->
+  Maybe (EffectMetadata Window Message) ->
   Source ->
   Target ->
   m (EffectId, Effect)
@@ -44,7 +44,7 @@ createTokenValueEffect n source target = do
 createWindowModifierEffect ::
   MonadRandom m =>
   EffectWindow ->
-  EffectMetadata Message ->
+  EffectMetadata Window Message ->
   Source ->
   Target ->
   m (EffectId, Effect)
@@ -57,7 +57,7 @@ createWindowModifierEffect effectWindow effectMetadata source target = do
 
 createTokenEffect ::
   MonadRandom m =>
-  EffectMetadata Message ->
+  EffectMetadata Window Message ->
   Source ->
   Token ->
   m (EffectId, Effect)
@@ -192,7 +192,7 @@ instance HasSet Trait env Effect where
 lookupEffect ::
   CardCode ->
   EffectId ->
-  Maybe (EffectMetadata Message) ->
+  Maybe (EffectMetadata Window Message) ->
   Source ->
   Target ->
   Effect
@@ -286,7 +286,7 @@ buildTokenValueEffect eid n source =
 
 buildWindowModifierEffect ::
   EffectId ->
-  EffectMetadata Message ->
+  EffectMetadata Window Message ->
   EffectWindow ->
   Source ->
   Target ->
@@ -296,7 +296,7 @@ buildWindowModifierEffect eid metadata effectWindow source target =
     windowModifierEffect eid metadata effectWindow source target
 
 buildTokenEffect ::
-  EffectId -> EffectMetadata Message -> Source -> Token -> Effect
+  EffectId -> EffectMetadata Window Message -> Source -> Token -> Effect
 buildTokenEffect eid metadata source token =
   TokenEffect' $ tokenEffect eid metadata source token
 

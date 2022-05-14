@@ -7,7 +7,6 @@ module Arkham.SkillTest (
 import Arkham.Prelude
 
 import Arkham.Action (Action)
-import Arkham.Json
 import Arkham.SkillTestResult
 import Arkham.SkillTest.Base as X
 import Arkham.SkillType

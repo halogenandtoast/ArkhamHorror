@@ -11,6 +11,7 @@ import Arkham.EffectMetadata
 import Arkham.Message
 import Arkham.Target
 import Arkham.Token
+import Arkham.Window (Window)
 
 newtype Shrivelling = Shrivelling EffectAttrs
   deriving anyclass HasAbilities
@@ -21,7 +22,7 @@ shrivelling = Shrivelling . uncurry4 (baseAttrs "01060")
 
 instance HasModifiersFor env Shrivelling
 
-intFromMetadata :: EffectMetadata a -> Int
+intFromMetadata :: EffectMetadata Window a -> Int
 intFromMetadata = \case
   EffectInt n -> n
   _ -> 0

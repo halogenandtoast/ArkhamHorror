@@ -75,7 +75,6 @@ instance SourceEntity SkillTest where
       skillTestInvestigator
       skillTestSkillType
       skillTestSource
-      skillTestTarget
       skillTestAction
   isSource _ SkillTestSource {} = True
   isSource _ _ = False

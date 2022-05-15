@@ -10,7 +10,6 @@ import Arkham.Event.Runner
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Target
 
 newtype BaitAndSwitch = BaitAndSwitch EventAttrs
@@ -20,12 +19,12 @@ newtype BaitAndSwitch = BaitAndSwitch EventAttrs
 baitAndSwitch :: EventCard BaitAndSwitch
 baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
 
-instance (EventRunner env) => RunMessage env BaitAndSwitch where
+instance EventRunner env => RunMessage env BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ ChooseEvadeEnemy
         iid
-        (EventSource eid)
+        (toSource attrs)
         (Just $ toTarget attrs)
         SkillAgility
         AnyEnemy
@@ -34,25 +33,15 @@ instance (EventRunner env) => RunMessage env BaitAndSwitch where
       ]
     Successful (Action.Evade, EnemyTarget eid) iid _ target _
       | isTarget attrs target -> do
-        nonElite <- notMember eid <$> select EliteEnemy
-        let msgs = EnemyEvaded iid eid : [ WillMoveEnemy eid msg | nonElite ]
-        e <$ pushAll msgs
+        nonElite <- member eid <$> select NonEliteEnemy
+        pushAll $ EnemyEvaded iid eid : [ WillMoveEnemy eid msg | nonElite ]
+        pure e
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _)
       | isTarget attrs target -> do
-        connectedLocationIds <- selectList ConnectedLocation
-        e <$ unless
-          (null connectedLocationIds)
-          (withQueue_ \queue ->
-            let
-              enemyMoves = map (EnemyMove enemyId) connectedLocationIds
-              (before, rest) = break
-                (\case
-                  AfterEvadeEnemy{} -> True
-                  _ -> False
-                )
-                queue
-            in case rest of
-              (x : xs) -> before <> [x, chooseOne iid enemyMoves] <> xs
-              _ -> error "evade missing"
-          )
+        enemyMoveChoices <- chooseOne iid
+          <$> selectListMap (EnemyMove enemyId) ConnectedLocation
+        insertAfterMatching enemyMoveChoices \case
+          AfterEvadeEnemy{} -> True
+          _ -> False
+        pure e
     _ -> BaitAndSwitch <$> runMessage msg attrs

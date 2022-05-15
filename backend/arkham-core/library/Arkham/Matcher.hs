@@ -19,7 +19,7 @@ import Arkham.Modifier
 import Arkham.Phase
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
-import {-# SOURCE #-} Arkham.Slot
+import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Timing
 import Arkham.Token

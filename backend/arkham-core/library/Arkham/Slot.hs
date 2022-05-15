@@ -1,8 +1,9 @@
-module Arkham.Slot where
+module Arkham.Slot (module X, module Arkham.Slot) where
 
 import Arkham.Prelude
 
 import Arkham.AssetId
+import Arkham.SlotType as X
 import Arkham.Source
 import Arkham.Trait
 
@@ -23,14 +24,6 @@ instance Ord Slot where
 
 newtype PotentialSlot = PotentialSlot { unPotentialSlot :: SlotType }
 
-data SlotType
-  = HandSlot
-  | BodySlot
-  | AllySlot
-  | AccessorySlot
-  | ArcaneSlot
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable, ToJSONKey, FromJSONKey)
 
 isEmptySlot :: Slot -> Bool
 isEmptySlot = isNothing . slotItem

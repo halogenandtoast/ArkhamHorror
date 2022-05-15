@@ -31,7 +31,7 @@ instance
   , HasSet Trait env LocationId
   )
   => HasModifiersFor env RipplesOnTheSurface where
-  getModifiersFor (SkillTestSource _ _ source _ _) (InvestigatorTarget iid) (RipplesOnTheSurface attrs)
+  getModifiersFor (SkillTestSource _ _ source _) (InvestigatorTarget iid) (RipplesOnTheSurface attrs)
     | isSource attrs source
     = do
       locationId <- getId @LocationId iid

@@ -314,14 +314,18 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
     ResolveToken _ ElderThing iid -> do
       msource <- getSkillTestSource
       case msource of
-        Just (SkillTestSource _ _ _ (EnemyTarget eid) (Just action)) -> do
-          enemyCardCode <- getId @CardCode eid
-          s <$ when
-            (enemyCardCode
-            == "02255"
-            && (action `elem` [Action.Evade, Action.Fight])
-            )
-            (push $ EnemyAttack iid eid DamageAny)
+        Just (SkillTestSource _ _ _ (Just action)) -> do
+          mtarget <- getSkillTestTarget
+          case mtarget of
+            Just (EnemyTarget eid) -> do
+              enemyCardCode <- getId @CardCode eid
+              s <$ when
+                (enemyCardCode
+                == "02255"
+                && (action `elem` [Action.Evade, Action.Fight])
+                )
+                (push $ EnemyAttack iid eid DamageAny)
+            _ -> pure s
         _ -> pure s
     RequestedPlayerCard iid source mcard | isSource attrs source ->
       case mcard of

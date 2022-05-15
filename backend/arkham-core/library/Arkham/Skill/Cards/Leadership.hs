@@ -23,7 +23,7 @@ leadership :: SkillCard Leadership
 leadership = skill Leadership Cards.leadership
 
 instance HasModifiersFor env Leadership where
-  getModifiersFor (SkillTestSource iid' _ _ _ _) (CardIdTarget cid) (Leadership attrs)
+  getModifiersFor (SkillTestSource iid' _ _ _) (CardIdTarget cid) (Leadership attrs)
     | toCardId attrs == cid && skillOwner attrs /= iid'
     = pure $ toModifiers attrs [AddSkillIcons [SkillWillpower, SkillWild]]
   getModifiersFor _ _ _ = pure []

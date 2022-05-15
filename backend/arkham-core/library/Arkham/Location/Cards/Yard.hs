@@ -38,7 +38,7 @@ instance
   getModifiersFor _ (LocationTarget lid) (Yard attrs) | lid == toId attrs = do
     mskillTestSource <- getSkillTestSource
     case mskillTestSource of
-      Just (SkillTestSource iid _ source _ (Just Action.Investigate))
+      Just (SkillTestSource iid _ source (Just Action.Investigate))
         | isSource attrs source -> do
           horror <- unHorrorCount <$> getCount iid
           pure $ toModifiers

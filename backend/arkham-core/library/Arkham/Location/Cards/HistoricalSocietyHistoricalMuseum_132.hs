@@ -15,6 +15,7 @@ import Arkham.Location.Helpers
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -36,10 +37,13 @@ historicalSocietyHistoricalMuseum_132 = locationWithRevealedSideConnections
   Hourglass
   [Circle, Heart]
 
-instance HasModifiersFor env HistoricalSocietyHistoricalMuseum_132 where
-  getModifiersFor (SkillTestSource _ _ _ target (Just Action.Investigate)) (InvestigatorTarget _) (HistoricalSocietyHistoricalMuseum_132 attrs)
-    | isTarget attrs target
-    = pure $ toModifiers attrs [SkillCannotBeIncreased SkillIntellect]
+instance HasSkillTest env => HasModifiersFor env HistoricalSocietyHistoricalMuseum_132 where
+  getModifiersFor (SkillTestSource _ _ _ (Just Action.Investigate)) (InvestigatorTarget _) (HistoricalSocietyHistoricalMuseum_132 attrs)
+    = do
+    mtarget <- getSkillTestTarget
+    case mtarget of
+      Just target | isTarget attrs target -> pure $ toModifiers attrs [SkillCannotBeIncreased SkillIntellect]
+      _ -> pure []
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities HistoricalSocietyHistoricalMuseum_132 where

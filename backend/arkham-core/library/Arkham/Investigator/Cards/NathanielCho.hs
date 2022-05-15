@@ -67,7 +67,7 @@ instance (InvestigatorRunner env) => RunMessage env NathanielCho where
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mSource <- getSkillTestSource
       case mSource of
-        Just (SkillTestSource _ _ _ _ (Just Action.Fight)) ->
+        Just (SkillTestSource _ _ _ (Just Action.Fight)) ->
           a <$ push
             (CreateEffect "60101" Nothing (toSource attrs) (toTarget attrs))
         _ -> pure a

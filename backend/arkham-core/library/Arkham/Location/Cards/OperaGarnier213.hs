@@ -12,6 +12,7 @@ import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Modifier
+import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 
@@ -28,10 +29,12 @@ operaGarnier213 = location
   Diamond
   [Triangle, Square, Heart]
 
-instance HasModifiersFor env OperaGarnier213 where
-  getModifiersFor (SkillTestSource _ _ _ target (Just Action.Investigate)) (InvestigatorTarget _) (OperaGarnier213 attrs)
-    | isTarget attrs target
-    = pure $ toModifiers attrs [DoubleBaseSkillValue]
+instance HasSkillTest env => HasModifiersFor env OperaGarnier213 where
+  getModifiersFor (SkillTestSource _ _ _ (Just Action.Investigate)) (InvestigatorTarget _) (OperaGarnier213 attrs) = do
+    mtarget <- getSkillTestTarget
+    case mtarget of
+      Just target | isTarget attrs target -> pure $ toModifiers attrs [DoubleBaseSkillValue]
+      _ -> pure []
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities OperaGarnier213 where

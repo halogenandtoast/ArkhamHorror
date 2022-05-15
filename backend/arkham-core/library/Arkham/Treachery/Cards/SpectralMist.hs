@@ -30,7 +30,7 @@ spectralMist :: TreacheryCard SpectralMist
 spectralMist = treachery SpectralMist Cards.spectralMist
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist where
-  getModifiersFor (SkillTestSource iid _ _ _ _) _ (SpectralMist a) = do
+  getModifiersFor (SkillTestSource iid _ _ _) _ (SpectralMist a) = do
     lid <- getId @LocationId iid
     pure $ toModifiers a [ Difficulty 1 | treacheryOnLocation lid a ]
   getModifiersFor _ _ _ = pure []

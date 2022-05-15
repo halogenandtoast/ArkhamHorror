@@ -31,7 +31,7 @@ instance
   , HasSet Trait env LocationId
   )
   => HasModifiersFor env CursedSwamp where
-  getModifiersFor (SkillTestSource _ _ source _ _) (InvestigatorTarget iid) (CursedSwamp attrs)
+  getModifiersFor (SkillTestSource _ _ source _) (InvestigatorTarget iid) (CursedSwamp attrs)
     | isSource attrs source
     = do
       locationId <- getId @LocationId iid

@@ -21,7 +21,7 @@ fineClothes =
   assetWith FineClothes Cards.fineClothes $ (healthL ?~ 1) . (sanityL ?~ 1)
 
 instance HasModifiersFor env FineClothes where
-  getModifiersFor (SkillTestSource iid _ _ _ (Just Action.Parley)) (InvestigatorTarget iid') (FineClothes a)
+  getModifiersFor (SkillTestSource iid _ _ (Just Action.Parley)) (InvestigatorTarget iid') (FineClothes a)
     | ownedBy a iid && iid == iid'
     = pure $ toModifiers a [Difficulty (-2)]
   getModifiersFor _ _ _ = pure []

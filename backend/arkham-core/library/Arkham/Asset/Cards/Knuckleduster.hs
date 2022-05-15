@@ -13,6 +13,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Keyword qualified as Keyword
 import Arkham.Modifier
+import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -31,11 +32,14 @@ instance HasAbilities Knuckleduster where
         $ ActionCost 1
     ]
 
-instance HasModifiersFor env Knuckleduster where
-  getModifiersFor (SkillTestSource _ _ source (EnemyTarget eid) (Just Action.Fight)) (EnemyTarget eid') (Knuckleduster attrs)
-    | isSource attrs source && eid == eid'
+instance HasSkillTest env => HasModifiersFor env Knuckleduster where
+  getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (EnemyTarget eid) (Knuckleduster attrs)
+    | isSource attrs source
     = do
-      pure $ toModifiers attrs [AddKeyword Keyword.Retaliate]
+      mtarget <- getSkillTestTarget
+      case mtarget of
+        Just (EnemyTarget eid') | eid == eid' -> pure $ toModifiers attrs [AddKeyword Keyword.Retaliate]
+        _ -> pure []
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Knuckleduster where

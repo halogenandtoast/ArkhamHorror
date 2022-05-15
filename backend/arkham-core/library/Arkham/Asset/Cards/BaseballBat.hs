@@ -24,7 +24,7 @@ baseballBat :: AssetCard BaseballBat
 baseballBat = asset BaseballBat Cards.baseballBat
 
 instance HasModifiersFor env BaseballBat where
-  getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) (InvestigatorTarget iid) (BaseballBat a)
+  getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (InvestigatorTarget iid) (BaseballBat a)
     | ownedBy a iid && isSource a source
     = pure $ toModifiers a [DamageDealt 1]
   getModifiersFor _ _ _ = pure []

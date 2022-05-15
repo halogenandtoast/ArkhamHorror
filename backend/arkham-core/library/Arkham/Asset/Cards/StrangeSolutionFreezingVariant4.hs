@@ -33,7 +33,7 @@ instance HasAbilities StrangeSolutionFreezingVariant4 where
     ]
 
 instance HasModifiersFor env StrangeSolutionFreezingVariant4 where
-  getModifiersFor (SkillTestSource _ _ source _ (Just Action.Evade)) (InvestigatorTarget iid) (StrangeSolutionFreezingVariant4 a)
+  getModifiersFor (SkillTestSource _ _ source (Just Action.Evade)) (InvestigatorTarget iid) (StrangeSolutionFreezingVariant4 a)
     | ownedBy a iid && isSource a source
     = pure $ toModifiers a [BaseSkillOf SkillAgility 6]
   getModifiersFor _ _ _ = pure []

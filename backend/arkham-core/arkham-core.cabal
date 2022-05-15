@@ -1044,6 +1044,7 @@ library
       Arkham.SkillTestResult
       Arkham.SkillType
       Arkham.Slot
+      Arkham.SlotType
       Arkham.Source
       Arkham.Stats
       Arkham.Story.Cards

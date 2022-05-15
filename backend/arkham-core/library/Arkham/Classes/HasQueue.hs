@@ -97,3 +97,15 @@ popMessageMatching_ = void . popMessageMatching
 removeAllMessagesMatching
   :: (MonadIO m, MonadReader env m, HasQueue env) => (Message -> Bool) -> m ()
 removeAllMessagesMatching matcher = withQueue_ $ filter (not . matcher)
+
+insertAfterMatching
+  :: (MonadIO m, MonadReader env m, HasQueue env)
+  => Message
+  -> (Message -> Bool)
+  -> m ()
+insertAfterMatching msg p = withQueue_ \queue ->
+  let
+    (before, rest) = break p queue
+  in case rest of
+    (x : xs) -> before <> (x : msg : xs)
+    _ -> queue

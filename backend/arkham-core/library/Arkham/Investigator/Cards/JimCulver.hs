@@ -29,7 +29,7 @@ jimCulver = investigator
     }
 
 instance HasModifiersFor env JimCulver where
-  getModifiersFor (SkillTestSource iid _ _ _ _) (TokenTarget token) (JimCulver attrs)
+  getModifiersFor (SkillTestSource iid _ _ _) (TokenTarget token) (JimCulver attrs)
     | iid == investigatorId attrs && tokenFace token == Skull
     = pure $ toModifiers attrs [ChangeTokenModifier $ PositiveModifier 0]
   getModifiersFor _ _ _ = pure []

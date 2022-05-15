@@ -26,7 +26,7 @@ iveGotAPlan :: EventCard IveGotAPlan
 iveGotAPlan = event IveGotAPlan Cards.iveGotAPlan
 
 instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor env IveGotAPlan where
-  getModifiersFor (SkillTestSource iid _ _ _ (Just Fight)) (InvestigatorTarget _) (IveGotAPlan attrs)
+  getModifiersFor (SkillTestSource iid _ _ (Just Fight)) (InvestigatorTarget _) (IveGotAPlan attrs)
     = do
       clueCount <- unClueCount <$> getCount iid
       pure $ toModifiers attrs [DamageDealt (min clueCount 3)]

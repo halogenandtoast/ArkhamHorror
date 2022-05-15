@@ -187,7 +187,7 @@ getIsScenarioAbility
 getIsScenarioAbility = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   case source of
-    SkillTestSource _ _ source' _ _ -> case source' of
+    SkillTestSource _ _ source' _ -> case source' of
       EnemySource _ -> pure True
       AgendaSource _ -> pure True
       LocationSource _ -> pure True

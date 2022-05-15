@@ -128,14 +128,14 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       pushAll
         [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
       pure $ s & (resolvedTokensL %~ (<> skillTestRevealedTokens))
-    RequestedTokens (SkillTestSource siid skillType source target maction) (Just iid) tokenFaces ->
+    RequestedTokens (SkillTestSource siid skillType source maction) (Just iid) tokenFaces ->
       do
         push (RevealSkillTestTokens iid)
         for_ tokenFaces $ \tokenFace -> do
           pushAll $
             resolve
               ( RevealToken
-                  (SkillTestSource siid skillType source target maction)
+                  (SkillTestSource siid skillType source maction)
                   iid
                   tokenFace
               )

@@ -34,7 +34,7 @@ instance HasAbilities AlchemicalConcoction where
     ]
 
 instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor env AlchemicalConcoction where
-  getModifiersFor (SkillTestSource _ _ source _ (Just Action.Fight)) _ (AlchemicalConcoction a)
+  getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) _ (AlchemicalConcoction a)
     | isSource a source
     = do
       skillTestTarget <- fromJustNote "not a skilltest" <$> getSkillTestTarget

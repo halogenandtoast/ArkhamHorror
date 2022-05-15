@@ -16,6 +16,7 @@ import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Query
 import Arkham.SkillType
+import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
@@ -38,12 +39,16 @@ instance HasAbilities EsotericFormula where
         (ActionAbility (Just Action.Fight) (ActionCost 1))
     ]
 
-instance HasCount ClueCount env EnemyId => HasModifiersFor env EsotericFormula where
-  getModifiersFor (SkillTestSource iid' _ source (EnemyTarget eid) (Just Action.Fight)) (InvestigatorTarget iid) (EsotericFormula attrs)
+instance (HasSkillTest env, HasCount ClueCount env EnemyId) => HasModifiersFor env EsotericFormula where
+  getModifiersFor (SkillTestSource iid' _ source (Just Action.Fight)) (InvestigatorTarget iid) (EsotericFormula attrs)
     | ownedBy attrs iid && isSource attrs source && iid' == iid
     = do
-      clueCount <- unClueCount <$> getCount eid
-      pure $ toModifiers attrs [SkillModifier SkillWillpower (clueCount * 2)]
+      skillTestTarget <- fromJustNote "not a skilltest" <$> getSkillTestTarget
+      case skillTestTarget of
+        EnemyTarget eid -> do
+          clueCount <- unClueCount <$> getCount eid
+          pure $ toModifiers attrs [SkillModifier SkillWillpower (clueCount * 2)]
+        _ -> error "Invalid target"
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env EsotericFormula where

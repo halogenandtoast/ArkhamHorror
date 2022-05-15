@@ -17,6 +17,7 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Query
+import Arkham.SkillTest
 import Arkham.Trait (Trait, toTraits)
 
 $(buildEntity "Enemy")
@@ -66,6 +67,7 @@ instance
     , HasId (Maybe LocationId) env AssetId
     , HasSkillValue env InvestigatorId
     , Query LocationMatcher env
+    , HasSkillTest env
     ) =>
     HasModifiersFor env Enemy
     where

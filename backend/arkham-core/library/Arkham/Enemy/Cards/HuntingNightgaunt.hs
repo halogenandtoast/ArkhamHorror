@@ -10,6 +10,7 @@ import Arkham.Action
 import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Modifier
+import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 
@@ -21,10 +22,12 @@ huntingNightgaunt :: EnemyCard HuntingNightgaunt
 huntingNightgaunt =
   enemy HuntingNightgaunt Cards.huntingNightgaunt (3, Static 4, 1) (1, 1)
 
-instance HasModifiersFor env HuntingNightgaunt where
-  getModifiersFor (SkillTestSource _ _ _ target (Just Evade)) (TokenTarget _) (HuntingNightgaunt a)
-    | isTarget a target
-    = pure $ toModifiers a [DoubleNegativeModifiersOnTokens]
+instance HasSkillTest env => HasModifiersFor env HuntingNightgaunt where
+  getModifiersFor (SkillTestSource _ _ _ (Just Evade)) (TokenTarget _) (HuntingNightgaunt a) = do
+    mtarget <- getSkillTestTarget
+    case mtarget of
+      Just target | isTarget a target -> pure $ toModifiers a [DoubleNegativeModifiersOnTokens]
+      _ -> pure []
   getModifiersFor _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env HuntingNightgaunt where

@@ -21,7 +21,7 @@ backstab :: EventCard Backstab
 backstab = event Backstab Cards.backstab
 
 instance HasModifiersFor env Backstab where
-  getModifiersFor (SkillTestSource _ _ source _ (Just Fight)) (InvestigatorTarget _) (Backstab attrs)
+  getModifiersFor (SkillTestSource _ _ source (Just Fight)) (InvestigatorTarget _) (Backstab attrs)
     = pure $ toModifiers attrs [ DamageDealt 2 | isSource attrs source ]
   getModifiersFor _ _ _ = pure []
 

@@ -17,7 +17,10 @@ type TreacheryRunner env =
   , HasSet SkillId env SkillMatcher
   , HasSet EventId env EventMatcher
   , HasSet ClassSymbol env InvestigatorId
+  , HasSkillValue env InvestigatorId
+  , HasModifiersFor env ()
   , HasName env (Unrevealed LocationId)
+  , HasRecord env ()
   , GetCardDef env AssetId
   , GetCardDef env LocationId
   , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)

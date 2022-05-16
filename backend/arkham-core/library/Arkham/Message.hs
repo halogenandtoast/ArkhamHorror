@@ -136,6 +136,7 @@ data Message
     AddFocusedToTopOfDeck InvestigatorId Target CardId
   | -- Adding Cards to Player Discard
     AddToDiscard InvestigatorId PlayerCard
+  | AddToEncounterDiscard EncounterCard
   | -- Slot Messages
     AddSlot InvestigatorId SlotType Slot
   | -- Adding Cards to Encounter Deck
@@ -270,6 +271,7 @@ data Message
   | EndUpkeep
   | EnemiesAttack
   | EnemyAttack InvestigatorId EnemyId DamageStrategy
+  | EnemyAttackFromDiscard InvestigatorId Card
   | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
   | EnemyAttacks [Message]
   | CheckEnemyEngagement InvestigatorId

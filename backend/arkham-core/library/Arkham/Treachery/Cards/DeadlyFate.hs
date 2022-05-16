@@ -45,7 +45,10 @@ instance TreacheryRunner env => RunMessage env DeadlyFate where
             , chooseOne
               iid
               [ Label "Draw enemy" [InvestigatorDrewEncounterCard iid c]
-              , Label "That enemy attacks you (from the discard pile)" [] -- EnemyAttack iid eid DamageAny]
+              , Label "That enemy attacks you (from the discard pile)"
+                [ AddToEncounterDiscard c
+                , EnemyAttackFromDiscard iid (EncounterCard c)
+                ]
               ]
             , UnfocusCards
             ]

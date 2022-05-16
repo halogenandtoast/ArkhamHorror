@@ -7,20 +7,18 @@ import Arkham.Prelude
 
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Message
 import Arkham.Treachery.Attrs
 import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards.FrozenInFear
 
-newtype FrozenInFearAPhantomOfTruth = FrozenInFearAPhantomOfTruth TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+newtype FrozenInFearAPhantomOfTruth = FrozenInFearAPhantomOfTruth FrozenInFear
+  deriving anyclass IsTreachery
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env, HasAbilities)
 
 frozenInFearAPhantomOfTruth :: TreacheryCard FrozenInFearAPhantomOfTruth
 frozenInFearAPhantomOfTruth =
-  treachery FrozenInFearAPhantomOfTruth Cards.frozenInFearAPhantomOfTruth
+  treachery (FrozenInFearAPhantomOfTruth . FrozenInFear) Cards.frozenInFearAPhantomOfTruth
 
 instance TreacheryRunner env => RunMessage env FrozenInFearAPhantomOfTruth where
-  runMessage msg t@(FrozenInFearAPhantomOfTruth attrs) = case msg of
-    Revelation _iid source | isSource attrs source ->
-      t <$ push (Discard $ toTarget attrs)
-    _ -> FrozenInFearAPhantomOfTruth <$> runMessage msg attrs
+  runMessage msg (FrozenInFearAPhantomOfTruth attrs) =
+    FrozenInFearAPhantomOfTruth <$> runMessage msg attrs

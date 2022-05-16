@@ -3885,6 +3885,8 @@ runGameMessage msg g = case msg of
       $ g
       & (entitiesL . eventsL %~ deleteMap eid) -- we might not want to remove here?
       & (victoryDisplayL %~ (toCard event :))
+  AddToEncounterDiscard ec -> do
+    pure $ g & discardL %~ (ec:)
   PlayerWindow iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
   Begin InvestigationPhase -> do
     investigatorIds <- getInvestigatorIds
@@ -3971,6 +3973,12 @@ runGameMessage msg g = case msg of
       ]
     pushAllEnd [phaseBeginsWindow, HuntersMove, EnemiesAttack, EndEnemy]
     pure $ g & phaseL .~ EnemyPhase
+  EnemyAttackFromDiscard iid card -> do
+    let
+      enemy = createEnemy card
+      enemyId = toId enemy
+    push $ EnemyWillAttack iid enemyId (getEnemyDamageStrategy enemy)
+    pure $ g & encounterDiscardEntitiesL . enemiesL . at enemyId ?~ enemy
   EndEnemy -> do
     pushAll . (: [EndPhase]) =<< checkWindows
       [Window Timing.When (Window.PhaseEnds EnemyPhase)]

@@ -177,3 +177,6 @@ getEnemyBearer = enemyBearer . toAttrs
 
 getEnemyLocation :: Enemy -> Maybe LocationId
 getEnemyLocation = enemyLocation . toAttrs
+
+getEnemyDamageStrategy :: Enemy -> DamageStrategy
+getEnemyDamageStrategy = view damageStrategyL . toAttrs

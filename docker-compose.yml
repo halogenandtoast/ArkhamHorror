@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:14.1
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=arkham-horror-backend
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./setup.sql:/docker-entrypoint-initdb.d/create_tables.sql
+  web:
+    build:
+      context: .
+      args:
+        - GHC_VERSION=9.0.2
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/arkham-horror-backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+volumes: 
+ pgdata:

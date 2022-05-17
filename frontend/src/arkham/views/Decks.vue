@@ -116,7 +116,7 @@ export default defineComponent({
           .then((data) => {
             investigator.value = null
             investigatorError.value = null
-            if (investigators.value.map(i => i.contents.id.replace(/^c/, '')).includes(data.investigator_code)) {
+            if (investigators.value.map(i => i.id.replace(/^c/, '')).includes(data.investigator_code)) {
               if(data.meta && data.meta.alternate_front) {
                 investigator.value = data.meta.alternate_front
               } else {

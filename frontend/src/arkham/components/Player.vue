@@ -2,7 +2,7 @@
   <div class="player-cards">
     <section class="in-play">
       <Asset
-        v-for="asset in player.assets"
+        v-for="asset in player.contents.assets"
         :asset="game.assets[asset]"
         :game="game"
         :investigatorId="investigatorId"
@@ -11,7 +11,7 @@
       />
 
       <Enemy
-        v-for="enemyId in player.engagedEnemies"
+        v-for="enemyId in player.contents.engagedEnemies"
         :key="enemyId"
         :enemy="game.enemies[enemyId]"
         :game="game"
@@ -20,7 +20,7 @@
       />
 
       <Treachery
-        v-for="treacheryId in player.treacheries"
+        v-for="treacheryId in player.contents.treacheries"
         :key="treacheryId"
         :treachery="game.treacheries[treacheryId]"
         :game="game"
@@ -67,7 +67,7 @@
       </div>
       <section class="hand">
         <HandCard
-          v-for="(card, index) in player.hand"
+          v-for="(card, index) in player.contents.hand"
           :card="card"
           :game="game"
           :investigatorId="investigatorId"
@@ -76,7 +76,7 @@
         />
 
         <Treachery
-          v-for="treacheryId in player.inHandTreacheries"
+          v-for="treacheryId in player.contents.inHandTreacheries"
           :key="treacheryId"
           :treachery="game.treacheries[treacheryId]"
           :game="game"
@@ -137,7 +137,7 @@ export default defineComponent({
   },
   setup(props) {
 
-    const discards = computed<ArkhamCard.Card[]>(() => props.player.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
+    const discards = computed<ArkhamCard.Card[]>(() => props.player.contents.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
     const topOfDiscard = computed(() => discards.value[0])
@@ -145,7 +145,7 @@ export default defineComponent({
     const topOfDeckRevealed = computed(() => props.player.modifiers?.some((m) => m.type.tag === "TopCardOfDeckIsRevealed"))
 
     const topOfDeck = computed(() => {
-      const topCard = props.player.deck[0]
+      const topCard = props.player.contents.deck[0]
       if  (topOfDeckRevealed.value && topCard) {
         return `${baseUrl}/img/arkham/cards/${topCard.cardCode.replace(/^c/, '')}.jpg`
       }
@@ -154,14 +154,14 @@ export default defineComponent({
 
     const playTopOfDeckAction = computed(() => {
       return choices.value.findIndex((c) => {
-        return c.tag === MessageType.PLAY_CARD && c.contents[1] === props.player.deck[0].id
+        return c.tag === MessageType.PLAY_CARD && c.contents[1] === props.player.contents.deck[0].id
       })
     })
 
     const viewingDiscard = ref(false)
     const viewDiscardLabel = computed(() => viewingDiscard.value ? "Close" : `${discards.value.length} Cards`)
 
-    const id = computed(() => props.player.id)
+    const id = computed(() => props.player.contents.id)
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
     const drawCardsAction = computed(() => {

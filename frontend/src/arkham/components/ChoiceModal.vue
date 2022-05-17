@@ -68,7 +68,7 @@ export default defineComponent({
   setup(props) {
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
     const focusedCards = computed(() => {
-      const playerCards = Object.values(props.game.investigators[props.investigatorId].foundCards).flat()
+      const playerCards = Object.values(props.game.investigators[props.investigatorId].contents.foundCards).flat()
       if (playerCards.length > 0) {
         return playerCards
       }
@@ -105,7 +105,7 @@ export default defineComponent({
 
     const question = computed(() => props.game.question[props.investigatorId])
 
-    const investigatorName = (iid: string) => props.game.investigators[iid].name.title
+    const investigatorName = (iid: string) => props.game.investigators[iid].contents.name.title
 
     const amountsChoices = computed(() => {
       if (question.value?.tag == 'ChoosePaymentAmounts') {

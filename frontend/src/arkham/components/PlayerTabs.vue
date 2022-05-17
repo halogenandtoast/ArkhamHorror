@@ -2,12 +2,12 @@
   <div class="player-info">
     <ul class='tabs__header'>
       <li v-for='iid in playerOrder'
-        :key='players[iid].name.title'
+        :key='players[iid].contents.name.title'
         @click.exact='selectTab(iid)'
         @click.shift='selectTabExtended(iid)'
         :class='tabClass(iid)'
       >
-        {{ players[iid].name.title }}
+        {{ players[iid].contents.name.title }}
       </li>
     </ul>
     <Tab
@@ -15,10 +15,10 @@
       :key="index"
       :index="index"
       :selectedTab="selectedTab"
-      :playerClass="player.class"
-      :title="player.name.title"
+      :playerClass="player.contents.class"
+      :title="player.contents.name.title"
       :investigatorId="index"
-      :activePlayer="player.id == activePlayerId"
+      :activePlayer="player.contents.id == activePlayerId"
     >
       <Player
         :game="game"
@@ -56,14 +56,14 @@ export default defineComponent({
     const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
 
     function tabClass(index: string) {
-      const pid = props.players[index].id
+      const pid = props.players[index].contents.id
       return [
         {
           'tab--selected': index === selectedTab.value,
           'tab--active-player': pid == props.activePlayerId,
-          'tab--has-actions': pid !== props.investigatorId && hasChoices(props.players[index].id),
+          'tab--has-actions': pid !== props.investigatorId && hasChoices(props.players[index].contents.id),
         },
-        `tab--${props.players[index].class}`,
+        `tab--${props.players[index].contents.class}`,
       ]
     }
 

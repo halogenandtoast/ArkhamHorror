@@ -140,14 +140,14 @@ instance HasRecord env UndimensionedAndUnseen where
   hasRecordCount _ _ = pure 0
 
 instance (Query EnemyMatcher env, HasTokenValue env InvestigatorId) => HasTokenValue env UndimensionedAndUnseen where
-  getTokenValue (UndimensionedAndUnseen attrs) iid = \case
+  getTokenValue iid tokenFace (UndimensionedAndUnseen attrs) = case tokenFace of
     Skull -> do
       broodCount <- length <$> getBroodOfYogSothoth
       pure $ toTokenValue attrs Skull broodCount (2 * broodCount)
     Cultist -> pure $ TokenValue Cultist NoModifier
     Tablet -> pure $ TokenValue Tablet ZeroModifier
     ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
   runMessage msg s@(UndimensionedAndUnseen attrs) = case msg of

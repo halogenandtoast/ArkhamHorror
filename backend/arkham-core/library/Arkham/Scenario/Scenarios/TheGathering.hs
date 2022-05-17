@@ -42,7 +42,7 @@ theGathering difficulty =
        ]
 
 instance (Query EnemyMatcher env, HasTokenValue env InvestigatorId) => HasTokenValue env TheGathering where
-  getTokenValue (TheGathering attrs) iid = \case
+  getTokenValue iid tokenFace (TheGathering attrs) = case tokenFace of
     Skull -> do
       ghoulCount <- selectCount $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid) <> EnemyWithTrait Trait.Ghoul
       pure $ toTokenValue attrs Skull ghoulCount 2
@@ -50,7 +50,7 @@ instance (Query EnemyMatcher env, HasTokenValue env InvestigatorId) => HasTokenV
       Cultist
       (if isEasyStandard attrs then NegativeModifier 1 else NoModifier)
     Tablet -> pure $ toTokenValue attrs Tablet 2 4
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 theGatheringAgendaDeck :: [CardDef]
 theGatheringAgendaDeck =

@@ -62,7 +62,7 @@ instance
   , HasId LocationId env InvestigatorId
   )
   => HasTokenValue env TheUnspeakableOath where
-  getTokenValue (TheUnspeakableOath attrs) iid = \case
+  getTokenValue iid tokenFace (TheUnspeakableOath attrs) = case tokenFace of
     Skull -> pure $ if isEasyStandard attrs
       then TokenValue Skull (NegativeModifier 1)
       else TokenValue Skull NoModifier
@@ -74,7 +74,7 @@ instance
       shroud <- unShroud <$> getCount lid
       pure $ TokenValue Tablet (NegativeModifier shroud)
     ElderThing -> pure $ TokenValue ElderThing ZeroModifier
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =

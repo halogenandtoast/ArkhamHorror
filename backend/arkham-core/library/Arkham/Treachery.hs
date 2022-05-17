@@ -16,8 +16,11 @@ import Arkham.Name
 import Arkham.Query
 import Arkham.Target
 import Arkham.Trait (Trait)
+import Data.Aeson.TH
 
 $(buildEntity "Treachery")
+
+$(deriveJSON defaultOptions ''Treachery)
 
 createTreachery :: IsCard a => a -> InvestigatorId -> Treachery
 createTreachery a iid =
@@ -27,10 +30,10 @@ instance HasCardDef Treachery where
   toCardDef = toCardDef . toAttrs
 
 instance HasAbilities Treachery where
-  getAbilities = genericGetAbilities
+  getAbilities = $(entityF "Treachery" "getAbilities")
 
 instance TreacheryRunner env => RunMessage env Treachery where
-  runMessage = genericRunMessage
+  runMessage = $(entityRunMessage "Treachery")
 
 instance
   ( HasCount PlayerCount env ()
@@ -42,7 +45,7 @@ instance
   , Query InvestigatorMatcher env
   )
   => HasModifiersFor env Treachery where
-  getModifiersFor = genericGetModifiersFor
+  getModifiersFor = $(entityF2 "Treachery" "getModifiersFor")
 
 instance HasCardCode Treachery where
   toCardCode = toCardCode . toAttrs
@@ -50,6 +53,8 @@ instance HasCardCode Treachery where
 instance Entity Treachery where
   type EntityId Treachery = TreacheryId
   type EntityAttrs Treachery = TreacheryAttrs
+  toId = toId . toAttrs
+  toAttrs = $(entityF "Treachery" "toAttrs")
 
 instance Named Treachery where
   toName = toName . toAttrs

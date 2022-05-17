@@ -41,7 +41,7 @@ theMidnightMasks difficulty =
     }
 
 instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), HasCount DoomCount env EnemyId, HasSet EnemyId env Trait) => HasTokenValue env TheMidnightMasks where
-  getTokenValue (TheMidnightMasks attrs) iid = \case
+  getTokenValue iid tokenFace (TheMidnightMasks attrs) = case tokenFace of
     Skull | isEasyStandard attrs -> do
       cultists <- getSetList @EnemyId Trait.Cultist
       doomCounts <- traverse ((unDoomCount <$>) . getCount) cultists
@@ -52,7 +52,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), HasCount 
       pure $ TokenValue Skull (NegativeModifier doomCount)
     Cultist -> pure $ TokenValue Cultist (NegativeModifier 2)
     Tablet -> pure $ toTokenValue attrs Tablet 3 4
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 data TheMidnightMasksIntroVersion = TheMidnightMasksIntroOne | TheMidnightMasksIntroTwo
 

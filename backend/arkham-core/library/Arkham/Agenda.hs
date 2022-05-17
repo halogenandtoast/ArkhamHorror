@@ -17,8 +17,11 @@ import Arkham.Modifier
 import Arkham.Name
 import Arkham.Query
 import Arkham.Trait (Trait)
+import Data.Aeson.TH
 
 $(buildEntity "Agenda")
+
+$(deriveJSON defaultOptions ''Agenda)
 
 lookupAgenda :: AgendaId -> (Int -> Agenda)
 lookupAgenda agendaId =

@@ -13,8 +13,11 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.Query
+import Data.Aeson.TH
 
 $(buildEntity "Event")
+
+$(deriveJSON defaultOptions ''Event)
 
 createEvent :: IsCard a => a -> InvestigatorId -> Event
 createEvent a iid = lookupEvent (toCardCode a) iid (EventId $ toCardId a)

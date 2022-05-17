@@ -24,78 +24,11 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Window (Window)
+import Data.Aeson.TH
 
-data Effect
-  = OnTheLam' OnTheLam
-  | MindOverMatter' MindOverMatter
-  | Deduction' Deduction
-  | Shrivelling' Shrivelling
-  | BlindingLight' BlindingLight
-  | MindWipe1' MindWipe1
-  | BlindingLight2' BlindingLight2
-  | BaseballBat' BaseballBat
-  | Lucky' Lucky
-  | Lucky2' Lucky2
-  | WillToSurvive3' WillToSurvive3
-  | SureGamble3' SureGamble3
-  | ArkhamWoodsTwistingPaths' ArkhamWoodsTwistingPaths
-  | RexsCurse' RexsCurse
-  | RiteOfSeeking' RiteOfSeeking
-  | BindMonster2' BindMonster2
-  | PushedIntoTheBeyond' PushedIntoTheBeyond
-  | ArcaneBarrier' ArcaneBarrier
-  | SongOfTheDead2' SongOfTheDead2
-  | FireExtinguisher1' FireExtinguisher1
-  | Deduction2' Deduction2
-  | ExposeWeakness1' ExposeWeakness1
-  | QuickThinking' QuickThinking
-  | LuckyDice2' LuckyDice2
-  | RiteOfSeeking4' RiteOfSeeking4
-  | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
-  | TenAcreMeadow_246' TenAcreMeadow_246
-  | AChanceEncounter' AChanceEncounter
-  | YogSothoth' YogSothoth
-  | MinhThiPhan' MinhThiPhan
-  | WilliamYorick' WilliamYorick
-  | ThePaintedWorld' ThePaintedWorld
-  | Improvisation' Improvisation
-  | LetMeHandleThis' LetMeHandleThis
-  | Fieldwork' Fieldwork
-  | SleightOfHand' SleightOfHand
-  | Lockpicks1' Lockpicks1
-  | AlchemicalTransmutation' AlchemicalTransmutation
-  | UncageTheSoul' UncageTheSoul
-  | Overzealous' Overzealous
-  | TheStrangerACityAflame' TheStrangerACityAflame
-  | TheStrangerThePathIsMine' TheStrangerThePathIsMine
-  | TheStrangerTheShoresOfHali' TheStrangerTheShoresOfHali
-  | TheKingsEdict' TheKingsEdict
-  | MrPeabody' MrPeabody
-  | CharlesRossEsq' CharlesRossEsq
-  | StormOfSpirits' StormOfSpirits
-  | FightOrFlight' FightOrFlight
-  | CallingInFavors' CallingInFavors
-  | Montmartre209' Montmartre209
-  | PereLachaiseCemetery' PereLachaiseCemetery
-  | LeMarais218' LeMarais218
-  | MeatCleaver' MeatCleaver
-  | MindWipe3' MindWipe3
-  | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
-  | JeremiahPierce' JeremiahPierce
-  | NathanielCho' NathanielCho
-  | TommyMalloy' TommyMalloy
-  | Lockpicks' Lockpicks
-  | EighteenDerringer' EighteenDerringer
-  | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
-  | CursedShores' CursedShores
-  | Mesmerize' Mesmerize
-  | DaisysToteBagAdvanced' DaisysToteBagAdvanced
-  | WindowModifierEffect' WindowModifierEffect
-  | PayForAbilityEffect' PayForAbilityEffect
-  | TokenEffect' TokenEffect
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+$(buildEntity "Effect")
 
+$(deriveJSON defaultOptions ''Effect)
 
 createEffect ::
   MonadRandom m =>
@@ -160,7 +93,7 @@ instance
   ) =>
   HasModifiersFor env Effect
   where
-  getModifiersFor = genericGetModifiersFor
+  getModifiersFor = $(entityF2 "Effect" "getModifiersFor")
 
 instance HasAbilities Effect where
   getAbilities = $(entityF "Effect" "getAbilities")

@@ -16,8 +16,11 @@ import Arkham.Query
 import Arkham.SkillTest
 import Arkham.Slot
 import Arkham.Trait (Trait)
+import Data.Aeson.TH
 
 $(buildEntity "Asset")
+
+$(deriveJSON defaultOptions ''Asset)
 
 createAsset :: IsCard a => a -> Asset
 createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)

@@ -100,7 +100,7 @@ instance
   , HasSet EnemyId env LocationId
   )
   => HasTokenValue env TheMiskatonicMuseum where
-  getTokenValue (TheMiskatonicMuseum attrs) iid = \case
+  getTokenValue iid tokenFace (TheMiskatonicMuseum attrs) = case tokenFace of
     Skull -> do
       huntingHorrorAtYourLocation <- enemyAtInvestigatorLocation "02141" iid
       pure $ if huntingHorrorAtYourLocation
@@ -109,7 +109,7 @@ instance
     Cultist -> pure $ toTokenValue attrs Cultist 1 3
     Tablet -> pure $ toTokenValue attrs Tablet 2 4
     ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =

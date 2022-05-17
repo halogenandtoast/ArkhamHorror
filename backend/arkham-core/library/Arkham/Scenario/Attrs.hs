@@ -213,8 +213,8 @@ instance SourceEntity ScenarioAttrs where
   isSource _ _ = False
 
 instance HasTokenValue env InvestigatorId => HasTokenValue env ScenarioAttrs where
-  getTokenValue _ iid = \case
-    ElderSign -> getTokenValue iid iid ElderSign
+  getTokenValue iid tokenFace _ = case tokenFace of
+    ElderSign -> getTokenValue iid ElderSign iid
     AutoFail -> pure $ TokenValue AutoFail AutoFailModifier
     PlusOne -> pure $ TokenValue PlusOne (PositiveModifier 1)
     Zero -> pure $ TokenValue Zero (PositiveModifier 0)

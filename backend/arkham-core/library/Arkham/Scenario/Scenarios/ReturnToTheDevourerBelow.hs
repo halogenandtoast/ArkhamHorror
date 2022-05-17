@@ -42,8 +42,8 @@ returnToTheDevourerBelow difficulty =
         }
 
 instance (HasTokenValue env InvestigatorId, Query EnemyMatcher env) => HasTokenValue env ReturnToTheDevourerBelow where
-  getTokenValue (ReturnToTheDevourerBelow theDevourerBelow') iid =
-    getTokenValue theDevourerBelow' iid
+  getTokenValue iid tokenFace (ReturnToTheDevourerBelow theDevourerBelow') =
+    getTokenValue iid tokenFace theDevourerBelow'
 
 instance ScenarioRunner env => RunMessage env ReturnToTheDevourerBelow where
   runMessage msg s@(ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs))

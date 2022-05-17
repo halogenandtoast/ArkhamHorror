@@ -62,11 +62,11 @@ theHouseAlwaysWinsIntro = FlavorText
   ]
 
 instance HasTokenValue env InvestigatorId => HasTokenValue env TheHouseAlwaysWins where
-  getTokenValue (TheHouseAlwaysWins attrs) iid = \case
+  getTokenValue iid tokenFace (TheHouseAlwaysWins attrs) = case tokenFace of
     Skull -> pure $ toTokenValue attrs Skull 2 3
     Cultist -> pure $ TokenValue Cultist (NegativeModifier 3)
     Tablet -> pure $ TokenValue Tablet (NegativeModifier 2)
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
   runMessage msg s@(TheHouseAlwaysWins attrs) = case msg of

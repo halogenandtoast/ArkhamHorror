@@ -61,7 +61,7 @@ instance
   , HasTokenValue env InvestigatorId
   )
   => HasTokenValue env EchoesOfThePast where
-  getTokenValue (EchoesOfThePast attrs) iid = \case
+  getTokenValue iid tokenFace (EchoesOfThePast attrs) = case tokenFace of
     Skull -> do
       enemies <- selectList AnyEnemy
       doomCounts <- traverse (fmap unDoomCount . getCount) enemies
@@ -73,7 +73,7 @@ instance
     Cultist -> pure $ toTokenValue attrs Cultist 2 4
     Tablet -> pure $ toTokenValue attrs Tablet 2 4
     ElderThing -> pure $ toTokenValue attrs ElderThing 2 4
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 gatherTheMidnightMasks :: MonadRandom m => m [EncounterCard]
 gatherTheMidnightMasks = traverse

@@ -44,7 +44,7 @@ curseOfTheRougarou difficulty =
        ]
 
 instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId LocationId env InvestigatorId) => HasTokenValue env CurseOfTheRougarou where
-  getTokenValue (CurseOfTheRougarou attrs) iid = \case
+  getTokenValue iid tokenFace (CurseOfTheRougarou attrs) = case tokenFace of
     Skull -> do
       lid <- getId @LocationId iid
       isBayou <- member Bayou <$> getSet lid
@@ -54,7 +54,7 @@ instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId L
     Cultist -> pure $ toTokenValue attrs Cultist 2 3
     Tablet -> pure $ TokenValue Tablet ZeroModifier
     ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 4)
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou attrs) = case msg of

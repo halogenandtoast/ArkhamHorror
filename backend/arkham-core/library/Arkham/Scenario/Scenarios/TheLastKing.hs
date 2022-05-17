@@ -61,7 +61,7 @@ instance
   , HasTokenValue env InvestigatorId
   )
   => HasTokenValue env TheLastKing where
-  getTokenValue (TheLastKing attrs) iid = \case
+  getTokenValue iid tokenFace (TheLastKing attrs) = case tokenFace of
     Skull -> pure $ TokenValue Skull NoModifier
     Cultist -> pure $ toTokenValue attrs Cultist 2 3
     Tablet -> pure $ TokenValue Tablet (NegativeModifier 4)
@@ -69,7 +69,7 @@ instance
       lid <- getId @LocationId iid
       shroud <- unShroud <$> getCount lid
       pure $ TokenValue ElderThing (NegativeModifier shroud)
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =

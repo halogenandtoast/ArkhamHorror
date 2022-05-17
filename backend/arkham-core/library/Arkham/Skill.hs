@@ -6,6 +6,7 @@ module Arkham.Skill (
 
 import Arkham.Prelude
 
+import Data.Aeson.TH
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
@@ -15,6 +16,8 @@ import Arkham.Skill.Runner
 import Arkham.Skill.Skills
 
 $(buildEntity "Skill")
+
+$(deriveJSON defaultOptions ''Skill)
 
 createSkill :: IsCard a => a -> InvestigatorId -> Skill
 createSkill a iid = lookupSkill (toCardCode a) iid (SkillId $ toCardId a)
@@ -26,17 +29,19 @@ instance HasCardDef Skill where
   toCardDef = toCardDef . toAttrs
 
 instance HasAbilities Skill where
-  getAbilities = genericGetAbilities
+  getAbilities = $(entityF "Skill" "getAbilities")
 
 instance SkillRunner env => RunMessage env Skill where
-  runMessage = genericRunMessage
+  runMessage = $(entityRunMessage "Skill")
 
 instance HasModifiersFor env Skill where
-  getModifiersFor = genericGetModifiersFor
+  getModifiersFor = $(entityF2 "Skill" "getModifiersFor")
 
 instance Entity Skill where
   type EntityId Skill = SkillId
   type EntityAttrs Skill = SkillAttrs
+  toId = toId . toAttrs
+  toAttrs = $(entityF "Skill" "toAttrs")
 
 instance Named Skill where
   toName = toName . toAttrs

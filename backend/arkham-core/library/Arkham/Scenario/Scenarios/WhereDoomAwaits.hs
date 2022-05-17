@@ -131,7 +131,7 @@ instance
   , HasId LocationId env InvestigatorId
   )
   => HasTokenValue env WhereDoomAwaits where
-  getTokenValue (WhereDoomAwaits attrs) iid = \case
+  getTokenValue iid tokenFace (WhereDoomAwaits attrs) = case tokenFace of
     Skull -> do
       lid <- getId @LocationId iid
       isAltered <- member Altered <$> getSet lid
@@ -148,7 +148,7 @@ instance
           else if agendaStep == 2 then AutoFailModifier else NegativeModifier 3
         )
     ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 0) -- determined by an effect
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 instance
   ( HasCount XPCount env ()

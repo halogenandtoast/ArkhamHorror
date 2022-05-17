@@ -61,14 +61,14 @@ instance HasRecord env APhantomOfTruth where
   hasRecordCount _ _ = pure 0
 
 instance (HasCount DoomCount env (), HasTokenValue env InvestigatorId) => HasTokenValue env APhantomOfTruth where
-  getTokenValue (APhantomOfTruth attrs) iid = \case
+  getTokenValue iid tokenFace (APhantomOfTruth attrs) = case tokenFace of
     Skull -> do
       doom <- unDoomCount <$> getCount ()
       pure $ toTokenValue attrs Skull (min 5 doom) doom
     Cultist -> pure $ TokenValue Cultist (NegativeModifier 2)
     Tablet -> pure $ toTokenValue attrs Tablet 3 4
     ElderThing -> pure $ toTokenValue attrs ElderThing 2 3
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =

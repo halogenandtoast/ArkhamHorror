@@ -16,8 +16,11 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.Query
+import Data.Aeson.TH
 
 $(buildEntity "Act")
+
+$(deriveJSON defaultOptions ''Act)
 
 instance HasAbilities Act where
   getAbilities = $(entityF "Act" "getAbilities")

@@ -86,14 +86,14 @@ instance
   , HasStep AgendaStep env ()
   )
   => HasTokenValue env TheEssexCountyExpress where
-  getTokenValue (TheEssexCountyExpress attrs) iid = \case
+  getTokenValue iid tokenFace (TheEssexCountyExpress attrs) = case tokenFace of
     Skull -> do
       step <- unAgendaStep <$> getStep ()
       pure $ toTokenValue attrs Skull step (step + 1)
     Cultist -> pure $ toTokenValue attrs Cultist 1 0
     Tablet -> pure $ toTokenValue attrs Tablet 2 4
     ElderThing -> pure $ toTokenValue attrs ElderThing 3 3
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =

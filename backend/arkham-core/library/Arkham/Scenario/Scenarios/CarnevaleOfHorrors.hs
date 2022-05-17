@@ -51,7 +51,7 @@ carnevaleOfHorrors difficulty =
        ]
 
 instance HasTokenValue env InvestigatorId => HasTokenValue env CarnevaleOfHorrors where
-  getTokenValue (CarnevaleOfHorrors attrs) iid = \case
+  getTokenValue iid tokenFace (CarnevaleOfHorrors attrs) = case tokenFace of
     Skull -> do
       let
         countInnocentRevelers = count ((== Assets.innocentReveler) . toCardDef)
@@ -65,7 +65,7 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env CarnevaleOfHorror
     Cultist -> pure $ TokenValue Cultist NoModifier
     Tablet -> pure $ toTokenValue attrs Tablet 3 4
     ElderThing -> pure $ toTokenValue attrs ElderThing 4 6
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 masks :: [CardDef]
 masks =

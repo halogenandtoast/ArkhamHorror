@@ -40,8 +40,8 @@ returnToTheMidnightMasks difficulty =
         }
 
 instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), HasCount DoomCount env EnemyId, HasSet EnemyId env Trait) => HasTokenValue env ReturnToTheMidnightMasks where
-  getTokenValue (ReturnToTheMidnightMasks theMidnightMasks') iid =
-    getTokenValue theMidnightMasks' iid
+  getTokenValue iid tokenFace (ReturnToTheMidnightMasks theMidnightMasks') =
+    getTokenValue iid tokenFace theMidnightMasks'
 
 instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
   runMessage msg (ReturnToTheMidnightMasks theMidnightMasks'@(TheMidnightMasks attrs))

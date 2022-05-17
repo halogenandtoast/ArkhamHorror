@@ -48,7 +48,7 @@ extracurricularActivityIntro = FlavorText
   ]
 
 instance (HasTokenValue env InvestigatorId, HasCount DiscardCount env InvestigatorId) => HasTokenValue env ExtracurricularActivity where
-  getTokenValue (ExtracurricularActivity attrs) iid = \case
+  getTokenValue iid tokenFace (ExtracurricularActivity attrs) = case tokenFace of
     Skull -> pure $ toTokenValue attrs Skull 1 2
     Cultist -> do
       discardCount <- unDiscardCount <$> getCount iid
@@ -59,7 +59,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DiscardCount env Investigat
           else 1
         )
     ElderThing -> pure $ TokenValue Tablet (NegativeModifier 0) -- determined by an effect
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
   runMessage msg s@(ExtracurricularActivity attrs) = case msg of

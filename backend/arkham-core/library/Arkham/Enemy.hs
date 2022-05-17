@@ -19,8 +19,11 @@ import Arkham.Name
 import Arkham.Query
 import Arkham.SkillTest
 import Arkham.Trait (Trait, toTraits)
+import Data.Aeson.TH
 
 $(buildEntity "Enemy")
+
+$(deriveJSON defaultOptions ''Enemy)
 
 createEnemy :: (HasCallStack, IsCard a) => a -> Enemy
 createEnemy a = lookupEnemy (toCardCode a) (EnemyId $ toCardId a)
@@ -48,7 +51,7 @@ preventedByModifier e msg (CannotTakeAction matcher) =
 preventedByModifier _ _ _ = False
 
 instance HasAbilities Enemy where
-  getAbilities = genericGetAbilities
+  getAbilities = $(entityF "Enemy" "getAbilities")
 
 instance
     ( HasId LocationId env InvestigatorId
@@ -71,7 +74,7 @@ instance
     ) =>
     HasModifiersFor env Enemy
     where
-  getModifiersFor = genericGetModifiersFor
+  getModifiersFor = $(entityF2 "Enemy" "getModifiersFor")
 
 instance HasCardCode Enemy where
   toCardCode = toCardCode . toAttrs
@@ -79,6 +82,8 @@ instance HasCardCode Enemy where
 instance Entity Enemy where
   type EntityId Enemy = EnemyId
   type EntityAttrs Enemy = EnemyAttrs
+  toId = toId . toAttrs
+  toAttrs = $(entityF "Enemy" "toAttrs")
 
 instance Named Enemy where
   toName = toName . toAttrs
@@ -101,7 +106,7 @@ instance EnemyRunner env => RunMessage env Enemy where
       then getModifiers (toSource e) (toTarget e)
       else pure []
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
-    genericRunMessage msg' e
+    $(entityRunMessage "Enemy") msg' e
 
 instance HasVictoryPoints Enemy where
   getVictoryPoints = getEnemyVictory

@@ -38,8 +38,8 @@ returnToTheGathering difficulty =
        ]
 
 instance (HasTokenValue env InvestigatorId, Query EnemyMatcher env) => HasTokenValue env ReturnToTheGathering where
-  getTokenValue (ReturnToTheGathering theGathering') iid =
-    getTokenValue theGathering' iid
+  getTokenValue iid tokenFace (ReturnToTheGathering theGathering') =
+    getTokenValue iid tokenFace theGathering'
 
 instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
   runMessage msg (ReturnToTheGathering theGathering'@(TheGathering attrs)) =

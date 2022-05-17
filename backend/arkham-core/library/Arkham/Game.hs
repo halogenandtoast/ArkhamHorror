@@ -102,21 +102,24 @@ import Data.UUID (nil)
 import Safe (headNote)
 import System.Environment
 import Text.Pretty.Simple
+import Data.Aeson.TH
 
 type GameMode = These Campaign Scenario
 type EntityMap a = HashMap (EntityId a) a
 
 data GameState = IsPending | IsActive | IsOver
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Eq, Show)
+
+$(deriveJSON defaultOptions ''GameState)
 
 data GameParams = GameParams
   (Either ScenarioId CampaignId)
   Int
   [(Investigator, [PlayerCard])] -- Map for order
   Difficulty
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Eq, Show)
+
+$(deriveJSON defaultOptions ''GameParams)
 
 data Entities = Entities
   { entitiesLocations :: EntityMap Location
@@ -130,8 +133,9 @@ data Entities = Entities
   , entitiesEffects :: EntityMap Effect
   , entitiesSkills :: EntityMap Skill
   }
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Eq, Show)
+
+$(deriveJSON defaultOptions ''Entities)
 
 makeLensesWith suffixedFields ''Entities
 
@@ -192,8 +196,9 @@ data Game = Game
   , -- Active questions
     gameQuestion :: HashMap InvestigatorId (Question Message)
   }
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Eq, Show)
+
+$(deriveJSON defaultOptions ''Game)
 
 makeLensesWith suffixedFields ''Game
 
@@ -1818,16 +1823,16 @@ instance
   , HasId LocationId env InvestigatorId
   )
   => HasTokenValue env () where
-  getTokenValue _ iid token = do
+  getTokenValue iid token _ = do
     mScenario <- modeScenario . view modeL <$> getGame
     case mScenario of
-      Just scenario -> getTokenValue scenario iid token
+      Just scenario -> getTokenValue iid token scenario
       Nothing -> error "missing scenario"
 
 instance HasGame env => HasTokenValue env InvestigatorId where
-  getTokenValue iid' iid token = do
+  getTokenValue iid token iid' = do
     investigator <- getInvestigator iid'
-    getTokenValue investigator iid token
+    getTokenValue iid token investigator
 
 instance HasGame env => HasModifiersFor env () where
   getModifiersFor source target _ = do

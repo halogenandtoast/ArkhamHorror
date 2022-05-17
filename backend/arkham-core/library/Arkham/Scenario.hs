@@ -22,10 +22,16 @@ import Arkham.ScenarioLogKey
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait)
+import Data.Aeson.TH
 
 $(buildEntity "Scenario")
 
-instance HasRecord env Scenario
+$(deriveJSON defaultOptions ''Scenario)
+
+instance HasRecord env Scenario where
+  hasRecord = $(entityF1 "Scenario" "hasRecord")
+  hasRecordSet = $(entityF1 "Scenario" "hasRecordSet")
+  hasRecordCount = $(entityF1 "Scenario" "hasRecordCount")
 
 instance
   ( HasSet ClosestAssetId env (InvestigatorId, AssetMatcher)
@@ -79,17 +85,19 @@ instance
   , HasModifiersFor env ()
   )
   => HasTokenValue env Scenario where
-  getTokenValue s iid tokenFace = do
+  getTokenValue iid tokenFace s = do
     modifiers' <- getModifiers
       (toSource $ toAttrs s)
       (TokenFaceTarget tokenFace)
     if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
       then pure $ TokenValue tokenFace NoModifier
-      else defaultGetTokenValue s iid tokenFace
+      else $(entityF2 "Scenario" "getTokenValue") iid tokenFace s
 
 instance Entity Scenario where
   type EntityId Scenario = ScenarioId
   type EntityAttrs Scenario = ScenarioAttrs
+  toId = toId . toAttrs
+  toAttrs = $(entityF "Scenario" "toAttrs")
 
 instance HasSet ScenarioLogKey env Scenario where
   getSet = pure . scenarioLog . toAttrs

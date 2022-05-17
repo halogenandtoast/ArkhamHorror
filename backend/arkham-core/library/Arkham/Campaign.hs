@@ -12,8 +12,11 @@ import Arkham.Difficulty
 import Arkham.Id
 import Arkham.Name
 import Arkham.Token
+import Data.Aeson.TH
 
 $(buildEntity "Campaign")
+
+$(deriveJSON defaultOptions ''Campaign)
 
 instance CampaignRunner env => RunMessage env Campaign where
   runMessage = $(entityRunMessage "Campaign")

@@ -22,8 +22,11 @@ import Arkham.SkillTest
 import Arkham.Trait (Trait)
 import Data.HashSet qualified as HashSet
 import Data.UUID (nil)
+import Data.Aeson.TH
 
 $(buildEntity "Location")
+
+$(deriveJSON defaultOptions ''Location)
 
 createLocation :: IsCard a => a -> Location
 createLocation a = lookupLocation (toCardCode a) (LocationId $ toCardId a)
@@ -55,7 +58,7 @@ instance
   , Query EnemyMatcher env
   )
   => HasModifiersFor env Location where
-  getModifiersFor = $(entityGetModifiers "Location")
+  getModifiersFor = $(entityF2 "Location" "getModifiersFor")
 
 instance LocationRunner env => RunMessage env Location where
   runMessage msg l = do

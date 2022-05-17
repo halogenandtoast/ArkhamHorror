@@ -52,7 +52,7 @@ instance
   , HasCount HorrorCount env InvestigatorId
   )
   => HasTokenValue env CurtainCall where
-  getTokenValue (CurtainCall attrs) iid = \case
+  getTokenValue iid tokenFace (CurtainCall attrs) = case tokenFace of
     Skull -> do
       horrorCount <- unHorrorCount <$> getCount iid
       let easyStandardModifier = if horrorCount >= 3 then 3 else 1
@@ -60,7 +60,7 @@ instance
       pure $ toTokenValue attrs Skull easyStandardModifier hardExpertModifier
     face | face `elem` [Cultist, Tablet, ElderThing] ->
       pure $ toTokenValue attrs face 4 5
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 instance ScenarioRunner env => RunMessage env CurtainCall where
   runMessage msg s@(CurtainCall attrs) = case msg of

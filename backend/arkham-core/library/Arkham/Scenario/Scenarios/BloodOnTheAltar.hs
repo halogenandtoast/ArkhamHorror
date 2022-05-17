@@ -83,7 +83,7 @@ instance
   , HasList UnderneathCard env LocationId
   )
   => HasTokenValue env BloodOnTheAltar where
-  getTokenValue (BloodOnTheAltar (attrs `With` _)) iid = \case
+  getTokenValue iid tokenFace (BloodOnTheAltar (attrs `With` _)) = case tokenFace of
     Skull -> do
       numLocations <- countM ((null <$>) . getList @UnderneathCard)
         =<< getSetList @LocationId ()
@@ -91,7 +91,7 @@ instance
     Cultist -> pure $ toTokenValue attrs Cultist 2 4
     Tablet -> pure $ toTokenValue attrs Tablet 2 3
     ElderThing -> pure $ toTokenValue attrs ElderThing 3 3
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =

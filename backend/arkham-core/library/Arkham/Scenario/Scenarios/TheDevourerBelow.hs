@@ -43,14 +43,14 @@ theDevourerBelow difficulty =
     }
 
 instance (HasTokenValue env InvestigatorId, Query EnemyMatcher env) => HasTokenValue env TheDevourerBelow where
-  getTokenValue (TheDevourerBelow attrs) iid = \case
+  getTokenValue iid tokenFace (TheDevourerBelow attrs) = case tokenFace of
     Skull -> do
       monsterCount <- selectCount $ EnemyWithTrait Monster
       pure $ toTokenValue attrs Skull monsterCount 3
     Cultist -> pure $ toTokenValue attrs Cultist 2 4
     Tablet -> pure $ toTokenValue attrs Tablet 3 5
     ElderThing -> pure $ toTokenValue attrs ElderThing 5 7
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 actDeck :: [CardDef]
 actDeck =

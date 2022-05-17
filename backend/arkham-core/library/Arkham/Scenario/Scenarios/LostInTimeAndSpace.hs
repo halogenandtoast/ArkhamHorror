@@ -63,7 +63,7 @@ instance
   , HasId LocationId env InvestigatorId
   )
   => HasTokenValue env LostInTimeAndSpace where
-  getTokenValue (LostInTimeAndSpace attrs) iid = \case
+  getTokenValue iid tokenFace (LostInTimeAndSpace attrs) = case tokenFace of
     Skull -> do
       extradimensionalCount <- length <$> getSet @LocationId [Extradimensional]
       pure $ TokenValue
@@ -78,7 +78,7 @@ instance
       lid <- getId @LocationId iid
       shroud <- unShroud <$> getCount lid
       pure $ toTokenValue attrs ElderThing shroud (shroud * 2)
-    otherFace -> getTokenValue attrs iid otherFace
+    otherFace -> getTokenValue iid otherFace attrs
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =

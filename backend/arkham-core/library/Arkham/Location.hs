@@ -42,7 +42,7 @@ instance IsCard Location where
   toCardOwner = toCardOwner . toAttrs
 
 instance HasAbilities Location where
-  getAbilities = genericGetAbilities
+  getAbilities = $(entityF "Location" "getAbilities")
 
 instance
   ( HasPhase env
@@ -55,17 +55,19 @@ instance
   , Query EnemyMatcher env
   )
   => HasModifiersFor env Location where
-  getModifiersFor = genericGetModifiersFor
+  getModifiersFor = $(entityGetModifiers "Location")
 
 instance LocationRunner env => RunMessage env Location where
   runMessage msg l = do
     modifiers' <- getModifiers (toSource l) (toTarget l)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
-    genericRunMessage msg' l
+    $(entityRunMessage "Location") msg' l
 
 instance Entity Location where
   type EntityId Location = LocationId
   type EntityAttrs Location = LocationAttrs
+  toId = toId . toAttrs
+  toAttrs = $(entityF "Location" "toAttrs")
 
 instance Named Location where
   toName = toName . toAttrs

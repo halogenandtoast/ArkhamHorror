@@ -13,7 +13,7 @@ import Arkham.Modifier
 import Arkham.Source
 
 newtype Fieldwork = Fieldwork EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fieldwork :: EffectArgs -> Fieldwork

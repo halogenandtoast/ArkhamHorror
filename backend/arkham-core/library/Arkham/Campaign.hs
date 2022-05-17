@@ -16,7 +16,7 @@ import Arkham.Token
 $(buildEntity "Campaign")
 
 instance CampaignRunner env => RunMessage env Campaign where
-  runMessage = genericRunMessage
+  runMessage = $(entityRunMessage "Campaign")
 
 instance HasRecord env Campaign where
   hasRecord key = hasRecord key . campaignLog . toAttrs
@@ -40,6 +40,8 @@ instance HasCampaignStoryCard env Campaign where
 instance Entity Campaign where
   type EntityId Campaign = CampaignId
   type EntityAttrs Campaign = CampaignAttrs
+  toId = toId . toAttrs
+  toAttrs = $(entityF "Campaign" "toAttrs")
 
 instance Named Campaign where
   toName = toName . toAttrs

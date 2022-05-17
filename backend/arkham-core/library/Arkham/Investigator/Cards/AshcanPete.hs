@@ -48,9 +48,9 @@ instance HasAbilities AshcanPete where
     ]
 
 instance HasTokenValue env AshcanPete where
-  getTokenValue (AshcanPete attrs) iid ElderSign | iid == toId attrs =
+  getTokenValue iid ElderSign (AshcanPete attrs) | iid == toId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 2)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env AshcanPete where
   runMessage msg i@(AshcanPete attrs) = case msg of

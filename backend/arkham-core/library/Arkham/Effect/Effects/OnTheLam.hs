@@ -12,7 +12,7 @@ import Arkham.Message
 import Arkham.Modifier
 
 newtype OnTheLam = OnTheLam EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onTheLam :: EffectArgs -> OnTheLam

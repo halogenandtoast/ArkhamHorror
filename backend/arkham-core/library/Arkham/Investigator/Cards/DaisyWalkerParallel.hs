@@ -49,10 +49,10 @@ instance Query AssetMatcher env => HasModifiersFor env DaisyWalkerParallel where
   getModifiersFor _ _ _ = pure []
 
 instance HasTokenValue env DaisyWalkerParallel where
-  getTokenValue (DaisyWalkerParallel attrs) iid ElderSign
+  getTokenValue iid ElderSign (DaisyWalkerParallel attrs)
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance HasAbilities DaisyWalkerParallel where
   getAbilities (DaisyWalkerParallel attrs) =

@@ -14,7 +14,7 @@ import Arkham.Source
 import Arkham.Target
 
 newtype ArcaneBarrier = ArcaneBarrier EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arcaneBarrier :: EffectArgs -> ArcaneBarrier

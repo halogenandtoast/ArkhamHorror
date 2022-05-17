@@ -20,7 +20,7 @@ import Arkham.Query
 $(buildEntity "Act")
 
 instance HasAbilities Act where
-  getAbilities = genericGetAbilities
+  getAbilities = $(entityF "Act" "getAbilities")
 
 instance
   ( ActRunner env
@@ -29,10 +29,10 @@ instance
   ) =>
   RunMessage env Act
   where
-  runMessage = genericRunMessage
+  runMessage = $(entityRunMessage "Act")
 
 instance Query LocationMatcher env => HasModifiersFor env Act where
-  getModifiersFor = genericGetModifiersFor
+  getModifiersFor = $(entityF2 "Act" "getModifiersFor")
 
 instance HasStep ActStep env Act where
   getStep = getStep . toAttrs
@@ -43,6 +43,8 @@ instance HasCount ClueCount env Act where
 instance Entity Act where
   type EntityId Act = ActId
   type EntityAttrs Act = ActAttrs
+  toId = toId . toAttrs
+  toAttrs = $(entityF "Act" "toAttrs")
 
 instance Named Act where
   toName = toName . toAttrs

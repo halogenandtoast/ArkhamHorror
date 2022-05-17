@@ -52,10 +52,10 @@ instance HasAbilities MinhThiPhan where
     ]
 
 instance HasTokenValue env MinhThiPhan where
-  getTokenValue (MinhThiPhan attrs) iid ElderSign
+  getTokenValue iid ElderSign (MinhThiPhan attrs)
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 -- TODO: Should we let card selection for ability
 instance (InvestigatorRunner env) => RunMessage env MinhThiPhan where

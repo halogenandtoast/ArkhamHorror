@@ -63,13 +63,13 @@ instance HasAbilities NormanWithers where
     ]
 
 instance HasTokenValue env NormanWithers where
-  getTokenValue (NormanWithers (a `With` _)) iid ElderSign | iid == toId a = do
+  getTokenValue iid ElderSign (NormanWithers (a `With` _)) | iid == toId a = do
     let
       x = case unDeck (investigatorDeck a) of
         [] -> 0
         c : _ -> maybe 0 toPrintedCost (cdCost $ toCardDef c)
     pure $ TokenValue ElderSign (PositiveModifier x)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env NormanWithers where
   runMessage msg nw@(NormanWithers (a `With` metadata)) = case msg of

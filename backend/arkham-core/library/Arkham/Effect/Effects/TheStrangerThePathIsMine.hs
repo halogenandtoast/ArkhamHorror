@@ -16,7 +16,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype TheStrangerThePathIsMine = TheStrangerThePathIsMine EffectAttrs
-  deriving anyclass (HasModifiersFor env)
+  deriving anyclass (IsEffect, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theStrangerThePathIsMine :: EffectArgs -> TheStrangerThePathIsMine

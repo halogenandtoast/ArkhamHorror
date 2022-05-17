@@ -51,10 +51,10 @@ instance HasAbilities MarkHarrigan where
     ]
 
 instance HasTokenValue env MarkHarrigan where
-  getTokenValue (MarkHarrigan attrs) iid ElderSign | iid == toId attrs = do
+  getTokenValue iid ElderSign (MarkHarrigan attrs) | iid == toId attrs = do
     let tokenValue' = PositiveModifier $ investigatorHealthDamage attrs
     pure $ TokenValue ElderSign tokenValue'
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance (InvestigatorRunner env) => RunMessage env MarkHarrigan where
   runMessage msg i@(MarkHarrigan attrs) = case msg of

@@ -1,8 +1,10 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Location.Attrs where
 
 import Arkham.Prelude
 
 import Arkham.Ability
+import Data.Aeson.TH
 import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.Classes.Entity
@@ -11,7 +13,6 @@ import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Json
 import Arkham.Location.Cards
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher(..))
@@ -64,7 +65,7 @@ data LocationAttrs = LocationAttrs
   , locationCardsUnderneath :: [Card]
   , locationCostToEnterUnrevealed :: Cost
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq)
 
 symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
@@ -160,12 +161,7 @@ instance HasCardDef LocationAttrs where
     Nothing ->
       error $ "missing card def for location " <> show (locationCardCode a)
 
-instance ToJSON LocationAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "location"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "location"
-
-instance FromJSON LocationAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "location"
+$(deriveJSON defaultOptions ''LocationAttrs)
 
 unrevealed :: LocationAttrs -> Bool
 unrevealed = not . locationRevealed

@@ -12,7 +12,7 @@ import Arkham.Target
 import Arkham.Token
 
 newtype AlchemicalTransmutation = AlchemicalTransmutation EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alchemicalTransmutation :: EffectArgs -> AlchemicalTransmutation

@@ -16,7 +16,7 @@ import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
 newtype TommyMalloy = TommyMalloy EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tommyMalloy :: EffectArgs -> TommyMalloy

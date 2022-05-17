@@ -31,9 +31,9 @@ daisyWalker = investigatorWith
   (tomeActionsL ?~ 1)
 
 instance HasTokenValue env DaisyWalker where
-  getTokenValue (DaisyWalker attrs) iid ElderSign | iid == toId attrs =
+  getTokenValue iid ElderSign (DaisyWalker attrs) | iid == toId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 0)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 -- Passing a skill test effect
 instance InvestigatorRunner env => RunMessage env DaisyWalker where

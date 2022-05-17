@@ -13,7 +13,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype JeremiahPierce = JeremiahPierce EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jeremiahPierce :: EffectArgs -> JeremiahPierce

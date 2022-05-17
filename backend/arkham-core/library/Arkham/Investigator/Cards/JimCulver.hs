@@ -35,9 +35,9 @@ instance HasModifiersFor env JimCulver where
   getModifiersFor _ _ _ = pure []
 
 instance HasTokenValue env JimCulver where
-  getTokenValue (JimCulver attrs) iid ElderSign | iid == investigatorId attrs =
+  getTokenValue iid ElderSign (JimCulver attrs) | iid == investigatorId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env JimCulver where
   runMessage msg i@(JimCulver attrs@InvestigatorAttrs {..}) = case msg of

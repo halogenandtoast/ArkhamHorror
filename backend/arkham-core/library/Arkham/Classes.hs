@@ -32,7 +32,6 @@ import Arkham.Target
 import Arkham.Trait
 import Data.Char qualified as C
 import Data.HashSet qualified as HashSet
-import GHC.Generics
 import Language.Haskell.TH.Syntax hiding (Name)
 import Language.Haskell.TH.Syntax qualified as TH
 
@@ -276,46 +275,9 @@ type ActionRunner env
     , HasStep ActStep env ()
     )
 
-class HasAbilities1 f where
-  getAbilities1 :: f p -> [Ability]
-
-instance HasAbilities1 f => HasAbilities1 (M1 i c f) where
-  getAbilities1 (M1 x) = getAbilities1 x
-
-instance (HasAbilities1 l, HasAbilities1 r) => HasAbilities1 (l :+: r) where
-  getAbilities1 (L1 x) = getAbilities1 x
-  getAbilities1 (R1 x) = getAbilities1 x
-
-instance (HasAbilities p) => HasAbilities1 (K1 R p) where
-  getAbilities1 (K1 x) = getAbilities x
-
-genericGetAbilities :: (Generic a, HasAbilities1 (Rep a)) => a -> [Ability]
-genericGetAbilities = getAbilities1 . from
-
 class HasAbilities a where
   getAbilities :: a -> [Ability]
   getAbilities = const []
-
-class HasModifiersFor1 env f where
-  getModifiersFor1 :: (HasCallStack, MonadReader env m) => Source -> Target -> f p -> m [Modifier]
-
-instance HasModifiersFor1 env f => HasModifiersFor1 env (M1 i c f) where
-  getModifiersFor1 source target (M1 x) = getModifiersFor1 source target x
-
-instance (HasModifiersFor1 env l, HasModifiersFor1 env r) => HasModifiersFor1 env (l :+: r) where
-  getModifiersFor1 source target (L1 x) = getModifiersFor1 source target x
-  getModifiersFor1 source target (R1 x) = getModifiersFor1 source target x
-
-instance (HasModifiersFor env p) => HasModifiersFor1 env (K1 R p) where
-  getModifiersFor1 source target (K1 x) = getModifiersFor source target x
-
-genericGetModifiersFor
-  :: (HasCallStack, Generic a, HasModifiersFor1 env (Rep a), MonadReader env m)
-  => Source
-  -> Target
-  -> a
-  -> m [Modifier]
-genericGetModifiersFor source target = getModifiersFor1 source target . from
 
 getModifiers
   :: (HasModifiersFor env (), MonadReader env m)
@@ -354,8 +316,7 @@ buildEntity nm = do
         []
         Nothing
         conz
-        [ DerivClause (Just StockStrategy) (map ConT [''Show, ''Generic, ''Eq])
-        , DerivClause (Just AnyclassStrategy) (map ConT [''ToJSON, ''FromJSON])
+        [ DerivClause (Just StockStrategy) (map ConT [''Show, ''Eq])
         ]
     ]
  where
@@ -376,3 +337,63 @@ buildEntityLookupList nm = do
   extractCon _ = Nothing
   toFunName [] = TH.mkName ""
   toFunName (x : xs) = TH.mkName $ C.toLower x : xs
+
+-- entityRunMessage :: Message -> a -> m a
+-- (a -> b) -> a -> b
+
+entityRunMessage :: String -> Q Exp
+entityRunMessage nm = do
+  ClassI _ instances <- reify (TH.mkName $ "Is" ++ nm)
+  a <- newName "a"
+  msg <- newName "msg"
+  x <- newName "x"
+  let matches = mapMaybe (toMatch msg x) instances
+  pure $ LamE [VarP msg, VarP a] $ CaseE (VarE a) matches
+ where
+  toMatch msg x (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ Match
+    (ConP (TH.mkName $ nameBase name <> "'")  [VarP x])
+    (NormalB $ AppE (AppE (VarE $ TH.mkName "fmap") (ConE $ TH.mkName $ nameBase name ++ "'")) (AppE (AppE (VarE $ TH.mkName "runMessage") (VarE msg) ) (VarE x)))
+    []
+  toMatch _ _ _ = Nothing
+
+entityF :: String -> String -> Q Exp
+entityF nm fName = do
+  ClassI _ instances <- reify (TH.mkName $ "Is" ++ nm)
+  let f = TH.mkName fName
+  a <- newName "a"
+  x <- newName "x"
+  let matches = mapMaybe (toMatch f x) instances
+  pure $ LamE [VarP a] $ CaseE (VarE a) matches
+ where
+  toMatch f x (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ Match
+    (ConP (TH.mkName $ nameBase name <> "'")  [VarP x])
+    (NormalB $ AppE (VarE f) (VarE x))
+    []
+  toMatch _ _  _ = Nothing
+
+entityF2 :: String -> String -> Q Exp
+entityF2 nm fName = do
+  ClassI _ instances <- reify (TH.mkName $ "Is" ++ nm)
+  let f = TH.mkName fName
+  a <- newName "a"
+  p1 <- newName "p1"
+  p2 <- newName "p2"
+  x <- newName "x"
+  let matches = mapMaybe (toMatch f p1 p2 x) instances
+  pure $ LamE [VarP p1, VarP p2, VarP a] $ CaseE (VarE a) matches
+ where
+  toMatch f p1 p2 x (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ Match
+    (ConP (TH.mkName $ nameBase name <> "'")  [VarP x])
+    (NormalB $
+      AppE
+        (AppE
+          (AppE
+            (VarE f)
+            (VarE p1)
+          )
+          (VarE p2))
+        (VarE x)
+    )
+
+    []
+  toMatch _ _ _ _ _ = Nothing

@@ -16,7 +16,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype FightOrFlight = FightOrFlight EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fightOrFlight :: EffectArgs -> FightOrFlight

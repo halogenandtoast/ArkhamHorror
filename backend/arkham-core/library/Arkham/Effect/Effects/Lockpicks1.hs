@@ -16,7 +16,7 @@ import Arkham.Source
 import Arkham.Target
 
 newtype Lockpicks1 = Lockpicks1 EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lockpicks1 :: EffectArgs -> Lockpicks1

@@ -10,7 +10,7 @@ import Arkham.Effect.Attrs
 import Arkham.Message
 
 newtype TenAcreMeadow_246 = TenAcreMeadow_246 EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tenAcreMeadow_246 :: EffectArgs -> TenAcreMeadow_246

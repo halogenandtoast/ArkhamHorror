@@ -40,10 +40,10 @@ instance HasAbilities SkidsOToole where
     ]
 
 instance HasTokenValue env SkidsOToole where
-  getTokenValue (SkidsOToole attrs) iid ElderSign
+  getTokenValue iid ElderSign (SkidsOToole attrs)
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 2)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env SkidsOToole where
   runMessage msg i@(SkidsOToole attrs) = case msg of

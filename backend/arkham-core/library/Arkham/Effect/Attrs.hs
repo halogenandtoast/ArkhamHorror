@@ -16,6 +16,8 @@ import Arkham.Target
 import Arkham.Trait
 import Arkham.Window (Window)
 
+class IsEffect a
+
 data EffectAttrs = EffectAttrs
   { effectId :: EffectId
   , effectCardCode :: Maybe CardCode

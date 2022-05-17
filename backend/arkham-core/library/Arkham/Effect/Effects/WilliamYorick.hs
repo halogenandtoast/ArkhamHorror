@@ -14,7 +14,7 @@ import Arkham.Modifier
 import Arkham.Target
 
 newtype WilliamYorick = WilliamYorick EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 williamYorick :: EffectArgs -> WilliamYorick

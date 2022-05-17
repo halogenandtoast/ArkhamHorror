@@ -40,22 +40,24 @@ instance
         (TokenFaceTarget tokenFace)
       if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
         then pure s
-        else genericRunMessage msg s
+        else go msg s
     FailedSkillTest _ _ _ (TokenTarget token) _ _ -> do
       modifiers' <- getModifiers
         (toSource $ toAttrs s)
         (TokenFaceTarget $ tokenFace token)
       if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
         then pure s
-        else genericRunMessage msg s
+        else go msg s
     PassedSkillTest _ _ _ (TokenTarget token) _ _ -> do
       modifiers' <- getModifiers
         (toSource $ toAttrs s)
         (TokenFaceTarget $ tokenFace token)
       if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
         then pure s
-        else genericRunMessage msg s
-    _ -> genericRunMessage msg s
+        else go msg s
+    _ -> go msg s
+   where
+     go = $(entityRunMessage "Scenario")
 
 instance
   ( HasCount DiscardCount env InvestigatorId

@@ -14,7 +14,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype PushedIntoTheBeyond = PushedIntoTheBeyond EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pushedIntoTheBeyond :: EffectArgs -> PushedIntoTheBeyond

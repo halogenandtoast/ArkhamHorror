@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Effect (
   module Arkham.Effect,
 ) where
@@ -23,6 +24,78 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Window (Window)
+
+data Effect
+  = OnTheLam' OnTheLam
+  | MindOverMatter' MindOverMatter
+  | Deduction' Deduction
+  | Shrivelling' Shrivelling
+  | BlindingLight' BlindingLight
+  | MindWipe1' MindWipe1
+  | BlindingLight2' BlindingLight2
+  | BaseballBat' BaseballBat
+  | Lucky' Lucky
+  | Lucky2' Lucky2
+  | WillToSurvive3' WillToSurvive3
+  | SureGamble3' SureGamble3
+  | ArkhamWoodsTwistingPaths' ArkhamWoodsTwistingPaths
+  | RexsCurse' RexsCurse
+  | RiteOfSeeking' RiteOfSeeking
+  | BindMonster2' BindMonster2
+  | PushedIntoTheBeyond' PushedIntoTheBeyond
+  | ArcaneBarrier' ArcaneBarrier
+  | SongOfTheDead2' SongOfTheDead2
+  | FireExtinguisher1' FireExtinguisher1
+  | Deduction2' Deduction2
+  | ExposeWeakness1' ExposeWeakness1
+  | QuickThinking' QuickThinking
+  | LuckyDice2' LuckyDice2
+  | RiteOfSeeking4' RiteOfSeeking4
+  | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
+  | TenAcreMeadow_246' TenAcreMeadow_246
+  | AChanceEncounter' AChanceEncounter
+  | YogSothoth' YogSothoth
+  | MinhThiPhan' MinhThiPhan
+  | WilliamYorick' WilliamYorick
+  | ThePaintedWorld' ThePaintedWorld
+  | Improvisation' Improvisation
+  | LetMeHandleThis' LetMeHandleThis
+  | Fieldwork' Fieldwork
+  | SleightOfHand' SleightOfHand
+  | Lockpicks1' Lockpicks1
+  | AlchemicalTransmutation' AlchemicalTransmutation
+  | UncageTheSoul' UncageTheSoul
+  | Overzealous' Overzealous
+  | TheStrangerACityAflame' TheStrangerACityAflame
+  | TheStrangerThePathIsMine' TheStrangerThePathIsMine
+  | TheStrangerTheShoresOfHali' TheStrangerTheShoresOfHali
+  | TheKingsEdict' TheKingsEdict
+  | MrPeabody' MrPeabody
+  | CharlesRossEsq' CharlesRossEsq
+  | StormOfSpirits' StormOfSpirits
+  | FightOrFlight' FightOrFlight
+  | CallingInFavors' CallingInFavors
+  | Montmartre209' Montmartre209
+  | PereLachaiseCemetery' PereLachaiseCemetery
+  | LeMarais218' LeMarais218
+  | MeatCleaver' MeatCleaver
+  | MindWipe3' MindWipe3
+  | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
+  | JeremiahPierce' JeremiahPierce
+  | NathanielCho' NathanielCho
+  | TommyMalloy' TommyMalloy
+  | Lockpicks' Lockpicks
+  | EighteenDerringer' EighteenDerringer
+  | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
+  | CursedShores' CursedShores
+  | Mesmerize' Mesmerize
+  | DaisysToteBagAdvanced' DaisysToteBagAdvanced
+  | WindowModifierEffect' WindowModifierEffect
+  | PayForAbilityEffect' PayForAbilityEffect
+  | TokenEffect' TokenEffect
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 
 createEffect ::
   MonadRandom m =>
@@ -76,75 +149,6 @@ createPayForAbilityEffect ability source target windows' = do
   eid <- getRandom
   pure (eid, buildPayForAbilityEffect eid ability source target windows')
 
-data Effect
-  = OnTheLam' OnTheLam
-  | MindOverMatter' MindOverMatter
-  | Deduction' Deduction
-  | Shrivelling' Shrivelling
-  | BlindingLight' BlindingLight
-  | MindWipe1' MindWipe1
-  | BlindingLight2' BlindingLight2
-  | BaseballBat' BaseballBat
-  | Lucky' Lucky
-  | Lucky2' Lucky2
-  | WillToSurvive3' WillToSurvive3
-  | SureGamble3' SureGamble3
-  | ArkhamWoodsTwistingPaths' ArkhamWoodsTwistingPaths
-  | RiteOfSeeking' RiteOfSeeking
-  | BindMonster2' BindMonster2
-  | PushedIntoTheBeyond' PushedIntoTheBeyond
-  | ArcaneBarrier' ArcaneBarrier
-  | SongOfTheDead2' SongOfTheDead2
-  | FireExtinguisher1' FireExtinguisher1
-  | Deduction2' Deduction2
-  | ExposeWeakness1' ExposeWeakness1
-  | QuickThinking' QuickThinking
-  | LuckyDice2' LuckyDice2
-  | RiteOfSeeking4' RiteOfSeeking4
-  | UndimensionedAndUnseenTabletToken' UndimensionedAndUnseenTabletToken
-  | TenAcreMeadow_246' TenAcreMeadow_246
-  | AChanceEncounter' AChanceEncounter
-  | MinhThiPhan' MinhThiPhan
-  | WilliamYorick' WilliamYorick
-  | ThePaintedWorld' ThePaintedWorld
-  | Improvisation' Improvisation
-  | LetMeHandleThis' LetMeHandleThis
-  | Fieldwork' Fieldwork
-  | SleightOfHand' SleightOfHand
-  | Lockpicks1' Lockpicks1
-  | AlchemicalTransmutation' AlchemicalTransmutation
-  | UncageTheSoul' UncageTheSoul
-  | Overzealous' Overzealous
-  | TheStrangerACityAflame' TheStrangerACityAflame
-  | TheStrangerThePathIsMine' TheStrangerThePathIsMine
-  | TheStrangerTheShoresOfHali' TheStrangerTheShoresOfHali
-  | TheKingsEdict' TheKingsEdict
-  | MrPeabody' MrPeabody
-  | CharlesRossEsq' CharlesRossEsq
-  | StormOfSpirits' StormOfSpirits
-  | FightOrFlight' FightOrFlight
-  | CallingInFavors' CallingInFavors
-  | Montmartre209' Montmartre209
-  | PereLachaiseCemetery' PereLachaiseCemetery
-  | LeMarais218' LeMarais218
-  | MeatCleaver' MeatCleaver
-  | MindWipe3' MindWipe3
-  | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
-  | JeremiahPierce' JeremiahPierce
-  | NathanielCho' NathanielCho
-  | TommyMalloy' TommyMalloy
-  | Lockpicks' Lockpicks
-  | EighteenDerringer' EighteenDerringer
-  | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
-  | CursedShores' CursedShores
-  | Mesmerize' Mesmerize
-  | DaisysToteBagAdvanced' DaisysToteBagAdvanced
-  | WindowModifierEffect' WindowModifierEffect
-  | PayForAbilityEffect' PayForAbilityEffect
-  | TokenEffect' TokenEffect
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
 instance
   ( HasSet ClassSymbol env InvestigatorId
   , HasId Difficulty env ()
@@ -159,7 +163,7 @@ instance
   getModifiersFor = genericGetModifiersFor
 
 instance HasAbilities Effect where
-  getAbilities = genericGetAbilities
+  getAbilities = $(entityF "Effect" "getAbilities")
 
 instance
   ( HasQueue env
@@ -172,11 +176,13 @@ instance
   ) =>
   RunMessage env Effect
   where
-  runMessage = genericRunMessage
+  runMessage = $(entityRunMessage "Effect")
 
 instance Entity Effect where
   type EntityId Effect = EffectId
   type EntityAttrs Effect = EffectAttrs
+  toId = toId . toAttrs
+  toAttrs = $(entityF "Effect" "toAttrs")
 
 instance TargetEntity Effect where
   toTarget = toTarget . toAttrs
@@ -222,6 +228,7 @@ allEffects =
     , ("01085", WillToSurvive3' . willToSurvive3)
     , ("01088", SureGamble3' . sureGamble3)
     , ("01151", ArkhamWoodsTwistingPaths' . arkhamWoodsTwistingPaths)
+    , ("02009", RexsCurse' . rexsCurse)
     , ("02028", RiteOfSeeking' . riteOfSeeking)
     , ("02031", BindMonster2' . bindMonster2)
     , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)
@@ -239,6 +246,7 @@ allEffects =
       )
     , ("02246", TenAcreMeadow_246' . tenAcreMeadow_246)
     , ("02270", AChanceEncounter' . aChanceEncounter)
+    , ("02323", YogSothoth' . yogSothoth)
     , ("03002", MinhThiPhan' . minhThiPhan)
     , ("03005", WilliamYorick' . williamYorick)
     , ("03012", ThePaintedWorld' . thePaintedWorld)

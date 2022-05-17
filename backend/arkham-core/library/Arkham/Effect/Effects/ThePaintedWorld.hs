@@ -13,7 +13,7 @@ import Arkham.Modifier
 import Arkham.Target
 
 newtype ThePaintedWorld = ThePaintedWorld EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePaintedWorld :: EffectArgs -> ThePaintedWorld

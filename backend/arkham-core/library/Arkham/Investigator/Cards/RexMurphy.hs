@@ -53,9 +53,9 @@ instance HasAbilities RexMurphy where
     ]
 
 instance HasTokenValue env RexMurphy where
-  getTokenValue (RexMurphy attrs) iid ElderSign | iid == toId attrs =
+  getTokenValue iid ElderSign (RexMurphy attrs) | iid == toId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 2)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance (InvestigatorRunner env) => RunMessage env RexMurphy where
   runMessage msg i@(RexMurphy attrs) = case msg of

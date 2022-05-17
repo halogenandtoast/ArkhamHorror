@@ -12,7 +12,7 @@ import Arkham.Message
 import Arkham.Modifier
 
 newtype LeMarais218 = LeMarais218 EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 leMarais218 :: EffectArgs -> LeMarais218

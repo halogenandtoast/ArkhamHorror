@@ -45,17 +45,19 @@ instance HasStep AgendaStep env Agenda where
   getStep = getStep . toAttrs
 
 instance HasAbilities Agenda where
-  getAbilities = genericGetAbilities
+  getAbilities = $(entityF "Agenda" "getAbilities")
 
 instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessage env Agenda where
-  runMessage = genericRunMessage
+  runMessage = $(entityRunMessage "Agenda")
 
 instance (Query EnemyMatcher env, HasSet Trait env EnemyId, HasRecord env ()) => HasModifiersFor env Agenda where
-  getModifiersFor = genericGetModifiersFor
+  getModifiersFor = $(entityF2 "Agenda" "getModifiersFor")
 
 instance Entity Agenda where
   type EntityId Agenda = AgendaId
   type EntityAttrs Agenda = AgendaAttrs
+  toId = toId . toAttrs
+  toAttrs = $(entityF "Agenda" "toAttrs")
 
 instance Named Agenda where
   toName = toName . toAttrs

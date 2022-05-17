@@ -26,7 +26,7 @@ instance HasCardDef Event where
   toCardDef = toCardDef . toAttrs
 
 instance HasAbilities Event where
-  getAbilities = genericGetAbilities
+  getAbilities = $(entityF "Event" "getAbilities")
 
 instance
   ( HasCount ClueCount env InvestigatorId
@@ -34,14 +34,16 @@ instance
   ) =>
   HasModifiersFor env Event
   where
-  getModifiersFor = genericGetModifiersFor
+  getModifiersFor = $(entityF2 "Event" "getModifiersFor")
 
 instance EventRunner env => RunMessage env Event where
-  runMessage = genericRunMessage
+  runMessage = $(entityRunMessage "Event")
 
 instance Entity Event where
   type EntityId Event = EventId
   type EntityAttrs Event = EventAttrs
+  toId = toId . toAttrs
+  toAttrs = $(entityF "Event" "toAttrs")
 
 instance Named Event where
   toName = toName . toAttrs

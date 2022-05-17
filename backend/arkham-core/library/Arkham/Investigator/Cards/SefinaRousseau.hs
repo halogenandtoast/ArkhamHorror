@@ -31,10 +31,10 @@ sefinaRousseau = investigator
     }
 
 instance HasTokenValue env SefinaRousseau where
-  getTokenValue (SefinaRousseau attrs) iid ElderSign
+  getTokenValue iid ElderSign (SefinaRousseau attrs)
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 3)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance HasAbilities SefinaRousseau where
   getAbilities (SefinaRousseau attrs) =

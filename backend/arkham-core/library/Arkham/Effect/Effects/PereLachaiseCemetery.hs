@@ -12,7 +12,7 @@ import Arkham.Message
 import Arkham.Modifier
 
 newtype PereLachaiseCemetery = PereLachaiseCemetery EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pereLachaiseCemetery :: EffectArgs -> PereLachaiseCemetery

@@ -12,7 +12,7 @@ import Arkham.Message
 import Arkham.Modifier
 
 newtype TheOrganistHopelessIDefiedHim = TheOrganistHopelessIDefiedHim EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theOrganistHopelessIDefiedHim :: EffectArgs -> TheOrganistHopelessIDefiedHim

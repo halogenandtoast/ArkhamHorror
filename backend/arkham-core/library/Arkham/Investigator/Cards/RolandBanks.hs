@@ -46,10 +46,10 @@ instance HasAbilities RolandBanks where
     ]
 
 instance HasTokenValue env RolandBanks where
-  getTokenValue (RolandBanks attrs) iid ElderSign | iid == toId attrs = do
+  getTokenValue iid ElderSign (RolandBanks attrs) | iid == toId attrs = do
     clues <- field LocationClues (investigatorLocation attrs)
     pure $ TokenValue ElderSign (PositiveModifier clues)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks a) = case msg of

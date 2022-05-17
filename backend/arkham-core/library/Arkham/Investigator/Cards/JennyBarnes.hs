@@ -24,10 +24,10 @@ jennyBarnes = investigator
     }
 
 instance HasTokenValue env JennyBarnes where
-  getTokenValue (JennyBarnes attrs) iid ElderSign
+  getTokenValue iid ElderSign (JennyBarnes attrs)
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier $ investigatorResources attrs)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance (InvestigatorRunner env) => RunMessage env JennyBarnes where
   runMessage msg (JennyBarnes attrs) = case msg of

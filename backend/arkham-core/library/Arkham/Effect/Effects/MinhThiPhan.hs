@@ -17,7 +17,7 @@ import Arkham.Target
 import Arkham.Token
 
 newtype MinhThiPhan = MinhThiPhan EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 minhThiPhan :: EffectArgs -> MinhThiPhan

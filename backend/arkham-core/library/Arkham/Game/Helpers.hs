@@ -2397,7 +2397,7 @@ matchToken
   -> m Bool
 matchToken iid' t = \case
   Matcher.WithNegativeModifier -> do
-    tv <- getTokenValue () iid' (tokenFace t)
+    tv <- getTokenValue iid' (tokenFace t) ()
     case tv of
       TokenValue _ (NegativeModifier _) -> pure True
       TokenValue _ (DoubleNegativeModifier _) -> pure True

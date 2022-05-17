@@ -13,7 +13,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype Deduction = Deduction EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deduction :: EffectArgs -> Deduction

@@ -19,17 +19,21 @@ import Arkham.Modifier
 import Arkham.Query
 import Arkham.Slot
 import Arkham.Source
+import Data.Aeson.TH
 
 $(buildEntity "Investigator")
+
+$(deriveJSON defaultOptions ''Investigator)
 
 instance
   ( HasCount StartingUsesCount env (AssetId, UseType)
   , Query AssetMatcher env
   )
   => HasModifiersFor env Investigator where
-  getModifiersFor s t i = genericGetModifiersFor s t i
+  getModifiersFor = $(entityF2 "Investigator" "getModifiersFor")
 
-deriving anyclass instance HasCount ClueCount env LocationId => HasTokenValue env Investigator
+instance HasTokenValue env Investigator where
+  getTokenValue = $(entityF2 "Investigator" "getTokenValue")
 
 isEliminated :: Investigator -> Bool
 isEliminated = uncurry (||) . (isResigned &&& isDefeated)
@@ -50,13 +54,13 @@ instance {-# OVERLAPPING #-} HasTraits Investigator where
   toTraits = toTraits . toAttrs
 
 instance HasAbilities Investigator where
-  getAbilities = genericGetAbilities
+  getAbilities = $(entityF "Investigator" "getAbilities")
 
 instance InvestigatorRunner env => RunMessage env Investigator where
   runMessage msg i = do
     modifiers' <- getModifiers (toSource i) (toTarget i)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
-    genericRunMessage msg' i
+    $(entityRunMessage "Investigator") msg' i
 
 instance HasId InvestigatorId () Investigator where
   getId = pure . toId
@@ -276,6 +280,8 @@ getRemainingHealth i = do
 instance Entity Investigator where
   type EntityId Investigator = InvestigatorId
   type EntityAttrs Investigator = InvestigatorAttrs
+  toId = toId . toAttrs
+  toAttrs = $(entityF "Investigator" "toAttrs")
 
 instance HasName env Investigator where
   getName = pure . toName

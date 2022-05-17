@@ -16,7 +16,7 @@ import Arkham.Token
 import Arkham.Window (Window)
 
 newtype TokenEffect = TokenEffect EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tokenEffect

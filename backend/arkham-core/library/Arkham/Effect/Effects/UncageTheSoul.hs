@@ -15,7 +15,7 @@ import Arkham.Modifier
 import Arkham.Target
 
 newtype UncageTheSoul = UncageTheSoul EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 uncageTheSoul :: EffectArgs -> UncageTheSoul

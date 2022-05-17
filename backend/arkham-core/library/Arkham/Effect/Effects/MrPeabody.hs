@@ -15,7 +15,7 @@ import Arkham.Target
 import Arkham.Trait
 
 newtype MrPeabody = MrPeabody EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mrPeabody :: EffectArgs -> MrPeabody

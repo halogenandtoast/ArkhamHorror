@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Modifier (
   Modifier (..),
   ModifierType (..),
@@ -6,6 +7,7 @@ module Arkham.Modifier (
 
 import Arkham.Prelude
 
+import Data.Aeson.TH
 import Arkham.Action
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
@@ -27,13 +29,6 @@ data Modifier = Modifier
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (Hashable)
-
-instance ToJSON Modifier where
-  toJSON = genericToJSON $ aesonOptions $ Just "modifier"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "modifier"
-
-instance FromJSON Modifier where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "modifier"
 
 data ModifierType
   = ActionCostOf ActionTarget Int
@@ -153,7 +148,7 @@ data ModifierType
   | UseSkillInPlaceOf SkillType SkillType
   | XPModifier Int
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON, Hashable)
+  deriving anyclass Hashable
 
 data ActionTarget
   = FirstOneOf [Action]
@@ -161,3 +156,13 @@ data ActionTarget
   | EnemyAction Action [Trait]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON, Hashable)
+
+$(deriveJSON defaultOptions ''ModifierType)
+
+instance ToJSON Modifier where
+  toJSON = genericToJSON $ aesonOptions $ Just "modifier"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "modifier"
+
+instance FromJSON Modifier where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "modifier"
+

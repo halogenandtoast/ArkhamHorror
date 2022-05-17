@@ -35,9 +35,9 @@ wendyAdams = investigator
     }
 
 instance HasTokenValue env WendyAdams where
-  getTokenValue (WendyAdams attrs) iid ElderSign | iid == investigatorId attrs =
+  getTokenValue iid ElderSign (WendyAdams attrs) | iid == investigatorId attrs =
     pure $ TokenValue ElderSign $ PositiveModifier 0
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance HasAbilities WendyAdams where
   getAbilities (WendyAdams attrs) =

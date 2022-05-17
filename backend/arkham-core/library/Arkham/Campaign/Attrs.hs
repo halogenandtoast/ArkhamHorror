@@ -1,7 +1,9 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Campaign.Attrs where
 
 import Arkham.Prelude
 
+import Data.Aeson.TH
 import Arkham.Json
 import Arkham.PlayerCard
 import Arkham.Campaign.Runner
@@ -38,7 +40,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignCompletedSteps :: [CampaignStep]
   , campaignResolutions :: HashMap ScenarioId Resolution
   }
-  deriving stock (Show, Generic, Eq)
+  deriving stock (Show, Eq)
 
 completedStepsL :: Lens' CampaignAttrs [CampaignStep]
 completedStepsL =
@@ -75,12 +77,7 @@ instance Entity CampaignAttrs where
 instance Named CampaignAttrs where
   toName = mkName . campaignName
 
-instance ToJSON CampaignAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "campaign"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "campaign"
-
-instance FromJSON CampaignAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "campaign"
+$(deriveJSON defaultOptions ''CampaignAttrs)
 
 instance HasSet CompletedScenarioId env CampaignAttrs where
   getSet CampaignAttrs {..} =

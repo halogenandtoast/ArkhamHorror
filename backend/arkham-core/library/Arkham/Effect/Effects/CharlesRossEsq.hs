@@ -18,7 +18,7 @@ import Arkham.Target
 import Arkham.Trait
 
 newtype CharlesRossEsq = CharlesRossEsq EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 charlesRossEsq :: EffectArgs -> CharlesRossEsq

@@ -16,7 +16,7 @@ import Arkham.Target
 import Arkham.Window (Window)
 
 newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 windowModifierEffect

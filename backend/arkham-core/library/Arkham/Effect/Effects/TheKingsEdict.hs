@@ -15,7 +15,7 @@ import Arkham.Query
 import Arkham.Target
 
 newtype TheKingsEdict = TheKingsEdict EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theKingsEdict :: EffectArgs -> TheKingsEdict

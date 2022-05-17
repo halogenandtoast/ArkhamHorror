@@ -12,7 +12,7 @@ import Arkham.Message
 import Arkham.Modifier
 
 newtype SureGamble3 = SureGamble3 EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sureGamble3 :: EffectArgs -> SureGamble3

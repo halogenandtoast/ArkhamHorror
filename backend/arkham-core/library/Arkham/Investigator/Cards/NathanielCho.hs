@@ -53,10 +53,10 @@ instance HasAbilities NathanielCho where
     ]
 
 instance HasTokenValue env NathanielCho where
-  getTokenValue (NathanielCho attrs) iid ElderSign
+  getTokenValue iid ElderSign (NathanielCho attrs)
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance (InvestigatorRunner env) => RunMessage env NathanielCho where
   runMessage msg a@(NathanielCho attrs) = case msg of

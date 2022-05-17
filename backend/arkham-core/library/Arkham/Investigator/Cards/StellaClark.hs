@@ -43,9 +43,9 @@ instance HasAbilities StellaClark where
     ]
 
 instance HasTokenValue env StellaClark where
-  getTokenValue (StellaClark attrs) iid ElderSign | iid == toId attrs = do
+  getTokenValue iid ElderSign (StellaClark attrs) | iid == toId attrs = do
     pure $ TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env StellaClark where
   runMessage msg i@(StellaClark attrs) = case msg of

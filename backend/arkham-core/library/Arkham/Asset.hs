@@ -23,7 +23,7 @@ createAsset :: IsCard a => a -> Asset
 createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)
 
 instance HasAbilities Asset where
-  getAbilities = genericGetAbilities
+  getAbilities = $(entityF "Asset" "getAbilities")
 
 instance
   ( HasId LocationId env InvestigatorId
@@ -42,7 +42,7 @@ instance
   , HasSkillTest env
   )
   => HasModifiersFor env Asset where
-  getModifiersFor = genericGetModifiersFor
+  getModifiersFor = $(entityF2 "Asset" "getModifiersFor")
 
 instance AssetRunner env => RunMessage env Asset where
   runMessage msg x = do
@@ -51,7 +51,7 @@ instance AssetRunner env => RunMessage env Asset where
       then getModifiers (toSource x) (toTarget x)
       else pure []
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
-    genericRunMessage msg' x
+    $(entityRunMessage "Asset") msg' x
 
 instance HasCardCode Asset where
   toCardCode = toCardCode . toAttrs
@@ -59,6 +59,8 @@ instance HasCardCode Asset where
 instance Entity Asset where
   type EntityId Asset = AssetId
   type EntityAttrs Asset = AssetAttrs
+  toId = toId . toAttrs
+  toAttrs = $(entityF "Asset" "toAttrs")
 
 instance Named Asset where
   toName = toName . toAttrs

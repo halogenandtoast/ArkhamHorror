@@ -17,7 +17,7 @@ import Arkham.Modifier
 import Arkham.Target
 
 newtype Improvisation = Improvisation EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 improvisation :: EffectArgs -> Improvisation

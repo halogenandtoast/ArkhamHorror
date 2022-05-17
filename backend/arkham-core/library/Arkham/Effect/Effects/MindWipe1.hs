@@ -12,7 +12,7 @@ import Arkham.Message
 import Arkham.Modifier
 
 newtype MindWipe1 = MindWipe1 EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mindWipe1 :: EffectArgs -> MindWipe1

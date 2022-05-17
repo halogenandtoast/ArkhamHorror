@@ -46,10 +46,10 @@ instance HasAbilities AgnesBaker where
     ]
 
 instance HasTokenValue env AgnesBaker where
-  getTokenValue (AgnesBaker attrs) iid ElderSign | iid == toId attrs =
+  getTokenValue iid ElderSign (AgnesBaker attrs) | iid == toId attrs =
     pure $ TokenValue ElderSign $ PositiveModifier $ investigatorSanityDamage
       attrs
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs) = case msg of

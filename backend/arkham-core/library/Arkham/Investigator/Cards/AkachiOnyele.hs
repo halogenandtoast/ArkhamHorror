@@ -43,11 +43,11 @@ akachiOnyele =
       }
 
 instance HasTokenValue env AkachiOnyele where
-  getTokenValue (AkachiOnyele attrs) iid ElderSign
+  getTokenValue iid ElderSign (AkachiOnyele attrs)
     | iid == investigatorId attrs =
       pure $
         TokenValue ElderSign (PositiveModifier 1)
-  getTokenValue _ _ token = pure $ TokenValue token mempty
+  getTokenValue _ token _ = pure $ TokenValue token mempty
 
 instance InvestigatorRunner env => RunMessage env AkachiOnyele where
   runMessage msg i@(AkachiOnyele attrs) = case msg of

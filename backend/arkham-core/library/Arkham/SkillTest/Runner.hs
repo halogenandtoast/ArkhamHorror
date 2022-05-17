@@ -93,7 +93,7 @@ getModifiedTokenValue s t = do
     <$> for
       modifiedTokenFaces'
       ( \tokenFace -> do
-          baseTokenValue <- getTokenValue () (skillTestInvestigator s) tokenFace
+          baseTokenValue <- getTokenValue (skillTestInvestigator s) tokenFace ()
           let updatedTokenValue =
                 tokenValue $ foldr applyModifier baseTokenValue tokenModifiers'
           pure . Sum $ fromMaybe 0 updatedTokenValue

@@ -18,7 +18,7 @@ import Arkham.Target
 import Arkham.Trait
 
 newtype CallingInFavors = CallingInFavors EffectAttrs
-  deriving anyclass HasAbilities
+  deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 callingInFavors :: EffectArgs -> CallingInFavors

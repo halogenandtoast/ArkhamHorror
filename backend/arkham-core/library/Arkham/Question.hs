@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Card.Id
 import Arkham.Id
-import {-# SOURCE #-} Arkham.Target
+import Arkham.Target
 
 data Question msg
     = ChooseOne [msg]

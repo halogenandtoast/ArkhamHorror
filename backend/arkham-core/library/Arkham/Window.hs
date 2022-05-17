@@ -13,7 +13,7 @@ import Arkham.Id
 import Arkham.Matcher (LocationMatcher)
 import Arkham.Phase (Phase)
 import Arkham.Source (Source)
-import {-# SOURCE #-} Arkham.Target (Target)
+import Arkham.Target (Target)
 import Arkham.Timing (Timing)
 import Arkham.Token (Token)
 

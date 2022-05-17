@@ -7,7 +7,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Card.CardCode
 import Arkham.Modifier
-import {-# SOURCE #-} Arkham.Target
+import Arkham.Target
 
 data EffectMetadata window a
   = EffectInt Int

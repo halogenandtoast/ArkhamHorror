@@ -11,7 +11,7 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Source
-import {-# SOURCE #-} Arkham.Target
+import Arkham.Target
 import Data.Text qualified as T
 
 totalActionCost :: Cost -> Int

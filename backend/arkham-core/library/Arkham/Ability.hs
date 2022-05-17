@@ -6,19 +6,19 @@ module Arkham.Ability (
 import Arkham.Prelude
 
 import Arkham.Ability.Limit as X
-import {-# SOURCE #-} Arkham.Ability.Type as X
+import Arkham.Ability.Type as X
 import Arkham.Json
 import Arkham.Action (Action)
 import Arkham.Card.EncounterCard
 import Arkham.Classes.Entity.Source
-import {-# SOURCE #-} Arkham.Cost
+import Arkham.Cost
 import Arkham.Criteria (Criterion(InYourHand, AnyCriterion, Criteria))
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Source
-import {-# SOURCE #-} Arkham.Target
+import Arkham.Target
 
 data Ability = Ability
   { abilitySource :: Source

@@ -3,6 +3,7 @@ module Arkham.Ability.Type where
 import Arkham.Prelude
 
 import Arkham.Action
+import Arkham.Ability.Limit
 import Arkham.Cost
 import Arkham.Matcher
 import Arkham.Modifier
@@ -102,7 +103,7 @@ isFastAbilityType = \case
   ForcedAbility {} -> False
   SilentForcedAbility {} -> False
   ForcedAbilityWithCost {} -> False
-  Objective aType -> go aType
+  Objective aType -> isFastAbilityType aType
   ReactionAbility {} -> False
   ActionAbility {} -> False
   ActionAbilityWithSkill {} -> False
@@ -114,7 +115,7 @@ isForcedAbilityType = \case
   SilentForcedAbility {} -> True
   ForcedAbility {} -> True
   ForcedAbilityWithCost {} -> True
-  Objective aType -> go aType
+  Objective aType -> isForcedAbilityType aType
   FastAbility {} -> False
   ReactionAbility {} -> False
   ActionAbility {} -> False
@@ -127,7 +128,7 @@ isSilentForcedAbilityType = \case
   SilentForcedAbility {} -> True
   ForcedAbility {} -> False
   ForcedAbilityWithCost {} -> False
-  Objective aType -> go aType
+  Objective aType -> isSilentForcedAbilityType aType
   FastAbility {} -> False
   ReactionAbility {} -> False
   ActionAbility {} -> False

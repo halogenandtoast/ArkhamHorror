@@ -1864,34 +1864,7 @@ windowMatches iid source window' = \case
   Matcher.EnemyDefeated timingMatcher whoMatcher enemyMatcher ->
     case window' of
       Window t (Window.EnemyDefeated who enemyId) | timingMatcher == t ->
-        -- When timing is after the enemy is already discarded
-        -- We have to then base the window on a card matcher
-        -- And we can only convert a limited set of matchers
-        if t == Timing.After
-          then do
-            discardedCards <-
-              filter ((== enemyId) . EnemyId . toCardId)
-              . map (EncounterCard . unDiscardedEncounterCard)
-              <$> getList ()
-            victoryDisplayCards <-
-              filter ((== enemyId) . EnemyId . toCardId)
-              . map unVictoryDisplayCard
-              <$> getSetList ()
-            let
-              cardMatcher = case enemyMatcher of
-                Matcher.EnemyIs cardCode -> Matcher.CardWithCardCode cardCode
-                _ ->
-                  error "Enemy Matcher has not been converted to card matcher"
-            andM
-              [ matchWho iid who whoMatcher
-              , pure $ any
-                (`cardMatch` cardMatcher)
-                (discardedCards <> victoryDisplayCards)
-              ]
-          else liftA2
-            (&&)
-            (enemyMatches enemyId enemyMatcher)
-            (matchWho iid who whoMatcher)
+        liftA2 (&&) (enemyMatches enemyId enemyMatcher) (matchWho iid who whoMatcher)
       _ -> pure False
   Matcher.EnemyEnters timingMatcher whereMatcher enemyMatcher ->
     case window' of

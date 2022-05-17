@@ -17,11 +17,11 @@ export default defineComponent({
 
     fetchInvestigators().then((response) => {
       cards.value = response.sort((a, b) => {
-        if (a.id < b.id) {
+        if (a.contents.id < b.contents.id) {
           return -1
         }
 
-        if (a.id > b.id) {
+        if (a.contents.id > b.contents.id) {
           return 1
         }
 
@@ -30,7 +30,7 @@ export default defineComponent({
       ready.value = true
     })
 
-    const image = (card: Arkham.Investigator) => `${baseUrl}/img/arkham/cards/${card.id.replace('c', '')}.jpg`
+    const image = (card: Arkham.Investigator) => `${baseUrl}/img/arkham/cards/${card.contents.id.replace('c', '')}.jpg`
 
     return { cards, ready, image }
   }

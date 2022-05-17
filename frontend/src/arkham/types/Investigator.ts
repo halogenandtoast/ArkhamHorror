@@ -21,6 +21,14 @@ export interface Modifier {
 export const modifierDecoder = JsonDecoder.object<Modifier>(
   { type: modifierTypeDecoder}, 'Modifier')
 
+export interface Investigator {
+  tag: string;
+  contents: InvestigatorContents;
+  deckSize?: number;
+  connectedLocations: string[];
+  modifiers?: Modifier[];
+}
+
 type ClassSymbol = 'Guardian' | 'Seeker' | 'Rogue' | 'Mystic' | 'Survivor' | 'Neutral';
 
 export const classSymbolDecoder = JsonDecoder.oneOf<ClassSymbol>([
@@ -32,7 +40,7 @@ export const classSymbolDecoder = JsonDecoder.oneOf<ClassSymbol>([
   JsonDecoder.isExactly('Neutral'),
 ], 'ClassSymbol');
 
-export interface Investigator {
+export interface InvestigatorContents {
   name: Name;
   id: string;
   class: ClassSymbol;
@@ -62,12 +70,9 @@ export interface Investigator {
   cardsUnderneath: Card[];
   foundCards: Record<string, Card[]>;
   xp: number;
-  deckSize?: number;
-  connectedLocations: string[];
-  modifiers?: Modifier[];
 }
 
-export const investigatorDecoder = JsonDecoder.object<Investigator>({
+export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorContents>({
   name: nameDecoder,
   id: JsonDecoder.string,
   class: classSymbolDecoder,
@@ -99,6 +104,11 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   foundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
   xp: JsonDecoder.number,
+}, 'Attrs');
+
+export const investigatorDecoder = JsonDecoder.object<Investigator>({
+  tag: JsonDecoder.string,
+  contents: investigatorContentsDecoder,
   deckSize: JsonDecoder.optional(JsonDecoder.number),
   connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),

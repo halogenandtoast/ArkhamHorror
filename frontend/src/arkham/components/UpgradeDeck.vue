@@ -48,7 +48,7 @@ export default defineComponent({
     const deckUrl = ref<string | null>(null)
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
     const investigator = computed(() => props.game.investigators[props.investigatorId])
-    const xp = computed(() => investigator.value.xp)
+    const xp = computed(() => investigator.value.contents.xp)
     const skipping = ref(false)
 
     function loadDeck() {

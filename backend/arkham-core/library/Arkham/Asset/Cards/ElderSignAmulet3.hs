@@ -7,7 +7,7 @@ import Arkham.Asset.Runner
 
 newtype ElderSignAmulet3 = ElderSignAmulet3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
-  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elderSignAmulet3 :: AssetCard ElderSignAmulet3
 elderSignAmulet3 =

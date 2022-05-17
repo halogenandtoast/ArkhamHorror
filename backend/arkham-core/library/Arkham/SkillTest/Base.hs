@@ -10,7 +10,7 @@ import Arkham.Json
 import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
+import {-# SOURCE #-} Arkham.Target
 import Arkham.Token
 
 data SkillTest = SkillTest

@@ -4,6 +4,7 @@ module Arkham.Location.Attrs where
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Json
 import Data.Aeson.TH
 import Arkham.Action qualified as Action
 import Arkham.Card
@@ -161,7 +162,7 @@ instance HasCardDef LocationAttrs where
     Nothing ->
       error $ "missing card def for location " <> show (locationCardCode a)
 
-$(deriveJSON defaultOptions ''LocationAttrs)
+$(deriveJSON (aesonOptions $ Just "Locaiton") ''LocationAttrs)
 
 unrevealed :: LocationAttrs -> Bool
 unrevealed = not . locationRevealed

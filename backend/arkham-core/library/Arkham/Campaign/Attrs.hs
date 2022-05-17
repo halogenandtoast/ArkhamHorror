@@ -21,6 +21,7 @@ import Arkham.Message
 import Arkham.Name
 import Arkham.Resolution
 import Arkham.Token
+import Arkham.Json
 import Control.Monad.Writer hiding (filterM)
 import Data.List.NonEmpty qualified as NE
 
@@ -76,7 +77,7 @@ instance Entity CampaignAttrs where
 instance Named CampaignAttrs where
   toName = mkName . campaignName
 
-$(deriveJSON defaultOptions ''CampaignAttrs)
+$(deriveJSON (aesonOptions $ Just "Campaign") ''CampaignAttrs)
 
 instance HasSet CompletedScenarioId env CampaignAttrs where
   getSet CampaignAttrs {..} =

@@ -16,7 +16,7 @@ import Arkham.Zone
 
 newtype Scrying = Scrying AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
-  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scrying :: AssetCard Scrying
 scrying = asset Scrying Cards.scrying

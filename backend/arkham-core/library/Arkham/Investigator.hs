@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Investigator
   ( module Arkham.Investigator
   ) where
@@ -6,7 +5,6 @@ module Arkham.Investigator
 import Arkham.Prelude
 
 import Arkham.Action (Action, TakenAction)
-import Arkham.Asset.Uses
 import Arkham.SkillType
 import Arkham.Card
 import Arkham.Helpers
@@ -19,21 +17,40 @@ import Arkham.Modifier
 import Arkham.Query
 import Arkham.Slot
 import Arkham.Source
-import Data.Aeson.TH
 
-$(buildEntity "Investigator")
+data Investigator = Investigator
+  { investigatorAttrs :: InvestigatorAttrs
+  , investigatorBehaviors :: InvestigatorBehaviors
+  }
 
-$(deriveJSON defaultOptions ''Investigator)
+instance ToJSON Investigator where
+  toJSON = toJSON . investigatorAttrs
 
-instance
-  ( HasCount StartingUsesCount env (AssetId, UseType)
-  , Query AssetMatcher env
-  )
-  => HasModifiersFor env Investigator where
-  getModifiersFor = $(entityF2 "Investigator" "getModifiersFor")
+instance FromJSON Investigator where
+  parseJSON o = do
+    attrs <- parseJSON o
+    let mbehaviors = lookupInvestigatorBehaviors (investigatorCardCode attrs)
+    case mbehaviors of
+      Nothing -> error "Could not find behaviors for investigator"
+      Just behaviors -> pure $ Investigator
+        { investigatorAttrs = attrs
+        , investigatorBehaviors = behaviors
+        }
+
+instance Show Investigator where
+  show = show . investigatorAttrs
+
+instance Eq Investigator where
+  a == b = toId a == toId b
+
+lookupInvestigatorBehaviors :: CardCode -> Maybe InvestigatorBehaviors
+lookupInvestigatorBehaviors _ = Just defaultInvestigatorBehaviors
+
+instance HasModifiersFor env Investigator where
+  getModifiersFor source target i = (ibGetModifiersFor $ investigatorBehaviors i) source target (investigatorAttrs i)
 
 instance HasTokenValue env Investigator where
-  getTokenValue = $(entityF2 "Investigator" "getTokenValue")
+  getTokenValue iid tFace i = (ibGetTokenValue $ investigatorBehaviors i) iid tFace (investigatorAttrs i)
 
 isEliminated :: Investigator -> Bool
 isEliminated = uncurry (||) . (isResigned &&& isDefeated)
@@ -54,13 +71,14 @@ instance {-# OVERLAPPING #-} HasTraits Investigator where
   toTraits = toTraits . toAttrs
 
 instance HasAbilities Investigator where
-  getAbilities = $(entityF "Investigator" "getAbilities")
+  getAbilities i = (ibGetAbilities $ investigatorBehaviors i) (investigatorAttrs i)
 
 instance InvestigatorRunner env => RunMessage env Investigator where
   runMessage msg i = do
     modifiers' <- getModifiers (toSource i) (toTarget i)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
-    $(entityRunMessage "Investigator") msg' i
+    attrs <- (ibRunMessage $ investigatorBehaviors i) msg' (investigatorAttrs i)
+    pure $ i { investigatorAttrs = attrs }
 
 instance HasId InvestigatorId () Investigator where
   getId = pure . toId
@@ -196,8 +214,13 @@ instance HasSkillValue env Investigator where
 
 allInvestigators :: HashMap InvestigatorId Investigator
 allInvestigators = mapFromList $ map
-  (InvestigatorId . cbCardCode &&& ($ ()) . cbCardBuilder)
-  $(buildEntityLookupList "Investigator")
+  (InvestigatorId . cbCardCode &&& convert . ($ ()) . cbCardBuilder)
+  [rolandBanks]
+ where
+   convert a = Investigator
+    { investigatorAttrs = toAttrs a
+    , investigatorBehaviors = defaultInvestigatorBehaviors
+    }
 
 lookupInvestigator :: InvestigatorId -> Investigator
 lookupInvestigator iid =
@@ -281,7 +304,7 @@ instance Entity Investigator where
   type EntityId Investigator = InvestigatorId
   type EntityAttrs Investigator = InvestigatorAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Investigator" "toAttrs")
+  toAttrs = investigatorAttrs
 
 instance HasName env Investigator where
   getName = pure . toName

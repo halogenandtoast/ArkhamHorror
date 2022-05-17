@@ -3,7 +3,7 @@ module Arkham.Strategy where
 import Arkham.Prelude
 import Arkham.Card.CardDef
 import Arkham.Id
-import Arkham.Target
+import {-# SOURCE #-} Arkham.Target
 import Arkham.Zone
 
 data DamageStrategy

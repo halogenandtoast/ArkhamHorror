@@ -21,13 +21,13 @@ import Arkham.Card
 import Arkham.Card.Id
 import Arkham.ChaosBagStepState
 import Arkham.ClassSymbol
-import Arkham.Cost
+import {-# SOURCE #-} Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
 import Arkham.Direction
 import Arkham.Effect.Window
 import Arkham.EffectId
-import Arkham.EffectMetadata
+import {-# SOURCE #-} Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Exception
 import Arkham.Helpers
@@ -42,10 +42,10 @@ import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
-import Arkham.Target
+import {-# SOURCE #-} Arkham.Target
 import Arkham.Token
 import Arkham.Trait
-import Arkham.Window (Window)
+import {-# SOURCE #-} Arkham.Window (Window)
 import Arkham.Zone
 import Control.Exception
 

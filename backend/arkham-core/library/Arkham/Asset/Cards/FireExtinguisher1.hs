@@ -14,7 +14,7 @@ import Arkham.Target
 
 newtype FireExtinguisher1 = FireExtinguisher1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor env)
-  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fireExtinguisher1 :: AssetCard FireExtinguisher1
 fireExtinguisher1 = asset FireExtinguisher1 Cards.fireExtinguisher1

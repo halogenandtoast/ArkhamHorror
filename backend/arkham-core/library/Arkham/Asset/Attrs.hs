@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Asset.Attrs where
 
 import Arkham.Prelude
@@ -9,6 +10,7 @@ import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Id
 import Arkham.Json
+import Data.Aeson.TH
 import Arkham.Name
 import Arkham.Slot
 import Arkham.Source
@@ -40,7 +42,7 @@ data AssetAttrs = AssetAttrs
   , assetDiscardWhenNoUses :: Bool
   , assetIsStory :: Bool
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq)
 
 discardWhenNoUsesL :: Lens' AssetAttrs Bool
 discardWhenNoUsesL =
@@ -111,12 +113,7 @@ instance HasCardDef AssetAttrs where
     Just def -> def
     Nothing -> error $ "missing card def for asset " <> show (assetCardCode a)
 
-instance ToJSON AssetAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "asset"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "asset"
-
-instance FromJSON AssetAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
+$(deriveJSON (aesonOptions $ Just "Asset") ''AssetAttrs)
 
 instance IsCard AssetAttrs where
   toCardId = unAssetId . assetId

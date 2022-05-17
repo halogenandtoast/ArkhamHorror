@@ -24,8 +24,8 @@ import Arkham.Token
 
 newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
   deriving stock Generic
-  deriving anyclass (IsScenario, HasRecord env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+  deriving anyclass IsScenario
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
 
 returnToTheDevourerBelow :: Difficulty -> ReturnToTheDevourerBelow
 returnToTheDevourerBelow difficulty =

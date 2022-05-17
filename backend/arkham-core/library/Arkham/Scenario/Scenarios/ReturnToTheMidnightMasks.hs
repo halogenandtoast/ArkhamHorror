@@ -23,8 +23,8 @@ import Arkham.Trait (Trait)
 
 newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
   deriving stock Generic
-  deriving anyclass (IsScenario, HasRecord env)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+  deriving anyclass IsScenario
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
 
 returnToTheMidnightMasks :: Difficulty -> ReturnToTheMidnightMasks
 returnToTheMidnightMasks difficulty =

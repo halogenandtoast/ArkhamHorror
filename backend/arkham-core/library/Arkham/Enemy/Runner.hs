@@ -339,7 +339,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         -- to AnyPrey and then find if there are any investigators
         -- who qualify as prey to filter
         matchingClosestLocationIds <- case (forcedTargetLocation, enemyPrey) of
-          (Just forcedTargetLocationId, _) -> error "TODO: MUST FIX"
+          (Just _forcedTargetLocationId, _) -> error "TODO: MUST FIX"
             -- map unClosestPathLocationId <$> getSetList
             --   (loc, forcedTargetLocationId, extraConnectionsMap)
           (Nothing, Bearer) -> selectList $ locationWithInvestigator $ fromJustNote "must have bearer" enemyBearer

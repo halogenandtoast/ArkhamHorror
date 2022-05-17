@@ -4,7 +4,6 @@ module Arkham.Campaign.Attrs where
 import Arkham.Prelude
 
 import Data.Aeson.TH
-import Arkham.Json
 import Arkham.PlayerCard
 import Arkham.Campaign.Runner
 import Arkham.CampaignLog

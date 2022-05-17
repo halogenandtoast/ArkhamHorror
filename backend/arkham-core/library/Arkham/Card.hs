@@ -25,6 +25,11 @@ import Arkham.Name
 import Arkham.PlayerCard
 import Arkham.SkillType
 import Arkham.Trait
+import Arkham.Token
+import {-# SOURCE #-} Arkham.Target
+import Arkham.Source
+import Arkham.Ability
+import Arkham.Message
 import qualified Data.Text as T
 
 lookupCard :: CardCode -> CardId -> Card
@@ -38,6 +43,13 @@ lookupCard cardCode cardId =
 data CardBuilder ident a = CardBuilder
   { cbCardCode :: CardCode
   , cbCardBuilder :: ident -> a
+  }
+
+data Behaviors a = Behaviors
+  { bRunMessage :: (forall m. Monad m  => Message -> a -> m a)
+  , bGetAbilities :: a -> [Ability]
+  , bGetTokenValue :: (forall m. Monad m => InvestigatorId -> TokenFace -> a -> m TokenValue)
+  , bGetModifiersFor :: (forall m. Monad m => Source -> Target -> a -> m [Modifier])
   }
 
 instance Functor (CardBuilder ident) where

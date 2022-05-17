@@ -17,7 +17,7 @@ import Arkham.Token qualified as Token
 
 newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced AssetAttrs
   deriving anyclass IsAsset
-  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theNecronomiconAdvanced :: AssetCard TheNecronomiconAdvanced
 theNecronomiconAdvanced =

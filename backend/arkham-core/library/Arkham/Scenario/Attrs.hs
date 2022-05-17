@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Scenario.Attrs
   ( module Arkham.Scenario.Attrs
   , module X
@@ -5,6 +6,7 @@ module Arkham.Scenario.Attrs
 
 import Arkham.Prelude
 
+import Data.Aeson.TH
 import Arkham.Act.Sequence
 import Arkham.Card
 import Arkham.Card.PlayerCard
@@ -64,7 +66,7 @@ data ScenarioAttrs = ScenarioAttrs
   -- for standalone
   , scenarioStoryCards :: HashMap InvestigatorId [PlayerCard]
   }
-  deriving stock (Show, Generic, Eq)
+  deriving stock (Show, Eq)
 
 cardsUnderneathAgendaDeckL :: Lens' ScenarioAttrs [Card]
 cardsUnderneathAgendaDeckL = lens scenarioCardsUnderAgendaDeck
@@ -117,12 +119,7 @@ cardsUnderScenarioReferenceL = lens scenarioCardsUnderScenarioReference
 storyCardsL :: Lens' ScenarioAttrs (HashMap InvestigatorId [PlayerCard])
 storyCardsL = lens scenarioStoryCards $ \m x -> m { scenarioStoryCards = x }
 
-instance ToJSON ScenarioAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "scenario"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "scenario"
-
-instance FromJSON ScenarioAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "scenario"
+$(deriveJSON (aesonOptions $ Just "Scenario") ''ScenarioAttrs)
 
 instance HasRecord env ScenarioAttrs where
   hasRecord _ _ = pure False

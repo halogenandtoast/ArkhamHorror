@@ -196,6 +196,14 @@ type InvestigatorRunner env
 instance InvestigatorRunner env => RunMessage env InvestigatorAttrs where
   runMessage = runInvestigatorMessage
 
+defaultInvestigatorBehaviors :: Behaviors InvestigatorAttrs
+defaultInvestigatorBehaviors = Behaviors InvestigatorAttrs
+  { ibRunMessage = runInvestigatorMessage
+  , ibGetAbilities = const []
+  , ibGetTokenValue = \_ token _ -> pure $ TokenValue token mempty
+  , ibGetModifiersFor = \_ _ _ -> pure []
+  }
+
 runInvestigatorMessage
   :: ( InvestigatorRunner env
      , MonadReader env m

@@ -82,3 +82,68 @@ applyCostModifier (Costs (x : xs)) modifier@(ActionCostSetToModifier _) =
     ActionCost _ -> Costs (applyCostModifier x modifier : xs)
     other -> other <> applyCostModifier (Costs xs) modifier
 applyCostModifier cost _ = cost
+
+defaultAbilityWindow :: AbilityType -> WindowMatcher
+defaultAbilityWindow = \case
+  FastAbility _ -> FastPlayerWindow
+  ActionAbility {} -> DuringTurn You
+  ActionAbilityWithBefore {} -> DuringTurn You
+  ActionAbilityWithSkill {} -> DuringTurn You
+  ForcedAbility window -> window
+  SilentForcedAbility window -> window
+  ForcedAbilityWithCost window _ -> window
+  ReactionAbility window _ -> window
+  AbilityEffect _ -> AnyWindow
+  Objective aType -> defaultAbilityWindow aType
+
+isFastAbilityType :: AbilityType -> Bool
+isFastAbilityType = \case
+  FastAbility {} -> True
+  ForcedAbility {} -> False
+  SilentForcedAbility {} -> False
+  ForcedAbilityWithCost {} -> False
+  Objective aType -> go aType
+  ReactionAbility {} -> False
+  ActionAbility {} -> False
+  ActionAbilityWithSkill {} -> False
+  ActionAbilityWithBefore {} -> False
+  AbilityEffect {} -> False
+
+isForcedAbilityType :: AbilityType -> Bool
+isForcedAbilityType = \case
+  SilentForcedAbility {} -> True
+  ForcedAbility {} -> True
+  ForcedAbilityWithCost {} -> True
+  Objective aType -> go aType
+  FastAbility {} -> False
+  ReactionAbility {} -> False
+  ActionAbility {} -> False
+  ActionAbilityWithSkill {} -> False
+  ActionAbilityWithBefore {} -> False
+  AbilityEffect {} -> False
+
+isSilentForcedAbilityType :: AbilityType -> Bool
+isSilentForcedAbilityType = \case
+  SilentForcedAbility {} -> True
+  ForcedAbility {} -> False
+  ForcedAbilityWithCost {} -> False
+  Objective aType -> go aType
+  FastAbility {} -> False
+  ReactionAbility {} -> False
+  ActionAbility {} -> False
+  ActionAbilityWithSkill {} -> False
+  ActionAbilityWithBefore {} -> False
+  AbilityEffect {} -> False
+
+defaultAbilityLimit :: AbilityType -> AbilityLimit
+defaultAbilityLimit = \case
+  ForcedAbility _ -> GroupLimit PerWindow 1
+  SilentForcedAbility _ -> GroupLimit PerWindow 1
+  ForcedAbilityWithCost _ _ -> GroupLimit PerWindow 1
+  ReactionAbility _ _ -> PlayerLimit PerWindow 1
+  FastAbility _ -> NoLimit
+  ActionAbility _ _ -> NoLimit
+  ActionAbilityWithBefore {} -> NoLimit
+  ActionAbilityWithSkill {} -> NoLimit
+  AbilityEffect _ -> NoLimit
+  Objective aType -> defaultAbilityLimit aType

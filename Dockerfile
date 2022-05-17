@@ -24,6 +24,14 @@ RUN npm run build
 FROM fpco/stack-build:latest as dependencies
 
 ENV LC_ALL=en_US.UTF-8
+ENV TZ=UTC
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get update && \
+  apt-get upgrade -y --assume-yes && \
+  apt-get install -y --assume-yes libpq-dev postgresql && \
+  rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \
   /opt/arkham/bin \
@@ -45,6 +53,14 @@ ENV LC_ALL=en_US.UTF-8
 # API
 
 ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
+ENV TZ=UTC
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get update && \
+  apt-get upgrade -y --assume-yes && \
+  apt-get install -y --assume-yes libpq-dev postgresql && \
+  rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \
   /opt/arkham/src/backend \

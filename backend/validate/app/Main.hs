@@ -235,6 +235,7 @@ toGameVal False n = Static n
 
 normalizeCardCode :: CardCode -> CardCode
 normalizeCardCode "03076a" = "03076"
+normalizeCardCode "03221" = "03221b"
 normalizeCardCode c = c
 
 runMissing :: Maybe Text -> HashMap CardCode CardJson -> IO ()
@@ -275,6 +276,7 @@ normalizeClassSymbol c = c
 
 ignoreCardCode :: CardCode -> Bool
 ignoreCardCode "03076" = True
+ignoreCardCode "03221a" = True
 ignoreCardCode x = T.isPrefixOf "x" (unCardCode x)
 
 runValidations :: HashMap CardCode CardJson -> IO ()
@@ -381,7 +383,7 @@ runValidations cards = do
   for_ (filterTestEntities $ mapToList allEnemies) $ \(ccode, builder) -> do
     attrs <- toAttrs . builder <$> getRandom
     case lookup ccode cards of
-      Nothing -> throw $ UnknownCard ccode
+      Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
       Just CardJson {..} -> do
         let
           cardStats =

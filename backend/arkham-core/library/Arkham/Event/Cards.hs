@@ -907,6 +907,7 @@ recharge2 = (event "03197" "Recharge" 0 Mystic)
     $ AssetControlledBy (InvestigatorAt YourLocation)
     <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
     )
+  , cdLevel = 2
   }
 
 snareTrap2 :: CardDef
@@ -919,6 +920,7 @@ snareTrap2 = (event "03199" "Snare Trap" 2 Survivor)
     $ AssetIs "03199"
     <> AssetAt YourLocation
     )
+  , cdLevel = 2
   }
 
 secondWind :: CardDef

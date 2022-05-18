@@ -353,7 +353,7 @@ theExperiment = (enemy
 
 cloverClubPitBoss :: CardDef
 cloverClubPitBoss = (enemy "02078" "Clover Club Pit Boss" TheHouseAlwaysWins 1)
-  { cdCardTraits = setFromList [Criminal, Elite]
+  { cdCardTraits = setFromList [Humanoid, Criminal, Elite]
   , cdKeywords = setFromList [Keyword.Hunter]
   , cdVictoryPoints = Just 1
   }

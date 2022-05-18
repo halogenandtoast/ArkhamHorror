@@ -58,20 +58,6 @@ library:
     - pretty-simple
     - template-haskell
 
-executables:
-  validate:
-    main: Main.hs
-    source-dirs: validate
-    ghc-options: -threaded -O2 "-with-rtsopts=-N -T -I0"
-    other-modules: []
-    dependencies:
-      - classy-prelude
-      - arkham-core
-      - aeson
-      - directory
-      - text
-      - MonadRandom
-
 tests:
   spec:
     main: Spec.hs

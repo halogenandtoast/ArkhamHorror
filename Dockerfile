@@ -110,4 +110,5 @@ ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
 EXPOSE 3000
 
 WORKDIR /opt/arkham/src/backend/arkham-api
+ENV PORT ${PORT:-"3000"}
 CMD ["./start.sh"]

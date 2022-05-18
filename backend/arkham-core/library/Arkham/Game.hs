@@ -209,7 +209,7 @@ class HasGame a where
   gameL :: Lens' a Game
 
 instance HasGame Game where
-  gameL = lens id $ \_ x -> x
+  gameL = id
 
 class HasStdGen a where
   genL :: Lens' a (IORef StdGen)

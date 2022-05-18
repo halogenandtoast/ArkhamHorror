@@ -1235,7 +1235,7 @@ gareDOrsay = location "03214" "Gare d'Orsay" [Paris, Rail] APhantomOfTruth
 
 pereLachaiseCemetery :: CardDef
 pereLachaiseCemetery =
-  (location "03215" "Pére Lachaise Cemetery" [Paris] APhantomOfTruth)
+  (location "03215" "Père Lachaise Cemetery" [Paris] APhantomOfTruth)
     { cdVictoryPoints = Just 1
     }
 

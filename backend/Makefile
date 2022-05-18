@@ -22,7 +22,8 @@ core:
 	  --file-watch \
 		$(EXTRA_STACK_FLAGS)
 
+.PHONY: data
 data:
 	cd data && \
-	curl https://arkhamdb.com/api/public/cards > cards.json && \
-	curl https://arkhamdb.com/api/public/packs/ | jq ".[].code" | xargs sh -c 'for arg do mkdir $arg; curl https://arkhamdb.com/api/public/cards/$arg > $arg/cards.json; done' _
+	curl https://arkhamdb.com/api/public/cards/?encounter=1 > cards.json && \
+	curl https://arkhamdb.com/api/public/packs/ | jq ".[].code" | xargs sh -c 'for arg do mkdir $$arg; curl https://arkhamdb.com/api/public/cards/$$arg > $$arg/cards.json; done' _

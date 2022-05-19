@@ -1278,7 +1278,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (remainingActionsL .~ actionsForTurn)
       & (actionsTakenL .~ mempty)
   DiscardTopOfDeck iid n mTarget | iid == investigatorId -> do
-    let (cs, deck') = splitAt n (unDeck investigatorDeck)
+    let (cs, deck') = splitAt n (traceShowId $ unDeck investigatorDeck)
     windowMsgs <- if null deck'
       then pure <$> checkWindows
         ((`Window` Window.DeckHasNoCards iid) <$> [Timing.When, Timing.After])

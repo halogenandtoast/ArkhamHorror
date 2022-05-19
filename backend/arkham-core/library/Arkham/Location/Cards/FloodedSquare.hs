@@ -40,9 +40,9 @@ instance HasAbilities FloodedSquare where
       $ [ restrictedAbility
             attrs
             1
-            (EnemyCriteria $ EnemyExists $ NonEliteEnemy <> EnemyAt
+            (Here <> EnemyCriteria (EnemyExists $ NonEliteEnemy <> EnemyAt
               (LocationInDirection RightOf $ LocationWithId $ toId attrs)
-            )
+            ))
           $ ActionAbility Nothing
           $ ActionCost 1
         | locationRevealed attrs

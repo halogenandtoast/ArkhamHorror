@@ -2,11 +2,11 @@ module Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot where
 
 import Arkham.Prelude
 
+import Arkham.Campaigns.NightOfTheZealot.Import
 import Arkham.Campaign.Attrs
 import Arkham.Campaign.Campaigns.NightOfTheZealot
 import Arkham.Campaign.Runner
 import Arkham.CampaignId
-import Arkham.CampaignStep
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Message
@@ -21,23 +21,18 @@ returnToNightOfTheZealot difficulty =
     (CampaignId "50")
     "Return to the Night of the Zealot"
     difficulty
-    (nightOfTheZealotChaosBagContents difficulty)
+    (chaosBagContents difficulty)
 
 instance (CampaignRunner env) => RunMessage env ReturnToNightOfTheZealot where
   runMessage msg (ReturnToNightOfTheZealot nightOfTheZealot'@(NightOfTheZealot attrs@CampaignAttrs {..}))
     = case msg of
       NextCampaignStep _ -> do
-        let
-          nextStep = case campaignStep of
-            Just PrologueStep -> Just (ScenarioStep "50011")
-            Just (ScenarioStep "50011") -> Just (ScenarioStep "50025")
-            Just (ScenarioStep "50025") -> Just (ScenarioStep "50032")
-            _ -> Nothing
-        push (CampaignStep nextStep)
+        let step = returnToNextStep attrs
+        push (CampaignStep step)
         pure
           . ReturnToNightOfTheZealot
           . NightOfTheZealot
           $ attrs
-          & (stepL .~ nextStep)
+          & (stepL .~ step)
           & (completedStepsL %~ completeStep campaignStep)
       _ -> ReturnToNightOfTheZealot <$> runMessage msg nightOfTheZealot'

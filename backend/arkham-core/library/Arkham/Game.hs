@@ -43,6 +43,7 @@ import Arkham.Keyword (HasKeywords(..), Keyword)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Label qualified as L
 import Arkham.Location
+import Arkham.Enemy.Attrs (Field(..), EnemyAttrs(..))
 import Arkham.Location.Attrs (Field(..), LocationAttrs(..))
 import Arkham.LocationSymbol
 import Arkham.Matcher hiding
@@ -620,7 +621,7 @@ getInvestigatorsMatching matcher = do
         <$> getSetList ()
       pure $ mostRemainingSanity == remainingSanity
     MostHorror -> \i -> do
-      horrorCount <- unHorrorCount <$> getCount i
+      let horrorCount = investigatorSanityDamage (toAttrs i)
       mostHorrorCount <- fromMaybe 0 . maximumMay . map unHorrorCount <$> getSetList ()
       pure $ mostHorrorCount == horrorCount
     NearestToEnemy enemyMatcher -> \i -> do
@@ -1537,12 +1538,19 @@ instance HasGame env => Projection env LocationAttrs where
     case f of
       LocationClues -> pure . locationClues $ toAttrs l
 
+instance HasGame env => Projection env EnemyAttrs where
+  field f eid = do
+    e <- getEnemy eid
+    case f of
+      EnemyDoom -> pure . enemyDoom $ toAttrs e
+
 instance HasGame env => Projection env InvestigatorAttrs where
   field f iid = do
     i <- getInvestigator iid
     case f of
       InvestigatorRemainingActions -> pure . investigatorRemainingActions $ toAttrs i
       InvestigatorLocation -> pure . Just . investigatorLocation $ toAttrs i
+      InvestigatorHorror -> pure . investigatorSanityDamage $ toAttrs i
 
 instance HasGame env => Query AssetMatcher env where
   select = fmap (setFromList . map toId) . getAssetsMatching
@@ -1817,7 +1825,6 @@ instance
   , HasCount DiscardCount env InvestigatorId
   , HasCount DoomCount env ()
   , HasCount DoomCount env EnemyId
-  , HasSet EnemyId env Trait
   , HasSet Trait env LocationId
   , HasTokenValue env InvestigatorId
   , HasId LocationId env InvestigatorId

@@ -2,6 +2,7 @@ module Arkham.Enemy.Attrs where
 
 import Arkham.Prelude
 
+import Arkham.Projection
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.AssetId
@@ -38,6 +39,9 @@ import Arkham.Window qualified as Window
 class IsEnemy a
 
 type EnemyCard a = CardBuilder EnemyId a
+
+data instance Field EnemyAttrs :: Type -> Type where
+  EnemyDoom :: Field EnemyAttrs Int
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId

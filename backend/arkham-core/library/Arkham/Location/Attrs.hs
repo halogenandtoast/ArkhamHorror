@@ -22,7 +22,6 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Data.Kind
 
 class IsLocation a
 

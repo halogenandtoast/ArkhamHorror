@@ -2,6 +2,7 @@ module Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks where
 
 import Arkham.Prelude
 
+import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
@@ -13,13 +14,15 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher (EnemyMatcher)
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Query
+import Arkham.Enemy.Attrs
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheMidnightMasks
-import Arkham.Trait (Trait)
 
 newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
   deriving stock Generic
@@ -39,7 +42,7 @@ returnToTheMidnightMasks difficulty =
         , scenarioDecks = mapFromList [(CultistDeck, [])]
         }
 
-instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), HasCount DoomCount env EnemyId, HasSet EnemyId env Trait) => HasTokenValue env ReturnToTheMidnightMasks where
+instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), Projection env EnemyAttrs, Query EnemyMatcher env) => HasTokenValue env ReturnToTheMidnightMasks where
   getTokenValue iid tokenFace (ReturnToTheMidnightMasks theMidnightMasks') =
     getTokenValue iid tokenFace theMidnightMasks'
 

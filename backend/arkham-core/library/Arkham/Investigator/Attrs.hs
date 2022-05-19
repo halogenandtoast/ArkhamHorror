@@ -30,7 +30,6 @@ import Arkham.Zone (Zone)
 import Data.HashSet qualified as HashSet
 import Data.Text qualified as T
 import Data.UUID (nil)
-import Data.Kind
 
 class IsInvestigator a
 
@@ -39,6 +38,7 @@ type InvestigatorCard a = CardBuilder () a
 data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorRemainingActions :: Field InvestigatorAttrs Int
   InvestigatorLocation :: Field InvestigatorAttrs (Maybe LocationId)
+  InvestigatorHorror :: Field InvestigatorAttrs Int
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId

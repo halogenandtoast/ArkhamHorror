@@ -362,6 +362,10 @@ library
       Arkham.CampaignId
       Arkham.CampaignLog
       Arkham.CampaignLogKey
+      Arkham.Campaigns.NightOfTheZealot.CampaignSteps
+      Arkham.Campaigns.NightOfTheZealot.ChaosBag
+      Arkham.Campaigns.NightOfTheZealot.FlavorText
+      Arkham.Campaigns.NightOfTheZealot.Import
       Arkham.Campaigns.ThePathToCarcosa.CampaignSteps
       Arkham.Campaigns.ThePathToCarcosa.ChaosBag
       Arkham.Campaigns.ThePathToCarcosa.FlavorText

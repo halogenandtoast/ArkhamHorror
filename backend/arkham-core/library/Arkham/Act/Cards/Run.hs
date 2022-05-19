@@ -10,19 +10,23 @@ import Arkham.Act.Attrs
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message hiding (Run)
+import Arkham.Message hiding ( Run )
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
-newtype Run = Run ActAttrs
+newtype Metadata = Metadata { advancingInvestigator :: Maybe InvestigatorId }
+  deriving stock (Show, Generic, Eq)
+  deriving anyclass (ToJSON, FromJSON)
+
+newtype Run = Run (ActAttrs `With` Metadata)
   deriving anyclass (IsAct, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 run :: ActCard Run
-run = act (1, A) Run Cards.run Nothing
+run = act (1, A) (Run . (`with` (Metadata Nothing))) Cards.run Nothing
 
 instance HasAbilities Run where
   getAbilities (Run x) =
@@ -31,41 +35,44 @@ instance HasAbilities Run where
     ]
 
 instance ActRunner env => RunMessage env Run where
-  runMessage msg a@(Run attrs) = case msg of
+  runMessage msg a@(Run (attrs `With` metadata)) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push (AdvanceAct (toId attrs) source AdvancedWithOther)
       -- We need to know the investigator who entered
-      a <$ push (AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther)
-    AdvanceAct aid (InvestigatorSource iid) _
-      | aid == toId attrs && onSide B attrs -> a <$ pushAll
-        (chooseOne
-            iid
-            [ Label
-              "Attempt to dodge the creature"
-              [ BeginSkillTest
-                  iid
-                  (toSource attrs)
-                  (toTarget attrs)
-                  Nothing
-                  SkillAgility
-                  3
+      pure $ Run $ attrs `with` Metadata (Just iid)
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
+      case advancingInvestigator metadata of
+        Nothing -> error "investigator should have advanced"
+        Just iid -> a <$ pushAll
+          (chooseOne
+              iid
+              [ Label
+                "Attempt to dodge the creature"
+                [ BeginSkillTest
+                    iid
+                    (toSource attrs)
+                    (toTarget attrs)
+                    Nothing
+                    SkillAgility
+                    3
+                ]
+              , Label
+                "Attempt to endure the creature's extreme heat"
+                [ BeginSkillTest
+                    iid
+                    (toSource attrs)
+                    (toTarget attrs)
+                    Nothing
+                    SkillCombat
+                    3
+                ]
               ]
-            , Label
-              "Attempt to endure the creature's extreme heat"
-              [ BeginSkillTest
-                  iid
-                  (toSource attrs)
-                  (toTarget attrs)
-                  Nothing
-                  SkillCombat
-                  3
-              ]
-            ]
-        : [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
-        )
+          : [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+          )
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} SkillAgility _
       | isSource attrs source && onSide B attrs -> a
       <$ push (SufferTrauma iid 1 0)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} SkillCombat _
       | isSource attrs source && onSide B attrs -> a
       <$ push (SufferTrauma iid 1 0)
-    _ -> Run <$> runMessage msg attrs
+    _ -> Run . (`with` metadata) <$> runMessage msg attrs

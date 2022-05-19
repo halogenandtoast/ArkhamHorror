@@ -10,6 +10,7 @@ import Arkham.Location.Cards qualified as Cards (easttownArkhamPoliceStation)
 import Arkham.Asset.Uses
 import Arkham.Classes
 import Arkham.Cost
+import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Runner
@@ -33,7 +34,7 @@ easttownArkhamPoliceStation = location
 instance HasAbilities EasttownArkhamPoliceStation where
   getAbilities (EasttownArkhamPoliceStation attrs) =
     withBaseAbilities attrs $
-      [ mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1)
+      [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
           & (abilityLimitL .~ PlayerLimit PerGame 1)
       | locationRevealed attrs
       ]

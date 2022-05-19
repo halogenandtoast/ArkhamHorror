@@ -35,7 +35,7 @@ instance HasAbilities CloverClubBar where
     [ restrictedAbility
           attrs
           1
-          (OnAct 1)
+          (OnAct 1 <> Here)
           (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
         & (abilityLimitL .~ PlayerLimit PerGame 1)
     | locationRevealed attrs

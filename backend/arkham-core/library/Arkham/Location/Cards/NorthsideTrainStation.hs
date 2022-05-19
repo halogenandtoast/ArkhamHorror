@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards (northsideTrainStation)
 import Arkham.Classes
 import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
@@ -32,7 +33,7 @@ northsideTrainStation = location
 instance HasAbilities NorthsideTrainStation where
   getAbilities (NorthsideTrainStation attrs) =
     withBaseAbilities attrs $
-      [ mkAbility attrs 1 (ActionAbility Nothing $ ActionCost 1)
+      [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
           & (abilityLimitL .~ PlayerLimit PerGame 1)
       | locationRevealed attrs
       ]

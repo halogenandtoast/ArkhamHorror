@@ -28,6 +28,8 @@ ENV TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
+
 RUN apt-get update && \
   apt-get upgrade -y --assume-yes && \
   apt-get install -y --assume-yes libpq-dev postgresql && \
@@ -56,6 +58,8 @@ ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
 ENV TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
 
 RUN apt-get update && \
   apt-get upgrade -y --assume-yes && \

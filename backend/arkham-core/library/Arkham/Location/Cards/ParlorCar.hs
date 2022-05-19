@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards (parlorCar)
 import Arkham.Classes
 import Arkham.Cost
+import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
@@ -48,7 +49,7 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env ParlorCar wher
 instance HasAbilities ParlorCar where
   getAbilities (ParlorCar attrs) =
     withBaseAbilities attrs $
-      [ mkAbility attrs 1 $ ActionAbility Nothing $ Costs
+      [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
           [ActionCost 1, ResourceCost 3]
       | locationRevealed attrs
       ]

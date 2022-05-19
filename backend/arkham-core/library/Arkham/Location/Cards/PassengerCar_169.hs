@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards (passengerCar_169)
 import Arkham.Classes
 import Arkham.Cost
+import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
@@ -49,7 +50,7 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env PassengerCar_1
 instance HasAbilities PassengerCar_169 where
   getAbilities (PassengerCar_169 x) = withBaseAbilities
     x
-    [ mkAbility x 1
+    [ restrictedAbility x 1 Here
       $ ForcedAbility
       $ Enters Timing.After You
       $ LocationWithId

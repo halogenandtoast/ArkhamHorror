@@ -8,6 +8,7 @@ module Arkham.Classes
 import Arkham.Prelude hiding (to)
 
 import Arkham.Ability
+import Arkham.Projection
 import Arkham.Action hiding (Ability)
 import Arkham.Card
 import Arkham.Card.Id
@@ -102,6 +103,17 @@ selectJust
   -> m (QueryElement a)
 selectJust matcher = fromJustNote errorNote <$> selectOne matcher
   where errorNote = "Could not find any matches for: " <> show matcher
+
+selectAgg
+  :: (MonadReader env m, Query a env, Num typ, QueryElement a ~ EntityId attrs, Projection env attrs)
+  => (typ -> typ -> typ)
+  -> Field attrs typ
+  -> a
+  -> m typ
+selectAgg f p matcher = do
+  results <- selectList matcher
+  values <- traverse (field p) results
+  pure $ foldl' f 0 values
 
 -- | Get a set aside card
 --

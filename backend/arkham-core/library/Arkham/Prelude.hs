@@ -5,6 +5,7 @@ module Arkham.Prelude
 
 import ClassyPrelude as X hiding (on, (\\))
 
+import Data.Kind as X (Type)
 import Control.Lens as X
   ( Lens'
   , Traversal'

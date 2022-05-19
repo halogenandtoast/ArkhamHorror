@@ -4,26 +4,26 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Scenarios.TheDevourerBelow.Story
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Id
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Resolution
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.TheDevourerBelow.Story
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding ( Cultist )
 
 newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
   deriving stock Generic
@@ -151,9 +151,12 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
       pure s
     ResolveToken _ Tablet iid -> do
       let horror = if isEasyStandard attrs then 0 else 1
-      monsterCount <- selectCount $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid) <> EnemyWithTrait Monster
+      isMonsterAtYourLocation <-
+        selectAny
+        $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
+        <> EnemyWithTrait Monster
       s <$ when
-        (monsterCount > 0)
+        isMonsterAtYourLocation
         (push $ InvestigatorAssignDamage
           iid
           (TokenEffectSource Tablet)
@@ -170,101 +173,22 @@ instance ScenarioRunner env => RunMessage env TheDevourerBelow where
           iid
           (CardWithType EnemyType <> CardWithTrait Monster)
         )
-    ScenarioResolution NoResolution -> do
+    ScenarioResolution r -> do
+      let
+        (resolution, record) = case r of
+          NoResolution ->
+            (noResolution, ArkhamSuccumbedToUmordhothsTerribleVengeance)
+          Resolution 1 -> (resolution1, TheRitualToSummonUmordhothWasBroken)
+          Resolution 2 -> (resolution2, TheInvestigatorsRepelledUmordoth)
+          Resolution 3 ->
+            (resolution3, TheInvestigatorsSacrificedLitaChantlerToUmordhoth)
+          _ -> error "Invalid resolution"
       leadInvestigatorId <- getLeadInvestigatorId
       s <$ push
         (chooseOne
           leadInvestigatorId
           [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                Nothing
-                [ "Too frightened to face her fate, Lita flees\
-                  \ into the night. She realizes that she has failed and Umôrdhoth’s\
-                  \ vengeance will pursue her wherever she goes. The creature’s\
-                  \ tendrils spread throughout the city of Arkham, searching for\
-                  \ her. It lurks in the darkness of every corner, tugging at the seams\
-                  \ of reality. But Lita is nowhere to be found, so the creature dwells\
-                  \ in the shadows to this day, searching…killing"
-                ]
-              , Record ArkhamSuccumbedToUmordhothsTerribleVengeance
-              ]
-            <> [EndOfGame Nothing]
-          ]
-        )
-    ScenarioResolution (Resolution 1) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      s <$ push
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                (Just "Resolution 1")
-                [ "You have managed to prevent the cult from\
-                  \ summoning its master. Although you’re unsure what would\
-                  \ have happened had the cult succeeded, you’re relieved that—at\
-                  \ least for the time being—Arkham is safe. You capture as many\
-                  \ cultists as you can find, but very few townspeople believe your\
-                  \ tale. Perhaps it was all in your head, after all."
-                ]
-              , Record TheRitualToSummonUmordhothWasBroken
-              ]
-            <> [EndOfGame Nothing]
-          ]
-        )
-    ScenarioResolution (Resolution 2) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      s <$ push
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                (Just "Resolution 2")
-                [ "Through force of arms and strength of will,\
-                  \ you are somehow able to harm Umôrdhoth enough to send it\
-                  \ reeling back to the dimension from which it emerged. Warmth\
-                  \ and light return to the woods as the void-like mass is sucked in\
-                  \ upon itself, vanishing in an instant. You aren’t sure if a being\
-                  \ such as this can be killed, but for the time being it seems to have\
-                  \ retreated. As their master vanishes, the ghouls nearby climb\
-                  \ into the open pit below, fleeing with terrible cries and shrieks.\
-                  \ You have stopped an evil plot, but the fight has taken its toll on\
-                  \ your body and mind. Worse, you can’t help but feel insignificant\
-                  \ in the face of the world’s mysteries. What other terrors exist in\
-                  \ the deep, dark corners of reality?"
-                ]
-              , Record TheInvestigatorsRepelledUmordoth
-              ]
-            <> [EndOfGame Nothing]
-          ]
-        )
-    ScenarioResolution (Resolution 3) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      s <$ push
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                (Just "Resolution 3")
-                [ "In the face of this horror, you don’t believe there\
-                  \ is anything you can do to stop it. You have but one hope if you\
-                  \ are to survive. You turn on Lita and throw her at the terrible\
-                  \ monstrosity, watching in dread as its swirling void-like mass\
-                  \ consumes her. She cries out in torment as the life is sucked from\
-                  \ her body. “Umôrdhoth…Umôrdhoth…” the cultists chant.\
-                  \ Lita Chantler vanishes without a trace. For a moment, you\
-                  \ fear that the creature will now turn on you, but you hear one of\
-                  \ the cultists say, “Umôrdhoth is a just god who claims only the\
-                  \ guilty and the dead. Go, and you shall be spared.” The swirling\
-                  \ mass vanishes, and warmth and light return to the woods. The\
-                  \ cultists slink away, leaving you alive. Lita’s last moments are\
-                  \ forever etched upon your memory."
-                ]
-              , Record TheInvestigatorsSacrificedLitaChantlerToUmordhoth
-              ]
+            $ [Continue "Continue", resolution, Record record]
             <> [EndOfGame Nothing]
           ]
         )

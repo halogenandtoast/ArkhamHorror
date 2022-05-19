@@ -10,6 +10,8 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Decks
 import Arkham.Difficulty
+import Arkham.Enemy.Attrs
+import Arkham.Projection
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
@@ -69,9 +71,9 @@ instance
   ( HasCount DiscardCount env InvestigatorId
   , HasCount DoomCount env ()
   , HasCount DoomCount env EnemyId
+  , Projection env EnemyAttrs
   , HasCount Shroud env LocationId
   , Query EnemyMatcher env
-  , HasSet EnemyId env Trait
   , HasSet EnemyId env LocationId
   , HasSet LocationId env [Trait]
   , HasSet LocationId env ()

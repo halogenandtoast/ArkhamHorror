@@ -19,6 +19,7 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Query
 import Arkham.SkillType
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 
@@ -78,7 +79,7 @@ instance LocationRunner env => RunMessage env PassengerCar_170 where
               [ CreatePayAbilityCostEffect
                   (abilityEffect attrs cost)
                   (toSource attrs)
-                  (toTarget attrs)
+                  (InvestigatorTarget iid)
                   []
               ]
             ]

@@ -996,6 +996,7 @@ library
       Arkham.ScenarioLogKey
       Arkham.Scenarios.APhantomOfTruth.Helpers
       Arkham.Scenarios.APhantomOfTruth.Story
+      Arkham.Scenarios.BloodOnTheAltar.Story
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.CurtainCall.Helpers
@@ -1005,6 +1006,7 @@ library
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
       Arkham.Scenarios.TheGathering.Story
       Arkham.Scenarios.TheLastKing.Story
+      Arkham.Scenarios.TheMidnightMasks.Story
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers
       Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers

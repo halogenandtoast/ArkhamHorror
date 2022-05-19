@@ -8,7 +8,7 @@ import Arkham.CampaignStep
 
 nextStep :: CampaignAttrs -> Maybe CampaignStep
 nextStep a = case campaignStep a of
-  Just PrologueStep -> error "must be handled"
+  Just PrologueStep -> error $ "Unhandled campaign step: " <> show a
   Just (ScenarioStep "02041") ->
     if ScenarioStep "02062" `elem` campaignCompletedSteps a
       then Just $ InterludeStep 1 Nothing

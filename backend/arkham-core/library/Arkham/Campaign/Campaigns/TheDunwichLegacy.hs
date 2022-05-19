@@ -172,8 +172,8 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
         <> addPowderOfIbnGhazi
         <> [NextCampaignStep Nothing]
         )
-    NextCampaignStep _ -> do
-      let step = nextStep attrs
+    NextCampaignStep mOverrideStep -> do
+      let step = mOverrideStep <|> nextStep attrs
       pushAll [CampaignStep step]
       pure
         . TheDunwichLegacy

@@ -366,6 +366,10 @@ library
       Arkham.Campaigns.NightOfTheZealot.ChaosBag
       Arkham.Campaigns.NightOfTheZealot.FlavorText
       Arkham.Campaigns.NightOfTheZealot.Import
+      Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
+      Arkham.Campaigns.TheDunwichLegacy.ChaosBag
+      Arkham.Campaigns.TheDunwichLegacy.FlavorText
+      Arkham.Campaigns.TheDunwichLegacy.Import
       Arkham.Campaigns.ThePathToCarcosa.CampaignSteps
       Arkham.Campaigns.ThePathToCarcosa.ChaosBag
       Arkham.Campaigns.ThePathToCarcosa.FlavorText

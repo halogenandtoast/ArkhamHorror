@@ -22,4 +22,3 @@ returnToNextStep a = case campaignStep a of
   Just (ScenarioStep "50025") -> Just (UpgradeDeckStep $ ScenarioStep "50032")
   Just (UpgradeDeckStep nextStep') -> Just nextStep'
   _ -> Nothing
-

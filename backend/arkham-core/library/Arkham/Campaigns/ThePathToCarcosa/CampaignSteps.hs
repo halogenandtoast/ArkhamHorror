@@ -12,4 +12,5 @@ nextStep a = case campaignStep a of
   Just (ScenarioStep "03061") -> Just (UpgradeDeckStep $ ScenarioStep "03120")
   Just (InterludeStep 1 _) -> Just (UpgradeDeckStep $ ScenarioStep "03120")
   Just (ScenarioStep "03120") -> Just (UpgradeDeckStep $ ScenarioStep "03159")
+  Just (UpgradeDeckStep nextStep') -> Just nextStep'
   _ -> Nothing

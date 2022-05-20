@@ -43,6 +43,8 @@ import Arkham.Keyword (HasKeywords(..), Keyword)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Label qualified as L
 import Arkham.Location
+import Arkham.Act.Sequence (actStep)
+import Arkham.Act.Attrs (Field(..), ActAttrs(..))
 import Arkham.Enemy.Attrs (Field(..), EnemyAttrs(..))
 import Arkham.Location.Attrs (Field(..), LocationAttrs(..))
 import Arkham.LocationSymbol
@@ -1537,6 +1539,12 @@ instance HasGame env => Projection env LocationAttrs where
     l <- getLocation lid
     case f of
       LocationClues -> pure . locationClues $ toAttrs l
+
+instance HasGame env => Projection env ActAttrs where
+  field f aid = do
+    l <- getAct aid
+    case f of
+      ActSequenceNumber -> pure . unActStep . actStep . actSequence $ toAttrs l
 
 instance HasGame env => Projection env EnemyAttrs where
   field f eid = do

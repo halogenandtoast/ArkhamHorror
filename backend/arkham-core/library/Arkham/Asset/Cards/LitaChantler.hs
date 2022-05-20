@@ -7,7 +7,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType
@@ -25,14 +24,15 @@ litaChantler :: AssetCard LitaChantler
 litaChantler =
   allyWith LitaChantler Cards.litaChantler (3, 3) (isStoryL .~ True)
 
-instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler where
+instance Query LocationMatcher env => HasModifiersFor env LitaChantler where
   getModifiersFor _ (InvestigatorTarget iid) (LitaChantler a@AssetAttrs {..}) =
     do
-      locationId <- getId @LocationId iid
       case assetController of
         Nothing -> pure []
         Just controllerId -> do
-          sameLocation <- (== locationId) <$> getId controllerId
+          sameLocation <- selectAny $
+            LocationWithInvestigator (InvestigatorWithId iid)
+            <> LocationWithInvestigator (InvestigatorWithId controllerId)
           pure [ toModifier a (SkillModifier SkillCombat 1) | sameLocation ]
   getModifiersFor _ _ _ = pure []
 

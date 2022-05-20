@@ -3,7 +3,6 @@ module Arkham.Projection where
 import Arkham.Prelude
 
 import Arkham.Classes.Entity
-import Data.Kind
 
 data family Field a :: Type -> Type
 

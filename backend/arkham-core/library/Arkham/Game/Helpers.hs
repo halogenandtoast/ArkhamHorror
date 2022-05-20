@@ -844,17 +844,17 @@ skillTestModifiers source target modifiers = CreateWindowModifierEffect
   (toTarget target)
 
 getJustLocationIdByName
-  :: (MonadReader env m, HasId (Maybe LocationId) env Matcher.LocationMatcher)
+  :: (MonadReader env m, Query Matcher.LocationMatcher env)
   => Name
   -> m LocationId
 getJustLocationIdByName name =
   fromJustNote ("Missing " <> show name) <$> getLocationIdByName name
 
 getLocationIdByName
-  :: (MonadReader env m, HasId (Maybe LocationId) env Matcher.LocationMatcher)
+  :: (MonadReader env m, Query Matcher.LocationMatcher env)
   => Name
   -> m (Maybe LocationId)
-getLocationIdByName name = getId matcher
+getLocationIdByName name = selectOne matcher
  where
   matcher = case (nameTitle name, nameSubtitle name) of
     (title, Just subtitle) -> Matcher.LocationWithFullTitle title subtitle

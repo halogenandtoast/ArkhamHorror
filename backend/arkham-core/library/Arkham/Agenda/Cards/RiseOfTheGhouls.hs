@@ -24,7 +24,7 @@ riseOfTheGhouls =
 
 instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
   runMessage msg a@(RiseOfTheGhouls attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs ->
       a <$ push
         (Run
           [ ShuffleEncounterDiscardBackIn

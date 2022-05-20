@@ -7,6 +7,7 @@ import Arkham.ActId
 import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Attrs as X
 import Arkham.Agenda.Sequence as X
+import Arkham.Act.Attrs (ActAttrs)
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Direction
@@ -16,6 +17,7 @@ import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message
 import Arkham.Name
 import Arkham.Query
+import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -32,6 +34,7 @@ type AgendaRunner env =
   , Query InvestigatorMatcher env
   , Query LocationMatcher env
   , Query ActMatcher env
+  , Projection env ActAttrs
   , HasCount ClueCount env InvestigatorId
   , HasCount ClueCount env LocationId
   , HasCount DiscardCount env InvestigatorId

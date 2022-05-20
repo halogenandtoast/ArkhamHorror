@@ -667,9 +667,14 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         a <$ unless
           (CannotMakeAttacksOfOpportunity `elem` modifiers')
           (push (EnemyWillAttack iid enemyId enemyDamageStrategy))
-    InvestigatorDrawEnemy iid lid eid | eid == enemyId ->
+    InvestigatorDrawEnemy iid lid eid | eid == enemyId -> do
+      modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
+      let getModifiedSpawnAt [] = enemySpawnAt
+          getModifiedSpawnAt (SpawnLocation m : _) = Just m
+          getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
+          spawnAtMatcher = getModifiedSpawnAt modifiers'
       a
-        <$ (case enemySpawnAt of
+        <$ (case spawnAtMatcher of
              Nothing -> pushAll (resolve (EnemySpawn (Just iid) lid eid))
              Just matcher -> do
                spawnAt enemyId matcher

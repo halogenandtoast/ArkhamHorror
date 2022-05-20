@@ -2,7 +2,7 @@
 require-stack-version: ">= 2.3.1"
 concurrent-tests: false
 
-resolver: lts-19.5
+resolver: lts-19.7
 
 ghc-options:
   "$locals":

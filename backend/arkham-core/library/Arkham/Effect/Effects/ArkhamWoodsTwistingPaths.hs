@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Effect.Attrs
 import Arkham.EffectMetadata
 import Arkham.Game.Helpers
-import Arkham.LocationId
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Name
@@ -26,12 +25,12 @@ arkhamWoodsTwistingPaths =
 
 instance HasModifiersFor env ArkhamWoodsTwistingPaths
 
-instance (HasId (Maybe LocationId) env LocationMatcher, HasQueue env) => RunMessage env ArkhamWoodsTwistingPaths where
+instance (Query LocationMatcher env, HasQueue env) => RunMessage env ArkhamWoodsTwistingPaths where
   runMessage msg e@(ArkhamWoodsTwistingPaths attrs) = case msg of
     PassedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget{} _ _ ->
       do
         arkhamWoodsTwistingPathsId <- getJustLocationIdByName
-          (mkFullName "Arkham Woods" "Twisting Paths")
+          ("Arkham Woods" <:> "Twisting Paths")
         let disable = DisableEffect (effectId attrs)
         e <$ when
           (lid == arkhamWoodsTwistingPathsId)
@@ -42,7 +41,7 @@ instance (HasId (Maybe LocationId) env LocationMatcher, HasQueue env) => RunMess
     FailedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget{} _ _ ->
       do
         arkhamWoodsTwistingPathsId <- getJustLocationIdByName
-          (mkFullName "Arkham Woods" "Twisting Paths")
+          ("Arkham Woods" <:> "Twisting Paths")
         e <$ when
           (lid == arkhamWoodsTwistingPathsId)
           (push $ DisableEffect $ effectId attrs)

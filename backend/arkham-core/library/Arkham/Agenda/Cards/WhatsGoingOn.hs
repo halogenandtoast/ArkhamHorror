@@ -21,11 +21,12 @@ whatsGoingOn = agenda (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 3)
 instance AgendaRunner env => RunMessage env WhatsGoingOn where
   runMessage msg a@(WhatsGoingOn attrs) = case msg of
     AdvanceAgenda aid
-      | aid == toId attrs && agendaSequence attrs == Agenda 1 B -> do
+      | aid == toId attrs && onSide B attrs -> do
         iid <- getLeadInvestigatorId
-        hasDiscardableCards <- notNull
-          <$> select (HandWith $ LengthIs $ GreaterThan $ Static 0)
-        a <$ pushAll
+        -- The lead investigator can choose the first option even if one of the
+        -- investigators has no cards in hand (but at least one does).
+        canChooseDiscardOption <- selectAny (HandWith $ LengthIs $ GreaterThan $ Static 0)
+        pushAll
           [ chooseOne iid
           $ Label
               "The lead investigator takes 2 horror"
@@ -33,8 +34,9 @@ instance AgendaRunner env => RunMessage env WhatsGoingOn where
           : [ Label
                 "Each investigator discards 1 card at random from his or her hand"
                 [AllRandomDiscard]
-            | hasDiscardableCards
+            | canChooseDiscardOption
             ]
           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
           ]
+        pure a
     _ -> WhatsGoingOn <$> runMessage msg attrs

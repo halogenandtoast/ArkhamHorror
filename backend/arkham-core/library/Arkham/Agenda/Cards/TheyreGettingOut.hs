@@ -3,6 +3,7 @@ module Arkham.Agenda.Cards.TheyreGettingOut where
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Act.Attrs (Field(..))
 import Arkham.Agenda.Attrs
 import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Agenda.Runner
@@ -13,6 +14,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
+import Arkham.Projection
 import Arkham.Resolution
 import qualified Arkham.Timing as Timing
 import Arkham.Trait
@@ -34,10 +36,10 @@ instance HasAbilities TheyreGettingOut where
 instance AgendaRunner env => RunMessage env TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs) = case msg of
     AdvanceAgenda aid
-      | aid == toId attrs && agendaSequence attrs == Agenda 3 B -> do
-        actIds <- getSet @ActId ()
+      | aid == toId attrs && onSide B attrs -> do
+        actSequence <- field ActSequenceNumber =<< selectJust AnyAct
         let
-          resolution = if any ((`elem` actIds) . ActId) ["01108", "01109"]
+          resolution = if actSequence `elem` [1, 2]
             then Resolution 3
             else NoResolution
         a <$ push (ScenarioResolution resolution)

@@ -12,12 +12,16 @@ import Arkham.Cost
 import Arkham.Id
 import Arkham.Json
 import Arkham.Name
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 
 class IsAct a
 
 type ActCard a = CardBuilder (Int, ActId) a
+
+data instance Field ActAttrs :: Type -> Type where
+  ActSequenceNumber :: Field ActAttrs Int
 
 data ActAttrs = ActAttrs
   { actId :: ActId

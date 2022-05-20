@@ -140,6 +140,7 @@ data ModifierType
   | SkillCannotBeIncreased SkillType
   | SkipMythosPhaseStep MythosPhaseStep
   | SpawnNonEliteAtConnectingInstead
+  | SpawnLocation LocationMatcher
   | StartingResources Int
   | TokenFaceModifier [TokenFace]
   | TokenValueModifier Int

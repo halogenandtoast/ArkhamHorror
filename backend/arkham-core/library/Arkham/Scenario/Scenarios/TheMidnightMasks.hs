@@ -177,7 +177,8 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
       s <$ push (ScenarioResolution $ Resolution 1)
     ScenarioResolution (Resolution n) -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      victoryDisplay <- mapSet toCardCode <$> select (VictoryDisplayCardMatch AnyCard)
+      victoryDisplay <- mapSet toCardCode
+        <$> select (VictoryDisplayCardMatch AnyCard)
       xp <- getXp
       let
         resolution = if n == 1 then resolution1 else resolution2

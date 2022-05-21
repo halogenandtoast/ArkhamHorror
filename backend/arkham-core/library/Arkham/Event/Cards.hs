@@ -122,6 +122,7 @@ allPlayerEventCards = mapFromList $ map
   , lucky
   , lucky2
   , lure1
+  , manoAMano1
   , mindOverMatter
   , mindWipe1
   , mindWipe3
@@ -472,7 +473,7 @@ emergencyAid = (event "02105" "Emergency Aid" 2 Guardian)
     [ Criteria.AssetExists
       (AssetControlledBy (InvestigatorAt YourLocation)
       <> AssetWithDamage
-      <> AssetWithTrait Ally
+      <> AllyAsset
       )
     , Criteria.InvestigatorExists
       (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
@@ -921,6 +922,18 @@ snareTrap2 = (event "03199" "Snare Trap" 2 Survivor)
     <> AssetAt YourLocation
     )
   , cdLevel = 2
+  }
+
+manoAMano1 :: CardDef
+manoAMano1 = (event "03229" "Mano a Mano" 0 Guardian)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdCardTraits = setFromList [Spirit, Bold]
+  , cdCriteria =
+    Just
+    $ Criteria.FirstAction
+    <> Criteria.EnemyCriteria (Criteria.EnemyExists EnemyEngagedWithYou)
+  , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+  , cdLevel = 1
   }
 
 secondWind :: CardDef

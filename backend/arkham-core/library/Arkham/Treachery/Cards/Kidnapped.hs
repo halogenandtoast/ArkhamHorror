@@ -65,7 +65,7 @@ instance TreacheryRunner env => RunMessage env Kidnapped where
       )
     FailedSkillTest iid _ _ (SkillTestInitiatorTarget target) _ _
       | isTarget attrs target -> do
-        allies <- selectList (AssetControlledBy You <> AssetWithTrait Ally)
+        allies <- selectList (AssetControlledBy You <> AllyAsset)
         if null allies
           then
             t <$ push

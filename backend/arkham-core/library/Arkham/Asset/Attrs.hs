@@ -12,6 +12,7 @@ import Arkham.Id
 import Arkham.Json
 import Data.Aeson.TH
 import Arkham.Name
+import Arkham.Projection
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
@@ -19,6 +20,11 @@ import Arkham.Target
 class IsAsset a
 
 type AssetCard a = CardBuilder AssetId a
+
+data instance Field AssetAttrs :: Type -> Type where
+  AssetHorror :: Field AssetAttrs Int
+  AssetDamage :: Field AssetAttrs Int
+  AssetExhausted :: Field AssetAttrs Bool
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId

@@ -7,7 +7,8 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Runner hiding (AssetDamage)
+import Arkham.Message (Message(AssetDamage))
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher hiding (EnemyEvaded)

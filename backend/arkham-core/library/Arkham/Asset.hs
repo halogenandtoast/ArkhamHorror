@@ -167,18 +167,3 @@ getRemainingAssetHealth a = case assetHealth attrs of
   Nothing -> 0
   Just n -> max 0 $ n - assetHealthDamage attrs
   where attrs = toAttrs a
-
-isStory :: Asset -> Bool
-isStory = assetIsStory . toAttrs
-
-assetEnemy :: Asset -> Maybe EnemyId
-assetEnemy = Attrs.assetEnemy . toAttrs
-
-assetLocation :: Asset -> Maybe LocationId
-assetLocation = Attrs.assetLocation . toAttrs
-
-assetOwner :: Asset -> Maybe InvestigatorId
-assetOwner = Attrs.assetOwner . toAttrs
-
-assetController :: Asset -> Maybe InvestigatorId
-assetController = Attrs.assetController . toAttrs

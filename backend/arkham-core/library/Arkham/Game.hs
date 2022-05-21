@@ -11,6 +11,7 @@ import Arkham.Action (Action, TakenAction)
 import Arkham.Action qualified as Action
 import Arkham.Agenda
 import Arkham.Asset
+import Arkham.Asset.Attrs (AssetAttrs(..), Field(..))
 import Arkham.Asset.Uses (UseType)
 import Arkham.Campaign
 import Arkham.CampaignId
@@ -50,6 +51,7 @@ import Arkham.Location.Attrs (Field(..), LocationAttrs(..))
 import Arkham.LocationSymbol
 import Arkham.Matcher hiding
   ( AssetDefeated
+  , AssetExhausted
   , Discarded
   , DuringTurn
   , EncounterCardSource
@@ -62,7 +64,7 @@ import Arkham.Matcher hiding
   , RevealLocation
   )
 import Arkham.Matcher qualified as M
-import Arkham.Message
+import Arkham.Message hiding (AssetDamage)
 import Arkham.Modifier
 import Arkham.ModifierData
 import Arkham.Name
@@ -1070,20 +1072,20 @@ getAssetsMatching matcher = do
     AssetCanLeavePlayByNormalMeans -> pure $ filter canBeDiscarded as
     AssetControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
-      pure $ filter (maybe False (`elem` iids) . assetController) as
+      pure $ filter (maybe False (`elem` iids) . assetController . toAttrs) as
     AssetAtLocation lid -> filterM (fmap (== Just lid) . getId) as
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
-    AssetNonStory -> pure $ filter (not . isStory) as
+    AssetNonStory -> pure $ filter (not . assetIsStory . toAttrs) as
     AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
     AssetCardMatch cardMatcher ->
       pure $ filter ((`cardMatch` cardMatcher) . toCard) as
     DiscardableAsset -> pure $ filter canBeDiscarded as
-    EnemyAsset eid -> pure $ filter ((== Just eid) . assetEnemy) as
+    EnemyAsset eid -> pure $ filter ((== Just eid) . assetEnemy . toAttrs) as
     AssetAt locationMatcher -> do
       locations <- map toId <$> getLocationsMatching locationMatcher
-      pure $ filter (maybe False (`elem` locations) . assetLocation) as
+      pure $ filter (maybe False (`elem` locations) . assetLocation . toAttrs) as
     AssetReady -> pure $ filter (not . isExhausted) as
-    AssetExhausted -> pure $ filter isExhausted as
+    M.AssetExhausted -> pure $ filter isExhausted as
     AssetWithoutModifier modifierType -> flip filterM as $ \a -> do
       modifiers' <- getModifiers (toSource a) (toTarget a)
       pure $ modifierType `notElem` modifiers'
@@ -1447,9 +1449,9 @@ instance HasGame env => HasId LocationId env AssetId where
   getId aid = do
     asset <- getAsset aid
     let
-      mEnemyId = assetEnemy asset
-      mLocationId = assetLocation asset
-      mOwnerId = assetOwner asset
+      mEnemyId = assetEnemy $ toAttrs asset
+      mLocationId = assetLocation $ toAttrs asset
+      mOwnerId = assetOwner $ toAttrs asset
     case (mLocationId, mEnemyId, mOwnerId) of
       (Just lid, _, _) -> pure lid
       (_, Just eid, _) -> selectJust $ LocationWithEnemy $ EnemyWithId eid
@@ -1539,6 +1541,14 @@ instance HasGame env => Projection env LocationAttrs where
     l <- getLocation lid
     case f of
       LocationClues -> pure . locationClues $ toAttrs l
+
+instance HasGame env => Projection env AssetAttrs where
+  field f aid = do
+    a <- getAsset aid
+    case f of
+      AssetDamage -> pure . assetHealthDamage $ toAttrs a
+      AssetHorror -> pure . assetSanityDamage $ toAttrs a
+      AssetExhausted -> pure . assetExhausted $ toAttrs a
 
 instance HasGame env => Projection env ActAttrs where
   field f aid = do
@@ -3537,7 +3547,7 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . skillsL %~ deleteMap skillId
   ReturnToHand iid (AssetTarget assetId) -> do
     asset <- getAsset assetId
-    if isStory asset
+    if assetIsStory $ toAttrs asset
       then g <$ push (Discard $ AssetTarget assetId)
       else do
         push $ AddToHand iid (toCard asset)

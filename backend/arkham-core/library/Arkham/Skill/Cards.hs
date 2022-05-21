@@ -62,6 +62,7 @@ allPlayerSkillCards = mapFromList $ map
   , fearless2
   , guts
   , inquiringMind
+  , inspiringPrescence
   , leadership
   , manualDexterity
   , neitherRainNorSnow
@@ -232,6 +233,16 @@ theHomeFront =
     { cdCardTraits = setFromList [Practiced, Expert]
     }
 
+resourceful :: CardDef
+resourceful = (skill
+                "03039"
+                "Resourceful"
+                [SkillIntellect, SkillCombat, SkillAgility]
+                Survivor
+              )
+  { cdCardTraits = singleton Innate
+  }
+
 sayYourPrayers :: CardDef
 sayYourPrayers = (skill
                    "03116"
@@ -296,13 +307,8 @@ runForYourLife = (skill
     ]
   }
 
-resourceful :: CardDef
-resourceful = (skill
-                "03039"
-                "Resourceful"
-                [SkillIntellect, SkillCombat, SkillAgility]
-                Survivor
-              )
+inspiringPrescence :: CardDef
+inspiringPrescence = (skill "03228" "Inspiring Prescence" [SkillWillpower, SkillIntellect, SkillCombat] Guardian)
   { cdCardTraits = singleton Innate
   }
 

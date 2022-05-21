@@ -154,6 +154,7 @@ allPlayerAssetCards = mapFromList $ map
   , fireAxe
   , fireExtinguisher1
   , firstAid
+  , firstAid3
   , flashlight
   , forbiddenKnowledge
   , fortyFiveAutomatic
@@ -1683,6 +1684,13 @@ madameLabranche =
     , cdUnique = True
     , cdSlots = [AllySlot]
     }
+
+firstAid3 :: CardDef
+firstAid3 = (asset "03230" "First Aid" 2 Guardian)
+  { cdSkills = [SkillWillpower, SkillWillpower]
+  , cdCardTraits = setFromList [Talent, Science]
+  , cdUses = Uses Supply 4
+  }
 
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker

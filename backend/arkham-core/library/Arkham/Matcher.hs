@@ -132,6 +132,10 @@ preyWith (Prey m1) m2 = Prey $ m1 <> m2
 preyWith (OnlyPrey m1) m2 = OnlyPrey $ m1 <> m2
 preyWith Bearer _ = Bearer
 
+pattern AllyAsset :: AssetMatcher
+pattern AllyAsset <- AssetWithTrait Ally where
+  AllyAsset = AssetWithTrait Ally
+
 data AssetMatcher
   = AssetWithTitle Text
   | AssetWithFullTitle Text Text

@@ -213,6 +213,7 @@ library
       Arkham.Asset.Cards.FireAxe
       Arkham.Asset.Cards.FireExtinguisher1
       Arkham.Asset.Cards.FirstAid
+      Arkham.Asset.Cards.FirstAid3
       Arkham.Asset.Cards.FishingNet
       Arkham.Asset.Cards.Flashlight
       Arkham.Asset.Cards.ForbiddenKnowledge
@@ -657,6 +658,7 @@ library
       Arkham.Event.Cards.Lucky
       Arkham.Event.Cards.Lucky2
       Arkham.Event.Cards.Lure1
+      Arkham.Event.Cards.ManoAMano1
       Arkham.Event.Cards.MindOverMatter
       Arkham.Event.Cards.MindWipe1
       Arkham.Event.Cards.MindWipe3
@@ -1022,6 +1024,7 @@ library
       Arkham.Skill.Cards.Fearless2
       Arkham.Skill.Cards.Guts
       Arkham.Skill.Cards.InquiringMind
+      Arkham.Skill.Cards.InspiringPrescence
       Arkham.Skill.Cards.Leadership
       Arkham.Skill.Cards.ManualDexterity
       Arkham.Skill.Cards.NeitherRainNorSnow

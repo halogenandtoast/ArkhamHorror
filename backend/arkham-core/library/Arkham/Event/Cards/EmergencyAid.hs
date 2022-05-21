@@ -33,7 +33,7 @@ instance
         (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
       let investigatorTargets = map InvestigatorTarget investigatorIds
       allyTargets <- map AssetTarget <$> selectList
-        (AssetWithDamage <> AssetWithTrait Ally <> AssetOneOf
+        (AssetWithDamage <> AllyAsset <> AssetOneOf
           (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
         )
       e <$ pushAll

@@ -10,7 +10,7 @@ import Arkham.Asset.Attrs as X
 import Arkham.Asset.Helpers as X
 import Arkham.Asset.Uses as X
 import Arkham.Classes as X
-import Arkham.Message as X
+import Arkham.Message as X hiding (AssetDamage)
 
 import Arkham.Ability
 import Arkham.Card
@@ -24,6 +24,7 @@ import Arkham.Matcher
   , InvestigatorMatcher
   , LocationMatcher
   )
+import Arkham.Message qualified as Msg
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Query
@@ -109,8 +110,12 @@ instance AssetRunner env => RunMessage env AssetAttrs where
           <> [afterWindow]
       pure a
     AssetDefeated aid | aid == assetId -> a <$ push (Discard $ toTarget a)
-    AssetDamage aid _ health sanity | aid == assetId ->
+    Msg.AssetDamage aid _ health sanity | aid == assetId ->
       pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
+    HealDamage (isTarget a -> True) n ->
+      pure $ a & healthDamageL %~ max 0 . subtract n
+    HealHorror (isTarget a -> True) n ->
+      pure $ a & sanityDamageL %~ max 0 . subtract n
     When (InvestigatorResigned iid) | assetController == Just iid ->
       a <$ push (ResignWith (AssetTarget assetId))
     InvestigatorEliminated iid | assetController == Just iid ->

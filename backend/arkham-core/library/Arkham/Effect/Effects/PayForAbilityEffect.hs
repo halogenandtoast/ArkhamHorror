@@ -239,7 +239,7 @@ instance
               ]
             )
         DiscardCost target -> do
-          push (Discard target)
+          pushAll [DiscardedCost target, Discard target]
           withPayment $ DiscardPayment [target]
         DiscardCardCost card -> do
           push (DiscardCard iid (toCardId card))
@@ -477,6 +477,7 @@ instance
           e <$ pushAll
             ([ DisableEffect $ toId attrs
              , UseCardAbility iid source windows' abilityIndex payments
+             , ClearDiscardCosts
              ]
             <> afterWindowMsgs
             )

@@ -40,7 +40,7 @@ instance (AssetRunner env) => RunMessage env Knife where
         (SkillModifier SkillCombat 1)
       , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> a <$ pushAll
+    InDiscard _ (UseCardAbility iid source _ 2 _) | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers
         attrs
         (InvestigatorTarget iid)

@@ -312,6 +312,11 @@ inspiringPrescence = (skill "03228" "Inspiring Prescence" [SkillWillpower, Skill
   { cdCardTraits = singleton Innate
   }
 
+eureka :: CardDef
+eureka = (skill "03231" "Eureka!" [SkillWillpower, SkillIntellect, SkillAgility] Seeker)
+  { cdCardTraits = singleton Innate
+  }
+
 trueUnderstanding :: CardDef
 trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)
   { cdCardTraits = setFromList [Innate]

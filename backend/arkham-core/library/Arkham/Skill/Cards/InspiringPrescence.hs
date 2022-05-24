@@ -13,7 +13,6 @@ import Arkham.Matcher hiding (AssetExhausted)
 import Arkham.Message hiding (AssetDamage)
 import Arkham.Projection
 import Arkham.Target
-import Arkham.Trait
 import Arkham.Skill.Attrs
 import Arkham.Skill.Runner
 

@@ -76,5 +76,6 @@ randomWeakness = CardDef
   , cdSlots = []
   , cdCardInHandEffects = False
   , cdCardInDiscardEffects = False
+  , cdCardInSearchEffects = False
   }
 

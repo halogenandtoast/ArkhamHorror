@@ -43,6 +43,7 @@ act cardCode name stage encounterSet = CardDef
   , cdSlots = []
   , cdCardInHandEffects = False
   , cdCardInDiscardEffects = False
+  , cdCardInSearchEffects = False
   }
 
 allActCards :: HashMap CardCode CardDef

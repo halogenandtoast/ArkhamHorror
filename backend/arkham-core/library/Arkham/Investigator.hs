@@ -19,6 +19,7 @@ import Arkham.Modifier
 import Arkham.Query
 import Arkham.Slot
 import Arkham.Source
+import Arkham.Zone (Zone)
 import Data.Aeson.TH
 
 $(buildEntity "Investigator")
@@ -262,6 +263,9 @@ deckOf = unDeck . investigatorDeck . toAttrs
 
 locationOf :: Investigator -> LocationId
 locationOf = investigatorLocation . toAttrs
+
+foundOf :: Investigator -> HashMap Zone [Card]
+foundOf = investigatorFoundCards . toAttrs
 
 getRemainingSanity
   :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Int

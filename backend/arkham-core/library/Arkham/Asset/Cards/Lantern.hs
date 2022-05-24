@@ -46,7 +46,7 @@ instance AssetRunner env => RunMessage env Lantern where
         [ skillTestModifier source (LocationTarget lid) (ShroudModifier (-1))
         , Investigate iid lid source Nothing SkillIntellect False
         ]
-    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+    InDiscard _ (UseCardAbility iid source _ 2 _) | isSource attrs source -> do
       targets <- selectListMap EnemyTarget $ EnemyAt YourLocation
       a <$ push
         (chooseOne

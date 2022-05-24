@@ -34,7 +34,7 @@ instance HasAbilities StrayCat where
 
 instance AssetRunner env => RunMessage env StrayCat where
   runMessage msg a@(StrayCat attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    InDiscard _ (UseCardAbility iid source _ 1 _) | isSource attrs source -> do
       locationId <- getId @LocationId iid
       enemies <- selectList
         (EnemyAt (LocationWithId locationId) <> NonEliteEnemy)

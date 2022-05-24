@@ -167,3 +167,6 @@ getRemainingAssetHealth a = case assetHealth attrs of
   Nothing -> 0
   Just n -> max 0 $ n - assetHealthDamage attrs
   where attrs = toAttrs a
+
+getAssetController :: Asset -> Maybe InvestigatorId
+getAssetController = assetController . toAttrs

@@ -4606,6 +4606,15 @@ runGameMessage msg g = case msg of
   Discarded (AssetTarget aid) (EncounterCard ec) ->
     pure $ g & entitiesL . assetsL %~ deleteMap aid & discardL %~ (ec :)
   Discarded (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid
+  DiscardedCost (AssetTarget aid) -> do
+    -- When discarded as a cost, the entity may still need to be in the environment to handle ability resolution
+    asset <- getAsset aid
+    case getAssetController asset of
+      Nothing -> error "Unhandled: Asset was discarded for cost but was uncontrolled"
+      Just iid -> do
+        let dEntities = fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
+        pure $ g & inDiscardEntitiesL . at iid ?~ (dEntities & assetsL . at aid ?~ asset)
+  ClearDiscardCosts -> pure $ g & inDiscardEntitiesL .~ mempty
   Discarded (TreacheryTarget aid) _ -> pure $ g & entitiesL . treacheriesL %~ deleteMap aid
   Exiled (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
@@ -4672,16 +4681,16 @@ preloadEntities g = do
          else do
            handEntities <- foldM (addEntity investigator) defaultEntities handEffectCards
            pure $ insertMap (toId investigator) handEntities entities
-    preloadDiscardEntities entities investigator = do
-      let discardEffectCards = filter (cdCardInDiscardEffects . toCardDef) $ map PlayerCard $ discardOf investigator
-      if null discardEffectCards
-         then pure entities
-         else do
-           discardEntities <- foldM (addEntity investigator ) defaultEntities discardEffectCards
-           pure $ insertMap (toId investigator) discardEntities entities
+    -- preloadDiscardEntities entities investigator = do
+    --   let discardEffectCards = filter (cdCardInDiscardEffects . toCardDef) $ map PlayerCard $ discardOf investigator
+    --   if null discardEffectCards
+    --      then pure entities
+    --      else do
+    --        discardEntities <- foldM (addEntity investigator ) defaultEntities discardEffectCards
+    --        pure $ insertMap (toId investigator) discardEntities entities
   handEntities <- foldM preloadHandEntities mempty investigators
-  discardEntities <- foldM preloadDiscardEntities mempty investigators
-  pure $ g { gameInHandEntities = handEntities, gameInDiscardEntities = discardEntities }
+  -- discardEntities <- foldM preloadDiscardEntities mempty investigators
+  pure $ g { gameInHandEntities = handEntities }
 
 instance (HasQueue env, HasGame env) => RunMessage env Game where
   runMessage msg g = do

@@ -39,7 +39,7 @@ instance HasAbilities BeatCop where
 
 instance AssetRunner env => RunMessage env BeatCop where
   runMessage msg a@(BeatCop attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    InDiscard _ (UseCardAbility iid source _ 1 _) | isSource attrs source -> do
       enemies <- selectList (EnemyAt YourLocation)
       a <$ push
         (chooseOrRunOne

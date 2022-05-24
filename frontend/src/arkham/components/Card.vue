@@ -81,8 +81,12 @@ export default defineComponent({
     const cardAction = computed(() =>  choices.value.findIndex(canInteract))
 
     function abilityLabel(idx: number) {
+      console.log()
       const label = choices.value[idx].tag === 'Run'
-        ? choices.value[idx].contents[0].contents[1].type.contents[0]
+        ? ( choices.value[idx].contents[0].contents[1].type.contents[0].tag === 'AmongSearchedCards'
+            ? null
+            : choices.value[idx].contents[0].contents[1].type.contents[0]
+          )
         : choices.value[idx].contents[1].type.contents[0]
       if (label) {
         return typeof label === "string" ? label : label.contents
@@ -160,5 +164,10 @@ export default defineComponent({
   color: #fff;
   border-radius: 4px;
   border: 1px solid #ff00ff;
+}
+
+.card-container {
+  display: flex;
+  flex-direction: column;
 }
 </style>

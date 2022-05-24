@@ -66,6 +66,7 @@ data CardDef = CardDef
   , cdSlots :: [SlotType]
   , cdCardInHandEffects :: Bool
   , cdCardInDiscardEffects :: Bool
+  , cdCardInSearchEffects :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (Hashable)
@@ -157,4 +158,5 @@ testCardDef cardType cardCode =
     , cdSlots = []
     , cdCardInHandEffects = False
     , cdCardInDiscardEffects = False
+    , cdCardInSearchEffects = False
     }

@@ -54,6 +54,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdSlots = []
   , cdCardInHandEffects = False
   , cdCardInDiscardEffects = False
+  , cdCardInSearchEffects = False
   }
 
 weakness :: CardCode -> Name -> CardDef

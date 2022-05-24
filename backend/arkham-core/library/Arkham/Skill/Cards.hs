@@ -48,6 +48,7 @@ skill cardCode name skills classSymbol = CardDef
   , cdSlots = []
   , cdCardInHandEffects = False
   , cdCardInDiscardEffects = False
+  , cdCardInSearchEffects = False
   }
 
 allPlayerSkillCards :: HashMap CardCode CardDef

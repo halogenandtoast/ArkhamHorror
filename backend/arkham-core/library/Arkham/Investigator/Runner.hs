@@ -444,6 +444,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       EncounterCard _ -> pure $ a & handL %~ filter ((/= cardId) . toCardId) -- TODO: This should discard to the encounter discard
   RemoveCardFromHand iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
+  RemoveCardFromSearch iid cardId | iid == investigatorId ->
+    pure $ a & foundCardsL %~ HashMap.map (filter ((/= cardId) . toCardId))
   ShuffleIntoDeck iid (TreacheryTarget tid) | iid == investigatorId ->
     pure $ a & treacheriesL %~ deleteSet tid
   ShuffleIntoDeck iid (AssetTarget aid) | iid == investigatorId -> do
@@ -1829,25 +1831,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             )
         ReturnCards -> pure ()
 
-      let
-        deckCards = mapMaybe (preview _PlayerCard)
-          $ findWithDefault [] Zone.FromDeck foundCards
-
-      unless
-        (null deckCards)
-        do
-          let window = Window Timing.When (Window.AmongSearchedCards iid)
-          actions <- filterM
-            (windowMatches iid source window . abilityWindow)
-            =<< asks getAbilities
-          -- TODO: This is for astounding revelation and only one research action is possible
-          -- so we are able to short circuit here, but we may have additional cards in the
-          -- future so we may want to make this more versatile
-          unless (null actions) $ push
-            (chooseOne iid
-            $ map (($ [window]) . UseAbility iid) actions
-            <> [Continue "Skip playing fast cards or using reactions!!!"]
-            )
+      push $ CheckWindow [iid] [Window Timing.When (Window.AmongSearchedCards iid)]
       pure $ a & (deckL .~ Deck deck) & (foundCardsL .~ foundCards)
   RemoveFromDiscard iid cardId | iid == investigatorId ->
     pure $ a & discardL %~ filter ((/= cardId) . toCardId)

@@ -331,6 +331,7 @@ data Message
   | HuntersMove
   | HunterMove EnemyId
   | InDiscard InvestigatorId Message
+  | InSearch Message
   | InHand InvestigatorId Message
   | InitDeck InvestigatorId (Deck PlayerCard) -- used to initialize the deck for the campaign
   | UpgradeDeck InvestigatorId (Deck PlayerCard) -- used to upgrade deck during campaign
@@ -453,6 +454,7 @@ data Message
   | RemoveAllDoom
   | RemoveCampaignCardFromDeck InvestigatorId CardCode
   | RemoveCardFromHand InvestigatorId CardId
+  | RemoveCardFromSearch InvestigatorId CardId
   | RemoveClues Target Int
   | RemoveDiscardFromGame InvestigatorId
   | RemoveDoom Target Int

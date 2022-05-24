@@ -102,7 +102,7 @@ import Data.Monoid (First(..))
 import Data.Sequence qualified as Seq
 import Data.These
 import Data.These.Lens
-import Control.Lens (each, itraverseOf, itraversed)
+import Control.Lens (each, itraverseOf, itraversed, set)
 import Data.UUID (nil)
 import Safe (headNote)
 import System.Environment
@@ -173,6 +173,7 @@ data Game = Game
   , gameEncounterDiscardEntities :: Entities
   , gameInHandEntities :: HashMap InvestigatorId Entities
   , gameInDiscardEntities :: HashMap InvestigatorId Entities
+  , gameInSearchEntities :: Entities
   , gameEnemiesInVoid :: EntityMap Enemy
   , -- Player Details
     gamePlayerCount :: Int -- used for determining if game should start
@@ -277,6 +278,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameEncounterDiscardEntities = defaultEntities
       , gameInHandEntities = mempty
       , gameInDiscardEntities = mempty
+      , gameInSearchEntities = defaultEntities
       , gameEnemiesInVoid = mempty
       , gameActiveInvestigatorId = initialInvestigatorId
       , gameTurnPlayerInvestigatorId = Nothing
@@ -1037,7 +1039,7 @@ getLocationsMatching = \case
     targets <- map AccessibleLocationId <$> getSetList matcher
     locations <- toList . view (entitiesL . locationsL) <$> getGame
     filterM
-      (fmap (\set -> all (`member` set) targets) . getSet . toId)
+      (fmap (\locationSet -> all (`member` locationSet) targets) . getSet . toId)
       locations
   -- TODO: to lazy to do these right now
   LocationWithResources _ -> pure []
@@ -2999,7 +3001,7 @@ instance {-# OVERLAPPABLE #-} HasGame env => HasAbilities env where
       agendaAbilities <- concatMap getAbilities
         <$> filterM unblanked (toList $ g ^. entitiesL . agendasL)
       eventAbilities <- concatMap getAbilities
-        <$> filterM unblanked (toList $ g ^. entitiesL . eventsL)
+        <$> filterM unblanked (toList (g ^. entitiesL . eventsL) <> toList (g ^. inSearchEntitiesL . eventsL))
       effectAbilities <- concatMap getAbilities
         <$> filterM unblanked (toList $ g ^. entitiesL . effectsL)
       investigatorAbilities <- concatMap getAbilities
@@ -3868,13 +3870,13 @@ runGameMessage msg g = case msg of
           & (entitiesL . enemiesL %~ insertMap eid enemy)
       Nothing -> error "enemy was not in void"
   Discard (SearchedCardTarget cardId) -> do
+    investigator <- getActiveInvestigator
     let
-      iid = gameActiveInvestigatorId g
       card = fromJustNote "must exist"
-        $ find ((== cardId) . toCardId) (g ^. focusedCardsL)
+        $ find ((== cardId) . toCardId) $ (g ^. focusedCardsL) <> (concat . HashMap.elems $ foundOf investigator)
     case card of
       PlayerCard pc -> do
-        push (AddToDiscard iid pc)
+        pushAll [RemoveCardFromSearch (toId investigator) cardId, AddToDiscard (toId investigator) pc]
         pure $ g & focusedCardsL %~ filter (/= card)
       _ -> error "should not be an option for other cards"
   Discard (ActTarget _) -> pure $ g & entitiesL . actsL .~ mempty
@@ -4614,6 +4616,13 @@ runGameMessage msg g = case msg of
       Just iid -> do
         let dEntities = fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
         pure $ g & inDiscardEntitiesL . at iid ?~ (dEntities & assetsL . at aid ?~ asset)
+  DiscardedCost (SearchedCardTarget cid) -> do
+    -- There is only one card, Astounding Revelation, that does this so we just hard code for now
+    iid <- toId <$> getActiveInvestigator
+    let
+      event = lookupEvent "06023" iid (EventId cid)
+      dEntities = fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
+    pure $ g & inDiscardEntitiesL . at iid ?~ (dEntities & eventsL . at (toId event) ?~ event)
   ClearDiscardCosts -> pure $ g & inDiscardEntitiesL .~ mempty
   Discarded (TreacheryTarget aid) _ -> pure $ g & entitiesL . treacheriesL %~ deleteMap aid
   Exiled (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid
@@ -4670,6 +4679,7 @@ addEntity i e card = case card of
       pure $ e & treacheriesL %~ insertMap (toId treachery) treachery
     _ -> error "Unhandled"
 
+-- TODO: Clean this up, the found of stuff is a bit messy
 preloadEntities :: Monad m => Game -> m Game
 preloadEntities g = do
   let
@@ -4681,16 +4691,17 @@ preloadEntities g = do
          else do
            handEntities <- foldM (addEntity investigator) defaultEntities handEffectCards
            pure $ insertMap (toId investigator) handEntities entities
-    -- preloadDiscardEntities entities investigator = do
-    --   let discardEffectCards = filter (cdCardInDiscardEffects . toCardDef) $ map PlayerCard $ discardOf investigator
-    --   if null discardEffectCards
-    --      then pure entities
-    --      else do
-    --        discardEntities <- foldM (addEntity investigator ) defaultEntities discardEffectCards
-    --        pure $ insertMap (toId investigator) discardEntities entities
+  let
+    foundOfElems :: Investigator -> [Card]
+    foundOfElems = concat . HashMap.elems . foundOf
+
+    searchEffectCards :: [Card] = filter (cdCardInSearchEffects . toCardDef) $
+      ((concat . HashMap.elems $ gameFoundCards g) :: [Card])
+      <> (concatMap foundOfElems (view (entitiesL . investigatorsL) g) :: [Card])
+  active <- runReaderT getActiveInvestigator g
+  searchEntities <- foldM (addEntity active) defaultEntities searchEffectCards
   handEntities <- foldM preloadHandEntities mempty investigators
-  -- discardEntities <- foldM preloadDiscardEntities mempty investigators
-  pure $ g { gameInHandEntities = handEntities }
+  pure $ g { gameInHandEntities = handEntities, gameInSearchEntities = searchEntities }
 
 instance (HasQueue env, HasGame env) => RunMessage env Game where
   runMessage msg g = do
@@ -4702,9 +4713,10 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
       >>= traverseOf entitiesL (runMessage msg)
       >>= itraverseOf (inHandEntitiesL . itraversed) (\i e -> runMessage (InHand i msg) e)
       >>= itraverseOf (inDiscardEntitiesL . itraversed) (\i e -> runMessage (InDiscard i msg) e)
+      >>= traverseOf inSearchEntitiesL (runMessage (InSearch msg))
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= runGameMessage msg
-      >>= (\g' -> pure $ g' & enemyMovingL .~ Nothing)
+      >>= (pure . set enemyMovingL Nothing)
 
 instance (HasQueue env, HasGame env) => RunMessage env Entities where
   runMessage msg entities =

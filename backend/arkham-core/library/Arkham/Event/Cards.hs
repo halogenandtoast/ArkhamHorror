@@ -52,6 +52,7 @@ event cardCode name cost classSymbol = CardDef
   , cdSlots = []
   , cdCardInHandEffects = False
   , cdCardInDiscardEffects = False
+  , cdCardInSearchEffects = False
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef
@@ -977,6 +978,7 @@ astoundingRevelation = (event "06023" "Astounding Revelation" 0 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Research]
   , cdCost = Nothing
+  , cdCardInSearchEffects = True
   }
 
 firstWatch :: CardDef

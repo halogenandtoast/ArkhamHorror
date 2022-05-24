@@ -46,8 +46,8 @@ aPhantomOfTruth difficulty =
     baseAttrs "03200" "A Phantom of Truth" difficulty
       & locationLayoutL
       ?~ [ "grandGuignol .                   canalSaintMartin ."
-         , "grandGuignol montmartre           canalSaintMartin péreLachaiseCemetery"
-         , "opéraGarnier montmartre           leMarais         péreLachaiseCemetery"
+         , "grandGuignol montmartre           canalSaintMartin pèreLachaiseCemetery"
+         , "opéraGarnier montmartre           leMarais         pèreLachaiseCemetery"
          , "opéraGarnier .                   leMarais         ."
          , "gareDOrsay   gardensOfLuxembourg notreDame        ."
          , "gareDOrsay   gardensOfLuxembourg notreDame        ."

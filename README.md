@@ -10,6 +10,26 @@ many of the rules implemented as possible.
 This is very much a work in progress. Things may break at any time, but if they do,
 please file a bug.
 
+## I just want to try this out on my computer
+
+You will need to install [Docker][docker].
+
+Afterwards you can run:
+
+```
+docker-compose up
+```
+
+And launch http://localhost:3000
+
+If you are using an nvidia card, you may run into an issue with GPG and missing publci keys, if this happens update, the Dockerfile by adding this line:
+
+```
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
+```
+
+Both before the apt-get update around line 30, as well as 58 (these are both under the `FROM fpco/stack-build:latest` stages)
+
 ## Features
 
 * Multiplayer up to 4 players
@@ -86,3 +106,5 @@ table statements and run them manually, you will want to specifically run the
 ## Copyright Disclaimer
 
 The Card Game, both literal and graphical, is copyrighted by Fantasy Flight Games. This application and the corresponding website is not produced, endorsed, supported, or affiliated with Fantasy Flight Games.
+
+[docker]: https://www.docker.com/

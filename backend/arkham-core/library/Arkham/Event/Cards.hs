@@ -143,6 +143,7 @@ allPlayerEventCards = mapFromList $ map
   , secondWind
   , seekingAnswers
   , shortcut
+  , shortcut2
   , sleightOfHand
   , snareTrap2
   , sneakAttack
@@ -934,6 +935,14 @@ manoAMano1 = (event "03229" "Mano a Mano" 0 Guardian)
     <> Criteria.EnemyCriteria (Criteria.EnemyExists EnemyEngagedWithYou)
   , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
   , cdLevel = 1
+  }
+
+shortcut2 :: CardDef
+shortcut2 = (event "03232" "Shortcut" 1 Seeker)
+  { cdSkills = [SkillWillpower, SkillIntellect, SkillAgility]
+  , cdCardTraits = setFromList [Insight, Tactic]
+  , cdFastWindow = Just $ DuringTurn You
+  , cdLevel = 2
   }
 
 secondWind :: CardDef

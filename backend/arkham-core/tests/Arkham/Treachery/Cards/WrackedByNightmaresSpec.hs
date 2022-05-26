@@ -13,7 +13,7 @@ spec = describe "Wracked by Nightmares" $ do
     investigator <- testInvestigator id
     wrackedByNightmares <- genPlayerCard Cards.wrackedByNightmares
     asset <- testAsset
-      ((Asset.exhaustedL .~ True) . (Asset.ownerL ?~ toId investigator))
+      ((Asset.exhaustedL .~ True) . (Asset.controllerL ?~ toId investigator))
     gameTest
         investigator
         [ loadDeck investigator [wrackedByNightmares]

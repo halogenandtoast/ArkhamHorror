@@ -10,7 +10,7 @@ spec :: Spec
 spec = describe "Aquinnah (1)" $ do
   it "can redirect damage to another enemy at your location" $ do
     aquinnah <- buildAsset "01082"
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     enemy1 <- testEnemy
       (\attrs ->
         attrs { Enemy.enemyHealthDamage = 2, Enemy.enemySanityDamage = 1 }
@@ -25,10 +25,10 @@ spec = describe "Aquinnah (1)" $ do
         , moveTo investigator location
         , enemyAttack investigator enemy1
         ]
-        ((enemiesL %~ insertEntity enemy1)
-        . (enemiesL %~ insertEntity enemy2)
-        . (locationsL %~ insertEntity location)
-        . (assetsL %~ insertEntity aquinnah)
+        ((entitiesL . enemiesL %~ insertEntity enemy1)
+        . (entitiesL . enemiesL %~ insertEntity enemy2)
+        . (entitiesL . locationsL %~ insertEntity location)
+        . (entitiesL . assetsL %~ insertEntity aquinnah)
         )
       $ do
           runMessages

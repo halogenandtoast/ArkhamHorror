@@ -36,7 +36,7 @@ spec = describe "\"Ashcan\" Pete" $ do
           , Exhaust (toTarget asset)
           , CheckWindow [toId ashcanPete] [fastPlayerWindow]
           ]
-          (assetsL %~ insertEntity asset)
+          (entitiesL . assetsL %~ insertEntity asset)
         $ do
             runMessages
             chooseOptionMatching
@@ -63,7 +63,7 @@ spec = describe "\"Ashcan\" Pete" $ do
           , Exhaust (toTarget duke)
           , beginSkillTest ashcanPete SkillIntellect 2
           ]
-          (assetsL %~ insertEntity duke)
+          (entitiesL . assetsL %~ insertEntity duke)
         $ do
             runMessages
             chooseOnlyOption "start skill test"

@@ -423,8 +423,10 @@ didFailSkillTestBy investigator skillType n = createMessageMatcher
     n
   )
 
-withGame :: Game -> ReaderT Game m b -> m b
-withGame = flip runReaderT
+withGame :: (MonadReader env m, HasGameRef env, MonadIO m) => ReaderT Game m b -> m b
+withGame b = do
+  g <- getTestGame
+  runReaderT b g
 
 chooseOnlyOption
   :: ( MonadFail m

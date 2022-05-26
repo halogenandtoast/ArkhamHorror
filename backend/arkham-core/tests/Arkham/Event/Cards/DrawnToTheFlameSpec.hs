@@ -15,7 +15,7 @@ spec = describe "Drawn to the flame" $ do
     -- We use "On Wings of Darkness" here to check that the Revelation effect
     -- resolves and that the clues discovered are at your location after the
     -- effect per the FAQ
-        investigator <- testInvestigator "00000"
+        investigator <- testInvestigator
           $ \attrs -> attrs { investigatorAgility = 3 }
         rivertown <- createLocation <$> genEncounterCard Cards.rivertown
         southside <- createLocation
@@ -32,9 +32,9 @@ spec = describe "Drawn to the flame" $ do
             , moveTo investigator southside
             , playEvent investigator drawnToTheFlame
             ]
-            ((eventsL %~ insertEntity drawnToTheFlame)
-            . (locationsL %~ insertEntity rivertown)
-            . (locationsL %~ insertEntity southside)
+            ((entitiesL . eventsL %~ insertEntity drawnToTheFlame)
+            . (entitiesL . locationsL %~ insertEntity rivertown)
+            . (entitiesL . locationsL %~ insertEntity southside)
             )
           $ do
               runMessages

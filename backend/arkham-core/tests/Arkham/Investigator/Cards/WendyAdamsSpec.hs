@@ -64,7 +64,7 @@ spec = describe "Wendy Adams" $ do
           , playAsset wendyAdams wendysAmulet
           , beginSkillTest wendyAdams SkillWillpower 20
           ]
-          (assetsL %~ insertEntity wendysAmulet)
+          (entitiesL . assetsL %~ insertEntity wendysAmulet)
         $ do
             runMessages
             chooseOnlyOption "start skill test"

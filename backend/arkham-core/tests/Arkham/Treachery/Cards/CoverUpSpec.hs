@@ -10,7 +10,7 @@ import Arkham.Location.Attrs qualified as Location
 spec :: Spec
 spec = describe "Cover Up" $ do
   it "starts with 3 clues on it" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     coverUp <- genPlayerCard Cards.coverUp
     gameTest
         investigator
@@ -19,11 +19,11 @@ spec = describe "Cover Up" $ do
       $ do
           runMessages
           game <- getTestGame
-          let coverUpTreachery = game ^?! treacheriesL . to toList . ix 0
+          let coverUpTreachery = game ^?! entitiesL . treacheriesL . to toList . ix 0
           getCount coverUpTreachery `shouldReturn` Just (ClueCount 3)
 
   it "allows you to remove a clue instead of discovering clues" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     coverUp <- genPlayerCard Cards.coverUp
     location <- testLocation $ Location.cluesL .~ 1
     gameTest
@@ -33,7 +33,7 @@ spec = describe "Cover Up" $ do
         , moveTo investigator location
         , DiscoverCluesAtLocation (toId investigator) (toId location) 1 Nothing
         ]
-        (locationsL %~ insertEntity location)
+        (entitiesL . locationsL %~ insertEntity location)
       $ do
           runMessages
           chooseOptionMatching
@@ -43,13 +43,13 @@ spec = describe "Cover Up" $ do
               _ -> False
             )
           game <- getTestGame
-          let coverUpTreachery = game ^?! treacheriesL . to toList . ix 0
+          let coverUpTreachery = game ^?! entitiesL . treacheriesL . to toList . ix 0
           getCount coverUpTreachery `shouldReturn` Just (ClueCount 2)
           getCount location `shouldReturn` ClueCount 1
 
   it "causes one mental trauma when the game ends if there are any clues on it"
     $ do
-        investigator <- testInvestigator "00000" id
+        investigator <- testInvestigator id
         coverUp <- genPlayerCard Cards.coverUp
         gameTest
             investigator
@@ -63,7 +63,7 @@ spec = describe "Cover Up" $ do
               getCount (toId investigator) `shouldReturn` MentalTraumaCount 1
 
   it "does not cause trauma when the game ends if there are no clues on it" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     coverUp <- genPlayerCard Cards.coverUp
     location <- testLocation $ Location.cluesL .~ 3
     gameTest
@@ -74,7 +74,7 @@ spec = describe "Cover Up" $ do
         , DiscoverCluesAtLocation (toId investigator) (toId location) 3 Nothing
         , EndOfGame Nothing
         ]
-        (locationsL %~ insertEntity location)
+        (entitiesL . locationsL %~ insertEntity location)
       $ do
           runMessages
           chooseOptionMatching
@@ -84,6 +84,6 @@ spec = describe "Cover Up" $ do
               _ -> False
             )
           game <- getTestGame
-          let coverUpTreachery = game ^?! treacheriesL . to toList . ix 0
+          let coverUpTreachery = game ^?! entitiesL . treacheriesL . to toList . ix 0
           getCount (toId coverUpTreachery) `shouldReturn` Just (ClueCount 0)
           getCount (toId investigator) `shouldReturn` MentalTraumaCount 0

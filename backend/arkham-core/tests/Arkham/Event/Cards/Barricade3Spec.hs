@@ -13,13 +13,13 @@ spec = do
         "should make the current location unenterable by non elites and non elites cannot spawn there"
       $ do
           location <- testLocation id
-          investigator <- testInvestigator "00000" id
+          investigator <- testInvestigator id
           barricade3 <- buildEvent "50004" investigator
           gameTest
               investigator
               [moveTo investigator location, playEvent investigator barricade3]
-              ((eventsL %~ insertEntity barricade3)
-              . (locationsL %~ insertEntity location)
+              ((entitiesL . eventsL %~ insertEntity barricade3)
+              . (entitiesL . locationsL %~ insertEntity location)
               )
             $ do
                 runMessages
@@ -31,8 +31,8 @@ spec = do
 
     it "should be discarded if an investigator leaves the location" $ do
       location <- testLocation id
-      investigator <- testInvestigator "00000" id
-      investigator2 <- testInvestigator "00001" id
+      investigator <- testInvestigator id
+      investigator2 <- testInvestigator id
       barricade3 <- buildEvent "01038" investigator
       gameTest
           investigator
@@ -40,9 +40,9 @@ spec = do
           , playEvent investigator barricade3
           , moveFrom investigator2 location
           ]
-          ((eventsL %~ insertEntity barricade3)
-          . (locationsL %~ insertEntity location)
-          . (investigatorsL %~ insertEntity investigator2)
+          ((entitiesL . eventsL %~ insertEntity barricade3)
+          . (entitiesL . locationsL %~ insertEntity location)
+          . (entitiesL . investigatorsL %~ insertEntity investigator2)
           )
         $ do
             runMessages

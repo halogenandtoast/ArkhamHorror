@@ -11,7 +11,7 @@ import Arkham.Location.Attrs (LocationAttrs(..))
 spec :: Spec
 spec = describe "Deduction" $ do
   it "it allows you to discover another clue if you succeed" $ do
-    investigator <- testInvestigator "00000"
+    investigator <- testInvestigator
       $ \attrs -> attrs { investigatorIntellect = 1 }
     location <- testLocation
       $ \attrs -> attrs { locationClues = 2, locationShroud = 2 }
@@ -23,7 +23,7 @@ spec = describe "Deduction" $ do
         , addToHand investigator (PlayerCard deduction)
         , investigate investigator location
         ]
-        (locationsL %~ insertEntity location)
+        (entitiesL . locationsL %~ insertEntity location)
       $ do
           runMessages
           chooseOptionMatching

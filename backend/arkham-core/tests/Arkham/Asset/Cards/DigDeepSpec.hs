@@ -11,7 +11,7 @@ spec :: Spec
 spec = describe "Dig Deep" $ do
   it "Adds 1 to willpower check for each resource spent" $ do
     digDeep <- buildAsset "01077"
-    investigator <- testInvestigator "00000" $ \attrs ->
+    investigator <- testInvestigator $ \attrs ->
       attrs {investigatorWillpower = 1, investigatorResources = 2}
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillWillpower 0
@@ -23,7 +23,7 @@ spec = describe "Dig Deep" $ do
       , playAsset investigator digDeep
       , beginSkillTest investigator SkillWillpower 3
       ]
-      (assetsL %~ insertEntity digDeep)
+      (entitiesL . assetsL %~ insertEntity digDeep)
       $ do
         runMessages
         chooseOptionMatching
@@ -53,7 +53,7 @@ spec = describe "Dig Deep" $ do
 
   it "Adds 1 to agility check for each resource spent" $ do
     digDeep <- buildAsset "01077"
-    investigator <- testInvestigator "00000" $
+    investigator <- testInvestigator $
       \attrs -> attrs {investigatorAgility = 1, investigatorResources = 2}
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillAgility 0
@@ -65,7 +65,7 @@ spec = describe "Dig Deep" $ do
       , playAsset investigator digDeep
       , beginSkillTest investigator SkillAgility 3
       ]
-      (assetsL %~ insertEntity digDeep)
+      (entitiesL . assetsL %~ insertEntity digDeep)
       $ do
         runMessages
         chooseOptionMatching

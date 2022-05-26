@@ -11,7 +11,7 @@ spec :: Spec
 spec = describe "Arcane Studies" $ do
   it "Adds 1 to willpower check for each resource spent" $ do
     arcaneStudies <- buildAsset "01062"
-    investigator <- testInvestigator "00000" $ \attrs ->
+    investigator <- testInvestigator $ \attrs ->
       attrs {investigatorWillpower = 1, investigatorResources = 2}
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillWillpower 0
@@ -23,7 +23,7 @@ spec = describe "Arcane Studies" $ do
       , playAsset investigator arcaneStudies
       , beginSkillTest investigator SkillWillpower 3
       ]
-      (assetsL %~ insertEntity arcaneStudies)
+      (entitiesL . assetsL %~ insertEntity arcaneStudies)
       $ do
         runMessages
         chooseOptionMatching
@@ -53,7 +53,7 @@ spec = describe "Arcane Studies" $ do
 
   it "Adds 1 to intellect check for each resource spent" $ do
     arcaneStudies <- buildAsset "01062"
-    investigator <- testInvestigator "00000" $ \attrs ->
+    investigator <- testInvestigator $ \attrs ->
       attrs {investigatorIntellect = 1, investigatorResources = 2}
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
@@ -65,7 +65,7 @@ spec = describe "Arcane Studies" $ do
       , playAsset investigator arcaneStudies
       , beginSkillTest investigator SkillIntellect 3
       ]
-      (assetsL %~ insertEntity arcaneStudies)
+      (entitiesL . assetsL %~ insertEntity arcaneStudies)
       $ do
         runMessages
         chooseOptionMatching

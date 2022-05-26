@@ -11,7 +11,7 @@ spec :: Spec
 spec = do
   describe "Cunning Distraction" $ do
     it "Evades enemies engaged with you" $ do
-      investigator <- testInvestigator "00000" id
+      investigator <- testInvestigator id
       location <- testLocation id
       enemy <- testEnemy id
       cunningDistraction <- buildEvent "01078" investigator
@@ -21,9 +21,9 @@ spec = do
           , moveTo investigator location
           , playEvent investigator cunningDistraction
           ]
-          ((eventsL %~ insertEntity cunningDistraction)
-          . (locationsL %~ insertEntity location)
-          . (enemiesL %~ insertEntity enemy)
+          ((entitiesL . eventsL %~ insertEntity cunningDistraction)
+          . (entitiesL . locationsL %~ insertEntity location)
+          . (entitiesL . enemiesL %~ insertEntity enemy)
           )
         $ do
             runMessages
@@ -31,8 +31,8 @@ spec = do
             evadedBy investigator enemy `shouldReturn` True
 
     it "Evades enemies engaged with other investigators at your location" $ do
-      investigator <- testInvestigator "00000" id
-      investigator2 <- testInvestigator "00001" id
+      investigator <- testInvestigator id
+      investigator2 <- testInvestigator id
       location <- testLocation id
       enemy <- testEnemy id
       cunningDistraction <- buildEvent "01078" investigator
@@ -43,9 +43,9 @@ spec = do
           , moveTo investigator location
           , playEvent investigator cunningDistraction
           ]
-          ((eventsL %~ insertEntity cunningDistraction)
-          . (locationsL %~ insertEntity location)
-          . (enemiesL %~ insertEntity enemy)
+          ((entitiesL . eventsL %~ insertEntity cunningDistraction)
+          . (entitiesL . locationsL %~ insertEntity location)
+          . (entitiesL . enemiesL %~ insertEntity enemy)
           )
         $ do
             runMessages
@@ -53,7 +53,7 @@ spec = do
             evadedBy investigator2 enemy `shouldReturn` True
 
     it "Evades aloof enemies at your location" $ do
-      investigator <- testInvestigator "00000" id
+      investigator <- testInvestigator id
       location <- testLocation id
       enemy <- testEnemyWithDef (CardDef.keywordsL .~ setFromList [Aloof]) id
       cunningDistraction <- buildEvent "01078" investigator
@@ -63,9 +63,9 @@ spec = do
           , moveTo investigator location
           , playEvent investigator cunningDistraction
           ]
-          ((eventsL %~ insertEntity cunningDistraction)
-          . (locationsL %~ insertEntity location)
-          . (enemiesL %~ insertEntity enemy)
+          ((entitiesL . eventsL %~ insertEntity cunningDistraction)
+          . (entitiesL . locationsL %~ insertEntity location)
+          . (entitiesL . enemiesL %~ insertEntity enemy)
           )
         $ do
             runMessages

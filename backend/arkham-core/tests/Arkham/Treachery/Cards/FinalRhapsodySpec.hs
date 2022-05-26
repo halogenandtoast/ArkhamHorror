@@ -9,7 +9,7 @@ import Arkham.Treachery.Cards qualified as Cards
 spec :: Spec
 spec = describe "Final Rhapsody" $ do
   it "does 1 damage per skull and autofail revealed" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     finalRhapsody <- genPlayerCard Cards.finalRhapsody
     gameTest
         investigator

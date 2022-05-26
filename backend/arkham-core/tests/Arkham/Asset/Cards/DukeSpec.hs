@@ -14,7 +14,7 @@ spec = describe "Duke" $ do
     it "uses a base combat skill of 4 and does +1 damage" $ do
       duke <- buildAsset "02014"
       enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 4))
-      investigator <- testInvestigator "00000"
+      investigator <- testInvestigator
         $ \attrs -> attrs { investigatorCombat = 1 }
       location <- testLocation id
       gameTest
@@ -24,9 +24,9 @@ spec = describe "Duke" $ do
           , enemySpawn location enemy
           , moveTo investigator location
           ]
-          ((enemiesL %~ insertEntity enemy)
-          . (locationsL %~ insertEntity location)
-          . (assetsL %~ insertEntity duke)
+          ((entitiesL . enemiesL %~ insertEntity enemy)
+          . (entitiesL . locationsL %~ insertEntity location)
+          . (entitiesL . assetsL %~ insertEntity duke)
           )
         $ do
             runMessages
@@ -41,7 +41,7 @@ spec = describe "Duke" $ do
   context "investigate action" $ do
     it "uses a base intellect skill of 4" $ do
       duke <- buildAsset "02014"
-      investigator <- testInvestigator "00000"
+      investigator <- testInvestigator
         $ \attrs -> attrs { investigatorIntellect = 1 }
       location <- testLocation
         (\attrs -> attrs { locationShroud = 4, locationClues = 1 })
@@ -51,8 +51,8 @@ spec = describe "Duke" $ do
           , moveTo investigator location
           , playAsset investigator duke
           ]
-          ((locationsL %~ insertEntity location)
-          . (assetsL %~ insertEntity duke)
+          ((entitiesL . locationsL %~ insertEntity location)
+          . (entitiesL . assetsL %~ insertEntity duke)
           )
         $ do
             runMessages
@@ -66,7 +66,7 @@ spec = describe "Duke" $ do
     it "you may move to a connecting location immediately before investigating"
       $ do
           duke <- buildAsset "02014"
-          investigator <- testInvestigator "00000"
+          investigator <- testInvestigator
             $ \attrs -> attrs { investigatorIntellect = 1 }
           (location1, location2) <- testConnectedLocations id
             $ \attrs -> attrs { locationShroud = 4, locationClues = 1 }
@@ -78,9 +78,9 @@ spec = describe "Duke" $ do
               , moveTo investigator location1
               , playAsset investigator duke
               ]
-              ((locationsL %~ insertEntity location1)
-              . (locationsL %~ insertEntity location2)
-              . (assetsL %~ insertEntity duke)
+              ((entitiesL . locationsL %~ insertEntity location1)
+              . (entitiesL . locationsL %~ insertEntity location2)
+              . (entitiesL . assetsL %~ insertEntity duke)
               )
             $ do
                 runMessages

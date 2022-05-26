@@ -11,12 +11,12 @@ import Arkham.Trait
 spec :: Spec
 spec = describe "Bandolier" $ do
   it "adds a weapon hand slot" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     bandolier <- buildAsset "02147"
     gameTest
         investigator
         [playAsset investigator bandolier]
-        (assetsL %~ insertEntity bandolier)
+        (entitiesL . assetsL %~ insertEntity bandolier)
       $ do
           runMessages
           investigator' <- updated investigator

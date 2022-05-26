@@ -11,7 +11,7 @@ import Arkham.Investigator.Attrs qualified as Investigator
 spec :: Spec
 spec = describe "Close Call (2)" $ do
   it "shuffles the enemy just evaded back into the encounter deck" $ do
-    investigator <- testInvestigator "00000" (Investigator.resourcesL .~ 2)
+    investigator <- testInvestigator (Investigator.resourcesL .~ 2)
     closeCall2 <- genPlayerCard Cards.closeCall2
     enemy <- testEnemy id
     location <- testLocation id
@@ -23,8 +23,8 @@ spec = describe "Close Call (2)" $ do
         , moveTo investigator location
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
-        ((enemiesL %~ insertEntity enemy)
-        . (locationsL %~ insertEntity location)
+        ((entitiesL . enemiesL %~ insertEntity enemy)
+        . (entitiesL . locationsL %~ insertEntity location)
         )
       $ do
           runMessages
@@ -36,10 +36,10 @@ spec = describe "Close Call (2)" $ do
             )
           game <- getTestGame
           length (game ^. encounterDeckL . to unDeck) `shouldBe` 1
-          length (game ^. enemiesL) `shouldBe` 0
+          length (game ^. entitiesL . enemiesL) `shouldBe` 0
 
   it "does not work on Elite enemies" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     closeCall2 <- genPlayerCard Cards.closeCall2
     enemy <- createEnemy <$> genEncounterCard Cards.ghoulPriest
     gameTest
@@ -47,14 +47,14 @@ spec = describe "Close Call (2)" $ do
         [ addToHand investigator (PlayerCard closeCall2)
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
-        (enemiesL %~ insertEntity enemy)
+        (entitiesL . enemiesL %~ insertEntity enemy)
       $ do
           runMessages
           queueRef <- view messageQueue
           queueRef `refShouldBe` []
 
   it "does not work on weakness enemies" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     closeCall2 <- genPlayerCard Cards.closeCall2
     enemy <- createEnemy <$> genPlayerCard Cards.mobEnforcer
     gameTest
@@ -62,7 +62,7 @@ spec = describe "Close Call (2)" $ do
         [ addToHand investigator (PlayerCard closeCall2)
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
-        (enemiesL %~ insertEntity enemy)
+        (entitiesL . enemiesL %~ insertEntity enemy)
       $ do
           runMessages
           queueRef <- view messageQueue

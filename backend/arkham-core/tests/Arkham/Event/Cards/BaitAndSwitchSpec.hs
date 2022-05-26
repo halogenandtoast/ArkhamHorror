@@ -6,11 +6,12 @@ import TestImport.Lifted
 
 import Arkham.Enemy.Attrs qualified as EnemyAttrs
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Matcher
 
 spec :: Spec
 spec = describe "Bait and Switch" $ do
   it "will move the enemy to a connected location if you succeed" $ do
-    investigator <- testInvestigator "00000"
+    investigator <- testInvestigator
       $ \attrs -> attrs { investigatorAgility = 3 }
     enemy <- testEnemy (EnemyAttrs.evadeL .~ 3)
     baitAndSwitch <- buildEvent "02034" investigator
@@ -24,10 +25,10 @@ spec = describe "Bait and Switch" $ do
         , moveTo investigator location1
         , playEvent investigator baitAndSwitch
         ]
-        ((eventsL %~ insertEntity baitAndSwitch)
-        . (enemiesL %~ insertEntity enemy)
-        . (locationsL %~ insertEntity location1)
-        . (locationsL %~ insertEntity location2)
+        ((entitiesL . eventsL %~ insertEntity baitAndSwitch)
+        . (entitiesL . enemiesL %~ insertEntity enemy)
+        . (entitiesL . locationsL %~ insertEntity location1)
+        . (entitiesL . locationsL %~ insertEntity location2)
         )
       $ do
           runMessages
@@ -38,5 +39,5 @@ spec = describe "Bait and Switch" $ do
 
           isInDiscardOf investigator baitAndSwitch `shouldReturn` True
           evadedBy investigator enemy `shouldReturn` True
-          enemyLocation <- getId @LocationId (toId enemy)
+          enemyLocation <- withGame $ selectJust $ LocationWithEnemy $ EnemyWithId (toId enemy)
           enemyLocation `shouldBe` toId location2

@@ -9,7 +9,7 @@ import Arkham.Treachery.Cards qualified as Cards
 spec :: Spec
 spec = describe "Searching for Izzie" $ do
   it "attaches to the location farthest away from you" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     (location1, location2) <- testConnectedLocations id id
     gameTest
@@ -20,8 +20,8 @@ spec = describe "Searching for Izzie" $ do
         , moveTo investigator location1
         , drawCards investigator 1
         ]
-        ((locationsL %~ insertEntity location1)
-        . (locationsL %~ insertEntity location2)
+        ((entitiesL . locationsL %~ insertEntity location1)
+        . (entitiesL . locationsL %~ insertEntity location2)
         )
       $ do
           runMessages
@@ -32,7 +32,7 @@ spec = describe "Searching for Izzie" $ do
             `shouldReturn` True
 
   it "takes 2 actions and is discarded on a successful investigation" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     location <- testLocation id
     gameTest
@@ -43,12 +43,12 @@ spec = describe "Searching for Izzie" $ do
         , drawCards investigator 1
         , moveTo investigator location
         ]
-        (locationsL %~ insertEntity location)
+        (entitiesL . locationsL %~ insertEntity location)
       $ do
           runMessages
           game <- getTestGame
           let
-            updatedSearchingForIzzie = game ^?! treacheriesL . to toList . ix 0
+            updatedSearchingForIzzie = game ^?! entitiesL . treacheriesL . to toList . ix 0
 
           [searchingForIzzieAction] <- getAbilitiesOf updatedSearchingForIzzie
 
@@ -68,7 +68,7 @@ spec = describe "Searching for Izzie" $ do
           investigator' `shouldSatisfy` hasTrauma (0, 0)
 
   it "causes 1 mental trauma if not discarded" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     location <- testLocation id
     gameTest
@@ -78,7 +78,7 @@ spec = describe "Searching for Izzie" $ do
         , drawCards investigator 1
         , EndOfGame Nothing
         ]
-        (locationsL %~ insertEntity location)
+        (entitiesL . locationsL %~ insertEntity location)
       $ do
           runMessages
           updated investigator `shouldSatisfyM` hasTrauma (0, 1)

@@ -10,7 +10,7 @@ import Arkham.Treachery.Cards qualified as Cards
 spec :: Spec
 spec = describe "Mysterious Chanting" $ do
   it "will place a token on the nearest cultist" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     cultist <- createEnemy <$> genEncounterCard Cards.acolyte
     mysteriousChanting <- genEncounterCard Cards.mysteriousChanting
     (location1, location2) <- testConnectedLocations id id
@@ -24,9 +24,9 @@ spec = describe "Mysterious Chanting" $ do
         , RemoveAllDoom
         , InvestigatorDrawEncounterCard (toId investigator)
         ]
-        ((enemiesL %~ insertEntity cultist)
-        . (locationsL %~ insertEntity location1)
-        . (locationsL %~ insertEntity location2)
+        ((entitiesL . enemiesL %~ insertEntity cultist)
+        . (entitiesL . locationsL %~ insertEntity location1)
+        . (entitiesL . locationsL %~ insertEntity location2)
         )
       $ do
           runMessages

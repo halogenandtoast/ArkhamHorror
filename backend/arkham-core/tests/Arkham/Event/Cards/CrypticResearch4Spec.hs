@@ -8,7 +8,7 @@ spec :: Spec
 spec = do
   describe "Cryptic Research 4" $ do
     it "causes the selected investigator to draw 3 cards" $ do
-      investigator <- testInvestigator "00000" id
+      investigator <- testInvestigator id
       cards <- testPlayerCards 3
       location <- testLocation id
       crypticResearch4 <- buildEvent "01043" investigator
@@ -18,8 +18,8 @@ spec = do
           , moveTo investigator location
           , playEvent investigator crypticResearch4
           ]
-          ((eventsL %~ insertEntity crypticResearch4)
-          . (locationsL %~ insertEntity location)
+          ((entitiesL . eventsL %~ insertEntity crypticResearch4)
+          . (entitiesL . locationsL %~ insertEntity location)
           )
         $ do
             runMessages
@@ -29,8 +29,8 @@ spec = do
             updated investigator `shouldSatisfyM` handIs (map PlayerCard cards)
 
     it "can select any investigator at the same location" $ do
-      investigator <- testInvestigator "00000" id
-      investigator2 <- testInvestigator "00001" id
+      investigator <- testInvestigator id
+      investigator2 <- testInvestigator id
       cards <- testPlayerCards 3
       location <- testLocation id
       crypticResearch4 <- buildEvent "01043" investigator
@@ -40,9 +40,9 @@ spec = do
           , moveAllTo location
           , playEvent investigator crypticResearch4
           ]
-          ((eventsL %~ insertEntity crypticResearch4)
-          . (locationsL %~ insertEntity location)
-          . (investigatorsL %~ insertEntity investigator2)
+          ((entitiesL . eventsL %~ insertEntity crypticResearch4)
+          . (entitiesL . locationsL %~ insertEntity location)
+          . (entitiesL . investigatorsL %~ insertEntity investigator2)
           )
         $ do
             runMessages

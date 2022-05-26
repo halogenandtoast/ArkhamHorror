@@ -51,7 +51,7 @@ spec = describe "Rex's Curse" $ do
             `shouldReturn` True
           didRunMessage `refShouldBe` True
 
-  it "is shuffled back into your deck if you fail the test" $ do
+  fit "is shuffled back into your deck if you fail the test" $ do
     investigator <- testInvestigator id
     rexsCurse <- genPlayerCard Cards.rexsCurse
     gameTest

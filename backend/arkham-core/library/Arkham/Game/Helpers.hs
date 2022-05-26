@@ -1688,11 +1688,15 @@ windowMatches iid source window' = \case
         Window t (Window.WouldFailSkillTest who) | t == whenMatcher ->
           matchWho iid who whoMatcher
         _ -> pure False
-      Matcher.SuccessResult _ -> pure False -- no pass window exists yet, add below too if added
+      Matcher.SuccessResult _ -> case window' of
+        Window t (Window.WouldPassSkillTest who) | t == whenMatcher ->
+          matchWho iid who whoMatcher
+        _ -> pure False
       Matcher.AnyResult -> case window' of
         Window Timing.When (Window.WouldFailSkillTest who) ->
           matchWho iid who whoMatcher
-        -- TODO: Add success window if it exists
+        Window Timing.When (Window.WouldPassSkillTest who) ->
+          matchWho iid who whoMatcher
         _ -> pure False
   Matcher.InitiatedSkillTest whenMatcher whoMatcher _ valueMatcher ->
     case window' of

@@ -112,6 +112,7 @@ data WindowType
   | DeckHasNoCards InvestigatorId
   | WouldDrawEncounterCard InvestigatorId
   | WouldFailSkillTest InvestigatorId
+  | WouldPassSkillTest InvestigatorId
   | WouldReady Target
   | WouldRevealChaosToken Source InvestigatorId
   | WouldTakeDamage Source Target

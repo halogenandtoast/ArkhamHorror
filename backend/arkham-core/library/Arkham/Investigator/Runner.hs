@@ -636,6 +636,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          ]
         <> windowMsgs
         )
+  Will (PassedSkillTest iid _ _ (InvestigatorTarget iid') _ _)
+    | iid == iid' && iid == investigatorId -> do
+      window <- checkWindows
+        [Window Timing.When (Window.WouldPassSkillTest iid)]
+      a <$ push window
   Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _ _)
     | iid == iid' && iid == investigatorId -> do
       window <- checkWindows

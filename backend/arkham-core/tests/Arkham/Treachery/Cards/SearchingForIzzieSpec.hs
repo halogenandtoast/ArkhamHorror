@@ -50,7 +50,7 @@ spec = describe "Searching for Izzie" $ do
           let
             updatedSearchingForIzzie = game ^?! entitiesL . treacheriesL . to toList . ix 0
 
-          [searchingForIzzieAction] <- getAbilitiesOf updatedSearchingForIzzie
+          [searchingForIzzieAction, _] <- getAbilitiesOf updatedSearchingForIzzie
 
           push $ UseAbility (toId investigator) searchingForIzzieAction []
           runMessages
@@ -81,4 +81,5 @@ spec = describe "Searching for Izzie" $ do
         (entitiesL . locationsL %~ insertEntity location)
       $ do
           runMessages
+          chooseOnlyOption "trigger searching for izzie"
           updated investigator `shouldSatisfyM` hasTrauma (0, 1)

@@ -10,19 +10,15 @@ module TestImport
 import Arkham.Prelude as X
 
 import Arkham.Ability
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Asset.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Game as X hiding (newGame, runMessages)
-import Arkham.Game qualified as Game
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Action
 import Arkham.Agenda as X
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Cards.WhatsGoingOn
 import Arkham.AgendaId
-import Arkham.Asset as X (Asset(Adaptable1'), createAsset, lookupAsset)
-import Arkham.Asset.Attrs hiding (body)
+import Arkham.Asset as X ( Asset (Adaptable1'), createAsset, lookupAsset )
+import Arkham.Asset.Attrs
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Cards.Adaptable1
 import Arkham.AssetId
 import Arkham.Card as X
@@ -31,32 +27,34 @@ import Arkham.Card.EncounterCard as X
 import Arkham.Card.PlayerCard as X
 import Arkham.ChaosBag as X
 import Arkham.ChaosBag qualified as ChaosBag
-import Arkham.ClassSymbol
 import Arkham.Classes as X hiding
-  (getCount, getId, getModifiers, getTokenValue)
+  ( getCount, getId, getModifiers, getTokenValue )
 import Arkham.Classes qualified as Arkham
 import Arkham.Cost as X
 import Arkham.Difficulty
 import Arkham.Enemy as X
 import Arkham.Enemy.Attrs
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Cards.SwarmOfRats
 import Arkham.Event as X
-import Arkham.Game as X hiding (getAsset)
+import Arkham.Game as X hiding ( getAsset, newGame, runMessages )
 import Arkham.Game qualified as Game
-import Arkham.Game.Helpers as X hiding (getCanAffordCost)
+import Arkham.Game.Helpers as X hiding ( getCanAffordCost )
 import Arkham.Game.Helpers qualified as Helpers
 import Arkham.GameValue as X
 import Arkham.Helpers as X
 import Arkham.Investigator as X
-import Arkham.Investigator.Attrs
+import Arkham.Investigator.Attrs hiding (investigator)
 import Arkham.Investigator.Attrs qualified as Investigator
 import Arkham.Investigator.Cards.JennyBarnes
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.InvestigatorId
 import Arkham.Location as X
 import Arkham.Location.Attrs
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards.Study
 import Arkham.LocationId as X
-import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)
+import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
 import Arkham.Message as X
 import Arkham.Modifier
 import Arkham.Phase
@@ -64,7 +62,7 @@ import Arkham.Query as X
 import Arkham.Scenario as X
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Attrs qualified as Scenario
-import Arkham.Scenario.Scenarios.TheGathering (TheGathering(..))
+import Arkham.Scenario.Scenarios.TheGathering ( TheGathering (..) )
 import Arkham.SkillType as X
 import Arkham.Source as X
 import Arkham.Stats as X
@@ -72,18 +70,23 @@ import Arkham.Target as X
 import Arkham.Timing qualified as Timing
 import Arkham.Token as X
 import Arkham.Window as X
-  (Window(..), WindowType(DuringTurn, FastPlayerWindow, NonFast))
-import Control.Lens as X (set, (^?!))
+  ( Window (..), WindowType (DuringTurn, FastPlayerWindow, NonFast) )
+import Control.Lens as X ( set, (^?!) )
 import Control.Monad.Fail as X
-import Control.Monad.State as X (get)
-import Control.Monad.State hiding (replicateM)
+import Control.Monad.State as X ( get )
+import Control.Monad.State hiding ( replicateM )
 import Data.HashMap.Strict qualified as HashMap
 import Data.These
 import Data.UUID.V4 as X
 import Helpers.Matchers as X
 import Helpers.Message as X
-import System.Random (StdGen, mkStdGen)
+import System.Random ( StdGen, mkStdGen )
 import Test.Hspec as X
+
+import Arkham.GameEnv
+import Arkham.LocationSymbol
+import Arkham.Agenda.Sequence
+import Arkham.Name
 
 runMessages
   :: ( MonadIO m
@@ -172,7 +175,7 @@ getTokenValue
   -> TokenFace
   -> m TokenValue
 getTokenValue a iid token =
-  toGameEnv >>= runReaderT (Arkham.getTokenValue a iid token)
+  toGameEnv >>= runReaderT (Arkham.getTokenValue iid token a)
 
 getCanAffordCost
   :: ( MonadReader env m
@@ -237,8 +240,6 @@ testScenario cardCode f =
     pure $ TheGathering' $ TheGathering $ f $ Scenario.baseAttrs
       cardCode
       name
-      []
-      []
       Easy
 
 buildEvent :: MonadRandom m => CardCode -> Investigator -> m Event
@@ -298,7 +299,7 @@ testAgenda cardCode f = pure $ cbCardBuilder
   (WhatsGoingOn'
   <$> agendaWith (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 100) f
   )
-  (AgendaId cardCode)
+  (1, AgendaId cardCode)
 
 testLocation :: MonadRandom m => (LocationAttrs -> LocationAttrs) -> m Location
 testLocation = testLocationWithDef id
@@ -320,20 +321,11 @@ testLocationWithDef defF attrsF = do
 -- or abilities
 testInvestigator
   :: MonadIO m
-  => CardCode
-  -> (InvestigatorAttrs -> InvestigatorAttrs)
+  => (InvestigatorAttrs -> InvestigatorAttrs)
   -> m Investigator
-testInvestigator cardCode f =
-  let
-    investigatorId = InvestigatorId cardCode
-    name = mkName (unCardCode cardCode)
-    stats = Stats 5 5 5 5 5 5
-  in pure $ JennyBarnes' $ JennyBarnes $ f $ Investigator.baseAttrs
-    investigatorId
-    name
-    Neutral
-    stats
-    []
+testInvestigator f = pure $ JennyBarnes' . ($ ()) . cbCardBuilder $ Investigator.investigator (JennyBarnes . f) Cards.jennyBarnes stats
+ where
+  stats = Stats 5 5 5 5 5 5
 
 testConnectedLocations
   :: MonadRandom m
@@ -536,11 +528,7 @@ newGame investigator = do
     , gameInitialSeed = seed
     , gameMode = That scenario'
     , gamePlayerCount = 1
-    , gameLocations = mempty
-    , gameEnemies = mempty
     , gameEnemiesInVoid = mempty
-    , gameAssets = mempty
-    , gameInvestigators = HashMap.singleton investigatorId investigator
     , gameActiveInvestigatorId = investigatorId
     , gameLeadInvestigatorId = investigatorId
     , gamePhase = CampaignPhase -- TODO: maybe this should be a TestPhase or something?
@@ -548,12 +536,11 @@ newGame investigator = do
     , gameDiscard = mempty
     , gameSkillTest = Nothing
     , gameSkillTestResults = Nothing
-    , gameAgendas = mempty
-    , gameTreacheries = mempty
-    , gameEvents = mempty
-    , gameEffects = mempty
-    , gameSkills = mempty
-    , gameActs = mempty
+    , gameEntities = defaultEntities { entitiesInvestigators = HashMap.singleton investigatorId investigator }
+    , gameEncounterDiscardEntities = defaultEntities
+    , gameInHandEntities = mempty
+    , gameInDiscardEntities = mempty
+    , gameInSearchEntities = defaultEntities
     , gameChaosBag = emptyChaosBag
     , gameGameState = IsActive
     , gameResignedCardCodes = mempty

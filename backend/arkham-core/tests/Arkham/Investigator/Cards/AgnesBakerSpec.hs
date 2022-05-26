@@ -20,8 +20,8 @@ spec = describe "Agnes Baker" $ do
           , moveTo agnesBaker location
           , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 1
           ]
-          ((enemiesL %~ insertEntity enemy)
-          . (locationsL %~ insertEntity location)
+          ((entitiesL . enemiesL %~ insertEntity enemy)
+          . (entitiesL . locationsL %~ insertEntity location)
           )
         $ do
             runMessages
@@ -50,7 +50,7 @@ spec = describe "Agnes Baker" $ do
           , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 2
           , beginSkillTest agnesBaker SkillIntellect 4
           ]
-          (locationsL %~ insertEntity location)
+          (entitiesL . locationsL %~ insertEntity location)
         $ do
             runMessages
             chooseOnlyOption "start skill test"

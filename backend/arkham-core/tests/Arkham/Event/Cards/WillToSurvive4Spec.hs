@@ -9,7 +9,7 @@ import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 spec :: Spec
 spec = describe "Will to Survive (4)" $ do
   it "cancels all tokens for the turn" $ do
-    investigator <- testInvestigator "00000"
+    investigator <- testInvestigator
       $ \attrs -> attrs { investigatorIntellect = 3 }
     willToSurvive4 <- buildEvent "01085" investigator
 
@@ -22,7 +22,7 @@ spec = describe "Will to Survive (4)" $ do
         , playEvent investigator willToSurvive4
         , beginSkillTest investigator SkillIntellect 3
         ]
-        (eventsL %~ insertEntity willToSurvive4)
+        (entitiesL . eventsL %~ insertEntity willToSurvive4)
       $ do
           runMessages
           chooseOnlyOption "start skill test"
@@ -30,7 +30,7 @@ spec = describe "Will to Survive (4)" $ do
           didPassTest `refShouldBe` True
 
   it "it is cancelled at the end of the turn" $ do
-    investigator <- testInvestigator "00000"
+    investigator <- testInvestigator
       $ \attrs -> attrs { investigatorIntellect = 3 }
     willToSurvive4 <- buildEvent "01085" investigator
 
@@ -44,7 +44,7 @@ spec = describe "Will to Survive (4)" $ do
         , ChooseEndTurn (toId investigator)
         , beginSkillTest investigator SkillIntellect 3
         ]
-        (eventsL %~ insertEntity willToSurvive4)
+        (entitiesL . eventsL %~ insertEntity willToSurvive4)
       $ do
           runMessages
           chooseOnlyOption "start skill test"

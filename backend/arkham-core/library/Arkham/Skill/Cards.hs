@@ -318,6 +318,12 @@ eureka = (skill "03231" "Eureka!" [SkillWillpower, SkillIntellect, SkillAgility]
   { cdCardTraits = singleton Innate
   }
 
+watchThis :: CardDef
+watchThis = (skill "03233" "\"Watch this!\"" [SkillWillpower, SkillCombat, SkillAgility] Rogue)
+  { cdCardTraits = singleton Gambit
+  , cdCommitRestrictions = [OnlyYourTest]
+  }
+
 trueUnderstanding :: CardDef
 trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)
   { cdCardTraits = setFromList [Innate]

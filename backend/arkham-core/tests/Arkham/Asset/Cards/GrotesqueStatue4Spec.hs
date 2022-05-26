@@ -10,7 +10,7 @@ spec :: Spec
 spec = describe "Grotesque Statue (4)" $ do
   context "when would reveal a token" $ do
     it "reveals 2 tokens and let's you choose one" $ do
-      investigator <- testInvestigator "00000" id
+      investigator <- testInvestigator id
       grotestqueStatue <- buildAsset "01071"
 
       (didRunMessage, logger) <- didPassSkillTestBy
@@ -25,7 +25,7 @@ spec = describe "Grotesque Statue (4)" $ do
           , playAsset investigator grotestqueStatue
           , beginSkillTest investigator SkillIntellect 0
           ]
-          (assetsL %~ insertEntity grotestqueStatue)
+          (entitiesL . assetsL %~ insertEntity grotestqueStatue)
         $ do
             runMessages
             chooseOnlyOption "start skill test"

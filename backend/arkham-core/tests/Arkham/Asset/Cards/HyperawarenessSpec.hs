@@ -1,4 +1,4 @@
-module Arkham.Asset.Cards.PhysicalTrainingSpec (
+module Arkham.Asset.Cards.HyperawarenessSpec (
   spec,
 ) where
 
@@ -8,22 +8,22 @@ import Arkham.Ability
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
-spec = describe "Physical Training" $ do
-  it "Adds 1 to willpower check for each resource spent" $ do
-    physicalTraining <- buildAsset "01017"
-    investigator <- testInvestigator "00000" $ \attrs ->
-      attrs {investigatorWillpower = 1, investigatorResources = 2}
+spec = describe "Hyperawareness" $ do
+  it "Adds 1 to intellect check for each resource spent" $ do
+    hyperawareness <- buildAsset "01034"
+    investigator <- testInvestigator $ \attrs ->
+      attrs {investigatorIntellect = 1, investigatorResources = 2}
 
-    (didPassTest, logger) <- didPassSkillTestBy investigator SkillWillpower 0
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
 
     gameTestWithLogger
       logger
       investigator
       [ SetTokens [Zero]
-      , playAsset investigator physicalTraining
-      , beginSkillTest investigator SkillWillpower 3
+      , playAsset investigator hyperawareness
+      , beginSkillTest investigator SkillIntellect 3
       ]
-      (assetsL %~ insertEntity physicalTraining)
+      (entitiesL . assetsL %~ insertEntity hyperawareness)
       $ do
         runMessages
         chooseOptionMatching
@@ -51,21 +51,21 @@ spec = describe "Physical Training" $ do
         chooseOnlyOption "apply results"
         didPassTest `refShouldBe` True
 
-  it "Adds 1 to combat check for each resource spent" $ do
-    physicalTraining <- buildAsset "01017"
-    investigator <- testInvestigator "00000" $
-      \attrs -> attrs {investigatorCombat = 1, investigatorResources = 2}
+  it "Adds 1 to agility check for each resource spent" $ do
+    hyperawareness <- buildAsset "01034"
+    investigator <- testInvestigator $
+      \attrs -> attrs {investigatorAgility = 1, investigatorResources = 2}
 
-    (didPassTest, logger) <- didPassSkillTestBy investigator SkillCombat 0
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillAgility 0
 
     gameTestWithLogger
       logger
       investigator
       [ SetTokens [Zero]
-      , playAsset investigator physicalTraining
-      , beginSkillTest investigator SkillCombat 3
+      , playAsset investigator hyperawareness
+      , beginSkillTest investigator SkillAgility 3
       ]
-      (assetsL %~ insertEntity physicalTraining)
+      (entitiesL . assetsL %~ insertEntity hyperawareness)
       $ do
         runMessages
         chooseOptionMatching

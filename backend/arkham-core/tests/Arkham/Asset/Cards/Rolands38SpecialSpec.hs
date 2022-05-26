@@ -11,7 +11,7 @@ import Arkham.Location.Attrs (LocationAttrs(..))
 spec :: Spec
 spec = describe "Roland's .39 Special" $ do
   it "gives +1 combat and +1 damage" $ do
-    investigator <- testInvestigator "00000"
+    investigator <- testInvestigator
       $ \attrs -> attrs { investigatorCombat = 1 }
     rolands38Special <- buildAsset "01006"
     enemy <- testEnemy
@@ -25,9 +25,9 @@ spec = describe "Roland's .39 Special" $ do
         , playAsset investigator rolands38Special
         , moveTo investigator location
         ]
-        ((assetsL %~ insertEntity rolands38Special)
-        . (enemiesL %~ insertEntity enemy)
-        . (locationsL %~ insertEntity location)
+        ((entitiesL . assetsL %~ insertEntity rolands38Special)
+        . (entitiesL . enemiesL %~ insertEntity enemy)
+        . (entitiesL . locationsL %~ insertEntity location)
         )
       $ do
           runMessages
@@ -43,7 +43,7 @@ spec = describe "Roland's .39 Special" $ do
   it
       "gives +3 combat and +1 damage if there are 1 or more clues on your location"
     $ do
-        investigator <- testInvestigator "00000"
+        investigator <- testInvestigator
           $ \attrs -> attrs { investigatorCombat = 1 }
         rolands38Special <- buildAsset "01006"
         enemy <- testEnemy
@@ -57,9 +57,9 @@ spec = describe "Roland's .39 Special" $ do
             , playAsset investigator rolands38Special
             , moveTo investigator location
             ]
-            ((assetsL %~ insertEntity rolands38Special)
-            . (enemiesL %~ insertEntity enemy)
-            . (locationsL %~ insertEntity location)
+            ((entitiesL . assetsL %~ insertEntity rolands38Special)
+            . (entitiesL . enemiesL %~ insertEntity enemy)
+            . (entitiesL . locationsL %~ insertEntity location)
             )
           $ do
               runMessages

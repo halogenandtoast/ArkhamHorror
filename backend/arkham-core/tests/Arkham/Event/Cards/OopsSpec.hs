@@ -12,7 +12,7 @@ spec :: Spec
 spec = describe "Oops!" $ do
   it "deals damage that attack would have done" $ do
     investigator <-
-      testInvestigator "00000"
+      testInvestigator
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
     oops <- genPlayerCard Cards.oops
@@ -30,10 +30,10 @@ spec = describe "Oops!" $ do
         , playAsset investigator rolands38Special
         , moveTo investigator location
         ]
-        ((enemiesL %~ insertEntity enemy)
-        . (enemiesL %~ insertEntity enemy2)
-        . (locationsL %~ insertEntity location)
-        . (assetsL %~ insertEntity rolands38Special)
+        ((entitiesL . enemiesL %~ insertEntity enemy)
+        . (entitiesL . enemiesL %~ insertEntity enemy2)
+        . (entitiesL . locationsL %~ insertEntity location)
+        . (entitiesL . assetsL %~ insertEntity rolands38Special)
         )
       $ do
           runMessages
@@ -64,7 +64,7 @@ spec = describe "Oops!" $ do
 
   it "[FAQ] does not deal on success damage" $ do
     investigator <-
-      testInvestigator "00000"
+      testInvestigator
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
     oops <- genPlayerCard Cards.oops
@@ -82,10 +82,10 @@ spec = describe "Oops!" $ do
         , playAsset investigator fortyOneDerringer
         , moveTo investigator location
         ]
-        ((enemiesL %~ insertEntity enemy)
-        . (enemiesL %~ insertEntity enemy2)
-        . (locationsL %~ insertEntity location)
-        . (assetsL %~ insertEntity fortyOneDerringer)
+        ((entitiesL . enemiesL %~ insertEntity enemy)
+        . (entitiesL . enemiesL %~ insertEntity enemy2)
+        . (entitiesL . locationsL %~ insertEntity location)
+        . (entitiesL . assetsL %~ insertEntity fortyOneDerringer)
         )
       $ do
           runMessages
@@ -116,7 +116,7 @@ spec = describe "Oops!" $ do
 
   it "[FAQ] shotgun only deals 1 damage" $ do
     investigator <-
-      testInvestigator "00000"
+      testInvestigator
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
     oops <- genPlayerCard Cards.oops
@@ -134,10 +134,10 @@ spec = describe "Oops!" $ do
         , playAsset investigator shotgun4
         , moveAllTo location
         ]
-        ((enemiesL %~ insertEntity enemy)
-        . (enemiesL %~ insertEntity enemy2)
-        . (locationsL %~ insertEntity location)
-        . (assetsL %~ insertEntity shotgun4)
+        ((entitiesL . enemiesL %~ insertEntity enemy)
+        . (entitiesL . enemiesL %~ insertEntity enemy2)
+        . (entitiesL . locationsL %~ insertEntity location)
+        . (entitiesL . assetsL %~ insertEntity shotgun4)
         )
       $ do
           runMessages

@@ -1,4 +1,4 @@
-module Arkham.Asset.Cards.HardKnocks2Spec (
+module Arkham.Asset.Cards.Hyperawareness2Spec (
   spec,
 ) where
 
@@ -8,20 +8,22 @@ import Arkham.Ability
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
-spec = describe "Hard Knocks (2)" $ do
-  it "Adds 1 to combat check for each resource spent" $ do
-    hardKnocks2 <- buildAsset "50005"
-    investigator <- testInvestigator "00000" $
-      \attrs -> attrs {investigatorCombat = 1, investigatorResources = 2}
-    (didPassTest, logger) <- didPassSkillTestBy investigator SkillCombat 0
+spec = describe "Hyperawareness (2)" $ do
+  it "Adds 1 to intellect check for each resource spent" $ do
+    hyperawareness2 <- buildAsset "50003"
+    investigator <- testInvestigator $ \attrs ->
+      attrs {investigatorIntellect = 1, investigatorResources = 2}
+
+    (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
+
     gameTestWithLogger
       logger
       investigator
       [ SetTokens [Zero]
-      , playAsset investigator hardKnocks2
-      , beginSkillTest investigator SkillCombat 3
+      , playAsset investigator hyperawareness2
+      , beginSkillTest investigator SkillIntellect 3
       ]
-      (assetsL %~ insertEntity hardKnocks2)
+      (entitiesL . assetsL %~ insertEntity hyperawareness2)
       $ do
         runMessages
         chooseOptionMatching
@@ -50,8 +52,8 @@ spec = describe "Hard Knocks (2)" $ do
         didPassTest `refShouldBe` True
 
   it "Adds 1 to agility check for each resource spent" $ do
-    hardKnocks2 <- buildAsset "50005"
-    investigator <- testInvestigator "00000" $
+    hyperawareness2 <- buildAsset "50003"
+    investigator <- testInvestigator $
       \attrs -> attrs {investigatorAgility = 1, investigatorResources = 2}
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillAgility 0
@@ -60,10 +62,10 @@ spec = describe "Hard Knocks (2)" $ do
       logger
       investigator
       [ SetTokens [Zero]
-      , playAsset investigator hardKnocks2
+      , playAsset investigator hyperawareness2
       , beginSkillTest investigator SkillAgility 3
       ]
-      (assetsL %~ insertEntity hardKnocks2)
+      (entitiesL . assetsL %~ insertEntity hyperawareness2)
       $ do
         runMessages
         chooseOptionMatching

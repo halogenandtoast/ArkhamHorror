@@ -12,7 +12,7 @@ spec = do
   describe "Zoey's Cross" $ do
     context "after engaging an enemy" $ do
       it "spend 1 resource and exhaust to deal one damage to that enemy" $ do
-        investigator <- testInvestigator "00000" (Investigator.resourcesL .~ 1)
+        investigator <- testInvestigator (Investigator.resourcesL .~ 1)
         enemy <- testEnemy (Enemy.healthL .~ Static 2)
         location <- testLocation id
         zoeysCross <- buildAsset "02006"
@@ -22,9 +22,9 @@ spec = do
             , enemySpawn location enemy
             , moveTo investigator location
             ]
-            ((assetsL %~ insertEntity zoeysCross)
-            . (enemiesL %~ insertEntity enemy)
-            . (locationsL %~ insertEntity location)
+            ((entitiesL . assetsL %~ insertEntity zoeysCross)
+            . (entitiesL . enemiesL %~ insertEntity enemy)
+            . (entitiesL . locationsL %~ insertEntity location)
             )
           $ do
               runMessages

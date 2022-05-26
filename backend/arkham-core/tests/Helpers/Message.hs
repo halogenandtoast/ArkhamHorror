@@ -17,6 +17,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (toTraits)
+import Arkham.Zone
 
 playEvent :: Investigator -> Event -> Message
 playEvent i e = InvestigatorPlayEvent (toId i) (toId e) Nothing [] FromHand

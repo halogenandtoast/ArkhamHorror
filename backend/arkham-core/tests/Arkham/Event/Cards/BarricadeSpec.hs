@@ -11,13 +11,13 @@ spec = do
   describe "Barricade" $ do
     it "should make the current location unenterable by non elites" $ do
       location <- testLocation id
-      investigator <- testInvestigator "00000" id
+      investigator <- testInvestigator id
       barricade <- buildEvent "01038" investigator
       gameTest
           investigator
           [moveTo investigator location, playEvent investigator barricade]
-          ((eventsL %~ insertEntity barricade)
-          . (locationsL %~ insertEntity location)
+          ((entitiesL . eventsL %~ insertEntity barricade)
+          . (entitiesL . locationsL %~ insertEntity location)
           )
         $ do
             runMessages
@@ -27,8 +27,8 @@ spec = do
 
     it "should be discarded if an investigator leaves the location" $ do
       location <- testLocation id
-      investigator <- testInvestigator "00000" id
-      investigator2 <- testInvestigator "00001" id
+      investigator <- testInvestigator id
+      investigator2 <- testInvestigator id
       barricade <- buildEvent "01038" investigator
       gameTest
           investigator
@@ -36,9 +36,9 @@ spec = do
           , playEvent investigator barricade
           , moveFrom investigator2 location
           ]
-          ((eventsL %~ insertEntity barricade)
-          . (locationsL %~ insertEntity location)
-          . (investigatorsL %~ insertEntity investigator2)
+          ((entitiesL . eventsL %~ insertEntity barricade)
+          . (entitiesL . locationsL %~ insertEntity location)
+          . (entitiesL . investigatorsL %~ insertEntity investigator2)
           )
         $ do
             runMessages

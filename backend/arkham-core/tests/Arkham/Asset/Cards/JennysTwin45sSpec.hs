@@ -21,7 +21,7 @@ spec = describe "Jenny's Twin .45s" $ do
 
   it "enters play with X uses" $ do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
-    investigator <- testInvestigator "00000" $ \attrs -> attrs
+    investigator <- testInvestigator $ \attrs -> attrs
       { investigatorResources = 5
       , investigatorHand = [PlayerCard jennysTwin45s]
       }
@@ -40,7 +40,7 @@ spec = describe "Jenny's Twin .45s" $ do
           updatedJennysTwin45s `shouldSatisfy` hasUses 5
   it "gives +2 combat and does +1 damage" $ do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
-    investigator <- testInvestigator "00000" $ \attrs -> attrs
+    investigator <- testInvestigator $ \attrs -> attrs
       { investigatorResources = 1
       , investigatorHand = [PlayerCard jennysTwin45s]
       , investigatorCombat = 3
@@ -52,8 +52,8 @@ spec = describe "Jenny's Twin .45s" $ do
         [ SetTokens [Zero]
         , playDynamicCard investigator (PlayerCard jennysTwin45s)
         ]
-        ((enemiesL %~ insertEntity enemy)
-        . (locationsL %~ insertEntity location)
+        ((entitiesL . enemiesL %~ insertEntity enemy)
+        . (entitiesL . locationsL %~ insertEntity location)
         )
       $ do
           runMessages

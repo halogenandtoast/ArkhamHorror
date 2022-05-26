@@ -12,7 +12,7 @@ spec = do
   describe "Backstab" $ do
     it "should use agility and do +2 damage" $ do
       location <- testLocation id
-      investigator <- testInvestigator "00000"
+      investigator <- testInvestigator
         $ \attrs -> attrs { investigatorCombat = 1, investigatorAgility = 4 }
       backstab <- buildEvent "01051" investigator
       enemy <- testEnemy
@@ -24,9 +24,9 @@ spec = do
           , moveTo investigator location
           , playEvent investigator backstab
           ]
-          ((eventsL %~ insertEntity backstab)
-          . (locationsL %~ insertEntity location)
-          . (enemiesL %~ insertEntity enemy)
+          ((entitiesL . eventsL %~ insertEntity backstab)
+          . (entitiesL . locationsL %~ insertEntity location)
+          . (entitiesL . enemiesL %~ insertEntity enemy)
           )
         $ do
             runMessages

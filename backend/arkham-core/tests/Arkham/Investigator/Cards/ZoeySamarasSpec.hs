@@ -27,8 +27,8 @@ spec = do
           , moveTo zoeySamaras location
           , fightEnemy zoeySamaras enemy
           ]
-          ((enemiesL %~ insertEntity enemy)
-          . (locationsL %~ insertEntity location)
+          ((entitiesL . enemiesL %~ insertEntity enemy)
+          . (entitiesL . locationsL %~ insertEntity location)
           )
         $ do
             runMessages
@@ -54,9 +54,9 @@ spec = do
               , moveTo zoeySamaras location
               , enemySpawn location enemy2
               ]
-              ((locationsL %~ insertEntity location)
-              . (enemiesL %~ insertEntity enemy1)
-              . (enemiesL %~ insertEntity enemy2)
+              ((entitiesL . locationsL %~ insertEntity location)
+              . (entitiesL . enemiesL %~ insertEntity enemy1)
+              . (entitiesL . enemiesL %~ insertEntity enemy2)
               )
             $ do
                 runMessages

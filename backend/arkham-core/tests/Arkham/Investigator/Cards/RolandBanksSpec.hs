@@ -24,8 +24,8 @@ spec = describe "Roland Banks" $ do
               , moveTo rolandBanks location
               , fightEnemy rolandBanks enemy
               ]
-              ((enemiesL %~ insertEntity enemy)
-              . (locationsL %~ insertEntity location)
+              ((entitiesL . enemiesL %~ insertEntity enemy)
+              . (entitiesL . locationsL %~ insertEntity location)
               )
             $ do
                 runMessages
@@ -51,7 +51,7 @@ spec = describe "Roland Banks" $ do
           , moveTo rolandBanks location
           , investigate rolandBanks location
           ]
-          (locationsL %~ insertEntity location)
+          (entitiesL . locationsL %~ insertEntity location)
         $ do
             runMessages
             chooseOnlyOption "start skill test"

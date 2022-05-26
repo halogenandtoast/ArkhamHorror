@@ -10,11 +10,11 @@ spec :: Spec
 spec = describe "Arcane Initiate" $ do
   it "enters play with 1 doom" $ do
     arcaneInitiate <- buildAsset "01063"
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     gameTest
         investigator
         [playAsset investigator arcaneInitiate]
-        (assetsL %~ insertEntity arcaneInitiate)
+        (entitiesL . assetsL %~ insertEntity arcaneInitiate)
       $ do
           runMessages
           chooseOnlyOption "trigger forced ability"
@@ -24,7 +24,7 @@ spec = describe "Arcane Initiate" $ do
   it "can be exhausted to search the top 3 cards of your deck for a Spell card"
     $ do
         arcaneInitiate <- buildAsset "01063"
-        investigator <- testInvestigator "00000" id
+        investigator <- testInvestigator id
         card <- genPlayerCard Cards.shrivelling
         otherCards <- testPlayerCards 2
         gameTest
@@ -32,7 +32,7 @@ spec = describe "Arcane Initiate" $ do
             [ loadDeck investigator (card : otherCards)
             , playAsset investigator arcaneInitiate
             ]
-            (assetsL %~ insertEntity arcaneInitiate)
+            (entitiesL . assetsL %~ insertEntity arcaneInitiate)
           $ do
               runMessages
               chooseOnlyOption "trigger forced ability"
@@ -45,12 +45,12 @@ spec = describe "Arcane Initiate" $ do
 
   it "should continue if no Spell card is found" $ do
     arcaneInitiate <- buildAsset "01063"
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     cards <- testPlayerCards 3
     gameTest
         investigator
         [loadDeck investigator cards, playAsset investigator arcaneInitiate]
-        (assetsL %~ insertEntity arcaneInitiate)
+        (entitiesL . assetsL %~ insertEntity arcaneInitiate)
       $ do
           runMessages
           chooseOnlyOption "trigger forced ability"

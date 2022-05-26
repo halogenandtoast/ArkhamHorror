@@ -10,7 +10,7 @@ import Arkham.Treachery.Cards qualified as Cards
 spec :: Spec
 spec = describe "Smite the Wicked" $ do
   it "draws an enemy, attaches to it, and spawns farthest away from you" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     treachery <- genEncounterCard Cards.ancientEvils
@@ -24,21 +24,21 @@ spec = describe "Smite the Wicked" $ do
         , moveTo investigator location1
         , drawCards investigator 1
         ]
-        ((locationsL %~ insertEntity location1)
-        . (locationsL %~ insertEntity location2)
+        ((entitiesL . locationsL %~ insertEntity location1)
+        . (entitiesL . locationsL %~ insertEntity location2)
         )
       $ do
           runMessages
           chooseOnlyOption "place enemy"
           game <- getTestGame
-          let enemy' = game ^?! enemiesL . to toList . ix 0
+          let enemy' = game ^?! entitiesL . enemiesL . to toList . ix 0
           location2' <- updated location2
           hasEnemy enemy' location2' `shouldReturn` True
           hasTreacheryWithMatchingCardCode (PlayerCard smiteTheWicked) enemy'
             `shouldReturn` True
 
   it "causes 1 mental trauma if enemy not defeated" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocation id
@@ -50,14 +50,14 @@ spec = describe "Smite the Wicked" $ do
         , drawCards investigator 1
         , EndOfGame Nothing
         ]
-        (locationsL %~ insertEntity location)
+        (entitiesL . locationsL %~ insertEntity location)
       $ do
           runMessages
           chooseOnlyOption "place enemy"
           updated investigator `shouldSatisfyM` hasTrauma (0, 1)
 
   it "won't cause trauma if enemy is defeated" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocation id
@@ -69,17 +69,16 @@ spec = describe "Smite the Wicked" $ do
         , moveTo investigator location
         , drawCards investigator 1
         ]
-        (locationsL %~ insertEntity location)
+        (entitiesL . locationsL %~ insertEntity location)
       $ do
           runMessages
           chooseOnlyOption "place enemy"
           game <- getTestGame
-          let updatedEnemy = game ^?! enemiesL . to toList . ix 0
+          let updatedEnemy = game ^?! entitiesL . enemiesL . to toList . ix 0
           pushAll
             [ EnemyDefeated
               (toId updatedEnemy)
               (toId investigator)
-              (toId location)
               (toCardCode enemy)
               (toSource investigator)
               []
@@ -91,7 +90,7 @@ spec = describe "Smite the Wicked" $ do
           isInDiscardOf investigator smiteTheWicked `shouldReturn` True
 
   it "will cause trauma if player is eliminated" $ do
-    investigator <- testInvestigator "00000" id
+    investigator <- testInvestigator id
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocation id
@@ -104,7 +103,7 @@ spec = describe "Smite the Wicked" $ do
         , drawCards investigator 1
         , Resign (toId investigator)
         ]
-        (locationsL %~ insertEntity location)
+        (entitiesL . locationsL %~ insertEntity location)
       $ do
           runMessages
           chooseOnlyOption "place enemy"

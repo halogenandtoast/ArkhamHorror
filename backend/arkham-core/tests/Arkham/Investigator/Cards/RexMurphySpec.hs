@@ -19,7 +19,7 @@ spec = describe "Rex Murphy" $ do
           , moveTo rexMurphy location1
           , beginActionSkillTest rexMurphy Action.Investigate SkillIntellect 2
           ]
-          (locationsL %~ insertEntity location1)
+          (entitiesL . locationsL %~ insertEntity location1)
         $ do
             runMessages
             chooseOnlyOption "start skill test"

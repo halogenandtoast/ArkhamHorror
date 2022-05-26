@@ -23,9 +23,9 @@ spec = describe "Fire Axe" $ do
         , enemySpawn location enemy
         , moveTo investigator location
         ]
-        ((enemiesL %~ insertEntity enemy)
-        . (assetsL %~ insertEntity fireAxe)
-        . (locationsL %~ insertEntity location)
+        ((entitiesL . enemiesL %~ insertEntity enemy)
+        . (entitiesL . assetsL %~ insertEntity fireAxe)
+        . (entitiesL . locationsL %~ insertEntity location)
         )
       $ do
           runMessages
@@ -51,9 +51,9 @@ spec = describe "Fire Axe" $ do
         , enemySpawn location enemy
         , moveTo investigator location
         ]
-        ((enemiesL %~ insertEntity enemy)
-        . (assetsL %~ insertEntity fireAxe)
-        . (locationsL %~ insertEntity location)
+        ((entitiesL . enemiesL %~ insertEntity enemy)
+        . (entitiesL . assetsL %~ insertEntity fireAxe)
+        . (entitiesL . locationsL %~ insertEntity location)
         )
       $ do
           runMessages
@@ -102,9 +102,9 @@ spec = describe "Fire Axe" $ do
         , enemySpawn location enemy
         , moveTo investigator location
         ]
-        ((enemiesL %~ insertEntity enemy)
-        . (assetsL %~ insertEntity fireAxe)
-        . (locationsL %~ insertEntity location)
+        ((entitiesL . enemiesL %~ insertEntity enemy)
+        . (entitiesL . assetsL %~ insertEntity fireAxe)
+        . (entitiesL . locationsL %~ insertEntity location)
         )
       $ do
           runMessages
@@ -141,9 +141,9 @@ spec = describe "Fire Axe" $ do
         , enemySpawn location enemy
         , moveTo investigator location
         ]
-        ((enemiesL %~ insertEntity enemy)
-        . (assetsL %~ insertEntity fireAxe)
-        . (locationsL %~ insertEntity location)
+        ((entitiesL . enemiesL %~ insertEntity enemy)
+        . (entitiesL . assetsL %~ insertEntity fireAxe)
+        . (entitiesL . locationsL %~ insertEntity location)
         )
       $ do
           runMessages

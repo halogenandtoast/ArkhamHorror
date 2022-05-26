@@ -3166,7 +3166,11 @@ runGameMessage msg g = case msg of
   EvadeLabel _ msgs -> g <$ pushAll msgs
   CardLabel _ msgs -> g <$ pushAll msgs
   Continue _ -> pure g
-  EndOfGame mNextCampaignStep -> g <$ pushEnd (EndOfScenario mNextCampaignStep)
+  EndOfGame mNextCampaignStep -> do
+    window <- checkWindows [Window Timing.When Window.EndOfGame]
+    push window
+    pushEnd (EndOfScenario mNextCampaignStep)
+    pure g
   ResetGame ->
     pure
       $ g

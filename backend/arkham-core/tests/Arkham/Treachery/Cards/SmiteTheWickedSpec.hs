@@ -54,6 +54,7 @@ spec = describe "Smite the Wicked" $ do
       $ do
           runMessages
           chooseOnlyOption "place enemy"
+          chooseOnlyOption "trigger smite the wicked"
           updated investigator `shouldSatisfyM` hasTrauma (0, 1)
 
   it "won't cause trauma if enemy is defeated" $ do
@@ -107,4 +108,5 @@ spec = describe "Smite the Wicked" $ do
       $ do
           runMessages
           chooseOnlyOption "place enemy"
+          chooseOnlyOption "trigger smite the wicked"
           updated investigator `shouldSatisfyM` hasTrauma (0, 1)

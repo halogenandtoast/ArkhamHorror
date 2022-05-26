@@ -33,7 +33,7 @@ instance HasAbilities SearchingForIzzie where
         1
         OnSameLocation
         (ActionAbility (Just Action.Investigate) $ ActionCost 2)
-      : [ mkAbility x 1 $ ForcedAbility $ OrWindowMatcher
+      : [ mkAbility x 2 $ ForcedAbility $ OrWindowMatcher
             [ GameEnds Timing.When
             , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
             ]

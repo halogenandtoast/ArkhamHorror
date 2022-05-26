@@ -15,7 +15,6 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Source
 import Arkham.Target
-import Arkham.Trait
 
 newtype CallingInFavors = CallingInFavors EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

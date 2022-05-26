@@ -13,6 +13,7 @@ import Arkham.Enemy
 import Arkham.EnemyId
 import Arkham.Event
 import Arkham.Game
+import Arkham.GameEnv
 import Arkham.Investigator
 import Arkham.Investigator.Attrs qualified as Investigator
 import Arkham.Location
@@ -35,7 +36,7 @@ isInDiscardOf
 isInDiscardOf investigator entity = do
   game <- getTestGame
   let
-    discard' = game ^?! investigatorsL . ix (toId investigator) . to discardOf
+    discard' = game ^?! entitiesL . investigatorsL . ix (toId investigator) . to discardOf
   pure $ pcId card `elem` map pcId discard'
   where card = asPlayerCard entity
 
@@ -59,25 +60,25 @@ class (Entity a, TargetEntity a) => TestEntity a where
   updated :: (MonadReader env m, HasGameRef env, MonadIO m) => a -> m a
 
 instance TestEntity Agenda where
-  updated a = fromJust . preview (agendasL . ix (toId a)) <$> getTestGame
+  updated a = fromJust . preview (entitiesL . agendasL . ix (toId a)) <$> getTestGame
 
 instance TestEntity Treachery where
-  updated t = fromJust . preview (treacheriesL . ix (toId t)) <$> getTestGame
+  updated t = fromJust . preview (entitiesL . treacheriesL . ix (toId t)) <$> getTestGame
 
 instance TestEntity Asset where
-  updated a = fromJust . preview (assetsL . ix (toId a)) <$> getTestGame
+  updated a = fromJust . preview (entitiesL . assetsL . ix (toId a)) <$> getTestGame
 
 instance TestEntity Location where
-  updated l = fromJust . preview (locationsL . ix (toId l)) <$> getTestGame
+  updated l = fromJust . preview (entitiesL . locationsL . ix (toId l)) <$> getTestGame
 
 instance TestEntity Event where
-  updated e = fromJust . preview (eventsL . ix (toId e)) <$> getTestGame
+  updated e = fromJust . preview (entitiesL . eventsL . ix (toId e)) <$> getTestGame
 
 instance TestEntity Enemy where
-  updated e = fromJust . preview (enemiesL . ix (toId e)) <$> getTestGame
+  updated e = fromJust . preview (entitiesL . enemiesL . ix (toId e)) <$> getTestGame
 
 instance TestEntity Investigator where
-  updated i = fromJust . preview (investigatorsL . ix (toId i)) <$> getTestGame
+  updated i = fromJust . preview (entitiesL . investigatorsL . ix (toId i)) <$> getTestGame
 
 isAttachedTo
   :: (TestEntity a, TestEntity b, MonadReader env m, HasGameRef env, MonadIO m)
@@ -90,7 +91,7 @@ isAttachedTo x y = case toTarget x of
       game <- getTestGame
       pure
         $ eventId
-        `member` (game ^. locationsL . ix locId . to (`getSet` game))
+        `member` (game ^. entitiesL . locationsL . ix locId . to (`getSet` game))
     _ -> pure False
   _ -> pure False
 
@@ -111,7 +112,7 @@ updatedResourceCount
   :: (HasGameRef env, MonadIO m, MonadReader env m) => Investigator -> m Int
 updatedResourceCount investigator = do
   game <- getTestGame
-  pure $ game ^?! investigatorsL . ix (toId investigator) . to
+  pure $ game ^?! entitiesL . investigatorsL . ix (toId investigator) . to
     (Investigator.investigatorResources . toAttrs)
 
 evadedBy
@@ -121,14 +122,14 @@ evadedBy
   -> m Bool
 evadedBy _investigator enemy = do
   game <- getTestGame
-  let enemy' = game ^?! enemiesL . ix (toId enemy)
+  let enemy' = game ^?! entitiesL . enemiesL . ix (toId enemy)
   pure $ not (isEngaged enemy') && isExhausted enemy'
 
 getRemainingActions
   :: (HasGameRef env, MonadReader env m, MonadIO m) => Investigator -> m Int
 getRemainingActions investigator = do
   game <- getTestGame
-  let investigator' = game ^?! investigatorsL . ix (toId investigator)
+  let investigator' = game ^?! entitiesL . investigatorsL . ix (toId investigator)
   pure $ actionsRemaining investigator'
 
 hasDamage :: (HasDamage a) => (Int, Int) -> a -> Bool
@@ -185,7 +186,7 @@ hasTreacheryWithMatchingCardCode c a = do
     (mtreachery game)
  where
   mtreachery g =
-    find ((== toCardCode c) . toCardCode) $ toList (g ^. treacheriesL)
+    find ((== toCardCode c) . toCardCode) $ toList (g ^. entitiesL . treacheriesL)
 
 hasClueCount :: HasCount ClueCount () a => Int -> a -> Bool
 hasClueCount n a = n == unClueCount (getCount a ())

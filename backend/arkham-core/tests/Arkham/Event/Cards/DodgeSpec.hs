@@ -11,7 +11,7 @@ spec :: Spec
 spec = do
   describe "Dodge" $ do
     it "cancels the attack" $ do
-      investigator <- testInvestigator "00000"
+      investigator <- testInvestigator
         $ \attrs -> attrs { investigatorResources = 1 }
       enemy <- testEnemy id
       location <- testLocation id
@@ -28,8 +28,8 @@ spec = do
           , moveTo investigator location
           , enemyAttack investigator enemy
           ]
-          ((enemiesL %~ insertEntity enemy)
-          . (locationsL %~ insertEntity location)
+          ((entitiesL . enemiesL %~ insertEntity enemy)
+          . (entitiesL . locationsL %~ insertEntity location)
           )
         $ do
             runMessages

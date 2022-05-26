@@ -10,7 +10,7 @@ import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 spec :: Spec
 spec = describe "Fire Axe" $ do
   it "gives +1 damage if you have no resources" $ do
-    investigator <- testInvestigator "00000"
+    investigator <- testInvestigator
       $ \attrs -> attrs { investigatorResources = 0, investigatorCombat = 3 }
     fireAxe <- buildAsset "02032"
     enemy <- testEnemy
@@ -38,7 +38,7 @@ spec = describe "Fire Axe" $ do
           updated enemy `shouldSatisfyM` hasDamage (2, 0)
 
   it "allows you to spend 1 resource to get +2 combat" $ do
-    investigator <- testInvestigator "00000"
+    investigator <- testInvestigator
       $ \attrs -> attrs { investigatorResources = 2, investigatorCombat = 1 }
     fireAxe <- buildAsset "02032"
     enemy <- testEnemy
@@ -89,7 +89,7 @@ spec = describe "Fire Axe" $ do
           updated enemy `shouldSatisfyM` hasDamage (1, 0)
 
   it "if you spend your resources before tokens, you stil get +1 damage" $ do
-    investigator <- testInvestigator "00000"
+    investigator <- testInvestigator
       $ \attrs -> attrs { investigatorResources = 1, investigatorCombat = 1 }
     fireAxe <- buildAsset "02032"
     enemy <- testEnemy
@@ -128,7 +128,7 @@ spec = describe "Fire Axe" $ do
           updated enemy `shouldSatisfyM` hasDamage (2, 0)
 
   it "limit of 3 resources can be spent" $ do
-    investigator <- testInvestigator "00000"
+    investigator <- testInvestigator
       $ \attrs -> attrs { investigatorResources = 4, investigatorCombat = 1 }
     fireAxe <- buildAsset "02032"
     enemy <- testEnemy

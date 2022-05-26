@@ -12,7 +12,7 @@ spec :: Spec
 spec = describe "Jim's Trumpet" $ do
   context "allows you to heal one horror when skull is revealed" $ do
     it "on yourself" $ do
-      investigator <- testInvestigator "00000" (Investigator.sanityDamageL .~ 1)
+      investigator <- testInvestigator (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       location <- testLocation id
       gameTest
@@ -22,8 +22,8 @@ spec = describe "Jim's Trumpet" $ do
           , moveTo investigator location
           , beginSkillTest investigator SkillIntellect 0
           ]
-          ((assetsL %~ insertEntity jimsTrumpet)
-          . (locationsL %~ insertEntity location)
+          ((entitiesL . assetsL %~ insertEntity jimsTrumpet)
+          . (entitiesL . locationsL %~ insertEntity location)
           )
         $ do
             runMessages
@@ -38,9 +38,8 @@ spec = describe "Jim's Trumpet" $ do
             updated investigator `shouldSatisfyM` hasDamage (0, 0)
 
     it "on an investigator at your location" $ do
-      investigator <- testInvestigator "00000" id
+      investigator <- testInvestigator id
       investigator2 <- testInvestigator
-        "00001"
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- createAsset <$> genPlayerCard Cards.jimsTrumpet
       location <- testLocation id
@@ -51,9 +50,9 @@ spec = describe "Jim's Trumpet" $ do
           , moveAllTo location
           , beginSkillTest investigator SkillIntellect 0
           ]
-          ((assetsL %~ insertEntity jimsTrumpet)
-          . (locationsL %~ insertEntity location)
-          . (investigatorsL %~ insertEntity investigator2)
+          ((entitiesL . assetsL %~ insertEntity jimsTrumpet)
+          . (entitiesL . locationsL %~ insertEntity location)
+          . (entitiesL . investigatorsL %~ insertEntity investigator2)
           )
         $ do
             runMessages
@@ -68,9 +67,8 @@ spec = describe "Jim's Trumpet" $ do
             updated investigator2 `shouldSatisfyM` hasDamage (0, 0)
 
     it "even when another player draws token" $ do
-      investigator <- testInvestigator "00000" id
+      investigator <- testInvestigator id
       investigator2 <- testInvestigator
-        "00001"
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       location <- testLocation id
@@ -81,9 +79,9 @@ spec = describe "Jim's Trumpet" $ do
           , moveAllTo location
           , beginSkillTest investigator2 SkillIntellect 0
           ]
-          ((assetsL %~ insertEntity jimsTrumpet)
-          . (locationsL %~ insertEntity location)
-          . (investigatorsL %~ insertEntity investigator2)
+          ((entitiesL . assetsL %~ insertEntity jimsTrumpet)
+          . (entitiesL . locationsL %~ insertEntity location)
+          . (entitiesL . investigatorsL %~ insertEntity investigator2)
           )
         $ do
             runMessages
@@ -98,9 +96,8 @@ spec = describe "Jim's Trumpet" $ do
             updated investigator2 `shouldSatisfyM` hasDamage (0, 0)
 
     it "on an investigator at a connected location" $ do
-      investigator <- testInvestigator "00000" id
+      investigator <- testInvestigator id
       investigator2 <- testInvestigator
-        "00001"
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       rivertown <- createLocation <$> genEncounterCard Cards.rivertown
@@ -116,10 +113,10 @@ spec = describe "Jim's Trumpet" $ do
           , moveTo investigator2 southside
           , beginSkillTest investigator SkillIntellect 0
           ]
-          ((assetsL %~ insertEntity jimsTrumpet)
-          . (locationsL %~ insertEntity rivertown)
-          . (locationsL %~ insertEntity southside)
-          . (investigatorsL %~ insertEntity investigator2)
+          ((entitiesL . assetsL %~ insertEntity jimsTrumpet)
+          . (entitiesL . locationsL %~ insertEntity rivertown)
+          . (entitiesL . locationsL %~ insertEntity southside)
+          . (entitiesL . investigatorsL %~ insertEntity investigator2)
           )
         $ do
             runMessages
@@ -134,9 +131,8 @@ spec = describe "Jim's Trumpet" $ do
             updated investigator2 `shouldSatisfyM` hasDamage (0, 0)
 
     it "cannot target an investigator at an unconnected location" $ do
-      investigator <- testInvestigator "00000" id
+      investigator <- testInvestigator id
       investigator2 <- testInvestigator
-        "00001"
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       rivertown <- createLocation <$> genEncounterCard Cards.rivertown
@@ -151,10 +147,10 @@ spec = describe "Jim's Trumpet" $ do
           , moveTo investigator2 downtown
           , beginSkillTest investigator SkillIntellect 0
           ]
-          ((assetsL %~ insertEntity jimsTrumpet)
-          . (locationsL %~ insertEntity rivertown)
-          . (locationsL %~ insertEntity downtown)
-          . (investigatorsL %~ insertEntity investigator2)
+          ((entitiesL . assetsL %~ insertEntity jimsTrumpet)
+          . (entitiesL . locationsL %~ insertEntity rivertown)
+          . (entitiesL . locationsL %~ insertEntity downtown)
+          . (entitiesL . investigatorsL %~ insertEntity investigator2)
           )
         $ do
             runMessages

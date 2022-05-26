@@ -12,7 +12,6 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
-import Arkham.Trait
 
 newtype EmergencyAid = EmergencyAid EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)

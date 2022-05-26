@@ -50,8 +50,8 @@ instance HasAbilities YourHouse where
   getAbilities (YourHouse x) = getAbilities x
 
 instance LocationRunner env => RunMessage env YourHouse where
-  runMessage msg l@(YourHouse attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility _ source [Window _ (Window.EnemySpawns eid _)] 1 _
+  runMessage msg l@(YourHouse attrs) = case msg of
+    UseCardAbility _ source [Window _ (Window.EnemySpawns _ _)] 1 _
       | isSource attrs source -> pure l
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       l <$ pushAll [DrawCards iid 1 False, TakeResources iid 1 False]

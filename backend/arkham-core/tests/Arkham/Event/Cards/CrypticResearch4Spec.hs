@@ -49,7 +49,7 @@ spec = do
             chooseOptionMatching
               "choose other investigator"
               (\case
-                TargetLabel (InvestigatorTarget "00001") _ -> True
+                TargetLabel (InvestigatorTarget iid') _ | iid' == toId investigator2 -> True
                 _ -> False
               )
             isInDiscardOf investigator crypticResearch4 `shouldReturn` True

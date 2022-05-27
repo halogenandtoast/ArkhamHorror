@@ -25,7 +25,7 @@ spec = do
               `shouldReturn` [CannotBeEnteredByNonElite]
             isAttachedTo location barricade `shouldReturn` True
 
-    it "should be discarded if an investigator leaves the location" $ do
+    fit "should be discarded if an investigator leaves the location" $ do
       location <- testLocation id
       investigator <- testInvestigator id
       investigator2 <- testInvestigator id

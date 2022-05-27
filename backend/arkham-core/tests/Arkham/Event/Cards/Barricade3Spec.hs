@@ -33,7 +33,7 @@ spec = do
       location <- testLocation id
       investigator <- testInvestigator id
       investigator2 <- testInvestigator id
-      barricade3 <- buildEvent "01038" investigator
+      barricade3 <- buildEvent "50004" investigator
       gameTest
           investigator
           [ moveAllTo location

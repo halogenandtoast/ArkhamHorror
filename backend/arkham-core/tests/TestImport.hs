@@ -87,6 +87,7 @@ import Arkham.GameEnv
 import Arkham.LocationSymbol
 import Arkham.Agenda.Sequence
 import Arkham.Name
+import Data.IntMap.Strict qualified as IntMap
 
 runMessages
   :: ( MonadIO m
@@ -249,13 +250,13 @@ instance HasGameLogger TestApp where
 
 testScenario
   :: MonadIO m => CardCode -> (ScenarioAttrs -> ScenarioAttrs) -> m Scenario
-testScenario cardCode f =
+testScenario cardCode f = do
+  a1 <- testAgenda "01105" id
   let name = mkName $ unCardCode cardCode
-  in
-    pure $ TheGathering' $ TheGathering $ f $ Scenario.baseAttrs
-      cardCode
-      name
-      Easy
+  pure $ TheGathering' $ TheGathering $ f $ (Scenario.baseAttrs
+    cardCode
+    name
+    Easy) { scenarioAgendaStack = IntMap.fromList [(1, [toCardDef (toAttrs a1), toCardDef (toAttrs a1)])] }
 
 buildEvent :: MonadRandom m => CardCode -> Investigator -> m Event
 buildEvent cardCode investigator =
@@ -442,6 +443,12 @@ withGame :: (MonadReader env m, HasGameRef env, MonadIO m) => ReaderT Game m b -
 withGame b = do
   g <- getTestGame
   runReaderT b g
+
+replaceScenario :: (MonadReader env m, HasGameRef env, MonadIO m) => (ScenarioAttrs -> ScenarioAttrs) -> m ()
+replaceScenario f = do
+  scenario' <- testScenario "00000" f
+  ref <- view gameRefL
+  atomicModifyIORef' ref (\g -> (g { gameMode = That scenario' }, ()))
 
 chooseOnlyOption
   :: ( MonadFail m

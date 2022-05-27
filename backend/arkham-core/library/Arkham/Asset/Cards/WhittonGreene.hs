@@ -38,7 +38,7 @@ instance HasAbilities WhittonGreene where
     ]
 
 instance Query AssetMatcher env => HasModifiersFor env WhittonGreene where
-  getModifiersFor _ (InvestigatorTarget iid) (WhittonGreene a) | ownedBy a iid =
+  getModifiersFor _ (InvestigatorTarget iid) (WhittonGreene a) | controlledBy a iid =
     do
       active <- selectAny (AssetControlledBy (InvestigatorWithId iid) <> AssetOneOf [AssetWithTrait Tome, AssetWithTrait Relic])
       -- active <- (> 0) . unAssetCount <$> getCount (iid, [Tome, Relic])

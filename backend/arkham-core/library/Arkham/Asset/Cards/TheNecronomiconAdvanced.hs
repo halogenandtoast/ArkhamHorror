@@ -32,7 +32,7 @@ instance HasModifiersFor env TheNecronomiconAdvanced where
       [ ForcedTokenChange
           Token.ElderSign
           [Token.Cultist, Token.Tablet, Token.ElderThing]
-      | ownedBy a iid
+      | controlledBy a iid
       ]
   getModifiersFor _ _ _ = pure []
 

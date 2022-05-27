@@ -20,12 +20,12 @@ instance HasId InvestigatorId env EventId => HasModifiersFor env WendysAmulet wh
   getModifiersFor _ (InvestigatorTarget iid) (WendysAmulet a) =
     pure $ toModifiers
       a
-      [ CanPlayTopOfDiscard (Just EventType, []) | ownedBy a iid ]
+      [ CanPlayTopOfDiscard (Just EventType, []) | controlledBy a iid ]
   getModifiersFor _ (EventTarget eid) (WendysAmulet a) = do
     owner <- getId @InvestigatorId eid
     pure $ toModifiers
       a
-      [ PlaceOnBottomOfDeckInsteadOfDiscard | ownedBy a owner ]
+      [ PlaceOnBottomOfDeckInsteadOfDiscard | controlledBy a owner ]
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env WendysAmulet where

@@ -39,7 +39,7 @@ instance HasAbilities SophieItWasAllMyFault where
 
 instance HasModifiersFor env SophieItWasAllMyFault where
   getModifiersFor _ (InvestigatorTarget iid) (SophieItWasAllMyFault attrs)
-    | ownedBy attrs iid = pure $ toModifiers attrs [AnySkillValue (-1)]
+    | controlledBy attrs iid = pure $ toModifiers attrs [AnySkillValue (-1)]
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env SophieItWasAllMyFault where

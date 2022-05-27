@@ -22,7 +22,7 @@ newspaper :: AssetCard Newspaper
 newspaper = asset Newspaper Cards.newspaper
 
 instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Newspaper where
-  getModifiersFor _ (InvestigatorTarget iid) (Newspaper a) | ownedBy a iid = do
+  getModifiersFor _ (InvestigatorTarget iid) (Newspaper a) | controlledBy a iid = do
     clueCount <- unClueCount <$> getCount iid
     pure
       [ toModifier a $ ActionSkillModifier Action.Investigate SkillIntellect 2

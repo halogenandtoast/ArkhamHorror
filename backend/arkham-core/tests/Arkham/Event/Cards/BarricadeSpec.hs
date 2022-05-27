@@ -25,24 +25,26 @@ spec = do
               `shouldReturn` [CannotBeEnteredByNonElite]
             isAttachedTo location barricade `shouldReturn` True
 
-    fit "should be discarded if an investigator leaves the location" $ do
-      location <- testLocation id
+    it "should be discarded if an investigator leaves the location" $ do
+      (location1, location2) <- testConnectedLocations id id
       investigator <- testInvestigator id
       investigator2 <- testInvestigator id
       barricade <- buildEvent "01038" investigator
       gameTest
           investigator
-          [ moveAllTo location
+          [ moveAllTo location1
           , playEvent investigator barricade
-          , moveFrom investigator2 location
+          , Move (toSource investigator2) (toId investigator2) (toId location1) (toId location2)
           ]
           ((entitiesL . eventsL %~ insertEntity barricade)
-          . (entitiesL . locationsL %~ insertEntity location)
+          . (entitiesL . locationsL %~ insertEntity location1)
+          . (entitiesL . locationsL %~ insertEntity location2)
           . (entitiesL . investigatorsL %~ insertEntity investigator2)
           )
         $ do
             runMessages
-            getModifiers (TestSource mempty) (toTarget location)
+            chooseOnlyOption "trigger barricade"
+            getModifiers (TestSource mempty) (toTarget location1)
               `shouldReturn` []
-            isAttachedTo location barricade `shouldReturn` False
+            isAttachedTo location1 barricade `shouldReturn` False
             isInDiscardOf investigator barricade `shouldReturn` True

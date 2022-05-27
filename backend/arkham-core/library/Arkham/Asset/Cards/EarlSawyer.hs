@@ -33,7 +33,7 @@ instance HasAbilities EarlSawyer where
 
 instance HasModifiersFor env EarlSawyer where
   getModifiersFor _ (InvestigatorTarget iid) (EarlSawyer a) =
-    pure [ toModifier a (SkillModifier SkillAgility 1) | ownedBy a iid ]
+    pure [ toModifier a (SkillModifier SkillAgility 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env EarlSawyer where

@@ -22,7 +22,7 @@ drMilanChristopher = ally DrMilanChristopher Cards.drMilanChristopher (1, 2)
 
 instance HasModifiersFor env DrMilanChristopher where
   getModifiersFor _ (InvestigatorTarget iid) (DrMilanChristopher a) =
-    pure [ toModifier a (SkillModifier SkillIntellect 1) | ownedBy a iid ]
+    pure [ toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities DrMilanChristopher where

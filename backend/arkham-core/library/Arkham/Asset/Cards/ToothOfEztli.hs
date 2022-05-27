@@ -26,7 +26,7 @@ toothOfEztli = asset ToothOfEztli Cards.toothOfEztli
 
 instance HasModifiersFor env ToothOfEztli where
   getModifiersFor (SkillTestSource _ _ (TreacherySource _) _) (InvestigatorTarget iid) (ToothOfEztli a)
-    | ownedBy a iid
+    | controlledBy a iid
     = pure $ toModifiers
       a
       [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]

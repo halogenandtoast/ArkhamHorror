@@ -21,7 +21,7 @@ arcaneEnlightenment = asset ArcaneEnlightenment Cards.arcaneEnlightenment
 
 instance HasModifiersFor env ArcaneEnlightenment where
   getModifiersFor _ (InvestigatorTarget iid) (ArcaneEnlightenment attrs) =
-    pure [ toModifier attrs (HandSize 1) | ownedBy attrs iid ]
+    pure [ toModifier attrs (HandSize 1) | controlledBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
 slot :: AssetAttrs -> Slot

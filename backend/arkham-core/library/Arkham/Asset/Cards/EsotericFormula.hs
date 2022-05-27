@@ -41,7 +41,7 @@ instance HasAbilities EsotericFormula where
 
 instance (HasSkillTest env, HasCount ClueCount env EnemyId) => HasModifiersFor env EsotericFormula where
   getModifiersFor (SkillTestSource iid' _ source (Just Action.Fight)) (InvestigatorTarget iid) (EsotericFormula attrs)
-    | ownedBy attrs iid && isSource attrs source && iid' == iid
+    | controlledBy attrs iid && isSource attrs source && iid' == iid
     = do
       skillTestTarget <- fromJustNote "not a skilltest" <$> getSkillTestTarget
       case skillTestTarget of

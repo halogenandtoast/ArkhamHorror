@@ -25,7 +25,7 @@ catBurglar1 = ally CatBurglar1 Cards.catBurglar1 (2, 2)
 
 instance HasModifiersFor env CatBurglar1 where
   getModifiersFor _ (InvestigatorTarget iid) (CatBurglar1 a) =
-    pure $ toModifiers a [ SkillModifier SkillAgility 1 | ownedBy a iid ]
+    pure $ toModifiers a [ SkillModifier SkillAgility 1 | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 

@@ -19,7 +19,7 @@ celaenoFragments = asset CelaenoFragments Cards.celaenoFragments
 
 instance HasCount CardCount env InvestigatorId => HasModifiersFor env CelaenoFragments where
   getModifiersFor _ (InvestigatorTarget iid) (CelaenoFragments attrs)
-    | ownedBy attrs iid = do
+    | controlledBy attrs iid = do
       count' <- unCardCount <$> getCount iid
       pure
         . toModifiers attrs

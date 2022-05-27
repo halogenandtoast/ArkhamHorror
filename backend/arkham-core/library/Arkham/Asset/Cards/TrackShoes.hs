@@ -25,7 +25,7 @@ trackShoes = asset TrackShoes Cards.trackShoes
 
 instance HasModifiersFor env TrackShoes where
   getModifiersFor _ (InvestigatorTarget iid) (TrackShoes attrs)
-    | attrs `ownedBy` iid = pure
+    | attrs `controlledBy` iid = pure
     $ toModifiers attrs [SkillModifier SkillAgility 1]
   getModifiersFor _ _ _ = pure []
 

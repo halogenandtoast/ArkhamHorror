@@ -38,7 +38,7 @@ instance HasAbilities ZebulonWhateley where
 
 instance HasModifiersFor env ZebulonWhateley where
   getModifiersFor _ (InvestigatorTarget iid) (ZebulonWhateley a) =
-    pure [ toModifier a (SkillModifier SkillWillpower 1) | ownedBy a iid ]
+    pure [ toModifier a (SkillModifier SkillWillpower 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env ZebulonWhateley where

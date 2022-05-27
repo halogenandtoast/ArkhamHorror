@@ -33,7 +33,7 @@ instance HasAbilities DrFrancisMorgan where
 
 instance HasModifiersFor env DrFrancisMorgan where
   getModifiersFor _ (InvestigatorTarget iid) (DrFrancisMorgan a) =
-    pure [ toModifier a (SkillModifier SkillCombat 1) | ownedBy a iid ]
+    pure [ toModifier a (SkillModifier SkillCombat 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env DrFrancisMorgan where

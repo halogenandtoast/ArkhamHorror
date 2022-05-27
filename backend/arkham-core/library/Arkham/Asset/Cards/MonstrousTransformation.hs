@@ -27,7 +27,7 @@ monstrousTransformation = assetWith
 
 instance HasModifiersFor env MonstrousTransformation where
   getModifiersFor _ (InvestigatorTarget iid) (MonstrousTransformation a)
-    | ownedBy a iid = pure $ toModifiers
+    | controlledBy a iid = pure $ toModifiers
       a
       [ BaseSkillOf SkillWillpower 2
       , BaseSkillOf SkillIntellect 2

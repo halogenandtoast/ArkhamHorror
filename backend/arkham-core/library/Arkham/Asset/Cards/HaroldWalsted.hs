@@ -50,7 +50,7 @@ instance
       isMiskatonic <- member Miskatonic <$> getSet lid
       pure $ toModifiers
         attrs
-        [ SkillModifier SkillIntellect 2 | isMiskatonic && ownedBy attrs iid ]
+        [ SkillModifier SkillIntellect 2 | isMiskatonic && controlledBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env  => RunMessage env HaroldWalsted where

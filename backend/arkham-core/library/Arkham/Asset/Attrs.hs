@@ -204,12 +204,12 @@ instance SourceEntity AssetAttrs where
   isSource AssetAttrs {assetId} (AssetSource aid) = assetId == aid
   isSource _ _ = False
 
-ownedBy :: AssetAttrs -> InvestigatorId -> Bool
-ownedBy AssetAttrs {..} = (== assetOwner) . Just
+controlledBy :: AssetAttrs -> InvestigatorId -> Bool
+controlledBy AssetAttrs {..} = (== assetController) . Just
 
-whenOwnedBy ::
+whenControlledBy ::
   Applicative m => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
-whenOwnedBy a iid f = if ownedBy a iid then f else pure []
+whenControlledBy a iid f = if controlledBy a iid then f else pure []
 
 getOwner :: HasCallStack => AssetAttrs -> InvestigatorId
 getOwner = fromJustNote "asset must be owned" . view ownerL

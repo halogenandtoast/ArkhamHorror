@@ -25,7 +25,7 @@ peterSylvestre2 = ally PeterSylvestre2 Cards.peterSylvestre2 (1, 3)
 
 instance HasModifiersFor env PeterSylvestre2 where
   getModifiersFor _ (InvestigatorTarget iid) (PeterSylvestre2 a)
-    | ownedBy a iid = pure $ toModifiers
+    | controlledBy a iid = pure $ toModifiers
       a
       [SkillModifier SkillAgility 1, SkillModifier SkillWillpower 1]
   getModifiersFor _ _ _ = pure []

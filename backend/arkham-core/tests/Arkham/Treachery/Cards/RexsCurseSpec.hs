@@ -5,6 +5,7 @@ module Arkham.Treachery.Cards.RexsCurseSpec
 import TestImport.Lifted
 
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Investigator.Attrs hiding (investigator)
 
 spec :: Spec
 spec = describe "Rex's Curse" $ do
@@ -46,14 +47,16 @@ spec = describe "Rex's Curse" $ do
           runMessages
           chooseOnlyOption "start skill test"
           chooseOnlyOption "apply results"
+          chooseOnlyOption "trigger rex's curse"
+          chooseOnlyOption "apply results"
           investigator' <- updated investigator
           hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'
             `shouldReturn` True
           didRunMessage `refShouldBe` True
 
-  fit "is shuffled back into your deck if you fail the test" $ do
-    -- TODO: need a way to interject a modifier on skill level
-    investigator <- testInvestigator id
+  it "is shuffled back into your deck if you fail the test" $ do
+    investigator <- testInvestigator $ \attrs ->
+      attrs { investigatorIntellect = 5 }
     rexsCurse <- genPlayerCard Cards.rexsCurse
     gameTest
         investigator
@@ -66,8 +69,8 @@ spec = describe "Rex's Curse" $ do
       $ do
           runMessages
           chooseOnlyOption "start skill test"
+          chooseOnlyOption "apply results"
           chooseOnlyOption "trigger rex's curse"
-          chooseOnlyOption "reveal new token"
           chooseOnlyOption "apply results"
           investigator' <- updated investigator
           hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'

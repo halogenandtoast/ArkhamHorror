@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Matcher
@@ -17,15 +16,19 @@ import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
 import Arkham.Treachery.Runner
 
-newtype RexsCurse = RexsCurse TreacheryAttrs
+newtype Metadata = Metadata { active :: Bool }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+newtype RexsCurse = RexsCurse (TreacheryAttrs `With` Metadata)
   deriving anyclass (IsTreachery, HasModifiersFor env)
-  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rexsCurse :: TreacheryCard RexsCurse
-rexsCurse = treachery RexsCurse Cards.rexsCurse
+rexsCurse = treachery (RexsCurse . (`with` Metadata False)) Cards.rexsCurse
 
 instance HasAbilities RexsCurse where
-  getAbilities (RexsCurse x) =
+  getAbilities (RexsCurse (x `With` _)) =
     [ restrictedAbility
         x
         1
@@ -39,7 +42,7 @@ instance HasAbilities RexsCurse where
     ]
 
 instance TreacheryRunner env => RunMessage env RexsCurse where
-  runMessage msg t@(RexsCurse attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(RexsCurse (attrs@TreacheryAttrs {..} `With` metadata)) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
@@ -57,15 +60,14 @@ instance TreacheryRunner env => RunMessage env RexsCurse where
         in (before <> remaining, remainingWillPass)
       pushAll
         $ retainedMessages
-        <> [ CreateEffect
-             (toCardCode attrs)
-             Nothing
-             (toSource attrs)
-             (toTarget attrs)
-           , ReturnSkillTestRevealedTokens
+        <> [ ReturnSkillTestRevealedTokens
            , DrawAnotherToken iid
            ]
-      pure t
-    FailedSkillTest iid _ _ (TreacheryTarget tid) _ _ | tid == treacheryId ->
-      t <$ push (ShuffleIntoDeck iid (TreacheryTarget treacheryId))
-    _ -> RexsCurse <$> runMessage msg attrs
+      pure $ RexsCurse (attrs `with` Metadata True)
+    FailedSkillTest iid _ _ _ _ _ | treacheryOnInvestigator iid attrs -> do
+      when (active metadata) $
+        push $ ShuffleIntoDeck iid (toTarget attrs)
+      pure $ RexsCurse (attrs `With` Metadata False)
+    SkillTestEnds _ ->
+      pure $ RexsCurse (attrs `With` Metadata False)
+    _ -> RexsCurse . (`with` metadata) <$> runMessage msg attrs

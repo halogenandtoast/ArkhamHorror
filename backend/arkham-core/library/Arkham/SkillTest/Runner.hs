@@ -437,7 +437,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
             Will PassedSkillTest {} -> False
             CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
               False
-            CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
+            CheckWindow _ [Window Timing.When (Window.WouldPassSkillTest _)] ->
               False
             Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
               | skillTestInvestigator == skillTestInvestigator' -> False

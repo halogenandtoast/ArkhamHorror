@@ -52,6 +52,7 @@ spec = describe "Rex's Curse" $ do
           didRunMessage `refShouldBe` True
 
   fit "is shuffled back into your deck if you fail the test" $ do
+    -- TODO: need a way to interject a modifier on skill level
     investigator <- testInvestigator id
     rexsCurse <- genPlayerCard Cards.rexsCurse
     gameTest
@@ -65,6 +66,8 @@ spec = describe "Rex's Curse" $ do
       $ do
           runMessages
           chooseOnlyOption "start skill test"
+          chooseOnlyOption "trigger rex's curse"
+          chooseOnlyOption "reveal new token"
           chooseOnlyOption "apply results"
           investigator' <- updated investigator
           hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'

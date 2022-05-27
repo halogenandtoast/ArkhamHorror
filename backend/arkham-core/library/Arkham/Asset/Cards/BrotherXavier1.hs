@@ -29,7 +29,7 @@ brotherXavier1 = ally BrotherXavier1 Cards.brotherXavier1 (3, 3)
 
 instance (HasId LocationId env InvestigatorId) => HasModifiersFor env BrotherXavier1 where
   getModifiersFor _ (InvestigatorTarget iid) (BrotherXavier1 a)
-    | ownedBy a iid = pure $ toModifiers a [SkillModifier SkillWillpower 1]
+    | controlledBy a iid = pure $ toModifiers a [SkillModifier SkillWillpower 1]
   getModifiersFor (InvestigatorSource iid) target (BrotherXavier1 a)
     | isTarget a target = do
       locationId <- getId @LocationId iid

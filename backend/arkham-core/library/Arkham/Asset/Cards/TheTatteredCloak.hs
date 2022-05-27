@@ -23,7 +23,7 @@ theTatteredCloak =
 
 instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env TheTatteredCloak where
   getModifiersFor _ (InvestigatorTarget iid) (TheTatteredCloak attrs)
-    | ownedBy attrs iid = do
+    | controlledBy attrs iid = do
       remainingSanity <- unRemainingSanity <$> getCount iid
       let
         skillModifiers = if remainingSanity <= 3

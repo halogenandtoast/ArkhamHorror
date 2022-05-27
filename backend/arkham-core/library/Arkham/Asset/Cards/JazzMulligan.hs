@@ -38,7 +38,7 @@ instance HasAbilities JazzMulligan where
 
 instance HasSet Trait env LocationId => HasModifiersFor env JazzMulligan where
   getModifiersFor (InvestigatorSource iid) (LocationTarget lid) (JazzMulligan attrs)
-    | ownedBy attrs iid
+    | controlledBy attrs iid
     = do
       traits <- getSet lid
       pure [ toModifier attrs Blank | Miskatonic `member` traits ]

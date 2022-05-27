@@ -23,7 +23,7 @@ davidRenfield = ally DavidRenfield Cards.davidRenfield (2, 1)
 
 instance HasModifiersFor env DavidRenfield where
   getModifiersFor _ (InvestigatorTarget iid) (DavidRenfield attrs)
-    | attrs `ownedBy` iid = pure $ toModifiers
+    | attrs `controlledBy` iid = pure $ toModifiers
       attrs
       [ SkillModifier SkillWillpower 1 | assetDoom attrs > 0 ]
   getModifiersFor _ _ _ = pure []

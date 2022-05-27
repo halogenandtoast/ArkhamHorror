@@ -33,7 +33,7 @@ instance HasAbilities AnalyticalMind where
 
 instance HasModifiersFor env AnalyticalMind where
   getModifiersFor _ (InvestigatorTarget iid) (AnalyticalMind attrs)
-    | ownedBy attrs iid = pure $ toModifiers
+    | controlledBy attrs iid = pure $ toModifiers
       attrs
       [CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation 1]
   getModifiersFor _ _ _ = pure []

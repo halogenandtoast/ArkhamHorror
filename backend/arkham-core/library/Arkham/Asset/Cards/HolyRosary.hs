@@ -17,7 +17,7 @@ holyRosary = assetWith HolyRosary Cards.holyRosary (sanityL ?~ 2)
 
 instance HasModifiersFor env  HolyRosary where
   getModifiersFor _ (InvestigatorTarget iid) (HolyRosary a) =
-    pure [ toModifier a (SkillModifier SkillWillpower 1) | ownedBy a iid ]
+    pure [ toModifier a (SkillModifier SkillWillpower 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env HolyRosary where

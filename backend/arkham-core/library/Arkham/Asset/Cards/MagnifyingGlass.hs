@@ -19,7 +19,7 @@ magnifyingGlass = asset MagnifyingGlass Cards.magnifyingGlass
 instance HasModifiersFor env MagnifyingGlass where
   getModifiersFor _ (InvestigatorTarget iid) (MagnifyingGlass a) = pure
     [ toModifier a $ ActionSkillModifier Action.Investigate SkillIntellect 1
-    | ownedBy a iid
+    | controlledBy a iid
     ]
   getModifiersFor _ _ _ = pure []
 

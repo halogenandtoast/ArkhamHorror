@@ -41,7 +41,7 @@ instance Query LocationMatcher env => HasModifiersFor env AdamLynch where
         <$> select (LocationWithTitle "Security Office")
       pure $ toModifiers
         attrs
-        [ ActionCostSetToModifier 1 | isSecurityOffice && ownedBy attrs iid ]
+        [ ActionCostSetToModifier 1 | isSecurityOffice && controlledBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env AdamLynch where

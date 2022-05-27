@@ -21,7 +21,7 @@ darkHorse :: AssetCard DarkHorse
 darkHorse = asset DarkHorse Cards.darkHorse
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env DarkHorse where
-  getModifiersFor _ (InvestigatorTarget iid) (DarkHorse a) | ownedBy a iid = do
+  getModifiersFor _ (InvestigatorTarget iid) (DarkHorse a) | controlledBy a iid = do
     resourceCount <- unResourceCount <$> getCount iid
     pure $ toModifiers
       a

@@ -25,7 +25,7 @@ trenchKnife = asset TrenchKnife Cards.trenchKnife
 
 instance HasModifiersFor env TrenchKnife where
   getModifiersFor _ (InvestigatorTarget iid) (TrenchKnife attrs)
-    | attrs `ownedBy` iid = pure $ toModifiers
+    | attrs `controlledBy` iid = pure $ toModifiers
       attrs
       [ActionDoesNotCauseAttacksOfOpportunity Action.Engage]
   getModifiersFor _ _ _ = pure []

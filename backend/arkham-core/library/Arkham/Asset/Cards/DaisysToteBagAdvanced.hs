@@ -42,7 +42,7 @@ instance HasAbilities DaisysToteBagAdvanced where
 
 instance HasModifiersFor env DaisysToteBagAdvanced where
   getModifiersFor _ (InvestigatorTarget iid) (DaisysToteBagAdvanced a)
-    | ownedBy a iid = pure
+    | controlledBy a iid = pure
       [toModifier a $ CanBecomeFast (Just AssetType, [Tome])]
   getModifiersFor _ _ _ = pure []
 

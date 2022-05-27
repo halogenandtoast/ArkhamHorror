@@ -26,7 +26,7 @@ professorWarrenRice = allyWith
 
 instance HasModifiersFor env ProfessorWarrenRice where
   getModifiersFor _ (InvestigatorTarget iid) (ProfessorWarrenRice a) =
-    pure [ toModifier a (SkillModifier SkillIntellect 1) | ownedBy a iid ]
+    pure [ toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities ProfessorWarrenRice where

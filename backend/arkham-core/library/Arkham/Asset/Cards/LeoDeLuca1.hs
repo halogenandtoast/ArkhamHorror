@@ -17,7 +17,7 @@ leoDeLuca1 = ally LeoDeLuca1 Cards.leoDeLuca1 (2, 2)
 
 instance HasModifiersFor env LeoDeLuca1 where
   getModifiersFor _ (InvestigatorTarget iid) (LeoDeLuca1 a) =
-    pure [ toModifier a (AdditionalActions 1) | ownedBy a iid ]
+    pure [ toModifier a (AdditionalActions 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env LeoDeLuca1 where

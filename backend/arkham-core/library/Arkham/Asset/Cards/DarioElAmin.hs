@@ -26,7 +26,7 @@ darioElAmin = ally DarioElAmin Cards.darioElAmin (2, 2)
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env DarioElAmin where
   getModifiersFor _ (InvestigatorTarget iid) (DarioElAmin attrs)
-    | attrs `ownedBy` iid = do
+    | attrs `controlledBy` iid = do
       resources <- unResourceCount <$> getCount iid
       pure $ toModifiers attrs $ if resources >= 10
         then [SkillModifier SkillWillpower 1, SkillModifier SkillIntellect 1]

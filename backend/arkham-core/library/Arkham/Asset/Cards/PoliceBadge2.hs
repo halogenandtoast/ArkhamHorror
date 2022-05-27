@@ -24,7 +24,7 @@ policeBadge2 = asset PoliceBadge2 Cards.policeBadge2
 
 instance HasModifiersFor env PoliceBadge2 where
   getModifiersFor _ (InvestigatorTarget iid) (PoliceBadge2 a) =
-    pure [ toModifier a (SkillModifier SkillWillpower 1) | ownedBy a iid ]
+    pure [ toModifier a (SkillModifier SkillWillpower 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities PoliceBadge2 where

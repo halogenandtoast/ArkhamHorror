@@ -27,7 +27,7 @@ charlesRossEsq = ally CharlesRossEsq Cards.charlesRossEsq (1, 2)
 
 instance HasId LocationId env AssetId => HasModifiersFor env CharlesRossEsq where
   getModifiersFor _ (InvestigatorTarget iid) (CharlesRossEsq attrs)
-    | attrs `ownedBy` iid = do
+    | attrs `controlledBy` iid = do
       lid <- getId @LocationId (toId attrs)
       pure $ toModifiers
         attrs

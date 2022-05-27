@@ -31,7 +31,7 @@ instance HasModifiersFor env TheNecronomicon where
     | Token.tokenFace t == Token.ElderSign
     = pure
       [ toModifier a (ForcedTokenChange Token.ElderSign [Token.AutoFail])
-      | ownedBy a iid
+      | controlledBy a iid
       ]
   getModifiersFor _ _ _ = pure []
 

@@ -22,7 +22,7 @@ fineClothes =
 
 instance HasModifiersFor env FineClothes where
   getModifiersFor (SkillTestSource iid _ _ (Just Action.Parley)) (InvestigatorTarget iid') (FineClothes a)
-    | ownedBy a iid && iid == iid'
+    | controlledBy a iid && iid == iid'
     = pure $ toModifiers a [Difficulty (-2)]
   getModifiersFor _ _ _ = pure []
 

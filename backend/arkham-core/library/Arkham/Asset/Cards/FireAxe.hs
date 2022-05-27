@@ -28,7 +28,7 @@ fireAxe = asset FireAxe Cards.fireAxe
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAxe where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
-    | ownedBy a iid && isSource a source
+    | controlledBy a iid && isSource a source
     = do
       resourceCount <- getResourceCount iid
       pure $ toModifiers a [ DamageDealt 1 | resourceCount == 0 ]

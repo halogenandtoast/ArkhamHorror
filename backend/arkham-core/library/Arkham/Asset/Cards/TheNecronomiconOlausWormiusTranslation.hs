@@ -30,7 +30,7 @@ instance HasAbilities TheNecronomiconOlausWormiusTranslation where
 
 instance HasModifiersFor env TheNecronomiconOlausWormiusTranslation where
   getModifiersFor _ (InvestigatorTarget iid) (TheNecronomiconOlausWormiusTranslation a)
-    = pure $ toModifiers a [ SkillModifier SkillIntellect 1 | ownedBy a iid ]
+    = pure $ toModifiers a [ SkillModifier SkillIntellect 1 | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env TheNecronomiconOlausWormiusTranslation where

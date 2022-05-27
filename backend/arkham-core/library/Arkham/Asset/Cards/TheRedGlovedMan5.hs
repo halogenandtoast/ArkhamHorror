@@ -41,7 +41,7 @@ instance HasAbilities TheRedGlovedMan5 where
 
 instance HasModifiersFor env TheRedGlovedMan5 where
   getModifiersFor _ (InvestigatorTarget iid) (TheRedGlovedMan5 (a `With` Metadata {..}))
-    | ownedBy a iid
+    | controlledBy a iid
     = pure $ toModifiers a $ map (`BaseSkillOf` 6) chosenSkills
   getModifiersFor _ _ _ = pure []
 

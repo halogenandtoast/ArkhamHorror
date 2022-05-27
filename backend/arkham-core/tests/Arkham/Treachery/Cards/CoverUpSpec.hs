@@ -60,6 +60,7 @@ spec = describe "Cover Up" $ do
             id
           $ do
               runMessages
+              chooseOnlyOption "trigger cover up"
               getCount (toId investigator) `shouldReturn` MentalTraumaCount 1
 
   it "does not cause trauma when the game ends if there are no clues on it" $ do

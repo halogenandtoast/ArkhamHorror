@@ -12,10 +12,10 @@ spec = do
   describe "Dark Memory" $ do
     it "places 1 doom and can advance current agenda" $ do
       investigator <- testInvestigator id
-      agenda <- testAgenda "00000" (Agenda.doomThresholdL .~ Static 1)
+      agenda <- testAgenda "01105" (Agenda.doomThresholdL .~ Static 1)
       darkMemory <- buildEvent "01013" investigator
 
-      (didAdvanceAgenda, logger) <- createMessageMatcher (AdvanceAgenda "00000")
+      (didAdvanceAgenda, logger) <- createMessageMatcher (AdvanceAgenda "01105")
 
       gameTestWithLogger
           logger
@@ -25,7 +25,7 @@ spec = do
           . (entitiesL . agendasL %~ insertEntity agenda)
           )
         $ do
-            void runMessages
+            runMessages
             chooseOnlyOption "Advance agenda"
             chooseOptionMatching
               "have to choose horror option to avoid discard"
@@ -54,6 +54,7 @@ spec = do
           id
         $ do
             void runMessages
+            chooseOnlyOption "trigger dark memory"
             chooseOnlyOption "assign first horror"
             chooseOnlyOption "assign second horror"
             updated investigator `shouldSatisfyM` hasDamage (0, 2)

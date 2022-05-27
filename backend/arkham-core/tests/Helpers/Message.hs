@@ -77,6 +77,8 @@ beginSkillTest :: Investigator -> SkillType -> Int -> Message
 beginSkillTest i =
   BeginSkillTest (toId i) (TestSource mempty) TestTarget Nothing
 
-beginActionSkillTest :: Investigator -> Action -> SkillType -> Int -> Message
-beginActionSkillTest i a =
-  BeginSkillTest (toId i) (TestSource mempty) TestTarget (Just a)
+beginActionSkillTest :: Investigator -> Action -> Maybe Target -> SkillType -> Int -> Message
+beginActionSkillTest i a mt =
+  BeginSkillTest (toId i) (TestSource mempty) target (Just a)
+ where
+   target = fromMaybe TestTarget mt

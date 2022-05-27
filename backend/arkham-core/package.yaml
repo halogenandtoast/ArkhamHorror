@@ -77,3 +77,4 @@ tests:
       - mtl
       - MonadRandom
       - random
+      - containers

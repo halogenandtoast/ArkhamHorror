@@ -100,6 +100,21 @@ runMessages
   => m ()
 runMessages = asks testLogger >>= Game.runMessages
 
+pushAndRun
+  :: ( MonadIO m
+     , HasGameRef env
+     , HasStdGen env
+     , HasQueue env
+     , MonadReader env m
+     , HasGameLogger env
+     , env ~ TestApp
+     )
+  => Message
+  -> m ()
+pushAndRun msg = push msg >> runMessages
+
+
+
 shouldSatisfyM
   :: (HasCallStack, Show a, MonadIO m) => m a -> (a -> Bool) -> m ()
 x `shouldSatisfyM` y = liftIO . (`shouldSatisfy` y) =<< x

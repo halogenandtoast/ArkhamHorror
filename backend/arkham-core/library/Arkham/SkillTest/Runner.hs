@@ -125,6 +125,21 @@ instance SkillTestRunner env => RunMessage env SkillTest where
             <$ pushAll
               [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
     DrawAnotherToken iid -> do
+      withQueue_ $
+        filter $ \case
+          Will FailedSkillTest {} -> False
+          Will PassedSkillTest {} -> False
+          CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
+            False
+          CheckWindow _ [Window Timing.When (Window.WouldPassSkillTest _)] ->
+            False
+          RunWindow _ [Window Timing.When (Window.WouldPassSkillTest _)] ->
+            False
+          RunWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
+            False
+          Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
+            | skillTestInvestigator == skillTestInvestigator' -> False
+          _ -> True
       pushAll
         [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
       pure $ s & (resolvedTokensL %~ (<> skillTestRevealedTokens))
@@ -438,6 +453,10 @@ instance SkillTestRunner env => RunMessage env SkillTest where
             CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
               False
             CheckWindow _ [Window Timing.When (Window.WouldPassSkillTest _)] ->
+              False
+            RunWindow _ [Window Timing.When (Window.WouldPassSkillTest _)] ->
+              False
+            RunWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
               False
             Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
               | skillTestInvestigator == skillTestInvestigator' -> False

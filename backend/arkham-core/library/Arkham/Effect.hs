@@ -161,7 +161,6 @@ allEffects =
     , ("01085", WillToSurvive3' . willToSurvive3)
     , ("01088", SureGamble3' . sureGamble3)
     , ("01151", ArkhamWoodsTwistingPaths' . arkhamWoodsTwistingPaths)
-    , ("02009", RexsCurse' . rexsCurse)
     , ("02028", RiteOfSeeking' . riteOfSeeking)
     , ("02031", BindMonster2' . bindMonster2)
     , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)

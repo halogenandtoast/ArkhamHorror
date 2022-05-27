@@ -7,6 +7,7 @@ import TestImport
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Matcher
 
 spec :: Spec
 spec = describe "Jim's Trumpet" $ do
@@ -133,7 +134,7 @@ spec = describe "Jim's Trumpet" $ do
     it "cannot target an investigator at an unconnected location" $ do
       investigator <- testInvestigator id
       investigator2 <- testInvestigator
-        (Investigator.sanityDamageL .~ 1)
+        ((Investigator.sanityDamageL .~ 1) . (Investigator.idL .~ "01001"))
       jimsTrumpet <- buildAsset "02012"
       rivertown <- createLocation <$> genEncounterCard Cards.rivertown
       downtown <- createLocation <$> genEncounterCard Cards.downtownArkhamAsylum

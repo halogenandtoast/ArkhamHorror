@@ -11,14 +11,6 @@ import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Jenny's Twin .45s" $ do
-  let
-    payResource = chooseOptionMatching
-      "pay 1 resource"
-      (\case
-        Label "Increase spent resources" _ -> True
-        _ -> False
-      )
-
   it "enters play with X uses" $ do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
     investigator <- testInvestigator $ \attrs -> attrs
@@ -27,18 +19,14 @@ spec = describe "Jenny's Twin .45s" $ do
       }
     gameTest
         investigator
-        [playDynamicCard investigator (PlayerCard jennysTwin45s)]
+        [playDynamicCard investigator (PlayerCard jennysTwin45s) 5]
         id
       $ do
           runMessages
-          payResource
-          payResource
-          payResource
-          payResource
-          payResource
           updatedJennysTwin45s <- getAsset (AssetId $ pcId jennysTwin45s)
           updatedJennysTwin45s `shouldSatisfy` hasUses 5
-  it "gives +2 combat and does +1 damage" $ do
+
+  fit "gives +2 combat and does +1 damage" $ do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
     investigator <- testInvestigator $ \attrs -> attrs
       { investigatorResources = 1
@@ -50,16 +38,16 @@ spec = describe "Jenny's Twin .45s" $ do
     gameTest
         investigator
         [ SetTokens [Zero]
-        , playDynamicCard investigator (PlayerCard jennysTwin45s)
+        , playDynamicCard investigator (PlayerCard jennysTwin45s) 1
         ]
         ((entitiesL . enemiesL %~ insertEntity enemy)
         . (entitiesL . locationsL %~ insertEntity location)
         )
       $ do
           runMessages
-          payResource
           pushAll
-            [ enemySpawn location enemy
+            [ PayedForDynamicCard (toId investigator) (toCardId jennysTwin45s) 1 True
+            , enemySpawn location enemy
             , moveTo investigator location
             , UseCardAbility
               (toId investigator)
@@ -69,7 +57,7 @@ spec = describe "Jenny's Twin .45s" $ do
               (UsesPayment 1)
             ]
           runMessages
-          chooseOnlyOption "choose enemy"
-          chooseOnlyOption "start skill test"
-          chooseOnlyOption "apply results"
+          -- chooseOnlyOption "choose enemy"
+          -- chooseOnlyOption "start skill test"
+          -- chooseOnlyOption "apply results"
           updated enemy `shouldSatisfyM` hasDamage (2, 0)

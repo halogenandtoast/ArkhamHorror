@@ -63,8 +63,8 @@ playAsset i a =
 placedLocation :: Location -> Message
 placedLocation l = PlacedLocation (toName l) (toCardCode l) (toId l)
 
-playDynamicCard :: Investigator -> Card -> Message
-playDynamicCard i c = PlayDynamicCard (toId i) (toCardId c) 0 Nothing True
+playDynamicCard :: Investigator -> Card -> Int -> Message
+playDynamicCard i c n = PlayDynamicCard (toId i) (toCardId c) n Nothing True
 
 drawCards :: Investigator -> Int -> Message
 drawCards i n = DrawCards (toId i) n False

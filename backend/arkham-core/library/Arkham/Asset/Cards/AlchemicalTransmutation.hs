@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Target
 
@@ -24,7 +25,7 @@ alchemicalTransmutation =
 instance HasAbilities AlchemicalTransmutation where
   getAbilities (AlchemicalTransmutation a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
-        [ExhaustCost (toTarget a), UseCost (toId a) Charge 1]
+        [ExhaustCost (toTarget a), UseCost (AssetWithId $ toId a) Charge 1]
     ]
 
 instance AssetRunner env => RunMessage env AlchemicalTransmutation where

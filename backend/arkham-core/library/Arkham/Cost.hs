@@ -5,7 +5,6 @@ module Arkham.Cost
 import Arkham.Prelude
 
 import Arkham.Asset.Uses
-import Arkham.AssetId
 import Arkham.Card
 import Arkham.GameValue
 import Arkham.Matcher
@@ -89,7 +88,7 @@ data Cost
   | HorrorCost Source Target Int
   | Free
   | ResourceCost Int
-  | UseCost AssetId UseType Int
+  | UseCost AssetMatcher UseType Int
   | UpTo Int Cost
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

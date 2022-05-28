@@ -27,7 +27,7 @@ instance HasAbilities SpringfieldM19034 where
   getAbilities (SpringfieldM19034 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
-        (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
+        (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1])
     ]
 
 instance AssetRunner env => RunMessage env SpringfieldM19034 where

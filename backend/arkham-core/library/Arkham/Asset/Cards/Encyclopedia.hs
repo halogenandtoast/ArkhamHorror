@@ -13,6 +13,7 @@ import Arkham.Criteria
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
@@ -27,7 +28,7 @@ encyclopedia = asset Encyclopedia Cards.encyclopedia
 instance HasAbilities Encyclopedia where
   getAbilities (Encyclopedia a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
-        [ActionCost 1, ExhaustCost (toTarget a), UseCost (toId a) Secret 1]
+        [ActionCost 1, ExhaustCost (toTarget a), UseCost (AssetWithId $ toId a) Secret 1]
     ]
 
 instance AssetRunner env => RunMessage env Encyclopedia where

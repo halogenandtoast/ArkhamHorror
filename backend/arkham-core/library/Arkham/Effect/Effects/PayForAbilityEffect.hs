@@ -196,7 +196,7 @@ instance
           e <$ when
             canAfford
             (push $ Ask iid $ ChoosePaymentAmounts
-              ("Pay up to " <> displayCostType cost')
+              ("Pay " <> displayCostType cost)
               Nothing
               [ ( iid
                 , (0, n)
@@ -330,8 +330,12 @@ instance
           let modifiedActionCost = max 0 (x + costModifier)
           push (SpendActions iid source modifiedActionCost)
           withPayment $ ActionPayment x
-        UseCost aid uType n -> do
-          push (SpendUses (AssetTarget aid) uType n)
+        UseCost assetMatcher uType n -> do
+          assets <- selectList assetMatcher
+          push $ chooseOrRunOne iid
+            [ TargetLabel (AssetTarget aid) [SpendUses (AssetTarget aid) uType n]
+            | aid <- assets
+            ]
           withPayment $ UsesPayment n
         ClueCost x -> do
           push (InvestigatorSpendClues iid x)

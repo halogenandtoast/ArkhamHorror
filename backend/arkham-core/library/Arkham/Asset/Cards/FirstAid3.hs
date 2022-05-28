@@ -25,7 +25,7 @@ firstAid3 =
 instance HasAbilities FirstAid3 where
   getAbilities (FirstAid3 x) =
     [ restrictedAbility x 1 OwnsThis $ ActionAbility Nothing $ Costs
-        [ActionCost 1, UseCost (toId x) Supply 1]
+        [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
 
 instance AssetRunner env => RunMessage env FirstAid3 where

@@ -29,7 +29,7 @@ instance HasAbilities ClarityOfMind where
             (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
           )
         $ ActionAbility Nothing
-        $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
+        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
     ]
 
 instance AssetRunner env => RunMessage env ClarityOfMind where

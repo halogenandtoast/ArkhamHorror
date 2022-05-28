@@ -28,7 +28,7 @@ instance HasAbilities Painkillers where
         (OwnsThis <> InvestigatorExists (You <> InvestigatorWithAnyDamage))
         (FastAbility
           (Costs
-            [ UseCost (toId a) Supply 1
+            [ UseCost (AssetWithId $ toId a) Supply 1
             , ExhaustCost (toTarget a)
             , HorrorCost (toSource a) YouTarget 1
             ]

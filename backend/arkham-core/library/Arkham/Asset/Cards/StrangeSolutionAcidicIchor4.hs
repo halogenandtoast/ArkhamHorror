@@ -11,6 +11,7 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Source
@@ -28,7 +29,7 @@ instance HasAbilities StrangeSolutionAcidicIchor4 where
   getAbilities (StrangeSolutionAcidicIchor4 attrs) =
     [ restrictedAbility attrs 1 OwnsThis
       $ ActionAbility (Just Action.Fight)
-      $ Costs [ActionCost 1, UseCost (toId attrs) Supply 1]
+      $ Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Supply 1]
     ]
 
 instance HasModifiersFor env StrangeSolutionAcidicIchor4 where

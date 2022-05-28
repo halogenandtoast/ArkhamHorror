@@ -11,6 +11,7 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
@@ -25,7 +26,7 @@ songOfTheDead2 = asset SongOfTheDead2 Cards.songOfTheDead2
 instance HasAbilities SongOfTheDead2 where
   getAbilities (SongOfTheDead2 x) =
     [ restrictedAbility x 1 OwnsThis $ ActionAbility (Just Action.Fight) $ Costs
-        [ActionCost 1, UseCost (toId x) Charge 1]
+        [ActionCost 1, UseCost (AssetWithId $ toId x) Charge 1]
     ]
 
 instance AssetRunner env => RunMessage env SongOfTheDead2 where

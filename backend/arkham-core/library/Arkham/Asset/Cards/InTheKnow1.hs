@@ -27,7 +27,7 @@ instance HasAbilities InTheKnow1 where
     [ restrictedAbility attrs 1 OwnsThis
         $ ActionAbility (Just Action.Investigate)
         $ ActionCost 1
-        <> UseCost (toId attrs) Secret 1
+        <> UseCost (AssetWithId $ toId attrs) Secret 1
     ]
 
 instance AssetRunner env => RunMessage env InTheKnow1 where

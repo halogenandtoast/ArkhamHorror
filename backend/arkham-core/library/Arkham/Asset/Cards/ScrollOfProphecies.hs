@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Target
 
 newtype ScrollOfProphecies = ScrollOfProphecies AssetAttrs
@@ -26,7 +27,7 @@ instance HasAbilities ScrollOfProphecies where
         x
         1
         OwnsThis
-        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId x) Secret 1]
+        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Secret 1]
         )
     ]
 

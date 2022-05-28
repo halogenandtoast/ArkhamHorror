@@ -11,6 +11,7 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
@@ -25,7 +26,7 @@ chicagoTypewriter4 = asset ChicagoTypewriter4 Cards.chicagoTypewriter4
 instance HasAbilities ChicagoTypewriter4 where
   getAbilities (ChicagoTypewriter4 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility (Just Action.Fight) $ Costs
-        [ActionCost 1, AdditionalActionsCost, UseCost (toId a) Ammo 1]
+        [ActionCost 1, AdditionalActionsCost, UseCost (AssetWithId $ toId a) Ammo 1]
     ]
 
 getAbilitiesSpent :: Payment -> Int

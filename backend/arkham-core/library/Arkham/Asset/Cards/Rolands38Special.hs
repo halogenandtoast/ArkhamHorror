@@ -13,6 +13,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Attrs
 import Arkham.Location.Attrs
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType
@@ -29,7 +30,7 @@ instance HasAbilities Rolands38Special where
   getAbilities (Rolands38Special x) =
     [ restrictedAbility x 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
-        (Costs [ActionCost 1, UseCost (toId x) Ammo 1])
+        (Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Ammo 1])
     ]
 
 instance AssetRunner env => RunMessage env Rolands38Special where

@@ -33,7 +33,7 @@ instance HasAbilities StrangeSolutionRestorativeConcoction4 where
           (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
         )
       $ ActionAbility Nothing
-      $ Costs [ActionCost 1, UseCost (toId x) Supply 1]
+      $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
 
 instance AssetRunner env => RunMessage env StrangeSolutionRestorativeConcoction4 where

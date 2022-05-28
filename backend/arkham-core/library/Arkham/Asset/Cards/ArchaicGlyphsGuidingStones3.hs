@@ -12,6 +12,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Query
 import Arkham.SkillType
 import Arkham.Target
@@ -24,7 +25,7 @@ instance HasAbilities ArchaicGlyphsGuidingStones3 where
   getAbilities (ArchaicGlyphsGuidingStones3 a) =
     [ restrictedAbility a 1 OwnsThis
         $ ActionAbility (Just Action.Investigate)
-        $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
+        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
     ]
 
 archaicGlyphsGuidingStones3 :: AssetCard ArchaicGlyphsGuidingStones3

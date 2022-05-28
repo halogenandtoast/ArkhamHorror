@@ -83,6 +83,7 @@ allPlayerSkillCards = mapFromList $ map
   , survivalInstinct2
   , takeHeart
   , theHomeFront
+  , torrentOfPower
   , trueUnderstanding
   , unexpectedCourage
   , unexpectedCourage2
@@ -324,6 +325,11 @@ watchThis :: CardDef
 watchThis = (skill "03233" "\"Watch this!\"" [SkillWillpower, SkillCombat, SkillAgility] Rogue)
   { cdCardTraits = singleton Gambit
   , cdCommitRestrictions = [OnlyYourTest]
+  }
+
+torrentOfPower :: CardDef
+torrentOfPower = (skill "03235" "Torrent of Power" [SkillWild] Mystic)
+  { cdCardTraits = singleton Practiced
   }
 
 trueUnderstanding :: CardDef

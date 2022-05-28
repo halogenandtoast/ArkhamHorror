@@ -24,7 +24,7 @@ instance HasAbilities ArchaicGlyphsProphecyForetold3 where
   getAbilities (ArchaicGlyphsProphecyForetold3 a) =
     [ restrictedAbility a 1 OwnsThis
         $ ActionAbility (Just Action.Investigate)
-        $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
+        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
     ]
 
 archaicGlyphsProphecyForetold3 :: AssetCard ArchaicGlyphsProphecyForetold3

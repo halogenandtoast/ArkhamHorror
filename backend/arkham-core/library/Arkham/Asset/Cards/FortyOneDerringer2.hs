@@ -12,6 +12,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
@@ -32,7 +33,7 @@ instance HasAbilities FortyOneDerringer2 where
   getAbilities (FortyOneDerringer2 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
-        (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
+        (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1])
     ]
 
 instance AssetRunner env => RunMessage env FortyOneDerringer2 where

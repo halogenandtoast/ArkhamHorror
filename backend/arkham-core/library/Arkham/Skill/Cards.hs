@@ -64,7 +64,7 @@ allPlayerSkillCards = mapFromList $ map
   , fearless2
   , guts
   , inquiringMind
-  , inspiringPrescence
+  , inspiringPresence
   , leadership
   , manualDexterity
   , neitherRainNorSnow
@@ -310,8 +310,8 @@ runForYourLife = (skill
     ]
   }
 
-inspiringPrescence :: CardDef
-inspiringPrescence = (skill "03228" "Inspiring Prescence" [SkillWillpower, SkillIntellect, SkillCombat] Guardian)
+inspiringPresence :: CardDef
+inspiringPresence = (skill "03228" "Inspiring Presence" [SkillWillpower, SkillIntellect, SkillCombat] Guardian)
   { cdCardTraits = singleton Innate
   }
 

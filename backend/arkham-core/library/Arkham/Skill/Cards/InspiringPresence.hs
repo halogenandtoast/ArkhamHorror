@@ -1,6 +1,6 @@
-module Arkham.Skill.Cards.InspiringPrescence
-  ( inspiringPrescence
-  , InspiringPrescence(..)
+module Arkham.Skill.Cards.InspiringPresence
+  ( inspiringPresence
+  , InspiringPresence(..)
   )
 where
 
@@ -16,16 +16,16 @@ import Arkham.Target
 import Arkham.Skill.Attrs
 import Arkham.Skill.Runner
 
-newtype InspiringPrescence = InspiringPrescence SkillAttrs
+newtype InspiringPresence = InspiringPresence SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-inspiringPrescence :: SkillCard InspiringPrescence
-inspiringPrescence =
-  skill InspiringPrescence Cards.inspiringPrescence
+inspiringPresence :: SkillCard InspiringPresence
+inspiringPresence =
+  skill InspiringPresence Cards.inspiringPresence
 
-instance SkillRunner env => RunMessage env InspiringPrescence where
-  runMessage msg s@(InspiringPrescence attrs) = case msg of
+instance SkillRunner env => RunMessage env InspiringPresence where
+  runMessage msg s@(InspiringPresence attrs) = case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       assets <- selectList
         $ AssetAt
@@ -54,4 +54,4 @@ instance SkillRunner env => RunMessage env InspiringPrescence where
       unless (null choices) $
         push $ chooseOne (skillOwner attrs) choices
       pure s
-    _ -> InspiringPrescence <$> runMessage msg attrs
+    _ -> InspiringPresence <$> runMessage msg attrs

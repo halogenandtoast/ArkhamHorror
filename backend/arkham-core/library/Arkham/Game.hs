@@ -76,6 +76,7 @@ import Arkham.Scenario
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Skill
+import Arkham.Skill.Attrs (SkillAttrs(..))
 import Arkham.SkillTest.Runner
 import Arkham.SkillType
 import Arkham.Slot
@@ -3474,6 +3475,9 @@ runGameMessage msg g = case msg of
             skill = createSkill pc iid
             skillId = toId skill
           push (InvestigatorCommittedSkill iid skillId)
+          for_ (skillAdditionalCost $ toAttrs skill) $ \cost -> do
+            let ability = abilityEffect skill cost
+            push $ CreatePayAbilityCostEffect ability (toSource skill) (InvestigatorTarget iid) []
           pure $ g & entitiesL . skillsL %~ insertMap skillId skill
         _ -> pure g
       _ -> pure g

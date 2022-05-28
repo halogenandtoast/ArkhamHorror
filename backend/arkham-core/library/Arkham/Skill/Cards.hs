@@ -59,6 +59,7 @@ allPlayerSkillCards = mapFromList $ map
   , defiance
   , desperateSearch
   , doubleOrNothing
+  , eureka
   , fearless
   , fearless2
   , guts
@@ -87,6 +88,7 @@ allPlayerSkillCards = mapFromList $ map
   , unexpectedCourage2
   , viciousBlow
   , viciousBlow2
+  , watchThis
   ]
 
 viciousBlow :: CardDef

@@ -161,6 +161,7 @@ allPlayerAssetCards = mapFromList $ map
   , fortyFiveAutomatic
   , fortyFiveAutomatic2
   , fortyOneDerringer
+  , fortyOneDerringer2
   , gravediggersShovel
   , grotesqueStatue4
   , grounded1
@@ -1692,6 +1693,14 @@ firstAid3 = (asset "03230" "First Aid" 2 Guardian)
   , cdCardTraits = setFromList [Talent, Science]
   , cdUses = Uses Supply 4
   , cdLevel = 3
+  }
+
+fortyOneDerringer2 :: CardDef
+fortyOneDerringer2 = (asset "03234" ".41 Derringer" 3 Rogue)
+  { cdSkills = [SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdUses = Uses Ammo 3
+  , cdSlots = [HandSlot]
   }
 
 toothOfEztli :: CardDef

@@ -514,7 +514,10 @@ chooseOptionMatching _reason f = do
       ChooseOne msgs -> case find f msgs of
         Just msg -> push msg <* runMessages
         Nothing -> error "could not find a matching message"
-      _ -> error "unsupported questions type"
+      ChooseDynamicCardAmounts _ _ _ _ msgs -> case find f msgs of
+        Just msg -> push msg <* runMessages
+        Nothing -> error "could not find a matching message"
+      _ -> error $ "unsupported questions type: " <> show question
     _ -> error "There must be only one question to use this function"
 
 gameTest

@@ -6,10 +6,10 @@ module Arkham.Event.Cards.Waylay
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Event.Attrs
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Enemy.Attrs (Field(..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -35,8 +35,8 @@ instance EventRunner env => RunMessage env Waylay where
       pushAll
         [ chooseOne
           iid
-          [ TargetLabel
-              (EnemyTarget enemy)
+          [ targetLabel
+              enemy
               [ BeginSkillTest
                   iid
                   (toSource attrs)

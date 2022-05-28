@@ -161,6 +161,7 @@ allPlayerEventCards = mapFromList $ map
   , uncageTheSoul
   , wardOfProtection
   , wardOfProtection5
+  , waylay
   , willToSurvive3
   , wingingIt
   , workingAHunch

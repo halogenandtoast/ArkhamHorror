@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import qualified Arkham.Enemy.Cards as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Runner hiding (EnemyEvade)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType

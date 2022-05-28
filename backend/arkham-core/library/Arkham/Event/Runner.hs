@@ -3,8 +3,10 @@ module Arkham.Event.Runner where
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
+import Arkham.Enemy.Attrs (EnemyAttrs)
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Query
 import Arkham.SkillTest
 import Arkham.Source
@@ -20,6 +22,7 @@ type EventRunner env
     , Query AssetMatcher env
     , Query LocationMatcher env
     , Query EnemyMatcher env
+    , Projection env EnemyAttrs
     , GetCardDef env AssetId
     , HasCount Shroud env LocationId
     , HasCount ClueCount env InvestigatorId

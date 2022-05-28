@@ -3345,14 +3345,9 @@ runGameMessage msg g = case msg of
           $ if null choices then [Label "No cards found" []] else choices
           )
       DeferSearchedToTarget searchTarget -> do
-        let
-          choices =
-            [SearchFound iid searchTarget Deck.EncounterDeck targetCards]
-        push
-          (chooseOne iid $ if null targetCards
-            then [Label "No cards found" [SearchNoneFound iid searchTarget]]
-            else choices
-          )
+        push $ if null targetCards
+          then chooseOne iid [Label "No cards found" [SearchNoneFound iid searchTarget]]
+          else SearchFound iid searchTarget Deck.EncounterDeck targetCards
       PlayFound{} -> error "PlayFound is not a valid EncounterDeck strategy"
       ReturnCards -> pure ()
 

@@ -242,6 +242,7 @@ allPlayerAssetCards = mapFromList $ map
   , scrapper3
   , scrollOfProphecies
   , scrying
+  , scrying3
   , shotgun4
   , shrivelling
   , shrivelling3
@@ -1701,6 +1702,16 @@ fortyOneDerringer2 = (asset "03234" ".41 Derringer" 3 Rogue)
   , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
   , cdUses = Uses Ammo 3
   , cdSlots = [HandSlot]
+  , cdLevel = 2
+  }
+
+scrying3 :: CardDef
+scrying3 = (asset "03236" "Scrying" 1 Mystic)
+  { cdSkills = [SkillIntellect, SkillIntellect]
+  , cdCardTraits = setFromList [Spell]
+  , cdUses = Uses Charge 3
+  , cdSlots = [ArcaneSlot]
+  , cdLevel = 3
   }
 
 toothOfEztli :: CardDef

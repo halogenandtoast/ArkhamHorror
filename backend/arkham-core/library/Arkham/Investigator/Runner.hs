@@ -1826,14 +1826,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             $ if null choices then [Label "No cards found" []] else choices
             )
         DeferSearchedToTarget searchTarget -> do
-          let
-            choices =
-              [SearchFound iid searchTarget (InvestigatorDeck iid) targetCards]
-          push
-            (chooseOne iid $ if null targetCards
-              then [Label "No cards found" [SearchNoneFound iid searchTarget]]
-              else choices
-            )
+          push $ if null targetCards
+             then chooseOne iid [Label "No cards found" [SearchNoneFound iid searchTarget]]
+             else SearchFound iid searchTarget (InvestigatorDeck iid) targetCards
         ReturnCards -> pure ()
 
       push $ CheckWindow [iid] [Window Timing.When (Window.AmongSearchedCards iid)]

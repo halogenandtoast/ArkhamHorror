@@ -5,11 +5,11 @@ module Arkham.Event.Cards.AChanceEncounter2
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Classes
 import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Id
 import Arkham.Message
@@ -47,7 +47,13 @@ instance
               (fmap (map unDiscardedPlayerCard) . getList)
               investigatorIds
       let
-        filteredDiscards = filter (and . sequence [elem Ally . toTraits, (== payment) . maybe 0 toPrintedCost . cdCost . toCardDef]) discards
+        filteredDiscards = filter
+          (and . sequence
+            [ elem Ally . toTraits
+            , (== payment) . maybe 0 toPrintedCost . cdCost . toCardDef
+            ]
+          )
+          discards
 
       -- Normally we would not error like this, but verifying card costs to
       -- match what is paid is quite difficult. The front-end should just not

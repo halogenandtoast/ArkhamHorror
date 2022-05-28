@@ -7,7 +7,6 @@ import TestImport
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Investigator.Attrs qualified as Investigator
-import Arkham.Matcher
 
 spec :: Spec
 spec = describe "Jim's Trumpet" $ do

@@ -514,6 +514,9 @@ chooseOptionMatching _reason f = do
       ChooseOne msgs -> case find f msgs of
         Just msg -> push msg <* runMessages
         Nothing -> error "could not find a matching message"
+      ChooseN _ msgs -> case find f msgs of
+        Just msg -> push msg <* runMessages
+        Nothing -> error "could not find a matching message"
       ChooseDynamicCardAmounts _ _ _ _ msgs -> case find f msgs of
         Just msg -> push msg <* runMessages
         Nothing -> error "could not find a matching message"

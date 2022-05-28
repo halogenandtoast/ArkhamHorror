@@ -305,8 +305,9 @@ getCanAffordCost iid source mAction windows' = \case
     _ -> error "Not handled"
   ExhaustAssetCost matcher ->
     notNull <$> select (matcher <> Matcher.AssetReady)
-  UseCost aid _uType n -> do
-    uses <- unUsesCount <$> getCount aid
+  UseCost assetMatcher _uType n -> do
+    assets <- selectList assetMatcher
+    uses <- sum <$> traverse (fmap unUsesCount . getCount) assets
     pure $ uses >= n
   ActionCost n -> do
     modifiers <- getModifiers source (InvestigatorTarget iid)

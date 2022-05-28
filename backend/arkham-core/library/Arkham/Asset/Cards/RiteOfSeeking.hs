@@ -12,6 +12,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Target
 
@@ -30,7 +31,7 @@ instance HasAbilities RiteOfSeeking where
         OwnsThis
         (ActionAbility
           (Just Action.Investigate)
-          (Costs [ActionCost 1, UseCost (toId a) Charge 1])
+          (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
         )
     ]
 

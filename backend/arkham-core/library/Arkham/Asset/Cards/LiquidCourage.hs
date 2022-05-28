@@ -30,7 +30,7 @@ instance HasAbilities LiquidCourage where
         (OwnsThis <> InvestigatorExists
           (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
         )
-        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (toId x) Supply 1]
+        (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
         )
     ]
 

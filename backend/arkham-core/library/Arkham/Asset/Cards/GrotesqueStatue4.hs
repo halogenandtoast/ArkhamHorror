@@ -31,7 +31,7 @@ instance HasAbilities GrotesqueStatue4 where
         1
         OwnsThis
         (ReactionAbility (WouldRevealChaosToken Timing.When You)
-        $ UseCost (toId x) Charge 1
+        $ UseCost (AssetWithId $ toId x) Charge 1
         )
     ]
 

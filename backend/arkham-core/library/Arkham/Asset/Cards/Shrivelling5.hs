@@ -12,6 +12,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.EffectMetadata
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
@@ -27,7 +28,7 @@ instance HasAbilities Shrivelling5 where
   getAbilities (Shrivelling5 a) =
     [ restrictedAbility a 1 OwnsThis $ ActionAbility
         (Just Action.Fight)
-        (Costs [ActionCost 1, UseCost (toId a) Charge 1])
+        (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
 
 instance AssetRunner env => RunMessage env Shrivelling5 where

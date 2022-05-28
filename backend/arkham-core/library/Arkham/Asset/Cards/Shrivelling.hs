@@ -11,6 +11,7 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
@@ -27,7 +28,7 @@ instance HasAbilities Shrivelling where
     [ restrictedAbility a 1 OwnsThis $ ActionAbilityWithSkill
         (Just Action.Fight)
         SkillWillpower
-        (Costs [ActionCost 1, UseCost (toId a) Charge 1])
+        (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
 
 instance AssetRunner env => RunMessage env Shrivelling where

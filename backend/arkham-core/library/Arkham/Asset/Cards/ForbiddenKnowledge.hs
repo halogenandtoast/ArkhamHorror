@@ -7,6 +7,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Matcher
 import Arkham.Target
 
 newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
@@ -26,7 +27,7 @@ instance HasAbilities ForbiddenKnowledge where
         1
         OwnsThis
         (FastAbility $ Costs
-          [ UseCost (toId a) Secret 1
+          [ UseCost (AssetWithId $ toId a) Secret 1
           , HorrorCost (toSource a) YouTarget 1
           , ExhaustCost (toTarget a)
           ]

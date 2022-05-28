@@ -28,7 +28,7 @@ instance HasAbilities SmokingPipe where
         (OwnsThis <> InvestigatorExists (You <> InvestigatorWithAnyHorror))
         (FastAbility
           (Costs
-            [ UseCost (toId a) Supply 1
+            [ UseCost (AssetWithId $ toId a) Supply 1
             , ExhaustCost (toTarget a)
             , DamageCost (toSource a) YouTarget 1
             ]

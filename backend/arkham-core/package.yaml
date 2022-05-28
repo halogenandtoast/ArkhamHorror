@@ -64,17 +64,13 @@ tests:
     source-dirs: tests
     ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
     dependencies:
-      - classy-prelude
       - arkham-core
       - hspec
-      - hspec-core
-      - hspec-expectations
       - hspec-expectations-lifted
       - lens
       - these
       - uuid
       - unordered-containers >= 0.2.12.0
       - mtl
-      - MonadRandom
       - random
       - containers

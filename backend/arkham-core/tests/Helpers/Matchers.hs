@@ -52,6 +52,9 @@ instance ToPlayerCard PlayerCard where
 instance ToPlayerCard Event where
   asPlayerCard event = lookupPlayerCard (toCardDef event) (toCardId event)
 
+instance ToPlayerCard Asset where
+  asPlayerCard asset = lookupPlayerCard (toCardDef asset) (toCardId asset)
+
 instance ToPlayerCard Treachery where
   asPlayerCard treachery =
     lookupPlayerCard (toCardDef treachery) (toCardId treachery)

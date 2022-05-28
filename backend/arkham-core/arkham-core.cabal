@@ -1286,6 +1286,7 @@ test-suite spec
       Arkham.Asset.Cards.HyperawarenessSpec
       Arkham.Asset.Cards.JennysTwin45sSpec
       Arkham.Asset.Cards.JimsTrumpetSpec
+      Arkham.Asset.Cards.KnifeSpec
       Arkham.Asset.Cards.PeterSylvestreSpec
       Arkham.Asset.Cards.PhysicalTraining2Spec
       Arkham.Asset.Cards.PhysicalTrainingSpec
@@ -1369,14 +1370,10 @@ test-suite spec
       ViewPatterns
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-depends:
-      MonadRandom
-    , arkham-core
+      arkham-core
     , base >=4.7 && <5
-    , classy-prelude
     , containers
     , hspec
-    , hspec-core
-    , hspec-expectations
     , hspec-expectations-lifted
     , lens
     , mtl

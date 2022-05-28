@@ -15,7 +15,6 @@ import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Trait
 import Arkham.Treachery.Attrs
 import Arkham.Treachery.Runner
 

@@ -1691,6 +1691,7 @@ firstAid3 = (asset "03230" "First Aid" 2 Guardian)
   { cdSkills = [SkillWillpower, SkillWillpower]
   , cdCardTraits = setFromList [Talent, Science]
   , cdUses = Uses Supply 4
+  , cdLevel = 3
   }
 
 toothOfEztli :: CardDef

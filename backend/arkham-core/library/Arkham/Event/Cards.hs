@@ -59,6 +59,7 @@ allPlayerEventCards :: HashMap CardCode CardDef
 allPlayerEventCards = mapFromList $ map
   (toCardCode &&& id)
   [ aChanceEncounter
+  , aChanceEncounter2
   , aTestOfWill1
   , aceInTheHole3
   , ambush1
@@ -953,6 +954,16 @@ waylay = (event "03237" "Waylay" 3 Survivor)
   , cdCardTraits = singleton Tactic
   , cdCriteria =
     Just $ Criteria.EnemyCriteria (Criteria.EnemyExists $ NonEliteEnemy <> EnemyAt YourLocation <> ExhaustedEnemy)
+  }
+
+aChanceEncounter2 :: CardDef
+aChanceEncounter2 = (event "03238" "A Chance Encounter" 0 Survivor)
+  { cdSkills = [SkillWillpower, SkillIntellect]
+  , cdCardTraits = singleton Fortune
+  , cdCost = Just DynamicCost
+  , cdCriteria = Just
+    $ Criteria.ReturnableCardInDiscard Criteria.AnyPlayerDiscard [Ally]
+  , cdLevel = 2
   }
 
 secondWind :: CardDef

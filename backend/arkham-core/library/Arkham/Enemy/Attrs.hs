@@ -26,7 +26,8 @@ import Arkham.Matcher
   , pattern AloofEnemy
   )
 import Arkham.Message
-import Arkham.Modifier
+import Arkham.Modifier hiding (EnemyEvade)
+import Arkham.Modifier qualified as Modifier
 import Arkham.Name
 import Arkham.Query
 import Arkham.SkillTest
@@ -42,6 +43,7 @@ type EnemyCard a = CardBuilder EnemyId a
 
 data instance Field EnemyAttrs :: Type -> Type where
   EnemyDoom :: Field EnemyAttrs Int
+  EnemyEvade :: Field EnemyAttrs Int
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
@@ -235,7 +237,7 @@ modifiedEnemyEvade EnemyAttrs {..} = do
   modifiers' <- getModifiers source (EnemyTarget enemyId)
   pure $ foldr applyModifier enemyEvade modifiers'
  where
-  applyModifier (EnemyEvade m) n = max 0 (n + m)
+  applyModifier (Modifier.EnemyEvade m) n = max 0 (n + m)
   applyModifier _ n = n
 
 getModifiedDamageAmount

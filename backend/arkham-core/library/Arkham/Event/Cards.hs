@@ -946,6 +946,14 @@ shortcut2 = (event "03232" "Shortcut" 1 Seeker)
   , cdLevel = 2
   }
 
+waylay :: CardDef
+waylay = (event "03237" "Waylay" 3 Survivor)
+  { cdSkills = [SkillAgility, SkillAgility]
+  , cdCardTraits = singleton Tactic
+  , cdCriteria =
+    Just $ Criteria.EnemyCriteria (Criteria.EnemyExists $ NonEliteEnemy <> EnemyAt YourLocation <> ExhaustedEnemy)
+  }
+
 secondWind :: CardDef
 secondWind = (event "04149" "Second Wind" 1 Guardian)
   { cdSkills = [SkillWillpower]

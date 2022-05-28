@@ -65,7 +65,7 @@ import Arkham.Matcher hiding
   )
 import Arkham.Matcher qualified as M
 import Arkham.Message hiding (AssetDamage)
-import Arkham.Modifier
+import Arkham.Modifier hiding (EnemyEvade)
 import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
@@ -1564,6 +1564,7 @@ instance HasGame env => Projection env EnemyAttrs where
     e <- getEnemy eid
     case f of
       EnemyDoom -> pure . enemyDoom $ toAttrs e
+      EnemyEvade -> pure . enemyEvade $ toAttrs e
 
 instance HasGame env => Projection env InvestigatorAttrs where
   field f iid = do

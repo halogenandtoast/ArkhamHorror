@@ -77,7 +77,8 @@ instance LocationRunner env => RunMessage env StoneArchways where
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
       case cards of
         [card] -> do
-          pushAll $ placeAtDirection RightOf attrs card
+          msgs <- placeAtDirection RightOf attrs <*> pure card
+          pushAll msgs
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l

@@ -82,10 +82,9 @@ instance LocationRunner env => RunMessage env WellOfSouls where
     DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
       case cards of
         [card] -> do
-          let
-            placeAbove = placeAtDirection Above attrs card
-            placeBelow = placeAtDirection Below attrs card
-            placeRight = placeAtDirection RightOf attrs card
+          placeAbove <- placeAtDirection Above attrs <*> pure card
+          placeBelow <- placeAtDirection Below attrs <*> pure card
+          placeRight <- placeAtDirection RightOf attrs <*> pure card
           aboveEmpty <- directionEmpty attrs Above
           belowEmpty <- directionEmpty attrs Below
           rightEmpty <- directionEmpty attrs RightOf

@@ -84,9 +84,8 @@ instance LocationRunner env => RunMessage env ShiveringPools where
     DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
       case cards of
         [card] -> do
-          let
-            placeBelow = placeAtDirection Below attrs card
-            placeRight = placeAtDirection RightOf attrs card
+          placeBelow <- placeAtDirection Below attrs <*> pure card
+          placeRight <- placeAtDirection RightOf attrs <*> pure card
           belowEmpty <- directionEmpty attrs Below
           rightEmpty <- directionEmpty attrs RightOf
           push

@@ -87,9 +87,8 @@ instance LocationRunner env => RunMessage env NarrowShaft where
     DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
       case cards of
         [card] -> do
-          let
-            placeAbove = placeAtDirection Above attrs card
-            placeRight = placeAtDirection RightOf attrs card
+          placeAbove <- placeAtDirection Above attrs <*> pure card
+          placeRight <- placeAtDirection RightOf attrs <*> pure card
           aboveEmpty <- directionEmpty attrs Above
           rightEmpty <- directionEmpty attrs RightOf
           push

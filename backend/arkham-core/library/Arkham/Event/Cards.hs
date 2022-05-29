@@ -95,6 +95,7 @@ allPlayerEventCards = mapFromList $ map
   , emergencyAid
   , emergencyCache
   , emergencyCache2
+  , emergencyCache3
   , everVigilant1
   , evidence
   , exposeWeakness1
@@ -964,6 +965,11 @@ aChanceEncounter2 = (event "03238" "A Chance Encounter" 0 Survivor)
   , cdCriteria = Just
     $ Criteria.ReturnableCardInDiscard Criteria.AnyPlayerDiscard [Ally]
   , cdLevel = 2
+  }
+
+emergencyCache3 :: CardDef
+emergencyCache3 = (event "03239" "Emergency Cache" 0 Neutral)
+  { cdCardTraits = setFromList [Supply]
   }
 
 secondWind :: CardDef

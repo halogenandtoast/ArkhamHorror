@@ -631,6 +631,7 @@ library
       Arkham.Event.Cards.EmergencyAid
       Arkham.Event.Cards.EmergencyCache
       Arkham.Event.Cards.EmergencyCache2
+      Arkham.Event.Cards.EmergencyCache3
       Arkham.Event.Cards.EverVigilant1
       Arkham.Event.Cards.Evidence
       Arkham.Event.Cards.ExposeWeakness1

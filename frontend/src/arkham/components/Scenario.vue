@@ -553,10 +553,18 @@ export default defineComponent({
   stroke-width:6px;
   /* stroke:#a6b5bb; */
   stroke:rgba(0,0,0, 0.2);
+
+  @media (prefers-color-scheme: dark) {
+    stroke:rgba(255,255,255, 0.2);
+  }
 }
 
 .active {
   stroke:rgba(0,0,0,0.5) !important;
+
+  @media (prefers-color-scheme: dark) {
+    stroke:rgba(255,255,255, 0.7) !important;
+  }
 }
 
 .view-out-of-play-button {

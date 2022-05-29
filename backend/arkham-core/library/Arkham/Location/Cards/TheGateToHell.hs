@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
@@ -27,50 +28,58 @@ theGateToHell :: LocationCard TheGateToHell
 theGateToHell = locationWith
   TheGateToHell
   Cards.theGateToHell
-  0
-  (Static 0)
+  1
+  (PerPlayer 2)
   NoSymbol
   []
-  (connectsToL .~ adjacentLocations)
+  ((connectsToL .~ adjacentLocations)
+  . (costToEnterUnrevealedL
+    .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+    )
+  )
 
 instance HasAbilities TheGateToHell where
-  getAbilities (TheGateToHell attrs) =
-    withBaseAbilities attrs $ if locationRevealed attrs
-      then
-        [ restrictedAbility
-            attrs
-            1
-            (AnyCriterion
-              [ Negate
-                  (LocationExists
-                  $ LocationInDirection dir (LocationWithId $ toId attrs)
-                  )
-              | dir <- [Above, Below]
-              ]
-            )
-          $ ForcedAbility
-          $ RevealLocation Timing.When Anyone
-          $ LocationWithId
-          $ toId attrs
-        ]
-      else []
+  getAbilities (TheGateToHell attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+        attrs
+        1
+        (AnyCriterion
+          [ Negate
+              (LocationExists
+              $ LocationInDirection dir (LocationWithId $ toId attrs)
+              )
+          | dir <- [Above, Below]
+          ]
+        )
+      $ ForcedAbility
+      $ RevealLocation Timing.When Anyone
+      $ LocationWithId
+      $ toId attrs
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env TheGateToHell where
   runMessage msg l@(TheGateToHell attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) 2)
+    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+      aboveEmpty <- selectNone
+        $ LocationInDirection Above (LocationWithId $ toId attrs)
+      belowEmpty <- selectNone
+        $ LocationInDirection Above (LocationWithId $ toId attrs)
+      let n = count id [aboveEmpty, belowEmpty]
+      push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)
       pure l
-    DrewFromScenarioDeck iid _ target cards | isTarget attrs target -> do
+    DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
       let
         placeAbove = placeAtDirection Above attrs
         placeBelow = placeAtDirection Below attrs
       case cards of
         [above, below] -> pushAll $ placeAbove above <> placeBelow below
-        [aboveOrBelow] -> push $ chooseOne
-          iid
-          [ Label "Place above" (placeAbove aboveOrBelow)
-          , Label "Place below" (placeBelow aboveOrBelow)
-          ]
+        [aboveOrBelow] -> do
+          aboveEmpty <- selectNone
+            $ LocationInDirection Above (LocationWithId $ toId attrs)
+          let placeFun = if aboveEmpty then placeAbove else placeBelow
+          pushAll $ placeFun aboveOrBelow
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l

@@ -17,6 +17,7 @@ import Arkham.Json
 import Arkham.Keyword
 import {-# SOURCE #-} Arkham.Matcher
 import Arkham.Phase
+import Arkham.SlotType
 import Arkham.SkillType
 import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
@@ -112,6 +113,7 @@ data ModifierType
   | EnemyCannotEngage InvestigatorId
   | EnemyEvade Int
   | EnemyFight Int
+  | FewerSlots SlotType Int
   | ForcedTokenChange TokenFace [TokenFace]
   | HandSize Int
   | HandSizeCardCount Int

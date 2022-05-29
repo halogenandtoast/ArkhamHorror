@@ -56,6 +56,7 @@ instance
   , HasCount HorrorCount env InvestigatorId
   , Query AssetMatcher env
   , Query EnemyMatcher env
+  , Query LocationMatcher env
   )
   => HasModifiersFor env Location where
   getModifiersFor = $(entityF2 "Location" "getModifiersFor")

@@ -29,5 +29,7 @@ data ScenarioLogKey
   | RecalledTheWayOut
   | YouTookTheKeysByForce
   -- ^ The Unspeakable Oath
+  | YouOpenedASecretPassageway
+  -- ^ The Pallid Mask
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

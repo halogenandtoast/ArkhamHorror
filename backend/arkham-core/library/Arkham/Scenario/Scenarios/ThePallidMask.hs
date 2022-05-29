@@ -5,21 +5,33 @@ module Arkham.Scenario.Scenarios.ThePallidMask
 
 import Arkham.Prelude
 
+import Arkham.CampaignLogKey
+import Arkham.ScenarioLogKey
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Card
+import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Game.Helpers
 import Arkham.Id
+import Arkham.Label (unLabel)
 import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Runner
+import Arkham.Scenario.Helpers
 import Arkham.Scenarios.ThePallidMask.Helpers
 import Arkham.Scenarios.ThePallidMask.Story
+import Arkham.Target
 import Arkham.Token
+import Arkham.EncounterSet qualified as EncounterSet
 
 newtype ThePallidMask = ThePallidMask ScenarioAttrs
   deriving anyclass IsScenario
@@ -59,6 +71,8 @@ startPosition :: (Int, Int)
 startPosition = (2, 6)
 
 instance HasRecord env ThePallidMask where
+  hasRecord YouFoundNigelsHome _ = pure True
+  hasRecord YouEnteredTheCatacombsOnYourOwn _ = pure True
   hasRecord _ _ = pure False
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
@@ -119,5 +133,86 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
       theManInThePallidMask <- genPlayerCard Enemies.theManInThePallidMask
       push $ ShuffleCardsIntoDeck leadInvestigatorId [theManInThePallidMask]
       pure s
-    Setup -> pure s
+    Setup -> do
+      investigatorIds <- getInvestigatorIds
+      didNotEscapeGazeOfThePhantom <- getHasRecord YouDidNotEscapeTheGazeOfThePhantom
+      unableToFindNigel <- getHasRecord YouWereUnableToFindNigel
+
+      let
+        awokeInsideTheCatacombs = didNotEscapeGazeOfThePhantom || unableToFindNigel
+        intro = if awokeInsideTheCatacombs then intro1 else intro2
+
+      harukoInterviewed <-
+        elem (Recorded $ toCardCode Assets.ishimaruHaruko)
+          <$> getRecordSet VIPsInterviewed
+
+      encounterDeck <- buildEncounterDeck
+        [ EncounterSet.ThePallidMask
+        , EncounterSet.Ghouls
+        , EncounterSet.Hauntings
+        , EncounterSet.ChillingCold
+        ]
+
+      theGateToHell <- genCard Locations.theGateToHell
+      blockedPassage <- genCard Locations.blockedPassage
+      tombOfShadows <- genCard Locations.tombOfShadows
+
+      otherCatacombs <- traverse genCard
+        [ Locations.stoneArchways
+        , Locations.stoneArchways
+        , Locations.cryptOfTheSepulchralLamp
+        , Locations.boneFilledCavern
+        , Locations.wellOfSouls
+        , Locations.candlelitTunnels
+        , Locations.candlelitTunnels
+        , Locations.labyrinthOfBones
+        , Locations.labyrinthOfBones
+        , Locations.narrowShaft
+        , Locations.shiveringPools
+        ]
+
+      (startingLocation, remainingCatacombs) <- if awokeInsideTheCatacombs
+                             then do
+                               shuffled <- shuffleM (theGateToHell : otherCatacombs)
+                               case shuffled of
+                                 (x : xs) -> pure (x, xs)
+                                 _ -> error "invalid setup"
+                             else (theGateToHell,) <$> shuffleM otherCatacombs
+
+      let (bottom3, rest) = splitAt 3 remainingCatacombs
+      bottom <- shuffleM ([tombOfShadows, blockedPassage] <> bottom3)
+      let catacombsDeck = rest <> bottom
+
+      pushAll
+        ([story investigatorIds intro]
+        <> [ story investigatorIds harukosInformation
+           | harukoInterviewed
+           ]
+        <> [ Remember YouOpenedASecretPassageway | harukoInterviewed ]
+        <> [ SetEncounterDeck encounterDeck
+           , PlaceLocation startingLocation
+           , SetLocationLabel (toLocationId startingLocation) (unLabel $ positionToLabel startPosition)
+           , PlaceResources (LocationTarget $ toLocationId startingLocation) 1
+           , MoveAllTo (toSource attrs) (toLocationId startingLocation)
+           ]
+        )
+      ThePallidMask <$> runMessage
+        msg
+        (attrs
+        & (decksL . at CatacombsDeck ?~ catacombsDeck)
+        & (actStackL
+          . at 1
+          ?~ [ Acts.throughTheCatacombs
+             , Acts.thePathIsBarred
+             , Acts.theWayOut
+             , Acts.leadingTheWay
+             ]
+          )
+        & (agendaStackL
+          . at 1
+          ?~ [ Agendas.empireOfTheDead
+             , Agendas.empireOfTheUndead
+             ]
+          )
+        )
     _ -> ThePallidMask <$> runMessage msg attrs

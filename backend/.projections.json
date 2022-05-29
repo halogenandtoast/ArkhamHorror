@@ -309,7 +309,7 @@
       "import qualified Arkham.Location.Cards as Cards",
       "import Arkham.Classes",
       "import Arkham.GameValue",
-      "import Arkham.Location.Attrs",
+      "import Arkham.Location.Runner",
       "",
       "newtype {dot} = {dot} LocationAttrs",
       "  deriving anyclass (IsLocation, HasModifiersFor env)",

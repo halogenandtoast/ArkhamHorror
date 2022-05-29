@@ -49,60 +49,62 @@ agenda cardCode name stage encounterSet = CardDef
 allAgendaCards :: HashMap CardCode CardDef
 allAgendaCards = mapFromList $ map
   (toCardCode &&& id)
-  [ whatsGoingOn
-  , riseOfTheGhouls
-  , theyreGettingOut
-  , predatorOrPrey
-  , timeIsRunningShort
-  , theArkhamWoods
-  , theRitualBegins
-  , vengeanceAwaits
-  , quietHalls
-  , deadOfNight
-  , theBeastUnleashed
-  , theCloverClub
-  , undergroundMuscle
-  , chaosInTheCloverClub
-  , restrictedAccess
-  , shadowsDeepen
-  , inEveryShadow
+  [ aCreatureOfTheBayou
   , aTearInReality
-  , theMawWidens
-  , rollingBackwards
-  , drawnIn
-  , outOfTime
-  , strangeDisappearances
-  , theOldOnesHunger
-  , feedTheBeast
-  , rampagingCreatures
-  , bidingItsTime
-  , horrorsUnleashed
-  , callingForthTheOldOnes
-  , beckoningForPower
   , allIsOne
-  , pastPresentAndFuture
+  , beckoningForPower
+  , bidingItsTime
   , breakingThrough
-  , theEndOfAllThings
-  , theThirdAct
+  , callingForthTheOldOnes
+  , chaosAtTheCarnevale
+  , chaosInTheCloverClub
+  , deadOfNight
+  , drawnIn
+  , empireOfTheDead
+  , empireOfTheUndead
   , encore
   , fashionablyLate
-  , theTerrifyingTruth
-  , theTruthIsHidden
-  , ransackingTheManor
-  , secretsBetterLeftHidden
-  , lockedInside
-  , torturousDescent
+  , feedTheBeast
   , hisDomain
-  , theFirstNight
-  , theSecondNight
-  , theThirdNight
+  , horrorsUnleashed
+  , inEveryShadow
+  , lockedInside
+  , outOfTime
+  , pastPresentAndFuture
+  , predatorOrPrey
+  , quietHalls
+  , rampagingCreatures
+  , ransackingTheManor
+  , restrictedAccess
   , returnToPredatorOrPrey
-  , aCreatureOfTheBayou
-  , theRougarouFeeds
+  , riseOfTheGhouls
+  , rollingBackwards
+  , secretsBetterLeftHidden
+  , shadowsDeepen
+  , strangeDisappearances
+  , theArkhamWoods
+  , theBeastUnleashed
+  , theCloverClub
   , theCurseSpreads
+  , theEndOfAllThings
   , theFestivitiesBegin
+  , theFirstNight
+  , theMawWidens
+  , theOldOnesHunger
+  , theRitualBegins
+  , theRougarouFeeds
+  , theSecondNight
   , theShadowOfTheEclipse
-  , chaosAtTheCarnevale
+  , theTerrifyingTruth
+  , theThirdAct
+  , theThirdNight
+  , theTruthIsHidden
+  , theyreGettingOut
+  , timeIsRunningShort
+  , torturousDescent
+  , undergroundMuscle
+  , vengeanceAwaits
+  , whatsGoingOn
   ]
 
 whatsGoingOn :: CardDef
@@ -252,6 +254,12 @@ theSecondNight = agenda "03202" "The Second Night" 2 APhantomOfTruth
 
 theThirdNight :: CardDef
 theThirdNight = agenda "03203" "The Third Night" 3 APhantomOfTruth
+
+empireOfTheDead :: CardDef
+empireOfTheDead = agenda "03241" "Empire of the Dead" 1 ThePallidMask
+
+empireOfTheUndead :: CardDef
+empireOfTheUndead = agenda "03242" "Empire of the Undead" 2 ThePallidMask
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

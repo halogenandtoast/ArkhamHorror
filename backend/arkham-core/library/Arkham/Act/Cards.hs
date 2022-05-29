@@ -49,63 +49,67 @@ act cardCode name stage encounterSet = CardDef
 allActCards :: HashMap CardCode CardDef
 allActCards = mapFromList $ map
   (toCardCode &&& id)
-  [ trapped
-  , theBarrier
-  , whatHaveYouDone
-  , uncoveringTheConspiracy
-  , investigatingTheTrail
-  , intoTheDarkness
-  , disruptingTheRitual
-  , afterHours
-  , ricesWhereabouts
-  , campusSafety
-  , beginnersLuck
-  , skinGame
+  [ afterHours
   , allIn
-  , fold
-  , findingAWayInside
-  , nightAtTheMuseum
-  , breakingAndEntering
-  , searchingForTheTome
-  , run
-  , getTheEngineRunning
-  , searchingForAnswers
-  , theChamberOfTheBeast
-  , saracenicScript
-  , theyMustBeDestroyed
-  , thePathToTheHill
+  , arkhamAsylum
   , ascendingTheHillV1
   , ascendingTheHillV2
   , ascendingTheHillV3
-  , theGateOpens
-  , outOfThisWorld
-  , intoTheBeyond
-  , closeTheRift
-  , findingANewWay
   , awakening
+  , beginnersLuck
+  , breakingAndEntering
+  , campusSafety
+  , closeTheRift
+  , curtainCall
+  , discoveringTheTruth
+  , disruptingTheRitual
+  , findingANewWay
+  , findingAWayInside
+  , findingLadyEsprit
+  , fold
+  , getTheEngineRunning
+  , getToTheBoats
+  , huntingTheRougarou
+  , intoTheBeyond
+  , intoTheDarkness
+  , investigatingTheTrail
+  , leadingTheWay
+  , mistakesOfThePast
+  , mysteriousGateway
+  , nightAtTheMuseum
+  , noAsylum
+  , outOfThisWorld
+  , planningTheEscape
+  , pursuingShadows
+  , raceForAnswers
+  , ricesWhereabouts
+  , row
+  , run
+  , saracenicScript
+  , searchingForAnswers
+  , searchingForTheTome
+  , skinGame
+  , stalkedByShadows
+  , theBarrier
+  , theCarnevaleConspiracy
+  , theChamberOfTheBeast
+  , theGateOpens
+  , theOath
+  , theParisianConspiracyV1
+  , theParisianConspiracyV2
+  , thePathIsBarred
+  , thePathToTheHill
+  , theReallyBadOnesV1
+  , theReallyBadOnesV2
   , theStrangerACityAflame
   , theStrangerThePathIsMine
   , theStrangerTheShoresOfHali
-  , curtainCall
-  , discoveringTheTruth
-  , raceForAnswers
-  , mistakesOfThePast
-  , theOath
-  , arkhamAsylum
-  , theReallyBadOnesV1
-  , theReallyBadOnesV2
-  , planningTheEscape
-  , noAsylum
-  , theParisianConspiracyV1
-  , theParisianConspiracyV2
-  , pursuingShadows
-  , stalkedByShadows
-  , mysteriousGateway
-  , findingLadyEsprit
-  , huntingTheRougarou
-  , theCarnevaleConspiracy
-  , getToTheBoats
-  , row
+  , theWayOut
+  , theyMustBeDestroyed
+  , throughTheCatacombs
+  , trapped
+  , uncoveringTheConspiracy
+  , whatHaveYouDone
   ]
 
 trapped :: CardDef
@@ -270,6 +274,18 @@ pursuingShadows = act "03206" "Pursuing Shadows" 2 APhantomOfTruth
 
 stalkedByShadows :: CardDef
 stalkedByShadows = act "03207" "Stalked by Shadows" 2 APhantomOfTruth
+
+throughTheCatacombs :: CardDef
+throughTheCatacombs = act "03243" "Through the Catacombs" 1 ThePallidMask
+
+thePathIsBarred :: CardDef
+thePathIsBarred = act "03244" "The Path is Barred" 2 ThePallidMask
+
+theWayOut :: CardDef
+theWayOut = act "03245" "The Way Out" 3 ThePallidMask
+
+leadingTheWay :: CardDef
+leadingTheWay = act "03246" "Leading the Way" 3 ThePallidMask
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

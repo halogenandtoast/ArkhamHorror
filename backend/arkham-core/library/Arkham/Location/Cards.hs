@@ -96,6 +96,8 @@ allLocationCards = mapFromList $ map
   , bishopsBrook_203
   , blastedHeath_248
   , blastedHeath_249
+  , blockedPassage
+  , boneFilledCavern
   , boxOffice
   , brackishWaters
   , bridgeOfSighs
@@ -104,6 +106,7 @@ allLocationCards = mapFromList $ map
   , burnedRuins_205
   , canalSaintMartin
   , canalSide
+  , candlelitTunnels
   , cellar
   , cloverClubBar
   , cloverClubCardroom
@@ -113,6 +116,7 @@ allLocationCards = mapFromList $ map
   , congregationalChurch_208
   , congregationalChurch_209
   , courtyard
+  , cryptOfTheSepulchralLamp
   , cursedShores
   , darkenedHall
   , deepBelowYourHouse
@@ -180,6 +184,7 @@ allLocationCards = mapFromList $ map
   , infirmary
   , kitchen
   , laBellaLuna
+  , labyrinthOfBones
   , leMarais217
   , leMarais218
   , lightingBox
@@ -196,6 +201,7 @@ allLocationCards = mapFromList $ map
   , montparnasse
   , museumEntrance
   , museumHalls
+  , narrowShaft
   , northside
   , northsideTrainStation
   , notreDame
@@ -235,12 +241,14 @@ allLocationCards = mapFromList $ map
   , securityOffice_128
   , securityOffice_129
   , sentinelPeak
+  , shiveringPools
   , slaughteredWoods
   , sleepingCar
   , southsideHistoricalSociety
   , southsideMasBoardingHouse
   , stMarysHospital
   , stepsOfYhagharl
+  , stoneArchways
   , streetsOfVenice
   , studentUnion
   , study
@@ -250,9 +258,11 @@ allLocationCards = mapFromList $ map
   , tenAcreMeadow_246
   , tenAcreMeadow_247
   , theEdgeOfTheUniverse
+  , theGateToHell
   , theGuardian
   , theHiddenChamber
   , theatre
+  , tombOfShadows
   , trapRoom
   , trappersCabin
   , twistedUnderbrush
@@ -260,6 +270,7 @@ allLocationCards = mapFromList $ map
   , venetianGarden
   , villageCommons
   , vipArea
+  , wellOfSouls
   , whateleyRuins_250
   , whateleyRuins_251
   , yard
@@ -1260,6 +1271,49 @@ gardensOfLuxembourg =
   (location "03220" "Gardens of Luxembourg" [Paris] APhantomOfTruth)
     { cdVictoryPoints = Just 1
     }
+
+theGateToHell :: CardDef
+theGateToHell = locationWithUnrevealed "03247" "Catacombs" [] "The Gate to Hell" [] ThePallidMask
+
+stoneArchways :: CardDef
+stoneArchways = locationWithUnrevealed "03248" "Catacombs" [] "Stone Archways" [] ThePallidMask
+
+cryptOfTheSepulchralLamp :: CardDef
+cryptOfTheSepulchralLamp = locationWithUnrevealed "03249" "Catacombs" [] "Crypt of the Sepulchral Lamp" [] ThePallidMask
+
+boneFilledCavern :: CardDef
+boneFilledCavern = (locationWithUnrevealed "03250" "Catacombs" [] "Bone-Filled Cavern" [] ThePallidMask)
+  { cdVictoryPoints = Just 1
+  }
+
+wellOfSouls :: CardDef
+wellOfSouls = (locationWithUnrevealed "03251" "Catacombs" [] "Well of Souls" [] ThePallidMask)
+  { cdVictoryPoints = Just 1
+  }
+
+candlelitTunnels :: CardDef
+candlelitTunnels = locationWithUnrevealed "03252" "Catacombs" [] "Candlelit Tunnels" [] ThePallidMask
+
+labyrinthOfBones :: CardDef
+labyrinthOfBones = locationWithUnrevealed "03253" "Catacombs" [] "Labyrinth of Bones" [] ThePallidMask
+
+narrowShaft :: CardDef
+narrowShaft = (locationWithUnrevealed "03254" "Catacombs" [] "Narrow Shaft" [] ThePallidMask)
+  { cdVictoryPoints = Just 1
+  }
+
+shiveringPools :: CardDef
+shiveringPools = (locationWithUnrevealed "03255" "Catacombs" [] "Shivering Pools" [] ThePallidMask)
+  { cdVictoryPoints = Just 1
+  }
+
+blockedPassage :: CardDef
+blockedPassage = locationWithUnrevealed "03256" "Catacombs" [] "Blocked Passage" [] ThePallidMask
+
+tombOfShadows :: CardDef
+tombOfShadows = (locationWithUnrevealed "03257" "Catacombs" [] "Tomb of Shadows" [] ThePallidMask)
+  { cdVictoryPoints = Just 1
+  }
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

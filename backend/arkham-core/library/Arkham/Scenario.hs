@@ -166,6 +166,7 @@ allScenarios = mapFromList
   , ("03120", EchoesOfThePast' . echoesOfThePast)
   , ("03159", TheUnspeakableOath' . theUnspeakableOath)
   , ("03200", APhantomOfTruth' . aPhantomOfTruth)
+  , ("03240", ThePallidMask' . thePallidMask)
   , ("50011", ReturnToTheGathering' . returnToTheGathering)
   , ("50025", ReturnToTheMidnightMasks' . returnToTheMidnightMasks)
   , ("50032", ReturnToTheDevourerBelow' . returnToTheDevourerBelow)

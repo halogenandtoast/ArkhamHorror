@@ -6,11 +6,10 @@ module Arkham.Location.Cards.TheGateToHell
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Classes
+import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Label (mkLabel, unLabel)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
@@ -25,14 +24,30 @@ newtype TheGateToHell = TheGateToHell LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theGateToHell :: LocationCard TheGateToHell
-theGateToHell =
-  location TheGateToHell Cards.theGateToHell 0 (Static 0) NoSymbol []
+theGateToHell = locationWith
+  TheGateToHell
+  Cards.theGateToHell
+  0
+  (Static 0)
+  NoSymbol
+  []
+  (connectsToL .~ adjacentLocations)
 
 instance HasAbilities TheGateToHell where
   getAbilities (TheGateToHell attrs) =
     withBaseAbilities attrs $ if locationRevealed attrs
       then
-        [ mkAbility attrs 1
+        [ restrictedAbility
+            attrs
+            1
+            (AnyCriterion
+              [ Negate
+                  (LocationExists
+                  $ LocationInDirection dir (LocationWithId $ toId attrs)
+                  )
+              | dir <- [Above, Below]
+              ]
+            )
           $ ForcedAbility
           $ RevealLocation Timing.When Anyone
           $ LocationWithId
@@ -45,18 +60,18 @@ instance LocationRunner env => RunMessage env TheGateToHell where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) 2)
       pure l
-    DrewFromScenarioDeck _ _ target [above, below] | isTarget attrs target -> do
+    DrewFromScenarioDeck iid _ target cards | isTarget attrs target -> do
       let
-        (x, y) = posLabelToPosition (mkLabel $ locationLabel attrs)
-        abovePosition = (x, y + 1)
-        belowPosition = (x, y - 1)
-      pushAll
-        [ PlaceLocation above
-        , SetLocationLabel (toLocationId above) (unLabel $ positionToLabel abovePosition)
-        , PlacedLocationDirection (toLocationId above) Above (toId attrs)
-        , PlaceLocation below
-        , SetLocationLabel (toLocationId below) (unLabel $ positionToLabel belowPosition)
-        , PlacedLocationDirection (toLocationId below) Below (toId attrs)
-        ]
+        placeAbove = placeAtDirection Above attrs
+        placeBelow = placeAtDirection Below attrs
+      case cards of
+        [above, below] -> pushAll $ placeAbove above <> placeBelow below
+        [aboveOrBelow] -> push $ chooseOne
+          iid
+          [ Label "Place above" (placeAbove aboveOrBelow)
+          , Label "Place below" (placeBelow aboveOrBelow)
+          ]
+        [] -> pure ()
+        _ -> error "wrong number of cards drawn"
       pure l
     _ -> TheGateToHell <$> runMessage msg attrs

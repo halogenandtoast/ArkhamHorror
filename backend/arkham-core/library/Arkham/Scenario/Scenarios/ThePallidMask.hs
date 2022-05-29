@@ -5,33 +5,32 @@ module Arkham.Scenario.Scenarios.ThePallidMask
 
 import Arkham.Prelude
 
-import Arkham.CampaignLogKey
-import Arkham.ScenarioLogKey
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
+import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Id
-import Arkham.Label (unLabel)
 import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs )
+import Arkham.Label ( unLabel )
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Attrs
-import Arkham.Scenario.Runner
 import Arkham.Scenario.Helpers
+import Arkham.Scenario.Runner
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThePallidMask.Helpers
 import Arkham.Scenarios.ThePallidMask.Story
 import Arkham.Target
 import Arkham.Token
-import Arkham.EncounterSet qualified as EncounterSet
 
 newtype ThePallidMask = ThePallidMask ScenarioAttrs
   deriving anyclass IsScenario
@@ -135,16 +134,17 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
       pure s
     Setup -> do
       investigatorIds <- getInvestigatorIds
-      didNotEscapeGazeOfThePhantom <- getHasRecord YouDidNotEscapeTheGazeOfThePhantom
+      didNotEscapeGazeOfThePhantom <- getHasRecord
+        YouDidNotEscapeTheGazeOfThePhantom
       unableToFindNigel <- getHasRecord YouWereUnableToFindNigel
 
       let
-        awokeInsideTheCatacombs = didNotEscapeGazeOfThePhantom || unableToFindNigel
+        awokeInsideTheCatacombs =
+          didNotEscapeGazeOfThePhantom || unableToFindNigel
         intro = if awokeInsideTheCatacombs then intro1 else intro2
 
-      harukoInterviewed <-
-        elem (Recorded $ toCardCode Assets.ishimaruHaruko)
-          <$> getRecordSet VIPsInterviewed
+      harukoInterviewed <- elem (Recorded $ toCardCode Assets.ishimaruHaruko)
+        <$> getRecordSet VIPsInterviewed
 
       encounterDeck <- buildEncounterDeck
         [ EncounterSet.ThePallidMask
@@ -157,7 +157,8 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
       blockedPassage <- genCard Locations.blockedPassage
       tombOfShadows <- genCard Locations.tombOfShadows
 
-      otherCatacombs <- traverse genCard
+      otherCatacombs <- traverse
+        genCard
         [ Locations.stoneArchways
         , Locations.stoneArchways
         , Locations.cryptOfTheSepulchralLamp
@@ -172,12 +173,12 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
         ]
 
       (startingLocation, remainingCatacombs) <- if awokeInsideTheCatacombs
-                             then do
-                               shuffled <- shuffleM (theGateToHell : otherCatacombs)
-                               case shuffled of
-                                 (x : xs) -> pure (x, xs)
-                                 _ -> error "invalid setup"
-                             else (theGateToHell,) <$> shuffleM otherCatacombs
+        then do
+          shuffled <- shuffleM (theGateToHell : otherCatacombs)
+          case shuffled of
+            (x : xs) -> pure (x, xs)
+            _ -> error "invalid setup"
+        else (theGateToHell, ) <$> shuffleM otherCatacombs
 
       let (bottom3, rest) = splitAt 3 remainingCatacombs
       bottom <- shuffleM ([tombOfShadows, blockedPassage] <> bottom3)
@@ -185,13 +186,13 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
 
       pushAll
         ([story investigatorIds intro]
-        <> [ story investigatorIds harukosInformation
-           | harukoInterviewed
-           ]
+        <> [ story investigatorIds harukosInformation | harukoInterviewed ]
         <> [ Remember YouOpenedASecretPassageway | harukoInterviewed ]
         <> [ SetEncounterDeck encounterDeck
            , PlaceLocation startingLocation
-           , SetLocationLabel (toLocationId startingLocation) (unLabel $ positionToLabel startPosition)
+           , SetLocationLabel
+             (toLocationId startingLocation)
+             (unLabel $ positionToLabel startPosition)
            , PlaceResources (LocationTarget $ toLocationId startingLocation) 1
            , MoveAllTo (toSource attrs) (toLocationId startingLocation)
            ]
@@ -210,9 +211,7 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
           )
         & (agendaStackL
           . at 1
-          ?~ [ Agendas.empireOfTheDead
-             , Agendas.empireOfTheUndead
-             ]
+          ?~ [Agendas.empireOfTheDead, Agendas.empireOfTheUndead]
           )
         )
     _ -> ThePallidMask <$> runMessage msg attrs

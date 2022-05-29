@@ -51,6 +51,7 @@ data EncounterSet
   | EchoesOfThePast
   | TheUnspeakableOath
   | APhantomOfTruth
+  | ThePallidMask
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

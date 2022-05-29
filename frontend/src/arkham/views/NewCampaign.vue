@@ -144,6 +144,10 @@ const scenarios = [
     name: 'A Phantom of Truth',
   },
   {
+    id: '03240',
+    name: 'The Pallid Mask',
+  },
+  {
     id: '81001',
     name: 'Curse of the Rougarou',
   },

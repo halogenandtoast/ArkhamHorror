@@ -70,7 +70,9 @@ library
       Arkham.Act.Cards.TheStrangerACityAflame
       Arkham.Act.Cards.TheStrangerThePathIsMine
       Arkham.Act.Cards.TheStrangerTheShoresOfHali
+      Arkham.Act.Cards.TheWayOut
       Arkham.Act.Cards.TheyMustBeDestroyed
+      Arkham.Act.Cards.ThroughTheCatacombs
       Arkham.Act.Cards.Trapped
       Arkham.Act.Cards.UncoveringTheConspiracy
       Arkham.Act.Cards.WhatHaveYouDone
@@ -95,6 +97,8 @@ library
       Arkham.Agenda.Cards.ChaosInTheCloverClub
       Arkham.Agenda.Cards.DeadOfNight
       Arkham.Agenda.Cards.DrawnIn
+      Arkham.Agenda.Cards.EmpireOfTheDead
+      Arkham.Agenda.Cards.EmpireOfTheUndead
       Arkham.Agenda.Cards.Encore
       Arkham.Agenda.Cards.FashionablyLate
       Arkham.Agenda.Cards.FeedTheBeast
@@ -785,6 +789,8 @@ library
       Arkham.Location.Cards.BishopsBrook_203
       Arkham.Location.Cards.BlastedHeath_248
       Arkham.Location.Cards.BlastedHeath_249
+      Arkham.Location.Cards.BlockedPassage
+      Arkham.Location.Cards.BoneFilledCavern
       Arkham.Location.Cards.BoxOffice
       Arkham.Location.Cards.BrackishWaters
       Arkham.Location.Cards.BridgeOfSighs
@@ -793,6 +799,7 @@ library
       Arkham.Location.Cards.BurnedRuins_205
       Arkham.Location.Cards.CanalSaintMartin
       Arkham.Location.Cards.CanalSide
+      Arkham.Location.Cards.CandlelitTunnels
       Arkham.Location.Cards.Cellar
       Arkham.Location.Cards.CloverClubBar
       Arkham.Location.Cards.CloverClubCardroom
@@ -802,6 +809,7 @@ library
       Arkham.Location.Cards.CongregationalChurch_208
       Arkham.Location.Cards.CongregationalChurch_209
       Arkham.Location.Cards.Courtyard
+      Arkham.Location.Cards.CryptOfTheSepulchralLamp
       Arkham.Location.Cards.CursedShores
       Arkham.Location.Cards.DarkenedHall
       Arkham.Location.Cards.DeepBelowYourHouse
@@ -869,6 +877,7 @@ library
       Arkham.Location.Cards.Infirmary
       Arkham.Location.Cards.Kitchen
       Arkham.Location.Cards.LaBellaLuna
+      Arkham.Location.Cards.LabyrinthOfBones
       Arkham.Location.Cards.LeMarais217
       Arkham.Location.Cards.LeMarais218
       Arkham.Location.Cards.LightingBox
@@ -885,6 +894,7 @@ library
       Arkham.Location.Cards.Montparnasse
       Arkham.Location.Cards.MuseumEntrance
       Arkham.Location.Cards.MuseumHalls
+      Arkham.Location.Cards.NarrowShaft
       Arkham.Location.Cards.Northside
       Arkham.Location.Cards.NorthsideTrainStation
       Arkham.Location.Cards.NotreDame
@@ -924,12 +934,14 @@ library
       Arkham.Location.Cards.SecurityOffice_128
       Arkham.Location.Cards.SecurityOffice_129
       Arkham.Location.Cards.SentinelPeak
+      Arkham.Location.Cards.ShiveringPools
       Arkham.Location.Cards.SlaughteredWoods
       Arkham.Location.Cards.SleepingCar
       Arkham.Location.Cards.SouthsideHistoricalSociety
       Arkham.Location.Cards.SouthsideMasBoardingHouse
       Arkham.Location.Cards.StepsOfYhagharl
       Arkham.Location.Cards.StMarysHospital
+      Arkham.Location.Cards.StoneArchways
       Arkham.Location.Cards.StreetsOfVenice
       Arkham.Location.Cards.StudentUnion
       Arkham.Location.Cards.Study
@@ -940,8 +952,10 @@ library
       Arkham.Location.Cards.TenAcreMeadow_247
       Arkham.Location.Cards.Theatre
       Arkham.Location.Cards.TheEdgeOfTheUniverse
+      Arkham.Location.Cards.TheGateToHell
       Arkham.Location.Cards.TheGuardian
       Arkham.Location.Cards.TheHiddenChamber
+      Arkham.Location.Cards.TombOfShadows
       Arkham.Location.Cards.TrappersCabin
       Arkham.Location.Cards.TrapRoom
       Arkham.Location.Cards.TwistedUnderbrush
@@ -949,6 +963,7 @@ library
       Arkham.Location.Cards.VenetianGarden
       Arkham.Location.Cards.VillageCommons
       Arkham.Location.Cards.VipArea
+      Arkham.Location.Cards.WellOfSouls
       Arkham.Location.Cards.WhateleyRuins_250
       Arkham.Location.Cards.WhateleyRuins_251
       Arkham.Location.Cards.Yard

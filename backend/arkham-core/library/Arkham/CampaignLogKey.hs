@@ -85,6 +85,8 @@ data CampaignLogKey
   | YouFoundNigelsHome
   | YouFoundNigelEngram
   | YouWereUnableToFindNigel
+  | YouAwokeInsideTheCatacombs
+  | YouEnteredTheCatacombsOnYourOwn
   -- ^ The Path to Carcosa
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

@@ -3,8 +3,9 @@ module Arkham.Scenarios.ThePallidMask.Helpers where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.Classes
 import Arkham.Label
-import Arkham.Classes.Entity
+import Arkham.Matcher
 import Arkham.Message hiding (Label)
 import Arkham.Direction
 import Arkham.Location.Attrs
@@ -50,3 +51,13 @@ placeAtDirection direction attrs card =
               Below -> (x, y - 1)
               LeftOf -> (x - 1, y)
               RightOf -> (x + 1, y)
+
+directionEmpty :: (Query LocationMatcher env, MonadReader env m) => LocationAttrs -> Direction -> m Bool
+directionEmpty attrs dir = selectNone $ LocationInDirection dir (LocationWithId $ toId attrs)
+
+toMaybePlacement :: (Query LocationMatcher env, MonadReader env m) => LocationAttrs -> Direction -> m (Maybe (Card -> [Message]))
+toMaybePlacement attrs dir = do
+  isEmpty <- directionEmpty attrs dir
+  pure $ if isEmpty
+    then Just $ placeAtDirection dir attrs
+    else Nothing

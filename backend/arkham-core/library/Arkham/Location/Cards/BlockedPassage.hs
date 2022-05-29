@@ -1,28 +1,63 @@
 module Arkham.Location.Cards.BlockedPassage
   ( blockedPassage
   , BlockedPassage(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Ability
 import Arkham.Classes
+import Arkham.Effect.Window
+import Arkham.EffectMetadata
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message hiding ( RevealLocation )
+import Arkham.Modifier
+import Arkham.Target
+import Arkham.Timing qualified as Timing
 
 newtype BlockedPassage = BlockedPassage LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blockedPassage :: LocationCard BlockedPassage
-blockedPassage = location BlockedPassage Cards.blockedPassage 0 (Static 0) NoSymbol []
+blockedPassage = locationWith
+  BlockedPassage
+  Cards.blockedPassage
+  7
+  (Static 0)
+  NoSymbol
+  []
+  ((connectsToL .~ adjacentLocations)
+  . (costToEnterUnrevealedL
+    .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+    )
+  )
 
 instance HasAbilities BlockedPassage where
-  getAbilities (BlockedPassage attrs) =
-    getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (BlockedPassage attrs) = withBaseAbilities
+    attrs
+    [ mkAbility attrs 1
+      $ ForcedAbility
+      $ RevealLocation Timing.When You
+      $ LocationWithId
+      $ toId attrs
+    | locationRevealed attrs
+    ]
 
 instance LocationRunner env => RunMessage env BlockedPassage where
-  runMessage msg (BlockedPassage attrs) =
-    BlockedPassage <$> runMessage msg attrs
+  runMessage msg l@(BlockedPassage attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+      pushAll
+        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
+        , CreateWindowModifierEffect
+          EffectRoundWindow
+          (EffectModifiers $ toModifiers attrs [CannotMove])
+          (toSource attrs)
+          (InvestigatorTarget iid)
+        ]
+      pure l
+    _ -> BlockedPassage <$> runMessage msg attrs

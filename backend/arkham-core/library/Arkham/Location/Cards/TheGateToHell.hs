@@ -62,25 +62,11 @@ instance HasAbilities TheGateToHell where
 instance LocationRunner env => RunMessage env TheGateToHell where
   runMessage msg l@(TheGateToHell attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
-      aboveEmpty <- selectNone
-        $ LocationInDirection Above (LocationWithId $ toId attrs)
-      belowEmpty <- selectNone
-        $ LocationInDirection Above (LocationWithId $ toId attrs)
-      let n = count id [aboveEmpty, belowEmpty]
+      n <- countM (directionEmpty attrs) [Above, Below]
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)
       pure l
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
-      let
-        placeAbove = placeAtDirection Above attrs
-        placeBelow = placeAtDirection Below attrs
-      case cards of
-        [above, below] -> pushAll $ placeAbove above <> placeBelow below
-        [aboveOrBelow] -> do
-          aboveEmpty <- selectNone
-            $ LocationInDirection Above (LocationWithId $ toId attrs)
-          let placeFun = if aboveEmpty then placeAbove else placeBelow
-          pushAll $ placeFun aboveOrBelow
-        [] -> pure ()
-        _ -> error "wrong number of cards drawn"
+      placements <- mapMaybeM (toMaybePlacement attrs) [Above, Below]
+      pushAll $ concat $ zipWith ($) placements cards
       pure l
     _ -> TheGateToHell <$> runMessage msg attrs

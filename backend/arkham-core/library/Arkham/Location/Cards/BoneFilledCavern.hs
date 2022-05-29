@@ -81,26 +81,12 @@ instance LocationRunner env => RunMessage env BoneFilledCavern where
       push (RefillSlots iid HandSlot assetIds)
       pure $ BoneFilledCavern $ With result (Metadata $ Just iid)
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
-      belowEmpty <- selectNone
-        $ LocationInDirection Below (LocationWithId $ toId attrs)
-      rightEmpty <- selectNone
-        $ LocationInDirection RightOf (LocationWithId $ toId attrs)
-      let n = count id [belowEmpty, rightEmpty]
+      n <- countM (directionEmpty attrs) [Below, RightOf]
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)
       pure l
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
-      let
-        placeBelow = placeAtDirection Below attrs
-        placeRight = placeAtDirection RightOf attrs
-      case cards of
-        [below, right] -> pushAll $ placeBelow below <> placeRight right
-        [belowOrRight] -> do
-          belowEmpty <- selectNone
-            $ LocationInDirection Below (LocationWithId $ toId attrs)
-          let placeFun = if belowEmpty then placeBelow else placeRight
-          pushAll $ placeFun belowOrRight
-        [] -> pure ()
-        _ -> error "wrong number of cards drawn"
+      placements <- mapMaybeM (toMaybePlacement attrs) [Below, RightOf]
+      pushAll $ concat $ zipWith ($) placements cards
       pure l
     SkillTestEnds _ -> pure $ BoneFilledCavern $ With attrs (Metadata Nothing)
     _ -> BoneFilledCavern . (`with` metadata) <$> runMessage msg attrs

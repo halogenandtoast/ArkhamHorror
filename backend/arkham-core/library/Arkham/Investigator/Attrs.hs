@@ -39,6 +39,7 @@ data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorRemainingActions :: Field InvestigatorAttrs Int
   InvestigatorLocation :: Field InvestigatorAttrs (Maybe LocationId)
   InvestigatorHorror :: Field InvestigatorAttrs Int
+  InvestigatorResources :: Field InvestigatorAttrs Int
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId

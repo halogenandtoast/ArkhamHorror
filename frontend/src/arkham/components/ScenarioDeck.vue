@@ -24,6 +24,8 @@ export default defineComponent({
       switch(props.deck[0]) {
         case 'ExhibitDeck':
           return `${baseUrl}/img/arkham/cards/02132b.jpg`;
+        case 'CatacombsDeck':
+          return `${baseUrl}/img/arkham/cards/03247b.jpg`;
         default:
           return `${baseUrl}/img/arkham/back.png`;
       }

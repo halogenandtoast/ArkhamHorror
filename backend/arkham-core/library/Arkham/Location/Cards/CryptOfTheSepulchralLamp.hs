@@ -66,25 +66,11 @@ instance LocationRunner env => RunMessage env CryptOfTheSepulchralLamp where
       let investigate = Investigate iid lid s mt SkillWillpower False
       CryptOfTheSepulchralLamp <$> runMessage investigate attrs
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
-      aboveEmpty <- selectNone
-        $ LocationInDirection Above (LocationWithId $ toId attrs)
-      belowEmpty <- selectNone
-        $ LocationInDirection Above (LocationWithId $ toId attrs)
-      let n = count id [aboveEmpty, belowEmpty]
+      n <- countM (directionEmpty attrs) [Above, RightOf]
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)
       pure l
     DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
-      let
-        placeAbove = placeAtDirection Above attrs
-        placeRight = placeAtDirection RightOf attrs
-      case cards of
-        [above, below] -> pushAll $ placeAbove above <> placeRight below
-        [aboveOrRight] -> do
-          aboveEmpty <- selectNone
-            $ LocationInDirection Above (LocationWithId $ toId attrs)
-          let placeFun = if aboveEmpty then placeAbove else placeRight
-          pushAll $ placeFun aboveOrRight
-        [] -> pure ()
-        _ -> error "wrong number of cards drawn"
+      placements <- mapMaybeM (toMaybePlacement attrs) [Above, RightOf]
+      pushAll $ concat $ zipWith ($) placements cards
       pure l
     _ -> CryptOfTheSepulchralLamp <$> runMessage msg attrs

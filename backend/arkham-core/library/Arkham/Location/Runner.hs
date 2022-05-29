@@ -18,12 +18,14 @@ import Arkham.Criteria
 import Arkham.Direction
 import Arkham.Exception
 import Arkham.Id
+import Arkham.Investigator.Attrs (InvestigatorAttrs)
 import Arkham.Location.Helpers
 import Arkham.Matcher
   (AgendaMatcher, AssetMatcher, EnemyMatcher, ExtendedCardMatcher, LocationMatcher(..), locationWithEnemy)
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
+import Arkham.Projection
 import Arkham.Query
 import Arkham.SkillTest
 import Arkham.SkillType
@@ -44,6 +46,7 @@ type LocationRunner env =
   , Query LocationMatcher env
   , Query EnemyMatcher env
   , Query ExtendedCardMatcher env
+  , Projection env InvestigatorAttrs
   , HasCostPayment env
   , HasCount ActionRemainingCount env InvestigatorId
   , HasCount ClueCount env InvestigatorId

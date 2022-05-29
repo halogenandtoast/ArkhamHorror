@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
@@ -52,6 +53,13 @@ instance EnemyRunner env => RunMessage env TheManInThePallidMask where
           SkillIntellect
           False
         ]
-    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->
-      e <$ push (DefeatEnemy (toId attrs) iid (toSource attrs))
+    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target -> do
+      -- Tomb of Shadows will prevent the man in the pallid mask from being
+      -- defeated, but because we have no good way of cancelling an aspect of
+      -- an ability, we handle it here
+      canBeDefeated <- case enemyLocation attrs of
+        Just lid -> notMember lid <$> select (locationIs Locations.tombOfShadows)
+        _ -> pure True
+      when canBeDefeated $ push (DefeatEnemy (toId attrs) iid (toSource attrs))
+      pure e
     _ -> TheManInThePallidMask <$> runMessage msg attrs

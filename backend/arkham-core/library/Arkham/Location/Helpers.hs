@@ -10,6 +10,7 @@ import Arkham.Action qualified as Action
 import Arkham.Classes.Entity
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Direction
 import Arkham.Game.Helpers as X
 import Arkham.Matcher
 
@@ -27,3 +28,6 @@ drawCardUnderneathAction a =
     )
     { abilityLimit = GroupLimit PerGame 1
     }
+
+adjacentLocations :: HashSet Direction
+adjacentLocations = setFromList [minBound .. maxBound]

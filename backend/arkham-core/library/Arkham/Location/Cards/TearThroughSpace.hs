@@ -11,6 +11,7 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Id
+import Arkham.Label (mkLabel)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -53,7 +54,7 @@ instance LocationRunner env => RunMessage env TearThroughSpace where
       let
         labels = [ nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 4] ]
       availableLabel <- findM
-        (fmap isNothing . getId @(Maybe LocationId) . LocationWithLabel)
+        (fmap isNothing . getId @(Maybe LocationId) . LocationWithLabel . mkLabel)
         labels
       case availableLabel of
         Just label -> pure . TearThroughSpace $ attrs & labelL .~ label

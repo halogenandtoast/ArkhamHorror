@@ -1016,6 +1016,8 @@ library
       Arkham.Scenarios.TheLastKing.Story
       Arkham.Scenarios.TheMidnightMasks.Story
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+      Arkham.Scenarios.ThePallidMask.Helpers
+      Arkham.Scenarios.ThePallidMask.Story
       Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Skill

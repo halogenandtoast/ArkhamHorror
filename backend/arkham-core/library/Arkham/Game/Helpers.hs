@@ -2204,7 +2204,7 @@ locationMatches
 locationMatches investigatorId source window locationId = \case
   Matcher.LocationNotInPlay -> pure False
   Matcher.LocationWithLabel label ->
-    (== label) . Location.unLabel <$> Location.getLabel locationId
+    (== label) <$> Location.getLabel locationId
   Matcher.LocationWithTitle title ->
     (== title) . nameTitle <$> getName locationId
   Matcher.LocationWithFullTitle title subtitle ->

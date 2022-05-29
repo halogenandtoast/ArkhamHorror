@@ -856,7 +856,7 @@ getLocationsMatching = \case
             (First Nothing)
             xs
   LocationWithLabel label ->
-    filter ((== label) . L.unLabel . toLocationLabel)
+    filter ((== label) . toLocationLabel)
       . toList
       . view (entitiesL . locationsL)
       <$> getGame

@@ -14,6 +14,7 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Keyword (Keyword)
 import Arkham.Keyword qualified as Keyword
+import Arkham.Label
 import Arkham.LocationSymbol
 import Arkham.Modifier
 import Arkham.Phase
@@ -324,7 +325,7 @@ data LocationMatcher
   | LocationWithFullTitle Text Text
   | LocationWithUnrevealedTitle Text
   | LocationWithId LocationId
-  | LocationWithLabel Text
+  | LocationWithLabel Label
   | LocationWithSymbol LocationSymbol
   | LocationLeavingPlay
   | LocationWithDoom ValueMatcher

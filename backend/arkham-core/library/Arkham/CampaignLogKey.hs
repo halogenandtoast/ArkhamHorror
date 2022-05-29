@@ -81,6 +81,10 @@ data CampaignLogKey
   | TheInvestigatorsEscapedTheAsylum
   | YouIgnoredDanielsWarning
   | YouHeadedDanielsWarning
+  | YouDidNotEscapeTheGazeOfThePhantom
+  | YouFoundNigelsHome
+  | YouFoundNigelEngram
+  | YouWereUnableToFindNigel
   -- ^ The Path to Carcosa
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

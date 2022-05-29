@@ -193,3 +193,103 @@ jordansInformation = FlavorText
     \ at a café in Montparnasse, “L’agneau Perdu.” You travel there first,\
     \ hoping to find Mr. Engram..."
   ]
+
+noResolution :: Message
+noResolution = FlavorText
+  (Just "No Resolution")
+  [ "You lose track of yourself\
+    \ within the city as you flee for your life. Your feet move of their\
+    \ own accord. The beating of sinewy wings and screeching of\
+    \ creatures above you spurs you onward. Soon you find yourself\
+    \ running down a narrow avenue, passing a set of heavy iron\
+    \ gates. You are in a dead end—a court with tall, old houses\
+    \ on either side. You turn back toward the entrance to find the\
+    \ shapes of many winged creatures barring your path. They are\
+    \ perched on the gates and on the balconies above, awaiting\
+    \ your doom. Walking with cold, sinister confidence, the man in\
+    \ black opens the iron gate and enters the court. His face gleams\
+    \ in the darkness. His eyes pierce your soul. For a moment, you\
+    \ recognize him for what he truly is. It is the last you remember\
+    \ of that night."
+  ]
+
+resolution1 :: Message
+resolution1 = FlavorText
+  (Just "Resolution 1")
+  [ "You can only assume this house belongs to\
+    \ Nigel Engram, the director of The King in Yellow. At last,\
+    \ you have finally found your quarry…and yet, it is little relief to\
+    \ your straining sanity. You feel like a dog being led by a leash,\
+    \ your fate decided by a cruel master who has long kept you in\
+    \ the dark. You push these gloomy thoughts to the back of your\
+    \ mind and knock on Mr. Engram’s door. There is no response\
+    \ but a flock of magpies that scatter from the rooftop at the\
+    \ sudden noise. You try the doorknob, hoping you won’t have to\
+    \ resort to more forceful measures. To your surprise, you find the\
+    \ door unlocked."
+  , "Inside, Nigel’s home is a mess of notes, old books, and strange\
+    \ diagrams. Covering the coffee table in his living room is an\
+    \ old, faded map, bearing many fold creases and tattered edges.\
+    \ It looks to be an incomplete map of the catacombs beneath\
+    \ Paris, or at least a section of it. The food in his pantry is old\
+    \ and rotten. There is no sign of anyone having lived here for\
+    \ years, and yet the ink upon the living room walls is wet and\
+    \ fresh. Over and over, across nearly every inch of the wallpaper,\
+    \ it reads:"
+  , "He is already here"
+  ]
+
+resolution2 :: Message
+resolution2 = FlavorText
+  (Just "Resolution 2")
+  [ "You can only assume this house belongs to Nigel\
+    \ Engram, the director of The King in Yellow. At last, you have\
+    \ finally found your quarry…and yet, it is little relief to your\
+    \ straining sanity. You feel like a dog being led by a leash, your\
+    \ fate decided by a cruel master who has long kept you in the\
+    \ dark. You push these gloomy thoughts to the back of your mind\
+    \ and knock on Mr. Engram’s door. A flock of magpies scatters\
+    \ from the rooftop at the sudden noise. Then, to your surprise, the\
+    \ door opens."
+  , "Across the threshold of the doorway stands a tall man with a\
+    \ thick, brown mustache. A familiar silver-handled cane leans\
+    \ against the wall next to his coat hanger. “So it’s you,” he says.\
+    \ “Come in. I have expected you for some time now.” He turns\
+    \ away and walks toward his kitchen. You can hear a teapot\
+    \ whistling, as though he’d been preparing for your arrival."
+  , "You enter his home, unsure of what to do next. This gentle,\
+    \ unassuming man is not quite what you had expected. Nigel’s\
+    \ home is a mess of notes, old books, and strange diagrams.\
+    \ Covering the coffee table in his living room is an old, faded\
+    \ map, bearing many fold creases and tattered edges. It looks to\
+    \ be an incomplete map of the catacombs beneath Paris, or at\
+    \ least a section of it. Mr. Engram returns moments later with\
+    \ hot tea and a plate of cheese and crackers. “I assume you are\
+    \ here to find the path to Carcosa?” he asks, wearing an excited\
+    \ grin. You shake your head in response, but he doesn’t seem to\
+    \ notice. He paces back and forth around the room as he speaks\
+    \ rapidly. “He told me that you would be arriving soon. That I\
+    \ should… Prepare.” Nigel turns toward you as he reaches the\
+    \ wooden door across from you, his eyes flashing. “Don’t worry.\
+    \ All is ready. The way is paved.” He opens the door to his study\
+    \ and steps inside, leaving you behind to interpret his cryptic\
+    \ comments. You wait a few minutes for him to return, but when\
+    \ he does not, you begin to worry. Then you notice that mold has\
+    \ already begun to grow over the cheese he’d brought you. “Mr.\
+    \ Engram?” you call out, and you hesitantly knock on the door\
+    \ to his study. There is no response. When you enter the room,\
+    \ you find him hanging from the ceiling fan, his body rotting\
+    \ from weeks of decomposition."
+  ]
+
+resolution3 :: Message
+resolution3 = FlavorText
+  (Just "Resolution 3")
+  [ "As the sun rises once more over the skyline of\
+    \ Paris, you lose sight of the mysterious figure. Frustrated at\
+    \ your failure, you return to your hotel to sleep and recover from\
+    \ the horrors of the past few nights. Your fitful dreams return—\
+    \ dreams of Carcosa, of the King in Tatters, and of the shadowy\
+    \ figure whom you had pursued through the streets of Paris.\
+    \ When you awaken, you are no longer in your hotel room."
+  ]

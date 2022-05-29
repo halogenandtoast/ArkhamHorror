@@ -28,6 +28,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Query
+import Arkham.Resolution
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -354,4 +355,38 @@ instance ScenarioRunner env => RunMessage env APhantomOfTruth where
       Cultist | isEasyStandard attrs -> s <$ cultistEffect
       ElderThing -> s <$ push (LoseResources iid n)
       _ -> pure s
+    ScenarioResolution res -> do
+      investigatorIds <- getInvestigatorIds
+      jordanSlain <- selectOne
+        (VictoryDisplayCardMatch $ cardIs Enemies.jordanPerry)
+      gainXp <- map (uncurry GainXP) <$> getXpWithBonus (if res == Resolution 2 then 2 else 0)
+      let
+        updateSlain =
+          [ RecordSetInsert VIPsSlain [toCardCode jordan]
+          | jordan <- maybeToList jordanSlain
+          ]
+        sufferTrauma =
+          if res == Resolution 2
+            then [SufferTrauma iid 0 1 | iid <- investigatorIds]
+            else []
+        (storyText, record, token) = case res of
+          NoResolution -> (noResolution, YouDidNotEscapeTheGazeOfThePhantom, ElderThing)
+          Resolution 1 -> (resolution1, YouFoundNigelsHome, Cultist)
+          Resolution 2 -> (resolution2, YouFoundNigelEngram, Tablet)
+          Resolution 3 -> (resolution3, YouWereUnableToFindNigel, ElderThing)
+          _ -> error "Invalid resolution"
+      pushAll
+        $ [ story investigatorIds storyText
+          , Record record
+          ]
+        <> sufferTrauma
+        <> [ RemoveAllTokens Cultist
+           , RemoveAllTokens Tablet
+           , RemoveAllTokens ElderThing
+           , AddToken token
+           , AddToken token
+           ]
+        <> updateSlain
+        <> gainXp
+      pure s
     _ -> APhantomOfTruth <$> runMessage msg attrs

@@ -158,13 +158,15 @@ instance ScenarioRunner env => RunMessage env APhantomOfTruth where
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      push
-        ( chooseOne
+      theManInThePallidMask <- genPlayerCard Enemies.theManInThePallidMask
+      pushAll
+        [ chooseOne
             leadInvestigatorId
             [ Label "Conviction" [RecordCount Conviction 1]
             , Label "Doubt" [RecordCount Doubt 1]
             ]
-        )
+        , ShuffleCardsIntoDeck leadInvestigatorId [theManInThePallidMask]
+        ]
       pure s
     Setup -> do
       investigatorIds <- getInvestigatorIds

@@ -5,15 +5,20 @@ module Arkham.Scenario.Scenarios.ThePallidMask
 
 import Arkham.Prelude
 
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
-import Arkham.Label
+import Arkham.Game.Helpers
 import Arkham.Id
-import Arkham.Investigator.Attrs ( InvestigatorAttrs, Field(..) )
+import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs )
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Projection
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Runner
-import Arkham.Matcher
-import Arkham.Projection
+import Arkham.Scenarios.ThePallidMask.Helpers
+import Arkham.Scenarios.ThePallidMask.Story
 import Arkham.Token
 
 newtype ThePallidMask = ThePallidMask ScenarioAttrs
@@ -32,8 +37,9 @@ newtype ThePallidMask = ThePallidMask ScenarioAttrs
 -- 13 x 11, in order to convert we use labels to figure out the new position
 
 thePallidMask :: Difficulty -> ThePallidMask
-thePallidMask difficulty = ThePallidMask $
-  baseAttrs "03240" "The Pallid Mask" difficulty
+thePallidMask difficulty =
+  ThePallidMask
+    $ baseAttrs "03240" "The Pallid Mask" difficulty
     & locationLayoutL
     ?~ [ "pos0011 pos0111 pos0211 pos0311 pos0411 pos0511 pos0611 pos0711 pos0811 pos0911 pos1011 pos1111 pos1211 pos1311"
        , "pos0010 pos0110 pos0210 pos0310 pos0410 pos0510 pos0610 pos0710 pos0810 pos0910 pos1010 pos1110 pos1210 pos1310"
@@ -49,30 +55,6 @@ thePallidMask difficulty = ThePallidMask $
        , "pos0000 pos0100 pos0200 pos0300 pos0400 pos0500 pos0600 pos0700 pos0800 pos0900 pos1000 pos1100 pos1200 pos1300"
        ]
 
-posLabelToPosition :: Label -> (Int, Int)
-posLabelToPosition lbl = case drop 3 (unpack . unLabel $ lbl) of
-  (x10 : x1 : y10 : y1 : []) -> (toI x10 * 10 + toI x1, toI y10 * 10 + toI y1)
-  _ -> error "Invalid position label"
- where
-   toI = \case
-    '0' -> 0
-    '1' -> 1
-    '2' -> 2
-    '3' -> 3
-    '4' -> 4
-    '5' -> 5
-    '6' -> 6
-    '7' -> 7
-    '8' -> 8
-    '9' -> 9
-    _ -> error "not a digit"
-
-positionToLabel :: (Int, Int) -> Label
-positionToLabel (x, y) = Label . pack $ "pos" <> fromI x <> fromI y
-  where
-    fromI n | n < 10 = "0" <> show n
-            | otherwise = show n
-
 startPosition :: (Int, Int)
 startPosition = (2, 6)
 
@@ -81,19 +63,61 @@ instance HasRecord env ThePallidMask where
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
 
-instance (Query LocationMatcher env, Projection env InvestigatorAttrs, HasCount (Maybe Distance) env (LocationId, LocationId), HasTokenValue env InvestigatorId) => HasTokenValue env ThePallidMask where
+instance
+  ( Query LocationMatcher env
+  , Projection env InvestigatorAttrs
+  , HasCount (Maybe Distance) env (LocationId, LocationId)
+  , HasTokenValue env InvestigatorId
+  )
+  => HasTokenValue env ThePallidMask where
   getTokenValue iid tokenFace (ThePallidMask attrs) = case tokenFace of
     Skull -> do
       -- -X where X is the number of locations away from the starting location
-      startingLocation <- selectJust $ LocationWithLabel . unLabel $ positionToLabel startPosition
-      yourLocation <- fromJustNote "no location" <$> field InvestigatorLocation iid
-      distance <- unDistance . fromJustNote "no distance?" <$> getDistance startingLocation yourLocation
+      startingLocation <- selectJust $ LocationWithLabel $ positionToLabel
+        startPosition
+      yourLocation <-
+        fromJustNote "no location" <$> field InvestigatorLocation iid
+      distance <-
+        unDistance
+        . fromMaybe (Distance 0)
+        <$> getDistance startingLocation yourLocation
       pure $ toTokenValue attrs Skull (min 5 distance) distance
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ TokenValue Tablet NoModifier
-    ElderThing -> pure $ TokenValue ElderThing NoModifier
+    Cultist -> pure $ toTokenValue attrs Cultist 2 3
+    Tablet -> pure $ toTokenValue attrs Tablet 2 3
+    ElderThing -> pure $ toTokenValue attrs ElderThing 3 4
     otherFace -> getTokenValue iid otherFace attrs
 
+standaloneTokens :: [TokenFace]
+standaloneTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusThree
+  , MinusFour
+  , Skull
+  , Skull
+  , Skull
+  , AutoFail
+  , ElderSign
+  ]
+
 instance ScenarioRunner env => RunMessage env ThePallidMask where
-  runMessage msg (ThePallidMask attrs) =
-    ThePallidMask <$> runMessage msg attrs
+  runMessage msg s@(ThePallidMask attrs) = case msg of
+    SetTokensForScenario -> do
+      whenM getIsStandalone $ do
+        randomToken <- sample (Cultist :| [Tablet, ElderThing])
+        push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+      pure s
+    StandaloneSetup -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      theManInThePallidMask <- genPlayerCard Enemies.theManInThePallidMask
+      push $ ShuffleCardsIntoDeck leadInvestigatorId [theManInThePallidMask]
+      pure s
+    Setup -> pure s
+    _ -> ThePallidMask <$> runMessage msg attrs

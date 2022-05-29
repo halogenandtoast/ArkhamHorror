@@ -78,6 +78,9 @@ selectCount = fmap HashSet.size . select
 selectAny :: (HasCallStack, MonadReader env m, Query a env) => a -> m Bool
 selectAny = fmap notNull . selectListMap id
 
+selectNone :: (HasCallStack, MonadReader env m, Query a env) => a -> m Bool
+selectNone = fmap null . selectListMap id
+
 selectList
   :: (HasCallStack, MonadReader env m, Query a env) => a -> m [QueryElement a]
 selectList = selectListMap id

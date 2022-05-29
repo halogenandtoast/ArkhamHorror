@@ -1248,8 +1248,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push (RefillSlots iid slotType assetIds)
     pure $ a & slotsL %~ insertMap slotType emptiedSlots
   RefillSlots iid slotType assetIds | iid == investigatorId -> do
+    modifiers' <- getModifiers (toSource a) (toTarget a)
     let
-      slots = findWithDefault [] slotType investigatorSlots
+      handleSlotModifiers [] xs = xs
+      handleSlotModifiers (m : ms) xs = case m of
+        FewerSlots slotType' n | slotType == slotType' -> handleSlotModifiers ms $ drop n xs
+        _ -> handleSlotModifiers ms xs
+      slots = handleSlotModifiers modifiers' $ findWithDefault [] slotType investigatorSlots
       emptiedSlots = sort $ map emptySlot slots
     assetsWithTraits <- for assetIds $ \assetId -> do
       traits <- getSetList assetId

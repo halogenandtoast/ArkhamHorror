@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Cost
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.GameValue

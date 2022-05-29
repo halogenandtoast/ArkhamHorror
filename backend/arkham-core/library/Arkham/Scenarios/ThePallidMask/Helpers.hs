@@ -36,17 +36,36 @@ positionToLabel (x, y) = Label . pack $ "pos" <> fromI x <> fromI y
     | otherwise = show n
 
 
-placeAtDirection :: Direction -> LocationAttrs -> Card -> [Message]
-placeAtDirection direction attrs card =
-  [ PlaceLocation card
-  , SetLocationLabel
-    (toLocationId card)
-    (unLabel $ positionToLabel newPos)
-  , PlacedLocationDirection (toLocationId card) direction (toId attrs)
-  ]
+placeAtDirection :: (Query LocationMatcher env, MonadReader env m) => Direction -> LocationAttrs -> m (Card -> [Message])
+placeAtDirection direction attrs = do
+  -- we need to determine what we are connected to based on our pos, the only way to do this is to get locations with labels
+  let placedPosition = newPos direction (posLabelToPosition . mkLabel $ locationLabel attrs)
+
+  mLeftLocation <- selectOne $ LocationWithLabel $ positionToLabel $ newPos LeftOf placedPosition
+  mRightLocation <- selectOne $ LocationWithLabel $ positionToLabel $ newPos RightOf placedPosition
+  mAboveLocation <- selectOne $ LocationWithLabel $ positionToLabel $ newPos Above placedPosition
+  mBelowLocation <- selectOne $ LocationWithLabel $ positionToLabel $ newPos Below placedPosition
+
+  pure $ \card ->
+    [ PlaceLocation card
+    , SetLocationLabel
+      (toLocationId card)
+      (unLabel $ positionToLabel placedPosition)
+    ]
+    <> case mLeftLocation of
+         Just lid -> [ PlacedLocationDirection (toLocationId card) LeftOf lid]
+         Nothing -> []
+    <> case mRightLocation of
+         Just lid -> [ PlacedLocationDirection (toLocationId card) RightOf lid]
+         Nothing -> []
+    <> case mAboveLocation of
+         Just lid -> [ PlacedLocationDirection (toLocationId card) Above lid]
+         Nothing -> []
+    <> case mBelowLocation of
+         Just lid -> [ PlacedLocationDirection (toLocationId card) Below lid]
+         Nothing -> []
  where
-   (x, y) = posLabelToPosition (mkLabel $ locationLabel attrs)
-   newPos = case direction of
+   newPos dir (x, y) = case dir of
               Above -> (x, y + 1)
               Below -> (x, y - 1)
               LeftOf -> (x - 1, y)
@@ -58,6 +77,6 @@ directionEmpty attrs dir = selectNone $ LocationInDirection dir (LocationWithId 
 toMaybePlacement :: (Query LocationMatcher env, MonadReader env m) => LocationAttrs -> Direction -> m (Maybe (Card -> [Message]))
 toMaybePlacement attrs dir = do
   isEmpty <- directionEmpty attrs dir
-  pure $ if isEmpty
-    then Just $ placeAtDirection dir attrs
-    else Nothing
+  if isEmpty
+    then Just <$> placeAtDirection dir attrs
+    else pure Nothing

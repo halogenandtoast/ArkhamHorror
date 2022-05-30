@@ -66,9 +66,6 @@ thePallidMask difficulty =
        , "pos0000 pos0100 pos0200 pos0300 pos0400 pos0500 pos0600 pos0700 pos0800 pos0900 pos1000 pos1100 pos1200 pos1300"
        ]
 
-startPosition :: (Int, Int)
-startPosition = (2, 6)
-
 instance HasRecord env ThePallidMask where
   hasRecord YouFoundNigelsHome _ = pure True
   hasRecord YouEnteredTheCatacombsOnYourOwn _ = pure True

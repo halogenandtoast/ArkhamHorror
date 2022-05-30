@@ -6,6 +6,7 @@ module Arkham.Scenario.Scenarios.ThePallidMask
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
@@ -13,6 +14,8 @@ import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.Effect.Window
+import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
@@ -20,8 +23,9 @@ import Arkham.Id
 import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs )
 import Arkham.Label ( unLabel )
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
+import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
@@ -29,6 +33,8 @@ import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThePallidMask.Helpers
 import Arkham.Scenarios.ThePallidMask.Story
+import Arkham.SkillTest
+import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 
@@ -177,6 +183,10 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
             _ -> error "invalid setup"
         else (theGateToHell, ) <$> shuffleM otherCatacombs
 
+      theManInThePallidMask <- getCampaignStoryCard
+        Enemies.theManInThePallidMask
+        ()
+
       let (bottom3, rest) = splitAt 3 remainingCatacombs
       bottom <- shuffleM ([tombOfShadows, blockedPassage] <> bottom3)
       let catacombsDeck = rest <> bottom
@@ -192,12 +202,15 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
              (unLabel $ positionToLabel startPosition)
            , PlaceResources (LocationTarget $ toLocationId startingLocation) 1
            , MoveAllTo (toSource attrs) (toLocationId startingLocation)
+           , SetupStep 1
+           , RemoveFromBearersDeckOrDiscard theManInThePallidMask
            ]
         )
       ThePallidMask <$> runMessage
         msg
         (attrs
         & (decksL . at CatacombsDeck ?~ catacombsDeck)
+        & (setAsideCardsL .~ [PlayerCard theManInThePallidMask])
         & (actStackL
           . at 1
           ?~ [ Acts.throughTheCatacombs
@@ -211,4 +224,38 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
           ?~ [Agendas.empireOfTheDead, Agendas.empireOfTheUndead]
           )
         )
+    SetupStep 1 -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      catacombs <- selectList UnrevealedLocation
+      youOpenedASecretPassageway <- remembered YouOpenedASecretPassageway
+      when youOpenedASecretPassageway $ push $ chooseOne
+        leadInvestigatorId
+        [ targetLabel
+            catacomb
+            [RevealLocation (Just leadInvestigatorId) catacomb]
+        | catacomb <- catacombs
+        ]
+      pure s
+    ResolveToken t token iid | token `elem` [Cultist, Tablet, ElderThing] ->
+      s <$ case token of
+        Cultist -> do
+          mskillTestSource <- getSkillTestSource
+          case mskillTestSource of
+            Just (SkillTestSource _ _ _ (Just Action.Fight)) -> push
+              (CreateWindowModifierEffect
+                EffectSkillTestWindow
+                (EffectModifiers $ toModifiers
+                  attrs
+                  [ if isEasyStandard attrs
+                      then DamageDealt (-1)
+                      else NoDamageDealt
+                  ]
+                )
+                (TokenSource t)
+                (InvestigatorTarget iid)
+              )
+            _ -> pure ()
+        Tablet -> pure ()
+        ElderThing -> pure ()
+        _ -> pure ()
     _ -> ThePallidMask <$> runMessage msg attrs

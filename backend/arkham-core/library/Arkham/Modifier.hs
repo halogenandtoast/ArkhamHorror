@@ -129,6 +129,7 @@ data ModifierType
   | MayChooseNotToTakeUpkeepResources
   | ModifierIfSucceededBy Int Modifier
   | NegativeToPositive
+  | NoDamageDealt
   | NonDirectHorrorMustBeAssignToThisFirst
   | PlaceOnBottomOfDeckInsteadOfDiscard
   | ReduceCostOf CardMatcher Int

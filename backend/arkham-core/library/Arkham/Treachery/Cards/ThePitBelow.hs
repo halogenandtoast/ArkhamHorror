@@ -1,25 +1,26 @@
 module Arkham.Treachery.Cards.ThePitBelow
   ( thePitBelow
   , ThePitBelow(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Ability
 import Arkham.Classes
-import Arkham.Message
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
+import Arkham.Message
 import Arkham.Modifier
-import Arkham.Investigator.Attrs ( Field(..))
 import Arkham.Projection
 import Arkham.Target
+import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
+import Arkham.Treachery.Runner
 
 newtype ThePitBelow = ThePitBelow TreacheryAttrs
-  deriving anyclass (IsTreachery, HasAbilities)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePitBelow :: TreacheryCard ThePitBelow
@@ -31,6 +32,10 @@ instance HasModifiersFor env ThePitBelow where
       $ toModifiers attrs [ ShroudModifier 1 | treacheryOnLocation lid attrs ]
   getModifiersFor _ _ _ = pure []
 
+instance HasAbilities ThePitBelow where
+  getAbilities (ThePitBelow a) =
+    [mkAbility a 1 $ ForcedAbility $ RoundEnds Timing.When]
+
 instance TreacheryRunner env => RunMessage env ThePitBelow where
   runMessage msg t@(ThePitBelow attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
@@ -38,9 +43,22 @@ instance TreacheryRunner env => RunMessage env ThePitBelow where
       case mlid of
         Nothing -> push (Discard $ toTarget attrs)
         Just lid -> do
-          hasThePitBelow <- selectAny $ TreacheryAt (LocationWithId lid) <> treacheryIs Cards.thePitBelow
+          hasThePitBelow <-
+            selectAny
+            $ TreacheryAt (LocationWithId lid)
+            <> treacheryIs Cards.thePitBelow
           if hasThePitBelow
-             then pushAll [Discard (toTarget attrs), Surge iid (toSource attrs)]
-             else push (AttachTreachery (toId attrs) $ LocationTarget lid)
+            then pushAll [Discard (toTarget attrs), Surge iid (toSource attrs)]
+            else push (AttachTreachery (toId attrs) $ LocationTarget lid)
+      pure t
+    UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
+      iids <-
+        selectList $ InvestigatorAt $ LocationWithTreachery $ TreacheryWithId
+          (toId attrs)
+      pushAll
+        $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 3 0
+          | iid <- iids
+          ]
+        <> [Discard $ toTarget attrs]
       pure t
     _ -> ThePitBelow <$> runMessage msg attrs

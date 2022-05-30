@@ -1,6 +1,6 @@
-module Arkham.Act.Cards.TheWayOut
-  ( TheWayOut(..)
-  , theWayOut
+module Arkham.Act.Cards.LeadingTheWay
+  ( LeadingTheWay(..)
+  , leadingTheWay
   ) where
 
 import Arkham.Prelude
@@ -14,24 +14,24 @@ import Arkham.Matcher
 import Arkham.Ability
 import Arkham.Criteria
 
-newtype TheWayOut = TheWayOut ActAttrs
+newtype LeadingTheWay = LeadingTheWay ActAttrs
   deriving anyclass (IsAct, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theWayOut :: ActCard TheWayOut
-theWayOut = act (3, A) TheWayOut Cards.theWayOut Nothing
+leadingTheWay :: ActCard LeadingTheWay
+leadingTheWay = act (3, A) LeadingTheWay Cards.leadingTheWay Nothing
 
-instance HasAbilities TheWayOut where
-  getAbilities (TheWayOut a) =
+instance HasAbilities LeadingTheWay where
+  getAbilities (LeadingTheWay a) =
     [ restrictedAbility
           a
-          2
+          1
           (EachUndefeatedInvestigator $ InvestigatorAt $ locationIs
-            Locations.theGateToHell
+            Locations.blockedPassage
           )
         $ Objective
         $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage env TheWayOut where
-  runMessage msg (TheWayOut attrs) = TheWayOut <$> runMessage msg attrs
+instance ActRunner env => RunMessage env LeadingTheWay where
+  runMessage msg (LeadingTheWay attrs) = LeadingTheWay <$> runMessage msg attrs

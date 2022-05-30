@@ -1142,6 +1142,7 @@ library
       Arkham.Treachery.Cards.DreamsOfRlyeh
       Arkham.Treachery.Cards.EagerForDeath
       Arkham.Treachery.Cards.EphemeralExhibits
+      Arkham.Treachery.Cards.EyesInTheWalls
       Arkham.Treachery.Cards.FalseLead
       Arkham.Treachery.Cards.FinalRhapsody
       Arkham.Treachery.Cards.FineDining
@@ -1209,6 +1210,7 @@ library
       Arkham.Treachery.Cards.TheHarbinger
       Arkham.Treachery.Cards.TheKingsEdict
       Arkham.Treachery.Cards.ThePaleMaskBeckons
+      Arkham.Treachery.Cards.TheShadowBehindYou
       Arkham.Treachery.Cards.TheYellowSign
       Arkham.Treachery.Cards.TheZealotsSeal
       Arkham.Treachery.Cards.TorturousChords

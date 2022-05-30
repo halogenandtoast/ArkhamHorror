@@ -40,6 +40,7 @@ data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorLocation :: Field InvestigatorAttrs (Maybe LocationId)
   InvestigatorHorror :: Field InvestigatorAttrs Int
   InvestigatorResources :: Field InvestigatorAttrs Int
+  InvestigatorHand :: Field InvestigatorAttrs [Card]
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId

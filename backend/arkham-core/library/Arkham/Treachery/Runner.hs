@@ -7,13 +7,16 @@ import Arkham.ClassSymbol
 import Arkham.Classes
 import Arkham.EnemyId
 import Arkham.Id
+import Arkham.Investigator.Attrs (InvestigatorAttrs)
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Query
 import Arkham.ScenarioLogKey
 import Arkham.Trait
 
 type TreacheryRunner env =
   ( HasQueue env
+  , Projection env InvestigatorAttrs
   , HasSet SkillId env SkillMatcher
   , HasSet EventId env EventMatcher
   , HasSet ClassSymbol env InvestigatorId

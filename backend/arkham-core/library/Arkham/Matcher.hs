@@ -59,6 +59,11 @@ pattern InvestigatorWithAnyClues <-
   InvestigatorWithClues (GreaterThan (Static 0)) where
   InvestigatorWithAnyClues = InvestigatorWithClues (GreaterThan (Static 0))
 
+pattern InvestigatorWithAnyResources :: InvestigatorMatcher
+pattern InvestigatorWithAnyResources <-
+  InvestigatorWithResources (GreaterThan (Static 0)) where
+  InvestigatorWithAnyResources = InvestigatorWithResources (GreaterThan (Static 0))
+
 pattern InvestigatorCanMove :: InvestigatorMatcher
 pattern InvestigatorCanMove <-
   InvestigatorWithoutModifier CannotMove where

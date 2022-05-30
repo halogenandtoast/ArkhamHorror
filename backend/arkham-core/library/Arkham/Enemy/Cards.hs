@@ -94,10 +94,12 @@ allEncounterEnemyCards = mapFromList $ map
   , bogGator
   , broodOfYogSothoth
   , carnevaleSentinel
+  , catacombsDocent
   , cloverClubPitBoss
   , cnidathqua
   , conglomerationOfSpheres
   , constanceDumaine
+  , corpseDweller
   , corpseHungryGhoul
   , corpseTaker
   , crazedShoggoth
@@ -737,6 +739,17 @@ specterOfDeath =
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdUnique = True
     }
+
+catacombsDocent :: CardDef
+catacombsDocent = (enemy "03258" "Catacombs Docent" ThePallidMask 3)
+  { cdCardTraits = setFromList [Humanoid, Lunatic]
+  }
+
+corpseDweller :: CardDef
+corpseDweller = (enemy "03259" "Corpse Dweller" ThePallidMask 3)
+  { cdCardTraits = singleton Monster
+  , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+  }
 
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul = (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering 1

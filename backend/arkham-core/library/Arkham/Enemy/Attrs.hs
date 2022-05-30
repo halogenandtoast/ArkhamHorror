@@ -64,6 +64,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyDoom :: Int
   , enemyClues :: Int
   , enemySpawnAt :: Maybe LocationMatcher
+  , enemySurgeIfUnabledToSpawn :: Bool
   , enemyAsSelfLocation :: Maybe Text
   , enemyMovedFromHunterKeyword :: Bool
   , enemyDamageStrategy :: DamageStrategy
@@ -84,6 +85,9 @@ bearerL = lens enemyBearer $ \m x -> m { enemyBearer = x }
 
 spawnAtL :: Lens' EnemyAttrs (Maybe LocationMatcher)
 spawnAtL = lens enemySpawnAt $ \m x -> m { enemySpawnAt = x }
+
+surgeIfUnableToSpawnL :: Lens' EnemyAttrs Bool
+surgeIfUnableToSpawnL = lens enemySurgeIfUnabledToSpawn $ \m x -> m { enemySurgeIfUnabledToSpawn = x }
 
 healthDamageL :: Lens' EnemyAttrs Int
 healthDamageL = lens enemyHealthDamage $ \m x -> m { enemyHealthDamage = x }
@@ -197,6 +201,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       , enemyDoom = 0
       , enemyClues = 0
       , enemySpawnAt = Nothing
+      , enemySurgeIfUnabledToSpawn = False
       , enemyAsSelfLocation = Nothing
       , enemyMovedFromHunterKeyword = False
       , enemyDamageStrategy = DamageAny

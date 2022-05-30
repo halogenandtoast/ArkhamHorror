@@ -274,13 +274,6 @@ instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
       a <$ case matches of
         [] -> error "There were no locations with that name"
         (card : _) -> push (PlaceLocation card)
-    EnemySpawnAtLocationMatching miid locationMatcher eid -> do
-      lids <- selectList locationMatcher
-      leadInvestigatorId <- getLeadInvestigatorId
-      a <$ case lids of
-        [] -> push (Discard (EnemyTarget eid))
-        [lid] -> pushAll (resolve $ EnemySpawn miid lid eid)
-        xs -> spawnAtOneOf (fromMaybe leadInvestigatorId miid) eid xs
     PlaceDoomOnAgenda -> do
       agendaIds <- getSetList @AgendaId ()
       case agendaIds of

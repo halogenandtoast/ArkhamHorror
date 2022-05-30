@@ -2284,6 +2284,8 @@ locationMatches investigatorId source window locationId = \case
     elem locationId . catMaybes <$> traverse (getId . (direction, )) starts
   Matcher.FarthestLocationFromYou matcher' ->
     member (FarthestLocationId locationId) <$> getSet (investigatorId, matcher')
+  Matcher.FarthestLocationFromLocation start matcher' ->
+    member locationId <$> select (Matcher.FarthestLocationFromLocation start matcher')
   Matcher.FarthestLocationFromAll matcher' -> do
     member locationId <$> select (Matcher.FarthestLocationFromAll matcher')
   Matcher.LocationWithDistanceFrom distance matcher' ->

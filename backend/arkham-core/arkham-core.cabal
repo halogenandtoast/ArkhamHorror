@@ -507,10 +507,12 @@ library
       Arkham.Enemy.Cards.BogGator
       Arkham.Enemy.Cards.BroodOfYogSothoth
       Arkham.Enemy.Cards.CarnevaleSentinel
+      Arkham.Enemy.Cards.CatacombsDocent
       Arkham.Enemy.Cards.CloverClubPitBoss
       Arkham.Enemy.Cards.Cnidathqua
       Arkham.Enemy.Cards.ConglomerationOfSpheres
       Arkham.Enemy.Cards.ConstanceDumaine
+      Arkham.Enemy.Cards.CorpseDweller
       Arkham.Enemy.Cards.CorpseHungryGhoul
       Arkham.Enemy.Cards.CorpseTaker
       Arkham.Enemy.Cards.CrazedShoggoth

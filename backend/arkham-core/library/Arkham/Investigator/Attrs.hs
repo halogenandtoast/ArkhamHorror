@@ -181,6 +181,7 @@ damageValueFor baseValue attrs = do
   pure $ foldr applyModifier baseValue modifiers
  where
   applyModifier (DamageDealt m) n = max 0 (n + m)
+  applyModifier NoDamageDealt _ = 0
   applyModifier _ n = n
 
 getIsScenarioAbility

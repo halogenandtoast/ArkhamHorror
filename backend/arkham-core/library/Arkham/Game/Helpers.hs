@@ -2509,3 +2509,9 @@ getCanShuffleDeck
 getCanShuffleDeck iid = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   pure $ CannotManipulateDeck `notElem` modifiers
+
+remembered
+  :: (MonadReader env m, HasSet ScenarioLogKey env ())
+  => ScenarioLogKey
+  -> m Bool
+remembered key = member key <$> getSet ()

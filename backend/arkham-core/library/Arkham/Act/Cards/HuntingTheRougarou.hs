@@ -12,7 +12,7 @@ import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Query
 import Arkham.Resolution
 import Arkham.ScenarioLogKey
@@ -20,7 +20,7 @@ import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype HuntingTheRougarou = HuntingTheRougarou ActAttrs
@@ -37,8 +37,11 @@ instance HasAbilities HuntingTheRougarou where
       $ ForcedAbility
       $ EnemyLeaves Timing.After Anywhere
       $ enemyIs Cards.theRougarou
-    , mkAbility a 2 $ ForcedAbility $ EnemyDefeated Timing.When Anyone $ enemyIs
-      Cards.theRougarou
+    , mkAbility a 2
+      $ Objective
+      $ ForcedAbility
+      $ EnemyDefeated Timing.When Anyone
+      $ enemyIs Cards.theRougarou
     , restrictedAbility
         a
         3

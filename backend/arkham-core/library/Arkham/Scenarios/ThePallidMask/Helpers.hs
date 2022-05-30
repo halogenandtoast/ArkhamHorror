@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Id
 import Arkham.Label
 import Arkham.Matcher
 import Arkham.Message hiding (Label)
@@ -27,6 +28,12 @@ posLabelToPosition lbl = case drop 3 (unpack . unLabel $ lbl) of
     '8' -> 8
     '9' -> 9
     _ -> error "not a digit"
+
+startPosition :: (Int, Int)
+startPosition = (2, 6)
+
+getStartingLocation :: (Query LocationMatcher env, MonadReader env m) => m LocationId
+getStartingLocation = selectJust $ LocationWithLabel $ positionToLabel startPosition
 
 positionToLabel :: (Int, Int) -> Label
 positionToLabel (x, y) = Label . pack $ "pos" <> fromI x <> fromI y

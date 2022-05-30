@@ -64,6 +64,7 @@ library
       Arkham.Act.Cards.TheOath
       Arkham.Act.Cards.TheParisianConspiracyV1
       Arkham.Act.Cards.TheParisianConspiracyV2
+      Arkham.Act.Cards.ThePathIsBarred
       Arkham.Act.Cards.ThePathToTheHill
       Arkham.Act.Cards.TheReallyBadOnesV1
       Arkham.Act.Cards.TheReallyBadOnesV2
@@ -566,6 +567,7 @@ library
       Arkham.Enemy.Cards.SilverTwilightAcolyte
       Arkham.Enemy.Cards.SlimeCoveredDhole
       Arkham.Enemy.Cards.SpawnOfHali
+      Arkham.Enemy.Cards.SpecterOfDeath
       Arkham.Enemy.Cards.StealthyByakhee
       Arkham.Enemy.Cards.StubbornDetective
       Arkham.Enemy.Cards.SwampLeech

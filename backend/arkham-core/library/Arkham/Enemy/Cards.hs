@@ -152,6 +152,7 @@ allEncounterEnemyCards = mapFromList $ map
   , silasBishop
   , slimeCoveredDhole
   , spawnOfHali
+  , specterOfDeath
   , stealthyByakhee
   , swampLeech
   , swarmOfRats
@@ -728,6 +729,14 @@ stealthyByakhee = (enemy "03222" "Stealthy Byakhee" APhantomOfTruth 2)
   { cdCardTraits = setFromList [Monster, Byakhee]
   , cdKeywords = singleton Keyword.Hunter
   }
+
+specterOfDeath :: CardDef
+specterOfDeath =
+  (enemy "03241b" ("Specter of Death" <:> "A Force From Beyond") ThePallidMask 1)
+    { cdCardTraits = setFromList [Monster, Geist, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdUnique = True
+    }
 
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul = (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering 1

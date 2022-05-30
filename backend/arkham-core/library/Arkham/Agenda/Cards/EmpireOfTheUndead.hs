@@ -5,11 +5,12 @@ module Arkham.Agenda.Cards.EmpireOfTheUndead
 
 import Arkham.Prelude
 
-import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Agenda.Attrs
+import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message
 
 newtype EmpireOfTheUndead = EmpireOfTheUndead AgendaAttrs
@@ -17,11 +18,15 @@ newtype EmpireOfTheUndead = EmpireOfTheUndead AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 empireOfTheUndead :: AgendaCard EmpireOfTheUndead
-empireOfTheUndead = agenda (1, A) EmpireOfTheUndead Cards.empireOfTheUndead (Static 12)
+empireOfTheUndead =
+  agenda (2, A) EmpireOfTheUndead Cards.empireOfTheUndead (Static 12)
 
 instance AgendaRunner env => RunMessage env EmpireOfTheUndead where
-  runMessage msg a@(EmpireOfTheUndead attrs) =
-    case msg of
-      AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
-        a <$ pushAll [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
-      _ -> EmpireOfTheUndead <$> runMessage msg attrs
+  runMessage msg a@(EmpireOfTheUndead attrs) = case msg of
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+      investigatorIds <- selectList UneliminatedInvestigator
+      a <$ pushAll
+        ([ InvestigatorDefeated (toSource attrs) iid | iid <- investigatorIds ]
+        <> [ SufferTrauma iid 1 0 | iid <- investigatorIds ]
+        )
+    _ -> EmpireOfTheUndead <$> runMessage msg attrs

@@ -755,6 +755,16 @@ lostSoul = (weakness "03227" "Lost Soul")
   , cdEncounterSetQuantity = Just 4
   }
 
+eyesInTheWalls :: CardDef
+eyesInTheWalls = (treachery "03260" "Eyes in the Walls" ThePallidMask 3)
+  { cdCardTraits = singleton Terror
+  }
+
+theShadowBehindYou :: CardDef
+theShadowBehindYou = (treachery "03261" "The Shadow Behind You" ThePallidMask 3)
+  { cdCardTraits = singleton Terror
+  }
+
 theHarbinger :: CardDef
 theHarbinger = (weakness "08006" "The Harbinger")
   { cdCardTraits = setFromList [Omen, Endtimes]

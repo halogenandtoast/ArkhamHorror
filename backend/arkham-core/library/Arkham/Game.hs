@@ -1578,6 +1578,7 @@ instance HasGame env => Projection env InvestigatorAttrs where
       InvestigatorLocation -> pure . Just . investigatorLocation $ toAttrs i
       InvestigatorHorror -> pure . investigatorSanityDamage $ toAttrs i
       InvestigatorResources -> pure . investigatorResources $ toAttrs i
+      InvestigatorHand -> pure . investigatorHand $ toAttrs i
 
 instance HasGame env => Query AssetMatcher env where
   select = fmap (setFromList . map toId) . getAssetsMatching

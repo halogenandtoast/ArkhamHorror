@@ -3916,7 +3916,6 @@ runGameMessage msg g = case msg of
         pure
           $ g
           & (victoryDisplayL %~ (EncounterCard ec :))
-          -- & (entitiesL . enemiesL %~ deleteMap eid)
   AddToVictory (EventTarget eid) -> do
     event <- getEvent eid
     let

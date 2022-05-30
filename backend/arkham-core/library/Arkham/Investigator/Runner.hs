@@ -6,18 +6,18 @@ module Arkham.Investigator.Runner
 
 import Arkham.Prelude
 
-import Arkham.ClassSymbol as X
 import Arkham.Classes as X
+import Arkham.ClassSymbol as X
 import Arkham.Investigator.Attrs as X
 import Arkham.Name as X
 import Arkham.Stats as X
 import Arkham.Token as X
-import Arkham.Trait as X hiding (Cultist)
+import Arkham.Trait as X hiding ( Cultist )
 
 import Arkham.Ability
-import Arkham.Action (Action)
-import qualified Arkham.Action as Action
-import Arkham.Asset.Uses (UseType)
+import Arkham.Action ( Action )
+import Arkham.Action qualified as Action
+import Arkham.Asset.Uses ( UseType )
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Card.Id
@@ -27,19 +27,19 @@ import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
 import Arkham.Direction
-import Arkham.Game.Helpers hiding (windows)
-import qualified Arkham.Game.Helpers as Helpers
+import Arkham.Game.Helpers hiding ( windows )
+import Arkham.Game.Helpers qualified as Helpers
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Keyword
 import Arkham.LocationSymbol
 import Arkham.Matcher
-  ( AssetMatcher(..)
-  , CardMatcher(..)
-  , EnemyMatcher(..)
+  ( AssetMatcher (..)
+  , CardMatcher (..)
+  , EnemyMatcher (..)
   , EventMatcher
-  , InvestigatorMatcher(..)
-  , LocationMatcher(..)
+  , InvestigatorMatcher (..)
+  , LocationMatcher (..)
   , SkillMatcher
   , assetIs
   )
@@ -52,12 +52,12 @@ import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
-import qualified Arkham.Timing as Timing
-import Arkham.Window (Window(..))
-import qualified Arkham.Window as Window
-import Arkham.Zone (Zone)
-import qualified Arkham.Zone as Zone
-import qualified Data.HashMap.Strict as HashMap
+import Arkham.Timing qualified as Timing
+import Arkham.Window ( Window (..) )
+import Arkham.Window qualified as Window
+import Arkham.Zone ( Zone )
+import Arkham.Zone qualified as Zone
+import Data.HashMap.Strict qualified as HashMap
 import Data.Monoid
 
 type InvestigatorRunner env
@@ -790,29 +790,34 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         else pure mempty
       let
         getDamageTargets xs = if length xs > length healthDamageableAssets + 1
-                                then getDamageTargets (drop (length healthDamageableAssets + 1) xs)
-                                else xs
+          then getDamageTargets (drop (length healthDamageableAssets + 1) xs)
+          else xs
         damageTargets' = getDamageTargets damageTargets
-        healthDamageableAssets' = filter ((`notElem` damageTargets') . AssetTarget) healthDamageableAssets
+        healthDamageableAssets' = filter
+          ((`notElem` damageTargets') . AssetTarget)
+          healthDamageableAssets
         assignRestOfHealthDamage = InvestigatorDoAssignDamage
           investigatorId
           source
           DamageEvenly
           (health - 1)
           0
+        -- N.B. we have to add to the end of targets to handle the drop logic
         damageAsset aid = Run
           [ AssetDamage aid source 1 0
-          , assignRestOfHealthDamage
-            (AssetTarget aid : damageTargets)
-            mempty
+          , assignRestOfHealthDamage (damageTargets <> [AssetTarget aid]) mempty
           ]
         damageInvestigator = Run
           [ InvestigatorDamage investigatorId source 1 0
           , assignRestOfHealthDamage
-            (InvestigatorTarget investigatorId : damageTargets)
+            (damageTargets <> [InvestigatorTarget investigatorId])
             mempty
           ]
-        healthDamageMessages = [damageInvestigator | InvestigatorTarget investigatorId `notElem` damageTargets' ] <> map damageAsset healthDamageableAssets'
+        healthDamageMessages =
+          [ damageInvestigator
+          | InvestigatorTarget investigatorId `notElem` damageTargets'
+          ]
+          <> map damageAsset healthDamageableAssets'
       push $ chooseOne iid healthDamageMessages
       pure a
   InvestigatorDoAssignDamage iid source DamageEvenly 0 sanity _ horrorTargets
@@ -827,29 +832,34 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       --   )
       let
         getDamageTargets xs = if length xs > length sanityDamageableAssets + 1
-                                then getDamageTargets (drop (length sanityDamageableAssets + 1) xs)
-                                else xs
+          then getDamageTargets (drop (length sanityDamageableAssets + 1) xs)
+          else xs
         horrorTargets' = getDamageTargets horrorTargets
-        sanityDamageableAssets' = filter ((`notElem` horrorTargets') . AssetTarget) sanityDamageableAssets
+        sanityDamageableAssets' = filter
+          ((`notElem` horrorTargets') . AssetTarget)
+          sanityDamageableAssets
         assignRestOfHealthDamage = InvestigatorDoAssignDamage
           investigatorId
           source
           DamageEvenly
           0
           (sanity - 1)
+        -- N.B. we have to add to the end of targets to handle the drop logic
         damageAsset aid = Run
           [ AssetDamage aid source 1 0
-          , assignRestOfHealthDamage
-            mempty
-            (AssetTarget aid : horrorTargets)
+          , assignRestOfHealthDamage mempty (horrorTargets <> [AssetTarget aid])
           ]
         damageInvestigator = Run
           [ InvestigatorDamage investigatorId source 1 0
           , assignRestOfHealthDamage
             mempty
-            (InvestigatorTarget investigatorId : horrorTargets)
+            (horrorTargets <> [InvestigatorTarget investigatorId])
           ]
-        sanityDamageMessages = [damageInvestigator | InvestigatorTarget investigatorId `notElem` horrorTargets' ] <> map damageAsset sanityDamageableAssets'
+        sanityDamageMessages =
+          [ damageInvestigator
+          | InvestigatorTarget investigatorId `notElem` horrorTargets'
+          ]
+          <> map damageAsset sanityDamageableAssets'
       push $ chooseOne iid sanityDamageMessages
       pure a
   InvestigatorDoAssignDamage iid _ DamageEvenly _ _ _ _

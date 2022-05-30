@@ -765,6 +765,11 @@ theShadowBehindYou = (treachery "03261" "The Shadow Behind You" ThePallidMask 3)
   { cdCardTraits = singleton Terror
   }
 
+thePitBelow :: CardDef
+thePitBelow = (treachery "03262" "The Pit Below" ThePallidMask 3)
+  { cdCardTraits = singleton Hazard
+  }
+
 theHarbinger :: CardDef
 theHarbinger = (weakness "08006" "The Harbinger")
   { cdCardTraits = setFromList [Omen, Endtimes]

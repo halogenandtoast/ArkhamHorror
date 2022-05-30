@@ -11,6 +11,7 @@ data DamageStrategy
   | DamageAssetsFirst
   | DamageFirst CardDef
   | SingleTarget
+  | DamageEvenly
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

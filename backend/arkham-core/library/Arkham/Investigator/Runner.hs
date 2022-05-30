@@ -1,5 +1,8 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Investigator.Runner (module Arkham.Investigator.Runner, module X) where
+module Arkham.Investigator.Runner
+  ( module Arkham.Investigator.Runner
+  , module X
+  ) where
 
 import Arkham.Prelude
 
@@ -13,12 +16,8 @@ import Arkham.Trait as X hiding (Cultist)
 
 import Arkham.Ability
 import Arkham.Action (Action)
-import Arkham.Action qualified as Action
+import qualified Arkham.Action as Action
 import Arkham.Asset.Uses (UseType)
-import Arkham.LocationSymbol
-import Arkham.ScenarioLogKey
-import Arkham.SkillTest
-import Arkham.SkillType
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Card.Id
@@ -29,10 +28,11 @@ import Arkham.DamageEffect
 import Arkham.Deck
 import Arkham.Direction
 import Arkham.Game.Helpers hiding (windows)
-import Arkham.Game.Helpers qualified as Helpers
+import qualified Arkham.Game.Helpers as Helpers
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Keyword
+import Arkham.LocationSymbol
 import Arkham.Matcher
   ( AssetMatcher(..)
   , CardMatcher(..)
@@ -46,15 +46,18 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Query
+import Arkham.ScenarioLogKey
+import Arkham.SkillTest
+import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 import Arkham.Window (Window(..))
-import Arkham.Window qualified as Window
+import qualified Arkham.Window as Window
 import Arkham.Zone (Zone)
-import Arkham.Zone qualified as Zone
-import Data.HashMap.Strict qualified as HashMap
+import qualified Arkham.Zone as Zone
+import qualified Data.HashMap.Strict as HashMap
 import Data.Monoid
 
 type InvestigatorRunner env
@@ -207,14 +210,15 @@ runInvestigatorMessage
   -> InvestigatorAttrs
   -> m InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
-  ResetGame ->pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) ())
-    { investigatorXp = investigatorXp
-    , investigatorPhysicalTrauma = investigatorPhysicalTrauma
-    , investigatorMentalTrauma = investigatorMentalTrauma
-    , investigatorSanityDamage = investigatorMentalTrauma
-    , investigatorHealthDamage = investigatorPhysicalTrauma
-    , investigatorStartsWith = investigatorStartsWith
-    }
+  ResetGame ->
+    pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) ())
+      { investigatorXp = investigatorXp
+      , investigatorPhysicalTrauma = investigatorPhysicalTrauma
+      , investigatorMentalTrauma = investigatorMentalTrauma
+      , investigatorSanityDamage = investigatorMentalTrauma
+      , investigatorHealthDamage = investigatorPhysicalTrauma
+      , investigatorStartsWith = investigatorStartsWith
+      }
   SetupInvestigators -> do
     let
       (startsWithMsgs, deck') = foldl'
@@ -779,6 +783,79 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [Window Timing.When (Window.AssignedHorror source iid horrorTargets)]
       )
 
+  InvestigatorDoAssignDamage iid source DamageEvenly health 0 damageTargets _
+    | iid == investigatorId -> do
+      healthDamageableAssets <- if health > 0
+        then selectList (AssetCanBeAssignedDamageBy iid)
+        else pure mempty
+      let
+        getDamageTargets xs = if length xs > length healthDamageableAssets + 1
+                                then getDamageTargets (drop (length healthDamageableAssets + 1) xs)
+                                else xs
+        damageTargets' = getDamageTargets damageTargets
+        healthDamageableAssets' = filter ((`notElem` damageTargets') . AssetTarget) healthDamageableAssets
+        assignRestOfHealthDamage = InvestigatorDoAssignDamage
+          investigatorId
+          source
+          DamageEvenly
+          (health - 1)
+          0
+        damageAsset aid = Run
+          [ AssetDamage aid source 1 0
+          , assignRestOfHealthDamage
+            (AssetTarget aid : damageTargets)
+            mempty
+          ]
+        damageInvestigator = Run
+          [ InvestigatorDamage investigatorId source 1 0
+          , assignRestOfHealthDamage
+            (InvestigatorTarget investigatorId : damageTargets)
+            mempty
+          ]
+        healthDamageMessages = [damageInvestigator | InvestigatorTarget investigatorId `notElem` damageTargets' ] <> map damageAsset healthDamageableAssets'
+      push $ chooseOne iid healthDamageMessages
+      pure a
+  InvestigatorDoAssignDamage iid source DamageEvenly 0 sanity _ horrorTargets
+    | iid == investigatorId -> do
+      sanityDamageableAssets <- if sanity > 0
+        then selectList (AssetCanBeAssignedHorrorBy iid)
+        else pure mempty
+      -- TODO: handle this
+      -- mustBeDamagedFirstBeforeInvestigator <- selectList
+      --   (AssetCanBeAssignedHorrorBy iid
+      --   <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
+      --   )
+      let
+        getDamageTargets xs = if length xs > length sanityDamageableAssets + 1
+                                then getDamageTargets (drop (length sanityDamageableAssets + 1) xs)
+                                else xs
+        horrorTargets' = getDamageTargets horrorTargets
+        sanityDamageableAssets' = filter ((`notElem` horrorTargets') . AssetTarget) sanityDamageableAssets
+        assignRestOfHealthDamage = InvestigatorDoAssignDamage
+          investigatorId
+          source
+          DamageEvenly
+          0
+          (sanity - 1)
+        damageAsset aid = Run
+          [ AssetDamage aid source 1 0
+          , assignRestOfHealthDamage
+            mempty
+            (AssetTarget aid : horrorTargets)
+          ]
+        damageInvestigator = Run
+          [ InvestigatorDamage investigatorId source 1 0
+          , assignRestOfHealthDamage
+            mempty
+            (InvestigatorTarget investigatorId : horrorTargets)
+          ]
+        sanityDamageMessages = [damageInvestigator | InvestigatorTarget investigatorId `notElem` horrorTargets' ] <> map damageAsset sanityDamageableAssets'
+      push $ chooseOne iid sanityDamageMessages
+      pure a
+  InvestigatorDoAssignDamage iid _ DamageEvenly _ _ _ _
+    | iid == investigatorId
+    -> error
+      "DamageEvenly only works with just horror or just damage, but not both"
   InvestigatorDoAssignDamage iid source SingleTarget health sanity damageTargets horrorTargets
     | iid == investigatorId
     -> do
@@ -859,6 +936,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 then damageInvestigator : map damageAsset healthDamageableAssets
                 else map damageAsset validAssets
             SingleTarget -> error "handled elsewhere"
+            DamageEvenly -> error "handled elsewhere"
         else pure []
       sanityDamageMessages <- if sanity > 0
         then do
@@ -906,6 +984,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 then damageInvestigator : map damageAsset sanityDamageableAssets
                 else map damageAsset validAssets
             SingleTarget -> error "handled elsewhere"
+            DamageEvenly -> error "handled elsewhere"
         else pure []
       a <$ push (chooseOne iid $ healthDamageMessages <> sanityDamageMessages)
   Investigate iid lid source mTarget skillType True | iid == investigatorId ->
@@ -1252,9 +1331,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let
       handleSlotModifiers [] xs = xs
       handleSlotModifiers (m : ms) xs = case m of
-        FewerSlots slotType' n | slotType == slotType' -> handleSlotModifiers ms $ drop n xs
+        FewerSlots slotType' n | slotType == slotType' ->
+          handleSlotModifiers ms $ drop n xs
         _ -> handleSlotModifiers ms xs
-      slots = handleSlotModifiers modifiers' $ findWithDefault [] slotType investigatorSlots
+      slots = handleSlotModifiers modifiers'
+        $ findWithDefault [] slotType investigatorSlots
       emptiedSlots = sort $ map emptySlot slots
     assetsWithTraits <- for assetIds $ \assetId -> do
       traits <- getSetList assetId
@@ -1832,11 +1913,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             )
         DeferSearchedToTarget searchTarget -> do
           push $ if null targetCards
-             then chooseOne iid [Label "No cards found" [SearchNoneFound iid searchTarget]]
-             else SearchFound iid searchTarget (InvestigatorDeck iid) targetCards
+            then chooseOne
+              iid
+              [Label "No cards found" [SearchNoneFound iid searchTarget]]
+            else SearchFound iid searchTarget (InvestigatorDeck iid) targetCards
         ReturnCards -> pure ()
 
-      push $ CheckWindow [iid] [Window Timing.When (Window.AmongSearchedCards iid)]
+      push $ CheckWindow
+        [iid]
+        [Window Timing.When (Window.AmongSearchedCards iid)]
       pure $ a & (deckL .~ Deck deck) & (foundCardsL .~ foundCards)
   RemoveFromDiscard iid cardId | iid == investigatorId ->
     pure $ a & discardL %~ filter ((/= cardId) . toCardId)

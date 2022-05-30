@@ -956,6 +956,10 @@ getLocationsMatching = \case
     matchingLocationIds <- map toId <$> getLocationsMatching matcher
     matches <- getLongestPath start (pure . (`elem` matchingLocationIds))
     filter ((`elem` matches) . toId) . toList . view (entitiesL . locationsL) <$> getGame
+  FarthestLocationFromLocation start matcher -> do
+    matchingLocationIds <- map toId <$> getLocationsMatching matcher
+    matches <- getLongestPath start (pure . (`elem` matchingLocationIds))
+    filter ((`elem` matches) . toId) . toList . view (entitiesL . locationsL) <$> getGame
   LocationWithDistanceFrom distance matcher -> do
     iids <- getInvestigatorIds
     candidates <- map toId <$> getLocationsMatching matcher

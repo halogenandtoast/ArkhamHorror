@@ -354,6 +354,8 @@ data LocationMatcher
   | UnrevealedLocation
   | InvestigatableLocation
   | LocationNotInPlay
+  | FarthestLocationFromLocation LocationId LocationMatcher
+    --                           ^ start
   | FarthestLocationFromYou LocationMatcher
   | FarthestLocationFromAll LocationMatcher
   | NearestLocationToYou LocationMatcher

@@ -1,5 +1,8 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Enemy.Runner (module Arkham.Enemy.Runner, module X) where
+module Arkham.Enemy.Runner
+  ( module Arkham.Enemy.Runner
+  , module X
+  ) where
 
 import Arkham.Prelude
 
@@ -15,7 +18,14 @@ import Arkham.Direction
 import Arkham.EnemyId
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
-import Arkham.Matcher (PreyMatcher(..), EnemyMatcher(..), InvestigatorMatcher(..), LocationMatcher(..), preyWith, locationWithInvestigator)
+import Arkham.Matcher
+  ( EnemyMatcher (..)
+  , InvestigatorMatcher (..)
+  , LocationMatcher (..)
+  , PreyMatcher (..)
+  , locationWithInvestigator
+  , preyWith
+  )
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Query
@@ -25,9 +35,9 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
-import Data.List.Extra (firstJust)
+import Data.List.Extra ( firstJust )
 
 type EnemyRunner env
   = ( HasQueue env
@@ -101,7 +111,10 @@ filterOutEnemyMessages eid msg = case msg of
   Discarded (EnemyTarget eid') _ | eid == eid' -> Nothing
   m -> Just m
 
-getInvestigatorsAtSameLocation :: (Query InvestigatorMatcher env, MonadReader env m) => EnemyAttrs -> m [InvestigatorId]
+getInvestigatorsAtSameLocation
+  :: (Query InvestigatorMatcher env, MonadReader env m)
+  => EnemyAttrs
+  -> m [InvestigatorId]
 getInvestigatorsAtSameLocation attrs = case enemyLocation attrs of
   Nothing -> pure []
   Just loc -> selectList $ InvestigatorAt $ LocationWithId loc
@@ -136,7 +149,11 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
             && not enemyExhausted
           then
             do
-              preyIds <- selectList $ preyWith enemyPrey $ InvestigatorAt $ LocationWithId lid
+              preyIds <-
+                selectList
+                $ preyWith enemyPrey
+                $ InvestigatorAt
+                $ LocationWithId lid
               investigatorIds <- if null preyIds
                 then selectList $ InvestigatorAt $ LocationWithId lid
                 else pure []
@@ -177,8 +194,11 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
       pure $ a & locationL ?~ lid
     Ready target | isTarget a target -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      iids <- fromMaybe []
-        <$> traverse (selectList . InvestigatorAt . LocationWithId) enemyLocation
+      iids <-
+        fromMaybe []
+          <$> traverse
+                (selectList . InvestigatorAt . LocationWithId)
+                enemyLocation
       keywords <- getModifiedKeywords a
       if null iids
         then pure ()
@@ -214,64 +234,52 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         [] -> a <$ when enemyExhausted (pushAll $ resolve (Ready $ toTarget a))
         [source] -> a <$ push (ReadyAlternative source (toTarget a))
         _ -> error "Can not handle multiple targets yet"
-    MoveToward target locationMatcher | isTarget a target -> case enemyLocation of
-      Nothing -> pure a
-      Just loc -> do
-        lid <- fromJustNote "can't move toward" <$> getId locationMatcher
-        if lid == loc
-          then pure a
-          else do
-            leadInvestigatorId <- getLeadInvestigatorId
-            adjacentLocationIds <- map unConnectedLocationId
-              <$> getSetList loc
-            closestLocationIds <- map unClosestPathLocationId
-              <$> getSetList (loc, lid, emptyLocationMap)
-            if lid `elem` adjacentLocationIds
-              then
-                a
-                  <$ push
-                       (chooseOne
-                         leadInvestigatorId
-                         [EnemyMove enemyId lid]
-                       )
-              else a <$ pushAll
-                [ chooseOne
-                    leadInvestigatorId
-                    [ EnemyMove enemyId lid'
-                    | lid' <- closestLocationIds
-                    ]
-                ]
+    MoveToward target locationMatcher | isTarget a target ->
+      case enemyLocation of
+        Nothing -> pure a
+        Just loc -> do
+          lid <- fromJustNote "can't move toward" <$> getId locationMatcher
+          if lid == loc
+            then pure a
+            else do
+              leadInvestigatorId <- getLeadInvestigatorId
+              adjacentLocationIds <- map unConnectedLocationId
+                <$> getSetList loc
+              closestLocationIds <- map unClosestPathLocationId
+                <$> getSetList (loc, lid, emptyLocationMap)
+              if lid `elem` adjacentLocationIds
+                then
+                  a <$ push
+                    (chooseOne leadInvestigatorId [EnemyMove enemyId lid])
+                else a <$ pushAll
+                  [ chooseOne
+                      leadInvestigatorId
+                      [ EnemyMove enemyId lid' | lid' <- closestLocationIds ]
+                  ]
     MoveUntil lid target | isTarget a target -> case enemyLocation of
       Nothing -> pure a
       Just loc -> if lid == loc
         then pure a
         else do
           leadInvestigatorId <- getLeadInvestigatorId
-          adjacentLocationIds <- map unConnectedLocationId
-            <$> getSetList loc
+          adjacentLocationIds <- map unConnectedLocationId <$> getSetList loc
           closestLocationIds <- map unClosestPathLocationId
             <$> getSetList (loc, lid, emptyLocationMap)
           if lid `elem` adjacentLocationIds
-            then
-              a
-                <$ push
-                     (chooseOne
-                       leadInvestigatorId
-                       [EnemyMove enemyId lid]
-                     )
+            then a
+              <$ push (chooseOne leadInvestigatorId [EnemyMove enemyId lid])
             else a <$ pushAll
               [ chooseOne
                 leadInvestigatorId
-                [ EnemyMove enemyId lid'
-                | lid' <- closestLocationIds
-                ]
+                [ EnemyMove enemyId lid' | lid' <- closestLocationIds ]
               , MoveUntil lid target
               ]
     EnemyMove eid lid | eid == enemyId -> do
       willMove <- canEnterLocation eid lid
       if willMove
         then do
-          leaveWindows <- for enemyLocation $ \oldId -> windows [Window.EnemyLeaves eid oldId]
+          leaveWindows <- for enemyLocation
+            $ \oldId -> windows [Window.EnemyLeaves eid oldId]
           pushAll
             $ fromMaybe [] leaveWindows
             <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
@@ -285,7 +293,8 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         modifiedFilter = if Keyword.Massive `elem` keywords
           then const True
           else (`notElem` modifiers') . EnemyCannotEngage
-      investigatorIds <- filter modifiedFilter <$> getInvestigatorsAtSameLocation a
+      investigatorIds <- filter modifiedFilter
+        <$> getInvestigatorsAtSameLocation a
       leadInvestigatorId <- getLeadInvestigatorId
       let unengaged = null enemyEngagedInvestigators
       a <$ when
@@ -318,78 +327,88 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         , HunterMove (toId a)
         ]
       pure a
-    HunterMove eid | eid == toId a && not enemyExhausted -> case enemyLocation of
-      Nothing -> pure a
-      Just loc -> do
-        modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
-        let
-          matchForcedTargetLocation = \case
-            DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
-            _ -> Nothing
-          forcedTargetLocation = firstJust matchForcedTargetLocation modifiers'
-          -- applyConnectionMapModifier connectionMap (HunterConnectedTo lid') =
-          --   unionWith (<>) connectionMap $ singletonMap loc [lid']
-          -- applyConnectionMapModifier connectionMap _ = connectionMap
-          -- extraConnectionsMap :: HashMap LocationId [LocationId] =
-          --   foldl' applyConnectionMapModifier mempty modifiers'
+    HunterMove eid | eid == toId a && not enemyExhausted ->
+      case enemyLocation of
+        Nothing -> pure a
+        Just loc -> do
+          modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
+          let
+            matchForcedTargetLocation = \case
+              DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
+              _ -> Nothing
+            forcedTargetLocation =
+              firstJust matchForcedTargetLocation modifiers'
+            -- applyConnectionMapModifier connectionMap (HunterConnectedTo lid') =
+            --   unionWith (<>) connectionMap $ singletonMap loc [lid']
+            -- applyConnectionMapModifier connectionMap _ = connectionMap
+            -- extraConnectionsMap :: HashMap LocationId [LocationId] =
+            --   foldl' applyConnectionMapModifier mempty modifiers'
 
-        -- The logic here is an artifact of doing this incorrect
-        -- Prey is only used for breaking ties unless we're dealing
-        -- with the Only keyword for prey, so here we hardcode prey
-        -- to AnyPrey and then find if there are any investigators
-        -- who qualify as prey to filter
-        matchingClosestLocationIds <- case (forcedTargetLocation, enemyPrey) of
-          (Just _forcedTargetLocationId, _) -> error "TODO: MUST FIX"
-            -- map unClosestPathLocationId <$> getSetList
-            --   (loc, forcedTargetLocationId, extraConnectionsMap)
-          (Nothing, Bearer) -> selectList $ locationWithInvestigator $ fromJustNote "must have bearer" enemyBearer
-          (Nothing, OnlyPrey prey) -> selectList $ LocationWithInvestigator $ prey <> NearestToEnemy (EnemyWithId eid)
-          (Nothing, _prey) -> selectList $ LocationWithInvestigator $ NearestToEnemy $ EnemyWithId eid
+          -- The logic here is an artifact of doing this incorrect
+          -- Prey is only used for breaking ties unless we're dealing
+          -- with the Only keyword for prey, so here we hardcode prey
+          -- to AnyPrey and then find if there are any investigators
+          -- who qualify as prey to filter
+          matchingClosestLocationIds <-
+            case (forcedTargetLocation, enemyPrey) of
+              (Just _forcedTargetLocationId, _) -> error "TODO: MUST FIX"
+                -- map unClosestPathLocationId <$> getSetList
+                --   (loc, forcedTargetLocationId, extraConnectionsMap)
+              (Nothing, Bearer) ->
+                selectList $ locationWithInvestigator $ fromJustNote
+                  "must have bearer"
+                  enemyBearer
+              (Nothing, OnlyPrey prey) ->
+                selectList $ LocationWithInvestigator $ prey <> NearestToEnemy
+                  (EnemyWithId eid)
+              (Nothing, _prey) ->
+                selectList
+                  $ LocationWithInvestigator
+                  $ NearestToEnemy
+                  $ EnemyWithId eid
 
-        preyIds <- select enemyPrey
+          preyIds <- select enemyPrey
 
-        filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
-          $ \lid -> notNull . intersect preyIds <$> getSet lid
+          filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
+            $ \lid -> notNull . intersect preyIds <$> getSet lid
 
-        -- If we have any locations with prey, that takes priority, otherwise
-        -- we return all locations which may have matched via AnyPrey
-        let
-          destinationLocationIds = if null filteredClosestLocationIds
-            then matchingClosestLocationIds
-            else filteredClosestLocationIds
+          -- If we have any locations with prey, that takes priority, otherwise
+          -- we return all locations which may have matched via AnyPrey
+          let
+            destinationLocationIds = if null filteredClosestLocationIds
+              then matchingClosestLocationIds
+              else filteredClosestLocationIds
 
-        leadInvestigatorId <- getLeadInvestigatorId
-        pathIds <-
-          map unClosestPathLocationId
-          . concat
-          <$> traverse
-                (getSetList . (loc, , emptyLocationMap))
-                destinationLocationIds
-        case pathIds of
-          [] -> pure a
-          [lid] -> do
-            pushAll
-              [ EnemyMove enemyId lid
-              , CheckWindow
-                [leadInvestigatorId]
-                [Window Timing.After (Window.MovedFromHunter enemyId)]
-              ]
-            pure $ a & movedFromHunterKeywordL .~ True
-          ls -> do
-            pushAll
-              (chooseOne
-                  leadInvestigatorId
-                  [ TargetLabel
-                      (LocationTarget l)
-                      [EnemyMove enemyId l]
-                  | l <- ls
-                  ]
-              : [ CheckWindow
-                    [leadInvestigatorId]
-                    [Window Timing.After (Window.MovedFromHunter enemyId)]
+          leadInvestigatorId <- getLeadInvestigatorId
+          pathIds <-
+            map unClosestPathLocationId
+            . concat
+            <$> traverse
+                  (getSetList . (loc, , emptyLocationMap))
+                  destinationLocationIds
+          case pathIds of
+            [] -> pure a
+            [lid] -> do
+              pushAll
+                [ EnemyMove enemyId lid
+                , CheckWindow
+                  [leadInvestigatorId]
+                  [Window Timing.After (Window.MovedFromHunter enemyId)]
                 ]
-              )
-            pure $ a & movedFromHunterKeywordL .~ True
+              pure $ a & movedFromHunterKeywordL .~ True
+            ls -> do
+              pushAll
+                (chooseOne
+                    leadInvestigatorId
+                    [ TargetLabel (LocationTarget l) [EnemyMove enemyId l]
+                    | l <- ls
+                    ]
+                : [ CheckWindow
+                      [leadInvestigatorId]
+                      [Window Timing.After (Window.MovedFromHunter enemyId)]
+                  ]
+                )
+              pure $ a & movedFromHunterKeywordL .~ True
     EnemiesAttack | notNull enemyEngagedInvestigators && not enemyExhausted ->
       do
         modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
@@ -601,22 +620,11 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         pushAll
           [ whenMsg
           , afterMsg
-          , EnemyDefeated
-            eid
-            iid
-            (toCardCode a)
-            source
-            (setToList $ toTraits a)
+          , EnemyDefeated eid iid (toCardCode a) source (setToList $ toTraits a)
           ]
       pure $ a & damageL +~ amount'
     DefeatEnemy eid iid source | eid == enemyId -> a <$ push
-      (EnemyDefeated
-        eid
-        iid
-        (toCardCode a)
-        source
-        (setToList $ toTraits a)
-      )
+      (EnemyDefeated eid iid (toCardCode a) source (setToList $ toTraits a))
     EnemyDefeated eid iid _ _ _ | eid == toId a -> do
       whenMsg <- checkWindows
         [Window Timing.When (Window.EnemyDefeated iid eid)]
@@ -669,16 +677,30 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
           (push (EnemyWillAttack iid enemyId enemyDamageStrategy))
     InvestigatorDrawEnemy iid lid eid | eid == enemyId -> do
       modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
-      let getModifiedSpawnAt [] = enemySpawnAt
-          getModifiedSpawnAt (SpawnLocation m : _) = Just m
-          getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
-          spawnAtMatcher = getModifiedSpawnAt modifiers'
+      let
+        getModifiedSpawnAt [] = enemySpawnAt
+        getModifiedSpawnAt (SpawnLocation m : _) = Just m
+        getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
+        spawnAtMatcher = getModifiedSpawnAt modifiers'
       a
         <$ (case spawnAtMatcher of
              Nothing -> pushAll (resolve (EnemySpawn (Just iid) lid eid))
              Just matcher -> do
                spawnAt enemyId matcher
            )
+    EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
+      lids <- selectList locationMatcher
+      leadInvestigatorId <- getLeadInvestigatorId
+      a <$ case lids of
+        [] ->
+          pushAll
+            $ Discard (EnemyTarget eid)
+            : [ Surge iid (toSource a)
+              | iid <- maybeToList miid
+              , enemySurgeIfUnabledToSpawn
+              ]
+        [lid] -> pushAll (resolve $ EnemySpawn miid lid eid)
+        xs -> spawnAtOneOf (fromMaybe leadInvestigatorId miid) eid xs
     InvestigatorEliminated iid ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid
     UnengageNonMatching iid traits
@@ -736,4 +758,3 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
     UseCardAbility iid source _ 102 _ | isSource a source ->
       a <$ push (EngageEnemy iid (toId a) False)
     _ -> pure a
-

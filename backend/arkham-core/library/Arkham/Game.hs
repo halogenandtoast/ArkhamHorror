@@ -1201,109 +1201,110 @@ getEnemiesMatching
   -> m [Enemy]
 getEnemiesMatching matcher = do
   allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
-  filterM (matcherFilter matcher) allGameEnemies
- where
-  matcherFilter = \case
-    NotEnemy m -> fmap not . matcherFilter m
-    EnemyWithTitle title -> pure . (== title) . nameTitle . toName
-    EnemyWithFullTitle title subtitle ->
-      pure . (== Name title (Just subtitle)) . toName
-    EnemyWithId enemyId -> pure . (== enemyId) . toId
-    NonEliteEnemy -> fmap (notElem Elite) . getSet . toId
-    EnemyMatchAll ms -> \enemy -> allM (`matcherFilter` enemy) ms
-    EnemyOneOf ms -> \enemy -> anyM (`matcherFilter` enemy) ms
-    EnemyWithTrait t -> fmap (member t) . getSet . toId
-    EnemyWithoutTrait t -> fmap (notMember t) . getSet . toId
-    EnemyWithKeyword k -> fmap (elem k) . getSet . toId
-    EnemyWithClues gameValueMatcher ->
-      getCount >=> (`gameValueMatches` gameValueMatcher) . unClueCount
-    EnemyWithDoom gameValueMatcher ->
-      getCount >=> (`gameValueMatches` gameValueMatcher) . unDoomCount
-    EnemyWithDamage gameValueMatcher ->
-      (`gameValueMatches` gameValueMatcher) . fst . getDamage
-    ExhaustedEnemy -> pure . isExhausted
-    ReadyEnemy -> pure . not . isExhausted
-    AnyEnemy -> pure . const True
-    EnemyIs cardCode -> pure . (== cardCode) . toCardCode
-    NonWeaknessEnemy -> pure . isNothing . cdCardSubType . toCardDef
-    EnemyIsEngagedWith investigatorMatcher -> \enemy -> do
-      iids <-
-        setFromList . map toId <$> getInvestigatorsMatching investigatorMatcher
-      notNull . intersection iids <$> getSet (toId enemy)
-    EnemyEngagedWithYou -> \enemy -> do
-      iid <- view activeInvestigatorIdL <$> getGame
-      member iid <$> getSet (toId enemy)
-    EnemyNotEngagedWithYou -> \enemy -> do
-      iid <- view activeInvestigatorIdL <$> getGame
-      notMember iid <$> getSet (toId enemy)
-    EnemyWithMostRemainingHealth enemyMatcher -> \enemy -> do
-      matches <- getEnemiesMatching enemyMatcher
-      elem enemy . maxes <$> traverse (traverseToSnd remainingHealth) matches
-    EnemyWithoutModifier modifier -> \enemy ->
-      notElem modifier <$> getModifiers (toSource enemy) (toTarget enemy)
-    UnengagedEnemy -> \enemy -> null <$> getSet @InvestigatorId (toId enemy)
-    UniqueEnemy -> pure . isUnique
-    MovingEnemy ->
-      \enemy -> (== Just (toId enemy)) . view enemyMovingL <$> getGame
-    M.EnemyAt locationMatcher -> \enemy -> case getEnemyLocation enemy of
-      Nothing -> pure False
-      Just loc -> member loc <$> select locationMatcher
-    CanFightEnemy -> \enemy -> do
-      iid <- view activeInvestigatorIdL <$> getGame
-      modifiers' <- getModifiers (toSource enemy) (InvestigatorTarget iid)
-      let
-        enemyFilters = mapMaybe
-          (\case
-            CannotFight m -> Just m
-            _ -> Nothing
-          )
-          modifiers'
-        window = Window Timing.When Window.NonFast
-      excluded <- if null enemyFilters
-        then pure False
-        else member (toId enemy) <$> select (mconcat enemyFilters)
-      if excluded
-        then pure False
-        else anyM
-          (andM . sequence
-            [ pure . (`abilityIs` Action.Fight)
-            , -- Because ChooseFightEnemy happens after taking a fight action we
-              -- need to decrement the action cost
-              getCanPerformAbility iid (InvestigatorSource iid) window
-              . (`applyAbilityModifiers` [ActionCostModifier (-1)])
-            ]
-          )
-          (getAbilities enemy)
-    CanEvadeEnemy -> \enemy -> do
-      iid <- view activeInvestigatorIdL <$> getGame
-      let window = Window Timing.When Window.NonFast
-      anyM
+  filterM (enemyMatcherFilter matcher) allGameEnemies
+
+enemyMatcherFilter :: (MonadReader env m, HasGame env, HasAbilities env) => EnemyMatcher -> Enemy -> m Bool
+enemyMatcherFilter = \case
+  NotEnemy m -> fmap not . enemyMatcherFilter m
+  EnemyWithTitle title -> pure . (== title) . nameTitle . toName
+  EnemyWithFullTitle title subtitle ->
+    pure . (== Name title (Just subtitle)) . toName
+  EnemyWithId enemyId -> pure . (== enemyId) . toId
+  NonEliteEnemy -> fmap (notElem Elite) . getSet . toId
+  EnemyMatchAll ms -> \enemy -> allM (`enemyMatcherFilter` enemy) ms
+  EnemyOneOf ms -> \enemy -> anyM (`enemyMatcherFilter` enemy) ms
+  EnemyWithTrait t -> fmap (member t) . getSet . toId
+  EnemyWithoutTrait t -> fmap (notMember t) . getSet . toId
+  EnemyWithKeyword k -> fmap (elem k) . getSet . toId
+  EnemyWithClues gameValueMatcher ->
+    getCount >=> (`gameValueMatches` gameValueMatcher) . unClueCount
+  EnemyWithDoom gameValueMatcher ->
+    getCount >=> (`gameValueMatches` gameValueMatcher) . unDoomCount
+  EnemyWithDamage gameValueMatcher ->
+    (`gameValueMatches` gameValueMatcher) . fst . getDamage
+  ExhaustedEnemy -> pure . isExhausted
+  ReadyEnemy -> pure . not . isExhausted
+  AnyEnemy -> pure . const True
+  EnemyIs cardCode -> pure . (== cardCode) . toCardCode
+  NonWeaknessEnemy -> pure . isNothing . cdCardSubType . toCardDef
+  EnemyIsEngagedWith investigatorMatcher -> \enemy -> do
+    iids <-
+      setFromList . map toId <$> getInvestigatorsMatching investigatorMatcher
+    notNull . intersection iids <$> getSet (toId enemy)
+  EnemyEngagedWithYou -> \enemy -> do
+    iid <- view activeInvestigatorIdL <$> getGame
+    member iid <$> getSet (toId enemy)
+  EnemyNotEngagedWithYou -> \enemy -> do
+    iid <- view activeInvestigatorIdL <$> getGame
+    notMember iid <$> getSet (toId enemy)
+  EnemyWithMostRemainingHealth enemyMatcher -> \enemy -> do
+    matches <- getEnemiesMatching enemyMatcher
+    elem enemy . maxes <$> traverse (traverseToSnd remainingHealth) matches
+  EnemyWithoutModifier modifier -> \enemy ->
+    notElem modifier <$> getModifiers (toSource enemy) (toTarget enemy)
+  UnengagedEnemy -> \enemy -> null <$> getSet @InvestigatorId (toId enemy)
+  UniqueEnemy -> pure . isUnique
+  MovingEnemy ->
+    \enemy -> (== Just (toId enemy)) . view enemyMovingL <$> getGame
+  M.EnemyAt locationMatcher -> \enemy -> case getEnemyLocation enemy of
+    Nothing -> pure False
+    Just loc -> member loc <$> select locationMatcher
+  CanFightEnemy -> \enemy -> do
+    iid <- view activeInvestigatorIdL <$> getGame
+    modifiers' <- getModifiers (toSource enemy) (InvestigatorTarget iid)
+    let
+      enemyFilters = mapMaybe
+        (\case
+          CannotFight m -> Just m
+          _ -> Nothing
+        )
+        modifiers'
+      window = Window Timing.When Window.NonFast
+    excluded <- if null enemyFilters
+      then pure False
+      else member (toId enemy) <$> select (mconcat enemyFilters)
+    if excluded
+      then pure False
+      else anyM
         (andM . sequence
-          [ pure . (`abilityIs` Action.Evade)
-          , getCanPerformAbility iid (InvestigatorSource iid) window
+          [ pure . (`abilityIs` Action.Fight)
+          , -- Because ChooseFightEnemy happens after taking a fight action we
+            -- need to decrement the action cost
+            getCanPerformAbility iid (InvestigatorSource iid) window
+            . (`applyAbilityModifiers` [ActionCostModifier (-1)])
           ]
         )
         (getAbilities enemy)
-    CanEngageEnemy -> \enemy -> do
-      iid <- view activeInvestigatorIdL <$> getGame
-      let window = Window Timing.When Window.NonFast
-      anyM
-        (andM . sequence
-          [ pure . (`abilityIs` Action.Engage)
-          , getCanPerformAbility iid (InvestigatorSource iid) window
-          ]
-        )
-        (getAbilities enemy)
-    NearestEnemy matcher' -> \enemy -> do
-      matchingEnemyIds <- map toId <$> getEnemiesMatching matcher'
-      matches <- guardYourLocation $ \start -> do
-        getShortestPath
-          start
-          (fmap (any (`elem` matchingEnemyIds)) . getSet)
-          mempty
-      if null matches
-        then pure $ toId enemy `elem` matchingEnemyIds
-        else pure $ maybe False (`elem` matches) (getEnemyLocation enemy)
+  CanEvadeEnemy -> \enemy -> do
+    iid <- view activeInvestigatorIdL <$> getGame
+    let window = Window Timing.When Window.NonFast
+    anyM
+      (andM . sequence
+        [ pure . (`abilityIs` Action.Evade)
+        , getCanPerformAbility iid (InvestigatorSource iid) window
+        ]
+      )
+      (getAbilities enemy)
+  CanEngageEnemy -> \enemy -> do
+    iid <- view activeInvestigatorIdL <$> getGame
+    let window = Window Timing.When Window.NonFast
+    anyM
+      (andM . sequence
+        [ pure . (`abilityIs` Action.Engage)
+        , getCanPerformAbility iid (InvestigatorSource iid) window
+        ]
+      )
+      (getAbilities enemy)
+  NearestEnemy matcher' -> \enemy -> do
+    matchingEnemyIds <- map toId <$> getEnemiesMatching matcher'
+    matches <- guardYourLocation $ \start -> do
+      getShortestPath
+        start
+        (fmap (any (`elem` matchingEnemyIds)) . getSet)
+        mempty
+    if null matches
+      then pure $ toId enemy `elem` matchingEnemyIds
+      else pure $ maybe False (`elem` matches) (getEnemyLocation enemy)
 
 getAct :: (HasCallStack, MonadReader env m, HasGame env) => ActId -> m Act
 getAct aid = fromJustNote missingAct . preview (entitiesL . actsL . ix aid) <$> getGame
@@ -3915,7 +3916,7 @@ runGameMessage msg g = case msg of
         pure
           $ g
           & (victoryDisplayL %~ (EncounterCard ec :))
-          & (entitiesL . enemiesL %~ deleteMap eid)
+          -- & (entitiesL . enemiesL %~ deleteMap eid)
   AddToVictory (EventTarget eid) -> do
     event <- getEvent eid
     let

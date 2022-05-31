@@ -1523,9 +1523,9 @@ windowMatches iid source window' = \case
       (matchWho iid who whoMatcher)
       (member aid <$> select assetMatcher)
     _ -> pure False
-  Matcher.WouldDrawEncounterCard timing whoMatcher -> case window' of
-    Window t (Window.WouldDrawEncounterCard who) | t == timing ->
-      matchWho iid who whoMatcher
+  Matcher.WouldDrawEncounterCard timing whoMatcher phaseMatcher -> case window' of
+    Window t (Window.WouldDrawEncounterCard who p) | t == timing ->
+      liftA2 (&&) (matchWho iid who whoMatcher) (matchPhase p phaseMatcher)
     _ -> pure False
   Matcher.AmongSearchedCards whoMatcher -> case window' of
     Window _ (Window.AmongSearchedCards who) -> matchWho iid who whoMatcher

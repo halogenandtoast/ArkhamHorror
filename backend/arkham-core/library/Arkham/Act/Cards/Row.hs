@@ -29,7 +29,7 @@ row = act (3, A) Row Cards.row Nothing
 
 instance HasAbilities Row where
   getAbilities (Row x) =
-    [ mkAbility x 1 $ ForcedAbility $ WouldDrawEncounterCard Timing.When You
+    [ mkAbility x 1 $ ForcedAbility $ WouldDrawEncounterCard Timing.When You AnyPhase
     , restrictedAbility
       x
       2

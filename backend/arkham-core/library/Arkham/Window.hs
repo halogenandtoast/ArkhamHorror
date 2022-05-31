@@ -110,7 +110,7 @@ data WindowType
   | TurnBegins InvestigatorId
   | TurnEnds InvestigatorId
   | DeckHasNoCards InvestigatorId
-  | WouldDrawEncounterCard InvestigatorId
+  | WouldDrawEncounterCard InvestigatorId Phase
   | WouldFailSkillTest InvestigatorId
   | WouldPassSkillTest InvestigatorId
   | WouldReady Target

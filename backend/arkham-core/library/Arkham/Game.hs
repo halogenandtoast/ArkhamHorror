@@ -3547,9 +3547,16 @@ runGameMessage msg g = case msg of
                   $ findWithDefault [] Zone.FromDeck foundCards
                   )
                 )
-            PutBack -> when
-              (foundKey cardSource == Zone.FromDeck)
-              (error "Can not take deck")
+            PutBack -> do
+              when
+                (foundKey cardSource /= Zone.FromDeck)
+                (error "Can not take deck")
+              pushAll
+                (map (PutOnTopOfEncounterDeck iid)
+                  (mapMaybe (preview _EncounterCard)
+                  $ findWithDefault [] Zone.FromDeck foundCards
+                  )
+                )
 
     pure
       $ g
@@ -4446,7 +4453,7 @@ runGameMessage msg g = case msg of
   SetActiveInvestigator iid -> pure $ g & activeInvestigatorIdL .~ iid
   InvestigatorDrawEncounterCard iid -> do
     drawEncounterCardWindow <- checkWindows
-      [Window Timing.When (Window.WouldDrawEncounterCard iid)]
+      [Window Timing.When (Window.WouldDrawEncounterCard iid $ g ^. phaseL)]
     g <$ pushAll
       [ SetActiveInvestigator iid
       , drawEncounterCardWindow

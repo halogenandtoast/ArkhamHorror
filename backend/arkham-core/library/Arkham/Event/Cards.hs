@@ -14,6 +14,7 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Modifier (ModifierType(..))
 import Arkham.Name
+import Arkham.Phase
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
@@ -134,6 +135,7 @@ allPlayerEventCards = mapFromList $ map
   , monsterSlayer5
   , moonlightRitual
   , noStoneUnturned
+  , onTheHunt
   , onTheLam
   , oops
   , preparedForTheWorst
@@ -971,6 +973,12 @@ emergencyCache3 :: CardDef
 emergencyCache3 = (event "03239" "Emergency Cache" 0 Neutral)
   { cdCardTraits = setFromList [Supply]
   , cdLevel = 3
+  }
+
+onTheHunt :: CardDef
+onTheHunt = (event "03263" "On the Hunt" 1 Guardian)
+  { cdCardTraits = singleton Tactic
+  , cdFastWindow = Just $ WouldDrawEncounterCard Timing.When You (PhaseIs MythosPhase)
   }
 
 secondWind :: CardDef

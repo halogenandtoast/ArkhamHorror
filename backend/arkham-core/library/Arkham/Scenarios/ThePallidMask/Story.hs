@@ -39,3 +39,82 @@ harukosInformation = FlavorText
     \ suddenly opens. Bones collapse to the ground as the wall slides to reveal a\
     \ new path."
   ]
+
+noResolution :: Message
+noResolution = FlavorText
+  (Just "No Resolution")
+  [ "You are shaken awake by a police officer and\
+    \ lifted to your feet. You feel as though the weight of a train has\
+    \ slammed into your head. The pain is unbearable. The man\
+    \ shines a flashlight in your eyes and asks you several questions\
+    \ in French. Dazed as you are, you find it difficult to answer. He\
+    \ points toward the staircase nearby and pushes you away from\
+    \ the catacombs. You stumble onto the Rue de la Tombe-Issoire\
+    \ and slowly make your way to a hotel where you can stay the\
+    \ night."
+  , "Several days of research later, the meaning of the strange\
+    \ diagrams you saw within the catacombs still escapes you. You\
+    \ feel as though you have been led on a wild goose chase. Just as\
+    \ you are about to give up, you see a faded yellow book on the\
+    \ table nearest to you. You are stunned to discover that it is the\
+    \ unabridged script of The King in Yellow. Drawn on the cover\
+    \ in black ink is the very same diagram whose meaning you\
+    \ have been struggling to interpret for several sleepless nights.\
+    \ Who had placed it here? How had it come to your hotel room?\
+    \ Regardless, you know what you must do. The play holds the\
+    \ secrets—it has all along—and yet like a fool you have avoided\
+    \ reading Act II out of superstition. Its words cannot harm you\
+    \ any more than the creatures and fanatics you have already\
+    \ encountered. Trembling, you open to the second part, and begin\
+    \to read."
+  ]
+
+resolution1 :: Message
+resolution1 = FlavorText
+  (Just "Resolution 1")
+  [ "The burned skull holds the key to everything.\
+    \ You are sure of it. You have tried every method available to\
+    \ you in studying the diagram it bears, but the answer eludes\
+    \ you still. You have brought the skull to experts, occultists,\
+    \ and professors. You have even tried speaking with the skull\
+    \ on more than one occasion. Exasperated, you place the skull\
+    \ on your night table and try to get some sleep for the first time\
+    \ since escaping the catacombs. As you fall asleep, you cannot\
+    \ shake the sight of the diagram etched in the skull’s forehead."
+  , "You awaken with a spark of inspiration and rush to the\
+    \ Musée du Louvre, a famous Parisian museum housing tens\
+    \ of thousands of paintings, drawings, and archaeological\
+    \ finds. You spend days exploring the museum—every display,\
+    \ every collection, every single object of art that might hold a\
+    \ clue to the diagram’s meaning. Finally, you see it: a painting\
+    \ depicting a beautiful island town weathering a torrential\
+    \ storm. Waves crash against the stone of the outer wall, the tide\
+    \ threatening to swallow the island whole. Lightning flashes\
+    \ around the tower of the abbey above the village. A whirlwind\
+    \ of black clouds churns in the sky above. The diagram from\
+    \ the burned skull you hold in your hands is recreated perfectly\
+    \ in the stained glass of the abbey. The title of the piece is “The\
+    \ Path Is Open.”"
+  ]
+
+resolution2 :: Message
+resolution2 = FlavorText
+  (Just "Resolution 2")
+  [ "You fall ceaselessly through the empty abyss.\
+    \ No air slows your descent or courses through your hair. It is\
+    \ a passageway devoid of reality. Finally, you pass through an\
+    \ invisible gateway and enter another realm. Looming above\
+    \ and below you are two skylines, one a warped reflection of the\
+    \ other. A vortex of swirling black clouds and crashing waves\
+    \ lies in between them. You study both sides—the familiar city\
+    \ and its strange mirror. Could this be the path to Carcosa? A\
+    \ passageway between realities, where realms converge? If so, all\
+    \ that is left is to find where this gate appears on Earth. You fall\
+    \ into the vortex below."
+  , "You are shaken awake by a police officer and lifted to your feet.\
+    \ You feel as though the weight of a train has slammed into your\
+    \ head. The pain is unbearable. The man shines a flashlight in\
+    \ your eyes and asks you several questions in French. Your eyes\
+    \ widen with realization and you wrest your arm free from the\
+    \ confused man’s grip. “I have to go at once!”"
+  ]

@@ -37,6 +37,7 @@ import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Arkham.Trait (Trait(Ghoul, Geist))
 
 newtype ThePallidMask = ThePallidMask ScenarioAttrs
   deriving anyclass IsScenario
@@ -236,26 +237,53 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
         | catacomb <- catacombs
         ]
       pure s
-    ResolveToken t token iid | token `elem` [Cultist, Tablet, ElderThing] ->
-      s <$ case token of
-        Cultist -> do
-          mskillTestSource <- getSkillTestSource
-          case mskillTestSource of
-            Just (SkillTestSource _ _ _ (Just Action.Fight)) -> push
-              (CreateWindowModifierEffect
-                EffectSkillTestWindow
-                (EffectModifiers $ toModifiers
-                  attrs
-                  [ if isEasyStandard attrs
-                      then DamageDealt (-1)
-                      else NoDamageDealt
-                  ]
-                )
-                (TokenSource t)
-                (InvestigatorTarget iid)
+    ResolveToken t token iid -> s <$ case token of
+      Cultist -> do
+        mskillTestSource <- getSkillTestSource
+        case mskillTestSource of
+          Just (SkillTestSource _ _ _ (Just Action.Fight)) -> push
+            (CreateWindowModifierEffect
+              EffectSkillTestWindow
+              (EffectModifiers $ toModifiers
+                attrs
+                [ if isEasyStandard attrs
+                    then DamageDealt (-1)
+                    else NoDamageDealt
+                ]
               )
-            _ -> pure ()
-        Tablet -> pure ()
-        ElderThing -> pure ()
-        _ -> pure ()
+              (TokenSource t)
+              (InvestigatorTarget iid)
+            )
+          _ -> pure ()
+      Tablet -> do
+        if isEasyStandard attrs
+          then do
+            enemies <- selectList
+              (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
+            unless (null enemies) $ push $ chooseOne
+              iid
+              [ targetLabel enemy [InitiateEnemyAttack iid enemy]
+              | enemy <- enemies
+              ]
+          else do
+            enemies <- selectList
+              (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
+            unless (null enemies) $ push $ chooseOne
+              iid
+              [ targetLabel
+                  enemy
+                  [Ready (EnemyTarget enemy), InitiateEnemyAttack iid enemy]
+              | enemy <- enemies
+              ]
+        pure ()
+      _ -> pure ()
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> case tokenFace token of
+      ElderThing -> do
+        push $ FindAndDrawEncounterCard
+          iid
+          (CardWithType EnemyType
+          <> CardWithOneOf (map CardWithTrait [Ghoul, Geist])
+          )
+        pure s
+      _ -> pure s
     _ -> ThePallidMask <$> runMessage msg attrs

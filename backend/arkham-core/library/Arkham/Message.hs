@@ -276,6 +276,7 @@ data Message
   | EndUpkeep
   | EnemiesAttack
   | EnemyAttack InvestigatorId EnemyId DamageStrategy
+  | InitiateEnemyAttack InvestigatorId EnemyId
   | EnemyAttackFromDiscard InvestigatorId Card
   | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
   | EnemyAttacks [Message]

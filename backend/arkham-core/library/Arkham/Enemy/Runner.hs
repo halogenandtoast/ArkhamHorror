@@ -107,6 +107,7 @@ filterOutEnemyMessages eid (Ask iid q) = case q of
   choose@ChooseAmounts{} -> Just (Ask iid choose)
   choose@ChooseDynamicCardAmounts{} -> Just (Ask iid choose)
 filterOutEnemyMessages eid msg = case msg of
+  InitiateEnemyAttack _ eid' | eid == eid' -> Nothing
   EnemyAttack _ eid' _ | eid == eid' -> Nothing
   Discarded (EnemyTarget eid') _ | eid == eid' -> Nothing
   m -> Just m
@@ -521,6 +522,9 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
              | Keyword.Alert `elem` keywords
              ]
           )
+    InitiateEnemyAttack iid eid | eid == enemyId -> do
+      push $ EnemyAttack iid eid enemyDamageStrategy
+      pure a
     EnemyAttack iid eid damageStrategy | eid == enemyId -> do
       whenAttacksWindow <- checkWindows
         [Window Timing.When (Window.EnemyAttacks iid eid)]

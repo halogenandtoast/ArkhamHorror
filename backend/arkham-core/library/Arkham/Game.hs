@@ -1882,6 +1882,7 @@ instance HasGame env => HasModifiersFor env () where
           InvestigatorTarget i -> maybe (pure []) (getModifiersFor source (InvestigatorDiscardTarget i)) (g ^. inDiscardEntitiesL . at i)
           _ -> pure []
       , maybe (pure []) (getModifiersFor source target) (g ^. skillTestL)
+      , maybe (pure []) (getModifiersFor source target) (modeScenario $ g ^. modeL)
       ]
     traits <- getSet target
     let

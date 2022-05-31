@@ -38,7 +38,7 @@ import Arkham.Token
 import Arkham.Trait qualified as Trait
 
 newtype TheLastKing = TheLastKing ScenarioAttrs
-  deriving anyclass IsScenario
+  deriving anyclass (IsScenario, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theLastKing :: Difficulty -> TheLastKing

@@ -136,6 +136,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , dreamsOfRlyeh
   , eagerForDeath
   , ephemeralExhibits
+  , eyesInTheWalls
   , falseLead
   , fineDining
   , frozenInFear
@@ -188,6 +189,8 @@ allEncounterTreacheryCards = mapFromList $ map
   , theCultsSearch
   , theKingsEdict
   , thePaleMaskBeckons
+  , thePitBelow
+  , theShadowBehindYou
   , theYellowSign
   , theZealotsSeal
   , torturousChords

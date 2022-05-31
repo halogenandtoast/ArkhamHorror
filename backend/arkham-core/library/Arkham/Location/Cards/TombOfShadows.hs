@@ -27,8 +27,8 @@ tombOfShadows :: LocationCard TombOfShadows
 tombOfShadows = locationWith
   TombOfShadows
   Cards.tombOfShadows
-  0
-  (Static 0)
+  4
+  (PerPlayer 2)
   NoSymbol
   []
   ((connectsToL .~ adjacentLocations)

@@ -970,6 +970,7 @@ aChanceEncounter2 = (event "03238" "A Chance Encounter" 0 Survivor)
 emergencyCache3 :: CardDef
 emergencyCache3 = (event "03239" "Emergency Cache" 0 Neutral)
   { cdCardTraits = setFromList [Supply]
+  , cdLevel = 3
   }
 
 secondWind :: CardDef

@@ -796,7 +796,7 @@ library
       Arkham.Location.Cards.BlastedHeath_248
       Arkham.Location.Cards.BlastedHeath_249
       Arkham.Location.Cards.BlockedPassage
-      Arkham.Location.Cards.BoneFilledCavern
+      Arkham.Location.Cards.BoneFilledCaverns
       Arkham.Location.Cards.BoxOffice
       Arkham.Location.Cards.BrackishWaters
       Arkham.Location.Cards.BridgeOfSighs
@@ -1343,7 +1343,7 @@ test-suite spec
       Arkham.Event.Cards.LuckySpec
       Arkham.Event.Cards.OopsSpec
       Arkham.Event.Cards.SearchForTheTruthSpec
-      Arkham.Event.Cards.WillToSurvive4Spec
+      Arkham.Event.Cards.WillToSurvive3Spec
       Arkham.GameSpec
       Arkham.Investigator.Cards.AgnesBakerSpec
       Arkham.Investigator.Cards.AshcanPeteSpec

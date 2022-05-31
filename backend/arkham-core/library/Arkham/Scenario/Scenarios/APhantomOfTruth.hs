@@ -38,7 +38,7 @@ import Arkham.Token
 import Arkham.Trait (Trait(Byakhee))
 
 newtype APhantomOfTruth = APhantomOfTruth ScenarioAttrs
-  deriving anyclass (IsScenario)
+  deriving anyclass (IsScenario, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aPhantomOfTruth :: Difficulty -> APhantomOfTruth

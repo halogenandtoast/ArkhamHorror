@@ -37,7 +37,7 @@ import Arkham.Trait (Trait(SecondFloor, ThirdFloor))
 import Data.List (replicate)
 
 newtype EchoesOfThePast = EchoesOfThePast ScenarioAttrs
-  deriving anyclass IsScenario
+  deriving anyclass (IsScenario, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 echoesOfThePast :: Difficulty -> EchoesOfThePast

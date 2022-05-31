@@ -38,7 +38,7 @@ import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait ( Trait (Geist, Ghoul) )
+import Arkham.Trait ( Trait (Geist, Ghoul, Madness, Pact) )
 
 newtype ThePallidMask = ThePallidMask ScenarioAttrs
   deriving anyclass IsScenario
@@ -73,6 +73,12 @@ thePallidMask difficulty =
        , "pos0001 pos0101 pos0201 pos0301 pos0401 pos0501 pos0601 pos0701 pos0801 pos0901 pos1001 pos1101 pos1201 pos1301"
        , "pos0000 pos0100 pos0200 pos0300 pos0400 pos0500 pos0600 pos0700 pos0800 pos0900 pos1000 pos1100 pos1200 pos1300"
        ]
+
+instance HasRecord env () => HasModifiersFor env ThePallidMask where
+  getModifiersFor _ (InvestigatorTarget iid) (ThePallidMask a) = do
+    extraXp <- elem (Recorded $ unInvestigatorId iid) <$> getRecordSet ReadActII
+    pure $ toModifiers a [XPModifier 2 | extraXp]
+  getModifiersFor _ _ _ = pure []
 
 instance HasRecord env ThePallidMask where
   hasRecord YouFoundNigelsHome _ = pure True
@@ -288,11 +294,12 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
         pure s
       _ -> pure s
     ScenarioResolution res -> do
+      investigatorIds <- getInvestigatorIds
+      leadInvestigatorId <- getLeadInvestigatorId
       harukoSlain <- selectOne
         (VictoryDisplayCardMatch $ cardIs Enemies.ishimaruHaruko)
-      gainXp <- map (uncurry GainXP)
-        <$> getXpWithBonus (if res == Resolution 2 then 2 else 0)
-      chasingTheStrangerTallies <- hasRecordCount ChasingTheStranger (campaignLog a)
+      chasingTheStrangerTallies <- getRecordCount
+        ChasingTheStranger
       let
         updateSlain =
           [ RecordSetInsert VIPsSlain [toCardCode haruko]
@@ -304,18 +311,36 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
           Resolution 2 -> Tablet
           _ -> error "Invalid resolution"
       pushAll
-        $ [ Record YouKnowTheSiteOfTheGate
-          , RemoveAllTokens Cultist
-          , RemoveAllTokens Tablet
-          , RemoveAllTokens ElderThing
-          , AddToken token
-          , AddToken token
-          ]
-
+        $ [Record YouKnowTheSiteOfTheGate]
+        <> [ chooseSome
+               leadInvestigatorId
+               "Done having investigators read Act II"
+               [ TargetLabel
+                   (InvestigatorTarget iid)
+                   [ RecordSet ReadActII [unInvestigatorId iid]
+                   , SearchCollectionForRandom
+                     iid
+                     (toSource attrs)
+                     (CardWithType PlayerTreacheryType
+                     <> CardWithOneOf (map CardWithTrait [Madness, Pact])
+                     )
+                   ]
+                   | iid <- investigatorIds]
+           ]
+        <> [ RemoveAllTokens Cultist
+           , RemoveAllTokens Tablet
+           , RemoveAllTokens ElderThing
+           , AddToken token
+           , AddToken token
+           ]
         <> [ RecordCount ChasingTheStranger (chasingTheStrangerTallies + 2)
            | res == Resolution 2
            ]
         <> updateSlain
-        <> gainXp
+        <> [ScenarioResolutionStep 1 res]
+      pure s
+    ScenarioResolutionStep 1 res -> do
+      gainXp <- map (uncurry GainXP) <$> getXp
+      pushAll gainXp
       pure s
     _ -> ThePallidMask <$> runMessage msg attrs

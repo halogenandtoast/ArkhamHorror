@@ -339,7 +339,7 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
         <> updateSlain
         <> [ScenarioResolutionStep 1 res]
       pure s
-    ScenarioResolutionStep 1 res -> do
+    ScenarioResolutionStep 1 _ -> do
       gainXp <- map (uncurry GainXP) <$> getXp
       pushAll gainXp
       pure s

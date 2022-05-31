@@ -27,6 +27,7 @@ import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -37,7 +38,7 @@ import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait (Trait(Ghoul, Geist))
+import Arkham.Trait ( Trait (Geist, Ghoul) )
 
 newtype ThePallidMask = ThePallidMask ScenarioAttrs
   deriving anyclass IsScenario
@@ -286,4 +287,35 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
           )
         pure s
       _ -> pure s
+    ScenarioResolution res -> do
+      harukoSlain <- selectOne
+        (VictoryDisplayCardMatch $ cardIs Enemies.ishimaruHaruko)
+      gainXp <- map (uncurry GainXP)
+        <$> getXpWithBonus (if res == Resolution 2 then 2 else 0)
+      chasingTheStrangerTallies <- hasRecordCount ChasingTheStranger (campaignLog a)
+      let
+        updateSlain =
+          [ RecordSetInsert VIPsSlain [toCardCode haruko]
+          | haruko <- maybeToList harukoSlain
+          ]
+        token = case res of
+          NoResolution -> ElderThing
+          Resolution 1 -> Cultist
+          Resolution 2 -> Tablet
+          _ -> error "Invalid resolution"
+      pushAll
+        $ [ Record YouKnowTheSiteOfTheGate
+          , RemoveAllTokens Cultist
+          , RemoveAllTokens Tablet
+          , RemoveAllTokens ElderThing
+          , AddToken token
+          , AddToken token
+          ]
+
+        <> [ RecordCount ChasingTheStranger (chasingTheStrangerTallies + 2)
+           | res == Resolution 2
+           ]
+        <> updateSlain
+        <> gainXp
+      pure s
     _ -> ThePallidMask <$> runMessage msg attrs

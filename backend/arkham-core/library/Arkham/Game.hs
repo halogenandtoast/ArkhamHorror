@@ -3552,8 +3552,8 @@ runGameMessage msg g = case msg of
                 (foundKey cardSource /= Zone.FromDeck)
                 (error "Can not take deck")
               pushAll
-                (map (PutOnTopOfEncounterDeck iid)
-                  (mapMaybe (preview _EncounterCard)
+                (map (AddFocusedToTopOfDeck iid EncounterDeckTarget . toCardId)
+                  (reverse $ mapMaybe (preview _EncounterCard)
                   $ findWithDefault [] Zone.FromDeck foundCards
                   )
                 )
@@ -4528,39 +4528,44 @@ runGameMessage msg g = case msg of
       pure $ g & (entitiesL . assetsL . at assetId ?~ asset)
     other ->
       error $ "Currently not handling Revelations from type " <> show other
-  InvestigatorDrewEncounterCard iid card -> case toCardType card of
-    EnemyType -> do
-      let enemy = createEnemy card
-      lid <- locationFor iid
-      pushAll [InvestigatorDrawEnemy iid lid $ toId enemy, UnsetActiveCard]
-      pure
-        $ g
-        & (entitiesL . enemiesL . at (toId enemy) ?~ enemy)
-        & (activeCardL ?~ EncounterCard card)
-    TreacheryType -> g <$ push (DrewTreachery iid $ EncounterCard card)
-    EncounterAssetType -> do
-      let
-        asset = createAsset card
-        assetId = toId asset
-      -- Asset is assumed to have a revelation ability if drawn from encounter deck
-      pushAll $ resolve $ Revelation iid (AssetSource assetId)
-      pure $ g & (entitiesL . assetsL . at assetId ?~ asset)
-    LocationType -> do
-      let
-        location = createLocation card
-        locationId = toId location
-      pushAll
-        $ [ PlacedLocation (toName location) (toCardCode card) locationId
-          , RevealLocation (Just iid) locationId
-          ]
-        <> resolve (Revelation iid (LocationSource locationId))
-      pure $ g & (entitiesL . locationsL . at locationId ?~ location)
-    _ ->
-      error
-        $ "Unhandled card type: "
-        <> show (toCardType card)
-        <> ": "
-        <> show card
+  InvestigatorDrewEncounterCard iid card -> do
+    let
+      g' = g
+        & focusedCardsL %~ filter ((/= Just card) . preview _EncounterCard)
+        & foundCardsL %~ HashMap.map (filter ((/= Just card) . preview _EncounterCard))
+    case toCardType card of
+      EnemyType -> do
+        let enemy = createEnemy card
+        lid <- locationFor iid
+        pushAll [InvestigatorDrawEnemy iid lid $ toId enemy, UnsetActiveCard]
+        pure
+          $ g'
+          & (entitiesL . enemiesL . at (toId enemy) ?~ enemy)
+          & (activeCardL ?~ EncounterCard card)
+      TreacheryType -> g <$ push (DrewTreachery iid $ EncounterCard card)
+      EncounterAssetType -> do
+        let
+          asset = createAsset card
+          assetId = toId asset
+        -- Asset is assumed to have a revelation ability if drawn from encounter deck
+        pushAll $ resolve $ Revelation iid (AssetSource assetId)
+        pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
+      LocationType -> do
+        let
+          location = createLocation card
+          locationId = toId location
+        pushAll
+          $ [ PlacedLocation (toName location) (toCardCode card) locationId
+            , RevealLocation (Just iid) locationId
+            ]
+          <> resolve (Revelation iid (LocationSource locationId))
+        pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
+      _ ->
+        error
+          $ "Unhandled card type: "
+          <> show (toCardType card)
+          <> ": "
+          <> show card
   After (Revelation iid source) -> do
     keywords' <- case source of
       AssetSource _ -> pure mempty

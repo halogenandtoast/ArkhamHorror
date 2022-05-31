@@ -23,7 +23,9 @@ theThingThatFollows = enemyWith
   Cards.theThingThatFollows
   (3, Static 2, 3)
   (1, 1)
-  ((preyL .~ Bearer) . (spawnAtL ?~ FarthestLocationFromYou Anywhere))
+  ((spawnAtL ?~ FarthestLocationFromYou Anywhere)
+  .  (\a -> a & preyL .~ BearerOf (toId a))
+  )
 
 instance HasAbilities TheThingThatFollows where
   getAbilities (TheThingThatFollows x) = withBaseAbilities

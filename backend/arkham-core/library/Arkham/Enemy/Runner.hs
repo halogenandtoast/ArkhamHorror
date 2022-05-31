@@ -137,6 +137,8 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
             | (iid, lid) <- iids
             ]
           )
+    SetBearer (EnemyTarget eid) iid | eid == enemyId -> do
+      pure $ a & bearerL ?~ iid
     EnemySpawn miid lid eid | eid == enemyId -> do
       locations' <- getSet ()
       keywords <- getModifiedKeywords a
@@ -355,7 +357,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
               (Just _forcedTargetLocationId, _) -> error "TODO: MUST FIX"
                 -- map unClosestPathLocationId <$> getSetList
                 --   (loc, forcedTargetLocationId, extraConnectionsMap)
-              (Nothing, Bearer) ->
+              (Nothing, BearerOf _) ->
                 selectList $ locationWithInvestigator $ fromJustNote
                   "must have bearer"
                   enemyBearer

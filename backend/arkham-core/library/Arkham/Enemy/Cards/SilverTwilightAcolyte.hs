@@ -23,7 +23,7 @@ silverTwilightAcolyte = enemyWith
   Cards.silverTwilightAcolyte
   (2, Static 3, 3)
   (1, 0)
-  (preyL .~ Bearer)
+  (\a -> a & preyL .~ BearerOf (toId a))
 
 instance HasAbilities SilverTwilightAcolyte where
   getAbilities (SilverTwilightAcolyte a) = withBaseAbilities

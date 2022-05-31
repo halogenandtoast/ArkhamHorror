@@ -129,14 +129,14 @@ instance Semigroup InvestigatorMatcher where
   x <> InvestigatorMatches xs = InvestigatorMatches (x : xs)
   x <> y = InvestigatorMatches [x, y]
 
-data PreyMatcher = Prey InvestigatorMatcher | OnlyPrey InvestigatorMatcher | Bearer
+data PreyMatcher = Prey InvestigatorMatcher | OnlyPrey InvestigatorMatcher | BearerOf EnemyId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 preyWith :: PreyMatcher -> InvestigatorMatcher -> PreyMatcher
 preyWith (Prey m1) m2 = Prey $ m1 <> m2
-preyWith (OnlyPrey m1) m2 = OnlyPrey $ m1 <> m2
-preyWith Bearer _ = Bearer
+preyWith (OnlyPrey m1) _ = OnlyPrey m1 -- I do not think we should combine here
+preyWith (BearerOf m1) _ = BearerOf m1 -- I do not think we should combine here
 
 pattern AllyAsset :: AssetMatcher
 pattern AllyAsset <- AssetWithTrait Ally where

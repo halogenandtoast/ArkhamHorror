@@ -1600,7 +1600,11 @@ instance HasGame env => Query PreyMatcher env where
   select = \case
     Prey matcher -> select matcher
     OnlyPrey matcher -> select matcher
-    Bearer -> error "can not be matched here"
+    BearerOf enemyId -> do
+      enemy <- getEnemy enemyId
+      case enemyBearer (toAttrs enemy) of
+        Just iid -> select $ InvestigatorWithId iid
+        Nothing -> error "Invalid bearer situation"
 
 instance HasGame env => Query ExtendedCardMatcher env where
   select = fmap setFromList . getList

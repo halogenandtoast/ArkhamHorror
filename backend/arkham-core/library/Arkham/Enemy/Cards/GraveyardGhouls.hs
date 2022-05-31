@@ -22,7 +22,7 @@ graveyardGhouls = enemyWith
   Cards.graveyardGhouls
   (3, Static 3, 2)
   (1, 1)
-  (preyL .~ Bearer)
+  (\a -> a & preyL .~ BearerOf (toId a))
 
 instance HasModifiersFor env GraveyardGhouls where
   getModifiersFor _ (InvestigatorTarget iid) (GraveyardGhouls attrs)

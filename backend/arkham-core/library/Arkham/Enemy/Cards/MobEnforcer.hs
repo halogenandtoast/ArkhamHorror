@@ -26,7 +26,7 @@ mobEnforcer = enemyWith
   Cards.mobEnforcer
   (4, Static 3, 3)
   (1, 0)
-  (preyL .~ Bearer)
+  (\a -> a & preyL .~ BearerOf (toId a))
 
 instance HasAbilities MobEnforcer where
   getAbilities (MobEnforcer attrs) = withBaseAbilities

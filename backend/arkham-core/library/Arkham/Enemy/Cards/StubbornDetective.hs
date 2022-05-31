@@ -23,7 +23,7 @@ stubbornDetective = enemyWith
   Cards.stubbornDetective
   (3, Static 2, 2)
   (1, 0)
-  (preyL .~ Bearer)
+  (\a -> a & preyL .~ BearerOf (toId a))
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env StubbornDetective where
   getModifiersFor _ (InvestigatorTarget iid) (StubbornDetective a@EnemyAttrs {..})

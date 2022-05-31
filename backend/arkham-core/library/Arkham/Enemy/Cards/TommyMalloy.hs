@@ -24,7 +24,7 @@ tommyMalloy = enemyWith
   Cards.tommyMalloy
   (2, Static 3, 3)
   (2, 0)
-  (preyL .~ Bearer)
+  (\a -> a & preyL .~ BearerOf (toId a))
 
 instance HasAbilities TommyMalloy where
   getAbilities (TommyMalloy attrs) = withBaseAbilities

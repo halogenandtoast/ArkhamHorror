@@ -173,7 +173,7 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
         [ Locations.stoneArchways
         , Locations.stoneArchways
         , Locations.cryptOfTheSepulchralLamp
-        , Locations.boneFilledCavern
+        , Locations.boneFilledCaverns
         , Locations.wellOfSouls
         , Locations.candlelitTunnels
         , Locations.candlelitTunnels

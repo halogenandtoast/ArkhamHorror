@@ -97,7 +97,7 @@ allLocationCards = mapFromList $ map
   , blastedHeath_248
   , blastedHeath_249
   , blockedPassage
-  , boneFilledCavern
+  , boneFilledCaverns
   , boxOffice
   , brackishWaters
   , bridgeOfSighs
@@ -1276,13 +1276,15 @@ theGateToHell :: CardDef
 theGateToHell = locationWithUnrevealed "03247" "Catacombs" [] "The Gate to Hell" [] ThePallidMask
 
 stoneArchways :: CardDef
-stoneArchways = locationWithUnrevealed "03248" "Catacombs" [] "Stone Archways" [] ThePallidMask
+stoneArchways = (locationWithUnrevealed "03248" "Catacombs" [] "Stone Archways" [] ThePallidMask)
+  { cdEncounterSetQuantity = Just 2
+  }
 
 cryptOfTheSepulchralLamp :: CardDef
 cryptOfTheSepulchralLamp = locationWithUnrevealed "03249" "Catacombs" [] "Crypt of the Sepulchral Lamp" [] ThePallidMask
 
-boneFilledCavern :: CardDef
-boneFilledCavern = (locationWithUnrevealed "03250" "Catacombs" [] "Bone-Filled Cavern" [] ThePallidMask)
+boneFilledCaverns :: CardDef
+boneFilledCaverns = (locationWithUnrevealed "03250" "Catacombs" [] "Bone-Filled Caverns" [] ThePallidMask)
   { cdVictoryPoints = Just 1
   }
 
@@ -1292,10 +1294,14 @@ wellOfSouls = (locationWithUnrevealed "03251" "Catacombs" [] "Well of Souls" [] 
   }
 
 candlelitTunnels :: CardDef
-candlelitTunnels = locationWithUnrevealed "03252" "Catacombs" [] "Candlelit Tunnels" [] ThePallidMask
+candlelitTunnels = (locationWithUnrevealed "03252" "Catacombs" [] "Candlelit Tunnels" [] ThePallidMask)
+  { cdEncounterSetQuantity = Just 2
+  }
 
 labyrinthOfBones :: CardDef
-labyrinthOfBones = locationWithUnrevealed "03253" "Catacombs" [] "Labyrinth of Bones" [] ThePallidMask
+labyrinthOfBones = (locationWithUnrevealed "03253" "Catacombs" [] "Labyrinth of Bones" [] ThePallidMask)
+  { cdEncounterSetQuantity = Just 2
+  }
 
 narrowShaft :: CardDef
 narrowShaft = (locationWithUnrevealed "03254" "Catacombs" [] "Narrow Shaft" [] ThePallidMask)

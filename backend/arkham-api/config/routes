@@ -13,6 +13,7 @@
           / ApiV1ArkhamDeckR DELETE
       /games ApiV1ArkhamGamesP:
         / ApiV1ArkhamGamesR GET POST
+        !/import ApiV1ArkhamGamesImportR POST
         /#ArkhamGameId ApiV1ArkhamGameP:
           / ApiV1ArkhamGameR GET PUT DELETE
           /raw ApiV1ArkhamGameRawR PUT
@@ -21,3 +22,4 @@
           /decks ApiV1ArkhamGameDecksR PUT
           /undo ApiV1ArkhamGameUndoR PUT
           /spectate ApiV1ArkhamGameSpectateR GET
+          /export ApiV1ArkhamGameExportR GET

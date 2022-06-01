@@ -20,6 +20,7 @@ flag library-only
 
 library
   exposed-modules:
+      Api.Arkham.Export
       Api.Arkham.Helpers
       Api.Arkham.Types.MultiplayerVariant
       Api.Handler.Arkham.Cards

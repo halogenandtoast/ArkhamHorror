@@ -2,14 +2,17 @@
 
 module Api.Handler.Arkham.Games
   ( getApiV1ArkhamGameR
+  , getApiV1ArkhamGameExportR
   , getApiV1ArkhamGameSpectateR
   , getApiV1ArkhamGamesR
   , postApiV1ArkhamGamesR
+  , postApiV1ArkhamGamesImportR
   , putApiV1ArkhamGameR
   , deleteApiV1ArkhamGameR
   , putApiV1ArkhamGameRawR
   ) where
 
+import Api.Arkham.Export
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.CampaignId
@@ -22,22 +25,23 @@ import Arkham.InvestigatorId
 import Arkham.Message
 import Arkham.ScenarioId
 import Conduit
-import Control.Lens (view)
-import Control.Monad.Random (mkStdGen)
-import Control.Monad.Random.Class (getRandom)
+import Control.Lens ( view )
+import Control.Monad.Random ( mkStdGen )
+import Control.Monad.Random.Class ( getRandom )
 import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
 import Data.HashMap.Strict qualified as HashMap
 import Data.Map.Strict qualified as Map
-import Data.Traversable (for)
-import Database.Esqueleto.Experimental hiding (update)
+import Data.Traversable ( for )
+import Database.Esqueleto.Experimental hiding ( update )
 import Entity.Arkham.Player
-import Import hiding (delete, on, (==.))
+import Import hiding ( delete, on, (==.) )
 import Json
-import Network.WebSockets (ConnectionException)
-import Safe (fromJustNote)
-import UnliftIO.Exception hiding (Handler)
+import Network.WebSockets ( ConnectionException )
+import Safe ( fromJustNote )
+import UnliftIO.Exception hiding ( Handler )
 import Yesod.WebSockets
+import Data.Text qualified as T
 
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
 gameStream gameId = catchingConnectionException $ do
@@ -141,6 +145,55 @@ data CreateGamePost = CreateGamePost
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
+
+getApiV1ArkhamGameExportR :: ArkhamGameId -> Handler ArkhamExport
+getApiV1ArkhamGameExportR gameId = do
+  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  ge <- runDB $ get404 gameId
+  players <- runDB $ select $ do
+    players <- from $ table @ArkhamPlayer
+    where_ (players ^. ArkhamPlayerArkhamGameId ==. val gameId)
+    pure players
+  pure $ ArkhamExport
+    { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
+    , aeCampaignData = arkhamGameToExportData ge
+    }
+
+postApiV1ArkhamGamesImportR :: Handler (PublicGame ArkhamGameId)
+postApiV1ArkhamGamesImportR = do
+  -- Convert to multiplayer solitaire
+  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  eExportData :: Either String ArkhamExport <- fmap eitherDecodeStrict'
+    . fileSourceByteString
+    . snd
+    . fromJustNote "No export file uploaded"
+    . headMay
+    . snd
+    =<< runRequestBody
+
+  case eExportData of
+    Left err -> error $ T.pack err
+    Right export -> do
+      let ArkhamGameExportData {..} = aeCampaignData export
+          investigatorIds = aeCampaignPlayers export
+      key <- runDB $ do
+        gameId <- insert $ ArkhamGame
+          agedName
+          agedCurrentData
+          agedChoices
+          agedLog
+          Solo
+        traverse_ (insert_ . ArkhamPlayer userId gameId) investigatorIds
+        pure gameId
+      pure $ toPublicGame $ Entity
+        key
+        (ArkhamGame
+          agedName
+          agedCurrentData
+          agedChoices
+          agedLog
+          Solo
+        )
 
 postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesR = do
@@ -372,20 +425,28 @@ handleAnswer :: Game -> InvestigatorId -> Answer -> [Message]
 handleAnswer Game {..} investigatorId = \case
   AmountsAnswer response -> case HashMap.lookup investigatorId gameQuestion of
     Just (ChooseAmounts _ _ _ target) ->
-      [ResolveAmounts investigatorId (HashMap.toList $ arAmounts response) target]
+      [ ResolveAmounts
+          investigatorId
+          (HashMap.toList $ arAmounts response)
+          target
+      ]
     _ -> error "Wrong question type"
-  PaymentAmountsAnswer response -> case HashMap.lookup investigatorId gameQuestion of
-    Just (ChoosePaymentAmounts _ _ info) ->
-      let
-        costMap = HashMap.fromList
-          $ map (\(iid, _, cost) -> (iid, cost)) info
-      in
-        concatMap (\(iid, n) -> replicate n (HashMap.findWithDefault Noop iid costMap))
-          $ HashMap.toList (parAmounts response)
-    Just (ChooseDynamicCardAmounts iid cardId _ isFast beforePlayMessages) ->
-      let amount = HashMap.findWithDefault 0 iid (parAmounts response)
-      in beforePlayMessages <> [PayedForDynamicCard iid cardId amount isFast]
-    _ -> error "Wrong question type"
+  PaymentAmountsAnswer response ->
+    case HashMap.lookup investigatorId gameQuestion of
+      Just (ChoosePaymentAmounts _ _ info) ->
+        let
+          costMap =
+            HashMap.fromList $ map (\(iid, _, cost) -> (iid, cost)) info
+        in
+          concatMap
+              (\(iid, n) ->
+                replicate n (HashMap.findWithDefault Noop iid costMap)
+              )
+            $ HashMap.toList (parAmounts response)
+      Just (ChooseDynamicCardAmounts iid cardId _ isFast beforePlayMessages) ->
+        let amount = HashMap.findWithDefault 0 iid (parAmounts response)
+        in beforePlayMessages <> [PayedForDynamicCard iid cardId amount isFast]
+      _ -> error "Wrong question type"
   Answer response -> case HashMap.lookup investigatorId gameQuestion of
     Just (ChooseOne qs) -> case qs !!? qrChoice response of
       Nothing -> [Ask investigatorId $ ChooseOne qs]

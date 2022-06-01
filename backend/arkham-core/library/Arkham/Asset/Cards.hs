@@ -252,6 +252,7 @@ allPlayerAssetCards = mapFromList $ map
   , sophieItWasAllMyFault
   , spiritAthame1
   , stealth
+  , stickToThePlan
   , streetwise3
   , scientificTheory1
   , songOfTheDead2
@@ -1711,6 +1712,13 @@ scrying3 = (asset "03236" "Scrying" 1 Mystic)
   , cdCardTraits = setFromList [Spell]
   , cdUses = Uses Charge 3
   , cdSlots = [ArcaneSlot]
+  , cdLevel = 3
+  }
+
+stickToThePlan :: CardDef
+stickToThePlan = permanent $ (asset "03264" "Stick to the Plan" 0 Guardian)
+  { cdCardTraits = singleton Talent
+  , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional ]
   , cdLevel = 3
   }
 

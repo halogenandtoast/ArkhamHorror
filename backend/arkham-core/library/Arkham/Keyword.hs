@@ -13,6 +13,8 @@ data Keyword
   | Retaliate
   | Surge
   | Uses Int
+  | Exceptional
+  | Permanent
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

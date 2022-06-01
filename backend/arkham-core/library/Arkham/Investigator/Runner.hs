@@ -243,12 +243,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         investigatorStartsWith
       (permanentCards, deck'') =
         partition (cdPermanent . toCardDef) (unDeck deck')
+    beforeDrawingStartingHand <- checkWindows
+      [Window Timing.When (Window.DrawingStartingHand investigatorId)]
     pushAll
       $ startsWithMsgs
       <> [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing
          | card <- permanentCards
          ]
-      <> [DrawStartingHand investigatorId, TakeStartingResources investigatorId]
+      <> [beforeDrawingStartingHand, DrawStartingHand investigatorId, TakeStartingResources investigatorId]
     pure $ a & (deckL .~ Deck deck'')
   DrawStartingHand iid | iid == investigatorId -> do
     let (discard, hand, deck) = drawOpeningHand a 5

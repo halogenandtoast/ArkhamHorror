@@ -6,6 +6,7 @@
       class="card"
       @click="$emit('choose', cardAction)"
     />
+    <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
     <AbilityButton
       v-for="ability in abilities"
       :key="ability"
@@ -64,7 +65,7 @@ export default defineComponent({
     asset: { type: Object as () => Arkham.Asset, required: true },
     investigatorId: { type: String, required: true },
   },
-  setup(props) {
+  setup(props, context) {
     const id = computed(() => props.asset.contents.id)
     const hasPool = computed(() => {
       const {
@@ -172,10 +173,30 @@ export default defineComponent({
         }, []);
     })
 
+    const cardsUnderneath = computed(() => props.asset.contents.cardsUnderneath)
+    const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
+
+    const showCardsUnderneath = (e: Event) => context.emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
+
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    return { debug, debugChoose, id, hasPool, exhausted, image, abilities, sanityAction, healthAction, cardAction, choices }
+    return {
+      debug,
+      debugChoose,
+      id,
+      hasPool,
+      exhausted,
+      image,
+      abilities,
+      sanityAction,
+      healthAction,
+      cardAction,
+      choices,
+      cardsUnderneath,
+      cardsUnderneathLabel,
+      showCardsUnderneath
+    }
   }
 })
 </script>

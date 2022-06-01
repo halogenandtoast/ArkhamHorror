@@ -9,6 +9,7 @@ import Arkham.Prelude
 
 import Data.Aeson.TH
 import Arkham.Action
+import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
@@ -49,6 +50,7 @@ data ModifierType
   | AlternateSuccessfullInvestigation
   | AlternativeReady Source
   | AnySkillValue Int
+  | AsIfInHand Card
   | AttacksCannotBeCancelled
   | BaseSkillOf SkillType Int
   | BecomesFast

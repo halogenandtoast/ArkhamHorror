@@ -564,6 +564,9 @@ getAsIfInHandCards attrs = do
     modifierPermitsPlayOfDeck (c, depth) = \case
       CanPlayTopOfDeck cardMatcher | depth == 0 -> cardMatch c cardMatcher
       _ -> False
+    cardsAddedViaModifiers = flip mapMaybe modifiers $ \case
+      AsIfInHand c -> Just c
+      _ -> Nothing
   pure
     $ map
         (PlayerCard . fst)
@@ -577,3 +580,4 @@ getAsIfInHandCards attrs = do
            modifiersPermitPlayOfDeck
            (zip (unDeck $ investigatorDeck attrs) [0 :: Int ..])
          )
+    <> cardsAddedViaModifiers

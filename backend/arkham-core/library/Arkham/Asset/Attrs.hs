@@ -47,6 +47,7 @@ data AssetAttrs = AssetAttrs
   , assetCanLeavePlayByNormalMeans :: Bool
   , assetDiscardWhenNoUses :: Bool
   , assetIsStory :: Bool
+  , assetCardsUnderneath :: [Card]
   }
   deriving stock (Show, Eq)
 
@@ -63,6 +64,9 @@ horrorL = lens assetHorror $ \m x -> m {assetHorror = x}
 
 isStoryL :: Lens' AssetAttrs Bool
 isStoryL = lens assetIsStory $ \m x -> m {assetIsStory = x}
+
+cardsUnderneathL :: Lens' AssetAttrs [Card]
+cardsUnderneathL = lens assetCardsUnderneath $ \m x -> m {assetCardsUnderneath = x}
 
 healthL :: Lens' AssetAttrs (Maybe Int)
 healthL = lens assetHealth $ \m x -> m {assetHealth = x}
@@ -178,6 +182,7 @@ assetWith f cardDef g =
             , assetCanLeavePlayByNormalMeans = True
             , assetDiscardWhenNoUses = False
             , assetIsStory = False
+            , assetCardsUnderneath = []
             }
     }
 

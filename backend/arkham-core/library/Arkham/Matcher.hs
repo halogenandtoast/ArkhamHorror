@@ -275,6 +275,7 @@ data EventMatcher
   | EventWithTrait Trait
   | EventWithClass ClassSymbol
   | EventControlledBy InvestigatorMatcher
+  | EventReady
   | EventMatches [EventMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

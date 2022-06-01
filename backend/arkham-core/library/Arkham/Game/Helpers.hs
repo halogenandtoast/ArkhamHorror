@@ -302,7 +302,10 @@ getCanAffordCost iid source mAction windows' = \case
     AssetTarget aid -> do
       readyAssetIds <- selectList Matcher.AssetReady
       pure $ aid `elem` readyAssetIds
-    _ -> error "Not handled"
+    EventTarget eid -> do
+      readyEventIds <- selectList Matcher.EventReady
+      pure $ eid `elem` readyEventIds
+    _ -> error $ "Not handled" <> show target
   ExhaustAssetCost matcher ->
     notNull <$> select (matcher <> Matcher.AssetReady)
   UseCost assetMatcher _uType n -> do
@@ -422,7 +425,7 @@ getActions iid window = do
         (InvestigatorSource iid)
         (InvestigatorTarget iid)
       cardClasses <- case abilitySource ability of
-        AssetSource aid -> insertSet Neutral <$> getSet aid
+        AssetSource aid -> getSet aid
         _ -> pure $ singleton Neutral
       let
         -- Lola Hayes: Forced abilities will always trigger
@@ -1309,17 +1312,17 @@ passesCriteria iid source windows' = \case
   Criteria.SetAsideCardExists matcher ->
     notNull <$> getList @SetAsideCard matcher
   Criteria.OnAct step -> (== step) . unActStep <$> getStep ()
-  Criteria.AssetExists matcher -> notNull <$> getSet @AssetId matcher
-  Criteria.TreacheryExists matcher -> notNull <$> getSet @TreacheryId matcher
+  Criteria.AssetExists matcher -> notNull <$> select matcher
+  Criteria.TreacheryExists matcher -> notNull <$> select matcher
   Criteria.InvestigatorExists matcher ->
     -- Because the matcher can't tell who is asking, we need to replace
     -- The You matcher by the Id of the investigator asking
-    notNull <$> getSet @InvestigatorId (Matcher.replaceYouMatcher iid matcher)
+    notNull <$> select (Matcher.replaceYouMatcher iid matcher)
   Criteria.InvestigatorsHaveSpendableClues valueMatcher ->
     (`gameValueMatches` valueMatcher) . unSpendableClueCount =<< getCount ()
   Criteria.Criteria rs -> allM (passesCriteria iid source windows') rs
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid source windows') rs
-  Criteria.LocationExists matcher -> notNull <$> getSet @LocationId matcher
+  Criteria.LocationExists matcher -> notNull <$> select matcher
   Criteria.InvestigatorIsAlone -> do
     location <- getId iid
     liftA2

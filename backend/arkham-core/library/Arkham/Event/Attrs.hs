@@ -23,12 +23,17 @@ data EventAttrs = EventAttrs
   , eventAttachedTarget :: Maybe Target
   , eventOwner :: InvestigatorId
   , eventDoom :: Int
+  , eventExhausted :: Bool
   }
   deriving stock (Show, Eq, Generic)
 
 attachedTargetL :: Lens' EventAttrs (Maybe Target)
 attachedTargetL =
   lens eventAttachedTarget $ \m x -> m {eventAttachedTarget = x}
+
+exhaustedL :: Lens' EventAttrs Bool
+exhaustedL =
+  lens eventExhausted $ \m x -> m {eventExhausted = x}
 
 originalCardCodeL :: Lens' EventAttrs CardCode
 originalCardCodeL =
@@ -81,6 +86,7 @@ event f cardDef =
             , eventAttachedTarget = Nothing
             , eventOwner = iid
             , eventDoom = 0
+            , eventExhausted = False
             }
     }
 
@@ -114,4 +120,8 @@ instance HasQueue env => RunMessage env EventAttrs where
     AttachEvent eid target
       | eid == eventId ->
         pure $ a & attachedTargetL ?~ target
+    Ready (isTarget a -> True) ->
+      pure $ a & exhaustedL .~ False
+    Exhaust (isTarget a -> True) ->
+      pure $ a & exhaustedL .~ True
     _ -> pure a

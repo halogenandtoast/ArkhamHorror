@@ -68,4 +68,10 @@ instance AssetRunner env => RunMessage env StickToThePlan where
         | card <- tacticsAndSupplies
         ]
       pure a
+    InitiatePlayCard iid cardId _ _ | controlledBy attrs iid && cardId `elem` map toCardId (assetCardsUnderneath attrs) -> do
+      let card = fromJustNote "card missing" $ find matcher $ assetCardsUnderneath attrs
+          remaining = deleteFirstMatch matcher $ assetCardsUnderneath attrs
+          matcher = (== cardId) . toCardId
+      pushAll [AddToHand iid card, msg]
+      pure $ StickToThePlan $ attrs & cardsUnderneathL .~ remaining
     _ -> StickToThePlan <$> runMessage msg attrs

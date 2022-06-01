@@ -30,7 +30,7 @@ instance HasAbilities Shortcut2 where
       [ restrictedAbility
           (ProxySource (LocationSource lid) (toSource a))
           1
-          (OnLocation $ LocationWithId lid)
+          (OnLocation (LocationWithId lid) <> LocationExists AccessibleLocation)
           (FastAbility $ ExhaustCost (toTarget a))
       ]
     _ -> []
@@ -40,9 +40,9 @@ instance EventRunner env => RunMessage env Shortcut2 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- selectJust $ LocationWithInvestigator $ InvestigatorWithId iid
       e <$ push (AttachEvent eid (LocationTarget lid))
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid (ProxySource _ source) _ 1 _ | isSource attrs source -> do
       lid <- selectJust $ LocationWithInvestigator $ InvestigatorWithId iid
-      connectingLocations <- selectList $ AccessibleFrom $ LocationWithId lid
+      connectingLocations <- selectList $ AccessibleLocation
       push $ chooseOne
         iid
         [ targetLabel lid' [Move (toSource attrs) iid lid lid']

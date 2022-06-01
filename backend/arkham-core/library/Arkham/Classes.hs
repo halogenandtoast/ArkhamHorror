@@ -202,6 +202,7 @@ type HasCostPayment env
     , HasList HandCard env InvestigatorId
     , HasList TakenAction env InvestigatorId
     , Query AssetMatcher env
+    , Query EventMatcher env
     , Query InvestigatorMatcher env
     , Query ExtendedCardMatcher env
     , HasSet InvestigatorId env LocationId

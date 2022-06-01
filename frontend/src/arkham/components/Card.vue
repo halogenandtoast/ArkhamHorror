@@ -78,7 +78,32 @@ export default defineComponent({
       }
     }
 
-    const cardAction = computed(() =>  choices.value.findIndex(canInteract))
+    function canPlay(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.PLAY_CARD:
+          return c.contents[1] === id.value
+        case MessageType.PLAY_CARD_AS:
+          return c.contents[1] === id.value
+        case MessageType.PLAY_DYNAMIC_CARD:
+          return c.contents[1] === id.value
+        case MessageType.PLAY_FAST_EVENT:
+          return c.contents[1] === id.value
+        case MessageType.LEGACY_PLAY_CARD:
+          return c.contents[1] === id.value
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canPlay(c1))
+        default:
+          return false
+      }
+    }
+
+    const playCardAction = computed(() => choices.value.findIndex(canPlay))
+    const cardAction = computed(() => {
+      if (playCardAction.value !== -1) {
+        return playCardAction.value
+      }
+      return choices.value.findIndex(canInteract)
+    })
 
     function abilityLabel(idx: number) {
       console.log()

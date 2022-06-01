@@ -26,50 +26,44 @@ data Window = Window
 
 data WindowType
   = ActAdvance ActId
+  | AddedToVictory Card
   | AgendaAdvance AgendaId
   | AgendaWouldAdvance AgendaAdvancementReason AgendaId
-  | AllUndefeatedInvestigatorsResigned
   | AllDrawEncounterCard
+  | AllUndefeatedInvestigatorsResigned
   | AmongSearchedCards InvestigatorId
   | AnyPhaseBegins
-  | AtEndOfRound
-  | EndOfGame
-  | ChosenRandomLocation LocationId
-  | CommittedCards InvestigatorId [Card]
-  | CommittedCard InvestigatorId Card
-  | DealtDamage Source DamageEffect Target
-  | TakeDamage Source DamageEffect Target
-  | DealtHorror Source Target
+  | AssetDefeated AssetId
   | AssignedHorror Source InvestigatorId [Target]
+  | AtEndOfRound
+  | ChosenRandomLocation LocationId
+  | CommittedCard InvestigatorId Card
+  | CommittedCards InvestigatorId [Card]
+  | DealtDamage Source DamageEffect Target
+  | DealtHorror Source Target
+  | DeckHasNoCards InvestigatorId
   | Defeated Source
-  | DiscoverClues InvestigatorId LocationId Int
-  | GainsClues InvestigatorId Int
-  | DiscoveringLastClue InvestigatorId LocationId
-  | LastClueRemovedFromAsset AssetId
-  | DrawCard InvestigatorId Card DeckSignifier
   | Discarded InvestigatorId Card
-  | WouldBeDiscarded Target
+  | DiscoverClues InvestigatorId LocationId Int
+  | DiscoveringLastClue InvestigatorId LocationId
+  | DrawCard InvestigatorId Card DeckSignifier
   | DrawToken InvestigatorId Token
   | DrawingStartingHand InvestigatorId
   | DuringTurn InvestigatorId
+  | EndOfGame
   | EndTurn InvestigatorId
-  | InvestigatorDefeated Source InvestigatorId
-  | InvestigatorEliminated InvestigatorId
-  | AssetDefeated AssetId
-  | TookControlOfAsset InvestigatorId AssetId
-  | EnemyWouldAttack InvestigatorId EnemyId
-  | EnemyAttacks InvestigatorId EnemyId
   | EnemyAttacked InvestigatorId Source EnemyId
-  | EnemyDefeated InvestigatorId EnemyId
-  | EnemyWouldBeDefeated EnemyId
-  | EnemyEngaged InvestigatorId EnemyId
-  | EnemyEvaded InvestigatorId EnemyId
+  | EnemyAttacks InvestigatorId EnemyId
   | EnemyAttemptsToSpawnAt EnemyId LocationMatcher
-  | EnemySpawns EnemyId LocationId
+  | EnemyDefeated InvestigatorId EnemyId
+  | EnemyEngaged InvestigatorId EnemyId
   | EnemyEnters EnemyId LocationId
+  | EnemyEvaded InvestigatorId EnemyId
   | EnemyLeaves EnemyId LocationId
+  | EnemySpawns EnemyId LocationId
+  | EnemyWouldAttack InvestigatorId EnemyId
+  | EnemyWouldBeDefeated EnemyId
   | EnterPlay Target
-  | AddedToVictory Card
   | Entering InvestigatorId LocationId
   | FailAttackEnemy InvestigatorId EnemyId Int
   | FailEvadeEnemy InvestigatorId EnemyId Int
@@ -77,39 +71,45 @@ data WindowType
   | FailSkillTest InvestigatorId Int
   | FailSkillTestAtOrLess InvestigatorId Int
   | FastPlayerWindow
+  | GainsClues InvestigatorId Int
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window
-  | Moves InvestigatorId LocationId LocationId
-  | MoveAction InvestigatorId LocationId LocationId
-  | Leaving InvestigatorId LocationId
+  | InitiatedSkillTest InvestigatorId (Maybe Action) Int
+  | InvestigatorDefeated Source InvestigatorId
+  | InvestigatorEliminated InvestigatorId
+  | LastClueRemovedFromAsset AssetId
   | LeavePlay Target
-  | MovedFromHunter EnemyId
-  | MovedBy Source LocationId InvestigatorId
+  | Leaving InvestigatorId LocationId
+  | MoveAction InvestigatorId LocationId LocationId
   | MovedButBeforeEnemyEngagement InvestigatorId LocationId
+  | MovedBy Source LocationId InvestigatorId
+  | MovedFromHunter EnemyId
+  | Moves InvestigatorId LocationId LocationId
   | NonFast
-  | PassSkillTest (Maybe Action) Source InvestigatorId Int
   | PassInvestigationSkillTest InvestigatorId LocationId Int
+  | PassSkillTest (Maybe Action) Source InvestigatorId Int
   | PerformAction InvestigatorId Action
   | PhaseBegins Phase
   | PhaseEnds Phase
-  | PlacedHorror InvestigatorId Int
-  | PlacedDamage InvestigatorId Int
-  | PlacedClues Target Int
   | PlaceUnderneath Target Card
+  | PlacedClues Target Int
+  | PlacedDamage InvestigatorId Int
+  | PlacedHorror InvestigatorId Int
   | PlayCard InvestigatorId Card
   | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId
   | RevealToken InvestigatorId Token
   | RevealTokenWithNegativeModifier InvestigatorId Token
   | SkillTest SkillType
-  | InitiatedSkillTest InvestigatorId (Maybe Action) Int
   | SkillTestEnded SkillTest
   | SuccessfulAttackEnemy InvestigatorId EnemyId Int
   | SuccessfulEvadeEnemy InvestigatorId EnemyId Int
   | SuccessfulInvestigation InvestigatorId LocationId
+  | TakeDamage Source DamageEffect Target
+  | TookControlOfAsset InvestigatorId AssetId
   | TurnBegins InvestigatorId
   | TurnEnds InvestigatorId
-  | DeckHasNoCards InvestigatorId
+  | WouldBeDiscarded Target
   | WouldDrawEncounterCard InvestigatorId Phase
   | WouldFailSkillTest InvestigatorId
   | WouldPassSkillTest InvestigatorId

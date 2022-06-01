@@ -1,27 +1,71 @@
 module Arkham.Asset.Cards.StickToThePlan
   ( stickToThePlan
   , StickToThePlan(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Ability
 import Arkham.Asset.Attrs
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card.PlayerCard
+import Arkham.Card
+import Arkham.Cost
+import Arkham.Criteria
+import Arkham.Matcher hiding ( PlaceUnderneath )
+import Arkham.Modifier
+import Arkham.Target
+import Arkham.Timing qualified as Timing
+import Arkham.Trait qualified as Trait
 
-newtype Metadata = Metadata { attachedCards :: [PlayerCard] }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype StickToThePlan = StickToThePlan (AssetAttrs `With` Metadata)
-  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
+newtype StickToThePlan = StickToThePlan AssetAttrs
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stickToThePlan :: AssetCard StickToThePlan
-stickToThePlan =
-  asset (StickToThePlan . (`with` Metadata [])) Cards.stickToThePlan
+stickToThePlan = asset StickToThePlan Cards.stickToThePlan
+
+instance HasModifiersFor env StickToThePlan where
+  getModifiersFor _ (InvestigatorTarget iid) (StickToThePlan attrs)
+    | controlledBy attrs iid = pure
+    $ toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
+  getModifiersFor _ _ _ = pure []
+
+instance HasAbilities StickToThePlan where
+  getAbilities (StickToThePlan attrs) =
+    [ restrictedAbility attrs 1 OwnsThis
+        $ ReactionAbility (DrawingStartingHand Timing.When You) Free
+    ]
 
 instance AssetRunner env => RunMessage env StickToThePlan where
-  runMessage msg (StickToThePlan (attrs `With` metadata)) = StickToThePlan . (`with` metadata) <$> runMessage msg attrs
+  runMessage msg a@(StickToThePlan attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
+      push $ Search
+        iid
+        (toSource attrs)
+        (InvestigatorTarget iid)
+        [fromDeck]
+        AnyCard
+        (DeferSearchedToTarget $ toTarget attrs)
+      pure a
+    SearchFound iid (isTarget attrs -> True) _ cards -> do
+      let
+        tacticsAndSupplies = filter
+          (`cardMatch` (CardWithType EventType <> CardWithOneOf
+                         (map CardWithTrait [Trait.Tactic, Trait.Supply])
+                       )
+          )
+          cards
+      push $ chooseUpToN
+        iid
+        3
+        "Choose no more events"
+        [ TargetLabel
+            (CardIdTarget $ toCardId card)
+            [ RemoveCardFromSearch iid (toCardId card)
+            , PlaceUnderneath (toTarget attrs) [card]
+            ]
+        | card <- tacticsAndSupplies
+        ]
+      pure a
+    _ -> StickToThePlan <$> runMessage msg attrs

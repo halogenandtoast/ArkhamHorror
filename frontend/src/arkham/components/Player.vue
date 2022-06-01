@@ -8,6 +8,7 @@
         :investigatorId="investigatorId"
         :key="asset"
         @choose="$emit('choose', $event)"
+        @showCards="doShowCards"
       />
 
       <Enemy

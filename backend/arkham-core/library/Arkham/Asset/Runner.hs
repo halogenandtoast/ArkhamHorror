@@ -207,5 +207,7 @@ instance AssetRunner env => RunMessage env AssetAttrs where
           then pure a
           else pure $ a & exhaustedL .~ False
       Nothing -> pure $ a & exhaustedL .~ False
+    PlaceUnderneath (isTarget a -> True) cards -> do
+      pure $ a & cardsUnderneathL <>~ cards
     Blanked msg' -> runMessage msg' a
     _ -> pure a

@@ -1,4 +1,8 @@
 import { JsonDecoder } from 'ts.data.json';
+import {
+  Card,
+  cardDecoder,
+} from '@/arkham/types/Card';
 
 export interface Uses {
   amount: number; // eslint-disable-line
@@ -21,6 +25,7 @@ export interface AssetContents {
   exhausted: boolean;
   horror?: number;
   doom: number;
+  cardsUnderneath: Card[];
 }
 
 export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
@@ -36,6 +41,7 @@ export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
   exhausted: JsonDecoder.boolean,
   horror: JsonDecoder.optional(JsonDecoder.number),
   doom: JsonDecoder.number,
+  cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
 }, 'AssetContents');
 
 export interface Asset {

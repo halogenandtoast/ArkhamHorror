@@ -1153,17 +1153,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure $ a & handL %~ (PlayerCard choiceAsCard :) . filter
         ((/= cardId) . toCardId)
   InitiatePlayCard iid cardId mtarget asAction | iid == investigatorId -> do
-    let card = findCard cardId a
-    a <$ pushAll
-      [ CheckWindow [iid] [Window Timing.When (Window.PlayCard iid card)]
-      , if isFastCard card && toCardType card == EventType
-        then PlayFastEvent
-          iid
-          cardId
-          mtarget
-          [Window Timing.When Window.FastPlayerWindow]
-        else PlayCard iid cardId mtarget asAction
-      ]
+    -- we need to check if the card is first an AsIfInHand card, if it is, then we let the owning entity handle this message
+    modifiers' <- getModifiers (toSource a) (toTarget a)
+    let
+      shouldSkip = flip any modifiers' $ \case
+        AsIfInHand card -> toCardId card == cardId
+        _ -> False
+    unless shouldSkip $ do
+      let card = findCard cardId a
+      pushAll
+        [ CheckWindow [iid] [Window Timing.When (Window.PlayCard iid card)]
+        , if isFastCard card && toCardType card == EventType
+          then PlayFastEvent
+            iid
+            cardId
+            mtarget
+            [Window Timing.When Window.FastPlayerWindow]
+          else PlayCard iid cardId mtarget asAction
+        ]
+    pure a
   PlayCard iid cardId mtarget True | iid == investigatorId -> do
     modifiers' <- getModifiers (InvestigatorSource iid) (CardIdTarget cardId)
     let

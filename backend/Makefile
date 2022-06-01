@@ -1,7 +1,7 @@
 .PHONY: api.watch
 api.watch:
 	cd arkham-api && \
-	stack build --fast arkham-api \
+	stack build --test --no-run-tests --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
 	  --file-watch \
@@ -16,7 +16,16 @@ tags:
 .PHONY: core
 core:
 	cd arkham-core && \
-	stack build --fast arkham-core \
+	stack build --test --no-run-tests --fast arkham-core \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+	  --file-watch \
+		$(EXTRA_STACK_FLAGS)
+
+.PHONY: test
+test:
+	cd arkham-core && \
+	stack build --test --fast arkham-core \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
 	  --file-watch \

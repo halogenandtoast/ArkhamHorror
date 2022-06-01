@@ -31,7 +31,7 @@ import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Enemy
 import Arkham.Event
-import Arkham.Event.Attrs (eventAttachedTarget)
+import Arkham.Event.Attrs (eventAttachedTarget, eventExhausted)
 import Arkham.Game.Helpers
 import Arkham.GameEnv
 import Arkham.GameRunner
@@ -1153,6 +1153,7 @@ getEventsMatching matcher = do
     EventControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as
+    EventReady -> pure $ filter (not . eventExhausted . toAttrs) as
     EventMatches ms -> foldM filterMatcher as ms
 
 getSkillsMatching

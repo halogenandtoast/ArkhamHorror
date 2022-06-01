@@ -535,7 +535,7 @@ hasModifier InvestigatorAttrs { investigatorId } m = elem m <$> getModifiers
   (InvestigatorSource investigatorId)
   (InvestigatorTarget investigatorId)
 
-findCard :: CardId -> InvestigatorAttrs -> Card
+findCard :: HasCallStack => CardId -> InvestigatorAttrs -> Card
 findCard cardId a =
   fromJustNote "not in hand or discard or deck"
     $ findMatch

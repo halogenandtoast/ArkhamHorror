@@ -37,6 +37,7 @@
         <CardOverlay />
         <GameLog :game="game" :gameLog="gameLog" />
         <button @click="toggleDebug">Toggle Debug</button>
+        <button @click="debugExport">Debug Export</button>
       </div>
       <div v-if="game.gameOver">
         <p>Game over</p>
@@ -59,6 +60,7 @@ import { useRoute } from 'vue-router'
 import * as Arkham from '@/arkham/types/Game'
 import { fetchGame, updateGame, updateGameAmounts, updateGamePaymentAmounts, updateGameRaw } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
+import api from '@/api';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import Scenario from '@/arkham/components/Scenario.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
@@ -172,6 +174,26 @@ export default defineComponent({
 
     const toggleDebug = () => debug.value = !debug.value
 
+    const debugExport = () => {
+      fetch(new Request(`${api.defaults.baseURL}/arkham/games/${props.gameId}/export`))
+      .then(resp => resp.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        // the filename you want
+        a.download = 'arkham-debug.json';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((e) => {
+        console.log(e)
+        alert('Unable to download export')
+      });
+    }
+
     const inviteLink = `${window.location.href}/join` // fix-syntax`
 
     const copyInviteLink = () => {
@@ -179,7 +201,7 @@ export default defineComponent({
     }
 
 
-    return { copyInviteLink, inviteLink, debug, toggleDebug, socketError, ready, game, investigatorId, choose, update, gameLog }
+    return { copyInviteLink, inviteLink, debug, toggleDebug, debugExport, socketError, ready, game, investigatorId, choose, update, gameLog }
   }
 })
 </script>

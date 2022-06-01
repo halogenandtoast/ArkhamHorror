@@ -114,4 +114,5 @@ export const undoChoice = (gameId: string): Promise<void> => api
   .put(`arkham/games/${gameId}/undo`)
 
 export const debugGame = (formData: FormData): Promise<Game> => api
-  .post("arkham/games/import", formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((resp) => gameDecoder.decodePromise(resp.data))
+  .post("arkham/games/import", formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+  .then((resp) => gameDecoder.decodePromise(resp.data))

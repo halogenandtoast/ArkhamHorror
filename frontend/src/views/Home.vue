@@ -119,7 +119,6 @@ export default defineComponent({
     const submitDebugUpload = async (e: Event) => {
       e.preventDefault()
       const field = debugFile.value
-      console.log(debugFile)
       if (field !== undefined && field !== null) {
         const files = field.files
         if (files !== undefined && files !== null && files[0] !== undefined && files[0] !== null) {

@@ -118,14 +118,11 @@ export default defineComponent({
     const debugFile = ref<HTMLInputElement | null>(null)
     const submitDebugUpload = async (e: Event) => {
       e.preventDefault()
-      const field = debugFile.value
-      if (field !== undefined && field !== null) {
-        const files = field.files
-        if (files !== undefined && files !== null && files[0] !== undefined && files[0] !== null) {
-          var formData = new FormData();
-          formData.append("debugFile", files[0]);
-          debugGame(formData).then((game) => router.push(`/games/${game.id}`))
-        }
+      const file = (debugFile.value?.files || [])[0]
+      if (file) {
+        var formData = new FormData();
+        formData.append("debugFile", file);
+        debugGame(formData).then((game) => router.push(`/games/${game.id}`))
       }
     }
 

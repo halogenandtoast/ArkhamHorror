@@ -72,6 +72,10 @@
       :yes="deleteGameEvent"
       :no="() => deleteId = null"
     />
+    <form enctype="multipart/form-data" method=POST>
+      <input type="file" name="debugFile" accept="application/json" class="input-file" ref="debugFile" />
+      <button @click="submitDebugUpload">Debug Game</button>
+    </form>
   </div>
 
 </template>
@@ -79,14 +83,16 @@
 <script lang="ts">
 import { defineComponent, ref, computed, Ref } from 'vue';
 import { useStore } from 'vuex';
-import { deleteGame, fetchGames } from '@/arkham/api';
-import Prompt from '@/components/Prompt.vue';
+import { useRouter } from 'vue-router';
+import { debugGame, deleteGame, fetchGames } from '@/arkham/api';
+import Prompt from '@/components/Prompt.vue'
 import { Game } from '@/arkham/types/Game';
 import { User } from '@/types';
 
 export default defineComponent({
   components: { Prompt },
   setup() {
+    const router = useRouter()
     const store = useStore()
     const currentUser = computed<User | null>(() => store.getters.currentUser)
     const deleteId = ref<string | null>(null)
@@ -109,7 +115,32 @@ export default defineComponent({
 
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
-    return { baseUrl, currentUser, deleteId, games, deleteGameEvent, activeGames, finishedGames }
+    const debugFile = ref<HTMLInputElement | null>(null)
+    const submitDebugUpload = async (e: Event) => {
+      e.preventDefault()
+      const field = debugFile.value
+      console.log(debugFile)
+      if (field !== undefined && field !== null) {
+        const files = field.files
+        if (files !== undefined && files !== null && files[0] !== undefined && files[0] !== null) {
+          var formData = new FormData();
+          formData.append("debugFile", files[0]);
+          debugGame(formData).then((game) => router.push(`/games/${game.id}`))
+        }
+      }
+    }
+
+    return {
+      baseUrl,
+      currentUser,
+      deleteId,
+      games,
+      deleteGameEvent,
+      activeGames,
+      finishedGames,
+      debugFile,
+      submitDebugUpload
+    }
   }
 })
 </script>

@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Action (Action)
 import Arkham.Asset
+import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy
@@ -44,7 +45,7 @@ chooseEndTurn :: Investigator -> Message
 chooseEndTurn i = ChooseEndTurn (toId i)
 
 enemyAttack :: Investigator -> Enemy -> Message
-enemyAttack i e = EnemyAttack (toId i) (toId e) DamageAny
+enemyAttack i e = EnemyAttack (toId i) (toId e) DamageAny RegularAttack
 
 fightEnemy :: Investigator -> Enemy -> Message
 fightEnemy i e =

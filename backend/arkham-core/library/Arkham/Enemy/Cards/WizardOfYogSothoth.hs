@@ -6,6 +6,7 @@ module Arkham.Enemy.Cards.WizardOfYogSothoth
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Attack
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Criteria
@@ -42,5 +43,5 @@ instance HasAbilities WizardOfYogSothoth where
 instance EnemyRunner env => RunMessage env WizardOfYogSothoth where
   runMessage msg e@(WizardOfYogSothoth attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      e <$ push (EnemyAttack iid enemyId DamageAny)
+      e <$ push (EnemyAttack iid enemyId DamageAny RegularAttack)
     _ -> WizardOfYogSothoth <$> runMessage msg attrs

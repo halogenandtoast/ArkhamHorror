@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.BeastOfTheBayou where
 
 import Arkham.Prelude
 
+import Arkham.Attack
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
@@ -35,7 +36,7 @@ instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
             (locationId : connectedLocationIds)
           case investigatorIds of
             [] -> pushAll [PlaceDoomOnAgenda]
-            xs -> pushAll [ EnemyAttack iid' eid DamageAny | iid' <- xs ]
+            xs -> pushAll [ EnemyAttack iid' eid DamageAny RegularAttack | iid' <- xs ]
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == treacheryId
       -> t

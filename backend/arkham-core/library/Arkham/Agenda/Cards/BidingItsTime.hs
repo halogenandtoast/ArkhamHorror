@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Attrs
 import Arkham.Agenda.Runner
+import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Exception
@@ -83,5 +84,5 @@ instance AgendaRunner env => RunMessage env BidingItsTime where
         )
     FailedSkillTest iid _ source (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
       | isSource attrs source
-      -> a <$ push (EnemyAttack iid eid DamageAny)
+      -> a <$ push (EnemyAttack iid eid DamageAny RegularAttack)
     _ -> BidingItsTime <$> runMessage msg attrs

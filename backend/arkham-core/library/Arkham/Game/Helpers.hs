@@ -2,6 +2,7 @@ module Arkham.Game.Helpers where
 
 import Arkham.Prelude
 
+import Arkham.Attack
 import Arkham.Ability
 import Arkham.Action (Action, TakenAction(..))
 import qualified Arkham.Action as Action
@@ -1387,7 +1388,7 @@ passesEnemyCriteria _iid source windows' criterion =
       -- TODO: should not be multiple enemies, but if so need to OR not AND matcher
       let
         getAttackingEnemy = \case
-          Window _ (Window.EnemyAttacks _ eid) -> Just eid
+          Window _ (Window.EnemyAttacks _ eid _) -> Just eid
           _ -> Nothing
       in
         case mapMaybe getAttackingEnemy windows' of
@@ -1819,19 +1820,21 @@ windowMatches iid source window' = \case
           (enemyMatches enemyId enemyMatcher)
           (locationMatches iid source window' locationId whereMatcher)
       _ -> pure False
-  Matcher.EnemyWouldAttack timingMatcher whoMatcher enemyMatcher ->
+  Matcher.EnemyWouldAttack timingMatcher whoMatcher enemyAttackMatcher enemyMatcher ->
     case window' of
-      Window t (Window.EnemyWouldAttack who enemyId) | timingMatcher == t ->
-        liftA2
-          (&&)
-          (matchWho iid who whoMatcher)
-          (enemyMatches enemyId enemyMatcher)
+      Window t (Window.EnemyWouldAttack who enemyId enemyAttackType) | timingMatcher == t ->
+        andM
+          [ matchWho iid who whoMatcher
+          , enemyMatches enemyId enemyMatcher
+          , pure $ enemyAttackMatches enemyAttackType enemyAttackMatcher
+          ]
       _ -> pure False
-  Matcher.EnemyAttacks timingMatcher whoMatcher enemyMatcher -> case window' of
-    Window t (Window.EnemyAttacks who enemyId) | timingMatcher == t -> liftA2
-      (&&)
-      (matchWho iid who whoMatcher)
-      (enemyMatches enemyId enemyMatcher)
+  Matcher.EnemyAttacks timingMatcher whoMatcher enemyAttackMatcher enemyMatcher -> case window' of
+    Window t (Window.EnemyAttacks who enemyId enemyAttackType) | timingMatcher == t -> andM
+      [ matchWho iid who whoMatcher
+      , enemyMatches enemyId enemyMatcher
+      , pure $ enemyAttackMatches enemyAttackType enemyAttackMatcher
+      ]
     _ -> pure False
   Matcher.EnemyAttacked timingMatcher whoMatcher sourceMatcher enemyMatcher ->
     case window' of
@@ -2466,6 +2469,11 @@ agendaMatches !agendaId !mtchr = member agendaId <$> select mtchr
 
 actionMatches :: Applicative m => Action -> Matcher.ActionMatcher -> m Bool
 actionMatches a (Matcher.ActionIs a') = pure $ a == a'
+
+enemyAttackMatches :: EnemyAttackType -> Matcher.EnemyAttackMatcher -> Bool
+enemyAttackMatches atkType = \case
+  Matcher.AnyEnemyAttack -> True
+  Matcher.AttackOfOpportunityAttack -> atkType == AttackOfOpportunity
 
 damageEffectMatches
   :: Applicative m => DamageEffect -> Matcher.DamageEffectMatcher -> m Bool

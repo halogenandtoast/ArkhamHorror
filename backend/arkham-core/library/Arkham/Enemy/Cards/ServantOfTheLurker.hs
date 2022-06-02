@@ -31,7 +31,7 @@ instance HasAbilities ServantOfTheLurker where
     x
     [ mkAbility x 1
       $ ForcedAbility
-      $ EnemyAttacks Timing.When You
+      $ EnemyAttacks Timing.When You AnyEnemyAttack
       $ EnemyWithId
       $ toId x
     ]

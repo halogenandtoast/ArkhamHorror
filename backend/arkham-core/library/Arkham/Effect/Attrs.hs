@@ -57,17 +57,25 @@ instance FromJSON EffectAttrs where
 
 instance HasAbilities EffectAttrs
 
+isEndOfWindow :: EffectAttrs -> EffectWindow -> Bool
+isEndOfWindow EffectAttrs {effectWindow} effectWindow' = effectWindow' `elem` toEffectWindowList effectWindow
+  where
+    toEffectWindowList Nothing = []
+    toEffectWindowList (Just (FirstEffectWindow xs)) = xs
+    toEffectWindowList (Just x) = [x]
+
+
 instance HasQueue env => RunMessage env EffectAttrs where
   runMessage msg a@EffectAttrs {..} = case msg of
-    EndSetup | EffectSetupWindow `elem` effectWindow ->
+    EndSetup | isEndOfWindow a EffectSetupWindow ->
       a <$ push (DisableEffect effectId)
-    EndPhase | EffectPhaseWindow `elem` effectWindow ->
+    EndPhase | isEndOfWindow a EffectPhaseWindow ->
       a <$ push (DisableEffect effectId)
-    EndTurn _ | EffectTurnWindow `elem` effectWindow ->
+    EndTurn _ | isEndOfWindow a EffectTurnWindow ->
       a <$ push (DisableEffect effectId)
-    EndRound | EffectRoundWindow `elem` effectWindow ->
+    EndRound | isEndOfWindow a EffectRoundWindow ->
       a <$ push (DisableEffect effectId)
-    SkillTestEnds _ | EffectSkillTestWindow `elem` effectWindow ->
+    SkillTestEnds _ | isEndOfWindow a EffectSkillTestWindow ->
       a <$ push (DisableEffect effectId)
     CancelSkillEffects -> case effectSource of
       (SkillSource _) -> a <$ push (DisableEffect effectId)

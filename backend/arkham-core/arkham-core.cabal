@@ -362,6 +362,7 @@ library
       Arkham.Asset.Runner
       Arkham.Asset.Uses
       Arkham.AssetId
+      Arkham.Attack
       Arkham.Campaign
       Arkham.Campaign.Attrs
       Arkham.Campaign.Campaigns
@@ -682,6 +683,7 @@ library
       Arkham.Event.Cards.MonsterSlayer
       Arkham.Event.Cards.MonsterSlayer5
       Arkham.Event.Cards.MoonlightRitual
+      Arkham.Event.Cards.NarrowEscape
       Arkham.Event.Cards.NoStoneUnturned
       Arkham.Event.Cards.OnTheHunt
       Arkham.Event.Cards.OnTheLam

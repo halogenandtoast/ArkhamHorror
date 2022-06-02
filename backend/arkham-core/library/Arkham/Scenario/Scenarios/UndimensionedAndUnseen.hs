@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Attack
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
@@ -324,7 +325,7 @@ instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
                 == "02255"
                 && (action `elem` [Action.Evade, Action.Fight])
                 )
-                (push $ EnemyAttack iid eid DamageAny)
+                (push $ EnemyAttack iid eid DamageAny RegularAttack)
             _ -> pure s
         _ -> pure s
     RequestedPlayerCard iid source mcard | isSource attrs source ->

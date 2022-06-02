@@ -30,7 +30,7 @@ instance HasAbilities WolfManDrew where
     a
     [ mkAbility a 1
       $ ForcedAbility
-      $ EnemyAttacks Timing.When Anyone
+      $ EnemyAttacks Timing.When Anyone AnyEnemyAttack
       $ EnemyWithId
       $ toId a
     ]

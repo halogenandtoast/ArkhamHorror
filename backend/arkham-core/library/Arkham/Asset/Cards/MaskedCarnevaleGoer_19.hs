@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
+import Arkham.Attack
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Asset.Runner
 import Arkham.Card
@@ -47,7 +48,7 @@ instance AssetRunner env => RunMessage env MaskedCarnevaleGoer_19 where
       investigatorIds <- getSetList lid
       a <$ pushAll
         (Flip (InvestigatorSource iid) (toTarget attrs)
-        : [ EnemyAttack iid' enemyId DamageAny | iid' <- investigatorIds ]
+        : [ EnemyAttack iid' enemyId DamageAny RegularAttack | iid' <- investigatorIds ]
         )
     Flip _ target | isTarget attrs target -> do
       let

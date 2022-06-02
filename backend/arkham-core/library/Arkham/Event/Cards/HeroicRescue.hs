@@ -22,7 +22,7 @@ heroicRescue = event HeroicRescue Cards.heroicRescue
 
 instance RunMessage env HeroicRescue where
   runMessage msg e@(HeroicRescue attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [Window _ (Window.EnemyWouldAttack iid' eid')] _
+    InvestigatorPlayEvent iid eid _ [Window _ (Window.EnemyWouldAttack iid' eid' _)] _
       | eid == toId attrs
       -> do
         popMessageMatching_ \case
@@ -30,22 +30,22 @@ instance RunMessage env HeroicRescue where
             any
             windows
             \case
-              Window _ (Window.EnemyAttacks targetInvestigator targetEnemy) ->
+              Window _ (Window.EnemyAttacks targetInvestigator targetEnemy _) ->
                 targetInvestigator == iid' && targetEnemy == eid'
               _ -> False
           _ -> False
         popMessageMatching_ \case
-          After (PerformEnemyAttack targetInvestigator targetEnemy _) ->
+          After (PerformEnemyAttack targetInvestigator targetEnemy _ _) ->
             targetInvestigator == iid' && targetEnemy == eid'
           _ -> False
         replaceMessageMatching
           \case
-            PerformEnemyAttack targetInvestigator targetEnemy _ ->
+            PerformEnemyAttack targetInvestigator targetEnemy _ _ ->
               targetInvestigator == iid' && targetEnemy == eid'
             _ -> False
           \case
-            PerformEnemyAttack _ targetEnemy damageStrategy ->
-              [ EnemyAttack iid targetEnemy damageStrategy
+            PerformEnemyAttack _ targetEnemy damageStrategy attackType ->
+              [ EnemyAttack iid targetEnemy damageStrategy attackType
               , EnemyDamage
                 targetEnemy
                 iid

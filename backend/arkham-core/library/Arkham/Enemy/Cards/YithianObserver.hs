@@ -32,7 +32,7 @@ instance HasAbilities YithianObserver where
     a
     [ mkAbility a 1
       $ ForcedAbility
-      $ EnemyAttacks Timing.When You
+      $ EnemyAttacks Timing.When You AnyEnemyAttack
       $ EnemyWithId
       $ toId a
     ]

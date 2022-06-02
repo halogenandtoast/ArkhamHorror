@@ -25,7 +25,7 @@ instance HasAbilities GraveEater where
     x
     [ mkAbility x 1
       $ ForcedAbility
-      $ EnemyAttacks Timing.After You
+      $ EnemyAttacks Timing.After You AnyEnemyAttack
       $ EnemyWithId
       $ toId x
     ]

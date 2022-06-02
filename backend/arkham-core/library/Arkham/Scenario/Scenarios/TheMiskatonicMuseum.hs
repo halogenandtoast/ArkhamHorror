@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Attack
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -242,7 +243,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
       mHuntingHorrorId <- getHuntingHorrorWith $ EnemyAt $ LocationWithId lid
       case mHuntingHorrorId of
         Just huntingHorrorId ->
-          s <$ push (EnemyAttack iid huntingHorrorId DamageAny)
+          s <$ push (EnemyAttack iid huntingHorrorId DamageAny RegularAttack)
         Nothing -> pure s
     FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of

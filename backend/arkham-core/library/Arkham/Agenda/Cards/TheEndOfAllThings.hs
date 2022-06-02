@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Attrs
 import Arkham.Agenda.Runner
+import Arkham.Attack
 import Arkham.Classes
 import Arkham.EnemyId
 import Arkham.Game.Helpers
@@ -49,7 +50,7 @@ instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessag
       yogSothoth <- fromJustNote "defeated?"
         <$> getId (EnemyWithTitle "Yog-Sothoth")
       a <$ pushAll
-        ([ EnemyAttack iid yogSothoth DamageAny | iid <- investigatorIds ]
+        ([ EnemyAttack iid yogSothoth DamageAny RegularAttack | iid <- investigatorIds ]
         <> [RevertAgenda aid]
         )
     _ -> TheEndOfAllThings <$> runMessage msg attrs

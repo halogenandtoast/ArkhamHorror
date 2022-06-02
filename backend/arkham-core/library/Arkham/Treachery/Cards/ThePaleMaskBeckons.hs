@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Matcher
@@ -29,7 +30,7 @@ instance TreacheryRunner env => RunMessage env ThePaleMaskBeckons where
       t <$ case mTheManInThePallidMask of
         Just enemy -> do
           iids <- getInvestigatorIds
-          pushAll $ map (\i -> EnemyAttack i enemy DamageAny) iids
+          pushAll $ map (\i -> EnemyAttack i enemy DamageAny RegularAttack) iids
         Nothing -> do
           enemy <- getCampaignStoryCard Cards.theManInThePallidMask ()
           pushAll

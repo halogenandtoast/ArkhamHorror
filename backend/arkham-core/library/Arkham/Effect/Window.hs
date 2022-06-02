@@ -11,5 +11,6 @@ data EffectWindow
   | EffectSetupWindow
   | EffectTurnWindow
   | EffectGameWindow
+  | FirstEffectWindow [EffectWindow]
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

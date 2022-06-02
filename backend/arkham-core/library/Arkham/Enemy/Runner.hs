@@ -12,6 +12,7 @@ import Arkham.GameValue as X
 
 import Arkham.Action qualified as Action
 import Arkham.AssetId
+import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Direction
@@ -107,8 +108,8 @@ filterOutEnemyMessages eid (Ask iid q) = case q of
   choose@ChooseAmounts{} -> Just (Ask iid choose)
   choose@ChooseDynamicCardAmounts{} -> Just (Ask iid choose)
 filterOutEnemyMessages eid msg = case msg of
-  InitiateEnemyAttack _ eid' | eid == eid' -> Nothing
-  EnemyAttack _ eid' _ | eid == eid' -> Nothing
+  InitiateEnemyAttack _ eid' _ | eid == eid' -> Nothing
+  EnemyAttack _ eid' _ _ | eid == eid' -> Nothing
   Discarded (EnemyTarget eid') _ | eid == eid' -> Nothing
   m -> Just m
 
@@ -417,7 +418,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
         unless (CannotAttack `elem` modifiers')
           $ pushAll
-          $ map (\iid -> EnemyWillAttack iid enemyId $ enemyDamageStrategy)
+          $ map (\iid -> EnemyWillAttack iid enemyId enemyDamageStrategy RegularAttack)
           $ setToList enemyEngagedInvestigators
         pure a
     AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
@@ -463,7 +464,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
              [iid]
              [Window Timing.After (Window.FailAttackEnemy iid enemyId n)]
            ]
-          <> [ EnemyAttack iid enemyId enemyDamageStrategy
+          <> [ EnemyAttack iid enemyId enemyDamageStrategy RegularAttack
              | Keyword.Retaliate
                `elem` keywords
                && IgnoreRetaliate
@@ -472,10 +473,10 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
           )
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->
-        push (EnemyAttack iid enemyId enemyDamageStrategy)
+        push (EnemyAttack iid enemyId enemyDamageStrategy RegularAttack)
       Just _ -> pure ()
       Nothing -> pushAll
-        [ EnemyAttack iid enemyId enemyDamageStrategy
+        [ EnemyAttack iid enemyId enemyDamageStrategy RegularAttack
         | iid <- setToList enemyEngagedInvestigators
         ]
     EnemyEvaded iid eid | eid == enemyId ->
@@ -520,32 +521,32 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
           [Window Timing.After (Window.FailEvadeEnemy iid enemyId n)]
         a <$ pushAll
           ([whenWindow, afterWindow]
-          <> [ EnemyAttack iid enemyId enemyDamageStrategy
+          <> [ EnemyAttack iid enemyId enemyDamageStrategy RegularAttack
              | Keyword.Alert `elem` keywords
              ]
           )
-    InitiateEnemyAttack iid eid | eid == enemyId -> do
-      push $ EnemyAttack iid eid enemyDamageStrategy
+    InitiateEnemyAttack iid eid attackType | eid == enemyId -> do
+      push $ EnemyAttack iid eid enemyDamageStrategy attackType
       pure a
-    EnemyAttack iid eid damageStrategy | eid == enemyId -> do
+    EnemyAttack iid eid damageStrategy attackType | eid == enemyId -> do
       whenAttacksWindow <- checkWindows
-        [Window Timing.When (Window.EnemyAttacks iid eid)]
+        [Window Timing.When (Window.EnemyAttacks iid eid attackType)]
       whenWouldAttackWindow <- checkWindows
-        [Window Timing.When (Window.EnemyWouldAttack iid eid)]
+        [Window Timing.When (Window.EnemyWouldAttack iid eid attackType)]
       a <$ pushAll
         [ whenWouldAttackWindow
         , whenAttacksWindow
-        , PerformEnemyAttack iid eid damageStrategy
-        , After (PerformEnemyAttack iid eid damageStrategy)
+        , PerformEnemyAttack iid eid damageStrategy attackType
+        , After (PerformEnemyAttack iid eid damageStrategy attackType)
         ]
-    PerformEnemyAttack iid eid damageStrategy | eid == enemyId -> a <$ pushAll
+    PerformEnemyAttack iid eid damageStrategy attackType | eid == enemyId -> a <$ pushAll
       [ InvestigatorAssignDamage
         iid
         (EnemySource enemyId)
         damageStrategy
         enemyHealthDamage
         enemySanityDamage
-      , After (EnemyAttack iid enemyId damageStrategy)
+      , After (EnemyAttack iid enemyId damageStrategy attackType)
       ]
     HealDamage (EnemyTarget eid) n | eid == enemyId ->
       pure $ a & damageL %~ max 0 . subtract n
@@ -680,7 +681,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
         modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
         a <$ unless
           (CannotMakeAttacksOfOpportunity `elem` modifiers')
-          (push (EnemyWillAttack iid enemyId enemyDamageStrategy))
+          (push (EnemyWillAttack iid enemyId enemyDamageStrategy AttackOfOpportunity))
     InvestigatorDrawEnemy iid lid eid | eid == enemyId -> do
       modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
       let

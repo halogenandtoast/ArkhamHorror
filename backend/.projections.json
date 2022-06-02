@@ -249,6 +249,7 @@
       "",
       "import qualified Arkham.Asset.Cards as Cards",
       "import Arkham.Asset.Attrs",
+      "import Arkham.Asset.Runner",
       "",
       "newtype {dot} = {dot} AssetAttrs",
       "  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)",

@@ -2083,7 +2083,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , Window Timing.When Window.FastPlayerWindow
         , Window Timing.When Window.NonFast
         ]
-    actions <- nub <$> concatMapM (getActions iid) windows
+    actions <- nub <$> concatMapM (getActions investigatorId) windows
     if any isForcedAbility actions
       then pure a -- handled by active player
       else do

@@ -3995,7 +3995,7 @@ runGameMessage msg g = case msg of
     g <$ pushAll (resolve $ EndTurn iid)
   EndTurn iid -> pure $ g & turnHistoryL .~ mempty & usedAbilitiesL %~ filter
     (\(iid', Ability {..}, _) ->
-      iid' /= iid || abilityLimitType abilityLimit /= Just PerTurn
+      iid' /= iid && abilityLimitType abilityLimit /= Just PerTurn
     )
   EndPhase -> do
     clearQueue

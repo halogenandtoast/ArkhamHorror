@@ -104,6 +104,7 @@ allPlayerAssetCards = mapFromList $ map
   , aquinnah3
   , arcaneEnlightenment
   , arcaneInitiate
+  , arcaneInsight4
   , arcaneStudies
   , arcaneStudies2
   , archaicGlyphs
@@ -1720,6 +1721,15 @@ stickToThePlan = permanent $ (asset "03264" "Stick to the Plan" 0 Guardian)
   { cdCardTraits = singleton Talent
   , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional ]
   , cdLevel = 3
+  }
+
+arcaneInsight4 :: CardDef
+arcaneInsight4 = (asset "03266" "Arcane Insight" 3 Seeker)
+  { cdCardTraits = singleton Spell
+  , cdSkills = [SkillWillpower, SkillIntellect]
+  , cdUses = Uses Charge 3
+  , cdSlots = [ArcaneSlot]
+  , cdLevel = 4
   }
 
 toothOfEztli :: CardDef

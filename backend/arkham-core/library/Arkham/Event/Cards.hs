@@ -135,6 +135,7 @@ allPlayerEventCards = mapFromList $ map
   , monsterSlayer
   , monsterSlayer5
   , moonlightRitual
+  , narrowEscape
   , noStoneUnturned
   , onTheHunt
   , onTheLam

@@ -2051,6 +2051,7 @@ matchWho you who matcher = case matcher of
   Matcher.TurnInvestigator -> do
     mTurn <- selectOne Matcher.TurnInvestigator
     pure $ Just who == mTurn
+  Matcher.YetToTakeTurn -> member who <$> select matcher
   Matcher.HandWith cardListMatcher -> do
     hand <- map unHandCard <$> getList who
     cardListMatches hand cardListMatcher

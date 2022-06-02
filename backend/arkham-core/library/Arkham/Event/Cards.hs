@@ -106,6 +106,7 @@ allPlayerEventCards = mapFromList $ map
   , flare1
   , forewarned1
   , gritYourTeeth
+  , guidance
   , heroicRescue
   , hidingSpot
   , hotStreak2
@@ -979,6 +980,12 @@ onTheHunt :: CardDef
 onTheHunt = (event "03263" "On the Hunt" 1 Guardian)
   { cdCardTraits = singleton Tactic
   , cdFastWindow = Just $ WouldDrawEncounterCard Timing.When You (PhaseIs MythosPhase)
+  }
+
+guidance :: CardDef
+guidance = (event "03265" "Guidance" 0 Seeker)
+  { cdCardTraits = singleton Insight
+  , cdCriteria = Just $ Criteria.InvestigatorExists (NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn)
   }
 
 secondWind :: CardDef

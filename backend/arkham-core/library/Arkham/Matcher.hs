@@ -110,6 +110,7 @@ data InvestigatorMatcher
   | LeadInvestigator
   | NoDamageDealtThisTurn
   | TopCardOfDeckIs CardMatcher
+  | YetToTakeTurn
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

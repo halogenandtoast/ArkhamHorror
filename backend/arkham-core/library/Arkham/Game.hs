@@ -671,6 +671,10 @@ getInvestigatorsMatching matcher = do
       pure $ you /= i
     Anyone -> pure . const True
     TurnInvestigator -> \i -> maybe False (== i) <$> getTurnInvestigator
+    YetToTakeTurn -> \i -> andM
+      [ maybe True (/= i) <$> getTurnInvestigator
+      , pure $ not $ investigatorEndedTurn $ toAttrs i
+      ]
     LeadInvestigator -> \i -> (== toId i) <$> getLeadInvestigatorId
     InvestigatorWithTitle title -> pure . (== title) . nameTitle . toName
     InvestigatorAt locationMatcher -> \i ->

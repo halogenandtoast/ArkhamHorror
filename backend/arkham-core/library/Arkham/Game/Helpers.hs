@@ -1046,7 +1046,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     cardModifiers <- getModifiers (CardIdSource $ toCardId c) (CardIdTarget $ toCardId c)
     let
       additionalCosts = flip mapMaybe cardModifiers $ \case
-        AdditionalCost c -> Just c
+        AdditionalCost x -> Just x
         _ -> Nothing
 
     canAffordAdditionalCosts <- allM (getCanAffordCost iid (CardIdSource $ toCardId c) Nothing windows') additionalCosts

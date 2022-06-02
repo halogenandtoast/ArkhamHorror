@@ -4,6 +4,7 @@ module Arkham.Event.Cards.DodgeSpec
 
 import TestImport
 
+import Arkham.Attack
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
@@ -18,7 +19,7 @@ spec = do
       dodge <- genPlayerCard Cards.dodge
 
       (didRunMessage, logger) <- createMessageMatcher
-        (PerformEnemyAttack "00000" (toId enemy) DamageAny)
+        (PerformEnemyAttack "00000" (toId enemy) DamageAny RegularAttack)
 
       gameTestWithLogger
           logger

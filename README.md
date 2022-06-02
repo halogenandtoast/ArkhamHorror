@@ -22,14 +22,6 @@ docker-compose up
 
 And launch http://localhost:3000
 
-If you are using an nvidia card, you may run into an issue with GPG and missing publci keys, if this happens update, the Dockerfile by adding this line:
-
-```
-RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
-```
-
-Both before the apt-get update around line 30, as well as 58 (these are both under the `FROM fpco/stack-build:latest` stages)
-
 ## Features
 
 * Multiplayer up to 4 players

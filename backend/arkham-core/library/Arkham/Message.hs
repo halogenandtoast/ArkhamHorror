@@ -15,6 +15,7 @@ import Arkham.Ability
 import Arkham.Act.Sequence
 import Arkham.Action
 import Arkham.Asset.Uses
+import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
@@ -275,8 +276,8 @@ data Message
   | EndTurn InvestigatorId
   | EndUpkeep
   | EnemiesAttack
-  | EnemyAttack InvestigatorId EnemyId DamageStrategy
-  | InitiateEnemyAttack InvestigatorId EnemyId
+  | EnemyAttack InvestigatorId EnemyId DamageStrategy EnemyAttackType
+  | InitiateEnemyAttack InvestigatorId EnemyId EnemyAttackType
   | EnemyAttackFromDiscard InvestigatorId Card
   | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
   | EnemyAttacks [Message]
@@ -301,7 +302,7 @@ data Message
   | EnemySpawnEngagedWithPrey EnemyId
   | EnemySpawnFromVoid (Maybe InvestigatorId) LocationId EnemyId
   | EnemySpawnedAt LocationId EnemyId
-  | EnemyWillAttack InvestigatorId EnemyId DamageStrategy
+  | EnemyWillAttack InvestigatorId EnemyId DamageStrategy EnemyAttackType
   | EngageEnemy InvestigatorId EnemyId Bool
   | EvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
   | Exhaust Target
@@ -414,7 +415,7 @@ data Message
   | PayDynamicCardCost InvestigatorId CardId Int [Message]
   | PayForCardAbility InvestigatorId Source [Window] Int Payment
   | PayedForDynamicCard InvestigatorId CardId Int Bool
-  | PerformEnemyAttack InvestigatorId EnemyId DamageStrategy
+  | PerformEnemyAttack InvestigatorId EnemyId DamageStrategy EnemyAttackType
   | PlaceClues Target Int
   | PlaceCluesUpToClueValue LocationId Int
   | FlipClues Target Int

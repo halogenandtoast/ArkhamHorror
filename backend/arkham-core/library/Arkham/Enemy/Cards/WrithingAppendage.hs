@@ -28,7 +28,7 @@ instance HasAbilities WrithingAppendage where
     attrs
     [ mkAbility attrs 1
     $ ForcedAbility
-    $ EnemyAttacks Timing.After You
+    $ EnemyAttacks Timing.After You AnyEnemyAttack
     $ EnemyWithId
     $ toId attrs
     , mkAbility attrs 2

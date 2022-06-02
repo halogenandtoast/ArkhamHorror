@@ -36,7 +36,7 @@ instance HasAbilities Aquinnah1 where
           (OwnsThis <> EnemyCriteria
             (NotAttackingEnemy <> EnemyExists (EnemyAt YourLocation))
           )
-        $ ReactionAbility (Matcher.EnemyAttacks Timing.When You AnyEnemy)
+        $ ReactionAbility (Matcher.EnemyAttacks Timing.When You AnyEnemyAttack AnyEnemy)
         $ Costs
             [ExhaustCost (toTarget a), HorrorCost (toSource a) (toTarget a) 1]
     ]
@@ -45,7 +45,7 @@ instance AssetRunner env => RunMessage env Aquinnah1 where
   runMessage msg a@(Aquinnah1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       enemyId <- withQueue $ \queue ->
-        let PerformEnemyAttack _ eid _ : queue' = dropUntilAttack queue
+        let PerformEnemyAttack _ eid _ _ : queue' = dropUntilAttack queue
         in (queue', eid)
       healthDamage' <- unHealthDamageCount <$> getCount enemyId
       sanityDamage' <- unSanityDamageCount <$> getCount enemyId

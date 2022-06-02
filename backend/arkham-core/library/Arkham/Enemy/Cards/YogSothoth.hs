@@ -42,7 +42,7 @@ instance HasAbilities YogSothoth where
     attrs
     [ mkAbility attrs 1
         $ ReactionAbility
-            (EnemyAttacks Timing.When You $ EnemyWithId $ toId attrs)
+            (EnemyAttacks Timing.When You AnyEnemyAttack $ EnemyWithId $ toId attrs)
             Free
     ]
 

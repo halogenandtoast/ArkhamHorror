@@ -554,8 +554,8 @@ data WindowMatcher
   | DiscoveringLastClue Timing Who Where
   | DiscoverClues Timing Who Where ValueMatcher
   | GainsClues Timing Who ValueMatcher
-  | EnemyWouldAttack Timing Who EnemyMatcher
-  | EnemyAttacks Timing Who EnemyMatcher
+  | EnemyWouldAttack Timing Who EnemyAttackMatcher EnemyMatcher
+  | EnemyAttacks Timing Who EnemyAttackMatcher EnemyMatcher
   | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
   | RevealChaosToken Timing Who TokenMatcher
   | WouldRevealChaosToken Timing Who
@@ -779,5 +779,9 @@ newtype RemainingActMatcher = RemainingActMatcher { unRemainingActMatcher :: Act
   deriving newtype (Hashable)
 
 data DamageEffectMatcher = AttackDamageEffect | NonAttackDamageEffect | AnyDamageEffect
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data EnemyAttackMatcher = AnyEnemyAttack | AttackOfOpportunityAttack
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

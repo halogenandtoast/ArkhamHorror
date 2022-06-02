@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Attack
 import Arkham.Classes
 import Arkham.Id
 import Arkham.Message
@@ -31,7 +32,7 @@ instance TreacheryRunner env => RunMessage env StalkedInTheDark where
           iids <- getSetList @InvestigatorId lid
           t <$ pushAll
             ([Ready (EnemyTarget eid), EnemyEngageInvestigator eid iid]
-            <> [ EnemyAttack iid' eid DamageAny | iid' <- iids ]
+            <> [ EnemyAttack iid' eid DamageAny RegularAttack | iid' <- iids ]
             )
         Nothing -> t <$ push (Surge iid source)
     _ -> StalkedInTheDark <$> runMessage msg attrs

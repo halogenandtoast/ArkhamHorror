@@ -33,6 +33,7 @@ instance HasAbilities YithianStarseeker where
       $ EnemyAttacks
           Timing.When
           (DiscardWith $ LengthIs $ GreaterThan $ Static 10)
+          AnyEnemyAttack
       $ EnemyWithId
       $ toId attrs
     ]

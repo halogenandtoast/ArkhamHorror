@@ -30,7 +30,7 @@ instance HasAbilities SilverTwilightAcolyte where
     a
     [ mkAbility a 1
       $ ForcedAbility
-      $ EnemyAttacks Timing.After Anyone
+      $ EnemyAttacks Timing.After Anyone AnyEnemyAttack
       $ EnemyWithId
       $ toId a
     ]

@@ -9,6 +9,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.PlayerCard
@@ -269,7 +270,7 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
               (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
             unless (null enemies) $ push $ chooseOne
               iid
-              [ targetLabel enemy [InitiateEnemyAttack iid enemy]
+              [ targetLabel enemy [InitiateEnemyAttack iid enemy RegularAttack]
               | enemy <- enemies
               ]
           else do
@@ -279,7 +280,7 @@ instance ScenarioRunner env => RunMessage env ThePallidMask where
               iid
               [ targetLabel
                   enemy
-                  [Ready (EnemyTarget enemy), InitiateEnemyAttack iid enemy]
+                  [Ready (EnemyTarget enemy), InitiateEnemyAttack iid enemy RegularAttack]
               | enemy <- enemies
               ]
         pure ()

@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Attack
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Agenda.Attrs
 import Arkham.Agenda.Helpers
@@ -52,6 +53,7 @@ instance AgendaRunner env => RunMessage env ChaosAtTheCarnevale where
                   iid
                   cnidathquaId
                   (DamageFirst Assets.innocentReveler)
+                  RegularAttack
               | iid <- investigatorIds
               ]
             <> [RevertAgenda (toId attrs)]

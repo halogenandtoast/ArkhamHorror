@@ -5,7 +5,7 @@ module Arkham.Treachery.Cards.DanceOfTheYellowKing
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Attack
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
@@ -13,6 +13,7 @@ import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Attrs
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype DanceOfTheYellowKing = DanceOfTheYellowKing TreacheryAttrs
@@ -41,7 +42,7 @@ instance TreacheryRunner env => RunMessage env DanceOfTheYellowKing where
                 (EnemyTarget eid)
                 [ MoveUntil lid (EnemyTarget eid)
                 , EnemyEngageInvestigator eid iid
-                , EnemyWillAttack iid eid DamageAny
+                , EnemyWillAttack iid eid DamageAny RegularAttack
                 ]
             | eid <- lunatics
             ]

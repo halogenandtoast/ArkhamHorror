@@ -13,6 +13,7 @@ import Arkham.Agenda
 import Arkham.Asset
 import Arkham.Asset.Attrs (AssetAttrs(..), Field(..))
 import Arkham.Asset.Uses (UseType)
+import Arkham.Attack
 import Arkham.Campaign
 import Arkham.CampaignId
 import Arkham.Card
@@ -3810,7 +3811,7 @@ runGameMessage msg g = case msg of
           )
       _ -> push (AskMap askMap)
     pure g
-  EnemyWillAttack iid eid damageStrategy -> do
+  EnemyWillAttack iid eid damageStrategy attackType -> do
     modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
     enemy <- getEnemy eid
     let
@@ -3825,12 +3826,12 @@ runGameMessage msg g = case msg of
         case mNextMessage of
           Just (EnemyAttacks as) -> do
             _ <- popMessage
-            push (EnemyAttacks (EnemyAttack iid eid damageStrategy : as))
+            push (EnemyAttacks (EnemyAttack iid eid damageStrategy attackType : as))
           Just aoo@(CheckAttackOfOpportunity _ _) -> do
             _ <- popMessage
             push msg
             push aoo
-          Just (EnemyWillAttack iid2 eid2 damageStrategy2) -> do
+          Just (EnemyWillAttack iid2 eid2 damageStrategy2 attackType2) -> do
             _ <- popMessage
             modifiers2' <- getModifiers
               (EnemySource eid2)
@@ -3846,12 +3847,12 @@ runGameMessage msg g = case msg of
             if canAttack2
               then push
                 (EnemyAttacks
-                  [ EnemyAttack iid eid damageStrategy
-                  , EnemyAttack iid2 eid2 damageStrategy2
+                  [ EnemyAttack iid eid damageStrategy attackType
+                  , EnemyAttack iid2 eid2 damageStrategy2 attackType2
                   ]
                 )
-              else push (EnemyAttacks [EnemyAttack iid eid damageStrategy])
-          _ -> push (EnemyAttack iid eid damageStrategy)
+              else push (EnemyAttacks [EnemyAttack iid eid damageStrategy attackType])
+          _ -> push (EnemyAttack iid eid damageStrategy attackType)
         pure g
       else pure g
   EnemyAttacks as -> do
@@ -3864,9 +3865,9 @@ runGameMessage msg g = case msg of
         _ <- popMessage
         push msg
         push aoo
-      Just (EnemyWillAttack iid2 eid2 damageStrategy2) -> do
+      Just (EnemyWillAttack iid2 eid2 damageStrategy2 attackType2) -> do
         _ <- popMessage
-        push (EnemyAttacks (EnemyAttack iid2 eid2 damageStrategy2 : as))
+        push (EnemyAttacks (EnemyAttack iid2 eid2 damageStrategy2 attackType2 : as))
       _ -> push (chooseOneAtATime (gameLeadInvestigatorId g) as)
     pure g
   When (AssetDefeated aid) -> do
@@ -4036,7 +4037,7 @@ runGameMessage msg g = case msg of
     let
       enemy = createEnemy card
       enemyId = toId enemy
-    push $ EnemyWillAttack iid enemyId (getEnemyDamageStrategy enemy)
+    push $ EnemyWillAttack iid enemyId (getEnemyDamageStrategy enemy) RegularAttack
     pure $ g & encounterDiscardEntitiesL . enemiesL . at enemyId ?~ enemy
   EndEnemy -> do
     pushAll . (: [EndPhase]) =<< checkWindows

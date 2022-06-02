@@ -5,6 +5,7 @@ module Arkham.Scenario.Scenarios.CurseOfTheRougarou
 
 import Arkham.Prelude
 
+import Arkham.Attack
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -208,14 +209,14 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
         lid <- getId @LocationId iid
         enemyIds <- getSetList @EnemyId lid
         mrougarou <- findM (((== "81028") <$>) . getId @CardCode) enemyIds
-        s <$ for_ mrougarou (\eid -> push $ EnemyWillAttack iid eid DamageAny)
+        s <$ for_ mrougarou (\eid -> push $ EnemyWillAttack iid eid DamageAny RegularAttack)
       else do
         lid <- getId @LocationId iid
         connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
         enemyIds <- concat
           <$> for (lid : connectedLocationIds) (getSetList @EnemyId)
         mrougarou <- findM (((== "81028") <$>) . getId @CardCode) enemyIds
-        s <$ for_ mrougarou (\eid -> push $ EnemyWillAttack iid eid DamageAny)
+        s <$ for_ mrougarou (\eid -> push $ EnemyWillAttack iid eid DamageAny RegularAttack)
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> s <$ when
       (tokenFace token == Tablet)
       (push $ CreateEffect

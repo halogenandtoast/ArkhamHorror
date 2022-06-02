@@ -6,6 +6,7 @@ module Arkham.Enemy.Cards.SpecterOfDeath
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Attrs
 import Arkham.Enemy.Cards qualified as Cards
@@ -39,6 +40,6 @@ instance HasAbilities SpecterOfDeath where
 instance EnemyRunner env => RunMessage env SpecterOfDeath where
   runMessage msg e@(SpecterOfDeath attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
-      push $ EnemyAttack iid (toId attrs) (enemyDamageStrategy attrs)
+      push $ EnemyAttack iid (toId attrs) (enemyDamageStrategy attrs) RegularAttack
       pure e
     _ -> SpecterOfDeath <$> runMessage msg attrs

@@ -30,7 +30,7 @@ instance HasAbilities AgentOfTheKing where
     a
     [ mkAbility a 1
     $ ForcedAbility
-    $ EnemyAttacks Timing.After (You <> InvestigatorWithAnyClues)
+    $ EnemyAttacks Timing.After (You <> InvestigatorWithAnyClues) AnyEnemyAttack
     $ EnemyWithId
     $ toId a
     , mkAbility a 2

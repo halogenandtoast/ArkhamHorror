@@ -200,7 +200,7 @@ dodge = (event "01023" "Dodge" 1 Guardian)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Tactic]
   , cdFastWindow = Just
-    (EnemyAttacks Timing.When (InvestigatorAt YourLocation)
+    (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemyAttack
     $ EnemyWithoutModifier AttacksCannotBeCancelled
     )
   }
@@ -552,7 +552,7 @@ hypnoticGaze = (event "02153" "Hypnotic Gaze" 3 Mystic)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = singleton Spell
   , cdFastWindow = Just
-    (EnemyAttacks Timing.When (InvestigatorAt YourLocation)
+    (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemyAttack
     $ EnemyWithoutModifier AttacksCannotBeCancelled
     )
   }
@@ -780,6 +780,7 @@ heroicRescue = (event "03106" "Heroic Rescue" 1 Guardian)
   , cdFastWindow = Just $ EnemyWouldAttack
     Timing.When
     (NotYou <> InvestigatorAt YourLocation)
+    AnyEnemyAttack
     NonEliteEnemy
   }
 
@@ -986,6 +987,16 @@ guidance :: CardDef
 guidance = (event "03265" "Guidance" 0 Seeker)
   { cdCardTraits = singleton Insight
   , cdCriteria = Just $ Criteria.InvestigatorExists (NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn)
+  }
+
+narrowEscape :: CardDef
+narrowEscape = (event "03267" "Narrow Escape" 0 Rogue)
+  { cdCardTraits = singleton Fortune
+  , cdSkills = [SkillAgility, SkillAgility]
+  , cdFastWindow = Just
+    (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AttackOfOpportunityAttack
+    $ EnemyWithoutModifier AttacksCannotBeCancelled
+    )
   }
 
 secondWind :: CardDef

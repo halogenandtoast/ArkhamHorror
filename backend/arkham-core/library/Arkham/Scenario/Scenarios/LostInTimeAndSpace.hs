@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Attack
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.CampaignLogKey
@@ -234,7 +235,7 @@ instance
           mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")
           case mYogSothothId of
             Nothing -> pure ()
-            Just eid -> push (EnemyAttack iid eid DamageAny)
+            Just eid -> push (EnemyAttack iid eid DamageAny RegularAttack)
         _ -> pure ()
     After (FailedSkillTest iid _ _ (TokenTarget token) _ _) ->
       s <$ case tokenFace token of
@@ -247,7 +248,7 @@ instance
           mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")
           case mYogSothothId of
             Nothing -> pure ()
-            Just eid -> push (EnemyAttack iid eid DamageAny)
+            Just eid -> push (EnemyAttack iid eid DamageAny RegularAttack)
         _ -> pure ()
     RequestedEncounterCard (ProxySource source (InvestigatorSource iid)) mcard
       | isSource attrs source -> s <$ case mcard of

@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Attack
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
@@ -391,6 +392,7 @@ instance
               iid
               cnidathquaId
               (DamageFirst Assets.innocentReveler)
+              RegularAttack
             Nothing -> pure ()
         _ -> pure ()
       pure s

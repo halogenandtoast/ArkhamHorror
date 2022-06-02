@@ -2,6 +2,7 @@ module Arkham.Window where
 
 import Arkham.Prelude
 
+import Arkham.Attack
 import Arkham.Action (Action)
 import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)
 import Arkham.SkillTest.Base
@@ -53,7 +54,7 @@ data WindowType
   | EndOfGame
   | EndTurn InvestigatorId
   | EnemyAttacked InvestigatorId Source EnemyId
-  | EnemyAttacks InvestigatorId EnemyId
+  | EnemyAttacks InvestigatorId EnemyId EnemyAttackType
   | EnemyAttemptsToSpawnAt EnemyId LocationMatcher
   | EnemyDefeated InvestigatorId EnemyId
   | EnemyEngaged InvestigatorId EnemyId
@@ -61,7 +62,7 @@ data WindowType
   | EnemyEvaded InvestigatorId EnemyId
   | EnemyLeaves EnemyId LocationId
   | EnemySpawns EnemyId LocationId
-  | EnemyWouldAttack InvestigatorId EnemyId
+  | EnemyWouldAttack InvestigatorId EnemyId EnemyAttackType
   | EnemyWouldBeDefeated EnemyId
   | EnterPlay Target
   | Entering InvestigatorId LocationId

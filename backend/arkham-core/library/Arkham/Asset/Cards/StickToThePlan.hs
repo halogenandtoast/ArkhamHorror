@@ -12,6 +12,8 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Effect.Window
+import Arkham.EffectMetadata
 import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Modifier
 import Arkham.Target
@@ -29,6 +31,11 @@ instance HasModifiersFor env StickToThePlan where
   getModifiersFor _ (InvestigatorTarget iid) (StickToThePlan attrs)
     | controlledBy attrs iid = pure
     $ toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
+  getModifiersFor _ (CardIdTarget cardId) (StickToThePlan attrs)
+    | cardId `elem` map toCardId (assetCardsUnderneath attrs) = pure
+    $ toModifiers
+        attrs
+        [AdditionalCost $ ExhaustCost $ AssetTarget $ toId attrs]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities StickToThePlan where
@@ -68,10 +75,28 @@ instance AssetRunner env => RunMessage env StickToThePlan where
         | card <- tacticsAndSupplies
         ]
       pure a
-    InitiatePlayCard iid cardId _ _ | controlledBy attrs iid && cardId `elem` map toCardId (assetCardsUnderneath attrs) -> do
-      let card = fromJustNote "card missing" $ find matcher $ assetCardsUnderneath attrs
+    InitiatePlayCard iid cardId _ _
+      | controlledBy attrs iid && cardId `elem` map
+        toCardId
+        (assetCardsUnderneath attrs)
+      -> do
+        let
+          card =
+            fromJustNote "card missing" $ find matcher $ assetCardsUnderneath
+              attrs
           remaining = deleteFirstMatch matcher $ assetCardsUnderneath attrs
           matcher = (== cardId) . toCardId
-      pushAll [AddToHand iid card, msg]
-      pure $ StickToThePlan $ attrs & cardsUnderneathL .~ remaining
+        pushAll
+          [ CreateWindowModifierEffect
+            EffectTurnWindow
+            (EffectModifiers $ toModifiers
+              attrs
+              [AdditionalCost $ ExhaustCost $ AssetTarget $ toId attrs]
+            )
+            (toSource attrs)
+            (CardIdTarget $ toCardId card)
+          , AddToHand iid card
+          , msg
+          ]
+        pure $ StickToThePlan $ attrs & cardsUnderneathL .~ remaining
     _ -> StickToThePlan <$> runMessage msg attrs

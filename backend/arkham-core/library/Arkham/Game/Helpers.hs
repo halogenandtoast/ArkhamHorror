@@ -1043,6 +1043,13 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You)
     canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You)
     passesLimits <- allM passesLimit (cdLimits pcDef)
+    cardModifiers <- getModifiers (CardIdSource $ toCardId c) (CardIdTarget $ toCardId c)
+    let
+      additionalCosts = flip mapMaybe cardModifiers $ \case
+        AdditionalCost c -> Just c
+        _ -> Nothing
+
+    canAffordAdditionalCosts <- allM (getCanAffordCost iid (CardIdSource $ toCardId c) Nothing windows') additionalCosts
 
     passesSlots <- if null (cdSlots pcDef)
       then pure True
@@ -1064,6 +1071,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       && passesLimits
       && passesUnique
       && passesSlots
+      && canAffordAdditionalCosts
  where
   pcDef = toCardDef c
   prevents (CanOnlyUseCardsInRole role) =

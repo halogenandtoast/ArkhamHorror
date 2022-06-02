@@ -13,6 +13,7 @@ import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
+import {-# SOURCE #-} Arkham.Cost
 import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword
@@ -44,6 +45,7 @@ data ModifierType
   | AddSkillIcons [SkillType]
   | AdditionalActions Int
   | AdditionalStartingUses Int
+  | AdditionalCost Cost
   | CannotTriggerAbilityMatching AbilityMatcher
   | ConnectedToWhen LocationMatcher LocationMatcher
   | AlternateSuccessfullEvasion

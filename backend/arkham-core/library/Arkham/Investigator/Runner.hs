@@ -1176,6 +1176,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     modifiers' <- getModifiers (InvestigatorSource iid) (CardIdTarget cardId)
     let
       card = findCard cardId a
+      additionalCosts = flip mapMaybe modifiers' $ \case
+        AdditionalCost c -> Just c
+        _ -> Nothing
       isFast = case card of
         PlayerCard pc ->
           isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` modifiers'
@@ -1222,7 +1225,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         >= actionCost
         && (investigatorResources + additionalResources >= getCost card)
       then a <$ pushAll
-        ([ TakeAction iid (Just Action.Play) (ActionCost actionCost)
+        ([ TakeAction iid (Just Action.Play) (mconcat $ ActionCost actionCost : additionalCosts)
          , PayCardCost iid cardId
          ]
         <> aooMessage

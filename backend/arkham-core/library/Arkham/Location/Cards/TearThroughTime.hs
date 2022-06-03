@@ -29,6 +29,6 @@ instance HasAbilities TearThroughTime where
   getAbilities (TearThroughTime attrs) =
     withBaseAbilities attrs $ [resignAction attrs]
 
-instance LocationRunner env => RunMessage env TearThroughTime where
+instance LocationRunner env => RunMessage TearThroughTime where
   runMessage msg (TearThroughTime attrs) =
     TearThroughTime <$> runMessage msg attrs

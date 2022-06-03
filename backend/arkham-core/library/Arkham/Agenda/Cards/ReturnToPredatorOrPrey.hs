@@ -31,7 +31,7 @@ instance HasAbilities ReturnToPredatorOrPrey where
   getAbilities (ReturnToPredatorOrPrey attrs) =
     [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
 
-instance AgendaRunner env => RunMessage env ReturnToPredatorOrPrey where
+instance AgendaRunner env => RunMessage ReturnToPredatorOrPrey where
   runMessage msg a@(ReturnToPredatorOrPrey attrs@AgendaAttrs {..}) =
     case msg of
       AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do

@@ -22,7 +22,7 @@ manoAMano1 :: EventCard ManoAMano1
 manoAMano1 =
   event ManoAMano1 Cards.manoAMano1
 
-instance EventRunner env => RunMessage env ManoAMano1 where
+instance EventRunner env => RunMessage ManoAMano1 where
   runMessage msg e@(ManoAMano1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid

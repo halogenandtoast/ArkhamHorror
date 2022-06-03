@@ -41,7 +41,7 @@ instance HasAbilities ThePathIsBarred where
       $ enemyIs Enemies.theManInThePallidMask
     ]
 
-instance ActRunner env => RunMessage env ThePathIsBarred where
+instance ActRunner env => RunMessage ThePathIsBarred where
   runMessage msg a@(ThePathIsBarred attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther

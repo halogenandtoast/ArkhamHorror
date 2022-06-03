@@ -33,5 +33,5 @@ instance HasModifiersFor env GuestHall where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance (LocationRunner env) => RunMessage env GuestHall where
+instance (LocationRunner env) => RunMessage GuestHall where
   runMessage msg (GuestHall attrs) = GuestHall <$> runMessage msg attrs

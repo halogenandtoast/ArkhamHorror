@@ -24,7 +24,7 @@ newtype Straitjacket = Straitjacket TreacheryAttrs
 straitjacket :: TreacheryCard Straitjacket
 straitjacket = treachery Straitjacket Cards.straitjacket
 
-instance TreacheryRunner env => RunMessage env Straitjacket where
+instance TreacheryRunner env => RunMessage Straitjacket where
   runMessage msg t@(Straitjacket attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       alreadyInStraitJacket <-

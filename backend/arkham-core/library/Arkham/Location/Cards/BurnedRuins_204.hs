@@ -34,6 +34,6 @@ instance HasModifiersFor env BurnedRuins_204 where
 instance HasAbilities BurnedRuins_204 where
   getAbilities = withDrawCardUnderneathAction
 
-instance LocationRunner env => RunMessage env BurnedRuins_204 where
+instance LocationRunner env => RunMessage BurnedRuins_204 where
   runMessage msg (BurnedRuins_204 attrs) =
     BurnedRuins_204 <$> runMessage msg attrs

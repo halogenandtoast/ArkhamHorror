@@ -1202,14 +1202,14 @@ getEnemyMatching
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
 getEnemiesMatching
-  :: (MonadReader env m, HasGame env, HasAbilities env)
+  :: (MonadReader env m, HasGame env, HasAbilities env, HasDepth env, MonadIO m)
   => EnemyMatcher
   -> m [Enemy]
 getEnemiesMatching matcher = do
   allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
   filterM (enemyMatcherFilter matcher) allGameEnemies
 
-enemyMatcherFilter :: (MonadReader env m, HasGame env, HasAbilities env) => EnemyMatcher -> Enemy -> m Bool
+enemyMatcherFilter :: (MonadReader env m, MonadIO m, HasDepth env, HasGame env, HasAbilities env) => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
   NotEnemy m -> fmap not . enemyMatcherFilter m
   EnemyWithTitle title -> pure . (== title) . nameTitle . toName
@@ -2420,7 +2420,7 @@ instance HasGame env => HasList Card env ExtendedCardMatcher where
       ExtendedCardWithOneOf ms -> anyM (matches c) ms
       ExtendedCardMatches ms -> allM (matches c) ms
 
-instance HasGame env => HasSet EnemyId env EnemyMatcher where
+instance HasGame env => HasSet EnemyId m EnemyMatcher where
   getSet = (setFromList . map toId <$>) . getEnemiesMatching
 
 instance HasGame env => HasId (Maybe EnemyId) env EnemyMatcher where
@@ -3173,6 +3173,7 @@ runGameMessage
      , MonadRandom m
      , MonadIO m
      , HasGame env
+     , HasDepth env
      , HasAbilities env
      , HasGameLogger env
      )
@@ -4736,7 +4737,7 @@ preloadEntities g = do
   handEntities <- foldM preloadHandEntities mempty investigators
   pure $ g { gameInHandEntities = handEntities, gameInSearchEntities = searchEntities }
 
-instance (HasQueue env, HasGame env) => RunMessage env Game where
+instance (HasDepth env, HasQueue env, HasGame env) => RunMessage Game where
   runMessage msg g = do
     preloadEntities g
       >>= runPreGameMessage msg
@@ -4751,7 +4752,7 @@ instance (HasQueue env, HasGame env) => RunMessage env Game where
       >>= runGameMessage msg
       >>= (pure . set enemyMovingL Nothing)
 
-instance (HasQueue env, HasGame env) => RunMessage env Entities where
+instance (HasDepth env, HasQueue env, HasGame env) => RunMessage env Entities where
   runMessage msg entities =
     traverseOf (actsL . traverse) (runMessage msg) entities
       >>= traverseOf (agendasL . traverse) (runMessage msg)

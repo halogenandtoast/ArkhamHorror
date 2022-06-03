@@ -31,7 +31,7 @@ instance HasCount HorrorCount env InvestigatorId => HasModifiersFor env FightOrF
         [SkillModifier SkillCombat horror, SkillModifier SkillAgility horror]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env FightOrFlight where
+instance HasQueue env => RunMessage FightOrFlight where
   runMessage msg e@(FightOrFlight attrs) = case msg of
     EndRound -> e <$ push (DisableEffect $ toId attrs)
     _ -> FightOrFlight <$> runMessage msg attrs

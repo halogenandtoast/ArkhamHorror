@@ -43,6 +43,6 @@ instance HasModifiersFor env TorrentOfPower where
         [AddSkillIcons $ cycleN n [SkillWillpower, SkillWild]]
   getModifiersFor _ _ _ = pure []
 
-instance SkillRunner env => RunMessage env TorrentOfPower where
+instance SkillRunner env => RunMessage TorrentOfPower where
   runMessage msg (TorrentOfPower attrs) =
     TorrentOfPower <$> runMessage msg attrs

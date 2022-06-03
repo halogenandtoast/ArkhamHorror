@@ -22,7 +22,7 @@ newtype PushedIntoTheBeyond = PushedIntoTheBeyond TreacheryAttrs
 pushedIntoTheBeyond :: TreacheryCard PushedIntoTheBeyond
 pushedIntoTheBeyond = treachery PushedIntoTheBeyond Cards.pushedIntoTheBeyond
 
-instance TreacheryRunner env => RunMessage env PushedIntoTheBeyond where
+instance TreacheryRunner env => RunMessage PushedIntoTheBeyond where
   runMessage msg t@(PushedIntoTheBeyond attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       validAssets <- selectList (AssetControlledBy You <> AssetNonStory)

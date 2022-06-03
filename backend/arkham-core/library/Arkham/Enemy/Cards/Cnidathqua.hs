@@ -53,7 +53,7 @@ instance HasAbilities Cnidathqua where
     $ toId attrs
     ]
 
-instance EnemyRunner env => RunMessage env Cnidathqua where
+instance EnemyRunner env => RunMessage Cnidathqua where
   runMessage msg e@(Cnidathqua attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       e <$ push

@@ -20,7 +20,7 @@ newtype TheYellowSign = TheYellowSign TreacheryAttrs
 theYellowSign :: TreacheryCard TheYellowSign
 theYellowSign = treachery TheYellowSign Cards.theYellowSign
 
-instance TreacheryRunner env => RunMessage env TheYellowSign where
+instance TreacheryRunner env => RunMessage TheYellowSign where
   runMessage msg t@(TheYellowSign attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ push
       (BeginSkillTest

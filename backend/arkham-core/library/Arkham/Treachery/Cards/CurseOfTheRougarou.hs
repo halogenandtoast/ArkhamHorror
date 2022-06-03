@@ -34,7 +34,7 @@ instance HasAbilities CurseOfTheRougarou where
       $ TurnEnds Timing.When You
     ]
 
-instance TreacheryRunner env => RunMessage env CurseOfTheRougarou where
+instance TreacheryRunner env => RunMessage CurseOfTheRougarou where
   runMessage msg t@(CurseOfTheRougarou attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

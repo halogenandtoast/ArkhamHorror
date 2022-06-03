@@ -133,7 +133,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
+instance ScenarioRunner env => RunMessage TheMiskatonicMuseum where
   runMessage msg s@(TheMiskatonicMuseum attrs@ScenarioAttrs {..}) = case msg of
     SetTokensForScenario -> do
       standalone <- isNothing <$> getId @(Maybe CampaignId) ()

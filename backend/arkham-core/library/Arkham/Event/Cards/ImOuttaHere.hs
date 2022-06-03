@@ -17,7 +17,7 @@ newtype ImOuttaHere = ImOuttaHere EventAttrs
 imOuttaHere :: EventCard ImOuttaHere
 imOuttaHere = event ImOuttaHere Cards.imOuttaHere
 
-instance RunMessage env ImOuttaHere where
+instance RunMessage ImOuttaHere where
   runMessage msg e@(ImOuttaHere attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs ->
       e <$ push (Resign iid)

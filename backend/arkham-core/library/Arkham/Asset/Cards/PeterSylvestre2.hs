@@ -39,7 +39,7 @@ instance HasAbilities PeterSylvestre2 where
         (ReactionAbility (TurnEnds Timing.After You) Free)
     ]
 
-instance (AssetRunner env) => RunMessage env PeterSylvestre2 where
+instance (AssetRunner env) => RunMessage PeterSylvestre2 where
   runMessage msg (PeterSylvestre2 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       pure $ PeterSylvestre2 $ attrs & sanityDamageL -~ 1

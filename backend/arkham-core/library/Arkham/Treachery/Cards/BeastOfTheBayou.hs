@@ -21,7 +21,7 @@ newtype BeastOfTheBayou = BeastOfTheBayou TreacheryAttrs
 beastOfTheBayou :: TreacheryCard BeastOfTheBayou
 beastOfTheBayou = treachery BeastOfTheBayou Cards.beastOfTheBayou
 
-instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
+instance TreacheryRunner env => RunMessage BeastOfTheBayou where
   runMessage msg t@(BeastOfTheBayou attrs@TreacheryAttrs {..}) = case msg of
     Revelation _iid source | isSource attrs source -> do
       mrougarou <- getTheRougarou

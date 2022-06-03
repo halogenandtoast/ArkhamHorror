@@ -28,7 +28,7 @@ reductionEffect :: InvestigatorId -> EventAttrs -> Message
 reductionEffect iid attrs =
   CreateEffect "03018" Nothing (toSource attrs) (InvestigatorTarget iid)
 
-instance RunMessage env Improvisation where
+instance RunMessage Improvisation where
   runMessage msg e@(Improvisation attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

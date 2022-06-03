@@ -16,7 +16,7 @@ newtype Amnesia = Amnesia TreacheryAttrs
 amnesia :: TreacheryCard Amnesia
 amnesia = treachery Amnesia Cards.amnesia
 
-instance TreacheryRunner env => RunMessage env Amnesia where
+instance TreacheryRunner env => RunMessage Amnesia where
   runMessage msg t@(Amnesia attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       cardCount' <- unCardCount <$> getCount iid

@@ -40,6 +40,6 @@ instance HasSkillTest env => HasModifiersFor env OperaGarnier213 where
 instance HasAbilities OperaGarnier213 where
   getAbilities (OperaGarnier213 attrs) = getAbilities attrs
 
-instance LocationRunner env => RunMessage env OperaGarnier213 where
+instance LocationRunner env => RunMessage OperaGarnier213 where
   runMessage msg (OperaGarnier213 attrs) =
     OperaGarnier213 <$> runMessage msg attrs

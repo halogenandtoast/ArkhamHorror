@@ -23,7 +23,7 @@ strangeDisappearances :: AgendaCard StrangeDisappearances
 strangeDisappearances =
   agenda (1, A) StrangeDisappearances Cards.strangeDisappearances (Static 6)
 
-instance AgendaRunner env => RunMessage env StrangeDisappearances where
+instance AgendaRunner env => RunMessage StrangeDisappearances where
   runMessage msg a@(StrangeDisappearances attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()

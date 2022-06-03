@@ -37,7 +37,7 @@ findingLadyEsprit = act
   Cards.findingLadyEsprit
   (Just $ GroupClueCost (PerPlayer 1) (LocationWithTrait Bayou))
 
-instance ActRunner env => RunMessage env FindingLadyEsprit where
+instance ActRunner env => RunMessage FindingLadyEsprit where
   runMessage msg a@(FindingLadyEsprit attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       ladyEspritSpawnLocation <-

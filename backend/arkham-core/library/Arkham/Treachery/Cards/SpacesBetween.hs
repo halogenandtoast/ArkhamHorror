@@ -21,7 +21,7 @@ newtype SpacesBetween = SpacesBetween TreacheryAttrs
 spacesBetween :: TreacheryCard SpacesBetween
 spacesBetween = treachery SpacesBetween Cards.spacesBetween
 
-instance TreacheryRunner env => RunMessage env SpacesBetween where
+instance TreacheryRunner env => RunMessage SpacesBetween where
   runMessage msg t@(SpacesBetween attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       nonSentinelHillLocations <- selectList $ LocationWithoutTrait SentinelHill

@@ -41,7 +41,7 @@ instance HasAbilities SpectralMist where
         1
     ]
 
-instance (TreacheryRunner env) => RunMessage env SpectralMist where
+instance (TreacheryRunner env) => RunMessage SpectralMist where
   runMessage msg t@(SpectralMist attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       exemptLocations <- getSet @LocationId

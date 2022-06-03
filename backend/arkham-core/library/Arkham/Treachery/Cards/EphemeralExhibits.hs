@@ -20,7 +20,7 @@ newtype EphemeralExhibits = EphemeralExhibits TreacheryAttrs
 ephemeralExhibits :: TreacheryCard EphemeralExhibits
 ephemeralExhibits = treachery EphemeralExhibits Cards.ephemeralExhibits
 
-instance TreacheryRunner env => RunMessage env EphemeralExhibits where
+instance TreacheryRunner env => RunMessage EphemeralExhibits where
   runMessage msg t@(EphemeralExhibits attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ push
       (BeginSkillTest

@@ -33,7 +33,7 @@ skinGame = act
   Cards.skinGame
   (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "VIP Area"))
 
-instance ActRunner env => RunMessage env SkinGame where
+instance ActRunner env => RunMessage SkinGame where
   runMessage msg a@(SkinGame attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       completedExtracurricularActivity <-

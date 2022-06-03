@@ -35,7 +35,7 @@ instance HasAbilities HuntingHorror where
     $ toId x
     ]
 
-instance EnemyRunner env => RunMessage env HuntingHorror where
+instance EnemyRunner env => RunMessage HuntingHorror where
   runMessage msg e@(HuntingHorror attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (RequestTokens source Nothing 1 SetAside)

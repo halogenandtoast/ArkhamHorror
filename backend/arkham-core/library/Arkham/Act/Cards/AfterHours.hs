@@ -22,7 +22,7 @@ afterHours = act
   Cards.afterHours
   (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
-instance ActRunner env => RunMessage env AfterHours where
+instance ActRunner env => RunMessage AfterHours where
   runMessage msg a@(AfterHours attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       jazzMulligan <- getSetAsideEncounterCard Assets.jazzMulligan

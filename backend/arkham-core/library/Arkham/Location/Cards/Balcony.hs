@@ -34,7 +34,7 @@ instance HasAbilities Balcony where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env Balcony where
+instance LocationRunner env => RunMessage Balcony where
   runMessage msg l@(Balcony attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (InvestigatorAssignDamage iid source DamageAny 2 0)

@@ -37,7 +37,7 @@ instance HasAbilities DrawingTheSign where
         2
     ]
 
-instance TreacheryRunner env => RunMessage env DrawingTheSign where
+instance TreacheryRunner env => RunMessage DrawingTheSign where
   runMessage msg t@(DrawingTheSign attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

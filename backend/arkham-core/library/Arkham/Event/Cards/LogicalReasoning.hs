@@ -21,7 +21,7 @@ newtype LogicalReasoning = LogicalReasoning EventAttrs
 logicalReasoning :: EventCard LogicalReasoning
 logicalReasoning = event LogicalReasoning Cards.logicalReasoning
 
-instance EventRunner env => RunMessage env LogicalReasoning where
+instance EventRunner env => RunMessage LogicalReasoning where
   runMessage msg e@(LogicalReasoning attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iids <- selectList $ InvestigatorAt YourLocation

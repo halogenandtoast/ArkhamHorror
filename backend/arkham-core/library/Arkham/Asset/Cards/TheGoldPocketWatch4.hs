@@ -30,7 +30,7 @@ instance HasAbilities TheGoldPocketWatch4 where
       $ ReactionAbility (PhaseEnds Timing.When AnyPhase) Free
     ]
 
-instance AssetRunner env => RunMessage env TheGoldPocketWatch4 where
+instance AssetRunner env => RunMessage TheGoldPocketWatch4 where
   runMessage msg a@(TheGoldPocketWatch4 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ pushAll [RemoveFromGame (toTarget attrs), EndPhase]

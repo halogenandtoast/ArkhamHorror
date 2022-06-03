@@ -39,7 +39,7 @@ instance HasAbilities WrackedByNightmares where
         2
     ]
 
-instance TreacheryRunner env => RunMessage env WrackedByNightmares where
+instance TreacheryRunner env => RunMessage WrackedByNightmares where
   runMessage msg t@(WrackedByNightmares attrs@TreacheryAttrs {..}) =
     case msg of
       Revelation iid source | isSource attrs source -> do

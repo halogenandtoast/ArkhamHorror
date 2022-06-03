@@ -51,7 +51,7 @@ instance HasAbilities CoverUp where
         | iid <- maybeToList (treacheryOwner a)
         ]
 
-instance TreacheryRunner env => RunMessage env CoverUp where
+instance TreacheryRunner env => RunMessage CoverUp where
   runMessage msg t@(CoverUp attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid (isSource attrs -> True) ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))

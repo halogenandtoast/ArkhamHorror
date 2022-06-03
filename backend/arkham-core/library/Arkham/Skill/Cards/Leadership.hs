@@ -28,5 +28,5 @@ instance HasModifiersFor env Leadership where
     = pure $ toModifiers attrs [AddSkillIcons [SkillWillpower, SkillWild]]
   getModifiersFor _ _ _ = pure []
 
-instance RunMessage env Leadership where
+instance RunMessage Leadership where
   runMessage msg (Leadership attrs) = Leadership <$> runMessage msg attrs

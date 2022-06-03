@@ -52,7 +52,7 @@ instance HasAbilities DevilsHopYard_252 where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env DevilsHopYard_252 where
+instance LocationRunner env => RunMessage DevilsHopYard_252 where
   runMessage msg l@(DevilsHopYard_252 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       investigatorWithCluePairs <- filter ((> 0) . snd) <$> traverse

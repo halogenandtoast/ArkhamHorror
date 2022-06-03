@@ -25,7 +25,7 @@ instance HasAbilities StrangeSolution where
   getAbilities (StrangeSolution x) =
     [restrictedAbility x 1 OwnsThis $ ActionAbility Nothing $ ActionCost 1]
 
-instance AssetRunner env => RunMessage env StrangeSolution where
+instance AssetRunner env => RunMessage StrangeSolution where
   runMessage msg a@(StrangeSolution attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (BeginSkillTest

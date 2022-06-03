@@ -41,7 +41,7 @@ instance HasAbilities DimensionalDoorway where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env DimensionalDoorway where
+instance LocationRunner env => RunMessage DimensionalDoorway where
   runMessage msg l@(DimensionalDoorway attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       encounterDiscard <- map unDiscardedEncounterCard <$> getList ()

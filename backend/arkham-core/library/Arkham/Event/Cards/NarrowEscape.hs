@@ -23,7 +23,7 @@ newtype NarrowEscape = NarrowEscape EventAttrs
 narrowEscape :: EventCard NarrowEscape
 narrowEscape = event NarrowEscape Cards.narrowEscape
 
-instance EventRunner env => RunMessage env NarrowEscape where
+instance EventRunner env => RunMessage NarrowEscape where
   runMessage msg e@(NarrowEscape attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll

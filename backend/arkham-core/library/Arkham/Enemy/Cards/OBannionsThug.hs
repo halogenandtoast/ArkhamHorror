@@ -24,5 +24,5 @@ instance HasModifiersFor env OBannionsThug where
     $ toModifiers a [CannotGainResources]
   getModifiersFor _ _ _ = pure []
 
-instance (EnemyRunner env) => RunMessage env OBannionsThug where
+instance (EnemyRunner env) => RunMessage OBannionsThug where
   runMessage msg (OBannionsThug attrs) = OBannionsThug <$> runMessage msg attrs

@@ -13,15 +13,13 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype JeremiahPierce = JeremiahPierce EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jeremiahPierce :: EffectArgs -> JeremiahPierce
 jeremiahPierce = JeremiahPierce . uncurry4 (baseAttrs "50044")
 
-instance HasModifiersFor env JeremiahPierce
-
-instance HasQueue env => RunMessage env JeremiahPierce where
+instance RunMessage m JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs ->
       e <$ pushAll

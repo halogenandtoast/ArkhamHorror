@@ -21,7 +21,7 @@ newtype Abduction = Abduction TreacheryAttrs
 abduction :: TreacheryCard Abduction
 abduction = treachery Abduction Cards.abduction
 
-instance TreacheryRunner env => RunMessage env Abduction where
+instance TreacheryRunner env => RunMessage Abduction where
   runMessage msg t@(Abduction attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillWillpower 3)

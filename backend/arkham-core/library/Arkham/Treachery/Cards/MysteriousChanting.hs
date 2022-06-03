@@ -20,7 +20,7 @@ newtype MysteriousChanting = MysteriousChanting TreacheryAttrs
 mysteriousChanting :: TreacheryCard MysteriousChanting
 mysteriousChanting = treachery MysteriousChanting Cards.mysteriousChanting
 
-instance TreacheryRunner env => RunMessage env MysteriousChanting where
+instance TreacheryRunner env => RunMessage MysteriousChanting where
   runMessage msg t@(MysteriousChanting attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid

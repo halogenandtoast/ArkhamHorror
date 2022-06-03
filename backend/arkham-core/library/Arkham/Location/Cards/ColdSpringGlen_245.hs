@@ -49,7 +49,7 @@ instance HasAbilities ColdSpringGlen_245 where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env ColdSpringGlen_245 where
+instance LocationRunner env => RunMessage ColdSpringGlen_245 where
   runMessage msg l@(ColdSpringGlen_245 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push

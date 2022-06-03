@@ -39,7 +39,7 @@ instance HasAbilities BeatCop2 where
             [ExhaustCost (toTarget x), DamageCost (toSource x) (toTarget x) 1]
     ]
 
-instance AssetRunner env => RunMessage env BeatCop2 where
+instance AssetRunner env => RunMessage BeatCop2 where
   runMessage msg a@(BeatCop2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       enemies <- selectList (EnemyAt YourLocation)

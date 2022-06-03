@@ -20,7 +20,7 @@ newtype SneakAttack2 = SneakAttack2 EventAttrs
 sneakAttack2 :: EventCard SneakAttack2
 sneakAttack2 = event SneakAttack2 Cards.sneakAttack2
 
-instance EventRunner env => RunMessage env SneakAttack2 where
+instance EventRunner env => RunMessage SneakAttack2 where
   runMessage msg e@(SneakAttack2 attrs) = case msg of
     InvestigatorPlayEvent you eid _ _ _ | eid == toId attrs -> do
       yourLocation <- LocationWithId <$> getId you

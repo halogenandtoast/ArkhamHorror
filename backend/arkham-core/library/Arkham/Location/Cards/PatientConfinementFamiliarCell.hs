@@ -40,7 +40,7 @@ instance HasAbilities PatientConfinementFamiliarCell where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env PatientConfinementFamiliarCell where
+instance LocationRunner env => RunMessage PatientConfinementFamiliarCell where
   runMessage msg l@(PatientConfinementFamiliarCell attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       horror <- unHorrorCount <$> getCount iid

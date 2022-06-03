@@ -41,7 +41,7 @@ instance HasAbilities ExhibitHallNatureExhibit where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage env ExhibitHallNatureExhibit where
+instance LocationRunner env => RunMessage ExhibitHallNatureExhibit where
   runMessage msg l@(ExhibitHallNatureExhibit attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ pushAll [RandomDiscard iid, RandomDiscard iid]

@@ -48,7 +48,7 @@ instance HasAbilities PossessedOathspeaker where
     $ toId a
     ]
 
-instance EnemyRunner env => RunMessage env PossessedOathspeaker where
+instance EnemyRunner env => RunMessage PossessedOathspeaker where
   runMessage msg e@(PossessedOathspeaker attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       leadInvestigatorIdL <- getLeadInvestigatorId

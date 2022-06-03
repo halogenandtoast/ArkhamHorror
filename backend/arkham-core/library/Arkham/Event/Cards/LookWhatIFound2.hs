@@ -17,7 +17,7 @@ newtype LookWhatIFound2 = LookWhatIFound2 EventAttrs
 lookWhatIFound2 :: EventCard LookWhatIFound2
 lookWhatIFound2 = event LookWhatIFound2 Cards.lookWhatIFound2
 
-instance EventRunner env => RunMessage env LookWhatIFound2 where
+instance EventRunner env => RunMessage LookWhatIFound2 where
   runMessage msg e@(LookWhatIFound2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

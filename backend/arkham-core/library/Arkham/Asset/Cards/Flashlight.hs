@@ -30,7 +30,7 @@ instance HasAbilities Flashlight where
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1])
     ]
 
-instance (AssetRunner env) => RunMessage env Flashlight where
+instance (AssetRunner env) => RunMessage Flashlight where
   runMessage msg a@(Flashlight attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid

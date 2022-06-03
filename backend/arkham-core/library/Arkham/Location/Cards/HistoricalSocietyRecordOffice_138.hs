@@ -50,7 +50,7 @@ instance HasAbilities HistoricalSocietyRecordOffice_138 where
     | not (locationRevealed attrs)
     ]
 
-instance LocationRunner env => RunMessage env HistoricalSocietyRecordOffice_138 where
+instance LocationRunner env => RunMessage HistoricalSocietyRecordOffice_138 where
   runMessage msg l@(HistoricalSocietyRecordOffice_138 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       l <$ push (RevealLocation Nothing $ toId attrs)

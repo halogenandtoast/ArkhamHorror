@@ -22,7 +22,7 @@ newtype WatchersGaze = WatchersGaze TreacheryAttrs
 watchersGaze :: TreacheryCard WatchersGaze
 watchersGaze = treachery WatchersGaze Cards.watchersGaze
 
-instance TreacheryRunner env => RunMessage env WatchersGaze where
+instance TreacheryRunner env => RunMessage WatchersGaze where
   runMessage msg t@(WatchersGaze attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       innocentRevelerIds <- selectList

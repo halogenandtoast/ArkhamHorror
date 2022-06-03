@@ -52,7 +52,7 @@ instance HasTokenValue env AshcanPete where
     pure $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage env AshcanPete where
+instance InvestigatorRunner env => RunMessage AshcanPete where
   runMessage msg i@(AshcanPete attrs) = case msg of
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs ->
       i <$ push (Ready $ CardCodeTarget "02014")

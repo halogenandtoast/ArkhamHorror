@@ -41,7 +41,7 @@ instance HasAbilities ArkhamWoodsQuietGlade where
         ]
   getAbilities (ArkhamWoodsQuietGlade attrs) = getAbilities attrs
 
-instance LocationRunner env => RunMessage env ArkhamWoodsQuietGlade where
+instance LocationRunner env => RunMessage ArkhamWoodsQuietGlade where
   runMessage msg l@(ArkhamWoodsQuietGlade attrs@LocationAttrs {..}) =
     case msg of
       UseCardAbility iid (LocationSource lid) _ 1 _ | lid == locationId ->

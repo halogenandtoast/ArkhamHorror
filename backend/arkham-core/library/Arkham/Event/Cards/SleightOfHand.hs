@@ -22,7 +22,7 @@ newtype SleightOfHand = SleightOfHand EventAttrs
 sleightOfHand :: EventCard SleightOfHand
 sleightOfHand = event SleightOfHand Cards.sleightOfHand
 
-instance Query ExtendedCardMatcher env => RunMessage env SleightOfHand where
+instance Query ExtendedCardMatcher env => RunMessage SleightOfHand where
   runMessage msg e@(SleightOfHand attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       cards <- selectList

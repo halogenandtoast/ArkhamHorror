@@ -112,7 +112,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance ScenarioRunner env => RunMessage env EchoesOfThePast where
+instance ScenarioRunner env => RunMessage EchoesOfThePast where
   runMessage msg s@(EchoesOfThePast attrs) = case msg of
     SetTokensForScenario -> do
       -- TODO: move to helper since consistent

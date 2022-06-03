@@ -28,7 +28,7 @@ mysteriousGateway = act
   Cards.mysteriousGateway
   (Just $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Guest Hall"))
 
-instance ActRunner env => RunMessage env MysteriousGateway where
+instance ActRunner env => RunMessage MysteriousGateway where
   runMessage msg a@(MysteriousGateway attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

@@ -59,7 +59,7 @@ instance HasAbilities TheGateToHell where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env TheGateToHell where
+instance LocationRunner env => RunMessage TheGateToHell where
   runMessage msg l@(TheGateToHell attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       n <- countM (directionEmpty attrs) [Above, Below]

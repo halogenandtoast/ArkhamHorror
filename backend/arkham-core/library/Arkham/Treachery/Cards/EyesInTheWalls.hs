@@ -20,7 +20,7 @@ newtype EyesInTheWalls = EyesInTheWalls TreacheryAttrs
 eyesInTheWalls :: TreacheryCard EyesInTheWalls
 eyesInTheWalls = treachery EyesInTheWalls Cards.eyesInTheWalls
 
-instance TreacheryRunner env => RunMessage env EyesInTheWalls where
+instance TreacheryRunner env => RunMessage EyesInTheWalls where
   runMessage msg t@(EyesInTheWalls attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillWillpower 3)

@@ -55,7 +55,7 @@ instance
   ( HasModifiersFor env ()
   , ActRunner env
   )
-  => RunMessage env TheCarnevaleConspiracy where
+  => RunMessage TheCarnevaleConspiracy where
   runMessage msg a@(TheCarnevaleConspiracy attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       maskedCarnevaleGoers <- selectList

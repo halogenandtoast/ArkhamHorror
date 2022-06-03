@@ -79,7 +79,7 @@ type AssetRunner env
     , HasSet Trait env Source
     )
 
-instance AssetRunner env => RunMessage env AssetAttrs where
+instance AssetRunner env => RunMessage AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     ReadyExhausted -> case assetController of

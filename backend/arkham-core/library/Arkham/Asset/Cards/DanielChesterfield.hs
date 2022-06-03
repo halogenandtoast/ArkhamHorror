@@ -39,7 +39,7 @@ instance HasAbilities DanielChesterfield where
       $ toId a
     ]
 
-instance AssetRunner env => RunMessage env DanielChesterfield where
+instance AssetRunner env => RunMessage DanielChesterfield where
   runMessage msg a@(DanielChesterfield attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       otherInvestigators <- selectList (InvestigatorAt YourLocation <> NotYou)

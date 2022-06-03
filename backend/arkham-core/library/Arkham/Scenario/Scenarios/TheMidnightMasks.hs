@@ -58,7 +58,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), Projectio
 allCultists :: HashSet CardCode
 allCultists = setFromList ["01137", "01138", "01139", "01140", "01141", "01121b"]
 
-instance ScenarioRunner env => RunMessage env TheMidnightMasks where
+instance ScenarioRunner env => RunMessage TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs) = case msg of
     Setup -> do
       count' <- getPlayerCount

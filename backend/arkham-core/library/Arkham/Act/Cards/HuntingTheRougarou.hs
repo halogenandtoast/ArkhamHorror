@@ -52,7 +52,7 @@ instance HasAbilities HuntingTheRougarou where
       & (abilityLimitL .~ PlayerLimit PerPhase 1)
     ]
 
-instance ActRunner env => RunMessage env HuntingTheRougarou where
+instance ActRunner env => RunMessage HuntingTheRougarou where
   runMessage msg a@(HuntingTheRougarou attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.EnemyLeaves _ lid)] 1 _
       | isSource attrs source -> a <$ push (PlaceClues (LocationTarget lid) 1)

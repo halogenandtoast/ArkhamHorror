@@ -20,7 +20,7 @@ newtype FightOrFlight = FightOrFlight EventAttrs
 fightOrFlight :: EventCard FightOrFlight
 fightOrFlight = event FightOrFlight Cards.fightOrFlight
 
-instance EventRunner env => RunMessage env FightOrFlight where
+instance EventRunner env => RunMessage FightOrFlight where
   runMessage msg e@(FightOrFlight attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

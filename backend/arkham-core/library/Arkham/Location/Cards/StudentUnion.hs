@@ -39,7 +39,7 @@ instance HasAbilities StudentUnion where
         ]
       else []
 
-instance LocationRunner env => RunMessage env StudentUnion where
+instance LocationRunner env => RunMessage StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       l <$ push (PlaceLocationMatching $ CardWithTitle "Dormitories")

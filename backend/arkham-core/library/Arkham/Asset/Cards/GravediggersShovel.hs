@@ -30,7 +30,7 @@ instance HasAbilities GravediggersShovel where
       [ActionCost 1, DiscardCost (toTarget x)]
     ]
 
-instance AssetRunner env => RunMessage env GravediggersShovel where
+instance AssetRunner env => RunMessage GravediggersShovel where
   runMessage msg a@(GravediggersShovel attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier

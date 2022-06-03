@@ -22,7 +22,7 @@ newtype ChaosInTheWater = ChaosInTheWater TreacheryAttrs
 chaosInTheWater :: TreacheryCard ChaosInTheWater
 chaosInTheWater = treachery ChaosInTheWater Cards.chaosInTheWater
 
-instance TreacheryRunner env => RunMessage env ChaosInTheWater where
+instance TreacheryRunner env => RunMessage ChaosInTheWater where
   runMessage msg t@(ChaosInTheWater attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       innocentRevelerIds <- selectList

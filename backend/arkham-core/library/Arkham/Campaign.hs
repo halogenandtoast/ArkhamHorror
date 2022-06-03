@@ -18,7 +18,7 @@ $(buildEntity "Campaign")
 
 $(deriveJSON defaultOptions ''Campaign)
 
-instance CampaignRunner env => RunMessage env Campaign where
+instance CampaignRunner env => RunMessage Campaign where
   runMessage = $(entityRunMessage "Campaign")
 
 instance HasRecord env Campaign where

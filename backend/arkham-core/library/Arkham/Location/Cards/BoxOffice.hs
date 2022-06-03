@@ -30,7 +30,7 @@ instance HasAbilities BoxOffice where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env BoxOffice where
+instance LocationRunner env => RunMessage BoxOffice where
   runMessage msg l@(BoxOffice attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ pushAll [TakeResources iid 5 False, Remember StoleFromTheBoxOffice]

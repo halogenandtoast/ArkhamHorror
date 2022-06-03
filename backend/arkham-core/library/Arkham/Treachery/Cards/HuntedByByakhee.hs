@@ -22,7 +22,7 @@ newtype HuntedByByakhee = HuntedByByakhee TreacheryAttrs
 huntedByByakhee :: TreacheryCard HuntedByByakhee
 huntedByByakhee = treachery HuntedByByakhee Cards.huntedByByakhee
 
-instance TreacheryRunner env => RunMessage env HuntedByByakhee where
+instance TreacheryRunner env => RunMessage HuntedByByakhee where
   runMessage msg t@(HuntedByByakhee attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillAgility 6)

@@ -32,7 +32,7 @@ instance
   , HasId LocationId env InvestigatorId
   , HasCount SanityDamageCount env EnemyId
   )
-  => RunMessage env IfItBleeds where
+  => RunMessage IfItBleeds where
   runMessage msg e@(IfItBleeds attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows _ | eid == toId attrs -> do
       let enemyIds = getWindowEnemyIds iid windows

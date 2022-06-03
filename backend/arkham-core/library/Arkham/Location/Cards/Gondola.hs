@@ -32,7 +32,7 @@ instance HasAbilities Gondola where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage env Gondola where
+instance LocationRunner env => RunMessage Gondola where
   runMessage msg l@(Gondola attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       locationIds <-

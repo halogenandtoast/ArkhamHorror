@@ -35,6 +35,6 @@ instance HasCount PlayerCount env () => HasModifiersFor env TheMaskedHunter wher
       else pure []
   getModifiersFor _ _ _ = pure []
 
-instance (EnemyRunner env) => RunMessage env TheMaskedHunter where
+instance (EnemyRunner env) => RunMessage TheMaskedHunter where
   runMessage msg (TheMaskedHunter attrs) =
     TheMaskedHunter <$> runMessage msg attrs

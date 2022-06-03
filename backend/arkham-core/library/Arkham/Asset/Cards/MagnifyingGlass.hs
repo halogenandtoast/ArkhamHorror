@@ -23,6 +23,6 @@ instance HasModifiersFor env MagnifyingGlass where
     ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env MagnifyingGlass where
+instance AssetRunner env => RunMessage MagnifyingGlass where
   runMessage msg (MagnifyingGlass attrs) =
     MagnifyingGlass <$> runMessage msg attrs

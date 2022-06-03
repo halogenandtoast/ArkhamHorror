@@ -16,7 +16,7 @@ newtype Dodge = Dodge EventAttrs
 dodge :: EventCard Dodge
 dodge = event Dodge Cards.dodge
 
-instance EventRunner env => RunMessage env Dodge where
+instance EventRunner env => RunMessage Dodge where
   runMessage msg e@(Dodge attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
       e <$ pushAll [CancelNext AttackMessage, Discard (EventTarget eid)]

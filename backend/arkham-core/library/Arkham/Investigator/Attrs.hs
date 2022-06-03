@@ -457,7 +457,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     else go (m - 1) (d, PlayerCard c : h, cs)
 
 getPlayableCards
-  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorAttrs
   -> CostStatus
   -> [Window]
@@ -471,7 +471,7 @@ getPlayableCards a@InvestigatorAttrs {..} costStatus windows = do
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards
-  :: (MonadReader env m, CanCheckPlayable env)
+  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorAttrs
   -> CostStatus
   -> [Window]

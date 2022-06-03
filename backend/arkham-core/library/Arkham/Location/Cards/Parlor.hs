@@ -46,7 +46,7 @@ instance HasAbilities Parlor where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env Parlor where
+instance LocationRunner env => RunMessage Parlor where
   runMessage msg l@(Parlor attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && locationRevealed -> do

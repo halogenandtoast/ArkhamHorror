@@ -44,7 +44,7 @@ instance HasAbilities SophieInLovingMemory where
       $ ForcedAbility AnyWindow
     ]
 
-instance AssetRunner env => RunMessage env SophieInLovingMemory where
+instance AssetRunner env => RunMessage SophieInLovingMemory where
   runMessage msg a@(SophieInLovingMemory attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push

@@ -19,7 +19,7 @@ relicHunter3 = asset RelicHunter3 Cards.relicHunter3
 slot :: AssetAttrs -> Slot
 slot attrs = Slot (toSource attrs) Nothing
 
-instance AssetRunner env => RunMessage env RelicHunter3 where
+instance AssetRunner env => RunMessage RelicHunter3 where
   runMessage msg (RelicHunter3 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       push $ AddSlot iid AccessorySlot (slot attrs)

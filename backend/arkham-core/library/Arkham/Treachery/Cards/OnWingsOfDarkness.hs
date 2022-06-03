@@ -18,7 +18,7 @@ newtype OnWingsOfDarkness = OnWingsOfDarkness TreacheryAttrs
 onWingsOfDarkness :: TreacheryCard OnWingsOfDarkness
 onWingsOfDarkness = treachery OnWingsOfDarkness Cards.onWingsOfDarkness
 
-instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
+instance TreacheryRunner env => RunMessage OnWingsOfDarkness where
   runMessage msg t@(OnWingsOfDarkness attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillAgility 4)

@@ -39,7 +39,7 @@ instance HasAbilities SwampLeech where
            $ toId attrs
          ]
 
-instance EnemyRunner env => RunMessage env SwampLeech where
+instance EnemyRunner env => RunMessage SwampLeech where
   runMessage msg e@(SwampLeech attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)

@@ -519,6 +519,10 @@ instance Semigroup CardMatcher where
 instance Monoid CardMatcher where
   mempty = AnyCard
 
+data DiscardedCardMatcher = DiscardedCardMatcher InvestigatorMatcher CardMatcher
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
 data WindowMatcher
   = EnemyDefeated Timing Who EnemyMatcher
   | AddedToVictory Timing CardMatcher

@@ -31,7 +31,7 @@ instance HasAbilities EighteenDerringer where
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Ammo 1]
     ]
 
-instance AssetRunner env => RunMessage env EighteenDerringer where
+instance AssetRunner env => RunMessage EighteenDerringer where
   runMessage msg a@(EighteenDerringer attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers

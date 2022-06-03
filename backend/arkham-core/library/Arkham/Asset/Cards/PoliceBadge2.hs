@@ -34,7 +34,7 @@ instance HasAbilities PoliceBadge2 where
     criteria = OwnsThis
       <> InvestigatorExists (TurnInvestigator <> InvestigatorAt YourLocation)
 
-instance AssetRunner env => RunMessage env PoliceBadge2 where
+instance AssetRunner env => RunMessage PoliceBadge2 where
   runMessage msg a@(PoliceBadge2 attrs) = case msg of
     InDiscard _ (UseCardAbility _ source _ 1 _) | isSource attrs source ->
       selectOne TurnInvestigator >>= \case

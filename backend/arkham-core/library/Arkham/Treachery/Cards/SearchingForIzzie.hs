@@ -40,7 +40,7 @@ instance HasAbilities SearchingForIzzie where
         | iid <- maybeToList (treacheryOwner x)
         ]
 
-instance TreacheryRunner env => RunMessage env SearchingForIzzie where
+instance TreacheryRunner env => RunMessage SearchingForIzzie where
   runMessage msg t@(SearchingForIzzie attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       targets <- selectListMap LocationTarget $ FarthestLocationFromYou Anywhere

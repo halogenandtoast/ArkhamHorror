@@ -25,7 +25,7 @@ instance HasModifiersFor env CursedShores where
     | target == effectTarget = pure [toModifier a (AnySkillValue 2)]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env CursedShores where
+instance HasQueue env => RunMessage CursedShores where
   runMessage msg e@(CursedShores attrs) = case msg of
     SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
     EndTurn iid | InvestigatorTarget iid == effectTarget attrs ->

@@ -31,7 +31,7 @@ instance HasAbilities Maniac where
 maniac :: EnemyCard Maniac
 maniac = enemy Maniac Cards.maniac (3, Static 4, 1) (1, 0)
 
-instance EnemyRunner env => RunMessage env Maniac where
+instance EnemyRunner env => RunMessage Maniac where
   runMessage msg e@(Maniac attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ pushAll
       [ InvestigatorAssignDamage iid source DamageAny 1 0

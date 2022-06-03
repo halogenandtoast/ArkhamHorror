@@ -28,7 +28,7 @@ instance HasAbilities FireExtinguisher1 where
       (Costs [ActionCost 1, ExileCost $ toTarget a])
     ]
 
-instance (AssetRunner env) => RunMessage env FireExtinguisher1 where
+instance (AssetRunner env) => RunMessage FireExtinguisher1 where
   runMessage msg a@(FireExtinguisher1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier

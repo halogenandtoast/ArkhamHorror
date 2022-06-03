@@ -38,7 +38,7 @@ instance HasAbilities MiskatonicUniversity where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage env MiskatonicUniversity where
+instance LocationRunner env => RunMessage MiskatonicUniversity where
   runMessage msg l@(MiskatonicUniversity attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (Search

@@ -40,7 +40,7 @@ instance HasAbilities Courtyard where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env Courtyard where
+instance LocationRunner env => RunMessage Courtyard where
   runMessage msg l@(Courtyard attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (DiscardTopOfEncounterDeck iid 1 (Just $ toTarget attrs))

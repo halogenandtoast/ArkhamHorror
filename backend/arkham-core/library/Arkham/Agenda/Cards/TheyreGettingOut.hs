@@ -33,7 +33,7 @@ instance HasAbilities TheyreGettingOut where
     , mkAbility x 2 $ ForcedAbility $ RoundEnds Timing.When
     ]
 
-instance AgendaRunner env => RunMessage env TheyreGettingOut where
+instance AgendaRunner env => RunMessage TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs) = case msg of
     AdvanceAgenda aid
       | aid == toId attrs && onSide B attrs -> do

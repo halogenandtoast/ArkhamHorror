@@ -31,5 +31,5 @@ instance (HasSet ConnectedLocationId env LocationId, HasSet LocationId env ()) =
         pure $ toModifiers attrs [HunterConnectedTo counterClockwiseLocationId]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env DonLagorio where
+instance EnemyRunner env => RunMessage DonLagorio where
   runMessage msg (DonLagorio attrs) = DonLagorio <$> runMessage msg attrs

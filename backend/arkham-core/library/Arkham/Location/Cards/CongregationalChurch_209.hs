@@ -37,7 +37,7 @@ instance HasAbilities CongregationalChurch_209 where
         ]
       <> rest
 
-instance LocationRunner env => RunMessage env CongregationalChurch_209 where
+instance LocationRunner env => RunMessage CongregationalChurch_209 where
   runMessage msg l@(CongregationalChurch_209 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (TakeResources iid 2 False)

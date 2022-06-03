@@ -12,20 +12,13 @@ import Arkham.Message
 import Arkham.Target
 
 newtype SleightOfHand = SleightOfHand EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sleightOfHand :: EffectArgs -> SleightOfHand
 sleightOfHand = SleightOfHand . uncurry4 (baseAttrs "03029")
 
-instance HasModifiersFor env SleightOfHand
-
-instance
-  ( Query AssetMatcher env
-  , Query InvestigatorMatcher env
-  , HasQueue env
-  )
-  => RunMessage env SleightOfHand where
+instance RunMessage SleightOfHand where
   runMessage msg e@(SleightOfHand attrs) = case msg of
     EndTurn _ -> do
       case effectTarget attrs of

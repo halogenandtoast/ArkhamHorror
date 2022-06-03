@@ -41,7 +41,7 @@ instance HasAbilities ServantOfManyMouths where
         )
     ]
 
-instance EnemyRunner env => RunMessage env ServantOfManyMouths where
+instance EnemyRunner env => RunMessage ServantOfManyMouths where
   runMessage msg e@(ServantOfManyMouths attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationsWithClues <- selectList LocationWithAnyClues

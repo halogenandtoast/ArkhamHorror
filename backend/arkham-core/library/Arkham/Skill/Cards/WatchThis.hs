@@ -27,7 +27,7 @@ paymentAmount (Payments xs) = sum $ map paymentAmount xs
 paymentAmount (ResourcePayment n) = n
 paymentAmount _ = 0
 
-instance SkillRunner env => RunMessage env WatchThis where
+instance SkillRunner env => RunMessage WatchThis where
   runMessage msg s@(WatchThis attrs) = case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 1 -> do
       let resources = 2 * maybe 0 paymentAmount (skillAdditionalPayment attrs)

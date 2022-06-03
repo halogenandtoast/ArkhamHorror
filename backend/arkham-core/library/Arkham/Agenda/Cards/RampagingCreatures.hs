@@ -31,7 +31,7 @@ instance HasAbilities RampagingCreatures where
   getAbilities (RampagingCreatures x) =
     [mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase]
 
-instance AgendaRunner env => RunMessage env RampagingCreatures where
+instance AgendaRunner env => RunMessage RampagingCreatures where
   runMessage msg a@(RampagingCreatures attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId

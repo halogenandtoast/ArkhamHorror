@@ -48,7 +48,7 @@ instance HasAbilities BasementHall where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage env BasementHall where
+instance LocationRunner env => RunMessage BasementHall where
   runMessage msg l@(BasementHall attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       patientConfinements <- shuffleM

@@ -36,7 +36,7 @@ instance HasAbilities TrackShoes where
         (ExhaustCost $ toTarget attrs)
     ]
 
-instance AssetRunner env => RunMessage env TrackShoes where
+instance AssetRunner env => RunMessage TrackShoes where
   runMessage msg a@(TrackShoes attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a

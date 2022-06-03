@@ -40,7 +40,7 @@ instance HasAbilities JeremiahPierce where
       $ ActionCost 1
     ]
 
-instance EnemyRunner env => RunMessage env JeremiahPierce where
+instance EnemyRunner env => RunMessage JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility iid (EnemySource eid) _ 1 _ | eid == enemyId -> e <$ pushAll
       [ AddToVictory (EnemyTarget enemyId)

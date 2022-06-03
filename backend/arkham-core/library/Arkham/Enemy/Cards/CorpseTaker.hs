@@ -35,7 +35,7 @@ instance HasAbilities CorpseTaker where
     , mkAbility x 2 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase
     ]
 
-instance EnemyRunner env => RunMessage env CorpseTaker where
+instance EnemyRunner env => RunMessage CorpseTaker where
   runMessage msg e@(CorpseTaker attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ pure (PlaceDoom (toTarget attrs) 1)

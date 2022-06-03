@@ -40,7 +40,7 @@ instance HasAbilities Barricade where
       ]
     _ -> []
 
-instance EventRunner env => RunMessage env Barricade where
+instance EventRunner env => RunMessage Barricade where
   runMessage msg e@(Barricade attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getId iid

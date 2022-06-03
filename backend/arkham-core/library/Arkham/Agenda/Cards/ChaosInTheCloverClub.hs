@@ -36,7 +36,7 @@ instance HasAbilities ChaosInTheCloverClub where
     | onSide A x
     ]
 
-instance AgendaRunner env => RunMessage env ChaosInTheCloverClub where
+instance AgendaRunner env => RunMessage ChaosInTheCloverClub where
   runMessage msg a@(ChaosInTheCloverClub attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       abominations <- getSetList @EnemyId Abomination

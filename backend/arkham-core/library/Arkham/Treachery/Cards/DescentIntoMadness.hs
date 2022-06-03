@@ -19,7 +19,7 @@ newtype DescentIntoMadness = DescentIntoMadness TreacheryAttrs
 descentIntoMadness :: TreacheryCard DescentIntoMadness
 descentIntoMadness = treachery DescentIntoMadness Cards.descentIntoMadness
 
-instance TreacheryRunner env => RunMessage env DescentIntoMadness where
+instance TreacheryRunner env => RunMessage DescentIntoMadness where
   runMessage msg t@(DescentIntoMadness attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       horrorCount <- unHorrorCount <$> getCount iid

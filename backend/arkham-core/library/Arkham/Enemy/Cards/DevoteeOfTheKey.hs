@@ -38,7 +38,7 @@ instance
   ( Query LocationMatcher env
   , EnemyRunner env
   )
-  => RunMessage env DevoteeOfTheKey where
+  => RunMessage DevoteeOfTheKey where
   runMessage msg e@(DevoteeOfTheKey attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       case enemyLocation of

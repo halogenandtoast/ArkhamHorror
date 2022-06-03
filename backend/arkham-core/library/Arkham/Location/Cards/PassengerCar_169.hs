@@ -58,7 +58,7 @@ instance HasAbilities PassengerCar_169 where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage env PassengerCar_169 where
+instance LocationRunner env => RunMessage PassengerCar_169 where
   runMessage msg l@(PassengerCar_169 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let cost = SkillIconCost 2 (singleton SkillWillpower)

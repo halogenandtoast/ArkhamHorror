@@ -20,7 +20,7 @@ newtype StarsOfHyades = StarsOfHyades TreacheryAttrs
 starsOfHyades :: TreacheryCard StarsOfHyades
 starsOfHyades = treachery StarsOfHyades Cards.starsOfHyades
 
-instance TreacheryRunner env => RunMessage env StarsOfHyades where
+instance TreacheryRunner env => RunMessage StarsOfHyades where
   runMessage msg t@(StarsOfHyades attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       underneathCards <- map unUnderneathCard <$> getList iid

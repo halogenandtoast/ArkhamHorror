@@ -38,7 +38,7 @@ instance HasAbilities Fieldwork where
         )
     ]
 
-instance AssetRunner env => RunMessage env Fieldwork where
+instance AssetRunner env => RunMessage Fieldwork where
   runMessage msg a@(Fieldwork attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a

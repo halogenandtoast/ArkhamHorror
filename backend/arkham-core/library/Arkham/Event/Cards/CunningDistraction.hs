@@ -17,7 +17,7 @@ newtype CunningDistraction = CunningDistraction EventAttrs
 cunningDistraction :: EventCard CunningDistraction
 cunningDistraction = event CunningDistraction Cards.cunningDistraction
 
-instance EventRunner env => RunMessage env CunningDistraction where
+instance EventRunner env => RunMessage CunningDistraction where
   runMessage msg e@(CunningDistraction attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       locationId <- getId @LocationId iid

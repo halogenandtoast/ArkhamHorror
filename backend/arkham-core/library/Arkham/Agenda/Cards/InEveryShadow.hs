@@ -36,7 +36,7 @@ instance HasAbilities InEveryShadow where
         Cards.huntingHorror
     ]
 
-instance AgendaRunner env => RunMessage env InEveryShadow where
+instance AgendaRunner env => RunMessage InEveryShadow where
   runMessage msg a@(InEveryShadow attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.EnemySpawns eid _)] 1 _
       | isSource attrs source -> do

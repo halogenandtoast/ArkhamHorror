@@ -28,7 +28,7 @@ undergroundMuscle :: AgendaCard UndergroundMuscle
 undergroundMuscle =
   agenda (2, A) UndergroundMuscle Cards.undergroundMuscle (Static 3)
 
-instance AgendaRunner env => RunMessage env UndergroundMuscle where
+instance AgendaRunner env => RunMessage UndergroundMuscle where
   runMessage msg (UndergroundMuscle attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       laBellaLunaId <- getJustLocationIdByName "La Bella Luna"

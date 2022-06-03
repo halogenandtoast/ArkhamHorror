@@ -45,7 +45,7 @@ instance HasAbilities CatBurglar1 where
         }
     ]
 
-instance AssetRunner env => RunMessage env CatBurglar1 where
+instance AssetRunner env => RunMessage CatBurglar1 where
   runMessage msg (CatBurglar1 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       push $ skillTestModifier

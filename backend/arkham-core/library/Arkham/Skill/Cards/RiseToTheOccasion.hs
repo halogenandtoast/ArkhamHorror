@@ -16,6 +16,6 @@ newtype RiseToTheOccasion = RiseToTheOccasion SkillAttrs
 riseToTheOccasion :: SkillCard RiseToTheOccasion
 riseToTheOccasion = skill RiseToTheOccasion Cards.riseToTheOccasion
 
-instance RunMessage env RiseToTheOccasion where
+instance RunMessage RiseToTheOccasion where
   runMessage msg (RiseToTheOccasion attrs) =
     RiseToTheOccasion <$> runMessage msg attrs

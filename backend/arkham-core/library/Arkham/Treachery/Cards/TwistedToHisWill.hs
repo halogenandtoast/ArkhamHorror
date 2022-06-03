@@ -21,7 +21,7 @@ newtype TwistedToHisWill = TwistedToHisWill TreacheryAttrs
 twistedToHisWill :: TreacheryCard TwistedToHisWill
 twistedToHisWill = treachery TwistedToHisWill Cards.twistedToHisWill
 
-instance TreacheryRunner env => RunMessage env TwistedToHisWill where
+instance TreacheryRunner env => RunMessage TwistedToHisWill where
   runMessage msg t@(TwistedToHisWill attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       doomCount <- unDoomCount <$> getCount ()

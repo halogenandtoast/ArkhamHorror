@@ -32,7 +32,7 @@ instance HasAbilities ArtStudent where
         )
     ]
 
-instance AssetRunner env => RunMessage env ArtStudent where
+instance AssetRunner env => RunMessage ArtStudent where
   runMessage msg a@(ArtStudent attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (InvestigatorDiscoverCluesAtTheirLocation iid 1 Nothing)

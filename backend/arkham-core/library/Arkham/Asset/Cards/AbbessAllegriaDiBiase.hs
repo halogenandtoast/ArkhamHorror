@@ -49,7 +49,7 @@ getAssetLocation AssetAttrs {..} = case assetLocation of
     Just iid -> getId iid
     Nothing -> error "Invalid location for Abbess"
 
-instance AssetRunner env => RunMessage env AbbessAllegriaDiBiase where
+instance AssetRunner env => RunMessage AbbessAllegriaDiBiase where
   runMessage msg a@(AbbessAllegriaDiBiase attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       investigatorLocationId <- getId @LocationId iid

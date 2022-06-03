@@ -32,7 +32,7 @@ instance HasAbilities ClarityOfMind where
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
     ]
 
-instance AssetRunner env => RunMessage env ClarityOfMind where
+instance AssetRunner env => RunMessage ClarityOfMind where
   runMessage msg a@(ClarityOfMind attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       targets <- selectListMap InvestigatorTarget (InvestigatorAt YourLocation)

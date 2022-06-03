@@ -16,7 +16,7 @@ newtype HotStreak4 = HotStreak4 EventAttrs
 hotStreak4 :: EventCard HotStreak4
 hotStreak4 = event HotStreak4 Cards.hotStreak4
 
-instance EventRunner env => RunMessage env HotStreak4 where
+instance EventRunner env => RunMessage HotStreak4 where
   runMessage msg e@(HotStreak4 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId ->
       e <$ pushAll [TakeResources iid 10 False, Discard (EventTarget eid)]

@@ -61,7 +61,7 @@ instance
   => HasModifiersFor env Location where
   getModifiersFor = $(entityF2 "Location" "getModifiersFor")
 
-instance LocationRunner env => RunMessage env Location where
+instance LocationRunner env => RunMessage Location where
   runMessage msg l = do
     modifiers' <- getModifiers (toSource l) (toTarget l)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg

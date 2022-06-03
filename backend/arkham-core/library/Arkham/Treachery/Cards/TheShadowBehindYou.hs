@@ -51,7 +51,7 @@ instance HasAbilities TheShadowBehindYou where
         | not (usedAbility metadata)
         ]
 
-instance TreacheryRunner env => RunMessage env TheShadowBehindYou where
+instance TreacheryRunner env => RunMessage TheShadowBehindYou where
   runMessage msg t@(TheShadowBehindYou (attrs `With` metadata)) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

@@ -185,7 +185,7 @@ investigatorDefeat = do
          | iid <- defeatedInvestigatorIds
          ]
 
-instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
+instance ScenarioRunner env => RunMessage TheEssexCountyExpress where
   runMessage msg s@(TheEssexCountyExpress attrs@ScenarioAttrs {..}) =
     case msg of
       SetTokensForScenario -> do

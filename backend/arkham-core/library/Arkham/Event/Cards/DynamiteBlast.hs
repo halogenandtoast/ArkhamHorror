@@ -19,7 +19,7 @@ newtype DynamiteBlast = DynamiteBlast EventAttrs
 dynamiteBlast :: EventCard DynamiteBlast
 dynamiteBlast = event DynamiteBlast Cards.dynamiteBlast
 
-instance EventRunner env => RunMessage env DynamiteBlast where
+instance EventRunner env => RunMessage DynamiteBlast where
   runMessage msg e@(DynamiteBlast attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       currentLocationId <- getId @LocationId iid

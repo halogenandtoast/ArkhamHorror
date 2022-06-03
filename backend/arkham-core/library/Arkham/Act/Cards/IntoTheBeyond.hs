@@ -35,7 +35,7 @@ instance HasAbilities IntoTheBeyond where
     $ LocationWithTitle "The Edge of the Universe"
     ]
 
-instance ActRunner env => RunMessage env IntoTheBeyond where
+instance ActRunner env => RunMessage IntoTheBeyond where
   runMessage msg a@(IntoTheBeyond attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))

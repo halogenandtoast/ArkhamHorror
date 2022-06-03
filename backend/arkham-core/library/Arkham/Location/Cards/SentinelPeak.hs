@@ -30,7 +30,7 @@ sentinelPeak = locationWith
   .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Anywhere]
   )
 
-instance LocationRunner env => RunMessage env SentinelPeak where
+instance LocationRunner env => RunMessage SentinelPeak where
   runMessage msg l@(SentinelPeak attrs) = case msg of
     InvestigatorDrewEncounterCard iid card | iid `on` attrs -> l <$ when
       (Hex `member` toTraits card)

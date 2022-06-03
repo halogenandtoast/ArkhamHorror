@@ -35,7 +35,7 @@ instance HasAbilities CrazedShoggoth where
         You
     ]
 
-instance EnemyRunner env => RunMessage env CrazedShoggoth where
+instance EnemyRunner env => RunMessage CrazedShoggoth where
   runMessage msg e@(CrazedShoggoth attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       e <$ push (InvestigatorKilled source iid)

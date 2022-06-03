@@ -38,7 +38,7 @@ instance HasAbilities InterstellarTraveler where
       $ toId attrs
     ]
 
-instance EnemyRunner env => RunMessage env InterstellarTraveler where
+instance EnemyRunner env => RunMessage InterstellarTraveler where
   runMessage msg e@(InterstellarTraveler attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> case enemyLocation attrs of
       Nothing -> pure e

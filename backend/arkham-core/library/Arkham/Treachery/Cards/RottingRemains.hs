@@ -17,7 +17,7 @@ newtype RottingRemains = RottingRemains TreacheryAttrs
 rottingRemains :: TreacheryCard RottingRemains
 rottingRemains = treachery RottingRemains Cards.rottingRemains
 
-instance TreacheryRunner env => RunMessage env RottingRemains where
+instance TreacheryRunner env => RunMessage RottingRemains where
   runMessage msg t@(RottingRemains attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillWillpower 3)

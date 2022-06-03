@@ -30,5 +30,5 @@ instance Query EnemyMatcher env => HasModifiersFor env HiddenLibrary where
       pure $ toModifiers attrs [ AddTrait Passageway | enemyIsMoving ]
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage env HiddenLibrary where
+instance LocationRunner env => RunMessage HiddenLibrary where
   runMessage msg (HiddenLibrary attrs) = HiddenLibrary <$> runMessage msg attrs

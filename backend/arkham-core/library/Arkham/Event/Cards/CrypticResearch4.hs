@@ -17,7 +17,7 @@ newtype CrypticResearch4 = CrypticResearch4 EventAttrs
 crypticResearch4 :: EventCard CrypticResearch4
 crypticResearch4 = event CrypticResearch4 Cards.crypticResearch4
 
-instance (EventRunner env) => RunMessage env CrypticResearch4 where
+instance (EventRunner env) => RunMessage CrypticResearch4 where
   runMessage msg e@(CrypticResearch4 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       locationId <- getId @LocationId iid

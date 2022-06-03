@@ -17,7 +17,7 @@ newtype Elusive = Elusive EventAttrs
 elusive :: EventCard Elusive
 elusive = event Elusive Cards.elusive
 
-instance EventRunner env => RunMessage env Elusive where
+instance EventRunner env => RunMessage Elusive where
   runMessage msg e@(Elusive attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- getSetList iid

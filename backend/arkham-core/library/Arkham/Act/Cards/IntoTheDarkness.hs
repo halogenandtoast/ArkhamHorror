@@ -31,7 +31,7 @@ instance HasAbilities IntoTheDarkness where
     ]
   getAbilities _ = []
 
-instance ActRunner env => RunMessage env IntoTheDarkness where
+instance ActRunner env => RunMessage IntoTheDarkness where
   runMessage msg a@(IntoTheDarkness attrs@ActAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       a <$ push (AdvanceAct actId source AdvancedWithOther)

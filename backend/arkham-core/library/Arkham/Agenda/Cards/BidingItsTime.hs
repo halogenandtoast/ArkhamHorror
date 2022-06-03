@@ -35,7 +35,7 @@ instance HasAbilities BidingItsTime where
   getAbilities (BidingItsTime x) =
     [mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase]
 
-instance AgendaRunner env => RunMessage env BidingItsTime where
+instance AgendaRunner env => RunMessage BidingItsTime where
   runMessage msg a@(BidingItsTime attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId

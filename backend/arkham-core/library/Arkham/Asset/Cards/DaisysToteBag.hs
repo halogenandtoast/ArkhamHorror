@@ -20,7 +20,7 @@ daisysToteBag = asset DaisysToteBag Cards.daisysToteBag
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
 
-instance AssetRunner env => RunMessage env DaisysToteBag where
+instance AssetRunner env => RunMessage DaisysToteBag where
   runMessage msg (DaisysToteBag attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       pushAll $ replicate 2 (AddSlot iid HandSlot (slot attrs))

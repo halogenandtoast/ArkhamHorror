@@ -30,7 +30,7 @@ instance HasAbilities DigDeep2 where
     | idx <- [1, 2]
     ]
 
-instance (AssetRunner env) => RunMessage env DigDeep2 where
+instance (AssetRunner env) => RunMessage DigDeep2 where
   runMessage msg a@(DigDeep2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier

@@ -27,7 +27,7 @@ instance HasModifiersFor env LightOfAforgomon where
     pure $ toModifiers attrs [TreatAllDamageAsDirect]
   getModifiersFor _ _ _ = pure []
 
-instance TreacheryRunner env => RunMessage env LightOfAforgomon where
+instance TreacheryRunner env => RunMessage LightOfAforgomon where
   runMessage msg (LightOfAforgomon attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       exemptActs <- getSet (TreacheryCardCode $ CardCode "81025")

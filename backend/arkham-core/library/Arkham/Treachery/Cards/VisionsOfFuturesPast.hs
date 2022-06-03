@@ -22,7 +22,7 @@ visionsOfFuturesPast :: TreacheryCard VisionsOfFuturesPast
 visionsOfFuturesPast =
   treachery VisionsOfFuturesPast Cards.visionsOfFuturesPast
 
-instance TreacheryRunner env => RunMessage env VisionsOfFuturesPast where
+instance TreacheryRunner env => RunMessage VisionsOfFuturesPast where
   runMessage msg t@(VisionsOfFuturesPast attrs@TreacheryAttrs {..}) =
     case msg of
       Revelation iid source | isSource attrs source ->

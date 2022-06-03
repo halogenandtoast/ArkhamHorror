@@ -58,7 +58,7 @@ instance Query LocationMatcher env => HasModifiersFor env NoAsylum where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActRunner env => RunMessage env NoAsylum where
+instance ActRunner env => RunMessage NoAsylum where
   runMessage msg a@(NoAsylum attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)

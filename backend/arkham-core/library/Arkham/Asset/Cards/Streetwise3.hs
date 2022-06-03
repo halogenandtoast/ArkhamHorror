@@ -32,7 +32,7 @@ instance HasAbilities Streetwise3 where
     | idx <- [1, 2]
     ]
 
-instance AssetRunner env => RunMessage env Streetwise3 where
+instance AssetRunner env => RunMessage Streetwise3 where
   runMessage msg a@(Streetwise3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier

@@ -22,7 +22,7 @@ newtype MonsterSlayer = MonsterSlayer EventAttrs
 monsterSlayer :: EventCard MonsterSlayer
 monsterSlayer = event MonsterSlayer Cards.monsterSlayer
 
-instance EventRunner env => RunMessage env MonsterSlayer where
+instance EventRunner env => RunMessage MonsterSlayer where
   runMessage msg e@(MonsterSlayer attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

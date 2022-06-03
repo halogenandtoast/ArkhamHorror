@@ -15,15 +15,13 @@ import Arkham.Target
 import Arkham.Token
 
 newtype BlindingLight = BlindingLight EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blindingLight :: EffectArgs -> BlindingLight
 blindingLight = BlindingLight . uncurry4 (baseAttrs "01066")
 
-instance HasModifiersFor env BlindingLight
-
-instance HasQueue env => RunMessage env BlindingLight where
+instance RunMessage BlindingLight where
   runMessage msg e@(BlindingLight attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget ->
       e <$ when

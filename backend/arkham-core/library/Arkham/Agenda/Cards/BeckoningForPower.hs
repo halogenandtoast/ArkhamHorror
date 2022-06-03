@@ -21,7 +21,7 @@ beckoningForPower :: AgendaCard BeckoningForPower
 beckoningForPower =
   agenda (2, A) BeckoningForPower Cards.beckoningForPower (Static 10)
 
-instance AgendaRunner env => RunMessage env BeckoningForPower where
+instance AgendaRunner env => RunMessage BeckoningForPower where
   runMessage msg a@(BeckoningForPower attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
       a <$ push (ScenarioResolution $ Resolution 2)

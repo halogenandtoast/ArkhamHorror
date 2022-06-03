@@ -43,7 +43,7 @@ instance HasAbilities ExhibitHallMedusaExhibit where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage env ExhibitHallMedusaExhibit where
+instance LocationRunner env => RunMessage ExhibitHallMedusaExhibit where
   runMessage msg l@(ExhibitHallMedusaExhibit attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (ChooseAndDiscardAsset iid AnyAsset)

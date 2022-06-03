@@ -18,7 +18,7 @@ newtype ATestOfWill1 = ATestOfWill1 EventAttrs
 aTestOfWill1 :: EventCard ATestOfWill1
 aTestOfWill1 = event ATestOfWill1 Cards.aTestOfWill1
 
-instance EventRunner env => RunMessage env ATestOfWill1 where
+instance EventRunner env => RunMessage ATestOfWill1 where
   runMessage msg e@(ATestOfWill1 attrs) = case msg of
     InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs ->
       e <$ pushAll [CancelNext RevelationMessage, Exile $ toTarget attrs]

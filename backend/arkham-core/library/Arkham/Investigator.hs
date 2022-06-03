@@ -57,7 +57,7 @@ instance {-# OVERLAPPING #-} HasTraits Investigator where
 instance HasAbilities Investigator where
   getAbilities = $(entityF "Investigator" "getAbilities")
 
-instance InvestigatorRunner env => RunMessage env Investigator where
+instance InvestigatorRunner env => RunMessage Investigator where
   runMessage msg i = do
     modifiers' <- getModifiers (toSource i) (toTarget i)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg

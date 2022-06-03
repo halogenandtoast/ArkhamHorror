@@ -34,7 +34,7 @@ instance HasAbilities BreakingAndEntering where
         Cards.exhibitHallRestrictedHall
     ]
 
-instance ActRunner env => RunMessage env BreakingAndEntering where
+instance ActRunner env => RunMessage BreakingAndEntering where
   runMessage msg a@(BreakingAndEntering attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)

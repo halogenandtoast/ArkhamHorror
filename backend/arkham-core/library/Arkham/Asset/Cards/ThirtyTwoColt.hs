@@ -30,7 +30,7 @@ instance HasAbilities ThirtyTwoColt where
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1])
     ]
 
-instance AssetRunner env => RunMessage env ThirtyTwoColt where
+instance AssetRunner env => RunMessage ThirtyTwoColt where
   runMessage msg a@(ThirtyTwoColt attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)

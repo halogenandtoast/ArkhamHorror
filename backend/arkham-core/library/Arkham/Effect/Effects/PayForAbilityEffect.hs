@@ -166,7 +166,7 @@ instance
   , HasCount ActionRemainingCount env InvestigatorId
   , HasId LeadInvestigatorId env ()
   )
-  => RunMessage env PayForAbilityEffect where
+  => RunMessage PayForAbilityEffect where
   runMessage msg e@(PayForAbilityEffect (attrs `With` payments)) = case msg of
     CreatedEffect eid (Just (EffectAbility (Ability {..}, _))) source (InvestigatorTarget iid)
       | eid == toId attrs

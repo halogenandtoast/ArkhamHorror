@@ -24,5 +24,5 @@ poleman = enemyWith
   . (preyL .~ Prey (HasMostMatchingAsset (AssetWithTitle "Innocent Reveler")))
   )
 
-instance EnemyRunner env => RunMessage env Poleman where
+instance EnemyRunner env => RunMessage Poleman where
   runMessage msg (Poleman attrs) = Poleman <$> runMessage msg attrs

@@ -36,7 +36,7 @@ instance HasAbilities TheStrangerTheShoresOfHali where
         .~ PlayerLimit PerRound 1
     ]
 
-instance HasQueue env => RunMessage env TheStrangerTheShoresOfHali where
+instance RunMessage TheStrangerTheShoresOfHali where
   runMessage msg e@(TheStrangerTheShoresOfHali attrs) = case msg of
     UseCardAbility iid (ProxySource _ source) _ 1 _ | isSource attrs source ->
       e

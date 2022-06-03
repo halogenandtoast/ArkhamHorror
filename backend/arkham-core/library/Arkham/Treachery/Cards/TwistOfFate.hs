@@ -20,7 +20,7 @@ newtype TwistOfFate = TwistOfFate TreacheryAttrs
 twistOfFate :: TreacheryCard TwistOfFate
 twistOfFate = treachery TwistOfFate Cards.twistOfFate
 
-instance TreacheryRunner env => RunMessage env TwistOfFate where
+instance TreacheryRunner env => RunMessage TwistOfFate where
   runMessage msg t@(TwistOfFate attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RequestTokens source (Just iid) 1 SetAside)

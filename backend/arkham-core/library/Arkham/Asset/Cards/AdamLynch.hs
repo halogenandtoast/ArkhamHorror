@@ -44,7 +44,7 @@ instance Query LocationMatcher env => HasModifiersFor env AdamLynch where
         [ ActionCostSetToModifier 1 | isSecurityOffice && controlledBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env AdamLynch where
+instance AssetRunner env => RunMessage AdamLynch where
   runMessage msg a@(AdamLynch attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ pushAll [AddToken Tablet, RemoveFromGame $ toTarget attrs]

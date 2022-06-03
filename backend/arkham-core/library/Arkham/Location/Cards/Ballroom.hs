@@ -42,7 +42,7 @@ instance HasAbilities Ballroom where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env Ballroom where
+instance LocationRunner env => RunMessage Ballroom where
   runMessage msg l@(Ballroom attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (TakeResources iid 2 False)

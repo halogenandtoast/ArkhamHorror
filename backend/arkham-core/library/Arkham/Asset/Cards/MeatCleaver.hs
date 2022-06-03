@@ -36,7 +36,7 @@ paidHorror (HorrorPayment _) = True
 paidHorror (Payments ps) = any paidHorror ps
 paidHorror _ = False
 
-instance AssetRunner env => RunMessage env MeatCleaver where
+instance AssetRunner env => RunMessage MeatCleaver where
   runMessage msg a@(MeatCleaver attrs) = case msg of
     UseCardAbility iid source _ 1 payments | isSource attrs source -> do
       remainingSanity <- unRemainingSanity <$> getCount iid

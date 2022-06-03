@@ -18,7 +18,7 @@ newtype WorkingAHunch = WorkingAHunch EventAttrs
 workingAHunch :: EventCard WorkingAHunch
 workingAHunch = event WorkingAHunch Cards.workingAHunch
 
-instance EventRunner env => RunMessage env WorkingAHunch where
+instance EventRunner env => RunMessage WorkingAHunch where
   runMessage msg e@(WorkingAHunch attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       currentLocationId <- getId @LocationId iid

@@ -31,7 +31,7 @@ instance Query EnemyMatcher env => HasModifiersFor env MaskOfUmordhoth where
       pure $ toModifiers attrs [HealthModifier 2, AddKeyword keyword]
   getModifiersFor _ _ _ = pure []
 
-instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
+instance TreacheryRunner env => RunMessage MaskOfUmordhoth where
   runMessage msg t@(MaskOfUmordhoth attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       enemies <- map unFarthestEnemyId <$> getSetList (iid, EnemyTrait Cultist)

@@ -2,6 +2,7 @@ module Arkham.GameEnv where
 
 import Arkham.Prelude
 
+import Arkham.Classes.Depth
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import {-# SOURCE #-} Arkham.Game
@@ -19,6 +20,7 @@ data GameEnv = GameEnv
   , gameEnvQueue :: IORef [Message]
   , gameRandomGen :: IORef StdGen
   , gameLogger :: Text -> IO ()
+  , gameDepthLock :: IORef Int
   }
 
 instance HasStdGen GameEnv where
@@ -29,6 +31,9 @@ instance HasGame GameEnv where
 
 instance HasQueue GameEnv where
   messageQueue = lens gameEnvQueue $ \m x -> m {gameEnvQueue = x}
+
+instance HasDepth GameEnv where
+  depthL = lens gameDepthLock $ \m x -> m {gameDepthLock = x}
 
 instance HasGameLogger GameEnv where
   gameLoggerL = lens gameLogger $ \m x -> m {gameLogger = x}
@@ -47,7 +52,8 @@ toGameEnv = do
   gen <- view genL
   queueRef <- view messageQueue
   logger <- view gameLoggerL
-  pure $ GameEnv game queueRef gen logger
+  depthLock <- newIORef 0
+  pure $ GameEnv game queueRef gen logger depthLock
 
 instance MonadRandom GameEnvT where
   getRandomR lohi = do

@@ -31,7 +31,7 @@ instance HasAbilities DressingRoom where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env DressingRoom where
+instance LocationRunner env => RunMessage DressingRoom where
   runMessage msg l@(DressingRoom attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (HealHorror (InvestigatorTarget iid) 3)

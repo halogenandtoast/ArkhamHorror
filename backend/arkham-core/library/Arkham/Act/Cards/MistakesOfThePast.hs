@@ -28,7 +28,7 @@ mistakesOfThePast = act
   Cards.mistakesOfThePast
   (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
-instance ActRunner env => RunMessage env MistakesOfThePast where
+instance ActRunner env => RunMessage MistakesOfThePast where
   runMessage msg a@(MistakesOfThePast attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       locations <- selectList $ RevealedLocation <> LocationWithTitle

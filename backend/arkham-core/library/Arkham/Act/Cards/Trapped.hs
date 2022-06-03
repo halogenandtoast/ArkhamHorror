@@ -22,7 +22,7 @@ trapped :: ActCard Trapped
 trapped =
   act (1, A) Trapped Cards.trapped (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
-instance ActRunner env => RunMessage env Trapped where
+instance ActRunner env => RunMessage Trapped where
   runMessage msg a@(Trapped attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       studyId <- selectJust $ LocationWithTitle "Study"

@@ -39,7 +39,7 @@ instance HasAbilities TheEndOfAllThings where
     $ EnemyWithTitle "Yog-Sothoth"
     ]
 
-instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessage env TheEndOfAllThings where
+instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessage TheEndOfAllThings where
   runMessage msg a@(TheEndOfAllThings attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)

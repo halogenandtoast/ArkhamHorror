@@ -32,7 +32,7 @@ instance HasAbilities SearchingForAnswers where
         "The Hidden Chamber"
     ]
 
-instance ActRunner env => RunMessage env SearchingForAnswers where
+instance ActRunner env => RunMessage SearchingForAnswers where
   runMessage msg a@(SearchingForAnswers attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)

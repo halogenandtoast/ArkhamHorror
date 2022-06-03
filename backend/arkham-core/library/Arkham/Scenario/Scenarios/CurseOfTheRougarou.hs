@@ -57,7 +57,7 @@ instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId L
     ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 4)
     otherFace -> getTokenValue iid otherFace attrs
 
-instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
+instance ScenarioRunner env => RunMessage CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds

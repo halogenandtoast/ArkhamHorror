@@ -15,5 +15,5 @@ hallway :: LocationCard Hallway
 hallway =
   location Hallway Cards.hallway 1 (Static 0) Square [Triangle, Plus, Diamond]
 
-instance (LocationRunner env) => RunMessage env Hallway where
+instance (LocationRunner env) => RunMessage Hallway where
   runMessage msg (Hallway attrs) = Hallway <$> runMessage msg attrs

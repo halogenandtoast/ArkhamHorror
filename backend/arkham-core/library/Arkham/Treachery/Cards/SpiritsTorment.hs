@@ -36,7 +36,7 @@ instance HasAbilities SpiritsTorment where
       [ActionCost 1, PlaceClueOnLocationCost 1]
     ]
 
-instance TreacheryRunner env => RunMessage env SpiritsTorment where
+instance TreacheryRunner env => RunMessage SpiritsTorment where
   runMessage msg t@(SpiritsTorment attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId iid

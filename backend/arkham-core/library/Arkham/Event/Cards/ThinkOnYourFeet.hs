@@ -24,7 +24,7 @@ instance
   , HasSet AccessibleLocationId env LocationId
   , HasId LocationId env InvestigatorId
   )
-  => RunMessage env ThinkOnYourFeet where
+  => RunMessage ThinkOnYourFeet where
   runMessage msg e@(ThinkOnYourFeet attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       lid <- getId @LocationId iid

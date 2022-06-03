@@ -32,7 +32,7 @@ instance HasAbilities DrawingThin where
         $ ExhaustCost (toTarget a)
     ]
 
-instance AssetRunner env => RunMessage env DrawingThin where
+instance AssetRunner env => RunMessage DrawingThin where
   runMessage msg a@(DrawingThin attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ CreateWindowModifierEffect

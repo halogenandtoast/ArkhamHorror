@@ -51,7 +51,7 @@ instance HasTokenValue env AgnesBaker where
       attrs
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage env AgnesBaker where
+instance InvestigatorRunner env => RunMessage AgnesBaker where
   runMessage msg i@(AgnesBaker attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       enemyIds <- selectList $ EnemyAt YourLocation

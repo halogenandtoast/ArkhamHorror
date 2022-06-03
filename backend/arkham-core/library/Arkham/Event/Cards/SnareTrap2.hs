@@ -40,7 +40,7 @@ instance HasAbilities SnareTrap2 where
       ]
     _ -> []
 
-instance EventRunner env => RunMessage env SnareTrap2 where
+instance EventRunner env => RunMessage SnareTrap2 where
   runMessage msg e@(SnareTrap2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getId iid

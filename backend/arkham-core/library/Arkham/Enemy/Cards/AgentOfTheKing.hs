@@ -40,7 +40,7 @@ instance HasAbilities AgentOfTheKing where
     <> EnemyWithAnyClues
     ]
 
-instance EnemyRunner env => RunMessage env AgentOfTheKing where
+instance EnemyRunner env => RunMessage AgentOfTheKing where
   runMessage msg e@(AgentOfTheKing attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       e <$ pushAll [InvestigatorSpendClues iid 1, PlaceClues (toTarget attrs) 1]

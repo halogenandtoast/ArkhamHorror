@@ -18,7 +18,7 @@ newtype CryptChill = CryptChill TreacheryAttrs
 cryptChill :: TreacheryCard CryptChill
 cryptChill = treachery CryptChill Cards.cryptChill
 
-instance TreacheryRunner env => RunMessage env CryptChill where
+instance TreacheryRunner env => RunMessage CryptChill where
   runMessage msg t@(CryptChill attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillWillpower 4)

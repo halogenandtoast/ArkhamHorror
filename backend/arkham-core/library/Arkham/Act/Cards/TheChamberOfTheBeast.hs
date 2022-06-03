@@ -45,7 +45,7 @@ instance HasAbilities TheChamberOfTheBeast where
     $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage env TheChamberOfTheBeast where
+instance ActRunner env => RunMessage TheChamberOfTheBeast where
   runMessage msg a@(TheChamberOfTheBeast attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

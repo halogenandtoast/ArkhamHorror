@@ -22,5 +22,5 @@ ravenousGhoul = enemyWith
   (1, 1)
   (preyL .~ Prey LowestRemainingHealth)
 
-instance EnemyRunner env => RunMessage env RavenousGhoul where
+instance EnemyRunner env => RunMessage RavenousGhoul where
   runMessage msg (RavenousGhoul attrs) = RavenousGhoul <$> runMessage msg attrs

@@ -26,7 +26,7 @@ instance HasAbilities FirstAid where
         [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
 
-instance AssetRunner env => RunMessage env FirstAid where
+instance AssetRunner env => RunMessage FirstAid where
   runMessage msg a@(FirstAid attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       targets <- selectListMap InvestigatorTarget $ InvestigatorAt YourLocation

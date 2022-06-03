@@ -34,7 +34,7 @@ instance HasAbilities RehearsalRoom where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env RehearsalRoom where
+instance LocationRunner env => RunMessage RehearsalRoom where
   runMessage msg l@(RehearsalRoom attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)

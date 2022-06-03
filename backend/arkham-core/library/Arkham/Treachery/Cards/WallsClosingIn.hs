@@ -23,7 +23,7 @@ newtype WallsClosingIn = WallsClosingIn TreacheryAttrs
 wallsClosingIn :: TreacheryCard WallsClosingIn
 wallsClosingIn = treachery WallsClosingIn Cards.wallsClosingIn
 
-instance TreacheryRunner env => RunMessage env WallsClosingIn where
+instance TreacheryRunner env => RunMessage WallsClosingIn where
   runMessage msg t@(WallsClosingIn attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       shroud <- fmap unShroud . getCount =<< getId @LocationId iid

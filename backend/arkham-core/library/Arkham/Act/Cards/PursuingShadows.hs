@@ -44,7 +44,7 @@ instance HasAbilities PursuingShadows where
       $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage env PursuingShadows where
+instance ActRunner env => RunMessage PursuingShadows where
   runMessage msg a@(PursuingShadows attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       theOrganist <- EnemyTarget <$> getTheOrganist

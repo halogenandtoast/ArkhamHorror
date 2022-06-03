@@ -58,7 +58,7 @@ instance HasTokenValue env MinhThiPhan where
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
 -- TODO: Should we let card selection for ability
-instance (InvestigatorRunner env) => RunMessage env MinhThiPhan where
+instance (InvestigatorRunner env) => RunMessage MinhThiPhan where
   runMessage msg i@(MinhThiPhan attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.CommittedCard _ card)] 1 _
       | isSource attrs source -> i <$ push

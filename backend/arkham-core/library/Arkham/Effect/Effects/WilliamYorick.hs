@@ -14,19 +14,13 @@ import Arkham.Modifier
 import Arkham.Target
 
 newtype WilliamYorick = WilliamYorick EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 williamYorick :: EffectArgs -> WilliamYorick
 williamYorick = WilliamYorick . uncurry4 (baseAttrs "03005")
 
-instance HasModifiersFor env WilliamYorick
-
-instance
-  ( HasList DiscardedPlayerCard env InvestigatorId
-  , HasModifiersFor env ()
-  )
-  => RunMessage env WilliamYorick where
+instance RunMessage WilliamYorick where
   runMessage msg e@(WilliamYorick attrs) = case msg of
     PassedSkillTest _ _ _ SkillTestInitiatorTarget{} _ _ ->
       case effectTarget attrs of
@@ -35,7 +29,7 @@ instance
           if CardsCannotLeaveYourDiscardPile `elem` modifiers'
             then pure e
             else do
-              discards <- map unDiscardedPlayerCard <$> getList iid
+              discards <- selectList $ DiscardedCardMatcher (InvestigatorWithId iid) AnyCard
               e <$ when
                 (notNull discards)
                 (push $ chooseOne

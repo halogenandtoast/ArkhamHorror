@@ -19,7 +19,7 @@ newtype QuickThinking = QuickThinking SkillAttrs
 quickThinking :: SkillCard QuickThinking
 quickThinking = skill QuickThinking Cards.quickThinking
 
-instance RunMessage env QuickThinking where
+instance RunMessage QuickThinking where
   runMessage msg s@(QuickThinking attrs) = case msg of
     PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _ n | n >= 2 -> s <$ push
       (chooseOne

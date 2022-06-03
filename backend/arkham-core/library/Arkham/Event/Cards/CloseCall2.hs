@@ -21,7 +21,7 @@ newtype CloseCall2 = CloseCall2 EventAttrs
 closeCall2 :: EventCard CloseCall2
 closeCall2 = event CloseCall2 Cards.closeCall2
 
-instance RunMessage env CloseCall2 where
+instance RunMessage CloseCall2 where
   runMessage msg e@(CloseCall2 attrs) = case msg of
     InvestigatorPlayEvent _iid eid _ [Window Timing.After (Window.EnemyEvaded _ enemyId)] _
       | eid == toId attrs

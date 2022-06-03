@@ -30,7 +30,7 @@ instance HasAbilities Machete where
         $ ActionCost 1
     ]
 
-instance AssetRunner env => RunMessage env Machete where
+instance AssetRunner env => RunMessage Machete where
   runMessage msg a@(Machete attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       criteriaMet <- (== 1) <$> selectCount (EnemyIsEngagedWith $ InvestigatorWithId iid)

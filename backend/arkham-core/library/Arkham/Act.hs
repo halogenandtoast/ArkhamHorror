@@ -30,7 +30,7 @@ instance
   , HasId LocationId env InvestigatorId
   , HasModifiersFor env ()
   ) =>
-  RunMessage env Act
+  RunMessage Act
   where
   runMessage = $(entityRunMessage "Act")
 

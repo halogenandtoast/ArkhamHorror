@@ -36,6 +36,6 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env Admini
       pure $ toModifiers attrs [ CannotInvestigate | resources <= 4 ]
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage env AdministrationOffice_130 where
+instance LocationRunner env => RunMessage AdministrationOffice_130 where
   runMessage msg (AdministrationOffice_130 attrs) =
     AdministrationOffice_130 <$> runMessage msg attrs

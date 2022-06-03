@@ -22,7 +22,7 @@ newtype VastExpanse = VastExpanse TreacheryAttrs
 vastExpanse :: TreacheryCard VastExpanse
 vastExpanse = treachery VastExpanse Cards.vastExpanse
 
-instance TreacheryRunner env => RunMessage env VastExpanse where
+instance TreacheryRunner env => RunMessage VastExpanse where
   runMessage msg t@(VastExpanse attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       extradimensionalCount <- length

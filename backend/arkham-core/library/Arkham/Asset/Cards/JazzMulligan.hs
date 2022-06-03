@@ -44,7 +44,7 @@ instance HasSet Trait env LocationId => HasModifiersFor env JazzMulligan where
       pure [ toModifier attrs Blank | Miskatonic `member` traits ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env JazzMulligan where
+instance AssetRunner env => RunMessage JazzMulligan where
   runMessage msg a@(JazzMulligan attrs@AssetAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId iid

@@ -22,7 +22,7 @@ newtype Resourceful = Resourceful SkillAttrs
 resourceful :: SkillCard Resourceful
 resourceful = skill Resourceful Cards.resourceful
 
-instance SkillRunner env => RunMessage env Resourceful where
+instance SkillRunner env => RunMessage Resourceful where
   runMessage msg s@(Resourceful attrs) = case msg of
     PassedSkillTest _ _ _ target _ _ | isTarget attrs target -> do
       targets <- selectList

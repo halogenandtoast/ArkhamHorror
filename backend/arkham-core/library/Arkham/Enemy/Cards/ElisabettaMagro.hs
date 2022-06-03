@@ -31,7 +31,7 @@ instance HasAbilities ElisabettaMagro where
         MythosPhase
     ]
 
-instance EnemyRunner env => RunMessage env ElisabettaMagro where
+instance EnemyRunner env => RunMessage ElisabettaMagro where
   runMessage msg e@(ElisabettaMagro attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (PlaceDoom (toTarget attrs) 1)

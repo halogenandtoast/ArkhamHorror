@@ -22,7 +22,7 @@ newtype TheThirdAct = TheThirdAct AgendaAttrs
 theThirdAct :: AgendaCard TheThirdAct
 theThirdAct = agenda (1, A) TheThirdAct Cards.theThirdAct (Static 6)
 
-instance AgendaRunner env => RunMessage env TheThirdAct where
+instance AgendaRunner env => RunMessage TheThirdAct where
   runMessage msg a@(TheThirdAct attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       royalEmissary <- fromJustNote "missing royal emissary" <$> selectOne

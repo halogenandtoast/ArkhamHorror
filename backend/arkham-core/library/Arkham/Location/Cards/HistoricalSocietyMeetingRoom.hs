@@ -50,7 +50,7 @@ instance HasAbilities HistoricalSocietyMeetingRoom where
             AnyEnemy
         ]
 
-instance LocationRunner env => RunMessage env HistoricalSocietyMeetingRoom where
+instance LocationRunner env => RunMessage HistoricalSocietyMeetingRoom where
   runMessage msg l@(HistoricalSocietyMeetingRoom attrs) = case msg of
     UseCardAbility iid source _ 1 _
       | isSource attrs source && locationRevealed attrs -> l

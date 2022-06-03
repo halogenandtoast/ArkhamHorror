@@ -16,7 +16,7 @@ newtype OnTheLam = OnTheLam EventAttrs
 onTheLam :: EventCard OnTheLam
 onTheLam = event OnTheLam Cards.onTheLam
 
-instance EventRunner env => RunMessage env OnTheLam where
+instance EventRunner env => RunMessage OnTheLam where
   runMessage msg e@(OnTheLam attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       e <$ unshiftEffect attrs (InvestigatorTarget iid)

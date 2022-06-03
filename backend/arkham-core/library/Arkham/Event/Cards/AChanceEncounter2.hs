@@ -30,7 +30,7 @@ instance
   , HasSet InvestigatorId env ()
   , HasList DiscardedPlayerCard env InvestigatorId
   )
-  => RunMessage env AChanceEncounter2 where
+  => RunMessage AChanceEncounter2 where
   runMessage msg e@(AChanceEncounter2 attrs) = case msg of
     InvestigatorPlayDynamicEvent iid eid payment | eid == toId attrs -> do
       investigatorIds <-

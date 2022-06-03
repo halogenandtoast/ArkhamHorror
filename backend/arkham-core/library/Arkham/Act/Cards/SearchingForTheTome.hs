@@ -38,7 +38,7 @@ instance HasAbilities SearchingForTheTome where
       $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage env SearchingForTheTome where
+instance ActRunner env => RunMessage SearchingForTheTome where
   runMessage msg a@(SearchingForTheTome attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)

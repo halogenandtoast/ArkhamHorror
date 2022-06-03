@@ -35,7 +35,7 @@ instance HasAbilities Shortcut2 where
       ]
     _ -> []
 
-instance EventRunner env => RunMessage env Shortcut2 where
+instance EventRunner env => RunMessage Shortcut2 where
   runMessage msg e@(Shortcut2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- selectJust $ LocationWithInvestigator $ InvestigatorWithId iid

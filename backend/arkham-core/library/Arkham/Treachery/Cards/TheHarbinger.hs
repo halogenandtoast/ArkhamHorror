@@ -44,7 +44,7 @@ instance HasAbilities TheHarbinger where
       ]
     _ -> []
 
-instance TreacheryRunner env => RunMessage env TheHarbinger where
+instance TreacheryRunner env => RunMessage TheHarbinger where
   runMessage msg t@(TheHarbinger attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       ([AttachTreachery (toId attrs) (InvestigatorTarget iid)]

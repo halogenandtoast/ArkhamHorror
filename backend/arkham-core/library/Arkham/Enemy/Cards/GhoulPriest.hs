@@ -23,5 +23,5 @@ ghoulPriest = enemyWith
   (2, 2)
   (preyL .~ Prey (InvestigatorWithHighestSkill SkillCombat))
 
-instance EnemyRunner env => RunMessage env GhoulPriest where
+instance EnemyRunner env => RunMessage GhoulPriest where
   runMessage msg (GhoulPriest attrs) = GhoulPriest <$> runMessage msg attrs

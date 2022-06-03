@@ -44,7 +44,7 @@ instance HasAbilities RicesWhereabouts where
       (assetIs Assets.jazzMulligan)
     ]
 
-instance ActRunner env => RunMessage env RicesWhereabouts where
+instance ActRunner env => RunMessage RicesWhereabouts where
   runMessage msg a@(RicesWhereabouts attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       playerCount <- getPlayerCount

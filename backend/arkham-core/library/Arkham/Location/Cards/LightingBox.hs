@@ -27,5 +27,5 @@ instance HasModifiersFor env LightingBox where
     | iid `on` attrs = pure $ toModifiers attrs [IncreaseCostOf AnyCard 2]
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage env LightingBox where
+instance LocationRunner env => RunMessage LightingBox where
   runMessage msg (LightingBox attrs) = LightingBox <$> runMessage msg attrs

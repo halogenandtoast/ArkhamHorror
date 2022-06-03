@@ -35,5 +35,5 @@ instance Query LocationMatcher env => HasModifiersFor env BogGator where
         else []
   getModifiersFor _ _ _ = pure []
 
-instance (EnemyRunner env) => RunMessage env BogGator where
+instance (EnemyRunner env) => RunMessage BogGator where
   runMessage msg (BogGator attrs) = BogGator <$> runMessage msg attrs

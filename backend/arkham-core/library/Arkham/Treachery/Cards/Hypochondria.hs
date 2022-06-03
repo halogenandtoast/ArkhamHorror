@@ -33,7 +33,7 @@ instance HasAbilities Hypochondria where
       2
     ]
 
-instance TreacheryRunner env => RunMessage env Hypochondria where
+instance TreacheryRunner env => RunMessage Hypochondria where
   runMessage msg t@(Hypochondria attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

@@ -30,7 +30,7 @@ instance HasAbilities PredatorOrPrey where
   getAbilities (PredatorOrPrey attrs) =
     [mkAbility attrs 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
 
-instance (AgendaRunner env) => RunMessage env PredatorOrPrey where
+instance (AgendaRunner env) => RunMessage PredatorOrPrey where
   runMessage msg a@(PredatorOrPrey attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
       push (Resign iid)

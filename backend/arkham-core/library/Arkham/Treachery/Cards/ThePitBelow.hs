@@ -36,7 +36,7 @@ instance HasAbilities ThePitBelow where
   getAbilities (ThePitBelow a) =
     [mkAbility a 1 $ ForcedAbility $ RoundEnds Timing.When]
 
-instance TreacheryRunner env => RunMessage env ThePitBelow where
+instance TreacheryRunner env => RunMessage ThePitBelow where
   runMessage msg t@(ThePitBelow attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid

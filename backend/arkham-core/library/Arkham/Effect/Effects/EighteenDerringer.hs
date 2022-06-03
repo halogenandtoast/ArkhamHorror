@@ -12,13 +12,13 @@ import Arkham.Message
 import Arkham.Target
 
 newtype EighteenDerringer = EighteenDerringer EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor env)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eighteenDerringer :: EffectArgs -> EighteenDerringer
 eighteenDerringer = EighteenDerringer . uncurry4 (baseAttrs "60505")
 
-instance HasQueue env => RunMessage env EighteenDerringer where
+instance RunMessage m EighteenDerringer where
   runMessage msg e@(EighteenDerringer attrs) = case msg of
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | effectSource attrs == source

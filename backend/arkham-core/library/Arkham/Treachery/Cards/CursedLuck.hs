@@ -44,7 +44,7 @@ instance HasAbilities CursedLuck where
       $ Static 1
     ]
 
-instance TreacheryRunner env => RunMessage env CursedLuck where
+instance TreacheryRunner env => RunMessage CursedLuck where
   runMessage msg t@(CursedLuck attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) (InvestigatorTarget iid))

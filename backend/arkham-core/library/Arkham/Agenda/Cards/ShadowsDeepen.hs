@@ -38,7 +38,7 @@ instance HasAbilities ShadowsDeepen where
         Cards.huntingHorror
     ]
 
-instance AgendaRunner env => RunMessage env ShadowsDeepen where
+instance AgendaRunner env => RunMessage ShadowsDeepen where
   runMessage msg a@(ShadowsDeepen attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.EnemySpawns eid _)] 1 _
       | isSource attrs source -> do

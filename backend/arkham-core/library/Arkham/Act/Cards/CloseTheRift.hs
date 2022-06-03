@@ -36,7 +36,7 @@ instance HasAbilities CloseTheRift where
   getAbilities (CloseTheRift x) =
     withBaseAbilities x [mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1]
 
-instance ActRunner env => RunMessage env CloseTheRift where
+instance ActRunner env => RunMessage CloseTheRift where
   runMessage msg a@(CloseTheRift attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))

@@ -37,7 +37,7 @@ instance HasAbilities Haunted where
         2
     ]
 
-instance TreacheryRunner env => RunMessage env Haunted where
+instance TreacheryRunner env => RunMessage Haunted where
   runMessage msg t@(Haunted attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

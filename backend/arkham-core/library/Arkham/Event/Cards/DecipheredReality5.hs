@@ -25,7 +25,7 @@ newtype DecipheredReality5 = DecipheredReality5 EventAttrs
 decipheredReality5 :: EventCard DecipheredReality5
 decipheredReality5 = event DecipheredReality5 Cards.decipheredReality5
 
-instance EventRunner env => RunMessage env DecipheredReality5 where
+instance EventRunner env => RunMessage DecipheredReality5 where
   runMessage msg e@(DecipheredReality5 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getId iid

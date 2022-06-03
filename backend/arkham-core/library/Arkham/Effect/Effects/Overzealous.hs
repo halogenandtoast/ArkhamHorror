@@ -26,7 +26,7 @@ instance HasModifiersFor env Overzealous where
     pure $ toModifiers a [AddKeyword Keyword.Surge]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env Overzealous where
+instance HasQueue env => RunMessage Overzealous where
   runMessage msg e@(Overzealous attrs) = case msg of
     Discard (TreacheryTarget tid)
       | effectTarget attrs == CardIdTarget (unTreacheryId tid) -> e

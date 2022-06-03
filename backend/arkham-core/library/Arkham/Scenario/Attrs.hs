@@ -252,7 +252,7 @@ addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
         (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
       pure $ toCardDef card /= randomWeakness
 
-instance ScenarioAttrsRunner env => RunMessage env ScenarioAttrs where
+instance ScenarioAttrsRunner env => RunMessage ScenarioAttrs where
   runMessage msg a@ScenarioAttrs {..} = case msg of
     Setup -> a <$ pushEnd (Begin InvestigationPhase)
     StartCampaign -> do

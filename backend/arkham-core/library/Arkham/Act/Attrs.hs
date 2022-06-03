@@ -81,7 +81,7 @@ instance ToJSON ActAttrs where
 instance FromJSON ActAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "act"
 
-instance HasStep ActStep env ActAttrs where
+instance Monad m => HasStep ActStep m ActAttrs where
   getStep = pure . actStep . actSequence
 
 instance Entity ActAttrs where

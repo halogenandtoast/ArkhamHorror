@@ -43,7 +43,7 @@ instance HasAbilities CharlesRossEsq where
         attrs
     ]
 
-instance AssetRunner env => RunMessage env CharlesRossEsq where
+instance AssetRunner env => RunMessage CharlesRossEsq where
   runMessage msg a@(CharlesRossEsq attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       -- TODO: we may want to track the investigator instead of the asset

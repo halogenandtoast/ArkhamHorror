@@ -7,12 +7,11 @@ import Arkham.Matcher
 import Arkham.Query
 import Arkham.ScenarioId
 
-type CampaignRunner env
-  = ( HasQueue env
-    , HasSet InvestigatorId env ()
-    , HasId LeadInvestigatorId env ()
-    , HasRecord env ()
-    , HasList CampaignStoryCard env ()
-    , HasName env ScenarioId
-    , Query InvestigatorMatcher env
+type CampaignRunner m
+  = ( HasSet InvestigatorId m ()
+    , HasId LeadInvestigatorId m ()
+    , HasRecord m ()
+    , HasList CampaignStoryCard m ()
+    , HasName m ScenarioId
+    , Query InvestigatorMatcher m
     )

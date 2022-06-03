@@ -49,6 +49,6 @@ instance HasAbilities TheEdgeOfTheUniverse where
         }
       _ -> action
 
-instance LocationRunner env => RunMessage env TheEdgeOfTheUniverse where
+instance LocationRunner env => RunMessage TheEdgeOfTheUniverse where
   runMessage msg (TheEdgeOfTheUniverse attrs) =
     TheEdgeOfTheUniverse <$> runMessage msg attrs

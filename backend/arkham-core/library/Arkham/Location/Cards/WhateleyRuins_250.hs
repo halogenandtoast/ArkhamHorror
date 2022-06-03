@@ -62,7 +62,7 @@ instance HasAbilities WhateleyRuins_250 where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env WhateleyRuins_250 where
+instance LocationRunner env => RunMessage WhateleyRuins_250 where
   runMessage msg l@(WhateleyRuins_250 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       investigatorWithCluePairs <- filter ((> 0) . snd) <$> traverse

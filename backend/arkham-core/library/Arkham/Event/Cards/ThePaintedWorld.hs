@@ -24,7 +24,7 @@ newtype ThePaintedWorld = ThePaintedWorld EventAttrs
 thePaintedWorld :: EventCard ThePaintedWorld
 thePaintedWorld = event ThePaintedWorld Cards.thePaintedWorld
 
-instance CanCheckPlayable env => RunMessage env ThePaintedWorld where
+instance CanCheckPlayable env => RunMessage ThePaintedWorld where
   runMessage msg e@(ThePaintedWorld attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       playableCards <-

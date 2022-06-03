@@ -18,7 +18,7 @@ newtype UnexpectedCourage2 = UnexpectedCourage2 SkillAttrs
 unexpectedCourage2 :: SkillCard UnexpectedCourage2
 unexpectedCourage2 = skill UnexpectedCourage2 Cards.unexpectedCourage2
 
-instance SkillRunner env => RunMessage env UnexpectedCourage2 where
+instance SkillRunner env => RunMessage UnexpectedCourage2 where
   runMessage msg s@(UnexpectedCourage2 attrs) = case msg of
     FailedSkillTest iid _ _ target _ _ | isTarget attrs target ->
       s <$ push (ReturnToHand iid target)

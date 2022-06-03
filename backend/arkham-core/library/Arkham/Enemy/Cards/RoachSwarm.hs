@@ -27,5 +27,5 @@ instance HasCount Shroud env LocationId => HasModifiersFor env RoachSwarm where
       pure $ toModifiers a [EnemyFight x]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env RoachSwarm where
+instance EnemyRunner env => RunMessage RoachSwarm where
   runMessage msg (RoachSwarm attrs) = RoachSwarm <$> runMessage msg attrs

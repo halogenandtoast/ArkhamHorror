@@ -22,7 +22,7 @@ newtype VortexOfTime = VortexOfTime TreacheryAttrs
 vortexOfTime :: TreacheryCard VortexOfTime
 vortexOfTime = treachery VortexOfTime Cards.vortexOfTime
 
-instance TreacheryRunner env => RunMessage env VortexOfTime where
+instance TreacheryRunner env => RunMessage VortexOfTime where
   runMessage msg t@(VortexOfTime attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       sentinelHills <- getSetList @LocationId [SentinelHill]

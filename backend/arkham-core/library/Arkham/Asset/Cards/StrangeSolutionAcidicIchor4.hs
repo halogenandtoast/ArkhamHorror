@@ -38,7 +38,7 @@ instance HasModifiersFor env StrangeSolutionAcidicIchor4 where
     = pure $ toModifiers a [BaseSkillOf SkillCombat 6, DamageDealt 2]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env StrangeSolutionAcidicIchor4 where
+instance AssetRunner env => RunMessage StrangeSolutionAcidicIchor4 where
   runMessage msg a@(StrangeSolutionAcidicIchor4 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)

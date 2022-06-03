@@ -48,7 +48,7 @@ instance
   , Query EnemyMatcher env
   , HasCount ClueCount env EnemyId
   )
-  => RunMessage env UndimensionedAndUnseenTabletToken where
+  => RunMessage UndimensionedAndUnseenTabletToken where
   runMessage msg e@(UndimensionedAndUnseenTabletToken attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs -> do
       broodOfYogSothoth <- getBroodOfYogSothoth

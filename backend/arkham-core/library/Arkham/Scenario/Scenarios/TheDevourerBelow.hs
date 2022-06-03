@@ -60,7 +60,7 @@ agendaDeck :: [CardDef]
 agendaDeck =
   [Agendas.theArkhamWoods, Agendas.theRitualBegins, Agendas.vengeanceAwaits]
 
-instance ScenarioRunner env => RunMessage env TheDevourerBelow where
+instance ScenarioRunner env => RunMessage TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds

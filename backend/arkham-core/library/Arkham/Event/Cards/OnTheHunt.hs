@@ -24,7 +24,7 @@ onTheHunt :: EventCard OnTheHunt
 onTheHunt =
   event OnTheHunt Cards.onTheHunt
 
-instance EventRunner env => RunMessage env OnTheHunt where
+instance EventRunner env => RunMessage OnTheHunt where
   runMessage msg e@(OnTheHunt attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       _ <- popMessageMatching $ \case

@@ -59,7 +59,7 @@ switchRole attrs = push
     ]
   )
 
-instance (InvestigatorRunner env) => RunMessage env LolaHayes where
+instance (InvestigatorRunner env) => RunMessage LolaHayes where
   runMessage msg i@(LolaHayes attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       i <$ switchRole attrs

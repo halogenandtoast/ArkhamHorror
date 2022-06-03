@@ -132,7 +132,7 @@ getRemoveNecronomicon = do
     , owner `elem` defeatedInvestigatorIds
     ]
 
-instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
+instance ScenarioRunner env => RunMessage BloodOnTheAltar where
   runMessage msg s@(BloodOnTheAltar (attrs@ScenarioAttrs {..} `With` metadata@(BloodOnTheAltarMetadata sacrificed)))
     = case msg of
       SetTokensForScenario -> do

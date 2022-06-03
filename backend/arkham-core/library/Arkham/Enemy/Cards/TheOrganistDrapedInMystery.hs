@@ -39,7 +39,7 @@ theOrganistDrapedInMystery = enemy
   (3, Static 1, 5)
   (0, 1)
 
-instance EnemyRunner env => RunMessage env TheOrganistDrapedInMystery where
+instance EnemyRunner env => RunMessage TheOrganistDrapedInMystery where
   runMessage msg e@(TheOrganistDrapedInMystery attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       engagedInvestigators <-

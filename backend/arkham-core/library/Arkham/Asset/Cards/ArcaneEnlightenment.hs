@@ -27,7 +27,7 @@ instance HasModifiersFor env ArcaneEnlightenment where
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
 
-instance (AssetRunner env) => RunMessage env ArcaneEnlightenment where
+instance (AssetRunner env) => RunMessage ArcaneEnlightenment where
   runMessage msg (ArcaneEnlightenment attrs) = case msg of
     InvestigatorPlayedAsset iid aid _ _ | aid == assetId attrs -> do
       push (AddSlot iid HandSlot (slot attrs))

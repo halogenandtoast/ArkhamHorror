@@ -28,7 +28,7 @@ instance
   ( HasId LocationId env InvestigatorId
   , Query EnemyMatcher env
   )
-  => RunMessage env Oops where
+  => RunMessage Oops where
   runMessage msg e@(Oops attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [Window Timing.After (Window.FailAttackEnemy _ targetId _)] _
       | eid == toId attrs

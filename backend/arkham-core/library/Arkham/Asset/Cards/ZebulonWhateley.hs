@@ -41,7 +41,7 @@ instance HasModifiersFor env ZebulonWhateley where
     pure [ toModifier a (SkillModifier SkillWillpower 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env ZebulonWhateley where
+instance AssetRunner env => RunMessage ZebulonWhateley where
   runMessage msg a@(ZebulonWhateley attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DrawCards iid 1 False)

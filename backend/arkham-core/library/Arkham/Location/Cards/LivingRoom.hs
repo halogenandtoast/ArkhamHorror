@@ -42,7 +42,7 @@ instance HasAbilities LivingRoom where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env LivingRoom where
+instance LocationRunner env => RunMessage LivingRoom where
   runMessage msg l@(LivingRoom attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (DrawCards iid 1 False)

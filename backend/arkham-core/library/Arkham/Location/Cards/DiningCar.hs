@@ -53,7 +53,7 @@ instance HasAbilities DiningCar where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage env DiningCar where
+instance LocationRunner env => RunMessage DiningCar where
   runMessage msg l@(DiningCar attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push

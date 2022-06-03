@@ -45,7 +45,7 @@ instance HasModifiersFor env WindowModifierEffect where
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env WindowModifierEffect where
+instance HasQueue env => RunMessage WindowModifierEffect where
   runMessage msg e@(WindowModifierEffect attrs) = case msg of
     CancelFailedByModifierEffects -> case effectMetadata attrs of
       Just (FailedByEffectModifiers _) ->

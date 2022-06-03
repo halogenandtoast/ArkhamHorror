@@ -20,7 +20,7 @@ newtype HeroicRescue = HeroicRescue EventAttrs
 heroicRescue :: EventCard HeroicRescue
 heroicRescue = event HeroicRescue Cards.heroicRescue
 
-instance RunMessage env HeroicRescue where
+instance RunMessage HeroicRescue where
   runMessage msg e@(HeroicRescue attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [Window _ (Window.EnemyWouldAttack iid' eid' _)] _
       | eid == toId attrs

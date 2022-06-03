@@ -44,7 +44,7 @@ instance HasAbilities StickToThePlan where
         $ ReactionAbility (DrawingStartingHand Timing.When You) Free
     ]
 
-instance AssetRunner env => RunMessage env StickToThePlan where
+instance AssetRunner env => RunMessage StickToThePlan where
   runMessage msg a@(StickToThePlan attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       push $ Search

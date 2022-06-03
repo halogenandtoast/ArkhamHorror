@@ -25,6 +25,6 @@ instance HasModifiersFor env ClaspOfBlackOnyx where
 claspOfBlackOnyx :: AssetCard ClaspOfBlackOnyx
 claspOfBlackOnyx = asset ClaspOfBlackOnyx Cards.claspOfBlackOnyx
 
-instance AssetRunner env => RunMessage env ClaspOfBlackOnyx where
+instance AssetRunner env => RunMessage ClaspOfBlackOnyx where
   runMessage msg (ClaspOfBlackOnyx attrs) =
     ClaspOfBlackOnyx <$> runMessage msg attrs

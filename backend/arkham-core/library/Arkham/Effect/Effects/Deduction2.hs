@@ -13,15 +13,13 @@ import Arkham.Message
 import Arkham.Target
 
 newtype Deduction2 = Deduction2 EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deduction2 :: EffectArgs -> Deduction2
 deduction2 = Deduction2 . uncurry4 (baseAttrs "02150")
 
-instance HasModifiersFor env Deduction2
-
-instance HasQueue env => RunMessage env Deduction2 where
+instance RunMessage m Deduction2 where
   runMessage msg e@(Deduction2 attrs@EffectAttrs {..}) = case msg of
     Successful (Action.Investigate, _) iid _ (LocationTarget lid) _ ->
       case effectMetadata of

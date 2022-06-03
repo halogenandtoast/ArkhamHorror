@@ -38,7 +38,7 @@ instance HasAbilities DissonantVoices where
         Timing.When
     ]
 
-instance TreacheryRunner env => RunMessage env DissonantVoices where
+instance TreacheryRunner env => RunMessage DissonantVoices where
   runMessage msg t@(DissonantVoices attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId t) (InvestigatorTarget iid))

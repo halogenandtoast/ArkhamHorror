@@ -44,7 +44,7 @@ instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env L
         ]
   getModifiersFor _ _ _ = pure []
 
-instance (EnemyRunner env) => RunMessage env Narogath where
+instance (EnemyRunner env) => RunMessage Narogath where
   runMessage msg (Narogath attrs@EnemyAttrs {..}) = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       playerCount <- unPlayerCount <$> getCount ()

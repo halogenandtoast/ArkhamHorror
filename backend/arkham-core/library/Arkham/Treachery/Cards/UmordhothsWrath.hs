@@ -21,7 +21,7 @@ newtype UmordhothsWrath = UmordhothsWrath TreacheryAttrs
 umordhothsWrath :: TreacheryCard UmordhothsWrath
 umordhothsWrath = treachery UmordhothsWrath Cards.umordhothsWrath
 
-instance TreacheryRunner env => RunMessage env UmordhothsWrath where
+instance TreacheryRunner env => RunMessage UmordhothsWrath where
   runMessage msg t@(UmordhothsWrath attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ push
       (BeginSkillTest

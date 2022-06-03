@@ -29,7 +29,7 @@ instance HasAbilities LoneWolf where
         (ReactionAbility (TurnBegins Timing.When You) Free)
     ]
 
-instance AssetRunner env => RunMessage env LoneWolf where
+instance AssetRunner env => RunMessage LoneWolf where
   runMessage msg a@(LoneWolf attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (TakeResources iid 1 False)

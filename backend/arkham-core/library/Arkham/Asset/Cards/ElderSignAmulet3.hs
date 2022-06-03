@@ -13,6 +13,6 @@ elderSignAmulet3 :: AssetCard ElderSignAmulet3
 elderSignAmulet3 =
   assetWith ElderSignAmulet3 Cards.elderSignAmulet3 (sanityL ?~ 4)
 
-instance AssetRunner env => RunMessage env ElderSignAmulet3 where
+instance AssetRunner env => RunMessage ElderSignAmulet3 where
   runMessage msg (ElderSignAmulet3 attrs) =
     ElderSignAmulet3 <$> runMessage msg attrs

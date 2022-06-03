@@ -17,7 +17,7 @@ newtype PreposterousSketches2 = PreposterousSketches2 EventAttrs
 preposterousSketches2 :: EventCard PreposterousSketches2
 preposterousSketches2 = event PreposterousSketches2 Cards.preposterousSketches2
 
-instance RunMessage env PreposterousSketches2 where
+instance RunMessage PreposterousSketches2 where
   runMessage msg e@(PreposterousSketches2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll [DrawCards iid 3 False, Discard (toTarget attrs)]

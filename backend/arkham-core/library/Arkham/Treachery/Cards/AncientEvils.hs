@@ -15,7 +15,7 @@ newtype AncientEvils = AncientEvils TreacheryAttrs
 ancientEvils :: TreacheryCard AncientEvils
 ancientEvils = treachery AncientEvils Cards.ancientEvils
 
-instance TreacheryRunner env => RunMessage env AncientEvils where
+instance TreacheryRunner env => RunMessage AncientEvils where
   runMessage msg t@(AncientEvils attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       t <$ pushAll [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]

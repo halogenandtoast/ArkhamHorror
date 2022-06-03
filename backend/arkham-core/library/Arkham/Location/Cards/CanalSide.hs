@@ -41,7 +41,7 @@ instance HasAbilities CanalSide where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env CanalSide where
+instance LocationRunner env => RunMessage CanalSide where
   runMessage msg l@(CanalSide attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       l <$ push (PlaceClues (toTarget attrs) 1)

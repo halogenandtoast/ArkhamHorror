@@ -19,7 +19,7 @@ newtype TakeHeart = TakeHeart SkillAttrs
 takeHeart :: SkillCard TakeHeart
 takeHeart = skill TakeHeart Cards.takeHeart
 
-instance SkillRunner env => RunMessage env TakeHeart where
+instance SkillRunner env => RunMessage TakeHeart where
   runMessage msg s@(TakeHeart attrs) = case msg of
     FailedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == toId attrs ->
       s <$ pushAll [DrawCards iid 2 False, TakeResources iid 2 False]

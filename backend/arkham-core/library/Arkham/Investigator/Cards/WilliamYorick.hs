@@ -53,7 +53,7 @@ instance HasAbilities WilliamYorick where
         & (abilityLimitL .~ PlayerLimit PerRound 1)
     ]
 
-instance (InvestigatorRunner env) => RunMessage env WilliamYorick where
+instance (InvestigatorRunner env) => RunMessage WilliamYorick where
   runMessage msg i@(WilliamYorick attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let

@@ -35,7 +35,7 @@ instance HasAbilities GiftOfMadnessMisery where
   getAbilities (GiftOfMadnessMisery a) =
     [restrictedAbility a 1 InYourHand $ ActionAbility Nothing $ ActionCost 1]
 
-instance TreacheryRunner env => RunMessage env GiftOfMadnessMisery where
+instance TreacheryRunner env => RunMessage GiftOfMadnessMisery where
   runMessage msg t@(GiftOfMadnessMisery attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AddTreacheryToHand iid $ toId attrs)

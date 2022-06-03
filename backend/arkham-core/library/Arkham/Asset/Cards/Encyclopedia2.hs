@@ -30,7 +30,7 @@ instance HasAbilities Encyclopedia2 where
         [ActionCost 1, ExhaustCost $ toTarget a]
     ]
 
-instance (AssetRunner env) => RunMessage env Encyclopedia2 where
+instance (AssetRunner env) => RunMessage Encyclopedia2 where
   runMessage msg (Encyclopedia2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid

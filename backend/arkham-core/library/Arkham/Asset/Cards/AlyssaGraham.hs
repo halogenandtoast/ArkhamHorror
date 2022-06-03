@@ -33,7 +33,7 @@ instance HasModifiersFor env AlyssaGraham where
     pure [ toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env AlyssaGraham where
+instance AssetRunner env => RunMessage AlyssaGraham where
   runMessage msg a@(AlyssaGraham attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       targets <- map InvestigatorTarget <$> getSetList ()

@@ -36,7 +36,7 @@ instance HasAbilities JoeyTheRatVigil where
         (FastAbility $ ResourceCost 1)
     ]
 
-instance AssetRunner env => RunMessage env JoeyTheRatVigil where
+instance AssetRunner env => RunMessage JoeyTheRatVigil where
   runMessage msg a@(JoeyTheRatVigil attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       handCards <- map unHandCard <$> getList iid

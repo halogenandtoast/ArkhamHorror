@@ -36,6 +36,6 @@ instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env TheT
       pure $ toModifiers attrs (SanityModifier (-1) : skillModifiers)
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env TheTatteredCloak where
+instance AssetRunner env => RunMessage TheTatteredCloak where
   runMessage msg (TheTatteredCloak attrs) =
     TheTatteredCloak <$> runMessage msg attrs

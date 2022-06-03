@@ -34,7 +34,7 @@ instance HasAbilities DrMilanChristopher where
         Free
     ]
 
-instance AssetRunner env => RunMessage env DrMilanChristopher where
+instance AssetRunner env => RunMessage DrMilanChristopher where
   runMessage msg a@(DrMilanChristopher attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (TakeResources iid 1 False)

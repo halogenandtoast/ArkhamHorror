@@ -43,7 +43,7 @@ instance HasAbilities PrismaticCascade where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env PrismaticCascade where
+instance LocationRunner env => RunMessage PrismaticCascade where
   runMessage msg l@(PrismaticCascade attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       push $ RandomDiscard iid

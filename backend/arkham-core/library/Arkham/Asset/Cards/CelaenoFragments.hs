@@ -28,6 +28,6 @@ instance HasCount CardCount env InvestigatorId => HasModifiersFor env CelaenoFra
         <> [ SkillModifier SkillIntellect 1 | count' >= 15 ]
   getModifiersFor _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env CelaenoFragments where
+instance (AssetRunner env) => RunMessage CelaenoFragments where
   runMessage msg (CelaenoFragments attrs) =
     CelaenoFragments <$> runMessage msg attrs

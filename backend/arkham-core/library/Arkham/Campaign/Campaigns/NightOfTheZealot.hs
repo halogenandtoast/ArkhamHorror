@@ -22,7 +22,7 @@ nightOfTheZealot difficulty = NightOfTheZealot $ baseAttrs
   difficulty
   (chaosBagContents difficulty)
 
-instance CampaignRunner env => RunMessage env NightOfTheZealot where
+instance CampaignRunner env => RunMessage NightOfTheZealot where
   runMessage msg c@(NightOfTheZealot attrs@CampaignAttrs {..}) = case msg of
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- getSetList ()

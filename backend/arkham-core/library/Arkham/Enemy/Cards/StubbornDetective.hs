@@ -33,6 +33,6 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env StubbornDete
       pure $ toModifiers a [ Blank | Just locationId == enemyLocation ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env StubbornDetective where
+instance EnemyRunner env => RunMessage StubbornDetective where
   runMessage msg (StubbornDetective attrs) =
     StubbornDetective <$> runMessage msg attrs

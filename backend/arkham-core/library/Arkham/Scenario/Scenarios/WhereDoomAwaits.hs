@@ -157,7 +157,7 @@ instance
   , ScenarioAttrsRunner env
   , HasModifiersFor env ()
   )
-  => RunMessage env WhereDoomAwaits where
+  => RunMessage WhereDoomAwaits where
   runMessage msg s@(WhereDoomAwaits attrs) = case msg of
     SetTokensForScenario -> do
       standalone <- getIsStandalone

@@ -23,7 +23,7 @@ newtype SlitheringBehindYou = SlitheringBehindYou TreacheryAttrs
 slitheringBehindYou :: TreacheryCard SlitheringBehindYou
 slitheringBehindYou = treachery SlitheringBehindYou Cards.slitheringBehindYou
 
-instance TreacheryRunner env => RunMessage env SlitheringBehindYou where
+instance TreacheryRunner env => RunMessage SlitheringBehindYou where
   runMessage msg t@(SlitheringBehindYou attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mHuntingHorrorId <- selectOne $ enemyIs Cards.huntingHorror

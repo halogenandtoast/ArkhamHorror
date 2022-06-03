@@ -19,7 +19,7 @@ newtype Taunt = Taunt EventAttrs
 taunt :: EventCard Taunt
 taunt = event Taunt Cards.taunt
 
-instance EventRunner env => RunMessage env Taunt where
+instance EventRunner env => RunMessage Taunt where
   runMessage msg e@(Taunt attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       lid <- getId @LocationId iid

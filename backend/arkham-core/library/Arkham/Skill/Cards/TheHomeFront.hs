@@ -24,7 +24,7 @@ newtype TheHomeFront = TheHomeFront SkillAttrs
 theHomeFront :: SkillCard TheHomeFront
 theHomeFront = skill TheHomeFront Cards.theHomeFront
 
-instance SkillRunner env => RunMessage env TheHomeFront where
+instance SkillRunner env => RunMessage TheHomeFront where
   runMessage msg s@(TheHomeFront attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ (Just Fight) _ target _ _ | isTarget attrs target -> do
       mSkillTestTarget <- getSkillTestTarget

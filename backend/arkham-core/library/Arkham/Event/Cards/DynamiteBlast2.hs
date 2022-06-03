@@ -19,7 +19,7 @@ newtype DynamiteBlast2 = DynamiteBlast2 EventAttrs
 dynamiteBlast2 :: EventCard DynamiteBlast2
 dynamiteBlast2 = event DynamiteBlast2 Cards.dynamiteBlast2
 
-instance EventRunner env => RunMessage env DynamiteBlast2 where
+instance EventRunner env => RunMessage DynamiteBlast2 where
   -- TODO: Does not provoke attacks of opportunity
   runMessage msg e@(DynamiteBlast2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do

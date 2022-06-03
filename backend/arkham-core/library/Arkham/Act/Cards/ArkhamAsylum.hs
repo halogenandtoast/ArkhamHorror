@@ -37,7 +37,7 @@ arkhamAsylum = act
 instance HasAbilities ArkhamAsylum where
   getAbilities (ArkhamAsylum (attrs `With` _)) = getAbilities attrs
 
-instance ActRunner env => RunMessage env ArkhamAsylum where
+instance ActRunner env => RunMessage ArkhamAsylum where
   runMessage msg a@(ArkhamAsylum (attrs `With` metadata)) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       let

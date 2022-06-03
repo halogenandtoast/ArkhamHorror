@@ -33,7 +33,7 @@ instance HasSet ClassSymbol env InvestigatorId => HasModifiersFor env Improvisat
           pure $ toModifiers attrs [ReduceCostOf (CardWithClass role) 3]
   getModifiersFor _ _ _ = pure []
 
-instance (HasSet ClassSymbol env InvestigatorId, HasQueue env) => RunMessage env Improvisation where
+instance (HasSet ClassSymbol env InvestigatorId, HasQueue env) => RunMessage Improvisation where
   runMessage msg e@(Improvisation attrs) = case msg of
     PlayedCard iid card | effectTarget attrs == InvestigatorTarget iid -> do
       roles <- getSetList iid

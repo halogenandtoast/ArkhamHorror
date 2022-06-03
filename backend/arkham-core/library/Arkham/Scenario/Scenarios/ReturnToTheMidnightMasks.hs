@@ -46,7 +46,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), Projectio
   getTokenValue iid tokenFace (ReturnToTheMidnightMasks theMidnightMasks') =
     getTokenValue iid tokenFace theMidnightMasks'
 
-instance ScenarioRunner env => RunMessage env ReturnToTheMidnightMasks where
+instance ScenarioRunner env => RunMessage ReturnToTheMidnightMasks where
   runMessage msg (ReturnToTheMidnightMasks theMidnightMasks'@(TheMidnightMasks attrs))
     = case msg of
       Setup -> do

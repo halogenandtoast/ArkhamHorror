@@ -35,7 +35,7 @@ instance HasAbilities BaseballBat where
         $ ActionAbility (Just Action.Fight) (ActionCost 1)
     ]
 
-instance AssetRunner env => RunMessage env BaseballBat where
+instance AssetRunner env => RunMessage BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier

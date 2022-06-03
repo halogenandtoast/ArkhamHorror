@@ -23,6 +23,6 @@ instance HasModifiersFor env SebastienMoreau where
     pure $ toModifiers a [AttacksCannotBeCancelled]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env SebastienMoreau where
+instance EnemyRunner env => RunMessage SebastienMoreau where
   runMessage msg (SebastienMoreau attrs) =
     SebastienMoreau <$> runMessage msg attrs

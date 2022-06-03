@@ -15,7 +15,7 @@ newtype WillToSurvive3 = WillToSurvive3 EventAttrs
 willToSurvive3 :: EventCard WillToSurvive3
 willToSurvive3 = event WillToSurvive3 Cards.willToSurvive3
 
-instance HasQueue env => RunMessage env WillToSurvive3 where
+instance HasQueue env => RunMessage WillToSurvive3 where
   runMessage msg e@(WillToSurvive3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       e <$ pushAll

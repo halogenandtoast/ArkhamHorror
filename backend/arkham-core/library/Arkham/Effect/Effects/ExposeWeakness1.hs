@@ -28,7 +28,7 @@ instance HasModifiersFor env ExposeWeakness1 where
       _ -> error "invalid effect metadata"
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env ExposeWeakness1 where
+instance HasQueue env => RunMessage ExposeWeakness1 where
   runMessage msg e@(ExposeWeakness1 attrs@EffectAttrs {..}) = case msg of
     PassedSkillTest _ (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _
       | target == effectTarget

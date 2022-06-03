@@ -14,20 +14,18 @@ import Arkham.Token
 import Arkham.Window (Window)
 
 newtype Shrivelling = Shrivelling EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shrivelling :: EffectArgs -> Shrivelling
 shrivelling = Shrivelling . uncurry4 (baseAttrs "01060")
-
-instance HasModifiersFor env Shrivelling
 
 intFromMetadata :: EffectMetadata Window a -> Int
 intFromMetadata = \case
   EffectInt n -> n
   _ -> 0
 
-instance HasQueue env => RunMessage env Shrivelling where
+instance RunMessage Shrivelling where
   runMessage msg e@(Shrivelling attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget -> do
       let damage = maybe 1 intFromMetadata effectMetadata

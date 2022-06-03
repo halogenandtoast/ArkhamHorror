@@ -34,7 +34,7 @@ getAbilitiesSpent (ActionPayment n) = n
 getAbilitiesSpent (Payments ps) = sum $ map getAbilitiesSpent ps
 getAbilitiesSpent _ = 0
 
-instance AssetRunner env => RunMessage env ChicagoTypewriter4 where
+instance AssetRunner env => RunMessage ChicagoTypewriter4 where
   runMessage msg a@(ChicagoTypewriter4 attrs) = case msg of
     UseCardAbility iid source _ 1 payment | isSource attrs source -> do
       let actionsSpent = getAbilitiesSpent payment

@@ -23,7 +23,7 @@ newtype TheCultsSearch = TheCultsSearch TreacheryAttrs
 theCultsSearch :: TreacheryCard TheCultsSearch
 theCultsSearch = treachery TheCultsSearch Cards.theCultsSearch
 
-instance TreacheryRunner env => RunMessage env TheCultsSearch where
+instance TreacheryRunner env => RunMessage TheCultsSearch where
   runMessage msg t@(TheCultsSearch attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       cultists <- selectList $ EnemyWithTrait Cultist <> EnemyWithAnyDoom

@@ -2,38 +2,47 @@ module Arkham.Classes.RunMessage
   ( module Arkham.Classes.RunMessage
   ) where
 
-import Arkham.Prelude hiding (to)
+import Arkham.Prelude hiding ( to )
 
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
+import Arkham.Classes.Query
 import Arkham.Message
+import Arkham.Matcher
 import GHC.Generics
 
-class RunMessage1 env f where
-  runMessage1 :: (HasCallStack, MonadIO m, MonadReader env m, MonadRandom m, HasQueue env, HasGameLogger env) => Message -> f p -> m (f p)
+type RunM env m
+  = ( HasCallStack
+    , MonadIO m
+    , MonadRandom m
+    , HasQueue env
+    , HasGameLogger env
+    , Query AssetMatcher m
+    , Query LocationMatcher m
+    , Query InvestigatorMatcher m
+    )
 
-instance RunMessage1 env f => RunMessage1 env (M1 i c f) where
+class RunMessage1 f where
+  runMessage1 :: (HasCallStack, MonadReader env m, RunM env m) => Message -> f p -> m (f p)
+
+instance RunMessage1 f => RunMessage1 (M1 i c f) where
   runMessage1 msg (M1 x) = M1 <$> runMessage1 msg x
 
-instance (RunMessage1 env l, RunMessage1 env r) => RunMessage1 env (l :+: r) where
+instance (RunMessage1 l, RunMessage1 r) => RunMessage1 (l :+: r) where
   runMessage1 msg (L1 x) = L1 <$> runMessage1 msg x
   runMessage1 msg (R1 x) = R1 <$> runMessage1 msg x
 
-instance RunMessage env p => RunMessage1 env (K1 R p) where
+instance RunMessage p => RunMessage1 (K1 R p) where
   runMessage1 msg (K1 x) = K1 <$> runMessage msg x
 
-class RunMessage env a where
-  runMessage :: (HasCallStack, MonadReader env m, HasQueue env, MonadIO m, MonadRandom m, HasGameLogger env) => Message -> a -> m a
+class RunMessage a where
+  runMessage :: (HasCallStack, MonadReader env m, RunM env m) => Message -> a -> m a
 
 genericRunMessage
   :: ( Generic a
-     , RunMessage1 env (Rep a)
-     , MonadIO m
-     , MonadRandom m
+     , RunMessage1 (Rep a)
      , MonadReader env m
-     , HasQueue env
-     , HasGameLogger env
-     , HasCallStack
+     , RunM env m
      )
   => Message
   -> a

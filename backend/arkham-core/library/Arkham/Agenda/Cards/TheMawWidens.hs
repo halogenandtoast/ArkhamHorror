@@ -23,7 +23,7 @@ newtype TheMawWidens = TheMawWidens AgendaAttrs
 theMawWidens :: AgendaCard TheMawWidens
 theMawWidens = agenda (2, A) TheMawWidens Cards.theMawWidens (Static 3)
 
-instance AgendaRunner env => RunMessage env TheMawWidens where
+instance AgendaRunner env => RunMessage TheMawWidens where
   runMessage msg a@(TheMawWidens attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()

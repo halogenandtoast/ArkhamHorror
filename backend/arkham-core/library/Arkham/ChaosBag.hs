@@ -270,7 +270,7 @@ instance
   ( HasQueue env
   , HasSet InvestigatorId env ()
   , HasId LeadInvestigatorId env ()
-  ) => RunMessage env ChaosBag where
+  ) => RunMessage ChaosBag where
   runMessage msg c@ChaosBag {..} = case msg of
     ForceTokenDraw face -> do
       leadInvestigatorIdL <- getLeadInvestigatorId -- TODO: active

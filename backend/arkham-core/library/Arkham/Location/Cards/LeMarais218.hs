@@ -42,7 +42,7 @@ instance HasAbilities LeMarais218 where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env LeMarais218 where
+instance LocationRunner env => RunMessage LeMarais218 where
   runMessage msg l@(LeMarais218 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push $ CreateEffect

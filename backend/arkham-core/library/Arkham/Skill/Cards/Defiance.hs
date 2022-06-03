@@ -21,7 +21,7 @@ newtype Defiance = Defiance SkillAttrs
 defiance :: SkillCard Defiance
 defiance = skill Defiance Cards.defiance
 
-instance RunMessage env Defiance where
+instance RunMessage Defiance where
   runMessage msg s@(Defiance attrs) = case msg of
     BeforeRevealTokens -> do
       s <$ push

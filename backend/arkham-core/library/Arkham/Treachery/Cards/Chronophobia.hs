@@ -33,7 +33,7 @@ instance HasAbilities Chronophobia where
       2
     ]
 
-instance TreacheryRunner env => RunMessage env Chronophobia where
+instance TreacheryRunner env => RunMessage Chronophobia where
   runMessage msg t@(Chronophobia attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

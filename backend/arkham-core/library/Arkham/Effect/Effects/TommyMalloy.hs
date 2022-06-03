@@ -37,7 +37,7 @@ isTakeDamage attrs window = case effectTarget attrs of
       eid == eid' && windowTiming window == Timing.After
     _ -> False
 
-instance HasQueue env => RunMessage env TommyMalloy where
+instance HasQueue env => RunMessage TommyMalloy where
   runMessage msg e@(TommyMalloy attrs) = case msg of
     CheckWindow _ windows' | any (isTakeDamage attrs) windows' ->
       e <$ push (DisableEffect $ toId attrs)

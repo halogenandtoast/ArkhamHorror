@@ -22,7 +22,7 @@ newtype TheKingsEdict = TheKingsEdict TreacheryAttrs
 theKingsEdict :: TreacheryCard TheKingsEdict
 theKingsEdict = treachery TheKingsEdict Cards.theKingsEdict
 
-instance TreacheryRunner env => RunMessage env TheKingsEdict where
+instance TreacheryRunner env => RunMessage TheKingsEdict where
   runMessage msg t@(TheKingsEdict attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       targets <-

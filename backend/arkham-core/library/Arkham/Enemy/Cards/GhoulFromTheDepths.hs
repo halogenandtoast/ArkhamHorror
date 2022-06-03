@@ -22,6 +22,6 @@ ghoulFromTheDepths = enemyWith
   (1, 1)
   (spawnAtL ?~ LocationWithTitle "Bathroom")
 
-instance (EnemyRunner env) => RunMessage env GhoulFromTheDepths where
+instance (EnemyRunner env) => RunMessage GhoulFromTheDepths where
   runMessage msg (GhoulFromTheDepths attrs) =
     GhoulFromTheDepths <$> runMessage msg attrs

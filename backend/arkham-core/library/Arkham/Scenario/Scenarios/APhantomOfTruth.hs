@@ -149,7 +149,7 @@ cultistEffect = do
       (EnemyTarget eid)
       (LocationWithInvestigator $ InvestigatorWithId x)
 
-instance ScenarioRunner env => RunMessage env APhantomOfTruth where
+instance ScenarioRunner env => RunMessage APhantomOfTruth where
   runMessage msg s@(APhantomOfTruth attrs) = case msg of
     SetTokensForScenario -> do
       whenM getIsStandalone $ do

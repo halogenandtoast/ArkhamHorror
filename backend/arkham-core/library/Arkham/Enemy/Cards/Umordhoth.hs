@@ -46,7 +46,7 @@ instance HasAbilities Umordhoth where
     $ ActionCost 1
     ]
 
-instance EnemyRunner env => RunMessage env Umordhoth where
+instance EnemyRunner env => RunMessage Umordhoth where
   runMessage msg e@(Umordhoth attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (Ready $ toTarget attrs)

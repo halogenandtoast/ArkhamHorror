@@ -28,21 +28,21 @@ import Arkham.Window qualified as Window
 import Data.HashMap.Strict qualified as HashMap
 import Data.Semigroup
 
-type SkillTestRunner env =
-  ( HasQueue env
-  , HasCard env InvestigatorId
-  , HasStats env (InvestigatorId, Maybe Action)
-  , HasSkillTest env
-  , HasModifiersFor env ()
-  , HasTokenValue env ()
-  , HasId LocationId env InvestigatorId
-  , HasSet ConnectedLocationId env LocationId
-  , HasSet InvestigatorId env ()
-  , Projection env LocationAttrs
+type SkillTestRunner m =
+  ( HasQueue m
+  , HasCard m InvestigatorId
+  , HasStats m (InvestigatorId, Maybe Action)
+  , HasSkillTest m
+  , HasModifiersFor m ()
+  , HasTokenValue m ()
+  , HasId LocationId m InvestigatorId
+  , HasSet ConnectedLocationId m LocationId
+  , HasSet InvestigatorId m ()
+  , Projection m LocationAttrs
   )
 
 skillIconCount ::
-  (MonadReader env m, HasModifiersFor env ()) => SkillTest -> m Int
+  HasModifiersFor m () => SkillTest -> m Int
 skillIconCount st@SkillTest {..} = do
   investigatorModifiers <-
     getModifiers
@@ -66,7 +66,7 @@ skillIconCount st@SkillTest {..} = do
   applySkillModifiers _ ys = ys
 
 getModifiedSkillTestDifficulty ::
-  (MonadReader env m, HasModifiersFor env ()) => SkillTest -> m Int
+  HasModifiersFor m () => SkillTest -> m Int
 getModifiedSkillTestDifficulty s = do
   modifiers' <- getModifiers (toSource s) SkillTestTarget
   let preModifiedDifficulty =
@@ -82,7 +82,7 @@ getModifiedSkillTestDifficulty s = do
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
 getModifiedTokenValue ::
-  (MonadReader env m, HasModifiersFor env (), HasTokenValue env (), Projection env LocationAttrs) =>
+  (HasModifiersFor m (), HasTokenValue m (), Projection m LocationAttrs) =>
   SkillTest ->
   Token ->
   m Int
@@ -114,7 +114,7 @@ getModifiedTokenValue s t = do
     TokenValue token (NegativeModifier (max 0 (n - m)))
   applyModifier _ currentTokenValue = currentTokenValue
 
-instance SkillTestRunner env => RunMessage env SkillTest where
+instance SkillTestRunner m => RunMessage m SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers (toSource s) (InvestigatorTarget iid)

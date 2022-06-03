@@ -22,7 +22,7 @@ newtype MassHysteria = MassHysteria TreacheryAttrs
 massHysteria :: TreacheryCard MassHysteria
 massHysteria = treachery MassHysteria Cards.massHysteria
 
-instance TreacheryRunner env => RunMessage env MassHysteria where
+instance TreacheryRunner env => RunMessage MassHysteria where
   runMessage msg t@(MassHysteria attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ push
       (chooseOne

@@ -22,7 +22,7 @@ newtype StalkedInTheDark = StalkedInTheDark TreacheryAttrs
 stalkedInTheDark :: TreacheryCard StalkedInTheDark
 stalkedInTheDark = treachery StalkedInTheDark Cards.stalkedInTheDark
 
-instance TreacheryRunner env => RunMessage env StalkedInTheDark where
+instance TreacheryRunner env => RunMessage StalkedInTheDark where
   runMessage msg t@(StalkedInTheDark attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mHuntingHorrorId <- getHuntingHorror

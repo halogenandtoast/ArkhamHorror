@@ -42,7 +42,7 @@ instance HasCount PlayerCount env () => HasModifiersFor env TheExperiment where
     pure $ toModifiers attrs [HealthModifier modifier]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env TheExperiment where
+instance EnemyRunner env => RunMessage TheExperiment where
   runMessage msg e@(TheExperiment attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (Ready $ toTarget attrs)

@@ -20,5 +20,5 @@ foyer = location Foyer Cards.foyer 2 (PerPlayer 1) T [Circle, Square, Equals]
 instance HasAbilities Foyer where
   getAbilities (Foyer attrs) = withResignAction attrs []
 
-instance LocationRunner env => RunMessage env Foyer where
+instance LocationRunner env => RunMessage Foyer where
   runMessage msg (Foyer attrs) = Foyer <$> runMessage msg attrs

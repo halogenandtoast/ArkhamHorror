@@ -20,7 +20,7 @@ newtype GraspingHands = GraspingHands TreacheryAttrs
 graspingHands :: TreacheryCard GraspingHands
 graspingHands = treachery GraspingHands Cards.graspingHands
 
-instance TreacheryRunner env => RunMessage env GraspingHands where
+instance TreacheryRunner env => RunMessage GraspingHands where
   runMessage msg t@(GraspingHands attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillAgility 3)

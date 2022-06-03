@@ -36,7 +36,7 @@ instance HasAbilities CloverClubPitBoss where
         AnyValue
     ]
 
-instance EnemyRunner env => RunMessage env CloverClubPitBoss where
+instance EnemyRunner env => RunMessage CloverClubPitBoss where
   runMessage msg e@(CloverClubPitBoss attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ pushAll
       ([ Ready (toTarget attrs) | enemyExhausted attrs ]

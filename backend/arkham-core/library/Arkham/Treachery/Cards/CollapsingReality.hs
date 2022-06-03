@@ -21,7 +21,7 @@ newtype CollapsingReality = CollapsingReality TreacheryAttrs
 collapsingReality :: TreacheryCard CollapsingReality
 collapsingReality = treachery CollapsingReality Cards.collapsingReality
 
-instance TreacheryRunner env => RunMessage env CollapsingReality where
+instance TreacheryRunner env => RunMessage CollapsingReality where
   runMessage msg t@(CollapsingReality attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid

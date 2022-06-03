@@ -24,6 +24,6 @@ instance HasModifiersFor env DoubleOrNothing where
     pure $ toModifiers attrs [DoubleDifficulty, DoubleSuccess]
   getModifiersFor _ _ _ = pure []
 
-instance RunMessage env DoubleOrNothing where
+instance RunMessage DoubleOrNothing where
   runMessage msg (DoubleOrNothing attrs) =
     DoubleOrNothing <$> runMessage msg attrs

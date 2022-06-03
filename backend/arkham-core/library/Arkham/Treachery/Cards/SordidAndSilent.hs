@@ -29,7 +29,7 @@ instance HasAbilities SordidAndSilent where
     , mkAbility x 2 $ ForcedAbility $ AgendaAdvances Timing.When AnyAgenda
     ]
 
-instance TreacheryRunner env => RunMessage env SordidAndSilent where
+instance TreacheryRunner env => RunMessage SordidAndSilent where
   runMessage msg t@(SordidAndSilent attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid

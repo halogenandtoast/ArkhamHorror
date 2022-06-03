@@ -61,7 +61,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DiscardCount env Investigat
     ElderThing -> pure $ TokenValue Tablet (NegativeModifier 0) -- determined by an effect
     otherFace -> getTokenValue iid otherFace attrs
 
-instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
+instance ScenarioRunner env => RunMessage ExtracurricularActivity where
   runMessage msg s@(ExtracurricularActivity attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds

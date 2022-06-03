@@ -22,7 +22,7 @@ newtype RitesHowled = RitesHowled TreacheryAttrs
 ritesHowled :: TreacheryCard RitesHowled
 ritesHowled = treachery RitesHowled Cards.ritesHowled
 
-instance TreacheryRunner env => RunMessage env RitesHowled where
+instance TreacheryRunner env => RunMessage RitesHowled where
   runMessage msg t@(RitesHowled attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds

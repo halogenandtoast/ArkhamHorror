@@ -39,7 +39,7 @@ isTakeDamage attrs window = case effectTarget attrs of
       eid == eid' && windowTiming window == Timing.After
     _ -> False
 
-instance (HasList DiscardedPlayerCard env InvestigatorId, HasQueue env) => RunMessage env NathanielCho where
+instance (HasList DiscardedPlayerCard env InvestigatorId, HasQueue env) => RunMessage NathanielCho where
   runMessage msg e@(NathanielCho attrs) = case msg of
     PassedSkillTest iid _ _ _ _ _
       | effectTarget attrs == InvestigatorTarget iid -> do

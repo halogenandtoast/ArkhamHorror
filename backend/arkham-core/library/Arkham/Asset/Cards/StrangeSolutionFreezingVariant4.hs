@@ -38,7 +38,7 @@ instance HasModifiersFor env StrangeSolutionFreezingVariant4 where
     = pure $ toModifiers a [BaseSkillOf SkillAgility 6]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env StrangeSolutionFreezingVariant4 where
+instance AssetRunner env => RunMessage StrangeSolutionFreezingVariant4 where
   runMessage msg a@(StrangeSolutionFreezingVariant4 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push

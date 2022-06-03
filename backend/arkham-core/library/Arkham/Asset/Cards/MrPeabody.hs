@@ -27,7 +27,7 @@ instance HasAbilities MrPeabody where
         [ActionCost 1, ExhaustCost $ toTarget attrs]
     ]
 
-instance AssetRunner env => RunMessage env MrPeabody where
+instance AssetRunner env => RunMessage MrPeabody where
   runMessage msg a@(MrPeabody attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locations <- selectListMap LocationTarget Anywhere

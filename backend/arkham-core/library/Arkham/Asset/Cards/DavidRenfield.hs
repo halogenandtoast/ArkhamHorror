@@ -32,7 +32,7 @@ instance HasAbilities DavidRenfield where
   getAbilities (DavidRenfield a) =
     [restrictedAbility a 1 OwnsThis $ FastAbility $ ExhaustCost $ toTarget a]
 
-instance AssetRunner env => RunMessage env DavidRenfield where
+instance AssetRunner env => RunMessage DavidRenfield where
   runMessage msg a@(DavidRenfield attrs) = case msg of
     UseCardAbility iid source windows' 1 p | isSource attrs source -> do
       let

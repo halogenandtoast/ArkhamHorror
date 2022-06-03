@@ -30,7 +30,7 @@ instance HasAbilities Hyperawareness2 where
     | idx <- [1, 2]
     ]
 
-instance (AssetRunner env) => RunMessage env Hyperawareness2 where
+instance (AssetRunner env) => RunMessage Hyperawareness2 where
   runMessage msg a@(Hyperawareness2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier

@@ -44,7 +44,7 @@ instance
   , HasStep ActStep env ()
   , ScenarioRunner env
   )
-  => RunMessage env Scenario where
+  => RunMessage Scenario where
   runMessage msg s = case msg of
     ResolveToken _ tokenFace _ -> do
       modifiers' <- getModifiers

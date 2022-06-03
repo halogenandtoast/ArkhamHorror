@@ -21,7 +21,7 @@ newtype EagerForDeath = EagerForDeath TreacheryAttrs
 eagerForDeath :: TreacheryCard EagerForDeath
 eagerForDeath = treachery EagerForDeath Cards.eagerForDeath
 
-instance TreacheryRunner env => RunMessage env EagerForDeath where
+instance TreacheryRunner env => RunMessage EagerForDeath where
   runMessage msg t@(EagerForDeath attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       difficulty <- (+ 2) . unDamageCount <$> getCount iid

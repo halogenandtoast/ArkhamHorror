@@ -28,7 +28,7 @@ instance HasAbilities FirstAid3 where
         [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
 
-instance AssetRunner env => RunMessage env FirstAid3 where
+instance AssetRunner env => RunMessage FirstAid3 where
   runMessage msg a@(FirstAid3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       targets <- liftA2

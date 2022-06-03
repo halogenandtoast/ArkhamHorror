@@ -30,7 +30,7 @@ instance HasModifiersFor env ToweringBeasts where
     $ toModifiers attrs [EnemyFight 1, HealthModifier 1]
   getModifiersFor _ _ _ = pure []
 
-instance TreacheryRunner env => RunMessage env ToweringBeasts where
+instance TreacheryRunner env => RunMessage ToweringBeasts where
   runMessage msg t@(ToweringBeasts attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       broodOfYogSothoth <- getSetList @EnemyId (CardCode "02255")

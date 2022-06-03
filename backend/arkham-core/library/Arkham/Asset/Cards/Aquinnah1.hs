@@ -41,7 +41,7 @@ instance HasAbilities Aquinnah1 where
             [ExhaustCost (toTarget a), HorrorCost (toSource a) (toTarget a) 1]
     ]
 
-instance AssetRunner env => RunMessage env Aquinnah1 where
+instance AssetRunner env => RunMessage Aquinnah1 where
   runMessage msg a@(Aquinnah1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       enemyId <- withQueue $ \queue ->

@@ -19,7 +19,7 @@ newtype BaitAndSwitch = BaitAndSwitch EventAttrs
 baitAndSwitch :: EventCard BaitAndSwitch
 baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
 
-instance EventRunner env => RunMessage env BaitAndSwitch where
+instance EventRunner env => RunMessage BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ ChooseEvadeEnemy

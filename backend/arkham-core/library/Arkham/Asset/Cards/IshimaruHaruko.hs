@@ -44,7 +44,7 @@ instance HasAbilities IshimaruHaruko where
       $ toId a
     ]
 
-instance AssetRunner env => RunMessage env IshimaruHaruko where
+instance AssetRunner env => RunMessage IshimaruHaruko where
   runMessage msg a@(IshimaruHaruko attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 2)

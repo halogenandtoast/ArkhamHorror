@@ -35,7 +35,7 @@ instance HasAbilities RiteOfSeeking where
         )
     ]
 
-instance AssetRunner env => RunMessage env RiteOfSeeking where
+instance AssetRunner env => RunMessage RiteOfSeeking where
   runMessage msg a@(RiteOfSeeking attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid

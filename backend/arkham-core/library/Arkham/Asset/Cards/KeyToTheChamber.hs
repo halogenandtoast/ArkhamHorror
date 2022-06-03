@@ -35,7 +35,7 @@ instance HasAbilities KeyToTheChamber where
 
 instance HasModifiersFor env KeyToTheChamber
 
-instance AssetRunner env => RunMessage env KeyToTheChamber where
+instance AssetRunner env => RunMessage KeyToTheChamber where
   runMessage msg a@(KeyToTheChamber attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       a <$ push (TakeControlOfAsset iid $ toId a)

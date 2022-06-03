@@ -31,7 +31,7 @@ instance HasCardDef Skill where
 instance HasAbilities Skill where
   getAbilities = $(entityF "Skill" "getAbilities")
 
-instance SkillRunner env => RunMessage env Skill where
+instance SkillRunner env => RunMessage Skill where
   runMessage = $(entityRunMessage "Skill")
 
 instance HasModifiersFor env Skill where

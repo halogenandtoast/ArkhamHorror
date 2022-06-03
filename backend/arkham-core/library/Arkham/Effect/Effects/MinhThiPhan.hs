@@ -32,7 +32,7 @@ instance HasModifiersFor env MinhThiPhan where
     $ toModifiers attrs [ReturnToHandAfterTest]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env MinhThiPhan where
+instance HasQueue env => RunMessage MinhThiPhan where
   runMessage msg e@(MinhThiPhan attrs) = case msg of
     SkillTestEnds _ | effectSource attrs == TokenEffectSource ElderSign ->
       case effectMetadata attrs of

@@ -22,7 +22,7 @@ newtype MarkedByTheSign = MarkedByTheSign TreacheryAttrs
 markedByTheSign :: TreacheryCard MarkedByTheSign
 markedByTheSign = treachery MarkedByTheSign Cards.markedByTheSign
 
-instance TreacheryRunner env => RunMessage env MarkedByTheSign where
+instance TreacheryRunner env => RunMessage MarkedByTheSign where
   runMessage msg t@(MarkedByTheSign attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       theManInThePallidMaskIsInPlay <- selectAny

@@ -107,7 +107,7 @@ instance
   , HasId LeadInvestigatorId env ()
   , CanCheckPlayable env
   ) =>
-  RunMessage env Effect
+  RunMessage Effect
   where
   runMessage = $(entityRunMessage "Effect")
 

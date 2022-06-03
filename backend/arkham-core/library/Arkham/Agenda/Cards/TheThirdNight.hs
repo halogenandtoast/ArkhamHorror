@@ -30,7 +30,7 @@ instance HasRecord env () => HasModifiersFor env TheThirdNight where
     pure $ toModifiers a $ [ DoomSubtracts | moreConvictionThanDoubt ]
   getModifiersFor _ _ _ = pure []
 
-instance AgendaRunner env => RunMessage env TheThirdNight where
+instance AgendaRunner env => RunMessage TheThirdNight where
   runMessage msg a@(TheThirdNight attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       conviction <- getConviction

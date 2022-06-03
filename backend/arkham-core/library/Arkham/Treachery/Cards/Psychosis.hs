@@ -33,7 +33,7 @@ instance HasAbilities Psychosis where
       2
     ]
 
-instance TreacheryRunner env => RunMessage env Psychosis where
+instance TreacheryRunner env => RunMessage Psychosis where
   runMessage msg t@(Psychosis attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

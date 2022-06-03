@@ -16,7 +16,7 @@ newtype DrawnToTheFlame = DrawnToTheFlame EventAttrs
 drawnToTheFlame :: EventCard DrawnToTheFlame
 drawnToTheFlame = event DrawnToTheFlame Cards.drawnToTheFlame
 
-instance EventRunner env => RunMessage env DrawnToTheFlame where
+instance EventRunner env => RunMessage DrawnToTheFlame where
   runMessage msg e@(DrawnToTheFlame attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ InvestigatorDrawEncounterCard iid

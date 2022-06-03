@@ -60,7 +60,7 @@ instance HasAbilities CurtainCall where
     ]
 
 
-instance ActRunner env => RunMessage env CurtainCall where
+instance ActRunner env => RunMessage CurtainCall where
   runMessage msg a@(CurtainCall attrs) = case msg of
     UseCardAbility iid (ProxySource _ source) _ 1 _ | isSource attrs source ->
       a <$ push (Resign iid)

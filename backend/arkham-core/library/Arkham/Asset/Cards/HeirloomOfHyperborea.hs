@@ -30,7 +30,7 @@ instance HasAbilities HeirloomOfHyperborea where
         Free
     ]
 
-instance AssetRunner env => RunMessage env HeirloomOfHyperborea where
+instance AssetRunner env => RunMessage HeirloomOfHyperborea where
   runMessage msg a@(HeirloomOfHyperborea attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DrawCards iid 1 False)

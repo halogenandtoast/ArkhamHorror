@@ -8,28 +8,27 @@ import Arkham.Prelude
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Effect.Attrs
-import Arkham.EnemyId
+import Arkham.Enemy.Attrs
+import Arkham.Projection
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
 
 newtype BindMonster2 = BindMonster2 EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bindMonster2 :: EffectArgs -> BindMonster2
 bindMonster2 = BindMonster2 . uncurry4 (baseAttrs "02031")
 
-instance HasModifiersFor env BindMonster2
-
-instance (HasQueue env, HasSet Trait env EnemyId) => RunMessage env BindMonster2 where
+instance RunMessage BindMonster2 where
   runMessage msg e@(BindMonster2 attrs@EffectAttrs {..}) = case msg of
     PassedSkillTest _ (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
       | SkillTestTarget == effectTarget
       -> case effectSource of
         (EventSource evid) -> do
-          nonElite <- notMember Elite <$> getSet eid
+          nonElite <- notMember Elite <$> field EnemyTraits eid
           e <$ when
             nonElite
             (pushAll

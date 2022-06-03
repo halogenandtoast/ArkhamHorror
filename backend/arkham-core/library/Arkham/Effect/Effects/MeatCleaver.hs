@@ -10,13 +10,13 @@ import Arkham.Effect.Attrs
 import Arkham.Message
 
 newtype MeatCleaver = MeatCleaver EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor env)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 meatCleaver :: EffectArgs -> MeatCleaver
 meatCleaver = MeatCleaver . uncurry4 (baseAttrs "05114")
 
-instance HasQueue env => RunMessage env MeatCleaver where
+instance RunMessage MeatCleaver where
   runMessage msg e@(MeatCleaver attrs) = case msg of
     EnemyDefeated _ _ _ source _ | effectSource attrs == source ->
       e <$ pushAll

@@ -46,7 +46,7 @@ instance HasAbilities TenAcreMeadow_246 where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env TenAcreMeadow_246 where
+instance LocationRunner env => RunMessage TenAcreMeadow_246 where
   runMessage msg l@(TenAcreMeadow_246 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       abominations <- locationEnemiesWithTrait attrs Abomination

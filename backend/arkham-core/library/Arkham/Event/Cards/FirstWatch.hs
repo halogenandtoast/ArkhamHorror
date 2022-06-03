@@ -34,7 +34,7 @@ instance
   , HasSet InvestigatorId env ()
   , HasCount PlayerCount env ()
   )
-  => RunMessage env FirstWatch where
+  => RunMessage FirstWatch where
   runMessage msg e@(FirstWatch (attrs@EventAttrs {..} `With` metadata@FirstWatchMetadata {..}))
     = case msg of
       InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do

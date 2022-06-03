@@ -25,7 +25,7 @@ rollingBackwards :: AgendaCard RollingBackwards
 rollingBackwards =
   agenda (3, A) RollingBackwards Cards.rollingBackwards (Static 4)
 
-instance AgendaRunner env => RunMessage env RollingBackwards where
+instance AgendaRunner env => RunMessage RollingBackwards where
   runMessage msg a@(RollingBackwards attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()

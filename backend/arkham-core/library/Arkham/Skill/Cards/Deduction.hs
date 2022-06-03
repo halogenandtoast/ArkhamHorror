@@ -19,7 +19,7 @@ newtype Deduction = Deduction SkillAttrs
 deduction :: SkillCard Deduction
 deduction = skill Deduction Cards.deduction
 
-instance (SkillRunner env) => RunMessage env Deduction where
+instance (SkillRunner env) => RunMessage Deduction where
   runMessage msg s@(Deduction attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid (Just Action.Investigate) _ (SkillTarget sid) _ _
       | sid == skillId -> do

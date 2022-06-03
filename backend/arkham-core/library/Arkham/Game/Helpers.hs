@@ -127,7 +127,7 @@ withBaseAbilities :: HasAbilities a => a -> [Ability] -> [Ability]
 withBaseAbilities a f = getAbilities a <> f
 
 getCanPerformAbility
-  :: (MonadReader env m, CanCheckPlayable env, HasCallStack)
+  :: (MonadReader env m, CanCheckPlayable env, HasCallStack, MonadIO m)
   => InvestigatorId
   -> Source
   -> Window
@@ -379,6 +379,7 @@ getActions
      , HasList UsedAbility env ()
      , CanCheckPlayable env
      , HasCallStack
+     , MonadIO m
      )
   => InvestigatorId
   -> Window
@@ -895,6 +896,7 @@ hasInvestigateActions _ window = notNull <$> select
 
 type CanCheckPlayable env
   = ( HasModifiersFor env ()
+    , HasDepth env
     , HasCostPayment env
     , HasHistory env
     , HasSet ScenarioLogKey env ()
@@ -976,7 +978,7 @@ data CostStatus = UnpaidCost | PaidCost
   deriving stock Eq
 
 getIsPlayable
-  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> CostStatus
@@ -988,7 +990,7 @@ getIsPlayable iid source costStatus windows' c = do
   getIsPlayableWithResources iid source availableResources costStatus windows' c
 
 getIsPlayableWithResources
-  :: (HasCallStack, MonadReader env m, CanCheckPlayable env)
+  :: (HasCallStack, MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> Int
@@ -1100,7 +1102,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     _ -> error $ "Not handling card type: " <> show (toCardType c)
 
 passesCriteria
-  :: (HasCallStack, MonadReader env m, CanCheckFast env, CanCheckPlayable env)
+  :: (HasCallStack, MonadReader env m, CanCheckFast env, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> [Window]
@@ -1472,7 +1474,7 @@ depthGuard = unsafePerformIO $ newIORef 0
 {-# NOINLINE depthGuard #-}
 
 cardInFastWindows
-  :: (MonadReader env m, CanCheckPlayable env)
+  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> Card
@@ -1482,8 +1484,34 @@ cardInFastWindows
 cardInFastWindows iid source _ windows' matcher =
   anyM (\window -> windowMatches iid source window matcher) windows'
 
+withDepthLock :: (MonadIO m, HasDepth env, MonadReader env m) => Int -> a -> m a -> m a
+withDepthLock d defaultValue action = do
+  depth <- getDepth
+  if depth >= d
+     then pure defaultValue
+     else do
+       delveDeeper
+       result <- action
+       resurface
+       pure result
+
+getDepth :: (HasDepth env, MonadIO m, MonadReader env m) => m Int
+getDepth = readIORef =<< view depthL
+
+delveDeeper :: (HasDepth env, MonadIO m, MonadReader env m) => m ()
+delveDeeper = do
+  ref <- view depthL
+  current <- readIORef ref
+  writeIORef ref (current + 1)
+
+resurface :: (HasDepth env, MonadIO m, MonadReader env m) => m ()
+resurface = do
+  ref <- view depthL
+  current <- readIORef ref
+  writeIORef ref (max 0 (current - 1))
+
 windowMatches
-  :: (MonadReader env m, CanCheckPlayable env)
+  :: (MonadReader env m, CanCheckPlayable env, MonadIO m)
   => InvestigatorId
   -> Source
   -> Window
@@ -1641,7 +1669,7 @@ windowMatches iid source window' = \case
   Matcher.PlayerHasPlayableCard cardMatcher -> do
     -- TODO: do we need to grab the card source?
     -- cards <- filter (/= c) <$> getList cardMatcher
-    cards <- getList cardMatcher
+    cards <- withDepthLock 2 [] $ getList cardMatcher
     anyM (getIsPlayable iid source UnpaidCost [window']) cards
   Matcher.PhaseBegins whenMatcher phaseMatcher -> case window' of
     Window t Window.AnyPhaseBegins | whenMatcher == t ->

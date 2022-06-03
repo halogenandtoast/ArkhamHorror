@@ -30,6 +30,6 @@ instance (HasId LocationId env InvestigatorId, HasPhase env) => HasModifiersFor 
       [ CannotDrawCards | phase == UpkeepPhase && Just lid == enemyLocation attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env AshleighClarke where
+instance EnemyRunner env => RunMessage AshleighClarke where
   runMessage msg (AshleighClarke attrs) =
     AshleighClarke <$> runMessage msg attrs

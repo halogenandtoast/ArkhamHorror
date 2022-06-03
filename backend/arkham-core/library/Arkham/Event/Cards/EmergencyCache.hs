@@ -18,7 +18,7 @@ newtype EmergencyCache = EmergencyCache EventAttrs
 emergencyCache :: EventCard EmergencyCache
 emergencyCache = event EmergencyCache Cards.emergencyCache
 
-instance HasQueue env => RunMessage env EmergencyCache where
+instance HasQueue env => RunMessage EmergencyCache where
   runMessage msg e@(EmergencyCache attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId ->
       e <$ pushAll [TakeResources iid 3 False, Discard (EventTarget eid)]

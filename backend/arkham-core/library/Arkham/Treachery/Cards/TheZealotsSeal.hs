@@ -20,7 +20,7 @@ newtype TheZealotsSeal = TheZealotsSeal TreacheryAttrs
 theZealotsSeal :: TreacheryCard TheZealotsSeal
 theZealotsSeal = treachery TheZealotsSeal Cards.theZealotsSeal
 
-instance TreacheryRunner env => RunMessage env TheZealotsSeal where
+instance TreacheryRunner env => RunMessage TheZealotsSeal where
   runMessage msg t@(TheZealotsSeal attrs@TreacheryAttrs {..}) = case msg of
     Revelation _ source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds

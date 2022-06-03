@@ -41,7 +41,7 @@ instance HasAbilities Ambush1 where
       ]
     _ -> []
 
-instance EventRunner env => RunMessage env Ambush1 where
+instance EventRunner env => RunMessage Ambush1 where
   runMessage msg e@(Ambush1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getId iid

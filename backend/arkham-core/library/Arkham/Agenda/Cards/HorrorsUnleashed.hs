@@ -42,7 +42,7 @@ instance HasSet Trait env EnemyId => HasModifiersFor env HorrorsUnleashed where
       else pure []
   getModifiersFor _ _ _ = pure []
 
-instance AgendaRunner env => RunMessage env HorrorsUnleashed where
+instance AgendaRunner env => RunMessage HorrorsUnleashed where
   runMessage msg a@(HorrorsUnleashed attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId

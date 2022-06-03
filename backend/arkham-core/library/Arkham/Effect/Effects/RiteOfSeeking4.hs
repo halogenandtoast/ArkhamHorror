@@ -13,15 +13,13 @@ import Arkham.Target
 import Arkham.Token
 
 newtype RiteOfSeeking4 = RiteOfSeeking4 EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riteOfSeeking4 :: EffectArgs -> RiteOfSeeking4
 riteOfSeeking4 = RiteOfSeeking4 . uncurry4 (baseAttrs "02233")
 
-instance HasModifiersFor env RiteOfSeeking4
-
-instance (HasQueue env) => RunMessage env RiteOfSeeking4 where
+instance RunMessage RiteOfSeeking4 where
   runMessage msg e@(RiteOfSeeking4 attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token -> case effectTarget of
       InvestigationTarget iid' _ | iid == iid' -> e <$ when

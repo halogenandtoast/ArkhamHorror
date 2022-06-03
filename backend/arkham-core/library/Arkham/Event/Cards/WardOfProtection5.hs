@@ -20,7 +20,7 @@ newtype WardOfProtection5 = WardOfProtection5 EventAttrs
 wardOfProtection5 :: EventCard WardOfProtection5
 wardOfProtection5 = event WardOfProtection5 Cards.wardOfProtection5
 
-instance EventRunner env => RunMessage env WardOfProtection5 where
+instance EventRunner env => RunMessage WardOfProtection5 where
   runMessage msg e@(WardOfProtection5 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ CancelNext DrawEncounterCardMessage

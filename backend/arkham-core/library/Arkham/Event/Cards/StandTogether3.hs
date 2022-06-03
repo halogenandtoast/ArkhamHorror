@@ -23,7 +23,7 @@ instance
   ( HasId LocationId env InvestigatorId
   , HasSet InvestigatorId env LocationId
   )
-  => RunMessage env StandTogether3 where
+  => RunMessage StandTogether3 where
   runMessage msg e@(StandTogether3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId attrs -> do
       locationId <- getId @LocationId iid

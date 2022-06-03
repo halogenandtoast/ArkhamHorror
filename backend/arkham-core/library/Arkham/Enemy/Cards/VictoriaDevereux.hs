@@ -34,7 +34,7 @@ instance HasAbilities VictoriaDevereux where
         $ ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 5])
     ]
 
-instance EnemyRunner env => RunMessage env VictoriaDevereux where
+instance EnemyRunner env => RunMessage VictoriaDevereux where
   runMessage msg e@(VictoriaDevereux attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (AddToVictory $ toTarget attrs)

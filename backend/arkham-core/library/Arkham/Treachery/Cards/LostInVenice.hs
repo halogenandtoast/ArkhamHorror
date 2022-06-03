@@ -20,7 +20,7 @@ newtype LostInVenice = LostInVenice TreacheryAttrs
 lostInVenice :: TreacheryCard LostInVenice
 lostInVenice = treachery LostInVenice Cards.lostInVenice
 
-instance TreacheryRunner env => RunMessage env LostInVenice where
+instance TreacheryRunner env => RunMessage LostInVenice where
   runMessage msg t@(LostInVenice attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid

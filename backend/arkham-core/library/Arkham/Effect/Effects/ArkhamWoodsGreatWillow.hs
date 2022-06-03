@@ -25,7 +25,7 @@ instance HasModifiersFor env ArkhamWoodsGreatWillow where
     $ toModifiers attrs [AddKeyword Keyword.Surge]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env ArkhamWoodsGreatWillow where
+instance HasQueue env => RunMessage ArkhamWoodsGreatWillow where
   runMessage msg e@(ArkhamWoodsGreatWillow attrs) = case msg of
     Surge _ source | sourceToTarget source == effectTarget attrs ->
       e <$ push (DisableEffect $ toId e)

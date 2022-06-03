@@ -37,7 +37,7 @@ instance (HasName env AssetId, HasId (Maybe LocationId) env AssetId) => HasModif
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env CarnevaleSentinel where
+instance EnemyRunner env => RunMessage CarnevaleSentinel where
   runMessage msg (CarnevaleSentinel attrs) = case msg of
     InvestigatorDrawEnemy _ lid eid | eid == toId attrs -> do
       acrossLocationId <- getAcrossLocation lid

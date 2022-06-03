@@ -22,5 +22,5 @@ fleshEater = enemyWith
   (1, 2)
   (spawnAtL ?~ LocationWithTitle "Attic")
 
-instance EnemyRunner env => RunMessage env FleshEater where
+instance EnemyRunner env => RunMessage FleshEater where
   runMessage msg (FleshEater attrs) = FleshEater <$> runMessage msg attrs

@@ -35,7 +35,7 @@ instance HasAbilities LaboratoryAssistant where
             Free
     ]
 
-instance (AssetRunner env) => RunMessage env LaboratoryAssistant where
+instance (AssetRunner env) => RunMessage LaboratoryAssistant where
   runMessage msg a@(LaboratoryAssistant attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DrawCards iid 2 False)

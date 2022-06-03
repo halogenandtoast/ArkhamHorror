@@ -41,7 +41,7 @@ instance (HasTokenValue env InvestigatorId, Query EnemyMatcher env) => HasTokenV
   getTokenValue iid tokenFace (ReturnToTheGathering theGathering') =
     getTokenValue iid tokenFace theGathering'
 
-instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
+instance ScenarioRunner env => RunMessage ReturnToTheGathering where
   runMessage msg (ReturnToTheGathering theGathering'@(TheGathering attrs)) =
     case msg of
       Setup -> do

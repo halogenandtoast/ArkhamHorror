@@ -28,7 +28,7 @@ instance HasAbilities Blackjack where
         $ ActionAbility (Just Action.Fight) (ActionCost 1)
     ]
 
-instance AssetRunner env => RunMessage env Blackjack where
+instance AssetRunner env => RunMessage Blackjack where
   runMessage msg a@(Blackjack attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers

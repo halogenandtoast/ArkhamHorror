@@ -39,7 +39,7 @@ instance HasModifiersFor env Grounded1 where
     pure $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env Grounded1 where
+instance AssetRunner env => RunMessage Grounded1 where
   runMessage msg a@(Grounded1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push

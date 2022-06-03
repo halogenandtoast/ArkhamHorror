@@ -30,7 +30,7 @@ instance HasAbilities SmiteTheWicked where
     | iid <- maybeToList (treacheryOwner a)
     ]
 
-instance TreacheryRunner env => RunMessage env SmiteTheWicked where
+instance TreacheryRunner env => RunMessage SmiteTheWicked where
   runMessage msg t@(SmiteTheWicked attrs@TreacheryAttrs {..}) = case msg of
     Revelation _iid source | isSource attrs source ->
       t <$ push (DiscardEncounterUntilFirst source (CardWithType EnemyType))

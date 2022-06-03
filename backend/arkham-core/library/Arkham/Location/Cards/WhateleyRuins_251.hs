@@ -48,7 +48,7 @@ instance HasAbilities WhateleyRuins_251 where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env WhateleyRuins_251 where
+instance LocationRunner env => RunMessage WhateleyRuins_251 where
   runMessage msg l@(WhateleyRuins_251 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 4)

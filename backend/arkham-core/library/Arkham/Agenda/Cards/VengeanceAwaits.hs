@@ -44,7 +44,7 @@ instance HasAbilities VengeanceAwaits where
         $ enemyIs Enemies.umordhoth
       ]
 
-instance AgendaRunner env => RunMessage env VengeanceAwaits where
+instance AgendaRunner env => RunMessage VengeanceAwaits where
   runMessage msg a@(VengeanceAwaits attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       actIds <- getSetList @ActId ()

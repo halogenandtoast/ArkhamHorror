@@ -41,7 +41,7 @@ instance HasAbilities BridgeOfSighs where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env BridgeOfSighs where
+instance LocationRunner env => RunMessage BridgeOfSighs where
   runMessage msg l@(BridgeOfSighs attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)

@@ -29,7 +29,7 @@ instance HasModifiersFor env Montmartre209 where
     pure $ toModifiers a [TopCardOfDeckIsRevealed, CanPlayTopOfDeck AnyCard]
   getModifiersFor _ _ _ = pure []
 
-instance (CanCheckPlayable env, HasQueue env) => RunMessage env Montmartre209 where
+instance (CanCheckPlayable env, HasQueue env) => RunMessage Montmartre209 where
   runMessage msg e@(Montmartre209 attrs) = case msg of
     CreatedEffect eid _ source (InvestigatorTarget iid) | eid == effectId attrs -> do
       cards <-

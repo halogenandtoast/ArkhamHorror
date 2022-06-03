@@ -31,7 +31,7 @@ instance HasAbilities Shotgun4 where
         [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1]
     ]
 
-instance (AssetRunner env) => RunMessage env Shotgun4 where
+instance (AssetRunner env) => RunMessage Shotgun4 where
   runMessage msg a@(Shotgun4 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier

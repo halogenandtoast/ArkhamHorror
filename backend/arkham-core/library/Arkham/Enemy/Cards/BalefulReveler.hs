@@ -39,7 +39,7 @@ instance HasAbilities BalefulReveler where
         & (abilityLimitL .~ GroupLimit PerRound 1)
     ]
 
-instance EnemyRunner env => RunMessage env BalefulReveler where
+instance EnemyRunner env => RunMessage BalefulReveler where
   runMessage msg e@(BalefulReveler attrs) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == toId attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

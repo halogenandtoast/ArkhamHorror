@@ -18,7 +18,7 @@ newtype Evidence = Evidence EventAttrs
 evidence :: EventCard Evidence
 evidence = event Evidence Cards.evidence
 
-instance EventRunner env => RunMessage env Evidence where
+instance EventRunner env => RunMessage Evidence where
   runMessage msg e@(Evidence attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       currentLocationId <- getId @LocationId iid

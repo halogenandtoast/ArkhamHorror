@@ -31,7 +31,7 @@ findingAWayInside = act
   Cards.findingAWayInside
   (Just $ GroupClueCost (Static 2) Anywhere)
 
-instance ActRunner env => RunMessage env FindingAWayInside where
+instance ActRunner env => RunMessage FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid source@(LocationSource _) advanceMode | aid == actId && onSide A attrs ->
       do

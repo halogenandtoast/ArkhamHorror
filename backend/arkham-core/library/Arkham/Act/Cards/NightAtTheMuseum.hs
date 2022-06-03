@@ -33,7 +33,7 @@ instance HasAbilities NightAtTheMuseum where
         Cards.exhibitHallRestrictedHall
     ]
 
-instance ActRunner env => RunMessage env NightAtTheMuseum where
+instance ActRunner env => RunMessage NightAtTheMuseum where
   runMessage msg a@(NightAtTheMuseum attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)

@@ -49,7 +49,7 @@ instance HasTokenValue env AkachiOnyele where
         TokenValue ElderSign (PositiveModifier 1)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage env AkachiOnyele where
+instance InvestigatorRunner env => RunMessage AkachiOnyele where
   runMessage msg i@(AkachiOnyele attrs) = case msg of
     ResolveToken _ ElderSign iid | iid == toId attrs -> do
       targets <-

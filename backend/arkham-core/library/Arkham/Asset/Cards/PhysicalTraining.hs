@@ -30,7 +30,7 @@ instance HasAbilities PhysicalTraining where
     | idx <- [1, 2]
     ]
 
-instance (AssetRunner env) => RunMessage env PhysicalTraining where
+instance (AssetRunner env) => RunMessage PhysicalTraining where
   runMessage msg a@(PhysicalTraining attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier

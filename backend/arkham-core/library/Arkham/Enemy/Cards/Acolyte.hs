@@ -35,7 +35,7 @@ instance HasAbilities Acolyte where
       $ toId a
     ]
 
-instance EnemyRunner env => RunMessage env Acolyte where
+instance EnemyRunner env => RunMessage Acolyte where
   runMessage msg e@(Acolyte attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (PlaceDoom (toTarget attrs) 1)

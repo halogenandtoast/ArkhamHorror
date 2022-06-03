@@ -33,7 +33,7 @@ instance HasAbilities Gallery where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env Gallery where
+instance LocationRunner env => RunMessage Gallery where
   runMessage msg l@(Gallery attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (BeginSkillTest

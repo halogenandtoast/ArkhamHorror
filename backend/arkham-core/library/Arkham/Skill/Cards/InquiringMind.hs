@@ -16,5 +16,5 @@ newtype InquiringMind = InquiringMind SkillAttrs
 inquiringMind :: SkillCard InquiringMind
 inquiringMind = skill InquiringMind Cards.inquiringMind
 
-instance RunMessage env InquiringMind where
+instance RunMessage InquiringMind where
   runMessage msg (InquiringMind attrs) = InquiringMind <$> runMessage msg attrs

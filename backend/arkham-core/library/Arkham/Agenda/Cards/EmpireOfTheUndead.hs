@@ -21,7 +21,7 @@ empireOfTheUndead :: AgendaCard EmpireOfTheUndead
 empireOfTheUndead =
   agenda (2, A) EmpireOfTheUndead Cards.empireOfTheUndead (Static 12)
 
-instance AgendaRunner env => RunMessage env EmpireOfTheUndead where
+instance AgendaRunner env => RunMessage EmpireOfTheUndead where
   runMessage msg a@(EmpireOfTheUndead attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       investigatorIds <- selectList UneliminatedInvestigator

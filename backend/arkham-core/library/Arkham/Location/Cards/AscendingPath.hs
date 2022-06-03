@@ -52,7 +52,7 @@ instance HasAbilities AscendingPath where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage env AscendingPath where
+instance LocationRunner env => RunMessage AscendingPath where
   runMessage msg l@(AscendingPath attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (Investigate

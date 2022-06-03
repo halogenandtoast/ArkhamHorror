@@ -17,7 +17,7 @@ newtype FinalRhapsody = FinalRhapsody TreacheryAttrs
 finalRhapsody :: TreacheryCard FinalRhapsody
 finalRhapsody = treachery FinalRhapsody Cards.finalRhapsody
 
-instance TreacheryRunner env => RunMessage env FinalRhapsody where
+instance TreacheryRunner env => RunMessage FinalRhapsody where
   runMessage msg t@(FinalRhapsody attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ push (RequestTokens source (Just iid) 5 SetAside)

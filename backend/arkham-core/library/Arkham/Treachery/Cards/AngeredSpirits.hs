@@ -19,15 +19,13 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype AngeredSpirits = AngeredSpirits TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 angeredSpirits :: TreacheryCard AngeredSpirits
-angeredSpirits =
-  treacheryWith AngeredSpirits Cards.angeredSpirits (resourcesL ?~ 0)
+angeredSpirits = treachery AngeredSpirits Cards.angeredSpirits
 
 instance HasAbilities AngeredSpirits where
   getAbilities (AngeredSpirits a) =
@@ -49,7 +47,7 @@ instance HasAbilities AngeredSpirits where
         | iid <- maybeToList (treacheryOwner a)
         ]
 
-instance TreacheryRunner env => RunMessage AngeredSpirits where
+instance RunMessage AngeredSpirits where
   runMessage msg t@(AngeredSpirits attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RemoveCardFromHand iid (toCardId attrs)

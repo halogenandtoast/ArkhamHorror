@@ -22,12 +22,13 @@ type ActCard a = CardBuilder (Int, ActId) a
 
 data instance Field ActAttrs :: Type -> Type where
   ActSequenceNumber :: Field ActAttrs Int
+  ActClues :: Field ActAttrs Int
 
 data ActAttrs = ActAttrs
   { actId :: ActId
   , actSequence :: ActSequence
   , actAdvanceCost :: Maybe Cost
-  , actClues :: Maybe Int
+  , actClues :: Int
   , actTreacheries :: HashSet TreacheryId
   , actDeckId :: Int
   }
@@ -36,7 +37,7 @@ data ActAttrs = ActAttrs
 sequenceL :: Lens' ActAttrs ActSequence
 sequenceL = lens actSequence $ \m x -> m { actSequence = x }
 
-cluesL :: Lens' ActAttrs (Maybe Int)
+cluesL :: Lens' ActAttrs Int
 cluesL = lens actClues $ \m x -> m { actClues = x }
 
 treacheriesL :: Lens' ActAttrs (HashSet TreacheryId)
@@ -54,7 +55,7 @@ actWith (n, side) f cardDef mCost g = CardBuilder
   , cbCardBuilder = \(deckId, aid) -> f . g $ ActAttrs
     { actId = aid
     , actSequence = AS.Act n side
-    , actClues = Nothing
+    , actClues = 0
     , actAdvanceCost = mCost
     , actTreacheries = mempty
     , actDeckId = deckId

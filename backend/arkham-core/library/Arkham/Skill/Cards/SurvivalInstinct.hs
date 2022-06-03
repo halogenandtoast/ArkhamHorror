@@ -5,35 +5,29 @@ module Arkham.Skill.Cards.SurvivalInstinct
 
 import Arkham.Prelude
 
-import Arkham.Skill.Cards qualified as Cards
 import Arkham.Action
 import Arkham.Classes
 import Arkham.Cost
-import Arkham.Id
+import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Message
 import Arkham.Skill.Attrs
-import Arkham.Skill.Runner
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Target
 
 newtype SurvivalInstinct = SurvivalInstinct SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 survivalInstinct :: SkillCard SurvivalInstinct
 survivalInstinct = skill SurvivalInstinct Cards.survivalInstinct
 
-instance SkillRunner env => RunMessage SurvivalInstinct where
+instance RunMessage SurvivalInstinct where
   runMessage msg s@(SurvivalInstinct attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid (Just Evade) _ (SkillTarget sid) _ _ | sid == skillId ->
       do
-        engagedEnemyIds <- getSetList iid
-        locationId <- getId @LocationId iid
-        blockedLocationIds <- mapSet unBlockedLocationId <$> getSet ()
-        connectedLocationIds <- mapSet unConnectedLocationId
-          <$> getSet locationId
+        engagedEnemyIds <- selectList EnemyEngagedWithYou
+        unblockedConnectedLocationIds <- selectList AccessibleLocation
         let
-          unblockedConnectedLocationIds =
-            setToList $ connectedLocationIds `difference` blockedLocationIds
           moveOptions = chooseOne
             iid
             ([Label "Do not move to a connecting location" []]

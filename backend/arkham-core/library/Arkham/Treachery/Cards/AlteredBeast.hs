@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.AlteredBeast
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
@@ -14,10 +13,10 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype AlteredBeast = AlteredBeast TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alteredBeast :: TreacheryCard AlteredBeast
@@ -33,19 +32,17 @@ instance HasAbilities AlteredBeast where
       ]
     _ -> error "Altered Beast must be attached to an enemy"
 
-instance TreacheryRunner env => RunMessage AlteredBeast where
+instance RunMessage AlteredBeast where
   runMessage msg t@(AlteredBeast attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       abominations <- selectListMap EnemyTarget $ EnemyWithTrait Abomination
       t <$ case abominations of
-        [] -> push (Surge iid source)
-        xs -> push
-          (chooseOrRunOne
-            iid
-            [ TargetLabel x [AttachTreachery treacheryId x, HealAllDamage x]
-            | x <- xs
-            ]
-          )
+        [] -> push $ Surge iid source
+        xs -> push $ chooseOrRunOne
+          iid
+          [ TargetLabel x [AttachTreachery treacheryId x, HealAllDamage x]
+          | x <- xs
+          ]
     UseCardAbility iid source _ 1 _ ->
       t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     _ -> AlteredBeast <$> runMessage msg attrs

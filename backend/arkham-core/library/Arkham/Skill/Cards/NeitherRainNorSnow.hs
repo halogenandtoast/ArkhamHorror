@@ -9,16 +9,15 @@ import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Skill.Attrs
-import Arkham.Skill.Runner
 
 newtype NeitherRainNorSnow = NeitherRainNorSnow SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 neitherRainNorSnow :: SkillCard NeitherRainNorSnow
 neitherRainNorSnow = skill NeitherRainNorSnow Cards.neitherRainNorSnow
 
-instance SkillRunner env => RunMessage NeitherRainNorSnow where
+instance RunMessage NeitherRainNorSnow where
   runMessage msg s@(NeitherRainNorSnow attrs) = case msg of
     When (FailedSkillTest _ _ _ target _ _) | isTarget attrs target -> do
       removeAllMessagesMatching \case

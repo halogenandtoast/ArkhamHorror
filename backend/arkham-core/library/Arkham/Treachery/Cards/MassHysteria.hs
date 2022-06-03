@@ -5,45 +5,49 @@ module Arkham.Treachery.Cards.MassHysteria
 
 import Arkham.Prelude
 
-import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
+import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype MassHysteria = MassHysteria TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 massHysteria :: TreacheryCard MassHysteria
 massHysteria = treachery MassHysteria Cards.massHysteria
 
-instance TreacheryRunner env => RunMessage MassHysteria where
+instance RunMessage MassHysteria where
   runMessage msg t@(MassHysteria attrs) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ push
-      (chooseOne
-        iid
-        [ Label
-          "Take 2 damage"
-          [InvestigatorAssignDamage iid source DamageAny 2 0]
-        , Label "Shuffle Masked Carnevale-Goers" [RevelationChoice iid source 2]
-        ]
-      )
+    Revelation iid source | isSource attrs source -> do
+      hasLocation <- isJust <$> field InvestigatorLocation iid
+      anyMaskedCarnevaleGoers <- selectAny
+        (AssetWithTitle "Masked Carnevale-Goer")
+      let take2damage = InvestigatorAssignDamage iid source DamageAny 2 0
+      if hasLocation && anyMaskedCarnevaleGoers
+        then push $ chooseOne
+          iid
+          [ Label "Take 2 damage" [take2damage]
+          , Label
+            "Shuffle Masked Carnevale-Goers"
+            [RevelationChoice iid source 2]
+          ]
+        else push take2damage
+      pure t
     RevelationChoice iid source 2 | isSource attrs source -> do
-      locationId <- getId @LocationId iid
+      locationId <- fromJustNote "impossible" <$> field InvestigatorLocation iid
       maskedCarnevaleGoers <- selectList
         (AssetWithTitle "Masked Carnevale-Goer")
       clockwiseLocations <- getClockwiseLocations locationId
-      case maskedCarnevaleGoers of
-        [] -> pure t
-        xs -> do
-          shuffled <- shuffleM xs
-          t <$ pushAll
-            [ AttachAsset aid (LocationTarget lid)
-            | (aid, lid) <- zip shuffled clockwiseLocations
-            ]
+      shuffled <- shuffleM maskedCarnevaleGoers
+      pushAll
+        [ AttachAsset aid (LocationTarget lid)
+        | (aid, lid) <- zip shuffled clockwiseLocations
+        ]
+      pure t
     _ -> MassHysteria <$> runMessage msg attrs

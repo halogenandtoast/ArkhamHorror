@@ -2,7 +2,7 @@ module Arkham.Matcher where
 
 import Arkham.Prelude
 
-import Arkham.Action (Action)
+import Arkham.Action ( Action )
 import Arkham.Agenda.AdvancementReason
 import Arkham.Asset.Uses
 import Arkham.Card.CardCode
@@ -12,12 +12,13 @@ import Arkham.ClassSymbol
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Keyword (Keyword)
+import Arkham.Keyword ( Keyword )
 import Arkham.Keyword qualified as Keyword
 import Arkham.Label
 import Arkham.LocationSymbol
 import Arkham.Modifier
 import Arkham.Phase
+import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.SlotType
@@ -62,11 +63,11 @@ pattern InvestigatorWithAnyClues <-
 pattern InvestigatorWithAnyResources :: InvestigatorMatcher
 pattern InvestigatorWithAnyResources <-
   InvestigatorWithResources (GreaterThan (Static 0)) where
-  InvestigatorWithAnyResources = InvestigatorWithResources (GreaterThan (Static 0))
+  InvestigatorWithAnyResources =
+    InvestigatorWithResources (GreaterThan (Static 0))
 
 pattern InvestigatorCanMove :: InvestigatorMatcher
-pattern InvestigatorCanMove <-
-  InvestigatorWithoutModifier CannotMove where
+pattern InvestigatorCanMove <- InvestigatorWithoutModifier CannotMove where
   InvestigatorCanMove = InvestigatorWithoutModifier CannotMove
 
 colocatedWith :: InvestigatorId -> InvestigatorMatcher
@@ -146,6 +147,10 @@ pattern AllyAsset :: AssetMatcher
 pattern AllyAsset <- AssetWithTrait Ally where
   AllyAsset = AssetWithTrait Ally
 
+pattern AssetWithAnyDoom :: AssetMatcher
+pattern AssetWithAnyDoom <- AssetWithDoom (GreaterThan (Static 0)) where
+  AssetWithAnyDoom = AssetWithDoom (GreaterThan (Static 0))
+
 data AssetMatcher
   = AssetWithTitle Text
   | AssetWithFullTitle Text Text
@@ -164,6 +169,7 @@ data AssetMatcher
   | AssetWithoutModifier ModifierType
   | AssetWithUseType UseType
   | AssetWithUses UseType
+  | AssetWithDoom ValueMatcher
   | AssetInSlot SlotType
   | AssetIs CardCode
   | AssetCardMatch CardMatcher
@@ -315,7 +321,8 @@ pattern LocationWithoutDoom <- LocationWithDoom (EqualTo (Static 0)) where
   LocationWithoutDoom = LocationWithDoom (EqualTo (Static 0))
 
 pattern LeadInvestigatorLocation :: LocationMatcher
-pattern LeadInvestigatorLocation <- LocationWithInvestigator LeadInvestigator where
+pattern LeadInvestigatorLocation <-
+  LocationWithInvestigator LeadInvestigator where
   LeadInvestigatorLocation = LocationWithInvestigator LeadInvestigator
 
 locationIs :: HasCardCode a => a -> LocationMatcher
@@ -522,7 +529,9 @@ instance Semigroup CardMatcher where
 instance Monoid CardMatcher where
   mempty = AnyCard
 
-data DiscardedPlayerCardMatcher = DiscardedCardMatcher InvestigatorMatcher CardMatcher
+data DiscardedPlayerCardMatcher = DiscardedCardMatcher
+  InvestigatorMatcher
+  CardMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -792,3 +801,22 @@ data DamageEffectMatcher = AttackDamageEffect | NonAttackDamageEffect | AnyDamag
 data EnemyAttackMatcher = AnyEnemyAttack | AttackOfOpportunityAttack
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+newtype ScenarioLogKeyMatcher = KeyIs ScenarioLogKey
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data ScenarioDeckMatcher = AnyScenarioDeck | ScenarioDeckWithCards | ScenarioDeckWithKey ScenarioDeckKey | ScenarioDeckMatches [ScenarioDeckMatcher]
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance Semigroup ScenarioDeckMatcher where
+  AnyScenarioDeck <> x = x
+  x <> AnyScenarioDeck = x
+  ScenarioDeckMatches xs <> ScenarioDeckMatches ys = ScenarioDeckMatches $ xs <> ys
+  ScenarioDeckMatches xs <> x = ScenarioDeckMatches $ xs <> [x]
+  x <> ScenarioDeckMatches xs = ScenarioDeckMatches $ x : xs
+  x <> y = ScenarioDeckMatches [x, y]
+
+instance Monoid ScenarioDeckMatcher where
+  mempty = AnyScenarioDeck

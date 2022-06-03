@@ -123,6 +123,9 @@ selectEventController = selectOne . HasMatchingEvent . EventWithId
 selectSkillController :: Query InvestigatorMatcher m => SkillId -> m (Maybe InvestigatorId)
 selectSkillController = selectOne . HasMatchingSkill . SkillWithId
 
+getPlayerCount :: Query InvestigatorMatcher m => m Int
+getPlayerCount = selectCount Anyone
+
 class (Monad m, Hashable (QueryElement a), Eq (QueryElement a)) => Query a m where
   select :: HasCallStack => a -> m (HashSet (QueryElement a))
 

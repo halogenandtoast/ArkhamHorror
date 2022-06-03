@@ -735,6 +735,7 @@ library
       Arkham.GameRunner
       Arkham.GameValue
       Arkham.Helpers
+      Arkham.Helpers.Window
       Arkham.History
       Arkham.Id
       Arkham.Investigator
@@ -1245,7 +1246,6 @@ library
       Arkham.Treachery.Cards.Wormhole
       Arkham.Treachery.Cards.WrackedByNightmares
       Arkham.Treachery.Helpers
-      Arkham.Treachery.Runner
       Arkham.Treachery.Treacheries
       Arkham.TreacheryId
       Arkham.Window

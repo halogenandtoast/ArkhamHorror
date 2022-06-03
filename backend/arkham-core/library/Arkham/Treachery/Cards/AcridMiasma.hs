@@ -6,19 +6,17 @@ module Arkham.Treachery.Cards.AcridMiasma
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype AcridMiasma = AcridMiasma TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 acridMiasma :: TreacheryCard AcridMiasma
@@ -34,11 +32,14 @@ instance HasAbilities AcridMiasma where
       ]
     _ -> []
 
-instance TreacheryRunner env => RunMessage AcridMiasma where
+instance RunMessage AcridMiasma where
   runMessage msg t@(AcridMiasma attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      targetLocations <- map unClosestLocationId <$> getSetList
-        (iid, LocationWithoutTreachery $ treacheryIs Cards.acridMiasma)
+    Revelation _ source | isSource attrs source -> do
+      targetLocations <-
+        selectList
+        $ NearestLocationToYou
+        $ LocationWithoutTreachery
+        $ treacheryIs Cards.acridMiasma
       case targetLocations of
         [] -> pure t
         (x : _) -> t <$ push (AttachTreachery (toId attrs) (LocationTarget x))
@@ -47,17 +48,16 @@ instance TreacheryRunner env => RunMessage AcridMiasma where
       -- not revelation but puts card into active
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        hunters <- getSetList HunterEnemy
+        hunters <- selectList HunterEnemy
         let damageChoice = InvestigatorAssignDamage iid source DamageAny 1 1
         case hunters of
-          [] -> t <$ push damageChoice
-          eids -> t <$ push
-            (chooseOne
-              iid
-              [ Label "Take 1 damage and 1 horror" [damageChoice]
-              , Label
-                "Resolve the hunter keyword on each enemy in play"
-                [ HunterMove eid | eid <- eids ]
-              ]
-            )
+          [] -> push damageChoice
+          eids -> push $ chooseOne
+            iid
+            [ Label "Take 1 damage and 1 horror" [damageChoice]
+            , Label
+              "Resolve the hunter keyword on each enemy in play"
+              [ HunterMove eid | eid <- eids ]
+            ]
+        pure t
     _ -> AcridMiasma <$> runMessage msg attrs

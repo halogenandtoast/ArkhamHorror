@@ -12,17 +12,16 @@ import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Skill.Attrs
-import Arkham.Skill.Runner
 import Arkham.Target
 
 newtype Resourceful = Resourceful SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 resourceful :: SkillCard Resourceful
 resourceful = skill Resourceful Cards.resourceful
 
-instance SkillRunner env => RunMessage Resourceful where
+instance RunMessage Resourceful where
   runMessage msg s@(Resourceful attrs) = case msg of
     PassedSkillTest _ _ _ target _ _ | isTarget attrs target -> do
       targets <- selectList

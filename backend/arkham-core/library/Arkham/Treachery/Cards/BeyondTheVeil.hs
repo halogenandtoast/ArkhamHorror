@@ -32,7 +32,7 @@ instance HasAbilities BeyondTheVeil where
         $ DeckHasNoCards Timing.When You
     ]
 
-instance TreacheryRunner env => RunMessage env BeyondTheVeil where
+instance TreacheryRunner env => RunMessage BeyondTheVeil where
   runMessage msg t@(BeyondTheVeil attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       exemptInvestigators <- getSet @InvestigatorId

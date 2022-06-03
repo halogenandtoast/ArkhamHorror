@@ -23,6 +23,6 @@ instance HasModifiersFor env StealthyByakhee where
     pure $ toModifiers attrs [ EnemyFight (-3) | enemyExhausted attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env StealthyByakhee where
+instance EnemyRunner env => RunMessage StealthyByakhee where
   runMessage msg (StealthyByakhee attrs) =
     StealthyByakhee <$> runMessage msg attrs

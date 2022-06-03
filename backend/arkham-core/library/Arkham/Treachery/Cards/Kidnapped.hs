@@ -35,7 +35,7 @@ instance HasAbilities Kidnapped where
       ]
     _ -> []
 
-instance TreacheryRunner env => RunMessage env Kidnapped where
+instance TreacheryRunner env => RunMessage Kidnapped where
   runMessage msg t@(Kidnapped attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> t <$ push
       (chooseOne

@@ -47,7 +47,7 @@ instance HasTokenValue env StellaClark where
     pure $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage env StellaClark where
+instance InvestigatorRunner env => RunMessage StellaClark where
   runMessage msg i@(StellaClark attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       i <$ push (GainActions iid source 1)

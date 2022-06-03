@@ -33,7 +33,7 @@ instance HasAbilities AlteredBeast where
       ]
     _ -> error "Altered Beast must be attached to an enemy"
 
-instance TreacheryRunner env => RunMessage env AlteredBeast where
+instance TreacheryRunner env => RunMessage AlteredBeast where
   runMessage msg t@(AlteredBeast attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       abominations <- selectListMap EnemyTarget $ EnemyWithTrait Abomination

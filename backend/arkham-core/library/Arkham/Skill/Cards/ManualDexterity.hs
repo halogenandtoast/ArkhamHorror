@@ -15,7 +15,7 @@ newtype ManualDexterity = ManualDexterity SkillAttrs
 manualDexterity :: SkillCard ManualDexterity
 manualDexterity = skill ManualDexterity Cards.manualDexterity
 
-instance RunMessage env ManualDexterity where
+instance RunMessage ManualDexterity where
   runMessage msg s@(ManualDexterity attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ push (DrawCards skillOwner 1 False)

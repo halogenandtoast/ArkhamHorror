@@ -38,7 +38,7 @@ instance HasModifiersFor env Lure1 where
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance HasId LocationId env InvestigatorId => RunMessage env Lure1 where
+instance HasId LocationId env InvestigatorId => RunMessage Lure1 where
   runMessage msg e@(Lure1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getId iid

@@ -19,7 +19,7 @@ newtype ShellShock = ShellShock TreacheryAttrs
 shellShock :: TreacheryCard ShellShock
 shellShock = treachery ShellShock Cards.shellShock
 
-instance TreacheryRunner env => RunMessage env ShellShock where
+instance TreacheryRunner env => RunMessage ShellShock where
   runMessage msg t@(ShellShock attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       horrorCount <- (`div` 2) . unDamageCount <$> getCount iid

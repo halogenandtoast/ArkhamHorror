@@ -42,7 +42,7 @@ instance HasAbilities CloverClubCardroom where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env CloverClubCardroom where
+instance LocationRunner env => RunMessage CloverClubCardroom where
   runMessage msg l@(CloverClubCardroom attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (RequestTokens source (Just iid) 1 SetAside)

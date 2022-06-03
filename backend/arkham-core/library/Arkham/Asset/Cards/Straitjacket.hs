@@ -28,7 +28,7 @@ instance HasAbilities Straitjacket where
         2
     ]
 
-instance AssetRunner env => RunMessage env Straitjacket where
+instance AssetRunner env => RunMessage Straitjacket where
   runMessage msg a@(Straitjacket attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       a <$ push (Discarded (toTarget attrs) (toCard attrs))

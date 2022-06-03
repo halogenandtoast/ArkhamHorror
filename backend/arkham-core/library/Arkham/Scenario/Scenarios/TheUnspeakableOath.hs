@@ -119,7 +119,7 @@ investigatorDefeat = do
            )
          ]
 
-instance ScenarioRunner env => RunMessage env TheUnspeakableOath where
+instance ScenarioRunner env => RunMessage TheUnspeakableOath where
   runMessage msg s@(TheUnspeakableOath attrs) = case msg of
     SetTokensForScenario -> do
       whenM getIsStandalone $ do

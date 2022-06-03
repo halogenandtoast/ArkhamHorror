@@ -31,7 +31,7 @@ tokenEffect eid metadata source token = TokenEffect $ EffectAttrs
   , effectWindow = Nothing
   }
 
-instance HasModifiersFor env TokenEffect where
+instance Monad m => HasModifiersFor m TokenEffect where
   getModifiersFor _ target (TokenEffect attrs) | target == effectTarget attrs =
     case effectMetadata attrs of
       Just (EffectModifiers modifiers) -> pure modifiers
@@ -39,7 +39,7 @@ instance HasModifiersFor env TokenEffect where
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env TokenEffect where
+instance RunMessage TokenEffect where
   runMessage msg e@(TokenEffect attrs@EffectAttrs {..}) = case msg of
     ResetTokens _ -> e <$ push (DisableEffect effectId)
     ReturnTokens tokens -> e <$ when

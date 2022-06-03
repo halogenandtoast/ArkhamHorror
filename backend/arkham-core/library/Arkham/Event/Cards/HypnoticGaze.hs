@@ -25,7 +25,7 @@ hypnoticGaze = event (HypnoticGaze . (`with` Nothing)) Cards.hypnoticGaze
 dropUntilAttack :: [Message] -> [Message]
 dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 
-instance HasCount HealthDamageCount env EnemyId => RunMessage env HypnoticGaze where
+instance HasCount HealthDamageCount env EnemyId => RunMessage HypnoticGaze where
   runMessage msg e@(HypnoticGaze (attrs `With` mEnemyId)) = case msg of
     InvestigatorPlayEvent iid eventId _ _ _ | eventId == toId attrs -> do
       enemyId <- withQueue $ \queue ->

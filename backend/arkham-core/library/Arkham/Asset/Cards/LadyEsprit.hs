@@ -33,7 +33,7 @@ instance HasAbilities LadyEsprit where
         )
     ]
 
-instance AssetRunner env => RunMessage env LadyEsprit where
+instance AssetRunner env => RunMessage LadyEsprit where
   runMessage msg a@(LadyEsprit attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push

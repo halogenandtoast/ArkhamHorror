@@ -47,7 +47,7 @@ instance HasAbilities WendyAdams where
         $ HandDiscardCost 1 AnyCard
     ]
 
-instance (InvestigatorRunner env) => RunMessage env WendyAdams where
+instance (InvestigatorRunner env) => RunMessage WendyAdams where
   runMessage msg i@(WendyAdams attrs@InvestigatorAttrs {..}) = case msg of
     UseCardAbility _ (isSource attrs -> True) [Window _ (Window.RevealToken _ token)] 1 _
       -> do

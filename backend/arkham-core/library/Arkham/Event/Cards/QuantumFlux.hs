@@ -18,7 +18,7 @@ newtype QuantumFlux = QuantumFlux EventAttrs
 quantumFlux :: EventCard QuantumFlux
 quantumFlux = event QuantumFlux Cards.quantumFlux
 
-instance EventRunner env => RunMessage env QuantumFlux where
+instance EventRunner env => RunMessage QuantumFlux where
   runMessage msg e@(QuantumFlux attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

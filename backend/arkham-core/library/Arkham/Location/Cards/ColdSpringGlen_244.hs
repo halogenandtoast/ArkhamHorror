@@ -60,7 +60,7 @@ instance HasAbilities ColdSpringGlen_244 where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env ColdSpringGlen_244 where
+instance LocationRunner env => RunMessage ColdSpringGlen_244 where
   runMessage msg l@(ColdSpringGlen_244 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       investigatorWithCluePairs <- filter ((> 0) . snd) <$> traverse

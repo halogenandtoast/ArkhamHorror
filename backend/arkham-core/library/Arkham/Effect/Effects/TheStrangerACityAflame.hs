@@ -39,7 +39,7 @@ instance HasAbilities TheStrangerACityAflame where
         .~ PlayerLimit PerRound 1
     ]
 
-instance HasQueue env => RunMessage env TheStrangerACityAflame where
+instance RunMessage TheStrangerACityAflame where
   runMessage msg e@(TheStrangerACityAflame attrs) = case msg of
     UseCardAbility iid (ProxySource _ source) _ 1 _ | isSource attrs source ->
       e

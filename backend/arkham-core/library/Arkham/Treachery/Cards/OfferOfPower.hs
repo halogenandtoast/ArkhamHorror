@@ -15,7 +15,7 @@ newtype OfferOfPower = OfferOfPower TreacheryAttrs
 offerOfPower :: TreacheryCard OfferOfPower
 offerOfPower = treachery OfferOfPower Cards.offerOfPower
 
-instance TreacheryRunner env => RunMessage env OfferOfPower where
+instance TreacheryRunner env => RunMessage OfferOfPower where
   runMessage msg t@(OfferOfPower attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ push

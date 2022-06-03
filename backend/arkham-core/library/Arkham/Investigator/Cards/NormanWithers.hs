@@ -71,7 +71,7 @@ instance HasTokenValue env NormanWithers where
     pure $ TokenValue ElderSign (PositiveModifier x)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage env NormanWithers where
+instance InvestigatorRunner env => RunMessage NormanWithers where
   runMessage msg nw@(NormanWithers (a `With` metadata)) = case msg of
     UseCardAbility iid source _ 1 _ | isSource a source ->
       nw <$ push (DrawCards iid 1 False)

@@ -25,7 +25,7 @@ newtype ClawsOfSteam = ClawsOfSteam TreacheryAttrs
 clawsOfSteam :: TreacheryCard ClawsOfSteam
 clawsOfSteam = treachery ClawsOfSteam Cards.clawsOfSteam
 
-instance TreacheryRunner env => RunMessage env ClawsOfSteam where
+instance TreacheryRunner env => RunMessage ClawsOfSteam where
   runMessage msg t@(ClawsOfSteam attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillWillpower 3)

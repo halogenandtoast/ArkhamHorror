@@ -21,7 +21,7 @@ newtype BrokenRails = BrokenRails TreacheryAttrs
 brokenRails :: TreacheryCard BrokenRails
 brokenRails = treachery BrokenRails Cards.brokenRails
 
-instance TreacheryRunner env => RunMessage env BrokenRails where
+instance TreacheryRunner env => RunMessage BrokenRails where
   runMessage msg t@(BrokenRails attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid

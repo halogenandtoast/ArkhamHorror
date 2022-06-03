@@ -58,7 +58,7 @@ instance HasAbilities TombOfShadows where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env TombOfShadows where
+instance LocationRunner env => RunMessage TombOfShadows where
   runMessage msg l@(TombOfShadows attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       actIds <- getSetList ()

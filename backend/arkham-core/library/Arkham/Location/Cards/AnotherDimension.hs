@@ -42,7 +42,7 @@ instance HasAbilities AnotherDimension where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage env AnotherDimension where
+instance LocationRunner env => RunMessage AnotherDimension where
   runMessage msg l@(AnotherDimension attrs) = case msg of
     UseCardAbility _ source [Window _ (LeavePlay (LocationTarget lid))] 1 _
       | isSource attrs source -> do

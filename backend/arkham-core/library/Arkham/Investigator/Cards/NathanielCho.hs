@@ -58,7 +58,7 @@ instance HasTokenValue env NathanielCho where
     $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance (InvestigatorRunner env) => RunMessage env NathanielCho where
+instance (InvestigatorRunner env) => RunMessage NathanielCho where
   runMessage msg a@(NathanielCho attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.DealtDamage _ _ (EnemyTarget eid))] 1 _
       | isSource attrs source

@@ -26,5 +26,5 @@ instance HasModifiersFor env FineClothes where
     = pure $ toModifiers a [Difficulty (-2)]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env FineClothes where
+instance AssetRunner env => RunMessage FineClothes where
   runMessage msg (FineClothes attrs) = FineClothes <$> runMessage msg attrs

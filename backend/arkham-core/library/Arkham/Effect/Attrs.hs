@@ -65,7 +65,7 @@ isEndOfWindow EffectAttrs {effectWindow} effectWindow' = effectWindow' `elem` to
     toEffectWindowList (Just x) = [x]
 
 
-instance HasQueue env => RunMessage env EffectAttrs where
+instance RunMessage EffectAttrs where
   runMessage msg a@EffectAttrs {..} = case msg of
     EndSetup | isEndOfWindow a EffectSetupWindow ->
       a <$ push (DisableEffect effectId)

@@ -36,7 +36,7 @@ instance HasAbilities SlimeCoveredDhole where
       $ toId attrs
     ]
 
-instance EnemyRunner env => RunMessage env SlimeCoveredDhole where
+instance EnemyRunner env => RunMessage SlimeCoveredDhole where
   runMessage msg e@(SlimeCoveredDhole attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorsAtSameLocation attrs

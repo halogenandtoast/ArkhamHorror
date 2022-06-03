@@ -29,7 +29,7 @@ instance HasAbilities DarkMemory where
         You
     ]
 
-instance EventRunner env => RunMessage env DarkMemory where
+instance EventRunner env => RunMessage DarkMemory where
   runMessage msg e@(DarkMemory attrs@EventAttrs {..}) = case msg of
     InHand iid' (UseCardAbility iid (isSource attrs -> True) _ 1 _) | iid' == iid -> e <$ pushAll
       [ RevealInHand $ toCardId attrs

@@ -45,7 +45,7 @@ instance HasAbilities LeadingTheWay where
         $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage env LeadingTheWay where
+instance ActRunner env => RunMessage LeadingTheWay where
   runMessage msg a@(LeadingTheWay attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
       push (AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther)

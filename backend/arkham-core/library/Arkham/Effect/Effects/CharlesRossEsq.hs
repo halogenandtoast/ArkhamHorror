@@ -50,7 +50,7 @@ instance
   , HasId LocationId env AssetId
   , HasQueue env
   )
-  => RunMessage env CharlesRossEsq where
+  => RunMessage CharlesRossEsq where
   runMessage msg e@(CharlesRossEsq attrs) = case msg of
     PlayedCard iid card -> case effectSource attrs of
       AssetSource aid -> do

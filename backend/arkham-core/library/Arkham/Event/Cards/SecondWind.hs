@@ -19,7 +19,7 @@ newtype SecondWind = SecondWind EventAttrs
 secondWind :: EventCard SecondWind
 secondWind = event SecondWind Cards.secondWind
 
-instance (HasQueue env, HasHistory env) => RunMessage env SecondWind where
+instance (HasQueue env, HasHistory env) => RunMessage SecondWind where
   runMessage msg e@(SecondWind attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       roundHistory <- getHistory RoundHistory iid

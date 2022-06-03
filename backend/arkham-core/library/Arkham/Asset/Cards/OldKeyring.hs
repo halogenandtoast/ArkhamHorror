@@ -29,7 +29,7 @@ instance HasAbilities OldKeyring where
         $ ActionCost 1
     ]
 
-instance AssetRunner env => RunMessage env OldKeyring where
+instance AssetRunner env => RunMessage OldKeyring where
   runMessage msg a@(OldKeyring attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid

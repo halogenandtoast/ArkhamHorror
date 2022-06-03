@@ -60,7 +60,7 @@ instance HasAbilities PlanningTheEscape where
         $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage env PlanningTheEscape where
+instance ActRunner env => RunMessage PlanningTheEscape where
   runMessage msg a@(PlanningTheEscape attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) (toSource attrs) AdvancedWithOther)

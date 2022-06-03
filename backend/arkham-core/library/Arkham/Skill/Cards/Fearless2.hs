@@ -15,7 +15,7 @@ newtype Fearless2 = Fearless2 SkillAttrs
 fearless2 :: SkillCard Fearless2
 fearless2 = skill Fearless2 Cards.fearless2
 
-instance RunMessage env Fearless2 where
+instance RunMessage Fearless2 where
   runMessage msg s@(Fearless2 attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ n | sid == skillId -> s <$ push
       (HealHorror (InvestigatorTarget skillOwner) (if n >= 2 then 2 else 1))

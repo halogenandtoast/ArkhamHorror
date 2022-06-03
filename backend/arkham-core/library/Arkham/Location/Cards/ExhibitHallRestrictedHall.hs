@@ -37,6 +37,6 @@ instance Query EnemyMatcher env => HasModifiersFor env ExhibitHallRestrictedHall
       pure $ toModifiers attrs [ CannotInvestigate | isJust mHuntingHorror ]
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage env ExhibitHallRestrictedHall where
+instance LocationRunner env => RunMessage ExhibitHallRestrictedHall where
   runMessage msg (ExhibitHallRestrictedHall attrs) =
     ExhibitHallRestrictedHall <$> runMessage msg attrs

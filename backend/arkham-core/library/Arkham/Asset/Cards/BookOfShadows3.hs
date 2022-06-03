@@ -35,7 +35,7 @@ instance HasAbilities BookOfShadows3 where
         $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
     ]
 
-instance AssetRunner env => RunMessage env BookOfShadows3 where
+instance AssetRunner env => RunMessage BookOfShadows3 where
   runMessage msg a@(BookOfShadows3 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       push (AddSlot iid ArcaneSlot (slot attrs))

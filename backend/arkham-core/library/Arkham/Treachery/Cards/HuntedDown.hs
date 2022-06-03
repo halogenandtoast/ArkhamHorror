@@ -22,7 +22,7 @@ newtype HuntedDown = HuntedDown TreacheryAttrs
 huntedDown :: TreacheryCard HuntedDown
 huntedDown = treachery HuntedDown Cards.huntedDown
 
-instance TreacheryRunner env => RunMessage env HuntedDown where
+instance TreacheryRunner env => RunMessage HuntedDown where
   runMessage msg t@(HuntedDown attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       destinationId <- getId @LocationId iid

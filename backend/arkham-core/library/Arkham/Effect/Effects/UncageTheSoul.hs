@@ -27,7 +27,7 @@ instance HasModifiersFor env UncageTheSoul where
     $ toModifiers attrs [ReduceCostOf (CardWithId cid) 3]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env UncageTheSoul where
+instance HasQueue env => RunMessage UncageTheSoul where
   runMessage msg e@(UncageTheSoul attrs) = case msg of
     ResolvedCard _ card | CardIdTarget (toCardId card) == effectTarget attrs ->
       e <$ push (DisableEffect $ toId attrs)

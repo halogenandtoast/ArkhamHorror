@@ -14,15 +14,13 @@ import Arkham.Source
 import Arkham.Target
 
 newtype ArcaneBarrier = ArcaneBarrier EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arcaneBarrier :: EffectArgs -> ArcaneBarrier
 arcaneBarrier = ArcaneBarrier . uncurry4 (baseAttrs "02102")
 
-instance HasModifiersFor env ArcaneBarrier
-
-instance HasQueue env => RunMessage env ArcaneBarrier where
+instance RunMessage ArcaneBarrier where
   runMessage msg e@(ArcaneBarrier attrs@EffectAttrs {..}) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId ->
       e <$ push

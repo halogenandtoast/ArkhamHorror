@@ -132,7 +132,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance ScenarioRunner env => RunMessage env ThePallidMask where
+instance ScenarioRunner env => RunMessage ThePallidMask where
   runMessage msg s@(ThePallidMask attrs) = case msg of
     SetTokensForScenario -> do
       whenM getIsStandalone $ do

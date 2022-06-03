@@ -18,7 +18,7 @@ newtype AcrossSpaceAndTime = AcrossSpaceAndTime TreacheryAttrs
 acrossSpaceAndTime :: TreacheryCard AcrossSpaceAndTime
 acrossSpaceAndTime = treachery AcrossSpaceAndTime Cards.acrossSpaceAndTime
 
-instance TreacheryRunner env => RunMessage env AcrossSpaceAndTime where
+instance TreacheryRunner env => RunMessage AcrossSpaceAndTime where
   runMessage msg t@(AcrossSpaceAndTime attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (DiscardTopOfDeck iid 3 Nothing)

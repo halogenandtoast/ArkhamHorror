@@ -20,7 +20,7 @@ newtype DevilsLuck = DevilsLuck EventAttrs
 devilsLuck :: EventCard DevilsLuck
 devilsLuck = event DevilsLuck Cards.devilsLuck
 
-instance EventRunner env => RunMessage env DevilsLuck where
+instance EventRunner env => RunMessage DevilsLuck where
   runMessage msg e@(DevilsLuck attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [Window _ (Window.WouldTakeDamageOrHorror _ _ damage horror)] _
       | eid == toId attrs

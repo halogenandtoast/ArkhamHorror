@@ -31,7 +31,7 @@ thePathToCarcosa difficulty = ThePathToCarcosa $ baseAttrs
   difficulty
   (chaosBagContents difficulty)
 
-instance CampaignRunner env => RunMessage env ThePathToCarcosa where
+instance CampaignRunner env => RunMessage ThePathToCarcosa where
   runMessage msg c@(ThePathToCarcosa a) = case msg of
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- getInvestigatorIds

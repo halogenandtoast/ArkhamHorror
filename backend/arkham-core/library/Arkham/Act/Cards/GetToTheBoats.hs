@@ -41,7 +41,7 @@ instance HasAbilities GetToTheBoats where
       $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage env GetToTheBoats where
+instance ActRunner env => RunMessage GetToTheBoats where
   runMessage msg a@(GetToTheBoats attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       gondola <- genEncounterCard Locations.gondola

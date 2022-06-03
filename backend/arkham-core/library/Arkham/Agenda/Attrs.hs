@@ -116,11 +116,11 @@ instance HasCardDef AgendaAttrs where
     Nothing ->
       error $ "missing card def for agenda " <> show (unAgendaId $ agendaId e)
 
-instance HasStep AgendaStep env AgendaAttrs where
+instance Monad m => HasStep AgendaStep m AgendaAttrs where
   getStep = pure . agendaStep . agendaSequence
 
-instance HasList UnderneathCard env AgendaAttrs where
+instance Monad m => HasList UnderneathCard m AgendaAttrs where
   getList = pure . map UnderneathCard . agendaCardsUnderneath
 
-instance HasCount DoomCount env AgendaAttrs where
+instance Monad m => HasCount DoomCount m AgendaAttrs where
   getCount = pure . DoomCount . agendaDoom

@@ -19,7 +19,7 @@ newtype QuietHalls = QuietHalls AgendaAttrs
 quietHalls :: AgendaCard QuietHalls
 quietHalls = agenda (1, A) QuietHalls Cards.quietHalls (Static 7)
 
-instance AgendaRunner env => RunMessage env QuietHalls where
+instance AgendaRunner env => RunMessage QuietHalls where
   runMessage msg a@(QuietHalls attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       investigatorIds <- getInvestigatorIds

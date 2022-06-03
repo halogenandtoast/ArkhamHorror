@@ -23,7 +23,7 @@ newtype CheapShot = CheapShot EventAttrs
 cheapShot :: EventCard CheapShot
 cheapShot = event CheapShot Cards.cheapShot
 
-instance EventRunner env => RunMessage env CheapShot where
+instance EventRunner env => RunMessage CheapShot where
   runMessage msg e@(CheapShot attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       agility <- getSkillValue SkillAgility iid

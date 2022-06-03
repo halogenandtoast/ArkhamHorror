@@ -41,7 +41,7 @@ instance HasAbilities DanielChesterfield where
         $ ActionAbility (Just Action.Parley) (ActionCost 1)
     ]
 
-instance EnemyRunner env => RunMessage env DanielChesterfield where
+instance EnemyRunner env => RunMessage DanielChesterfield where
   runMessage msg a@(DanielChesterfield attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AddToVictory $ toTarget attrs)

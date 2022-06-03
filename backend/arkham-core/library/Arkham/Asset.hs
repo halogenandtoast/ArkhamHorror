@@ -47,7 +47,7 @@ instance
   => HasModifiersFor env Asset where
   getModifiersFor = $(entityF2 "Asset" "getModifiersFor")
 
-instance AssetRunner env => RunMessage env Asset where
+instance AssetRunner env => RunMessage Asset where
   runMessage msg x = do
     inPlay <- member (toId x) <$> select AnyAsset
     modifiers' <- if inPlay

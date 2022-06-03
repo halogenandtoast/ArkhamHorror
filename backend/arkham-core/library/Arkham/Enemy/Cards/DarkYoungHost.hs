@@ -46,7 +46,7 @@ instance HasAbilities DarkYoungHost where
            $ toId attrs
          ]
 
-instance EnemyRunner env => RunMessage env DarkYoungHost where
+instance EnemyRunner env => RunMessage DarkYoungHost where
   runMessage msg e@(DarkYoungHost attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.PlacedClues target n)] 1 _
       | isSource attrs source -> do

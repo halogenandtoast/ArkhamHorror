@@ -27,7 +27,7 @@ instance HasAbilities DiscoveringTheTruth where
   getAbilities (DiscoveringTheTruth a) =
     [mkAbility a 1 $ ForcedAbility $ InvestigatorEliminated Timing.When You]
 
-instance ActRunner env => RunMessage env DiscoveringTheTruth where
+instance ActRunner env => RunMessage DiscoveringTheTruth where
   runMessage msg a@(DiscoveringTheTruth attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       clueCount <- unClueCount <$> getCount iid

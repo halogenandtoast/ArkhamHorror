@@ -31,7 +31,7 @@ instance HasAbilities MaskedCarnevaleGoer_21 where
         (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
     ]
 
-instance AssetRunner env => RunMessage env MaskedCarnevaleGoer_21 where
+instance AssetRunner env => RunMessage MaskedCarnevaleGoer_21 where
   runMessage msg a@(MaskedCarnevaleGoer_21 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push (Flip (InvestigatorSource iid) (toTarget attrs))

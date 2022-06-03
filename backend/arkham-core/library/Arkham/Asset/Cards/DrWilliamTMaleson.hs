@@ -40,7 +40,7 @@ instance HasAbilities DrWilliamTMaleson where
 dropUntilDraw :: [Message] -> [Message]
 dropUntilDraw = dropWhile (notElem DrawEncounterCardMessage . messageType)
 
-instance AssetRunner env => RunMessage env DrWilliamTMaleson where
+instance AssetRunner env => RunMessage DrWilliamTMaleson where
   runMessage msg a@(DrWilliamTMaleson attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       card <- withQueue $ \queue ->

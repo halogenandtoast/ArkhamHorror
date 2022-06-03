@@ -22,7 +22,7 @@ newtype LedAstray = LedAstray TreacheryAttrs
 ledAstray :: TreacheryCard LedAstray
 ledAstray = treachery LedAstray Cards.ledAstray
 
-instance TreacheryRunner env => RunMessage env LedAstray where
+instance TreacheryRunner env => RunMessage LedAstray where
   runMessage msg t@(LedAstray attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       cultists <- selectListMap EnemyTarget $ EnemyWithTrait Cultist

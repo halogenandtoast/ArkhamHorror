@@ -21,7 +21,7 @@ iveHadWorse4 = event IveHadWorse4 Cards.iveHadWorse4
 dropUntilDamage :: [Message] -> [Message]
 dropUntilDamage = dropWhile (notElem DamageMessage . messageType)
 
-instance RunMessage env IveHadWorse4 where
+instance RunMessage IveHadWorse4 where
   runMessage msg e@(IveHadWorse4 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows _ | eid == toId attrs -> do
       e <$ push (UseCardAbility iid (toSource attrs) windows 0 NoPayment)

@@ -39,7 +39,7 @@ instance HasTokenValue env JimCulver where
     pure $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage env JimCulver where
+instance InvestigatorRunner env => RunMessage JimCulver where
   runMessage msg i@(JimCulver attrs@InvestigatorAttrs {..}) = case msg of
     When (RevealToken _ iid token)
       | iid == investigatorId && tokenFace token == ElderSign -> do

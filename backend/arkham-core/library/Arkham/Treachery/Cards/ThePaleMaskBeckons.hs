@@ -23,7 +23,7 @@ newtype ThePaleMaskBeckons = ThePaleMaskBeckons TreacheryAttrs
 thePaleMaskBeckons :: TreacheryCard ThePaleMaskBeckons
 thePaleMaskBeckons = treachery ThePaleMaskBeckons Cards.thePaleMaskBeckons
 
-instance TreacheryRunner env => RunMessage env ThePaleMaskBeckons where
+instance TreacheryRunner env => RunMessage ThePaleMaskBeckons where
   runMessage msg t@(ThePaleMaskBeckons attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mTheManInThePallidMask <- selectOne $ enemyIs Cards.theManInThePallidMask

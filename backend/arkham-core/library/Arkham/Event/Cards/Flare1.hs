@@ -37,7 +37,7 @@ findAllyMessages iid investigatorIds e =
     ]
   ]
 
-instance EventRunner env => RunMessage env Flare1 where
+instance EventRunner env => RunMessage Flare1 where
   runMessage msg e@(Flare1 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       investigatorIds <- getInvestigatorIds

@@ -36,7 +36,7 @@ instance HasAbilities MagnifyingGlass1 where
         $ FastAbility Free
     ]
 
-instance (AssetRunner env) => RunMessage env MagnifyingGlass1 where
+instance (AssetRunner env) => RunMessage MagnifyingGlass1 where
   runMessage msg a@(MagnifyingGlass1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (ReturnToHand iid (toTarget attrs))

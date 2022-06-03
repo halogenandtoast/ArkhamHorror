@@ -13,6 +13,6 @@ cherishedKeepsake :: AssetCard CherishedKeepsake
 cherishedKeepsake =
   assetWith CherishedKeepsake Cards.cherishedKeepsake (sanityL ?~ 2)
 
-instance AssetRunner env => RunMessage env CherishedKeepsake where
+instance AssetRunner env => RunMessage CherishedKeepsake where
   runMessage msg (CherishedKeepsake attrs) =
     CherishedKeepsake <$> runMessage msg attrs

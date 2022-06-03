@@ -23,7 +23,7 @@ newtype SeekingAnswers = SeekingAnswers EventAttrs
 seekingAnswers :: EventCard SeekingAnswers
 seekingAnswers = event SeekingAnswers Cards.seekingAnswers
 
-instance EventRunner env => RunMessage env SeekingAnswers where
+instance EventRunner env => RunMessage SeekingAnswers where
   runMessage msg e@(SeekingAnswers attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       lid <- getId @LocationId iid

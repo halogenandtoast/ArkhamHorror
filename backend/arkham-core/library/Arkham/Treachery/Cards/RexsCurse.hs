@@ -41,7 +41,7 @@ instance HasAbilities RexsCurse where
       .~ PlayerLimit PerTestOrAbility 1
     ]
 
-instance TreacheryRunner env => RunMessage env RexsCurse where
+instance TreacheryRunner env => RunMessage RexsCurse where
   runMessage msg t@(RexsCurse (attrs@TreacheryAttrs {..} `With` metadata)) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))

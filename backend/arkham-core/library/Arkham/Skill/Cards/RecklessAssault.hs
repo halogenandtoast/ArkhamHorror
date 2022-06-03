@@ -17,6 +17,6 @@ newtype RecklessAssault = RecklessAssault SkillAttrs
 recklessAssault :: SkillCard RecklessAssault
 recklessAssault = skill RecklessAssault Cards.recklessAssault
 
-instance SkillRunner env => RunMessage env RecklessAssault where
+instance SkillRunner env => RunMessage RecklessAssault where
   runMessage msg (RecklessAssault attrs) =
     RecklessAssault <$> runMessage msg attrs

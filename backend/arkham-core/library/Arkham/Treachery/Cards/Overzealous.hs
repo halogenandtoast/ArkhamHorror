@@ -20,7 +20,7 @@ newtype Overzealous = Overzealous TreacheryAttrs
 overzealous :: TreacheryCard Overzealous
 overzealous = treachery Overzealous Cards.overzealous
 
-instance TreacheryRunner env => RunMessage env Overzealous where
+instance TreacheryRunner env => RunMessage Overzealous where
   runMessage msg t@(Overzealous attrs) = case msg of
     Revelation _iid source | isSource attrs source ->
       t <$ push (DrawEncounterCards (toTarget attrs) 1)

@@ -36,7 +36,7 @@ instance HasModifiersFor env HiredMuscle1 where
     pure [ toModifier a (SkillModifier SkillCombat 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env HiredMuscle1 where
+instance AssetRunner env => RunMessage HiredMuscle1 where
   runMessage msg a@(HiredMuscle1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (chooseOne

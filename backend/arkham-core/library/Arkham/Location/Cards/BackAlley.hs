@@ -28,5 +28,5 @@ backAlley = locationWith
 instance HasAbilities BackAlley where
   getAbilities (BackAlley a) = withBaseAbilities a [locationResignAction a]
 
-instance LocationRunner env => RunMessage env BackAlley where
+instance LocationRunner env => RunMessage BackAlley where
   runMessage msg (BackAlley attrs) = BackAlley <$> runMessage msg attrs

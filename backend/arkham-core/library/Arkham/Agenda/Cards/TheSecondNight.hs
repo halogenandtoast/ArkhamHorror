@@ -32,7 +32,7 @@ instance HasRecord env () => HasModifiersFor env TheSecondNight where
     pure $ toModifiers a $ [ DoomSubtracts | moreConvictionThanDoubt ]
   getModifiersFor _ _ _ = pure []
 
-instance AgendaRunner env => RunMessage env TheSecondNight where
+instance AgendaRunner env => RunMessage TheSecondNight where
   runMessage msg a@(TheSecondNight attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       msgs <- disengageEachEnemyAndMoveToConnectingLocation

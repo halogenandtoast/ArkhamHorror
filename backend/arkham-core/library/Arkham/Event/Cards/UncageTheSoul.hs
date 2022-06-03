@@ -27,7 +27,7 @@ newtype UncageTheSoul = UncageTheSoul EventAttrs
 uncageTheSoul :: EventCard UncageTheSoul
 uncageTheSoul = event UncageTheSoul Cards.uncageTheSoul
 
-instance CanCheckPlayable env => RunMessage env UncageTheSoul where
+instance CanCheckPlayable env => RunMessage UncageTheSoul where
   runMessage msg e@(UncageTheSoul attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       let

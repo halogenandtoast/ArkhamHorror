@@ -23,7 +23,7 @@ newtype ATearInReality = ATearInReality AgendaAttrs
 aTearInReality :: AgendaCard ATearInReality
 aTearInReality = agenda (1, A) ATearInReality Cards.aTearInReality (Static 4)
 
-instance AgendaRunner env => RunMessage env ATearInReality where
+instance AgendaRunner env => RunMessage ATearInReality where
   runMessage msg a@(ATearInReality attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()

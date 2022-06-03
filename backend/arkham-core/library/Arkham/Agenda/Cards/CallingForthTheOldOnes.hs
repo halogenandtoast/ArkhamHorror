@@ -20,7 +20,7 @@ callingForthTheOldOnes :: AgendaCard CallingForthTheOldOnes
 callingForthTheOldOnes =
   agenda (1, A) CallingForthTheOldOnes Cards.callingForthTheOldOnes (Static 12)
 
-instance AgendaRunner env => RunMessage env CallingForthTheOldOnes where
+instance AgendaRunner env => RunMessage CallingForthTheOldOnes where
   runMessage msg a@(CallingForthTheOldOnes attrs@AgendaAttrs {..}) =
     case msg of
       AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->

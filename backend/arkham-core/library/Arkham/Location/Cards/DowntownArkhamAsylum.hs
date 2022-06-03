@@ -44,7 +44,7 @@ instance HasAbilities DowntownArkhamAsylum where
   getAbilities (DowntownArkhamAsylum attrs) =
     getAbilities attrs
 
-instance LocationRunner env => RunMessage env DowntownArkhamAsylum where
+instance LocationRunner env => RunMessage DowntownArkhamAsylum where
   runMessage msg l@(DowntownArkhamAsylum attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (HealHorror (InvestigatorTarget iid) 3)

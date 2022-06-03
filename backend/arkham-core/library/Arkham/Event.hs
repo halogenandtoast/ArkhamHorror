@@ -39,7 +39,7 @@ instance
   where
   getModifiersFor = $(entityF2 "Event" "getModifiersFor")
 
-instance EventRunner env => RunMessage env Event where
+instance EventRunner env => RunMessage Event where
   runMessage = $(entityRunMessage "Event")
 
 instance Entity Event where

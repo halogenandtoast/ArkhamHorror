@@ -22,7 +22,7 @@ newtype MindWipe1 = MindWipe1 EventAttrs
 mindWipe1 :: EventCard MindWipe1
 mindWipe1 = event MindWipe1 Cards.mindWipe1
 
-instance EventRunner env => RunMessage env MindWipe1 where
+instance EventRunner env => RunMessage MindWipe1 where
   runMessage msg e@(MindWipe1 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       locationId <- getId @LocationId iid

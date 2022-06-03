@@ -25,7 +25,7 @@ instance
   , HasSet InvestigatorId env LocationId
   , HasId LocationId env InvestigatorId
   )
-  => RunMessage env Shortcut where
+  => RunMessage Shortcut where
   runMessage msg e@(Shortcut attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       lid <- getId @LocationId iid

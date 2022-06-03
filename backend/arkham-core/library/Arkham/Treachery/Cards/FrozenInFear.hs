@@ -40,7 +40,7 @@ instance HasAbilities FrozenInFear where
         You
     ]
 
-instance TreacheryRunner env => RunMessage env FrozenInFear where
+instance TreacheryRunner env => RunMessage FrozenInFear where
   runMessage msg t@(FrozenInFear attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

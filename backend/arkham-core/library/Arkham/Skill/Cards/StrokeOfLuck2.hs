@@ -18,7 +18,7 @@ newtype StrokeOfLuck2 = StrokeOfLuck2 SkillAttrs
 strokeOfLuck2 :: SkillCard StrokeOfLuck2
 strokeOfLuck2 = skill StrokeOfLuck2 Cards.strokeOfLuck2
 
-instance RunMessage env StrokeOfLuck2 where
+instance RunMessage StrokeOfLuck2 where
   runMessage msg s@(StrokeOfLuck2 attrs) = case msg of
     RevealToken _ iid token | tokenFace token /= AutoFail -> s <$ push
       (chooseOne

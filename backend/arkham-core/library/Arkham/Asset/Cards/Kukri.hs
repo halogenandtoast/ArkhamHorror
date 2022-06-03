@@ -29,7 +29,7 @@ instance HasAbilities Kukri where
         $ ActionAbility (Just Action.Fight) (ActionCost 1)
     ]
 
-instance AssetRunner env => RunMessage env Kukri where
+instance AssetRunner env => RunMessage Kukri where
   runMessage msg a@(Kukri attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier

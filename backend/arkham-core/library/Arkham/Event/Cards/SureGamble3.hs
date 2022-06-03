@@ -18,7 +18,7 @@ newtype SureGamble3 = SureGamble3 EventAttrs
 sureGamble3 :: EventCard SureGamble3
 sureGamble3 = event SureGamble3 Cards.sureGamble3
 
-instance EventRunner env => RunMessage env SureGamble3 where
+instance EventRunner env => RunMessage SureGamble3 where
   runMessage msg e@(SureGamble3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent _ eid _ [Window Timing.When (RevealToken _ token)] _
       | eid == eventId -> e <$ pushAll

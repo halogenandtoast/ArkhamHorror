@@ -36,7 +36,7 @@ instance HasAbilities TommyMalloy where
         AnySource
     ]
 
-instance EnemyRunner env => RunMessage env TommyMalloy where
+instance EnemyRunner env => RunMessage TommyMalloy where
   runMessage msg e@(TommyMalloy attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e

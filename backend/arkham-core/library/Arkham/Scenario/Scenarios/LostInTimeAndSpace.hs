@@ -164,7 +164,7 @@ instance
   , HasCount XPCount env ()
   , HasModifiersFor env ()
   )
-  => RunMessage env LostInTimeAndSpace where
+  => RunMessage LostInTimeAndSpace where
   runMessage msg s@(LostInTimeAndSpace attrs) = case msg of
     SetTokensForScenario -> do
       standalone <- getIsStandalone

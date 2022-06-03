@@ -36,7 +36,7 @@ instance HasAbilities AstoundingRevelation where
         & (abilityLimitL .~ PlayerLimit (PerSearch $ Just Research) 1)
     ]
 
-instance (Query AssetMatcher env, HasQueue env) => RunMessage env AstoundingRevelation where
+instance (Query AssetMatcher env, HasQueue env) => RunMessage AstoundingRevelation where
   runMessage msg e@(AstoundingRevelation attrs) = case msg of
     InDiscard _ (UseCardAbility iid source _ 1 _) | isSource attrs source -> do
       secretAssetIds <- selectList (AssetControlledBy You <> AssetWithUseType Secret)

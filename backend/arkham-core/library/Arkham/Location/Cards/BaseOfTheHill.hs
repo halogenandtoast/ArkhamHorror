@@ -44,7 +44,7 @@ instance HasAbilities BaseOfTheHill where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env BaseOfTheHill where
+instance LocationRunner env => RunMessage BaseOfTheHill where
   runMessage msg l@(BaseOfTheHill attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (Investigate

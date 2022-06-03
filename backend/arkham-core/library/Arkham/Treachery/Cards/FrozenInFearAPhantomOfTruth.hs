@@ -19,6 +19,6 @@ frozenInFearAPhantomOfTruth :: TreacheryCard FrozenInFearAPhantomOfTruth
 frozenInFearAPhantomOfTruth =
   treachery (FrozenInFearAPhantomOfTruth . FrozenInFear) Cards.frozenInFearAPhantomOfTruth
 
-instance TreacheryRunner env => RunMessage env FrozenInFearAPhantomOfTruth where
+instance TreacheryRunner env => RunMessage FrozenInFearAPhantomOfTruth where
   runMessage msg (FrozenInFearAPhantomOfTruth attrs) =
     FrozenInFearAPhantomOfTruth <$> runMessage msg attrs

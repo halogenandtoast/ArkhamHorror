@@ -23,7 +23,7 @@ newtype MonsterSlayer5 = MonsterSlayer5 EventAttrs
 monsterSlayer5 :: EventCard MonsterSlayer5
 monsterSlayer5 = event MonsterSlayer5 Cards.monsterSlayer5
 
-instance (HasSet Trait env EnemyId, HasSkillTest env) => RunMessage env MonsterSlayer5 where
+instance (HasSet Trait env EnemyId, HasSkillTest env) => RunMessage MonsterSlayer5 where
   runMessage msg e@(MonsterSlayer5 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

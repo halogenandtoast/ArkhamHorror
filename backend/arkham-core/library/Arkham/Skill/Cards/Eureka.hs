@@ -20,7 +20,7 @@ newtype Eureka = Eureka SkillAttrs
 eureka :: SkillCard Eureka
 eureka = skill Eureka Cards.eureka
 
-instance SkillRunner env => RunMessage env Eureka where
+instance SkillRunner env => RunMessage Eureka where
   runMessage msg s@(Eureka attrs) = case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
       push $ Search

@@ -24,7 +24,7 @@ newtype AnatomicalDiagrams = AnatomicalDiagrams EventAttrs
 anatomicalDiagrams :: EventCard AnatomicalDiagrams
 anatomicalDiagrams = event AnatomicalDiagrams Cards.anatomicalDiagrams
 
-instance EventRunner env => RunMessage env AnatomicalDiagrams where
+instance EventRunner env => RunMessage AnatomicalDiagrams where
   runMessage msg e@(AnatomicalDiagrams attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-

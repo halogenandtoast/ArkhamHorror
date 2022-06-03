@@ -25,7 +25,7 @@ instance
   , HasSet InvestigatorId env InvestigatorMatcher
   , Query AssetMatcher env
   )
-  => RunMessage env EmergencyAid where
+  => RunMessage EmergencyAid where
   runMessage msg e@(EmergencyAid attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       investigatorIds <- getSetList

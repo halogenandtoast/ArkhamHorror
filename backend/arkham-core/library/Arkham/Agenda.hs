@@ -50,7 +50,7 @@ instance HasStep AgendaStep env Agenda where
 instance HasAbilities Agenda where
   getAbilities = $(entityF "Agenda" "getAbilities")
 
-instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessage env Agenda where
+instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessage Agenda where
   runMessage = $(entityRunMessage "Agenda")
 
 instance (Query EnemyMatcher env, HasSet Trait env EnemyId, HasRecord env ()) => HasModifiersFor env Agenda where

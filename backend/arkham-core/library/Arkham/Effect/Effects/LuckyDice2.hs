@@ -31,7 +31,7 @@ instance HasModifiersFor env LuckyDice2 where
     | target == effectTarget attrs = pure $ toModifiers attrs [IgnoreToken]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env LuckyDice2 where
+instance HasQueue env => RunMessage LuckyDice2 where
   runMessage msg e@(LuckyDice2 (attrs@EffectAttrs {..} `With` (Metadata hasDrawn)))
     = case msg of
       RevealToken _ _ token -> do

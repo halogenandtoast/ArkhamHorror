@@ -70,7 +70,7 @@ instance HasAbilities TheRougarou where
         forcedAbility : filter (not . isEngage) actions' <> [engageAction]
       else forcedAbility : actions'
 
-instance EnemyRunner env => RunMessage env TheRougarou where
+instance EnemyRunner env => RunMessage TheRougarou where
   runMessage msg (TheRougarou (attrs@EnemyAttrs {..} `With` metadata)) =
     case msg of
       UseCardAbility _ source _ 1 _ | isSource attrs source -> do

@@ -400,12 +400,15 @@ library
       Arkham.ChaosBag
       Arkham.ChaosBagStepState
       Arkham.Classes
+      Arkham.Classes.Depth
       Arkham.Classes.Entity
       Arkham.Classes.Entity.Source
       Arkham.Classes.GameLogger
       Arkham.Classes.HasQueue
       Arkham.Classes.HasRecord
+      Arkham.Classes.HasSet
       Arkham.Classes.HasTokenValue
+      Arkham.Classes.Query
       Arkham.Classes.RunMessage
       Arkham.ClassSymbol
       Arkham.CommitRestriction

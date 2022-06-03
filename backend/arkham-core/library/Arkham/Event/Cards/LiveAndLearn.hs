@@ -24,7 +24,7 @@ newtype LiveAndLearn = LiveAndLearn EventAttrs
 liveAndLearn :: EventCard LiveAndLearn
 liveAndLearn = event LiveAndLearn Cards.liveAndLearn
 
-instance EventRunner env => RunMessage env LiveAndLearn where
+instance EventRunner env => RunMessage LiveAndLearn where
   runMessage msg e@(LiveAndLearn attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [Window _ (Window.SkillTestEnded st)] _
       | eid == toId attrs -> do

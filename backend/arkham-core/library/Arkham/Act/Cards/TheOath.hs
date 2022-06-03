@@ -40,7 +40,7 @@ instance HasModifiersFor env TheOath where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActRunner env => RunMessage env TheOath where
+instance ActRunner env => RunMessage TheOath where
   runMessage msg a@(TheOath attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

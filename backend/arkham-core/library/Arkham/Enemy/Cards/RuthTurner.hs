@@ -35,7 +35,7 @@ instance HasAbilities RuthTurner where
       $ toId a
     ]
 
-instance EnemyRunner env => RunMessage env RuthTurner where
+instance EnemyRunner env => RunMessage RuthTurner where
   runMessage msg e@(RuthTurner attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (AddToVictory $ toTarget attrs)

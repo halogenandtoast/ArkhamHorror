@@ -16,7 +16,7 @@ newtype SearchForTheTruth = SearchForTheTruth EventAttrs
 searchForTheTruth :: EventCard SearchForTheTruth
 searchForTheTruth = event SearchForTheTruth Cards.searchForTheTruth
 
-instance (HasQueue env, HasCount ClueCount env InvestigatorId) => RunMessage env SearchForTheTruth where
+instance (HasQueue env, HasCount ClueCount env InvestigatorId) => RunMessage SearchForTheTruth where
   runMessage msg e@(SearchForTheTruth attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       clueCount' <- unClueCount <$> getCount iid

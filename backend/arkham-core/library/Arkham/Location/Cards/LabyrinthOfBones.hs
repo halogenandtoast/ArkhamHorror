@@ -59,7 +59,7 @@ instance HasAbilities LabyrinthOfBones where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env LabyrinthOfBones where
+instance LocationRunner env => RunMessage LabyrinthOfBones where
   runMessage msg l@(LabyrinthOfBones attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       n <- countM (directionEmpty attrs) [Above, Below, RightOf]

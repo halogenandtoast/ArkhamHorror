@@ -12,16 +12,14 @@ import Arkham.Target
 import Arkham.Token
 
 newtype AlchemicalTransmutation = AlchemicalTransmutation EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alchemicalTransmutation :: EffectArgs -> AlchemicalTransmutation
 alchemicalTransmutation =
   AlchemicalTransmutation . uncurry4 (baseAttrs "03032")
 
-instance HasModifiersFor env AlchemicalTransmutation
-
-instance HasQueue env => RunMessage env AlchemicalTransmutation where
+instance RunMessage AlchemicalTransmutation where
   runMessage msg e@(AlchemicalTransmutation attrs@EffectAttrs {..}) =
     case msg of
       RevealToken _ iid token | InvestigatorTarget iid == effectTarget -> do

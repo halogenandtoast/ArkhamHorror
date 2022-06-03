@@ -24,7 +24,7 @@ narrowShaft =
 
 instance HasModifiersFor env NarrowShaft
 
-instance (Query LocationMatcher env, HasQueue env) => RunMessage env NarrowShaft where
+instance (Query LocationMatcher env, HasQueue env) => RunMessage NarrowShaft where
   runMessage msg e@(NarrowShaft attrs) = case msg of
     PassedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget{} _ _ ->
       do

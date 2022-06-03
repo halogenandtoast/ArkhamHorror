@@ -29,7 +29,7 @@ instance HasTokenValue env JennyBarnes where
     $ TokenValue ElderSign (PositiveModifier $ investigatorResources attrs)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance (InvestigatorRunner env) => RunMessage env JennyBarnes where
+instance (InvestigatorRunner env) => RunMessage JennyBarnes where
   runMessage msg (JennyBarnes attrs) = case msg of
     -- TODO: Move this to a modifier
     AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) ->

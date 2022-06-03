@@ -38,7 +38,7 @@ instance HasAbilities NorthsideTrainStation where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env NorthsideTrainStation where
+instance LocationRunner env => RunMessage NorthsideTrainStation where
   runMessage msg l@(NorthsideTrainStation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationIds <- getSetList [Arkham]

@@ -11,15 +11,13 @@ import Arkham.Message
 import Arkham.Target
 
 newtype QuickThinking = QuickThinking EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor env)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 quickThinking :: EffectArgs -> QuickThinking
 quickThinking = QuickThinking . uncurry4 (baseAttrs "02229")
 
-instance HasModifiersFor env QuickThinking
-
-instance HasQueue env => RunMessage env QuickThinking where
+instance RunMessage QuickThinking where
   runMessage msg e@(QuickThinking attrs) = case msg of
     AfterSkillTestEnds{} -> case effectTarget attrs of
       InvestigatorTarget iid ->

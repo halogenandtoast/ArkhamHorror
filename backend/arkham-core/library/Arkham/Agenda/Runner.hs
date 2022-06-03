@@ -78,7 +78,7 @@ instance
   , HasId LeadInvestigatorId env ()
   , HasSet InvestigatorId env ()
   )
-  => RunMessage env AgendaAttrs
+  => RunMessage AgendaAttrs
   where
   runMessage msg a@AgendaAttrs {..} = case msg of
     PlaceUnderneath target cards | isTarget a target ->

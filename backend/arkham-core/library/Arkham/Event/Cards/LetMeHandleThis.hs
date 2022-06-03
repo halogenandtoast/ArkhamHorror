@@ -20,7 +20,7 @@ newtype LetMeHandleThis = LetMeHandleThis EventAttrs
 letMeHandleThis :: EventCard LetMeHandleThis
 letMeHandleThis = event LetMeHandleThis Cards.letMeHandleThis
 
-instance HasQueue env => RunMessage env LetMeHandleThis where
+instance HasQueue env => RunMessage LetMeHandleThis where
   runMessage msg e@(LetMeHandleThis attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid (Just (TreacheryTarget tid)) _ _
       | eid == eventId -> do

@@ -36,7 +36,7 @@ instance HasTokenValue env DaisyWalker where
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
 -- Passing a skill test effect
-instance InvestigatorRunner env => RunMessage env DaisyWalker where
+instance InvestigatorRunner env => RunMessage DaisyWalker where
   runMessage msg i@(DaisyWalker attrs@InvestigatorAttrs {..}) = case msg of
     ResetGame -> do
       attrs' <- runMessage msg attrs

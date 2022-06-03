@@ -36,7 +36,7 @@ instance HasAbilities HoleInTheWall where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage env HoleInTheWall where
+instance LocationRunner env => RunMessage HoleInTheWall where
   runMessage msg l@(HoleInTheWall attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> l <$ pushAll
       [ PlaceLocationMatching (CardWithTitle "Attic")

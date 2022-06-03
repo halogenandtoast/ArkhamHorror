@@ -25,7 +25,7 @@ newtype Corrosion = Corrosion TreacheryAttrs
 corrosion :: TreacheryCard Corrosion
 corrosion = treachery Corrosion Cards.corrosion
 
-instance TreacheryRunner env => RunMessage env Corrosion where
+instance TreacheryRunner env => RunMessage Corrosion where
   runMessage msg t@(Corrosion attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid

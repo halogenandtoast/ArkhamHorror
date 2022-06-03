@@ -35,7 +35,7 @@ instance
         [ EnemyFight (clueCount + doomCount) | clueCount + doomCount > 0 ]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env TheKingsEdict where
+instance HasQueue env => RunMessage TheKingsEdict where
   runMessage msg e@(TheKingsEdict attrs) = case msg of
     EndRound -> e <$ push (DisableEffect $ toId e)
     _ -> TheKingsEdict <$> runMessage msg attrs

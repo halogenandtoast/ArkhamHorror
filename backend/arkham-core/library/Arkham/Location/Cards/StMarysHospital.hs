@@ -44,7 +44,7 @@ instance HasAbilities StMarysHospital where
   getAbilities (StMarysHospital attrs) =
     getAbilities attrs
 
-instance LocationRunner env => RunMessage env StMarysHospital where
+instance LocationRunner env => RunMessage StMarysHospital where
   runMessage msg l@(StMarysHospital attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (HealDamage (InvestigatorTarget iid) 3)

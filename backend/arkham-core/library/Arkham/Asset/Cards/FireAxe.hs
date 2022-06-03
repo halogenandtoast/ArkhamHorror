@@ -48,7 +48,7 @@ instance HasAbilities FireAxe where
       .~ PlayerLimit PerTestOrAbility 3
     ]
 
-instance (AssetRunner env) => RunMessage env FireAxe where
+instance (AssetRunner env) => RunMessage FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)

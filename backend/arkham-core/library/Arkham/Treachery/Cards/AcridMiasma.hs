@@ -34,7 +34,7 @@ instance HasAbilities AcridMiasma where
       ]
     _ -> []
 
-instance TreacheryRunner env => RunMessage env AcridMiasma where
+instance TreacheryRunner env => RunMessage AcridMiasma where
   runMessage msg t@(AcridMiasma attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       targetLocations <- map unClosestLocationId <$> getSetList

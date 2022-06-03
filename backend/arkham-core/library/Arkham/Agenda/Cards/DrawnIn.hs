@@ -24,7 +24,7 @@ newtype DrawnIn = DrawnIn AgendaAttrs
 drawnIn :: AgendaCard DrawnIn
 drawnIn = agenda (4, A) DrawnIn Cards.drawnIn (Static 3)
 
-instance AgendaRunner env => RunMessage env DrawnIn where
+instance AgendaRunner env => RunMessage DrawnIn where
   runMessage msg a@(DrawnIn attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 4 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()

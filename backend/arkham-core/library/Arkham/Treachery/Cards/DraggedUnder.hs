@@ -32,7 +32,7 @@ instance HasAbilities DraggedUnder where
       You
     ]
 
-instance TreacheryRunner env => RunMessage env DraggedUnder where
+instance TreacheryRunner env => RunMessage DraggedUnder where
   runMessage msg t@(DraggedUnder attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillAgility 3)

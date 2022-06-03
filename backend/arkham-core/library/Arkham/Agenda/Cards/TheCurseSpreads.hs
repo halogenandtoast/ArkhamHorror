@@ -32,7 +32,7 @@ instance HasAbilities TheCurseSpreads where
         InvestigationPhase
     ]
 
-instance AgendaRunner env => RunMessage env TheCurseSpreads where
+instance AgendaRunner env => RunMessage TheCurseSpreads where
   runMessage msg a@(TheCurseSpreads attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       notEngaged <- isJust

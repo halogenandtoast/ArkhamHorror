@@ -23,7 +23,7 @@ instance HasModifiersFor env LeMarais218 where
     | target == effectTarget attrs = pure $ toModifiers attrs [CannotMove]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env LeMarais218 where
+instance HasQueue env => RunMessage LeMarais218 where
   runMessage msg e@(LeMarais218 attrs) = case msg of
     EndRoundWindow -> e <$ push (DisableEffect $ toId attrs)
     _ -> LeMarais218 <$> runMessage msg attrs

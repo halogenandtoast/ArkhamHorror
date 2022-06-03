@@ -15,7 +15,7 @@ newtype Guts = Guts SkillAttrs
 guts :: SkillCard Guts
 guts = skill Guts Cards.guts
 
-instance RunMessage env Guts where
+instance RunMessage Guts where
   runMessage msg s@(Guts attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ push (DrawCards skillOwner 1 False)

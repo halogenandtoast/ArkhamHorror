@@ -22,5 +22,5 @@ icyGhoul = enemyWith
   (2, 1)
   (spawnAtL ?~ LocationWithTitle "Cellar")
 
-instance EnemyRunner env => RunMessage env IcyGhoul where
+instance EnemyRunner env => RunMessage IcyGhoul where
   runMessage msg (IcyGhoul attrs) = IcyGhoul <$> runMessage msg attrs

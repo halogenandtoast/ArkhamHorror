@@ -40,7 +40,7 @@ instance HasAbilities AscendingTheHillV2 where
         "Sentinel Peak"
     ]
 
-instance ActRunner env => RunMessage env AscendingTheHillV2 where
+instance ActRunner env => RunMessage AscendingTheHillV2 where
   runMessage msg a@(AscendingTheHillV2 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)

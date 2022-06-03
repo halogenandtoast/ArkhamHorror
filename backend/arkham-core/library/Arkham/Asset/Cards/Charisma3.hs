@@ -19,7 +19,7 @@ charisma3 = asset Charisma3 Cards.charisma3
 slot :: AssetAttrs -> Slot
 slot attrs = Slot (toSource attrs) Nothing
 
-instance AssetRunner env => RunMessage env Charisma3 where
+instance AssetRunner env => RunMessage Charisma3 where
   runMessage msg (Charisma3 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       push $ AddSlot iid AllySlot (slot attrs)

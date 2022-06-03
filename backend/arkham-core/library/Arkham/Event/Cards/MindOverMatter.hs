@@ -16,7 +16,7 @@ newtype MindOverMatter = MindOverMatter EventAttrs
 mindOverMatter :: EventCard MindOverMatter
 mindOverMatter = event MindOverMatter Cards.mindOverMatter
 
-instance EventRunner env => RunMessage env MindOverMatter where
+instance EventRunner env => RunMessage MindOverMatter where
   runMessage msg e@(MindOverMatter attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       e <$ pushAll

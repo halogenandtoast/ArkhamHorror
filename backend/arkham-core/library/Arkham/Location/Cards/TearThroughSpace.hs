@@ -39,7 +39,7 @@ instance HasAbilities TearThroughSpace where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env TearThroughSpace where
+instance LocationRunner env => RunMessage TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (chooseOne

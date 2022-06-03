@@ -35,7 +35,7 @@ instance HasAbilities SilverTwilightAcolyte where
       $ toId a
     ]
 
-instance EnemyRunner env => RunMessage env SilverTwilightAcolyte where
+instance EnemyRunner env => RunMessage SilverTwilightAcolyte where
   runMessage msg e@(SilverTwilightAcolyte attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       e <$ push PlaceDoomOnAgenda

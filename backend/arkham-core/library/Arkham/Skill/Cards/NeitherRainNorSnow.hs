@@ -18,7 +18,7 @@ newtype NeitherRainNorSnow = NeitherRainNorSnow SkillAttrs
 neitherRainNorSnow :: SkillCard NeitherRainNorSnow
 neitherRainNorSnow = skill NeitherRainNorSnow Cards.neitherRainNorSnow
 
-instance SkillRunner env => RunMessage env NeitherRainNorSnow where
+instance SkillRunner env => RunMessage NeitherRainNorSnow where
   runMessage msg s@(NeitherRainNorSnow attrs) = case msg of
     When (FailedSkillTest _ _ _ target _ _) | isTarget attrs target -> do
       removeAllMessagesMatching \case

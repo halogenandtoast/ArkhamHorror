@@ -38,7 +38,7 @@ instance HasAbilities Lantern where
       $ toTarget x
     ]
 
-instance AssetRunner env => RunMessage env Lantern where
+instance AssetRunner env => RunMessage Lantern where
   runMessage msg a@(Lantern attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid

@@ -21,7 +21,7 @@ newtype RuinAndDestruction = RuinAndDestruction TreacheryAttrs
 ruinAndDestruction :: TreacheryCard RuinAndDestruction
 ruinAndDestruction = treachery RuinAndDestruction Cards.ruinAndDestruction
 
-instance TreacheryRunner env => RunMessage env RuinAndDestruction where
+instance TreacheryRunner env => RunMessage RuinAndDestruction where
   runMessage msg t@(RuinAndDestruction attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       targetInvestigators <-

@@ -37,7 +37,7 @@ instance HasModifiersFor env CombatTraining1 where
     $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env CombatTraining1 where
+instance AssetRunner env => RunMessage CombatTraining1 where
   runMessage msg a@(CombatTraining1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier

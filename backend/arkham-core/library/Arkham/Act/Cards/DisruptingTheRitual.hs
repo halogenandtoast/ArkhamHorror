@@ -36,7 +36,7 @@ instance HasAbilities DisruptingTheRitual where
     ]
   getAbilities _ = []
 
-instance ActRunner env => RunMessage env DisruptingTheRitual where
+instance ActRunner env => RunMessage DisruptingTheRitual where
   runMessage msg a@(DisruptingTheRitual attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (chooseOne

@@ -13,6 +13,6 @@ bulletproofVest3 :: AssetCard BulletproofVest3
 bulletproofVest3 =
   assetWith BulletproofVest3 Cards.bulletproofVest3 (healthL ?~ 4)
 
-instance AssetRunner env => RunMessage env BulletproofVest3 where
+instance AssetRunner env => RunMessage BulletproofVest3 where
   runMessage msg (BulletproofVest3 attrs) =
     BulletproofVest3 <$> runMessage msg attrs

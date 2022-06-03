@@ -41,7 +41,7 @@ instance HasAbilities SpiresOfCarcosa where
              ]
            _ -> []
 
-instance TreacheryRunner env => RunMessage env SpiresOfCarcosa where
+instance TreacheryRunner env => RunMessage SpiresOfCarcosa where
   runMessage msg t@(SpiresOfCarcosa attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId iid

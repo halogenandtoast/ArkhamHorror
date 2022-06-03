@@ -41,7 +41,7 @@ instance HasAbilities RialtoBridge where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env RialtoBridge where
+instance LocationRunner env => RunMessage RialtoBridge where
   runMessage msg l@(RialtoBridge attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (LoseActions iid source 1)

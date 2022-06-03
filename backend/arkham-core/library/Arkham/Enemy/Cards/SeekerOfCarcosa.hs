@@ -35,7 +35,7 @@ instance HasAbilities SeekerOfCarcosa where
         MythosPhase
     ]
 
-instance EnemyRunner env => RunMessage env SeekerOfCarcosa where
+instance EnemyRunner env => RunMessage SeekerOfCarcosa where
   runMessage msg e@(SeekerOfCarcosa attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       case enemyLocation attrs of

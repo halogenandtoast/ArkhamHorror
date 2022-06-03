@@ -30,7 +30,7 @@ saracenicScript = act
   Cards.saracenicScript
   (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Whateley Ruins"))
 
-instance ActRunner env => RunMessage env SaracenicScript where
+instance ActRunner env => RunMessage SaracenicScript where
   runMessage msg a@(SaracenicScript attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       survived <- getHasRecord DrHenryArmitageSurvivedTheDunwichLegacy

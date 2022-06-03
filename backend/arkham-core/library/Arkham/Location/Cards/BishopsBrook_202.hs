@@ -35,6 +35,6 @@ instance HasModifiersFor env BishopsBrook_202 where
 instance HasAbilities BishopsBrook_202 where
   getAbilities = withDrawCardUnderneathAction
 
-instance LocationRunner env => RunMessage env BishopsBrook_202 where
+instance LocationRunner env => RunMessage BishopsBrook_202 where
   runMessage msg (BishopsBrook_202 attrs) =
     BishopsBrook_202 <$> runMessage msg attrs

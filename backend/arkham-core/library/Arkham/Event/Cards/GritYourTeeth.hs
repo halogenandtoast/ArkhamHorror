@@ -23,7 +23,7 @@ newtype GritYourTeeth = GritYourTeeth EventAttrs
 gritYourTeeth :: EventCard GritYourTeeth
 gritYourTeeth = event GritYourTeeth Cards.gritYourTeeth
 
-instance EventRunner env => RunMessage env GritYourTeeth where
+instance EventRunner env => RunMessage GritYourTeeth where
   runMessage msg e@(GritYourTeeth attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

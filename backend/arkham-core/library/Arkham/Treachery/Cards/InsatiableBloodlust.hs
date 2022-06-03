@@ -38,7 +38,7 @@ instance HasAbilities InsatiableBloodlust where
         AnySource
     ]
 
-instance TreacheryRunner env => RunMessage env InsatiableBloodlust where
+instance TreacheryRunner env => RunMessage InsatiableBloodlust where
   runMessage msg t@(InsatiableBloodlust attrs@TreacheryAttrs {..}) =
     case msg of
       Revelation _iid source | isSource attrs source -> do

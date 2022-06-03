@@ -36,7 +36,7 @@ instance HasAbilities HumanitiesBuilding where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env HumanitiesBuilding where
+instance LocationRunner env => RunMessage HumanitiesBuilding where
   runMessage msg l@(HumanitiesBuilding attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       horror <- unHorrorCount <$> getCount iid

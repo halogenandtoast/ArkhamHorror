@@ -31,7 +31,7 @@ instance HasAbilities RiteOfSeeking4 where
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
 
-instance AssetRunner env => RunMessage env RiteOfSeeking4 where
+instance AssetRunner env => RunMessage RiteOfSeeking4 where
   runMessage msg a@(RiteOfSeeking4 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid

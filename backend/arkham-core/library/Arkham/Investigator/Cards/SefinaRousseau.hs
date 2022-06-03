@@ -43,7 +43,7 @@ instance HasAbilities SefinaRousseau where
     | notNull (investigatorCardsUnderneath attrs)
     ]
 
-instance InvestigatorRunner env => RunMessage env SefinaRousseau where
+instance InvestigatorRunner env => RunMessage SefinaRousseau where
   runMessage msg i@(SefinaRousseau attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> i <$ push
       (chooseOne

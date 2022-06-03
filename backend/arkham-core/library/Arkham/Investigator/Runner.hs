@@ -196,7 +196,7 @@ type InvestigatorRunner env
     , GetCardDef env EnemyId
     )
 
-instance InvestigatorRunner env => RunMessage env InvestigatorAttrs where
+instance InvestigatorRunner env => RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
 
 runInvestigatorMessage

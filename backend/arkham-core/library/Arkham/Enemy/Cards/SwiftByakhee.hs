@@ -51,7 +51,7 @@ choosePrey attrs (iid, pathId, distance) =
     (toSource attrs)
     (toTarget attrs)
 
-instance EnemyRunner env => RunMessage env SwiftByakhee where
+instance EnemyRunner env => RunMessage SwiftByakhee where
   runMessage msg e@(SwiftByakhee attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       for_ (enemyLocation attrs) $ \loc -> do

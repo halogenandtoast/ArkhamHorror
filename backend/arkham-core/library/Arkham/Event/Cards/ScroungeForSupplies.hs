@@ -21,7 +21,7 @@ newtype ScroungeForSupplies = ScroungeForSupplies EventAttrs
 scroungeForSupplies :: EventCard ScroungeForSupplies
 scroungeForSupplies = event ScroungeForSupplies Cards.scroungeForSupplies
 
-instance EventRunner env => RunMessage env ScroungeForSupplies where
+instance EventRunner env => RunMessage ScroungeForSupplies where
   runMessage msg e@(ScroungeForSupplies attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-

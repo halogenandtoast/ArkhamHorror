@@ -36,7 +36,7 @@ instance HasAbilities GuardDog where
         )
     ]
 
-instance (AssetRunner env) => RunMessage env GuardDog where
+instance (AssetRunner env) => RunMessage GuardDog where
   runMessage msg a@(GuardDog attrs) = case msg of
     UseCardAbility iid source [Window Timing.When (Window.DealtDamage (EnemySource eid) _ _)] 1 _
       | isSource attrs source

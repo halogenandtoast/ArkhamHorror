@@ -47,7 +47,7 @@ instance HasAbilities HidingSpot where
         $ PhaseIs EnemyPhase
     ]
 
-instance EventRunner env => RunMessage env HidingSpot where
+instance EventRunner env => RunMessage HidingSpot where
   runMessage msg e@(HidingSpot attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <- selectListMap LocationTarget Anywhere

@@ -49,7 +49,7 @@ instance HasAbilities AngeredSpirits where
         | iid <- maybeToList (treacheryOwner a)
         ]
 
-instance TreacheryRunner env => RunMessage env AngeredSpirits where
+instance TreacheryRunner env => RunMessage AngeredSpirits where
   runMessage msg t@(AngeredSpirits attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RemoveCardFromHand iid (toCardId attrs)

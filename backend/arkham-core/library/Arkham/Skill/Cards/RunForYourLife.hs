@@ -17,6 +17,6 @@ newtype RunForYourLife = RunForYourLife SkillAttrs
 runForYourLife :: SkillCard RunForYourLife
 runForYourLife = skill RunForYourLife Cards.runForYourLife
 
-instance SkillRunner env => RunMessage env RunForYourLife where
+instance SkillRunner env => RunMessage RunForYourLife where
   runMessage msg (RunForYourLife attrs) =
     RunForYourLife <$> runMessage msg attrs

@@ -39,7 +39,7 @@ instance HasAbilities SpiritAthame1 where
       (Costs [ActionCost 1, ExhaustCost (toTarget x)])
     ]
 
-instance AssetRunner env => RunMessage env SpiritAthame1 where
+instance AssetRunner env => RunMessage SpiritAthame1 where
   runMessage msg a@(SpiritAthame1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier source (InvestigatorTarget iid) (AnySkillValue 2))

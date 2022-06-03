@@ -24,7 +24,7 @@ aCreatureOfTheBayou :: AgendaCard ACreatureOfTheBayou
 aCreatureOfTheBayou =
   agenda (1, A) ACreatureOfTheBayou Cards.aCreatureOfTheBayou (Static 5)
 
-instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
+instance AgendaRunner env => RunMessage ACreatureOfTheBayou where
   runMessage msg a@(ACreatureOfTheBayou attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       mrougarou <- getTheRougarou

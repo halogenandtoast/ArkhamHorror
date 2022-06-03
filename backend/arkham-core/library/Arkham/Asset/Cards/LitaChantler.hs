@@ -53,7 +53,7 @@ instance HasAbilities LitaChantler where
         )
     ]
 
-instance AssetRunner env => RunMessage env LitaChantler where
+instance AssetRunner env => RunMessage LitaChantler where
   runMessage msg a@(LitaChantler attrs) = case msg of
     UseCardAbility _ source [Window Timing.When (Window.SuccessfulAttackEnemy _ enemyId _)] 1 _
       | isSource attrs source

@@ -22,7 +22,7 @@ newtype FineDining = FineDining TreacheryAttrs
 fineDining :: TreacheryCard FineDining
 fineDining = treachery FineDining Cards.fineDining
 
-instance TreacheryRunner env => RunMessage env FineDining where
+instance TreacheryRunner env => RunMessage FineDining where
   runMessage msg t@(FineDining attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       clueCount <- unClueCount <$> getCount iid

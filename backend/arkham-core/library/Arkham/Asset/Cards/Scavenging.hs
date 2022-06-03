@@ -46,7 +46,7 @@ instance HasAbilities Scavenging where
             (ExhaustCost $ toTarget a)
     ]
 
-instance AssetRunner env => RunMessage env Scavenging where
+instance AssetRunner env => RunMessage Scavenging where
   runMessage msg a@(Scavenging attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (Search

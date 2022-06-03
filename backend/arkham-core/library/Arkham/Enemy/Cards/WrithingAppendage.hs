@@ -38,7 +38,7 @@ instance HasAbilities WrithingAppendage where
     $ toId attrs
     ]
 
-instance EnemyRunner env => RunMessage env WrithingAppendage where
+instance EnemyRunner env => RunMessage WrithingAppendage where
   runMessage msg e@(WrithingAppendage attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       e <$ push (RandomDiscard iid)

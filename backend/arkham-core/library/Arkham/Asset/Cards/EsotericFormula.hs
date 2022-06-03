@@ -51,7 +51,7 @@ instance (HasSkillTest env, HasCount ClueCount env EnemyId) => HasModifiersFor e
         _ -> error "Invalid target"
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env EsotericFormula where
+instance AssetRunner env => RunMessage EsotericFormula where
   runMessage msg a@(EsotericFormula attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (ChooseFightEnemy

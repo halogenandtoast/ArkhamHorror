@@ -33,7 +33,7 @@ instance HasCount PlayerCount env () => HasModifiersFor env BroodOfYogSothoth wh
       ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env BroodOfYogSothoth where
+instance EnemyRunner env => RunMessage BroodOfYogSothoth where
   runMessage msg e@(BroodOfYogSothoth attrs) = case msg of
     EnemyDamage eid _ (AssetSource aid) _ _ | eid == enemyId attrs -> do
       name <- getName aid

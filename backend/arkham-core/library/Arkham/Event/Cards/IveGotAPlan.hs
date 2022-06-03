@@ -32,7 +32,7 @@ instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor env IveGotAP
       pure $ toModifiers attrs [DamageDealt (min clueCount 3)]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env IveGotAPlan where
+instance HasQueue env => RunMessage IveGotAPlan where
   runMessage msg e@(IveGotAPlan attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       e <$ push

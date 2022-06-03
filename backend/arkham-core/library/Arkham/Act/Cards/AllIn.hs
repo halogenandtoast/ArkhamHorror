@@ -48,7 +48,7 @@ instance HasAbilities AllIn where
       ]
     else []
 
-instance ActRunner env => RunMessage env AllIn where
+instance ActRunner env => RunMessage AllIn where
   runMessage msg a@(AllIn attrs@ActAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)

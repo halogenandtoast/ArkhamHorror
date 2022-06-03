@@ -38,7 +38,7 @@ instance HasAbilities BlastedHeath_249 where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env BlastedHeath_249 where
+instance LocationRunner env => RunMessage BlastedHeath_249 where
   runMessage msg l@(BlastedHeath_249 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)

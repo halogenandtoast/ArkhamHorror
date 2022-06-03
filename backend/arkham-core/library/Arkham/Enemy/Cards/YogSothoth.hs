@@ -46,7 +46,7 @@ instance HasAbilities YogSothoth where
             Free
     ]
 
-instance EnemyRunner env => RunMessage env YogSothoth where
+instance EnemyRunner env => RunMessage YogSothoth where
   runMessage msg e@(YogSothoth attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       e <$ push

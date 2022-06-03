@@ -46,7 +46,7 @@ instance HasAbilities DunwichVillage_243 where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage env DunwichVillage_243 where
+instance LocationRunner env => RunMessage DunwichVillage_243 where
   runMessage msg l@(DunwichVillage_243 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       broodOfYogSothoth <- getSetList @EnemyId (CardCode "02255")

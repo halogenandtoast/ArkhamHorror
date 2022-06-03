@@ -22,7 +22,7 @@ newtype SurvivalInstinct = SurvivalInstinct SkillAttrs
 survivalInstinct :: SkillCard SurvivalInstinct
 survivalInstinct = skill SurvivalInstinct Cards.survivalInstinct
 
-instance SkillRunner env => RunMessage env SurvivalInstinct where
+instance SkillRunner env => RunMessage SurvivalInstinct where
   runMessage msg s@(SurvivalInstinct attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid (Just Evade) _ (SkillTarget sid) _ _ | sid == skillId ->
       do

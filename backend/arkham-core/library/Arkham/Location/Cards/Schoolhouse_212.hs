@@ -40,6 +40,6 @@ instance HasModifiersFor env Schoolhouse_212 where
 instance HasAbilities Schoolhouse_212 where
   getAbilities = withDrawCardUnderneathAction
 
-instance LocationRunner env => RunMessage env Schoolhouse_212 where
+instance LocationRunner env => RunMessage Schoolhouse_212 where
   runMessage msg (Schoolhouse_212 attrs) =
     Schoolhouse_212 <$> runMessage msg attrs

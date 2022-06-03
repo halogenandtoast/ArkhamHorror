@@ -38,7 +38,7 @@ instance HasAbilities ObscuringFog where
       ]
     _ -> []
 
-instance TreacheryRunner env => RunMessage env ObscuringFog where
+instance TreacheryRunner env => RunMessage ObscuringFog where
   runMessage msg t@(ObscuringFog attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       currentLocationId <- getId iid

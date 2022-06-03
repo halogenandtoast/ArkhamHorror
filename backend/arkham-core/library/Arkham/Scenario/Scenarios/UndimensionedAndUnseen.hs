@@ -150,7 +150,7 @@ instance (Query EnemyMatcher env, HasTokenValue env InvestigatorId) => HasTokenV
     ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
     otherFace -> getTokenValue iid otherFace attrs
 
-instance ScenarioRunner env => RunMessage env UndimensionedAndUnseen where
+instance ScenarioRunner env => RunMessage UndimensionedAndUnseen where
   runMessage msg s@(UndimensionedAndUnseen attrs) = case msg of
     SetTokensForScenario -> do
       standalone <- getIsStandalone

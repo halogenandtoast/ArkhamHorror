@@ -17,7 +17,7 @@ newtype MaskedHorrors = MaskedHorrors TreacheryAttrs
 maskedHorrors :: TreacheryCard MaskedHorrors
 maskedHorrors = treachery MaskedHorrors Cards.maskedHorrors
 
-instance TreacheryRunner env => RunMessage env MaskedHorrors where
+instance TreacheryRunner env => RunMessage MaskedHorrors where
   runMessage msg t@(MaskedHorrors attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       iids <- getInvestigatorIds

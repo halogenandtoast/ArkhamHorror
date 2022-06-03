@@ -53,7 +53,7 @@ skillTypes =
   , ("Agility", SkillAgility)
   ]
 
-instance AssetRunner env => RunMessage env TheRedGlovedMan5 where
+instance AssetRunner env => RunMessage TheRedGlovedMan5 where
   runMessage msg a@(TheRedGlovedMan5 (attrs `With` metadata)) = case msg of
     UseCardAbility iid source windows' 1 p | isSource attrs source -> a <$ push
       (chooseOne

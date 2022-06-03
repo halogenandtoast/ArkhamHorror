@@ -17,7 +17,7 @@ newtype DelveTooDeep = DelveTooDeep EventAttrs
 delveTooDeep :: EventCard DelveTooDeep
 delveTooDeep = event DelveTooDeep Cards.delveTooDeep
 
-instance HasQueue env => RunMessage env DelveTooDeep where
+instance HasQueue env => RunMessage DelveTooDeep where
   runMessage msg e@(DelveTooDeep attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
       e <$ pushAll [AllDrawEncounterCard, AddToVictory (toTarget attrs)]

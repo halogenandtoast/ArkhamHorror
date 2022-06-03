@@ -18,7 +18,7 @@ newtype WhatsGoingOn = WhatsGoingOn AgendaAttrs
 whatsGoingOn :: AgendaCard WhatsGoingOn
 whatsGoingOn = agenda (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 3)
 
-instance AgendaRunner env => RunMessage env WhatsGoingOn where
+instance AgendaRunner env => RunMessage WhatsGoingOn where
   runMessage msg a@(WhatsGoingOn attrs) = case msg of
     AdvanceAgenda aid
       | aid == toId attrs && onSide B attrs -> do

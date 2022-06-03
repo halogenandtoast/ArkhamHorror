@@ -30,7 +30,7 @@ instance HasAbilities GraveEater where
       $ toId x
     ]
 
-instance EnemyRunner env => RunMessage env GraveEater where
+instance EnemyRunner env => RunMessage GraveEater where
   runMessage msg e@(GraveEater attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       e <$ push (RandomDiscard iid)

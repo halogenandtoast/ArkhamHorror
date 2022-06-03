@@ -22,7 +22,7 @@ newtype Mesmerize = Mesmerize TreacheryAttrs
 mesmerize :: TreacheryCard Mesmerize
 mesmerize = treachery Mesmerize Cards.mesmerize
 
-instance TreacheryRunner env => RunMessage env Mesmerize where
+instance TreacheryRunner env => RunMessage Mesmerize where
   runMessage msg t@(Mesmerize attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid

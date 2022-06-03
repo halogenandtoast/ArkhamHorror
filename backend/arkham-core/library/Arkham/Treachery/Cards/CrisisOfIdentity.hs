@@ -22,7 +22,7 @@ newtype CrisisOfIdentity = CrisisOfIdentity TreacheryAttrs
 crisisOfIdentity :: TreacheryCard CrisisOfIdentity
 crisisOfIdentity = treachery CrisisOfIdentity Cards.crisisOfIdentity
 
-instance TreacheryRunner env => RunMessage env CrisisOfIdentity where
+instance TreacheryRunner env => RunMessage CrisisOfIdentity where
   runMessage msg t@(CrisisOfIdentity attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       roles <- getSetList iid

@@ -21,7 +21,7 @@ newtype OutOfTime = OutOfTime AgendaAttrs
 outOfTime :: AgendaCard OutOfTime
 outOfTime = agenda (5, A) OutOfTime Cards.outOfTime (Static 3)
 
-instance AgendaRunner env => RunMessage env OutOfTime where
+instance AgendaRunner env => RunMessage OutOfTime where
   runMessage msg a@(OutOfTime attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 5 B -> do
       investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()

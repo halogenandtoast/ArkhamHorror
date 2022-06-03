@@ -29,5 +29,5 @@ mainPath = locationWith
 instance HasAbilities MainPath where
   getAbilities (MainPath a) = withResignAction a []
 
-instance LocationRunner env => RunMessage env MainPath where
+instance LocationRunner env => RunMessage MainPath where
   runMessage msg (MainPath attrs) = MainPath <$> runMessage msg attrs

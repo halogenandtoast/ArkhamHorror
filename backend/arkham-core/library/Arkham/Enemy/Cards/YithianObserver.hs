@@ -37,7 +37,7 @@ instance HasAbilities YithianObserver where
       $ toId a
     ]
 
-instance EnemyRunner env => RunMessage env YithianObserver where
+instance EnemyRunner env => RunMessage YithianObserver where
   runMessage msg e@(YithianObserver attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       cardCount' <- unCardCount <$> getCount iid

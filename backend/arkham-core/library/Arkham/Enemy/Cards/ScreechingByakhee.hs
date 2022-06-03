@@ -35,6 +35,6 @@ instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env Scre
         else []
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env ScreechingByakhee where
+instance EnemyRunner env => RunMessage ScreechingByakhee where
   runMessage msg (ScreechingByakhee attrs) =
     ScreechingByakhee <$> runMessage msg attrs

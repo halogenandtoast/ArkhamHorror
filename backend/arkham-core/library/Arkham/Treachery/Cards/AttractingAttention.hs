@@ -21,7 +21,7 @@ newtype AttractingAttention = AttractingAttention TreacheryAttrs
 attractingAttention :: TreacheryCard AttractingAttention
 attractingAttention = treachery AttractingAttention Cards.attractingAttention
 
-instance TreacheryRunner env => RunMessage env AttractingAttention where
+instance TreacheryRunner env => RunMessage AttractingAttention where
   runMessage msg t@(AttractingAttention attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId iid

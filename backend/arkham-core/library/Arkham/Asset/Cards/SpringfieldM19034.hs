@@ -30,7 +30,7 @@ instance HasAbilities SpringfieldM19034 where
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1])
     ]
 
-instance AssetRunner env => RunMessage env SpringfieldM19034 where
+instance AssetRunner env => RunMessage SpringfieldM19034 where
   runMessage msg a@(SpringfieldM19034 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers

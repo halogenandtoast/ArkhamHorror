@@ -29,7 +29,7 @@ instance HasAbilities KeenEye where
     | idx <- [1, 2]
     ]
 
-instance AssetRunner env => RunMessage env KeenEye where
+instance AssetRunner env => RunMessage KeenEye where
   runMessage msg a@(KeenEye attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (CreateWindowModifierEffect

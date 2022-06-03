@@ -19,7 +19,7 @@ newtype IllSeeYouInHell = IllSeeYouInHell EventAttrs
 illSeeYouInHell :: EventCard IllSeeYouInHell
 illSeeYouInHell = event IllSeeYouInHell Cards.illSeeYouInHell
 
-instance EventRunner env => RunMessage env IllSeeYouInHell where
+instance EventRunner env => RunMessage IllSeeYouInHell where
   runMessage msg e@(IllSeeYouInHell attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <- selectList

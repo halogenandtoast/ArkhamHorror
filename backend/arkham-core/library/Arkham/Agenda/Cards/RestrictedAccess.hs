@@ -37,7 +37,7 @@ instance HasAbilities RestrictedAccess where
         Cards.huntingHorror
     ]
 
-instance AgendaRunner env => RunMessage env RestrictedAccess where
+instance AgendaRunner env => RunMessage RestrictedAccess where
   runMessage msg a@(RestrictedAccess attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.EnemySpawns eid _)] 1 _
       | isSource attrs source -> do

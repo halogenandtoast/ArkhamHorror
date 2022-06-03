@@ -35,7 +35,7 @@ instance HasModifiersFor env Moxie1 where
     pure $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env Moxie1 where
+instance AssetRunner env => RunMessage Moxie1 where
   runMessage msg a@(Moxie1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier

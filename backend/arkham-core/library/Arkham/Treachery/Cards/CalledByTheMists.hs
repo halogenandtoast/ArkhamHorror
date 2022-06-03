@@ -34,7 +34,7 @@ instance HasAbilities CalledByTheMists where
       2
     ]
 
-instance TreacheryRunner env => RunMessage env CalledByTheMists where
+instance TreacheryRunner env => RunMessage CalledByTheMists where
   runMessage msg t@(CalledByTheMists attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

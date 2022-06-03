@@ -56,7 +56,7 @@ theGatheringAgendaDeck :: [CardDef]
 theGatheringAgendaDeck =
   [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
 
-instance ScenarioRunner env => RunMessage env TheGathering where
+instance ScenarioRunner env => RunMessage TheGathering where
   runMessage msg s@(TheGathering attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds

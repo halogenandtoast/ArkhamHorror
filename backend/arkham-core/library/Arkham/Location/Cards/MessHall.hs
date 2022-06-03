@@ -34,7 +34,7 @@ instance HasAbilities MessHall where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env MessHall where
+instance LocationRunner env => RunMessage MessHall where
   runMessage msg l@(MessHall attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (ChooseAndDiscardCard iid)

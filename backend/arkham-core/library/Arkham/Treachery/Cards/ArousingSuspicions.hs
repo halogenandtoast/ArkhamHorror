@@ -21,7 +21,7 @@ newtype ArousingSuspicions = ArousingSuspicions TreacheryAttrs
 arousingSuspicions :: TreacheryCard ArousingSuspicions
 arousingSuspicions = treachery ArousingSuspicions Cards.arousingSuspicions
 
-instance TreacheryRunner env => RunMessage env ArousingSuspicions where
+instance TreacheryRunner env => RunMessage ArousingSuspicions where
   runMessage msg t@(ArousingSuspicions attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid

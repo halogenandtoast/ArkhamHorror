@@ -23,7 +23,7 @@ newtype Waylay = Waylay EventAttrs
 waylay :: EventCard Waylay
 waylay = event Waylay Cards.waylay
 
-instance EventRunner env => RunMessage env Waylay where
+instance EventRunner env => RunMessage Waylay where
   runMessage msg e@(Waylay attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-

@@ -23,7 +23,7 @@ newtype WingingIt = WingingIt EventAttrs
 wingingIt :: EventCard WingingIt
 wingingIt = event WingingIt Cards.wingingIt
 
-instance EventRunner env => RunMessage env WingingIt where
+instance EventRunner env => RunMessage WingingIt where
   runMessage msg e@(WingingIt attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
       lid <- getId iid

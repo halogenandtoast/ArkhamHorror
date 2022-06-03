@@ -34,7 +34,7 @@ instance HasAbilities YoungPsychopath where
       $ toId a
     ]
 
-instance EnemyRunner env => RunMessage env YoungPsychopath where
+instance EnemyRunner env => RunMessage YoungPsychopath where
   runMessage msg e@(YoungPsychopath attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ push
       (chooseOne

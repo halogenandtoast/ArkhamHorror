@@ -149,7 +149,7 @@ instance
   ( HasSet ClosestAssetId env (InvestigatorId, AssetMatcher)
   , ScenarioRunner env
   )
-  => RunMessage env CarnevaleOfHorrors where
+  => RunMessage CarnevaleOfHorrors where
   runMessage msg s@(CarnevaleOfHorrors attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds

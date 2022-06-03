@@ -38,7 +38,7 @@ instance Query LocationMatcher env => HasModifiersFor env TheReallyBadOnesV1 whe
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActRunner env => RunMessage env TheReallyBadOnesV1 where
+instance ActRunner env => RunMessage TheReallyBadOnesV1 where
   runMessage msg a@(TheReallyBadOnesV1 attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

@@ -28,7 +28,7 @@ instance HasAbilities Scrying3 where
         [UseCost (AssetWithId $ toId a) Charge 1, ExhaustCost $ toTarget a]
     ]
 
-instance AssetRunner env => RunMessage env Scrying3 where
+instance AssetRunner env => RunMessage Scrying3 where
   runMessage msg a@(Scrying3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       targets <- map InvestigatorTarget <$> getInvestigatorIds

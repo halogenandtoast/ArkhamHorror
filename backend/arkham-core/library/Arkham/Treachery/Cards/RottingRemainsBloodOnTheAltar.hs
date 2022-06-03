@@ -20,6 +20,6 @@ rottingRemainsBloodOnTheAltar = treachery
   (RottingRemainsBloodOnTheAltar . RottingRemains)
   Cards.rottingRemainsBloodOnTheAltar
 
-instance TreacheryRunner env => RunMessage env RottingRemainsBloodOnTheAltar where
+instance TreacheryRunner env => RunMessage RottingRemainsBloodOnTheAltar where
   runMessage msg (RottingRemainsBloodOnTheAltar inner) =
     RottingRemainsBloodOnTheAltar <$> runMessage msg inner

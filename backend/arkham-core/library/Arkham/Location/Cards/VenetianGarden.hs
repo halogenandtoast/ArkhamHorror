@@ -43,7 +43,7 @@ instance HasAbilities VenetianGarden where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env VenetianGarden where
+instance LocationRunner env => RunMessage VenetianGarden where
   runMessage msg l@(VenetianGarden attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (HealHorror (InvestigatorTarget iid) 2)

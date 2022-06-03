@@ -24,7 +24,7 @@ theShadowOfTheEclipse :: AgendaCard TheShadowOfTheEclipse
 theShadowOfTheEclipse =
   agenda (2, A) TheShadowOfTheEclipse Cards.theShadowOfTheEclipse (Static 3)
 
-instance AgendaRunner env => RunMessage env TheShadowOfTheEclipse where
+instance AgendaRunner env => RunMessage TheShadowOfTheEclipse where
   runMessage msg a@(TheShadowOfTheEclipse attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       maskedCarnevaleGoers <- selectList

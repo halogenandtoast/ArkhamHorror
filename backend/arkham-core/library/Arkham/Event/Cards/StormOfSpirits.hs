@@ -24,7 +24,7 @@ newtype StormOfSpirits = StormOfSpirits EventAttrs
 stormOfSpirits :: EventCard StormOfSpirits
 stormOfSpirits = event StormOfSpirits Cards.stormOfSpirits
 
-instance EventRunner env => RunMessage env StormOfSpirits where
+instance EventRunner env => RunMessage StormOfSpirits where
   runMessage msg e@(StormOfSpirits attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

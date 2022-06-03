@@ -39,7 +39,7 @@ instance HasAbilities LockedDoor where
         1
     ]
 
-instance (TreacheryRunner env) => RunMessage env LockedDoor where
+instance (TreacheryRunner env) => RunMessage LockedDoor where
   runMessage msg t@(LockedDoor attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       targets <-

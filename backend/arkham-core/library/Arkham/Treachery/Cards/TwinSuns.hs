@@ -21,7 +21,7 @@ newtype TwinSuns = TwinSuns TreacheryAttrs
 twinSuns :: TreacheryCard TwinSuns
 twinSuns = treachery TwinSuns Cards.twinSuns
 
-instance TreacheryRunner env => RunMessage env TwinSuns where
+instance TreacheryRunner env => RunMessage TwinSuns where
   runMessage msg t@(TwinSuns attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillIntellect 4

@@ -21,7 +21,7 @@ newtype TerrorFromBeyond = TerrorFromBeyond TreacheryAttrs
 terrorFromBeyond :: TreacheryCard TerrorFromBeyond
 terrorFromBeyond = treachery TerrorFromBeyond Cards.terrorFromBeyond
 
-instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
+instance TreacheryRunner env => RunMessage TerrorFromBeyond where
   runMessage msg t@(TerrorFromBeyond attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       iids <- getSetList ()

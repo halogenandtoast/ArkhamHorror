@@ -40,7 +40,7 @@ instance HasAbilities Montparnasse where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env Montparnasse where
+instance LocationRunner env => RunMessage Montparnasse where
   runMessage msg a@(Montparnasse attrs) = case msg of
     UseCardAbility iid source _ 1 (DiscardCardPayment cards)
       | isSource attrs source -> do

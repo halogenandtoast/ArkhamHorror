@@ -53,7 +53,7 @@ instance
         [ SkillModifier SkillIntellect 2 | isMiskatonic && controlledBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env  => RunMessage env HaroldWalsted where
+instance AssetRunner env  => RunMessage HaroldWalsted where
   runMessage msg a@(HaroldWalsted attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ pushAll [AddToken Tablet, RemoveFromGame $ toTarget attrs]

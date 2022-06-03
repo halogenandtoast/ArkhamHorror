@@ -41,7 +41,7 @@ instance HasAbilities JimsTrumpet where
         )
     ]
 
-instance AssetRunner env => RunMessage env JimsTrumpet where
+instance AssetRunner env => RunMessage JimsTrumpet where
   runMessage msg a@(JimsTrumpet attrs@AssetAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       let controllerId = fromJustNote "must be controller" assetController

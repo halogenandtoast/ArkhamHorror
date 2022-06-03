@@ -40,7 +40,7 @@ instance HasAbilities ArkhamWoodsUnhallowedGround where
         ]
   getAbilities (ArkhamWoodsUnhallowedGround x) = getAbilities x
 
-instance LocationRunner env => RunMessage env ArkhamWoodsUnhallowedGround where
+instance LocationRunner env => RunMessage ArkhamWoodsUnhallowedGround where
   runMessage msg l@(ArkhamWoodsUnhallowedGround attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (BeginSkillTest

@@ -41,7 +41,7 @@ instance HasAbilities TheGuardian where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env TheGuardian where
+instance LocationRunner env => RunMessage TheGuardian where
   runMessage msg l@(TheGuardian attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (DrawCards iid 1 False)

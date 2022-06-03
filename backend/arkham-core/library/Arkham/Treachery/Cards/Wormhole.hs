@@ -22,7 +22,7 @@ newtype Wormhole = Wormhole TreacheryAttrs
 wormhole :: TreacheryCard Wormhole
 wormhole = treachery Wormhole Cards.wormhole
 
-instance TreacheryRunner env => RunMessage env Wormhole where
+instance TreacheryRunner env => RunMessage Wormhole where
   runMessage msg t@(Wormhole attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ push
       (DiscardEncounterUntilFirst

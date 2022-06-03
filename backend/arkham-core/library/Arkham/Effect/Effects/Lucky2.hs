@@ -24,7 +24,7 @@ instance HasModifiersFor env Lucky2 where
     | target == effectTarget = pure [toModifier a $ AnySkillValue 2]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env Lucky2 where
+instance HasQueue env => RunMessage Lucky2 where
   runMessage msg e@(Lucky2 attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget _) | eid == effectId attrs ->
       e <$ push RerunSkillTest

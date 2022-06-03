@@ -121,7 +121,7 @@ getInvestigatorsAtSameLocation attrs = case enemyLocation attrs of
   Nothing -> pure []
   Just loc -> selectList $ InvestigatorAt $ LocationWithId loc
 
-instance EnemyRunner env => RunMessage env EnemyAttrs where
+instance EnemyRunner env => RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
     EndPhase -> pure $ a & movedFromHunterKeywordL .~ False
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do

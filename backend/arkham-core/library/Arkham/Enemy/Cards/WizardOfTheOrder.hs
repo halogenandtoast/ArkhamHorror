@@ -33,7 +33,7 @@ instance HasAbilities WizardOfTheOrder where
         MythosPhase
     ]
 
-instance EnemyRunner env => RunMessage env WizardOfTheOrder where
+instance EnemyRunner env => RunMessage WizardOfTheOrder where
   runMessage msg e@(WizardOfTheOrder attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (PlaceDoom (toTarget attrs) 1)

@@ -64,7 +64,7 @@ instance HasAbilities NarrowShaft where
         ]
       else []
 
-instance LocationRunner env => RunMessage env NarrowShaft where
+instance LocationRunner env => RunMessage NarrowShaft where
   runMessage msg l@(NarrowShaft attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       moveFrom <- popMessageMatching \case

@@ -13,15 +13,13 @@ import Arkham.Target
 import Arkham.Token
 
 newtype BaseballBat = BaseballBat EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseballBat :: EffectArgs -> BaseballBat
 baseballBat = BaseballBat . uncurry4 (baseAttrs "01074")
 
-instance HasModifiersFor env BaseballBat
-
-instance HasQueue env => RunMessage env BaseballBat where
+instance RunMessage BaseballBat where
   runMessage msg e@(BaseballBat attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid token | InvestigatorTarget iid == effectTarget ->
       case effectSource of

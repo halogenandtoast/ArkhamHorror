@@ -25,7 +25,7 @@ instance HasModifiersFor env LetMeHandleThis where
       [toModifier a $ AnySkillValue 2]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env LetMeHandleThis where
+instance HasQueue env => RunMessage LetMeHandleThis where
   runMessage msg e@(LetMeHandleThis attrs) = case msg of
     AfterRevelation _ tid' | effectTarget attrs == TreacheryTarget tid' ->
       e <$ push (DisableEffect $ effectId attrs)

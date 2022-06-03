@@ -21,7 +21,7 @@ newtype ViciousBlow = ViciousBlow SkillAttrs
 viciousBlow :: SkillCard ViciousBlow
 viciousBlow = skill ViciousBlow Cards.viciousBlow
 
-instance RunMessage env ViciousBlow where
+instance RunMessage ViciousBlow where
   runMessage msg s@(ViciousBlow attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ push

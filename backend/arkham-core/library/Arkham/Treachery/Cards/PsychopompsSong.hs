@@ -33,7 +33,7 @@ instance HasAbilities PsychopompsSong where
       ]
     _ -> []
 
-instance TreacheryRunner env => RunMessage env PsychopompsSong where
+instance TreacheryRunner env => RunMessage PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

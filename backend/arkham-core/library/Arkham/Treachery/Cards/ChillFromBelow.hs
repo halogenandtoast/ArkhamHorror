@@ -18,7 +18,7 @@ newtype ChillFromBelow = ChillFromBelow TreacheryAttrs
 chillFromBelow :: TreacheryCard ChillFromBelow
 chillFromBelow = treachery ChillFromBelow Cards.chillFromBelow
 
-instance TreacheryRunner env => RunMessage env ChillFromBelow where
+instance TreacheryRunner env => RunMessage ChillFromBelow where
   runMessage msg t@(ChillFromBelow attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillWillpower 3)

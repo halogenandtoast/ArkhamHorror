@@ -41,7 +41,7 @@ instance HasAbilities ArkhamWoodsTwistingPaths where
         ]
   getAbilities (ArkhamWoodsTwistingPaths attrs) = getAbilities attrs
 
-instance LocationRunner env => RunMessage env ArkhamWoodsTwistingPaths where
+instance LocationRunner env => RunMessage ArkhamWoodsTwistingPaths where
   runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       moveFrom <- popMessageMatching \case

@@ -20,7 +20,7 @@ newtype DaringManeuver = DaringManeuver EventAttrs
 daringManeuver :: EventCard DaringManeuver
 daringManeuver = event DaringManeuver Cards.daringManeuver
 
-instance RunMessage env DaringManeuver where
+instance RunMessage DaringManeuver where
   runMessage msg e@(DaringManeuver attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> e <$ pushAll
       [ skillTestModifier

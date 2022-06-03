@@ -30,5 +30,5 @@ instance (HasId LocationId env InvestigatorId) => HasModifiersFor env TrueGrit w
         ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env TrueGrit where
+instance AssetRunner env => RunMessage TrueGrit where
   runMessage msg (TrueGrit attrs) = TrueGrit <$> runMessage msg attrs

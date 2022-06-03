@@ -17,6 +17,6 @@ newtype SayYourPrayers = SayYourPrayers SkillAttrs
 sayYourPrayers :: SkillCard SayYourPrayers
 sayYourPrayers = skill SayYourPrayers Cards.sayYourPrayers
 
-instance SkillRunner env => RunMessage env SayYourPrayers where
+instance SkillRunner env => RunMessage SayYourPrayers where
   runMessage msg (SayYourPrayers attrs) =
     SayYourPrayers <$> runMessage msg attrs

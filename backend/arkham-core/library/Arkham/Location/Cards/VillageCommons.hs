@@ -28,6 +28,6 @@ instance HasAbilities VillageCommons where
   getAbilities (VillageCommons a) =
     withBaseAbilities a $ [locationResignAction a]
 
-instance LocationRunner env => RunMessage env VillageCommons where
+instance LocationRunner env => RunMessage VillageCommons where
   runMessage msg (VillageCommons attrs) =
     VillageCommons <$> runMessage msg attrs

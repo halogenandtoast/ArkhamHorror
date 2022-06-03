@@ -39,7 +39,7 @@ instance
       pure $ toModifiers attrs [ CannotCommitCards AnyCard | isBayou ]
   getModifiersFor _ _ _ = pure []
 
-instance TreacheryRunner env => RunMessage env CursedSwamp where
+instance TreacheryRunner env => RunMessage CursedSwamp where
   runMessage msg t@(CursedSwamp attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillWillpower 3)

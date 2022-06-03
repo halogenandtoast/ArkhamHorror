@@ -34,7 +34,7 @@ instance HasAbilities GetTheEngineRunning where
       $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage env GetTheEngineRunning where
+instance ActRunner env => RunMessage GetTheEngineRunning where
   runMessage msg a@(GetTheEngineRunning attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)

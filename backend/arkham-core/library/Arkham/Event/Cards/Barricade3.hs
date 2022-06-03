@@ -30,7 +30,7 @@ instance HasModifiersFor env Barricade3 where
       else pure []
   getModifiersFor _ _ _ = pure []
 
-instance (EventRunner env) => RunMessage env Barricade3 where
+instance (EventRunner env) => RunMessage Barricade3 where
   runMessage msg e@(Barricade3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       lid <- getId iid

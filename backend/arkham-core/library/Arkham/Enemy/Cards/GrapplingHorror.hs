@@ -26,6 +26,6 @@ instance HasModifiersFor env GrapplingHorror where
       else pure []
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env GrapplingHorror where
+instance EnemyRunner env => RunMessage GrapplingHorror where
   runMessage msg (GrapplingHorror attrs) =
     GrapplingHorror <$> runMessage msg attrs

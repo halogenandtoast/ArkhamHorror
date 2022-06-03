@@ -40,7 +40,7 @@ instance HasAbilities Garden where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage env Garden where
+instance LocationRunner env => RunMessage Garden where
   runMessage msg l@(Garden attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (BeginSkillTest

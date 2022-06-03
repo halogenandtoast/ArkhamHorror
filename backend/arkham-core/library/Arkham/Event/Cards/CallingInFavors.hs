@@ -23,7 +23,7 @@ newtype CallingInFavors = CallingInFavors EventAttrs
 callingInFavors :: EventCard CallingInFavors
 callingInFavors = event CallingInFavors Cards.callingInFavors
 
-instance EventRunner env => RunMessage env CallingInFavors where
+instance EventRunner env => RunMessage CallingInFavors where
   runMessage msg e@(CallingInFavors attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       allies <- selectList $ AllyAsset <> AssetControlledBy

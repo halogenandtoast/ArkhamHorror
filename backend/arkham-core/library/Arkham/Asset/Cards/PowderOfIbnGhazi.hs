@@ -38,7 +38,7 @@ instance HasAbilities PowderOfIbnGhazi where
         (FastAbility Free)
     ]
 
-instance AssetRunner env => RunMessage env PowderOfIbnGhazi where
+instance AssetRunner env => RunMessage PowderOfIbnGhazi where
   runMessage msg (PowderOfIbnGhazi attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == toId attrs -> do
       survivedCount <- countM

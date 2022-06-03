@@ -35,7 +35,7 @@ instance HasAbilities TheStrangerThePathIsMine where
         $ Leaves Timing.After You ThisLocation
     ]
 
-instance HasQueue env => RunMessage env TheStrangerThePathIsMine where
+instance RunMessage TheStrangerThePathIsMine where
   runMessage msg e@(TheStrangerThePathIsMine attrs) = case msg of
     UseCardAbility iid (ProxySource _ source) _ 1 _ | isSource attrs source ->
       e

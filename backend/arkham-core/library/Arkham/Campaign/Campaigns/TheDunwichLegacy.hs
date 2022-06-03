@@ -39,7 +39,7 @@ theDunwichLegacy difficulty = TheDunwichLegacy $ baseAttrs
   difficulty
   (chaosBagContents difficulty)
 
-instance CampaignRunner env => RunMessage env TheDunwichLegacy where
+instance CampaignRunner env => RunMessage TheDunwichLegacy where
   runMessage msg c@(TheDunwichLegacy attrs@CampaignAttrs {..}) = case msg of
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- getSetList ()

@@ -68,7 +68,7 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env TheHouseAlwaysWin
     Tablet -> pure $ TokenValue Tablet (NegativeModifier 2)
     otherFace -> getTokenValue iid otherFace attrs
 
-instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
+instance ScenarioRunner env => RunMessage TheHouseAlwaysWins where
   runMessage msg s@(TheHouseAlwaysWins attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds

@@ -42,7 +42,7 @@ instance HasSkillTest env => HasModifiersFor env Knuckleduster where
         _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env Knuckleduster where
+instance AssetRunner env => RunMessage Knuckleduster where
   runMessage msg a@(Knuckleduster attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ pushAll

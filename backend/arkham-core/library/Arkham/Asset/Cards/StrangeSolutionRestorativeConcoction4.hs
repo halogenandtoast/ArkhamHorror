@@ -36,7 +36,7 @@ instance HasAbilities StrangeSolutionRestorativeConcoction4 where
       $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
 
-instance AssetRunner env => RunMessage env StrangeSolutionRestorativeConcoction4 where
+instance AssetRunner env => RunMessage StrangeSolutionRestorativeConcoction4 where
   runMessage msg a@(StrangeSolutionRestorativeConcoction4 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid

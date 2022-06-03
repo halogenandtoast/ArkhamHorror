@@ -43,7 +43,7 @@ instance HasAbilities HouseInTheReeds_211 where
         ]
       <> rest
 
-instance LocationRunner env => RunMessage env HouseInTheReeds_211 where
+instance LocationRunner env => RunMessage HouseInTheReeds_211 where
   runMessage msg l@(HouseInTheReeds_211 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (FindEncounterCard iid (toTarget attrs)

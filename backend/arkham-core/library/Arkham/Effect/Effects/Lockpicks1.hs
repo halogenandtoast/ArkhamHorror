@@ -29,7 +29,7 @@ instance HasModifiersFor env Lockpicks1 where
       _ -> error "needs to be set"
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env Lockpicks1 where
+instance HasQueue env => RunMessage Lockpicks1 where
   runMessage msg e@(Lockpicks1 attrs) = case msg of
     SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
     PassedSkillTest _ _ _ SkillTestInitiatorTarget{} _ n | n < 2 ->

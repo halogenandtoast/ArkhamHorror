@@ -37,7 +37,7 @@ instance HasModifiersFor env ScientificTheory1 where
     $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env ScientificTheory1 where
+instance AssetRunner env => RunMessage ScientificTheory1 where
   runMessage msg a@(ScientificTheory1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier

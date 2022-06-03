@@ -25,5 +25,5 @@ instance HasModifiersFor env OrneLibrary where
     $ toModifiers attrs [ActionCostOf (IsAction Action.Investigate) 1]
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage env OrneLibrary where
+instance LocationRunner env => RunMessage OrneLibrary where
   runMessage msg (OrneLibrary attrs) = OrneLibrary <$> runMessage msg attrs

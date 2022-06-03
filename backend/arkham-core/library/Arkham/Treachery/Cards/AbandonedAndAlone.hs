@@ -15,7 +15,7 @@ newtype AbandonedAndAlone = AbandonedAndAlone TreacheryAttrs
 abandonedAndAlone :: TreacheryCard AbandonedAndAlone
 abandonedAndAlone = treachery AbandonedAndAlone Cards.abandonedAndAlone
 
-instance TreacheryRunner env => RunMessage env AbandonedAndAlone where
+instance TreacheryRunner env => RunMessage AbandonedAndAlone where
   runMessage msg t@(AbandonedAndAlone attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ pushAll

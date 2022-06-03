@@ -39,7 +39,7 @@ instance HasAbilities EasttownArkhamPoliceStation where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env EasttownArkhamPoliceStation where
+instance LocationRunner env => RunMessage EasttownArkhamPoliceStation where
   runMessage msg l@(EasttownArkhamPoliceStation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       ammoAssets <- map (Ammo, )

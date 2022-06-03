@@ -51,7 +51,7 @@ instance HasTokenValue env RolandBanks where
     pure $ TokenValue ElderSign (PositiveModifier clues)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage env RolandBanks where
+instance InvestigatorRunner env => RunMessage RolandBanks where
   runMessage msg rb@(RolandBanks a) = case msg of
     UseCardAbility _ (isSource a -> True) _ 1 _ -> do
       push (DiscoverCluesAtLocation (toId a) (investigatorLocation a) 1 Nothing)

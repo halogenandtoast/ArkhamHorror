@@ -45,7 +45,7 @@ instance HasAbilities TheCloverClub where
     | onSide A x
     ]
 
-instance AgendaRunner env => RunMessage env TheCloverClub where
+instance AgendaRunner env => RunMessage TheCloverClub where
   runMessage msg a@(TheCloverClub attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAgenda $ toId attrs)

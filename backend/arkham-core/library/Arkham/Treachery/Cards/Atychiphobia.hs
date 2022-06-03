@@ -35,7 +35,7 @@ instance HasAbilities Atychiphobia where
     $ ActionCost 2
     ]
 
-instance TreacheryRunner env => RunMessage env Atychiphobia where
+instance TreacheryRunner env => RunMessage Atychiphobia where
   runMessage msg t@(Atychiphobia attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

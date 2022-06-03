@@ -27,7 +27,7 @@ instance HasAbilities Burglary where
         $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
     ]
 
-instance AssetRunner env => RunMessage env Burglary where
+instance AssetRunner env => RunMessage Burglary where
   runMessage msg a@(Burglary attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid

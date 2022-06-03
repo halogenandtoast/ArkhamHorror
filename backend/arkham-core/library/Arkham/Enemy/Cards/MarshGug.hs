@@ -23,5 +23,5 @@ marshGug = enemyWith
   (2, 1)
   (spawnAtL ?~ LocationWithTrait Bayou)
 
-instance EnemyRunner env => RunMessage env MarshGug where
+instance EnemyRunner env => RunMessage MarshGug where
   runMessage msg (MarshGug attrs) = MarshGug <$> runMessage msg attrs

@@ -11,15 +11,13 @@ import Arkham.Message
 import Arkham.Target
 
 newtype AChanceEncounter = AChanceEncounter EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aChanceEncounter :: EffectArgs -> AChanceEncounter
 aChanceEncounter = AChanceEncounter . uncurry4 (baseAttrs "02270")
 
-instance HasModifiersFor env AChanceEncounter
-
-instance HasQueue env => RunMessage env AChanceEncounter where
+instance RunMessage AChanceEncounter where
   runMessage msg e@(AChanceEncounter attrs@EffectAttrs {..}) = case msg of
     EndRoundWindow -> case effectTarget of
       CardIdTarget cardId ->

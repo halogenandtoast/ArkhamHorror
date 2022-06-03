@@ -175,7 +175,7 @@ is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
 is (CardIdTarget cardId) t = cardId == unTreacheryId (treacheryId t)
 is _ _ = False
 
-instance TreacheryRunner env => RunMessage env TreacheryAttrs where
+instance TreacheryRunner env => RunMessage TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of
     InvestigatorEliminated iid
       | InvestigatorTarget iid `elem` treacheryAttachedTarget ->

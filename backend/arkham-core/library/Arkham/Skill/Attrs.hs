@@ -88,7 +88,7 @@ skill f cardDef = CardBuilder
     }
   }
 
-instance RunMessage env SkillAttrs where
+instance RunMessage SkillAttrs where
   runMessage msg a = case msg of
     UseCardAbility _ (isSource a -> True) _ (-1) payment ->
       pure $ a { skillAdditionalPayment = Just payment }

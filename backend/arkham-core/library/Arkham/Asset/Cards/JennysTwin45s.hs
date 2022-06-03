@@ -30,7 +30,7 @@ instance HasAbilities JennysTwin45s where
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1])
     ]
 
-instance AssetRunner env => RunMessage env JennysTwin45s where
+instance AssetRunner env => RunMessage JennysTwin45s where
   runMessage msg a@(JennysTwin45s attrs) = case msg of
     InvestigatorPlayDynamicAsset _ aid _ _ n | aid == assetId attrs ->
       JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Ammo n)

@@ -19,7 +19,7 @@ newtype Guidance = Guidance EventAttrs
 guidance :: EventCard Guidance
 guidance = event Guidance Cards.guidance
 
-instance EventRunner env => RunMessage env Guidance where
+instance EventRunner env => RunMessage Guidance where
   runMessage msg e@(Guidance attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       investigators <-

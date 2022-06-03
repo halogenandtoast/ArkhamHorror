@@ -34,7 +34,7 @@ instance HasAbilities LiquidCourage where
         )
     ]
 
-instance AssetRunner env => RunMessage env LiquidCourage where
+instance AssetRunner env => RunMessage LiquidCourage where
   runMessage msg a@(LiquidCourage attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid

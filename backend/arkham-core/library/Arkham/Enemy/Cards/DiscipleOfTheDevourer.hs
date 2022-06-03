@@ -36,7 +36,7 @@ instance HasAbilities DiscipleOfTheDevourer where
       $ toId x
     ]
 
-instance EnemyRunner env => RunMessage env DiscipleOfTheDevourer where
+instance EnemyRunner env => RunMessage DiscipleOfTheDevourer where
   runMessage msg e@(DiscipleOfTheDevourer attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let

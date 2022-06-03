@@ -26,7 +26,7 @@ instance
   , HasCount DoomCount env InvestigatorId
   , Query AssetMatcher env
   )
-  => RunMessage env MoonlightRitual where
+  => RunMessage MoonlightRitual where
   runMessage msg e@(MoonlightRitual attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       -- we assume that the only cards that are relevant here are assets and investigators

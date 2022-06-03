@@ -83,7 +83,7 @@ type LocationRunner env =
   , HasSet UnrevealedLocationId env LocationMatcher
   )
 
-instance LocationRunner env => RunMessage env LocationAttrs where
+instance LocationRunner env => RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
     Investigate iid lid source mTarget skillType False | lid == locationId -> do
       allowed <- getInvestigateAllowed iid a

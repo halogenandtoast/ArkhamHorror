@@ -16,7 +16,7 @@ newtype Paranoia = Paranoia TreacheryAttrs
 paranoia :: TreacheryCard Paranoia
 paranoia = treachery Paranoia Cards.paranoia
 
-instance TreacheryRunner env => RunMessage env Paranoia where
+instance TreacheryRunner env => RunMessage Paranoia where
   runMessage msg t@(Paranoia attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       resourceCount' <- unResourceCount <$> getCount iid

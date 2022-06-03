@@ -27,7 +27,7 @@ investigatingTheTrail = act
   Cards.investigatingTheTrail
   (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
-instance ActRunner env => RunMessage env InvestigatingTheTrail where
+instance ActRunner env => RunMessage InvestigatingTheTrail where
   runMessage msg a@(InvestigatingTheTrail attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       mRitualSiteId <- getLocationIdByName "Ritual Site"

@@ -94,8 +94,8 @@ instance ToJSON CardDef where
 instance FromJSON CardDef where
   parseJSON = genericParseJSON $ aesonOptions $ Just "cd"
 
-class GetCardDef env a where
-  getCardDef :: MonadReader env m => a -> m CardDef
+class GetCardDef m a where
+  getCardDef :: a -> m CardDef
 
 class HasCardDef a where
   toCardDef :: a -> CardDef

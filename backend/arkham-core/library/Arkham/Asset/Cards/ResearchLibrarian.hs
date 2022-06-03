@@ -32,7 +32,7 @@ instance HasAbilities ResearchLibrarian where
         )
     ]
 
-instance (AssetRunner env) => RunMessage env ResearchLibrarian where
+instance (AssetRunner env) => RunMessage ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (Search

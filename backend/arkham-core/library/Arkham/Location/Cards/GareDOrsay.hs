@@ -36,7 +36,7 @@ instance HasAbilities GareDOrsay where
     attrs
     [restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)]
 
-instance LocationRunner env => RunMessage env GareDOrsay where
+instance LocationRunner env => RunMessage GareDOrsay where
   runMessage msg l@(GareDOrsay attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       rails <- filter (/= toId attrs) <$> selectList (LocationWithTrait Rail)

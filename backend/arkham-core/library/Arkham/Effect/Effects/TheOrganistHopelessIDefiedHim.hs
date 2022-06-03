@@ -24,7 +24,7 @@ instance HasModifiersFor env TheOrganistHopelessIDefiedHim where
     | isTarget attrs target = pure $ toModifiers attrs [CannotAttack]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env TheOrganistHopelessIDefiedHim where
+instance HasQueue env => RunMessage TheOrganistHopelessIDefiedHim where
   runMessage msg e@(TheOrganistHopelessIDefiedHim attrs) = case msg of
     EndRound -> e <$ push (DisableEffect $ toId attrs)
     _ -> TheOrganistHopelessIDefiedHim <$> runMessage msg attrs

@@ -24,6 +24,6 @@ instance HasModifiersFor env ConstanceDumaine where
     pure $ toModifiers a [ EnemyFight 3 | enemyExhausted a ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env ConstanceDumaine where
+instance EnemyRunner env => RunMessage ConstanceDumaine where
   runMessage msg (ConstanceDumaine attrs) =
     ConstanceDumaine <$> runMessage msg attrs

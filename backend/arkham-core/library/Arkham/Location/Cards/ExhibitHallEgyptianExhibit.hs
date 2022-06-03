@@ -43,7 +43,7 @@ instance HasAbilities ExhibitHallEgyptianExhibit where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage env ExhibitHallEgyptianExhibit where
+instance LocationRunner env => RunMessage ExhibitHallEgyptianExhibit where
   runMessage msg l@(ExhibitHallEgyptianExhibit attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (LoseActions iid (toSource attrs) 1)

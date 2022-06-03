@@ -43,7 +43,7 @@ instance HasAbilities EndlessBridge where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env EndlessBridge where
+instance LocationRunner env => RunMessage EndlessBridge where
   runMessage msg l@(EndlessBridge attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       push $ LoseResources iid 2

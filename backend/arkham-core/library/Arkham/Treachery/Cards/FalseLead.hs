@@ -19,7 +19,7 @@ newtype FalseLead = FalseLead TreacheryAttrs
 falseLead :: TreacheryCard FalseLead
 falseLead = treachery FalseLead Cards.falseLead
 
-instance TreacheryRunner env => RunMessage env FalseLead where
+instance TreacheryRunner env => RunMessage FalseLead where
   runMessage msg t@(FalseLead attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       playerClueCount <- unClueCount <$> getCount iid

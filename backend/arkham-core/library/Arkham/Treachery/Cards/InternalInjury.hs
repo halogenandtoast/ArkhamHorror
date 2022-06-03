@@ -33,7 +33,7 @@ instance HasAbilities InternalInjury where
       2
     ]
 
-instance TreacheryRunner env => RunMessage env InternalInjury where
+instance TreacheryRunner env => RunMessage InternalInjury where
   runMessage msg t@(InternalInjury attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

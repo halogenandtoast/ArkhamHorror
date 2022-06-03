@@ -61,7 +61,7 @@ instance HasAbilities HistoricalSocietyHistoricalLibrary_136 where
             AnyEnemy
         ]
 
-instance LocationRunner env => RunMessage env HistoricalSocietyHistoricalLibrary_136 where
+instance LocationRunner env => RunMessage HistoricalSocietyHistoricalLibrary_136 where
   runMessage msg l@(HistoricalSocietyHistoricalLibrary_136 attrs) = case msg of
     UseCardAbility iid source _ 1 _
       | isSource attrs source && locationRevealed attrs -> l

@@ -32,7 +32,7 @@ instance HasCardDef Treachery where
 instance HasAbilities Treachery where
   getAbilities = $(entityF "Treachery" "getAbilities")
 
-instance TreacheryRunner env => RunMessage env Treachery where
+instance TreacheryRunner env => RunMessage Treachery where
   runMessage = $(entityRunMessage "Treachery")
 
 instance

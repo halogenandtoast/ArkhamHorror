@@ -39,7 +39,7 @@ instance HasAbilities TheManInThePallidMask where
       $ ActionCost 1
     ]
 
-instance EnemyRunner env => RunMessage env TheManInThePallidMask where
+instance EnemyRunner env => RunMessage TheManInThePallidMask where
   runMessage msg e@(TheManInThePallidMask attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid

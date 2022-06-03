@@ -17,6 +17,6 @@ newtype DesperateSearch = DesperateSearch SkillAttrs
 desperateSearch :: SkillCard DesperateSearch
 desperateSearch = skill DesperateSearch Cards.desperateSearch
 
-instance SkillRunner env => RunMessage env DesperateSearch where
+instance SkillRunner env => RunMessage DesperateSearch where
   runMessage msg (DesperateSearch attrs) =
     DesperateSearch <$> runMessage msg attrs

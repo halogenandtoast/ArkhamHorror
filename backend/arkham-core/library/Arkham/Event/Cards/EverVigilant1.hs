@@ -30,7 +30,7 @@ instance HasModifiersFor env EverVigilant1 where
     $ toModifiers attrs [ReduceCostOf AnyCard 1]
   getModifiersFor _ _ _ = pure []
 
-instance CanCheckPlayable env => RunMessage env EverVigilant1 where
+instance CanCheckPlayable env => RunMessage EverVigilant1 where
   runMessage msg e@(EverVigilant1 attrs) = case msg of
     InvestigatorPlayEvent iid eid mtarget _ _ | eid == toId attrs -> do
       e <$ pushAll

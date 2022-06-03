@@ -43,7 +43,7 @@ instance HasAbilities TheNecronomiconAdvanced where
         $ ActionCost 1
     ]
 
-instance (AssetRunner env) => RunMessage env TheNecronomiconAdvanced where
+instance (AssetRunner env) => RunMessage TheNecronomiconAdvanced where
   runMessage msg a@(TheNecronomiconAdvanced attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       a <$ push (PlayCard iid (toCardId attrs) Nothing False)

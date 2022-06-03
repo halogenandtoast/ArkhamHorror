@@ -22,7 +22,7 @@ newtype BlindingLight2 = BlindingLight2 EventAttrs
 blindingLight2 :: EventCard BlindingLight2
 blindingLight2 = event BlindingLight2 Cards.blindingLight2
 
-instance EventRunner env => RunMessage env BlindingLight2 where
+instance EventRunner env => RunMessage BlindingLight2 where
   runMessage msg e@(BlindingLight2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ CreateEffect "01069" Nothing (toSource attrs) (InvestigatorTarget iid)

@@ -15,19 +15,13 @@ import Arkham.Message
 import Arkham.Target
 
 newtype Mesmerize = Mesmerize EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mesmerize :: EffectArgs -> Mesmerize
 mesmerize = Mesmerize . uncurry4 (baseAttrs "82035")
 
-instance HasModifiersFor env Mesmerize
-
-instance
-  ( HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
-  , HasQueue env
-  )
-  => RunMessage env Mesmerize where
+instance RunMessage Mesmerize where
   runMessage msg e@(Mesmerize attrs) = case msg of
     Flipped _ card -> do
       if toCardDef card == Assets.innocentReveler
@@ -35,8 +29,7 @@ instance
           let aid = AssetId $ toCardId card
           case effectTarget attrs of
             InvestigatorTarget iid -> do
-              locationTargets <- map (LocationTarget . unFarthestLocationId)
-                <$> getSetList (iid, LocationWithoutInvestigators)
+              locationTargets <- selectListMap LocationTarget $ FarthestLocationFromYou LocationWithoutInvestigators
               e <$ pushAll
                 [ chooseOne
                   iid

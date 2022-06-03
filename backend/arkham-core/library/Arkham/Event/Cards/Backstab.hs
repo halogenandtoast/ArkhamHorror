@@ -25,7 +25,7 @@ instance HasModifiersFor env Backstab where
     = pure $ toModifiers attrs [ DamageDealt 2 | isSource attrs source ]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env Backstab where
+instance HasQueue env => RunMessage Backstab where
   runMessage msg e@(Backstab attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       e <$ pushAll

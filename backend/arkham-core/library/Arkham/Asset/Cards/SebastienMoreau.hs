@@ -37,7 +37,7 @@ instance HasAbilities SebastienMoreau where
       $ toId a
     ]
 
-instance AssetRunner env => RunMessage env SebastienMoreau where
+instance AssetRunner env => RunMessage SebastienMoreau where
   runMessage msg a@(SebastienMoreau attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 3)

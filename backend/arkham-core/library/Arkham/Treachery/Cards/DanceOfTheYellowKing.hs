@@ -24,7 +24,7 @@ danceOfTheYellowKing :: TreacheryCard DanceOfTheYellowKing
 danceOfTheYellowKing =
   treachery DanceOfTheYellowKing Cards.danceOfTheYellowKing
 
-instance TreacheryRunner env => RunMessage env DanceOfTheYellowKing where
+instance TreacheryRunner env => RunMessage DanceOfTheYellowKing where
   runMessage msg t@(DanceOfTheYellowKing attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       anyLunatics <- selectAny (EnemyWithTrait Lunatic)

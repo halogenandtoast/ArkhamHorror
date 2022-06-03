@@ -34,7 +34,7 @@ instance HasAbilities Run where
         "Engine Car"
     ]
 
-instance ActRunner env => RunMessage env Run where
+instance ActRunner env => RunMessage Run where
   runMessage msg a@(Run (attrs `With` metadata)) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push (AdvanceAct (toId attrs) source AdvancedWithOther)

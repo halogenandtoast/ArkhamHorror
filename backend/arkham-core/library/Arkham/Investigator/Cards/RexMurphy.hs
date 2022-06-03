@@ -57,7 +57,7 @@ instance HasTokenValue env RexMurphy where
     pure $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance (InvestigatorRunner env) => RunMessage env RexMurphy where
+instance (InvestigatorRunner env) => RunMessage RexMurphy where
   runMessage msg i@(RexMurphy attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> i <$ push
       (DiscoverCluesAtLocation

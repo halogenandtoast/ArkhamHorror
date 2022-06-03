@@ -16,7 +16,7 @@ newtype HuntingShadow = HuntingShadow TreacheryAttrs
 huntingShadow :: TreacheryCard HuntingShadow
 huntingShadow = treachery HuntingShadow Cards.huntingShadow
 
-instance TreacheryRunner env => RunMessage env HuntingShadow where
+instance TreacheryRunner env => RunMessage HuntingShadow where
   runMessage msg t@(HuntingShadow attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       playerSpendableClueCount <- unSpendableClueCount <$> getCount iid

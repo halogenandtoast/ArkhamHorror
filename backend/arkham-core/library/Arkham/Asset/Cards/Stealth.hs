@@ -32,7 +32,7 @@ instance HasAbilities Stealth where
         $ ActionCost 1
     ]
 
-instance AssetRunner env => RunMessage env Stealth where
+instance AssetRunner env => RunMessage Stealth where
   runMessage msg a@(Stealth attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (ChooseEvadeEnemy

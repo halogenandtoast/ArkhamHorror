@@ -22,7 +22,7 @@ newtype DeadlyFate = DeadlyFate TreacheryAttrs
 deadlyFate :: TreacheryCard DeadlyFate
 deadlyFate = treachery DeadlyFate Cards.deadlyFate
 
-instance TreacheryRunner env => RunMessage env DeadlyFate where
+instance TreacheryRunner env => RunMessage DeadlyFate where
   runMessage msg t@(DeadlyFate attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 3

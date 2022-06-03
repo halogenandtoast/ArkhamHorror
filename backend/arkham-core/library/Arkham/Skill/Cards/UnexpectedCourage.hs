@@ -13,6 +13,6 @@ newtype UnexpectedCourage = UnexpectedCourage SkillAttrs
 unexpectedCourage :: SkillCard UnexpectedCourage
 unexpectedCourage = skill UnexpectedCourage Cards.unexpectedCourage
 
-instance RunMessage env UnexpectedCourage where
+instance RunMessage UnexpectedCourage where
   runMessage msg (UnexpectedCourage attrs) =
     UnexpectedCourage <$> runMessage msg attrs

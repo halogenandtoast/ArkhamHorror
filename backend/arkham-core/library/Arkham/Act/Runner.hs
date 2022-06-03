@@ -88,7 +88,7 @@ advanceActSideA attrs advanceMode = do
     , chooseOne leadInvestigatorId [AdvanceAct (toId attrs) (toSource attrs) advanceMode]
     ]
 
-instance ActAttrsRunner env => RunMessage env ActAttrs where
+instance ActAttrsRunner env => RunMessage ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
     AdvanceAct aid _ advanceMode | aid == actId && onSide A a -> do
       pushAll =<< advanceActSideA a advanceMode

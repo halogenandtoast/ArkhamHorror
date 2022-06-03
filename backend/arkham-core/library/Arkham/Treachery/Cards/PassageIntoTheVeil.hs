@@ -22,7 +22,7 @@ newtype PassageIntoTheVeil = PassageIntoTheVeil TreacheryAttrs
 passageIntoTheVeil :: TreacheryCard PassageIntoTheVeil
 passageIntoTheVeil = treachery PassageIntoTheVeil Cards.passageIntoTheVeil
 
-instance TreacheryRunner env => RunMessage env PassageIntoTheVeil where
+instance TreacheryRunner env => RunMessage PassageIntoTheVeil where
   runMessage msg t@(PassageIntoTheVeil attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       huntingHorrorAtYourLocation <- enemyAtInvestigatorLocation "02141" iid

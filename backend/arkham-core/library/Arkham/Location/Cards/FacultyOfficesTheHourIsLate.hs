@@ -28,6 +28,6 @@ instance HasModifiersFor env FacultyOfficesTheHourIsLate where
     $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage env FacultyOfficesTheHourIsLate where
+instance LocationRunner env => RunMessage FacultyOfficesTheHourIsLate where
   runMessage msg (FacultyOfficesTheHourIsLate attrs) =
     FacultyOfficesTheHourIsLate <$> runMessage msg attrs

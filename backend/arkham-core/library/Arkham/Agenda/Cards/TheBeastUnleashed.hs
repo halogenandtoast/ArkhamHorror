@@ -44,7 +44,7 @@ getTheExperiment :: (MonadReader env m, Query EnemyMatcher env) => m EnemyId
 getTheExperiment =
   fromJustNote "must be in play" <$> selectOne (enemyIs Cards.theExperiment)
 
-instance AgendaRunner env => RunMessage env TheBeastUnleashed where
+instance AgendaRunner env => RunMessage TheBeastUnleashed where
   runMessage msg a@(TheBeastUnleashed attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       experimentId <- getTheExperiment

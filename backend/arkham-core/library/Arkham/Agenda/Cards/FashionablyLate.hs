@@ -23,7 +23,7 @@ fashionablyLate :: AgendaCard FashionablyLate
 fashionablyLate =
   agenda (1, A) FashionablyLate Cards.fashionablyLate (Static 3)
 
-instance AgendaRunner env => RunMessage env FashionablyLate where
+instance AgendaRunner env => RunMessage FashionablyLate where
   runMessage msg a@(FashionablyLate attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       dianneDevine <- getSetAsideCard Cards.dianneDevine

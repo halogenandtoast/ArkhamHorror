@@ -22,7 +22,7 @@ newtype LostSoul = LostSoul TreacheryAttrs
 lostSoul :: TreacheryCard LostSoul
 lostSoul = treachery LostSoul Cards.lostSoul
 
-instance TreacheryRunner env => RunMessage env LostSoul where
+instance TreacheryRunner env => RunMessage LostSoul where
   runMessage msg t@(LostSoul attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       moreConvictionThanDoubt <- getMoreConvictionThanDoubt

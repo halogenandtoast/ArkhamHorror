@@ -33,7 +33,7 @@ instance HasAbilities RandallCho where
             Free
     ]
 
-instance AssetRunner env => RunMessage env RandallCho where
+instance AssetRunner env => RunMessage RandallCho where
   runMessage msg a@(RandallCho attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       damage <- unDamageCount <$> getCount iid

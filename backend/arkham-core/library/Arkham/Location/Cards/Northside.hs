@@ -35,7 +35,7 @@ instance HasAbilities Northside where
       ]
   getAbilities (Northside attrs) = getAbilities attrs
 
-instance LocationRunner env => RunMessage env Northside where
+instance LocationRunner env => RunMessage Northside where
   runMessage msg l@(Northside attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (GainClues iid 2)

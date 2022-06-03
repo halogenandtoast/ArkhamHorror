@@ -36,7 +36,7 @@ instance HasAbilities TheTerrifyingTruth where
     | onSide A a
     ]
 
-instance AgendaRunner env => RunMessage env TheTerrifyingTruth where
+instance AgendaRunner env => RunMessage TheTerrifyingTruth where
   runMessage msg a@(TheTerrifyingTruth attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       storyCards <- selectList

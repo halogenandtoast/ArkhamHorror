@@ -43,7 +43,7 @@ instance
   ( HasId LocationId env InvestigatorId
   , ActRunner env
   )
-  => RunMessage env Row where
+  => RunMessage Row where
   runMessage msg a@(Row attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       _ <- popMessageMatching $ \case

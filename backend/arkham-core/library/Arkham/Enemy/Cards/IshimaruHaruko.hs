@@ -31,7 +31,7 @@ instance HasAbilities IshimaruHaruko where
         AnySource
     ]
 
-instance EnemyRunner env => RunMessage env IshimaruHaruko where
+instance EnemyRunner env => RunMessage IshimaruHaruko where
   runMessage msg e@(IshimaruHaruko attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       e <$ push (InvestigatorDrawEncounterCard iid)

@@ -62,7 +62,7 @@ instance
       pure $ toTokenValue attrs face 4 5
     otherFace -> getTokenValue iid otherFace attrs
 
-instance ScenarioRunner env => RunMessage env CurtainCall where
+instance ScenarioRunner env => RunMessage CurtainCall where
   runMessage msg s@(CurtainCall attrs) = case msg of
     Setup -> do
       encounterDeck <- buildEncounterDeckExcluding

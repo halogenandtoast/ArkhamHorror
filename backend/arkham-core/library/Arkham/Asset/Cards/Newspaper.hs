@@ -30,5 +30,5 @@ instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Newspaper 
       ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage env Newspaper where
+instance AssetRunner env => RunMessage Newspaper where
   runMessage msg (Newspaper attrs) = Newspaper <$> runMessage msg attrs

@@ -47,7 +47,7 @@ instance HasAbilities BeginnersLuck where
       ]
     else []
 
-instance ActRunner env => RunMessage env BeginnersLuck where
+instance ActRunner env => RunMessage BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs) = case msg of
     UseCardAbility iid source [Window Timing.When (RevealToken _ token)] 1 _
       | isSource attrs source -> do

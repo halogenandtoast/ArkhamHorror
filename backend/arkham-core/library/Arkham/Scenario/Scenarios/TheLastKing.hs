@@ -99,7 +99,7 @@ interviewedToCardCode = \case
   InterviewedAshleigh -> Just $ toCardCode Assets.ashleighClarke
   _ -> Nothing
 
-instance ScenarioRunner env => RunMessage env TheLastKing where
+instance ScenarioRunner env => RunMessage TheLastKing where
   runMessage msg s@(TheLastKing attrs) = case msg of
     SetTokensForScenario -> do
       standalone <- getIsStandalone

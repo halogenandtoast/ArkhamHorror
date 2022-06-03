@@ -35,7 +35,7 @@ instance HasAbilities HermanCollins where
         (Costs [ActionCost 1, HandDiscardCost 4 AnyCard])
     ]
 
-instance EnemyRunner env => RunMessage env HermanCollins where
+instance EnemyRunner env => RunMessage HermanCollins where
   runMessage msg e@(HermanCollins attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (AddToVictory $ toTarget attrs)

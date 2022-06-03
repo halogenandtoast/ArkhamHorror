@@ -20,7 +20,7 @@ newtype BlackStarsRise = BlackStarsRise TreacheryAttrs
 blackStarsRise :: TreacheryCard BlackStarsRise
 blackStarsRise = treachery BlackStarsRise Cards.blackStarsRise
 
-instance TreacheryRunner env => RunMessage env BlackStarsRise where
+instance TreacheryRunner env => RunMessage BlackStarsRise where
   runMessage msg t@(BlackStarsRise attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillIntellect 4)

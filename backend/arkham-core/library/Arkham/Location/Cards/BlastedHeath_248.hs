@@ -53,7 +53,7 @@ instance HasAbilities BlastedHeath_248 where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage env BlastedHeath_248 where
+instance LocationRunner env => RunMessage BlastedHeath_248 where
   runMessage msg l@(BlastedHeath_248 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       investigatorWithCluePairs <- filter ((> 0) . snd) <$> traverse

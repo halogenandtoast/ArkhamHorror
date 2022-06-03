@@ -45,7 +45,7 @@ instance HasModifiersFor env Poltergeist where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage env Poltergeist where
+instance EnemyRunner env => RunMessage Poltergeist where
   runMessage msg e@(Poltergeist attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ push
       (BeginSkillTest

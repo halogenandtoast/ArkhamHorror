@@ -21,7 +21,7 @@ newtype TheCreaturesTracks = TheCreaturesTracks TreacheryAttrs
 theCreaturesTracks :: TreacheryCard TheCreaturesTracks
 theCreaturesTracks = treachery TheCreaturesTracks Cards.theCreaturesTracks
 
-instance TreacheryRunner env => RunMessage env TheCreaturesTracks where
+instance TreacheryRunner env => RunMessage TheCreaturesTracks where
   runMessage msg t@(TheCreaturesTracks attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       broodOfYogSothothCount <- unSetAsideCount

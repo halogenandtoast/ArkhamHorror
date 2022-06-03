@@ -40,7 +40,7 @@ instance HasAbilities DianneDevine where
         EnemyPhase
     ]
 
-instance EnemyRunner env => RunMessage env DianneDevine where
+instance EnemyRunner env => RunMessage DianneDevine where
   runMessage msg e@(DianneDevine attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId

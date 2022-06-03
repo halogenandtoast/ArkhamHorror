@@ -24,7 +24,7 @@ inspiringPresence :: SkillCard InspiringPresence
 inspiringPresence =
   skill InspiringPresence Cards.inspiringPresence
 
-instance SkillRunner env => RunMessage env InspiringPresence where
+instance SkillRunner env => RunMessage InspiringPresence where
   runMessage msg s@(InspiringPresence attrs) = case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       assets <- selectList

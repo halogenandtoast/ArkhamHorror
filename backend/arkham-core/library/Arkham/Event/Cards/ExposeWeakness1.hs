@@ -29,7 +29,7 @@ instance
   , HasId LocationId env InvestigatorId
   , HasSkillTest env
   )
-  => RunMessage env ExposeWeakness1 where
+  => RunMessage ExposeWeakness1 where
   runMessage msg e@(ExposeWeakness1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getId @LocationId iid

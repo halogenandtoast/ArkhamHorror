@@ -29,7 +29,7 @@ instance HasAbilities ThePathToTheHill where
         (GroupClueCost (PerPlayer 2) Anywhere)
     ]
 
-instance ActRunner env => RunMessage env ThePathToTheHill where
+instance ActRunner env => RunMessage ThePathToTheHill where
   runMessage msg a@(ThePathToTheHill attrs@ActAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) (toSource attrs) AdvancedWithClues)

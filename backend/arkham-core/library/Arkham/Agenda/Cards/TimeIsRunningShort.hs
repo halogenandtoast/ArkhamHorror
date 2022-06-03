@@ -28,7 +28,7 @@ instance HasAbilities TimeIsRunningShort where
   getAbilities (TimeIsRunningShort a) =
     [mkAbility a 1 $ ActionAbility (Just Action.Resign) (ActionCost 1)]
 
-instance AgendaRunner env => RunMessage env TimeIsRunningShort where
+instance AgendaRunner env => RunMessage TimeIsRunningShort where
   runMessage msg a@(TimeIsRunningShort attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
       a <$ push (ScenarioResolution $ Resolution 2)

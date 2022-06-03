@@ -64,7 +64,7 @@ instance HasAbilities DaisyWalkerParallel where
         & (abilityLimitL .~ PlayerLimit PerGame 1)
     ]
 
-instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
+instance InvestigatorRunner env => RunMessage DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs@InvestigatorAttrs {..}) =
     case msg of
       UseCardAbility iid (InvestigatorSource iid') windows' 1 _

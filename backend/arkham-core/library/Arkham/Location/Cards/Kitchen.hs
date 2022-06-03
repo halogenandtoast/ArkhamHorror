@@ -40,7 +40,7 @@ instance HasModifiersFor env Kitchen where
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage env Kitchen where
+instance LocationRunner env => RunMessage Kitchen where
   runMessage msg l@(Kitchen attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (BeginSkillTest

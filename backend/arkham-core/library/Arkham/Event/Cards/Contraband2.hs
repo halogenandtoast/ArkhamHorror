@@ -29,7 +29,7 @@ instance
   , HasCount UsesCount env AssetId
   , Query AssetMatcher env
   )
-  => RunMessage env Contraband2 where
+  => RunMessage Contraband2 where
   runMessage msg e@(Contraband2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       locationId <- getId @LocationId iid

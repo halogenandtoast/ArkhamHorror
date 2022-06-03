@@ -25,7 +25,7 @@ arkhamWoodsTwistingPaths =
 
 instance HasModifiersFor env ArkhamWoodsTwistingPaths
 
-instance (Query LocationMatcher env, HasQueue env) => RunMessage env ArkhamWoodsTwistingPaths where
+instance (Query LocationMatcher env, HasQueue env) => RunMessage ArkhamWoodsTwistingPaths where
   runMessage msg e@(ArkhamWoodsTwistingPaths attrs) = case msg of
     PassedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget{} _ _ ->
       do

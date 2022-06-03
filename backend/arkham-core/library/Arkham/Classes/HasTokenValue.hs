@@ -9,7 +9,5 @@ import Arkham.Projection
 import Arkham.Location.Attrs
 import Arkham.Token
 
-type TokenValueM env m = (MonadReader env m, Projection env LocationAttrs)
-
-class HasTokenValue env a where
-  getTokenValue :: TokenValueM env m => InvestigatorId -> TokenFace -> a -> m TokenValue
+class HasTokenValue m a where
+  getTokenValue :: Projection m LocationAttrs => InvestigatorId -> TokenFace -> a -> m TokenValue

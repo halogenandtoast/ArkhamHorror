@@ -16,7 +16,7 @@ newtype Lucky = Lucky EventAttrs
 lucky :: EventCard Lucky
 lucky = event Lucky Cards.lucky
 
-instance EventRunner env => RunMessage env Lucky where
+instance EventRunner env => RunMessage Lucky where
   runMessage msg e@(Lucky attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId ->
       e <$ unshiftEffect attrs (InvestigatorTarget iid)

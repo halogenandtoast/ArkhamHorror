@@ -45,7 +45,7 @@ instance (HasTokenValue env InvestigatorId, Query EnemyMatcher env) => HasTokenV
   getTokenValue iid tokenFace (ReturnToTheDevourerBelow theDevourerBelow') =
     getTokenValue iid tokenFace theDevourerBelow'
 
-instance ScenarioRunner env => RunMessage env ReturnToTheDevourerBelow where
+instance ScenarioRunner env => RunMessage ReturnToTheDevourerBelow where
   runMessage msg s@(ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs))
     = case msg of
       Setup -> do

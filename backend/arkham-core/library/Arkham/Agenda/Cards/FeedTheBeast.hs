@@ -20,7 +20,7 @@ newtype FeedTheBeast = FeedTheBeast AgendaAttrs
 feedTheBeast :: AgendaCard FeedTheBeast
 feedTheBeast = agenda (3, A) FeedTheBeast Cards.feedTheBeast (Static 7)
 
-instance AgendaRunner env => RunMessage env FeedTheBeast where
+instance AgendaRunner env => RunMessage FeedTheBeast where
   runMessage msg a@(FeedTheBeast attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()

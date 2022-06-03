@@ -39,7 +39,7 @@ instance HasAbilities Lobby where
         ]
       else []
 
-instance LocationRunner env => RunMessage env Lobby where
+instance LocationRunner env => RunMessage Lobby where
   runMessage msg l@(Lobby attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       lobbyDoorwayCount <- selectCount

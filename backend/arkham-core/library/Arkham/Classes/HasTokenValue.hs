@@ -2,8 +2,6 @@ module Arkham.Classes.HasTokenValue
   ( module Arkham.Classes.HasTokenValue
   ) where
 
-import Arkham.Prelude
-
 import Arkham.InvestigatorId
 import Arkham.Projection
 import Arkham.Location.Attrs

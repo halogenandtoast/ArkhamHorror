@@ -18,6 +18,7 @@ type family QueryElement a where
   QueryElement EnemyMatcher = EnemyId
   QueryElement TreacheryMatcher = TreacheryId
   QueryElement ExtendedCardMatcher = Card
+  QueryElement DiscardedPlayerCardMatcher = PlayerCard
   QueryElement AbilityMatcher = Ability
   QueryElement SkillMatcher = SkillId
   QueryElement EventMatcher = EventId

@@ -102,8 +102,5 @@ treacheryInHandOf = Attrs.treacheryInHandOf . toAttrs
 treacheryOwner :: Treachery -> Maybe InvestigatorId
 treacheryOwner = Attrs.treacheryOwner . toAttrs
 
-instance CanBeWeakness env Treachery where
-  getIsWeakness = pure . isWeakness
-
 treacheryTarget :: Treachery -> Maybe Target
 treacheryTarget = treacheryAttachedTarget . toAttrs

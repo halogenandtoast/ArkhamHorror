@@ -8,7 +8,9 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Attrs
+import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Id
+import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Query
 import Arkham.Target
@@ -39,8 +41,10 @@ instance
       enemyIdsWithHorrorValue <- traverse
         (traverseToSnd (fmap unSanityDamageCount . getCount))
         enemyIds
-      locationId <- getId @LocationId iid
-      investigatorIds <- getSetList locationId
+      enemyIdsWithHorrorValue <- traverse
+        (traverseToSnd (field EnemySanityDamageCount))
+        enemyIds
+      investigatorIds <- selectList $ colocatedWith iid
       e <$ pushAll
         (chooseOne
             iid

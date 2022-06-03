@@ -69,6 +69,9 @@ pattern InvestigatorCanMove <-
   InvestigatorWithoutModifier CannotMove where
   InvestigatorCanMove = InvestigatorWithoutModifier CannotMove
 
+colocatedWith :: InvestigatorId -> InvestigatorMatcher
+colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId
+
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | You
@@ -519,7 +522,7 @@ instance Semigroup CardMatcher where
 instance Monoid CardMatcher where
   mempty = AnyCard
 
-data DiscardedCardMatcher = DiscardedCardMatcher InvestigatorMatcher CardMatcher
+data DiscardedPlayerCardMatcher = DiscardedCardMatcher InvestigatorMatcher CardMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

@@ -9,6 +9,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Attrs
+import Arkham.Enemy.Attrs
 import Arkham.Id
 import Arkham.Message
 import Arkham.Query
@@ -41,7 +42,7 @@ instance HasCount HealthDamageCount env EnemyId => RunMessage HypnoticGaze where
           faces
       if shouldDamageEnemy
         then do
-          healthDamage' <- unHealthDamageCount <$> getCount enemyId
+          healthDamage' <- field EnemyHealthDamage enemyId
           e <$ pushAll
             [ EnemyDamage
               enemyId

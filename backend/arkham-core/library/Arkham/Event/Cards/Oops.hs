@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Attrs
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
@@ -18,24 +17,19 @@ import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
 newtype Oops = Oops EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oops :: EventCard Oops
 oops = event Oops Cards.oops
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , Query EnemyMatcher env
-  )
-  => RunMessage Oops where
+instance RunMessage Oops where
   runMessage msg e@(Oops attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [Window Timing.After (Window.FailAttackEnemy _ targetId _)] _
       | eid == toId attrs
       -> do
-        location <- getId @LocationId iid
         enemies <- filter (/= targetId)
-          <$> selectList (EnemyAt $ LocationWithId location)
+          <$> selectList (EnemyAt $ LocationWithInvestigator $ InvestigatorWithId iid)
         let
           damageMsg = case enemies of
             [] -> error "event should not have been playable"

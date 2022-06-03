@@ -18,20 +18,19 @@ import Arkham.Classes.Entity as X
 import Arkham.Classes.GameLogger as X
 import Arkham.Classes.HasQueue as X
 import Arkham.Classes.HasRecord as X
+import Arkham.Classes.HasModifiersFor as X
+import Arkham.Classes.HasHistory as X
 import Arkham.Classes.HasTokenValue as X
 import Arkham.Classes.RunMessage as X
-import Arkham.History
 import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Query
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
-import Arkham.Target
 import Arkham.Trait
 import Data.Char qualified as C
 import Language.Haskell.TH.Syntax hiding (Name)
@@ -45,9 +44,6 @@ class Monad m => HasPhase m where
 
 class Monad m => HasStep step m a where
   getStep :: a -> m step
-
-class Monad m => HasHistory m where
-  getHistory :: HistoryType -> InvestigatorId -> m History
 
 class Monad m => HasList list m a where
   getList :: a -> m [list]
@@ -172,23 +168,8 @@ class HasAbilities a where
   getAbilities :: a -> [Ability]
   getAbilities = const []
 
-getModifiers
-  :: HasModifiersFor m ()
-  => Source
-  -> Target
-  -> m [ModifierType]
-getModifiers source target =
-  map modifierType <$> getModifiersFor source target ()
-
-class Applicative m => HasModifiersFor m a where
-  getModifiersFor :: HasCallStack => Source -> Target -> a -> m [Modifier]
-  getModifiersFor _ _ _ = pure []
-
 class Discardable a where
   canBeDiscarded :: a -> Bool
-
-class Monad m => CanBeWeakness m a where
-  getIsWeakness :: a -> m Bool
 
 class Exhaustable a where
   isExhausted :: a -> Bool

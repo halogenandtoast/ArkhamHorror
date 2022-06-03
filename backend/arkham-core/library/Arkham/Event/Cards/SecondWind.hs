@@ -13,13 +13,13 @@ import Arkham.Message
 import Arkham.Target
 
 newtype SecondWind = SecondWind EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 secondWind :: EventCard SecondWind
 secondWind = event SecondWind Cards.secondWind
 
-instance (HasQueue env, HasHistory env) => RunMessage SecondWind where
+instance RunMessage SecondWind where
   runMessage msg e@(SecondWind attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       roundHistory <- getHistory RoundHistory iid

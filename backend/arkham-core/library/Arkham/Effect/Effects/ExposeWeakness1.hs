@@ -21,14 +21,14 @@ newtype ExposeWeakness1 = ExposeWeakness1 EffectAttrs
 exposeWeakness1 :: EffectArgs -> ExposeWeakness1
 exposeWeakness1 = ExposeWeakness1 . uncurry4 (baseAttrs "02228")
 
-instance HasModifiersFor env ExposeWeakness1 where
+instance HasModifiersFor m ExposeWeakness1 where
   getModifiersFor _ target (ExposeWeakness1 attrs)
     | target == effectTarget attrs = case effectMetadata attrs of
       Just (EffectInt n) -> pure $ toModifiers attrs [EnemyFight (-n)]
       _ -> error "invalid effect metadata"
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage ExposeWeakness1 where
+instance RunMessage ExposeWeakness1 where
   runMessage msg e@(ExposeWeakness1 attrs@EffectAttrs {..}) = case msg of
     PassedSkillTest _ (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _
       | target == effectTarget

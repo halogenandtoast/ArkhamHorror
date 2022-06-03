@@ -7,11 +7,12 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Asset.Attrs ( Field(..) )
+import Arkham.Investigator.Attrs ( Field(..) )
 import Arkham.Event.Attrs
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 
 newtype MoonlightRitual = MoonlightRitual EventAttrs
@@ -21,20 +22,15 @@ newtype MoonlightRitual = MoonlightRitual EventAttrs
 moonlightRitual :: EventCard MoonlightRitual
 moonlightRitual = event MoonlightRitual Cards.moonlightRitual
 
-instance
-  ( HasCount DoomCount env AssetId
-  , HasCount DoomCount env InvestigatorId
-  , Query AssetMatcher env
-  )
-  => RunMessage MoonlightRitual where
+instance RunMessage MoonlightRitual where
   runMessage msg e@(MoonlightRitual attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       -- we assume that the only cards that are relevant here are assets and investigators
       assetIds <- selectList (AssetControlledBy You)
-      investigatorDoomCount <- unDoomCount <$> getCount iid
+      investigatorDoomCount <- field InvestigatorDoom iid
       assetsWithDoomCount <-
         filter ((> 0) . snd)
-          <$> traverse (traverseToSnd (fmap unDoomCount . getCount)) assetIds
+          <$> traverse (traverseToSnd (field AssetDoom)) assetIds
       e <$ pushAll
         [ chooseOne
           iid

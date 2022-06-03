@@ -14,8 +14,8 @@ moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
   :: ( MonadIO m
      , MonadReader env m
      , HasQueue env
-     , Query LocationMatcher env
-     , Query EnemyMatcher env
+     , Query LocationMatcher m
+     , Query EnemyMatcher m
      )
   => m ()
 moveTheManInThePalidMaskToLobbyInsteadOfDiscarding = do
@@ -31,8 +31,7 @@ moveTheManInThePalidMaskToLobbyInsteadOfDiscarding = do
       _ -> False
     (const [EnemyMove theManInThePallidMask lobbyId])
 
-getTheManInThePallidMask
-  :: (MonadReader env m, Query EnemyMatcher env) => m EnemyId
+getTheManInThePallidMask :: Query EnemyMatcher m => m EnemyId
 getTheManInThePallidMask =
   fromJustNote "the man in the pallid mask must still be in play"
     <$> selectOne (enemyIs Cards.theManInThePallidMask)

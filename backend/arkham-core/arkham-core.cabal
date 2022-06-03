@@ -404,6 +404,8 @@ library
       Arkham.Classes.Entity
       Arkham.Classes.Entity.Source
       Arkham.Classes.GameLogger
+      Arkham.Classes.HasHistory
+      Arkham.Classes.HasModifiersFor
       Arkham.Classes.HasQueue
       Arkham.Classes.HasRecord
       Arkham.Classes.HasSet
@@ -1006,7 +1008,6 @@ library
       Arkham.Scenario.Attrs
       Arkham.Scenario.Deck
       Arkham.Scenario.Helpers
-      Arkham.Scenario.Runner
       Arkham.Scenario.Scenarios
       Arkham.Scenario.Scenarios.APhantomOfTruth
       Arkham.Scenario.Scenarios.BloodOnTheAltar
@@ -1089,7 +1090,6 @@ library
       Arkham.Skill.Cards.ViciousBlow
       Arkham.Skill.Cards.ViciousBlow2
       Arkham.Skill.Cards.WatchThis
-      Arkham.Skill.Runner
       Arkham.Skill.Skills
       Arkham.SkillId
       Arkham.SkillTest

@@ -12,13 +12,13 @@ import Arkham.Message
 import Arkham.Target
 
 newtype EmergencyCache = EmergencyCache EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 emergencyCache :: EventCard EmergencyCache
 emergencyCache = event EmergencyCache Cards.emergencyCache
 
-instance HasQueue env => RunMessage EmergencyCache where
+instance RunMessage EmergencyCache where
   runMessage msg e@(EmergencyCache attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId ->
       e <$ pushAll [TakeResources iid 3 False, Discard (EventTarget eid)]

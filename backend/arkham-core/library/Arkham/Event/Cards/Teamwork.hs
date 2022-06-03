@@ -8,14 +8,13 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Attrs
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 import Arkham.Trait
 
 newtype Teamwork = Teamwork EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 teamwork :: EventCard Teamwork
@@ -29,19 +28,12 @@ teamwork = event Teamwork Cards.teamwork
 -- message which is meant to be an internal message inside events after they
 -- have resolved and behavior needs to be handled.
 
-instance
-  ( HasQueue env
-  , Query AssetMatcher env
-  , HasSet InvestigatorId env LocationId
-  , HasId LocationId env InvestigatorId
-  )
-  => RunMessage Teamwork where
+instance RunMessage Teamwork where
   runMessage msg e@(Teamwork attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid mtarget _ _ | eid == eventId ->
       e <$ push (ResolveEvent iid eid mtarget)
     ResolveEvent iid eid mtarget | eid == eventId -> do
-      locationId <- getId @LocationId iid
-      investigatorIds <- getSetList locationId
+      investigatorIds <- selectList $ colocatedWith iid
       assetsWithInvestigatorIds <- concat <$> for
         investigatorIds
         (\investigatorId -> map (investigatorId, ) <$> selectList

@@ -24,7 +24,9 @@ type AssetCard a = CardBuilder AssetId a
 data instance Field AssetAttrs :: Type -> Type where
   AssetHorror :: Field AssetAttrs Int
   AssetDamage :: Field AssetAttrs Int
+  AssetDoom :: Field AssetAttrs Int
   AssetExhausted :: Field AssetAttrs Bool
+  AssetUses :: Field AssetAttrs Uses
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId

@@ -11,13 +11,11 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Enemy.Cards
-import Arkham.Enemy.Helpers
-import Arkham.EnemyId
 import Arkham.GameValue
-import Arkham.InvestigatorId
+import Arkham.Helpers.Window
+import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword (HasKeywords(..), Keyword)
-import Arkham.LocationId
 import Arkham.Matcher
   ( EnemyMatcher(..)
   , PreyMatcher(..)
@@ -34,7 +32,6 @@ import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
-import Arkham.TreacheryId
 import Arkham.Window qualified as Window
 
 class IsEnemy a
@@ -44,7 +41,7 @@ type EnemyCard a = CardBuilder EnemyId a
 data instance Field EnemyAttrs :: Type -> Type where
   EnemyDoom :: Field EnemyAttrs Int
   EnemyEvade :: Field EnemyAttrs Int
-  EnemyHealthDamage :: Field EnemyAttrs EnemyHealthDamage
+  EnemyHealthDamage :: Field EnemyAttrs Int
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
@@ -211,7 +208,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
     }
 
 spawnAt
-  :: (MonadIO m, MonadReader env m, HasQueue env, HasSet InvestigatorId env ())
+  :: (MonadIO m, MonadReader env m, HasQueue env)
   => EnemyId
   -> LocationMatcher
   -> m ()
@@ -221,7 +218,7 @@ spawnAt eid locationMatcher = do
     (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
 
 modifiedEnemyFight
-  :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
+  :: (HasModifiersFor m (), HasSkillTest m)
   => EnemyAttrs
   -> m Int
 modifiedEnemyFight EnemyAttrs {..} = do
@@ -234,7 +231,7 @@ modifiedEnemyFight EnemyAttrs {..} = do
   applyModifier _ n = n
 
 modifiedEnemyEvade
-  :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
+  :: (HasModifiersFor m (), HasSkillTest m)
   => EnemyAttrs
   -> m Int
 modifiedEnemyEvade EnemyAttrs {..} = do
@@ -247,7 +244,7 @@ modifiedEnemyEvade EnemyAttrs {..} = do
   applyModifier _ n = n
 
 getModifiedDamageAmount
-  :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
+  :: (HasModifiersFor m (), HasSkillTest m)
   => EnemyAttrs
   -> Bool
   -> Int
@@ -265,7 +262,7 @@ getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   applyModifierCaps _ n = n
 
 getModifiedKeywords
-  :: (MonadReader env m, HasModifiersFor env (), HasSkillTest env)
+  :: (HasModifiersFor m (), HasSkillTest m)
   => EnemyAttrs
   -> m (HashSet Keyword)
 getModifiedKeywords e@EnemyAttrs {..} = do
@@ -278,7 +275,7 @@ getModifiedKeywords e@EnemyAttrs {..} = do
   applyModifier _ n = n
 
 canEnterLocation
-  :: (HasModifiersFor env (), HasSet Trait env EnemyId, MonadReader env m)
+  :: HasModifiersFor m ()
   => EnemyId
   -> LocationId
   -> m Bool
@@ -338,7 +335,7 @@ instance SourceEntity EnemyAttrs where
   isSource _ _ = False
 
 getModifiedHealth
-  :: (MonadReader env m, HasModifiersFor env (), HasCount PlayerCount env ())
+  :: HasModifiersFor m ()
   => EnemyAttrs
   -> m Int
 getModifiedHealth EnemyAttrs {..} = do

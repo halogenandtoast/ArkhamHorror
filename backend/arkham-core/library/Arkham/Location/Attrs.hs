@@ -39,6 +39,9 @@ type LocationCard a = CardBuilder LocationId a
 
 data instance Field LocationAttrs :: Type -> Type where
   LocationClues :: Field LocationAttrs Int
+  LocationResources :: Field LocationAttrs Int
+  LocationHorror :: Field LocationAttrs Int
+  LocationDoom :: Field LocationAttrs Int
 
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId

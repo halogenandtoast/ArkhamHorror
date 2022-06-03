@@ -5,15 +5,16 @@ module Arkham.Skill.Cards.TrueUnderstanding
 
 import Arkham.Prelude
 
-import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Investigator.Attrs ( Field(..) )
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Skill.Attrs
-import Arkham.Skill.Runner
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Target
 
 newtype TrueUnderstanding = TrueUnderstanding SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trueUnderstanding :: SkillCard TrueUnderstanding
@@ -22,9 +23,11 @@ trueUnderstanding = skill TrueUnderstanding Cards.trueUnderstanding
 -- Investigation is not an ability on the card so we need to pass
 -- Nothing for the action type
 
-instance SkillRunner env => RunMessage TrueUnderstanding where
+instance RunMessage TrueUnderstanding where
   runMessage msg s@(TrueUnderstanding attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == skillId -> do
-      lid <- getId iid
-      s <$ push (InvestigatorDiscoverClues iid lid 1 Nothing)
+      mlid <- field InvestigatorLocation iid
+      for_ mlid $ \lid ->
+        push (InvestigatorDiscoverClues iid lid 1 Nothing)
+      pure s
     _ -> TrueUnderstanding <$> runMessage msg attrs

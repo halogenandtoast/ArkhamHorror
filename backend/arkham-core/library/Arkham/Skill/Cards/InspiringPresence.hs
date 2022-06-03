@@ -14,17 +14,16 @@ import Arkham.Message hiding (AssetDamage)
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Skill.Attrs
-import Arkham.Skill.Runner
 
 newtype InspiringPresence = InspiringPresence SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 inspiringPresence :: SkillCard InspiringPresence
 inspiringPresence =
   skill InspiringPresence Cards.inspiringPresence
 
-instance SkillRunner env => RunMessage InspiringPresence where
+instance RunMessage InspiringPresence where
   runMessage msg s@(InspiringPresence attrs) = case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       assets <- selectList

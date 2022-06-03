@@ -10,17 +10,16 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Skill.Attrs
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
 import Arkham.Target
 
 newtype Eureka = Eureka SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eureka :: SkillCard Eureka
 eureka = skill Eureka Cards.eureka
 
-instance SkillRunner env => RunMessage Eureka where
+instance RunMessage Eureka where
   runMessage msg s@(Eureka attrs) = case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
       push $ Search

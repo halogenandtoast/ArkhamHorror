@@ -5,34 +5,37 @@ module Arkham.Treachery.Cards.AttractingAttention
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Card.CardCode
 import Arkham.Classes
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype AttractingAttention = AttractingAttention TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 attractingAttention :: TreacheryCard AttractingAttention
 attractingAttention = treachery AttractingAttention Cards.attractingAttention
 
-instance TreacheryRunner env => RunMessage AttractingAttention where
+instance RunMessage AttractingAttention where
   runMessage msg t@(AttractingAttention attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lid <- getId iid
-      broodOfYogSothoth <- getSetList (CardCode "02255")
+      mlid <- field InvestigatorLocation iid
+      for_ mlid $ \lid -> do
+        broodOfYogSothoth <- getBroodOfYogSothoth
 
-      t <$ pushAll
-        [ chooseOneAtATime
-            iid
-            [ MoveToward (EnemyTarget eid) (LocationWithId lid)
-            | eid <- broodOfYogSothoth
-            ]
-        | notNull broodOfYogSothoth
-        ]
+        pushAll
+          [ chooseOneAtATime
+              iid
+              [ MoveToward (EnemyTarget eid) (LocationWithId lid)
+              | eid <- broodOfYogSothoth
+              ]
+          | notNull broodOfYogSothoth
+          ]
+      pure t
     _ -> AttractingAttention <$> runMessage msg attrs

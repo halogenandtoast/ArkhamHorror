@@ -1782,27 +1782,6 @@ instance HasGame env => HasCount XPCount env () where
       $ (sum . mapMaybe getVictoryPoints $ g ^. victoryDisplayL)
       + (sum . mapMaybe getVictoryPoints . toList $ g ^. entitiesL . locationsL)
 
-instance HasGame env => HasCount DoomCount env () where
-  getCount _ = do
-    g <- getGame
-    enemyDoomCount <- traverse getCount . toList $ g ^. entitiesL . enemiesL
-    locationDoomCount <- traverse getCount . toList $ g ^. entitiesL . locationsL
-    assetDoomCount <- traverse getCount . toList $ g ^. entitiesL . assetsL
-    treacheryDoomCount <- traverse getCount . toList $ g ^. entitiesL . treacheriesL
-    agendaDoomCount <- traverse getCount . toList $ g ^. entitiesL . agendasL
-    investigatorDoomCount <- traverse getCount . toList $ g ^. entitiesL . investigatorsL
-    pure
-      $ DoomCount
-      . max 0
-      . sum
-      . map unDoomCount
-      $ enemyDoomCount
-      <> locationDoomCount
-      <> assetDoomCount
-      <> treacheryDoomCount
-      <> agendaDoomCount
-      <> investigatorDoomCount
-
 instance HasGame env => HasCount ClueCount env LocationId where
   getCount = getCount <=< getLocation
 

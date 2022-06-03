@@ -5,33 +5,36 @@ module Arkham.Treachery.Cards.ArcaneBarrier
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.EffectMetadata
+import Arkham.Investigator.Attrs
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype ArcaneBarrier = ArcaneBarrier TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arcaneBarrier :: TreacheryCard ArcaneBarrier
 arcaneBarrier = treachery ArcaneBarrier Cards.arcaneBarrier
 
 -- TODO: Move move to effect to a modifier...
-instance TreacheryRunner env => RunMessage ArcaneBarrier where
+instance RunMessage ArcaneBarrier where
   runMessage msg t@(ArcaneBarrier attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lid <- getId iid
-      t <$ push (AttachTreachery (toId attrs) (LocationTarget lid))
+      mlid <- field InvestigatorLocation iid
+      for_ mlid
+        $ \lid -> push $ AttachTreachery (toId attrs) (LocationTarget lid)
+      pure t
     Will (MoveTo _ iid lid) -> do
-      investigatorLocation <- getId iid
+      mInvestigatorLocation <- field InvestigatorLocation iid
       when
           (treacheryOnLocation lid attrs
-          || treacheryOnLocation investigatorLocation attrs
+          || maybe False (`treacheryOnLocation` attrs) mInvestigatorLocation
           )
         $ do
             moveFromMessage <- fromJustNote "missing move from" <$> popMessage

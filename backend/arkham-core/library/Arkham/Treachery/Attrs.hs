@@ -2,25 +2,24 @@ module Arkham.Treachery.Attrs where
 
 import Arkham.Prelude
 
-import Arkham.AgendaId
-import Arkham.EnemyId
-import Arkham.Json
-import Arkham.LocationId
-import Arkham.Treachery.Cards
-import Arkham.Treachery.Runner
-import Arkham.TreacheryId
 import Arkham.Card
 import Arkham.Classes
-import Arkham.InvestigatorId
+import Arkham.Id
+import Arkham.Json
 import Arkham.Message
 import Arkham.Name
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Treachery.Cards
 
 class IsTreachery a
 
 type TreacheryCard a = CardBuilder (InvestigatorId, TreacheryId) a
+
+data instance Field TreacheryAttrs :: Type -> Type where
+  TreacheryClues :: Field TreacheryAttrs Int
+  TreacheryResources :: Field TreacheryAttrs Int
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId
@@ -29,23 +28,23 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryOwner :: Maybe InvestigatorId
   , treacheryInHandOf :: Maybe InvestigatorId
   , treacheryDoom :: Int
-  , treacheryClues :: Maybe Int
-  , treacheryResources :: Maybe Int
+  , treacheryClues :: Int
+  , treacheryResources :: Int
   }
   deriving stock (Show, Eq, Generic)
 
-cluesL :: Lens' TreacheryAttrs (Maybe Int)
-cluesL = lens treacheryClues $ \m x -> m {treacheryClues = x}
+cluesL :: Lens' TreacheryAttrs Int
+cluesL = lens treacheryClues $ \m x -> m { treacheryClues = x }
 
 attachedTargetL :: Lens' TreacheryAttrs (Maybe Target)
 attachedTargetL =
-  lens treacheryAttachedTarget $ \m x -> m {treacheryAttachedTarget = x}
+  lens treacheryAttachedTarget $ \m x -> m { treacheryAttachedTarget = x }
 
 inHandOfL :: Lens' TreacheryAttrs (Maybe InvestigatorId)
-inHandOfL = lens treacheryInHandOf $ \m x -> m {treacheryInHandOf = x}
+inHandOfL = lens treacheryInHandOf $ \m x -> m { treacheryInHandOf = x }
 
-resourcesL :: Lens' TreacheryAttrs (Maybe Int)
-resourcesL = lens treacheryResources $ \m x -> m {treacheryResources = x}
+resourcesL :: Lens' TreacheryAttrs Int
+resourcesL = lens treacheryResources $ \m x -> m { treacheryResources = x }
 
 instance HasCardCode TreacheryAttrs where
   toCardCode = treacheryCardCode
@@ -63,9 +62,6 @@ instance ToJSON TreacheryAttrs where
 instance FromJSON TreacheryAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "treachery"
 
-instance HasCount ResourceCount env TreacheryAttrs where
-  getCount = pure . ResourceCount . fromMaybe 0 . treacheryResources
-
 instance Entity TreacheryAttrs where
   type EntityId TreacheryAttrs = TreacheryId
   type EntityAttrs TreacheryAttrs = TreacheryAttrs
@@ -77,13 +73,13 @@ instance Named TreacheryAttrs where
 
 instance TargetEntity TreacheryAttrs where
   toTarget = TreacheryTarget . toId
-  isTarget TreacheryAttrs {treacheryId} (TreacheryTarget tid) =
+  isTarget TreacheryAttrs { treacheryId } (TreacheryTarget tid) =
     treacheryId == tid
   isTarget _ _ = False
 
 instance SourceEntity TreacheryAttrs where
   toSource = TreacherySource . toId
-  isSource TreacheryAttrs {treacheryId} (TreacherySource tid) =
+  isSource TreacheryAttrs { treacheryId } (TreacherySource tid) =
     treacheryId == tid
   isSource _ _ = False
 
@@ -95,7 +91,7 @@ instance IsCard TreacheryAttrs where
 -- ownedBy Attrs { treacheryOwner } iid = treacheryOwner == Just iid
 
 treacheryOn :: Target -> TreacheryAttrs -> Bool
-treacheryOn t TreacheryAttrs {treacheryAttachedTarget} =
+treacheryOn t TreacheryAttrs { treacheryAttachedTarget } =
   t `elem` treacheryAttachedTarget
 
 treacheryOnInvestigator :: InvestigatorId -> TreacheryAttrs -> Bool
@@ -126,48 +122,44 @@ withTreacheryInvestigator :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
   Just (InvestigatorTarget iid) -> f iid
   _ ->
-    error $
-      show (cdName $ toCardDef attrs)
-        <> " must be attached to an investigator"
+    error
+      $ show (cdName $ toCardDef attrs)
+      <> " must be attached to an investigator"
 
 withTreacheryOwner :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryOwner attrs f = case treacheryOwner attrs of
   Just iid -> f iid
   _ ->
-    error $
-      show (cdName $ toCardDef attrs)
-        <> " must be owned by an investigator"
+    error
+      $ show (cdName $ toCardDef attrs)
+      <> " must be owned by an investigator"
 
-treachery ::
-  (TreacheryAttrs -> a) ->
-  CardDef ->
-  CardBuilder (InvestigatorId, TreacheryId) a
+treachery
+  :: (TreacheryAttrs -> a)
+  -> CardDef
+  -> CardBuilder (InvestigatorId, TreacheryId) a
 treachery f cardDef = treacheryWith f cardDef id
 
-treacheryWith ::
-  (TreacheryAttrs -> a) ->
-  CardDef ->
-  (TreacheryAttrs -> TreacheryAttrs) ->
-  CardBuilder (InvestigatorId, TreacheryId) a
-treacheryWith f cardDef g =
-  CardBuilder
-    { cbCardCode = cdCardCode cardDef
-    , cbCardBuilder = \(iid, tid) ->
-        f . g $
-          TreacheryAttrs
-            { treacheryId = tid
-            , treacheryCardCode = toCardCode cardDef
-            , treacheryAttachedTarget = Nothing
-            , treacheryInHandOf = Nothing
-            , treacheryOwner =
-                if isJust (cdCardSubType cardDef)
-                  then Just iid
-                  else Nothing
-            , treacheryDoom = 0
-            , treacheryClues = Nothing
-            , treacheryResources = Nothing
-            }
+treacheryWith
+  :: (TreacheryAttrs -> a)
+  -> CardDef
+  -> (TreacheryAttrs -> TreacheryAttrs)
+  -> CardBuilder (InvestigatorId, TreacheryId) a
+treacheryWith f cardDef g = CardBuilder
+  { cbCardCode = cdCardCode cardDef
+  , cbCardBuilder = \(iid, tid) -> f . g $ TreacheryAttrs
+    { treacheryId = tid
+    , treacheryCardCode = toCardCode cardDef
+    , treacheryAttachedTarget = Nothing
+    , treacheryInHandOf = Nothing
+    , treacheryOwner = if isJust (cdCardSubType cardDef)
+      then Just iid
+      else Nothing
+    , treacheryDoom = 0
+    , treacheryClues = 0
+    , treacheryResources = 0
     }
+  }
 
 is :: Target -> TreacheryAttrs -> Bool
 is (TreacheryTarget tid) t = tid == treacheryId t
@@ -175,31 +167,22 @@ is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
 is (CardIdTarget cardId) t = cardId == unTreacheryId (treacheryId t)
 is _ _ = False
 
-instance TreacheryRunner env => RunMessage TreacheryAttrs where
+instance RunMessage TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of
     InvestigatorEliminated iid
-      | InvestigatorTarget iid `elem` treacheryAttachedTarget ->
-        a
-          <$ push (Discard $ toTarget a)
-    AttachTreachery tid target
-      | tid == treacheryId ->
-        pure $ a & attachedTargetL ?~ target
+      | InvestigatorTarget iid `elem` treacheryAttachedTarget -> a
+      <$ push (Discard $ toTarget a)
+    AttachTreachery tid target | tid == treacheryId ->
+      pure $ a & attachedTargetL ?~ target
     PlaceResources target n | isTarget a target -> do
-      let amount = fromMaybe 0 treacheryResources + n
-      pure $ a & resourcesL ?~ amount
-    PlaceEnemyInVoid eid
-      | EnemyTarget eid `elem` treacheryAttachedTarget ->
-        a <$ push (Discard $ toTarget a)
-    AddTreacheryToHand iid tid
-      | tid == treacheryId ->
-        pure $ a & inHandOfL ?~ iid
-    Discarded target _
-      | target `elem` treacheryAttachedTarget ->
-        a <$ push (Discard $ toTarget a)
-    After (Revelation _ source)
-      | isSource a source ->
-        a
-          <$ when
-            (isNothing treacheryAttachedTarget && isNothing treacheryInHandOf)
-            (push $ Discard $ toTarget a)
+      pure $ a & resourcesL +~ n
+    PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget ->
+      a <$ push (Discard $ toTarget a)
+    AddTreacheryToHand iid tid | tid == treacheryId ->
+      pure $ a & inHandOfL ?~ iid
+    Discarded target _ | target `elem` treacheryAttachedTarget ->
+      a <$ push (Discard $ toTarget a)
+    After (Revelation _ source) | isSource a source -> a <$ when
+      (isNothing treacheryAttachedTarget && isNothing treacheryInHandOf)
+      (push $ Discard $ toTarget a)
     _ -> pure a

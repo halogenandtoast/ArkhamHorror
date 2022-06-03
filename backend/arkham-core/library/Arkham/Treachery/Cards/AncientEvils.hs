@@ -6,16 +6,15 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype AncientEvils = AncientEvils TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ancientEvils :: TreacheryCard AncientEvils
 ancientEvils = treachery AncientEvils Cards.ancientEvils
 
-instance TreacheryRunner env => RunMessage AncientEvils where
+instance RunMessage AncientEvils where
   runMessage msg t@(AncientEvils attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       t <$ pushAll [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]

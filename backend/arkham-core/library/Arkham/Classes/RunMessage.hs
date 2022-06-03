@@ -32,6 +32,7 @@ type RunM env m
     , Query InvestigatorMatcher m
     , Query DiscardedPlayerCardMatcher m
     , Query ExtendedCardMatcher m
+    , Query TreacheryMatcher m
     , Projection m AssetAttrs
     , Projection m InvestigatorAttrs
     )

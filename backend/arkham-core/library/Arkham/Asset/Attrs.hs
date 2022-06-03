@@ -22,11 +22,14 @@ class IsAsset a
 type AssetCard a = CardBuilder AssetId a
 
 data instance Field AssetAttrs :: Type -> Type where
+  AssetClues :: Field AssetAttrs Int
   AssetHorror :: Field AssetAttrs Int
   AssetDamage :: Field AssetAttrs Int
   AssetDoom :: Field AssetAttrs Int
   AssetExhausted :: Field AssetAttrs Bool
   AssetUses :: Field AssetAttrs Uses
+  AssetController :: Field AssetAttrs (Maybe InvestigatorId)
+  AssetLocation :: Field AssetAttrs (Maybe LocationId)
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId
@@ -45,7 +48,7 @@ data AssetAttrs = AssetAttrs
   , assetExhausted :: Bool
   , assetDoom :: Int
   , assetClues :: Int
-  , assetHorror :: Maybe Int
+  , assetHorror :: Int
   , assetCanLeavePlayByNormalMeans :: Bool
   , assetDiscardWhenNoUses :: Bool
   , assetIsStory :: Bool
@@ -61,7 +64,7 @@ canLeavePlayByNormalMeansL :: Lens' AssetAttrs Bool
 canLeavePlayByNormalMeansL = lens assetCanLeavePlayByNormalMeans $
   \m x -> m {assetCanLeavePlayByNormalMeans = x}
 
-horrorL :: Lens' AssetAttrs (Maybe Int)
+horrorL :: Lens' AssetAttrs Int
 horrorL = lens assetHorror $ \m x -> m {assetHorror = x}
 
 isStoryL :: Lens' AssetAttrs Bool
@@ -180,7 +183,7 @@ assetWith f cardDef g =
             , assetExhausted = False
             , assetDoom = 0
             , assetClues = 0
-            , assetHorror = Nothing
+            , assetHorror = 0
             , assetCanLeavePlayByNormalMeans = True
             , assetDiscardWhenNoUses = False
             , assetIsStory = False

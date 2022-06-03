@@ -2,21 +2,17 @@ module Arkham.Scenarios.CarnevaleOfHorrors.Helpers where
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Id
 import Arkham.Matcher
 
-getCnidathqua
-  :: (MonadReader env m, Query EnemyMatcher env) => m (Maybe EnemyId)
+getCnidathqua :: Query EnemyMatcher m => m (Maybe EnemyId)
 getCnidathqua = selectOne $ enemyIs Cards.cnidathqua
 
 -- | An across location will be 4 locations away
 getAcrossLocation
-  :: ( MonadReader env m
-     , HasSet LocationId env ()
-     , HasSet ConnectedLocationId env LocationId
-     )
+  :: Query LocationMatcher m
   => LocationId
   -> m LocationId
 getAcrossLocation lid = do
@@ -31,10 +27,7 @@ getAcrossLocation lid = do
   range = [1 .. 4]
 
 getCounterClockwiseLocation
-  :: ( MonadReader env m
-     , HasSet LocationId env ()
-     , HasSet ConnectedLocationId env LocationId
-     )
+  :: Query LocationMatcher m
   => LocationId
   -> m LocationId
 getCounterClockwiseLocation lid = do
@@ -44,10 +37,7 @@ getCounterClockwiseLocation lid = do
     Nothing -> error $ show lid <> "was not connected for some reason"
 
 getCounterClockwiseLocations
-  :: ( MonadReader env m
-     , HasSet LocationId env ()
-     , HasSet ConnectedLocationId env LocationId
-     )
+  :: Query LocationMatcher m
   => LocationId
   -> m [LocationId]
 getCounterClockwiseLocations end = do
@@ -60,12 +50,7 @@ getCounterClockwiseLocations end = do
     current : buildList (lookup current counterClockwiseMap) counterClockwiseMap
 
 getClockwiseLocations
-  :: ( MonadReader env m
-     , HasSet LocationId env ()
-     , HasSet ConnectedLocationId env LocationId
-     )
-  => LocationId
-  -> m [LocationId]
+  :: Query LocationMatcher m => LocationId -> m [LocationId]
 getClockwiseLocations end = do
   clockwiseMap <- getClockwiseMap
   pure $ buildList (lookup end clockwiseMap) clockwiseMap
@@ -75,30 +60,17 @@ getClockwiseLocations end = do
   buildList (Just current) clockwiseMap =
     current : buildList (lookup current clockwiseMap) clockwiseMap
 
-getClockwiseMap
-  :: ( MonadReader env m
-     , HasSet LocationId env ()
-     , HasSet ConnectedLocationId env LocationId
-     )
-  => m (HashMap LocationId LocationId)
+getClockwiseMap :: Query LocationMatcher m => m (HashMap LocationId LocationId)
 getClockwiseMap = do
-  lids <- getSetList @LocationId ()
+  lids <- selectList Anywhere
   mapFromList
     . concat
-    <$> traverse
-          (\lid -> map ((lid, ) . unConnectedLocationId) <$> getSetList lid)
-          lids
+    <$> traverse (\lid -> map (lid, ) <$> selectList (AccessibleFrom $ LocationWithId lid)) lids
 
 getCounterClockwiseMap
-  :: ( MonadReader env m
-     , HasSet LocationId env ()
-     , HasSet ConnectedLocationId env LocationId
-     )
-  => m (HashMap LocationId LocationId)
+  :: Query LocationMatcher m => m (HashMap LocationId LocationId)
 getCounterClockwiseMap = do
-  lids <- getSetList @LocationId ()
+  lids <- selectList Anywhere
   mapFromList
     . concat
-    <$> traverse
-          (\lid -> map ((, lid) . unConnectedLocationId) <$> getSetList lid)
-          lids
+    <$> traverse (\lid -> map (, lid) <$> selectList (AccessibleFrom $ LocationWithId lid)) lids

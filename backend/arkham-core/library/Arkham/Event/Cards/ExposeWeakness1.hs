@@ -8,34 +8,29 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.EffectMetadata
+import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Event.Attrs
 import Arkham.Id
 import Arkham.Message
 import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Target
 
 newtype ExposeWeakness1 = ExposeWeakness1 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exposeWeakness1 :: EventCard ExposeWeakness1
 exposeWeakness1 = event ExposeWeakness1 Cards.exposeWeakness1
 
-instance
-  ( HasCount FightCount env EnemyId
-  , HasSet EnemyId env LocationId
-  , HasId LocationId env InvestigatorId
-  , HasSkillTest env
-  )
-  => RunMessage ExposeWeakness1 where
+instance RunMessage ExposeWeakness1 where
   runMessage msg e@(ExposeWeakness1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- getId @LocationId iid
-      enemyIds <- getSetList @EnemyId lid
+      enemyIds <- selectList $ EnemyAt $ LocationWithInvestigator $ InvestigatorWithId iid
       enemyIdsWithFight <- traverse
-        (traverseToSnd (fmap unFightCount . getCount))
+        (traverseToSnd (field EnemyFight))
         enemyIds
       e <$ push
         (chooseOne

@@ -44,6 +44,7 @@ type EnemyCard a = CardBuilder EnemyId a
 data instance Field EnemyAttrs :: Type -> Type where
   EnemyDoom :: Field EnemyAttrs Int
   EnemyEvade :: Field EnemyAttrs Int
+  EnemyHealthDamage :: Field EnemyAttrs EnemyHealthDamage
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId

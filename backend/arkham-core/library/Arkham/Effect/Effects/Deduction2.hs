@@ -19,7 +19,7 @@ newtype Deduction2 = Deduction2 EffectAttrs
 deduction2 :: EffectArgs -> Deduction2
 deduction2 = Deduction2 . uncurry4 (baseAttrs "02150")
 
-instance RunMessage m Deduction2 where
+instance RunMessage Deduction2 where
   runMessage msg e@(Deduction2 attrs@EffectAttrs {..}) = case msg of
     Successful (Action.Investigate, _) iid _ (LocationTarget lid) _ ->
       case effectMetadata of

@@ -16,13 +16,13 @@ import Arkham.Target
 import Arkham.Trait
 
 newtype SleightOfHand = SleightOfHand EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sleightOfHand :: EventCard SleightOfHand
 sleightOfHand = event SleightOfHand Cards.sleightOfHand
 
-instance Query ExtendedCardMatcher env => RunMessage SleightOfHand where
+instance RunMessage SleightOfHand where
   runMessage msg e@(SleightOfHand attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       cards <- selectList

@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Attrs
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -20,18 +19,13 @@ newtype EmergencyAid = EmergencyAid EventAttrs
 emergencyAid :: EventCard EmergencyAid
 emergencyAid = event EmergencyAid Cards.emergencyAid
 
-instance
-  ( HasQueue env
-  , HasSet InvestigatorId env InvestigatorMatcher
-  , Query AssetMatcher env
-  )
-  => RunMessage EmergencyAid where
+instance RunMessage EmergencyAid where
   runMessage msg e@(EmergencyAid attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      investigatorIds <- getSetList
+      investigatorIds <- selectList
         (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
       let investigatorTargets = map InvestigatorTarget investigatorIds
-      allyTargets <- map AssetTarget <$> selectList
+      allyTargets <- selectListMap AssetTarget
         (AssetWithDamage <> AllyAsset <> AssetOneOf
           (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
         )

@@ -1357,9 +1357,6 @@ getTurnInvestigator
 getTurnInvestigator =
   traverse getInvestigator . view turnPlayerInvestigatorIdL =<< getGame
 
-instance HasGame env => CanBeWeakness env TreacheryId where
-  getIsWeakness = getIsWeakness <=< getTreachery
-
 instance HasGame env => HasRecord env () where
   hasRecord key _ = do
     g <- getGame

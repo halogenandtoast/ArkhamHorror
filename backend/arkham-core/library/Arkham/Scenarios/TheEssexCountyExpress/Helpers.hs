@@ -4,15 +4,10 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Direction
+import Arkham.Matcher
 import Arkham.Id
 
-leftmostLocation
-  :: ( MonadReader env m
-     , HasId (Maybe LocationId) env (Direction, LocationId)
-     , MonadIO m
-     )
-  => LocationId
-  -> m LocationId
+leftmostLocation :: Query LocationMatcher m => LocationId -> m LocationId
 leftmostLocation lid = do
-  mlid' <- getId (LeftOf, lid)
+  mlid' <- selectOne $ LocationInDirection LeftOf $ LocationWithId lid
   maybe (pure lid) leftmostLocation mlid'

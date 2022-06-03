@@ -13,6 +13,9 @@ import Arkham.Source
 import Arkham.Target
 import Data.Text qualified as T
 
+data CostStatus = UnpaidCost | PaidCost
+  deriving stock Eq
+
 totalActionCost :: Cost -> Int
 totalActionCost (ActionCost n) = n
 totalActionCost (Costs xs) = sum $ map totalActionCost xs

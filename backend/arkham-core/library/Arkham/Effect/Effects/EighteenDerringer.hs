@@ -18,7 +18,7 @@ newtype EighteenDerringer = EighteenDerringer EffectAttrs
 eighteenDerringer :: EffectArgs -> EighteenDerringer
 eighteenDerringer = EighteenDerringer . uncurry4 (baseAttrs "60505")
 
-instance RunMessage m EighteenDerringer where
+instance RunMessage EighteenDerringer where
   runMessage msg e@(EighteenDerringer attrs) = case msg of
     FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | effectSource attrs == source

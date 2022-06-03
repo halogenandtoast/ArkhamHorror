@@ -6,20 +6,34 @@ import Arkham.Prelude hiding ( to )
 
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
+import Arkham.Classes.HasHistory
+import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.Query
 import Arkham.Message
 import Arkham.Matcher
+import Arkham.Projection
+import Arkham.SkillTest
+import Arkham.Asset.Attrs (AssetAttrs)
+import Arkham.Investigator.Attrs (InvestigatorAttrs)
 import GHC.Generics
 
 type RunM env m
   = ( HasCallStack
+    , HasQueue env
     , MonadIO m
     , MonadRandom m
-    , HasQueue env
+    , HasHistory m
     , HasGameLogger env
+    , HasModifiersFor m ()
+    , HasSkillTest m
     , Query AssetMatcher m
+    , Query EnemyMatcher m
     , Query LocationMatcher m
     , Query InvestigatorMatcher m
+    , Query DiscardedPlayerCardMatcher m
+    , Query ExtendedCardMatcher m
+    , Projection m AssetAttrs
+    , Projection m InvestigatorAttrs
     )
 
 class RunMessage1 f where

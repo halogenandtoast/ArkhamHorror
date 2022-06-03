@@ -37,7 +37,7 @@ windowModifierEffect eid metadata effectWindow source target =
     , effectWindow = Just effectWindow
     }
 
-instance HasModifiersFor env WindowModifierEffect where
+instance Monad m => HasModifiersFor m WindowModifierEffect where
   getModifiersFor _ target (WindowModifierEffect EffectAttrs {..})
     | target == effectTarget = case effectMetadata of
       Just (EffectModifiers modifiers) -> pure modifiers
@@ -45,7 +45,7 @@ instance HasModifiersFor env WindowModifierEffect where
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage WindowModifierEffect where
+instance RunMessage WindowModifierEffect where
   runMessage msg e@(WindowModifierEffect attrs) = case msg of
     CancelFailedByModifierEffects -> case effectMetadata attrs of
       Just (FailedByEffectModifiers _) ->

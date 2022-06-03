@@ -110,7 +110,7 @@ instance SourceEntity EventAttrs where
   isSource EventAttrs {eventId} (EventSource eid) = eventId == eid
   isSource _ _ = False
 
-instance HasQueue env => RunMessage EventAttrs where
+instance RunMessage EventAttrs where
   runMessage msg a@EventAttrs {..} = case msg of
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     InvestigatorEliminated iid

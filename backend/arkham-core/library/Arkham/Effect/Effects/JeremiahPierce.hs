@@ -19,7 +19,7 @@ newtype JeremiahPierce = JeremiahPierce EffectAttrs
 jeremiahPierce :: EffectArgs -> JeremiahPierce
 jeremiahPierce = JeremiahPierce . uncurry4 (baseAttrs "50044")
 
-instance RunMessage m JeremiahPierce where
+instance RunMessage JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs ->
       e <$ pushAll

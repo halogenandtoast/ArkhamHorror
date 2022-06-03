@@ -8,27 +8,22 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Attrs
-import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 
 newtype StandTogether3 = StandTogether3 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, TargetEntity)
 
 standTogether3 :: EventCard StandTogether3
 standTogether3 = event StandTogether3 Cards.standTogether3
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , HasSet InvestigatorId env LocationId
-  )
-  => RunMessage StandTogether3 where
+instance RunMessage StandTogether3 where
   runMessage msg e@(StandTogether3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId attrs -> do
-      locationId <- getId @LocationId iid
       investigatorIds <- filter (/= iid)
-        <$> getSetList @InvestigatorId locationId
+        <$> selectList (colocatedWith iid)
       case investigatorIds of
         [] -> error "should not have happened"
         [x] -> e <$ pushAll

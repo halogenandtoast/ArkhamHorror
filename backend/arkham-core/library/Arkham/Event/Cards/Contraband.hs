@@ -5,14 +5,14 @@ module Arkham.Event.Cards.Contraband
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
+import Arkham.Asset.Attrs
 import Arkham.Asset.Uses
 import Arkham.Classes
 import Arkham.Event.Attrs
-import Arkham.Id
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 
 newtype Contraband = Contraband EventAttrs
@@ -22,34 +22,32 @@ newtype Contraband = Contraband EventAttrs
 contraband :: EventCard Contraband
 contraband = event Contraband Cards.contraband
 
-instance
-  ( HasQueue env
-  , Query AssetMatcher env
-  , HasId LocationId env InvestigatorId
-  , HasSet InvestigatorId env LocationId
-  , HasCount UsesCount env AssetId
-  )
-  => RunMessage Contraband where
+instance RunMessage Contraband where
   runMessage msg e@(Contraband attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      locationId <- getId @LocationId iid
-      investigatorIds <- getSetList @InvestigatorId locationId
+      investigatorIds <-
+        selectList
+        $ InvestigatorAt
+        $ LocationWithInvestigator
+        $ InvestigatorWithId iid
 
       ammoAssets <- selectList
         (AssetWithUseType Ammo <> AssetOneOf
           (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
         )
 
-      ammoAssetsWithUseCount <- map (\(c, aid) -> (Ammo, c, aid))
-        <$> for ammoAssets (\aid -> (, aid) . unUsesCount <$> getCount aid)
+      ammoAssetsWithUseCount <- map (\(c, aid) -> (Ammo, c, aid)) <$> for
+        ammoAssets
+        (\aid -> (, aid) . useCount <$> field AssetUses aid)
 
       supplyAssets <- selectList
         (AssetWithUseType Supply <> AssetOneOf
           (map (AssetControlledBy . InvestigatorWithId) investigatorIds)
         )
 
-      supplyAssetsWithUseCount <- map (\(c, aid) -> (Supply, c, aid))
-        <$> for supplyAssets (\aid -> (, aid) . unUsesCount <$> getCount aid)
+      supplyAssetsWithUseCount <- map (\(c, aid) -> (Supply, c, aid)) <$> for
+        supplyAssets
+        (\aid -> (, aid) . useCount <$> field AssetUses aid)
 
       e <$ pushAll
         [ chooseOne

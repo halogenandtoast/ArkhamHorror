@@ -8,37 +8,40 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card.CardCode
 import Arkham.Classes
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
+import Arkham.Projection
+import Arkham.Investigator.Attrs ( Field(..) )
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype Mesmerize = Mesmerize TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mesmerize :: TreacheryCard Mesmerize
 mesmerize = treachery Mesmerize Cards.mesmerize
 
-instance TreacheryRunner env => RunMessage Mesmerize where
+instance RunMessage Mesmerize where
   runMessage msg t@(Mesmerize attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lid <- getId @LocationId iid
-      maskedCarnevaleGoers <- selectListMap
-        AssetTarget
-        (AssetAtLocation lid <> AssetWithTitle "Masked Carnevale-Goer")
-      case maskedCarnevaleGoers of
-        [] -> t <$ push (chooseOne iid [Surge iid $ toSource attrs])
-        xs -> t <$ pushAll
-          [ CreateEffect
-            (toCardCode attrs)
-            Nothing
-            source
-            (InvestigatorTarget iid)
-          , chooseOne
-            iid
-            [ TargetLabel target [Flip source target] | target <- xs ]
-          ]
+      mlid <- field InvestigatorLocation iid
+      t <$ case mlid of
+        Nothing -> push $ Surge iid (toSource attrs)
+        Just lid -> do
+          maskedCarnevaleGoers <- selectListMap
+            AssetTarget
+            (AssetAtLocation lid <> AssetWithTitle "Masked Carnevale-Goer")
+          case maskedCarnevaleGoers of
+            [] -> push (chooseOne iid [Surge iid $ toSource attrs])
+            xs -> pushAll
+              [ CreateEffect
+                (toCardCode attrs)
+                Nothing
+                source
+                (InvestigatorTarget iid)
+              , chooseOne
+                iid
+                [ TargetLabel target [Flip source target] | target <- xs ]
+              ]
     _ -> Mesmerize <$> runMessage msg attrs

@@ -13,16 +13,15 @@ import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype MarkedByTheSign = MarkedByTheSign TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 markedByTheSign :: TreacheryCard MarkedByTheSign
 markedByTheSign = treachery MarkedByTheSign Cards.markedByTheSign
 
-instance TreacheryRunner env => RunMessage MarkedByTheSign where
+instance RunMessage MarkedByTheSign where
   runMessage msg t@(MarkedByTheSign attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       theManInThePallidMaskIsInPlay <- selectAny

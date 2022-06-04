@@ -5,23 +5,23 @@ module Arkham.Treachery.Cards.ShellShock
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Message
-import Arkham.Query
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Message hiding (InvestigatorDamage)
+import Arkham.Projection
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype ShellShock = ShellShock TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shellShock :: TreacheryCard ShellShock
 shellShock = treachery ShellShock Cards.shellShock
 
-instance TreacheryRunner env => RunMessage ShellShock where
+instance RunMessage ShellShock where
   runMessage msg t@(ShellShock attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      horrorCount <- (`div` 2) . unDamageCount <$> getCount iid
+      horrorCount <- fieldMap InvestigatorDamage (`div` 2) iid
       t <$ push (InvestigatorAssignDamage iid source DamageAny 0 horrorCount)
     _ -> ShellShock <$> runMessage msg attrs

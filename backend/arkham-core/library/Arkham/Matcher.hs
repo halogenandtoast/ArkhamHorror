@@ -384,8 +384,10 @@ data LocationMatcher
   | LocationMatchAll [LocationMatcher]
   | LocationMatchAny [LocationMatcher]
   | FirstLocation [LocationMatcher]
-  -- only useful for windows
+  | ClosestPathLocation LocationId LocationId
+  -- ^ start destination / end destination
   | ThisLocation
+  -- ^ only useful for windows
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

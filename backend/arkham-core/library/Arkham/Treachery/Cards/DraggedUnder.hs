@@ -12,10 +12,9 @@ import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype DraggedUnder = DraggedUnder TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 draggedUnder :: TreacheryCard DraggedUnder
@@ -32,7 +31,7 @@ instance HasAbilities DraggedUnder where
       You
     ]
 
-instance TreacheryRunner env => RunMessage DraggedUnder where
+instance RunMessage DraggedUnder where
   runMessage msg t@(DraggedUnder attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillAgility 3)

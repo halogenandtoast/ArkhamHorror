@@ -17,18 +17,13 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
 
 newtype CoverUp = CoverUp TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 coverUp :: TreacheryCard CoverUp
-coverUp = treacheryWith CoverUp Cards.coverUp (cluesL ?~ 3)
-
-coverUpClues :: TreacheryAttrs -> Int
-coverUpClues TreacheryAttrs { treacheryClues } =
-  fromJustNote "must be set" treacheryClues
+coverUp = treacheryWith CoverUp Cards.coverUp (cluesL .~ 3)
 
 instance HasAbilities CoverUp where
   getAbilities (CoverUp a) =
@@ -51,7 +46,7 @@ instance HasAbilities CoverUp where
         | iid <- maybeToList (treacheryOwner a)
         ]
 
-instance TreacheryRunner env => RunMessage CoverUp where
+instance RunMessage CoverUp where
   runMessage msg t@(CoverUp attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid (isSource attrs -> True) ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
@@ -65,8 +60,8 @@ instance TreacheryRunner env => RunMessage CoverUp where
             [] -> error "DiscoverClues has to be present"
             (x : xs) -> (x, xs)
         (before <> remaining, m)
-      let remainingClues = max 0 (coverUpClues attrs - cluesToRemove)
-      pure $ CoverUp (attrs { treacheryClues = Just remainingClues })
+      let remainingClues = max 0 (treacheryClues - cluesToRemove)
+      pure $ CoverUp (attrs { treacheryClues = remainingClues })
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       withTreacheryInvestigator attrs
         $ \tormented -> t <$ push (SufferTrauma tormented 0 1)

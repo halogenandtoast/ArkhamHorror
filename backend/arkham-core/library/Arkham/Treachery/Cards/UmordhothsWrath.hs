@@ -5,23 +5,23 @@ module Arkham.Treachery.Cards.UmordhothsWrath
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype UmordhothsWrath = UmordhothsWrath TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 umordhothsWrath :: TreacheryCard UmordhothsWrath
 umordhothsWrath = treachery UmordhothsWrath Cards.umordhothsWrath
 
-instance TreacheryRunner env => RunMessage UmordhothsWrath where
+instance RunMessage UmordhothsWrath where
   runMessage msg t@(UmordhothsWrath attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ push
       (BeginSkillTest
@@ -37,8 +37,8 @@ instance TreacheryRunner env => RunMessage UmordhothsWrath where
       <$ push (HandlePointOfFailure iid (toTarget attrs) n)
     HandlePointOfFailure _ target 0 | isTarget attrs target -> pure t
     HandlePointOfFailure iid target n | isTarget attrs target -> do
-      cardCount' <- unCardCount <$> getCount iid
-      if cardCount' > 0
+      hasCards <- fieldMap InvestigatorHand notNull iid
+      if hasCards
         then t <$ pushAll
           [ chooseOne
             iid

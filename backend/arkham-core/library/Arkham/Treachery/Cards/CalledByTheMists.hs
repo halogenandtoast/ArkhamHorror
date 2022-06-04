@@ -16,10 +16,9 @@ import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype CalledByTheMists = CalledByTheMists TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 calledByTheMists :: TreacheryCard CalledByTheMists
@@ -34,7 +33,7 @@ instance HasAbilities CalledByTheMists where
       2
     ]
 
-instance TreacheryRunner env => RunMessage CalledByTheMists where
+instance RunMessage CalledByTheMists where
   runMessage msg t@(CalledByTheMists attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

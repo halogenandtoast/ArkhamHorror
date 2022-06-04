@@ -15,16 +15,15 @@ import Arkham.Message
 import Arkham.Slot
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype Straitjacket = Straitjacket TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 straitjacket :: TreacheryCard Straitjacket
 straitjacket = treachery Straitjacket Cards.straitjacket
 
-instance TreacheryRunner env => RunMessage Straitjacket where
+instance RunMessage Straitjacket where
   runMessage msg t@(Straitjacket attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       alreadyInStraitJacket <-

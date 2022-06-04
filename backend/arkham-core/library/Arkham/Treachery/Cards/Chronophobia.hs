@@ -15,10 +15,9 @@ import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype Chronophobia = Chronophobia TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chronophobia :: TreacheryCard Chronophobia
@@ -33,7 +32,7 @@ instance HasAbilities Chronophobia where
       2
     ]
 
-instance TreacheryRunner env => RunMessage Chronophobia where
+instance RunMessage Chronophobia where
   runMessage msg t@(Chronophobia attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

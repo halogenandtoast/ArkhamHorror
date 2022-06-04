@@ -5,33 +5,40 @@ module Arkham.Treachery.Cards.CollapsingReality
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Id
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Investigator.Attrs ( Field(..) )
+import Arkham.Location.Attrs ( Field(..) )
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype CollapsingReality = CollapsingReality TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 collapsingReality :: TreacheryCard CollapsingReality
 collapsingReality = treachery CollapsingReality Cards.collapsingReality
 
-instance TreacheryRunner env => RunMessage CollapsingReality where
+instance RunMessage CollapsingReality where
   runMessage msg t@(CollapsingReality attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lid <- getId @LocationId iid
-      isExtradimensional <- member Extradimensional <$> getSet lid
-      let
-        revelationMsgs = if isExtradimensional
-          then
-            [ Discard (LocationTarget lid)
-            , InvestigatorAssignDamage iid source DamageAny 1 0
-            ]
-          else [InvestigatorAssignDamage iid source DamageAny 2 0]
-      t <$ pushAll revelationMsgs
+      mlid <- field InvestigatorLocation iid
+      let other = InvestigatorAssignDamage iid source DamageAny 2 0
+      case mlid of
+        Nothing -> push other
+        Just lid -> do
+          isExtradimensional <- fieldP
+            LocationTraits
+            (member Extradimensional)
+            lid
+          pushAll $ if isExtradimensional
+            then
+              [ Discard (LocationTarget lid)
+              , InvestigatorAssignDamage iid source DamageAny 1 0
+              ]
+            else [other]
+      pure t
     _ -> CollapsingReality <$> runMessage msg attrs

@@ -5,26 +5,23 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype MysteriousChanting = MysteriousChanting TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mysteriousChanting :: TreacheryCard MysteriousChanting
 mysteriousChanting = treachery MysteriousChanting Cards.mysteriousChanting
 
-instance TreacheryRunner env => RunMessage MysteriousChanting where
+instance RunMessage MysteriousChanting where
   runMessage msg t@(MysteriousChanting attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lid <- getId @LocationId iid
-      enemies <- map unClosestEnemyId <$> getSetList (lid, [Cultist])
+      enemies <- selectList $ NearestEnemy $ EnemyWithTrait Cultist
       case enemies of
         [] -> t <$ push
           (FindAndDrawEncounterCard

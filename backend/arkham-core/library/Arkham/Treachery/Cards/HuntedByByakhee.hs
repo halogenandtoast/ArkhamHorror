@@ -13,16 +13,15 @@ import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype HuntedByByakhee = HuntedByByakhee TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntedByByakhee :: TreacheryCard HuntedByByakhee
 huntedByByakhee = treachery HuntedByByakhee Cards.huntedByByakhee
 
-instance TreacheryRunner env => RunMessage HuntedByByakhee where
+instance RunMessage HuntedByByakhee where
   runMessage msg t@(HuntedByByakhee attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillAgility 6)

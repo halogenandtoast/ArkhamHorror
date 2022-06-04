@@ -6,20 +6,18 @@ module Arkham.Treachery.Cards.Kidnapped
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Id
-import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Message
 import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype Kidnapped = Kidnapped TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 kidnapped :: TreacheryCard Kidnapped
@@ -35,10 +33,10 @@ instance HasAbilities Kidnapped where
       ]
     _ -> []
 
-instance TreacheryRunner env => RunMessage Kidnapped where
+instance RunMessage Kidnapped where
   runMessage msg t@(Kidnapped attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> t <$ push
-      (chooseOne
+    Revelation iid source | isSource attrs source -> do
+      push $ chooseOne
         iid
         [ Label
           "Test {willpower} (4)"
@@ -61,20 +59,16 @@ instance TreacheryRunner env => RunMessage Kidnapped where
               4
           ]
         ]
-      )
+      pure t
     FailedSkillTest iid _ _ (SkillTestInitiatorTarget target) _ _
       | isTarget attrs target -> do
         allies <- selectList (AssetControlledBy You <> AllyAsset)
         if null allies
-          then
-            t <$ push
-              (InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0)
+          then push
+            $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
           else do
-            agendaId <-
-              fromJustNote "missing agenga"
-              . headMay
-              <$> getSetList @AgendaId ()
-            t <$ pushAll
+            agendaId <- selectJust AnyAgenda
+            pushAll
               [ chooseOne
                 iid
                 [ TargetLabel
@@ -84,15 +78,14 @@ instance TreacheryRunner env => RunMessage Kidnapped where
                 ]
               , AttachTreachery treacheryId (AgendaTarget agendaId)
               ]
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      t
-        <$ push
-             (DrawRandomFromScenarioDeck
-               iid
-               PotentialSacrifices
-               (toTarget attrs)
-               1
-             )
+        pure t
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ DrawRandomFromScenarioDeck
+        iid
+        PotentialSacrifices
+        (toTarget attrs)
+        1
+      pure t
     DrewFromScenarioDeck _ PotentialSacrifices target cards
       | isTarget attrs target -> t
       <$ push (PlaceUnderneath AgendaDeckTarget cards)

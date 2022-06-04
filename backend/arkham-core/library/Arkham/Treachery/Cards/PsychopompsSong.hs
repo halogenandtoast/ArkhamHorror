@@ -14,10 +14,9 @@ import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype PsychopompsSong = PsychopompsSong TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 psychopompsSong :: TreacheryCard PsychopompsSong
@@ -33,7 +32,7 @@ instance HasAbilities PsychopompsSong where
       ]
     _ -> []
 
-instance TreacheryRunner env => RunMessage PsychopompsSong where
+instance RunMessage PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

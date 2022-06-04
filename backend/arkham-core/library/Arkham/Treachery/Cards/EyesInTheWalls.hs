@@ -11,16 +11,15 @@ import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Attrs
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
 
 newtype EyesInTheWalls = EyesInTheWalls TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eyesInTheWalls :: TreacheryCard EyesInTheWalls
 eyesInTheWalls = treachery EyesInTheWalls Cards.eyesInTheWalls
 
-instance TreacheryRunner env => RunMessage EyesInTheWalls where
+instance RunMessage EyesInTheWalls where
   runMessage msg t@(EyesInTheWalls attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillWillpower 3)

@@ -11,7 +11,6 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
 import Arkham.Name
-import Arkham.Query
 import Arkham.Source
 import Arkham.Target
 
@@ -115,12 +114,3 @@ instance HasCardDef AgendaAttrs where
     Just def -> def
     Nothing ->
       error $ "missing card def for agenda " <> show (unAgendaId $ agendaId e)
-
-instance Monad m => HasStep AgendaStep m AgendaAttrs where
-  getStep = pure . agendaStep . agendaSequence
-
-instance Monad m => HasList UnderneathCard m AgendaAttrs where
-  getList = pure . map UnderneathCard . agendaCardsUnderneath
-
-instance Monad m => HasCount DoomCount m AgendaAttrs where
-  getCount = pure . DoomCount . agendaDoom

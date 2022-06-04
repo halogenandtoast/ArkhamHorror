@@ -5,26 +5,26 @@ module Arkham.Treachery.Cards.EagerForDeath
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Message
-import Arkham.Query
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Message hiding (InvestigatorDamage)
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype EagerForDeath = EagerForDeath TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eagerForDeath :: TreacheryCard EagerForDeath
 eagerForDeath = treachery EagerForDeath Cards.eagerForDeath
 
-instance TreacheryRunner env => RunMessage EagerForDeath where
+instance RunMessage EagerForDeath where
   runMessage msg t@(EagerForDeath attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      difficulty <- (+ 2) . unDamageCount <$> getCount iid
+      difficulty <- fieldMap InvestigatorDamage (+ 2) iid
       t <$ push (RevelationSkillTest iid source SkillWillpower difficulty)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t

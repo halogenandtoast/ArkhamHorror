@@ -9,23 +9,23 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Trait
+import Arkham.Investigator.Attrs ( Field(..) )
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype FineDining = FineDining TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fineDining :: TreacheryCard FineDining
 fineDining = treachery FineDining Cards.fineDining
 
-instance TreacheryRunner env => RunMessage FineDining where
+instance RunMessage FineDining where
   runMessage msg t@(FineDining attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      clueCount <- unClueCount <$> getCount iid
+      clueCount <- field InvestigatorClues iid
       bystanders <- selectListMap AssetTarget $ AssetWithTrait Bystander
       let damageMsg = InvestigatorAssignDamage iid source DamageAny 1 1
       t <$ push

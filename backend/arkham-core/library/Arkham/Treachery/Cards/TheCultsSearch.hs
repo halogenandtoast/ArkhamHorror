@@ -5,30 +5,30 @@ module Arkham.Treachery.Cards.TheCultsSearch
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card.CardType
 import Arkham.Classes
+import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype TheCultsSearch = TheCultsSearch TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCultsSearch :: TreacheryCard TheCultsSearch
 theCultsSearch = treachery TheCultsSearch Cards.theCultsSearch
 
-instance TreacheryRunner env => RunMessage TheCultsSearch where
+instance RunMessage TheCultsSearch where
   runMessage msg t@(TheCultsSearch attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       cultists <- selectList $ EnemyWithTrait Cultist <> EnemyWithAnyDoom
       cultistsWithDoomCount <- traverse
-        (traverseToSnd (fmap unDoomCount . getCount))
+        (traverseToSnd (field EnemyDoom))
         cultists
       let
         revelation = if null cultistsWithDoomCount

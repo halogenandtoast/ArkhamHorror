@@ -5,33 +5,33 @@ module Arkham.Treachery.Cards.LedAstray
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype LedAstray = LedAstray TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ledAstray :: TreacheryCard LedAstray
 ledAstray = treachery LedAstray Cards.ledAstray
 
-instance TreacheryRunner env => RunMessage LedAstray where
+instance RunMessage LedAstray where
   runMessage msg t@(LedAstray attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       cultists <- selectListMap EnemyTarget $ EnemyWithTrait Cultist
-      clues <- unClueCount <$> getCount iid
+      hasClues <- fieldP InvestigatorClues (> 0) iid
       let
         advanceAgenda = [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
         placeDoomOnCultist target =
           TargetLabel target [InvestigatorSpendClues iid 1, PlaceClues target 1]
-        revelation = if null cultists || clues == 0
+        revelation = if null cultists || hasClues
           then advanceAgenda
           else
             [ chooseOne

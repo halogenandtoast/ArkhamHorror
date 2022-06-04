@@ -27,7 +27,6 @@ import Arkham.Message
 import Arkham.Modifier hiding (EnemyEvade)
 import Arkham.Modifier qualified as Modifier
 import Arkham.Name
-import Arkham.Query
 import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
@@ -42,6 +41,7 @@ data instance Field EnemyAttrs :: Type -> Type where
   EnemyDoom :: Field EnemyAttrs Int
   EnemyEvade :: Field EnemyAttrs Int
   EnemyHealthDamage :: Field EnemyAttrs Int
+  EnemyTraits :: Field EnemyAttrs (HashSet Trait)
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
@@ -137,9 +137,6 @@ cluesL = lens enemyClues $ \m x -> m { enemyClues = x }
 allEnemyCards :: HashMap CardCode CardDef
 allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards
 
-instance HasName env EnemyAttrs where
-  getName = pure . toName
-
 instance HasCardCode EnemyAttrs where
   toCardCode = enemyCardCode
 
@@ -208,7 +205,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
     }
 
 spawnAt
-  :: (MonadIO m, MonadReader env m, HasQueue env)
+  :: (MonadIO m, MonadReader env m, HasQueue env, Query InvestigatorMatcher m)
   => EnemyId
   -> LocationMatcher
   -> m ()
@@ -275,12 +272,12 @@ getModifiedKeywords e@EnemyAttrs {..} = do
   applyModifier _ n = n
 
 canEnterLocation
-  :: HasModifiersFor m ()
+  :: (Projection m EnemyAttrs, HasModifiersFor m ())
   => EnemyId
   -> LocationId
   -> m Bool
 canEnterLocation eid lid = do
-  traits <- getSet eid
+  traits <- field EnemyTraits eid
   modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid)
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
@@ -335,7 +332,7 @@ instance SourceEntity EnemyAttrs where
   isSource _ _ = False
 
 getModifiedHealth
-  :: HasModifiersFor m ()
+  :: (Query InvestigatorMatcher m, HasModifiersFor m ())
   => EnemyAttrs
   -> m Int
 getModifiedHealth EnemyAttrs {..} = do

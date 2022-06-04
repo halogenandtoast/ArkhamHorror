@@ -13,16 +13,15 @@ import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Attrs
 import qualified Arkham.Treachery.Cards as Cards
-import Arkham.Treachery.Runner
 
 newtype DeadlyFate = DeadlyFate TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deadlyFate :: TreacheryCard DeadlyFate
 deadlyFate = treachery DeadlyFate Cards.deadlyFate
 
-instance TreacheryRunner env => RunMessage DeadlyFate where
+instance RunMessage DeadlyFate where
   runMessage msg t@(DeadlyFate attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 3

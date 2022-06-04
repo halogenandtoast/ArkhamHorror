@@ -8,27 +8,28 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Helpers
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Investigator.Attrs ( Field(..) )
 
 newtype StarsOfHyades = StarsOfHyades TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 starsOfHyades :: TreacheryCard StarsOfHyades
 starsOfHyades = treachery StarsOfHyades Cards.starsOfHyades
 
-instance TreacheryRunner env => RunMessage StarsOfHyades where
+instance RunMessage StarsOfHyades where
   runMessage msg t@(StarsOfHyades attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      underneathCards <- map unUnderneathCard <$> getList iid
-      let events = filter ((== EventType) . toCardType) underneathCards
+      events <- fieldMap InvestigatorCardsUnderneath (filter ((== EventType) . toCardType)) iid
       t <$ case nonEmpty events of
         Nothing -> push (InvestigatorAssignDamage iid source DamageAny 1 1)
         Just targets -> do
-          deckSize <- length <$> getList @DeckCard iid
+          deckSize <- fieldMap InvestigatorDeck (length . unDeck) iid
           discardedEvent <- sample targets
           pushAll
             (chooseOne

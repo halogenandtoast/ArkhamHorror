@@ -8,16 +8,15 @@ import Arkham.Message
 import Arkham.RequestedTokenStrategy
 import Arkham.Token
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype FinalRhapsody = FinalRhapsody TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 finalRhapsody :: TreacheryCard FinalRhapsody
 finalRhapsody = treachery FinalRhapsody Cards.finalRhapsody
 
-instance TreacheryRunner env => RunMessage FinalRhapsody where
+instance RunMessage FinalRhapsody where
   runMessage msg t@(FinalRhapsody attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ push (RequestTokens source (Just iid) 5 SetAside)

@@ -9,22 +9,22 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Card.Id
 import Arkham.Classes
+import Arkham.Game.Helpers
 import Arkham.History
 import Arkham.Message
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype TerrorFromBeyond = TerrorFromBeyond TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 terrorFromBeyond :: TreacheryCard TerrorFromBeyond
 terrorFromBeyond = treachery TerrorFromBeyond Cards.terrorFromBeyond
 
-instance TreacheryRunner env => RunMessage TerrorFromBeyond where
+instance RunMessage TerrorFromBeyond where
   runMessage msg t@(TerrorFromBeyond attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      iids <- getSetList ()
+      iids <- getInvestigatorIds
       phaseHistory <- mconcat <$> traverse (getHistory PhaseHistory) iids
       let
         secondCopy =

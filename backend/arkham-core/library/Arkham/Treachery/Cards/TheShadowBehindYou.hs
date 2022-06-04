@@ -18,14 +18,13 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
 
 newtype Metadata = Metadata { usedAbility :: Bool }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TheShadowBehindYou = TheShadowBehindYou (TreacheryAttrs `With` Metadata)
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theShadowBehindYou :: TreacheryCard TheShadowBehindYou
@@ -51,7 +50,7 @@ instance HasAbilities TheShadowBehindYou where
         | not (usedAbility metadata)
         ]
 
-instance TreacheryRunner env => RunMessage TheShadowBehindYou where
+instance RunMessage TheShadowBehindYou where
   runMessage msg t@(TheShadowBehindYou (attrs `With` metadata)) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

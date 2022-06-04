@@ -11,16 +11,15 @@ import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype BlackStarsRise = BlackStarsRise TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blackStarsRise :: TreacheryCard BlackStarsRise
 blackStarsRise = treachery BlackStarsRise Cards.blackStarsRise
 
-instance TreacheryRunner env => RunMessage BlackStarsRise where
+instance RunMessage BlackStarsRise where
   runMessage msg t@(BlackStarsRise attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillIntellect 4)

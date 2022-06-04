@@ -22,6 +22,7 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Trait (Trait)
 
 class IsLocation a
 
@@ -42,6 +43,9 @@ data instance Field LocationAttrs :: Type -> Type where
   LocationResources :: Field LocationAttrs Int
   LocationHorror :: Field LocationAttrs Int
   LocationDoom :: Field LocationAttrs Int
+  LocationShroud :: Field LocationAttrs Int
+  LocationTraits :: Field LocationAttrs (HashSet Trait)
+  LocationUnrevealedName :: Field LocationAttrs Name
 
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId

@@ -5,25 +5,25 @@ module Arkham.Treachery.Cards.SlitheringBehindYou
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Id
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype SlitheringBehindYou = SlitheringBehindYou TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 slitheringBehindYou :: TreacheryCard SlitheringBehindYou
 slitheringBehindYou = treachery SlitheringBehindYou Cards.slitheringBehindYou
 
-instance TreacheryRunner env => RunMessage SlitheringBehindYou where
+instance RunMessage SlitheringBehindYou where
   runMessage msg t@(SlitheringBehindYou attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mHuntingHorrorId <- selectOne $ enemyIs Cards.huntingHorror
@@ -40,9 +40,12 @@ instance TreacheryRunner env => RunMessage SlitheringBehindYou where
                    (CardWithCardCode "02141")
                  )
     FoundEncounterCard iid target ec | isTarget attrs target -> do
-      lid <- getId @LocationId iid
-      t <$ push (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
+      mlid <- field InvestigatorLocation iid
+      for_ mlid
+        $ \lid -> push (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
+      pure t
     FoundEnemyInVoid iid target eid | isTarget attrs target -> do
-      lid <- getId @LocationId iid
-      t <$ push (EnemySpawnFromVoid (Just iid) lid eid)
+      mlid <- field InvestigatorLocation iid
+      for_ mlid $ \lid -> push (EnemySpawnFromVoid (Just iid) lid eid)
+      pure t
     _ -> SlitheringBehindYou <$> runMessage msg attrs

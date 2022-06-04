@@ -6,10 +6,8 @@ module Arkham.Treachery.Cards.BeyondTheVeil
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message hiding ( DeckHasNoCards )
 import Arkham.Target

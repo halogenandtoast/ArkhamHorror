@@ -5,43 +5,41 @@ module Arkham.Treachery.Cards.WallsClosingIn
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype WallsClosingIn = WallsClosingIn TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wallsClosingIn :: TreacheryCard WallsClosingIn
 wallsClosingIn = treachery WallsClosingIn Cards.wallsClosingIn
 
-instance TreacheryRunner env => RunMessage WallsClosingIn where
+instance RunMessage WallsClosingIn where
   runMessage msg t@(WallsClosingIn attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      shroud <- fmap unShroud . getCount =<< getId @LocationId iid
+      shroud <- maybe (pure 0) (field LocationShroud) =<< field InvestigatorLocation iid
       t <$ push (RevelationSkillTest iid source SkillWillpower shroud)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
-
-        t <$ push
-          (chooseOne
-            iid
-            [ Label
-              ("Take " <> tshow n <> " horror")
-              [InvestigatorAssignDamage iid source DamageAny 0 n]
-            , Label
-              "Randomly choose 1 enemy from among the set-aside Monster enemies and place it beneath the act deck without looking at it"
-              [DrawRandomFromScenarioDeck iid MonstersDeck (toTarget attrs) 1]
-            ]
-          )
+        push $ chooseOne
+          iid
+          [ Label
+            ("Take " <> tshow n <> " horror")
+            [InvestigatorAssignDamage iid source DamageAny 0 n]
+          , Label
+            "Randomly choose 1 enemy from among the set-aside Monster enemies and place it beneath the act deck without looking at it"
+            [DrawRandomFromScenarioDeck iid MonstersDeck (toTarget attrs) 1]
+          ]
+        pure t
     DrewFromScenarioDeck _ _ target cards | isTarget attrs target ->
       t <$ push (PlaceUnderneath ActDeckTarget cards)
     _ -> WallsClosingIn <$> runMessage msg attrs

@@ -11,16 +11,15 @@ import Arkham.Classes
 import Arkham.Message
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype Overzealous = Overzealous TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 overzealous :: TreacheryCard Overzealous
 overzealous = treachery Overzealous Cards.overzealous
 
-instance TreacheryRunner env => RunMessage Overzealous where
+instance RunMessage Overzealous where
   runMessage msg t@(Overzealous attrs) = case msg of
     Revelation _iid source | isSource attrs source ->
       t <$ push (DrawEncounterCards (toTarget attrs) 1)

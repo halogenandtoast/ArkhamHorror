@@ -5,23 +5,23 @@ module Arkham.Treachery.Cards.SpacesBetween
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Card.CardDef
 import Arkham.Classes
+import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Trait
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype SpacesBetween = SpacesBetween TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 spacesBetween :: TreacheryCard SpacesBetween
 spacesBetween = treachery SpacesBetween Cards.spacesBetween
 
-instance TreacheryRunner env => RunMessage SpacesBetween where
+instance RunMessage SpacesBetween where
   runMessage msg t@(SpacesBetween attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       nonSentinelHillLocations <- selectList $ LocationWithoutTrait SentinelHill
@@ -47,12 +47,12 @@ instance TreacheryRunner env => RunMessage SpacesBetween where
       alteredPaths <-
         shuffleM
           =<< filterM
-                (fmap (== "Altered Path") . getName . Unrevealed)
+                (fieldP LocationUnrevealedName (== "Altered Path"))
                 nonSentinelHillLocations
       divergingPaths <-
         shuffleM
           =<< filterM
-                (fmap (== "Diverging Path") . getName . Unrevealed)
+                (fieldP LocationUnrevealedName (== "Diverging Path"))
                 nonSentinelHillLocations
 
       t <$ pushAll

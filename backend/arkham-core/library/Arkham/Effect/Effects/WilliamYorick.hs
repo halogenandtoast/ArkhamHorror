@@ -8,9 +8,10 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Attrs
-import Arkham.Matcher
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Target
 
 newtype WilliamYorick = WilliamYorick EffectAttrs
@@ -26,22 +27,18 @@ instance RunMessage WilliamYorick where
       case effectTarget attrs of
         InvestigatorTarget iid -> do
           modifiers' <- getModifiers (toSource attrs) (InvestigatorTarget iid)
-          if CardsCannotLeaveYourDiscardPile `elem` modifiers'
-            then pure e
-            else do
-              discards <- selectList $ DiscardedCardMatcher (InvestigatorWithId iid) AnyCard
-              e <$ when
-                (notNull discards)
-                (push $ chooseOne
-                  iid
-                  (Done "Do not return card to hand"
-                  : [ TargetLabel
-                        (CardIdTarget $ toCardId card)
-                        [AddToHand iid $ PlayerCard card]
-                    | card <- discards
-                    ]
-                  )
-                )
+          unless (CardsCannotLeaveYourDiscardPile `elem` modifiers') $ do
+            discards <- field InvestigatorDiscard iid
+            when (notNull discards)
+              $ push
+              $ chooseOne iid
+              $ Done "Do not return card to hand"
+              : [ TargetLabel
+                    (CardIdTarget $ toCardId card)
+                    [AddToHand iid $ PlayerCard card]
+                | card <- discards
+                ]
+          pure e
         _ -> pure e
     SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> WilliamYorick <$> runMessage msg attrs

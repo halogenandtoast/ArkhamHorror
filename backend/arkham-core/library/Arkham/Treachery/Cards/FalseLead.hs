@@ -2,27 +2,27 @@ module Arkham.Treachery.Cards.FalseLead where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype FalseLead = FalseLead TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 falseLead :: TreacheryCard FalseLead
 falseLead = treachery FalseLead Cards.falseLead
 
-instance TreacheryRunner env => RunMessage FalseLead where
+instance RunMessage FalseLead where
   runMessage msg t@(FalseLead attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      playerClueCount <- unClueCount <$> getCount iid
+      playerClueCount <- field InvestigatorClues iid
       if playerClueCount == 0
         then t <$ push (chooseOne iid [Surge iid (toSource attrs)])
         else t <$ push (RevelationSkillTest iid source SkillIntellect 4)

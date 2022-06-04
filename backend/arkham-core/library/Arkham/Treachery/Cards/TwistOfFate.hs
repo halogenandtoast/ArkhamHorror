@@ -11,16 +11,15 @@ import Arkham.Message
 import Arkham.RequestedTokenStrategy
 import Arkham.Token
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype TwistOfFate = TwistOfFate TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twistOfFate :: TreacheryCard TwistOfFate
 twistOfFate = treachery TwistOfFate Cards.twistOfFate
 
-instance TreacheryRunner env => RunMessage TwistOfFate where
+instance RunMessage TwistOfFate where
   runMessage msg t@(TwistOfFate attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RequestTokens source (Just iid) 1 SetAside)

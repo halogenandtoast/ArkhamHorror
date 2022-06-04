@@ -12,10 +12,9 @@ import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 smiteTheWicked :: TreacheryCard SmiteTheWicked
@@ -30,7 +29,7 @@ instance HasAbilities SmiteTheWicked where
     | iid <- maybeToList (treacheryOwner a)
     ]
 
-instance TreacheryRunner env => RunMessage SmiteTheWicked where
+instance RunMessage SmiteTheWicked where
   runMessage msg t@(SmiteTheWicked attrs@TreacheryAttrs {..}) = case msg of
     Revelation _iid source | isSource attrs source ->
       t <$ push (DiscardEncounterUntilFirst source (CardWithType EnemyType))
@@ -40,7 +39,7 @@ instance TreacheryRunner env => RunMessage SmiteTheWicked where
         let
           ownerId = fromJustNote "has to be set" treacheryOwner
           enemyId = EnemyId $ toCardId card
-        farthestLocations <- map unFarthestLocationId <$> getSetList ownerId
+        farthestLocations <- selectList $ FarthestLocationFromYou Anywhere
         t <$ pushAll
           [ CreateEnemy (EncounterCard card)
           , AttachTreachery treacheryId (EnemyTarget enemyId)

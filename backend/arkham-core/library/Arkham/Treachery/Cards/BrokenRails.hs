@@ -5,34 +5,32 @@ module Arkham.Treachery.Cards.BrokenRails
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
-import Arkham.Message
-import Arkham.Query
+import Arkham.Message hiding (InvestigatorDamage)
+import Arkham.Projection
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype BrokenRails = BrokenRails TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brokenRails :: TreacheryCard BrokenRails
 brokenRails = treachery BrokenRails Cards.brokenRails
 
-instance TreacheryRunner env => RunMessage BrokenRails where
+instance RunMessage BrokenRails where
   runMessage msg t@(BrokenRails attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lid <- getId @LocationId iid
-      investigatorIds <- getSetList lid
-      investigatorsWhoMustDiscard <- flip filterM investigatorIds $ \iid' -> do
-        damageCount <- unDamageCount <$> getCount iid'
-        pure $ damageCount >= 4
-      t <$ pushAll
-        ([ LoseActions iid' source 1 | iid' <- investigatorIds ]
+      investigatorIds <- selectList $ colocatedWith iid
+      investigatorsWhoMustDiscard <- filterM
+        (fieldP InvestigatorDamage (>= 4))
+        investigatorIds
+      pushAll
+        $ [ LoseActions iid' source 1 | iid' <- investigatorIds ]
         <> [ ChooseAndDiscardAsset iid' AnyAsset
            | iid' <- investigatorsWhoMustDiscard
            ]
-        )
+      pure t
     _ -> BrokenRails <$> runMessage msg attrs

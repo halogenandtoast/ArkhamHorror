@@ -42,6 +42,10 @@ data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorDoom :: Field InvestigatorAttrs Int
   InvestigatorClues :: Field InvestigatorAttrs Int
   InvestigatorHand :: Field InvestigatorAttrs [Card]
+  InvestigatorCardsUnderneath :: Field InvestigatorAttrs [Card]
+  InvestigatorDeck :: Field InvestigatorAttrs (Deck PlayerCard)
+  InvestigatorDiscard :: Field InvestigatorAttrs [PlayerCard]
+  InvestigatorClass :: Field InvestigatorAttrs ClassSymbol
   InvestigatorActionsTaken :: Field InvestigatorAttrs [Action]
 
 data InvestigatorAttrs = InvestigatorAttrs

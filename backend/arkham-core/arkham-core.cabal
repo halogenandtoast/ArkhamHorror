@@ -370,7 +370,6 @@ library
       Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
       Arkham.Campaign.Campaigns.TheDunwichLegacy
       Arkham.Campaign.Campaigns.ThePathToCarcosa
-      Arkham.Campaign.Runner
       Arkham.CampaignId
       Arkham.CampaignLog
       Arkham.CampaignLogKey

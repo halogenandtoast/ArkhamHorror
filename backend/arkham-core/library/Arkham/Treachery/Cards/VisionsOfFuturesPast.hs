@@ -12,17 +12,16 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype VisionsOfFuturesPast = VisionsOfFuturesPast TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 visionsOfFuturesPast :: TreacheryCard VisionsOfFuturesPast
 visionsOfFuturesPast =
   treachery VisionsOfFuturesPast Cards.visionsOfFuturesPast
 
-instance TreacheryRunner env => RunMessage VisionsOfFuturesPast where
+instance RunMessage VisionsOfFuturesPast where
   runMessage msg t@(VisionsOfFuturesPast attrs@TreacheryAttrs {..}) =
     case msg of
       Revelation iid source | isSource attrs source ->

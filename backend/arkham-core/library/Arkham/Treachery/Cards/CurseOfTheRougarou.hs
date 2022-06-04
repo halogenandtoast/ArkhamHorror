@@ -14,10 +14,9 @@ import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curseOfTheRougarou :: TreacheryCard CurseOfTheRougarou
@@ -34,7 +33,7 @@ instance HasAbilities CurseOfTheRougarou where
       $ TurnEnds Timing.When You
     ]
 
-instance TreacheryRunner env => RunMessage CurseOfTheRougarou where
+instance RunMessage CurseOfTheRougarou where
   runMessage msg t@(CurseOfTheRougarou attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

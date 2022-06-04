@@ -14,14 +14,13 @@ import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype Metadata = Metadata { active :: Bool }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype RexsCurse = RexsCurse (TreacheryAttrs `With` Metadata)
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rexsCurse :: TreacheryCard RexsCurse
@@ -41,7 +40,7 @@ instance HasAbilities RexsCurse where
       .~ PlayerLimit PerTestOrAbility 1
     ]
 
-instance TreacheryRunner env => RunMessage RexsCurse where
+instance RunMessage RexsCurse where
   runMessage msg t@(RexsCurse (attrs@TreacheryAttrs {..} `With` metadata)) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))

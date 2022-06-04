@@ -7,26 +7,24 @@ import Arkham.Prelude
 
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype VastExpanse = VastExpanse TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vastExpanse :: TreacheryCard VastExpanse
 vastExpanse = treachery VastExpanse Cards.vastExpanse
 
-instance TreacheryRunner env => RunMessage VastExpanse where
+instance RunMessage VastExpanse where
   runMessage msg t@(VastExpanse attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      extradimensionalCount <- length
-        <$> getSetList @LocationId [Extradimensional]
+      extradimensionalCount <- selectCount $ LocationWithTrait Extradimensional
       let
         revelationMsg = if extradimensionalCount == 0
           then Surge iid source

@@ -6,22 +6,23 @@ import Arkham.Window
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
+import Arkham.Classes.Query
 
-checkWindows :: [Window] -> m Message
+checkWindows :: Query InvestigatorMatcher m => [Window] -> m Message
 checkWindows windows' = do
-  iids <- select Anyone
+  iids <- selectList Anyone
   pure $ CheckWindow iids windows'
 
-windows :: [WindowType] -> m [Message]
+windows :: Query InvestigatorMatcher m => [WindowType] -> m [Message]
 windows windows' = do
-  iids <- getInvestigatorIds
+  iids <- selectList Anyone
   pure $ do
     timing <- [Timing.When, Timing.After]
     [CheckWindow iids $ map (Window timing) windows']
 
-splitWithWindows :: Message -> [WindowType] -> m [Message]
+splitWithWindows :: Query InvestigatorMatcher m => Message -> [WindowType] -> m [Message]
 splitWithWindows msg windows' = do
-  iids <- getInvestigatorIds
+  iids <- selectList Anyone
   pure
     $ [CheckWindow iids $ map (Window Timing.When) windows']
     <> [msg]

@@ -5,43 +5,57 @@ module Arkham.Treachery.Cards.Corrosion
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Classes
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype Corrosion = Corrosion TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corrosion :: TreacheryCard Corrosion
 corrosion = treachery Corrosion Cards.corrosion
 
-instance TreacheryRunner env => RunMessage Corrosion where
+handMatcher :: CardMatcher
+handMatcher = CardWithTrait Item <> CardWithType AssetType <> NonWeakness
+
+assetMatcher :: AssetMatcher
+assetMatcher = DiscardableAsset <> AssetWithTrait Item <> AssetControlledBy You
+
+instance RunMessage Corrosion where
   runMessage msg t@(Corrosion attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lid <- getId @LocationId iid
-      shroud <- unShroud <$> getCount lid
-      t <$ push (RevelationChoice iid source shroud)
+      shroud <-
+        maybe (pure 0) (field LocationShroud) =<< field InvestigatorLocation iid
+      hasAssets <- selectAny assetMatcher
+      hasHandAssets <- fieldP
+        InvestigatorHand
+        (any (`cardMatch` handMatcher))
+        iid
+      push $ if shroud > 0 && (hasAssets || hasHandAssets)
+        then RevelationChoice iid source shroud
+        else Surge iid source
+      pure t
     RevelationChoice iid source n | n > 0 -> do
-      assets <- selectList $ DiscardableAsset <> AssetWithTrait Item
-      assetsWithCosts <- traverse
-        (traverseToSnd (fmap (maybe 0 toPrintedCost . cdCost) . getCardDef))
-        assets
-      handAssets <-
-        selectList $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch
-          (CardWithTrait Item <> CardWithType AssetType <> NonWeakness)
+      assets <- selectList assetMatcher
+      assetsWithCosts <- traverse (traverseToSnd (field AssetCost)) assets
+      handAssets <- fieldMap
+        InvestigatorHand
+        (filter (`cardMatch` handMatcher))
+        iid
       let
-        discardAsset (asset, cost) = TargetLabel
-          (AssetTarget asset)
+        discardAsset (asset, cost) = targetLabel
+          asset
           [Discard (AssetTarget asset), RevelationChoice iid source (n - cost)]
         discardHandAsset card = TargetLabel
           (CardIdTarget $ toCardId card)
@@ -51,11 +65,10 @@ instance TreacheryRunner env => RunMessage Corrosion where
             source
             (n - maybe 0 toPrintedCost (cdCost $ toCardDef card))
           ]
-      unless (null assets && null handAssets) $ do
-        push
-          (chooseOne iid
-          $ map discardAsset assetsWithCosts
-          <> map discardHandAsset handAssets
-          )
+      unless (null assets && null handAssets)
+        $ push
+        $ chooseOne iid
+        $ map discardAsset assetsWithCosts
+        <> map discardHandAsset handAssets
       pure t
     _ -> Corrosion <$> runMessage msg attrs

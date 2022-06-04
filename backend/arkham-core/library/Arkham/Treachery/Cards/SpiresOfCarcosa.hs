@@ -6,20 +6,21 @@ module Arkham.Treachery.Cards.SpiresOfCarcosa
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 
 newtype SpiresOfCarcosa = SpiresOfCarcosa TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 spiresOfCarcosa :: TreacheryCard SpiresOfCarcosa
@@ -41,31 +42,29 @@ instance HasAbilities SpiresOfCarcosa where
              ]
            _ -> []
 
-instance TreacheryRunner env => RunMessage SpiresOfCarcosa where
+instance RunMessage SpiresOfCarcosa where
   runMessage msg t@(SpiresOfCarcosa attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lid <- getId iid
-      t <$ pushAll
+      mlid <- field InvestigatorLocation iid
+      for_ mlid $ \lid -> pushAll
         [ AttachTreachery (toId attrs) (LocationTarget lid)
         , PlaceDoom (LocationTarget lid) 2
         ]
+      pure t
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- getId iid
-      t
-        <$ push
-             (Investigate
-               iid
-               lid
-               source
-               (Just $ toTarget attrs)
-               SkillIntellect
-               False
-             )
+      mlid <- field InvestigatorLocation iid
+      for_ mlid $ \lid -> push $ Investigate
+        iid
+        lid
+        source
+        (Just $ toTarget attrs)
+        SkillIntellect
+        False
+      pure t
     Successful (Action.Investigate, _) _ _ target _ | isTarget attrs target ->
-      do
-        case treacheryAttachedTarget attrs of
-          Just location -> t <$ push (RemoveDoom location 1)
-          Nothing -> error "must be attached to location to trigger ability"
+      case treacheryAttachedTarget attrs of
+        Just location -> t <$ push (RemoveDoom location 1)
+        Nothing -> error "must be attached to location to trigger ability"
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       t <$ push (Discard $ toTarget attrs)
     _ -> SpiresOfCarcosa <$> runMessage msg attrs

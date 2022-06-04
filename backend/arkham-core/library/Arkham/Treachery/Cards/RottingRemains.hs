@@ -8,16 +8,15 @@ import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype RottingRemains = RottingRemains TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rottingRemains :: TreacheryCard RottingRemains
 rottingRemains = treachery RottingRemains Cards.rottingRemains
 
-instance TreacheryRunner env => RunMessage RottingRemains where
+instance RunMessage RottingRemains where
   runMessage msg t@(RottingRemains attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillWillpower 3)

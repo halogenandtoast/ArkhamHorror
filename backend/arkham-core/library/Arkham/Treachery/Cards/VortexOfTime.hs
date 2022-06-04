@@ -8,25 +8,24 @@ import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Treachery.Attrs
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
 import Arkham.Classes
-import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 import Arkham.Trait
 
 newtype VortexOfTime = VortexOfTime TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vortexOfTime :: TreacheryCard VortexOfTime
 vortexOfTime = treachery VortexOfTime Cards.vortexOfTime
 
-instance TreacheryRunner env => RunMessage VortexOfTime where
+instance RunMessage VortexOfTime where
   runMessage msg t@(VortexOfTime attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
-      sentinelHills <- getSetList @LocationId [SentinelHill]
-      investigatorsAtSentinelHills <- concatMapM' getSetList sentinelHills
+      sentinelHills <- selectList $ LocationWithTrait SentinelHill
+      investigatorsAtSentinelHills <- concatMapM' (selectList . InvestigatorAt . LocationWithId) sentinelHills
       t <$ pushAll
         ([ BeginSkillTest
              iid

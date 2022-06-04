@@ -1,20 +1,19 @@
-module Arkham.Classes.RunMessage
-  ( module Arkham.Classes.RunMessage
-  ) where
+module Arkham.Classes.RunMessage where
 
 import Arkham.Prelude hiding ( to )
 
+import Arkham.Asset.Attrs ( AssetAttrs )
 import Arkham.Classes.GameLogger
-import Arkham.Classes.HasQueue
 import Arkham.Classes.HasHistory
 import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
-import Arkham.Message
+import Arkham.Investigator.Attrs ( InvestigatorAttrs )
+import Arkham.Location.Attrs ( LocationAttrs )
 import Arkham.Matcher
+import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillTest
-import Arkham.Asset.Attrs (AssetAttrs)
-import Arkham.Investigator.Attrs (InvestigatorAttrs)
 import GHC.Generics
 
 type RunM env m
@@ -27,14 +26,18 @@ type RunM env m
     , HasModifiersFor m ()
     , HasSkillTest m
     , Query AssetMatcher m
+    , Query AgendaMatcher m
     , Query EnemyMatcher m
+    , Query EventMatcher m
     , Query LocationMatcher m
     , Query InvestigatorMatcher m
     , Query DiscardedPlayerCardMatcher m
     , Query ExtendedCardMatcher m
     , Query TreacheryMatcher m
+    , Query SkillMatcher m
     , Projection m AssetAttrs
     , Projection m InvestigatorAttrs
+    , Projection m LocationAttrs
     )
 
 class RunMessage1 f where
@@ -54,11 +57,7 @@ class RunMessage a where
   runMessage :: (HasCallStack, MonadReader env m, RunM env m) => Message -> a -> m a
 
 genericRunMessage
-  :: ( Generic a
-     , RunMessage1 (Rep a)
-     , MonadReader env m
-     , RunM env m
-     )
+  :: (Generic a, RunMessage1 (Rep a), MonadReader env m, RunM env m)
   => Message
   -> a
   -> m a

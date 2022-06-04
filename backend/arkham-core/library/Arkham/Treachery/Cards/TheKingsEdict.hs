@@ -13,16 +13,15 @@ import Arkham.Message
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype TheKingsEdict = TheKingsEdict TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theKingsEdict :: TreacheryCard TheKingsEdict
 theKingsEdict = treachery TheKingsEdict Cards.theKingsEdict
 
-instance TreacheryRunner env => RunMessage TheKingsEdict where
+instance RunMessage TheKingsEdict where
   runMessage msg t@(TheKingsEdict attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       targets <-

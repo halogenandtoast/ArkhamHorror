@@ -17,10 +17,9 @@ import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
 
 newtype SearchingForIzzie = SearchingForIzzie TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env)
+  deriving anyclass (IsTreachery, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 searchingForIzzie :: TreacheryCard SearchingForIzzie
@@ -40,7 +39,7 @@ instance HasAbilities SearchingForIzzie where
         | iid <- maybeToList (treacheryOwner x)
         ]
 
-instance TreacheryRunner env => RunMessage SearchingForIzzie where
+instance RunMessage SearchingForIzzie where
   runMessage msg t@(SearchingForIzzie attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       targets <- selectListMap LocationTarget $ FarthestLocationFromYou Anywhere

@@ -511,6 +511,7 @@ getXpWithBonus bonus = do
       modifiers' <- getModifiers
         (InvestigatorSource iid)
         (InvestigatorTarget iid)
+      vd <- sum <$> scenarioFieldMap ScenarioVictoryDisplay (fromMaybe 0 . cdVictoryPoints . toCardDef)
       amount <- unXPCount <$> getCount ()
       pure (iid, foldl' applyModifier (amount + bonus) modifiers')
  where

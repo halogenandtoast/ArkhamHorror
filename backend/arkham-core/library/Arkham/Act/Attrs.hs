@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act.Cards
-import Arkham.Act.Sequence
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Card
 import Arkham.Classes
@@ -21,12 +20,12 @@ class IsAct a
 type ActCard a = CardBuilder (Int, ActId) a
 
 data instance Field ActAttrs :: Type -> Type where
-  ActSequenceNumber :: Field ActAttrs Int
+  ActSequence :: Field ActAttrs AS.ActSequence
   ActClues :: Field ActAttrs Int
 
 data ActAttrs = ActAttrs
   { actId :: ActId
-  , actSequence :: ActSequence
+  , actSequence :: AS.ActSequence
   , actAdvanceCost :: Maybe Cost
   , actClues :: Int
   , actTreacheries :: HashSet TreacheryId
@@ -34,7 +33,7 @@ data ActAttrs = ActAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-sequenceL :: Lens' ActAttrs ActSequence
+sequenceL :: Lens' ActAttrs AS.ActSequence
 sequenceL = lens actSequence $ \m x -> m { actSequence = x }
 
 cluesL :: Lens' ActAttrs Int
@@ -44,7 +43,7 @@ treacheriesL :: Lens' ActAttrs (HashSet TreacheryId)
 treacheriesL = lens actTreacheries $ \m x -> m { actTreacheries = x }
 
 actWith
-  :: (Int, ActSide)
+  :: (Int, AS.ActSide)
   -> (ActAttrs -> a)
   -> CardDef
   -> Maybe Cost
@@ -63,7 +62,7 @@ actWith (n, side) f cardDef mCost g = CardBuilder
   }
 
 act
-  :: (Int, ActSide)
+  :: (Int, AS.ActSide)
   -> (ActAttrs -> a)
   -> CardDef
   -> Maybe Cost
@@ -101,8 +100,8 @@ instance SourceEntity ActAttrs where
   isSource ActAttrs { actId } (ActSource aid) = actId == aid
   isSource _ _ = False
 
-onSide :: ActSide -> ActAttrs -> Bool
-onSide side ActAttrs {..} = actSide actSequence == side
+onSide :: AS.ActSide -> ActAttrs -> Bool
+onSide side ActAttrs {..} = AS.actSide actSequence == side
 
 instance HasAbilities ActAttrs where
   getAbilities attrs@ActAttrs {..} = case actAdvanceCost of

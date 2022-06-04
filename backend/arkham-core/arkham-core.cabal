@@ -403,6 +403,7 @@ library
       Arkham.Classes.Entity
       Arkham.Classes.Entity.Source
       Arkham.Classes.GameLogger
+      Arkham.Classes.HasAbilities
       Arkham.Classes.HasHistory
       Arkham.Classes.HasModifiersFor
       Arkham.Classes.HasQueue
@@ -734,6 +735,7 @@ library
       Arkham.GameRunner
       Arkham.GameValue
       Arkham.Helpers
+      Arkham.Helpers.Query
       Arkham.Helpers.Window
       Arkham.History
       Arkham.Id
@@ -1008,6 +1010,7 @@ library
       Arkham.Scenario.Attrs
       Arkham.Scenario.Deck
       Arkham.Scenario.Helpers
+      Arkham.Scenario.Runner
       Arkham.Scenario.Scenarios
       Arkham.Scenario.Scenarios.APhantomOfTruth
       Arkham.Scenario.Scenarios.BloodOnTheAltar

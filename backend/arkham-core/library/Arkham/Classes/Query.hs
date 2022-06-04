@@ -24,6 +24,8 @@ type family QueryElement a where
   QueryElement EventMatcher = EventId
   QueryElement ActMatcher = ActId
   QueryElement AgendaMatcher = AgendaId
+  QueryElement ScenarioMatcher = ScenarioId
+  QueryElement CampaignMatcher = CampaignId
   QueryElement RemainingActMatcher = CardCode
 
 selectCount :: (HasCallStack, Query a m) => a -> m Int
@@ -128,4 +130,3 @@ getPlayerCount = selectCount Anyone
 
 class (Monad m, Hashable (QueryElement a), Eq (QueryElement a)) => Query a m where
   select :: HasCallStack => a -> m (HashSet (QueryElement a))
-

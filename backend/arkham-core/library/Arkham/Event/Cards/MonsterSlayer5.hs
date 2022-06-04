@@ -10,8 +10,8 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Event.Attrs
 import Arkham.Enemy.Attrs ( Field(..) )
-import Arkham.Id
 import Arkham.Message
+import Arkham.Projection
 import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Target

@@ -333,33 +333,5 @@ getHasSpendableClues i = (> 0) <$> getSpendableClueCount (toAttrs i)
 actionsRemaining :: Investigator -> Int
 actionsRemaining = investigatorRemainingActions . toAttrs
 
-getPotentialSlots
-  :: (MonadReader env m, Query AssetMatcher env)
-  => HashSet Trait
-  -> Investigator
-  -> m [PotentialSlot]
-getPotentialSlots traits i = do
-  let
-    slots :: [(SlotType, Slot)] =
-      concatMap (\(slotType, slots') -> map (slotType, ) slots')
-        . mapToList
-        . investigatorSlots
-        $ toAttrs i
-  map (PotentialSlot . fst)
-    <$> filterM
-          (\(_, slot) -> do
-            let
-              passesRestriction = case slot of
-                           TraitRestrictedSlot _ t _ -> t `member` traits
-                           Slot{}                    -> True
-
-             in if passesRestriction
-                  then case slotItem slot of
-                    Nothing  -> pure True
-                    Just aid -> member aid <$> select DiscardableAsset
-                  else pure False
-          )
-          slots
-
 instance ToGameLoggerFormat Investigator where
   format = format . toAttrs

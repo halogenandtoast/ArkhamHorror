@@ -8,6 +8,7 @@ import Arkham.Classes.HasHistory
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Enemy.Attrs ( EnemyAttrs )
 import Arkham.Investigator.Attrs ( InvestigatorAttrs )
 import Arkham.Location.Attrs ( LocationAttrs )
 import Arkham.Matcher
@@ -38,6 +39,7 @@ type RunM env m
     , Projection m AssetAttrs
     , Projection m InvestigatorAttrs
     , Projection m LocationAttrs
+    , Projection m EnemyAttrs
     )
 
 class RunMessage1 f where

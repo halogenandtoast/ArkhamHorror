@@ -10,9 +10,8 @@ import Arkham.Classes
 import Arkham.EffectMetadata
 import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Event.Attrs
-import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
 import Arkham.Projection
 import Arkham.SkillTest
 import Arkham.SkillType

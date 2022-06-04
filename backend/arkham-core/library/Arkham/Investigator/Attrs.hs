@@ -47,6 +47,7 @@ data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorDiscard :: Field InvestigatorAttrs [PlayerCard]
   InvestigatorClass :: Field InvestigatorAttrs ClassSymbol
   InvestigatorActionsTaken :: Field InvestigatorAttrs [Action]
+  InvestigatorSlots :: Field InvestigatorAttrs (HashMap SlotType [Slot])
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId
@@ -109,12 +110,6 @@ instance ToJSON InvestigatorAttrs where
 
 instance FromJSON InvestigatorAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "investigator"
-
--- instance HasCount ActionRemainingCount env InvestigatorAttrs where
---   getCount = pure . ActionRemainingCount . investigatorRemainingActions
---
--- instance HasList Action.TakenAction env InvestigatorAttrs where
---   getList = pure . map Action.TakenAction . investigatorActionsTaken
 
 instance Entity InvestigatorAttrs where
   type EntityId InvestigatorAttrs = InvestigatorId

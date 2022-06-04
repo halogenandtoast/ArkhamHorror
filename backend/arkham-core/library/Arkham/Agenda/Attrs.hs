@@ -11,12 +11,16 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
 import Arkham.Name
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 
 class IsAgenda a
 
 type AgendaCard a = CardBuilder (Int, AgendaId) a
+
+data instance Field AgendaAttrs :: Type -> Type where
+  AgendaDoom :: Field AgendaAttrs Int
 
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int

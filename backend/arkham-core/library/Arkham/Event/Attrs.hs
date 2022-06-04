@@ -9,12 +9,16 @@ import Arkham.Classes
 import Arkham.Id
 import Arkham.Message
 import Arkham.Name
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 
 class IsEvent a
 
 type EventCard a = CardBuilder (InvestigatorId, EventId) a
+
+data instance Field EventAttrs :: Type -> Type where
+  EventAttachedTarget :: Field EventAttrs (Maybe Target)
 
 data EventAttrs = EventAttrs
   { eventCardCode :: CardCode

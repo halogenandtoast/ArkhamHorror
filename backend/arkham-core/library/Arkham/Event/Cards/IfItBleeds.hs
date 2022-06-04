@@ -12,13 +12,13 @@ import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Id
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 
 newtype IfItBleeds = IfItBleeds EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ifItBleeds :: EventCard IfItBleeds
@@ -29,20 +29,12 @@ getWindowEnemyIds iid = mapMaybe \case
   Window Timing.After (EnemyDefeated who eid) | iid == who -> Just eid
   _ -> Nothing
 
-instance
-  ( HasSet InvestigatorId env LocationId
-  , HasId LocationId env InvestigatorId
-  , HasCount SanityDamageCount env EnemyId
-  )
-  => RunMessage IfItBleeds where
+instance RunMessage IfItBleeds where
   runMessage msg e@(IfItBleeds attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows _ | eid == toId attrs -> do
       let enemyIds = getWindowEnemyIds iid windows
       enemyIdsWithHorrorValue <- traverse
-        (traverseToSnd (fmap unSanityDamageCount . getCount))
-        enemyIds
-      enemyIdsWithHorrorValue <- traverse
-        (traverseToSnd (field EnemySanityDamageCount))
+        (traverseToSnd (field EnemySanityDamage))
         enemyIds
       investigatorIds <- selectList $ colocatedWith iid
       e <$ pushAll

@@ -12,12 +12,12 @@ import Arkham.Event.Attrs
 import Arkham.Enemy.Attrs
 import Arkham.Id
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.RequestedTokenStrategy
 import Arkham.Token
 
 newtype HypnoticGaze = HypnoticGaze (EventAttrs `With` Maybe EnemyId)
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hypnoticGaze :: EventCard HypnoticGaze
@@ -26,7 +26,7 @@ hypnoticGaze = event (HypnoticGaze . (`with` Nothing)) Cards.hypnoticGaze
 dropUntilAttack :: [Message] -> [Message]
 dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 
-instance HasCount HealthDamageCount env EnemyId => RunMessage HypnoticGaze where
+instance RunMessage HypnoticGaze where
   runMessage msg e@(HypnoticGaze (attrs `With` mEnemyId)) = case msg of
     InvestigatorPlayEvent iid eventId _ _ _ | eventId == toId attrs -> do
       enemyId <- withQueue $ \queue ->

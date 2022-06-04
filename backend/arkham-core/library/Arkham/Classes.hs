@@ -5,23 +5,23 @@ module Arkham.Classes
   , module X
   ) where
 
-import Arkham.Prelude hiding (to)
+import Arkham.Prelude hiding ( to )
 
-import Arkham.Ability
 import Arkham.Classes.Depth as X
-import Arkham.Classes.Query as X
-import Arkham.Classes.HasSet as X
 import Arkham.Classes.Entity as X
 import Arkham.Classes.GameLogger as X
+import Arkham.Classes.HasAbilities as X
+import Arkham.Classes.HasHistory as X
+import Arkham.Classes.HasModifiersFor as X
 import Arkham.Classes.HasQueue as X
 import Arkham.Classes.HasRecord as X
-import Arkham.Classes.HasModifiersFor as X
-import Arkham.Classes.HasHistory as X
+import Arkham.Classes.HasSet as X
 import Arkham.Classes.HasTokenValue as X
+import Arkham.Classes.Query as X
 import Arkham.Classes.RunMessage as X
 import Arkham.Phase
 import Data.Char qualified as C
-import Language.Haskell.TH.Syntax hiding (Name)
+import Language.Haskell.TH.Syntax hiding ( Name )
 import Language.Haskell.TH.Syntax qualified as TH
 
 newtype Distance = Distance { unDistance :: Int }
@@ -29,10 +29,6 @@ newtype Distance = Distance { unDistance :: Int }
 
 class HasPhase m where
   getPhase :: Monad m => m Phase
-
-class HasAbilities a where
-  getAbilities :: a -> [Ability]
-  getAbilities = const []
 
 buildEntity :: String -> Q [Dec]
 buildEntity nm = do
@@ -45,8 +41,7 @@ buildEntity nm = do
         []
         Nothing
         conz
-        [ DerivClause (Just StockStrategy) (map ConT [''Show, ''Eq])
-        ]
+        [DerivClause (Just StockStrategy) (map ConT [''Show, ''Eq])]
     ]
  where
   extractCon (InstanceD _ _ (AppT _ con@(ConT name)) _) = Just $ NormalC
@@ -80,8 +75,11 @@ entityRunMessage nm = do
   pure $ LamE [VarP msg, VarP a] $ CaseE (VarE a) matches
  where
   toMatch msg x (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ Match
-    (ConP (TH.mkName $ nameBase name <> "'")  [VarP x])
-    (NormalB $ AppE (AppE (VarE $ TH.mkName "fmap") (ConE $ TH.mkName $ nameBase name ++ "'")) (AppE (AppE (VarE $ TH.mkName "runMessage") (VarE msg) ) (VarE x)))
+    (ConP (TH.mkName $ nameBase name <> "'") [VarP x])
+    (NormalB $ AppE
+      (AppE (VarE $ TH.mkName "fmap") (ConE $ TH.mkName $ nameBase name ++ "'"))
+      (AppE (AppE (VarE $ TH.mkName "runMessage") (VarE msg)) (VarE x))
+    )
     []
   toMatch _ _ _ = Nothing
 
@@ -95,10 +93,10 @@ entityF nm fName = do
   pure $ LamE [VarP a] $ CaseE (VarE a) matches
  where
   toMatch f x (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ Match
-    (ConP (TH.mkName $ nameBase name <> "'")  [VarP x])
+    (ConP (TH.mkName $ nameBase name <> "'") [VarP x])
     (NormalB $ AppE (VarE f) (VarE x))
     []
-  toMatch _ _  _ = Nothing
+  toMatch _ _ _ = Nothing
 
 entityF2 :: String -> String -> Q Exp
 entityF2 nm fName = do
@@ -112,17 +110,8 @@ entityF2 nm fName = do
   pure $ LamE [VarP p1, VarP p2, VarP a] $ CaseE (VarE a) matches
  where
   toMatch f p1 p2 x (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ Match
-    (ConP (TH.mkName $ nameBase name <> "'")  [VarP x])
-    (NormalB $
-      AppE
-        (AppE
-          (AppE
-            (VarE f)
-            (VarE p1)
-          )
-          (VarE p2))
-        (VarE x)
-    )
+    (ConP (TH.mkName $ nameBase name <> "'") [VarP x])
+    (NormalB $ AppE (AppE (AppE (VarE f) (VarE p1)) (VarE p2)) (VarE x))
 
     []
   toMatch _ _ _ _ _ = Nothing
@@ -138,15 +127,8 @@ entityF1 nm fName = do
   pure $ LamE [VarP p1, VarP a] $ CaseE (VarE a) matches
  where
   toMatch f p1 x (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ Match
-    (ConP (TH.mkName $ nameBase name <> "'")  [VarP x])
-    (NormalB $
-      AppE
-        (AppE
-          (VarE f)
-          (VarE p1)
-        )
-        (VarE x)
-    )
+    (ConP (TH.mkName $ nameBase name <> "'") [VarP x])
+    (NormalB $ AppE (AppE (VarE f) (VarE p1)) (VarE x))
 
     []
   toMatch _ _ _ _ = Nothing

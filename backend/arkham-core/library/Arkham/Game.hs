@@ -185,9 +185,6 @@ data Game = Game
   , gamePlayerOrder :: [InvestigatorId] -- For "in player order"
   , -- Game Details
     gamePhase :: Phase
-  , gameEncounterDeck :: Deck EncounterCard
-  , gameDiscard :: [EncounterCard]
-  , gameChaosBag :: ChaosBag
   , gameSkillTest :: Maybe SkillTest
   , gameUsedAbilities :: [(InvestigatorId, Ability, Int)]
   , gameResignedCardCodes :: [CardCode]
@@ -196,7 +193,6 @@ data Game = Game
   , gameFocusedTargets :: [Target]
   , gameFocusedTokens :: [Token]
   , gameActiveCard :: Maybe Card
-  , gameVictoryDisplay :: [Card]
   , gameRemovedFromPlay :: [Card]
   , gameGameState :: GameState
   , gameSkillTestResults :: Maybe SkillTestResultsData
@@ -1774,11 +1770,10 @@ instance HasGame env => HasCount DoomCount env AssetId where
 instance HasGame env => HasCount DoomCount env AgendaId where
   getCount = getCount <=< getAgenda
 
-instance HasGame env => HasCount XPCount env () where
-  getCount _ = do
+instance HasGame env => HasXP env () where
+  getXP _ = do
     g <- getGame
     pure
-      $ XPCount
       $ (sum . mapMaybe getVictoryPoints $ g ^. victoryDisplayL)
       + (sum . mapMaybe getVictoryPoints . toList $ g ^. entitiesL . locationsL)
 

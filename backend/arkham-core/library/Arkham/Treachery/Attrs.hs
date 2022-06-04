@@ -21,6 +21,7 @@ data instance Field TreacheryAttrs :: Type -> Type where
   TreacheryClues :: Field TreacheryAttrs Int
   TreacheryResources :: Field TreacheryAttrs Int
   TreacheryDoom :: Field TreacheryAttrs Int
+  TreacheryAttachedTarget :: Field TreacheryAttrs (Maybe Target)
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId

@@ -822,3 +822,11 @@ instance Semigroup ScenarioDeckMatcher where
 
 instance Monoid ScenarioDeckMatcher where
   mempty = AnyScenarioDeck
+
+data ScenarioMatcher = TheScenario
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data CampaignMatcher = TheCampaign
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)

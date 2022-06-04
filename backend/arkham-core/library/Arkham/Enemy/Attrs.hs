@@ -7,7 +7,11 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.AssetId
 import Arkham.Card
-import Arkham.Classes
+import Arkham.Classes.Entity
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.HasQueue
+import Arkham.Classes.HasAbilities
+import Arkham.Classes.Query
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Enemy.Cards
@@ -24,7 +28,7 @@ import Arkham.Matcher
   , pattern AloofEnemy
   )
 import Arkham.Message
-import Arkham.Modifier hiding (EnemyEvade)
+import Arkham.Modifier (Modifier)
 import Arkham.Modifier qualified as Modifier
 import Arkham.Name
 import Arkham.SkillTest
@@ -40,7 +44,9 @@ type EnemyCard a = CardBuilder EnemyId a
 data instance Field EnemyAttrs :: Type -> Type where
   EnemyDoom :: Field EnemyAttrs Int
   EnemyEvade :: Field EnemyAttrs Int
+  EnemyFight :: Field EnemyAttrs Int
   EnemyHealthDamage :: Field EnemyAttrs Int
+  EnemySanityDamage :: Field EnemyAttrs Int
   EnemyTraits :: Field EnemyAttrs (HashSet Trait)
 
 data EnemyAttrs = EnemyAttrs
@@ -224,7 +230,7 @@ modifiedEnemyFight EnemyAttrs {..} = do
   modifiers' <- getModifiers source (EnemyTarget enemyId)
   pure $ foldr applyModifier enemyFight modifiers'
  where
-  applyModifier (EnemyFight m) n = max 0 (n + m)
+  applyModifier (Modifier.EnemyFight m) n = max 0 (n + m)
   applyModifier _ n = n
 
 modifiedEnemyEvade
@@ -253,9 +259,9 @@ getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   let updatedAmount = foldr applyModifier baseAmount modifiers'
   pure $ foldr applyModifierCaps updatedAmount modifiers'
  where
-  applyModifier (DamageTaken m) n | not direct = max 0 (n + m)
+  applyModifier (Modifier.DamageTaken m) n | not direct = max 0 (n + m)
   applyModifier _ n = n
-  applyModifierCaps (MaxDamageTaken m) n = min m n
+  applyModifierCaps (Modifier.MaxDamageTaken m) n = min m n
   applyModifierCaps _ n = n
 
 getModifiedKeywords
@@ -268,7 +274,7 @@ getModifiedKeywords e@EnemyAttrs {..} = do
   modifiers' <- getModifiers source (EnemyTarget enemyId)
   pure $ foldr applyModifier (toKeywords $ toCardDef e) modifiers'
  where
-  applyModifier (AddKeyword k) n = insertSet k n
+  applyModifier (Modifier.AddKeyword k) n = insertSet k n
   applyModifier _ n = n
 
 canEnterLocation
@@ -280,7 +286,7 @@ canEnterLocation eid lid = do
   traits <- field EnemyTraits eid
   modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid)
   pure $ not $ flip any modifiers' $ \case
-    CannotBeEnteredByNonElite{} -> Elite `notMember` traits
+    Modifier.CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
 
 instance HasAbilities EnemyAttrs where
@@ -340,7 +346,7 @@ getModifiedHealth EnemyAttrs {..} = do
   modifiers' <- getModifiers (EnemySource enemyId) (EnemyTarget enemyId)
   pure $ foldr applyModifier (fromGameValue enemyHealth playerCount) modifiers'
  where
-  applyModifier (HealthModifier m) n = max 0 (n + m)
+  applyModifier (Modifier.HealthModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
 emptyLocationMap :: HashMap LocationId [LocationId]

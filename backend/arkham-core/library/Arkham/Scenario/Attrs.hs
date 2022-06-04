@@ -43,6 +43,7 @@ newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
 data instance Field ScenarioAttrs :: Type -> Type where
   ScenarioCardsUnderActDeck :: Field ScenarioAttrs [Card]
   ScenarioCardsUnderAgendaDeck :: Field ScenarioAttrs [Card]
+  ScenarioVictoryDisplay :: Field ScenarioAttrs [Card]
 
 data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Name

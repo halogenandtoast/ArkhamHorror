@@ -6,7 +6,9 @@ module Arkham.Game.Helpers
 import Arkham.Prelude
 
 import Arkham.Helpers.Query as X
+import Arkham.Helpers.Scenario as X
 import Arkham.Helpers.Window as X
+import Arkham.Helpers.Xp as X
 
 import Arkham.Ability
 import Arkham.Act.Attrs ( Field (..) )
@@ -498,28 +500,6 @@ getInvestigatorModifiers
   :: HasModifiersFor m () => InvestigatorId -> Source -> m [ModifierType]
 getInvestigatorModifiers iid source =
   getModifiers source (InvestigatorTarget iid)
-
-getXp :: HasModifiersFor m () => m [(InvestigatorId, Int)]
-getXp = getXpWithBonus 0
-
-getXpWithBonus :: HasModifiersFor m () => Int -> m [(InvestigatorId, Int)]
-getXpWithBonus bonus = do
-  investigatorIds <- getInvestigatorIds
-  for
-    investigatorIds
-    \iid -> do
-      modifiers' <- getModifiers
-        (InvestigatorSource iid)
-        (InvestigatorTarget iid)
-      vd <- sum <$> scenarioFieldMap ScenarioVictoryDisplay (fromMaybe 0 . cdVictoryPoints . toCardDef)
-      amount <- unXPCount <$> getCount ()
-      pure (iid, foldl' applyModifier (amount + bonus) modifiers')
- where
-  applyModifier n (XPModifier m) = max 0 (n + m)
-  applyModifier n _ = n
-
-scenarioField :: Projection env ScenarioAttrs => Field ScenarioAttrs a -> m a
-scenarioField fld = selectJust Matcher.TheScenario >>= field fld
 
 getPlayerCountValue :: GameValue Int -> m Int
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount

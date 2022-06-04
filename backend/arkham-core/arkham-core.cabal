@@ -736,7 +736,9 @@ library
       Arkham.GameValue
       Arkham.Helpers
       Arkham.Helpers.Query
+      Arkham.Helpers.Scenario
       Arkham.Helpers.Window
+      Arkham.Helpers.Xp
       Arkham.History
       Arkham.Id
       Arkham.Investigator

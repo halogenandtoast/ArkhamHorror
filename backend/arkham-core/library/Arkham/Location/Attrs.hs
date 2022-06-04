@@ -46,6 +46,8 @@ data instance Field LocationAttrs :: Type -> Type where
   LocationShroud :: Field LocationAttrs Int
   LocationTraits :: Field LocationAttrs (HashSet Trait)
   LocationUnrevealedName :: Field LocationAttrs Name
+  -- virtual
+  LocationCardDef :: Field LocationAttrs CardDef
 
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId

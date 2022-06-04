@@ -5,11 +5,17 @@ import Arkham.Prelude
 import Arkham.Act.Sequence
 import Arkham.Card.PlayerCard
 import Arkham.Scenario.Attrs
+import Arkham.Card.CardCode
+import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Decks
+import Arkham.Helpers.Query
+import Arkham.Helpers.Window
 import Arkham.Message
+import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Resolution
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
@@ -37,7 +43,7 @@ instance RunMessage ScenarioAttrs where
         [] -> error "There were no locations with that name"
         (card : _) -> push (PlaceLocation card)
     PlaceDoomOnAgenda -> do
-      agendaIds <- getSetList @AgendaId ()
+      agendaIds <- selectList AnyAgenda
       case agendaIds of
         [] -> pure a
         [x] -> a <$ push (PlaceDoom (AgendaTarget x) 1)
@@ -109,7 +115,7 @@ instance RunMessage ScenarioAttrs where
     -- See: Vengeance Awaits / The Devourer Below - right now the assumption
     -- is that the act deck has been replaced.
     CheckForRemainingInvestigators -> do
-      investigatorIds <- getSet @InScenarioInvestigatorId ()
+      investigatorIds <- selectList UneliminatedInvestigator
       a <$ when
         (null investigatorIds && not scenarioInResolution)
         (push $ HandleNoRemainingInvestigators

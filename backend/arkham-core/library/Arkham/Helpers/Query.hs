@@ -1,10 +1,8 @@
 module Arkham.Helpers.Query where
 
-import Arkham.Prelude
-
-import Arkham.Matcher
-import Arkham.Id
 import Arkham.Classes.Query
+import Arkham.Id
+import Arkham.Matcher
 
 getLeadInvestigatorId :: Query InvestigatorMatcher m => m InvestigatorId
 getLeadInvestigatorId = selectJust LeadInvestigator

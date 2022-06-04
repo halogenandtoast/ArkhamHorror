@@ -20,6 +20,7 @@ type TreacheryCard a = CardBuilder (InvestigatorId, TreacheryId) a
 data instance Field TreacheryAttrs :: Type -> Type where
   TreacheryClues :: Field TreacheryAttrs Int
   TreacheryResources :: Field TreacheryAttrs Int
+  TreacheryDoom :: Field TreacheryAttrs Int
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId

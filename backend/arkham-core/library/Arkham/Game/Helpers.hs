@@ -8,6 +8,7 @@ import Arkham.Ability
 import Arkham.Act.Attrs ( Field (..) )
 import Arkham.Action ( Action, TakenAction (..) )
 import Arkham.Action qualified as Action
+import Arkham.Agenda.Attrs ( Field (..) )
 import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Asset.Uses ( useCount )
 import Arkham.Attack
@@ -242,7 +243,7 @@ meetsActionRestrictions _ _ Ability {..} = go abilityType
     AbilityEffect _ -> pure True
 
 getCanAffordAbility
-  :: (HasModifiersFor m (), HasCostPayment m)
+  :: HasModifiersFor m ()
   => InvestigatorId
   -> Ability
   -> m Bool
@@ -250,7 +251,7 @@ getCanAffordAbility iid ability =
   (&&) <$> getCanAffordUse iid ability <*> getCanAffordAbilityCost iid ability
 
 getCanAffordAbilityCost
-  :: (HasModifiersFor m (), HasCostPayment m)
+  :: HasModifiersFor m ()
   => InvestigatorId
   -> Ability
   -> m Bool
@@ -270,7 +271,7 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
   AbilityEffect _ -> pure True
   Objective{} -> pure True
 
-getCanAffordUse :: HasCostPayment m => InvestigatorId -> Ability -> m Bool
+getCanAffordUse :: InvestigatorId -> Ability -> m Bool
 getCanAffordUse iid ability = case abilityLimit ability of
   NoLimit -> case abilityType ability of
     ReactionAbility _ _ ->
@@ -314,7 +315,7 @@ applyActionCostModifier _ _ (ActionCostModifier m) n = n + m
 applyActionCostModifier _ _ _ n = n
 
 getCanAffordCost
-  :: (HasModifiersFor m (), HasCostPayment m, HasCallStack)
+  :: (HasModifiersFor m (), HasCallStack)
   => InvestigatorId
   -> Source
   -> Maybe Action
@@ -399,7 +400,7 @@ getCanAffordCost iid source mAction windows' = \case
     pure $ length (filter (`cardMatch` cardMatcher) cards) >= n
 
 getActions
-  :: (HasCostPayment m, HasCallStack, MonadIO m)
+  :: (HasCallStack, MonadIO m)
   => InvestigatorId
   -> Window
   -> m [Ability]
@@ -524,9 +525,6 @@ getLeadInvestigatorId = selectJust Matcher.LeadInvestigator
 getInvestigatorIds :: m [InvestigatorId]
 getInvestigatorIds = selectList Matcher.Anyone
 
-getPlayerCount :: m Int
-getPlayerCount = selectCount Matcher.Anyone
-
 getPlayerCountValue :: GameValue Int -> m Int
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
 
@@ -538,7 +536,7 @@ getSpendableClueCount investigatorIds =
 
 -- TODO: canFight _ a@Attrs {..} = canDo Action.Fight a
 getCanFight
-  :: (HasCostPayment m, Query Matcher.LocationMatcher m, HasModifiersFor m ())
+  :: (Query Matcher.LocationMatcher m, HasModifiersFor m ())
   => EnemyId
   -> InvestigatorId
   -> m Bool
@@ -575,7 +573,7 @@ getCanFight eid iid = do
   applyFightCostModifiers _ costToFight _ = costToFight
 
 getCanEngage
-  :: (HasCostPayment m, Query Matcher.LocationMatcher m, HasModifiersFor m ())
+  :: (Query Matcher.LocationMatcher m, HasModifiersFor m ())
   => EnemyId
   -> InvestigatorId
   -> m Bool
@@ -593,7 +591,7 @@ getCanEngage eid iid = do
   pure $ notEngaged && canAffordActions && sameLocation
 
 getCanEvade
-  :: (HasCostPayment m, HasModifiersFor m ())
+  :: HasModifiersFor m ()
   => EnemyId
   -> InvestigatorId
   -> m Bool
@@ -623,7 +621,7 @@ getCanEvade eid iid = do
   applyEvadeCostModifiers _ costToFight _ = costToFight
 
 getCanMoveTo
-  :: (HasCostPayment m, HasModifiersFor m (), HasHistory m, HasCallStack)
+  :: (HasModifiersFor m (), HasHistory m, HasCallStack)
   => LocationId
   -> InvestigatorId
   -> m Bool
@@ -1905,8 +1903,7 @@ matchWho you who matcher = case matcher of
       (Matcher.InvestigatorEngagedWith enemyMatcher)
     pure $ who `member` engagedInvestigators
   Matcher.InvestigatorAt locationMatcher -> do
-    lid <- getId @LocationId who
-    member lid <$> select locationMatcher
+    member who <$> select matcher
   Matcher.InvestigatorWithTitle _ -> do
     member who <$> select matcher
   Matcher.InvestigatorCanMove -> do
@@ -2036,17 +2033,17 @@ locationMatches
 locationMatches investigatorId source window locationId = \case
   Matcher.LocationNotInPlay -> pure False
   Matcher.LocationWithLabel label ->
-    (== label) <$> Location.getLabel locationId
+    member locationId <$> select (Matcher.LocationWithLabel label)
   Matcher.LocationWithTitle title ->
-    (== title) . nameTitle <$> getName locationId
+    member locationId <$> select (Matcher.LocationWithTitle title)
   Matcher.LocationWithFullTitle title subtitle ->
-    (== Name title (Just subtitle)) <$> getName locationId
+    member locationId <$> select (Matcher.LocationWithFullTitle title subtitle)
   Matcher.LocationWithSymbol locationSymbol ->
     member locationId <$> select (Matcher.LocationWithSymbol locationSymbol)
   Matcher.LocationWithUnrevealedTitle title ->
-    (== title) . nameTitle <$> getName (Unrevealed locationId)
+    member locationId <$> select (Matcher.LocationWithUnrevealedTitle title)
   Matcher.LocationWithId lid -> pure $ lid == locationId
-  Matcher.LocationIs cardCode -> (== cardCode) <$> getId locationId
+  Matcher.LocationIs cardCode -> member locationId <$> select (Matcher.LocationIs cardCode)
   Matcher.Anywhere -> pure True
   Matcher.Unblocked -> notElem Blocked <$> getModifiers
     (InvestigatorSource investigatorId)
@@ -2064,9 +2061,8 @@ locationMatches investigatorId source window locationId = \case
     (Matcher.AssetAt (Matcher.LocationWithId locationId) <> assetMatcher)
   Matcher.LocationWithInvestigator whoMatcher -> notNull <$> select
     (Matcher.InvestigatorAt (Matcher.LocationWithId locationId) <> whoMatcher)
-  Matcher.AccessibleLocation -> do
-    yourLocationId <- getId @LocationId investigatorId
-    member (AccessibleLocationId locationId) <$> getSet yourLocationId
+  Matcher.AccessibleLocation ->
+    member locationId <$> select Matcher.AccessibleLocation
   Matcher.AccessibleFrom locationMatcher -> do
     lids <- selectList locationMatcher
     anyM (fmap (member (AccessibleLocationId locationId)) . getSet) lids
@@ -2075,8 +2071,7 @@ locationMatches investigatorId source window locationId = \case
     destinations <- select locationMatcher
     pure $ notNull $ intersect (setFromList accessibleLocations) destinations
   Matcher.ConnectedLocation -> do
-    yourLocationId <- getId @LocationId investigatorId
-    member (ConnectedLocationId locationId) <$> getSet yourLocationId
+    member locationId <$> select Matcher.ConnectedLocation
   Matcher.RevealedLocation ->
     member locationId <$> select Matcher.RevealedLocation
   Matcher.UnrevealedLocation ->
@@ -2104,18 +2099,17 @@ locationMatches investigatorId source window locationId = \case
       _ -> error $ "can't detect same location for source " <> show source
     pure $ Just locationId == mlid'
   Matcher.YourLocation -> do
-    yourLocationId <- getId @LocationId investigatorId
-    pure $ locationId == yourLocationId
+    yourLocationId <- field InvestigatorLocation investigatorId
+    pure $ Just locationId == yourLocationId
   Matcher.ThisLocation -> case source of
     (LocationSource lid) -> pure $ lid == locationId
     (ProxySource (LocationSource lid) _) -> pure $ lid == locationId
     _ -> error "Invalid source for ThisLocation"
   Matcher.NotYourLocation -> do
-    yourLocationId <- getId @LocationId investigatorId
-    pure $ locationId /= yourLocationId
+    yourLocationId <- field InvestigatorLocation investigatorId
+    pure $ Just locationId /= yourLocationId
   Matcher.LocationInDirection direction matcher' -> do
-    starts <- selectList matcher'
-    elem locationId . catMaybes <$> traverse (getId . (direction, )) starts
+    member locationId <$> select (Matcher.LocationInDirection direction matcher')
   Matcher.FarthestLocationFromYou matcher' ->
     member (FarthestLocationId locationId) <$> getSet (investigatorId, matcher')
   Matcher.FarthestLocationFromLocation start matcher' -> member locationId

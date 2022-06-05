@@ -186,7 +186,6 @@ data Game = Game
   , -- Game Details
     gamePhase :: Phase
   , gameSkillTest :: Maybe SkillTest
-  , gameUsedAbilities :: [(InvestigatorId, Ability, Int)]
   , gameResignedCardCodes :: [CardCode]
   , gameFocusedCards :: [Card]
   , gameFoundCards :: HashMap Zone [Card]

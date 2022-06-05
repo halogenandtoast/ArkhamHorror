@@ -28,6 +28,7 @@ type RunM env m
     , HasSkillTest m
     , Query AssetMatcher m
     , Query AgendaMatcher m
+    , Query CampaignMatcher m
     , Query EnemyMatcher m
     , Query EventMatcher m
     , Query LocationMatcher m

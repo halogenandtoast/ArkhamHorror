@@ -6,19 +6,19 @@ module Arkham.Investigator.Cards.MinhThiPhan
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Card hiding (CommittedCard)
+import Arkham.Card hiding ( CommittedCard )
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.Id
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype MinhThiPhan = MinhThiPhan InvestigatorAttrs
@@ -40,15 +40,11 @@ minhThiPhan = investigator
 
 instance HasAbilities MinhThiPhan where
   getAbilities (MinhThiPhan attrs) =
-    [ restrictedAbility
-          attrs
-          1
-          Self
-          (ReactionAbility
+    [ limitedAbility (PerInvestigatorLimit PerRound 1)
+        $ restrictedAbility attrs 1 Self
+        $ ReactionAbility
             (CommittedCard Timing.After (InvestigatorAt YourLocation) AnyCard)
             Free
-          )
-        & (abilityLimitL .~ PerInvestigatorLimit PerRound 1)
     ]
 
 instance HasTokenValue env MinhThiPhan where

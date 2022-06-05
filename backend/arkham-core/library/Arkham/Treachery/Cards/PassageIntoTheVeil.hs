@@ -5,7 +5,6 @@ module Arkham.Treachery.Cards.PassageIntoTheVeil
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher
@@ -13,19 +12,21 @@ import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Attrs
-import Arkham.Treachery.Runner
+import qualified Arkham.Treachery.Cards as Cards
 
 newtype PassageIntoTheVeil = PassageIntoTheVeil TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 passageIntoTheVeil :: TreacheryCard PassageIntoTheVeil
 passageIntoTheVeil = treachery PassageIntoTheVeil Cards.passageIntoTheVeil
 
-instance TreacheryRunner env => RunMessage PassageIntoTheVeil where
+instance RunMessage PassageIntoTheVeil where
   runMessage msg t@(PassageIntoTheVeil attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      huntingHorrorAtYourLocation <- enemyAtInvestigatorLocation "02141" iid
+      huntingHorrorAtYourLocation <-
+        selectAny $ enemyIs Enemies.huntingHorror <> EnemyAtLocation
+          (LocationWithInvestigator $ InvestigatorWithId iid)
       t <$ push
         (BeginSkillTest
           iid

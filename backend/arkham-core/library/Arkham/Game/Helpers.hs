@@ -5,6 +5,7 @@ module Arkham.Game.Helpers
 
 import Arkham.Prelude
 
+import Arkham.Helpers.Ability as X
 import Arkham.Helpers.Query as X
 import Arkham.Helpers.Scenario as X
 import Arkham.Helpers.Window as X
@@ -65,10 +66,11 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
-import Arkham.Trait ( Trait, toTraits )
+import Arkham.Trait ( Trait (Tome), toTraits )
 import Arkham.Treachery.Attrs ( Field (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
+import Data.HashMap.Strict qualified as HashMap
 import Data.HashSet ( size )
 import Data.HashSet qualified as HashSet
 import Data.UUID ( nil )
@@ -252,9 +254,9 @@ meetsActionRestrictions _ _ Ability {..} = go abilityType
     AbilityEffect _ -> pure True
 
 getCanAffordAbility
-  :: HasModifiersFor m () => InvestigatorId -> Ability -> m Bool
-getCanAffordAbility iid ability =
-  (&&) <$> getCanAffordUse iid ability <*> getCanAffordAbilityCost iid ability
+  :: HasModifiersFor m () => InvestigatorId -> Ability -> Window -> m Bool
+getCanAffordAbility iid ability window =
+  (&&) <$> getCanAffordUse iid ability window <*> getCanAffordAbilityCost iid ability
 
 getCanAffordAbilityCost
   :: HasModifiersFor m () => InvestigatorId -> Ability -> m Bool
@@ -274,8 +276,8 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
   AbilityEffect _ -> pure True
   Objective{} -> pure True
 
-getCanAffordUse :: InvestigatorId -> Ability -> m Bool
-getCanAffordUse iid ability = case abilityLimit ability of
+getCanAffordUse :: InvestigatorId -> Ability -> Window -> m Bool
+getCanAffordUse iid ability window = case abilityLimit ability of
   NoLimit -> case abilityType ability of
     ReactionAbility _ _ ->
       notElem (iid, ability) . map unUsedAbility <$> getList ()
@@ -292,20 +294,28 @@ getCanAffordUse iid ability = case abilityLimit ability of
     AbilityEffect _ -> pure True
     Objective{} -> pure True
   PlayerLimit (PerSearch (Just _)) n ->
-    (< n)
-      . count ((== abilityLimit ability) . abilityLimit . snd . unUsedAbility)
-      <$> getList ()
+    (< n) . count ((== ability) . usedAbility) <$> field InvestigatorUsedAbilities iid
   PlayerLimit _ n ->
-    (< n) . count (== (iid, ability)) . map unUsedAbility <$> getList ()
+    (< n) . count ((== ability) . usedAbility) <$> field InvestigatorUsedAbilities iid
   PerInvestigatorLimit _ n -> do
-    usedAbilities <- map unUsedAbility <$> getList ()
-    let
-      matchingAbilities = filter (== (iid, ability)) usedAbilities
-      matchingPerInvestigatorCount =
-        count ((== abilityLimit ability) . abilityLimit . snd) matchingAbilities
-    pure $ matchingPerInvestigatorCount < n
-  GroupLimit _ n ->
-    (< n) . count (== ability) . map (snd . unUsedAbility) <$> getList ()
+    -- This is difficult and based on the window, so we need to match out the
+    -- relevant investigator ids from the window. If this becomes more prevalent
+    -- we may want a method from `Window -> Maybe InvestigatorId`
+    usedAbilities <- field InvestigatorUsedAbilities iid
+    case window of
+      Window _ (Window.CommittedCards iid' _) -> do
+        let
+          matchingPerInvestigatorCount =
+            flip count usedAbilities $ \usedAbility ->
+              case usedAbilityWindow usedAbility of
+                Window _ (Window.CommittedCard iid'' _) -> iid' == iid''
+                _ -> False
+        pure $ matchingPerInvestigatorCount < n
+      _ -> error "Unhandled per investigator limit"
+  GroupLimit _ n -> do
+    usedAbilities <- concatMapM (fieldMap InvestigatorUsedAbilities HashMap.toList) =<< getInvestigatorIds
+    let total = sum . map snd $ filter ((== ability) . first) usedAbilities
+    pure $ total < n
 
 applyActionCostModifier
   :: [Action] -> Maybe Action -> ModifierType -> Int -> Int
@@ -350,14 +360,20 @@ getCanAffordCost iid source mAction windows' = \case
     if ActionsAreFree `elem` modifiers
       then pure True
       else do
-        takenActions <- map unTakenAction <$> getList iid
+        takenActions <- field InvestigatorActionsTaken iid
         let
           modifiedActionCost =
             foldr (applyActionCostModifier takenActions mAction) n modifiers
-        traits <- getSetList @Trait source
-        actionCount <- unActionRemainingCount
-          <$> getCount (mAction, traits, iid)
-        pure $ actionCount >= modifiedActionCost
+        traits <- case source of
+                    AssetSource aid ->
+                      fieldMap AssetTraits HashSet.toList aid
+                    _ -> pure []
+
+        tomeActions <- if Tome `elem` traits
+                          then field InvestigatorTomeActions iid
+                          else pure 0
+        actionCount <- field InvestigatorRemainingActions iid
+        pure $ (actionCount + tomeActions) >= modifiedActionCost
   ClueCost n -> do
     spendableClues <- getSpendableClueCount [iid]
     pure $ spendableClues >= n
@@ -376,10 +392,11 @@ getCanAffordCost iid source mAction windows' = \case
     -- filter
     let
       getCards = \case
-        FromHandOf whoMatcher -> selectList
-          (Matcher.InHandOf whoMatcher <> Matcher.BasicCardMatch cardMatcher)
-        FromPlayAreaOf whoMatcher ->
-          map unInPlayCard <$> (selectList whoMatcher >>= concatMapM getList)
+        FromHandOf whoMatcher ->
+          fmap (filter (`cardMatch` cardMatcher) . concat) . traverse (field InvestigatorHand) =<< selectList whoMatcher
+        FromPlayAreaOf whoMatcher -> do
+          assets <- selectList $ Matcher.AssetControlledBy whoMatcher
+          traverse (field AssetCard) assets
         CostZones zs -> concatMapM getCards zs
     (> n) . length <$> getCards zone
   DiscardCost _ -> pure True -- TODO: Make better
@@ -467,17 +484,11 @@ getActions iid window = do
     (\action -> liftA2
       (&&)
       (getCanPerformAbility iid (abilitySource action) window action)
-      (getCanAffordAbility iid action)
+      (getCanAffordAbility iid action window)
     )
     actions''
   let forcedActions = filter isForcedAbility actions'''
   pure $ if null forcedActions then actions''' else forcedActions
-
-enemyAtInvestigatorLocation :: CardCode -> InvestigatorId -> m Bool
-enemyAtInvestigatorLocation cardCode iid = do
-  lid <- getId @LocationId iid
-  enemyIds <- getSetList @EnemyId lid
-  elem cardCode <$> for enemyIds (getId @CardCode)
 
 getHasRecord :: HasRecord m () => CampaignLogKey -> m Bool
 getHasRecord k = hasRecord k ()
@@ -487,14 +498,6 @@ getRecordCount k = hasRecordCount k ()
 
 getRecordSet :: HasRecord m () => CampaignLogKey -> m [Recorded CardCode]
 getRecordSet k = hasRecordSet k ()
-
-getIsUnused' :: InvestigatorId -> Ability -> m Bool
-getIsUnused' iid ability = notElem ability' . map unUsedAbility <$> getList ()
-  where ability' = (iid, ability)
-
-getGroupIsUnused :: Ability -> m Bool
-getGroupIsUnused ability =
-  notElem ability . map (snd . unUsedAbility) <$> getList ()
 
 getInvestigatorModifiers
   :: HasModifiersFor m () => InvestigatorId -> Source -> m [ModifierType]

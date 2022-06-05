@@ -3,21 +3,24 @@ module Arkham.Scenario.Runner where
 import Arkham.Prelude
 
 import Arkham.Act.Sequence
+import Arkham.Card
 import Arkham.Card.PlayerCard
-import Arkham.Scenario.Attrs
-import Arkham.Card.CardCode
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Decks
+import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
+import Arkham.Id
+import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Resolution
+import Arkham.Scenario.Attrs
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Token
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 instance RunMessage ScenarioAttrs where
@@ -37,13 +40,13 @@ instance RunMessage ScenarioAttrs where
     PlaceLocationMatching cardMatcher -> do
       let
         matches = filter
-          (`cardMatch` (CardWithType LocationType <> cardMatcher))
+          (`cardMatch` (Matcher.CardWithType LocationType <> cardMatcher))
           scenarioSetAsideCards
       a <$ case matches of
         [] -> error "There were no locations with that name"
         (card : _) -> push (PlaceLocation card)
     PlaceDoomOnAgenda -> do
-      agendaIds <- selectList AnyAgenda
+      agendaIds <- selectList Matcher.AnyAgenda
       case agendaIds of
         [] -> pure a
         [x] -> a <$ push (PlaceDoom (AgendaTarget x) 1)
@@ -100,7 +103,9 @@ instance RunMessage ScenarioAttrs where
           let
             fromActId = ActId (toCardCode x)
             toActId = ActId (toCardCode act)
-          when (newActSide == B) (push $ AdvanceAct toActId (toSource a) AdvancedWithOther)
+          when
+            (newActSide == B)
+            (push $ AdvanceAct toActId (toSource a) AdvancedWithOther)
           push (ReplaceAct fromActId toActId)
           pure $ filter
             (\c ->
@@ -115,7 +120,7 @@ instance RunMessage ScenarioAttrs where
     -- See: Vengeance Awaits / The Devourer Below - right now the assumption
     -- is that the act deck has been replaced.
     CheckForRemainingInvestigators -> do
-      investigatorIds <- selectList UneliminatedInvestigator
+      investigatorIds <- selectList Matcher.UneliminatedInvestigator
       a <$ when
         (null investigatorIds && not scenarioInResolution)
         (push $ HandleNoRemainingInvestigators
@@ -201,7 +206,7 @@ instance RunMessage ScenarioAttrs where
           <> show key
           <> ", could not find deck in scenario"
     ChooseRandomLocation target exclusions -> do
-      locationIds <- setToList . (`difference` exclusions) <$> select Anywhere
+      locationIds <- setToList . (`difference` exclusions) <$> select Matcher.Anywhere
       case nonEmpty locationIds of
         Nothing -> error "no locations?"
         Just lids -> do

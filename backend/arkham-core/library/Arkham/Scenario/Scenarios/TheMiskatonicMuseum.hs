@@ -103,7 +103,9 @@ instance
   => HasTokenValue env TheMiskatonicMuseum where
   getTokenValue iid tokenFace (TheMiskatonicMuseum attrs) = case tokenFace of
     Skull -> do
-      huntingHorrorAtYourLocation <- enemyAtInvestigatorLocation "02141" iid
+      huntingHorrorAtYourLocation <-
+        selectAny $ enemyIs Enemies.huntingHorror <> EnemyAtLocation
+          (LocationWithInvestigator $ InvestigatorWithId iid)
       pure $ if huntingHorrorAtYourLocation
         then toTokenValue attrs Skull 3 4
         else toTokenValue attrs Skull 1 2

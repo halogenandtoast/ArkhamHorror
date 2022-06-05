@@ -735,6 +735,7 @@ library
       Arkham.GameRunner
       Arkham.GameValue
       Arkham.Helpers
+      Arkham.Helpers.Ability
       Arkham.Helpers.Query
       Arkham.Helpers.Scenario
       Arkham.Helpers.Window

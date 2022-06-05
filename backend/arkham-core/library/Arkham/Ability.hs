@@ -19,6 +19,7 @@ import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Arkham.Window
 
 data Ability = Ability
   { abilitySource :: Source
@@ -31,7 +32,7 @@ data Ability = Ability
   , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
   }
   deriving stock (Show, Generic)
-  deriving anyclass (Hashable)
+  deriving anyclass (Hashable, ToJSONKey, FromJSONKey)
 
 inHandAbility :: Ability -> Bool
 inHandAbility = maybe False inHandCriteria . abilityCriteria
@@ -83,7 +84,12 @@ instance ToJSON Ability where
 instance FromJSON Ability where
   parseJSON = genericParseJSON $ aesonOptions $ Just "ability"
 
-newtype UsedAbility = UsedAbility {unUsedAbility :: (InvestigatorId, Ability)}
+data UsedAbility = UsedAbility
+  { usedAbility :: Ability
+  , usedAbilityInitiator :: InvestigatorId
+  , usedAbilityWindow :: Window
+  , usedTimes :: Int
+  }
 
 data AbilityMetadata
   = IntMetadata Int

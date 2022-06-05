@@ -16,6 +16,7 @@ import Arkham.Projection
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
+import Arkham.Trait (Trait)
 
 class IsAsset a
 
@@ -32,6 +33,10 @@ data instance Field AssetAttrs :: Type -> Type where
   AssetController :: Field AssetAttrs (Maybe InvestigatorId)
   AssetLocation :: Field AssetAttrs (Maybe LocationId)
   AssetCardCode :: Field AssetAttrs CardCode
+  -- virtual
+  AssetTraits :: Field AssetAttrs (HashSet Trait)
+  AssetCardDef :: Field AssetAttrs CardDef
+  AssetCard :: Field AssetAttrs Card
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId

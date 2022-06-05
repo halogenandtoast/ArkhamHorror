@@ -8,7 +8,7 @@ import Arkham.Projection
 import Arkham.Scenario.Attrs
 
 scenarioField
-  :: (Monad m, Query ScenarioMatcher m, Projection m ScenarioAttrs)
+  :: (Query ScenarioMatcher m, Projection m ScenarioAttrs)
   => Field ScenarioAttrs a
   -> m a
 scenarioField fld = scenarioFieldMap fld id

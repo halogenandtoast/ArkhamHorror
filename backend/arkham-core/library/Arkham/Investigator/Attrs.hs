@@ -3,30 +3,31 @@ module Arkham.Investigator.Attrs where
 
 import Arkham.Prelude
 
-import Arkham.Action (Action)
-import Arkham.Investigator.Cards (allInvestigatorCards)
-import Arkham.Json
-import Arkham.SkillTest
-import Arkham.SkillType
+import Arkham.Ability
+import Arkham.Action ( Action )
 import Arkham.Card
 import Arkham.Card.Id
-import Arkham.ClassSymbol
-import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
+import Arkham.Classes.HasModifiersFor
+import Arkham.ClassSymbol
 import Arkham.Helpers
 import Arkham.Id
+import Arkham.Investigator.Cards ( allInvestigatorCards )
+import Arkham.Json
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Projection
+import Arkham.SkillTest
+import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
-import Arkham.Trait hiding (Cultist)
-import Arkham.Zone (Zone)
+import Arkham.Trait hiding ( Cultist )
+import Arkham.Zone ( Zone )
 import Data.Text qualified as T
-import Data.UUID (nil)
+import Data.UUID ( nil )
 
 class IsInvestigator a
 
@@ -34,6 +35,7 @@ type InvestigatorCard a = CardBuilder () a
 
 data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorRemainingActions :: Field InvestigatorAttrs Int
+  InvestigatorTomeActions :: Field InvestigatorAttrs Int
   InvestigatorRemainingSanity :: Field InvestigatorAttrs Int
   InvestigatorLocation :: Field InvestigatorAttrs (Maybe LocationId)
   InvestigatorHorror :: Field InvestigatorAttrs Int
@@ -48,6 +50,7 @@ data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorClass :: Field InvestigatorAttrs ClassSymbol
   InvestigatorActionsTaken :: Field InvestigatorAttrs [Action]
   InvestigatorSlots :: Field InvestigatorAttrs (HashMap SlotType [Slot])
+  InvestigatorUsedAbilities :: Field InvestigatorAttrs [UsedAbility]
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId
@@ -86,6 +89,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorStartsWith :: [CardDef]
   , investigatorCardsUnderneath :: [Card]
   , investigatorFoundCards :: HashMap Zone [Card]
+  , investigatorUsedAbilities :: HashMap Ability Int
   -- investigator-specific fields
   , investigatorTomeActions :: Maybe Int
   }
@@ -120,7 +124,8 @@ instance Entity InvestigatorAttrs where
 instance HasCardDef InvestigatorAttrs where
   toCardDef e = case lookup (investigatorCardCode e) allInvestigatorCards of
     Just def -> def
-    Nothing -> error $ "missing card def for enemy " <> show (investigatorCardCode e)
+    Nothing ->
+      error $ "missing card def for enemy " <> show (investigatorCardCode e)
 
 instance Named InvestigatorAttrs where
   toName = investigatorName
@@ -172,10 +177,7 @@ baseSkillValueFor skill _maction tempModifiers attrs = foldr
     SkillWild -> error "investigators do not have wild skills"
 
 damageValueFor
-  :: (HasModifiersFor m (), HasSkillTest m)
-  => Int
-  -> InvestigatorAttrs
-  -> m Int
+  :: (HasModifiersFor m (), HasSkillTest m) => Int -> InvestigatorAttrs -> m Int
 damageValueFor baseValue attrs = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
@@ -186,8 +188,7 @@ damageValueFor baseValue attrs = do
   applyModifier _ n = n
 
 getIsScenarioAbility
-  :: (Monad m, HasSkillTest m, GetCardDef m TreacheryId)
-  => m Bool
+  :: (Monad m, HasSkillTest m, GetCardDef m TreacheryId) => m Bool
 getIsScenarioAbility = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   case source of
@@ -203,9 +204,7 @@ getIsScenarioAbility = do
     _ -> pure False
 
 getHandSize
-  :: (HasModifiersFor m (), HasSkillTest m)
-  => InvestigatorAttrs
-  -> m Int
+  :: (HasModifiersFor m (), HasSkillTest m) => InvestigatorAttrs -> m Int
 getHandSize attrs = do
   source <- fromMaybe (toSource attrs) <$> getSkillTestSource
   modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
@@ -214,8 +213,7 @@ getHandSize attrs = do
   applyModifier (HandSize m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getInHandCount
-  :: HasModifiersFor m () => InvestigatorAttrs -> m Int
+getInHandCount :: HasModifiersFor m () => InvestigatorAttrs -> m Int
 getInHandCount attrs = do
   let
     cards = investigatorHand attrs
@@ -227,8 +225,7 @@ getInHandCount attrs = do
       pure $ foldl' applyModifier 1 modifiers
   sum <$> traverse getCardHandSize cards
 
-getAbilitiesForTurn
-  :: HasModifiersFor m () => InvestigatorAttrs -> m Int
+getAbilitiesForTurn :: HasModifiersFor m () => InvestigatorAttrs -> m Int
 getAbilitiesForTurn attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier 3 modifiers
@@ -236,8 +233,7 @@ getAbilitiesForTurn attrs = do
   applyModifier (AdditionalActions m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getCanDiscoverClues
-  :: HasModifiersFor m () => InvestigatorAttrs -> m Bool
+getCanDiscoverClues :: HasModifiersFor m () => InvestigatorAttrs -> m Bool
 getCanDiscoverClues attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ not (any match modifiers)
@@ -245,8 +241,7 @@ getCanDiscoverClues attrs = do
   match CannotDiscoverClues{} = True
   match _ = False
 
-getCanSpendClues
-  :: HasModifiersFor m () => InvestigatorAttrs -> m Bool
+getCanSpendClues :: HasModifiersFor m () => InvestigatorAttrs -> m Bool
 getCanSpendClues attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ not (any match modifiers)
@@ -254,8 +249,7 @@ getCanSpendClues attrs = do
   match CannotSpendClues{} = True
   match _ = False
 
-getModifiedHealth
-  :: HasModifiersFor m () => InvestigatorAttrs -> m Int
+getModifiedHealth :: HasModifiersFor m () => InvestigatorAttrs -> m Int
 getModifiedHealth attrs@InvestigatorAttrs {..} = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier investigatorHealth modifiers
@@ -263,8 +257,7 @@ getModifiedHealth attrs@InvestigatorAttrs {..} = do
   applyModifier (HealthModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getModifiedSanity
-  :: HasModifiersFor m () => InvestigatorAttrs -> m Int
+getModifiedSanity :: HasModifiersFor m () => InvestigatorAttrs -> m Int
 getModifiedSanity attrs@InvestigatorAttrs {..} = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier investigatorSanity modifiers
@@ -320,67 +313,68 @@ investigatorWith
 investigatorWith f cardDef stats g = investigator (f . g) cardDef stats
 
 investigator
-  :: (InvestigatorAttrs -> a)
-  -> CardDef
-  -> Stats
-  -> CardBuilder () a
-investigator f cardDef Stats {..} = let iid = InvestigatorId (cdCardCode cardDef) in
-  CardBuilder
-    { cbCardCode = cdCardCode cardDef
-    , cbCardBuilder = \_ -> f $ InvestigatorAttrs
-      { investigatorId = iid
-      , investigatorName = cdName cardDef
-      , investigatorCardCode = cdCardCode cardDef
-      , investigatorClass = fromJustNote "missing class symbol" $ cdClassSymbol cardDef
-      , investigatorHealth = health
-      , investigatorSanity = sanity
-      , investigatorWillpower = willpower
-      , investigatorIntellect = intellect
-      , investigatorCombat = combat
-      , investigatorAgility = agility
-      , investigatorHealthDamage = 0
-      , investigatorSanityDamage = 0
-      , investigatorClues = 0
-      , investigatorDoom = 0
-      , investigatorResources = 0
-      , investigatorLocation = LocationId $ CardId nil
-      , investigatorActionsTaken = mempty
-      , investigatorRemainingActions = 3
-      , investigatorEndedTurn = False
-      , investigatorEngagedEnemies = mempty
-      , investigatorAssets = mempty
-      , investigatorDeck = mempty
-      , investigatorDiscard = mempty
-      , investigatorHand = mempty
-      , investigatorTraits = cdCardTraits cardDef
-      , investigatorTreacheries = mempty
-      , investigatorInHandTreacheries = mempty
-      , investigatorDefeated = False
-      , investigatorResigned = False
-      , investigatorSlots = mapFromList
-        [ (AccessorySlot, [Slot (InvestigatorSource iid) Nothing])
-        , (BodySlot, [Slot (InvestigatorSource iid) Nothing])
-        , (AllySlot, [Slot (InvestigatorSource iid) Nothing])
-        , ( HandSlot
-          , [ Slot (InvestigatorSource iid) Nothing
-            , Slot (InvestigatorSource iid) Nothing
-            ]
-          )
-        , ( ArcaneSlot
-          , [ Slot (InvestigatorSource iid) Nothing
-            , Slot (InvestigatorSource iid) Nothing
-            ]
-          )
-        ]
-      , investigatorXp = 0
-      , investigatorPhysicalTrauma = 0
-      , investigatorMentalTrauma = 0
-      , investigatorStartsWith = []
-      , investigatorCardsUnderneath = []
-      , investigatorFoundCards = mempty
-      , investigatorTomeActions = Nothing
+  :: (InvestigatorAttrs -> a) -> CardDef -> Stats -> CardBuilder () a
+investigator f cardDef Stats {..} =
+  let iid = InvestigatorId (cdCardCode cardDef)
+  in
+    CardBuilder
+      { cbCardCode = cdCardCode cardDef
+      , cbCardBuilder = \_ -> f $ InvestigatorAttrs
+        { investigatorId = iid
+        , investigatorName = cdName cardDef
+        , investigatorCardCode = cdCardCode cardDef
+        , investigatorClass = fromJustNote "missing class symbol"
+          $ cdClassSymbol cardDef
+        , investigatorHealth = health
+        , investigatorSanity = sanity
+        , investigatorWillpower = willpower
+        , investigatorIntellect = intellect
+        , investigatorCombat = combat
+        , investigatorAgility = agility
+        , investigatorHealthDamage = 0
+        , investigatorSanityDamage = 0
+        , investigatorClues = 0
+        , investigatorDoom = 0
+        , investigatorResources = 0
+        , investigatorLocation = LocationId $ CardId nil
+        , investigatorActionsTaken = mempty
+        , investigatorRemainingActions = 3
+        , investigatorEndedTurn = False
+        , investigatorEngagedEnemies = mempty
+        , investigatorAssets = mempty
+        , investigatorDeck = mempty
+        , investigatorDiscard = mempty
+        , investigatorHand = mempty
+        , investigatorTraits = cdCardTraits cardDef
+        , investigatorTreacheries = mempty
+        , investigatorInHandTreacheries = mempty
+        , investigatorDefeated = False
+        , investigatorResigned = False
+        , investigatorSlots = mapFromList
+          [ (AccessorySlot, [Slot (InvestigatorSource iid) Nothing])
+          , (BodySlot, [Slot (InvestigatorSource iid) Nothing])
+          , (AllySlot, [Slot (InvestigatorSource iid) Nothing])
+          , ( HandSlot
+            , [ Slot (InvestigatorSource iid) Nothing
+              , Slot (InvestigatorSource iid) Nothing
+              ]
+            )
+          , ( ArcaneSlot
+            , [ Slot (InvestigatorSource iid) Nothing
+              , Slot (InvestigatorSource iid) Nothing
+              ]
+            )
+          ]
+        , investigatorXp = 0
+        , investigatorPhysicalTrauma = 0
+        , investigatorMentalTrauma = 0
+        , investigatorStartsWith = []
+        , investigatorCardsUnderneath = []
+        , investigatorFoundCards = mempty
+        , investigatorUsedAbilities = mempty
+        , investigatorTomeActions = Nothing
+        }
       }
-    }
 
 matchTarget :: InvestigatorAttrs -> ActionTarget -> Action -> Bool
 matchTarget attrs (FirstOneOf as) action =
@@ -388,11 +382,7 @@ matchTarget attrs (FirstOneOf as) action =
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
-getActionCost
-  :: HasModifiersFor m ()
-  => InvestigatorAttrs
-  -> Action
-  -> m Int
+getActionCost :: HasModifiersFor m () => InvestigatorAttrs -> Action -> m Int
 getActionCost attrs a = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier 1 modifiers
@@ -402,10 +392,7 @@ getActionCost attrs a = do
   applyModifier _ n = n
 
 getActionCostModifier
-  :: HasModifiersFor m ()
-  => InvestigatorAttrs
-  -> Maybe Action
-  -> m Int
+  :: HasModifiersFor m () => InvestigatorAttrs -> Maybe Action -> m Int
 getActionCostModifier _ Nothing = pure 0
 getActionCostModifier attrs (Just a) = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
@@ -415,17 +402,13 @@ getActionCostModifier attrs (Just a) = do
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
-getSpendableClueCount
-  :: HasModifiersFor m () => InvestigatorAttrs -> m Int
+getSpendableClueCount :: HasModifiersFor m () => InvestigatorAttrs -> m Int
 getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a
   pure $ if canSpendClues then investigatorClues a else 0
 
 cluesToDiscover
-  :: (HasModifiersFor m (), HasSkillTest m)
-  => InvestigatorAttrs
-  -> Int
-  -> m Int
+  :: (HasModifiersFor m (), HasSkillTest m) => InvestigatorAttrs -> Int -> m Int
 cluesToDiscover attrs startValue = do
   msource <- getSkillTestSource
   case msource of
@@ -439,11 +422,7 @@ cluesToDiscover attrs startValue = do
   applyModifier (DiscoveredClues m) n = n + m
   applyModifier _ n = n
 
-getCanAfford
-  :: HasModifiersFor m ()
-  => InvestigatorAttrs
-  -> Action
-  -> m Bool
+getCanAfford :: HasModifiersFor m () => InvestigatorAttrs -> Action -> m Bool
 getCanAfford a@InvestigatorAttrs {..} actionType = do
   actionCost <- getActionCost a actionType
   pure $ actionCost <= investigatorRemainingActions
@@ -460,10 +439,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     else go (m - 1) (d, PlayerCard c : h, cs)
 
 getPossibleSkillTypeChoices
-  :: HasModifiersFor m ()
-  => SkillType
-  -> InvestigatorAttrs
-  -> m [SkillType]
+  :: HasModifiersFor m () => SkillType -> InvestigatorAttrs -> m [SkillType]
 getPossibleSkillTypeChoices skillType attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier [skillType] modifiers
@@ -473,12 +449,13 @@ getPossibleSkillTypeChoices skillType attrs = do
   applyModifier _ skills = skills
 
 canCommitToAnotherLocation
-  :: (HasModifiersFor m (), HasSkillTest m)
-  => InvestigatorAttrs
-  -> m Bool
+  :: (HasModifiersFor m (), HasSkillTest m) => InvestigatorAttrs -> m Bool
 canCommitToAnotherLocation attrs = do
-  commitedCards <- skillTestCommittedCards . fromJustNote "no skill test" <$> getSkillTest
-  let committedCardIds = map snd . filter ((== toId attrs) . fst) $ toList commitedCards
+  commitedCards <-
+    skillTestCommittedCards . fromJustNote "no skill test" <$> getSkillTest
+  let
+    committedCardIds =
+      map snd . filter ((== toId attrs) . fst) $ toList commitedCards
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ any (permit committedCardIds) modifiers
  where
@@ -487,10 +464,7 @@ canCommitToAnotherLocation attrs = do
   permit _ _ = False
 
 hasModifier
-  :: HasModifiersFor m ()
-  => InvestigatorAttrs
-  -> ModifierType
-  -> m Bool
+  :: HasModifiersFor m () => InvestigatorAttrs -> ModifierType -> m Bool
 hasModifier InvestigatorAttrs { investigatorId } m = elem m <$> getModifiers
   (InvestigatorSource investigatorId)
   (InvestigatorTarget investigatorId)

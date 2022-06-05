@@ -67,7 +67,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait ( Trait (Tome), toTraits )
-import Arkham.Treachery.Attrs ( TreacheryAttrs, Field (..) )
+import Arkham.Treachery.Attrs ( Field (..), TreacheryAttrs )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Data.HashMap.Strict qualified as HashMap
@@ -1958,20 +1958,11 @@ locationMatches investigatorId source window locationId matcher =
       (Matcher.InvestigatorAt (Matcher.LocationWithId locationId) <> whoMatcher)
     Matcher.AccessibleLocation ->
       member locationId <$> select Matcher.AccessibleLocation
-    Matcher.AccessibleFrom locationMatcher -> do
-      lids <- selectList locationMatcher
-      anyM (fmap (member (AccessibleLocationId locationId)) . getSet) lids
-    Matcher.AccessibleTo locationMatcher -> do
-      accessibleLocations <- map unAccessibleLocationId
-        <$> getSetList locationId
-      destinations <- select locationMatcher
-      pure $ notNull $ intersect (setFromList accessibleLocations) destinations
-    Matcher.ConnectedLocation -> do
-      member locationId <$> select Matcher.ConnectedLocation
-    Matcher.RevealedLocation ->
-      member locationId <$> select Matcher.RevealedLocation
-    Matcher.UnrevealedLocation ->
-      member locationId <$> select Matcher.UnrevealedLocation
+    Matcher.AccessibleFrom _ -> member locationId <$> select matcher
+    Matcher.AccessibleTo _ -> member locationId <$> select matcher
+    Matcher.ConnectedLocation -> member locationId <$> select matcher
+    Matcher.RevealedLocation -> member locationId <$> select matcher
+    Matcher.UnrevealedLocation -> member locationId <$> select matcher
     Matcher.LocationWithClues valueMatcher ->
       (`gameValueMatches` valueMatcher) =<< field LocationClues locationId
     Matcher.LocationWithDoom valueMatcher ->

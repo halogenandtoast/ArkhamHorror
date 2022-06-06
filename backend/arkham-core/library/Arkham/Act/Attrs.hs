@@ -22,6 +22,7 @@ type ActCard a = CardBuilder (Int, ActId) a
 data instance Field ActAttrs :: Type -> Type where
   ActSequence :: Field ActAttrs AS.ActSequence
   ActClues :: Field ActAttrs Int
+  ActAbilities :: Field ActAttrs [Ability]
 
 data ActAttrs = ActAttrs
   { actId :: ActId

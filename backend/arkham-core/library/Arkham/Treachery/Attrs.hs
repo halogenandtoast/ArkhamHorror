@@ -2,6 +2,7 @@ module Arkham.Treachery.Attrs where
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
@@ -11,6 +12,7 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Trait
 import Arkham.Treachery.Cards
 
 class IsTreachery a
@@ -22,6 +24,8 @@ data instance Field TreacheryAttrs :: Type -> Type where
   TreacheryResources :: Field TreacheryAttrs Int
   TreacheryDoom :: Field TreacheryAttrs Int
   TreacheryAttachedTarget :: Field TreacheryAttrs (Maybe Target)
+  TreacheryTraits :: Field TreacheryAttrs (HashSet Trait)
+  TreacheryAbilities :: Field TreacheryAttrs [Ability]
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId

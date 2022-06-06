@@ -2,6 +2,7 @@ module Arkham.Agenda.Attrs where
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Agenda.Cards
 import Arkham.Agenda.Sequence
 import Arkham.Agenda.Sequence qualified as AS
@@ -21,6 +22,7 @@ type AgendaCard a = CardBuilder (Int, AgendaId) a
 
 data instance Field AgendaAttrs :: Type -> Type where
   AgendaDoom :: Field AgendaAttrs Int
+  AgendaAbilities :: Field AgendaAttrs [Ability]
 
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int

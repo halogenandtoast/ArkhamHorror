@@ -1,22 +1,25 @@
-module Arkham.Effect.Attrs
-  ( module Arkham.Effect.Attrs
-  ) where
+module Arkham.Effect.Attrs where
 
 import Arkham.Prelude
 
-import Arkham.Json
+import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Window
 import Arkham.EffectId
 import Arkham.EffectMetadata
+import Arkham.Json
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Window (Window)
+import Arkham.Window ( Window )
 
 class IsEffect a
+
+data instance Field EffectAttrs :: Type -> Type where
+  EffectAbilities :: Field EffectAttrs [Ability]
 
 data EffectAttrs = EffectAttrs
   { effectId :: EffectId
@@ -29,7 +32,8 @@ data EffectAttrs = EffectAttrs
   }
   deriving stock (Show, Eq, Generic)
 
-type EffectArgs = (EffectId, Maybe (EffectMetadata Window Message), Source, Target)
+type EffectArgs
+  = (EffectId, Maybe (EffectMetadata Window Message), Source, Target)
 
 baseAttrs
   :: CardCode
@@ -58,11 +62,12 @@ instance FromJSON EffectAttrs where
 instance HasAbilities EffectAttrs
 
 isEndOfWindow :: EffectAttrs -> EffectWindow -> Bool
-isEndOfWindow EffectAttrs {effectWindow} effectWindow' = effectWindow' `elem` toEffectWindowList effectWindow
-  where
-    toEffectWindowList Nothing = []
-    toEffectWindowList (Just (FirstEffectWindow xs)) = xs
-    toEffectWindowList (Just x) = [x]
+isEndOfWindow EffectAttrs { effectWindow } effectWindow' = effectWindow'
+  `elem` toEffectWindowList effectWindow
+ where
+  toEffectWindowList Nothing = []
+  toEffectWindowList (Just (FirstEffectWindow xs)) = xs
+  toEffectWindowList (Just x) = [x]
 
 
 instance RunMessage EffectAttrs where

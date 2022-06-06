@@ -17,6 +17,7 @@ import Arkham.Criteria
 import Arkham.Enemy.Cards
 import Arkham.GameValue
 import Arkham.Helpers.Window
+import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword (HasKeywords(..), Keyword)
@@ -48,6 +49,7 @@ data instance Field EnemyAttrs :: Type -> Type where
   EnemyHealthDamage :: Field EnemyAttrs Int
   EnemySanityDamage :: Field EnemyAttrs Int
   EnemyTraits :: Field EnemyAttrs (HashSet Trait)
+  EnemyAbilities :: Field EnemyAttrs [Ability]
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId

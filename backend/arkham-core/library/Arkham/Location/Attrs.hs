@@ -48,6 +48,7 @@ data instance Field LocationAttrs :: Type -> Type where
   LocationUnrevealedName :: Field LocationAttrs Name
   -- virtual
   LocationCardDef :: Field LocationAttrs CardDef
+  LocationAbilities :: Field LocationAttrs [Ability]
 
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId

@@ -41,7 +41,7 @@ instance HasAbilities PeterClover where
       (FastAbility $ ExhaustCost $ toTarget x)
     ]
 
-instance AssetRunner env => RunMessage PeterClover where
+instance RunMessage PeterClover where
   runMessage msg a@(PeterClover attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AssetDamage (toId attrs) source 1 0)

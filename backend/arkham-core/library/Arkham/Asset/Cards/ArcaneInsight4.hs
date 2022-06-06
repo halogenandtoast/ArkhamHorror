@@ -34,7 +34,7 @@ instance HasAbilities ArcaneInsight4 where
         $ UseCost (AssetWithId $ toId a) Charge 1
     ]
 
-instance AssetRunner env => RunMessage ArcaneInsight4 where
+instance RunMessage ArcaneInsight4 where
   runMessage msg a@(ArcaneInsight4 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       mlid <- field InvestigatorLocation iid

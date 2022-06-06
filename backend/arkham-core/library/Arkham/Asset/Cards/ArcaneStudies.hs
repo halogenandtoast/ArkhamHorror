@@ -30,7 +30,7 @@ instance HasAbilities ArcaneStudies where
     | idx <- [1, 2]
     ]
 
-instance AssetRunner env => RunMessage ArcaneStudies where
+instance RunMessage ArcaneStudies where
   runMessage msg a@(ArcaneStudies attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier

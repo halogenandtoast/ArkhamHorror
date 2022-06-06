@@ -23,7 +23,7 @@ getXp
      , Query ScenarioMatcher m
      , Projection m ScenarioAttrs
      , Query InvestigatorMatcher m
-     , HasModifiersFor m ()
+     , HasModifiersFor ()
      )
   => m [(InvestigatorId, Int)]
 getXp = getXpWithBonus 0
@@ -34,7 +34,7 @@ getXpWithBonus
      , Query ScenarioMatcher m
      , Projection m ScenarioAttrs
      , Query InvestigatorMatcher m
-     , HasModifiersFor m ()
+     , HasModifiersFor ()
      )
   => Int
   -> m [(InvestigatorId, Int)]

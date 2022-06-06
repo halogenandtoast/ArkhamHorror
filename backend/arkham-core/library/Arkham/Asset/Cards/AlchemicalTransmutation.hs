@@ -28,7 +28,7 @@ instance HasAbilities AlchemicalTransmutation where
         [ExhaustCost (toTarget a), UseCost (AssetWithId $ toId a) Charge 1]
     ]
 
-instance AssetRunner env => RunMessage AlchemicalTransmutation where
+instance RunMessage AlchemicalTransmutation where
   runMessage msg a@(AlchemicalTransmutation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ CreateEffect "03032" Nothing source (InvestigatorTarget iid)

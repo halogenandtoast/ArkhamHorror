@@ -38,5 +38,5 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env DarkHo
 
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage DarkHorse where
+instance RunMessage DarkHorse where
   runMessage msg (DarkHorse attrs) = DarkHorse <$> runMessage msg attrs

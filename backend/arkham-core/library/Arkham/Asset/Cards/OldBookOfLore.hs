@@ -35,7 +35,7 @@ instance HasAbilities OldBookOfLore where
         $ Costs [ActionCost 1, ExhaustCost $ toTarget a]
     ]
 
-instance AssetRunner env => RunMessage OldBookOfLore where
+instance RunMessage OldBookOfLore where
   runMessage msg a@(OldBookOfLore attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId iid

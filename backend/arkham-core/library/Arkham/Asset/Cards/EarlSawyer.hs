@@ -36,7 +36,7 @@ instance HasModifiersFor env EarlSawyer where
     pure [ toModifier a (SkillModifier SkillAgility 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage EarlSawyer where
+instance RunMessage EarlSawyer where
   runMessage msg a@(EarlSawyer attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DrawCards iid 1 False)

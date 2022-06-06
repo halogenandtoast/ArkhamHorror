@@ -20,7 +20,7 @@ instance HasModifiersFor env LeoDeLuca where
     pure [ toModifier a (AdditionalActions 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage LeoDeLuca where
+instance RunMessage LeoDeLuca where
   runMessage msg (LeoDeLuca attrs@AssetAttrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       push $ GainActions iid (AssetSource aid) 1

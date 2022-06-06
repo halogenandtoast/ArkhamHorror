@@ -11,10 +11,12 @@ import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasModifiersFor
 import Arkham.ClassSymbol
+import Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Cards ( allInvestigatorCards )
 import Arkham.Json
+import {-# SOURCE #-} Arkham.Game
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Projection
@@ -179,7 +181,9 @@ baseSkillValueFor skill _maction tempModifiers attrs = foldr
     SkillWild -> error "investigators do not have wild skills"
 
 damageValueFor
-  :: (HasModifiersFor m (), HasSkillTest m) => Int -> InvestigatorAttrs -> m Int
+  :: Int
+  -> InvestigatorAttrs
+  -> GameT Int
 damageValueFor baseValue attrs = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
@@ -205,8 +209,7 @@ getIsScenarioAbility = do
       _ -> pure False
     _ -> pure False
 
-getHandSize
-  :: (HasModifiersFor m (), HasSkillTest m) => InvestigatorAttrs -> m Int
+getHandSize :: InvestigatorAttrs -> GameT Int
 getHandSize attrs = do
   source <- fromMaybe (toSource attrs) <$> getSkillTestSource
   modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
@@ -215,7 +218,7 @@ getHandSize attrs = do
   applyModifier (HandSize m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getInHandCount :: HasModifiersFor m () => InvestigatorAttrs -> m Int
+getInHandCount :: InvestigatorAttrs -> GameT Int
 getInHandCount attrs = do
   let
     cards = investigatorHand attrs
@@ -227,7 +230,7 @@ getInHandCount attrs = do
       pure $ foldl' applyModifier 1 modifiers
   sum <$> traverse getCardHandSize cards
 
-getAbilitiesForTurn :: HasModifiersFor m () => InvestigatorAttrs -> m Int
+getAbilitiesForTurn :: InvestigatorAttrs -> GameT Int
 getAbilitiesForTurn attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier 3 modifiers
@@ -235,7 +238,7 @@ getAbilitiesForTurn attrs = do
   applyModifier (AdditionalActions m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getCanDiscoverClues :: HasModifiersFor m () => InvestigatorAttrs -> m Bool
+getCanDiscoverClues :: InvestigatorAttrs -> GameT Bool
 getCanDiscoverClues attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ not (any match modifiers)
@@ -243,7 +246,7 @@ getCanDiscoverClues attrs = do
   match CannotDiscoverClues{} = True
   match _ = False
 
-getCanSpendClues :: HasModifiersFor m () => InvestigatorAttrs -> m Bool
+getCanSpendClues :: InvestigatorAttrs -> GameT Bool
 getCanSpendClues attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ not (any match modifiers)
@@ -251,7 +254,7 @@ getCanSpendClues attrs = do
   match CannotSpendClues{} = True
   match _ = False
 
-getModifiedHealth :: HasModifiersFor m () => InvestigatorAttrs -> m Int
+getModifiedHealth :: InvestigatorAttrs -> GameT Int
 getModifiedHealth attrs@InvestigatorAttrs {..} = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier investigatorHealth modifiers
@@ -259,7 +262,7 @@ getModifiedHealth attrs@InvestigatorAttrs {..} = do
   applyModifier (HealthModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getModifiedSanity :: HasModifiersFor m () => InvestigatorAttrs -> m Int
+getModifiedSanity :: InvestigatorAttrs -> GameT Int
 getModifiedSanity attrs@InvestigatorAttrs {..} = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier investigatorSanity modifiers
@@ -384,7 +387,7 @@ matchTarget attrs (FirstOneOf as) action =
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
-getActionCost :: HasModifiersFor m () => InvestigatorAttrs -> Action -> m Int
+getActionCost :: InvestigatorAttrs -> Action -> GameT Int
 getActionCost attrs a = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier 1 modifiers
@@ -394,7 +397,7 @@ getActionCost attrs a = do
   applyModifier _ n = n
 
 getActionCostModifier
-  :: HasModifiersFor m () => InvestigatorAttrs -> Maybe Action -> m Int
+  :: InvestigatorAttrs -> Maybe Action -> GameT Int
 getActionCostModifier _ Nothing = pure 0
 getActionCostModifier attrs (Just a) = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
@@ -404,13 +407,14 @@ getActionCostModifier attrs (Just a) = do
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
-getSpendableClueCount :: HasModifiersFor m () => InvestigatorAttrs -> m Int
+getSpendableClueCount
+  :: InvestigatorAttrs -> GameT Int
 getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a
   pure $ if canSpendClues then investigatorClues a else 0
 
 cluesToDiscover
-  :: (HasModifiersFor m (), HasSkillTest m) => InvestigatorAttrs -> Int -> m Int
+  :: InvestigatorAttrs -> Int -> GameT Int
 cluesToDiscover attrs startValue = do
   msource <- getSkillTestSource
   case msource of
@@ -424,7 +428,7 @@ cluesToDiscover attrs startValue = do
   applyModifier (DiscoveredClues m) n = n + m
   applyModifier _ n = n
 
-getCanAfford :: HasModifiersFor m () => InvestigatorAttrs -> Action -> m Bool
+getCanAfford :: InvestigatorAttrs -> Action -> GameT Bool
 getCanAfford a@InvestigatorAttrs {..} actionType = do
   actionCost <- getActionCost a actionType
   pure $ actionCost <= investigatorRemainingActions
@@ -441,7 +445,9 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     else go (m - 1) (d, PlayerCard c : h, cs)
 
 getPossibleSkillTypeChoices
-  :: HasModifiersFor m () => SkillType -> InvestigatorAttrs -> m [SkillType]
+  :: SkillType
+  -> InvestigatorAttrs
+  -> GameT [SkillType]
 getPossibleSkillTypeChoices skillType attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier [skillType] modifiers
@@ -451,7 +457,7 @@ getPossibleSkillTypeChoices skillType attrs = do
   applyModifier _ skills = skills
 
 canCommitToAnotherLocation
-  :: (HasModifiersFor m (), HasSkillTest m) => InvestigatorAttrs -> m Bool
+  :: HasModifiersFor () => InvestigatorAttrs -> GameT Bool
 canCommitToAnotherLocation attrs = do
   commitedCards <-
     skillTestCommittedCards . fromJustNote "no skill test" <$> getSkillTest
@@ -465,8 +471,7 @@ canCommitToAnotherLocation attrs = do
     m > length n
   permit _ _ = False
 
-hasModifier
-  :: HasModifiersFor m () => InvestigatorAttrs -> ModifierType -> m Bool
+hasModifier :: HasModifiersFor () => InvestigatorAttrs -> ModifierType -> GameT Bool
 hasModifier InvestigatorAttrs { investigatorId } m = elem m <$> getModifiers
   (InvestigatorSource investigatorId)
   (InvestigatorTarget investigatorId)

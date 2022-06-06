@@ -29,7 +29,7 @@ instance HasAbilities SongOfTheDead2 where
         [ActionCost 1, UseCost (AssetWithId $ toId x) Charge 1]
     ]
 
-instance AssetRunner env => RunMessage SongOfTheDead2 where
+instance RunMessage SongOfTheDead2 where
   runMessage msg a@(SongOfTheDead2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier

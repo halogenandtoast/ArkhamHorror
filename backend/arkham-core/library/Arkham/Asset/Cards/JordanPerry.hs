@@ -44,7 +44,7 @@ instance HasAbilities JordanPerry where
       $ toId a
     ]
 
-instance AssetRunner env => RunMessage JordanPerry where
+instance RunMessage JordanPerry where
   runMessage msg a@(JordanPerry attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 2)

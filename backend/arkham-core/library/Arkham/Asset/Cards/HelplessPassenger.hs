@@ -42,7 +42,7 @@ instance HasAbilities HelplessPassenger where
       $ toId x
     ]
 
-instance AssetRunner env => RunMessage HelplessPassenger where
+instance RunMessage HelplessPassenger where
   runMessage msg a@(HelplessPassenger attrs@AssetAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid

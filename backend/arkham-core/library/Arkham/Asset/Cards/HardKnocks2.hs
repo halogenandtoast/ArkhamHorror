@@ -30,7 +30,7 @@ instance HasAbilities HardKnocks2 where
     | idx <- [1, 2]
     ]
 
-instance AssetRunner env => RunMessage HardKnocks2 where
+instance RunMessage HardKnocks2 where
   runMessage msg a@(HardKnocks2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier

@@ -32,7 +32,7 @@ instance HasAbilities StrayCat where
         $ toTarget a
     ]
 
-instance AssetRunner env => RunMessage StrayCat where
+instance RunMessage StrayCat where
   runMessage msg a@(StrayCat attrs) = case msg of
     InDiscard _ (UseCardAbility iid source _ 1 _) | isSource attrs source -> do
       locationId <- getId @LocationId iid

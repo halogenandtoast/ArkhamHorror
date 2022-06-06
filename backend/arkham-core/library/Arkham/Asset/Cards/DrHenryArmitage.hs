@@ -28,7 +28,7 @@ instance HasAbilities DrHenryArmitage where
       $ Costs [DiscardDrawnCardCost, ExhaustCost (toTarget a)]
     ]
 
-instance AssetRunner env => RunMessage DrHenryArmitage where
+instance RunMessage DrHenryArmitage where
   runMessage msg a@(DrHenryArmitage attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (TakeResources iid 3 False)

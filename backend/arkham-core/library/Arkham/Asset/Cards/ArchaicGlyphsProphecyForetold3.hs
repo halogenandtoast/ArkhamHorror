@@ -31,7 +31,7 @@ archaicGlyphsProphecyForetold3 :: AssetCard ArchaicGlyphsProphecyForetold3
 archaicGlyphsProphecyForetold3 =
   asset ArchaicGlyphsProphecyForetold3 Cards.archaicGlyphsProphecyForetold3
 
-instance AssetRunner env => RunMessage ArchaicGlyphsProphecyForetold3 where
+instance RunMessage ArchaicGlyphsProphecyForetold3 where
   runMessage msg a@(ArchaicGlyphsProphecyForetold3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid

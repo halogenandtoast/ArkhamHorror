@@ -31,7 +31,7 @@ instance HasAbilities Lockpicks where
         $ toTarget a
     ]
 
-instance AssetRunner env => RunMessage Lockpicks where
+instance RunMessage Lockpicks where
   runMessage msg a@(Lockpicks attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid

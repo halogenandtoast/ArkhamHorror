@@ -30,7 +30,7 @@ instance HasAbilities SpiritSpeaker where
         (FastAbility $ ExhaustCost $ toTarget attrs)
     ]
 
-instance AssetRunner env => RunMessage SpiritSpeaker where
+instance RunMessage SpiritSpeaker where
   runMessage msg a@(SpiritSpeaker attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       assetIds <- selectList (AssetControlledBy You <> AssetWithUseType Charge)

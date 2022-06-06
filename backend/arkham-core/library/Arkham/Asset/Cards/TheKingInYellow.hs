@@ -52,7 +52,7 @@ instance HasSet CommittedCardId env InvestigatorId => HasModifiersFor env TheKin
       ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage TheKingInYellow where
+instance RunMessage TheKingInYellow where
   runMessage msg a@(TheKingInYellow attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       a <$ push (PutCardIntoPlay iid (toCard attrs) Nothing)

@@ -28,5 +28,5 @@ instance HasId InvestigatorId env EventId => HasModifiersFor env WendysAmulet wh
       [ PlaceOnBottomOfDeckInsteadOfDiscard | controlledBy a owner ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage WendysAmulet where
+instance RunMessage WendysAmulet where
   runMessage msg (WendysAmulet attrs) = WendysAmulet <$> runMessage msg attrs

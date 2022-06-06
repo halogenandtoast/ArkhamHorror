@@ -42,7 +42,7 @@ instance HasAbilities MadameLabranche where
       $ toTarget attrs
     ]
 
-instance AssetRunner env => RunMessage MadameLabranche where
+instance RunMessage MadameLabranche where
   runMessage msg a@(MadameLabranche attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DrawCards iid 1 False)

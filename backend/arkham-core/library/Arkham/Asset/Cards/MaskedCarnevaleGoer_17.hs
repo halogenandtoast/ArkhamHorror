@@ -39,7 +39,7 @@ locationOf AssetAttrs { assetLocation } = case assetLocation of
   Just lid -> lid
   Nothing -> error "impossible"
 
-instance AssetRunner env => RunMessage MaskedCarnevaleGoer_17 where
+instance RunMessage MaskedCarnevaleGoer_17 where
   runMessage msg a@(MaskedCarnevaleGoer_17 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let

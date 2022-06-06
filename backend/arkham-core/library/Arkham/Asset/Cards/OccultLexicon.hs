@@ -15,7 +15,7 @@ newtype OccultLexicon = OccultLexicon AssetAttrs
 occultLexicon :: AssetCard OccultLexicon
 occultLexicon = asset OccultLexicon Cards.occultLexicon
 
-instance AssetRunner env => RunMessage OccultLexicon where
+instance RunMessage OccultLexicon where
   runMessage msg (OccultLexicon attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       handBloodRite <- PlayerCard <$> genPlayerCard Events.bloodRite

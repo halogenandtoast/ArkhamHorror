@@ -45,7 +45,7 @@ instance Query AssetMatcher env => HasModifiersFor env WhittonGreene where
       pure $ toModifiers a [ SkillModifier SkillIntellect 1 | active ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage WhittonGreene where
+instance RunMessage WhittonGreene where
   runMessage msg a@(WhittonGreene attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (Search

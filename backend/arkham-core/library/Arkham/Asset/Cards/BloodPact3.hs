@@ -29,7 +29,7 @@ instance HasAbilities BloodPact3 where
     | idx <- [1 .. 2]
     ]
 
-instance AssetRunner env => RunMessage BloodPact3 where
+instance RunMessage BloodPact3 where
   runMessage msg a@(BloodPact3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier

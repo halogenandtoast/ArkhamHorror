@@ -11,7 +11,9 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Investigator.Attrs
+import Arkham.Matcher hiding ( MoveAction )
+import Arkham.Projection
 import Arkham.Target
 
 newtype AbbessAllegriaDiBiase = AbbessAllegriaDiBiase AssetAttrs
@@ -40,32 +42,33 @@ instance HasAbilities AbbessAllegriaDiBiase where
     Nothing -> []
 
 getAssetLocation
-  :: (MonadReader env m, HasId LocationId env InvestigatorId)
-  => AssetAttrs
-  -> m LocationId
+  :: (Applicative m, Projection m InvestigatorAttrs) => AssetAttrs -> m LocationId
 getAssetLocation AssetAttrs {..} = case assetLocation of
   Just location -> pure location
   Nothing -> case assetController of
-    Just iid -> getId iid
+    Just iid -> fromJustNote "expected" <$> field InvestigatorLocation iid
     Nothing -> error "Invalid location for Abbess"
 
-instance AssetRunner env => RunMessage AbbessAllegriaDiBiase where
+instance RunMessage AbbessAllegriaDiBiase where
   runMessage msg a@(AbbessAllegriaDiBiase attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      investigatorLocationId <- getId @LocationId iid
-      abbessLocationId <- getAssetLocation attrs
-      a <$ if investigatorLocationId == abbessLocationId
-        then do
-          connectedLocationIds <- map unConnectedLocationId
-            <$> getSetList abbessLocationId
-          push
-            (chooseOrRunOne
-              iid
-              [ TargetLabel
-                  (LocationTarget connectedLocationId)
-                  [MoveAction iid connectedLocationId Free False]
-              | connectedLocationId <- connectedLocationIds
-              ]
-            )
-        else push (MoveAction iid abbessLocationId Free False)
+      mLocationId <- field InvestigatorLocation iid
+      case mLocationId of
+        Nothing -> error "impossible"
+        Just locationId -> do
+          abbessLocationId <- getAssetLocation attrs
+          a <$ if locationId == abbessLocationId
+            then do
+              connectedLocationIds <-
+                selectList $ AccessibleFrom $ LocationWithId locationId
+              push
+                (chooseOrRunOne
+                  iid
+                  [ TargetLabel
+                      (LocationTarget connectedLocationId)
+                      [MoveAction iid connectedLocationId Free False]
+                  | connectedLocationId <- connectedLocationIds
+                  ]
+                )
+            else push (MoveAction iid abbessLocationId Free False)
     _ -> AbbessAllegriaDiBiase <$> runMessage msg attrs

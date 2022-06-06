@@ -10,17 +10,20 @@ import Arkham.Action (Action)
 import Arkham.SkillTestResult
 import Arkham.SkillTest.Base as X
 import Arkham.SkillType
-import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.Entity
 import Arkham.Card
 import Arkham.Card.Id
 import Arkham.Id
+import {-# SOURCE #-} Arkham.Game
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 
 class HasSkillTest m where
   getSkillTest :: m (Maybe SkillTest)
+
+instance HasGame m => HasSkillTest m where
+  getSkillTest = getGameSkillTest
 
 getSkillTestTarget :: (Functor m, HasSkillTest m) => m (Maybe Target)
 getSkillTestTarget = fmap skillTestTarget <$> getSkillTest
@@ -78,56 +81,6 @@ instance SourceEntity SkillTest where
       skillTestAction
   isSource _ SkillTestSource {} = True
   isSource _ _ = False
-
--- TODO: Cursed Swamp would apply to anyone trying to commit skill cards
-instance Monad m => HasModifiersFor m SkillTest
-
--- instance HasList CommittedCard env (InvestigatorId, SkillTest) where
---   getList (iid, st) =
---     pure
---       . map (CommittedCard . snd)
---       . filter ((== iid) . fst)
---       . toList
---       $ skillTestCommittedCards st
-
--- instance HasSet CommittedCardId env (InvestigatorId, SkillTest) where
---   getSet (iid, st) =
---     pure
---       . mapSet CommittedCardId
---       . keysSet
---       . filterMap ((== iid) . fst)
---       $ skillTestCommittedCards st
-
--- instance HasSet CommittedSkillId env (InvestigatorId, SkillTest) where
---   getSet (iid, st) =
---     pure
---       . mapSet (CommittedSkillId . SkillId)
---       . keysSet
---       . filterMap
---         (\(iid', card') -> iid' == iid && toCardType card' == SkillType)
---       $ skillTestCommittedCards st
-
--- instance HasModifiersFor env () => HasList CommittedSkillIcon env (InvestigatorId, SkillTest) where
---   getList (iid, st) = do
---     let cards = toList . filterMap ((== iid) . fst) $ skillTestCommittedCards st
---     concatMapM (fmap (map CommittedSkillIcon) . iconsForCard . snd) cards
---    where
---     iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
---       modifiers' <- getModifiers (toSource st) (CardIdTarget pcId)
---       pure $ foldr applyAfterSkillModifiers (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers') modifiers'
---     iconsForCard _ = pure []
---     applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
---     applySkillModifiers _ ys = ys
---     applyAfterSkillModifiers DoubleSkillIcons ys = ys <> ys
---     applyAfterSkillModifiers _ ys = ys
-
--- instance HasSet CommittedCardCode env SkillTest where
---   getSet =
---     pure
---       . setFromList
---       . map (CommittedCardCode . cdCardCode . toCardDef . snd)
---       . toList
---       . skillTestCommittedCards
 
 initSkillTest ::
   InvestigatorId ->

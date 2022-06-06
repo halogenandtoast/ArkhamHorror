@@ -49,7 +49,7 @@ instance HasModifiersFor env DaisysToteBagAdvanced where
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
 
-instance AssetRunner env => RunMessage DaisysToteBagAdvanced where
+instance RunMessage DaisysToteBagAdvanced where
   runMessage msg a@(DaisysToteBagAdvanced attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       pushAll $ replicate 2 (AddSlot iid HandSlot (slot attrs))

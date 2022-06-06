@@ -37,7 +37,7 @@ instance HasAbilities BeatCop where
         $ FastAbility (DiscardCost $ toTarget x)
     ]
 
-instance AssetRunner env => RunMessage BeatCop where
+instance RunMessage BeatCop where
   runMessage msg a@(BeatCop attrs) = case msg of
     InDiscard _ (UseCardAbility iid source _ 1 _) | isSource attrs source -> do
       enemies <- selectList (EnemyAt YourLocation)

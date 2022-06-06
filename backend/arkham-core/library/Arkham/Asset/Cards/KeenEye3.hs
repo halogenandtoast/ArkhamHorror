@@ -27,7 +27,7 @@ instance HasAbilities KeenEye3 where
     | idx <- [1, 2]
     ]
 
-instance AssetRunner env => RunMessage KeenEye3 where
+instance RunMessage KeenEye3 where
   runMessage msg a@(KeenEye3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier

@@ -43,7 +43,7 @@ instance HasAbilities BearTrap where
          ]
     where restriction = maybe OwnsThis (const Never) (assetEnemy x)
 
-instance AssetRunner env => RunMessage BearTrap where
+instance RunMessage BearTrap where
   runMessage msg a@(BearTrap attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid

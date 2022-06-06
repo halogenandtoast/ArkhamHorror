@@ -30,7 +30,7 @@ instance HasAbilities Shrivelling3 where
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
 
-instance AssetRunner env => RunMessage Shrivelling3 where
+instance RunMessage Shrivelling3 where
   runMessage msg a@(Shrivelling3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers

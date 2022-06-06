@@ -405,7 +405,6 @@ library
       Arkham.Classes.GameLogger
       Arkham.Classes.HasAbilities
       Arkham.Classes.HasHistory
-      Arkham.Classes.HasModifiersFor
       Arkham.Classes.HasQueue
       Arkham.Classes.HasRecord
       Arkham.Classes.HasSet
@@ -609,6 +608,7 @@ library
       Arkham.Enemy.Helpers
       Arkham.Enemy.Runner
       Arkham.EnemyId
+      Arkham.Entities
       Arkham.Event
       Arkham.Event.Attrs
       Arkham.Event.Cards

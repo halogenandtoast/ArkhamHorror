@@ -28,7 +28,7 @@ instance HasAbilities ArchaicGlyphs where
         $ singleton SkillIntellect
     ]
 
-instance AssetRunner env => RunMessage ArchaicGlyphs where
+instance RunMessage ArchaicGlyphs where
   runMessage msg a@(ArchaicGlyphs attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AddUses (toTarget attrs) Secret 1)

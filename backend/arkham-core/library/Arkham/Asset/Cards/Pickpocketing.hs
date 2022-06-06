@@ -28,7 +28,7 @@ instance HasAbilities Pickpocketing where
         (ExhaustCost $ toTarget a)
     ]
 
-instance AssetRunner env => RunMessage Pickpocketing where
+instance RunMessage Pickpocketing where
   runMessage msg a@(Pickpocketing attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DrawCards iid 1 False)

@@ -12,7 +12,7 @@ import Arkham.Helpers.Window as X
 import Arkham.Helpers.Xp as X
 
 import Arkham.Ability
-import Arkham.Act.Attrs ( Field (..) )
+import Arkham.Act.Attrs ( ActAttrs, Field (..) )
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Action ( Action, TakenAction (..) )
 import Arkham.Action qualified as Action
@@ -34,12 +34,13 @@ import Arkham.DamageEffect
 import Arkham.Deck hiding ( InvestigatorDiscard )
 import Arkham.Decks
 import Arkham.Direction
+import Arkham.Effect.Attrs ( EffectAttrs, Field (..) )
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterCard
 import Arkham.EncounterSet
 import Arkham.Enemy.Attrs ( EnemyAttrs, Field (..) )
-import Arkham.Event.Attrs ( Field (..) )
+import Arkham.Event.Attrs ( EventAttrs, Field (..) )
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.History
@@ -58,6 +59,7 @@ import Arkham.Projection
 import Arkham.Scenario.Attrs ( Field (..), ScenarioAttrs )
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
+import Arkham.Skill.Attrs ( Field (..), SkillAttrs )
 import Arkham.SkillTest
 import Arkham.SkillTestResult
 import Arkham.SkillType
@@ -445,7 +447,7 @@ getActions iid window = do
         _ -> Nothing
       )
       modifiersForFilter
-  unfilteredActions <- nub <$> asks getAbilities
+  unfilteredActions <- nub <$> getAllAbilities
   actions' <- if null abilityFilters
     then pure unfilteredActions
     else do
@@ -814,7 +816,7 @@ getIsPlayable iid source costStatus windows' c = do
   getIsPlayableWithResources iid source availableResources costStatus windows' c
 
 getIsPlayableWithResources
-  :: (HasCallStack, MonadIO m)
+  :: _
   => InvestigatorId
   -> Source
   -> Int
@@ -916,7 +918,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
   prevents _ = False
   passesLimit (LimitPerInvestigator m) = case toCardType c of
     AssetType -> do
-      n <- size <$> getSet @AssetId
+      n <- selectCount
         (Matcher.AssetControlledBy (Matcher.InvestigatorWithId iid)
         <> Matcher.AssetWithTitle (nameTitle $ toName c)
         )
@@ -924,12 +926,38 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     _ -> error $ "Not handling card type: " <> show (toCardType c)
   passesLimit (LimitPerTrait t m) = case toCardType c of
     AssetType -> do
-      n <- size <$> getSet @AssetId (Matcher.AssetWithTrait t)
+      n <- selectCount (Matcher.AssetWithTrait t)
       pure $ m > n
     _ -> error $ "Not handling card type: " <> show (toCardType c)
 
 passesCriteria
-  :: (HasCallStack, MonadIO m)
+  :: ( HasModifiersFor m ()
+     , HasSkillTest m
+     , MonadIO m
+     , Query Matcher.AssetMatcher m
+     , Query Matcher.EnemyMatcher m
+     , Query Matcher.LocationMatcher m
+     , Query Matcher.TreacheryMatcher m
+     , Query Matcher.AgendaMatcher m
+     , Query Matcher.InvestigatorMatcher m
+     , Query Matcher.EventMatcher m
+     , Query Matcher.SkillMatcher m
+     , Query Matcher.ScenarioDeckMatcher m
+     , Query Matcher.CardMatcher m
+     , Query Matcher.ExtendedCardMatcher m
+     , Query Matcher.ActMatcher m
+     , Projection m AssetAttrs
+     , Projection m EnemyAttrs
+     , Projection m LocationAttrs
+     , Projection m TreacheryAttrs
+     , Projection m AgendaAttrs
+     , Projection m InvestigatorAttrs
+     , Projection m EventAttrs
+     , Projection m SkillAttrs
+     , Projection m ActAttrs
+     , Query Matcher.ScenarioMatcher m
+     , Projection m ScenarioAttrs
+     )
   => InvestigatorId
   -> Source
   -> [Window]
@@ -1171,19 +1199,21 @@ passesCriteria iid source windows' = \case
         ActionAbility (Just Action.Resign) _ -> True
         _ -> False
   Criteria.Remembered rememberedListMatcher logKeys -> do
-    filtered <- filter (`elem` logKeys) <$> getSetList ()
+    filtered <-
+      filter (`elem` logKeys)
+        <$> scenarioFieldMap ScenarioRemembered HashSet.toList
     rememberedListMatches filtered rememberedListMatcher
 
 -- | Build a matcher and check the list
 passesEnemyCriteria
-  :: HasCallStack
+  :: (Projection m EventAttrs, Query Matcher.EnemyMatcher m)
   => InvestigatorId
   -> Source
   -> [Window]
   -> Criteria.EnemyCriterion
   -> m Bool
-passesEnemyCriteria _iid source windows' criterion =
-  notNull <$> (getSet @EnemyId =<< matcher criterion)
+passesEnemyCriteria _iid source windows' criterion = selectAny
+  =<< matcher criterion
  where
   matcher = \case
     Criteria.EnemyMatchesCriteria ms -> mconcatMapM matcher ms
@@ -1210,7 +1240,11 @@ passesEnemyCriteria _iid source windows' criterion =
           [] -> error "can not be called without enemy source"
           xs -> pure $ Matcher.NotEnemy (concatMap Matcher.EnemyWithId xs)
 
-getModifiedCardCost :: HasModifiersFor m () => InvestigatorId -> Card -> m Int
+getModifiedCardCost
+  :: (HasModifiersFor m (), Query Matcher.CardMatcher m)
+  => InvestigatorId
+  -> Card
+  -> m Int
 getModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   cardModifiers <- getModifiers
@@ -1247,7 +1281,28 @@ depthGuard = unsafePerformIO $ newIORef 0
 {-# NOINLINE depthGuard #-}
 
 cardInFastWindows
-  :: MonadIO m
+  :: ( Projection m AssetAttrs
+     , Projection m EnemyAttrs
+     , Projection m EventAttrs
+     , Projection m InvestigatorAttrs
+     , Projection m LocationAttrs
+     , Projection m SkillAttrs
+     , Projection m TreacheryAttrs
+     , HasModifiersFor m ()
+     , MonadIO m
+     , HasDepth env
+     , MonadReader env m
+     , Query Matcher.InvestigatorMatcher m
+     , Query Matcher.EnemyMatcher m
+     , Query Matcher.LocationMatcher m
+     , Query Matcher.AssetMatcher m
+     , Query Matcher.AgendaMatcher m
+     , Query Matcher.TreacheryMatcher m
+     , Query Matcher.ExtendedCardMatcher m
+     , Query Matcher.SkillMatcher m
+     , HasSkillTest m
+     , HasTokenValue m ()
+     )
   => InvestigatorId
   -> Source
   -> Card
@@ -1285,7 +1340,28 @@ resurface = do
   writeIORef ref (max 0 (current - 1))
 
 windowMatches
-  :: MonadIO m
+  :: ( Projection m AssetAttrs
+     , Projection m EnemyAttrs
+     , Projection m EventAttrs
+     , Projection m InvestigatorAttrs
+     , Projection m LocationAttrs
+     , Projection m SkillAttrs
+     , Projection m TreacheryAttrs
+     , HasModifiersFor m ()
+     , MonadIO m
+     , HasDepth env
+     , MonadReader env m
+     , Query Matcher.InvestigatorMatcher m
+     , Query Matcher.EnemyMatcher m
+     , Query Matcher.LocationMatcher m
+     , Query Matcher.AssetMatcher m
+     , Query Matcher.AgendaMatcher m
+     , Query Matcher.TreacheryMatcher m
+     , Query Matcher.ExtendedCardMatcher m
+     , Query Matcher.SkillMatcher m
+     , HasSkillTest m
+     , HasTokenValue m ()
+     )
   => InvestigatorId
   -> Source
   -> Window
@@ -1813,10 +1889,14 @@ windowMatches iid source window' = \case
       member eid <$> select enemyMatcher
     _ -> pure False
 
-matchWho :: InvestigatorId -> Matcher.InvestigatorMatcher -> m Bool
+matchWho
+  :: (Monad m, Query Matcher.InvestigatorMatcher m)
+  => InvestigatorId
+  -> Matcher.InvestigatorMatcher
+  -> m Bool
 matchWho who matcher = member who <$> select matcher
 
-gameValueMatches :: Int -> Matcher.ValueMatcher -> m Bool
+gameValueMatches :: Monad m => Int -> Matcher.ValueMatcher -> m Bool
 gameValueMatches n = \case
   Matcher.AnyValue -> pure True
   Matcher.LessThan gv -> (n <) <$> getPlayerCountValue gv
@@ -1825,14 +1905,75 @@ gameValueMatches n = \case
   Matcher.GreaterThanOrEqualTo gv -> (n >=) <$> getPlayerCountValue gv
   Matcher.EqualTo gv -> (n ==) <$> getPlayerCountValue gv
 
+sourceTraits
+  :: ( Projection m AssetAttrs
+     , Projection m EnemyAttrs
+     , Projection m EventAttrs
+     , Projection m InvestigatorAttrs
+     , Projection m LocationAttrs
+     , Projection m SkillAttrs
+     , Projection m TreacheryAttrs
+     , Monad m
+     )
+  => Source
+  -> m (HashSet Trait)
+sourceTraits = \case
+  AbilitySource s _ -> sourceTraits s
+  ActDeckSource -> pure mempty
+  ActSource _ -> pure mempty
+  AfterSkillTestSource -> pure mempty
+  AgendaDeckSource -> pure mempty
+  AgendaSource _ -> pure mempty
+  AssetMatcherSource _ -> pure mempty
+  AssetSource aid -> field AssetTraits aid
+
+  CardCodeSource _ -> pure mempty
+  CardIdSource _ -> pure mempty
+  DeckSource -> pure mempty
+  EffectSource _ -> pure mempty
+  EmptyDeckSource -> pure mempty
+  EncounterCardSource _ -> pure mempty
+  EnemyAttackSource _ -> pure mempty
+
+  EnemySource eid -> field EnemyTraits eid
+  EventSource eid -> field EventTraits eid
+
+  GameSource -> pure mempty
+
+  InvestigatorSource iid -> field InvestigatorTraits iid
+  LocationSource lid -> field LocationTraits lid
+
+  PlayerCardSource _ -> pure mempty
+  ProxySource s _ -> sourceTraits s
+  ResourceSource -> pure mempty
+
+  ScenarioSource _ -> pure mempty
+  SkillSource sid -> field SkillTraits sid
+  SkillTestSource{} -> pure mempty
+  TreacherySource tid -> field TreacheryTraits tid
+
+  StorySource _ -> pure mempty
+  TestSource traits -> pure traits
+  TokenEffectSource _ -> pure mempty
+  TokenSource _ -> pure mempty
+
 sourceMatches
-  :: (Query Matcher.InvestigatorMatcher m, Query Matcher.EnemyMatcher m)
+  :: ( Projection m AssetAttrs
+     , Projection m EnemyAttrs
+     , Projection m EventAttrs
+     , Projection m InvestigatorAttrs
+     , Projection m LocationAttrs
+     , Projection m SkillAttrs
+     , Projection m TreacheryAttrs
+     , Query Matcher.InvestigatorMatcher m
+     , Query Matcher.EnemyMatcher m
+     )
   => Source
   -> Matcher.SourceMatcher
   -> m Bool
 sourceMatches s = \case
   Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms
-  Matcher.SourceWithTrait t -> elem t <$> getSet s
+  Matcher.SourceWithTrait t -> elem t <$> sourceTraits s
   Matcher.SourceIsEnemyAttack em -> case s of
     EnemyAttackSource eid -> member eid <$> select em
     _ -> pure False
@@ -1901,21 +2042,27 @@ sourceMatches s = \case
     TreacherySource _ -> True
     _ -> False
 
-targetMatches :: MonadReader env m => Target -> Matcher.TargetMatcher -> m Bool
+targetMatches :: Monad m => Target -> Matcher.TargetMatcher -> m Bool
 targetMatches s = \case
   Matcher.TargetMatchesAny ms -> anyM (targetMatches s) ms
   Matcher.TargetIs s' -> pure $ s == s'
   Matcher.AnyTarget -> pure True
   Matcher.TargetMatches ms -> allM (targetMatches s) ms
 
-enemyMatches :: EnemyId -> Matcher.EnemyMatcher -> m Bool
-enemyMatches !enemyId !mtchr = member enemyId <$> getSet mtchr
+enemyMatches
+  :: (Query Matcher.EnemyMatcher m) => EnemyId -> Matcher.EnemyMatcher -> m Bool
+enemyMatches !enemyId !mtchr = member enemyId <$> select mtchr
 
 locationMatches
   :: ( HasCallStack
      , Query Matcher.TreacheryMatcher m
+     , Query Matcher.InvestigatorMatcher m
+     , Query Matcher.LocationMatcher m
+     , Query Matcher.EnemyMatcher m
+     , Query Matcher.AssetMatcher m
      , Projection m InvestigatorAttrs
      , Projection m LocationAttrs
+     , HasModifiersFor m ()
      )
   => InvestigatorId
   -> Source
@@ -1943,13 +2090,10 @@ locationMatches investigatorId source window locationId matcher =
     Matcher.Unblocked -> notElem Blocked <$> getModifiers
       (InvestigatorSource investigatorId)
       (LocationTarget locationId)
-    Matcher.EmptyLocation -> liftA2
-      (&&)
-      (null <$> getSet @EnemyId locationId)
-      (null <$> getSet @InvestigatorId locationId)
+    Matcher.EmptyLocation -> member locationId <$> select matcher
     Matcher.LocationWithoutInvestigators ->
-      null <$> getSet @InvestigatorId locationId
-    Matcher.LocationWithoutEnemies -> null <$> getSet @EnemyId locationId
+      member locationId <$> select matcher
+    Matcher.LocationWithoutEnemies -> member locationId <$> select matcher
     Matcher.LocationWithEnemy enemyMatcher -> notNull <$> select
       (Matcher.EnemyAt (Matcher.LocationWithId locationId) <> enemyMatcher)
     Matcher.LocationWithAsset assetMatcher -> notNull <$> select
@@ -2036,7 +2180,13 @@ skillTestMatches
      , Query Matcher.LocationMatcher m
      , Query Matcher.TreacheryMatcher m
      , Query Matcher.InvestigatorMatcher m
+     , Projection m AssetAttrs
+     , Projection m EnemyAttrs
+     , Projection m EventAttrs
      , Projection m InvestigatorAttrs
+     , Projection m LocationAttrs
+     , Projection m SkillAttrs
+     , Projection m TreacheryAttrs
      )
   => InvestigatorId
   -> Source
@@ -2123,14 +2273,13 @@ getModifiedTokenFaces source tokens = flip
   applyModifier [f'] (ForcedTokenChange f fs) | f == f' = fs
   applyModifier fs _ = fs
 
-cardListMatches :: Applicative m => [Card] -> Matcher.CardListMatcher -> m Bool
+cardListMatches :: Monad m => [Card] -> Matcher.CardListMatcher -> m Bool
 cardListMatches cards = \case
   Matcher.AnyCards -> pure True
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
   Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards
 
-targetListMatches
-  :: MonadReader env m => [Target] -> Matcher.TargetListMatcher -> m Bool
+targetListMatches :: Monad m => [Target] -> Matcher.TargetListMatcher -> m Bool
 targetListMatches targets = \case
   Matcher.AnyTargetList -> pure True
   Matcher.HasTarget targetMatcher ->
@@ -2139,17 +2288,14 @@ targetListMatches targets = \case
     noneM (`targetMatches` targetMatcher) targets
 
 rememberedListMatches
-  :: Applicative m
-  => [ScenarioLogKey]
-  -> Matcher.ScenarioLogKeyListMatcher
-  -> m Bool
+  :: Monad m => [ScenarioLogKey] -> Matcher.ScenarioLogKeyListMatcher -> m Bool
 rememberedListMatches targets = \case
   Matcher.HasRemembered k -> pure $ k `elem` targets
   Matcher.RememberedLengthIs valueMatcher ->
     gameValueMatches (length targets) valueMatcher
 
 deckMatch
-  :: Applicative m
+  :: (Monad m, Query Matcher.InvestigatorMatcher m)
   => InvestigatorId
   -> DeckSignifier
   -> Matcher.DeckMatcher
@@ -2210,6 +2356,13 @@ sourceCanDamageEnemy
   :: ( HasModifiersFor m ()
      , Query Matcher.InvestigatorMatcher m
      , Query Matcher.EnemyMatcher m
+     , Projection m AssetAttrs
+     , Projection m EnemyAttrs
+     , Projection m EventAttrs
+     , Projection m InvestigatorAttrs
+     , Projection m LocationAttrs
+     , Projection m SkillAttrs
+     , Projection m TreacheryAttrs
      )
   => EnemyId
   -> Source
@@ -2231,10 +2384,10 @@ getCanShuffleDeck iid = do
   pure $ CannotManipulateDeck `notElem` modifiers
 
 remembered
-  :: (Functor m, Query Matcher.ScenarioLogKeyMatcher m)
+  :: (Functor m, Projection m ScenarioAttrs, Query Matcher.ScenarioMatcher m)
   => ScenarioLogKey
   -> m Bool
-remembered = fmap isJust . selectOne . Matcher.KeyIs
+remembered k = member k <$> scenarioField ScenarioRemembered
 
 getDoomCount
   :: ( Query Matcher.AssetMatcher m
@@ -2283,3 +2436,33 @@ getPotentialSlots traits iid = do
             else pure False
           )
           slotTypesAndSlots
+
+getAllAbilities :: _ => m [Ability]
+getAllAbilities = do
+  enemyAbilities <- concatMapM (field EnemyAbilities)
+    =<< selectList Matcher.AnyEnemy
+  locationAbilities <- concatMapM (field LocationAbilities)
+    =<< selectList Matcher.Anywhere
+  assetAbilities <- concatMapM (field AssetAbilities)
+    =<< selectList Matcher.AnyAsset
+  treacheryAbilities <- concatMapM (field TreacheryAbilities)
+    =<< selectList Matcher.AnyTreachery
+  actAbilities <- concatMapM (field ActAbilities) =<< selectList Matcher.AnyAct
+  agendaAbilities <- concatMapM (field AgendaAbilities)
+    =<< selectList Matcher.AnyAgenda
+  eventAbilities <- concatMapM (field EventAbilities)
+    =<< selectList Matcher.AnyEvent
+  effectAbilities <- concatMapM (field EffectAbilities)
+    =<< selectList Matcher.AnyEffect
+  investigatorAbilities <- concatMapM (field InvestigatorAbilities)
+    =<< selectList Matcher.Anyone
+  pure
+    $ enemyAbilities
+    <> locationAbilities
+    <> assetAbilities
+    <> treacheryAbilities
+    <> eventAbilities
+    <> actAbilities
+    <> agendaAbilities
+    <> effectAbilities
+    <> investigatorAbilities

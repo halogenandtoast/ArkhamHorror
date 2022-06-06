@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Scenario.Runner where
 
 import Arkham.Prelude
@@ -6,14 +7,12 @@ import Arkham.Act.Sequence
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes
-import Arkham.Decks
 import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Resolution
 import Arkham.Scenario.Attrs

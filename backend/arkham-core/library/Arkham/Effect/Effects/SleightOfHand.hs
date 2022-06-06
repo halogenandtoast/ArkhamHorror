@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Attrs
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target

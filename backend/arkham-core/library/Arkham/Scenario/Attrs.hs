@@ -44,6 +44,7 @@ data instance Field ScenarioAttrs :: Type -> Type where
   ScenarioCardsUnderActDeck :: Field ScenarioAttrs [Card]
   ScenarioCardsUnderAgendaDeck :: Field ScenarioAttrs [Card]
   ScenarioVictoryDisplay :: Field ScenarioAttrs [Card]
+  ScenarioRemembered :: Field ScenarioAttrs (HashSet ScenarioLogKey)
 
 data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Name

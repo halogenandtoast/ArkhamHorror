@@ -37,6 +37,7 @@ data instance Field AssetAttrs :: Type -> Type where
   AssetTraits :: Field AssetAttrs (HashSet Trait)
   AssetCardDef :: Field AssetAttrs CardDef
   AssetCard :: Field AssetAttrs Card
+  AssetAbilities :: Field AssetAttrs [Ability]
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId

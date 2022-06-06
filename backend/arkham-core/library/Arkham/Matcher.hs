@@ -287,6 +287,7 @@ data EventMatcher
   | EventControlledBy InvestigatorMatcher
   | EventReady
   | EventMatches [EventMatcher]
+  | AnyEvent
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -828,5 +829,9 @@ data ScenarioMatcher = TheScenario
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data CampaignMatcher = TheCampaign
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data EffectMatcher = AnyEffect
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
 import Arkham.Treachery.Cards qualified as Cards
 
-newtype Metadata = Metadata { usedAbility :: Bool }
+newtype Metadata = Metadata { hasUsedAbility :: Bool }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -47,7 +47,7 @@ instance HasAbilities TheShadowBehindYou where
             )
           $ ForcedAbility
           $ TurnEnds Timing.When You
-        | not (usedAbility metadata)
+        | not (hasUsedAbility metadata)
         ]
 
 instance RunMessage TheShadowBehindYou where

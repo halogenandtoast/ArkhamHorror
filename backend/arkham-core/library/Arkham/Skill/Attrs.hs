@@ -10,13 +10,18 @@ import Arkham.Cost
 import Arkham.InvestigatorId
 import Arkham.Message
 import Arkham.Name
+import Arkham.Projection
 import Arkham.SkillId
 import Arkham.Source
 import Arkham.Target
+import Arkham.Trait
+
+class IsSkill a
 
 type SkillCard a = CardBuilder (InvestigatorId, SkillId) a
 
-class IsSkill a
+data instance Field SkillAttrs :: Type -> Type where
+  SkillTraits :: Field SkillAttrs (HashSet Trait)
 
 data SkillAttrs = SkillAttrs
   { skillCardCode :: CardCode

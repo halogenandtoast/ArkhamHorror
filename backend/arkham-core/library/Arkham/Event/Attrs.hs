@@ -2,6 +2,7 @@ module Arkham.Event.Attrs where
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Event.Cards
 import Arkham.Json
 import Arkham.Card
@@ -12,6 +13,7 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Trait
 
 class IsEvent a
 
@@ -19,6 +21,8 @@ type EventCard a = CardBuilder (InvestigatorId, EventId) a
 
 data instance Field EventAttrs :: Type -> Type where
   EventAttachedTarget :: Field EventAttrs (Maybe Target)
+  EventTraits :: Field EventAttrs (HashSet Trait)
+  EventAbilities :: Field EventAttrs [Ability]
 
 data EventAttrs = EventAttrs
   { eventCardCode :: CardCode

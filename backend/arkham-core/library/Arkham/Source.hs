@@ -16,38 +16,38 @@ import Arkham.Token
 import Arkham.Trait
 
 data Source
-  = AssetSource AssetId
-  | EnemySource EnemyId
-  | ScenarioSource ScenarioId
-  | InvestigatorSource InvestigatorId
-  | CardCodeSource CardCode
-  | TokenSource Token
-  | TokenEffectSource TokenFace
-  | AgendaSource AgendaId
-  | LocationSource LocationId
-  | SkillTestSource InvestigatorId SkillType Source (Maybe Action)
-  | AfterSkillTestSource
-  | TreacherySource TreacheryId
-  | EventSource EventId
-  | SkillSource SkillId
-  | EmptyDeckSource
-  | DeckSource
-  | GameSource
-  | CardIdSource CardId
-  | ActSource ActId
-  | PlayerCardSource PlayerCard
-  | EncounterCardSource CardId
-  | TestSource (HashSet Trait)
-  | ProxySource Source Source
-  | EffectSource EffectId
-  | ResourceSource
-  | AbilitySource Source Int
+  = AbilitySource Source Int
   | ActDeckSource
+  | ActSource ActId
+  | AfterSkillTestSource
   | AgendaDeckSource
-  | YouSource
-  | EnemyAttackSource EnemyId
+  | AgendaSource AgendaId
   | AssetMatcherSource AssetMatcher
+  | AssetSource AssetId
+  | CardCodeSource CardCode
+  | CardIdSource CardId
+  | DeckSource
+  | EffectSource EffectId
+  | EmptyDeckSource
+  | EncounterCardSource CardId
+  | EnemyAttackSource EnemyId
+  | EnemySource EnemyId
+  | EventSource EventId
+  | GameSource
+  | InvestigatorSource InvestigatorId
   | LocationMatcherSource LocationMatcher
+  | LocationSource LocationId
+  | PlayerCardSource PlayerCard
+  | ProxySource Source Source
+  | ResourceSource
+  | ScenarioSource ScenarioId
+  | SkillSource SkillId
+  | SkillTestSource InvestigatorId SkillType Source (Maybe Action)
   | StorySource CardCode
+  | TestSource (HashSet Trait)
+  | TokenEffectSource TokenFace
+  | TokenSource Token
+  | TreacherySource TreacheryId
+  | YouSource
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

@@ -51,6 +51,8 @@ data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorActionsTaken :: Field InvestigatorAttrs [Action]
   InvestigatorSlots :: Field InvestigatorAttrs (HashMap SlotType [Slot])
   InvestigatorUsedAbilities :: Field InvestigatorAttrs [UsedAbility]
+  InvestigatorTraits :: Field InvestigatorAttrs (HashSet Trait)
+  InvestigatorAbilities :: Field InvestigatorAttrs [Ability]
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId

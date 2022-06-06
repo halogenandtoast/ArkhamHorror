@@ -32,7 +32,7 @@ instance HasAbilities Scrapper3 where
     | idx <- [1, 2]
     ]
 
-instance AssetRunner env => RunMessage Scrapper3 where
+instance RunMessage Scrapper3 where
   runMessage msg a@(Scrapper3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (CreateWindowModifierEffect

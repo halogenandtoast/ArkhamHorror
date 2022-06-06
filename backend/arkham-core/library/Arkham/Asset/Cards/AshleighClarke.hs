@@ -35,7 +35,7 @@ instance HasAbilities AshleighClarke where
       $ toId a
     ]
 
-instance AssetRunner env => RunMessage AshleighClarke where
+instance RunMessage AshleighClarke where
   runMessage msg a@(AshleighClarke attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ when
       (assetClues attrs > 0)

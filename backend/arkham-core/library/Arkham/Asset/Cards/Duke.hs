@@ -60,7 +60,7 @@ dukeInvestigate :: AssetAttrs -> InvestigatorId -> LocationId -> Message
 dukeInvestigate attrs iid lid =
   Investigate iid lid (toSource attrs) Nothing SkillIntellect False
 
-instance AssetRunner env => RunMessage Duke where
+instance RunMessage Duke where
   runMessage msg a@(Duke attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)

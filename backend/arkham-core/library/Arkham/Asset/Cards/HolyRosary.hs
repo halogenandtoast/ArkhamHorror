@@ -20,5 +20,5 @@ instance HasModifiersFor env  HolyRosary where
     pure [ toModifier a (SkillModifier SkillWillpower 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage HolyRosary where
+instance RunMessage HolyRosary where
   runMessage msg (HolyRosary attrs) = HolyRosary <$> runMessage msg attrs

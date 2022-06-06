@@ -40,7 +40,7 @@ instance HasAbilities InnocentReveler where
       $ toId x
     ]
 
-instance AssetRunner env => RunMessage InnocentReveler where
+instance RunMessage InnocentReveler where
   runMessage msg a@(InnocentReveler attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a

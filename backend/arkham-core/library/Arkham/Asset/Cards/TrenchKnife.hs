@@ -37,7 +37,7 @@ instance HasAbilities TrenchKnife where
         $ ActionCost 1
     ]
 
-instance AssetRunner env => RunMessage TrenchKnife where
+instance RunMessage TrenchKnife where
   runMessage msg a@(TrenchKnife attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       enemyCount <- selectCount EnemyEngagedWithYou

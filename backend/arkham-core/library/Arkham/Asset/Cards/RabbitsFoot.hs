@@ -24,7 +24,7 @@ instance HasAbilities RabbitsFoot where
         (ExhaustCost $ toTarget a)
     ]
 
-instance AssetRunner env => RunMessage RabbitsFoot where
+instance RunMessage RabbitsFoot where
   runMessage msg a@(RabbitsFoot attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DrawCards iid 1 False)

@@ -36,7 +36,7 @@ instance HasAbilities SmokingPipe where
         )
     ]
 
-instance AssetRunner env => RunMessage SmokingPipe where
+instance RunMessage SmokingPipe where
   runMessage msg a@(SmokingPipe attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (HealHorror (InvestigatorTarget iid) 1)

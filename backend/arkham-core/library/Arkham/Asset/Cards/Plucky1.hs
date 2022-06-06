@@ -35,7 +35,7 @@ instance HasModifiersFor env Plucky1 where
     pure $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage Plucky1 where
+instance RunMessage Plucky1 where
   runMessage msg a@(Plucky1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (skillTestModifier

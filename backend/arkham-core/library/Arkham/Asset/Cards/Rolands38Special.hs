@@ -33,7 +33,7 @@ instance HasAbilities Rolands38Special where
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Ammo 1])
     ]
 
-instance AssetRunner env => RunMessage Rolands38Special where
+instance RunMessage Rolands38Special where
   runMessage msg a@(Rolands38Special attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       mLocationId <- field InvestigatorLocation iid

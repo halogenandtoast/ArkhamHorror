@@ -42,7 +42,7 @@ instance HasModifiersFor env SophieItWasAllMyFault where
     | controlledBy attrs iid = pure $ toModifiers attrs [AnySkillValue (-1)]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env => RunMessage SophieItWasAllMyFault where
+instance RunMessage SophieItWasAllMyFault where
   runMessage msg a@(SophieItWasAllMyFault attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (Flip (toSource attrs) (toTarget attrs))

@@ -15,5 +15,5 @@ newtype Courage = Courage AssetAttrs
 courage :: AssetCard Courage
 courage = assetWith Courage Cards.courage (sanityL ?~ 2)
 
-instance AssetRunner env => RunMessage Courage where
+instance RunMessage Courage where
   runMessage msg (Courage attrs) = Courage <$> runMessage msg attrs

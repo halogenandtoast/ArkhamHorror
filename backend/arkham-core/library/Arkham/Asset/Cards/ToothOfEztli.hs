@@ -49,7 +49,7 @@ instance HasAbilities ToothOfEztli where
         )
     ]
 
-instance AssetRunner env => RunMessage ToothOfEztli where
+instance RunMessage ToothOfEztli where
   runMessage msg a@(ToothOfEztli attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DrawCards iid 1 False)

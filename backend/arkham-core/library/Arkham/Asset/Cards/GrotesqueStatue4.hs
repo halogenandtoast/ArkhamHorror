@@ -35,7 +35,7 @@ instance HasAbilities GrotesqueStatue4 where
         )
     ]
 
-instance AssetRunner env => RunMessage GrotesqueStatue4 where
+instance RunMessage GrotesqueStatue4 where
   runMessage msg a@(GrotesqueStatue4 attrs) = case msg of
     UseCardAbility iid source [Window Timing.When (Window.WouldRevealChaosToken drawSource _)] 1 _
       | isSource attrs source

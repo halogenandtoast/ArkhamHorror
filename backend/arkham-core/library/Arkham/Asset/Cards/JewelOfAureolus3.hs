@@ -39,7 +39,7 @@ instance HasAbilities JewelOfAureolus3 where
         )
     ]
 
-instance AssetRunner env => RunMessage JewelOfAureolus3 where
+instance RunMessage JewelOfAureolus3 where
   runMessage msg a@(JewelOfAureolus3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (chooseOne

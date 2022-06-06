@@ -30,7 +30,7 @@ instance HasAbilities Pickpocketing2 where
         (ExhaustCost $ toTarget a)
     ]
 
-instance AssetRunner env => RunMessage Pickpocketing2 where
+instance RunMessage Pickpocketing2 where
   runMessage msg a@(Pickpocketing2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       mskillTest <- getSkillTest

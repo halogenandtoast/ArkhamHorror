@@ -42,7 +42,7 @@ instance HasAbilities FishingNet where
         <> enemyIs Cards.theRougarou
         )
 
-instance AssetRunner env => RunMessage FishingNet where
+instance RunMessage FishingNet where
   runMessage msg a@(FishingNet attrs@AssetAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       mrougarou <- selectOne $ enemyIs Cards.theRougarou

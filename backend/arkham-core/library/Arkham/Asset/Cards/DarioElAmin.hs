@@ -44,7 +44,7 @@ instance HasAbilities DarioElAmin where
         $ toTarget attrs
     ]
 
-instance AssetRunner env => RunMessage DarioElAmin where
+instance RunMessage DarioElAmin where
   runMessage msg a@(DarioElAmin attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (TakeResources iid 2 False)

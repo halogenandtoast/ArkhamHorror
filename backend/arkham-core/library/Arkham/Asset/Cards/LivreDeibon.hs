@@ -36,7 +36,7 @@ instance HasAbilities LivreDeibon where
       $ toTarget a
     ]
 
-instance AssetRunner env => RunMessage LivreDeibon where
+instance RunMessage LivreDeibon where
   runMessage msg a@(LivreDeibon attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       handCards <- map unHandCard <$> getList iid

@@ -8,7 +8,6 @@ import Arkham.Action qualified as Action
 import Arkham.AssetId
 import Arkham.Card
 import Arkham.Classes.Entity
-import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasQueue
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.Query
@@ -225,7 +224,7 @@ spawnAt eid locationMatcher = do
     (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
 
 modifiedEnemyFight
-  :: (HasModifiersFor m (), HasSkillTest m)
+  :: (CanGetModifiersFor m, HasSkillTest m)
   => EnemyAttrs
   -> m Int
 modifiedEnemyFight EnemyAttrs {..} = do
@@ -238,7 +237,7 @@ modifiedEnemyFight EnemyAttrs {..} = do
   applyModifier _ n = n
 
 modifiedEnemyEvade
-  :: (HasModifiersFor m (), HasSkillTest m)
+  :: (CanGetModifiersFor m, HasSkillTest m)
   => EnemyAttrs
   -> m Int
 modifiedEnemyEvade EnemyAttrs {..} = do
@@ -251,7 +250,7 @@ modifiedEnemyEvade EnemyAttrs {..} = do
   applyModifier _ n = n
 
 getModifiedDamageAmount
-  :: (HasModifiersFor m (), HasSkillTest m)
+  :: (CanGetModifiersFor m, HasSkillTest m)
   => EnemyAttrs
   -> Bool
   -> Int
@@ -269,7 +268,7 @@ getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   applyModifierCaps _ n = n
 
 getModifiedKeywords
-  :: (HasModifiersFor m (), HasSkillTest m)
+  :: (CanGetModifiersFor m, HasSkillTest m)
   => EnemyAttrs
   -> m (HashSet Keyword)
 getModifiedKeywords e@EnemyAttrs {..} = do
@@ -282,7 +281,7 @@ getModifiedKeywords e@EnemyAttrs {..} = do
   applyModifier _ n = n
 
 canEnterLocation
-  :: (Projection m EnemyAttrs, HasModifiersFor m ())
+  :: (Projection m EnemyAttrs, CanGetModifiersFor m)
   => EnemyId
   -> LocationId
   -> m Bool
@@ -342,7 +341,7 @@ instance SourceEntity EnemyAttrs where
   isSource _ _ = False
 
 getModifiedHealth
-  :: (Query InvestigatorMatcher m, HasModifiersFor m ())
+  :: (Query InvestigatorMatcher m, CanGetModifiersFor m)
   => EnemyAttrs
   -> m Int
 getModifiedHealth EnemyAttrs {..} = do

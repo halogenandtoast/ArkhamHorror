@@ -20,7 +20,7 @@ bandolier = assetWith Bandolier Cards.bandolier (healthL ?~ 1)
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing
 
-instance AssetRunner env => RunMessage Bandolier where
+instance RunMessage Bandolier where
   runMessage msg (Bandolier attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       push $ AddSlot iid HandSlot (slot attrs)

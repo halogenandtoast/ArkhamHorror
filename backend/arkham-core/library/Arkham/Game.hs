@@ -5,6 +5,7 @@ module Arkham.Game where
 
 import Arkham.Prelude
 
+import Arkham.Entities
 import Arkham.Ability
 import Arkham.Act
 import Arkham.Action (Action, TakenAction)
@@ -112,8 +113,6 @@ import Text.Pretty.Simple
 import Data.Aeson.TH
 
 type GameMode = These Campaign Scenario
-type EntityMap a = HashMap (EntityId a) a
-
 data GameState = IsPending | IsActive | IsOver
   deriving stock (Eq, Show)
 
@@ -127,38 +126,6 @@ data GameParams = GameParams
   deriving stock (Eq, Show)
 
 $(deriveJSON defaultOptions ''GameParams)
-
-data Entities = Entities
-  { entitiesLocations :: EntityMap Location
-  , entitiesInvestigators :: EntityMap Investigator
-  , entitiesEnemies :: EntityMap Enemy
-  , entitiesAssets :: EntityMap Asset
-  , entitiesActs :: EntityMap Act
-  , entitiesAgendas :: EntityMap Agenda
-  , entitiesTreacheries :: EntityMap Treachery
-  , entitiesEvents :: EntityMap Event
-  , entitiesEffects :: EntityMap Effect
-  , entitiesSkills :: EntityMap Skill
-  }
-  deriving stock (Eq, Show)
-
-$(deriveJSON defaultOptions ''Entities)
-
-makeLensesWith suffixedFields ''Entities
-
-defaultEntities :: Entities
-defaultEntities = Entities
-  { entitiesLocations = mempty
-  , entitiesInvestigators = mempty
-  , entitiesEnemies = mempty
-  , entitiesAssets = mempty
-  , entitiesActs = mempty
-  , entitiesAgendas = mempty
-  , entitiesTreacheries = mempty
-  , entitiesEvents = mempty
-  , entitiesEffects = mempty
-  , entitiesSkills = mempty
-  }
 
 data Game = Game
   { gamePhaseHistory :: HashMap InvestigatorId History
@@ -208,11 +175,8 @@ makeLensesWith suffixedFields ''Game
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
 
-class HasGame a where
-  gameL :: Lens' a Game
-
-instance HasGame Game where
-  gameL = id
+class HasGame m where
+  getGame :: m Game
 
 class HasStdGen a where
   genL :: Lens' a (IORef StdGen)

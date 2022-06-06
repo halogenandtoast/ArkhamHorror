@@ -9,11 +9,11 @@ import {-# SOURCE #-} Arkham.Game
 import Arkham.Message
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 
-newtype GameEnvT a = GameEnvT {unGameEnvT :: ReaderT GameEnv IO a}
+newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
   deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO)
 
-runGameEnvT :: (MonadIO m) => GameEnv -> GameEnvT a -> m a
-runGameEnvT gameEnv = liftIO . flip runReaderT gameEnv . unGameEnvT
+runGameEnvT :: MonadIO m => GameEnv -> GameT a -> m a
+runGameEnvT gameEnv = liftIO . flip runReaderT gameEnv . unGameT
 
 data GameEnv = GameEnv
   { gameEnvGame :: Game
@@ -26,8 +26,8 @@ data GameEnv = GameEnv
 instance HasStdGen GameEnv where
   genL = lens gameRandomGen $ \m x -> m {gameRandomGen = x}
 
-instance HasGame GameEnv where
-  gameL = lens gameEnvGame $ \m x -> m {gameEnvGame = x}
+instance HasGame GameT where
+  getGame = asks $ gameEnvGame
 
 instance HasQueue GameEnv where
   messageQueue = lens gameEnvQueue $ \m x -> m {gameEnvQueue = x}
@@ -55,7 +55,7 @@ toGameEnv = do
   depthLock <- newIORef 0
   pure $ GameEnv game queueRef gen logger depthLock
 
-instance MonadRandom GameEnvT where
+instance MonadRandom GameT where
   getRandomR lohi = do
     ref <- view genL
     atomicModifyIORef' ref (swap . randomR lohi)

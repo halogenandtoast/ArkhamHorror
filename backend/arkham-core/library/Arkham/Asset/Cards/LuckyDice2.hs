@@ -31,7 +31,7 @@ instance HasAbilities LuckyDice2 where
         (ResourceCost 2)
     ]
 
-instance AssetRunner env => RunMessage LuckyDice2 where
+instance RunMessage LuckyDice2 where
   runMessage msg a@(LuckyDice2 attrs) = case msg of
     UseCardAbility iid source [Window _ (Window.RevealToken _ token)] 1 _
       | isSource attrs source -> a <$ pushAll

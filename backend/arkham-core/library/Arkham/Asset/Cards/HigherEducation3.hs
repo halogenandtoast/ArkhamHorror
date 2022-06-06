@@ -33,7 +33,7 @@ instance HasAbilities HigherEducation3 where
       OwnsThis <> DuringSkillTest AnySkillTest <> InvestigatorExists
         (You <> HandWith (LengthIs $ AtLeast $ Static 5))
 
-instance AssetRunner env => RunMessage HigherEducation3 where
+instance RunMessage HigherEducation3 where
   runMessage msg a@(HigherEducation3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ SpendResources iid 1

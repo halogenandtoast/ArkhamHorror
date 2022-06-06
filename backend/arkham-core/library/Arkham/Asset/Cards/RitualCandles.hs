@@ -41,7 +41,7 @@ instance HasAbilities RitualCandles where
         )
     ]
 
-instance AssetRunner env => RunMessage RitualCandles where
+instance RunMessage RitualCandles where
   runMessage msg a@(RitualCandles attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 1)]

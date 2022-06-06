@@ -32,7 +32,7 @@ archaicGlyphsGuidingStones3 :: AssetCard ArchaicGlyphsGuidingStones3
 archaicGlyphsGuidingStones3 =
   asset ArchaicGlyphsGuidingStones3 Cards.archaicGlyphsGuidingStones3
 
-instance AssetRunner env => RunMessage ArchaicGlyphsGuidingStones3 where
+instance RunMessage ArchaicGlyphsGuidingStones3 where
   runMessage msg a@(ArchaicGlyphsGuidingStones3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid

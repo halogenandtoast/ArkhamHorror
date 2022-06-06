@@ -7,19 +7,20 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Runner hiding ( InvestigatorDamage )
 import Arkham.Card.CardType
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Zone qualified as Zone
 
 newtype RandallCho = RandallCho AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 randallCho :: AssetCard RandallCho
@@ -33,10 +34,10 @@ instance HasAbilities RandallCho where
             Free
     ]
 
-instance AssetRunner env => RunMessage RandallCho where
+instance RunMessage RandallCho where
   runMessage msg a@(RandallCho attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      damage <- unDamageCount <$> getCount iid
+      damage <- field InvestigatorDamage iid
       push $ chooseOrRunOne
         iid
         (catMaybes

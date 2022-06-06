@@ -30,7 +30,7 @@ instance HasAbilities Pathfinder1 where
         (FastAbility $ ExhaustCost (toTarget attrs))
     ]
 
-instance AssetRunner env => RunMessage Pathfinder1 where
+instance RunMessage Pathfinder1 where
   runMessage msg a@(Pathfinder1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       accessibleLocationIds <-

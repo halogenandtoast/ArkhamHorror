@@ -30,7 +30,7 @@ instance HasAbilities LightningGun5 where
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1])
     ]
 
-instance AssetRunner env => RunMessage LightningGun5 where
+instance RunMessage LightningGun5 where
   runMessage msg a@(LightningGun5 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ pushAll

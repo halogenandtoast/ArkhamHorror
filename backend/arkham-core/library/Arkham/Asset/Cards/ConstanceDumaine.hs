@@ -37,7 +37,7 @@ instance HasAbilities ConstanceDumaine where
       $ toId a
     ]
 
-instance AssetRunner env => RunMessage ConstanceDumaine where
+instance RunMessage ConstanceDumaine where
   runMessage msg a@(ConstanceDumaine attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 3)

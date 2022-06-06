@@ -14,7 +14,7 @@ import Arkham.Trait
 import Arkham.Zone
 
 newtype ResearchLibrarian = ResearchLibrarian AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor m)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 researchLibrarian :: AssetCard ResearchLibrarian
@@ -32,7 +32,7 @@ instance HasAbilities ResearchLibrarian where
         )
     ]
 
-instance (AssetRunner env) => RunMessage ResearchLibrarian where
+instance RunMessage ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (Search

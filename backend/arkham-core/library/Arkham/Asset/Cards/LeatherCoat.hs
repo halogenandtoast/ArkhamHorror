@@ -12,5 +12,5 @@ newtype LeatherCoat = LeatherCoat AssetAttrs
 leatherCoat :: AssetCard LeatherCoat
 leatherCoat = assetWith LeatherCoat Cards.leatherCoat (healthL ?~ 2)
 
-instance AssetRunner env => RunMessage LeatherCoat where
+instance RunMessage LeatherCoat where
   runMessage msg (LeatherCoat attrs) = LeatherCoat <$> runMessage msg attrs

@@ -30,7 +30,7 @@ instance HasAbilities FortyFiveAutomatic2 where
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1])
     ]
 
-instance AssetRunner env => RunMessage FortyFiveAutomatic2 where
+instance RunMessage FortyFiveAutomatic2 where
   runMessage msg a@(FortyFiveAutomatic2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers

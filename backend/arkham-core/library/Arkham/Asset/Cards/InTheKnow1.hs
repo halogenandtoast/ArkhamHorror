@@ -30,7 +30,7 @@ instance HasAbilities InTheKnow1 where
         <> UseCost (AssetWithId $ toId attrs) Secret 1
     ]
 
-instance AssetRunner env => RunMessage InTheKnow1 where
+instance RunMessage InTheKnow1 where
   runMessage msg a@(InTheKnow1 attrs) = case msg of
     UseCardAbility iid source windows' 1 _ | isSource attrs source -> do
       investigatorLocation <- getId @LocationId iid

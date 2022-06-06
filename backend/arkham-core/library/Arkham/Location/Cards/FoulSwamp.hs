@@ -52,7 +52,7 @@ instance HasAbilities FoulSwamp where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage FoulSwamp where
+instance RunMessage FoulSwamp where
   runMessage msg l@(FoulSwamp attrs) = case msg of
     UseCardAbility iid source _ 1 payments | isSource attrs source -> do
       let

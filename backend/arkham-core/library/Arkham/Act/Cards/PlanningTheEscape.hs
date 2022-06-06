@@ -10,15 +10,14 @@ import Arkham.Act.Attrs
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Criteria
-import Arkham.Decks
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.Target
@@ -32,7 +31,7 @@ planningTheEscape :: ActCard PlanningTheEscape
 planningTheEscape =
   act (3, A) PlanningTheEscape Cards.planningTheEscape Nothing
 
-instance Query LocationMatcher env => HasModifiersFor PlanningTheEscape where
+instance HasModifiersFor PlanningTheEscape where
   getModifiersFor _ (LocationTarget lid) (PlanningTheEscape attrs) = do
     targets <- select UnrevealedLocation
     pure
@@ -60,16 +59,16 @@ instance HasAbilities PlanningTheEscape where
         $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage PlanningTheEscape where
+instance RunMessage PlanningTheEscape where
   runMessage msg a@(PlanningTheEscape attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) (toSource attrs) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       enemyCards <-
         filter ((== EnemyType) . toCardType)
-        . mapMaybe (preview _EncounterCard . unUnderneathCard)
-        <$> getList ActDeck
-      discardedCards <- map unDiscardedEncounterCard <$> getList ()
+        . mapMaybe (preview _EncounterCard)
+        <$> scenarioField ScenarioCardsUnderActDeck
+      discardedCards <- scenarioField ScenarioDiscard
 
       let
         monsterCount =

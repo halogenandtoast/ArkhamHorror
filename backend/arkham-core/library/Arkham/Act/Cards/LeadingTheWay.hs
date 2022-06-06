@@ -26,7 +26,7 @@ newtype LeadingTheWay = LeadingTheWay ActAttrs
 leadingTheWay :: ActCard LeadingTheWay
 leadingTheWay = act (3, A) LeadingTheWay Cards.leadingTheWay Nothing
 
-instance Query LocationMatcher env => HasModifiersFor LeadingTheWay where
+instance HasModifiersFor LeadingTheWay where
   getModifiersFor _ (LocationTarget lid) (LeadingTheWay attrs) = do
     isBlockedPassage <- member lid
       <$> select (locationIs Locations.blockedPassage)
@@ -45,7 +45,7 @@ instance HasAbilities LeadingTheWay where
         $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage LeadingTheWay where
+instance RunMessage LeadingTheWay where
   runMessage msg a@(LeadingTheWay attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
       push (AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther)

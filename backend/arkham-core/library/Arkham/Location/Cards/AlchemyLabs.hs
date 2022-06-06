@@ -42,7 +42,7 @@ instance HasAbilities AlchemyLabs where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage AlchemyLabs where
+instance RunMessage AlchemyLabs where
   runMessage msg l@(AlchemyLabs attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (Investigate

@@ -35,7 +35,7 @@ instance HasAbilities TwistedUnderbrush where
       | locationRevealed attrs
       ]
 
-instance (LocationRunner env) => RunMessage TwistedUnderbrush where
+instance RunMessage TwistedUnderbrush where
   runMessage msg l@(TwistedUnderbrush attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
       [ TakeResources iid 2 False

@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Card.CardCode
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.Target
@@ -20,7 +20,7 @@ newtype FightOrFlight = FightOrFlight EventAttrs
 fightOrFlight :: EventCard FightOrFlight
 fightOrFlight = event FightOrFlight Cards.fightOrFlight
 
-instance EventRunner env => RunMessage FightOrFlight where
+instance RunMessage FightOrFlight where
   runMessage msg e@(FightOrFlight attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

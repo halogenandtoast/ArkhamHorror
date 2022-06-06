@@ -10,7 +10,6 @@ import Arkham.Location.Cards qualified as Cards (endlessBridge)
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Label (mkLabel)
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -43,14 +42,14 @@ instance HasAbilities EndlessBridge where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage EndlessBridge where
+instance RunMessage EndlessBridge where
   runMessage msg l@(EndlessBridge attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       push $ LoseResources iid 2
       let
         labels = [ nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 2] ]
       availableLabel <- findM
-        (fmap isNothing . getId @(Maybe LocationId) . LocationWithLabel . mkLabel)
+        (selectNone . LocationWithLabel . mkLabel)
         labels
       case availableLabel of
         Just label -> pure . EndlessBridge $ attrs & labelL .~ label

@@ -23,7 +23,7 @@ theFestivitiesBegin :: AgendaCard TheFestivitiesBegin
 theFestivitiesBegin =
   agenda (1, A) TheFestivitiesBegin Cards.theFestivitiesBegin (Static 8)
 
-instance AgendaRunner env => RunMessage TheFestivitiesBegin where
+instance RunMessage TheFestivitiesBegin where
   runMessage msg a@(TheFestivitiesBegin attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       leadInvestigatorId <- getLeadInvestigatorId

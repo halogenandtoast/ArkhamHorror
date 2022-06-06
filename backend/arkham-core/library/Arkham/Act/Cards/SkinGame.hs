@@ -16,6 +16,7 @@ import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Campaign
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Query
@@ -33,12 +34,11 @@ skinGame = act
   Cards.skinGame
   (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "VIP Area"))
 
-instance ActRunner env => RunMessage SkinGame where
+instance RunMessage SkinGame where
   runMessage msg a@(SkinGame attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      completedExtracurricularActivity <-
-        elem "02041" . map unCompletedScenarioId <$> getSetList ()
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
+      completedExtracurricularActivity <- elem "02041" <$> getCompletedScenarios
+      leadInvestigatorId <- getLeadInvestigatorId
       peterClover <- EncounterCard <$> genEncounterCard Assets.peterClover
       drFrancisMorgan <- PlayerCard <$> genPlayerCard Assets.drFrancisMorgan
       cloverClubBarId <- getJustLocationIdByName "Clover Club Bar"

@@ -10,9 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
-import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Target
+import Arkham.Matcher hiding ( EnemyEvaded )
 
 newtype StrayCat = StrayCat AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -35,15 +33,13 @@ instance HasAbilities StrayCat where
 instance RunMessage StrayCat where
   runMessage msg a@(StrayCat attrs) = case msg of
     InDiscard _ (UseCardAbility iid source _ 1 _) | isSource attrs source -> do
-      locationId <- getId @LocationId iid
-      enemies <- selectList
-        (EnemyAt (LocationWithId locationId) <> NonEliteEnemy)
+      enemies <-
+        selectList
+        $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
+        <> NonEliteEnemy
 
-      a <$ push
-        (chooseOne
-          iid
-          [ TargetLabel (EnemyTarget enemyId) [EnemyEvaded iid enemyId]
-          | enemyId <- enemies
-          ]
-        )
+      push $ chooseOne
+        iid
+        [ targetLabel enemyId [EnemyEvaded iid enemyId] | enemyId <- enemies ]
+      pure a
     _ -> StrayCat <$> runMessage msg attrs

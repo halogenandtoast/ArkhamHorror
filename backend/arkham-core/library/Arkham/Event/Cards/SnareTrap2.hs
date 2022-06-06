@@ -6,15 +6,15 @@ module Arkham.Event.Cards.SnareTrap2
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype SnareTrap2 = SnareTrap2 EventAttrs
@@ -40,10 +40,10 @@ instance HasAbilities SnareTrap2 where
       ]
     _ -> []
 
-instance EventRunner env => RunMessage SnareTrap2 where
+instance RunMessage SnareTrap2 where
   runMessage msg e@(SnareTrap2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- getId iid
+      lid <- getJustLocation iid
       e <$ push (AttachEvent eid (LocationTarget lid))
     UseCardAbility _ source [Window _ (Window.EnemyEnters enemyId _)] 1 _
       | isSource attrs source -> do

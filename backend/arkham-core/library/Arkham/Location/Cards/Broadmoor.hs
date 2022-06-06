@@ -21,5 +21,5 @@ broadmoor =
 instance HasAbilities Broadmoor where
   getAbilities (Broadmoor a) = withResignAction a []
 
-instance LocationRunner env => RunMessage Broadmoor where
+instance RunMessage Broadmoor where
   runMessage msg (Broadmoor attrs) = Broadmoor <$> runMessage msg attrs

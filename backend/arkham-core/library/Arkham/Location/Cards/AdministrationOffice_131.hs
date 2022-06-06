@@ -36,6 +36,6 @@ instance HasCount CardCount env InvestigatorId => HasModifiersFor Administration
       pure $ toModifiers attrs [ CannotInvestigate | cardsInHand <= 4 ]
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage AdministrationOffice_131 where
+instance RunMessage AdministrationOffice_131 where
   runMessage msg (AdministrationOffice_131 attrs) =
     AdministrationOffice_131 <$> runMessage msg attrs

@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Message
 
 newtype IveHadWorse4 = IveHadWorse4 EventAttrs

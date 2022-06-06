@@ -42,7 +42,7 @@ instance HasAbilities StudyAberrantGateway where
       LocationNotInPlay
     ]
 
-instance LocationRunner env => RunMessage StudyAberrantGateway where
+instance RunMessage StudyAberrantGateway where
   runMessage msg l@(StudyAberrantGateway attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (DrawCards iid 3 False)

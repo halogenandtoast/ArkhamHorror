@@ -20,7 +20,7 @@ campusSafety = act (3, A) CampusSafety Cards.campusSafety Nothing
 -- Campus Safety has an Objective but it is triggered by other cards so this is
 -- left off of this definition
 
-instance ActRunner env => RunMessage CampusSafety where
+instance RunMessage CampusSafety where
   runMessage msg a@(CampusSafety attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       a <$ push (ScenarioResolution $ Resolution 3)

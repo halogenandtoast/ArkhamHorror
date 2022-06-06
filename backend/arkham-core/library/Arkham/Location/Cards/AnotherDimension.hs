@@ -10,7 +10,6 @@ import Arkham.Location.Cards qualified as Cards (anotherDimension)
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -42,11 +41,11 @@ instance HasAbilities AnotherDimension where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage AnotherDimension where
+instance RunMessage AnotherDimension where
   runMessage msg l@(AnotherDimension attrs) = case msg of
     UseCardAbility _ source [Window _ (LeavePlay (LocationTarget lid))] 1 _
       | isSource attrs source -> do
-        investigatorIds <- getSetList @InvestigatorId lid
+        investigatorIds <- selectList $ InvestigatorAt $ LocationWithId  lid
         enemyIds <- selectList $ UnengagedEnemy <> EnemyAt (LocationWithId lid)
         l <$ pushAll
           ([ MoveTo (toSource attrs) iid (toId attrs) | iid <- investigatorIds ]

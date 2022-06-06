@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (MoveAction)
 import Arkham.Message
@@ -24,7 +24,7 @@ newtype AstralTravel = AstralTravel EventAttrs
 astralTravel :: EventCard AstralTravel
 astralTravel = event AstralTravel Cards.astralTravel
 
-instance EventRunner env => RunMessage AstralTravel where
+instance RunMessage AstralTravel where
   runMessage msg e@(AstralTravel attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       locations <- selectList $ RevealedLocation <> Unblocked <> NotYourLocation

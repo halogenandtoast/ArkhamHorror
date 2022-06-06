@@ -31,7 +31,7 @@ instance HasAbilities Knife where
           (Costs [ActionCost 1, DiscardCost (toTarget a)])
     ]
 
-instance (AssetRunner env) => RunMessage Knife where
+instance RunMessage Knife where
   runMessage msg a@(Knife attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier

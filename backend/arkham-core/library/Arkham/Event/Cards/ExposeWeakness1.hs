@@ -9,7 +9,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.EffectMetadata
 import Arkham.Enemy.Attrs ( Field (..) )
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection

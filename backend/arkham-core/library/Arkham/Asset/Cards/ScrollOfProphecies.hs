@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Target
 
@@ -34,8 +33,7 @@ instance HasAbilities ScrollOfProphecies where
 instance RunMessage ScrollOfProphecies where
   runMessage msg a@(ScrollOfProphecies attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationId <- getId @LocationId iid
-      investigatorIds <- getSetList locationId
+      investigatorIds <- selectList $ colocatedWith iid
       a <$ push
         (chooseOne
           iid

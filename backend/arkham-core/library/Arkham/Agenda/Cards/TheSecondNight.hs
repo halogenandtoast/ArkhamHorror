@@ -26,13 +26,13 @@ newtype TheSecondNight = TheSecondNight AgendaAttrs
 theSecondNight :: AgendaCard TheSecondNight
 theSecondNight = agenda (2, A) TheSecondNight Cards.theSecondNight (Static 5)
 
-instance HasRecord env () => HasModifiersFor TheSecondNight where
+instance HasModifiersFor TheSecondNight where
   getModifiersFor _ target (TheSecondNight a) | not (isTarget a target) = do
     moreConvictionThanDoubt <- getMoreConvictionThanDoubt
     pure $ toModifiers a $ [ DoomSubtracts | moreConvictionThanDoubt ]
   getModifiersFor _ _ _ = pure []
 
-instance AgendaRunner env => RunMessage TheSecondNight where
+instance RunMessage TheSecondNight where
   runMessage msg a@(TheSecondNight attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       msgs <- disengageEachEnemyAndMoveToConnectingLocation

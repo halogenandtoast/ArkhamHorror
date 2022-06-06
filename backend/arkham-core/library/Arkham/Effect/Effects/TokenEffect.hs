@@ -6,7 +6,7 @@ module Arkham.Effect.Effects.TokenEffect
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.EffectMetadata
 import Arkham.Id
 import Arkham.Message
@@ -31,7 +31,7 @@ tokenEffect eid metadata source token = TokenEffect $ EffectAttrs
   , effectWindow = Nothing
   }
 
-instance Monad m => HasModifiersFor TokenEffect where
+instance HasModifiersFor TokenEffect where
   getModifiersFor _ target (TokenEffect attrs) | target == effectTarget attrs =
     case effectMetadata attrs of
       Just (EffectModifiers modifiers) -> pure modifiers

@@ -41,7 +41,7 @@ instance HasAbilities LeMarais217 where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage LeMarais217 where
+instance RunMessage LeMarais217 where
   runMessage msg l@(LeMarais217 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (DrawCards iid 1 False)

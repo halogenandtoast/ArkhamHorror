@@ -8,10 +8,11 @@ import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype HumanitiesBuilding = HumanitiesBuilding LocationAttrs
@@ -36,9 +37,9 @@ instance HasAbilities HumanitiesBuilding where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage HumanitiesBuilding where
+instance RunMessage HumanitiesBuilding where
   runMessage msg l@(HumanitiesBuilding attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      horror <- unHorrorCount <$> getCount iid
+      horror <- field InvestigatorHorror iid
       l <$ when (horror > 0) (push $ DiscardTopOfDeck iid horror Nothing)
     _ -> HumanitiesBuilding <$> runMessage msg attrs

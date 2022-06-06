@@ -6,6 +6,7 @@ import Arkham.Card.CardDef
 import Arkham.Enemy.Attrs
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Location
 import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
@@ -90,3 +91,42 @@ canEnterLocation eid lid = do
   pure $ not $ flip any modifiers' $ \case
     Modifier.CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
+
+getFightableEnemyIds :: InvestigatorId -> Source -> GameT [EnemyId]
+getFightableEnemyIds iid source = do
+  fightAnywhereEnemyIds <- getSetList () >>= filterM \eid -> do
+    modifiers' <- getModifiers source (EnemyTarget eid)
+    pure $ CanBeFoughtAsIfAtYourLocation `elem` modifiers'
+  locationId <- getId @LocationId iid
+  enemyIds <- union (setFromList fightAnywhereEnemyIds)
+    <$> getSet @EnemyId locationId
+  investigatorEnemyIds <- getSet @EnemyId iid
+  aloofEnemyIds <- select $ AloofEnemy <> EnemyAt (LocationWithId locationId)
+  let
+    potentials = setToList
+      (investigatorEnemyIds `union` (enemyIds `difference` aloofEnemyIds))
+  fightableEnemyIds <- flip filterM potentials $ \eid -> do
+    modifiers' <- getModifiers source (EnemyTarget eid)
+    not
+      <$> anyM
+            (\case
+              CanOnlyBeAttackedByAbilityOn cardCodes -> case source of
+                (AssetSource aid) ->
+                  (`member` cardCodes) <$> getId @CardCode aid
+                _ -> pure True
+              _ -> pure False
+            )
+            modifiers'
+  pure . setFromList . coerce $ fightableEnemyIds
+
+getEnemyAccessibleLocations :: EnemyId -> GameT [LocationId]
+getEnemyAccessibleLocations eid = do
+  location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
+  matcher <- getConnectedMatcher location
+  connectedLocationIds <- selectList matcher
+  let
+    enemyIsElite = Elite `member` toTraits enemy
+    unblocked lid' = do
+      modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid')
+      pure $ enemyIsElite || CannotBeEnteredByNonElite `notElem` modifiers'
+  setFromList . coerce <$> filterM unblocked connectedLocationIds

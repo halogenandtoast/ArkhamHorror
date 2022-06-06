@@ -4,8 +4,8 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
 import Arkham.Event.Runner
+import Arkham.Helpers.Event
 import Arkham.Message
 import Arkham.Target
 
@@ -16,7 +16,7 @@ newtype Lucky = Lucky EventAttrs
 lucky :: EventCard Lucky
 lucky = event Lucky Cards.lucky
 
-instance EventRunner env => RunMessage Lucky where
+instance RunMessage Lucky where
   runMessage msg e@(Lucky attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId ->
       e <$ unshiftEffect attrs (InvestigatorTarget iid)

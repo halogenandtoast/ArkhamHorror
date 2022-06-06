@@ -34,4 +34,3 @@ insertHistory
   -> HashMap InvestigatorId History
   -> HashMap InvestigatorId History
 insertHistory = HashMap.insertWith (<>)
-

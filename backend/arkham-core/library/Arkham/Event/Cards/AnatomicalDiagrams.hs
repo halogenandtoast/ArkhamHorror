@@ -9,7 +9,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Matcher
@@ -24,7 +24,7 @@ newtype AnatomicalDiagrams = AnatomicalDiagrams EventAttrs
 anatomicalDiagrams :: EventCard AnatomicalDiagrams
 anatomicalDiagrams = event AnatomicalDiagrams Cards.anatomicalDiagrams
 
-instance EventRunner env => RunMessage AnatomicalDiagrams where
+instance RunMessage AnatomicalDiagrams where
   runMessage msg e@(AnatomicalDiagrams attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-

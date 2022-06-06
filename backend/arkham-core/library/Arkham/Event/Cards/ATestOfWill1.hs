@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Message
 
@@ -18,7 +18,7 @@ newtype ATestOfWill1 = ATestOfWill1 EventAttrs
 aTestOfWill1 :: EventCard ATestOfWill1
 aTestOfWill1 = event ATestOfWill1 Cards.aTestOfWill1
 
-instance EventRunner env => RunMessage ATestOfWill1 where
+instance RunMessage ATestOfWill1 where
   runMessage msg e@(ATestOfWill1 attrs) = case msg of
     InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs ->
       e <$ pushAll [CancelNext RevelationMessage, Exile $ toTarget attrs]

@@ -47,7 +47,7 @@ instance HasAbilities EerieGlade where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage EerieGlade where
+instance RunMessage EerieGlade where
   runMessage msg l@(EerieGlade attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid

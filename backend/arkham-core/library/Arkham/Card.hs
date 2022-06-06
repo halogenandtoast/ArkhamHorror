@@ -182,9 +182,6 @@ newtype InPlayCard = InPlayCard { unInPlayCard ::Card }
 class HasCard env a where
   getCard :: (MonadReader env m, MonadIO m) => CardId -> a -> m Card
 
-class HasCampaignStoryCard env a where
-  getCampaignStoryCard :: (MonadReader env m, MonadIO m) => CardDef -> a -> m PlayerCard
-
 instance HasSkillIcons Card where
   getSkillIcons (PlayerCard card) = getSkillIcons card
   getSkillIcons (EncounterCard _) = []

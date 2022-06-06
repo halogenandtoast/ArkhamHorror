@@ -6,15 +6,16 @@ module Arkham.Event.Cards.Lure1
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Criteria
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
-import Arkham.Id
+import Arkham.Event.Runner
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -38,10 +39,13 @@ instance HasModifiersFor Lure1 where
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance HasId LocationId env InvestigatorId => RunMessage Lure1 where
+instance RunMessage Lure1 where
   runMessage msg e@(Lure1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- getId iid
+      lid <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
       e <$ push (AttachEvent eid (LocationTarget lid))
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       e <$ push (Discard (toTarget attrs))

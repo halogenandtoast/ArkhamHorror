@@ -62,7 +62,7 @@ instance HasAbilities MuseumHalls where
         ]
     ]
 
-instance LocationRunner env => RunMessage MuseumHalls where
+instance RunMessage MuseumHalls where
   runMessage msg l@(MuseumHalls attrs) = case msg of
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && unrevealed attrs -> do

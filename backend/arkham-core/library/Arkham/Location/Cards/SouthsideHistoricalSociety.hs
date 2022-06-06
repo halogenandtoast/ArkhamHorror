@@ -42,7 +42,7 @@ instance HasAbilities SouthsideHistoricalSociety where
   getAbilities (SouthsideHistoricalSociety x) =
     getAbilities x
 
-instance LocationRunner env => RunMessage SouthsideHistoricalSociety where
+instance RunMessage SouthsideHistoricalSociety where
   runMessage msg l@(SouthsideHistoricalSociety attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (DrawCards iid 3 False)

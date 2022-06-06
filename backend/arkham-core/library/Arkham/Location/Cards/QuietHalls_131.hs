@@ -47,7 +47,7 @@ instance HasAbilities QuietHalls_131 where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage QuietHalls_131 where
+instance RunMessage QuietHalls_131 where
   runMessage msg l@(QuietHalls_131 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       amount <- getPlayerCount

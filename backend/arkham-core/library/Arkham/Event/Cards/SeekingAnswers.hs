@@ -5,12 +5,11 @@ module Arkham.Event.Cards.SeekingAnswers
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Id
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -23,10 +22,10 @@ newtype SeekingAnswers = SeekingAnswers EventAttrs
 seekingAnswers :: EventCard SeekingAnswers
 seekingAnswers = event SeekingAnswers Cards.seekingAnswers
 
-instance EventRunner env => RunMessage SeekingAnswers where
+instance RunMessage SeekingAnswers where
   runMessage msg e@(SeekingAnswers attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      lid <- getId @LocationId iid
+      lid <- getJustLocation iid
       e <$ pushAll
         [ Investigate
           iid
@@ -43,8 +42,8 @@ instance EventRunner env => RunMessage SeekingAnswers where
         e <$ push
           (chooseOne
             iid
-            [ TargetLabel
-                (LocationTarget lid')
+            [ targetLabel
+                lid'
                 [InvestigatorDiscoverClues iid lid' 1 (Just Action.Investigate)]
             | lid' <- lids
             ]

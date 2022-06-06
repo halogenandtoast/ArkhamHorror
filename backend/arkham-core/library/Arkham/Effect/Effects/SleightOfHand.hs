@@ -6,7 +6,7 @@ module Arkham.Effect.Effects.SleightOfHand
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message

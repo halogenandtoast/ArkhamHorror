@@ -46,7 +46,7 @@ instance HasAbilities ATearInThePath where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage ATearInThePath where
+instance RunMessage ATearInThePath where
   runMessage msg l@(ATearInThePath attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (InvestigatorAssignDamage iid source DamageAny 2 0)

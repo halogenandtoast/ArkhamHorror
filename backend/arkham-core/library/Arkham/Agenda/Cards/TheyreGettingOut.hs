@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act.Attrs (Field(..))
+import Arkham.Act.Sequence qualified as AS
 import Arkham.Agenda.Attrs
 import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Agenda.Runner
@@ -33,11 +34,11 @@ instance HasAbilities TheyreGettingOut where
     , mkAbility x 2 $ ForcedAbility $ RoundEnds Timing.When
     ]
 
-instance AgendaRunner env => RunMessage TheyreGettingOut where
+instance RunMessage TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs) = case msg of
     AdvanceAgenda aid
       | aid == toId attrs && onSide B attrs -> do
-        actSequence <- field ActSequenceNumber =<< selectJust AnyAct
+        actSequence <- fieldMap ActSequence (unActStep . AS.actStep) =<< selectJust AnyAct
         let
           resolution = if actSequence `elem` [1, 2]
             then Resolution 3
@@ -53,11 +54,11 @@ instance AgendaRunner env => RunMessage TheyreGettingOut where
         enemiesToMove
         \eid -> do
           mLocationId <- selectOne $ LocationWithEnemy $ EnemyWithId eid
+          parlorId <- selectJust $ LocationWithTitle "Parlor"
           case mLocationId of
             Nothing -> pure Nothing
             Just loc -> do
-              closestLocationIds <- map unClosestPathLocationId
-                <$> getSetList (loc, LocationWithTitle "Parlor")
+              closestLocationIds <- selectList $ ClosestPathLocation loc parlorId
               case closestLocationIds of
                 [] -> pure Nothing
                 [x] -> pure $ Just $ EnemyMove eid x

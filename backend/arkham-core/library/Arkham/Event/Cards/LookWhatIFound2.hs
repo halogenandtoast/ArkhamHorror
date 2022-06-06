@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -17,7 +17,7 @@ newtype LookWhatIFound2 = LookWhatIFound2 EventAttrs
 lookWhatIFound2 :: EventCard LookWhatIFound2
 lookWhatIFound2 = event LookWhatIFound2 Cards.lookWhatIFound2
 
-instance EventRunner env => RunMessage LookWhatIFound2 where
+instance RunMessage LookWhatIFound2 where
   runMessage msg e@(LookWhatIFound2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

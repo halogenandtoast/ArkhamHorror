@@ -40,7 +40,7 @@ instance HasAbilities ArkhamWoodsWoodenBridge where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage ArkhamWoodsWoodenBridge where
+instance RunMessage ArkhamWoodsWoodenBridge where
   runMessage msg l@(ArkhamWoodsWoodenBridge attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (DrawAnotherToken iid)

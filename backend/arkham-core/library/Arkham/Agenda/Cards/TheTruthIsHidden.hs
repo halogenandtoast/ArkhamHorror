@@ -43,7 +43,7 @@ instance HasAbilities TheTruthIsHidden where
         AnyValue
     ]
 
-instance AgendaRunner env => RunMessage TheTruthIsHidden where
+instance RunMessage TheTruthIsHidden where
   runMessage msg a@(TheTruthIsHidden attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> a <$ pushAll
       [ ShuffleEncounterDiscardBackIn

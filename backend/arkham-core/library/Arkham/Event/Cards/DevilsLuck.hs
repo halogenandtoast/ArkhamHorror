@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.Window (Window(..))
@@ -20,7 +20,7 @@ newtype DevilsLuck = DevilsLuck EventAttrs
 devilsLuck :: EventCard DevilsLuck
 devilsLuck = event DevilsLuck Cards.devilsLuck
 
-instance EventRunner env => RunMessage DevilsLuck where
+instance RunMessage DevilsLuck where
   runMessage msg e@(DevilsLuck attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [Window _ (Window.WouldTakeDamageOrHorror _ _ damage horror)] _
       | eid == toId attrs

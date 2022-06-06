@@ -28,7 +28,7 @@ instance HasAbilities Attic where
       $ toId a
     ]
 
-instance LocationRunner env => RunMessage Attic where
+instance RunMessage Attic where
   runMessage msg a@(Attic attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)

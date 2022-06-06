@@ -52,7 +52,7 @@ instance HasAbilities TenAcreMeadow_247 where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage TenAcreMeadow_247 where
+instance RunMessage TenAcreMeadow_247 where
   runMessage msg l@(TenAcreMeadow_247 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       investigatorsWithClues <- locationInvestigatorsWithClues attrs

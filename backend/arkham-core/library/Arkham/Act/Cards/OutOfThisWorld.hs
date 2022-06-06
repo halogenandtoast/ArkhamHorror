@@ -33,7 +33,7 @@ instance HasAbilities OutOfThisWorld where
   getAbilities (OutOfThisWorld x) =
     withBaseAbilities x [mkAbility x 1 $ ActionAbility Nothing $ ActionCost 1]
 
-instance ActRunner env => RunMessage OutOfThisWorld where
+instance RunMessage OutOfThisWorld where
   runMessage msg a@(OutOfThisWorld attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       theEdgeOfTheUniverse <- getSetAsideCard Locations.theEdgeOfTheUniverse

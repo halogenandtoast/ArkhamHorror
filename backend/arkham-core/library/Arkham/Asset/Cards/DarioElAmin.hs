@@ -10,10 +10,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field(..) )
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -24,10 +24,10 @@ newtype DarioElAmin = DarioElAmin AssetAttrs
 darioElAmin :: AssetCard DarioElAmin
 darioElAmin = ally DarioElAmin Cards.darioElAmin (2, 2)
 
-instance HasCount ResourceCount env InvestigatorId => HasModifiersFor DarioElAmin where
+instance HasModifiersFor DarioElAmin where
   getModifiersFor _ (InvestigatorTarget iid) (DarioElAmin attrs)
     | attrs `controlledBy` iid = do
-      resources <- unResourceCount <$> getCount iid
+      resources <- field InvestigatorResources iid
       pure $ toModifiers attrs $ if resources >= 10
         then [SkillModifier SkillWillpower 1, SkillModifier SkillIntellect 1]
         else []

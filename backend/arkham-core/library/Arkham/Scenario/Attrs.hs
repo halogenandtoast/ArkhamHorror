@@ -9,31 +9,19 @@ import Arkham.Prelude
 
 import Data.Aeson.TH
 import Arkham.Card
-import Arkham.ChaosBag
+import Arkham.ChaosBag.Base
 import Arkham.Classes.HasRecord
-import Arkham.Classes.HasTokenValue
 import Arkham.Classes.Entity
-import Arkham.Classes.Query
 import Arkham.Difficulty
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Json
-import Arkham.Matcher hiding
-  ( ChosenRandomLocation
-  , InvestigatorDefeated
-  , InvestigatorEliminated
-  , PlaceUnderneath
-  )
 import Arkham.Name
-import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario.Deck as X
 import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token
-import Control.Monad.Writer hiding (filterM)
-import Data.List.NonEmpty qualified as NE
 
 class IsScenario a
 
@@ -43,9 +31,13 @@ newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
 data instance Field ScenarioAttrs :: Type -> Type where
   ScenarioCardsUnderActDeck :: Field ScenarioAttrs [Card]
   ScenarioCardsUnderAgendaDeck :: Field ScenarioAttrs [Card]
+  ScenarioDiscard :: Field ScenarioAttrs [EncounterCard]
   ScenarioDecks :: Field ScenarioAttrs (HashMap ScenarioDeckKey [Card])
   ScenarioVictoryDisplay :: Field ScenarioAttrs [Card]
   ScenarioRemembered :: Field ScenarioAttrs (HashSet ScenarioLogKey)
+  ScenarioResignedCardCodes :: Field ScenarioAttrs [CardCode]
+  ScenarioChaosBag :: Field ScenarioAttrs ChaosBag
+  ScenarioSetAsideCards :: Field ScenarioAttrs [Card]
 
 data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Name
@@ -68,6 +60,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioChaosBag :: ChaosBag
   , scenarioEncounterDeck :: Deck EncounterCard
   , scenarioDiscard :: [EncounterCard]
+  , scenarioResignedCardCodes :: [CardCode]
   -- for standalone
   , scenarioStoryCards :: HashMap InvestigatorId [PlayerCard]
   }
@@ -126,7 +119,7 @@ storyCardsL = lens scenarioStoryCards $ \m x -> m { scenarioStoryCards = x }
 
 $(deriveJSON (aesonOptions $ Just "Scenario") ''ScenarioAttrs)
 
-instance Monad m => HasRecord m ScenarioAttrs where
+instance HasRecord ScenarioAttrs where
   hasRecord _ _ = pure False
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
@@ -154,6 +147,7 @@ baseAttrs cardCode name difficulty = ScenarioAttrs
   , scenarioChaosBag = emptyChaosBag
   , scenarioEncounterDeck = mempty
   , scenarioDiscard = mempty
+  , scenarioResignedCardCodes = mempty
   , scenarioStoryCards = mempty
   }
 
@@ -177,19 +171,3 @@ instance SourceEntity ScenarioAttrs where
   isSource ScenarioAttrs { scenarioId } (ScenarioSource sid) =
     scenarioId == sid
   isSource _ _ = False
-
-instance HasTokenValue ScenarioAttrs where
-  getTokenValue iid tokenFace _ = case tokenFace of
-    ElderSign -> getTokenValue iid ElderSign iid
-    AutoFail -> pure $ TokenValue AutoFail AutoFailModifier
-    PlusOne -> pure $ TokenValue PlusOne (PositiveModifier 1)
-    Zero -> pure $ TokenValue Zero (PositiveModifier 0)
-    MinusOne -> pure $ TokenValue MinusOne (NegativeModifier 1)
-    MinusTwo -> pure $ TokenValue MinusTwo (NegativeModifier 2)
-    MinusThree -> pure $ TokenValue MinusThree (NegativeModifier 3)
-    MinusFour -> pure $ TokenValue MinusFour (NegativeModifier 4)
-    MinusFive -> pure $ TokenValue MinusFive (NegativeModifier 5)
-    MinusSix -> pure $ TokenValue MinusSix (NegativeModifier 6)
-    MinusSeven -> pure $ TokenValue MinusSeven (NegativeModifier 7)
-    MinusEight -> pure $ TokenValue MinusEight (NegativeModifier 8)
-    otherFace -> pure $ TokenValue otherFace NoModifier

@@ -49,7 +49,7 @@ instance HasAbilities BlockedPassage where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage BlockedPassage where
+instance RunMessage BlockedPassage where
   runMessage msg l@(BlockedPassage attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       pushAll

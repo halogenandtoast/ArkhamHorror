@@ -8,11 +8,14 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Cost
+import Arkham.Event.Runner
 import Arkham.Game.Helpers
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window
@@ -30,7 +33,7 @@ instance HasModifiersFor EverVigilant1 where
     $ toModifiers attrs [ReduceCostOf AnyCard 1]
   getModifiersFor _ _ _ = pure []
 
-instance CanCheckPlayable env => RunMessage EverVigilant1 where
+instance RunMessage EverVigilant1 where
   runMessage msg e@(EverVigilant1 attrs) = case msg of
     InvestigatorPlayEvent iid eid mtarget _ _ | eid == toId attrs -> do
       e <$ pushAll
@@ -38,10 +41,7 @@ instance CanCheckPlayable env => RunMessage EverVigilant1 where
         <> [Discard (toTarget attrs)]
         )
     ResolveEvent iid eid mtarget | eid == toId attrs -> do
-      cards <- getList @Card
-        (InHandOf (InvestigatorWithId iid)
-        <> BasicCardMatch (CardWithType AssetType)
-        )
+      cards <- fieldMap InvestigatorHand (filter (`cardMatch` CardWithType AssetType)) iid
       playableCards <- filterM
         (getIsPlayable
           iid

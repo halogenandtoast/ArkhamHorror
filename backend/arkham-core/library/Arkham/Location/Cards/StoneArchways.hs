@@ -69,7 +69,7 @@ instance HasAbilities StoneArchways where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage StoneArchways where
+instance RunMessage StoneArchways where
   runMessage msg l@(StoneArchways attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) 1)

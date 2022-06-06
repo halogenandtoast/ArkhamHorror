@@ -53,7 +53,7 @@ instance HasAbilities EngineCar_177 where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage EngineCar_177 where
+instance RunMessage EngineCar_177 where
   runMessage msg l@(EngineCar_177 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       l <$ pushAll (replicate 3 $ InvestigatorDrawEncounterCard iid)

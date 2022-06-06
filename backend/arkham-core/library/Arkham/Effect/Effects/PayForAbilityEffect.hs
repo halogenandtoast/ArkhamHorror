@@ -11,7 +11,7 @@ import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.EffectId
 import Arkham.EffectMetadata
 import Arkham.Game.Helpers

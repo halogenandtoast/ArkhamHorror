@@ -33,7 +33,7 @@ instance HasAbilities StalkedByShadows where
       $ FastAbility (GroupClueCost (Static 1) Anywhere)
     ]
 
-instance ActRunner env => RunMessage StalkedByShadows where
+instance RunMessage StalkedByShadows where
   runMessage msg a@(StalkedByShadows attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       theOrganist <- getTheOrganist

@@ -17,7 +17,6 @@ import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -38,12 +37,11 @@ instance HasAbilities ShadowsDeepen where
         Cards.huntingHorror
     ]
 
-instance AgendaRunner env => RunMessage ShadowsDeepen where
+instance RunMessage ShadowsDeepen where
   runMessage msg a@(ShadowsDeepen attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.EnemySpawns eid _)] 1 _
       | isSource attrs source -> do
-        mShadowSpawnedId <- fmap unStoryTreacheryId
-          <$> getId (toCardCode Treacheries.shadowSpawned)
+        mShadowSpawnedId <- selectOne $ treacheryIs Treacheries.shadowSpawned
         shadowSpawned <- EncounterCard
           <$> genEncounterCard Treacheries.shadowSpawned
         a <$ case mShadowSpawnedId of

@@ -51,7 +51,7 @@ instance HasAbilities SleepingCar where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage SleepingCar where
+instance RunMessage SleepingCar where
   runMessage msg l@(SleepingCar attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ pushAll

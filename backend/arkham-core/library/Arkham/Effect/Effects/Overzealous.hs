@@ -6,7 +6,7 @@ module Arkham.Effect.Effects.Overzealous
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword

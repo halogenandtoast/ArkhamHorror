@@ -6,15 +6,13 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Id
 import Arkham.Matcher
+import {-# SOURCE #-} Arkham.GameEnv
 
-getCnidathqua :: Query EnemyMatcher m => m (Maybe EnemyId)
+getCnidathqua :: GameT (Maybe EnemyId)
 getCnidathqua = selectOne $ enemyIs Cards.cnidathqua
 
 -- | An across location will be 4 locations away
-getAcrossLocation
-  :: Query LocationMatcher m
-  => LocationId
-  -> m LocationId
+getAcrossLocation :: LocationId -> GameT LocationId
 getAcrossLocation lid = do
   clockwiseMap <- getClockwiseMap
   pure $ foldl'
@@ -26,20 +24,14 @@ getAcrossLocation lid = do
   range :: [Int]
   range = [1 .. 4]
 
-getCounterClockwiseLocation
-  :: Query LocationMatcher m
-  => LocationId
-  -> m LocationId
+getCounterClockwiseLocation :: LocationId -> GameT LocationId
 getCounterClockwiseLocation lid = do
   counterClockwiseMap <- getCounterClockwiseMap
   case lookup lid counterClockwiseMap of
     Just x -> pure x
     Nothing -> error $ show lid <> "was not connected for some reason"
 
-getCounterClockwiseLocations
-  :: Query LocationMatcher m
-  => LocationId
-  -> m [LocationId]
+getCounterClockwiseLocations :: LocationId -> GameT [LocationId]
 getCounterClockwiseLocations end = do
   counterClockwiseMap <- getCounterClockwiseMap
   pure $ buildList (lookup end counterClockwiseMap) counterClockwiseMap
@@ -49,8 +41,7 @@ getCounterClockwiseLocations end = do
   buildList (Just current) counterClockwiseMap =
     current : buildList (lookup current counterClockwiseMap) counterClockwiseMap
 
-getClockwiseLocations
-  :: Query LocationMatcher m => LocationId -> m [LocationId]
+getClockwiseLocations :: LocationId -> GameT [LocationId]
 getClockwiseLocations end = do
   clockwiseMap <- getClockwiseMap
   pure $ buildList (lookup end clockwiseMap) clockwiseMap
@@ -60,17 +51,24 @@ getClockwiseLocations end = do
   buildList (Just current) clockwiseMap =
     current : buildList (lookup current clockwiseMap) clockwiseMap
 
-getClockwiseMap :: Query LocationMatcher m => m (HashMap LocationId LocationId)
+getClockwiseMap :: GameT (HashMap LocationId LocationId)
 getClockwiseMap = do
   lids <- selectList Anywhere
   mapFromList
     . concat
-    <$> traverse (\lid -> map (lid, ) <$> selectList (AccessibleFrom $ LocationWithId lid)) lids
+    <$> traverse
+          (\lid ->
+            map (lid, ) <$> selectList (AccessibleFrom $ LocationWithId lid)
+          )
+          lids
 
-getCounterClockwiseMap
-  :: Query LocationMatcher m => m (HashMap LocationId LocationId)
+getCounterClockwiseMap :: GameT (HashMap LocationId LocationId)
 getCounterClockwiseMap = do
   lids <- selectList Anywhere
   mapFromList
     . concat
-    <$> traverse (\lid -> map (, lid) <$> selectList (AccessibleFrom $ LocationWithId lid)) lids
+    <$> traverse
+          (\lid ->
+            map (, lid) <$> selectList (AccessibleFrom $ LocationWithId lid)
+          )
+          lids

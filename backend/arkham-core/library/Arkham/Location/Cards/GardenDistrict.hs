@@ -33,7 +33,7 @@ instance HasAbilities GardenDistrict where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage GardenDistrict where
+instance RunMessage GardenDistrict where
   runMessage msg l@(GardenDistrict attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push

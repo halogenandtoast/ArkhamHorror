@@ -12,6 +12,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
@@ -28,7 +29,7 @@ awakening = act
   Cards.awakening
   (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
-instance ActRunner env => RunMessage Awakening where
+instance RunMessage Awakening where
   runMessage msg a@(Awakening attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       -- Choose one of the set-aside locations, at random.

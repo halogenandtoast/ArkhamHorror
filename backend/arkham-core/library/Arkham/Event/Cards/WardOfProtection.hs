@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.Source
@@ -17,7 +17,7 @@ newtype WardOfProtection = WardOfProtection EventAttrs
 wardOfProtection :: EventCard WardOfProtection
 wardOfProtection = event WardOfProtection Cards.wardOfProtection
 
-instance EventRunner env => RunMessage WardOfProtection where
+instance RunMessage WardOfProtection where
   runMessage msg e@(WardOfProtection attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ CancelNext RevelationMessage

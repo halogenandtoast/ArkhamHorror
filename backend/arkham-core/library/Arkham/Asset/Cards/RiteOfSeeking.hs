@@ -6,13 +6,14 @@ module Arkham.Asset.Cards.RiteOfSeeking
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -25,20 +26,18 @@ riteOfSeeking = asset RiteOfSeeking Cards.riteOfSeeking
 
 instance HasAbilities RiteOfSeeking where
   getAbilities (RiteOfSeeking a) =
-    [ restrictedAbility
-        a
-        1
-        OwnsThis
-        (ActionAbility
-          (Just Action.Investigate)
-          (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
-        )
+    [ restrictedAbility a 1 OwnsThis $ ActionAbility
+        (Just Action.Investigate)
+        (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]
 
 instance RunMessage RiteOfSeeking where
   runMessage msg a@(RiteOfSeeking attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- getId @LocationId iid
+      lid <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
       a <$ pushAll
         [ CreateEffect "02028" Nothing source (InvestigationTarget iid lid)
         , Investigate iid lid source Nothing SkillWillpower False

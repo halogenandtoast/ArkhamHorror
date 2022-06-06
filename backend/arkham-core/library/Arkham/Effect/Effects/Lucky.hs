@@ -6,7 +6,7 @@ module Arkham.Effect.Effects.Lucky
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.Effect.Helpers
 import Arkham.Message
 import Arkham.Modifier

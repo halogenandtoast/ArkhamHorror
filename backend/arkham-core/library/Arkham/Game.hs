@@ -162,7 +162,6 @@ data Game = Game
   , -- Game Details
     gamePhase :: Phase
   , gameSkillTest :: Maybe SkillTest
-  , gameResignedCardCodes :: [CardCode]
   , gameFocusedCards :: [Card]
   , gameFoundCards :: HashMap Zone [Card]
   , gameFocusedTargets :: [Target]
@@ -260,7 +259,6 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameChaosBag = emptyChaosBag
       , gameGameState = state
       , gameUsedAbilities = mempty
-      , gameResignedCardCodes = mempty
       , gameFocusedCards = mempty
       , gameFoundCards = mempty
       , gameFocusedTargets = mempty
@@ -528,7 +526,6 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         )
         g
       )
-    , "resignedCardCodes" .= toJSON gameResignedCardCodes
     , "focusedCards" .= toJSON gameFocusedCards
     , "foundCards" .= toJSON gameFoundCards
     , "focusedTargets" .= toJSON gameFocusedTargets
@@ -1351,14 +1348,6 @@ instance HasGame env => HasRecord env () where
 instance HasGame env => HasCard env InvestigatorId where
   getCard cardId = runReaderT (getCard cardId ()) <=< getInvestigator
 
-instance HasGame env => HasCampaignStoryCard env () where
-  getCampaignStoryCard def _ = do
-    mode <- view modeL <$> getGame
-    case mode of
-      This campaign -> getCampaignStoryCard def campaign
-      These campaign _ -> getCampaignStoryCard def campaign
-      That scenario -> getCampaignStoryCard def scenario
-
 instance HasGame env => HasId LocationSymbol env LocationId where
   getId = getId <=< getLocation
 
@@ -1660,60 +1649,6 @@ instance HasGame env => HasSet EnemyId env LocationMatcher where
    where
     missingLocation = "No location with matching: " <> show locationMatcher
 
-instance HasGame env => HasSet FightableEnemyId env (InvestigatorId, Source) where
-  getSet (iid, source) = do
-    fightAnywhereEnemyIds <- getSetList () >>= filterM \eid -> do
-      modifiers' <- getModifiers source (EnemyTarget eid)
-      pure $ CanBeFoughtAsIfAtYourLocation `elem` modifiers'
-    locationId <- getId @LocationId iid
-    enemyIds <- union (setFromList fightAnywhereEnemyIds)
-      <$> getSet @EnemyId locationId
-    investigatorEnemyIds <- getSet @EnemyId iid
-    aloofEnemyIds <- select $ AloofEnemy <> EnemyAt (LocationWithId locationId)
-    let
-      potentials = setToList
-        (investigatorEnemyIds `union` (enemyIds `difference` aloofEnemyIds))
-    fightableEnemyIds <- flip filterM potentials $ \eid -> do
-      modifiers' <- getModifiers source (EnemyTarget eid)
-      not
-        <$> anyM
-              (\case
-                CanOnlyBeAttackedByAbilityOn cardCodes -> case source of
-                  (AssetSource aid) ->
-                    (`member` cardCodes) <$> getId @CardCode aid
-                  _ -> pure True
-                _ -> pure False
-              )
-              modifiers'
-    pure . setFromList . coerce $ fightableEnemyIds
-
-instance HasGame env => HasList SetAsideCard env () where
-  getList _ = do
-    mScenario <- modeScenario . view modeL <$> getGame
-    case mScenario of
-      Just scenario -> getList scenario
-      Nothing -> error "missing scenario"
-
-instance HasGame env => HasList SetAsideCard env CardMatcher where
-  getList matcher = do
-    mScenario <- modeScenario . view modeL <$> getGame
-    case mScenario of
-      Just scenario -> do
-        allCards <- getList scenario
-        pure $ filter (`cardMatch` matcher) allCards
-      Nothing -> error "missing scenario"
-
-instance HasGame env => HasList UnderScenarioReferenceCard env () where
-  getList _ = do
-    mScenario <- modeScenario . view modeL <$> getGame
-    case mScenario of
-      Just scenario -> getList scenario
-      Nothing -> error "missing scenario"
-
-instance HasGame env => HasSet ClosestPathLocationId env (LocationId, LocationMatcher) where
-  getSet (lid, locationMatcher) = maybe (pure mempty) (getSet . (lid, ) . toId)
-    =<< getLocationMatching locationMatcher
-
 instance HasGame env => HasId (Maybe StoryTreacheryId) env CardCode where
   getId cardCode = fmap StoryTreacheryId <$> getId cardCode
 
@@ -2007,16 +1942,6 @@ instance HasGame env => HasList DiscardableHandCard env InvestigatorId where
 
 instance HasGame env => HasList DiscardedPlayerCard env InvestigatorId where
   getList = getList <=< getInvestigator
-
-instance HasGame env => HasHistory env where
-  getHistory TurnHistory iid =
-    findWithDefault mempty iid . view turnHistoryL <$> getGame
-  getHistory PhaseHistory iid =
-    findWithDefault mempty iid . view phaseHistoryL <$> getGame
-  getHistory RoundHistory iid = do
-    roundH <- findWithDefault mempty iid . view roundHistoryL <$> getGame
-    phaseH <- getHistory PhaseHistory iid
-    pure $ roundH <> phaseH
 
 instance HasGame env => HasList Location env () where
   getList _ = toList . view (entitiesL . locationsL) <$> getGame

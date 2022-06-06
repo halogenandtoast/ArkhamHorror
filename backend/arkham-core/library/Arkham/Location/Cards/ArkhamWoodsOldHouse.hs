@@ -25,7 +25,7 @@ arkhamWoodsOldHouse = locationWithRevealedSideConnections
   [Squiggle, Triangle, T]
 
 -- TODO: Move this to a modifier
-instance LocationRunner env => RunMessage ArkhamWoodsOldHouse where
+instance RunMessage ArkhamWoodsOldHouse where
   runMessage msg (ArkhamWoodsOldHouse attrs@LocationAttrs {..}) = case msg of
     Investigate iid lid s mt _ False | lid == locationId -> do
       let investigate = Investigate iid lid s mt SkillWillpower False

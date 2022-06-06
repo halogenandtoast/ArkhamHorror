@@ -4,9 +4,9 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Id
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Investigator.Attrs ( Field(..) )
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -17,10 +17,10 @@ newtype CelaenoFragments = CelaenoFragments AssetAttrs
 celaenoFragments :: AssetCard CelaenoFragments
 celaenoFragments = asset CelaenoFragments Cards.celaenoFragments
 
-instance HasCount CardCount env InvestigatorId => HasModifiersFor CelaenoFragments where
+instance HasModifiersFor CelaenoFragments where
   getModifiersFor _ (InvestigatorTarget iid) (CelaenoFragments attrs)
     | controlledBy attrs iid = do
-      count' <- unCardCount <$> getCount iid
+      count' <- fieldMap InvestigatorHand length iid
       pure
         . toModifiers attrs
         $ [ SkillModifier SkillIntellect 1 | count' >= 5 ]
@@ -28,6 +28,6 @@ instance HasCount CardCount env InvestigatorId => HasModifiersFor CelaenoFragmen
         <> [ SkillModifier SkillIntellect 1 | count' >= 15 ]
   getModifiersFor _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage CelaenoFragments where
+instance RunMessage CelaenoFragments where
   runMessage msg (CelaenoFragments attrs) =
     CelaenoFragments <$> runMessage msg attrs

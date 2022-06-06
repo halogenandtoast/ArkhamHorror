@@ -32,7 +32,7 @@ instance HasAbilities ArcaneInitiate where
     , restrictedAbility a 2 OwnsThis $ FastAbility $ ExhaustCost $ toTarget a
     ]
 
-instance (AssetRunner env) => RunMessage ArcaneInitiate where
+instance RunMessage ArcaneInitiate where
   runMessage msg a@(ArcaneInitiate attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (PlaceDoom (toTarget attrs) 1)

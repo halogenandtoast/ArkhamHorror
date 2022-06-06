@@ -29,5 +29,5 @@ instance HasModifiersFor Easttown where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage Easttown where
+instance RunMessage Easttown where
   runMessage msg (Easttown attrs) = Easttown <$> runMessage msg attrs

@@ -36,6 +36,6 @@ instance HasModifiersFor AsylumHallsWesternPatientWing_169 where
     $ toModifiers attrs [ HorrorDealt 1 | locationRevealed attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage AsylumHallsWesternPatientWing_169 where
+instance RunMessage AsylumHallsWesternPatientWing_169 where
   runMessage msg (AsylumHallsWesternPatientWing_169 attrs) =
     AsylumHallsWesternPatientWing_169 <$> runMessage msg attrs

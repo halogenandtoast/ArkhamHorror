@@ -4,7 +4,8 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Classes
+import Arkham.Classes.Entity
+import Arkham.Classes.HasAbilities
 import Arkham.Effect.Window
 import Arkham.EffectId
 import Arkham.EffectMetadata
@@ -68,24 +69,6 @@ isEndOfWindow EffectAttrs { effectWindow } effectWindow' = effectWindow'
   toEffectWindowList Nothing = []
   toEffectWindowList (Just (FirstEffectWindow xs)) = xs
   toEffectWindowList (Just x) = [x]
-
-
-instance RunMessage EffectAttrs where
-  runMessage msg a@EffectAttrs {..} = case msg of
-    EndSetup | isEndOfWindow a EffectSetupWindow ->
-      a <$ push (DisableEffect effectId)
-    EndPhase | isEndOfWindow a EffectPhaseWindow ->
-      a <$ push (DisableEffect effectId)
-    EndTurn _ | isEndOfWindow a EffectTurnWindow ->
-      a <$ push (DisableEffect effectId)
-    EndRound | isEndOfWindow a EffectRoundWindow ->
-      a <$ push (DisableEffect effectId)
-    SkillTestEnds _ | isEndOfWindow a EffectSkillTestWindow ->
-      a <$ push (DisableEffect effectId)
-    CancelSkillEffects -> case effectSource of
-      (SkillSource _) -> a <$ push (DisableEffect effectId)
-      _ -> pure a
-    _ -> pure a
 
 instance Entity EffectAttrs where
   type EntityId EffectAttrs = EffectId

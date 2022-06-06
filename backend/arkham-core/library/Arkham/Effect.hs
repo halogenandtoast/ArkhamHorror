@@ -98,17 +98,7 @@ instance
 instance HasAbilities Effect where
   getAbilities = $(entityF "Effect" "getAbilities")
 
-instance
-  ( HasQueue env
-  , HasCostPayment env
-  , HasId Difficulty env ()
-  , HasCount ClueCount env EnemyId
-  , HasSet ClassSymbol env InvestigatorId
-  , HasId LeadInvestigatorId env ()
-  , CanCheckPlayable env
-  ) =>
-  RunMessage Effect
-  where
+instance RunMessage Effect where
   runMessage = $(entityRunMessage "Effect")
 
 instance Entity Effect where

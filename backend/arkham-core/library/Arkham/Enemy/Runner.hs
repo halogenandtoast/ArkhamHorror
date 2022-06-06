@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Enemy.Attrs as X
 import Arkham.Enemy.Helpers as X
 import Arkham.GameValue as X
+import Arkham.Helpers.Enemy as X
 
 import Arkham.Action qualified as Action
 import Arkham.AssetId

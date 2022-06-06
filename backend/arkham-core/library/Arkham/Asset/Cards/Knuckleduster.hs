@@ -32,7 +32,7 @@ instance HasAbilities Knuckleduster where
         $ ActionCost 1
     ]
 
-instance HasSkillTest env => HasModifiersFor Knuckleduster where
+instance HasModifiersFor Knuckleduster where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (EnemyTarget eid) (Knuckleduster attrs)
     | isSource attrs source
     = do

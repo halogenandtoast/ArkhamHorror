@@ -13,6 +13,9 @@ import Arkham.Card.CardDef
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.EffectMetadata
+import Arkham.Helpers.Investigator
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -34,7 +37,10 @@ instance HasAbilities Lockpicks1 where
 instance RunMessage Lockpicks1 where
   runMessage msg a@(Lockpicks1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- getId iid
+      lid <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
       agility <- getSkillValue SkillAgility iid
       a <$ pushAll
         [ CreateEffect

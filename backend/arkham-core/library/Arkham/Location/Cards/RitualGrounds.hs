@@ -35,7 +35,7 @@ instance HasAbilities RitualGrounds where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage RitualGrounds where
+instance RunMessage RitualGrounds where
   runMessage msg l@(RitualGrounds attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       l <$ pushAll

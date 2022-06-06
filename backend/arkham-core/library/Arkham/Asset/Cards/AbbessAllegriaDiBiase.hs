@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Attrs
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Projection
@@ -41,8 +42,7 @@ instance HasAbilities AbbessAllegriaDiBiase where
       ]
     Nothing -> []
 
-getAssetLocation
-  :: (Applicative m, Projection m InvestigatorAttrs) => AssetAttrs -> m LocationId
+getAssetLocation :: AssetAttrs -> GameT LocationId
 getAssetLocation AssetAttrs {..} = case assetLocation of
   Just location -> pure location
   Nothing -> case assetController of

@@ -9,10 +9,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillTest
 import Arkham.SkillType
@@ -33,15 +32,15 @@ instance HasAbilities AlchemicalConcoction where
         $ ActionCost 1
     ]
 
-instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor AlchemicalConcoction where
+instance HasModifiersFor AlchemicalConcoction where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) _ (AlchemicalConcoction a)
     | isSource a source
     = do
       skillTestTarget <- fromJustNote "not a skilltest" <$> getSkillTestTarget
       case skillTestTarget of
         EnemyTarget eid -> do
-          cardCode <- getId eid
-          pure $ toModifiers a [ DamageDealt 6 | cardCode == CardCode "02059" ]
+          isTheExperiement <- enemyMatches eid $ EnemyWithTitle "The Experiment"
+          pure $ toModifiers a [ DamageDealt 6 | isTheExperiement ]
         _ -> pure []
   getModifiersFor _ _ _ = pure []
 

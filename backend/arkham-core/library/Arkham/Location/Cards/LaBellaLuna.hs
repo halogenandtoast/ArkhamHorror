@@ -22,5 +22,5 @@ laBellaLuna =
 instance HasAbilities LaBellaLuna where
   getAbilities (LaBellaLuna a) = withBaseAbilities a [locationResignAction a]
 
-instance LocationRunner env => RunMessage LaBellaLuna where
+instance RunMessage LaBellaLuna where
   runMessage msg (LaBellaLuna attrs) = LaBellaLuna <$> runMessage msg attrs

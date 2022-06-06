@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Classes as X
 import Arkham.ClassSymbol as X
 import Arkham.Investigator.Attrs as X
+import Arkham.Helpers.Investigator as X
 import Arkham.Name as X
 import Arkham.Stats as X
 import Arkham.Token as X

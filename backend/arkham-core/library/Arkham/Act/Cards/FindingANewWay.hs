@@ -32,7 +32,7 @@ instance HasAbilities FindingANewWay where
     $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage FindingANewWay where
+instance RunMessage FindingANewWay where
   runMessage msg a@(FindingANewWay attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (DiscardTopOfEncounterDeck iid 3 (Just $ toTarget attrs))

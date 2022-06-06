@@ -12,7 +12,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
-import Arkham.LocationId
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
@@ -30,11 +30,10 @@ instance HasAbilities Encyclopedia2 where
         [ActionCost 1, ExhaustCost $ toTarget a]
     ]
 
-instance (AssetRunner env) => RunMessage Encyclopedia2 where
-  runMessage msg (Encyclopedia2 attrs) = case msg of
+instance RunMessage Encyclopedia2 where
+  runMessage msg a@(Encyclopedia2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationId <- getId @LocationId iid
-      investigatorTargets <- map InvestigatorTarget <$> getSetList locationId
+      targets <- selectListMap InvestigatorTarget $ colocatedWith iid
       push $ chooseOne
         iid
         [ TargetLabel
@@ -59,7 +58,7 @@ instance (AssetRunner env) => RunMessage Encyclopedia2 where
                   ]
                 ]
             ]
-        | target <- investigatorTargets
+        | target <- targets
         ]
-      pure $ Encyclopedia2 $ attrs & exhaustedL .~ True
+      pure a
     _ -> Encyclopedia2 <$> runMessage msg attrs

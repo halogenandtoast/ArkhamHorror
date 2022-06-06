@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards (blindingLight)
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -19,7 +19,7 @@ newtype BlindingLight = BlindingLight EventAttrs
 blindingLight :: EventCard BlindingLight
 blindingLight = event BlindingLight Cards.blindingLight
 
-instance EventRunner env => RunMessage BlindingLight where
+instance RunMessage BlindingLight where
   runMessage msg e@(BlindingLight attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ CreateEffect "01066" Nothing (toSource attrs) (InvestigatorTarget iid)

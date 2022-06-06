@@ -15,6 +15,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Card
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDefeated )
@@ -41,7 +42,7 @@ instance HasAbilities ThePathIsBarred where
       $ enemyIs Enemies.theManInThePallidMask
     ]
 
-instance ActRunner env => RunMessage ThePathIsBarred where
+instance RunMessage ThePathIsBarred where
   runMessage msg a@(ThePathIsBarred attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
@@ -51,7 +52,7 @@ instance ActRunner env => RunMessage ThePathIsBarred where
         (convictionOrDoubt, nextAct) = case advanceMode of
           AdvancedWithOther -> (Conviction, Cards.theWayOut)
           AdvancedWithClues -> (Doubt, Cards.leadingTheWay)
-      enemy <- getCampaignStoryCard Enemies.theManInThePallidMask ()
+      enemy <- getCampaignStoryCard Enemies.theManInThePallidMask
       mTheManInThePallidMaskId <- selectOne
         $ enemyIs Enemies.theManInThePallidMask
       convictionOrDoubtCount <- getRecordCount convictionOrDoubt

@@ -57,7 +57,7 @@ instance HasAbilities FacultyOfficesTheNightIsStillYoung where
         ]
       else []
 
-instance LocationRunner env => RunMessage FacultyOfficesTheNightIsStillYoung where
+instance RunMessage FacultyOfficesTheNightIsStillYoung where
   runMessage msg l@(FacultyOfficesTheNightIsStillYoung attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (FindEncounterCard iid (toTarget attrs)

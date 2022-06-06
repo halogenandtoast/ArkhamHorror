@@ -30,7 +30,7 @@ instance HasAbilities RitualSite where
       ]
   getAbilities (RitualSite attrs) = getAbilities attrs
 
-instance LocationRunner env => RunMessage RitualSite where
+instance RunMessage RitualSite where
   runMessage msg l@(RitualSite attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       cluesToAdd <-

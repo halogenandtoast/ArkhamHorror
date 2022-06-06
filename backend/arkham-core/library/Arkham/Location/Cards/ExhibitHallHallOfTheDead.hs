@@ -43,7 +43,7 @@ instance HasAbilities ExhibitHallHallOfTheDead where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage ExhibitHallHallOfTheDead where
+instance RunMessage ExhibitHallHallOfTheDead where
   runMessage msg l@(ExhibitHallHallOfTheDead attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)

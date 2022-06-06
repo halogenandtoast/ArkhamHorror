@@ -43,7 +43,7 @@ instance HasAbilities StepsOfYhagharl where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage StepsOfYhagharl where
+instance RunMessage StepsOfYhagharl where
   runMessage msg l@(StepsOfYhagharl attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       encounterDiscard <- map unDiscardedEncounterCard <$> getList ()

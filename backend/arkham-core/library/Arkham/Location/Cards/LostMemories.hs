@@ -46,7 +46,7 @@ instance HasAbilities LostMemories where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage LostMemories where
+instance RunMessage LostMemories where
   runMessage msg l@(LostMemories attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       actionRemainingCount <- unActionRemainingCount <$> getCount iid

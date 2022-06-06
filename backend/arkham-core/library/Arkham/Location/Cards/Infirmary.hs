@@ -32,7 +32,7 @@ instance HasAbilities Infirmary where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage Infirmary where
+instance RunMessage Infirmary where
   runMessage msg l@(Infirmary attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (chooseOne

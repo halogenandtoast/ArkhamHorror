@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Message hiding (RevealToken)
 import Arkham.Target
@@ -18,7 +18,7 @@ newtype SureGamble3 = SureGamble3 EventAttrs
 sureGamble3 :: EventCard SureGamble3
 sureGamble3 = event SureGamble3 Cards.sureGamble3
 
-instance EventRunner env => RunMessage SureGamble3 where
+instance RunMessage SureGamble3 where
   runMessage msg e@(SureGamble3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent _ eid _ [Window Timing.When (RevealToken _ token)] _
       | eid == eventId -> e <$ pushAll

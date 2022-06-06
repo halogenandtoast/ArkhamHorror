@@ -11,14 +11,15 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Action
+import Arkham.Asset.Attrs ( Field(..) )
+import Arkham.Scenario.Attrs ( Field(..) )
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.SkillType
 import Arkham.Source
@@ -48,13 +49,12 @@ instance HasAbilities AllIn where
       ]
     else []
 
-instance ActRunner env => RunMessage AllIn where
+instance RunMessage AllIn where
   runMessage msg a@(AllIn attrs@ActAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      resignedWithDrFrancisMorgan <- elem (ResignedCardCode $ CardCode "02080")
-        <$> getList ()
+      resignedWithDrFrancisMorgan <- scenarioFieldMap ScenarioResignedCardCodes (elem "02080")
       let resolution = if resignedWithDrFrancisMorgan then 2 else 1
       a <$ push (ScenarioResolution $ Resolution resolution)
     UseCardAbility iid (ProxySource _ source) _ 1 _
@@ -77,7 +77,7 @@ instance ActRunner env => RunMessage AllIn where
         case maid of
           Nothing -> error "this ability should not be able to be used"
           Just aid -> do
-            currentClueCount <- unClueCount <$> getCount aid
+            currentClueCount <- field AssetClues aid
             requiredClueCount <- getPlayerCountValue (PerPlayer 1)
             push (PlaceClues (AssetTarget aid) 1)
             a <$ when

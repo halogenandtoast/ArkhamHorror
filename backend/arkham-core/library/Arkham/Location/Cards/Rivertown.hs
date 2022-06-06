@@ -20,5 +20,5 @@ rivertown = location
   Circle
   [Moon, Diamond, Square, Squiggle, Hourglass]
 
-instance LocationRunner env => RunMessage Rivertown where
+instance RunMessage Rivertown where
   runMessage msg (Rivertown attrs) = Rivertown <$> runMessage msg attrs

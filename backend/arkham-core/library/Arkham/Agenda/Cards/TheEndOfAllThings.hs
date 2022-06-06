@@ -11,7 +11,6 @@ import Arkham.Agenda.Attrs
 import Arkham.Agenda.Runner
 import Arkham.Attack
 import Arkham.Classes
-import Arkham.EnemyId
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
@@ -39,7 +38,7 @@ instance HasAbilities TheEndOfAllThings where
     $ EnemyWithTitle "Yog-Sothoth"
     ]
 
-instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessage TheEndOfAllThings where
+instance RunMessage TheEndOfAllThings where
   runMessage msg a@(TheEndOfAllThings attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
@@ -47,8 +46,7 @@ instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessag
       a <$ push (ScenarioResolution $ Resolution 3)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       investigatorIds <- getInvestigatorIds
-      yogSothoth <- fromJustNote "defeated?"
-        <$> getId (EnemyWithTitle "Yog-Sothoth")
+      yogSothoth <- selectJust (EnemyWithTitle "Yog-Sothoth")
       a <$ pushAll
         ([ EnemyAttack iid yogSothoth DamageAny RegularAttack | iid <- investigatorIds ]
         <> [RevertAgenda aid]

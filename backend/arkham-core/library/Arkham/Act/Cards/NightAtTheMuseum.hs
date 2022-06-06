@@ -33,7 +33,7 @@ instance HasAbilities NightAtTheMuseum where
         Cards.exhibitHallRestrictedHall
     ]
 
-instance ActRunner env => RunMessage NightAtTheMuseum where
+instance RunMessage NightAtTheMuseum where
   runMessage msg a@(NightAtTheMuseum attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
@@ -43,7 +43,7 @@ instance ActRunner env => RunMessage NightAtTheMuseum where
       case mHuntingHorror of
         Just eid -> do
           lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
-            <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
+            <$> selectOne (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
           a <$ pushAll
             [ EnemySpawn Nothing lid eid
             , Ready (EnemyTarget eid)

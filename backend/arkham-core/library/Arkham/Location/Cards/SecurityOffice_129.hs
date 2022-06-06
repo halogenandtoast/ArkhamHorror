@@ -39,7 +39,7 @@ instance HasAbilities SecurityOffice_129 where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage SecurityOffice_129 where
+instance RunMessage SecurityOffice_129 where
   runMessage msg l@(SecurityOffice_129 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unrevealedExhibitHalls <- map unUnrevealedLocationId

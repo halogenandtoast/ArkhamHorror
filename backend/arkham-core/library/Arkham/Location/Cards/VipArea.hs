@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Location.Cards qualified as Cards (vipArea)
 import Arkham.Classes
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Modifier
@@ -28,7 +29,7 @@ vipArea = locationWith
   [Diamond]
   (revealedSymbolL .~ Plus)
 
-instance HasPhase env => HasModifiersFor VipArea where
+instance HasModifiersFor VipArea where
   getModifiersFor _ (InvestigatorTarget iid) (VipArea attrs)
     | iid `member` locationInvestigators attrs = do
       phase <- getPhase
@@ -37,5 +38,5 @@ instance HasPhase env => HasModifiersFor VipArea where
         else pure []
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage VipArea where
+instance RunMessage VipArea where
   runMessage msg (VipArea attrs) = VipArea <$> runMessage msg attrs

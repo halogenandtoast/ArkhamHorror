@@ -37,7 +37,7 @@ instance HasAbilities SecurityOffice_128 where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage SecurityOffice_128 where
+instance RunMessage SecurityOffice_128 where
   runMessage msg l@(SecurityOffice_128 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (Search

@@ -43,7 +43,7 @@ instance HasAbilities NotreDame where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage NotreDame where
+instance RunMessage NotreDame where
   runMessage msg l@(NotreDame attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       l <$ push

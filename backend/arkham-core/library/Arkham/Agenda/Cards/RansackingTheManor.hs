@@ -46,7 +46,7 @@ instance HasAbilities RansackingTheManor where
         AnyValue
     ]
 
-instance AgendaRunner env => RunMessage RansackingTheManor where
+instance RunMessage RansackingTheManor where
   runMessage msg a@(RansackingTheManor attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       possessedOathspeaker <- getSetAsideCard Enemies.possessedOathspeaker

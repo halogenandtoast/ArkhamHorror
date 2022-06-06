@@ -43,7 +43,7 @@ instance HasAbilities TheWayOut where
       $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage TheWayOut where
+instance RunMessage TheWayOut where
   runMessage msg a@(TheWayOut attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
       leadInvestigatorId <- getLeadInvestigatorId

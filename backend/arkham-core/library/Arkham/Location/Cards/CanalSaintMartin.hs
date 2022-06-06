@@ -45,7 +45,7 @@ instance HasAbilities CanalSaintMartin where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage CanalSaintMartin where
+instance RunMessage CanalSaintMartin where
   runMessage msg a@(CanalSaintMartin attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       enemies <- selectListMap EnemyTarget

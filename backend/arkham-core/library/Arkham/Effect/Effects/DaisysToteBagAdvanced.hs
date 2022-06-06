@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.Effect.Helpers
 import Arkham.Message
 import Arkham.Modifier

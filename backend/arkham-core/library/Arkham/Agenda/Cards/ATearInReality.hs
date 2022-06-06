@@ -5,16 +5,16 @@ module Arkham.Agenda.Cards.ATearInReality
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.LocationId
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
+import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 
 newtype ATearInReality = ATearInReality AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -23,12 +23,15 @@ newtype ATearInReality = ATearInReality AgendaAttrs
 aTearInReality :: AgendaCard ATearInReality
 aTearInReality = agenda (1, A) ATearInReality Cards.aTearInReality (Static 4)
 
-instance AgendaRunner env => RunMessage ATearInReality where
+instance RunMessage ATearInReality where
   runMessage msg a@(ATearInReality attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
+      leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      locationId <- getId @LocationId leadInvestigatorId
+      locationId <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at location")
+        leadInvestigatorId
       lid <- leftmostLocation locationId
       a <$ pushAll
         (RemoveLocation lid

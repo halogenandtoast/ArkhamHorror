@@ -2,22 +2,16 @@ module Arkham.Scenarios.CurtainCall.Helpers where
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
-import Arkham.Matcher hiding (Discarded)
+import Arkham.Matcher hiding ( Discarded )
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target
 
-moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
-  :: ( MonadIO m
-     , MonadReader env m
-     , HasQueue env
-     , Query LocationMatcher m
-     , Query EnemyMatcher m
-     )
-  => m ()
+moveTheManInThePalidMaskToLobbyInsteadOfDiscarding :: GameT ()
 moveTheManInThePalidMaskToLobbyInsteadOfDiscarding = do
   theManInThePallidMask <- getTheManInThePallidMask
   lobbyId <- fromJustNote "Lobby must be in play"
@@ -31,7 +25,7 @@ moveTheManInThePalidMaskToLobbyInsteadOfDiscarding = do
       _ -> False
     (const [EnemyMove theManInThePallidMask lobbyId])
 
-getTheManInThePallidMask :: Query EnemyMatcher m => m EnemyId
+getTheManInThePallidMask :: GameT EnemyId
 getTheManInThePallidMask =
   fromJustNote "the man in the pallid mask must still be in play"
     <$> selectOne (enemyIs Cards.theManInThePallidMask)

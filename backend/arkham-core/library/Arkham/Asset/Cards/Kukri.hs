@@ -6,13 +6,14 @@ module Arkham.Asset.Cards.Kukri
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -40,17 +41,15 @@ instance RunMessage Kukri where
       ]
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        actionRemainingCount <- unActionRemainingCount <$> getCount iid
-        a <$ when
-          (actionRemainingCount > 0)
-          (push $ chooseOne
-            iid
-            [ Label
-              "Spend 1 action to deal +1 damage"
-              [ LoseActions iid source 1
-              , skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
-              ]
-            , Label "Skip additional Kukri damage" []
+        actionRemainingCount <- field InvestigatorRemainingActions iid
+        when (actionRemainingCount > 0) $ push $ chooseOne
+          iid
+          [ Label
+            "Spend 1 action to deal +1 damage"
+            [ LoseActions iid source 1
+            , skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)
             ]
-          )
+          , Label "Skip additional Kukri damage" []
+          ]
+        pure a
     _ -> Kukri <$> runMessage msg attrs

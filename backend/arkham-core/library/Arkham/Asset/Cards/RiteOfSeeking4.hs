@@ -11,9 +11,10 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -34,7 +35,7 @@ instance HasAbilities RiteOfSeeking4 where
 instance RunMessage RiteOfSeeking4 where
   runMessage msg a@(RiteOfSeeking4 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- getId @LocationId iid
+      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
       a <$ pushAll
         [ CreateEffect "02233" Nothing source (InvestigationTarget iid lid) -- same effect as base
         , skillTestModifier

@@ -36,6 +36,6 @@ instance HasModifiersFor OsbornsGeneralStore_206 where
 instance HasAbilities OsbornsGeneralStore_206 where
   getAbilities = withDrawCardUnderneathAction
 
-instance LocationRunner env => RunMessage OsbornsGeneralStore_206 where
+instance RunMessage OsbornsGeneralStore_206 where
   runMessage msg (OsbornsGeneralStore_206 attrs) =
     OsbornsGeneralStore_206 <$> runMessage msg attrs

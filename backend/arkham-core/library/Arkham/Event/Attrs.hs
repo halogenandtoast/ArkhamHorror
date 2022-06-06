@@ -4,11 +4,10 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Event.Cards
+import Arkham.Classes.Entity
 import Arkham.Json
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Id
-import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
@@ -23,6 +22,7 @@ data instance Field EventAttrs :: Type -> Type where
   EventAttachedTarget :: Field EventAttrs (Maybe Target)
   EventTraits :: Field EventAttrs (HashSet Trait)
   EventAbilities :: Field EventAttrs [Ability]
+  EventOwner :: Field EventAttrs InvestigatorId
 
 data EventAttrs = EventAttrs
   { eventCardCode :: CardCode
@@ -69,17 +69,6 @@ instance IsCard EventAttrs where
   toCardId = unEventId . eventId
   toCardOwner = Just . eventOwner
 
-unshiftEffect ::
-  (HasQueue env, MonadReader env m, MonadIO m) =>
-  EventAttrs ->
-  Target ->
-  m ()
-unshiftEffect attrs target =
-  pushAll
-    [ CreateEffect (cdCardCode $ toCardDef attrs) Nothing (toSource attrs) target
-    , Discard $ toTarget attrs
-    ]
-
 event ::
   (EventAttrs -> a) -> CardDef -> CardBuilder (InvestigatorId, EventId) a
 event f cardDef =
@@ -117,19 +106,3 @@ instance SourceEntity EventAttrs where
   toSource = EventSource . toId
   isSource EventAttrs {eventId} (EventSource eid) = eventId == eid
   isSource _ _ = False
-
-instance RunMessage EventAttrs where
-  runMessage msg a@EventAttrs {..} = case msg of
-    SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
-    InvestigatorEliminated iid
-      | eventAttachedTarget == Just (InvestigatorTarget iid) ->
-        a
-          <$ push (Discard (EventTarget eventId))
-    AttachEvent eid target
-      | eid == eventId ->
-        pure $ a & attachedTargetL ?~ target
-    Ready (isTarget a -> True) ->
-      pure $ a & exhaustedL .~ False
-    Exhaust (isTarget a -> True) ->
-      pure $ a & exhaustedL .~ True
-    _ -> pure a

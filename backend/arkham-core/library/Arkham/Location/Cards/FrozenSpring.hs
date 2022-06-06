@@ -41,7 +41,7 @@ instance HasAbilities FrozenSpring where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage FrozenSpring where
+instance RunMessage FrozenSpring where
   runMessage msg l@(FrozenSpring attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       l <$ pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]

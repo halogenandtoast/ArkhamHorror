@@ -12,6 +12,9 @@ import {-# SOURCE #-} Arkham.Game ()
 getLeadInvestigatorId :: GameT InvestigatorId
 getLeadInvestigatorId = selectJust LeadInvestigator
 
+getActiveInvestigatorId :: GameT InvestigatorId
+getActiveInvestigatorId = selectJust TurnInvestigator
+
 getInvestigatorIds :: GameT [InvestigatorId]
 getInvestigatorIds = selectList Anyone
 

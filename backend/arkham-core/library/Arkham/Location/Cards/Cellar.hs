@@ -28,7 +28,7 @@ instance HasAbilities Cellar where
       $ toId a
     ]
 
-instance LocationRunner env => RunMessage Cellar where
+instance RunMessage Cellar where
   runMessage msg a@(Cellar attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0)

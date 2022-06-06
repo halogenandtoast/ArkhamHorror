@@ -2,13 +2,14 @@ module Arkham.Event.Cards.DynamiteBlast where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.DamageEffect
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 
@@ -19,15 +20,17 @@ newtype DynamiteBlast = DynamiteBlast EventAttrs
 dynamiteBlast :: EventCard DynamiteBlast
 dynamiteBlast = event DynamiteBlast Cards.dynamiteBlast
 
-instance EventRunner env => RunMessage DynamiteBlast where
+instance RunMessage DynamiteBlast where
   runMessage msg e@(DynamiteBlast attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      currentLocationId <- getId @LocationId iid
-      connectedLocationIds <- map unConnectedLocationId
-        <$> getSetList currentLocationId
+      currentLocationId <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
+      connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId currentLocationId
       choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do
-        enemyIds <- getSetList lid
-        investigatorIds <- getSetList @InvestigatorId lid
+        enemyIds <- selectList $ EnemyAt $ LocationWithId lid
+        investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
         pure
           ( lid
           , map
@@ -47,7 +50,6 @@ instance EventRunner env => RunMessage DynamiteBlast where
           )
       let
         availableChoices =
-          map (\(l, c) -> TargetLabel (LocationTarget l) c)
-            $ filter (notNull . snd) choices
+          map (\(l, c) -> targetLabel l c) $ filter (notNull . snd) choices
       e <$ pushAll [chooseOne iid availableChoices, Discard (EventTarget eid)]
     _ -> DynamiteBlast <$> runMessage msg attrs

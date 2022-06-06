@@ -38,5 +38,5 @@ instance HasCount ClueCount env LocationId => HasModifiersFor EngineCar_175 wher
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage EngineCar_175 where
+instance RunMessage EngineCar_175 where
   runMessage msg (EngineCar_175 attrs) = EngineCar_175 <$> runMessage msg attrs

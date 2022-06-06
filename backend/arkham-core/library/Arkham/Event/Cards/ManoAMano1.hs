@@ -9,7 +9,7 @@ import Arkham.Prelude
 import qualified Arkham.Event.Cards as Cards
 import Arkham.Classes
 import Arkham.DamageEffect
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
@@ -22,7 +22,7 @@ manoAMano1 :: EventCard ManoAMano1
 manoAMano1 =
   event ManoAMano1 Cards.manoAMano1
 
-instance EventRunner env => RunMessage ManoAMano1 where
+instance RunMessage ManoAMano1 where
   runMessage msg e@(ManoAMano1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid

@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Message
@@ -22,7 +22,7 @@ newtype MonsterSlayer = MonsterSlayer EventAttrs
 monsterSlayer :: EventCard MonsterSlayer
 monsterSlayer = event MonsterSlayer Cards.monsterSlayer
 
-instance EventRunner env => RunMessage MonsterSlayer where
+instance RunMessage MonsterSlayer where
   runMessage msg e@(MonsterSlayer attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

@@ -6,7 +6,8 @@ import Arkham.Ability
 import Arkham.Act.Cards
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Card
-import Arkham.Classes
+import Arkham.Classes.Entity
+import Arkham.Classes.HasAbilities
 import Arkham.Cost
 import Arkham.Id
 import Arkham.Json

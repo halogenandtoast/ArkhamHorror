@@ -11,7 +11,7 @@ import Arkham.Asset.Uses (UseType(..))
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target

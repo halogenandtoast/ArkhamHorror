@@ -11,10 +11,11 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.InvestigatorId
-import Arkham.LocationId
+import Arkham.Id
+import Arkham.Investigator.Attrs ( Field(..) )
 import Arkham.Matcher hiding (MoveAction)
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -65,12 +66,12 @@ instance RunMessage Duke where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)
     UseCardAbility iid source windows' 2 _ | isSource attrs source -> do
-      lid <- getId @LocationId iid
+      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
       investigateAbilities :: [Ability] <-
         filterM
             (andM . sequence
               [ pure . (`abilityIs` Action.Investigate)
-              , getCanAffordAbility iid
+              , (\ab -> anyM (getCanAffordAbility iid ab) windows')
                 . (`applyAbilityModifiers` [ActionCostModifier (-1)])
               ]
             )

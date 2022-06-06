@@ -6,14 +6,15 @@ module Arkham.Asset.Cards.ArchaicGlyphsGuidingStones3
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Matcher
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -35,20 +36,23 @@ archaicGlyphsGuidingStones3 =
 instance RunMessage ArchaicGlyphsGuidingStones3 where
   runMessage msg a@(ArchaicGlyphsGuidingStones3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- getId @LocationId iid
-      a <$ pushAll
-        [ Investigate
-          iid
-          lid
-          (toSource attrs)
-          (Just $ toTarget attrs)
-          SkillIntellect
-          False
-        , Discard (toTarget attrs)
-        ]
+      mlid <- field InvestigatorLocation iid
+      case mlid of
+        Nothing -> push $ Discard (toTarget attrs)
+        Just lid -> pushAll
+          [ Investigate
+            iid
+            lid
+            (toSource attrs)
+            (Just $ toTarget attrs)
+            SkillIntellect
+            False
+          , Discard (toTarget attrs)
+          ]
+      pure a
     Successful (Action.Investigate, LocationTarget lid) iid _ target n
       | isTarget attrs target -> do
-        clueCount <- unClueCount <$> getCount lid
+        clueCount <- field LocationClues lid
         let
           additional = n `div` 2
           amount = min clueCount (1 + additional)

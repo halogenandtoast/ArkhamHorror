@@ -6,11 +6,15 @@ import Arkham.Prelude
 import Arkham.Act.Sequence
 import Arkham.Card
 import Arkham.Card.PlayerCard
-import Arkham.Classes
 import Arkham.Helpers
 import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Helpers.Window
+import Arkham.Classes.HasTokenValue
+import Arkham.Classes.RunMessage
+import Arkham.Classes.HasQueue
 import Arkham.Id
+import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Phase
@@ -21,6 +25,22 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
+
+instance HasTokenValue ScenarioAttrs where
+  getTokenValue iid tokenFace _ = case tokenFace of
+    ElderSign -> getTokenValue iid ElderSign iid
+    AutoFail -> pure $ TokenValue AutoFail AutoFailModifier
+    PlusOne -> pure $ TokenValue PlusOne (PositiveModifier 1)
+    Zero -> pure $ TokenValue Zero (PositiveModifier 0)
+    MinusOne -> pure $ TokenValue MinusOne (NegativeModifier 1)
+    MinusTwo -> pure $ TokenValue MinusTwo (NegativeModifier 2)
+    MinusThree -> pure $ TokenValue MinusThree (NegativeModifier 3)
+    MinusFour -> pure $ TokenValue MinusFour (NegativeModifier 4)
+    MinusFive -> pure $ TokenValue MinusFive (NegativeModifier 5)
+    MinusSix -> pure $ TokenValue MinusSix (NegativeModifier 6)
+    MinusSeven -> pure $ TokenValue MinusSeven (NegativeModifier 7)
+    MinusEight -> pure $ TokenValue MinusEight (NegativeModifier 8)
+    otherFace -> pure $ TokenValue otherFace NoModifier
 
 instance RunMessage ScenarioAttrs where
   runMessage msg a@ScenarioAttrs {..} = case msg of

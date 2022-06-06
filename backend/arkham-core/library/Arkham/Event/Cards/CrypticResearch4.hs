@@ -2,11 +2,10 @@ module Arkham.Event.Cards.CrypticResearch4 where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 
@@ -17,15 +16,14 @@ newtype CrypticResearch4 = CrypticResearch4 EventAttrs
 crypticResearch4 :: EventCard CrypticResearch4
 crypticResearch4 = event CrypticResearch4 Cards.crypticResearch4
 
-instance (EventRunner env) => RunMessage CrypticResearch4 where
+instance RunMessage CrypticResearch4 where
   runMessage msg e@(CrypticResearch4 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      locationId <- getId @LocationId iid
-      investigatorIds <- getSetList locationId
+      investigatorIds <- selectList $ colocatedWith iid
       e <$ pushAll
         [ chooseOne
           iid
-          [ TargetLabel (InvestigatorTarget iid') [DrawCards iid' 3 False]
+          [ targetLabel iid' [DrawCards iid' 3 False]
           | iid' <- investigatorIds
           ]
         , Discard (EventTarget eid)

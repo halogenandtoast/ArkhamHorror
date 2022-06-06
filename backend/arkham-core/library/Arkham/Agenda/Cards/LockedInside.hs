@@ -22,7 +22,7 @@ newtype LockedInside = LockedInside AgendaAttrs
 lockedInside :: AgendaCard LockedInside
 lockedInside = agenda (1, A) LockedInside Cards.lockedInside (Static 2)
 
-instance AgendaRunner env => RunMessage LockedInside where
+instance RunMessage LockedInside where
   runMessage msg a@(LockedInside attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
@@ -35,7 +35,7 @@ instance HasAbilities Shortcut2 where
       ]
     _ -> []
 
-instance EventRunner env => RunMessage Shortcut2 where
+instance RunMessage Shortcut2 where
   runMessage msg e@(Shortcut2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- selectJust $ LocationWithInvestigator $ InvestigatorWithId iid

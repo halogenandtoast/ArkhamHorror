@@ -32,11 +32,14 @@ data instance Field EnemyAttrs :: Type -> Type where
   EnemyDoom :: Field EnemyAttrs Int
   EnemyEvade :: Field EnemyAttrs Int
   EnemyFight :: Field EnemyAttrs Int
+  EnemyClues :: Field EnemyAttrs Int
   EnemyHealthDamage :: Field EnemyAttrs Int
   EnemySanityDamage :: Field EnemyAttrs Int
   EnemyTraits :: Field EnemyAttrs (HashSet Trait)
   EnemyKeywords :: Field EnemyAttrs (HashSet Keyword)
   EnemyAbilities :: Field EnemyAttrs [Ability]
+  EnemyCardCode :: Field EnemyAttrs CardCode
+  EnemyLocation :: Field EnemyAttrs (Maybe LocationId)
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId

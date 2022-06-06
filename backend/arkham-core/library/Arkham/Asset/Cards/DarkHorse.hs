@@ -7,9 +7,9 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field(..) )
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -20,9 +20,9 @@ newtype DarkHorse = DarkHorse AssetAttrs
 darkHorse :: AssetCard DarkHorse
 darkHorse = asset DarkHorse Cards.darkHorse
 
-instance HasCount ResourceCount env InvestigatorId => HasModifiersFor DarkHorse where
+instance HasModifiersFor DarkHorse where
   getModifiersFor _ (InvestigatorTarget iid) (DarkHorse a) | controlledBy a iid = do
-    resourceCount <- unResourceCount <$> getCount iid
+    resourceCount <- field InvestigatorResources iid
     pure $ toModifiers
       a
       (if resourceCount == 0
@@ -35,7 +35,6 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor DarkHorse 
           ]
         else [MayChooseNotToTakeUpkeepResources]
       )
-
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage DarkHorse where

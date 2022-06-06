@@ -39,7 +39,7 @@ instance HasAbilities PatientConfinementDrearyCell where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage PatientConfinementDrearyCell where
+instance RunMessage PatientConfinementDrearyCell where
   runMessage msg l@(PatientConfinementDrearyCell attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 2)

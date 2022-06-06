@@ -6,7 +6,7 @@ module Arkham.Effect.Effects.WindowModifierEffect
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.Effect.Window
 import Arkham.EffectId
 import Arkham.EffectMetadata
@@ -37,7 +37,7 @@ windowModifierEffect eid metadata effectWindow source target =
     , effectWindow = Just effectWindow
     }
 
-instance Monad m => HasModifiersFor WindowModifierEffect where
+instance HasModifiersFor WindowModifierEffect where
   getModifiersFor _ target (WindowModifierEffect EffectAttrs {..})
     | target == effectTarget = case effectMetadata of
       Just (EffectModifiers modifiers) -> pure modifiers

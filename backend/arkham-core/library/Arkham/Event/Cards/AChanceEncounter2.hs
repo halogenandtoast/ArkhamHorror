@@ -8,12 +8,13 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Classes
-import Arkham.Event.Attrs
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
-import Arkham.Id
+import Arkham.Event.Runner
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
@@ -25,12 +26,7 @@ newtype AChanceEncounter2 = AChanceEncounter2 EventAttrs
 aChanceEncounter2 :: EventCard AChanceEncounter2
 aChanceEncounter2 = event AChanceEncounter2 Cards.aChanceEncounter2
 
-instance
-  ( HasModifiersFor env ()
-  , HasSet InvestigatorId env ()
-  , HasList DiscardedPlayerCard env InvestigatorId
-  )
-  => RunMessage AChanceEncounter2 where
+instance RunMessage AChanceEncounter2 where
   runMessage msg e@(AChanceEncounter2 attrs) = case msg of
     InvestigatorPlayDynamicEvent iid eid payment | eid == toId attrs -> do
       investigatorIds <-
@@ -41,11 +37,10 @@ instance
             )
           =<< getInvestigatorIds
       discards <-
-        map PlayerCard
-        . concat
-        <$> traverse
-              (fmap (map unDiscardedPlayerCard) . getList)
-              investigatorIds
+        concat
+          <$> traverse
+                (fieldMap InvestigatorDiscard (map PlayerCard))
+                investigatorIds
       let
         filteredDiscards = filter
           (and . sequence

@@ -32,14 +32,14 @@ instance HasAbilities SearchingForAnswers where
         "The Hidden Chamber"
     ]
 
-instance ActRunner env => RunMessage SearchingForAnswers where
+instance RunMessage SearchingForAnswers where
   runMessage msg a@(SearchingForAnswers attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       unrevealedLocationIds <- selectList UnrevealedLocation
       hiddenChamber <- fromJustNote "must exist"
-        <$> getId (LocationWithTitle "The Hidden Chamber")
+        <$> selectOne (LocationWithTitle "The Hidden Chamber")
       silasBishop <- EncounterCard <$> genEncounterCard Enemies.silasBishop
       a <$ pushAll
         ([ RevealLocation Nothing lid | lid <- unrevealedLocationIds ]

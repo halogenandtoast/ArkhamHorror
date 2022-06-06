@@ -31,7 +31,7 @@ instance HasAbilities WhatHaveYouDone where
       $ enemyIs Cards.ghoulPriest
     ]
 
-instance ActRunner env => RunMessage WhatHaveYouDone where
+instance RunMessage WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther)

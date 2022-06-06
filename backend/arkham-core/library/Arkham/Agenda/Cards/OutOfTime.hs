@@ -10,7 +10,7 @@ import Arkham.Agenda.Attrs
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.InvestigatorId
+import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message
 import Arkham.Resolution
 
@@ -21,10 +21,10 @@ newtype OutOfTime = OutOfTime AgendaAttrs
 outOfTime :: AgendaCard OutOfTime
 outOfTime = agenda (5, A) OutOfTime Cards.outOfTime (Static 3)
 
-instance AgendaRunner env => RunMessage OutOfTime where
+instance RunMessage OutOfTime where
   runMessage msg a@(OutOfTime attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 5 B -> do
-      investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
+      investigatorIds <- selectList UneliminatedInvestigator
       a <$ pushAll
         ([ InvestigatorDefeated (toSource attrs) iid | iid <- investigatorIds ]
         <> [ SufferTrauma iid 0 1 | iid <- investigatorIds ]

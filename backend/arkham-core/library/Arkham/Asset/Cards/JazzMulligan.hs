@@ -6,13 +6,15 @@ module Arkham.Asset.Cards.JazzMulligan
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -36,30 +38,31 @@ instance HasAbilities JazzMulligan where
         $ ActionCost 1
     ]
 
-instance HasSet Trait env LocationId => HasModifiersFor JazzMulligan where
+instance HasModifiersFor JazzMulligan where
   getModifiersFor (InvestigatorSource iid) (LocationTarget lid) (JazzMulligan attrs)
     | controlledBy attrs iid
     = do
-      traits <- getSet lid
+      traits <- field LocationTraits lid
       pure [ toModifier attrs Blank | Miskatonic `member` traits ]
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage JazzMulligan where
   runMessage msg a@(JazzMulligan attrs@AssetAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lid <- getId iid
+      lid <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
       a <$ push (AttachAsset assetId (LocationTarget lid))
-    UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a
-        <$ push
-             (BeginSkillTest
-               iid
-               source
-               (toTarget attrs)
-               (Just Parley)
-               SkillIntellect
-               3
-             )
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ BeginSkillTest
+        iid
+        source
+        (toTarget attrs)
+        (Just Parley)
+        SkillIntellect
+        3
+      pure a
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> a <$ push (TakeControlOfAsset iid assetId)
     _ -> JazzMulligan <$> runMessage msg attrs

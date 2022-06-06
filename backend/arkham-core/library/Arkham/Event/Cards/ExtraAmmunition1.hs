@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Asset.Uses
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -19,7 +18,7 @@ newtype ExtraAmmunition1 = ExtraAmmunition1 EventAttrs
 extraAmmunition1 :: EventCard ExtraAmmunition1
 extraAmmunition1 = event ExtraAmmunition1 Cards.extraAmmunition1
 
-instance (EventRunner env) => RunMessage ExtraAmmunition1 where
+instance RunMessage ExtraAmmunition1 where
   runMessage msg e@(ExtraAmmunition1 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       firearms <-

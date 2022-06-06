@@ -56,7 +56,7 @@ instance HasAbilities Yard where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage Yard where
+instance RunMessage Yard where
   runMessage msg l@(Yard attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       l <$ push (Remember IncitedAFightAmongstThePatients)

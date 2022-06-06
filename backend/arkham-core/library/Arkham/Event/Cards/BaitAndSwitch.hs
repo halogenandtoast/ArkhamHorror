@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards (baitAndSwitch)
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message
@@ -19,7 +19,7 @@ newtype BaitAndSwitch = BaitAndSwitch EventAttrs
 baitAndSwitch :: EventCard BaitAndSwitch
 baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
 
-instance EventRunner env => RunMessage BaitAndSwitch where
+instance RunMessage BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ ChooseEvadeEnemy

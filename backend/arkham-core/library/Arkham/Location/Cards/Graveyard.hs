@@ -28,7 +28,7 @@ instance HasAbilities Graveyard where
         $ ForcedAbility (Enters Timing.After Anyone $ LocationWithId (toId x))
     ]
 
-instance LocationRunner env => RunMessage Graveyard where
+instance RunMessage Graveyard where
   runMessage msg l@(Graveyard attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (BeginSkillTest

@@ -48,7 +48,7 @@ instance HasAbilities FloodedSquare where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage FloodedSquare where
+instance RunMessage FloodedSquare where
   runMessage msg l@(FloodedSquare attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)

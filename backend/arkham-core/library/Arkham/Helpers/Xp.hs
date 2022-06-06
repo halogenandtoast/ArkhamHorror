@@ -6,8 +6,10 @@ import Arkham.Card.CardDef
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.Query
 import Arkham.Helpers.Query
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
 import Arkham.Id
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Location.Attrs ( Field (..), LocationAttrs )
 import Arkham.Matcher
 import Arkham.Modifier
@@ -17,27 +19,10 @@ import Arkham.Source
 import Arkham.Target
 import Data.Monoid ( Sum (..) )
 
-getXp
-  :: ( Query LocationMatcher m
-     , Projection m LocationAttrs
-     , Query ScenarioMatcher m
-     , Projection m ScenarioAttrs
-     , Query InvestigatorMatcher m
-     , HasModifiersFor ()
-     )
-  => m [(InvestigatorId, Int)]
+getXp :: GameT [(InvestigatorId, Int)]
 getXp = getXpWithBonus 0
 
-getXpWithBonus
-  :: ( Query LocationMatcher m
-     , Projection m LocationAttrs
-     , Query ScenarioMatcher m
-     , Projection m ScenarioAttrs
-     , Query InvestigatorMatcher m
-     , HasModifiersFor ()
-     )
-  => Int
-  -> m [(InvestigatorId, Int)]
+getXpWithBonus :: Int -> GameT [(InvestigatorId, Int)]
 getXpWithBonus bonus = do
   investigatorIds <- getInvestigatorIds
   for

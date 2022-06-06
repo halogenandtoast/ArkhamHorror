@@ -30,7 +30,7 @@ instance HasAbilities Encore where
         Cards.royalEmissary
     ]
 
-instance AgendaRunner env => RunMessage Encore where
+instance RunMessage Encore where
   runMessage msg a@(Encore attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ RemoveAllDoom

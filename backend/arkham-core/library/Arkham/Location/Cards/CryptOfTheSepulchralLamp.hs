@@ -60,7 +60,7 @@ instance HasAbilities CryptOfTheSepulchralLamp where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage CryptOfTheSepulchralLamp where
+instance RunMessage CryptOfTheSepulchralLamp where
   runMessage msg l@(CryptOfTheSepulchralLamp attrs) = case msg of
     Investigate iid lid s mt _ False | lid == toId attrs -> do
       let investigate = Investigate iid lid s mt SkillWillpower False

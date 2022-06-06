@@ -37,7 +37,7 @@ instance Query AssetMatcher env => HasModifiersFor TheHiddenChamber where
       )
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage TheHiddenChamber where
+instance RunMessage TheHiddenChamber where
   runMessage msg (TheHiddenChamber attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       connectedLocation <- getId iid

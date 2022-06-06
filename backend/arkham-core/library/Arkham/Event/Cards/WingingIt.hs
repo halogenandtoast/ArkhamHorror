@@ -5,13 +5,14 @@ module Arkham.Event.Cards.WingingIt
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Zone qualified as Zone
@@ -23,10 +24,13 @@ newtype WingingIt = WingingIt EventAttrs
 wingingIt :: EventCard WingingIt
 wingingIt = event WingingIt Cards.wingingIt
 
-instance EventRunner env => RunMessage WingingIt where
+instance RunMessage WingingIt where
   runMessage msg e@(WingingIt attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
-      lid <- getId iid
+      lid <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
       let
         eventResolution =
           if zone == Zone.FromDiscard then ShuffleIntoDeck iid else Discard

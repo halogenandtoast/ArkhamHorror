@@ -10,7 +10,6 @@ import Arkham.Location.Cards qualified as Cards (tearThroughSpace)
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Label (mkLabel)
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -39,7 +38,7 @@ instance HasAbilities TearThroughSpace where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage TearThroughSpace where
+instance RunMessage TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (chooseOne
@@ -54,7 +53,7 @@ instance LocationRunner env => RunMessage TearThroughSpace where
       let
         labels = [ nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 4] ]
       availableLabel <- findM
-        (fmap isNothing . getId @(Maybe LocationId) . LocationWithLabel . mkLabel)
+        (selectNone. LocationWithLabel . mkLabel)
         labels
       case availableLabel of
         Just label -> pure . TearThroughSpace $ attrs & labelL .~ label

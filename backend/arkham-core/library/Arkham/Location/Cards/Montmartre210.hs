@@ -49,7 +49,7 @@ instance HasAbilities Montmartre210 where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage Montmartre210 where
+instance RunMessage Montmartre210 where
   runMessage msg a@(Montmartre210 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       ammoAssets <-

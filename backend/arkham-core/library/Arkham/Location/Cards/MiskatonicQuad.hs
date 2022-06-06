@@ -28,6 +28,6 @@ instance HasAbilities MiskatonicQuad where
   getAbilities (MiskatonicQuad a) =
     withBaseAbilities a $ [locationResignAction a]
 
-instance (LocationRunner env) => RunMessage MiskatonicQuad where
+instance RunMessage MiskatonicQuad where
   runMessage msg (MiskatonicQuad attrs) =
     MiskatonicQuad <$> runMessage msg attrs

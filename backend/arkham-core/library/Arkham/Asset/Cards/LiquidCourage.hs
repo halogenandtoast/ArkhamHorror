@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Target
@@ -37,8 +36,7 @@ instance HasAbilities LiquidCourage where
 instance RunMessage LiquidCourage where
   runMessage msg a@(LiquidCourage attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- getId @LocationId iid
-      iids <- getSetList @InvestigatorId lid
+      iids <- selectList $ colocatedWith iid
       let
         doAbilityEffect iid' =
           [ HealHorror (InvestigatorTarget iid') 1

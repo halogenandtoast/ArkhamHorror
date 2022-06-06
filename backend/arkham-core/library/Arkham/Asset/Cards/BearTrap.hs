@@ -11,9 +11,10 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.LocationId
+import Arkham.Investigator.Attrs ( Field(..) )
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window(..))
@@ -46,7 +47,7 @@ instance HasAbilities BearTrap where
 instance RunMessage BearTrap where
   runMessage msg a@(BearTrap attrs@AssetAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationId <- getId @LocationId iid
+      locationId <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
       a <$ push (AttachAsset assetId (LocationTarget locationId))
     UseCardAbility _ source [Window _ (Window.EnemyEnters eid _)] 2 _
       | isSource attrs source -> do

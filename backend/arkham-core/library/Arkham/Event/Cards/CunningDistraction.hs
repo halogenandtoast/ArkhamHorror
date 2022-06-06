@@ -2,11 +2,10 @@ module Arkham.Event.Cards.CunningDistraction where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Id
+import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message
 import Arkham.Target
 
@@ -17,13 +16,11 @@ newtype CunningDistraction = CunningDistraction EventAttrs
 cunningDistraction :: EventCard CunningDistraction
 cunningDistraction = event CunningDistraction Cards.cunningDistraction
 
-instance EventRunner env => RunMessage CunningDistraction where
+instance RunMessage CunningDistraction where
   runMessage msg e@(CunningDistraction attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      locationId <- getId @LocationId iid
-      enemyIds <- getSetList locationId
-      e <$ pushAll
-        ([ EnemyEvaded iid enemyId | enemyId <- enemyIds ]
-        <> [Discard (EventTarget eid)]
-        )
+      enemyIds <-
+        selectList $ EnemyAt $ LocationWithInvestigator $ InvestigatorWithId iid
+      pushAll $ map (EnemyEvaded iid) enemyIds <> [Discard (EventTarget eid)]
+      pure e
     _ -> CunningDistraction <$> runMessage msg attrs

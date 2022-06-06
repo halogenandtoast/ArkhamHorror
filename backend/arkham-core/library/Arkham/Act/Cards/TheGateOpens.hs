@@ -25,7 +25,7 @@ theGateOpens = act
   Cards.theGateOpens
   (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Sentinel Peak"))
 
-instance ActRunner env => RunMessage TheGateOpens where
+instance RunMessage TheGateOpens where
   runMessage msg a@(TheGateOpens attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)

@@ -2,10 +2,14 @@ module Arkham.GameEnv where
 
 import Arkham.Prelude
 
+import Arkham.Phase
 import Arkham.Classes.Depth
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
+import Arkham.Distance
 import {-# SOURCE #-} Arkham.Game
+import Arkham.History
+import Arkham.Id
 import Arkham.Message
 import Arkham.SkillTest.Base
 import Control.Monad.Random.Lazy hiding ( filterM, foldM, fromList )
@@ -74,3 +78,21 @@ instance MonadRandom GameT where
 
 getSkillTest :: GameT (Maybe SkillTest)
 getSkillTest = asks $ gameSkillTest . gameEnvGame
+
+getHistory :: HistoryType -> InvestigatorId -> GameT History
+getHistory TurnHistory iid =
+  findWithDefault mempty iid . gameTurnHistory <$> getGame
+getHistory PhaseHistory iid =
+  findWithDefault mempty iid . gamePhaseHistory <$> getGame
+getHistory RoundHistory iid = do
+  roundH <- findWithDefault mempty iid . gameRoundHistory <$> getGame
+  phaseH <- getHistory PhaseHistory iid
+  pure $ roundH <> phaseH
+
+getDistance :: LocationId -> LocationId -> GameT (Maybe Distance)
+getDistance l1 l2 = do
+  game <- getGame
+  pure $ gameGetDistance game l1 l2
+
+getPhase :: GameT Phase
+getPhase = asks $ gamePhase . gameEnvGame

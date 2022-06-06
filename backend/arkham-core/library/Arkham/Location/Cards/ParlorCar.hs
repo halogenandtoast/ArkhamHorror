@@ -54,7 +54,7 @@ instance HasAbilities ParlorCar where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage ParlorCar where
+instance RunMessage ParlorCar where
   runMessage msg l@(ParlorCar attrs@LocationAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (DiscoverCluesAtLocation iid locationId 1 Nothing)

@@ -5,10 +5,9 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Card
-import Arkham.Classes
+import Arkham.Classes.Entity
 import Arkham.Cost
 import Arkham.InvestigatorId
-import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
 import Arkham.SkillId
@@ -92,9 +91,3 @@ skill f cardDef = CardBuilder
     , skillAdditionalPayment = Nothing
     }
   }
-
-instance RunMessage SkillAttrs where
-  runMessage msg a = case msg of
-    UseCardAbility _ (isSource a -> True) _ (-1) payment ->
-      pure $ a { skillAdditionalPayment = Just payment }
-    _ -> pure a

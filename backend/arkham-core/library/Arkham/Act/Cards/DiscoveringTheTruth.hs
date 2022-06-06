@@ -6,13 +6,14 @@ module Arkham.Act.Cards.DiscoveringTheTruth
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Attrs
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
-import Arkham.Message hiding (InvestigatorEliminated)
-import Arkham.Query
+import Arkham.Message hiding ( InvestigatorEliminated )
+import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype DiscoveringTheTruth = DiscoveringTheTruth ActAttrs
@@ -27,10 +28,10 @@ instance HasAbilities DiscoveringTheTruth where
   getAbilities (DiscoveringTheTruth a) =
     [mkAbility a 1 $ ForcedAbility $ InvestigatorEliminated Timing.When You]
 
-instance ActRunner env => RunMessage DiscoveringTheTruth where
+instance RunMessage DiscoveringTheTruth where
   runMessage msg a@(DiscoveringTheTruth attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      clueCount <- unClueCount <$> getCount iid
+      clueCount <- field InvestigatorClues iid
       a
         <$ pushAll
              [ InvestigatorDiscardAllClues iid

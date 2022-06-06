@@ -10,10 +10,11 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.DamageEffect
-import Arkham.Event.Attrs
 import Arkham.Event.Runner
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window(..))
@@ -41,10 +42,13 @@ instance HasAbilities Ambush1 where
       ]
     _ -> []
 
-instance EventRunner env => RunMessage Ambush1 where
+instance RunMessage Ambush1 where
   runMessage msg e@(Ambush1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- getId iid
+      lid <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
       e <$ push (AttachEvent eid (LocationTarget lid))
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)

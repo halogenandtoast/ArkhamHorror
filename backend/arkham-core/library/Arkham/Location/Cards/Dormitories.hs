@@ -36,7 +36,7 @@ instance HasAbilities Dormitories where
           (LocationWithTitle "Dormitories")
       ]
 
-instance LocationRunner env => RunMessage Dormitories where
+instance RunMessage Dormitories where
   runMessage msg l@(Dormitories attrs) = case msg of
     UseCardAbility _iid source _ 1 _
       | isSource attrs source && locationRevealed attrs -> l

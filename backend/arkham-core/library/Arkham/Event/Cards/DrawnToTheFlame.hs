@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.Target
@@ -16,7 +16,7 @@ newtype DrawnToTheFlame = DrawnToTheFlame EventAttrs
 drawnToTheFlame :: EventCard DrawnToTheFlame
 drawnToTheFlame = event DrawnToTheFlame Cards.drawnToTheFlame
 
-instance EventRunner env => RunMessage DrawnToTheFlame where
+instance RunMessage DrawnToTheFlame where
   runMessage msg e@(DrawnToTheFlame attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ InvestigatorDrawEncounterCard iid

@@ -46,7 +46,7 @@ instance HasAbilities DunwichVillage_242 where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage DunwichVillage_242 where
+instance RunMessage DunwichVillage_242 where
   runMessage msg l@(DunwichVillage_242 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       investigatorsWithClues <- locationInvestigatorsWithClues attrs

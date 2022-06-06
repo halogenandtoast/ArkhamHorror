@@ -5,20 +5,22 @@ module Arkham.Event.Cards.UncageTheSoul
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Cost
+import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Runner
 import Arkham.Game.Helpers
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 import Arkham.Trait
 import Arkham.Window (Window(..))
-import Arkham.Window qualified as Window
+import qualified Arkham.Window as Window
 
 newtype UncageTheSoul = UncageTheSoul EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -27,14 +29,14 @@ newtype UncageTheSoul = UncageTheSoul EventAttrs
 uncageTheSoul :: EventCard UncageTheSoul
 uncageTheSoul = event UncageTheSoul Cards.uncageTheSoul
 
-instance CanCheckPlayable env => RunMessage UncageTheSoul where
+instance RunMessage UncageTheSoul where
   runMessage msg e@(UncageTheSoul attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       let
         windows' = map
           (Window Timing.When)
           [Window.DuringTurn iid, Window.NonFast, Window.FastPlayerWindow]
-      availableResources <- unResourceCount <$> getCount iid
+      availableResources <- field InvestigatorResources iid
       results <- selectList
         (InHandOf You <> BasicCardMatch
           (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual])
@@ -48,7 +50,7 @@ instance CanCheckPlayable env => RunMessage UncageTheSoul where
           windows'
         )
         results
-      e <$ pushAll
+      pushAll
         [ chooseOne
           iid
           [ TargetLabel
@@ -65,4 +67,5 @@ instance CanCheckPlayable env => RunMessage UncageTheSoul where
           ]
         , Discard (toTarget attrs)
         ]
+      pure e
     _ -> UncageTheSoul <$> runMessage msg attrs

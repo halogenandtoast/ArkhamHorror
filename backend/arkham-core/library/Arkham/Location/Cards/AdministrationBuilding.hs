@@ -39,7 +39,7 @@ instance HasAbilities AdministrationBuilding where
         ]
       else []
 
-instance (LocationRunner env) => RunMessage AdministrationBuilding where
+instance RunMessage AdministrationBuilding where
   runMessage msg l@(AdministrationBuilding attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       l <$ push (PlaceLocationMatching $ CardWithTitle "Faculty Offices")

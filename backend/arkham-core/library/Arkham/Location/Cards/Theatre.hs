@@ -18,5 +18,5 @@ theatre :: LocationCard Theatre
 theatre =
   location Theatre Cards.theatre 2 (Static 0) Circle [Diamond, Triangle]
 
-instance LocationRunner env => RunMessage Theatre where
+instance RunMessage Theatre where
   runMessage msg (Theatre attrs) = Theatre <$> runMessage msg attrs

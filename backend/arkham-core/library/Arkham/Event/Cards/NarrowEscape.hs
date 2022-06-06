@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Helpers
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -23,7 +23,7 @@ newtype NarrowEscape = NarrowEscape EventAttrs
 narrowEscape :: EventCard NarrowEscape
 narrowEscape = event NarrowEscape Cards.narrowEscape
 
-instance EventRunner env => RunMessage NarrowEscape where
+instance RunMessage NarrowEscape where
   runMessage msg e@(NarrowEscape attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll

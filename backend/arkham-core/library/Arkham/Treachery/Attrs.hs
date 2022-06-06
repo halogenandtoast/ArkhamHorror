@@ -4,10 +4,9 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Classes
+import Arkham.Classes.Entity
 import Arkham.Id
 import Arkham.Json
-import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
@@ -172,23 +171,3 @@ is (TreacheryTarget tid) t = tid == treacheryId t
 is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
 is (CardIdTarget cardId) t = cardId == unTreacheryId (treacheryId t)
 is _ _ = False
-
-instance RunMessage TreacheryAttrs where
-  runMessage msg a@TreacheryAttrs {..} = case msg of
-    InvestigatorEliminated iid
-      | InvestigatorTarget iid `elem` treacheryAttachedTarget -> a
-      <$ push (Discard $ toTarget a)
-    AttachTreachery tid target | tid == treacheryId ->
-      pure $ a & attachedTargetL ?~ target
-    PlaceResources target n | isTarget a target -> do
-      pure $ a & resourcesL +~ n
-    PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget ->
-      a <$ push (Discard $ toTarget a)
-    AddTreacheryToHand iid tid | tid == treacheryId ->
-      pure $ a & inHandOfL ?~ iid
-    Discarded target _ | target `elem` treacheryAttachedTarget ->
-      a <$ push (Discard $ toTarget a)
-    After (Revelation _ source) | isSource a source -> a <$ when
-      (isNothing treacheryAttachedTarget && isNothing treacheryInHandOf)
-      (push $ Discard $ toTarget a)
-    _ -> pure a

@@ -13,10 +13,11 @@ import Arkham.Criteria
 import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Trait
 
@@ -52,11 +53,11 @@ instance HasAbilities DevilsHopYard_252 where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage DevilsHopYard_252 where
+instance RunMessage DevilsHopYard_252 where
   runMessage msg l@(DevilsHopYard_252 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       investigatorWithCluePairs <- filter ((> 0) . snd) <$> traverse
-        (traverseToSnd (fmap unClueCount . getCount))
+        (traverseToSnd (field InvestigatorClues))
         (setToList $ locationInvestigators attrs)
       abominations <-
         map EnemyTarget <$> locationEnemiesWithTrait attrs Abomination

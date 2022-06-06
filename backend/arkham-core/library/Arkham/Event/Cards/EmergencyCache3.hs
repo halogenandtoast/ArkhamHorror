@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Event.Cards as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Asset.Uses
 import Arkham.Matcher
@@ -23,7 +23,7 @@ emergencyCache3 :: EventCard EmergencyCache3
 emergencyCache3 =
   event EmergencyCache3 Cards.emergencyCache3
 
-instance EventRunner env => RunMessage EmergencyCache3 where
+instance RunMessage EmergencyCache3 where
   runMessage msg e@(EmergencyCache3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       supplyAssets <- selectList $ AssetControlledBy (InvestigatorWithId iid) <> AssetWithUses Supply

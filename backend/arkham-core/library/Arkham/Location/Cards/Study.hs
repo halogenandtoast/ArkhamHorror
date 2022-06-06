@@ -13,5 +13,5 @@ newtype Study = Study LocationAttrs
 study :: LocationCard Study
 study = location Study Cards.study 2 (PerPlayer 2) Circle []
 
-instance LocationRunner env => RunMessage Study where
+instance RunMessage Study where
   runMessage msg (Study attrs) = Study <$> runMessage msg attrs

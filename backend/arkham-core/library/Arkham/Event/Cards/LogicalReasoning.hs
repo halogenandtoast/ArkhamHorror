@@ -7,7 +7,7 @@ import Arkham.Prelude hiding (terror)
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -21,7 +21,7 @@ newtype LogicalReasoning = LogicalReasoning EventAttrs
 logicalReasoning :: EventCard LogicalReasoning
 logicalReasoning = event LogicalReasoning Cards.logicalReasoning
 
-instance EventRunner env => RunMessage LogicalReasoning where
+instance RunMessage LogicalReasoning where
   runMessage msg e@(LogicalReasoning attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iids <- selectList $ InvestigatorAt YourLocation

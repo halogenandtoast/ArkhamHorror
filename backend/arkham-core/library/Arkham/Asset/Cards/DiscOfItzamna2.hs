@@ -28,7 +28,7 @@ instance HasAbilities DiscOfItzamna2 where
             Free
     ]
 
-instance (AssetRunner env) => RunMessage DiscOfItzamna2 where
+instance RunMessage DiscOfItzamna2 where
   runMessage msg a@(DiscOfItzamna2 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       push

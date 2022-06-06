@@ -38,7 +38,7 @@ instance HasAbilities AudubonPark where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage AudubonPark where
+instance RunMessage AudubonPark where
   runMessage msg l@(AudubonPark attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (RandomDiscard iid)

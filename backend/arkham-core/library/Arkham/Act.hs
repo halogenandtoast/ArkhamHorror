@@ -25,13 +25,7 @@ $(deriveJSON defaultOptions ''Act)
 instance HasAbilities Act where
   getAbilities = $(entityF "Act" "getAbilities")
 
-instance
-  ( ActRunner env
-  , HasId LocationId env InvestigatorId
-  , HasModifiersFor ()
-  ) =>
-  RunMessage Act
-  where
+instance RunMessage Act where
   runMessage = $(entityRunMessage "Act")
 
 instance Query LocationMatcher env => HasModifiersFor env Act where

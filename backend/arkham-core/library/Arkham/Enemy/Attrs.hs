@@ -50,6 +50,7 @@ data instance Field EnemyAttrs :: Type -> Type where
   EnemyHealthDamage :: Field EnemyAttrs Int
   EnemySanityDamage :: Field EnemyAttrs Int
   EnemyTraits :: Field EnemyAttrs (HashSet Trait)
+  EnemyKeywords :: Field EnemyAttrs (HashSet Keyword)
   EnemyAbilities :: Field EnemyAttrs [Ability]
 
 data EnemyAttrs = EnemyAttrs

@@ -40,7 +40,7 @@ instance HasAbilities Montmartre209 where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage Montmartre209 where
+instance RunMessage Montmartre209 where
   runMessage msg a@(Montmartre209 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push $ CreateEffect

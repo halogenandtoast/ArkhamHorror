@@ -6,13 +6,14 @@ module Arkham.Asset.Cards.CatBurglar1
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.LocationId
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Matcher hiding (MoveAction)
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -54,10 +55,12 @@ instance RunMessage CatBurglar1 where
         (SkillModifier SkillAgility 1)
       CatBurglar1 <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      engagedEnemyIds <- getSetList iid
-      locationId <- getId @LocationId iid
-      accessibleLocationIds <- map unAccessibleLocationId
-        <$> getSetList locationId
+      engagedEnemyIds <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
+      locationId <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
+      accessibleLocationIds <- selectList $ AccessibleFrom $ LocationWithId locationId
       pushAll
         $ [ DisengageEnemy iid eid | eid <- engagedEnemyIds ]
         <> [ chooseOne

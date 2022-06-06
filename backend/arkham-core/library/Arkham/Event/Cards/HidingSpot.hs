@@ -9,9 +9,8 @@ import Arkham.Ability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Criteria
-import Arkham.Event.Attrs
-import Arkham.Event.Helpers
 import Arkham.Event.Runner
+import Arkham.Event.Helpers
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Message
@@ -27,7 +26,7 @@ newtype HidingSpot = HidingSpot EventAttrs
 hidingSpot :: EventCard HidingSpot
 hidingSpot = event HidingSpot Cards.hidingSpot
 
-instance Query EnemyMatcher env => HasModifiersFor HidingSpot where
+instance HasModifiersFor HidingSpot where
   getModifiersFor _ (EnemyTarget eid) (HidingSpot attrs) =
     case eventAttachedTarget attrs of
       Just (LocationTarget lid) -> do
@@ -47,7 +46,7 @@ instance HasAbilities HidingSpot where
         $ PhaseIs EnemyPhase
     ]
 
-instance EventRunner env => RunMessage HidingSpot where
+instance RunMessage HidingSpot where
   runMessage msg e@(HidingSpot attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <- selectListMap LocationTarget Anywhere

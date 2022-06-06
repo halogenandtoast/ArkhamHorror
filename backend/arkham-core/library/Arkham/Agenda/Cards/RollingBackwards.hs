@@ -5,17 +5,18 @@ module Arkham.Agenda.Cards.RollingBackwards
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.LocationId
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
+import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 
 newtype RollingBackwards = RollingBackwards AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -25,14 +26,17 @@ rollingBackwards :: AgendaCard RollingBackwards
 rollingBackwards =
   agenda (3, A) RollingBackwards Cards.rollingBackwards (Static 4)
 
-instance AgendaRunner env => RunMessage RollingBackwards where
+instance RunMessage RollingBackwards where
   runMessage msg a@(RollingBackwards attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
+      leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      locationId <- getId @LocationId leadInvestigatorId
+      locationId <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        leadInvestigatorId
       lid <- leftmostLocation locationId
-      rlid <- fromJustNote "missing right" <$> getId (RightOf, lid)
+      rlid <- selectJust $ LocationInDirection RightOf $ LocationWithId lid
       a <$ pushAll
         (RemoveLocation lid
         : RemoveLocation rlid

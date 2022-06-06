@@ -51,11 +51,7 @@ instance HasAbilities TheCarnevaleConspiracy where
       $ ForcedAbility AnyWindow
     ]
 
-instance
-  ( HasModifiersFor env ()
-  , ActRunner env
-  )
-  => RunMessage TheCarnevaleConspiracy where
+instance RunMessage TheCarnevaleConspiracy where
   runMessage msg a@(TheCarnevaleConspiracy attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       maskedCarnevaleGoers <- selectList

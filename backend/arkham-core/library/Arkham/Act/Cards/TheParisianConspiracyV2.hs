@@ -36,7 +36,7 @@ instance HasAbilities TheParisianConspiracyV2 where
         $ RoundEnds When
     ]
 
-instance ActRunner env => RunMessage TheParisianConspiracyV2 where
+instance RunMessage TheParisianConspiracyV2 where
   runMessage msg a@(TheParisianConspiracyV2 attrs) = case msg of
     AdvanceAct aid _ advanceMode | aid == actId attrs && onSide B attrs -> do
       theOrganist <-

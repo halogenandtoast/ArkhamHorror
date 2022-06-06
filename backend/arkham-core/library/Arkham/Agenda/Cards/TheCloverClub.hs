@@ -12,6 +12,7 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Campaign
 import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
@@ -28,7 +29,7 @@ newtype TheCloverClub = TheCloverClub AgendaAttrs
 theCloverClub :: AgendaCard TheCloverClub
 theCloverClub = agenda (1, A) TheCloverClub Cards.theCloverClub (Static 4)
 
-instance Query EnemyMatcher env => HasModifiersFor TheCloverClub where
+instance HasModifiersFor TheCloverClub where
   getModifiersFor _ (EnemyTarget eid) (TheCloverClub attrs) | onSide A attrs =
     do
       isCriminal <- member eid <$> select (EnemyWithTrait Criminal)
@@ -45,14 +46,14 @@ instance HasAbilities TheCloverClub where
     | onSide A x
     ]
 
-instance AgendaRunner env => RunMessage TheCloverClub where
+instance RunMessage TheCloverClub where
   runMessage msg a@(TheCloverClub attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAgenda $ toId attrs)
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       completedExtracurricularActivity <-
-        elem "02041" . map unCompletedScenarioId <$> getSetList ()
+        elem "02041" <$> getCompletedScenarios
       enemyIds <- selectList $ EnemyWithTrait Criminal
 
       let

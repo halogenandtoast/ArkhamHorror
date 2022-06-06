@@ -49,7 +49,7 @@ instance HasAbilities YourHouse where
       ]
   getAbilities (YourHouse x) = getAbilities x
 
-instance LocationRunner env => RunMessage YourHouse where
+instance RunMessage YourHouse where
   runMessage msg l@(YourHouse attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.EnemySpawns _ _)] 1 _
       | isSource attrs source -> pure l

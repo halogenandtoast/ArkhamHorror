@@ -10,8 +10,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Cost
-import Arkham.Criteria hiding (DuringTurn)
-import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)
+import Arkham.Criteria hiding ( DuringTurn )
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
+import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window
@@ -39,7 +41,7 @@ instance HasAbilities JoeyTheRatVigil where
 instance RunMessage JoeyTheRatVigil where
   runMessage msg a@(JoeyTheRatVigil attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      handCards <- map unHandCard <$> getList iid
+      handCards <- field InvestigatorHand iid
       let items = filter (member Item . toTraits) handCards
       playableItems <- filterM
         (getIsPlayable

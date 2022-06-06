@@ -51,7 +51,7 @@ instance HasAbilities DestroyedPath where
         ]
       else []
 
-instance LocationRunner env => RunMessage DestroyedPath where
+instance RunMessage DestroyedPath where
   runMessage msg l@(DestroyedPath attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       amount <- getPlayerCountValue (PerPlayer 1)

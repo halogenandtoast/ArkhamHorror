@@ -6,7 +6,7 @@ module Arkham.Effect.Effects.MinhThiPhan
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.EffectMetadata
 import Arkham.Game.Helpers
 import Arkham.Message
@@ -32,7 +32,7 @@ instance HasModifiersFor MinhThiPhan where
     $ toModifiers attrs [ReturnToHandAfterTest]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage MinhThiPhan where
+instance RunMessage MinhThiPhan where
   runMessage msg e@(MinhThiPhan attrs) = case msg of
     SkillTestEnds _ | effectSource attrs == TokenEffectSource ElderSign ->
       case effectMetadata attrs of

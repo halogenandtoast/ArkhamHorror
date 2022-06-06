@@ -6,7 +6,7 @@ module Arkham.Effect.Effects.FightOrFlight
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Id
 import Arkham.Message

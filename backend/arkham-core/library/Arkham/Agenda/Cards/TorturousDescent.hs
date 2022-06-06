@@ -26,7 +26,7 @@ torturousDescent :: AgendaCard TorturousDescent
 torturousDescent =
   agenda (2, A) TorturousDescent Cards.torturousDescent (Static 7)
 
-instance AgendaRunner env => RunMessage TorturousDescent where
+instance RunMessage TorturousDescent where
   runMessage msg a@(TorturousDescent attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

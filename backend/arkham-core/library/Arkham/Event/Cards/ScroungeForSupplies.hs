@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -21,7 +21,7 @@ newtype ScroungeForSupplies = ScroungeForSupplies EventAttrs
 scroungeForSupplies :: EventCard ScroungeForSupplies
 scroungeForSupplies = event ScroungeForSupplies Cards.scroungeForSupplies
 
-instance EventRunner env => RunMessage ScroungeForSupplies where
+instance RunMessage ScroungeForSupplies where
   runMessage msg e@(ScroungeForSupplies attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-

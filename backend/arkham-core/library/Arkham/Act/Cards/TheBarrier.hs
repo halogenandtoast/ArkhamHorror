@@ -31,7 +31,7 @@ instance HasAbilities TheBarrier where
         $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Hallway")
     ]
 
-instance ActRunner env => RunMessage TheBarrier where
+instance RunMessage TheBarrier where
   runMessage msg a@(TheBarrier attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)

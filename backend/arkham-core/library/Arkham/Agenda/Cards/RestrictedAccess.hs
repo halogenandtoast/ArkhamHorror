@@ -6,21 +6,20 @@ module Arkham.Agenda.Cards.RestrictedAccess
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype RestrictedAccess = RestrictedAccess AgendaAttrs
@@ -37,12 +36,11 @@ instance HasAbilities RestrictedAccess where
         Cards.huntingHorror
     ]
 
-instance AgendaRunner env => RunMessage RestrictedAccess where
+instance RunMessage RestrictedAccess where
   runMessage msg a@(RestrictedAccess attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.EnemySpawns eid _)] 1 _
       | isSource attrs source -> do
-        mShadowSpawnedId <- fmap unStoryTreacheryId
-          <$> getId (toCardCode Treacheries.shadowSpawned)
+        mShadowSpawnedId <- selectOne $ treacheryIs Treacheries.shadowSpawned
         a <$ case mShadowSpawnedId of
           Just tid -> push $ PlaceResources (TreacheryTarget tid) 1
           Nothing -> do

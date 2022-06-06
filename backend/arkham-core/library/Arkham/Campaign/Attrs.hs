@@ -19,6 +19,7 @@ import Arkham.Id
 import Arkham.Investigator
 import Arkham.Message
 import Arkham.Name
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Token
 import Arkham.Json
@@ -26,6 +27,10 @@ import Control.Monad.Writer hiding (filterM)
 import Data.List.NonEmpty qualified as NE
 
 class IsCampaign a
+
+data instance Field CampaignAttrs :: Type -> Type where
+  CampaignCompletedSteps :: Field CampaignAttrs [CampaignStep]
+  CampaignStoryCards :: Field CampaignAttrs (HashMap InvestigatorId [PlayerCard])
 
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId

@@ -8,13 +8,13 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
-import Arkham.Id
-import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Matcher qualified as Matcher
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Timing qualified as Timing
 
@@ -34,7 +34,8 @@ instance HasAbilities Aquinnah3 where
           a
           1
           (OwnsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
-        $ ReactionAbility (Matcher.EnemyAttacks Timing.When You AnyEnemyAttack AnyEnemy)
+        $ ReactionAbility
+            (Matcher.EnemyAttacks Timing.When You AnyEnemyAttack AnyEnemy)
         $ Costs
             [ExhaustCost (toTarget a), HorrorCost (toSource a) (toTarget a) 1]
     ]
@@ -45,10 +46,10 @@ instance RunMessage Aquinnah3 where
       enemyId <- withQueue $ \queue ->
         let PerformEnemyAttack _ eid _ _ : queue' = dropUntilAttack queue
         in (queue', eid)
-      healthDamage' <- unHealthDamageCount <$> getCount enemyId
-      sanityDamage' <- unSanityDamageCount <$> getCount enemyId
-      locationId <- getId @LocationId iid
-      enemyIds <- getSetList @EnemyId locationId
+      healthDamage' <- field EnemyHealthDamage enemyId
+      sanityDamage' <- field EnemySanityDamage enemyId
+      enemyIds <- selectList
+        $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
 
       when (null enemyIds) (error "enemies have to be present")
 

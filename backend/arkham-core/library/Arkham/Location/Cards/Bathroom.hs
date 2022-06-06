@@ -35,7 +35,7 @@ instance HasAbilities Bathroom where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage Bathroom where
+instance RunMessage Bathroom where
   runMessage msg l@(Bathroom attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ pushAll [SetActions iid source 0, ChooseEndTurn iid]

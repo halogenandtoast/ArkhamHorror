@@ -10,7 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
+import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Target
 
@@ -29,8 +29,7 @@ instance RunMessage MedicalTexts where
   runMessage msg a@(MedicalTexts attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let controllerId = fromJustNote "must be controlled" (assetController attrs)
-      locationId <- getId @LocationId controllerId
-      locationInvestigatorIds <- getSetList locationId
+      locationInvestigatorIds <- selectList $ colocatedWith controllerId
       push
         (chooseOne
           iid

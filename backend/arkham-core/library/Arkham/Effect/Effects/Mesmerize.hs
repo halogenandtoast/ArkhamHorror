@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message

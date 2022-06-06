@@ -56,11 +56,11 @@ willpowerCount (DiscardCardPayment cards) =
 willpowerCount (Payments xs) = sum $ map willpowerCount xs
 willpowerCount _ = 0
 
-instance LocationRunner env => RunMessage RivertownAbandonedWarehouse where
+instance RunMessage RivertownAbandonedWarehouse where
   runMessage msg l@(RivertownAbandonedWarehouse attrs) = case msg of
     UseCardAbility iid source _ 1 payments | isSource attrs source -> do
       let doomToRemove = willpowerCount payments
-      cultists <- getSetList Cultist
+      cultists <- selectList $ EnemyWithTrait Cultist
       l <$ unless
         (null cultists)
         (push

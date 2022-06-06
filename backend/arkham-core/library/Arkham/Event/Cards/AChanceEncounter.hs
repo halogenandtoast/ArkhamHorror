@@ -5,14 +5,15 @@ module Arkham.Event.Cards.AChanceEncounter
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
-import Arkham.Id
+import Arkham.Event.Runner
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
@@ -24,12 +25,7 @@ newtype AChanceEncounter = AChanceEncounter EventAttrs
 aChanceEncounter :: EventCard AChanceEncounter
 aChanceEncounter = event AChanceEncounter Cards.aChanceEncounter
 
-instance
-  ( HasModifiersFor env ()
-  , HasSet InvestigatorId env ()
-  , HasList DiscardedPlayerCard env InvestigatorId
-  )
-  => RunMessage AChanceEncounter where
+instance RunMessage AChanceEncounter where
   runMessage msg e@(AChanceEncounter attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       investigatorIds <-
@@ -40,11 +36,8 @@ instance
             )
           =<< getInvestigatorIds
       discards <-
-        map PlayerCard
-        . concat
-        <$> traverse
-              (fmap (map unDiscardedPlayerCard) . getList)
-              investigatorIds
+        concat
+          <$> traverse (fieldMap InvestigatorDiscard (map PlayerCard)) investigatorIds
       let filteredDiscards = filter (elem Ally . toTraits) discards
       e <$ pushAll
         [ FocusCards filteredDiscards

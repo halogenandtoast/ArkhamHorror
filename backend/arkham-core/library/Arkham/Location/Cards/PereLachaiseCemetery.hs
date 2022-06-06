@@ -49,7 +49,7 @@ instance HasAbilities PereLachaiseCemetery where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage PereLachaiseCemetery where
+instance RunMessage PereLachaiseCemetery where
   runMessage msg a@(PereLachaiseCemetery attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push $ CreateEffect (toCardCode attrs) Nothing source (InvestigatorTarget iid)

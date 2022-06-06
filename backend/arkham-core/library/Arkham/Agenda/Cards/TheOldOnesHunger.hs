@@ -5,13 +5,14 @@ module Arkham.Agenda.Cards.TheOldOnesHunger
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Message
-import Arkham.Query
 import Arkham.Scenario.Deck
 import Arkham.Target
 
@@ -23,11 +24,11 @@ theOldOnesHunger :: AgendaCard TheOldOnesHunger
 theOldOnesHunger =
   agenda (2, A) TheOldOnesHunger Cards.theOldOnesHunger (Static 6)
 
-instance AgendaRunner env => RunMessage TheOldOnesHunger where
+instance RunMessage TheOldOnesHunger where
   runMessage msg a@(TheOldOnesHunger attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      scenarioDeckCount <- unScenarioDeckCount <$> getCount PotentialSacrifices
+      leadInvestigatorId <- getLeadInvestigatorId
+      scenarioDeckCount <- length <$> getScenarioDeck PotentialSacrifices
       if scenarioDeckCount >= 2
         then a <$ pushAll
           [ DrawRandomFromScenarioDeck

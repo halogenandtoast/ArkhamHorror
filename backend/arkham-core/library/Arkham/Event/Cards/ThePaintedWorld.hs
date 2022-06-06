@@ -5,13 +5,16 @@ module Arkham.Event.Cards.ThePaintedWorld
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Cost
+import Arkham.Event.Cards qualified as Cards
+import Arkham.Event.Runner
 import Arkham.Game.Helpers
-import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Matcher hiding ( DuringTurn )
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -24,30 +27,29 @@ newtype ThePaintedWorld = ThePaintedWorld EventAttrs
 thePaintedWorld :: EventCard ThePaintedWorld
 thePaintedWorld = event ThePaintedWorld Cards.thePaintedWorld
 
-instance CanCheckPlayable env => RunMessage ThePaintedWorld where
+instance RunMessage ThePaintedWorld where
   runMessage msg e@(ThePaintedWorld attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      playableCards <-
-        filterM
-            (getIsPlayable iid (toSource attrs) UnpaidCost
-            $ Window Timing.When (DuringTurn iid)
-            : windows'
-            )
-          =<< getList
-                (BasicCardMatch (NonExceptional <> EventCard)
-                <> CardIsBeneathInvestigator You
-                )
-      e <$ push
-        (InitiatePlayCardAsChoose
-          iid
-          (toCardId attrs)
-          playableCards
-          [ CreateEffect
-              "03012"
-              Nothing
-              (CardIdSource $ toCardId attrs)
-              (CardIdTarget $ toCardId attrs)
-          ]
-          True
+      candidates <- fieldMap
+        InvestigatorCardsUnderneath
+        (filter (`cardMatch` (NonExceptional <> EventCard)))
+        iid
+      playableCards <- filterM
+        (getIsPlayable iid (toSource attrs) UnpaidCost
+        $ Window Timing.When (DuringTurn iid)
+        : windows'
         )
+        candidates
+      push $ InitiatePlayCardAsChoose
+        iid
+        (toCardId attrs)
+        playableCards
+        [ CreateEffect
+            "03012"
+            Nothing
+            (CardIdSource $ toCardId attrs)
+            (CardIdTarget $ toCardId attrs)
+        ]
+        True
+      pure e
     _ -> ThePaintedWorld <$> runMessage msg attrs

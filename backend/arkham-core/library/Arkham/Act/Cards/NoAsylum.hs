@@ -49,7 +49,7 @@ instance HasAbilities NoAsylum where
       ]
     else []
 
-instance Query LocationMatcher env => HasModifiersFor NoAsylum where
+instance HasModifiersFor NoAsylum where
   getModifiersFor _ (LocationTarget lid) (NoAsylum attrs) = do
     targets <- select UnrevealedLocation
     pure
@@ -58,12 +58,12 @@ instance Query LocationMatcher env => HasModifiersFor NoAsylum where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActRunner env => RunMessage NoAsylum where
+instance RunMessage NoAsylum where
   runMessage msg a@(NoAsylum attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      tookKeysByForce <- member YouTookTheKeysByForce <$> getSet ()
+      tookKeysByForce <- remembered YouTookTheKeysByForce
       a <$ push
         (ScenarioResolution $ Resolution $ if tookKeysByForce then 2 else 3)
     _ -> NoAsylum <$> runMessage msg attrs

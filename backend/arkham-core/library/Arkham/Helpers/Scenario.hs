@@ -2,28 +2,32 @@ module Arkham.Helpers.Scenario where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Classes.Query
+import Arkham.Difficulty
+import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers
 import Arkham.Matcher
+import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario.Attrs
+import Arkham.Token
+import Control.Monad.Writer hiding ( filterM )
+import Data.HashMap.Strict qualified as HashMap
+import Data.List.NonEmpty qualified as NE
 
-scenarioField
-  :: (Query ScenarioMatcher m, Projection m ScenarioAttrs)
-  => Field ScenarioAttrs a
-  -> m a
+scenarioField :: Field ScenarioAttrs a -> GameT a
 scenarioField fld = scenarioFieldMap fld id
 
-scenarioFieldMap
-  :: (Monad m, Query ScenarioMatcher m, Projection m ScenarioAttrs)
-  => Field ScenarioAttrs a
-  -> (a -> b)
-  -> m b
+scenarioFieldMap :: Field ScenarioAttrs a -> (a -> b) -> GameT b
 scenarioFieldMap fld f = selectJust TheScenario >>= fieldMap fld f
 
 getIsStandalone :: GameT Bool
 getIsStandalone = isNothing <$> selectOne TheCampaign
 
-addRandomBasicWeaknessIfNeeded :: Deck PlayerCard -> GameT (Deck PlayerCard, [CardDef])
+addRandomBasicWeaknessIfNeeded
+  :: Deck PlayerCard -> GameT (Deck PlayerCard, [CardDef])
 addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
   Deck <$> flip
     filterM
@@ -47,3 +51,5 @@ isHardExpert :: ScenarioAttrs -> Bool
 isHardExpert ScenarioAttrs { scenarioDifficulty } =
   scenarioDifficulty `elem` [Hard, Expert]
 
+getScenarioDeck :: ScenarioDeckKey -> GameT [Card]
+getScenarioDeck k = scenarioFieldMap ScenarioDecks (HashMap.findWithDefault [] k)

@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message hiding ( DeckHasNoCards )
 import Arkham.Target

@@ -5,10 +5,11 @@ module Arkham.Asset.Cards.TrueGrit
 
 import Arkham.Prelude
 
-import Arkham.Asset.Cards qualified as Cards
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Asset.Runner
-import Arkham.Id
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Source
 
 newtype TrueGrit = TrueGrit AssetAttrs
@@ -18,15 +19,17 @@ newtype TrueGrit = TrueGrit AssetAttrs
 trueGrit :: AssetCard TrueGrit
 trueGrit = assetWith TrueGrit Cards.trueGrit (healthL ?~ 3)
 
-instance (HasId LocationId env InvestigatorId) => HasModifiersFor TrueGrit where
+instance HasModifiersFor TrueGrit where
   getModifiersFor (InvestigatorSource iid) target (TrueGrit a)
     | isTarget a target = do
-      locationId <- getId @LocationId iid
-      assetLocationId <- getId @LocationId
+      locationId <- field InvestigatorLocation iid
+      assetLocationId <- field InvestigatorLocation
         $ fromJustNote "unowned" (assetController a)
       pure
         [ toModifier a CanBeAssignedDamage
-        | locationId == assetLocationId && Just iid /= assetController a
+        | (locationId == assetLocationId)
+          && (Just iid /= assetController a)
+          && isJust locationId
         ]
   getModifiersFor _ _ _ = pure []
 

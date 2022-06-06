@@ -49,7 +49,7 @@ instance HasAbilities TrappersCabin where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage TrappersCabin where
+instance RunMessage TrappersCabin where
   runMessage msg l@(TrappersCabin attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 3)

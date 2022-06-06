@@ -7,11 +7,12 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
-import Arkham.Event.Helpers
 import Arkham.Event.Runner
+import Arkham.Event.Helpers
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Target
 
 newtype Barricade3 = Barricade3 EventAttrs
@@ -30,10 +31,10 @@ instance HasModifiersFor Barricade3 where
       else pure []
   getModifiersFor _ _ _ = pure []
 
-instance (EventRunner env) => RunMessage Barricade3 where
+instance RunMessage Barricade3 where
   runMessage msg e@(Barricade3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      lid <- getId iid
+      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
       e <$ push (AttachEvent eid (LocationTarget lid))
     MoveFrom _ _ lid | LocationTarget lid `elem` eventAttachedTarget ->
       e <$ push (Discard (EventTarget eventId))

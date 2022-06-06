@@ -11,10 +11,11 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
-import Arkham.Id
-import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -27,17 +28,19 @@ newtype BrotherXavier1 = BrotherXavier1 AssetAttrs
 brotherXavier1 :: AssetCard BrotherXavier1
 brotherXavier1 = ally BrotherXavier1 Cards.brotherXavier1 (3, 3)
 
-instance (HasId LocationId env InvestigatorId) => HasModifiersFor BrotherXavier1 where
+instance HasModifiersFor BrotherXavier1 where
   getModifiersFor _ (InvestigatorTarget iid) (BrotherXavier1 a)
     | controlledBy a iid = pure $ toModifiers a [SkillModifier SkillWillpower 1]
   getModifiersFor (InvestigatorSource iid) target (BrotherXavier1 a)
     | isTarget a target = do
-      locationId <- getId @LocationId iid
-      assetLocationId <- getId @LocationId
+      locationId <- field InvestigatorLocation iid
+      assetLocationId <- field InvestigatorLocation
         $ fromJustNote "uncontroller" (assetController a)
       pure
         [ toModifier a CanBeAssignedDamage
-        | locationId == assetLocationId && Just iid /= assetController a
+        | (locationId == assetLocationId)
+          && (Just iid /= assetController a)
+          && isJust locationId
         ]
   getModifiersFor _ _ _ = pure []
 

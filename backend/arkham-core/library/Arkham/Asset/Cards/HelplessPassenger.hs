@@ -6,14 +6,15 @@ module Arkham.Asset.Cards.HelplessPassenger
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -45,13 +46,17 @@ instance HasAbilities HelplessPassenger where
 instance RunMessage HelplessPassenger where
   runMessage msg a@(HelplessPassenger attrs@AssetAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lid <- getId @LocationId iid
-      spawnAt <- fromMaybe lid <$> getId (LeftOf, lid)
+      lid <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
+      spawnAt <- fromMaybe lid
+        <$> selectOne (LocationInDirection LeftOf (LocationWithId lid))
       a <$ push (AttachAsset assetId (LocationTarget spawnAt))
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (TakeControlOfAsset iid assetId)
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
-      investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
+      investigatorIds <- selectList UneliminatedInvestigator
       a <$ pushAll
         [ InvestigatorAssignDamage iid' source DamageAny 0 1
         | iid' <- investigatorIds

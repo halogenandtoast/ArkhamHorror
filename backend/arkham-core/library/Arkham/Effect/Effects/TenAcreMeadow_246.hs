@@ -6,7 +6,7 @@ module Arkham.Effect.Effects.TenAcreMeadow_246
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.Message
 
 newtype TenAcreMeadow_246 = TenAcreMeadow_246 EffectAttrs

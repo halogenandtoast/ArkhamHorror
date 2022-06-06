@@ -65,7 +65,7 @@ instance HasAbilities CandlelitTunnels where
         ]
       else []
 
-instance LocationRunner env => RunMessage CandlelitTunnels where
+instance RunMessage CandlelitTunnels where
   runMessage msg l@(CandlelitTunnels attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       push $ BeginSkillTest

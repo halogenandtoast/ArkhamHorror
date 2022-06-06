@@ -39,7 +39,7 @@ instance HasAbilities ReturnToAttic where
         | locationRevealed attrs
         ]
 
-instance (LocationRunner env) => RunMessage ReturnToAttic where
+instance RunMessage ReturnToAttic where
   runMessage msg l@(ReturnToAttic attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       farAboveYourHouse <- getSetAsideCard Cards.farAboveYourHouse

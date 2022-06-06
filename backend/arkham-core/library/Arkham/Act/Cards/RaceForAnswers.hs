@@ -25,7 +25,7 @@ raceForAnswers = act
   Cards.raceForAnswers
   (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
-instance ActRunner env => RunMessage RaceForAnswers where
+instance RunMessage RaceForAnswers where
   runMessage msg a@(RaceForAnswers attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       locations <- selectList $ RevealedLocation <> LocationWithTitle

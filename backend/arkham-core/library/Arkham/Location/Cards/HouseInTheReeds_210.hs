@@ -39,6 +39,6 @@ instance HasModifiersFor HouseInTheReeds_210 where
 instance HasAbilities HouseInTheReeds_210 where
   getAbilities = withDrawCardUnderneathAction
 
-instance LocationRunner env => RunMessage HouseInTheReeds_210 where
+instance RunMessage HouseInTheReeds_210 where
   runMessage msg (HouseInTheReeds_210 attrs) =
     HouseInTheReeds_210 <$> runMessage msg attrs

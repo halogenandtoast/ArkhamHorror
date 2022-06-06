@@ -36,7 +36,7 @@ instance HasAbilities ForgottenMarsh where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage ForgottenMarsh where
+instance RunMessage ForgottenMarsh where
   runMessage msg l@(ForgottenMarsh attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (SpendResources iid 2)

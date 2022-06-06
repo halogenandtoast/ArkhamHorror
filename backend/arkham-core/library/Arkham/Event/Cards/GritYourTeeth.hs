@@ -9,7 +9,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Message
@@ -23,7 +23,7 @@ newtype GritYourTeeth = GritYourTeeth EventAttrs
 gritYourTeeth :: EventCard GritYourTeeth
 gritYourTeeth = event GritYourTeeth Cards.gritYourTeeth
 
-instance EventRunner env => RunMessage GritYourTeeth where
+instance RunMessage GritYourTeeth where
   runMessage msg e@(GritYourTeeth attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

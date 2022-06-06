@@ -11,7 +11,10 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Helpers
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Target
 
 newtype LivreDeibon = LivreDeibon AssetAttrs
@@ -39,7 +42,7 @@ instance HasAbilities LivreDeibon where
 instance RunMessage LivreDeibon where
   runMessage msg a@(LivreDeibon attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      handCards <- map unHandCard <$> getList iid
+      handCards <- field InvestigatorHand iid
       a <$ push
         (chooseOne iid
         $ [ TargetLabel
@@ -49,7 +52,7 @@ instance RunMessage LivreDeibon where
           ]
         )
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
-      deckCards <- map unDeckCard <$> getList iid
+      deckCards <- fieldMap InvestigatorDeck unDeck iid
       case deckCards of
         [] -> error "Missing deck card"
         x : _ -> push (SkillTestCommitCard iid (toCardId x))

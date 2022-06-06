@@ -10,7 +10,7 @@ import Arkham.Action qualified as Action
 import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.DamageEffect
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (AttackDamageEffect)
 import Arkham.Message
@@ -24,7 +24,7 @@ newtype StormOfSpirits = StormOfSpirits EventAttrs
 stormOfSpirits :: EventCard StormOfSpirits
 stormOfSpirits = event StormOfSpirits Cards.stormOfSpirits
 
-instance EventRunner env => RunMessage StormOfSpirits where
+instance RunMessage StormOfSpirits where
   runMessage msg e@(StormOfSpirits attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

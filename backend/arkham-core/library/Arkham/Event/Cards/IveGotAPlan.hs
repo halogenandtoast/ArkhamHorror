@@ -8,12 +8,12 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Action
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Helpers
-import Arkham.Id
+import Arkham.Investigator.Attrs (Field (..))
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -25,14 +25,14 @@ newtype IveGotAPlan = IveGotAPlan EventAttrs
 iveGotAPlan :: EventCard IveGotAPlan
 iveGotAPlan = event IveGotAPlan Cards.iveGotAPlan
 
-instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor IveGotAPlan where
+instance HasModifiersFor IveGotAPlan where
   getModifiersFor (SkillTestSource iid _ _ (Just Fight)) (InvestigatorTarget _) (IveGotAPlan attrs)
     = do
-      clueCount <- unClueCount <$> getCount iid
+      clueCount <- field InvestigatorClues iid
       pure $ toModifiers attrs [DamageDealt (min clueCount 3)]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage IveGotAPlan where
+instance RunMessage IveGotAPlan where
   runMessage msg e@(IveGotAPlan attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       e <$ push

@@ -11,10 +11,10 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
+import Arkham.Enemy.Attrs ( Field(..) )
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.SkillTest
 import Arkham.Source
@@ -39,14 +39,14 @@ instance HasAbilities EsotericFormula where
         (ActionAbility (Just Action.Fight) (ActionCost 1))
     ]
 
-instance (HasSkillTest env, HasCount ClueCount env EnemyId) => HasModifiersFor EsotericFormula where
+instance HasModifiersFor EsotericFormula where
   getModifiersFor (SkillTestSource iid' _ source (Just Action.Fight)) (InvestigatorTarget iid) (EsotericFormula attrs)
     | controlledBy attrs iid && isSource attrs source && iid' == iid
     = do
       skillTestTarget <- fromJustNote "not a skilltest" <$> getSkillTestTarget
       case skillTestTarget of
         EnemyTarget eid -> do
-          clueCount <- unClueCount <$> getCount eid
+          clueCount <- field EnemyClues eid
           pure $ toModifiers attrs [SkillModifier SkillWillpower (clueCount * 2)]
         _ -> error "Invalid target"
   getModifiersFor _ _ _ = pure []

@@ -27,6 +27,6 @@ asylumHallsEasternPatientWing_171 = location
 instance HasAbilities AsylumHallsEasternPatientWing_171 where
   getAbilities (AsylumHallsEasternPatientWing_171 attrs) = getAbilities attrs
 
-instance LocationRunner env => RunMessage AsylumHallsEasternPatientWing_171 where
+instance RunMessage AsylumHallsEasternPatientWing_171 where
   runMessage msg (AsylumHallsEasternPatientWing_171 attrs) =
     AsylumHallsEasternPatientWing_171 <$> runMessage msg attrs

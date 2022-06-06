@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Message
 
@@ -18,7 +18,7 @@ newtype QuantumFlux = QuantumFlux EventAttrs
 quantumFlux :: EventCard QuantumFlux
 quantumFlux = event QuantumFlux Cards.quantumFlux
 
-instance EventRunner env => RunMessage QuantumFlux where
+instance RunMessage QuantumFlux where
   runMessage msg e@(QuantumFlux attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll

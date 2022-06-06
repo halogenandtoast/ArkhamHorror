@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Asset.Uses
 import Arkham.Classes
-import Arkham.Event.Attrs
 import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Matcher
@@ -29,13 +28,12 @@ newtype Recharge2 = Recharge2 (EventAttrs `With` Meta)
 recharge2 :: EventCard Recharge2
 recharge2 = event (Recharge2 . (`With` Meta Nothing)) Cards.recharge2
 
-instance EventRunner env => RunMessage Recharge2 where
+instance RunMessage Recharge2 where
   runMessage msg e@(Recharge2 (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- getId @LocationId iid
       assets <-
         selectListMap AssetTarget
-        $ AssetControlledBy (InvestigatorAt $ LocationWithId lid)
+        $ AssetControlledBy (InvestigatorAt $ LocationWithInvestigator $ InvestigatorWithId iid)
         <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
       e <$ push
         (chooseOne

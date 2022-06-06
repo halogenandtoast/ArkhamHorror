@@ -51,7 +51,7 @@ instance HasAbilities Backstage where
         ]
       else []
 
-instance LocationRunner env => RunMessage Backstage where
+instance RunMessage Backstage where
   runMessage msg l@(Backstage attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       backstageDoorwayCount <- selectCount

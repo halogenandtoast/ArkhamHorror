@@ -28,7 +28,7 @@ instance HasAbilities Switchblade where
         $ ActionAbility (Just Action.Fight) (ActionCost 1)
     ]
 
-instance (AssetRunner env) => RunMessage Switchblade where
+instance RunMessage Switchblade where
   runMessage msg a@(Switchblade attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)

@@ -12,7 +12,9 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
+import Arkham.Investigator.Attrs (Field (..))
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -40,8 +42,7 @@ instance RunMessage TryAndTryAgain3 where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       committedSkills <-
         filter ((== SkillType) . toCardType)
-        . map unCommittedCard
-        <$> getList iid
+        <$> field InvestigatorCommittedCards iid
       a <$ pushAll
         [ FocusCards committedSkills
         , chooseOne

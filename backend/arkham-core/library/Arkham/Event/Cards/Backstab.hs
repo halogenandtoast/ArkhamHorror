@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Action
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Helpers
 import Arkham.Message
 import Arkham.Modifier
@@ -25,7 +25,7 @@ instance HasModifiersFor Backstab where
     = pure $ toModifiers attrs [ DamageDealt 2 | isSource attrs source ]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage Backstab where
+instance RunMessage Backstab where
   runMessage msg e@(Backstab attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       e <$ pushAll

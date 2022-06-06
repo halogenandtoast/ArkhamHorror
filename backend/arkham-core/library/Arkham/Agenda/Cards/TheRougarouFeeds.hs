@@ -24,7 +24,7 @@ theRougarouFeeds :: AgendaCard TheRougarouFeeds
 theRougarouFeeds =
   agenda (2, A) TheRougarouFeeds Cards.theRougarouFeeds (Static 6)
 
-instance AgendaRunner env => RunMessage TheRougarouFeeds where
+instance RunMessage TheRougarouFeeds where
   runMessage msg a@(TheRougarouFeeds attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       mrougarou <- getTheRougarou

@@ -10,7 +10,6 @@ import Arkham.Location.Cards qualified as Cards (prismaticCascade)
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Label (mkLabel)
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (DiscoverClues)
@@ -43,14 +42,14 @@ instance HasAbilities PrismaticCascade where
       | locationRevealed attrs
       ]
 
-instance LocationRunner env => RunMessage PrismaticCascade where
+instance RunMessage PrismaticCascade where
   runMessage msg l@(PrismaticCascade attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       push $ RandomDiscard iid
       let
         labels = [ nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 2] ]
       availableLabel <- findM
-        (fmap isNothing . getId @(Maybe LocationId) . LocationWithLabel . mkLabel)
+        (selectNone. LocationWithLabel . mkLabel)
         labels
       case availableLabel of
         Just label -> pure . PrismaticCascade $ attrs & labelL .~ label

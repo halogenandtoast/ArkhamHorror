@@ -13,7 +13,8 @@ import Arkham.Card.CardCode
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -39,7 +40,7 @@ paidHorror _ = False
 instance RunMessage MeatCleaver where
   runMessage msg a@(MeatCleaver attrs) = case msg of
     UseCardAbility iid source _ 1 payments | isSource attrs source -> do
-      remainingSanity <- unRemainingSanity <$> getCount iid
+      remainingSanity <- field InvestigatorRemainingSanity iid
       a <$ pushAll
         [ skillTestModifiers
           attrs

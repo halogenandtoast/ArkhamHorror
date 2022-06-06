@@ -42,7 +42,7 @@ instance HasAbilities ArkhamWoodsGreatWillow where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage ArkhamWoodsGreatWillow where
+instance RunMessage ArkhamWoodsGreatWillow where
   runMessage msg l@(ArkhamWoodsGreatWillow attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       getSkillTestSource >>= \case

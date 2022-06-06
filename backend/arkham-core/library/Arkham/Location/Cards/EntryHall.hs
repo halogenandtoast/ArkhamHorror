@@ -31,5 +31,5 @@ entryHall = locationWith
 instance HasAbilities EntryHall where
   getAbilities (EntryHall attrs) = withResignAction attrs []
 
-instance LocationRunner env => RunMessage EntryHall where
+instance RunMessage EntryHall where
   runMessage msg (EntryHall attrs) = EntryHall <$> runMessage msg attrs

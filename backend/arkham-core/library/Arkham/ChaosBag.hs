@@ -1,3 +1,4 @@
+{-# OPTIONs_GHC -Wno-orphans #-}
 module Arkham.ChaosBag
   ( ChaosBag
   , emptyChaosBag
@@ -6,8 +7,8 @@ module Arkham.ChaosBag
 
 import Arkham.Prelude
 
-import Arkham.Json
 import Arkham.ChaosBagStepState
+import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.Helpers.Window
 import Arkham.Helpers.Query
@@ -213,51 +214,6 @@ decideFirstChooseUndecided source iid strategy f = \case
       (step', msgs) =
         decideFirstUndecided source iid strategy f (Undecided step)
     in (step' : rest, msgs)
-
-data ChaosBag = ChaosBag
-  { chaosBagTokens :: [Token]
-  , chaosBagSetAsideTokens :: [Token]
-  , chaosBagRevealedTokens :: [Token]
-  , chaosBagChoice :: Maybe ChaosBagStepState
-  , chaosBagForceDraw :: Maybe TokenFace
-  }
-  deriving stock (Show, Eq, Generic)
-
-instance ToJSON ChaosBag where
-  toJSON = genericToJSON $ aesonOptions $ Just "chaosBag"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "chaosBag"
-
-instance FromJSON ChaosBag where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "chaosBag"
-
-emptyChaosBag :: ChaosBag
-emptyChaosBag = ChaosBag
-  { chaosBagTokens = []
-  , chaosBagSetAsideTokens = []
-  , chaosBagRevealedTokens = []
-  , chaosBagChoice = Nothing
-  , chaosBagForceDraw = Nothing
-  }
-
-tokensL :: Lens' ChaosBag [Token]
-tokensL = lens chaosBagTokens $ \m x -> m { chaosBagTokens = x }
-
-forceDrawL :: Lens' ChaosBag (Maybe TokenFace)
-forceDrawL = lens chaosBagForceDraw $ \m x -> m { chaosBagForceDraw = x }
-
-setAsideTokensL :: Lens' ChaosBag [Token]
-setAsideTokensL =
-  lens chaosBagSetAsideTokens $ \m x -> m { chaosBagSetAsideTokens = x }
-
-revealedTokensL :: Lens' ChaosBag [Token]
-revealedTokensL =
-  lens chaosBagRevealedTokens $ \m x -> m { chaosBagRevealedTokens = x }
-
-choiceL :: Lens' ChaosBag (Maybe ChaosBagStepState)
-choiceL = lens chaosBagChoice $ \m x -> m { chaosBagChoice = x }
-
-createToken :: MonadRandom m => TokenFace -> m Token
-createToken face = Token <$> getRandom <*> pure face
 
 instance RunMessage ChaosBag where
   runMessage msg c@ChaosBag {..} = case msg of

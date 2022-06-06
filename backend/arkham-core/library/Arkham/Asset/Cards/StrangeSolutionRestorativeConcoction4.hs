@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Target
 
@@ -27,24 +26,21 @@ strangeSolutionRestorativeConcoction4 = asset
 instance HasAbilities StrangeSolutionRestorativeConcoction4 where
   getAbilities (StrangeSolutionRestorativeConcoction4 x) =
     [ restrictedAbility
-        x
-        1
-        (OwnsThis <> InvestigatorExists
-          (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
-        )
-      $ ActionAbility Nothing
-      $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
+          x
+          1
+          (OwnsThis <> InvestigatorExists
+            (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
+          )
+        $ ActionAbility Nothing
+        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
 
 instance RunMessage StrangeSolutionRestorativeConcoction4 where
   runMessage msg a@(StrangeSolutionRestorativeConcoction4 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationId <- getId @LocationId iid
-      targets <- map InvestigatorTarget
-        <$> getSetList @InvestigatorId locationId
-      a <$ push
-        (chooseOne
-          iid
-          [ TargetLabel target [HealDamage target 2] | target <- targets ]
-        )
+      targets <- selectListMap InvestigatorTarget $ colocatedWith iid
+      push $ chooseOne
+        iid
+        [ TargetLabel target [HealDamage target 2] | target <- targets ]
+      pure a
     _ -> StrangeSolutionRestorativeConcoction4 <$> runMessage msg attrs

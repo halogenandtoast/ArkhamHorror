@@ -35,7 +35,7 @@ instance HasAbilities BreakingThrough where
         EncounterCardSource
     ]
 
-instance AgendaRunner env => RunMessage BreakingThrough where
+instance RunMessage BreakingThrough where
   runMessage msg a@(BreakingThrough attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)

@@ -5,12 +5,12 @@ module Arkham.Event.Cards.CheapShot
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Card.CardDef
 import Arkham.Classes
 import Arkham.EffectMetadata
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Investigator
 import Arkham.Message
 import Arkham.SkillTest
 import Arkham.SkillType
@@ -23,7 +23,7 @@ newtype CheapShot = CheapShot EventAttrs
 cheapShot :: EventCard CheapShot
 cheapShot = event CheapShot Cards.cheapShot
 
-instance EventRunner env => RunMessage CheapShot where
+instance RunMessage CheapShot where
   runMessage msg e@(CheapShot attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       agility <- getSkillValue SkillAgility iid

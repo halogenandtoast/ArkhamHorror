@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.SkillTest

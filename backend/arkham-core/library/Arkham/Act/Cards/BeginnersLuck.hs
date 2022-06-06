@@ -13,6 +13,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.EffectMetadata
 import Arkham.Game.Helpers
+import Arkham.Helpers.ChaosBag
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -47,11 +48,11 @@ instance HasAbilities BeginnersLuck where
       ]
     else []
 
-instance ActRunner env => RunMessage BeginnersLuck where
+instance RunMessage BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs) = case msg of
     UseCardAbility iid source [Window Timing.When (RevealToken _ token)] 1 _
       | isSource attrs source -> do
-        tokensInBag <- getList @Token ()
+        tokensInBag <- getTokensInBag
         a <$ pushAll
           [ FocusTokens tokensInBag
           , chooseOne

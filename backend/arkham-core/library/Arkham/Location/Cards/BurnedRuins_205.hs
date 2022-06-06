@@ -41,7 +41,7 @@ instance HasAbilities BurnedRuins_205 where
         ]
       <> rest
 
-instance LocationRunner env => RunMessage BurnedRuins_205 where
+instance RunMessage BurnedRuins_205 where
   runMessage msg l@(BurnedRuins_205 attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> l <$ when
       (locationClues attrs > 0)

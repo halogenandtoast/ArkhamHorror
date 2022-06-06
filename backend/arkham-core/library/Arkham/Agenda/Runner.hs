@@ -25,60 +25,7 @@ import Arkham.Trait
 import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
-type AgendaRunner env =
-  ( HasQueue env
-  , HasRecord env ()
-  , Query AssetMatcher env
-  , Query EnemyMatcher env
-  , Query ExtendedCardMatcher env
-  , Query InvestigatorMatcher env
-  , Query LocationMatcher env
-  , Query ActMatcher env
-  , Projection env ActAttrs
-  , HasCount ClueCount env InvestigatorId
-  , HasCount ClueCount env LocationId
-  , HasCount DiscardCount env InvestigatorId
-  , HasCount DoomCount env ()
-  , HasCount PlayerCount env ()
-  , HasCount ScenarioDeckCount env ScenarioDeckKey
-  , HasCount SetAsideCount env CardCode
-  , HasId (Maybe LocationId) env LocationMatcher
-  , HasId (Maybe LocationId) env (Direction, LocationId)
-  , HasId (Maybe StoryTreacheryId) env CardCode
-  , HasId CardCode env EnemyId
-  , HasId LeadInvestigatorId env ()
-  , HasId LocationId env InvestigatorId
-  , HasList LocationName env ()
-  , HasList (InvestigatorId, Distance) env EnemyMatcher
-  , HasList (LocationId, Distance) env InvestigatorId
-  , HasSet ActId env ()
-  , HasSet ClosestPathLocationId env (LocationId, LocationId)
-  , HasSet ClosestPathLocationId env (LocationId, LocationMatcher)
-  , HasSet CompletedScenarioId env ()
-  , HasSet EnemyId env ()
-  , HasSet EnemyId env ([Trait], LocationId)
-  , HasSet EnemyId env LocationId
-  , HasSet EnemyId env EnemyMatcher
-  , HasSet EnemyId env LocationMatcher
-  , HasSet EnemyId env Trait
-  , HasSet InScenarioInvestigatorId env ()
-  , HasSet InvestigatorId env ()
-  , HasSet InvestigatorId env EnemyId
-  , HasSet InvestigatorId env LocationMatcher
-  , HasSet InvestigatorId env LocationId
-  , HasSet LocationId env ()
-  , HasSet LocationId env [Trait]
-  , HasSet Trait env EnemyId
-  )
-
-instance
-  ( HasQueue env
-  , HasCount DoomCount env ()
-  , HasCount PlayerCount env ()
-  , HasId LeadInvestigatorId env ()
-  , HasSet InvestigatorId env ()
-  )
-  => RunMessage AgendaAttrs
+instance RunMessage AgendaAttrs
   where
   runMessage msg a@AgendaAttrs {..} = case msg of
     PlaceUnderneath target cards | isTarget a target ->
@@ -96,7 +43,7 @@ instance
         & (flippedL .~ True)
     AdvanceAgendaIfThresholdSatisfied -> do
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
-      totalDoom <- unDoomCount <$> getCount ()
+      totalDoom <- getDoomCount
       when
         (totalDoom >= perPlayerDoomThreshold)
         do
@@ -115,7 +62,7 @@ instance
     Do AdvanceAgendaIfThresholdSatisfied -> do
       -- This status can change due to the above windows so we much check again
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
-      totalDoom <- unDoomCount <$> getCount ()
+      totalDoom <- getDoomCount
       when (totalDoom >= perPlayerDoomThreshold) $ do
         leadInvestigatorId <- getLeadInvestigatorId
         pushAll

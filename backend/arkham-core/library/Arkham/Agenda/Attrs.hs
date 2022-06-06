@@ -7,7 +7,7 @@ import Arkham.Agenda.Cards
 import Arkham.Agenda.Sequence
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Card
-import Arkham.Classes
+import Arkham.Classes.Entity
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
@@ -21,6 +21,7 @@ class IsAgenda a
 type AgendaCard a = CardBuilder (Int, AgendaId) a
 
 data instance Field AgendaAttrs :: Type -> Type where
+  AgendaSequence :: Field AgendaAttrs AS.AgendaSequence
   AgendaDoom :: Field AgendaAttrs Int
   AgendaAbilities :: Field AgendaAttrs [Ability]
 

@@ -36,7 +36,7 @@ instance HasAbilities TheStrangerACityAflame where
         $ enemyIs Enemies.theManInThePallidMask
     ]
 
-instance ActRunner env => RunMessage TheStrangerACityAflame where
+instance RunMessage TheStrangerACityAflame where
   runMessage msg a@(TheStrangerACityAflame attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)

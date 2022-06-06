@@ -23,7 +23,7 @@ empireOfTheDead :: AgendaCard EmpireOfTheDead
 empireOfTheDead =
   agenda (1, A) EmpireOfTheDead Cards.empireOfTheDead (Static 6)
 
-instance AgendaRunner env => RunMessage EmpireOfTheDead where
+instance RunMessage EmpireOfTheDead where
   runMessage msg a@(EmpireOfTheDead attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       specterOfDeath <- EncounterCard

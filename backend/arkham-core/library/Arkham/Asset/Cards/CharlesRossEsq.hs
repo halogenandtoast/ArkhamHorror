@@ -12,9 +12,9 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Trait
 
@@ -25,16 +25,16 @@ newtype CharlesRossEsq = CharlesRossEsq AssetAttrs
 charlesRossEsq :: AssetCard CharlesRossEsq
 charlesRossEsq = ally CharlesRossEsq Cards.charlesRossEsq (1, 2)
 
-instance HasId LocationId env AssetId => HasModifiersFor CharlesRossEsq where
+instance HasModifiersFor CharlesRossEsq where
   getModifiersFor _ (InvestigatorTarget iid) (CharlesRossEsq attrs)
     | attrs `controlledBy` iid = do
-      lid <- getId @LocationId (toId attrs)
+      mlid <- field AssetLocation (toId attrs)
       pure $ toModifiers
         attrs
         [ CanSpendResourcesOnCardFromInvestigator
             (InvestigatorAt $ LocationWithId lid)
             (CardWithType AssetType <> CardWithTrait Item)
-        ]
+          | lid <- maybeToList mlid]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities CharlesRossEsq where

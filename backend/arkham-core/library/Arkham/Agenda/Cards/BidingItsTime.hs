@@ -6,8 +6,8 @@ module Arkham.Agenda.Cards.BidingItsTime
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Attack
 import Arkham.Card
@@ -16,10 +16,12 @@ import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Matcher hiding (ChosenRandomLocation)
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher hiding ( ChosenRandomLocation )
 import Arkham.Message
 import Arkham.Phase
-import Arkham.Query
+import Arkham.Projection
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -35,12 +37,11 @@ instance HasAbilities BidingItsTime where
   getAbilities (BidingItsTime x) =
     [mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase]
 
-instance AgendaRunner env => RunMessage BidingItsTime where
+instance RunMessage BidingItsTime where
   runMessage msg a@(BidingItsTime attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      broodOfYogSothoth <- map EnemyTarget
-        <$> getSetList (EnemyWithTitle "Brood of Yog-Sothoth")
+      broodOfYogSothoth <- selectListMap EnemyTarget (EnemyWithTitle "Brood of Yog-Sothoth")
       a <$ when
         (notNull broodOfYogSothoth)
         (push $ chooseOneAtATime
@@ -52,8 +53,7 @@ instance AgendaRunner env => RunMessage BidingItsTime where
     ChosenRandomLocation target@(EnemyTarget _) lid ->
       a <$ push (MoveToward target (LocationWithId lid))
     AdvanceAgenda aid | aid == agendaId attrs && onSide B attrs -> do
-      broodOfYogSothothCount <- unSetAsideCount
-        <$> getCount @SetAsideCount (CardCode "02255")
+      broodOfYogSothothCount <- length <$> getSetAsideBroodOfYogSothoth
       a <$ pushAll
         (ShuffleEncounterDiscardBackIn
         : [ RequestSetAsideCard (toSource attrs) (CardCode "02255")
@@ -67,8 +67,11 @@ instance AgendaRunner env => RunMessage BidingItsTime where
         (throwIO $ InvalidState "wrong card")
       let enemyId = EnemyId $ toCardId card
       leadInvestigatorId <- getLeadInvestigatorId
-      locationId <- getId leadInvestigatorId
-      investigatorIds <- getSetList locationId
+      locationId <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be somewhere")
+        leadInvestigatorId
+      investigatorIds <- selectList $ colocatedWith leadInvestigatorId
       a <$ pushAll
         (CreateEnemy card
         : EnemySpawn Nothing locationId enemyId

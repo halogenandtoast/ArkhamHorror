@@ -43,7 +43,7 @@ instance HasAbilities SlaughteredWoods where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage SlaughteredWoods where
+instance RunMessage SlaughteredWoods where
   runMessage msg l@(SlaughteredWoods attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (InvestigatorAssignDamage iid source DamageAny 0 2)

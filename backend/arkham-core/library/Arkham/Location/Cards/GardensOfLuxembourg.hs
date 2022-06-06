@@ -43,6 +43,6 @@ instance Query EnemyMatcher env => HasModifiersFor GardensOfLuxembourg where
         ]
   getModifiersFor _ _ _ = pure []
 
-instance LocationRunner env => RunMessage GardensOfLuxembourg where
+instance RunMessage GardensOfLuxembourg where
   runMessage msg (GardensOfLuxembourg attrs) =
     GardensOfLuxembourg <$> runMessage msg attrs

@@ -43,7 +43,7 @@ instance HasAbilities ArtGallery where
     | locationRevealed x
     ]
 
-instance LocationRunner env => RunMessage ArtGallery where
+instance RunMessage ArtGallery where
   runMessage msg l@(ArtGallery attrs) = case msg of
     After (FailedSkillTest iid (Just Action.Investigate) _ (SkillTestInitiatorTarget _) _ _)
       -> l <$ push (SpendResources iid 2)

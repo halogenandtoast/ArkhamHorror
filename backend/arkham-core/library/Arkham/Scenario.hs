@@ -132,14 +132,6 @@ instance HasList UnderneathCard env (Scenario, AgendaDeck) where
 instance HasName env Scenario where
   getName = getName . toAttrs
 
-instance HasCampaignStoryCard env Scenario where
-  getCampaignStoryCard def s = pure . fromJustNote "missing card" $ find
-    ((== def) . toCardDef)
-    cards
-   where
-    attrs = toAttrs s
-    cards = concat . toList $ scenarioStoryCards attrs
-
 lookupScenario :: ScenarioId -> Difficulty -> Scenario
 lookupScenario = fromJustNote "Unknown scenario" . flip lookup allScenarios
 

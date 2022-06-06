@@ -30,7 +30,7 @@ instance HasModifiersFor Schoolhouse_213
 instance HasAbilities Schoolhouse_213 where
   getAbilities = withDrawCardUnderneathAction
 
-instance LocationRunner env => RunMessage Schoolhouse_213 where
+instance RunMessage Schoolhouse_213 where
   runMessage msg l@(Schoolhouse_213 attrs) = case msg of
     -- Cannot discover clues except by investigating so we just noop
     DiscoverCluesAtLocation _ lid _ Nothing | lid == locationId attrs -> pure l

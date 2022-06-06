@@ -10,19 +10,23 @@ import Arkham.Act.Attrs
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
+import Arkham.Agenda.Attrs ( Field (..) )
+import Arkham.Agenda.Sequence qualified as AS
 import Arkham.AgendaId
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
+import Arkham.Helpers.Campaign
 import Arkham.Matcher
-import Arkham.Message hiding (Discarded)
+import Arkham.Message hiding ( Discarded )
 import Arkham.ScenarioId
+import Arkham.Projection
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
-import Data.List.Extra (firstJust)
+import Data.List.Extra ( firstJust )
 
 newtype RicesWhereabouts = RicesWhereabouts ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -44,7 +48,7 @@ instance HasAbilities RicesWhereabouts where
       (assetIs Assets.jazzMulligan)
     ]
 
-instance ActRunner env => RunMessage RicesWhereabouts where
+instance RunMessage RicesWhereabouts where
   runMessage msg a@(RicesWhereabouts attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       playerCount <- getPlayerCount
@@ -67,11 +71,11 @@ instance ActRunner env => RunMessage RicesWhereabouts where
     UseCardAbility _ source _ 3 _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+      agendaId <- selectJust AnyAgenda
+      step <- fieldMap AgendaSequence (unAgendaStep . AS.agendaStep) agendaId
       alchemyLabsInPlay <- isJust
         <$> selectOne (LocationWithTitle "Alchemy Labs")
-      agendaStep <- unAgendaStep <$> getStep ()
-      completedTheHouseAlwaysWins <-
-        elem "02062" . map unCompletedScenarioId <$> getSetList ()
+      completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
       theExperiment <- getSetAsideCard Enemies.theExperiment
       alchemicalConcoction <- getSetAsideCard Assets.alchemicalConcoction
 
@@ -82,7 +86,7 @@ instance ActRunner env => RunMessage RicesWhereabouts where
         <> [ CreateEnemyAtLocationMatching
                theExperiment
                (LocationWithTitle "Alchemy Labs")
-           | agendaStep <= 2
+           | step <= 2
            ]
         <> [ CreateStoryAssetAtLocationMatching
                alchemicalConcoction

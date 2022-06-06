@@ -38,7 +38,7 @@ instance HasAbilities StreetsOfVenice where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage StreetsOfVenice where
+instance RunMessage StreetsOfVenice where
   runMessage msg l@(StreetsOfVenice attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locations <- selectList AccessibleLocation

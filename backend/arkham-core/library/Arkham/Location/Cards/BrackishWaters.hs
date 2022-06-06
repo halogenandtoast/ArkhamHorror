@@ -62,7 +62,7 @@ instance HasAbilities BrackishWaters where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage BrackishWaters where
+instance RunMessage BrackishWaters where
   runMessage msg l@(BrackishWaters attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push

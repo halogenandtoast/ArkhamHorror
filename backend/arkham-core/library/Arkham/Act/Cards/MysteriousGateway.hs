@@ -28,12 +28,11 @@ mysteriousGateway = act
   Cards.mysteriousGateway
   (Just $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Guest Hall"))
 
-instance ActRunner env => RunMessage MysteriousGateway where
+instance RunMessage MysteriousGateway where
   runMessage msg a@(MysteriousGateway attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getSetList @InvestigatorId
-        (LocationWithTitle "Guest Hall")
+      investigatorIds <- selectList $ InvestigatorAt $ LocationWithTitle "Guest Hall"
       holeInTheWall <- getSetAsideCard Locations.holeInTheWall
       a <$ pushAll
         ([PlaceLocation holeInTheWall]

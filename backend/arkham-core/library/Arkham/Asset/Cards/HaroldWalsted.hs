@@ -6,10 +6,9 @@ module Arkham.Asset.Cards.HaroldWalsted
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.SkillType
@@ -39,21 +38,21 @@ instance HasAbilities HaroldWalsted where
         $ toId x
     ]
 
-instance
-  ( HasSet Trait env LocationId
-  , HasId LocationId env InvestigatorId
-  )
-  => HasModifiersFor HaroldWalsted where
+instance HasModifiersFor HaroldWalsted where
   getModifiersFor (SkillTestSource _ _ _ (Just Action.Investigate)) (InvestigatorTarget iid) (HaroldWalsted attrs)
     = do
-      lid <- getId @LocationId iid
-      isMiskatonic <- member Miskatonic <$> getSet lid
+      isMiskatonic <-
+        selectAny
+        $ LocationWithInvestigator (InvestigatorWithId iid)
+        <> LocationWithTrait Miskatonic
       pure $ toModifiers
         attrs
-        [ SkillModifier SkillIntellect 2 | isMiskatonic && controlledBy attrs iid ]
+        [ SkillModifier SkillIntellect 2
+        | isMiskatonic && controlledBy attrs iid
+        ]
   getModifiersFor _ _ _ = pure []
 
-instance AssetRunner env  => RunMessage HaroldWalsted where
+instance RunMessage HaroldWalsted where
   runMessage msg a@(HaroldWalsted attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ pushAll [AddToken Tablet, RemoveFromGame $ toTarget attrs]

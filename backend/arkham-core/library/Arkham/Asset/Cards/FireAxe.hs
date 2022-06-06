@@ -11,10 +11,10 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -26,11 +26,11 @@ newtype FireAxe = FireAxe AssetAttrs
 fireAxe :: AssetCard FireAxe
 fireAxe = asset FireAxe Cards.fireAxe
 
-instance HasCount ResourceCount env InvestigatorId => HasModifiersFor FireAxe where
+instance HasModifiersFor FireAxe where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
     | controlledBy a iid && isSource a source
     = do
-      resourceCount <- getResourceCount iid
+      resourceCount <- field InvestigatorResources iid
       pure $ toModifiers a [ DamageDealt 1 | resourceCount == 0 ]
   getModifiersFor _ _ _ = pure []
 
@@ -48,7 +48,7 @@ instance HasAbilities FireAxe where
       .~ PlayerLimit PerTestOrAbility 3
     ]
 
-instance (AssetRunner env) => RunMessage FireAxe where
+instance RunMessage FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)

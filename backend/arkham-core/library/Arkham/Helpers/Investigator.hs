@@ -3,20 +3,30 @@ module Arkham.Helpers.Investigator where
 import Arkham.Prelude
 
 import Arkham.Action
-import Arkham.Stats
 import Arkham.Card
-import Arkham.Slot
-import Arkham.Trait
-import Arkham.Id
-import Arkham.Source
-import Arkham.Target
+import Arkham.Card.Id
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
-import Arkham.Card.Id
-import Arkham.Modifier
-import Arkham.SkillType
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Id
 import Arkham.Investigator.Attrs
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher
+import Arkham.Modifier
+import Arkham.Projection
+import Arkham.SkillType
+import Arkham.Slot
+import Arkham.Source
+import Arkham.Stats
+import Arkham.Target
+import Arkham.Trait
+
+getSkillValue :: SkillType -> InvestigatorId -> GameT Int
+getSkillValue st iid = \case
+  SkillWillpower -> field InvestigatorWillpower iid
+  SkillIntellect -> field InvestigatorIntellect iid
+  SkillCombat -> field InvestigatorCombat iid
+  SkillAgility -> field InvestigatorAgility iid
 
 skillValueFor
   :: SkillType -> Maybe Action -> [ModifierType] -> InvestigatorAttrs -> Int
@@ -51,10 +61,7 @@ baseSkillValueFor skill _maction tempModifiers attrs = foldr
     SkillAgility -> investigatorAgility attrs
     SkillWild -> error "investigators do not have wild skills"
 
-damageValueFor
-  :: Int
-  -> InvestigatorAttrs
-  -> GameT Int
+damageValueFor :: Int -> InvestigatorAttrs -> GameT Int
 damageValueFor baseValue attrs = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
@@ -266,8 +273,7 @@ getActionCost attrs a = do
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
-getActionCostModifier
-  :: InvestigatorAttrs -> Maybe Action -> GameT Int
+getActionCostModifier :: InvestigatorAttrs -> Maybe Action -> GameT Int
 getActionCostModifier _ Nothing = pure 0
 getActionCostModifier attrs (Just a) = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
@@ -277,14 +283,12 @@ getActionCostModifier attrs (Just a) = do
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
-getSpendableClueCount
-  :: InvestigatorAttrs -> GameT Int
+getSpendableClueCount :: InvestigatorAttrs -> GameT Int
 getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a
   pure $ if canSpendClues then investigatorClues a else 0
 
-cluesToDiscover
-  :: InvestigatorAttrs -> Int -> GameT Int
+cluesToDiscover :: InvestigatorAttrs -> Int -> GameT Int
 cluesToDiscover attrs startValue = do
   msource <- getSkillTestSource
   case msource of
@@ -315,9 +319,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     else go (m - 1) (d, PlayerCard c : h, cs)
 
 getPossibleSkillTypeChoices
-  :: SkillType
-  -> InvestigatorAttrs
-  -> GameT [SkillType]
+  :: SkillType -> InvestigatorAttrs -> GameT [SkillType]
 getPossibleSkillTypeChoices skillType attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier [skillType] modifiers
@@ -326,8 +328,7 @@ getPossibleSkillTypeChoices skillType attrs = do
     | toReplace == skillType = toUse : skills
   applyModifier _ skills = skills
 
-canCommitToAnotherLocation
-  :: InvestigatorAttrs -> GameT Bool
+canCommitToAnotherLocation :: InvestigatorAttrs -> GameT Bool
 canCommitToAnotherLocation attrs = do
   commitedCards <-
     skillTestCommittedCards . fromJustNote "no skill test" <$> getSkillTest
@@ -354,3 +355,10 @@ findCard cardId a =
     <> map PlayerCard (a ^. discardL)
     <> map PlayerCard (unDeck $ a ^. deckL)
   where findMatch = find ((== cardId) . toCardId)
+
+getJustLocation :: InvestigatorId -> GameT LocationId
+getJustLocation =
+  fieldMap InvestigatorLocation (fromJustNote "must be at a location")
+
+enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
+enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId

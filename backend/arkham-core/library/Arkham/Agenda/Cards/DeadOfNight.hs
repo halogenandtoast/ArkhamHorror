@@ -28,7 +28,7 @@ instance HasModifiersFor DeadOfNight where
     pure $ toModifiers a [HandSize (-3)]
   getModifiersFor _ _ _ = pure []
 
-instance AgendaRunner env => RunMessage DeadOfNight where
+instance RunMessage DeadOfNight where
   runMessage msg a@(DeadOfNight attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       dormitoriesInPlay <- isJust

@@ -3,7 +3,7 @@ module Arkham.Act.Cards.Fold
   , fold
   ) where
 
-import Arkham.Prelude hiding (fold)
+import Arkham.Prelude hiding ( fold )
 
 import Arkham.Ability
 import Arkham.Act.Attrs
@@ -11,15 +11,16 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Action
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -48,13 +49,14 @@ instance HasAbilities Fold where
       ]
     else []
 
-instance ActRunner env => RunMessage Fold where
+instance RunMessage Fold where
   runMessage msg a@(Fold attrs@ActAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      resignedWithPeterClover <- elem (ResignedCardCode $ CardCode "02079")
-        <$> getList ()
+      resignedWithPeterClover <- scenarioFieldMap
+        ScenarioResignedCardCodes
+        (elem "02079")
       let resolution = if resignedWithPeterClover then 3 else 1
       a <$ push (ScenarioResolution $ Resolution resolution)
     UseCardAbility iid (ProxySource _ source) _ 1 _
@@ -77,7 +79,7 @@ instance ActRunner env => RunMessage Fold where
         case maid of
           Nothing -> error "this ability should not be able to be used"
           Just aid -> do
-            currentClueCount <- unClueCount <$> getCount aid
+            currentClueCount <- field AssetClues aid
             requiredClueCount <- getPlayerCountValue (PerPlayer 1)
             push (PlaceClues (AssetTarget aid) 1)
             a <$ when

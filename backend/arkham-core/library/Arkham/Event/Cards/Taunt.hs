@@ -5,11 +5,10 @@ module Arkham.Event.Cards.Taunt
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Id
+import Arkham.Helpers.Investigator
 import Arkham.Message
 
 newtype Taunt = Taunt EventAttrs
@@ -19,11 +18,10 @@ newtype Taunt = Taunt EventAttrs
 taunt :: EventCard Taunt
 taunt = event Taunt Cards.taunt
 
-instance EventRunner env => RunMessage Taunt where
+instance RunMessage Taunt where
   runMessage msg e@(Taunt attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      lid <- getId @LocationId iid
-      enemyIds <- getSetList lid
+      enemyIds <- selectList $ enemiesColocatedWith iid
       e <$ push
         (chooseSome
           iid

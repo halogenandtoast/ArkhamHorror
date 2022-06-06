@@ -5,12 +5,12 @@ module Arkham.Asset.Cards.Newspaper
 
 import Arkham.Prelude
 
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -21,13 +21,14 @@ newtype Newspaper = Newspaper AssetAttrs
 newspaper :: AssetCard Newspaper
 newspaper = asset Newspaper Cards.newspaper
 
-instance HasCount ClueCount env InvestigatorId => HasModifiersFor Newspaper where
-  getModifiersFor _ (InvestigatorTarget iid) (Newspaper a) | controlledBy a iid = do
-    clueCount <- unClueCount <$> getCount iid
-    pure
-      [ toModifier a $ ActionSkillModifier Action.Investigate SkillIntellect 2
-      | clueCount == 0
-      ]
+instance HasModifiersFor Newspaper where
+  getModifiersFor _ (InvestigatorTarget iid) (Newspaper a)
+    | controlledBy a iid = do
+      clueCount <- field InvestigatorClues iid
+      pure
+        [ toModifier a $ ActionSkillModifier Action.Investigate SkillIntellect 2
+        | clueCount == 0
+        ]
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage Newspaper where

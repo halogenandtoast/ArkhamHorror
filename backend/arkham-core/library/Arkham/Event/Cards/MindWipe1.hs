@@ -5,11 +5,10 @@ module Arkham.Event.Cards.MindWipe1
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Id
+import Arkham.Helpers.Investigator
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target
@@ -22,28 +21,26 @@ newtype MindWipe1 = MindWipe1 EventAttrs
 mindWipe1 :: EventCard MindWipe1
 mindWipe1 = event MindWipe1 Cards.mindWipe1
 
-instance EventRunner env => RunMessage MindWipe1 where
+instance RunMessage MindWipe1 where
   runMessage msg e@(MindWipe1 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      locationId <- getId @LocationId iid
-      enemyIds <- getSetList locationId
-      nonEliteEnemyIds <- flip filterM enemyIds $ \enemyId -> do
-        notElem Elite <$> getSet enemyId
-      if null nonEliteEnemyIds
-        then e <$ push (Discard (EventTarget eventId))
-        else e <$ pushAll
+      enemyIds <- selectList $ enemiesColocatedWith iid <> NonEliteEnemy
+      if null enemyIds
+        then push (Discard (EventTarget eventId))
+        else pushAll
           [ chooseOne
             iid
-            [ TargetLabel
-                (EnemyTarget eid')
+            [ targetLabel
+                eid'
                 [ CreateEffect
                     "01068"
                     Nothing
                     (EventSource eventId)
                     (EnemyTarget eid')
                 ]
-            | eid' <- nonEliteEnemyIds
+            | eid' <- enemyIds
             ]
           , Discard (EventTarget eid)
           ]
+      pure e
     _ -> MindWipe1 <$> runMessage msg attrs

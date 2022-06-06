@@ -25,7 +25,7 @@ arkhamWoodsTangledThicket = locationWithRevealedSideConnections
   [Squiggle, T, Moon]
 
 -- TODO: Move this to a modifier
-instance (LocationRunner env) => RunMessage ArkhamWoodsTangledThicket where
+instance RunMessage ArkhamWoodsTangledThicket where
   runMessage msg (ArkhamWoodsTangledThicket attrs@LocationAttrs {..}) =
     case msg of
       Investigate iid lid s mt _ False | lid == locationId -> do

@@ -13,9 +13,10 @@ import Arkham.Card.Id
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Id
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -41,10 +42,10 @@ instance HasAbilities TheKingInYellow where
         Free
     ]
 
-instance HasSet CommittedCardId env InvestigatorId => HasModifiersFor TheKingInYellow where
+instance HasModifiersFor TheKingInYellow where
   getModifiersFor _ SkillTestTarget (TheKingInYellow attrs) = do
     let minhId = fromJustNote "not owned" $ assetController attrs
-    commitedCardsCount <- length <$> getSetList @CommittedCardId minhId
+    commitedCardsCount <- fieldMap InvestigatorCommittedCards length minhId
     pure $ toModifiers
       attrs
       [ CannotPerformSkillTest

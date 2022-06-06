@@ -34,7 +34,7 @@ instance HasAbilities BreakingAndEntering where
         Cards.exhibitHallRestrictedHall
     ]
 
-instance ActRunner env => RunMessage BreakingAndEntering where
+instance RunMessage BreakingAndEntering where
   runMessage msg a@(BreakingAndEntering attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
@@ -46,7 +46,7 @@ instance ActRunner env => RunMessage BreakingAndEntering where
       case mHuntingHorror of
         Just eid -> do
           lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
-            <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
+            <$> selectOne (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
           a <$ pushAll
             [ chooseOne
               leadInvestigatorId
@@ -74,14 +74,14 @@ instance ActRunner env => RunMessage BreakingAndEntering where
           ]
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
-        <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
+        <$> selectOne (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
       a <$ pushAll
         [ EnemySpawnFromVoid Nothing lid eid
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
-        <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
+        <$> selectOne (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
       a <$ pushAll
         [ SpawnEnemyAt (EncounterCard ec) lid
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)

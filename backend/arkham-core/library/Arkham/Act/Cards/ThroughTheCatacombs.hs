@@ -26,7 +26,7 @@ throughTheCatacombs :: ActCard ThroughTheCatacombs
 throughTheCatacombs =
   act (1, A) ThroughTheCatacombs Cards.throughTheCatacombs Nothing
 
-instance ActRunner env => RunMessage ThroughTheCatacombs where
+instance RunMessage ThroughTheCatacombs where
   runMessage msg a@(ThroughTheCatacombs attrs) = case msg of
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       theManInThePallidMask <- getSetAsideCard Enemies.theManInThePallidMask

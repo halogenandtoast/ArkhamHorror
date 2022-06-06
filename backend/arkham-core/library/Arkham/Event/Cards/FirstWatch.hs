@@ -6,15 +6,14 @@ module Arkham.Event.Cards.FirstWatch
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
+import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Id
 import Arkham.Message
-import Arkham.Query
 import Arkham.Source
 import Arkham.Target
 
@@ -29,12 +28,7 @@ firstWatch :: EventCard FirstWatch
 firstWatch =
   event (FirstWatch . (`with` FirstWatchMetadata [])) Cards.firstWatch
 
-instance
-  ( HasQueue env
-  , HasSet InvestigatorId env ()
-  , HasCount PlayerCount env ()
-  )
-  => RunMessage FirstWatch where
+instance RunMessage FirstWatch where
   runMessage msg e@(FirstWatch (attrs@EventAttrs {..} `With` metadata@FirstWatchMetadata {..}))
     = case msg of
       InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
@@ -49,7 +43,7 @@ instance
       UseCardAbilityChoice iid (EventSource eid) [] 1 _ (EncounterCardMetadata card)
         | eid == eventId
         -> do
-          investigatorIds <- getSet @InvestigatorId ()
+          investigatorIds <- setFromList @(HashSet InvestigatorId) <$> getInvestigatorIds
           let
             assignedInvestigatorIds = setFromList $ map fst firstWatchPairings
             remainingInvestigatorIds =
@@ -57,22 +51,21 @@ instance
                 . insertSet iid
                 $ investigatorIds
                 `difference` assignedInvestigatorIds
-          e <$ push
-            (chooseOne
-              iid
-              [ TargetLabel
-                  (InvestigatorTarget iid')
-                  [ UseCardAbilityChoice
-                      iid'
-                      (EventSource eid)
-                      []
-                      2
-                      NoPayment
-                      (EncounterCardMetadata card)
-                  ]
-              | iid' <- remainingInvestigatorIds
-              ]
-            )
+          push $ chooseOne
+            iid
+            [ targetLabel
+                iid'
+                [ UseCardAbilityChoice
+                    iid'
+                    (EventSource eid)
+                    []
+                    2
+                    NoPayment
+                    (EncounterCardMetadata card)
+                ]
+            | iid' <- remainingInvestigatorIds
+            ]
+          pure e
       UseCardAbilityChoice iid (EventSource eid) _ 2 _ (EncounterCardMetadata card)
         | eid == eventId
         -> pure $ FirstWatch
@@ -85,8 +78,8 @@ instance
           [ InvestigatorDrewEncounterCard iid' card
           | (iid', card) <- firstWatchPairings
           ]
-      RequestedEncounterCards (EventTarget eid) cards | eid == eventId ->
-        e <$ pushAll
+      RequestedEncounterCards (EventTarget eid) cards | eid == eventId -> do
+        pushAll
           [ chooseOneAtATime
             eventOwner
             [ TargetLabel
@@ -109,4 +102,5 @@ instance
             NoPayment
             (TargetMetadata $ toTarget attrs)
           ]
+        pure e
       _ -> FirstWatch . (`with` metadata) <$> runMessage msg attrs

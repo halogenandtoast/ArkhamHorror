@@ -15,7 +15,6 @@ import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message
 import Arkham.Target
@@ -36,12 +35,11 @@ instance HasAbilities InEveryShadow where
         Cards.huntingHorror
     ]
 
-instance AgendaRunner env => RunMessage InEveryShadow where
+instance RunMessage InEveryShadow where
   runMessage msg a@(InEveryShadow attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.EnemySpawns eid _)] 1 _
       | isSource attrs source -> do
-        mShadowSpawnedId <- fmap unStoryTreacheryId
-          <$> getId (toCardCode Treacheries.shadowSpawned)
+        mShadowSpawnedId <- selectOne $ treacheryIs Treacheries.shadowSpawned
         shadowSpawned <- EncounterCard
           <$> genEncounterCard Treacheries.shadowSpawned
         a <$ case mShadowSpawnedId of
@@ -49,7 +47,7 @@ instance AgendaRunner env => RunMessage InEveryShadow where
           Nothing ->
             push $ AttachStoryTreacheryTo shadowSpawned (EnemyTarget eid)
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- map unInScenarioInvestigatorId <$> getSetList ()
+      iids <- selectList UneliminatedInvestigator
       a <$ pushAll
         (concatMap
           (\iid ->

@@ -6,13 +6,14 @@ module Arkham.Asset.Cards.ArchaicGlyphsProphecyForetold3
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
-import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher hiding ( EnemyEvaded )
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -34,30 +35,33 @@ archaicGlyphsProphecyForetold3 =
 instance RunMessage ArchaicGlyphsProphecyForetold3 where
   runMessage msg a@(ArchaicGlyphsProphecyForetold3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- getId @LocationId iid
-      a <$ pushAll
-        [ Investigate
-          iid
-          lid
-          (toSource attrs)
-          (Just $ toTarget attrs)
-          SkillIntellect
-          False
-        , Discard (toTarget attrs)
-        ]
+      mlid <- field InvestigatorLocation iid
+      case mlid of
+        Nothing -> push $ Discard (toTarget attrs)
+        Just lid -> pushAll
+          [ Investigate
+            iid
+            lid
+            (toSource attrs)
+            (Just $ toTarget attrs)
+            SkillIntellect
+            False
+          , Discard (toTarget attrs)
+          ]
+      pure a
     Successful (Action.Investigate, LocationTarget lid) iid _ target _
       | isTarget attrs target -> do
         enemies <- selectList EnemyEngagedWithYou
-        a <$ pushAll
-          (InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate)
+        pushAll
+          $ InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate)
           : [ chooseOne
                 iid
                 (Label "No evasion" []
-                : [ TargetLabel (EnemyTarget enemy) [EnemyEvaded iid enemy]
+                : [ targetLabel enemy [EnemyEvaded iid enemy]
                   | enemy <- enemies
                   ]
                 )
             | notNull enemies
             ]
-          )
+        pure a
     _ -> ArchaicGlyphsProphecyForetold3 <$> runMessage msg attrs

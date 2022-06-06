@@ -50,7 +50,7 @@ instance HasAbilities SanMarcoBasilica where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage SanMarcoBasilica where
+instance RunMessage SanMarcoBasilica where
   runMessage msg l@(SanMarcoBasilica attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       innocentRevelerIds <-

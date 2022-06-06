@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.Source
@@ -17,7 +17,7 @@ newtype Lucky2 = Lucky2 EventAttrs
 lucky2 :: EventCard Lucky2
 lucky2 = event Lucky2 Cards.lucky2
 
-instance EventRunner env => RunMessage Lucky2 where
+instance RunMessage Lucky2 where
   runMessage msg e@(Lucky2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> e <$ pushAll
       [ Discard (EventTarget eid)

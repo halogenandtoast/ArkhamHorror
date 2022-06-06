@@ -30,7 +30,7 @@ instance HasAbilities ZoeysCross where
         $ Costs [ExhaustCost (toTarget x), ResourceCost 1]
     ]
 
-instance (AssetRunner env) => RunMessage ZoeysCross where
+instance RunMessage ZoeysCross where
   runMessage msg a@(ZoeysCross attrs) = case msg of
     UseCardAbility iid source [Window _ (Window.EnemyEngaged _ eid)] 1 _
       | isSource attrs source -> a

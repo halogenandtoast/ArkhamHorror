@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Enemy.Attrs ( Field (..) )
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
@@ -23,7 +23,7 @@ newtype Waylay = Waylay EventAttrs
 waylay :: EventCard Waylay
 waylay = event Waylay Cards.waylay
 
-instance EventRunner env => RunMessage Waylay where
+instance RunMessage Waylay where
   runMessage msg e@(Waylay attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-

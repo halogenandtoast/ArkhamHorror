@@ -54,7 +54,7 @@ instance HasAbilities HistoricalSocietyPeabodysOffice where
     ]
 
 
-instance LocationRunner env => RunMessage HistoricalSocietyPeabodysOffice where
+instance RunMessage HistoricalSocietyPeabodysOffice where
   runMessage msg l@(HistoricalSocietyPeabodysOffice attrs) = case msg of
     UseCardAbility _ source _ 1 _
       | isSource attrs source && not (locationRevealed attrs) -> l

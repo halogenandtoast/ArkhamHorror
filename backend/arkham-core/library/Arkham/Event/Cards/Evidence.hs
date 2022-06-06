@@ -2,13 +2,13 @@ module Arkham.Event.Cards.Evidence where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 
 newtype Evidence = Evidence EventAttrs
@@ -18,11 +18,14 @@ newtype Evidence = Evidence EventAttrs
 evidence :: EventCard Evidence
 evidence = event Evidence Cards.evidence
 
-instance EventRunner env => RunMessage Evidence where
+instance RunMessage Evidence where
   runMessage msg e@(Evidence attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      currentLocationId <- getId @LocationId iid
-      locationClueCount <- unClueCount <$> getCount currentLocationId
+      currentLocationId <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
+      locationClueCount <- field LocationClues currentLocationId
       if locationClueCount > 0
         then e <$ pushAll
           [ DiscoverCluesAtLocation iid currentLocationId 1 Nothing

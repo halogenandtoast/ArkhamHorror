@@ -10,9 +10,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
 import Arkham.Matcher
-import Arkham.Query
+import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -45,13 +45,12 @@ instance RunMessage JimsTrumpet where
   runMessage msg a@(JimsTrumpet attrs@AssetAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       let controllerId = fromJustNote "must be controller" assetController
-      locationId <- getId controllerId
-      connectedLocationIds <- map unConnectedLocationId
-        <$> getSetList locationId
+      locationId <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") controllerId
+      connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId locationId
       investigatorIds <-
-        concat <$> for (locationId : connectedLocationIds) getSetList
+        concat <$> for (locationId : connectedLocationIds) (selectList . InvestigatorAt . LocationWithId)
       pairings <- for investigatorIds
-        $ \targetId -> (targetId, ) . unHorrorCount <$> getCount targetId
+        $ \targetId -> (targetId, ) <$> field InvestigatorHorror targetId
       let choices = map fst $ filter ((> 0) . snd) pairings
       a <$ push
         (chooseOne

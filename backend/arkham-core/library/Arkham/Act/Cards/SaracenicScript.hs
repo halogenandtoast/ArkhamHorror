@@ -15,7 +15,6 @@ import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.InvestigatorId
 import Arkham.Matcher
 import Arkham.Message
 
@@ -30,12 +29,11 @@ saracenicScript = act
   Cards.saracenicScript
   (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Whateley Ruins"))
 
-instance ActRunner env => RunMessage SaracenicScript where
+instance RunMessage SaracenicScript where
   runMessage msg a@(SaracenicScript attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       survived <- getHasRecord DrHenryArmitageSurvivedTheDunwichLegacy
-      investigatorIds <- map unInScenarioInvestigatorId
-        <$> getSetList @InScenarioInvestigatorId ()
+      investigatorIds <- selectList UneliminatedInvestigator
       investigatorEsotericFormulaPairs <- for investigatorIds $ \iid ->
         (iid, ) <$> (PlayerCard <$> genPlayerCard Assets.esotericFormula)
       a <$ pushAll

@@ -38,7 +38,7 @@ instance HasAbilities HisDomain where
         (CardWithType EnemyType)
     ]
 
-instance AgendaRunner env => RunMessage HisDomain where
+instance RunMessage HisDomain where
   runMessage msg a@(HisDomain attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       investigatorIds <- selectList UneliminatedInvestigator

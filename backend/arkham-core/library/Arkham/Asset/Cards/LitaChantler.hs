@@ -24,7 +24,7 @@ litaChantler :: AssetCard LitaChantler
 litaChantler =
   allyWith LitaChantler Cards.litaChantler (3, 3) (isStoryL .~ True)
 
-instance Query LocationMatcher env => HasModifiersFor LitaChantler where
+instance HasModifiersFor LitaChantler where
   getModifiersFor _ (InvestigatorTarget iid) (LitaChantler a@AssetAttrs {..}) =
     do
       case assetController of

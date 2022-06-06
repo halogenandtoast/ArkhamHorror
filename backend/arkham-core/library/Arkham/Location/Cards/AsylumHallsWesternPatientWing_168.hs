@@ -41,7 +41,7 @@ instance HasAbilities AsylumHallsWesternPatientWing_168 where
             Free
     ]
 
-instance LocationRunner env => RunMessage AsylumHallsWesternPatientWing_168 where
+instance RunMessage AsylumHallsWesternPatientWing_168 where
   runMessage msg l@(AsylumHallsWesternPatientWing_168 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ push (DrawCards iid 1 False)

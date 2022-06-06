@@ -11,7 +11,9 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -32,7 +34,7 @@ instance HasAbilities OldKeyring where
 instance RunMessage OldKeyring where
   runMessage msg a@(OldKeyring attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- getId iid
+      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
       a <$ pushAll
         [ skillTestModifier attrs (LocationTarget lid) (ShroudModifier (-2))
         , Investigate iid lid source Nothing SkillIntellect False

@@ -43,7 +43,7 @@ instance HasAbilities MonstrousTransformation where
         (Costs [ExhaustCost (toTarget a), ActionCost 1])
     ]
 
-instance (AssetRunner env) => RunMessage MonstrousTransformation where
+instance RunMessage MonstrousTransformation where
   runMessage msg a@(MonstrousTransformation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)

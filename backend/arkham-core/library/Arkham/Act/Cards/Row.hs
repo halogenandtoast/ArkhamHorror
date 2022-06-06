@@ -14,9 +14,10 @@ import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
@@ -29,21 +30,20 @@ row = act (3, A) Row Cards.row Nothing
 
 instance HasAbilities Row where
   getAbilities (Row x) =
-    [ mkAbility x 1 $ ForcedAbility $ WouldDrawEncounterCard Timing.When You AnyPhase
+    [ mkAbility x 1 $ ForcedAbility $ WouldDrawEncounterCard
+      Timing.When
+      You
+      AnyPhase
     , restrictedAbility
-      x
-      2
-      (ResourcesOnLocation (LocationWithTitle "Gondola") (AtLeast $ PerPlayer 4)
-      )
-    $ Objective
-    $ ForcedAbility AnyWindow
+        x
+        2
+        (ResourcesOnLocation (LocationWithTitle "Gondola") (AtLeast $ PerPlayer 4)
+        )
+      $ Objective
+      $ ForcedAbility AnyWindow
     ]
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , ActRunner env
-  )
-  => RunMessage Row where
+instance RunMessage Row where
   runMessage msg a@(Row attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       _ <- popMessageMatching $ \case
@@ -55,7 +55,10 @@ instance
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
-      lid <- getId @LocationId iid
+      lid <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "Must be at a location")
+        iid
       let
         writhingAppendages =
           filter ((== Enemies.writhingAppendage) . toCardDef) cards

@@ -6,7 +6,7 @@ module Arkham.Effect.Effects.Shrivelling
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.EffectMetadata
 import Arkham.Message
 import Arkham.Target

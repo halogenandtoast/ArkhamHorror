@@ -6,7 +6,7 @@ module Arkham.Event.Cards.Guidance
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
@@ -19,7 +19,7 @@ newtype Guidance = Guidance EventAttrs
 guidance :: EventCard Guidance
 guidance = event Guidance Cards.guidance
 
-instance EventRunner env => RunMessage Guidance where
+instance RunMessage Guidance where
   runMessage msg e@(Guidance attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       investigators <-

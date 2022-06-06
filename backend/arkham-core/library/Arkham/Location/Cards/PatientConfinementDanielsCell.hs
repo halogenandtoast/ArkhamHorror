@@ -40,7 +40,7 @@ instance HasAbilities PatientConfinementDanielsCell where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage PatientConfinementDanielsCell where
+instance RunMessage PatientConfinementDanielsCell where
   runMessage msg l@(PatientConfinementDanielsCell attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       actIds <- getSetList ()

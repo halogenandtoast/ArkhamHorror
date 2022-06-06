@@ -13,11 +13,11 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Card.PlayerCard (genPlayerCard)
 import Arkham.Classes
-import Arkham.Decks
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.Target
 import Arkham.Trait
 
@@ -29,7 +29,7 @@ theReallyBadOnesV1 :: ActCard TheReallyBadOnesV1
 theReallyBadOnesV1 =
   act (2, A) TheReallyBadOnesV1 Cards.theReallyBadOnesV1 Nothing
 
-instance Query LocationMatcher env => HasModifiersFor TheReallyBadOnesV1 where
+instance HasModifiersFor TheReallyBadOnesV1 where
   getModifiersFor _ (LocationTarget lid) (TheReallyBadOnesV1 attrs) = do
     targets <- select UnrevealedLocation
     pure
@@ -38,7 +38,7 @@ instance Query LocationMatcher env => HasModifiersFor TheReallyBadOnesV1 where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActRunner env => RunMessage TheReallyBadOnesV1 where
+instance RunMessage TheReallyBadOnesV1 where
   runMessage msg a@(TheReallyBadOnesV1 attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -48,8 +48,8 @@ instance ActRunner env => RunMessage TheReallyBadOnesV1 where
         <$> genPlayerCard Assets.danielChesterfield
       enemiesUnderAct <-
         filter ((== EnemyType) . toCardType)
-        . mapMaybe (preview _EncounterCard . unUnderneathCard)
-        <$> getList ActDeck
+        . mapMaybe (preview _EncounterCard)
+        <$> scenarioField ScenarioCardsUnderActDeck
       pushAll
         (chooseOne
             leadInvestigatorId

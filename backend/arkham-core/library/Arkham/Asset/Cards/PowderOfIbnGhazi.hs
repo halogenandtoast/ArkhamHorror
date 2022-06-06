@@ -51,11 +51,10 @@ instance RunMessage PowderOfIbnGhazi where
         ]
       PowderOfIbnGhazi <$> runMessage msg (attrs & cluesL .~ survivedCount)
     UseCardAbility you source _ 1 _ | isSource attrs source -> do
-      yourLocation <- LocationWithId <$> getId you
       targets <-
         selectListMap EnemyTarget
         $ EnemyWithTitle "Brood of Yog-Sothoth"
-        <> EnemyAt yourLocation
+        <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId you)
         <> ExhaustedEnemy
       case targets of
         [] -> throwIO $ InvalidState "missing brood of yog sothoth"

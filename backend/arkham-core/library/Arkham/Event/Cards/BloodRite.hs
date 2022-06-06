@@ -10,9 +10,11 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.DamageEffect
-import Arkham.Event.Attrs
 import Arkham.Event.Runner
-import Arkham.Id
+import Arkham.Event.Runner
+import Arkham.Helpers.Card
+import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
 
@@ -23,7 +25,7 @@ newtype BloodRite = BloodRite EventAttrs
 bloodRite :: EventCard BloodRite
 bloodRite = event BloodRite Cards.bloodRite
 
-instance EventRunner env => RunMessage BloodRite where
+instance RunMessage BloodRite where
   runMessage msg e@(BloodRite attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ windows _ | eid == eventId -> e <$ pushAll
       [ DrawCards iid 2 False
@@ -40,7 +42,7 @@ instance EventRunner env => RunMessage BloodRite where
       -> if length discardedCards == 2
         then e <$ push (UseCardAbility iid source windows 1 payment)
         else do
-          cards <- map unDiscardableHandCard <$> getList iid
+          cards <- fieldMap InvestigatorHand (filter isDiscardable) iid
           e <$ push
             (chooseOne iid
             $ [ Run
@@ -64,8 +66,7 @@ instance EventRunner env => RunMessage BloodRite where
             )
     UseCardAbility iid source _ 1 (DiscardCardPayment xs)
       | isSource attrs source -> do
-        locationId <- getId @LocationId iid
-        enemyIds <- getSetList @EnemyId locationId
+        enemyIds <- selectList $ EnemyAt $ LocationWithInvestigator $ InvestigatorWithId iid
         e <$ pushAll
           (replicate
             (length xs)

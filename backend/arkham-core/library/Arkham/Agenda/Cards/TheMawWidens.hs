@@ -5,16 +5,16 @@ module Arkham.Agenda.Cards.TheMawWidens
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.LocationId
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
+import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 
 newtype TheMawWidens = TheMawWidens AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -23,12 +23,15 @@ newtype TheMawWidens = TheMawWidens AgendaAttrs
 theMawWidens :: AgendaCard TheMawWidens
 theMawWidens = agenda (2, A) TheMawWidens Cards.theMawWidens (Static 3)
 
-instance AgendaRunner env => RunMessage TheMawWidens where
+instance RunMessage TheMawWidens where
   runMessage msg a@(TheMawWidens attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
+      leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      locationId <- getId @LocationId leadInvestigatorId
+      locationId <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        leadInvestigatorId
       lid <- leftmostLocation locationId
       a <$ pushAll
         (RemoveLocation lid

@@ -397,6 +397,7 @@ library
       Arkham.Card.Id
       Arkham.Card.PlayerCard
       Arkham.ChaosBag
+      Arkham.ChaosBag.Base
       Arkham.ChaosBagStepState
       Arkham.Classes
       Arkham.Classes.Depth
@@ -404,7 +405,6 @@ library
       Arkham.Classes.Entity.Source
       Arkham.Classes.GameLogger
       Arkham.Classes.HasAbilities
-      Arkham.Classes.HasHistory
       Arkham.Classes.HasModifiersFor
       Arkham.Classes.HasQueue
       Arkham.Classes.HasRecord
@@ -421,6 +421,7 @@ library
       Arkham.Decks
       Arkham.Difficulty
       Arkham.Direction
+      Arkham.Distance
       Arkham.Effect
       Arkham.Effect.Attrs
       Arkham.Effect.Effects
@@ -493,6 +494,7 @@ library
       Arkham.Effect.Effects.WindowModifierEffect
       Arkham.Effect.Effects.YogSothoth
       Arkham.Effect.Helpers
+      Arkham.Effect.Runner
       Arkham.Effect.Window
       Arkham.EffectId
       Arkham.EffectMetadata
@@ -737,8 +739,13 @@ library
       Arkham.GameValue
       Arkham.Helpers
       Arkham.Helpers.Ability
+      Arkham.Helpers.Campaign
+      Arkham.Helpers.Card
+      Arkham.Helpers.ChaosBag
       Arkham.Helpers.Enemy
+      Arkham.Helpers.Event
       Arkham.Helpers.Investigator
+      Arkham.Helpers.Location
       Arkham.Helpers.Modifiers
       Arkham.Helpers.Query
       Arkham.Helpers.Scenario
@@ -1100,6 +1107,7 @@ library
       Arkham.Skill.Cards.ViciousBlow
       Arkham.Skill.Cards.ViciousBlow2
       Arkham.Skill.Cards.WatchThis
+      Arkham.Skill.Runner
       Arkham.Skill.Skills
       Arkham.SkillId
       Arkham.SkillTest
@@ -1255,6 +1263,7 @@ library
       Arkham.Treachery.Cards.Wormhole
       Arkham.Treachery.Cards.WrackedByNightmares
       Arkham.Treachery.Helpers
+      Arkham.Treachery.Runner
       Arkham.Treachery.Treacheries
       Arkham.TreacheryId
       Arkham.Window

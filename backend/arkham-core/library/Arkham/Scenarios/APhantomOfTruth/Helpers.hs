@@ -1,117 +1,102 @@
-module Arkham.Scenarios.APhantomOfTruth.Helpers (module Arkham.Scenarios.APhantomOfTruth.Helpers, module X) where
+module Arkham.Scenarios.APhantomOfTruth.Helpers
+  ( module Arkham.Scenarios.APhantomOfTruth.Helpers
+  , module X
+  ) where
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Campaigns.ThePathToCarcosa.Helpers as X
 import Arkham.Classes
 import Arkham.Cost
+import Arkham.Distance
 import Arkham.Game.Helpers
+import Arkham.Investigator.Attrs (Field (.. ))
+import Arkham.Enemy.Attrs (Field (.. ))
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Message
-import Arkham.Query
-import Arkham.Target
-import Arkham.Campaigns.ThePathToCarcosa.Helpers as X
+import Arkham.Projection
 
-getTheOrganist :: (Query EnemyMatcher env, MonadReader env m) => m EnemyId
+getTheOrganist :: GameT EnemyId
 getTheOrganist = selectJust $ EnemyWithTitle "The Organist"
 
-investigatorsNearestToTheOrganist ::
-  (HasList (InvestigatorId, Distance) env EnemyMatcher, MonadReader env m) =>
-  m (Distance, [InvestigatorId])
+investigatorsNearestToTheOrganist :: GameT (Distance, [InvestigatorId])
 investigatorsNearestToTheOrganist = do
-  mappings :: [(InvestigatorId, Distance)] <-
-    getList
-      ( EnemyOneOf
-          [ enemyIs Cards.theOrganistHopelessIDefiedHim
-          , enemyIs Cards.theOrganistDrapedInMystery
-          ]
-      )
-  let minDistance :: Int =
-        fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
-  pure . (Distance minDistance,) . hashNub . map fst $
-    filter
-      ((== minDistance) . unDistance . snd)
-      mappings
+  theOrganist <- getTheOrganist
+  organistLocation <- fieldMap
+    EnemyLocation
+    (fromJustNote "must be at a location")
+    theOrganist
+  investigatorIdWithLocationId <-
+    fmap catMaybes
+    . traverse (\i -> fmap (i, ) <$> field InvestigatorLocation i)
+    =<< selectList UneliminatedInvestigator
 
-moveOrganistAwayFromNearestInvestigator ::
-  ( MonadReader env m
-  , HasId LeadInvestigatorId env ()
-  , HasList (LocationId, Distance) env InvestigatorId
-  , HasList (InvestigatorId, Distance) env EnemyMatcher
-  , Query LocationMatcher env
-  , Query EnemyMatcher env
-  ) =>
-  m Message
+  mappings <- catMaybes <$> traverse
+    (\(i, l) -> fmap (i, ) <$> getDistance organistLocation l)
+    investigatorIdWithLocationId
+
+  let
+    minDistance :: Int =
+      fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
+  pure . (Distance minDistance, ) . hashNub . map fst $ filter
+    ((== minDistance) . unDistance . snd)
+    mappings
+
+moveOrganistAwayFromNearestInvestigator :: GameT Message
 moveOrganistAwayFromNearestInvestigator = do
-  organist <-
-    selectJust $
-      EnemyOneOf
-        [ enemyIs Cards.theOrganistDrapedInMystery
-        , enemyIs Cards.theOrganistHopelessIDefiedHim
-        ]
+  organist <- getTheOrganist
   leadInvestigatorId <- getLeadInvestigatorId
   (minDistance, iids) <- investigatorsNearestToTheOrganist
-  lids <-
-    setFromList . concat
-      <$> for
-        iids
-        ( \iid -> do
-            rs <- getList iid
-            pure $ map fst $ filter ((> minDistance) . snd) rs
-        )
-  withNoInvestigators <- select LocationWithoutInvestigators
-  let forced = lids `intersect` withNoInvestigators
-      targets = toList $ if null forced then lids else forced
-  pure $
-    chooseOne
-      leadInvestigatorId
-      [ TargetLabel (LocationTarget lid) [EnemyMove organist lid]
-      | lid <- targets
-      ]
+  everywhere <- selectList Anywhere
 
-disengageEachEnemyAndMoveToConnectingLocation ::
-  ( MonadReader env m
-  , HasSet InvestigatorId env ()
-  , HasId LeadInvestigatorId env ()
-  , Query EnemyMatcher env
-  , Query LocationMatcher env
-  ) =>
-  m [Message]
+  lids <- setFromList . concat <$> for
+    iids
+    (\iid -> do
+      currentLocation <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
+      rs <- traverse (traverseToSnd (fmap (fromMaybe (Distance 0)) . getDistance currentLocation)) everywhere
+      pure $ map fst $ filter ((> minDistance) . snd) rs
+    )
+  withNoInvestigators <- select LocationWithoutInvestigators
+  let
+    forced = lids `intersect` withNoInvestigators
+    targets = toList $ if null forced then lids else forced
+  pure $ chooseOne
+    leadInvestigatorId
+    [ targetLabel lid [EnemyMove organist lid] | lid <- targets ]
+
+disengageEachEnemyAndMoveToConnectingLocation :: GameT [Message]
 disengageEachEnemyAndMoveToConnectingLocation = do
   leadInvestigatorId <- getLeadInvestigatorId
   iids <- getInvestigatorIds
-  enemyPairs <-
-    traverse
-      (traverseToSnd (selectList . EnemyIsEngagedWith . InvestigatorWithId))
-      iids
-  locationPairs <-
-    traverse
-      ( traverseToSnd
-          ( selectList
-              . AccessibleFrom
-              . LocationWithInvestigator
-              . InvestigatorWithId
-          )
+  enemyPairs <- traverse
+    (traverseToSnd (selectList . EnemyIsEngagedWith . InvestigatorWithId))
+    iids
+  locationPairs <- traverse
+    (traverseToSnd
+      (selectList
+      . AccessibleFrom
+      . LocationWithInvestigator
+      . InvestigatorWithId
       )
-      iids
-  pure $
-    [ DisengageEnemy iid enemy
-    | (iid, enemies) <- enemyPairs
-    , enemy <- enemies
-    ]
-      <> [ chooseOneAtATime
-            leadInvestigatorId
-            [ TargetLabel
-              (InvestigatorTarget iid)
-              [ chooseOne
-                  iid
-                  [ TargetLabel
-                    (LocationTarget lid)
-                    [MoveAction iid lid Free False]
-                  | lid <- locations
-                  ]
-              ]
-            | (iid, locations) <- locationPairs
-            ]
-         ]
+    )
+    iids
+  pure
+    $ [ DisengageEnemy iid enemy
+      | (iid, enemies) <- enemyPairs
+      , enemy <- enemies
+      ]
+    <> [ chooseOneAtATime
+           leadInvestigatorId
+           [ targetLabel
+               iid
+               [ chooseOne
+                   iid
+                   [ targetLabel lid [MoveAction iid lid Free False]
+                   | lid <- locations
+                   ]
+               ]
+           | (iid, locations) <- locationPairs
+           ]
+       ]

@@ -45,7 +45,7 @@ instance HasAbilities UncoveringTheConspiracy where
       $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage UncoveringTheConspiracy where
+instance RunMessage UncoveringTheConspiracy where
   runMessage msg a@(UncoveringTheConspiracy attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push (DrawFromScenarioDeck iid CultistDeck (toTarget attrs) 1)

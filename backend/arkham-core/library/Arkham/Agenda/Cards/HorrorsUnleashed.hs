@@ -6,17 +6,18 @@ module Arkham.Agenda.Cards.HorrorsUnleashed
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.EnemyId
+import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Matcher hiding (ChosenRandomLocation)
+import Arkham.Matcher hiding ( ChosenRandomLocation )
 import Arkham.Message
-import Arkham.Modifier
+import Arkham.Modifier qualified as Modifier
 import Arkham.Phase
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -34,20 +35,20 @@ instance HasAbilities HorrorsUnleashed where
   getAbilities (HorrorsUnleashed x) =
     [mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase]
 
-instance HasSet Trait env EnemyId => HasModifiersFor HorrorsUnleashed where
+instance HasModifiersFor HorrorsUnleashed where
   getModifiersFor _ (EnemyTarget eid) (HorrorsUnleashed attrs) = do
-    isAbomination <- member Abomination <$> getSet eid
+    isAbomination <- member Abomination <$> field EnemyTraits eid
     if isAbomination
-      then pure $ toModifiers attrs [EnemyFight 1, EnemyEvade 1]
+      then pure $ toModifiers attrs [Modifier.EnemyFight 1, Modifier.EnemyEvade 1]
       else pure []
   getModifiersFor _ _ _ = pure []
 
-instance AgendaRunner env => RunMessage HorrorsUnleashed where
+instance RunMessage HorrorsUnleashed where
   runMessage msg a@(HorrorsUnleashed attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      broodOfYogSothoth <- map EnemyTarget
-        <$> getSetList (EnemyWithTitle "Brood of Yog-Sothoth")
+      broodOfYogSothoth <- selectListMap EnemyTarget
+        $ EnemyWithTitle "Brood of Yog-Sothoth"
       a <$ when
         (notNull broodOfYogSothoth)
         (push $ chooseOneAtATime

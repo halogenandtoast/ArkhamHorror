@@ -22,13 +22,13 @@ newtype TheFirstNight = TheFirstNight AgendaAttrs
 theFirstNight :: AgendaCard TheFirstNight
 theFirstNight = agenda (1, A) TheFirstNight Cards.theFirstNight (Static 6)
 
-instance HasRecord env () => HasModifiersFor TheFirstNight where
+instance HasModifiersFor TheFirstNight where
   getModifiersFor _ target (TheFirstNight a) | not (isTarget a target) = do
     moreConvictionThanDoubt <- getMoreConvictionThanDoubt
     pure $ toModifiers a $ [DoomSubtracts | moreConvictionThanDoubt ]
   getModifiersFor _ _ _ = pure []
 
-instance AgendaRunner env => RunMessage TheFirstNight where
+instance RunMessage TheFirstNight where
   runMessage msg a@(TheFirstNight attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       msgs <- disengageEachEnemyAndMoveToConnectingLocation

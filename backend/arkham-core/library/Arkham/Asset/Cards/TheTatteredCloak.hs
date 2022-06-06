@@ -7,9 +7,9 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.InvestigatorId
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -21,10 +21,10 @@ theTatteredCloak :: AssetCard TheTatteredCloak
 theTatteredCloak =
   assetWith TheTatteredCloak Cards.theTatteredCloak (healthL ?~ 1)
 
-instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor TheTatteredCloak where
+instance HasModifiersFor TheTatteredCloak where
   getModifiersFor _ (InvestigatorTarget iid) (TheTatteredCloak attrs)
     | controlledBy attrs iid = do
-      remainingSanity <- unRemainingSanity <$> getCount iid
+      remainingSanity <- field InvestigatorRemainingSanity iid
       let
         skillModifiers = if remainingSanity <= 3
           then

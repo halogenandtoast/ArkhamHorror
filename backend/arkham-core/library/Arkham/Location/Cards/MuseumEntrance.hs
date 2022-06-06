@@ -29,6 +29,6 @@ instance HasModifiersFor MuseumEntrance where
 instance HasAbilities MuseumEntrance where
   getAbilities (MuseumEntrance a) = withResignAction a []
 
-instance LocationRunner env => RunMessage MuseumEntrance where
+instance RunMessage MuseumEntrance where
   runMessage msg (MuseumEntrance attrs) =
     MuseumEntrance <$> runMessage msg attrs

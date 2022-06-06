@@ -26,7 +26,7 @@ theReallyBadOnesV2 :: ActCard TheReallyBadOnesV2
 theReallyBadOnesV2 =
   act (2, A) TheReallyBadOnesV2 Cards.theReallyBadOnesV2 Nothing
 
-instance Query LocationMatcher env => HasModifiersFor TheReallyBadOnesV2 where
+instance HasModifiersFor TheReallyBadOnesV2 where
   getModifiersFor _ (LocationTarget lid) (TheReallyBadOnesV2 attrs) = do
     targets <- select UnrevealedLocation
     pure
@@ -35,7 +35,7 @@ instance Query LocationMatcher env => HasModifiersFor TheReallyBadOnesV2 where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActRunner env => RunMessage TheReallyBadOnesV2 where
+instance RunMessage TheReallyBadOnesV2 where
   runMessage msg a@(TheReallyBadOnesV2 attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       danielsCell <- getJustLocationIdByName

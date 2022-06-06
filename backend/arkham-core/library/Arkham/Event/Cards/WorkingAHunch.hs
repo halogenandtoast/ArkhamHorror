@@ -2,13 +2,13 @@ module Arkham.Event.Cards.WorkingAHunch where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Id
+import Arkham.Helpers.Investigator
+import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 
 newtype WorkingAHunch = WorkingAHunch EventAttrs
@@ -18,11 +18,11 @@ newtype WorkingAHunch = WorkingAHunch EventAttrs
 workingAHunch :: EventCard WorkingAHunch
 workingAHunch = event WorkingAHunch Cards.workingAHunch
 
-instance EventRunner env => RunMessage WorkingAHunch where
+instance RunMessage WorkingAHunch where
   runMessage msg e@(WorkingAHunch attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      currentLocationId <- getId @LocationId iid
-      locationClueCount <- unClueCount <$> getCount currentLocationId
+      currentLocationId <- getJustLocation iid
+      locationClueCount <- field LocationClues currentLocationId
       if locationClueCount > 0
         then e <$ pushAll
           [ DiscoverCluesAtLocation iid currentLocationId 1 Nothing

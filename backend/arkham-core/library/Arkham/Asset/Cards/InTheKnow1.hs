@@ -6,13 +6,14 @@ module Arkham.Asset.Cards.InTheKnow1
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Target
 
 newtype InTheKnow1 = InTheKnow1 AssetAttrs
@@ -33,7 +34,10 @@ instance HasAbilities InTheKnow1 where
 instance RunMessage InTheKnow1 where
   runMessage msg a@(InTheKnow1 attrs) = case msg of
     UseCardAbility iid source windows' 1 _ | isSource attrs source -> do
-      investigatorLocation <- getId @LocationId iid
+      investigatorLocation <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        iid
       locations <- selectList $ RevealedLocation <> InvestigatableLocation
       locationsWithInvestigate <- concat <$> for
         locations

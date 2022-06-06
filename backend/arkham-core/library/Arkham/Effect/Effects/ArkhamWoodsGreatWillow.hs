@@ -6,7 +6,7 @@ module Arkham.Effect.Effects.ArkhamWoodsGreatWillow
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Message
@@ -25,7 +25,7 @@ instance HasModifiersFor ArkhamWoodsGreatWillow where
     $ toModifiers attrs [AddKeyword Keyword.Surge]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage ArkhamWoodsGreatWillow where
+instance RunMessage ArkhamWoodsGreatWillow where
   runMessage msg e@(ArkhamWoodsGreatWillow attrs) = case msg of
     Surge _ source | sourceToTarget source == effectTarget attrs ->
       e <$ push (DisableEffect $ toId e)

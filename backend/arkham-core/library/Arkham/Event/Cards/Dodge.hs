@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Message
 import Arkham.Target
@@ -16,7 +16,7 @@ newtype Dodge = Dodge EventAttrs
 dodge :: EventCard Dodge
 dodge = event Dodge Cards.dodge
 
-instance EventRunner env => RunMessage Dodge where
+instance RunMessage Dodge where
   runMessage msg e@(Dodge attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
       e <$ pushAll [CancelNext AttackMessage, Discard (EventTarget eid)]

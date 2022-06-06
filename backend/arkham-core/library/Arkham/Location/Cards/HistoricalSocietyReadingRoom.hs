@@ -55,7 +55,7 @@ instance HasAbilities HistoricalSocietyReadingRoom where
             AnyEnemy
         ]
 
-instance LocationRunner env => RunMessage HistoricalSocietyReadingRoom where
+instance RunMessage HistoricalSocietyReadingRoom where
   runMessage msg l@(HistoricalSocietyReadingRoom attrs) = case msg of
     UseCardAbility iid source _ 1 _
       | isSource attrs source && locationRevealed attrs -> l <$ push

@@ -31,6 +31,10 @@ data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorTomeActions :: Field InvestigatorAttrs Int
   InvestigatorRemainingSanity :: Field InvestigatorAttrs Int
   InvestigatorLocation :: Field InvestigatorAttrs (Maybe LocationId)
+  InvestigatorWillpower :: Field InvestigatorAttrs Int
+  InvestigatorIntellect :: Field InvestigatorAttrs Int
+  InvestigatorCombat :: Field InvestigatorAttrs Int
+  InvestigatorAgility :: Field InvestigatorAttrs Int
   InvestigatorHorror :: Field InvestigatorAttrs Int
   InvestigatorDamage :: Field InvestigatorAttrs Int
   InvestigatorResources :: Field InvestigatorAttrs Int
@@ -46,6 +50,7 @@ data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorUsedAbilities :: Field InvestigatorAttrs [UsedAbility]
   InvestigatorTraits :: Field InvestigatorAttrs (HashSet Trait)
   InvestigatorAbilities :: Field InvestigatorAttrs [Ability]
+  InvestigatorCommittedCards :: Field InvestigatorAttrs [Card]
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId

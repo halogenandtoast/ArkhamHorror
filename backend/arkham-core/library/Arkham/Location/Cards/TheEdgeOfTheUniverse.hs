@@ -11,6 +11,7 @@ import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -31,7 +32,7 @@ theEdgeOfTheUniverse = location
   Moon
   [Plus, Squiggle]
 
-instance HasPhase env => HasModifiersFor TheEdgeOfTheUniverse where
+instance HasModifiersFor TheEdgeOfTheUniverse where
   getModifiersFor _ (InvestigatorTarget iid) (TheEdgeOfTheUniverse attrs)
     | iid `on` attrs = do
       phase <- getPhase
@@ -49,6 +50,6 @@ instance HasAbilities TheEdgeOfTheUniverse where
         }
       _ -> action
 
-instance LocationRunner env => RunMessage TheEdgeOfTheUniverse where
+instance RunMessage TheEdgeOfTheUniverse where
   runMessage msg (TheEdgeOfTheUniverse attrs) =
     TheEdgeOfTheUniverse <$> runMessage msg attrs

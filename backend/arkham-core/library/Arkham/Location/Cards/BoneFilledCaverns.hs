@@ -75,7 +75,7 @@ instance HasAbilities BoneFilledCaverns where
     | locationRevealed attrs
     ]
 
-instance LocationRunner env => RunMessage BoneFilledCaverns where
+instance RunMessage BoneFilledCaverns where
   runMessage msg l@(BoneFilledCaverns (attrs `With` metadata)) = case msg of
     Investigate iid lid _ _ _ False | lid == toId attrs -> do
       result <- runMessage msg attrs

@@ -32,14 +32,6 @@ instance HasSet CompletedScenarioId env Campaign where
 instance HasList CampaignStoryCard env Campaign where
   getList = getList . toAttrs
 
-instance HasCampaignStoryCard env Campaign where
-  getCampaignStoryCard def s = pure . fromJustNote "missing card" $ find
-    ((== def) . toCardDef)
-    cards
-   where
-    attrs = toAttrs s
-    cards = concat . toList $ campaignStoryCards attrs
-
 instance Entity Campaign where
   type EntityId Campaign = CampaignId
   type EntityAttrs Campaign = CampaignAttrs

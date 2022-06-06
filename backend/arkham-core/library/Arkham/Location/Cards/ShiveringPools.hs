@@ -63,7 +63,7 @@ instance HasAbilities ShiveringPools where
         ]
       else []
 
-instance LocationRunner env => RunMessage ShiveringPools where
+instance RunMessage ShiveringPools where
   runMessage msg l@(ShiveringPools attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       hasResources <- fieldP InvestigatorResources (> 0) iid

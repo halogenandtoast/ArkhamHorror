@@ -43,7 +43,7 @@ instance HasAbilities DimensionalGap where
         | locationRevealed attrs
         ]
 
-instance LocationRunner env => RunMessage DimensionalGap where
+instance RunMessage DimensionalGap where
   runMessage msg l@(DimensionalGap attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       l <$ push (DiscardEncounterUntilFirst source $ CardWithType EnemyType)

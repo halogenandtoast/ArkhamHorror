@@ -11,7 +11,6 @@ import Arkham.Classes.Depth as X
 import Arkham.Classes.Entity as X
 import Arkham.Classes.GameLogger as X
 import Arkham.Classes.HasAbilities as X
-import Arkham.Classes.HasHistory as X
 import Arkham.Classes.HasModifiersFor as X
 import Arkham.Classes.HasQueue as X
 import Arkham.Classes.HasRecord as X
@@ -19,16 +18,9 @@ import Arkham.Classes.HasSet as X
 import Arkham.Classes.HasTokenValue as X
 import Arkham.Classes.Query as X
 import Arkham.Classes.RunMessage as X
-import Arkham.Phase
 import Data.Char qualified as C
 import Language.Haskell.TH.Syntax hiding ( Name )
 import Language.Haskell.TH.Syntax qualified as TH
-
-newtype Distance = Distance { unDistance :: Int }
-  deriving newtype (Ord, Eq)
-
-class HasPhase m where
-  getPhase :: Monad m => m Phase
 
 buildEntity :: String -> Q [Dec]
 buildEntity nm = do

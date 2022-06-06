@@ -9,7 +9,7 @@ import Arkham.Prelude
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Classes
 import Arkham.Difficulty
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.Effect.Helpers
 import Arkham.EnemyId
 import Arkham.Matcher

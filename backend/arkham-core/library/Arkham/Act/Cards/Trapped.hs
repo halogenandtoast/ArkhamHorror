@@ -8,6 +8,7 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher (LocationMatcher(..), EnemyMatcher(..))
@@ -22,7 +23,7 @@ trapped :: ActCard Trapped
 trapped =
   act (1, A) Trapped Cards.trapped (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
-instance ActRunner env => RunMessage Trapped where
+instance RunMessage Trapped where
   runMessage msg a@(Trapped attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       studyId <- selectJust $ LocationWithTitle "Study"

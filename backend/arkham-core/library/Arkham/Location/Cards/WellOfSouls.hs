@@ -61,7 +61,7 @@ instance HasAbilities WellOfSouls where
         ]
       else []
 
-instance LocationRunner env => RunMessage WellOfSouls where
+instance RunMessage WellOfSouls where
   runMessage msg l@(WellOfSouls attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       hasCardsInHand <- selectAny $ InHandOf (InvestigatorWithId iid)

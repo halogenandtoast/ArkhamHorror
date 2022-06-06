@@ -38,22 +38,20 @@ instance HasAbilities OldBookOfLore where
 instance RunMessage OldBookOfLore where
   runMessage msg a@(OldBookOfLore attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationId <- getId iid
-      investigatorIds <- selectList $ InvestigatorAt $ LocationWithId locationId
-      a <$ push
-        (chooseOne
-          iid
-          [ TargetLabel
-              (InvestigatorTarget iid')
-              [ Search
-                  iid'
-                  source
-                  (InvestigatorTarget iid')
-                  [fromTopOfDeck 3]
-                  AnyCard
-                  (DrawFound iid' 1)
-              ]
-          | iid' <- investigatorIds
-          ]
-        )
+      investigatorIds <- selectList $ colocatedWith iid
+      push $ chooseOne
+        iid
+        [ targetLabel
+            iid'
+            [ Search
+                iid'
+                source
+                (InvestigatorTarget iid')
+                [fromTopOfDeck 3]
+                AnyCard
+                (DrawFound iid' 1)
+            ]
+        | iid' <- investigatorIds
+        ]
+      pure a
     _ -> OldBookOfLore <$> runMessage msg attrs

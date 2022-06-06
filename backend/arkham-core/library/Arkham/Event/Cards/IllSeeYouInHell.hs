@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message
@@ -19,7 +19,7 @@ newtype IllSeeYouInHell = IllSeeYouInHell EventAttrs
 illSeeYouInHell :: EventCard IllSeeYouInHell
 illSeeYouInHell = event IllSeeYouInHell Cards.illSeeYouInHell
 
-instance EventRunner env => RunMessage IllSeeYouInHell where
+instance RunMessage IllSeeYouInHell where
   runMessage msg e@(IllSeeYouInHell attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <- selectList

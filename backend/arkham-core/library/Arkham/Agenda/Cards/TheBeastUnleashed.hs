@@ -3,16 +3,17 @@ module Arkham.Agenda.Cards.TheBeastUnleashed where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.EnemyId
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Resolution
@@ -30,21 +31,21 @@ theBeastUnleashed =
 instance HasAbilities TheBeastUnleashed where
   getAbilities (TheBeastUnleashed x) =
     [ mkAbility x 1
-    $ ForcedAbility
-    $ AgendaWouldAdvance Timing.When DoomThreshold
-    $ AgendaWithId
-    $ toId x
+      $ ForcedAbility
+      $ AgendaWouldAdvance Timing.When DoomThreshold
+      $ AgendaWithId
+      $ toId x
     , mkAbility x 2 $ Objective $ ForcedAbility $ EnemyEnters
       Timing.After
       (locationIs Cards.dormitories)
       (enemyIs Cards.theExperiment)
     ]
 
-getTheExperiment :: (MonadReader env m, Query EnemyMatcher env) => m EnemyId
+getTheExperiment :: GameT EnemyId
 getTheExperiment =
   fromJustNote "must be in play" <$> selectOne (enemyIs Cards.theExperiment)
 
-instance AgendaRunner env => RunMessage TheBeastUnleashed where
+instance RunMessage TheBeastUnleashed where
   runMessage msg a@(TheBeastUnleashed attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       experimentId <- getTheExperiment

@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher hiding (FastPlayerWindow)
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 
 newtype SpiritSpeaker = SpiritSpeaker AssetAttrs
@@ -37,7 +37,7 @@ instance RunMessage SpiritSpeaker where
       discardableAssetIds <- selectList
         (AssetControlledBy You <> AssetWithUseType Charge <> DiscardableAsset)
       assetIdsWithChargeCounts <- traverse
-        (traverseToSnd (fmap unUsesCount . getCount))
+        (traverseToSnd (fmap useCount . field AssetUses))
         assetIds
       a <$ push
         (chooseOne

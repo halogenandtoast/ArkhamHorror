@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Message
@@ -24,7 +24,7 @@ newtype LiveAndLearn = LiveAndLearn EventAttrs
 liveAndLearn :: EventCard LiveAndLearn
 liveAndLearn = event LiveAndLearn Cards.liveAndLearn
 
-instance EventRunner env => RunMessage LiveAndLearn where
+instance RunMessage LiveAndLearn where
   runMessage msg e@(LiveAndLearn attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [Window _ (Window.SkillTestEnded st)] _
       | eid == toId attrs -> do

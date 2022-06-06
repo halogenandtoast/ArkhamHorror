@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Label
 import Arkham.Matcher
@@ -32,7 +33,7 @@ posLabelToPosition lbl = case drop 3 (unpack . unLabel $ lbl) of
 startPosition :: (Int, Int)
 startPosition = (2, 6)
 
-getStartingLocation :: Query LocationMatcher m => m LocationId
+getStartingLocation :: GameT LocationId
 getStartingLocation = selectJust $ LocationWithLabel $ positionToLabel startPosition
 
 positionToLabel :: (Int, Int) -> Label
@@ -43,7 +44,7 @@ positionToLabel (x, y) = Label . pack $ "pos" <> fromI x <> fromI y
     | otherwise = show n
 
 
-placeAtDirection :: Query LocationMatcher m => Direction -> LocationAttrs -> m (Card -> [Message])
+placeAtDirection :: Direction -> LocationAttrs -> GameT (Card -> [Message])
 placeAtDirection direction attrs = do
   -- we need to determine what we are connected to based on our pos, the only way to do this is to get locations with labels
   let placedPosition = newPos direction (posLabelToPosition . mkLabel $ locationLabel attrs)
@@ -78,10 +79,10 @@ placeAtDirection direction attrs = do
               LeftOf -> (x - 1, y)
               RightOf -> (x + 1, y)
 
-directionEmpty :: Query LocationMatcher m => LocationAttrs -> Direction -> m Bool
+directionEmpty :: LocationAttrs -> Direction -> GameT Bool
 directionEmpty attrs dir = selectNone $ LocationInDirection dir (LocationWithId $ toId attrs)
 
-toMaybePlacement :: Query LocationMatcher m => LocationAttrs -> Direction -> m (Maybe (Card -> [Message]))
+toMaybePlacement :: LocationAttrs -> Direction -> GameT (Maybe (Card -> [Message]))
 toMaybePlacement attrs dir = do
   isEmpty <- directionEmpty attrs dir
   if isEmpty

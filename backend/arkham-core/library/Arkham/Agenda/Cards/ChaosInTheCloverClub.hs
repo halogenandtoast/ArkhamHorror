@@ -6,16 +6,15 @@ module Arkham.Agenda.Cards.ChaosInTheCloverClub
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Id
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
-import Arkham.Query
 import Arkham.Resolution
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -36,16 +35,13 @@ instance HasAbilities ChaosInTheCloverClub where
     | onSide A x
     ]
 
-instance AgendaRunner env => RunMessage ChaosInTheCloverClub where
+instance RunMessage ChaosInTheCloverClub where
   runMessage msg a@(ChaosInTheCloverClub attrs@AgendaAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      abominations <- getSetList @EnemyId Abomination
-      abominationLocations <- traverse (selectJust . LocationWithEnemy . EnemyWithId) abominations
-      criminals <-
-        concat <$> traverse (getSetList . ([Criminal], )) abominationLocations
+      criminals <- selectList $ EnemyWithTrait Criminal <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Abomination)
       a <$ pushAll [ Discard $ EnemyTarget eid | eid <- criminals ]
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
+      leadInvestigatorId <- getLeadInvestigatorId
       a <$ push
         (chooseOne
           leadInvestigatorId

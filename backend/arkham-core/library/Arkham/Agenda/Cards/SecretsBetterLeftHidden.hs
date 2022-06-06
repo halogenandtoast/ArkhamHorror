@@ -47,7 +47,7 @@ instance HasAbilities SecretsBetterLeftHidden where
         AnyValue
     ]
 
-instance AgendaRunner env => RunMessage SecretsBetterLeftHidden where
+instance RunMessage SecretsBetterLeftHidden where
   runMessage msg a@(SecretsBetterLeftHidden attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
       a <$ pushAll [ScenarioResolution $ Resolution 4]

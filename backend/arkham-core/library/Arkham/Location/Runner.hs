@@ -1,5 +1,8 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Location.Runner (module Arkham.Location.Runner, module X) where
+module Arkham.Location.Runner
+  ( module Arkham.Location.Runner
+  , module X
+  ) where
 
 import Arkham.Prelude
 
@@ -16,74 +19,34 @@ import Arkham.Card.Id
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
+import Arkham.Enemy.Attrs ( Field(..) )
 import Arkham.Exception
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
-import Arkham.Investigator.Attrs (InvestigatorAttrs)
+import Arkham.Investigator.Attrs ( Field(..), InvestigatorAttrs )
 import Arkham.Location.Helpers
 import Arkham.Matcher
-  (AgendaMatcher, AssetMatcher, EnemyMatcher, ExtendedCardMatcher, LocationMatcher(..), locationWithEnemy)
+  ( AgendaMatcher
+  , AssetMatcher
+  , EnemyMatcher
+  , ExtendedCardMatcher
+  , LocationMatcher (..)
+  , locationWithEnemy
+  )
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Projection
-import Arkham.Query
 import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
-type LocationRunner env =
-  ( HasQueue env
-  , CanCheckPlayable env
-  , HasSkillTest env
-  , HasSet EnemyId env EnemyMatcher
-  , Query AgendaMatcher env
-  , Query AssetMatcher env
-  , Query LocationMatcher env
-  , Query EnemyMatcher env
-  , Query ExtendedCardMatcher env
-  , Projection env InvestigatorAttrs
-  , HasCostPayment env
-  , HasCount ActionRemainingCount env InvestigatorId
-  , HasCount ClueCount env InvestigatorId
-  , HasCount HorrorCount env InvestigatorId
-  , HasCount PlayerCount env ()
-  , HasId (Maybe LocationId) env LocationMatcher
-  , HasId ActiveInvestigatorId env ()
-  , HasId CardCode env EnemyId
-  , HasId LeadInvestigatorId env ()
-  , HasId LocationId env InvestigatorId
-  , HasList DiscardedEncounterCard env ()
-  , HasList HandCard env InvestigatorId
-  , HasList LocationName env ()
-  , HasList UsedAbility env ()
-  , HasModifiersFor ()
-  , HasName env LocationId
-  , HasSet ActId env ()
-  , HasSet ConnectedLocationId env LocationId
-  , HasSet EnemyId env Trait
-  , HasSet EnemyId env CardCode
-  , HasSet EnemyAccessibleLocationId env (EnemyId, LocationId)
-  , HasSet EventId env ()
-  , HasSet HandCardId env (InvestigatorId, CardType)
-  , HasSet InvestigatorId env ()
-  , HasSet LocationId env ()
-  , HasSet LocationId env LocationMatcher
-  , HasSet LocationId env (HashSet LocationSymbol)
-  , HasSet LocationId env [Trait]
-  , HasList SetAsideCard env ()
-  , HasSet Trait env Source
-  , HasSet Trait env EnemyId
-  , HasSet Trait env LocationId
-  , HasSet UnrevealedLocationId env ()
-  , HasSet UnrevealedLocationId env LocationMatcher
-  )
-
-instance LocationRunner env => RunMessage LocationAttrs where
+instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
     Investigate iid lid source mTarget skillType False | lid == locationId -> do
       allowed <- getInvestigateAllowed iid a
@@ -205,18 +168,18 @@ instance LocationRunner env => RunMessage LocationAttrs where
       pure $ a & investigatorsL %~ deleteSet iid
     AddToVictory (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
     EnemyEngageInvestigator eid iid -> do
-      lid <- getId @LocationId iid
-      if lid == locationId then pure $ a & enemiesL %~ insertSet eid else pure a
+      mlid <- field InvestigatorLocation iid
+      if mlid == Just locationId then pure $ a & enemiesL %~ insertSet eid else pure a
     EnemyMove eid lid | lid == locationId -> do
       willMove <- canEnterLocation eid lid
       pure $ if willMove then a & enemiesL %~ insertSet eid else a
     EnemyMove eid lid -> do
       mLocationId <- selectOne $ locationWithEnemy eid
       if mLocationId == Just locationId
-         then do
-           willMove <- canEnterLocation eid lid
-           pure $ if willMove then a & enemiesL %~ deleteSet eid else a
-         else pure a
+        then do
+          willMove <- canEnterLocation eid lid
+          pure $ if willMove then a & enemiesL %~ deleteSet eid else a
+        else pure a
     EnemyEntered eid lid | lid == locationId -> do
       pure $ a & enemiesL %~ insertSet eid
     EnemyEntered eid lid | lid /= locationId -> do
@@ -225,10 +188,10 @@ instance LocationRunner env => RunMessage LocationAttrs where
       shouldSpawnNonEliteAtConnectingInstead <-
         getShouldSpawnNonEliteAtConnectingInstead a
       when shouldSpawnNonEliteAtConnectingInstead $ do
-        traits' <- getSetList eid
+        traits' <- field EnemyTraits eid
         when (Elite `notElem` traits') $ do
-          activeInvestigatorId <- unActiveInvestigatorId <$> getId ()
-          connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
+          activeInvestigatorId <- getActiveInvestigatorId
+          connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
               modifiers' <- getModifiers
@@ -331,24 +294,22 @@ instance LocationRunner env => RunMessage LocationAttrs where
     _ -> pure a
 
 locationEnemiesWithTrait
-  :: (MonadReader env m, HasSet Trait env EnemyId)
-  => LocationAttrs
+  :: LocationAttrs
   -> Trait
-  -> m [EnemyId]
+  -> GameT [EnemyId]
 locationEnemiesWithTrait LocationAttrs { locationEnemies } trait =
-  filterM (fmap (member trait) . getSet) (setToList locationEnemies)
+  filterM (fieldMap EnemyTraits (member trait)) (setToList locationEnemies)
 
 locationInvestigatorsWithClues
-  :: (MonadReader env m, HasCount ClueCount env InvestigatorId)
-  => LocationAttrs
-  -> m [InvestigatorId]
+  :: LocationAttrs
+  -> GameT [InvestigatorId]
 locationInvestigatorsWithClues LocationAttrs { locationInvestigators } =
   filterM
-    (fmap ((> 0) . unClueCount) . getCount)
+    (fieldMap InvestigatorClues (> 0))
     (setToList locationInvestigators)
 
 getModifiedShroudValueFor
-  :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Int
+  :: LocationAttrs -> GameT Int
 getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier (locationShroud attrs) modifiers'
@@ -357,10 +318,9 @@ getModifiedShroudValueFor attrs = do
   applyModifier _ n = n
 
 getInvestigateAllowed
-  :: (MonadReader env m, HasModifiersFor env ())
-  => InvestigatorId
+  :: InvestigatorId
   -> LocationAttrs
-  -> m Bool
+  -> GameT Bool
 getInvestigateAllowed iid attrs = do
   modifiers1' <- getModifiers (toSource attrs) (toTarget attrs)
   modifiers2' <- getModifiers (InvestigatorSource iid) (toTarget attrs)
@@ -370,9 +330,11 @@ getInvestigateAllowed iid attrs = do
   isCannotInvestigate _ = False
 
 canEnterLocation
-  :: (MonadReader env m, HasModifiersFor env (), HasSet Trait env EnemyId)  => EnemyId -> LocationId -> m Bool
+  :: EnemyId
+  -> LocationId
+  -> GameT Bool
 canEnterLocation eid lid = do
-  traits' <- getSet eid
+  traits' <- field EnemyTraits eid
   modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid)
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits'
@@ -412,8 +374,7 @@ instance HasAbilities LocationAttrs where
       then locationCostToEnterUnrevealed l
       else ActionCost 1
 
-getShouldSpawnNonEliteAtConnectingInstead
-  :: (MonadReader env m, HasModifiersFor env ()) => LocationAttrs -> m Bool
+getShouldSpawnNonEliteAtConnectingInstead :: LocationAttrs -> GameT Bool
 getShouldSpawnNonEliteAtConnectingInstead attrs = do
   modifiers' <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ flip any modifiers' $ \case
@@ -432,18 +393,3 @@ instance Named (Unrevealed LocationAttrs) where
 instance IsCard LocationAttrs where
   toCardId = unLocationId . locationId
   toCardOwner = const Nothing
-
-instance HasName env LocationAttrs where
-  getName = pure . toName
-
-instance HasName env (Unrevealed LocationAttrs) where
-  getName = pure . toName
-
-instance HasId (Maybe LocationId) env (Direction, LocationAttrs) where
-  getId (dir, LocationAttrs {..}) = pure $ lookup dir locationDirections
-
-instance HasId LocationSymbol env LocationAttrs where
-  getId = pure . locationSymbol
-
-instance HasList UnderneathCard env LocationAttrs where
-  getList = pure . map UnderneathCard . locationCardsUnderneath

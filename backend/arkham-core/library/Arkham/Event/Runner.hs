@@ -1,46 +1,31 @@
-module Arkham.Event.Runner where
+module Arkham.Event.Runner
+  ( module X
+  ) where
+
+import Arkham.Event.Attrs as X
+
+import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
-import Arkham.Enemy.Attrs (EnemyAttrs)
 import Arkham.Id
-import Arkham.Matcher
+import Arkham.Matcher hiding (InvestigatorEliminated)
+import Arkham.Message
 import Arkham.Projection
-import Arkham.Query
 import Arkham.SkillTest
 import Arkham.Source
+import Arkham.Target
 import Arkham.Trait
 
-type EventRunner env
-  = ( HasQueue env
-    , HasSet FightableEnemyId env (InvestigatorId, Source)
-    , HasCount HealthDamageCount env EnemyId
-    , HasCount SanityDamageCount env EnemyId
-    , HasCount FightCount env EnemyId
-    , CanCheckPlayable env
-    , Query AssetMatcher env
-    , Query LocationMatcher env
-    , Query EnemyMatcher env
-    , Projection env EnemyAttrs
-    , GetCardDef env AssetId
-    , HasCount Shroud env LocationId
-    , HasCount ClueCount env InvestigatorId
-    , HasCount ClueCount env LocationId
-    , HasCount PlayerCount env ()
-    , HasCount UsesCount env AssetId
-    , HasId LocationId env InvestigatorId
-    , HasList DiscardableHandCard env InvestigatorId
-    , HasSet AccessibleLocationId env LocationId
-    , HasSet ConnectedLocationId env LocationId
-    , HasSet EmptyLocationId env ()
-    , HasSet EnemyId env InvestigatorId
-    , HasSet EnemyId env LocationId
-    , HasSet InvestigatorId env ()
-    , HasSet InvestigatorId env LocationId
-    , HasSet RevealedLocationId env ()
-    , HasSet Trait env AssetId
-    , HasSet Trait env EnemyId
-    , HasSkillTest env
-    , HasSkillValue env InvestigatorId
-    )
+instance RunMessage EventAttrs where
+  runMessage msg a@EventAttrs {..} = case msg of
+    SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
+    InvestigatorEliminated iid
+      | eventAttachedTarget == Just (InvestigatorTarget iid) -> a
+      <$ push (Discard (EventTarget eventId))
+    AttachEvent eid target | eid == eventId ->
+      pure $ a & attachedTargetL ?~ target
+    Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
+    Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
+    _ -> pure a

@@ -41,6 +41,6 @@ instance HasAbilities FauborgMarigny where
   getAbilities (FauborgMarigny a) =
     withBaseAbilities a $ [locationResignAction a]
 
-instance LocationRunner env => RunMessage FauborgMarigny where
+instance RunMessage FauborgMarigny where
   runMessage msg (FauborgMarigny attrs) =
     FauborgMarigny <$> runMessage msg attrs

@@ -6,7 +6,7 @@ module Arkham.Effect.Effects.YogSothoth
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Runner
 import Arkham.EffectMetadata
 import Arkham.Game.Helpers
 import Arkham.Message

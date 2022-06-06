@@ -37,7 +37,7 @@ instance HasAbilities TheyMustBeDestroyed where
         $ ForcedAbility AnyWindow
     ]
 
-instance ActRunner env => RunMessage TheyMustBeDestroyed where
+instance RunMessage TheyMustBeDestroyed where
   runMessage msg a@(TheyMustBeDestroyed attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 2)

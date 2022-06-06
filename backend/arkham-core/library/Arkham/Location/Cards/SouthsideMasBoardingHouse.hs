@@ -39,7 +39,7 @@ instance HasAbilities SouthsideMasBoardingHouse where
         ]
   getAbilities (SouthsideMasBoardingHouse attrs) = getAbilities attrs
 
-instance LocationRunner env => RunMessage SouthsideMasBoardingHouse where
+instance RunMessage SouthsideMasBoardingHouse where
   runMessage msg l@(SouthsideMasBoardingHouse attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (Search iid source (InvestigatorTarget iid) [fromDeck] IsAlly

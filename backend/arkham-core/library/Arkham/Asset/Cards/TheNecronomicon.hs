@@ -23,7 +23,7 @@ newtype TheNecronomicon = TheNecronomicon AssetAttrs
 theNecronomicon :: AssetCard TheNecronomicon
 theNecronomicon =
   assetWith TheNecronomicon Cards.theNecronomicon
-    $ (horrorL ?~ 3)
+    $ (horrorL .~ 3)
     . (canLeavePlayByNormalMeansL .~ False)
 
 instance HasModifiersFor TheNecronomicon where
@@ -42,14 +42,15 @@ instance HasAbilities TheNecronomicon where
         $ ActionCost 1
     ]
 
-instance (AssetRunner env) => RunMessage TheNecronomicon where
+instance RunMessage TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       a <$ push (PlayCard iid (toCardId attrs) Nothing False)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push $ InvestigatorDamage iid source 0 1
-      if fromJustNote "Must be set" (assetHorror attrs) == 1
+      if assetHorror attrs <= 1
         then a <$ push (Discard (toTarget attrs))
-        else pure $ TheNecronomicon
-          (attrs { assetHorror = max 0 . subtract 1 <$> assetHorror attrs })
+        else
+          pure $ TheNecronomicon
+            (attrs { assetHorror = max 0 (assetHorror attrs - 1) })
     _ -> TheNecronomicon <$> runMessage msg attrs

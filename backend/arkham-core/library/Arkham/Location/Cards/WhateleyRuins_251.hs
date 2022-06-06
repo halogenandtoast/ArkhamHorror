@@ -6,18 +6,20 @@ module Arkham.Location.Cards.WhateleyRuins_251
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (whateleyRuins_251)
 import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Enemy
 import Arkham.Id
+import Arkham.Location.Cards qualified as Cards ( whateleyRuins_251 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.SkillType
 import Arkham.Target
 
@@ -43,40 +45,41 @@ instance HasModifiersFor WhateleyRuins_251 where
 
 instance HasAbilities WhateleyRuins_251 where
   getAbilities (WhateleyRuins_251 attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
+        | locationRevealed attrs
+        ]
 
-instance LocationRunner env => RunMessage WhateleyRuins_251 where
+instance RunMessage WhateleyRuins_251 where
   runMessage msg l@(WhateleyRuins_251 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 4)
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        abominations <- getSetList @EnemyId (CardCode "02255")
-        abominationsWithLocation <- traverse (traverseToSnd (selectJust . LocationWithEnemy . EnemyWithId)) abominations
-        abominationsWithLocationAndAccessibleLocations :: [(EnemyId, LocationId, [LocationId])] <-
+        abominations <- getBroodOfYogSothoth
+        abominationsWithLocation <- traverse
+          (traverseToSnd (selectJust . LocationWithEnemy . EnemyWithId))
+          abominations
+        abominationsWithLocationAndAccessibleLocations :: [ ( EnemyId
+            , LocationId
+            , [LocationId]
+            )
+          ] <-
           for abominationsWithLocation $ \(abomination, locationId) ->
             (abomination, locationId, )
-              . map unEnemyAccessibleLocationId
-              <$> getSetList (abomination, locationId)
+              <$> getEnemyAccessibleLocations abomination
 
-        l <$ push
-          (chooseOne
-            iid
-            [ TargetLabel
-                (EnemyTarget eid)
-                [ chooseOne
-                    iid
-                    [ TargetLabel
-                        (LocationTarget destination)
-                        [EnemyMove eid destination]
-                    ]
-                | destination <- destinations
-                ]
-            | (eid, _, destinations) <-
-              abominationsWithLocationAndAccessibleLocations
-            ]
-          )
+        push $ chooseOne
+          iid
+          [ targetLabel
+              eid
+              [ chooseOne
+                  iid
+                  [targetLabel destination [EnemyMove eid destination]]
+              | destination <- destinations
+              ]
+          | (eid, _, destinations) <-
+            abominationsWithLocationAndAccessibleLocations
+          ]
+        pure l
     _ -> WhateleyRuins_251 <$> runMessage msg attrs

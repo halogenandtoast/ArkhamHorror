@@ -31,7 +31,7 @@ findingAWayInside = act
   Cards.findingAWayInside
   (Just $ GroupClueCost (Static 2) Anywhere)
 
-instance ActRunner env => RunMessage FindingAWayInside where
+instance RunMessage FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid source@(LocationSource _) advanceMode | aid == actId && onSide A attrs ->
       do
@@ -48,7 +48,7 @@ instance ActRunner env => RunMessage FindingAWayInside where
         investigatorIds <- getInvestigatorIds
         adamLynch <- EncounterCard <$> genEncounterCard Assets.adamLynch
         museumHallsId <- fromJustNote "missing museum halls"
-          <$> getId (LocationWithTitle "Museum Halls")
+          <$> selectOne (LocationWithTitle "Museum Halls")
         a <$ pushAll
           [ chooseOne
             leadInvestigatorId
@@ -62,7 +62,7 @@ instance ActRunner env => RunMessage FindingAWayInside where
           ]
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       museumHallsId <- fromJustNote "missing museum halls"
-        <$> getId (LocationWithTitle "Museum Halls")
+        <$> selectOne (LocationWithTitle "Museum Halls")
       a <$ pushAll
         [ RevealLocation Nothing museumHallsId
         , AdvanceToAct actDeckId Acts.breakingAndEntering A (toSource attrs)

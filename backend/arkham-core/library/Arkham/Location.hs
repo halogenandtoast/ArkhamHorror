@@ -61,7 +61,7 @@ instance
   => HasModifiersFor Location where
   getModifiersFor = $(entityF2 "Location" "getModifiersFor")
 
-instance LocationRunner env => RunMessage Location where
+instance RunMessage Location where
   runMessage msg l = do
     modifiers' <- getModifiers (toSource l) (toTarget l)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
@@ -189,26 +189,6 @@ noInvestigatorsAtLocation l = null investigators'
 noEnemiesAtLocation :: Location -> Bool
 noEnemiesAtLocation l = null enemies'
   where enemies' = locationEnemies $ toAttrs l
-
-getConnectedMatcher
-  :: (HasModifiersFor env (), MonadReader env m, Query LocationMatcher env)
-  => Location
-  -> m LocationMatcher
-getConnectedMatcher l = do
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
-  LocationMatchAny <$> foldM applyModifier base modifiers
- where
-  applyModifier current (ConnectedToWhen whenMatcher matcher) = do
-    matches <- member (toId l) <$> select whenMatcher
-    pure $ current <> [ matcher | matches ]
-  applyModifier current _ = pure current
-  attrs = toAttrs l
-  self = LocationWithId $ toId attrs
-  base = if isRevealed l
-    then locationRevealedConnectedMatchers attrs <> directionalMatchers
-    else locationConnectedMatchers attrs <> directionalMatchers
-  directionalMatchers =
-    map (`LocationInDirection` self) (setToList $ locationConnectsTo attrs)
 
 isRevealed :: Location -> Bool
 isRevealed = locationRevealed . toAttrs

@@ -11,9 +11,10 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -41,7 +42,7 @@ instance HasAbilities Lantern where
 instance RunMessage Lantern where
   runMessage msg a@(Lantern attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- getId @LocationId iid
+      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
       a <$ pushAll
         [ skillTestModifier source (LocationTarget lid) (ShroudModifier (-1))
         , Investigate iid lid source Nothing SkillIntellect False

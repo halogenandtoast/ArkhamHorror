@@ -38,7 +38,7 @@ instance HasAbilities FarAboveYourHouse where
       | locationRevealed attrs
       ]
 
-instance (LocationRunner env) => RunMessage FarAboveYourHouse where
+instance RunMessage FarAboveYourHouse where
   runMessage msg l@(FarAboveYourHouse attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
       (BeginSkillTest

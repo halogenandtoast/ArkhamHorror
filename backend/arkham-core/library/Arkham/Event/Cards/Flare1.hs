@@ -5,9 +5,10 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards (flare1)
 import Arkham.Asset.Helpers
 import Arkham.Classes
-import Arkham.Event.Attrs
+import Arkham.Event.Runner
 import Arkham.Event.Runner
 import Arkham.Id
+import Arkham.Helpers.Enemy
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -37,11 +38,11 @@ findAllyMessages iid investigatorIds e =
     ]
   ]
 
-instance EventRunner env => RunMessage Flare1 where
+instance RunMessage Flare1 where
   runMessage msg e@(Flare1 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       investigatorIds <- getInvestigatorIds
-      fightableEnemies <- getSetList @FightableEnemyId (iid, toSource e)
+      fightableEnemies <- getFightableEnemyIds iid (toSource e)
       e <$ if null fightableEnemies
         then pushAll $ findAllyMessages iid investigatorIds e
         else push $ chooseOne

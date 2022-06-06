@@ -11,6 +11,7 @@ import Arkham.Agenda.Attrs
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Trait
@@ -23,7 +24,7 @@ fashionablyLate :: AgendaCard FashionablyLate
 fashionablyLate =
   agenda (1, A) FashionablyLate Cards.fashionablyLate (Static 3)
 
-instance AgendaRunner env => RunMessage FashionablyLate where
+instance RunMessage FashionablyLate where
   runMessage msg a@(FashionablyLate attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       dianneDevine <- getSetAsideCard Cards.dianneDevine

@@ -15,6 +15,7 @@ import Arkham.Card.EncounterCard
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Source
 
 newtype MaskedCarnevaleGoer_20 = MaskedCarnevaleGoer_20 AssetAttrs
@@ -45,7 +46,7 @@ instance RunMessage MaskedCarnevaleGoer_20 where
       let
         lid = locationOf attrs
         enemyId = EnemyId $ toCardId attrs
-      investigatorIds <- getSetList lid
+      investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
       a <$ pushAll
         (Flip (InvestigatorSource iid) (toTarget attrs)
         : [ EnemyAttack iid' enemyId DamageAny RegularAttack | iid' <- investigatorIds ]

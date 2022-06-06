@@ -5,8 +5,9 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Id
+import Arkham.Event.Attrs (Field(..))
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Target
 
 newtype WendysAmulet = WendysAmulet AssetAttrs
@@ -16,13 +17,13 @@ newtype WendysAmulet = WendysAmulet AssetAttrs
 wendysAmulet :: AssetCard WendysAmulet
 wendysAmulet = asset WendysAmulet Cards.wendysAmulet
 
-instance HasId InvestigatorId env EventId => HasModifiersFor WendysAmulet where
+instance HasModifiersFor WendysAmulet where
   getModifiersFor _ (InvestigatorTarget iid) (WendysAmulet a) =
     pure $ toModifiers
       a
       [ CanPlayTopOfDiscard (Just EventType, []) | controlledBy a iid ]
   getModifiersFor _ (EventTarget eid) (WendysAmulet a) = do
-    owner <- getId @InvestigatorId eid
+    owner <- field EventOwner eid
     pure $ toModifiers
       a
       [ PlaceOnBottomOfDeckInsteadOfDiscard | controlledBy a owner ]

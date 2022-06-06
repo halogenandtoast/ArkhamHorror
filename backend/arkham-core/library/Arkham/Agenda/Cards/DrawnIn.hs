@@ -5,17 +5,18 @@ module Arkham.Agenda.Cards.DrawnIn
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.LocationId
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
+import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 
 newtype DrawnIn = DrawnIn AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -24,14 +25,17 @@ newtype DrawnIn = DrawnIn AgendaAttrs
 drawnIn :: AgendaCard DrawnIn
 drawnIn = agenda (4, A) DrawnIn Cards.drawnIn (Static 3)
 
-instance AgendaRunner env => RunMessage DrawnIn where
+instance RunMessage DrawnIn where
   runMessage msg a@(DrawnIn attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 4 B -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
+      leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      locationId <- getId @LocationId leadInvestigatorId
+      locationId <- fieldMap
+        InvestigatorLocation
+        (fromJustNote "must be at a location")
+        leadInvestigatorId
       lid <- leftmostLocation locationId
-      rlid <- fromJustNote "missing right" <$> getId (RightOf, lid)
+      rlid <- selectJust (LocationInDirection RightOf $ LocationWithId lid)
       a <$ pushAll
         (RemoveLocation lid
         : RemoveLocation rlid

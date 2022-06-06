@@ -30,7 +30,7 @@ instance HasModifiersFor TheRitualBegins where
     $ toModifiers attrs [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ _ = pure []
 
-instance AgendaRunner env => RunMessage TheRitualBegins where
+instance RunMessage TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       iids <- getInvestigatorIds

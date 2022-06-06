@@ -8,6 +8,7 @@ import Arkham.Asset.Cards
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.ClassSymbol
 import Arkham.Id
 import Arkham.Json
 import Data.Aeson.TH
@@ -34,6 +35,7 @@ data instance Field AssetAttrs :: Type -> Type where
   AssetLocation :: Field AssetAttrs (Maybe LocationId)
   AssetCardCode :: Field AssetAttrs CardCode
   -- virtual
+  AssetClasses :: Field AssetAttrs (HashSet ClassSymbol)
   AssetTraits :: Field AssetAttrs (HashSet Trait)
   AssetCardDef :: Field AssetAttrs CardDef
   AssetCard :: Field AssetAttrs Card

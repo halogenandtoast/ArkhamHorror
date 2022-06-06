@@ -515,10 +515,14 @@ getInvestigatorModifiers
 getInvestigatorModifiers iid source =
   getModifiers source (InvestigatorTarget iid)
 
-getPlayerCountValue :: GameValue Int -> m Int
+getPlayerCountValue
+  :: (Functor m, Query Matcher.InvestigatorMatcher m) => GameValue Int -> m Int
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
 
-getSpendableClueCount :: [InvestigatorId] -> m Int
+getSpendableClueCount
+  :: (Projection m InvestigatorAttrs, Query Matcher.InvestigatorMatcher m)
+  => [InvestigatorId]
+  -> m Int
 getSpendableClueCount investigatorIds =
   selectAgg (+) InvestigatorClues
     $ Matcher.InvestigatorWithoutModifier CannotSpendClues
@@ -526,7 +530,11 @@ getSpendableClueCount investigatorIds =
 
 -- TODO: canFight _ a@Attrs {..} = canDo Action.Fight a
 getCanFight
-  :: (Query Matcher.LocationMatcher m, HasModifiersFor m ())
+  :: ( Query Matcher.LocationMatcher m
+     , HasModifiersFor m ()
+     , Projection m EnemyAttrs
+     , Projection m InvestigatorAttrs
+     )
   => EnemyId
   -> InvestigatorId
   -> m Bool
@@ -537,14 +545,14 @@ getCanFight eid iid = do
     (Matcher.locationWithEnemy eid)
   modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
   takenActions <- fieldMap InvestigatorActionsTaken setFromList iid
-  keywords <- getSet eid
+  keywords <- field EnemyKeywords eid
   canAffordActions <- getCanAffordCost
     iid
     (EnemySource eid)
     (Just Action.Fight)
     []
     (foldl' (applyFightCostModifiers takenActions) (ActionCost 1) modifiers')
-  engagedInvestigators <- getSet eid
+  engagedInvestigators <- field EnemyEngagedInvestigators eid
   pure
     $ canAffordActions
     && (Keyword.Aloof `notMember` keywords || iid `member` engagedInvestigators)
@@ -563,7 +571,11 @@ getCanFight eid iid = do
   applyFightCostModifiers _ costToFight _ = costToFight
 
 getCanEngage
-  :: (Query Matcher.LocationMatcher m, HasModifiersFor m ())
+  :: ( Query Matcher.LocationMatcher m
+     , HasModifiersFor m ()
+     , Projection m EnemyAttrs
+     , Projection m InvestigatorAttrs
+     )
   => EnemyId
   -> InvestigatorId
   -> m Bool
@@ -571,7 +583,7 @@ getCanEngage eid iid = do
   mLocationId <- field InvestigatorLocation iid
   sameLocation <- (isJust mLocationId &&) . (== mLocationId) <$> selectOne
     (Matcher.locationWithEnemy eid)
-  notEngaged <- notElem iid <$> getSet eid
+  notEngaged <- notElem iid <$> field EnemyEngagedInvestigators eid
   canAffordActions <- getCanAffordCost
     iid
     (EnemySource eid)
@@ -580,7 +592,14 @@ getCanEngage eid iid = do
     (ActionCost 1)
   pure $ notEngaged && canAffordActions && sameLocation
 
-getCanEvade :: (HasModifiersFor m (), Projection m InvestigatorAttrs) => EnemyId -> InvestigatorId -> m Bool
+getCanEvade
+  :: ( HasModifiersFor m ()
+     , Projection m InvestigatorAttrs
+     , Projection m EnemyAttrs
+     )
+  => EnemyId
+  -> InvestigatorId
+  -> m Bool
 getCanEvade eid iid = do
   engaged <- elem iid <$> field EnemyEngagedInvestigators eid
   enemyModifiers <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
@@ -1860,7 +1879,11 @@ matchWho
   -> m Bool
 matchWho who matcher = member who <$> select matcher
 
-gameValueMatches :: Monad m => Int -> Matcher.ValueMatcher -> m Bool
+gameValueMatches
+  :: (Query Matcher.InvestigatorMatcher m, Monad m)
+  => Int
+  -> Matcher.ValueMatcher
+  -> m Bool
 gameValueMatches n = \case
   Matcher.AnyValue -> pure True
   Matcher.LessThan gv -> (n <) <$> getPlayerCountValue gv
@@ -2237,7 +2260,11 @@ getModifiedTokenFaces source tokens = flip
   applyModifier [f'] (ForcedTokenChange f fs) | f == f' = fs
   applyModifier fs _ = fs
 
-cardListMatches :: Monad m => [Card] -> Matcher.CardListMatcher -> m Bool
+cardListMatches
+  :: (Monad m, Query Matcher.InvestigatorMatcher m)
+  => [Card]
+  -> Matcher.CardListMatcher
+  -> m Bool
 cardListMatches cards = \case
   Matcher.AnyCards -> pure True
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
@@ -2252,7 +2279,10 @@ targetListMatches targets = \case
     noneM (`targetMatches` targetMatcher) targets
 
 rememberedListMatches
-  :: Monad m => [ScenarioLogKey] -> Matcher.ScenarioLogKeyListMatcher -> m Bool
+  :: (Monad m, Query Matcher.InvestigatorMatcher m)
+  => [ScenarioLogKey]
+  -> Matcher.ScenarioLogKeyListMatcher
+  -> m Bool
 rememberedListMatches targets = \case
   Matcher.HasRemembered k -> pure $ k `elem` targets
   Matcher.RememberedLengthIs valueMatcher ->

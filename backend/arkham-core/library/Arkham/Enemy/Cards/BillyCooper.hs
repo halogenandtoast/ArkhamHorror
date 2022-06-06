@@ -15,7 +15,7 @@ import qualified Arkham.Timing as Timing
 import Arkham.Trait
 
 newtype BillyCooper = BillyCooper EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 billyCooper :: EnemyCard BillyCooper

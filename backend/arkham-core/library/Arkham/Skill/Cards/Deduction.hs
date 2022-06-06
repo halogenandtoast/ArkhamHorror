@@ -13,7 +13,7 @@ import qualified Arkham.Skill.Cards as Cards
 import Arkham.Target
 
 newtype Deduction = Deduction SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deduction :: SkillCard Deduction

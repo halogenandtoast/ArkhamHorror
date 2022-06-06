@@ -18,7 +18,7 @@ sebastienMoreau :: EnemyCard SebastienMoreau
 sebastienMoreau =
   enemy SebastienMoreau Cards.sebastienMoreau (3, Static 5, 3) (2, 2)
 
-instance HasModifiersFor env SebastienMoreau where
+instance HasModifiersFor SebastienMoreau where
   getModifiersFor _ target (SebastienMoreau a) | isTarget a target =
     pure $ toModifiers a [AttacksCannotBeCancelled]
   getModifiersFor _ _ _ = pure []

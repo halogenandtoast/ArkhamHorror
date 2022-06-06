@@ -21,7 +21,7 @@ museumEntrance :: LocationCard MuseumEntrance
 museumEntrance =
   location MuseumEntrance Cards.museumEntrance 3 (Static 2) Circle [Square]
 
-instance HasModifiersFor env MuseumEntrance where
+instance HasModifiersFor MuseumEntrance where
   getModifiersFor _ (InvestigatorTarget iid) (MuseumEntrance attrs) =
     pure $ toModifiers attrs [ CannotGainResources | iid `on` attrs ]
   getModifiersFor _ _ _ = pure []

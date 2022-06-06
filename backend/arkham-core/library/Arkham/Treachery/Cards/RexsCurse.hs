@@ -20,7 +20,7 @@ newtype Metadata = Metadata { active :: Bool }
   deriving anyclass (ToJSON, FromJSON)
 
 newtype RexsCurse = RexsCurse (TreacheryAttrs `With` Metadata)
-  deriving anyclass (IsTreachery, HasModifiersFor m)
+  deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rexsCurse :: TreacheryCard RexsCurse

@@ -18,7 +18,7 @@ import Arkham.Modifier
 import Arkham.Target
 
 newtype SophieInLovingMemory = SophieInLovingMemory AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sophieInLovingMemory :: AssetCard SophieInLovingMemory

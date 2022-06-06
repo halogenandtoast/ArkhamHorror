@@ -17,7 +17,7 @@ import Arkham.Investigator.Attrs ( Field(..) )
 import Arkham.Treachery.Attrs
 
 newtype SordidAndSilent = SordidAndSilent TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m)
+  deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sordidAndSilent :: TreacheryCard SordidAndSilent

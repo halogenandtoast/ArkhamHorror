@@ -20,7 +20,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype DunwichVillage_243 = DunwichVillage_243 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dunwichVillage_243 :: LocationCard DunwichVillage_243

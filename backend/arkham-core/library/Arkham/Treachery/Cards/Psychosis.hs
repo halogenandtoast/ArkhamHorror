@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
 
 newtype Psychosis = Psychosis TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m)
+  deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 psychosis :: TreacheryCard Psychosis

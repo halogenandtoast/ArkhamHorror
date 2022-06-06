@@ -10,7 +10,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype MindOverMatter = MindOverMatter EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mindOverMatter :: EventCard MindOverMatter

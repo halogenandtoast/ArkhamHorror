@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Trait
 
 newtype MarshGug = MarshGug EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 marshGug :: EnemyCard MarshGug

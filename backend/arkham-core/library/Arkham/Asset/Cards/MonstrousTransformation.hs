@@ -25,7 +25,7 @@ monstrousTransformation = assetWith
   Cards.monstrousTransformation
   (isStoryL .~ True)
 
-instance HasModifiersFor env MonstrousTransformation where
+instance HasModifiersFor MonstrousTransformation where
   getModifiersFor _ (InvestigatorTarget iid) (MonstrousTransformation a)
     | controlledBy a iid = pure $ toModifiers
       a

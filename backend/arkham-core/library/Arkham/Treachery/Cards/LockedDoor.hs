@@ -26,7 +26,7 @@ newtype LockedDoor = LockedDoor TreacheryAttrs
 lockedDoor :: TreacheryCard LockedDoor
 lockedDoor = treachery LockedDoor Cards.lockedDoor
 
-instance HasModifiersFor env LockedDoor where
+instance HasModifiersFor LockedDoor where
   getModifiersFor _ (LocationTarget lid) (LockedDoor attrs) =
     pure $ toModifiers
       attrs

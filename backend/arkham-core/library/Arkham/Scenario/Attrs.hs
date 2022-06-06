@@ -131,19 +131,6 @@ instance Monad m => HasRecord m ScenarioAttrs where
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
 
-toTokenValue :: ScenarioAttrs -> TokenFace -> Int -> Int -> TokenValue
-toTokenValue attrs t esVal heVal = TokenValue
-  t
-  (NegativeModifier $ if isEasyStandard attrs then esVal else heVal)
-
-isEasyStandard :: ScenarioAttrs -> Bool
-isEasyStandard ScenarioAttrs { scenarioDifficulty } =
-  scenarioDifficulty `elem` [Easy, Standard]
-
-isHardExpert :: ScenarioAttrs -> Bool
-isHardExpert ScenarioAttrs { scenarioDifficulty } =
-  scenarioDifficulty `elem` [Hard, Expert]
-
 baseAttrs :: CardCode -> Name -> Difficulty -> ScenarioAttrs
 baseAttrs cardCode name difficulty = ScenarioAttrs
   { scenarioId = ScenarioId cardCode
@@ -191,7 +178,7 @@ instance SourceEntity ScenarioAttrs where
     scenarioId == sid
   isSource _ _ = False
 
-instance (Monad m, HasTokenValue m InvestigatorId) => HasTokenValue m ScenarioAttrs where
+instance HasTokenValue ScenarioAttrs where
   getTokenValue iid tokenFace _ = case tokenFace of
     ElderSign -> getTokenValue iid ElderSign iid
     AutoFail -> pure $ TokenValue AutoFail AutoFailModifier
@@ -206,19 +193,3 @@ instance (Monad m, HasTokenValue m InvestigatorId) => HasTokenValue m ScenarioAt
     MinusSeven -> pure $ TokenValue MinusSeven (NegativeModifier 7)
     MinusEight -> pure $ TokenValue MinusEight (NegativeModifier 8)
     otherFace -> pure $ TokenValue otherFace NoModifier
-
-getIsStandalone
-  :: (MonadReader env m, Query CampaignMatcher m) => m Bool
-getIsStandalone = isNothing <$> selectOne TheCampaign
-
-addRandomBasicWeaknessIfNeeded
-  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
-addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
-  Deck <$> flip
-    filterM
-    (unDeck deck)
-    \card -> do
-      when
-        (toCardDef card == randomWeakness)
-        (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
-      pure $ toCardDef card /= randomWeakness

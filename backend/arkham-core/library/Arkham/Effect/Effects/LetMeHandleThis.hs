@@ -19,7 +19,7 @@ newtype LetMeHandleThis = LetMeHandleThis EffectAttrs
 letMeHandleThis :: EffectArgs -> LetMeHandleThis
 letMeHandleThis = LetMeHandleThis . uncurry4 (baseAttrs "03022")
 
-instance HasModifiersFor env LetMeHandleThis where
+instance HasModifiersFor LetMeHandleThis where
   getModifiersFor source target (LetMeHandleThis a@EffectAttrs {..})
     | source == effectSource && target == effectTarget = pure
       [toModifier a $ AnySkillValue 2]

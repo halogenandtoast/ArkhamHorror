@@ -23,7 +23,7 @@ acolyteOfUmordhoth = enemyWith
   (1, 1)
   (preyL .~ Prey FewestCardsInHand)
 
-instance HasCount CardCount env InvestigatorId => HasModifiersFor env AcolyteOfUmordhoth where
+instance HasCount CardCount env InvestigatorId => HasModifiersFor AcolyteOfUmordhoth where
   getModifiersFor _ (EnemyTarget eid) (AcolyteOfUmordhoth a@EnemyAttrs {..})
     | eid == enemyId = do
       anyWithoutCards <- or <$> for

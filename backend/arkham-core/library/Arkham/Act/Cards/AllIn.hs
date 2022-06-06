@@ -25,7 +25,7 @@ import Arkham.Source
 import Arkham.Target
 
 newtype AllIn = AllIn ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 allIn :: ActCard AllIn

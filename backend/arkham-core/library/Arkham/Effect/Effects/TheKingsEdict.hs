@@ -25,7 +25,7 @@ instance
   ( HasCount DoomCount env EnemyId
   , HasCount ClueCount env EnemyId
   )
-  => HasModifiersFor env TheKingsEdict where
+  => HasModifiersFor TheKingsEdict where
   getModifiersFor _ target@(EnemyTarget eid) (TheKingsEdict a)
     | target == effectTarget a = do
       clueCount <- unClueCount <$> getCount eid

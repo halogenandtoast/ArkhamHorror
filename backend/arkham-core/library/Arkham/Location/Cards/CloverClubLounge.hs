@@ -19,7 +19,7 @@ import Arkham.Message
 import Arkham.Trait
 
 newtype CloverClubLounge = CloverClubLounge LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubLounge :: LocationCard CloverClubLounge

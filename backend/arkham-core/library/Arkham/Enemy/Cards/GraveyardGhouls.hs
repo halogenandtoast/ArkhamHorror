@@ -24,7 +24,7 @@ graveyardGhouls = enemyWith
   (1, 1)
   (\a -> a & preyL .~ BearerOf (toId a))
 
-instance HasModifiersFor env GraveyardGhouls where
+instance HasModifiersFor GraveyardGhouls where
   getModifiersFor _ (InvestigatorTarget iid) (GraveyardGhouls attrs)
     | iid `elem` enemyEngagedInvestigators attrs = pure
     $ toModifiers attrs [CardsCannotLeaveYourDiscardPile]

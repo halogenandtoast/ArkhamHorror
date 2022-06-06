@@ -31,7 +31,7 @@ instance HasAbilities AnalyticalMind where
         $ ExhaustCost (toTarget attrs)
     ]
 
-instance HasModifiersFor env AnalyticalMind where
+instance HasModifiersFor AnalyticalMind where
   getModifiersFor _ (InvestigatorTarget iid) (AnalyticalMind attrs)
     | controlledBy attrs iid = pure $ toModifiers
       attrs

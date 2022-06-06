@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Target
 
 newtype FirstAid = FirstAid AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 firstAid :: AssetCard FirstAid

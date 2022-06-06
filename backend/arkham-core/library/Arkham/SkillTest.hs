@@ -14,21 +14,16 @@ import Arkham.Classes.Entity
 import Arkham.Card
 import Arkham.Card.Id
 import Arkham.Id
-import {-# SOURCE #-} Arkham.Game
+import {-# SOURCE #-} Arkham.GameEnv
+import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 
-class HasSkillTest m where
-  getSkillTest :: m (Maybe SkillTest)
-
-instance HasGame m => HasSkillTest m where
-  getSkillTest = getGameSkillTest
-
-getSkillTestTarget :: (Functor m, HasSkillTest m) => m (Maybe Target)
+getSkillTestTarget :: GameT (Maybe Target)
 getSkillTestTarget = fmap skillTestTarget <$> getSkillTest
 
-getSkillTestSource :: (Functor m, HasSkillTest m) => m (Maybe Source)
+getSkillTestSource :: GameT (Maybe Source)
 getSkillTestSource = fmap toSource <$> getSkillTest
 
 data SkillTestResultsData = SkillTestResultsData

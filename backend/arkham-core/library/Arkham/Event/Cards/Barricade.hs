@@ -24,7 +24,7 @@ newtype Barricade = Barricade EventAttrs
 barricade :: EventCard Barricade
 barricade = event Barricade Cards.barricade
 
-instance HasModifiersFor env Barricade where
+instance HasModifiersFor Barricade where
   getModifiersFor _ (LocationTarget lid) (Barricade attrs) = pure $ toModifiers
     attrs
     [ CannotBeEnteredByNonElite

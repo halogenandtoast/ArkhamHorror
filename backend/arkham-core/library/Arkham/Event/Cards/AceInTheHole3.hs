@@ -11,7 +11,7 @@ import Arkham.Event.Attrs
 import Arkham.Message
 
 newtype AceInTheHole3 = AceInTheHole3 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aceInTheHole3 :: EventCard AceInTheHole3

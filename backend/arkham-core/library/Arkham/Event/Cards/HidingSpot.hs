@@ -27,7 +27,7 @@ newtype HidingSpot = HidingSpot EventAttrs
 hidingSpot :: EventCard HidingSpot
 hidingSpot = event HidingSpot Cards.hidingSpot
 
-instance Query EnemyMatcher env => HasModifiersFor env HidingSpot where
+instance Query EnemyMatcher env => HasModifiersFor HidingSpot where
   getModifiersFor _ (EnemyTarget eid) (HidingSpot attrs) =
     case eventAttachedTarget attrs of
       Just (LocationTarget lid) -> do

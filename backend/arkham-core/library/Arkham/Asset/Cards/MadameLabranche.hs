@@ -14,7 +14,7 @@ import Arkham.GameValue
 import Arkham.Matcher
 
 newtype MadameLabranche = MadameLabranche AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 madameLabranche :: AssetCard MadameLabranche

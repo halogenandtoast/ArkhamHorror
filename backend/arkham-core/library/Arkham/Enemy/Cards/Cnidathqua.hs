@@ -30,7 +30,7 @@ cnidathqua = enemyWith
   (2, 2)
   (asSelfLocationL ?~ "cnidathqua")
 
-instance HasModifiersFor env Cnidathqua where
+instance HasModifiersFor Cnidathqua where
   getModifiersFor _ (EnemyTarget eid) (Cnidathqua attrs) | eid == toId attrs =
     pure $ toModifiers attrs [CannotBeEvaded, CanBeFoughtAsIfAtYourLocation]
   getModifiersFor _ _ _ = pure []

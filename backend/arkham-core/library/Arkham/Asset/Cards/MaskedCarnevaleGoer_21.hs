@@ -15,7 +15,7 @@ import Arkham.Criteria
 import Arkham.Source
 
 newtype MaskedCarnevaleGoer_21 = MaskedCarnevaleGoer_21 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, TargetEntity)
 
 maskedCarnevaleGoer_21 :: AssetCard MaskedCarnevaleGoer_21

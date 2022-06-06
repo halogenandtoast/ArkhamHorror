@@ -32,7 +32,7 @@ ransackingTheManor :: AgendaCard RansackingTheManor
 ransackingTheManor =
   agenda (2, A) RansackingTheManor Cards.ransackingTheManor (PerPlayer 2)
 
-instance HasModifiersFor env RansackingTheManor where
+instance HasModifiersFor RansackingTheManor where
   getModifiersFor _ (PhaseTarget MythosPhase) (RansackingTheManor attrs) =
     pure $ toModifiers attrs [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
   getModifiersFor _ _ _ = pure []

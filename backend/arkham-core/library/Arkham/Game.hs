@@ -127,6 +127,15 @@ data GameParams = GameParams
 
 $(deriveJSON defaultOptions ''GameParams)
 
+
+-- the issue is the following we want GameT
+-- which has GameEnv as the environment
+-- GameEnv contains Game
+-- Game references entities like Investigator
+-- Which references every Investigator
+-- which references InvestigatorAttrs
+-- All of which now need to know about GameT
+
 data Game = Game
   { gamePhaseHistory :: HashMap InvestigatorId History
   , gameTurnHistory :: HashMap InvestigatorId History
@@ -386,7 +395,7 @@ getScenario = modeScenario . view modeL <$> getGame
 withModifiers
   :: ( MonadReader env m
      , TargetEntity a
-     , HasModifiersFor env ()
+     , HasModifiersFor ()
      , HasId ActiveInvestigatorId env ()
      , HasCallStack
      )
@@ -1569,8 +1578,79 @@ instance HasGame env => Query PreyMatcher env where
         Just iid -> select $ InvestigatorWithId iid
         Nothing -> error "Invalid bearer situation"
 
-instance HasGame env => Query ExtendedCardMatcher env where
-  select = fmap setFromList . getList
+instance Query ExtendedCardMatcher where
+  select matcher = do
+    investigatorIds <- getInvestigatorIds
+    handCards <- map unHandCard . concat <$> traverse getList investigatorIds
+    deckCards <-
+      map (PlayerCard . unDeckCard)
+      . concat
+      <$> traverse getList investigatorIds
+    discards <- getDiscards investigatorIds
+    setAsideCards <- map unSetAsideCard <$> getList ()
+    victoryDisplayCards <- map unVictoryDisplayCard <$> getSetList ()
+    underScenarioReferenceCards <- map unUnderScenarioReferenceCard
+      <$> getList ()
+    underneathCards <-
+      map unUnderneathCard . concat <$> traverse getList investigatorIds
+    filterM
+      (`matches` matcher)
+      (handCards
+      <> deckCards
+      <> underneathCards
+      <> underScenarioReferenceCards
+      <> discards
+      <> setAsideCards
+      <> victoryDisplayCards
+      )
+   where
+    getDiscards iids =
+      map PlayerCard
+        . concat
+        <$> traverse (fmap discardOf . getInvestigator) iids
+    matches c = \case
+      SetAsideCardMatch matcher' -> do
+        cards <- map unSetAsideCard <$> getList ()
+        pure $ c `elem` filter (`cardMatch` matcher') cards
+      UnderScenarioReferenceMatch matcher' -> do
+        cards <- map unUnderScenarioReferenceCard <$> getList ()
+        pure $ c `elem` filter (`cardMatch` matcher') cards
+      VictoryDisplayCardMatch matcher' -> do
+        cards <- map unVictoryDisplayCard <$> getSetList ()
+        pure $ c `elem` filter (`cardMatch` matcher') cards
+      BasicCardMatch cm -> pure $ cardMatch c cm
+      InHandOf who -> do
+        iids <- selectList who
+        cards <- map unHandCard . concat <$> traverse getList iids
+        pure $ c `elem` cards
+      TopOfDeckOf who -> do
+        iids <- selectList who
+        cards <-
+          map (PlayerCard . unDeckCard)
+          . concatMap (take 1)
+          <$> traverse getList iids
+        pure $ c `elem` cards
+      EligibleForCurrentSkillTest -> do
+        mSkillTest <- getSkillTest
+        case mSkillTest of
+          Nothing -> pure False
+          Just st -> pure
+            (SkillWild
+            `elem` cdSkills (toCardDef c)
+            || skillTestSkillType st
+            `elem` cdSkills (toCardDef c)
+            || (null (cdSkills $ toCardDef c) && toCardType c == SkillType)
+            )
+      InDiscardOf who -> do
+        iids <- selectList who
+        discards <- getDiscards iids
+        pure $ c `elem` discards
+      CardIsBeneathInvestigator who -> do
+        iids <- getSetList @InvestigatorId who
+        cards <- map unUnderneathCard . concat <$> traverse getList iids
+        pure $ c `elem` cards
+      ExtendedCardWithOneOf ms -> anyM (matches c) ms
+      ExtendedCardMatches ms -> allM (matches c) ms
 
 instance HasGame env => HasSet EnemyId env LocationMatcher where
   getSet locationMatcher = do
@@ -2280,80 +2360,6 @@ instance HasGame env => HasList Card env CardMatcher where
       map unUnderneathCard . concat <$> traverse getList investigatorIds
     let allCards' = handCards <> underneathCards <> deckCards
     pure $ filter (`cardMatch` matcher) allCards'
-
-instance HasGame env => HasList Card env ExtendedCardMatcher where
-  getList matcher = do
-    investigatorIds <- getInvestigatorIds
-    handCards <- map unHandCard . concat <$> traverse getList investigatorIds
-    deckCards <-
-      map (PlayerCard . unDeckCard)
-      . concat
-      <$> traverse getList investigatorIds
-    discards <- getDiscards investigatorIds
-    setAsideCards <- map unSetAsideCard <$> getList ()
-    victoryDisplayCards <- map unVictoryDisplayCard <$> getSetList ()
-    underScenarioReferenceCards <- map unUnderScenarioReferenceCard
-      <$> getList ()
-    underneathCards <-
-      map unUnderneathCard . concat <$> traverse getList investigatorIds
-    filterM
-      (`matches` matcher)
-      (handCards
-      <> deckCards
-      <> underneathCards
-      <> underScenarioReferenceCards
-      <> discards
-      <> setAsideCards
-      <> victoryDisplayCards
-      )
-   where
-    getDiscards iids =
-      map PlayerCard
-        . concat
-        <$> traverse (fmap discardOf . getInvestigator) iids
-    matches c = \case
-      SetAsideCardMatch matcher' -> do
-        cards <- map unSetAsideCard <$> getList ()
-        pure $ c `elem` filter (`cardMatch` matcher') cards
-      UnderScenarioReferenceMatch matcher' -> do
-        cards <- map unUnderScenarioReferenceCard <$> getList ()
-        pure $ c `elem` filter (`cardMatch` matcher') cards
-      VictoryDisplayCardMatch matcher' -> do
-        cards <- map unVictoryDisplayCard <$> getSetList ()
-        pure $ c `elem` filter (`cardMatch` matcher') cards
-      BasicCardMatch cm -> pure $ cardMatch c cm
-      InHandOf who -> do
-        iids <- selectList who
-        cards <- map unHandCard . concat <$> traverse getList iids
-        pure $ c `elem` cards
-      TopOfDeckOf who -> do
-        iids <- selectList who
-        cards <-
-          map (PlayerCard . unDeckCard)
-          . concatMap (take 1)
-          <$> traverse getList iids
-        pure $ c `elem` cards
-      EligibleForCurrentSkillTest -> do
-        mSkillTest <- getSkillTest
-        case mSkillTest of
-          Nothing -> pure False
-          Just st -> pure
-            (SkillWild
-            `elem` cdSkills (toCardDef c)
-            || skillTestSkillType st
-            `elem` cdSkills (toCardDef c)
-            || (null (cdSkills $ toCardDef c) && toCardType c == SkillType)
-            )
-      InDiscardOf who -> do
-        iids <- selectList who
-        discards <- getDiscards iids
-        pure $ c `elem` discards
-      CardIsBeneathInvestigator who -> do
-        iids <- getSetList @InvestigatorId who
-        cards <- map unUnderneathCard . concat <$> traverse getList iids
-        pure $ c `elem` cards
-      ExtendedCardWithOneOf ms -> anyM (matches c) ms
-      ExtendedCardMatches ms -> allM (matches c) ms
 
 instance HasGame env => HasSet EnemyId m EnemyMatcher where
   getSet = (setFromList . map toId <$>) . getEnemiesMatching

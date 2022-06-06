@@ -18,7 +18,7 @@ import Arkham.Source
 import Arkham.Target
 
 newtype Shortcut2 = Shortcut2 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env)
+  deriving anyclass (IsEvent, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shortcut2 :: EventCard Shortcut2

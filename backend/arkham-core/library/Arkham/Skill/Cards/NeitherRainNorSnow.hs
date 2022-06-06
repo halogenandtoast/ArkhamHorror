@@ -11,7 +11,7 @@ import Arkham.Message
 import Arkham.Skill.Attrs
 
 newtype NeitherRainNorSnow = NeitherRainNorSnow SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 neitherRainNorSnow :: SkillCard NeitherRainNorSnow

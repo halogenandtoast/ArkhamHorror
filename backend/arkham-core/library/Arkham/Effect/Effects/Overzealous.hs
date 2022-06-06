@@ -21,7 +21,7 @@ newtype Overzealous = Overzealous EffectAttrs
 overzealous :: EffectArgs -> Overzealous
 overzealous = Overzealous . uncurry4 (baseAttrs "03040")
 
-instance HasModifiersFor env Overzealous where
+instance HasModifiersFor Overzealous where
   getModifiersFor _ target (Overzealous a) | effectTarget a == target =
     pure $ toModifiers a [AddKeyword Keyword.Surge]
   getModifiersFor _ _ _ = pure []

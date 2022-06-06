@@ -13,7 +13,7 @@ import Arkham.Source
 import Arkham.Target
 
 newtype DaisyWalker = DaisyWalker InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsInvestigator, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 daisyWalker :: InvestigatorCard DaisyWalker

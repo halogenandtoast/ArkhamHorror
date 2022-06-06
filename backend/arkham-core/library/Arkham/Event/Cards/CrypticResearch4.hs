@@ -11,7 +11,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype CrypticResearch4 = CrypticResearch4 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crypticResearch4 :: EventCard CrypticResearch4

@@ -23,7 +23,7 @@ newtype MinhThiPhan = MinhThiPhan EffectAttrs
 minhThiPhan :: EffectArgs -> MinhThiPhan
 minhThiPhan = MinhThiPhan . uncurry4 (baseAttrs "03002")
 
-instance HasModifiersFor env MinhThiPhan where
+instance HasModifiersFor MinhThiPhan where
   getModifiersFor _ target@(CardIdTarget _) (MinhThiPhan attrs)
     | effectTarget attrs == target = pure
     $ toModifiers attrs [AddSkillIcons [SkillWild]]

@@ -19,7 +19,7 @@ newtype ThePaintedWorld = ThePaintedWorld EffectAttrs
 thePaintedWorld :: EffectArgs -> ThePaintedWorld
 thePaintedWorld = ThePaintedWorld . uncurry4 (baseAttrs "03012")
 
-instance HasModifiersFor env ThePaintedWorld where
+instance HasModifiersFor ThePaintedWorld where
   getModifiersFor _ (EventTarget eid) (ThePaintedWorld a@EffectAttrs {..})
     | CardIdTarget (unEventId eid) == effectTarget = pure
     $ toModifiers a [RemoveFromGameInsteadOfDiscard]

@@ -11,7 +11,7 @@ import Arkham.GameValue
 import Arkham.Location.Runner
 
 newtype AsylumHallsEasternPatientWing_171 = AsylumHallsEasternPatientWing_171 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 asylumHallsEasternPatientWing_171

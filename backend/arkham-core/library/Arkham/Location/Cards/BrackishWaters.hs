@@ -35,7 +35,7 @@ brackishWaters = location
   Triangle
   [Squiggle, Square, Diamond, Hourglass]
 
-instance HasModifiersFor env BrackishWaters where
+instance HasModifiersFor BrackishWaters where
   getModifiersFor _ (InvestigatorTarget iid) (BrackishWaters attrs) =
     pure $ toModifiers
       attrs

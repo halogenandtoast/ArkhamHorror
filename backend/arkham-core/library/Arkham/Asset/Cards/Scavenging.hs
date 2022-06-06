@@ -19,7 +19,7 @@ import Arkham.Trait
 import Arkham.Zone qualified as Zone
 
 newtype Scavenging = Scavenging AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scavenging :: AssetCard Scavenging

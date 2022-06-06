@@ -14,7 +14,7 @@ import Arkham.Trait
 import Arkham.Zone
 
 newtype ResearchLibrarian = ResearchLibrarian AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor m)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 researchLibrarian :: AssetCard ResearchLibrarian

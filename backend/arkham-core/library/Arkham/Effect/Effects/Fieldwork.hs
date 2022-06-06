@@ -19,7 +19,7 @@ newtype Fieldwork = Fieldwork EffectAttrs
 fieldwork :: EffectArgs -> Fieldwork
 fieldwork = Fieldwork . uncurry4 (baseAttrs "03024")
 
-instance HasModifiersFor env Fieldwork where
+instance HasModifiersFor Fieldwork where
   getModifiersFor SkillTestSource{} target (Fieldwork a@EffectAttrs {..})
     | target == effectTarget = pure [toModifier a (AnySkillValue 2)]
   getModifiersFor _ _ _ = pure []

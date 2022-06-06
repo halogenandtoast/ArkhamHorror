@@ -9,7 +9,7 @@ import Arkham.Card
 import Arkham.Card.PlayerCard
 
 newtype OccultLexicon = OccultLexicon AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 occultLexicon :: AssetCard OccultLexicon

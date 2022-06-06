@@ -15,7 +15,7 @@ import Arkham.Window
 import Arkham.Window qualified as Window
 
 newtype BuryThemDeep = BuryThemDeep EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 buryThemDeep :: EventCard BuryThemDeep

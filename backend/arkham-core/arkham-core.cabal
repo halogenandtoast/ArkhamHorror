@@ -405,6 +405,7 @@ library
       Arkham.Classes.GameLogger
       Arkham.Classes.HasAbilities
       Arkham.Classes.HasHistory
+      Arkham.Classes.HasModifiersFor
       Arkham.Classes.HasQueue
       Arkham.Classes.HasRecord
       Arkham.Classes.HasSet
@@ -736,6 +737,9 @@ library
       Arkham.GameValue
       Arkham.Helpers
       Arkham.Helpers.Ability
+      Arkham.Helpers.Enemy
+      Arkham.Helpers.Investigator
+      Arkham.Helpers.Modifiers
       Arkham.Helpers.Query
       Arkham.Helpers.Scenario
       Arkham.Helpers.Window

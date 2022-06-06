@@ -91,7 +91,7 @@ instance
   , HasId LocationId env InvestigatorId
   , HasId LocationId env AssetId
   ) =>
-  HasModifiersFor env Effect
+  HasModifiersFor Effect
   where
   getModifiersFor = $(entityF2 "Effect" "getModifiersFor")
 

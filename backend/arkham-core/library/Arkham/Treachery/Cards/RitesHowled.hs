@@ -16,7 +16,7 @@ import Arkham.Message
 import Arkham.Trait
 
 newtype RitesHowled = RitesHowled TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ritesHowled :: TreacheryCard RitesHowled

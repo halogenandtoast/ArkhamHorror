@@ -17,7 +17,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 springfieldM19034 :: AssetCard SpringfieldM19034

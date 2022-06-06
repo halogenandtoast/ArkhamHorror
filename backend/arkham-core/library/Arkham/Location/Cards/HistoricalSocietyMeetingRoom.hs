@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype HistoricalSocietyMeetingRoom = HistoricalSocietyMeetingRoom LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 historicalSocietyMeetingRoom :: LocationCard HistoricalSocietyMeetingRoom

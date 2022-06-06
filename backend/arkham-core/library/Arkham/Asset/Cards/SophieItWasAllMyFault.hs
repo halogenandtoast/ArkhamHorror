@@ -37,7 +37,7 @@ instance HasAbilities SophieItWasAllMyFault where
         $ ForcedAbility AnyWindow
     ]
 
-instance HasModifiersFor env SophieItWasAllMyFault where
+instance HasModifiersFor SophieItWasAllMyFault where
   getModifiersFor _ (InvestigatorTarget iid) (SophieItWasAllMyFault attrs)
     | controlledBy attrs iid = pure $ toModifiers attrs [AnySkillValue (-1)]
   getModifiersFor _ _ _ = pure []

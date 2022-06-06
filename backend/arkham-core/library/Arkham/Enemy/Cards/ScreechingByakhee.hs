@@ -25,7 +25,7 @@ screechingByakhee = enemyWith
   (1, 2)
   (preyL .~ Prey LowestRemainingSanity)
 
-instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env ScreechingByakhee where
+instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor ScreechingByakhee where
   getModifiersFor _ target (ScreechingByakhee attrs) | isTarget attrs target =
     do
       sanities <- map unRemainingSanity

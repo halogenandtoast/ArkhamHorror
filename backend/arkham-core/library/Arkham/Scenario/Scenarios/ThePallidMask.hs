@@ -75,7 +75,7 @@ thePallidMask difficulty =
        , "pos0000 pos0100 pos0200 pos0300 pos0400 pos0500 pos0600 pos0700 pos0800 pos0900 pos1000 pos1100 pos1200 pos1300"
        ]
 
-instance HasRecord env () => HasModifiersFor env ThePallidMask where
+instance HasRecord env () => HasModifiersFor ThePallidMask where
   getModifiersFor _ (InvestigatorTarget iid) (ThePallidMask a) = do
     extraXp <- elem (Recorded $ unInvestigatorId iid) <$> getRecordSet ReadActII
     pure $ toModifiers a [XPModifier 2 | extraXp]

@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 
 newtype JimsTrumpet = JimsTrumpet AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jimsTrumpet :: AssetCard JimsTrumpet

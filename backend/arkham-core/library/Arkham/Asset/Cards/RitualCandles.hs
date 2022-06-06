@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 
 newtype RitualCandles = RitualCandles AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ritualCandles :: AssetCard RitualCandles

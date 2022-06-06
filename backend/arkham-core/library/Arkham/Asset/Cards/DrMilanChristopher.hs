@@ -20,7 +20,7 @@ newtype DrMilanChristopher = DrMilanChristopher AssetAttrs
 drMilanChristopher :: AssetCard DrMilanChristopher
 drMilanChristopher = ally DrMilanChristopher Cards.drMilanChristopher (1, 2)
 
-instance HasModifiersFor env DrMilanChristopher where
+instance HasModifiersFor DrMilanChristopher where
   getModifiersFor _ (InvestigatorTarget iid) (DrMilanChristopher a) =
     pure [ toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

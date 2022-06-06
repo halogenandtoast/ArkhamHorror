@@ -26,7 +26,7 @@ newtype ThePitBelow = ThePitBelow TreacheryAttrs
 thePitBelow :: TreacheryCard ThePitBelow
 thePitBelow = treachery ThePitBelow Cards.thePitBelow
 
-instance HasModifiersFor env ThePitBelow where
+instance HasModifiersFor ThePitBelow where
   getModifiersFor _ (LocationTarget lid) (ThePitBelow attrs) =
     pure
       $ toModifiers attrs [ ShroudModifier 1 | treacheryOnLocation lid attrs ]

@@ -16,7 +16,7 @@ import Arkham.Target
 import Arkham.Trait
 
 newtype BindMonster2 = BindMonster2 EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bindMonster2 :: EffectArgs -> BindMonster2

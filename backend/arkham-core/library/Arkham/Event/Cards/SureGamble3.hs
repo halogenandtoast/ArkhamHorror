@@ -12,7 +12,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window
 
 newtype SureGamble3 = SureGamble3 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sureGamble3 :: EventCard SureGamble3

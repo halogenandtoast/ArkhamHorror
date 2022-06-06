@@ -18,7 +18,7 @@ newtype PereLachaiseCemetery = PereLachaiseCemetery EffectAttrs
 pereLachaiseCemetery :: EffectArgs -> PereLachaiseCemetery
 pereLachaiseCemetery = PereLachaiseCemetery . uncurry4 (baseAttrs "03215")
 
-instance HasModifiersFor env PereLachaiseCemetery where
+instance HasModifiersFor PereLachaiseCemetery where
   getModifiersFor _ target (PereLachaiseCemetery attrs)
     | target == effectTarget attrs = pure $ toModifiers attrs [CannotMove]
   getModifiersFor _ _ _ = pure []

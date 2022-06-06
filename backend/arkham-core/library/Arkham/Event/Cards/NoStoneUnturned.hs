@@ -13,7 +13,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype NoStoneUnturned = NoStoneUnturned EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 noStoneUnturned :: EventCard NoStoneUnturned

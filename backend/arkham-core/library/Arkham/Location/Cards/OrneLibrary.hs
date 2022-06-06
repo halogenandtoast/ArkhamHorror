@@ -19,7 +19,7 @@ orneLibrary :: LocationCard OrneLibrary
 orneLibrary =
   location OrneLibrary Cards.orneLibrary 3 (PerPlayer 1) Triangle [Plus, Square]
 
-instance HasModifiersFor env OrneLibrary where
+instance HasModifiersFor OrneLibrary where
   getModifiersFor _ (InvestigatorTarget iid) (OrneLibrary attrs)
     | iid `elem` locationInvestigators attrs = pure
     $ toModifiers attrs [ActionCostOf (IsAction Action.Investigate) 1]

@@ -40,7 +40,7 @@ instance HasAbilities DaisysToteBagAdvanced where
         $ ExhaustCost (toTarget a)
     ]
 
-instance HasModifiersFor env DaisysToteBagAdvanced where
+instance HasModifiersFor DaisysToteBagAdvanced where
   getModifiersFor _ (InvestigatorTarget iid) (DaisysToteBagAdvanced a)
     | controlledBy a iid = pure
       [toModifier a $ CanBecomeFast (Just AssetType, [Tome])]

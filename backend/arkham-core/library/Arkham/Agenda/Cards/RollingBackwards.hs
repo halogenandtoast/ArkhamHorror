@@ -18,7 +18,7 @@ import Arkham.Message
 import Arkham.Query
 
 newtype RollingBackwards = RollingBackwards AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rollingBackwards :: AgendaCard RollingBackwards

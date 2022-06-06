@@ -31,7 +31,7 @@ instance HasAbilities EarlSawyer where
         (ExhaustCost $ toTarget attrs)
     ]
 
-instance HasModifiersFor env EarlSawyer where
+instance HasModifiersFor EarlSawyer where
   getModifiersFor _ (InvestigatorTarget iid) (EarlSawyer a) =
     pure [ toModifier a (SkillModifier SkillAgility 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

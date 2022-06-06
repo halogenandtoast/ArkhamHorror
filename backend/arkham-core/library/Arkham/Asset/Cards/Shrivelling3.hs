@@ -17,7 +17,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype Shrivelling3 = Shrivelling3 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shrivelling3 :: AssetCard Shrivelling3

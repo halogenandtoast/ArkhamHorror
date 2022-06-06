@@ -18,7 +18,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype Scrapper3 = Scrapper3 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scrapper3 :: AssetCard Scrapper3

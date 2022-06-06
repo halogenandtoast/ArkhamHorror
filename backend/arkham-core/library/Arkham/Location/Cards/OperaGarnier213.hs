@@ -29,7 +29,7 @@ operaGarnier213 = location
   Diamond
   [Triangle, Square, Heart]
 
-instance HasSkillTest env => HasModifiersFor env OperaGarnier213 where
+instance HasSkillTest env => HasModifiersFor OperaGarnier213 where
   getModifiersFor (SkillTestSource _ _ _ (Just Action.Investigate)) (InvestigatorTarget _) (OperaGarnier213 attrs) = do
     mtarget <- getSkillTestTarget
     case mtarget of

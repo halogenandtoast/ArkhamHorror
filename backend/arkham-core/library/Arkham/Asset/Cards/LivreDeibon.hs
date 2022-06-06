@@ -15,7 +15,7 @@ import Arkham.Matcher
 import Arkham.Target
 
 newtype LivreDeibon = LivreDeibon AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 livreDeibon :: AssetCard LivreDeibon

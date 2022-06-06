@@ -14,7 +14,7 @@ import Arkham.Message hiding (EnemyEvaded)
 import Arkham.Timing qualified as Timing
 
 newtype RuthTurner = RuthTurner EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ruthTurner :: EnemyCard RuthTurner

@@ -24,7 +24,7 @@ newtype NathanielCho = NathanielCho EffectAttrs
 nathanielCho :: EffectArgs -> NathanielCho
 nathanielCho = NathanielCho . uncurry4 (baseAttrs "60101")
 
-instance HasModifiersFor env NathanielCho where
+instance HasModifiersFor NathanielCho where
   getModifiersFor _ target@(EnemyTarget _) (NathanielCho attrs)
     | effectTarget attrs == target = pure $ toModifiers attrs [DamageTaken 1]
   getModifiersFor _ _ _ = pure []

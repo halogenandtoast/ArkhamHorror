@@ -13,7 +13,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype SecondWind = SecondWind EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 secondWind :: EventCard SecondWind

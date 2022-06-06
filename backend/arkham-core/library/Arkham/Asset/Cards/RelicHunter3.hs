@@ -10,7 +10,7 @@ import Arkham.Asset.Runner
 import Arkham.Slot
 
 newtype RelicHunter3 = RelicHunter3 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 relicHunter3 :: AssetCard RelicHunter3

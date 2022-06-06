@@ -12,7 +12,7 @@ import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype StellaClark = StellaClark InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor env)
+  deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stellaClark :: InvestigatorCard StellaClark

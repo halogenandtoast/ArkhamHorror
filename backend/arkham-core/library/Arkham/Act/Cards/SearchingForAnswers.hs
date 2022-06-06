@@ -19,7 +19,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype SearchingForAnswers = SearchingForAnswers ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 searchingForAnswers :: ActCard SearchingForAnswers

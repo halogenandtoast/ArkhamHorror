@@ -36,7 +36,7 @@ instance HasAbilities ZebulonWhateley where
         (ExhaustCost $ toTarget x)
     ]
 
-instance HasModifiersFor env ZebulonWhateley where
+instance HasModifiersFor ZebulonWhateley where
   getModifiersFor _ (InvestigatorTarget iid) (ZebulonWhateley a) =
     pure [ toModifier a (SkillModifier SkillWillpower 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

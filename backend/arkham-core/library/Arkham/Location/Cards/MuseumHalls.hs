@@ -37,7 +37,7 @@ museumHalls = locationWithRevealedSideConnectionsWith
   [Circle, Diamond, Triangle]
   (revealedConnectedMatchersL <>~ [LocationWithTitle "Exhibit Hall"])
 
-instance HasModifiersFor env MuseumHalls where
+instance HasModifiersFor MuseumHalls where
   getModifiersFor _ target (MuseumHalls l) | isTarget l target =
     pure $ toModifiers l [ Blocked | unrevealed l ]
   getModifiersFor _ _ _ = pure []

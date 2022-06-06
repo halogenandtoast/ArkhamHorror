@@ -18,7 +18,7 @@ import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
 newtype SnareTrap2 = SnareTrap2 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env)
+  deriving anyclass (IsEvent, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 snareTrap2 :: EventCard SnareTrap2

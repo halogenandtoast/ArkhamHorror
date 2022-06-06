@@ -18,7 +18,7 @@ import Arkham.Resolution
 import Arkham.Target
 
 newtype FindingANewWay = FindingANewWay ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 findingANewWay :: ActCard FindingANewWay

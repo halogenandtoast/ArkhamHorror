@@ -15,7 +15,7 @@ import Arkham.Matcher hiding (MoveAction)
 import Arkham.Target
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pathfinder1 :: AssetCard Pathfinder1

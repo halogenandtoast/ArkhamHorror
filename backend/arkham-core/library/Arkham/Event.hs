@@ -35,7 +35,7 @@ instance
   ( HasCount ClueCount env InvestigatorId
   , Query EnemyMatcher env
   ) =>
-  HasModifiersFor env Event
+  HasModifiersFor Event
   where
   getModifiersFor = $(entityF2 "Event" "getModifiersFor")
 

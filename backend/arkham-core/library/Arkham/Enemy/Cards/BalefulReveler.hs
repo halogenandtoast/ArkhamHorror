@@ -19,7 +19,7 @@ import Arkham.Token
 import Control.Monad.Extra (findM)
 
 newtype BalefulReveler = BalefulReveler EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 -- TODO: spawn at is complicated here

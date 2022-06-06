@@ -122,7 +122,7 @@ type InvestigatorRunner env
       , HasList UsedAbility env ()
       , HasList SetAsideCard env ()
       )
-    , HasModifiersFor env ()
+    , HasModifiersFor ()
     , (HasName env AssetId, HasName env LocationId)
     , HasPlayerCard env AssetId
     , HasPlayerCard env EventId

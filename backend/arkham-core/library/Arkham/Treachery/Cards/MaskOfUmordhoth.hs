@@ -23,7 +23,7 @@ newtype MaskOfUmordhoth = MaskOfUmordhoth TreacheryAttrs
 maskOfUmordhoth :: TreacheryCard MaskOfUmordhoth
 maskOfUmordhoth = treachery MaskOfUmordhoth Cards.maskOfUmordhoth
 
-instance Query EnemyMatcher env => HasModifiersFor env MaskOfUmordhoth where
+instance Query EnemyMatcher env => HasModifiersFor MaskOfUmordhoth where
   getModifiersFor _ (EnemyTarget eid) (MaskOfUmordhoth attrs)
     | treacheryOnEnemy eid attrs = do
       isUnique <- member eid <$> select UniqueEnemy

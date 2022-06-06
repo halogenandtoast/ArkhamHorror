@@ -15,7 +15,7 @@ import Arkham.Message
 import Arkham.Resolution
 
 newtype OutOfTime = OutOfTime AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outOfTime :: AgendaCard OutOfTime

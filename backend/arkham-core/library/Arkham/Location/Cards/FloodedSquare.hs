@@ -21,7 +21,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype FloodedSquare = FloodedSquare LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 floodedSquare :: LocationCard FloodedSquare

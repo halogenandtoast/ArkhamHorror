@@ -18,7 +18,7 @@ import Arkham.Source
 import Arkham.Target
 
 newtype MysteriousGateway = MysteriousGateway ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 mysteriousGateway :: ActCard MysteriousGateway

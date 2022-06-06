@@ -23,7 +23,7 @@ newtype DissonantVoices= DissonantVoices TreacheryAttrs
 dissonantVoices :: TreacheryCard DissonantVoices
 dissonantVoices = treachery DissonantVoices Cards.dissonantVoices
 
-instance HasModifiersFor env DissonantVoices where
+instance HasModifiersFor DissonantVoices where
   getModifiersFor _ (InvestigatorTarget iid) (DissonantVoices attrs) =
     pure $ toModifiers
       attrs

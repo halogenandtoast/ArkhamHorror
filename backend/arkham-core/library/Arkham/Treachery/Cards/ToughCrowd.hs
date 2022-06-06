@@ -25,7 +25,7 @@ newtype ToughCrowd = ToughCrowd TreacheryAttrs
 toughCrowd :: TreacheryCard ToughCrowd
 toughCrowd = treachery ToughCrowd Cards.toughCrowd
 
-instance HasModifiersFor env ToughCrowd where
+instance HasModifiersFor ToughCrowd where
   getModifiersFor _ (InvestigatorTarget _) (ToughCrowd a) =
     pure $ toModifiers a [ActionCostOf (IsAction Parley) 1]
   getModifiersFor _ _ _ = pure []

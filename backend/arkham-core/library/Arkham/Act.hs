@@ -28,7 +28,7 @@ instance HasAbilities Act where
 instance
   ( ActRunner env
   , HasId LocationId env InvestigatorId
-  , HasModifiersFor env ()
+  , HasModifiersFor ()
   ) =>
   RunMessage Act
   where

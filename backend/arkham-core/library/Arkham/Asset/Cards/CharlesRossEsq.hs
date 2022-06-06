@@ -25,7 +25,7 @@ newtype CharlesRossEsq = CharlesRossEsq AssetAttrs
 charlesRossEsq :: AssetCard CharlesRossEsq
 charlesRossEsq = ally CharlesRossEsq Cards.charlesRossEsq (1, 2)
 
-instance HasId LocationId env AssetId => HasModifiersFor env CharlesRossEsq where
+instance HasId LocationId env AssetId => HasModifiersFor CharlesRossEsq where
   getModifiersFor _ (InvestigatorTarget iid) (CharlesRossEsq attrs)
     | attrs `controlledBy` iid = do
       lid <- getId @LocationId (toId attrs)

@@ -20,7 +20,7 @@ import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype BreakingThrough = BreakingThrough AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 breakingThrough :: AgendaCard BreakingThrough

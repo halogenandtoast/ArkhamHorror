@@ -18,7 +18,7 @@ newtype OnTheLam = OnTheLam EffectAttrs
 onTheLam :: EffectArgs -> OnTheLam
 onTheLam = OnTheLam . uncurry4 (baseAttrs "01010")
 
-instance HasModifiersFor env OnTheLam where
+instance HasModifiersFor OnTheLam where
   getModifiersFor _ target (OnTheLam a@EffectAttrs {..}) =
     pure $ toModifiers a [ CannotBeAttackedByNonElite | target == effectTarget ]
 

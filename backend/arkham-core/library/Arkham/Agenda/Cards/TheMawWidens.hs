@@ -17,7 +17,7 @@ import Arkham.Message
 import Arkham.Query
 
 newtype TheMawWidens = TheMawWidens AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theMawWidens :: AgendaCard TheMawWidens

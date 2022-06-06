@@ -39,7 +39,7 @@ instance HasAbilities EsotericFormula where
         (ActionAbility (Just Action.Fight) (ActionCost 1))
     ]
 
-instance (HasSkillTest env, HasCount ClueCount env EnemyId) => HasModifiersFor env EsotericFormula where
+instance (HasSkillTest env, HasCount ClueCount env EnemyId) => HasModifiersFor EsotericFormula where
   getModifiersFor (SkillTestSource iid' _ source (Just Action.Fight)) (InvestigatorTarget iid) (EsotericFormula attrs)
     | controlledBy attrs iid && isSource attrs source && iid' == iid
     = do

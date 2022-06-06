@@ -28,7 +28,7 @@ vipArea = locationWith
   [Diamond]
   (revealedSymbolL .~ Plus)
 
-instance HasPhase env => HasModifiersFor env VipArea where
+instance HasPhase env => HasModifiersFor VipArea where
   getModifiersFor _ (InvestigatorTarget iid) (VipArea attrs)
     | iid `member` locationInvestigators attrs = do
       phase <- getPhase

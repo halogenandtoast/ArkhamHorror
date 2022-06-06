@@ -16,7 +16,7 @@ import Arkham.GameValue
 import Arkham.Message
 
 newtype TheFestivitiesBegin = TheFestivitiesBegin AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theFestivitiesBegin :: AgendaCard TheFestivitiesBegin

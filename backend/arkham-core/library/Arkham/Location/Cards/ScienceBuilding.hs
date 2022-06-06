@@ -15,7 +15,7 @@ import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype ScienceBuilding = ScienceBuilding LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scienceBuilding :: LocationCard ScienceBuilding

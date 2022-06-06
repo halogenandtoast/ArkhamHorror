@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Message
 
 newtype AfterHours = AfterHours ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 afterHours :: ActCard AfterHours

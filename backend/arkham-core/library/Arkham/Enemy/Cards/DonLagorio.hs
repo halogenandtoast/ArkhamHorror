@@ -22,7 +22,7 @@ donLagorio = enemy DonLagorio Cards.donLagorio (4, Static 4, 3) (2, 0)
 
 -- Since we will check the enemies location here, we need to make sure don has
 -- spawned before checking for modifiers
-instance (HasSet ConnectedLocationId env LocationId, HasSet LocationId env ()) => HasModifiersFor env DonLagorio where
+instance (HasSet ConnectedLocationId env LocationId, HasSet LocationId env ()) => HasModifiersFor DonLagorio where
   getModifiersFor _ (EnemyTarget eid) (DonLagorio attrs) | eid == toId attrs =
     case enemyLocation attrs of
       Nothing -> pure []

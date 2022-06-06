@@ -26,7 +26,7 @@ newtype TheHarbinger = TheHarbinger TreacheryAttrs
 theHarbinger :: TreacheryCard TheHarbinger
 theHarbinger = treachery TheHarbinger Cards.theHarbinger
 
-instance HasModifiersFor env TheHarbinger where
+instance HasModifiersFor TheHarbinger where
   getModifiersFor _ target (TheHarbinger a)
     | Just target == treacheryAttachedTarget a = pure
     $ toModifiers a [CannotManipulateDeck]

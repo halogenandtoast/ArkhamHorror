@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window
 
 newtype IfItBleeds = IfItBleeds EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ifItBleeds :: EventCard IfItBleeds

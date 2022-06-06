@@ -21,7 +21,7 @@ newtype ObscuringFog = ObscuringFog TreacheryAttrs
 obscuringFog :: TreacheryCard ObscuringFog
 obscuringFog = treachery ObscuringFog Cards.obscuringFog
 
-instance HasModifiersFor env ObscuringFog where
+instance HasModifiersFor ObscuringFog where
   getModifiersFor _ (LocationTarget lid) (ObscuringFog attrs) =
     pure
       $ toModifiers attrs [ ShroudModifier 2 | treacheryOnLocation lid attrs ]

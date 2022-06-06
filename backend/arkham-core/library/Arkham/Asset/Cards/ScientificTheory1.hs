@@ -31,7 +31,7 @@ instance HasAbilities ScientificTheory1 where
     | idx <- [1, 2]
     ]
 
-instance HasModifiersFor env ScientificTheory1 where
+instance HasModifiersFor ScientificTheory1 where
   getModifiersFor _ (AssetTarget aid) (ScientificTheory1 attrs)
     | toId attrs == aid = pure
     $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]

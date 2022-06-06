@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype InterstellarTraveler = InterstellarTraveler EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 interstellarTraveler :: EnemyCard InterstellarTraveler

@@ -20,7 +20,7 @@ import Arkham.Target
 import Arkham.Trait
 
 newtype DevilsHopYard_253 = DevilsHopYard_253 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 devilsHopYard_253 :: LocationCard DevilsHopYard_253

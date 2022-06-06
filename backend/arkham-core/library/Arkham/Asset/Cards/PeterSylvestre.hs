@@ -23,7 +23,7 @@ newtype PeterSylvestre = PeterSylvestre AssetAttrs
 peterSylvestre :: AssetCard PeterSylvestre
 peterSylvestre = ally PeterSylvestre Cards.peterSylvestre (1, 2)
 
-instance HasModifiersFor env PeterSylvestre where
+instance HasModifiersFor PeterSylvestre where
   getModifiersFor _ (InvestigatorTarget iid) (PeterSylvestre a) =
     pure [ toModifier a (SkillModifier SkillAgility 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

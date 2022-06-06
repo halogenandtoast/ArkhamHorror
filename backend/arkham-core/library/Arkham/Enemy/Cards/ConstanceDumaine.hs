@@ -19,7 +19,7 @@ constanceDumaine :: EnemyCard ConstanceDumaine
 constanceDumaine =
   enemy ConstanceDumaine Cards.constanceDumaine (4, Static 6, 1) (2, 0)
 
-instance HasModifiersFor env ConstanceDumaine where
+instance HasModifiersFor ConstanceDumaine where
   getModifiersFor _ (EnemyTarget eid) (ConstanceDumaine a) | eid == toId a =
     pure $ toModifiers a [ EnemyFight 3 | enemyExhausted a ]
   getModifiersFor _ _ _ = pure []

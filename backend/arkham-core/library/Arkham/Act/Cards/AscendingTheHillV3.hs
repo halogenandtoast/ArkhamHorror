@@ -30,7 +30,7 @@ ascendingTheHillV3 :: ActCard AscendingTheHillV3
 ascendingTheHillV3 =
   act (2, A) AscendingTheHillV3 Cards.ascendingTheHillV3 Nothing
 
-instance HasModifiersFor env AscendingTheHillV3 where
+instance HasModifiersFor AscendingTheHillV3 where
   getModifiersFor _ (LocationTarget _) (AscendingTheHillV3 attrs) = do
     pure $ toModifiers attrs [TraitRestrictedModifier Altered CannotPlaceClues]
   getModifiersFor _ _ _ = pure []

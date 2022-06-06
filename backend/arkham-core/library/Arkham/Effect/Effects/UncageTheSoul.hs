@@ -21,7 +21,7 @@ newtype UncageTheSoul = UncageTheSoul EffectAttrs
 uncageTheSoul :: EffectArgs -> UncageTheSoul
 uncageTheSoul = UncageTheSoul . uncurry4 (baseAttrs "03033")
 
-instance HasModifiersFor env UncageTheSoul where
+instance HasModifiersFor UncageTheSoul where
   getModifiersFor _ target@(CardIdTarget cid) (UncageTheSoul attrs)
     | effectTarget attrs == target = pure
     $ toModifiers attrs [ReduceCostOf (CardWithId cid) 3]

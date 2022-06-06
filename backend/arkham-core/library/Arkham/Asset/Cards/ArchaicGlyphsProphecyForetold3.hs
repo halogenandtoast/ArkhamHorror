@@ -17,7 +17,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype ArchaicGlyphsProphecyForetold3 = ArchaicGlyphsProphecyForetold3 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasAbilities ArchaicGlyphsProphecyForetold3 where

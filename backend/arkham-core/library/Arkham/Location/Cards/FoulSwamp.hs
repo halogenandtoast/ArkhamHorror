@@ -33,7 +33,7 @@ foulSwamp = location
   Hourglass
   [Equals, Square, Triangle, Diamond]
 
-instance HasModifiersFor env FoulSwamp where
+instance HasModifiersFor FoulSwamp where
   getModifiersFor _ (InvestigatorTarget iid) (FoulSwamp attrs)
     | iid `member` locationInvestigators attrs = pure
     $ toModifiers attrs [CannotHealHorror, CannotCancelHorror]

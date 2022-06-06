@@ -28,7 +28,7 @@ newtype TheCloverClub = TheCloverClub AgendaAttrs
 theCloverClub :: AgendaCard TheCloverClub
 theCloverClub = agenda (1, A) TheCloverClub Cards.theCloverClub (Static 4)
 
-instance Query EnemyMatcher env => HasModifiersFor env TheCloverClub where
+instance Query EnemyMatcher env => HasModifiersFor TheCloverClub where
   getModifiersFor _ (EnemyTarget eid) (TheCloverClub attrs) | onSide A attrs =
     do
       isCriminal <- member eid <$> select (EnemyWithTrait Criminal)

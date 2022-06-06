@@ -36,7 +36,7 @@ instance HasAbilities TheExperiment where
     $ toId x
     ]
 
-instance HasCount PlayerCount env () => HasModifiersFor env TheExperiment where
+instance HasCount PlayerCount env () => HasModifiersFor TheExperiment where
   getModifiersFor _ target (TheExperiment attrs) | isTarget attrs target = do
     modifier <- getPlayerCountValue (PerPlayer 3)
     pure $ toModifiers attrs [HealthModifier modifier]

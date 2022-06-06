@@ -18,7 +18,7 @@ import Arkham.Query
 import Arkham.Timing qualified as Timing
 
 newtype LostMemories = LostMemories LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lostMemories :: LocationCard LostMemories

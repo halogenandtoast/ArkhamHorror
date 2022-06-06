@@ -20,7 +20,7 @@ import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
 newtype TheChamberOfTheBeast = TheChamberOfTheBeast ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theChamberOfTheBeast :: ActCard TheChamberOfTheBeast

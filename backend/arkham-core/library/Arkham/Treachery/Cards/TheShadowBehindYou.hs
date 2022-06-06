@@ -24,7 +24,7 @@ newtype Metadata = Metadata { hasUsedAbility :: Bool }
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TheShadowBehindYou = TheShadowBehindYou (TreacheryAttrs `With` Metadata)
-  deriving anyclass (IsTreachery, HasModifiersFor m)
+  deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theShadowBehindYou :: TreacheryCard TheShadowBehindYou

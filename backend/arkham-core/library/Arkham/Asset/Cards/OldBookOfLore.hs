@@ -15,7 +15,7 @@ import Arkham.Modifier
 import Arkham.Target
 
 newtype OldBookOfLore = OldBookOfLore AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oldBookOfLore :: AssetCard OldBookOfLore

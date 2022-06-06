@@ -30,7 +30,7 @@ instance HasAbilities Moxie1 where
     | idx <- [1, 2]
     ]
 
-instance HasModifiersFor env Moxie1 where
+instance HasModifiersFor Moxie1 where
   getModifiersFor _ (AssetTarget aid) (Moxie1 attrs) | toId attrs == aid =
     pure $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor _ _ _ = pure []

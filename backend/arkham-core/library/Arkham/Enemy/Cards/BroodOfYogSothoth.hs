@@ -23,7 +23,7 @@ broodOfYogSothoth :: EnemyCard BroodOfYogSothoth
 broodOfYogSothoth =
   enemy BroodOfYogSothoth Cards.broodOfYogSothoth (6, Static 1, 3) (2, 2)
 
-instance HasCount PlayerCount env () => HasModifiersFor env BroodOfYogSothoth where
+instance HasCount PlayerCount env () => HasModifiersFor BroodOfYogSothoth where
   getModifiersFor _ target (BroodOfYogSothoth a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 1)
     pure $ toModifiers

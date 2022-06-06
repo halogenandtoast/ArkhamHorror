@@ -19,7 +19,7 @@ newtype DoubleOrNothing = DoubleOrNothing SkillAttrs
 doubleOrNothing :: SkillCard DoubleOrNothing
 doubleOrNothing = skill DoubleOrNothing Cards.doubleOrNothing
 
-instance HasModifiersFor env DoubleOrNothing where
+instance HasModifiersFor DoubleOrNothing where
   getModifiersFor _ SkillTestTarget (DoubleOrNothing attrs) =
     pure $ toModifiers attrs [DoubleDifficulty, DoubleSuccess]
   getModifiersFor _ _ _ = pure []

@@ -17,7 +17,7 @@ import Arkham.Location.Helpers
 import Arkham.Message
 
 newtype MiskatonicUniversityMiskatonicMuseum = MiskatonicUniversityMiskatonicMuseum LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicUniversityMiskatonicMuseum

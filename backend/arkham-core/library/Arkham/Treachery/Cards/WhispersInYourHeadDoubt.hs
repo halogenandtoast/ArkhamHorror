@@ -26,7 +26,7 @@ whispersInYourHeadDoubt :: TreacheryCard WhispersInYourHeadDoubt
 whispersInYourHeadDoubt =
   treachery WhispersInYourHeadDoubt Cards.whispersInYourHeadDoubt
 
-instance HasModifiersFor env WhispersInYourHeadDoubt where
+instance HasModifiersFor WhispersInYourHeadDoubt where
   getModifiersFor _ (InvestigatorHandTarget _) (WhispersInYourHeadDoubt a) = pure $ toModifiers a [CannotPlay [(EventType, mempty)]]
   getModifiersFor _ _ _ = pure []
 

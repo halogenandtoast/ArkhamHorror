@@ -8,7 +8,7 @@ import Arkham.Message
 import Arkham.Treachery.Attrs
 
 newtype AbandonedAndAlone = AbandonedAndAlone TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abandonedAndAlone :: TreacheryCard AbandonedAndAlone

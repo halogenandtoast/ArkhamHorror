@@ -38,7 +38,7 @@ allAgendas =
 instance HasList UnderneathCard env Agenda where
   getList = getList . toAttrs
 
-instance HasModifiersFor env () => HasCount DoomCount env Agenda where
+instance HasModifiersFor () => HasCount DoomCount env Agenda where
   getCount a = do
     modifiers <- getModifiers (toSource a) (toTarget a)
     let f = if DoomSubtracts `elem` modifiers then negate else id

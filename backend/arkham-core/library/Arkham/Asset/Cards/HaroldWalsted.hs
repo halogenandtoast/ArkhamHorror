@@ -43,7 +43,7 @@ instance
   ( HasSet Trait env LocationId
   , HasId LocationId env InvestigatorId
   )
-  => HasModifiersFor env HaroldWalsted where
+  => HasModifiersFor HaroldWalsted where
   getModifiersFor (SkillTestSource _ _ _ (Just Action.Investigate)) (InvestigatorTarget iid) (HaroldWalsted attrs)
     = do
       lid <- getId @LocationId iid

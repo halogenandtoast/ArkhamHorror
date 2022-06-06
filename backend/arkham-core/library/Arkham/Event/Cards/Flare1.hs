@@ -15,7 +15,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype Flare1 = Flare1 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, TargetEntity, SourceEntity)
 
 flare1 :: EventCard Flare1

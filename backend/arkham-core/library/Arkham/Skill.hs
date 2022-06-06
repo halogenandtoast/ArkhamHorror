@@ -34,7 +34,7 @@ instance HasAbilities Skill where
 instance SkillRunner env => RunMessage Skill where
   runMessage = $(entityRunMessage "Skill")
 
-instance HasModifiersFor env Skill where
+instance HasModifiersFor Skill where
   getModifiersFor = $(entityF2 "Skill" "getModifiersFor")
 
 instance Entity Skill where

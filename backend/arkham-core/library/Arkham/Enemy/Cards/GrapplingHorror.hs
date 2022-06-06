@@ -19,7 +19,7 @@ grapplingHorror :: EnemyCard GrapplingHorror
 grapplingHorror =
   enemy GrapplingHorror Cards.grapplingHorror (3, Static 3, 2) (1, 1)
 
-instance HasModifiersFor env GrapplingHorror where
+instance HasModifiersFor GrapplingHorror where
   getModifiersFor _ (InvestigatorTarget iid) (GrapplingHorror a@EnemyAttrs {..})
     = if iid `elem` enemyEngagedInvestigators
       then pure $ toModifiers a [CannotMove]

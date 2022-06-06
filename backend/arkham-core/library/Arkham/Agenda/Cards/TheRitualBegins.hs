@@ -24,7 +24,7 @@ theRitualBegins :: AgendaCard TheRitualBegins
 theRitualBegins =
   agenda (2, A) TheRitualBegins Cards.theRitualBegins (Static 5)
 
-instance HasModifiersFor env TheRitualBegins where
+instance HasModifiersFor TheRitualBegins where
   getModifiersFor _ (EnemyTarget _) (TheRitualBegins attrs)
     | agendaSequence attrs == Agenda 2 A = pure
     $ toModifiers attrs [EnemyFight 1, EnemyEvade 1]

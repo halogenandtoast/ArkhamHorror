@@ -31,7 +31,7 @@ instance HasAbilities HiredMuscle1 where
       $ PhaseIs UpkeepPhase
     ]
 
-instance HasModifiersFor env HiredMuscle1 where
+instance HasModifiersFor HiredMuscle1 where
   getModifiersFor _ (InvestigatorTarget iid) (HiredMuscle1 a) =
     pure [ toModifier a (SkillModifier SkillCombat 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

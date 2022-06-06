@@ -26,7 +26,7 @@ newtype LeadingTheWay = LeadingTheWay ActAttrs
 leadingTheWay :: ActCard LeadingTheWay
 leadingTheWay = act (3, A) LeadingTheWay Cards.leadingTheWay Nothing
 
-instance Query LocationMatcher env => HasModifiersFor env LeadingTheWay where
+instance Query LocationMatcher env => HasModifiersFor LeadingTheWay where
   getModifiersFor _ (LocationTarget lid) (LeadingTheWay attrs) = do
     isBlockedPassage <- member lid
       <$> select (locationIs Locations.blockedPassage)

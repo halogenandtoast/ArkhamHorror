@@ -16,7 +16,7 @@ import Arkham.GameValue
 import Arkham.Message
 
 newtype EmpireOfTheDead = EmpireOfTheDead AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 empireOfTheDead :: AgendaCard EmpireOfTheDead

@@ -29,7 +29,7 @@ exhibitHallRestrictedHall = locationWithRevealedSideConnections
   Equals
   [Square]
 
-instance Query EnemyMatcher env => HasModifiersFor env ExhibitHallRestrictedHall where
+instance Query EnemyMatcher env => HasModifiersFor ExhibitHallRestrictedHall where
   getModifiersFor _ target (ExhibitHallRestrictedHall attrs)
     | isTarget attrs target = do
       mHuntingHorror <- selectOne $ enemyIs Cards.huntingHorror <> EnemyAt

@@ -20,7 +20,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype VengeanceAwaits = VengeanceAwaits AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vengeanceAwaits :: AgendaCard VengeanceAwaits

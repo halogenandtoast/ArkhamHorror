@@ -37,7 +37,7 @@ tombOfShadows = locationWith
     )
   )
 
-instance Query EnemyMatcher env => HasModifiersFor env TombOfShadows where
+instance Query EnemyMatcher env => HasModifiersFor TombOfShadows where
   getModifiersFor _ (EnemyTarget eid) (TombOfShadows attrs) = do
     active <- member eid <$> select
       (enemyIs Enemies.theManInThePallidMask

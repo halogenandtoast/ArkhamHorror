@@ -19,7 +19,7 @@ theOrganistHopelessIDefiedHim :: EffectArgs -> TheOrganistHopelessIDefiedHim
 theOrganistHopelessIDefiedHim =
   TheOrganistHopelessIDefiedHim . uncurry4 (baseAttrs "03221a")
 
-instance HasModifiersFor env TheOrganistHopelessIDefiedHim where
+instance HasModifiersFor TheOrganistHopelessIDefiedHim where
   getModifiersFor _ target (TheOrganistHopelessIDefiedHim attrs)
     | isTarget attrs target = pure $ toModifiers attrs [CannotAttack]
   getModifiersFor _ _ _ = pure []

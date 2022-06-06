@@ -28,7 +28,7 @@ fauborgMarigny = location
   Squiggle
   [Triangle, Squiggle]
 
-instance HasModifiersFor env FauborgMarigny where
+instance HasModifiersFor FauborgMarigny where
   getModifiersFor _ (InvestigatorTarget iid) (FauborgMarigny attrs) =
     pure $ toModifiers
       attrs

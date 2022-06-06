@@ -18,7 +18,7 @@ newtype MindWipe3 = MindWipe3 EffectAttrs
 mindWipe3 :: EffectArgs -> MindWipe3
 mindWipe3 = MindWipe3 . uncurry4 (baseAttrs "50008")
 
-instance HasModifiersFor env MindWipe3 where
+instance HasModifiersFor MindWipe3 where
   getModifiersFor _ target (MindWipe3 a@EffectAttrs {..})
     | target == effectTarget = pure
     $ toModifiers a [Blank, DamageDealt (-1), HorrorDealt (-1)]

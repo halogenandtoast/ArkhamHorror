@@ -21,7 +21,7 @@ newtype DavidRenfield = DavidRenfield AssetAttrs
 davidRenfield :: AssetCard DavidRenfield
 davidRenfield = ally DavidRenfield Cards.davidRenfield (2, 1)
 
-instance HasModifiersFor env DavidRenfield where
+instance HasModifiersFor DavidRenfield where
   getModifiersFor _ (InvestigatorTarget iid) (DavidRenfield attrs)
     | attrs `controlledBy` iid = pure $ toModifiers
       attrs

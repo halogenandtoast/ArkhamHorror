@@ -1,11 +1,8 @@
-module Arkham.Classes.HasTokenValue
-  ( module Arkham.Classes.HasTokenValue
-  ) where
+module Arkham.Classes.HasTokenValue where
 
 import Arkham.InvestigatorId
-import Arkham.Projection
-import Arkham.Location.Attrs
 import Arkham.Token
+import Arkham.GameEnv
 
-class HasTokenValue m a where
-  getTokenValue :: Projection m LocationAttrs => InvestigatorId -> TokenFace -> a -> m TokenValue
+class HasTokenValue a where
+  getTokenValue :: InvestigatorId -> TokenFace -> a -> GameT TokenValue

@@ -25,7 +25,7 @@ theHiddenChamber :: LocationCard TheHiddenChamber
 theHiddenChamber =
   location TheHiddenChamber Cards.theHiddenChamber 3 (Static 0) NoSymbol []
 
-instance Query AssetMatcher env => HasModifiersFor env TheHiddenChamber where
+instance Query AssetMatcher env => HasModifiersFor TheHiddenChamber where
   getModifiersFor _ target (TheHiddenChamber attrs) | isTarget attrs target = do
     mKeyToTheChamber <- selectOne (assetIs Assets.keyToTheChamber)
     pure $ toModifiers

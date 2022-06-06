@@ -15,7 +15,7 @@ import Arkham.Treachery.Attrs
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype RuinAndDestruction = RuinAndDestruction TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ruinAndDestruction :: TreacheryCard RuinAndDestruction

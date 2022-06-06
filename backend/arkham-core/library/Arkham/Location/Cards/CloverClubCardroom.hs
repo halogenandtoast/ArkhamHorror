@@ -18,7 +18,7 @@ import Arkham.RequestedTokenStrategy
 import Arkham.Token
 
 newtype CloverClubCardroom = CloverClubCardroom LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubCardroom :: LocationCard CloverClubCardroom

@@ -16,7 +16,7 @@ import Arkham.Message hiding (MoveAction)
 import Arkham.Timing qualified as Timing
 
 newtype Balcony = Balcony LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 balcony :: LocationCard Balcony

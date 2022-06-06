@@ -24,7 +24,7 @@ newtype TheThirdNight = TheThirdNight AgendaAttrs
 theThirdNight :: AgendaCard TheThirdNight
 theThirdNight = agenda (3, A) TheThirdNight Cards.theThirdNight (Static 5)
 
-instance HasRecord env () => HasModifiersFor env TheThirdNight where
+instance HasRecord env () => HasModifiersFor TheThirdNight where
   getModifiersFor _ target (TheThirdNight a) | not (isTarget a target) = do
     moreConvictionThanDoubt <- getMoreConvictionThanDoubt
     pure $ toModifiers a $ [ DoomSubtracts | moreConvictionThanDoubt ]

@@ -18,7 +18,7 @@ import Arkham.Target
 import Arkham.Trait
 
 newtype MonsterSlayer5 = MonsterSlayer5 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 monsterSlayer5 :: EventCard MonsterSlayer5

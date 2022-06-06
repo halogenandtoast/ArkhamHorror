@@ -21,7 +21,7 @@ import Arkham.Query
 import Data.Maybe (fromJust)
 
 newtype UndergroundMuscle = UndergroundMuscle AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 undergroundMuscle :: AgendaCard UndergroundMuscle

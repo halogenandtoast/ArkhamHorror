@@ -30,7 +30,7 @@ narogath = enemyWith
   (1, 2)
   (preyL .~ Prey (NearestToEnemy (EnemyWithTrait Trait.Cultist <> NotEnemy (enemyIs Cards.narogath))))
 
-instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env LocationId) => HasModifiersFor env Narogath where
+instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env LocationId) => HasModifiersFor Narogath where
   getModifiersFor _ (InvestigatorTarget iid) (Narogath a@EnemyAttrs {..}) = case enemyLocation of
     Nothing -> pure []
     Just loc -> do

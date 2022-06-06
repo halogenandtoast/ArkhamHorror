@@ -25,7 +25,7 @@ newtype DreamsOfRlyeh = DreamsOfRlyeh TreacheryAttrs
 dreamsOfRlyeh :: TreacheryCard DreamsOfRlyeh
 dreamsOfRlyeh = treachery DreamsOfRlyeh Cards.dreamsOfRlyeh
 
-instance HasModifiersFor env DreamsOfRlyeh where
+instance HasModifiersFor DreamsOfRlyeh where
   getModifiersFor _ (InvestigatorTarget iid) (DreamsOfRlyeh attrs) =
     pure $ toModifiers attrs $ if treacheryOnInvestigator iid attrs
       then [SkillModifier SkillWillpower (-1), SanityModifier (-1)]

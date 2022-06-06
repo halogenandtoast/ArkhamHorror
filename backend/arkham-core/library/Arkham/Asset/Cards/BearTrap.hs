@@ -26,7 +26,7 @@ newtype BearTrap = BearTrap AssetAttrs
 bearTrap :: AssetCard BearTrap
 bearTrap = assetWith BearTrap Cards.bearTrap (isStoryL .~ True)
 
-instance HasModifiersFor env BearTrap where
+instance HasModifiersFor BearTrap where
   getModifiersFor _ (EnemyTarget eid) (BearTrap attrs@AssetAttrs {..})
     | Just eid == assetEnemy = pure
     $ toModifiers attrs [EnemyFight (-1), EnemyEvade (-1)]

@@ -17,7 +17,7 @@ newtype CelaenoFragments = CelaenoFragments AssetAttrs
 celaenoFragments :: AssetCard CelaenoFragments
 celaenoFragments = asset CelaenoFragments Cards.celaenoFragments
 
-instance HasCount CardCount env InvestigatorId => HasModifiersFor env CelaenoFragments where
+instance HasCount CardCount env InvestigatorId => HasModifiersFor CelaenoFragments where
   getModifiersFor _ (InvestigatorTarget iid) (CelaenoFragments attrs)
     | controlledBy attrs iid = do
       count' <- unCardCount <$> getCount iid

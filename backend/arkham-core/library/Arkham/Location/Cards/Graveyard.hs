@@ -15,7 +15,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype Graveyard = Graveyard LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 graveyard :: LocationCard Graveyard

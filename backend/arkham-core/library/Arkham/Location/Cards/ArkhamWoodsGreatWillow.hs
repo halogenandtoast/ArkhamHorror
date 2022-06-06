@@ -18,7 +18,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsGreatWillow :: LocationCard ArkhamWoodsGreatWillow

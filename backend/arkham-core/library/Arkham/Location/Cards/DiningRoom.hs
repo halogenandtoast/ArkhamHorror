@@ -20,7 +20,7 @@ import Arkham.Target
 import Arkham.Token
 
 newtype DiningRoom = DiningRoom LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 diningRoom :: LocationCard DiningRoom

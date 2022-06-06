@@ -17,7 +17,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype Lockpicks1 = Lockpicks1 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lockpicks1 :: AssetCard Lockpicks1

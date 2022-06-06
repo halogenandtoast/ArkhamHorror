@@ -10,12 +10,13 @@ import Arkham.Classes
 import Arkham.Effect.Attrs
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
+import Arkham.Helpers.Modifiers
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Target
 
 newtype WilliamYorick = WilliamYorick EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor env)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 williamYorick :: EffectArgs -> WilliamYorick

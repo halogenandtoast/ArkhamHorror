@@ -23,7 +23,7 @@ import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
 newtype ChaosAtTheCarnevale = ChaosAtTheCarnevale AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chaosAtTheCarnevale :: AgendaCard ChaosAtTheCarnevale

@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
 
 newtype CalledByTheMists = CalledByTheMists TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m)
+  deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 calledByTheMists :: TreacheryCard CalledByTheMists

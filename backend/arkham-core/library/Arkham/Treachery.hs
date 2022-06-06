@@ -44,7 +44,7 @@ instance
   , Query EnemyMatcher env
   , Query InvestigatorMatcher env
   )
-  => HasModifiersFor env Treachery where
+  => HasModifiersFor Treachery where
   getModifiersFor = $(entityF2 "Treachery" "getModifiersFor")
 
 instance HasCardCode Treachery where

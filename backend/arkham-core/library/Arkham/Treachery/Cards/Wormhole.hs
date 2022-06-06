@@ -15,7 +15,7 @@ import Arkham.Source
 import Arkham.Treachery.Attrs
 
 newtype Wormhole = Wormhole TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wormhole :: TreacheryCard Wormhole

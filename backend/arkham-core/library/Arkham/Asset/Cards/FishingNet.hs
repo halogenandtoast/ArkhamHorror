@@ -23,7 +23,7 @@ newtype FishingNet = FishingNet AssetAttrs
 fishingNet :: AssetCard FishingNet
 fishingNet = assetWith FishingNet Cards.fishingNet (isStoryL .~ True)
 
-instance HasModifiersFor env FishingNet where
+instance HasModifiersFor FishingNet where
   getModifiersFor _ (EnemyTarget eid) (FishingNet attrs) = pure $ toModifiers
     attrs
     [ RemoveKeyword Retaliate | assetEnemy attrs == Just eid ]

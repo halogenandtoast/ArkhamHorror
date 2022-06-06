@@ -25,7 +25,7 @@ newtype IveGotAPlan = IveGotAPlan EventAttrs
 iveGotAPlan :: EventCard IveGotAPlan
 iveGotAPlan = event IveGotAPlan Cards.iveGotAPlan
 
-instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor env IveGotAPlan where
+instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor IveGotAPlan where
   getModifiersFor (SkillTestSource iid _ _ (Just Fight)) (InvestigatorTarget _) (IveGotAPlan attrs)
     = do
       clueCount <- unClueCount <$> getCount iid

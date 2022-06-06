@@ -12,7 +12,7 @@ import Arkham.GameValue
 import Arkham.Location.Runner
 
 newtype VillageCommons = VillageCommons LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 villageCommons :: LocationCard VillageCommons

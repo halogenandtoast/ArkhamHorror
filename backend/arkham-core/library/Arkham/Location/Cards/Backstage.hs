@@ -31,7 +31,7 @@ backstage :: LocationCard Backstage
 backstage =
   location Backstage Cards.backstage 3 (Static 1) Diamond [Circle, Moon]
 
-instance HasModifiersFor env Backstage where
+instance HasModifiersFor Backstage where
   getModifiersFor (InvestigatorSource iid) (CardTarget card) (Backstage attrs)
     | iid `on` attrs = pure $ toModifiers
       attrs

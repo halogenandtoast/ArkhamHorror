@@ -32,7 +32,7 @@ instance HasAbilities StrangeSolutionAcidicIchor4 where
       $ Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Supply 1]
     ]
 
-instance HasModifiersFor env StrangeSolutionAcidicIchor4 where
+instance HasModifiersFor StrangeSolutionAcidicIchor4 where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (InvestigatorTarget iid) (StrangeSolutionAcidicIchor4 a)
     | controlledBy a iid && isSource a source
     = pure $ toModifiers a [BaseSkillOf SkillCombat 6, DamageDealt 2]

@@ -19,7 +19,7 @@ newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow EffectAttrs
 arkhamWoodsGreatWillow :: EffectArgs -> ArkhamWoodsGreatWillow
 arkhamWoodsGreatWillow = ArkhamWoodsGreatWillow . uncurry4 (baseAttrs "50033")
 
-instance HasModifiersFor env ArkhamWoodsGreatWillow where
+instance HasModifiersFor ArkhamWoodsGreatWillow where
   getModifiersFor _ target (ArkhamWoodsGreatWillow attrs)
     | target == effectTarget attrs = pure
     $ toModifiers attrs [AddKeyword Keyword.Surge]

@@ -16,7 +16,7 @@ import Arkham.Location.Helpers
 import Arkham.Message
 
 newtype Northside = Northside LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northside :: LocationCard Northside

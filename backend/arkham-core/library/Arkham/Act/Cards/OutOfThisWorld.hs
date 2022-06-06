@@ -19,7 +19,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype OutOfThisWorld = OutOfThisWorld ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outOfThisWorld :: ActCard OutOfThisWorld

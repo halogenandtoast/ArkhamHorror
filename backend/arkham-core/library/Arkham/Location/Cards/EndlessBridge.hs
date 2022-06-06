@@ -20,7 +20,7 @@ import Arkham.Timing qualified as Timing
 import Control.Monad.Extra (findM)
 
 newtype EndlessBridge = EndlessBridge LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 endlessBridge :: LocationCard EndlessBridge

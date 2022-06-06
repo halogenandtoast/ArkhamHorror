@@ -25,7 +25,7 @@ whispersInYourHeadAnxiety :: TreacheryCard WhispersInYourHeadAnxiety
 whispersInYourHeadAnxiety =
   treachery WhispersInYourHeadAnxiety Cards.whispersInYourHeadAnxiety
 
-instance HasModifiersFor env WhispersInYourHeadAnxiety where
+instance HasModifiersFor WhispersInYourHeadAnxiety where
   getModifiersFor _ (InvestigatorHandTarget _) (WhispersInYourHeadAnxiety a) = pure $ toModifiers a [CannotTriggerFastAbilities]
   getModifiersFor _ _ _ = pure []
 

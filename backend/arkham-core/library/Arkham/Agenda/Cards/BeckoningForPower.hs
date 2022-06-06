@@ -14,7 +14,7 @@ import Arkham.Message
 import Arkham.Resolution
 
 newtype BeckoningForPower = BeckoningForPower AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 beckoningForPower :: AgendaCard BeckoningForPower

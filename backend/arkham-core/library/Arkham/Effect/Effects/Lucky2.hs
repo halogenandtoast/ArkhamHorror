@@ -19,7 +19,7 @@ newtype Lucky2 = Lucky2 EffectAttrs
 lucky2 :: EffectArgs -> Lucky2
 lucky2 = Lucky2 . uncurry4 (baseAttrs "01084")
 
-instance HasModifiersFor env Lucky2 where
+instance HasModifiersFor Lucky2 where
   getModifiersFor _ target (Lucky2 a@EffectAttrs {..})
     | target == effectTarget = pure [toModifier a $ AnySkillValue 2]
   getModifiersFor _ _ _ = pure []

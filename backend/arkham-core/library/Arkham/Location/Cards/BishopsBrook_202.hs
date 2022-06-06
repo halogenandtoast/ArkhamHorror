@@ -26,7 +26,7 @@ bishopsBrook_202 = location
   Square
   [Plus, Circle, Triangle]
 
-instance HasModifiersFor env BishopsBrook_202 where
+instance HasModifiersFor BishopsBrook_202 where
   getModifiersFor _ (EnemyTarget eid) (BishopsBrook_202 attrs@LocationAttrs {..})
     | eid `elem` locationEnemies
     = pure $ toModifiers attrs [HorrorDealt 1]

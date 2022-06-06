@@ -14,7 +14,7 @@ import Arkham.Source
 import Arkham.Target
 
 newtype WardOfProtection5 = WardOfProtection5 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wardOfProtection5 :: EventCard WardOfProtection5

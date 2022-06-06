@@ -11,7 +11,7 @@ import Arkham.Target
 import Arkham.Treachery.Attrs
 
 newtype CryptChill = CryptChill TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cryptChill :: TreacheryCard CryptChill

@@ -17,7 +17,7 @@ newtype SilasBishop = SilasBishop EnemyAttrs
 silasBishop :: EnemyCard SilasBishop
 silasBishop = enemy SilasBishop Cards.silasBishop (3, PerPlayer 6, 7) (2, 2)
 
-instance HasModifiersFor env SilasBishop where
+instance HasModifiersFor SilasBishop where
   getModifiersFor _ target (SilasBishop attrs) | isTarget attrs target =
     pure $ toModifiers attrs [CannotMakeAttacksOfOpportunity]
   getModifiersFor _ _ _ = pure []

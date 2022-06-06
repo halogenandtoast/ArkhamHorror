@@ -17,7 +17,7 @@ import Arkham.Treachery.Attrs
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype Kidnapped = Kidnapped TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m)
+  deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 kidnapped :: TreacheryCard Kidnapped

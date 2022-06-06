@@ -12,7 +12,7 @@ import Arkham.Trait
 import Arkham.Treachery.Attrs
 
 newtype OnWingsOfDarkness = OnWingsOfDarkness TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onWingsOfDarkness :: TreacheryCard OnWingsOfDarkness

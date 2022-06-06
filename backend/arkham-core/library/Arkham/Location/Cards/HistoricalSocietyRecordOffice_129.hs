@@ -33,7 +33,7 @@ historicalSocietyRecordOffice_129 = locationWithRevealedSideConnections
   Plus
   [Square]
 
-instance HasModifiersFor env HistoricalSocietyRecordOffice_129 where
+instance HasModifiersFor HistoricalSocietyRecordOffice_129 where
   getModifiersFor _ (EnemyTarget eid) (HistoricalSocietyRecordOffice_129 attrs)
     = pure $ if eid `member` locationEnemies attrs
       then toModifiers attrs [EnemyFight 1, EnemyEvade 1]

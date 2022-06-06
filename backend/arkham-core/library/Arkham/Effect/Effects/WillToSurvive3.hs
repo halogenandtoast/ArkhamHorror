@@ -18,7 +18,7 @@ newtype WillToSurvive3 = WillToSurvive3 EffectAttrs
 willToSurvive3 :: EffectArgs -> WillToSurvive3
 willToSurvive3 = WillToSurvive3 . uncurry4 (baseAttrs "01085")
 
-instance HasModifiersFor env WillToSurvive3 where
+instance HasModifiersFor WillToSurvive3 where
   getModifiersFor _ target (WillToSurvive3 a@EffectAttrs {..})
     | target == effectTarget = pure
       [toModifier a DoNotDrawChaosTokensForSkillChecks]

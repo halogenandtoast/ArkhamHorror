@@ -16,7 +16,7 @@ import Arkham.Target
 import Arkham.Skill.Attrs
 
 newtype InspiringPresence = InspiringPresence SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 inspiringPresence :: SkillCard InspiringPresence

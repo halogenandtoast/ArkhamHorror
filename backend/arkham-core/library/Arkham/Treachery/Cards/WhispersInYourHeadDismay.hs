@@ -27,7 +27,7 @@ whispersInYourHeadDismay :: TreacheryCard WhispersInYourHeadDismay
 whispersInYourHeadDismay =
   treachery WhispersInYourHeadDismay Cards.whispersInYourHeadDismay
 
-instance HasModifiersFor env WhispersInYourHeadDismay where
+instance HasModifiersFor WhispersInYourHeadDismay where
   getModifiersFor _ (InvestigatorHandTarget _) (WhispersInYourHeadDismay a) = pure $ toModifiers a [CannotCommitCards $ CardWithType SkillType]
   getModifiersFor _ _ _ = pure []
 

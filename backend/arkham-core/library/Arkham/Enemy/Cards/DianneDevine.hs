@@ -25,7 +25,7 @@ newtype DianneDevine = DianneDevine EnemyAttrs
 dianneDevine :: EnemyCard DianneDevine
 dianneDevine = enemy DianneDevine Cards.dianneDevine (2, Static 3, 2) (0, 0)
 
-instance HasId LocationId env InvestigatorId => HasModifiersFor env DianneDevine where
+instance HasId LocationId env InvestigatorId => HasModifiersFor DianneDevine where
   getModifiersFor _ (InvestigatorTarget iid) (DianneDevine a) = do
     lid <- getId iid
     pure $ toModifiers a $ if Just lid == enemyLocation a

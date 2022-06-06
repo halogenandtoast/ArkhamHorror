@@ -16,7 +16,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype ArcaneStudies = ArcaneStudies AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arcaneStudies :: AssetCard ArcaneStudies

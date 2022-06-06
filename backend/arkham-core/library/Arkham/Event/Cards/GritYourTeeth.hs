@@ -17,7 +17,7 @@ import Arkham.Modifier
 import Arkham.Target
 
 newtype GritYourTeeth = GritYourTeeth EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gritYourTeeth :: EventCard GritYourTeeth

@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 
 newtype Bathroom = Bathroom LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bathroom :: LocationCard Bathroom

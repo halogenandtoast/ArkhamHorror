@@ -15,7 +15,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype BloodPact3 = BloodPact3 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bloodPact3 :: AssetCard BloodPact3

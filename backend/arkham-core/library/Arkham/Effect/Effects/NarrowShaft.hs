@@ -22,7 +22,7 @@ narrowShaft :: EffectArgs -> NarrowShaft
 narrowShaft =
   NarrowShaft . uncurry4 (baseAttrs "03254")
 
-instance HasModifiersFor env NarrowShaft
+instance HasModifiersFor NarrowShaft
 
 instance (Query LocationMatcher env, HasQueue env) => RunMessage NarrowShaft where
   runMessage msg e@(NarrowShaft attrs) = case msg of

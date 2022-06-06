@@ -7,7 +7,7 @@ import Arkham.GameValue
 import Arkham.Location.Runner
 
 newtype Study = Study LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 study :: LocationCard Study

@@ -19,7 +19,7 @@ newtype MindOverMatter = MindOverMatter EffectAttrs
 mindOverMatter :: EffectArgs -> MindOverMatter
 mindOverMatter = MindOverMatter . uncurry4 (baseAttrs "01036")
 
-instance HasModifiersFor env MindOverMatter where
+instance HasModifiersFor MindOverMatter where
   getModifiersFor _ target (MindOverMatter a@EffectAttrs {..})
     | target == effectTarget = pure $ toModifiers
       a

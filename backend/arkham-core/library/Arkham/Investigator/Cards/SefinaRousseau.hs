@@ -14,7 +14,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype SefinaRousseau = SefinaRousseau InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor env)
+  deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sefinaRousseau :: InvestigatorCard SefinaRousseau

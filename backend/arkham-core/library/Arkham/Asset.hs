@@ -44,7 +44,7 @@ instance
   , Query AssetMatcher env
   , HasSkillTest env
   )
-  => HasModifiersFor env Asset where
+  => HasModifiersFor Asset where
   getModifiersFor = $(entityF2 "Asset" "getModifiersFor")
 
 instance RunMessage Asset where

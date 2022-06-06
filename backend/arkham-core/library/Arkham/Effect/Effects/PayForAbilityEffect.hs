@@ -45,7 +45,7 @@ payForAbilityEffect eid ability source target windows' =
     , effectWindow = Nothing
     }
 
-instance HasModifiersFor env PayForAbilityEffect where
+instance HasModifiersFor PayForAbilityEffect where
   getModifiersFor _ target (PayForAbilityEffect (With EffectAttrs {..} _))
     | target == effectTarget = case effectMetadata of
       Just (EffectModifiers modifiers) -> pure modifiers

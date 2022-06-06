@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype RabbitsFoot = RabbitsFoot AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rabbitsFoot :: AssetCard RabbitsFoot

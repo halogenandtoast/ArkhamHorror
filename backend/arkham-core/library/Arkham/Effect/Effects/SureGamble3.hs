@@ -18,7 +18,7 @@ newtype SureGamble3 = SureGamble3 EffectAttrs
 sureGamble3 :: EffectArgs -> SureGamble3
 sureGamble3 = SureGamble3 . uncurry4 (baseAttrs "01088")
 
-instance HasModifiersFor env SureGamble3 where
+instance HasModifiersFor SureGamble3 where
   getModifiersFor _ target (SureGamble3 a@EffectAttrs {..})
     | target == effectTarget = pure [toModifier a NegativeToPositive]
   getModifiersFor _ _ _ = pure []

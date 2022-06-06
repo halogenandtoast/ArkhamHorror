@@ -46,7 +46,7 @@ boneFilledCaverns = locationWith
     )
   )
 
-instance HasModifiersFor env BoneFilledCaverns where
+instance HasModifiersFor BoneFilledCaverns where
   getModifiersFor _ (InvestigatorTarget iid) (BoneFilledCaverns (attrs `With` metadata))
     = case affectedInvestigator metadata of
       Just iid' | iid == iid' ->

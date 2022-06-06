@@ -17,7 +17,7 @@ import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype TheBarrier = TheBarrier ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBarrier :: ActCard TheBarrier

@@ -17,7 +17,7 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype AshleighClarke = AshleighClarke AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ashleighClarke :: AssetCard AshleighClarke

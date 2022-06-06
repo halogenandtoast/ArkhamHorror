@@ -19,7 +19,7 @@ import Arkham.Message
 import Arkham.Scenario.Deck
 
 newtype TorturousDescent = TorturousDescent AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 torturousDescent :: AgendaCard TorturousDescent

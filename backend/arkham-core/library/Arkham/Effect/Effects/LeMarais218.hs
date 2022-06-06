@@ -18,7 +18,7 @@ newtype LeMarais218 = LeMarais218 EffectAttrs
 leMarais218 :: EffectArgs -> LeMarais218
 leMarais218 = LeMarais218 . uncurry4 (baseAttrs "03218")
 
-instance HasModifiersFor env LeMarais218 where
+instance HasModifiersFor LeMarais218 where
   getModifiersFor _ target (LeMarais218 attrs)
     | target == effectTarget attrs = pure $ toModifiers attrs [CannotMove]
   getModifiersFor _ _ _ = pure []

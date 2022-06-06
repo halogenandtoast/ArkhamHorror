@@ -12,7 +12,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype EighteenDerringer = EighteenDerringer EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eighteenDerringer :: EffectArgs -> EighteenDerringer

@@ -36,7 +36,7 @@ instance HasAbilities JazzMulligan where
         $ ActionCost 1
     ]
 
-instance HasSet Trait env LocationId => HasModifiersFor env JazzMulligan where
+instance HasSet Trait env LocationId => HasModifiersFor JazzMulligan where
   getModifiersFor (InvestigatorSource iid) (LocationTarget lid) (JazzMulligan attrs)
     | controlledBy attrs iid
     = do

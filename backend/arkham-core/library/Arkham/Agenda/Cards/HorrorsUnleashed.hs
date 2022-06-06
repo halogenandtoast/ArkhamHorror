@@ -34,7 +34,7 @@ instance HasAbilities HorrorsUnleashed where
   getAbilities (HorrorsUnleashed x) =
     [mkAbility x 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase]
 
-instance HasSet Trait env EnemyId => HasModifiersFor env HorrorsUnleashed where
+instance HasSet Trait env EnemyId => HasModifiersFor HorrorsUnleashed where
   getModifiersFor _ (EnemyTarget eid) (HorrorsUnleashed attrs) = do
     isAbomination <- member Abomination <$> getSet eid
     if isAbomination

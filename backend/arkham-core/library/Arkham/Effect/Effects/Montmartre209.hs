@@ -24,7 +24,7 @@ newtype Montmartre209 = Montmartre209 EffectAttrs
 montmartre209 :: EffectArgs -> Montmartre209
 montmartre209 = Montmartre209 . uncurry4 (baseAttrs "03209")
 
-instance HasModifiersFor env Montmartre209 where
+instance HasModifiersFor Montmartre209 where
   getModifiersFor _ (InvestigatorTarget _) (Montmartre209 a) =
     pure $ toModifiers a [TopCardOfDeckIsRevealed, CanPlayTopOfDeck AnyCard]
   getModifiersFor _ _ _ = pure []

@@ -26,7 +26,7 @@ theNecronomicon =
     $ (horrorL ?~ 3)
     . (canLeavePlayByNormalMeansL .~ False)
 
-instance HasModifiersFor env TheNecronomicon where
+instance HasModifiersFor TheNecronomicon where
   getModifiersFor (SkillTestSource iid _ _ _) (TokenTarget t) (TheNecronomicon a)
     | Token.tokenFace t == Token.ElderSign
     = pure

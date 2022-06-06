@@ -18,7 +18,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype HelplessPassenger = HelplessPassenger AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 helplessPassenger :: AssetCard HelplessPassenger

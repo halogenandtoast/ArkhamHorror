@@ -11,7 +11,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype Elusive = Elusive EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elusive :: EventCard Elusive

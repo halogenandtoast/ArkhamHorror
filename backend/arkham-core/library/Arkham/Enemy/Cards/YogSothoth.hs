@@ -26,7 +26,7 @@ newtype YogSothoth = YogSothoth EnemyAttrs
 yogSothoth :: EnemyCard YogSothoth
 yogSothoth = enemy YogSothoth Cards.yogSothoth (4, Static 4, 0) (1, 5)
 
-instance HasCount PlayerCount env () => HasModifiersFor env YogSothoth where
+instance HasCount PlayerCount env () => HasModifiersFor YogSothoth where
   getModifiersFor _ target (YogSothoth a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 6)
     pure $ toModifiers

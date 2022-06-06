@@ -25,7 +25,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype BidingItsTime = BidingItsTime AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bidingItsTime :: AgendaCard BidingItsTime

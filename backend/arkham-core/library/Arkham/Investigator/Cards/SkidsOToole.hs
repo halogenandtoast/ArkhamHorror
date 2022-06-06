@@ -15,7 +15,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype SkidsOToole = SkidsOToole InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor env)
+  deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 skidsOToole :: InvestigatorCard SkidsOToole

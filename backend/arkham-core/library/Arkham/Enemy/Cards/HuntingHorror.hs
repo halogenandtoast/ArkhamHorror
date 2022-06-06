@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 
 newtype HuntingHorror = HuntingHorror EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingHorror :: EnemyCard HuntingHorror

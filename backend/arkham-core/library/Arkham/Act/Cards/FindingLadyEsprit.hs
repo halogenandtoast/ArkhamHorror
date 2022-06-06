@@ -27,7 +27,7 @@ import Data.HashSet qualified as HashSet
 import Data.Maybe (fromJust)
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 findingLadyEsprit :: ActCard FindingLadyEsprit

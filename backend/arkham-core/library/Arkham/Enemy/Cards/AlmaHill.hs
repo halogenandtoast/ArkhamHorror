@@ -16,7 +16,7 @@ import Arkham.Matcher
 import Arkham.Message
 
 newtype AlmaHill = AlmaHill EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 almaHill :: EnemyCard AlmaHill

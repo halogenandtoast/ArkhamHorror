@@ -29,7 +29,7 @@ theReallyBadOnesV1 :: ActCard TheReallyBadOnesV1
 theReallyBadOnesV1 =
   act (2, A) TheReallyBadOnesV1 Cards.theReallyBadOnesV1 Nothing
 
-instance Query LocationMatcher env => HasModifiersFor env TheReallyBadOnesV1 where
+instance Query LocationMatcher env => HasModifiersFor TheReallyBadOnesV1 where
   getModifiersFor _ (LocationTarget lid) (TheReallyBadOnesV1 attrs) = do
     targets <- select UnrevealedLocation
     pure

@@ -22,7 +22,7 @@ newtype LaboratoryAssistant = LaboratoryAssistant AssetAttrs
 laboratoryAssistant :: AssetCard LaboratoryAssistant
 laboratoryAssistant = ally LaboratoryAssistant Cards.laboratoryAssistant (1, 2)
 
-instance HasModifiersFor env LaboratoryAssistant where
+instance HasModifiersFor LaboratoryAssistant where
   getModifiersFor _ (InvestigatorTarget iid) (LaboratoryAssistant attrs) =
     pure $ toModifiers attrs [ HandSize 2 | controlledBy attrs iid ]
   getModifiersFor _ _ _ = pure []

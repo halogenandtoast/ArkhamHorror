@@ -24,7 +24,7 @@ newtype Haunted = Haunted TreacheryAttrs
 haunted :: TreacheryCard Haunted
 haunted = treachery Haunted Cards.haunted
 
-instance HasModifiersFor env Haunted where
+instance HasModifiersFor Haunted where
   getModifiersFor _ (InvestigatorTarget iid) (Haunted attrs) =
     pure $ toModifiers
       attrs

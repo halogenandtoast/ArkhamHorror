@@ -15,7 +15,7 @@ newtype HolyRosary = HolyRosary AssetAttrs
 holyRosary :: AssetCard HolyRosary
 holyRosary = assetWith HolyRosary Cards.holyRosary (sanityL ?~ 2)
 
-instance HasModifiersFor env  HolyRosary where
+instance HasModifiersFor  HolyRosary where
   getModifiersFor _ (InvestigatorTarget iid) (HolyRosary a) =
     pure [ toModifier a (SkillModifier SkillWillpower 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

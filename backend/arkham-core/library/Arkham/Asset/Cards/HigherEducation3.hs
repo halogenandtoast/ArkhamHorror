@@ -17,7 +17,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype HigherEducation3 = HigherEducation3 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 higherEducation3 :: AssetCard HigherEducation3

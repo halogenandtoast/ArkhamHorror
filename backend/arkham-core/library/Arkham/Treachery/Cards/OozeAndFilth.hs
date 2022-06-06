@@ -24,7 +24,7 @@ newtype OozeAndFilth = OozeAndFilth TreacheryAttrs
 oozeAndFilth :: TreacheryCard OozeAndFilth
 oozeAndFilth = treachery OozeAndFilth Cards.oozeAndFilth
 
-instance HasModifiersFor env OozeAndFilth where
+instance HasModifiersFor OozeAndFilth where
   getModifiersFor _ (LocationTarget _) (OozeAndFilth a) =
     pure $ toModifiers a [ShroudModifier 1]
   getModifiersFor _ _ _ = pure []

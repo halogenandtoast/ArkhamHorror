@@ -22,7 +22,7 @@ newtype Metadata = Metadata { advancingInvestigator :: Maybe InvestigatorId }
   deriving anyclass (ToJSON, FromJSON)
 
 newtype Run = Run (ActAttrs `With` Metadata)
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 run :: ActCard Run

@@ -20,7 +20,7 @@ import Arkham.Target
 import qualified Arkham.Timing as Timing
 
 newtype CanalSaintMartin = CanalSaintMartin LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 canalSaintMartin :: LocationCard CanalSaintMartin

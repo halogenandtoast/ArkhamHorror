@@ -28,7 +28,7 @@ schoolhouse_212 = location
   Moon
   [Plus, Squiggle, Circle]
 
-instance HasModifiersFor env Schoolhouse_212 where
+instance HasModifiersFor Schoolhouse_212 where
   getModifiersFor _ (InvestigatorTarget iid) (Schoolhouse_212 attrs) =
     pure $ toModifiers
       attrs

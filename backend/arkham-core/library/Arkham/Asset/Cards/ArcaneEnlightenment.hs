@@ -19,7 +19,7 @@ newtype ArcaneEnlightenment = ArcaneEnlightenment AssetAttrs
 arcaneEnlightenment :: AssetCard ArcaneEnlightenment
 arcaneEnlightenment = asset ArcaneEnlightenment Cards.arcaneEnlightenment
 
-instance HasModifiersFor env ArcaneEnlightenment where
+instance HasModifiersFor ArcaneEnlightenment where
   getModifiersFor _ (InvestigatorTarget iid) (ArcaneEnlightenment attrs) =
     pure [ toModifier attrs (HandSize 1) | controlledBy attrs iid ]
   getModifiersFor _ _ _ = pure []

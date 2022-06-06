@@ -24,7 +24,7 @@ guestHall = location
   T
   [Circle, Heart, Star, Square]
 
-instance HasModifiersFor env GuestHall where
+instance HasModifiersFor GuestHall where
   getModifiersFor _ (InvestigatorTarget iid) (GuestHall attrs) =
     pure $ toModifiers
       attrs

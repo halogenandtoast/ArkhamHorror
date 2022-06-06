@@ -10,7 +10,7 @@ import Arkham.Token
 import Arkham.Treachery.Attrs
 
 newtype FinalRhapsody = FinalRhapsody TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 finalRhapsody :: TreacheryCard FinalRhapsody

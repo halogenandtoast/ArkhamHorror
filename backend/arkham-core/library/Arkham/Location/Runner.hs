@@ -61,7 +61,7 @@ type LocationRunner env =
   , HasList HandCard env InvestigatorId
   , HasList LocationName env ()
   , HasList UsedAbility env ()
-  , HasModifiersFor env ()
+  , HasModifiersFor ()
   , HasName env LocationId
   , HasSet ActId env ()
   , HasSet ConnectedLocationId env LocationId

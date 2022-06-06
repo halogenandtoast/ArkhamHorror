@@ -30,7 +30,7 @@ theOath = act
   Cards.theOath
   (Just $ GroupClueCost (PerPlayer 3) (locationIs Locations.hiddenLibrary))
 
-instance HasModifiersFor env TheOath where
+instance HasModifiersFor TheOath where
   getModifiersFor _ (LocationTarget _) (TheOath attrs) = do
     pure $ toModifiers
       attrs

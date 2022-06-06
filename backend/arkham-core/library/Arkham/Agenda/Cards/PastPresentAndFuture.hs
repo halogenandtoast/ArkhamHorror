@@ -21,7 +21,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype PastPresentAndFuture = PastPresentAndFuture AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pastPresentAndFuture :: AgendaCard PastPresentAndFuture

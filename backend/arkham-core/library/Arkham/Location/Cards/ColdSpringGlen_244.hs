@@ -34,7 +34,7 @@ coldSpringGlen_244 = location
   Triangle
   [Circle, Diamond, Plus]
 
-instance HasModifiersFor env ColdSpringGlen_244 where
+instance HasModifiersFor ColdSpringGlen_244 where
   getModifiersFor _ (EnemyTarget eid) (ColdSpringGlen_244 attrs) =
     pure $ toModifiers
       attrs

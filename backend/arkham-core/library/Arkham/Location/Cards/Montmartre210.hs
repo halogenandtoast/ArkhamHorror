@@ -19,7 +19,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype Montmartre210 = Montmartre210 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 montmartre210 :: LocationCard Montmartre210

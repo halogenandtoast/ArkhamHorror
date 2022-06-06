@@ -29,7 +29,7 @@ houseInTheReeds_211 = location
   Squiggle
   [Diamond, Moon]
 
-instance HasModifiersFor env HouseInTheReeds_211
+instance HasModifiersFor HouseInTheReeds_211
 
 instance HasAbilities HouseInTheReeds_211 where
   getAbilities (HouseInTheReeds_211 x) = do

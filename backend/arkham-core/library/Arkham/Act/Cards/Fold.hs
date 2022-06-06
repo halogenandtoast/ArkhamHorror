@@ -25,7 +25,7 @@ import Arkham.Source
 import Arkham.Target
 
 newtype Fold = Fold ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fold :: ActCard Fold

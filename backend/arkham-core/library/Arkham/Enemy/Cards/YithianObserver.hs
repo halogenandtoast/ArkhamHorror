@@ -16,7 +16,7 @@ import Arkham.Query
 import Arkham.Timing qualified as Timing
 
 newtype YithianObserver = YithianObserver EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yithianObserver :: EnemyCard YithianObserver

@@ -24,7 +24,7 @@ newtype EverVigilant1 = EverVigilant1 EventAttrs
 everVigilant1 :: EventCard EverVigilant1
 everVigilant1 = event EverVigilant1 Cards.everVigilant1
 
-instance HasModifiersFor env EverVigilant1 where
+instance HasModifiersFor EverVigilant1 where
   getModifiersFor _ (InvestigatorTarget iid) (EverVigilant1 attrs)
     | iid == eventOwner attrs = pure
     $ toModifiers attrs [ReduceCostOf AnyCard 1]

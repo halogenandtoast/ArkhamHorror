@@ -26,7 +26,7 @@ osbornsGeneralStore_206 = location
   Circle
   [Moon, Square]
 
-instance HasModifiersFor env OsbornsGeneralStore_206 where
+instance HasModifiersFor OsbornsGeneralStore_206 where
   getModifiersFor _ (InvestigatorTarget iid) (OsbornsGeneralStore_206 attrs) =
     pure $ toModifiers
       attrs

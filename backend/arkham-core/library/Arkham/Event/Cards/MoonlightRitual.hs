@@ -16,7 +16,7 @@ import Arkham.Projection
 import Arkham.Target
 
 newtype MoonlightRitual = MoonlightRitual EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 moonlightRitual :: EventCard MoonlightRitual

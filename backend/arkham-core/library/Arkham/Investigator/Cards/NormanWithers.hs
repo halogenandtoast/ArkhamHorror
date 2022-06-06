@@ -36,7 +36,7 @@ normanWithers = investigator
     , agility = 1
     }
 
-instance HasModifiersFor env NormanWithers where
+instance HasModifiersFor NormanWithers where
   getModifiersFor _ target (NormanWithers (a `With` metadata))
     | isTarget a target
     = pure

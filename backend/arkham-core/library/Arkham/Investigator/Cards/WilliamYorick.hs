@@ -19,7 +19,7 @@ import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
 newtype WilliamYorick = WilliamYorick InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor env)
+  deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 williamYorick :: InvestigatorCard WilliamYorick

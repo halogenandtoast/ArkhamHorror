@@ -30,7 +30,7 @@ instance HasAbilities Plucky1 where
     | idx <- [1, 2]
     ]
 
-instance HasModifiersFor env Plucky1 where
+instance HasModifiersFor Plucky1 where
   getModifiersFor _ (AssetTarget aid) (Plucky1 attrs) | toId attrs == aid =
     pure $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor _ _ _ = pure []

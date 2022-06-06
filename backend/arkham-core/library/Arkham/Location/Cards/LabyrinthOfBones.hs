@@ -21,7 +21,7 @@ import Arkham.Scenarios.ThePallidMask.Helpers
 import Arkham.Timing qualified as Timing
 
 newtype LabyrinthOfBones = LabyrinthOfBones LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 labyrinthOfBones :: LocationCard LabyrinthOfBones

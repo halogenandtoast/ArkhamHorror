@@ -13,7 +13,7 @@ import Arkham.Treachery.Cards.FrozenInFear
 
 newtype FrozenInFearAPhantomOfTruth = FrozenInFearAPhantomOfTruth FrozenInFear
   deriving anyclass IsTreachery
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor env, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor, HasAbilities)
 
 frozenInFearAPhantomOfTruth :: TreacheryCard FrozenInFearAPhantomOfTruth
 frozenInFearAPhantomOfTruth =

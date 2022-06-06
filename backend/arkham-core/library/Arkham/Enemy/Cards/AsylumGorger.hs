@@ -14,7 +14,7 @@ newtype AsylumGorger = AsylumGorger EnemyAttrs
   deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
-instance HasModifiersFor env AsylumGorger where
+instance HasModifiersFor AsylumGorger where
   getModifiersFor _ target (AsylumGorger a) | isTarget a target = do
     pure
       $ toModifiers a

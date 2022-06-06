@@ -18,7 +18,7 @@ import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
 newtype LuckyDice2 = LuckyDice2 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 luckyDice2 :: AssetCard LuckyDice2

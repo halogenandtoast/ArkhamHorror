@@ -24,7 +24,7 @@ newtype DrawingTheSign = DrawingTheSign TreacheryAttrs
 drawingTheSign :: TreacheryCard DrawingTheSign
 drawingTheSign = treachery DrawingTheSign Cards.drawingTheSign
 
-instance HasModifiersFor env DrawingTheSign where
+instance HasModifiersFor DrawingTheSign where
   getModifiersFor _ (InvestigatorTarget iid) (DrawingTheSign attrs) =
     pure $ toModifiers
       attrs

@@ -21,7 +21,7 @@ import Arkham.Token
 import Arkham.Trait
 
 newtype TheStrangerTheShoresOfHali = TheStrangerTheShoresOfHali ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theStrangerTheShoresOfHali :: ActCard TheStrangerTheShoresOfHali

@@ -28,7 +28,7 @@ administrationOffice_131 = location
   Triangle
   [Square]
 
-instance HasCount CardCount env InvestigatorId => HasModifiersFor env AdministrationOffice_131 where
+instance HasCount CardCount env InvestigatorId => HasModifiersFor AdministrationOffice_131 where
   getModifiersFor (InvestigatorSource iid) target (AdministrationOffice_131 attrs)
     | isTarget attrs target
     = do

@@ -16,7 +16,7 @@ import Arkham.Location.Helpers
 import Arkham.Message
 
 newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 southsideHistoricalSociety :: LocationCard SouthsideHistoricalSociety

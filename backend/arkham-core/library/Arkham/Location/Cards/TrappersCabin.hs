@@ -30,7 +30,7 @@ trappersCabin :: LocationCard TrappersCabin
 trappersCabin =
   location TrappersCabin Cards.trappersCabin 3 (Static 0) Moon [Diamond, Moon]
 
-instance HasModifiersFor env TrappersCabin where
+instance HasModifiersFor TrappersCabin where
   getModifiersFor _ (InvestigatorTarget iid) (TrappersCabin attrs) =
     pure $ toModifiers
       attrs

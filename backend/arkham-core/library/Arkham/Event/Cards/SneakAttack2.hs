@@ -14,7 +14,7 @@ import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
 
 newtype SneakAttack2 = SneakAttack2 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sneakAttack2 :: EventCard SneakAttack2

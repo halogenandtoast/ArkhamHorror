@@ -17,7 +17,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype JennysTwin45s = JennysTwin45s AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jennysTwin45s :: AssetCard JennysTwin45s

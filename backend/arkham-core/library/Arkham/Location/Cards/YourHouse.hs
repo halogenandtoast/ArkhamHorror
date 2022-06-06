@@ -30,7 +30,7 @@ yourHouse :: LocationCard YourHouse
 yourHouse =
   location YourHouse Cards.yourHouse 2 (PerPlayer 1) Squiggle [Circle]
 
-instance Query EnemyMatcher env => HasModifiersFor env YourHouse where
+instance Query EnemyMatcher env => HasModifiersFor YourHouse where
   getModifiersFor _ (EnemyTarget eid) (YourHouse attrs) = do
     isGhoulPriest <- member eid <$> select (enemyIs $ Cards.ghoulPriest)
     pure $ toModifiers attrs [SpawnLocation (LocationWithId $ toId attrs) | isGhoulPriest]

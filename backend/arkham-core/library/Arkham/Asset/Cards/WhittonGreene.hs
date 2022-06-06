@@ -37,7 +37,7 @@ instance HasAbilities WhittonGreene where
         (ExhaustCost $ toTarget x)
     ]
 
-instance Query AssetMatcher env => HasModifiersFor env WhittonGreene where
+instance Query AssetMatcher env => HasModifiersFor WhittonGreene where
   getModifiersFor _ (InvestigatorTarget iid) (WhittonGreene a) | controlledBy a iid =
     do
       active <- selectAny (AssetControlledBy (InvestigatorWithId iid) <> AssetOneOf [AssetWithTrait Tome, AssetWithTrait Relic])

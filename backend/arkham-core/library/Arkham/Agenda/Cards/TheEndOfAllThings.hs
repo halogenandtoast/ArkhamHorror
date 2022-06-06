@@ -20,7 +20,7 @@ import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
 newtype TheEndOfAllThings = TheEndOfAllThings AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEndOfAllThings :: AgendaCard TheEndOfAllThings

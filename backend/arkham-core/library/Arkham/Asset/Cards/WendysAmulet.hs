@@ -16,7 +16,7 @@ newtype WendysAmulet = WendysAmulet AssetAttrs
 wendysAmulet :: AssetCard WendysAmulet
 wendysAmulet = asset WendysAmulet Cards.wendysAmulet
 
-instance HasId InvestigatorId env EventId => HasModifiersFor env WendysAmulet where
+instance HasId InvestigatorId env EventId => HasModifiersFor WendysAmulet where
   getModifiersFor _ (InvestigatorTarget iid) (WendysAmulet a) =
     pure $ toModifiers
       a

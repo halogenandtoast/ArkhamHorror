@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype CongregationalChurch_208 = CongregationalChurch_208 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 congregationalChurch_208 :: LocationCard CongregationalChurch_208

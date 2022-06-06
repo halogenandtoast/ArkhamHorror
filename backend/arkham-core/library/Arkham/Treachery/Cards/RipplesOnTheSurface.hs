@@ -30,7 +30,7 @@ instance
   ( HasId LocationId env InvestigatorId
   , HasSet Trait env LocationId
   )
-  => HasModifiersFor env RipplesOnTheSurface where
+  => HasModifiersFor RipplesOnTheSurface where
   getModifiersFor (SkillTestSource _ _ source _) (InvestigatorTarget iid) (RipplesOnTheSurface attrs)
     | isSource attrs source
     = do

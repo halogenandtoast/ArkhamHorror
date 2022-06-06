@@ -22,7 +22,7 @@ newtype Lockpicks1 = Lockpicks1 EffectAttrs
 lockpicks1 :: EffectArgs -> Lockpicks1
 lockpicks1 = Lockpicks1 . uncurry4 (baseAttrs "03031")
 
-instance HasModifiersFor env Lockpicks1 where
+instance HasModifiersFor Lockpicks1 where
   getModifiersFor _ target (Lockpicks1 a) | target == effectTarget a =
     case effectMetadata a of
       Just (EffectInt n) -> pure $ toModifiers a [AnySkillValue n]

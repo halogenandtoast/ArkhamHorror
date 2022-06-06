@@ -16,7 +16,7 @@ import Arkham.Location.Attrs ( Field(..) )
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype CollapsingReality = CollapsingReality TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 collapsingReality :: TreacheryCard CollapsingReality

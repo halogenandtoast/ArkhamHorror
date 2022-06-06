@@ -25,7 +25,7 @@ stubbornDetective = enemyWith
   (1, 0)
   (\a -> a & preyL .~ BearerOf (toId a))
 
-instance HasId LocationId env InvestigatorId => HasModifiersFor env StubbornDetective where
+instance HasId LocationId env InvestigatorId => HasModifiersFor StubbornDetective where
   getModifiersFor _ (InvestigatorTarget iid) (StubbornDetective a@EnemyAttrs {..})
     | spawned a
     = do

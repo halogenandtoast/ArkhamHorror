@@ -29,7 +29,7 @@ newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
 unhallowedCountry :: TreacheryCard UnhallowedCountry
 unhallowedCountry = treachery UnhallowedCountry Cards.unhallowedCountry
 
-instance (HasSet Trait env AssetId, Query InvestigatorMatcher env) => HasModifiersFor env UnhallowedCountry where
+instance (HasSet Trait env AssetId, Query InvestigatorMatcher env) => HasModifiersFor UnhallowedCountry where
   getModifiersFor _ (InvestigatorTarget iid) (UnhallowedCountry attrs) =
     pure $ toModifiers
       attrs

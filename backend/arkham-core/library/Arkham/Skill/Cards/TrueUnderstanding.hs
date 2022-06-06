@@ -14,7 +14,7 @@ import Arkham.Skill.Cards qualified as Cards
 import Arkham.Target
 
 newtype TrueUnderstanding = TrueUnderstanding SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trueUnderstanding :: SkillCard TrueUnderstanding

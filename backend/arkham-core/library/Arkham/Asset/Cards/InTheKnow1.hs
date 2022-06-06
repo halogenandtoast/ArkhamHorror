@@ -16,7 +16,7 @@ import Arkham.Matcher
 import Arkham.Target
 
 newtype InTheKnow1 = InTheKnow1 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 inTheKnow1 :: AssetCard InTheKnow1

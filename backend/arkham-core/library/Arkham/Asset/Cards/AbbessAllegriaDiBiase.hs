@@ -17,7 +17,7 @@ import Arkham.Projection
 import Arkham.Target
 
 newtype AbbessAllegriaDiBiase = AbbessAllegriaDiBiase AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abbessAllegriaDiBiase :: AssetCard AbbessAllegriaDiBiase

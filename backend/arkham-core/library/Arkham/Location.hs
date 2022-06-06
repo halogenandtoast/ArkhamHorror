@@ -58,7 +58,7 @@ instance
   , Query EnemyMatcher env
   , Query LocationMatcher env
   )
-  => HasModifiersFor env Location where
+  => HasModifiersFor Location where
   getModifiersFor = $(entityF2 "Location" "getModifiersFor")
 
 instance LocationRunner env => RunMessage Location where

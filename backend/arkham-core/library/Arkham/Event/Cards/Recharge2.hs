@@ -23,7 +23,7 @@ newtype Meta = Meta { chosenAsset :: Maybe AssetId }
   deriving anyclass (ToJSON, FromJSON)
 
 newtype Recharge2 = Recharge2 (EventAttrs `With` Meta)
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 recharge2 :: EventCard Recharge2

@@ -16,7 +16,7 @@ import Arkham.Phase
 import qualified Arkham.Timing as Timing
 
 newtype CorpseTaker = CorpseTaker EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corpseTaker :: EnemyCard CorpseTaker

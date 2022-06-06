@@ -6,7 +6,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 
 newtype LeatherCoat = LeatherCoat AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 leatherCoat :: AssetCard LeatherCoat

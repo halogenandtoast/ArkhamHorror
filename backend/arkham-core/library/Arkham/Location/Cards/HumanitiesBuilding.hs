@@ -15,7 +15,7 @@ import Arkham.Query
 import Arkham.Timing qualified as Timing
 
 newtype HumanitiesBuilding = HumanitiesBuilding LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 humanitiesBuilding :: LocationCard HumanitiesBuilding

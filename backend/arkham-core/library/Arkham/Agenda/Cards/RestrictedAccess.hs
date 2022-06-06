@@ -24,7 +24,7 @@ import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
 newtype RestrictedAccess = RestrictedAccess AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 restrictedAccess :: AgendaCard RestrictedAccess

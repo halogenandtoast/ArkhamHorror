@@ -13,7 +13,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype SleightOfHand = SleightOfHand EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor env)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sleightOfHand :: EffectArgs -> SleightOfHand

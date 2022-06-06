@@ -33,7 +33,7 @@ instance HasAbilities AlchemicalConcoction where
         $ ActionCost 1
     ]
 
-instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor env AlchemicalConcoction where
+instance (HasId CardCode env EnemyId, HasSkillTest env) => HasModifiersFor AlchemicalConcoction where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) _ (AlchemicalConcoction a)
     | isSource a source
     = do

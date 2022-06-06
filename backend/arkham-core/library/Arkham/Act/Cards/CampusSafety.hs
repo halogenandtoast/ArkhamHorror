@@ -10,7 +10,7 @@ import Arkham.Message
 import Arkham.Resolution
 
 newtype CampusSafety = CampusSafety ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 campusSafety :: ActCard CampusSafety

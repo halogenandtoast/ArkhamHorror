@@ -16,7 +16,7 @@ import Arkham.Target
 import Arkham.Trait
 
 newtype TheArkhamWoods = TheArkhamWoods AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theArkhamWoods :: AgendaCard TheArkhamWoods

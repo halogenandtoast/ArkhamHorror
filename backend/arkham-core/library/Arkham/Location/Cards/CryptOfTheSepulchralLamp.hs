@@ -22,7 +22,7 @@ import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype CryptOfTheSepulchralLamp = CryptOfTheSepulchralLamp LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cryptOfTheSepulchralLamp :: LocationCard CryptOfTheSepulchralLamp

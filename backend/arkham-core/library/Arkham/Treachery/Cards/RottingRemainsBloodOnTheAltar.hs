@@ -12,7 +12,7 @@ import Arkham.Treachery.Cards.RottingRemains
 
 newtype RottingRemainsBloodOnTheAltar = RottingRemainsBloodOnTheAltar RottingRemains
   deriving anyclass IsTreachery
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor m, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor, HasAbilities)
 
 rottingRemainsBloodOnTheAltar :: TreacheryCard RottingRemainsBloodOnTheAltar
 rottingRemainsBloodOnTheAltar = treachery

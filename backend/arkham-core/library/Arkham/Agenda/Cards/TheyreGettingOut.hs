@@ -20,7 +20,7 @@ import qualified Arkham.Timing as Timing
 import Arkham.Trait
 
 newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theyreGettingOut :: AgendaCard TheyreGettingOut

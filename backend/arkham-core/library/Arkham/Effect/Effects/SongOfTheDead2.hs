@@ -20,7 +20,7 @@ newtype SongOfTheDead2 = SongOfTheDead2 EffectAttrs
 songOfTheDead2 :: EffectArgs -> SongOfTheDead2
 songOfTheDead2 = SongOfTheDead2 . uncurry4 (baseAttrs "02112")
 
-instance HasModifiersFor env SongOfTheDead2
+instance HasModifiersFor SongOfTheDead2
 
 instance HasQueue env => RunMessage SongOfTheDead2 where
   runMessage msg e@(SongOfTheDead2 attrs@EffectAttrs {..}) = case msg of

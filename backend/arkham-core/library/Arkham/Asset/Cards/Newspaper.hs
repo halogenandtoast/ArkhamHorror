@@ -21,7 +21,7 @@ newtype Newspaper = Newspaper AssetAttrs
 newspaper :: AssetCard Newspaper
 newspaper = asset Newspaper Cards.newspaper
 
-instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Newspaper where
+instance HasCount ClueCount env InvestigatorId => HasModifiersFor Newspaper where
   getModifiersFor _ (InvestigatorTarget iid) (Newspaper a) | controlledBy a iid = do
     clueCount <- unClueCount <$> getCount iid
     pure

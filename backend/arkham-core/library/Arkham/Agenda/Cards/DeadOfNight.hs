@@ -23,7 +23,7 @@ newtype DeadOfNight = DeadOfNight AgendaAttrs
 deadOfNight :: AgendaCard DeadOfNight
 deadOfNight = agenda (2, A) DeadOfNight Cards.deadOfNight (Static 3)
 
-instance HasModifiersFor env DeadOfNight where
+instance HasModifiersFor DeadOfNight where
   getModifiersFor _ (InvestigatorTarget _) (DeadOfNight a) =
     pure $ toModifiers a [HandSize (-3)]
   getModifiersFor _ _ _ = pure []

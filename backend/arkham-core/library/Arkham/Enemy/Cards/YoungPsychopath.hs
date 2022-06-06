@@ -17,7 +17,7 @@ import Arkham.Modifier
 import Arkham.Timing qualified as Timing
 
 newtype YoungPsychopath = YoungPsychopath EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 youngPsychopath :: EnemyCard YoungPsychopath

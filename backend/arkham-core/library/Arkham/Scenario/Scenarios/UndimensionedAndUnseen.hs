@@ -34,7 +34,7 @@ import Arkham.Token
 import Arkham.Trait hiding (Cultist)
 
 newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor env)
+  deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 undimensionedAndUnseen :: Difficulty -> UndimensionedAndUnseen

@@ -21,7 +21,7 @@ import Arkham.Scenario.Scenarios.TheGathering
 
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
   deriving stock Generic
-  deriving anyclass (IsScenario, HasModifiersFor env)
+  deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
 
 returnToTheGathering :: Difficulty -> ReturnToTheGathering

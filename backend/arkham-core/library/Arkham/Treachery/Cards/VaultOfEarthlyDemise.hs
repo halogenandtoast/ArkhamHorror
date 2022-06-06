@@ -33,7 +33,7 @@ instance HasAbilities VaultOfEarthlyDemise where
       $ enemyIs Cards.umordhoth
     ]
 
-instance HasCount PlayerCount env () => HasModifiersFor env VaultOfEarthlyDemise where
+instance HasCount PlayerCount env () => HasModifiersFor VaultOfEarthlyDemise where
   getModifiersFor _ target@(EnemyTarget _) (VaultOfEarthlyDemise attrs)
     | Just target == treacheryAttachedTarget attrs = do
       let x = fromJustNote "had to be set" (treacheryResources attrs)

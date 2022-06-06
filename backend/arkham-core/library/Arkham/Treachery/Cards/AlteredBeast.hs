@@ -16,7 +16,7 @@ import Arkham.Treachery.Attrs
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype AlteredBeast = AlteredBeast TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m)
+  deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alteredBeast :: TreacheryCard AlteredBeast

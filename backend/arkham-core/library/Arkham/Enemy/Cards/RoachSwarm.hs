@@ -19,7 +19,7 @@ newtype RoachSwarm = RoachSwarm EnemyAttrs
 roachSwarm :: EnemyCard RoachSwarm
 roachSwarm = enemy RoachSwarm Cards.roachSwarm (0, Static 2, 3) (1, 0)
 
-instance HasCount Shroud env LocationId => HasModifiersFor env RoachSwarm where
+instance HasCount Shroud env LocationId => HasModifiersFor RoachSwarm where
   getModifiersFor _ target (RoachSwarm a) | isTarget a target = case enemyLocation a of
     Nothing -> pure []
     Just loc -> do

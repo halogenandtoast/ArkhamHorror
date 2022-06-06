@@ -22,7 +22,7 @@ newtype FightOrFlight = FightOrFlight EffectAttrs
 fightOrFlight :: EffectArgs -> FightOrFlight
 fightOrFlight = FightOrFlight . uncurry4 (baseAttrs "03155")
 
-instance HasCount HorrorCount env InvestigatorId => HasModifiersFor env FightOrFlight where
+instance HasCount HorrorCount env InvestigatorId => HasModifiersFor FightOrFlight where
   getModifiersFor _ target@(InvestigatorTarget iid) (FightOrFlight attrs)
     | effectTarget attrs == target = do
       horror <- unHorrorCount <$> getCount iid

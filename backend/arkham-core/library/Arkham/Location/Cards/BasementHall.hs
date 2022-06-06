@@ -31,7 +31,7 @@ basementHall = location
   Squiggle
   [Hourglass, Moon]
 
-instance HasModifiersFor env BasementHall where
+instance HasModifiersFor BasementHall where
   getModifiersFor _ (LocationTarget lid) (BasementHall attrs)
     | lid == toId attrs = pure
     $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]

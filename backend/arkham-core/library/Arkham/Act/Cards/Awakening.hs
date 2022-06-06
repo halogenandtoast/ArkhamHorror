@@ -18,7 +18,7 @@ import Arkham.Message
 import Arkham.Name
 
 newtype Awakening = Awakening ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 awakening :: ActCard Awakening

@@ -19,7 +19,7 @@ import Arkham.Location.Runner
 import Arkham.Timing qualified as Timing
 
 newtype PereLachaiseCemetery = PereLachaiseCemetery LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pereLachaiseCemetery :: LocationCard PereLachaiseCemetery

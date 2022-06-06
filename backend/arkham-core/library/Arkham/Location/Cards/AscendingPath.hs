@@ -34,7 +34,7 @@ ascendingPath = locationWith
   [Triangle, Diamond, T, Equals, Moon]
   (revealedConnectedMatchersL <>~ [LocationWithTitle "Altered Path"])
 
-instance HasModifiersFor env AscendingPath where
+instance HasModifiersFor AscendingPath where
   getModifiersFor _ target (AscendingPath l@LocationAttrs {..})
     | isTarget l target = pure
     $ toModifiers l [ Blocked | not locationRevealed ]

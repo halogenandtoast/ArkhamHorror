@@ -19,7 +19,7 @@ import Arkham.Target
 import Arkham.Trait
 
 newtype OsbornsGeneralStore_207 = OsbornsGeneralStore_207 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 osbornsGeneralStore_207 :: LocationCard OsbornsGeneralStore_207

@@ -24,7 +24,7 @@ import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
 newtype HisDomain = HisDomain AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hisDomain :: AgendaCard HisDomain

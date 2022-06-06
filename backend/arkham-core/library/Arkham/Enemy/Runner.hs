@@ -57,7 +57,7 @@ type EnemyRunner env
     , HasId (Maybe LocationId) env (Direction, LocationId)
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
-    , HasModifiersFor env ()
+    , HasModifiersFor ()
     , HasSet ActId env ()
     , HasList (InvestigatorId, Distance) env EnemyMatcher
     , HasSet

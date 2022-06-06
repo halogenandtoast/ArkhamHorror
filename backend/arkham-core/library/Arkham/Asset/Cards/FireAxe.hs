@@ -26,7 +26,7 @@ newtype FireAxe = FireAxe AssetAttrs
 fireAxe :: AssetCard FireAxe
 fireAxe = asset FireAxe Cards.fireAxe
 
-instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAxe where
+instance HasCount ResourceCount env InvestigatorId => HasModifiersFor FireAxe where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
     | controlledBy a iid && isSource a source
     = do

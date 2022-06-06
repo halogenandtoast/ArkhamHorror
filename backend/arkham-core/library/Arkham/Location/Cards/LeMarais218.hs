@@ -19,7 +19,7 @@ import Arkham.Target
 import qualified Arkham.Timing as Timing
 
 newtype LeMarais218 = LeMarais218 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 leMarais218 :: LocationCard LeMarais218

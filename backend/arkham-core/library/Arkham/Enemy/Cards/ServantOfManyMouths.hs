@@ -17,7 +17,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype ServantOfManyMouths = ServantOfManyMouths EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 servantOfManyMouths :: EnemyCard ServantOfManyMouths

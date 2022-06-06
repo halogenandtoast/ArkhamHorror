@@ -13,7 +13,7 @@ import Arkham.Treachery.Attrs
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype FalseLead = FalseLead TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 falseLead :: TreacheryCard FalseLead

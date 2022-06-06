@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Target
 
 newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forbiddenKnowledge :: AssetCard ForbiddenKnowledge

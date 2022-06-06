@@ -16,7 +16,7 @@ import Arkham.Message
 import Arkham.Resolution
 
 newtype TheyMustBeDestroyed = TheyMustBeDestroyed ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theyMustBeDestroyed :: ActCard TheyMustBeDestroyed

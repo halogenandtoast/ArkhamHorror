@@ -25,7 +25,7 @@ carnevaleSentinel :: EnemyCard CarnevaleSentinel
 carnevaleSentinel =
   enemy CarnevaleSentinel Cards.carnevaleSentinel (3, Static 3, 3) (2, 0)
 
-instance (HasName env AssetId, HasId (Maybe LocationId) env AssetId) => HasModifiersFor env CarnevaleSentinel where
+instance (HasName env AssetId, HasId (Maybe LocationId) env AssetId) => HasModifiersFor CarnevaleSentinel where
   getModifiersFor _ (AssetTarget aid) (CarnevaleSentinel attrs) = do
     mlid <- getId @(Maybe LocationId) aid
     case mlid of

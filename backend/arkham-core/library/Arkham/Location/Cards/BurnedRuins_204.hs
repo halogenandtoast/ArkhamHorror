@@ -26,7 +26,7 @@ burnedRuins_204 = location
   Triangle
   [Square, Diamond]
 
-instance HasModifiersFor env BurnedRuins_204 where
+instance HasModifiersFor BurnedRuins_204 where
   getModifiersFor _ (EnemyTarget eid) (BurnedRuins_204 attrs@LocationAttrs {..})
     | eid `elem` locationEnemies = pure $ toModifiers attrs [EnemyEvade 1]
   getModifiersFor _ _ _ = pure []

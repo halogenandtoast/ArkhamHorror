@@ -17,7 +17,7 @@ import Arkham.Message
 import Arkham.ScenarioLogKey
 
 newtype BoxOffice = BoxOffice LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 boxOffice :: LocationCard BoxOffice

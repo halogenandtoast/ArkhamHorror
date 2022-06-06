@@ -24,7 +24,7 @@ schoolhouse_213 = location
   Moon
   [Plus, Squiggle, Circle]
 
-instance HasModifiersFor env Schoolhouse_213
+instance HasModifiersFor Schoolhouse_213
 
 
 instance HasAbilities Schoolhouse_213 where

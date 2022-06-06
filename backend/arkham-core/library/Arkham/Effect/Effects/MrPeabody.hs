@@ -21,7 +21,7 @@ newtype MrPeabody = MrPeabody EffectAttrs
 mrPeabody :: EffectArgs -> MrPeabody
 mrPeabody = MrPeabody . uncurry4 (baseAttrs "03141")
 
-instance HasModifiersFor env MrPeabody where
+instance HasModifiersFor MrPeabody where
   getModifiersFor _ target (MrPeabody attrs) | effectTarget attrs == target =
     pure $ toModifiers attrs [ShroudModifier (-1), AddTrait Passageway]
   getModifiersFor _ _ _ = pure []

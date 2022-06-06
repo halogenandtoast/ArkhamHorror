@@ -34,7 +34,7 @@ instance HasAbilities Grounded1 where
         $ ResourceCost 1
     ]
 
-instance HasModifiersFor env Grounded1 where
+instance HasModifiersFor Grounded1 where
   getModifiersFor _ (AssetTarget aid) (Grounded1 attrs) | toId attrs == aid =
     pure $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor _ _ _ = pure []

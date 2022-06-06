@@ -23,7 +23,7 @@ newtype TrenchKnife = TrenchKnife AssetAttrs
 trenchKnife :: AssetCard TrenchKnife
 trenchKnife = asset TrenchKnife Cards.trenchKnife
 
-instance HasModifiersFor env TrenchKnife where
+instance HasModifiersFor TrenchKnife where
   getModifiersFor _ (InvestigatorTarget iid) (TrenchKnife attrs)
     | attrs `controlledBy` iid = pure $ toModifiers
       attrs

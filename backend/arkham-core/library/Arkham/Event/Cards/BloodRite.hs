@@ -17,7 +17,7 @@ import Arkham.Message
 import Arkham.Source
 
 newtype BloodRite = BloodRite EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bloodRite :: EventCard BloodRite

@@ -26,7 +26,7 @@ arkhamWoodsCorpseRiddenClearing = locationWithRevealedSideConnections
   Droplet
   [Squiggle, Circle]
 
-instance HasModifiersFor env ArkhamWoodsCorpseRiddenClearing where
+instance HasModifiersFor ArkhamWoodsCorpseRiddenClearing where
   getModifiersFor _ (EnemyTarget eid) (ArkhamWoodsCorpseRiddenClearing attrs) =
     pure $ toModifiers
       attrs

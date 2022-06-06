@@ -29,7 +29,7 @@ possessedOathspeaker = enemy
   (4, PerPlayer 5, 3)
   (2, 2)
 
-instance HasStep AgendaStep env () => HasModifiersFor env PossessedOathspeaker where
+instance HasStep AgendaStep env () => HasModifiersFor PossessedOathspeaker where
   getModifiersFor _ (EnemyTarget eid) (PossessedOathspeaker attrs)
     | toId attrs == eid = do
       step <- unAgendaStep <$> getStep ()

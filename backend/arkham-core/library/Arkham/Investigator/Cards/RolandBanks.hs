@@ -18,7 +18,7 @@ import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype RolandBanks = RolandBanks InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor env)
+  deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rolandBanks :: InvestigatorCard RolandBanks

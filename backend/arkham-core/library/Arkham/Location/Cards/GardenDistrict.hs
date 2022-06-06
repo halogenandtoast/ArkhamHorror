@@ -19,7 +19,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype GardenDistrict = GardenDistrict LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gardenDistrict :: LocationCard GardenDistrict

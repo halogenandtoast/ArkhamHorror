@@ -29,7 +29,7 @@ import Arkham.Target
 import Arkham.Token
 
 newtype CurtainCall = CurtainCall ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor env)
+  deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curtainCall :: Difficulty -> CurtainCall

@@ -17,7 +17,7 @@ import Arkham.Query
 import Arkham.Target
 
 newtype TheRougarouFeeds = TheRougarouFeeds AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRougarouFeeds :: AgendaCard TheRougarouFeeds

@@ -18,7 +18,7 @@ import Arkham.Message
 import Arkham.Trait
 
 newtype QuietHalls_135 = QuietHalls_135 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 quietHalls_135 :: LocationCard QuietHalls_135

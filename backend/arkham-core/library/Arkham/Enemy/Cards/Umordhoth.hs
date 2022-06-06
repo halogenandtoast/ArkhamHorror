@@ -26,7 +26,7 @@ newtype Umordhoth = Umordhoth EnemyAttrs
 umordhoth :: EnemyCard Umordhoth
 umordhoth = enemy Umordhoth Cards.umordhoth (5, Static 6, 6) (3, 3)
 
-instance HasCount PlayerCount env () => HasModifiersFor env Umordhoth where
+instance HasCount PlayerCount env () => HasModifiersFor Umordhoth where
   getModifiersFor _ target (Umordhoth a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 4)
     pure $ toModifiers a [HealthModifier healthModifier]

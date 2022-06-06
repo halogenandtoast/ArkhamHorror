@@ -49,7 +49,7 @@ instance HasAbilities NoAsylum where
       ]
     else []
 
-instance Query LocationMatcher env => HasModifiersFor env NoAsylum where
+instance Query LocationMatcher env => HasModifiersFor NoAsylum where
   getModifiersFor _ (LocationTarget lid) (NoAsylum attrs) = do
     targets <- select UnrevealedLocation
     pure

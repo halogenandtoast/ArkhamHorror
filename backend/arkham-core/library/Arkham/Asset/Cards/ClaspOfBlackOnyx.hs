@@ -15,7 +15,7 @@ newtype ClaspOfBlackOnyx = ClaspOfBlackOnyx AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-instance HasModifiersFor env ClaspOfBlackOnyx where
+instance HasModifiersFor ClaspOfBlackOnyx where
   getModifiersFor _ (InvestigatorHandTarget _) (ClaspOfBlackOnyx attrs) =
     pure $ toModifiers
       attrs

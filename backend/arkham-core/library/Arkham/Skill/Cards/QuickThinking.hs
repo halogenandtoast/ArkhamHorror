@@ -13,7 +13,7 @@ import Arkham.Skill.Attrs
 import Arkham.Target
 
 newtype QuickThinking = QuickThinking SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 quickThinking :: SkillCard QuickThinking

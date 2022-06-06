@@ -20,7 +20,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stepsOfYhagharl :: LocationCard StepsOfYhagharl

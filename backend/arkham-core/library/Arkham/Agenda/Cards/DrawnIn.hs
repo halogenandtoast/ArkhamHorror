@@ -18,7 +18,7 @@ import Arkham.Message
 import Arkham.Query
 
 newtype DrawnIn = DrawnIn AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drawnIn :: AgendaCard DrawnIn

@@ -17,7 +17,7 @@ import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype ZoeySamaras = ZoeySamaras InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor env)
+  deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 zoeySamaras :: InvestigatorCard ZoeySamaras

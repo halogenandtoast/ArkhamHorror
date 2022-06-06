@@ -31,7 +31,7 @@ tokenEffect eid metadata source token = TokenEffect $ EffectAttrs
   , effectWindow = Nothing
   }
 
-instance Monad m => HasModifiersFor m TokenEffect where
+instance Monad m => HasModifiersFor TokenEffect where
   getModifiersFor _ target (TokenEffect attrs) | target == effectTarget attrs =
     case effectMetadata attrs of
       Just (EffectModifiers modifiers) -> pure modifiers

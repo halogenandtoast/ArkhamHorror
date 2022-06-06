@@ -32,7 +32,7 @@ planningTheEscape :: ActCard PlanningTheEscape
 planningTheEscape =
   act (3, A) PlanningTheEscape Cards.planningTheEscape Nothing
 
-instance Query LocationMatcher env => HasModifiersFor env PlanningTheEscape where
+instance Query LocationMatcher env => HasModifiersFor PlanningTheEscape where
   getModifiersFor _ (LocationTarget lid) (PlanningTheEscape attrs) = do
     targets <- select UnrevealedLocation
     pure

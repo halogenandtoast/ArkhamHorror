@@ -27,7 +27,7 @@ notreDame :: LocationCard NotreDame
 notreDame =
   location NotreDame Cards.notreDame 3 (PerPlayer 1) Plus [Circle, Moon, Star]
 
-instance HasModifiersFor env NotreDame where
+instance HasModifiersFor NotreDame where
   getModifiersFor _ (EnemyTarget eid) (NotreDame attrs)
     | eid `member` locationEnemies attrs && locationRevealed attrs
     = pure $ toModifiers attrs [EnemyFight (-1), EnemyEvade 1]

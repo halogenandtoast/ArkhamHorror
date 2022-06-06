@@ -21,7 +21,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nightAtTheMuseum :: ActCard NightAtTheMuseum

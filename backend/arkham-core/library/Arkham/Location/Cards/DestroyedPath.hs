@@ -21,7 +21,7 @@ import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype DestroyedPath = DestroyedPath LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 destroyedPath :: LocationCard DestroyedPath

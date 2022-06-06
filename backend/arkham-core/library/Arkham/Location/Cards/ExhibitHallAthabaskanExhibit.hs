@@ -33,7 +33,7 @@ exhibitHallAthabaskanExhibit = locationWithRevealedSideConnections
   Plus
   [Square]
 
-instance HasModifiersFor env ExhibitHallAthabaskanExhibit where
+instance HasModifiersFor ExhibitHallAthabaskanExhibit where
   getModifiersFor _ (InvestigatorTarget iid) (ExhibitHallAthabaskanExhibit attrs)
     = pure $ toModifiers attrs [ SkillModifier SkillAgility 2 | iid `on` attrs ]
   getModifiersFor _ _ _ = pure []

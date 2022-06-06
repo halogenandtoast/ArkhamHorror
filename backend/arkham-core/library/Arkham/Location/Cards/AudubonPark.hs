@@ -14,7 +14,7 @@ import Arkham.Message hiding (EnemyEvaded)
 import Arkham.Timing qualified as Timing
 
 newtype AudubonPark = AudubonPark LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 audubonPark :: LocationCard AudubonPark

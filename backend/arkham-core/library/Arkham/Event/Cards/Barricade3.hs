@@ -21,7 +21,7 @@ newtype Barricade3 = Barricade3 EventAttrs
 barricade3 :: EventCard Barricade3
 barricade3 = event Barricade3 Cards.barricade3
 
-instance HasModifiersFor env Barricade3 where
+instance HasModifiersFor Barricade3 where
   getModifiersFor _ (LocationTarget lid) (Barricade3 attrs) =
     if LocationTarget lid `elem` eventAttachedTarget attrs
       then pure $ toModifiers

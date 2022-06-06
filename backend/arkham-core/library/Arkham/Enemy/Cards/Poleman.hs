@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 
 newtype Poleman = Poleman EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 poleman :: EnemyCard Poleman

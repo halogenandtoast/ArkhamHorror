@@ -19,7 +19,7 @@ curseOfTheRougarouTabletToken :: EffectArgs -> CurseOfTheRougarouTabletToken
 curseOfTheRougarouTabletToken =
   CurseOfTheRougarouTabletToken . uncurry4 (baseAttrs "81001")
 
-instance HasModifiersFor env CurseOfTheRougarouTabletToken where
+instance HasModifiersFor CurseOfTheRougarouTabletToken where
   getModifiersFor _ target (CurseOfTheRougarouTabletToken a@EffectAttrs {..})
     | target == effectTarget = pure [toModifier a CannotMove]
   getModifiersFor _ _ _ = pure []

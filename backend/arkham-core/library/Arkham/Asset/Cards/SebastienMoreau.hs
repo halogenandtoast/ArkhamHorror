@@ -20,7 +20,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype SebastienMoreau = SebastienMoreau AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sebastienMoreau :: AssetCard SebastienMoreau

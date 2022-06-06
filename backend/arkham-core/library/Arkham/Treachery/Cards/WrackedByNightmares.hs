@@ -26,7 +26,7 @@ newtype WrackedByNightmares = WrackedByNightmares TreacheryAttrs
 wrackedByNightmares :: TreacheryCard WrackedByNightmares
 wrackedByNightmares = treachery WrackedByNightmares Cards.wrackedByNightmares
 
-instance HasModifiersFor env WrackedByNightmares where
+instance HasModifiersFor WrackedByNightmares where
   getModifiersFor _ (InvestigatorTarget iid) (WrackedByNightmares attrs) =
     pure $ toModifiers
       attrs

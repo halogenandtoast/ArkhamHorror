@@ -30,7 +30,7 @@ asylumHallsWesternPatientWing_169 = location
 instance HasAbilities AsylumHallsWesternPatientWing_169 where
   getAbilities (AsylumHallsWesternPatientWing_169 attrs) = getAbilities attrs
 
-instance HasModifiersFor env AsylumHallsWesternPatientWing_169 where
+instance HasModifiersFor AsylumHallsWesternPatientWing_169 where
   getModifiersFor _ (EnemyTarget eid) (AsylumHallsWesternPatientWing_169 attrs)
     | eid `elem` locationEnemies attrs = pure
     $ toModifiers attrs [ HorrorDealt 1 | locationRevealed attrs ]

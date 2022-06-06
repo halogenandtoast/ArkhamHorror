@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 
 newtype JewelOfAureolus3 = JewelOfAureolus3 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jewelOfAureolus3 :: AssetCard JewelOfAureolus3

@@ -37,7 +37,7 @@ historicalSocietyHistoricalMuseum_132 = locationWithRevealedSideConnections
   Hourglass
   [Circle, Heart]
 
-instance HasSkillTest env => HasModifiersFor env HistoricalSocietyHistoricalMuseum_132 where
+instance HasSkillTest env => HasModifiersFor HistoricalSocietyHistoricalMuseum_132 where
   getModifiersFor (SkillTestSource _ _ _ (Just Action.Investigate)) (InvestigatorTarget _) (HistoricalSocietyHistoricalMuseum_132 attrs)
     = do
     mtarget <- getSkillTestTarget

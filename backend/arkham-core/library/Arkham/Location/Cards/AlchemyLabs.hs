@@ -29,7 +29,7 @@ alchemyLabs :: LocationCard AlchemyLabs
 alchemyLabs =
   location AlchemyLabs Cards.alchemyLabs 5 (Static 0) Squiggle [Hourglass]
 
-instance HasModifiersFor env AlchemyLabs where
+instance HasModifiersFor AlchemyLabs where
   getModifiersFor _ target (AlchemyLabs attrs) | isTarget attrs target =
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []

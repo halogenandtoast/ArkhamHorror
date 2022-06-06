@@ -21,7 +21,7 @@ import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
 newtype Row = Row ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 row :: ActCard Row

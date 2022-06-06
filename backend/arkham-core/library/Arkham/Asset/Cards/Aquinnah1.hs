@@ -19,7 +19,7 @@ import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype Aquinnah1 = Aquinnah1 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aquinnah1 :: AssetCard Aquinnah1

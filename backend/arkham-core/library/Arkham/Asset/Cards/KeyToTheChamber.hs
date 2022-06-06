@@ -33,7 +33,7 @@ instance HasAbilities KeyToTheChamber where
         (FastAbility Free)
     ]
 
-instance HasModifiersFor env KeyToTheChamber
+instance HasModifiersFor KeyToTheChamber
 
 instance RunMessage KeyToTheChamber where
   runMessage msg a@(KeyToTheChamber attrs) = case msg of

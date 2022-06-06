@@ -14,7 +14,7 @@ import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype IshimaruHaruko = IshimaruHaruko EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ishimaruHaruko :: EnemyCard IshimaruHaruko

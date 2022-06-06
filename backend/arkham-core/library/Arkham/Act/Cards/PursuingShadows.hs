@@ -22,7 +22,7 @@ import Arkham.Target
 import qualified Arkham.Timing as Timing
 
 newtype PursuingShadows = PursuingShadows ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pursuingShadows :: ActCard PursuingShadows

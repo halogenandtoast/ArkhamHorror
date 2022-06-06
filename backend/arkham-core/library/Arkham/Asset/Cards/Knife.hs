@@ -16,7 +16,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype Knife = Knife AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 knife :: AssetCard Knife

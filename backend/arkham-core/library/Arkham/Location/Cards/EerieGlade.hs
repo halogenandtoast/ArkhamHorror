@@ -18,7 +18,7 @@ import Arkham.Query
 import Arkham.Timing qualified as Timing
 
 newtype EerieGlade = EerieGlade LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eerieGlade :: LocationCard EerieGlade

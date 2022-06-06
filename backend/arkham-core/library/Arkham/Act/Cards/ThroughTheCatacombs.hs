@@ -19,7 +19,7 @@ import Arkham.Message
 import Arkham.Scenarios.ThePallidMask.Helpers
 
 newtype ThroughTheCatacombs = ThroughTheCatacombs ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAct, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 throughTheCatacombs :: ActCard ThroughTheCatacombs

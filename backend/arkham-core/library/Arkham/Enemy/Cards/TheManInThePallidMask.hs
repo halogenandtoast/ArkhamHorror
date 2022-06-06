@@ -20,7 +20,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype TheManInThePallidMask = TheManInThePallidMask EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theManInThePallidMask :: EnemyCard TheManInThePallidMask

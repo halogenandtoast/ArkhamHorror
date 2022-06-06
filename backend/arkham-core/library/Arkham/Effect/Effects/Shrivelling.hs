@@ -14,7 +14,7 @@ import Arkham.Token
 import Arkham.Window (Window)
 
 newtype Shrivelling = Shrivelling EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor env)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shrivelling :: EffectArgs -> Shrivelling

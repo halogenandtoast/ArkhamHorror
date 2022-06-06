@@ -14,7 +14,7 @@ import Arkham.Criteria
 import Arkham.SkillType
 
 newtype ArchaicGlyphs = ArchaicGlyphs AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 archaicGlyphs :: AssetCard ArchaicGlyphs

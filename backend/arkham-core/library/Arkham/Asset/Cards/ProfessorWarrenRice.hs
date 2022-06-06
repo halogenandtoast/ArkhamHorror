@@ -24,7 +24,7 @@ professorWarrenRice = allyWith
   (2, 3)
   (isStoryL .~ True)
 
-instance HasModifiersFor env ProfessorWarrenRice where
+instance HasModifiersFor ProfessorWarrenRice where
   getModifiersFor _ (InvestigatorTarget iid) (ProfessorWarrenRice a) =
     pure [ toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

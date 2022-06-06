@@ -26,7 +26,7 @@ newtype Duke = Duke AssetAttrs
 duke :: AssetCard Duke
 duke = allyWith Duke Cards.duke (2, 3) (slotsL .~ mempty)
 
-instance HasModifiersFor env Duke where
+instance HasModifiersFor Duke where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (InvestigatorTarget iid) (Duke a)
     | controlledBy a iid && isSource a source
     = pure $ toModifiers a [BaseSkillOf SkillCombat 4, DamageDealt 1]

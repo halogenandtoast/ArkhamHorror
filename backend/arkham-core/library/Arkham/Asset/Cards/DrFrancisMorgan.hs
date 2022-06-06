@@ -31,7 +31,7 @@ instance HasAbilities DrFrancisMorgan where
         (ExhaustCost $ toTarget x)
     ]
 
-instance HasModifiersFor env DrFrancisMorgan where
+instance HasModifiersFor DrFrancisMorgan where
   getModifiersFor _ (InvestigatorTarget iid) (DrFrancisMorgan a) =
     pure [ toModifier a (SkillModifier SkillCombat 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

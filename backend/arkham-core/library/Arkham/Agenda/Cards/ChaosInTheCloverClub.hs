@@ -22,7 +22,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype ChaosInTheCloverClub = ChaosInTheCloverClub AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chaosInTheCloverClub :: AgendaCard ChaosInTheCloverClub

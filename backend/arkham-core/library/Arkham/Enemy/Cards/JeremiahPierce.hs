@@ -19,7 +19,7 @@ import Arkham.Source
 import Arkham.Target
 
 newtype JeremiahPierce = JeremiahPierce EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jeremiahPierce :: EnemyCard JeremiahPierce

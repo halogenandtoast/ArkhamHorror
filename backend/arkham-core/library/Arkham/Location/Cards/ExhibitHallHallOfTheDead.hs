@@ -16,7 +16,7 @@ import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype ExhibitHallHallOfTheDead = ExhibitHallHallOfTheDead LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallHallOfTheDead :: LocationCard ExhibitHallHallOfTheDead

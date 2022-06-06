@@ -16,7 +16,7 @@ import Arkham.Source
 import Arkham.Timing qualified as Timing
 
 newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whatHaveYouDone :: ActCard WhatHaveYouDone

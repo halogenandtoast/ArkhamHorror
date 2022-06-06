@@ -9,7 +9,7 @@ import Arkham.Skill.Attrs
 import Arkham.Target
 
 newtype Overpower = Overpower SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 overpower :: SkillCard Overpower

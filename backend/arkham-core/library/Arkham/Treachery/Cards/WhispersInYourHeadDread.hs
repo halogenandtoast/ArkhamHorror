@@ -25,7 +25,7 @@ whispersInYourHeadDread :: TreacheryCard WhispersInYourHeadDread
 whispersInYourHeadDread =
   treachery WhispersInYourHeadDread Cards.whispersInYourHeadDread
 
-instance HasModifiersFor env WhispersInYourHeadDread where
+instance HasModifiersFor WhispersInYourHeadDread where
   getModifiersFor _ (InvestigatorHandTarget _) (WhispersInYourHeadDread a) = pure $ toModifiers a [CannotMoveMoreThanOnceEachTurn]
   getModifiersFor _ _ _ = pure []
 

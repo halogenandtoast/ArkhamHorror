@@ -2,40 +2,26 @@ module Arkham.Enemy.Attrs where
 
 import Arkham.Prelude
 
-import Arkham.Projection
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.AssetId
 import Arkham.Card
 import Arkham.Classes.Entity
-import Arkham.Classes.HasQueue
 import Arkham.Classes.HasAbilities
-import Arkham.Classes.Query
 import Arkham.Cost
-import Arkham.Criteria
-import Arkham.Enemy.Cards
 import Arkham.GameValue
-import Arkham.Helpers.Window
-import Arkham.Helpers.Query
 import Arkham.Id
-import Arkham.Json
-import Arkham.Keyword (HasKeywords(..), Keyword)
+import Arkham.Keyword
 import Arkham.Matcher
-  ( EnemyMatcher(..)
-  , PreyMatcher(..)
-  , InvestigatorMatcher(Anyone, You)
-  , LocationMatcher
-  , pattern AloofEnemy
-  )
-import Arkham.Message
+import Arkham.Criteria
+import Arkham.Json
+import Arkham.Enemy.Cards
 import Arkham.Modifier (Modifier)
-import Arkham.Modifier qualified as Modifier
 import Arkham.Name
-import Arkham.SkillTest
+import Arkham.Projection
 import Arkham.Source
+import Arkham.Strategy
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Window qualified as Window
 
 class IsEnemy a
 
@@ -94,7 +80,8 @@ spawnAtL :: Lens' EnemyAttrs (Maybe LocationMatcher)
 spawnAtL = lens enemySpawnAt $ \m x -> m { enemySpawnAt = x }
 
 surgeIfUnableToSpawnL :: Lens' EnemyAttrs Bool
-surgeIfUnableToSpawnL = lens enemySurgeIfUnabledToSpawn $ \m x -> m { enemySurgeIfUnabledToSpawn = x }
+surgeIfUnableToSpawnL =
+  lens enemySurgeIfUnabledToSpawn $ \m x -> m { enemySurgeIfUnabledToSpawn = x }
 
 healthDamageL :: Lens' EnemyAttrs Int
 healthDamageL = lens enemyHealthDamage $ \m x -> m { enemyHealthDamage = x }
@@ -154,9 +141,6 @@ instance HasCardDef EnemyAttrs where
     Just def -> def
     Nothing -> error $ "missing card def for enemy " <> show (enemyCardCode e)
 
-spawned :: EnemyAttrs -> Bool
-spawned EnemyAttrs { enemyLocation } = enemyLocation /= Nothing
-
 instance ToJSON EnemyAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "enemy"
   toEncoding = genericToEncoding $ aesonOptions $ Just "enemy"
@@ -213,85 +197,6 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       }
     }
 
-spawnAt
-  :: (MonadIO m, MonadReader env m, HasQueue env, Query InvestigatorMatcher m)
-  => EnemyId
-  -> LocationMatcher
-  -> m ()
-spawnAt eid locationMatcher = do
-  windows' <- windows [Window.EnemyAttemptsToSpawnAt eid locationMatcher]
-  pushAll $ windows' <> resolve
-    (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
-
-modifiedEnemyFight
-  :: (CanGetModifiersFor m, HasSkillTest m)
-  => EnemyAttrs
-  -> m Int
-modifiedEnemyFight EnemyAttrs {..} = do
-  msource <- getSkillTestSource
-  let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <- getModifiers source (EnemyTarget enemyId)
-  pure $ foldr applyModifier enemyFight modifiers'
- where
-  applyModifier (Modifier.EnemyFight m) n = max 0 (n + m)
-  applyModifier _ n = n
-
-modifiedEnemyEvade
-  :: (CanGetModifiersFor m, HasSkillTest m)
-  => EnemyAttrs
-  -> m Int
-modifiedEnemyEvade EnemyAttrs {..} = do
-  msource <- getSkillTestSource
-  let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <- getModifiers source (EnemyTarget enemyId)
-  pure $ foldr applyModifier enemyEvade modifiers'
- where
-  applyModifier (Modifier.EnemyEvade m) n = max 0 (n + m)
-  applyModifier _ n = n
-
-getModifiedDamageAmount
-  :: (CanGetModifiersFor m, HasSkillTest m)
-  => EnemyAttrs
-  -> Bool
-  -> Int
-  -> m Int
-getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
-  msource <- getSkillTestSource
-  let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <- getModifiers source (EnemyTarget enemyId)
-  let updatedAmount = foldr applyModifier baseAmount modifiers'
-  pure $ foldr applyModifierCaps updatedAmount modifiers'
- where
-  applyModifier (Modifier.DamageTaken m) n | not direct = max 0 (n + m)
-  applyModifier _ n = n
-  applyModifierCaps (Modifier.MaxDamageTaken m) n = min m n
-  applyModifierCaps _ n = n
-
-getModifiedKeywords
-  :: (CanGetModifiersFor m, HasSkillTest m)
-  => EnemyAttrs
-  -> m (HashSet Keyword)
-getModifiedKeywords e@EnemyAttrs {..} = do
-  msource <- getSkillTestSource
-  let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <- getModifiers source (EnemyTarget enemyId)
-  pure $ foldr applyModifier (toKeywords $ toCardDef e) modifiers'
- where
-  applyModifier (Modifier.AddKeyword k) n = insertSet k n
-  applyModifier _ n = n
-
-canEnterLocation
-  :: (Projection m EnemyAttrs, CanGetModifiersFor m)
-  => EnemyId
-  -> LocationId
-  -> m Bool
-canEnterLocation eid lid = do
-  traits <- field EnemyTraits eid
-  modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid)
-  pure $ not $ flip any modifiers' $ \case
-    Modifier.CannotBeEnteredByNonElite{} -> Elite `notMember` traits
-    _ -> False
-
 instance HasAbilities EnemyAttrs where
   getAbilities e =
     [ restrictedAbility
@@ -339,21 +244,3 @@ instance SourceEntity EnemyAttrs where
   isSource EnemyAttrs { enemyId } (EnemySource eid) = enemyId == eid
   isSource attrs (CardCodeSource cardCode) = toCardCode attrs == cardCode
   isSource _ _ = False
-
-getModifiedHealth
-  :: (Query InvestigatorMatcher m, CanGetModifiersFor m)
-  => EnemyAttrs
-  -> m Int
-getModifiedHealth EnemyAttrs {..} = do
-  playerCount <- getPlayerCount
-  modifiers' <- getModifiers (EnemySource enemyId) (EnemyTarget enemyId)
-  pure $ foldr applyModifier (fromGameValue enemyHealth playerCount) modifiers'
- where
-  applyModifier (Modifier.HealthModifier m) n = max 0 (n + m)
-  applyModifier _ n = n
-
-emptyLocationMap :: HashMap LocationId [LocationId]
-emptyLocationMap = mempty
-
-isActionTarget :: EnemyAttrs -> Target -> Bool
-isActionTarget attrs = isTarget attrs . toProxyTarget

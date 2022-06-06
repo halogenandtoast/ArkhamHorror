@@ -16,7 +16,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype DarkMemory = DarkMemory EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env)
+  deriving anyclass (IsEvent, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkMemory :: EventCard DarkMemory

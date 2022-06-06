@@ -12,7 +12,7 @@ import Arkham.Skill.Attrs
 import Arkham.Skill.Cards qualified as Cards
 
 newtype WatchThis = WatchThis SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 watchThis :: SkillCard WatchThis

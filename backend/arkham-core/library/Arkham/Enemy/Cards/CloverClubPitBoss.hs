@@ -16,7 +16,7 @@ import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype CloverClubPitBoss = CloverClubPitBoss EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubPitBoss :: EnemyCard CloverClubPitBoss

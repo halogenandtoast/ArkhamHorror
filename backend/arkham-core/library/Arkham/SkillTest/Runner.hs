@@ -33,7 +33,7 @@ type SkillTestRunner m =
   , HasCard m InvestigatorId
   , HasStats m (InvestigatorId, Maybe Action)
   , HasSkillTest m
-  , HasModifiersFor m ()
+  , HasModifiersFor ()
   , HasTokenValue m ()
   , HasId LocationId m InvestigatorId
   , HasSet ConnectedLocationId m LocationId

@@ -35,7 +35,7 @@ instance HasAbilities Poltergeist where
       $ ActionCost 1
     ]
 
-instance HasModifiersFor env Poltergeist where
+instance HasModifiersFor Poltergeist where
   getModifiersFor _ (EnemyTarget eid) (Poltergeist a) | toId a == eid =
     pure $ toModifiers
       a

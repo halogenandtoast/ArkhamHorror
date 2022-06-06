@@ -17,7 +17,7 @@ newtype AkachiOnyele = AkachiOnyele InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-instance HasCount StartingUsesCount env (AssetId, UseType) => HasModifiersFor env AkachiOnyele where
+instance HasCount StartingUsesCount env (AssetId, UseType) => HasModifiersFor AkachiOnyele where
   getModifiersFor (InvestigatorSource iid) (AssetTarget aid) (AkachiOnyele attrs)
     | toId attrs == iid =
       do

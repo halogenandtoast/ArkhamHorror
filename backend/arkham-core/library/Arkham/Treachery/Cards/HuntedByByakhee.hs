@@ -15,7 +15,7 @@ import Arkham.Trait
 import Arkham.Treachery.Attrs
 
 newtype HuntedByByakhee = HuntedByByakhee TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntedByByakhee :: TreacheryCard HuntedByByakhee

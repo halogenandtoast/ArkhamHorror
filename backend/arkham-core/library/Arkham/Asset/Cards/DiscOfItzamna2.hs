@@ -14,7 +14,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype DiscOfItzamna2 = DiscOfItzamna2 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 discOfItzamna2 :: AssetCard DiscOfItzamna2

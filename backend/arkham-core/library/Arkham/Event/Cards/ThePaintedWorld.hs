@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window
 
 newtype ThePaintedWorld = ThePaintedWorld EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePaintedWorld :: EventCard ThePaintedWorld

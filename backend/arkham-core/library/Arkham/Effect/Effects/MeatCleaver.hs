@@ -10,7 +10,7 @@ import Arkham.Effect.Attrs
 import Arkham.Message
 
 newtype MeatCleaver = MeatCleaver EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 meatCleaver :: EffectArgs -> MeatCleaver

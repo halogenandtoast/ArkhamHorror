@@ -16,7 +16,7 @@ import Arkham.Location.Helpers
 import Arkham.Message
 
 newtype Infirmary = Infirmary LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 infirmary :: LocationCard Infirmary

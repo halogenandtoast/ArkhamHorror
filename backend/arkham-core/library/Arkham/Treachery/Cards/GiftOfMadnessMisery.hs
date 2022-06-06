@@ -27,7 +27,7 @@ newtype GiftOfMadnessMisery = GiftOfMadnessMisery TreacheryAttrs
 giftOfMadnessMisery :: TreacheryCard GiftOfMadnessMisery
 giftOfMadnessMisery = treachery GiftOfMadnessMisery Cards.giftOfMadnessMisery
 
-instance HasModifiersFor env GiftOfMadnessMisery where
+instance HasModifiersFor GiftOfMadnessMisery where
   getModifiersFor _ (InvestigatorHandTarget _) (GiftOfMadnessMisery a) = pure $ toModifiers a [CannotFight (EnemyWithTrait Lunatic)]
   getModifiersFor _ _ _ = pure []
 

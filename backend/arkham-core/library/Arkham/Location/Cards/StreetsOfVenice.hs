@@ -18,7 +18,7 @@ import Arkham.Matcher hiding (MoveAction)
 import Arkham.Message
 
 newtype StreetsOfVenice = StreetsOfVenice LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 streetsOfVenice :: LocationCard StreetsOfVenice

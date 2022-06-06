@@ -15,7 +15,7 @@ import Arkham.Skill.Attrs
 import Arkham.Target
 
 newtype ViciousBlow2 = ViciousBlow2 SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 viciousBlow2 :: SkillCard ViciousBlow2

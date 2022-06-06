@@ -16,7 +16,7 @@ import Arkham.Matcher
 import Arkham.Message
 
 newtype TheThirdAct = TheThirdAct AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theThirdAct :: AgendaCard TheThirdAct

@@ -24,7 +24,7 @@ newtype ToweringBeasts = ToweringBeasts TreacheryAttrs
 toweringBeasts :: TreacheryCard ToweringBeasts
 toweringBeasts = treachery ToweringBeasts Cards.toweringBeasts
 
-instance HasModifiersFor env ToweringBeasts where
+instance HasModifiersFor ToweringBeasts where
   getModifiersFor _ (EnemyTarget eid) (ToweringBeasts attrs)
     | treacheryOnEnemy eid attrs = pure
     $ toModifiers attrs [EnemyFight 1, HealthModifier 1]

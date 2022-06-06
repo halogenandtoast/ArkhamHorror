@@ -29,7 +29,7 @@ theTruthIsHidden :: AgendaCard TheTruthIsHidden
 theTruthIsHidden =
   agenda (1, A) TheTruthIsHidden Cards.theTruthIsHidden (PerPlayer 2)
 
-instance HasModifiersFor env TheTruthIsHidden where
+instance HasModifiersFor TheTruthIsHidden where
   getModifiersFor _ (PhaseTarget MythosPhase) (TheTruthIsHidden attrs) =
     pure $ toModifiers attrs [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
   getModifiersFor _ _ _ = pure []

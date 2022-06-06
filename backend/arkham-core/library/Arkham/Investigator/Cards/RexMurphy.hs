@@ -17,7 +17,7 @@ import Arkham.Modifier
 import Arkham.Timing qualified as Timing
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor env)
+  deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rexMurphy :: InvestigatorCard RexMurphy

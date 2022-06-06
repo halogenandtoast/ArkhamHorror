@@ -63,7 +63,7 @@ instance
     , HasSet ConnectedLocationId env LocationId
     , HasSet Trait env AssetId
     , HasSet LocationId env ()
-    , HasModifiersFor env ()
+    , HasModifiersFor ()
     , HasName env AssetId
     , HasPhase env
     , HasStep AgendaStep env ()

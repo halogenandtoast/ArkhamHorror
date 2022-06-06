@@ -34,7 +34,7 @@ import Data.List.NonEmpty qualified as NE
 
 newtype CarnevaleOfHorrors = CarnevaleOfHorrors ScenarioAttrs
   deriving stock Generic
-  deriving anyclass (IsScenario, HasModifiersFor env)
+  deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
 
 carnevaleOfHorrors :: Difficulty -> CarnevaleOfHorrors

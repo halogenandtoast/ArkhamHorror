@@ -19,7 +19,7 @@ import Arkham.Target
 import Arkham.Timing
 
 newtype TheParisianConspiracyV2 = TheParisianConspiracyV2 ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theParisianConspiracyV2 :: ActCard TheParisianConspiracyV2

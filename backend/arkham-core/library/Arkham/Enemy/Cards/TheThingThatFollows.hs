@@ -14,7 +14,7 @@ import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Timing qualified as Timing
 
 newtype TheThingThatFollows = TheThingThatFollows EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theThingThatFollows :: EnemyCard TheThingThatFollows

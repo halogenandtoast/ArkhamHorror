@@ -22,7 +22,7 @@ lightingBox :: LocationCard LightingBox
 lightingBox =
   location LightingBox Cards.lightingBox 4 (PerPlayer 1) Plus [Triangle]
 
-instance HasModifiersFor env LightingBox where
+instance HasModifiersFor LightingBox where
   getModifiersFor _ (InvestigatorTarget iid) (LightingBox attrs)
     | iid `on` attrs = pure $ toModifiers attrs [IncreaseCostOf AnyCard 2]
   getModifiersFor _ _ _ = pure []

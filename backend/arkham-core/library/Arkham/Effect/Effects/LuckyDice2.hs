@@ -26,7 +26,7 @@ luckyDice2 :: EffectArgs -> LuckyDice2
 luckyDice2 =
   LuckyDice2 . (`with` Metadata False) . uncurry4 (baseAttrs "02230")
 
-instance HasModifiersFor env LuckyDice2 where
+instance HasModifiersFor LuckyDice2 where
   getModifiersFor _ target (LuckyDice2 (attrs `With` _))
     | target == effectTarget attrs = pure $ toModifiers attrs [IgnoreToken]
   getModifiersFor _ _ _ = pure []

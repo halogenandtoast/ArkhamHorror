@@ -15,7 +15,7 @@ import Arkham.Target
 import Arkham.Trait
 
 newtype VortexOfTime = VortexOfTime TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vortexOfTime :: TreacheryCard VortexOfTime

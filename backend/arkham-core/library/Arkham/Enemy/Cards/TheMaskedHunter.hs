@@ -25,7 +25,7 @@ theMaskedHunter = enemyWith
   (2, 1)
   (preyL .~ Prey MostClues)
 
-instance HasCount PlayerCount env () => HasModifiersFor env TheMaskedHunter where
+instance HasCount PlayerCount env () => HasModifiersFor TheMaskedHunter where
   getModifiersFor _ target (TheMaskedHunter a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 2)
     pure $ toModifiers a [HealthModifier healthModifier]

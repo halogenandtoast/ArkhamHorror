@@ -20,7 +20,7 @@ newtype CursedShores = CursedShores EffectAttrs
 cursedShores :: EffectArgs -> CursedShores
 cursedShores = CursedShores . uncurry4 (baseAttrs "81007")
 
-instance HasModifiersFor env CursedShores where
+instance HasModifiersFor CursedShores where
   getModifiersFor SkillTestSource{} target (CursedShores a@EffectAttrs {..})
     | target == effectTarget = pure [toModifier a (AnySkillValue 2)]
   getModifiersFor _ _ _ = pure []

@@ -23,7 +23,7 @@ newtype TheRougarouMetadata = TheRougarouMetadata { damagePerPhase :: Int }
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TheRougarou = TheRougarou (EnemyAttrs `With` TheRougarouMetadata)
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRougarou :: EnemyCard TheRougarou

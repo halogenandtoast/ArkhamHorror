@@ -10,7 +10,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype HotStreak4 = HotStreak4 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hotStreak4 :: EventCard HotStreak4

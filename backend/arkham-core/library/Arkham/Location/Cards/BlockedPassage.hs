@@ -21,7 +21,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype BlockedPassage = BlockedPassage LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blockedPassage :: LocationCard BlockedPassage

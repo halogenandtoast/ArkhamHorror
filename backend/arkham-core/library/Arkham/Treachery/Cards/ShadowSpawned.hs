@@ -24,7 +24,7 @@ newtype ShadowSpawned = ShadowSpawned TreacheryAttrs
 shadowSpawned :: TreacheryCard ShadowSpawned
 shadowSpawned = treachery ShadowSpawned Cards.shadowSpawned
 
-instance HasCount ResourceCount env TreacheryId => HasModifiersFor env ShadowSpawned where
+instance HasCount ResourceCount env TreacheryId => HasModifiersFor ShadowSpawned where
   getModifiersFor _ (EnemyTarget eid) (ShadowSpawned attrs)
     | treacheryOnEnemy eid attrs = do
       n <- unResourceCount <$> getCount (treacheryId attrs)

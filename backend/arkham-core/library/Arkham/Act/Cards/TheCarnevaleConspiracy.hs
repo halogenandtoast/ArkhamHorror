@@ -21,7 +21,7 @@ import Arkham.Modifier
 import Arkham.Target
 
 newtype TheCarnevaleConspiracy = TheCarnevaleConspiracy ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCarnevaleConspiracy :: ActCard TheCarnevaleConspiracy

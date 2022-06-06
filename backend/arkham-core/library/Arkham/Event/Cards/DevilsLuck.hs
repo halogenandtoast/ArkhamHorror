@@ -14,7 +14,7 @@ import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
 newtype DevilsLuck = DevilsLuck EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 devilsLuck :: EventCard DevilsLuck

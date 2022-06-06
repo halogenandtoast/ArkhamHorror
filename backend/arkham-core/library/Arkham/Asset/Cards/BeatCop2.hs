@@ -23,7 +23,7 @@ newtype BeatCop2 = BeatCop2 AssetAttrs
 beatCop2 :: AssetCard BeatCop2
 beatCop2 = ally BeatCop2 Cards.beatCop2 (3, 2)
 
-instance HasModifiersFor env BeatCop2 where
+instance HasModifiersFor BeatCop2 where
   getModifiersFor _ (InvestigatorTarget iid) (BeatCop2 a) =
     pure [ toModifier a (SkillModifier SkillCombat 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

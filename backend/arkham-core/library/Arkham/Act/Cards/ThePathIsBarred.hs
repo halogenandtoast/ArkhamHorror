@@ -21,7 +21,7 @@ import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Timing qualified as Timing
 
 newtype ThePathIsBarred = ThePathIsBarred ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePathIsBarred :: ActCard ThePathIsBarred

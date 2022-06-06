@@ -20,7 +20,7 @@ newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced EffectAttrs
 daisysToteBagAdvanced :: EffectArgs -> DaisysToteBagAdvanced
 daisysToteBagAdvanced = DaisysToteBagAdvanced . uncurry4 (baseAttrs "90002")
 
-instance HasModifiersFor env DaisysToteBagAdvanced where
+instance HasModifiersFor DaisysToteBagAdvanced where
   getModifiersFor _ target (DaisysToteBagAdvanced attrs@EffectAttrs {..})
     | target == effectTarget = pure (toModifiers attrs [BecomesFast])
   getModifiersFor _ _ _ = pure []

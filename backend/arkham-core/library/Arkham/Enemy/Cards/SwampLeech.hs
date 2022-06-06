@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype SwampLeech = SwampLeech EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 swampLeech :: EnemyCard SwampLeech

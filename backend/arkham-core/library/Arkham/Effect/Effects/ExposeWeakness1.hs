@@ -21,7 +21,7 @@ newtype ExposeWeakness1 = ExposeWeakness1 EffectAttrs
 exposeWeakness1 :: EffectArgs -> ExposeWeakness1
 exposeWeakness1 = ExposeWeakness1 . uncurry4 (baseAttrs "02228")
 
-instance HasModifiersFor m ExposeWeakness1 where
+instance HasModifiersFor ExposeWeakness1 where
   getModifiersFor _ target (ExposeWeakness1 attrs)
     | target == effectTarget attrs = case effectMetadata attrs of
       Just (EffectInt n) -> pure $ toModifiers attrs [EnemyFight (-n)]

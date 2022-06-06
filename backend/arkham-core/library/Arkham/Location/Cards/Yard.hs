@@ -34,7 +34,7 @@ instance
   ( HasCount HorrorCount env InvestigatorId
   , HasSkillTest env
   )
-  => HasModifiersFor env Yard where
+  => HasModifiersFor Yard where
   getModifiersFor _ (LocationTarget lid) (Yard attrs) | lid == toId attrs = do
     mskillTestSource <- getSkillTestSource
     case mskillTestSource of

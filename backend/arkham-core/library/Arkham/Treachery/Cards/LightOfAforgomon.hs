@@ -22,7 +22,7 @@ newtype LightOfAforgomon = LightOfAforgomon TreacheryAttrs
 lightOfAforgomon :: TreacheryCard LightOfAforgomon
 lightOfAforgomon = treachery LightOfAforgomon Cards.lightOfAforgomon
 
-instance HasModifiersFor env LightOfAforgomon where
+instance HasModifiersFor LightOfAforgomon where
   getModifiersFor _ (InvestigatorTarget _) (LightOfAforgomon attrs) =
     pure $ toModifiers attrs [TreatAllDamageAsDirect]
   getModifiersFor _ _ _ = pure []

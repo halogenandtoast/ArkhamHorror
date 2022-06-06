@@ -20,7 +20,7 @@ import Arkham.Message
 import Arkham.Source
 
 newtype ReturnToPredatorOrPrey = ReturnToPredatorOrPrey AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToPredatorOrPrey :: AgendaCard ReturnToPredatorOrPrey

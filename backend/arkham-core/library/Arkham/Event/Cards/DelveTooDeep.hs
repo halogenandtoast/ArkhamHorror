@@ -11,7 +11,7 @@ import Arkham.Event.Attrs
 import Arkham.Message
 
 newtype DelveTooDeep = DelveTooDeep EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 delveTooDeep :: EventCard DelveTooDeep

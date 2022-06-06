@@ -20,7 +20,7 @@ easttown :: LocationCard Easttown
 easttown =
   location Easttown Cards.easttown 2 (PerPlayer 1) Moon [Circle, Triangle]
 
-instance HasModifiersFor env Easttown where
+instance HasModifiersFor Easttown where
   getModifiersFor _ (InvestigatorTarget iid) (Easttown attrs) =
     pure $ toModifiers
       attrs

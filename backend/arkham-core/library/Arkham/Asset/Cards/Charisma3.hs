@@ -10,7 +10,7 @@ import Arkham.Asset.Runner
 import Arkham.Slot
 
 newtype Charisma3 = Charisma3 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 charisma3 :: AssetCard Charisma3

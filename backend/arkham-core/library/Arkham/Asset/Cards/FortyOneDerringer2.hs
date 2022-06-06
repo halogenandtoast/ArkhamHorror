@@ -22,7 +22,7 @@ newtype Metadata = Metadata { gotExtraAction :: Bool }
   deriving anyclass (ToJSON, FromJSON)
 
 newtype FortyOneDerringer2 = FortyOneDerringer2 (AssetAttrs `With` Metadata)
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fortyOneDerringer2 :: AssetCard FortyOneDerringer2

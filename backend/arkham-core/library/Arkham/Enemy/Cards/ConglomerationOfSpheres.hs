@@ -18,7 +18,7 @@ import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
 newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 conglomerationOfSpheres :: EnemyCard ConglomerationOfSpheres

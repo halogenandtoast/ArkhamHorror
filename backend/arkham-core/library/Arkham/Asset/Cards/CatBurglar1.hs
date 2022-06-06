@@ -23,7 +23,7 @@ newtype CatBurglar1 = CatBurglar1 AssetAttrs
 catBurglar1 :: AssetCard CatBurglar1
 catBurglar1 = ally CatBurglar1 Cards.catBurglar1 (2, 2)
 
-instance HasModifiersFor env CatBurglar1 where
+instance HasModifiersFor CatBurglar1 where
   getModifiersFor _ (InvestigatorTarget iid) (CatBurglar1 a) =
     pure $ toModifiers a [ SkillModifier SkillAgility 1 | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

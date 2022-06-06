@@ -27,7 +27,7 @@ newtype StickToThePlan = StickToThePlan AssetAttrs
 stickToThePlan :: AssetCard StickToThePlan
 stickToThePlan = asset StickToThePlan Cards.stickToThePlan
 
-instance HasModifiersFor env StickToThePlan where
+instance HasModifiersFor StickToThePlan where
   getModifiersFor _ (InvestigatorTarget iid) (StickToThePlan attrs)
     | controlledBy attrs iid = pure
     $ toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)

@@ -37,7 +37,7 @@ daisyWalkerParallel = investigator
     , agility = 2
     }
 
-instance Query AssetMatcher env => HasModifiersFor env DaisyWalkerParallel where
+instance Query AssetMatcher env => HasModifiersFor DaisyWalkerParallel where
   getModifiersFor _ (InvestigatorTarget iid) (DaisyWalkerParallel attrs@InvestigatorAttrs {..})
     | iid == investigatorId
     = do

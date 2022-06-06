@@ -22,7 +22,7 @@ newtype PoliceBadge2 = PoliceBadge2 AssetAttrs
 policeBadge2 :: AssetCard PoliceBadge2
 policeBadge2 = asset PoliceBadge2 Cards.policeBadge2
 
-instance HasModifiersFor env PoliceBadge2 where
+instance HasModifiersFor PoliceBadge2 where
   getModifiersFor _ (InvestigatorTarget iid) (PoliceBadge2 a) =
     pure [ toModifier a (SkillModifier SkillWillpower 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

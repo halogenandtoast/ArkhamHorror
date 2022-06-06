@@ -36,7 +36,7 @@ facultyOfficesTheNightIsStillYoung = location
   T
   [Circle]
 
-instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
+instance HasModifiersFor FacultyOfficesTheNightIsStillYoung where
   getModifiersFor _ target (FacultyOfficesTheNightIsStillYoung attrs)
     | isTarget attrs target = pure
     $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]

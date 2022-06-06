@@ -15,7 +15,7 @@ newtype LeoDeLuca1 = LeoDeLuca1 AssetAttrs
 leoDeLuca1 :: AssetCard LeoDeLuca1
 leoDeLuca1 = ally LeoDeLuca1 Cards.leoDeLuca1 (2, 2)
 
-instance HasModifiersFor env LeoDeLuca1 where
+instance HasModifiersFor LeoDeLuca1 where
   getModifiersFor _ (InvestigatorTarget iid) (LeoDeLuca1 a) =
     pure [ toModifier a (AdditionalActions 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

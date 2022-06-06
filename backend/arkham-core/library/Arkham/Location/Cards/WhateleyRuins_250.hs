@@ -35,7 +35,7 @@ whateleyRuins_250 = location
   Plus
   [Triangle, Diamond, Hourglass]
 
-instance HasModifiersFor env WhateleyRuins_250 where
+instance HasModifiersFor WhateleyRuins_250 where
   getModifiersFor _ (InvestigatorTarget iid) (WhateleyRuins_250 attrs) =
     pure $ toModifiers
       attrs

@@ -16,7 +16,7 @@ import Arkham.Scenario.Deck
 import Arkham.Target
 
 newtype StrangeDisappearances = StrangeDisappearances AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeDisappearances :: AgendaCard StrangeDisappearances

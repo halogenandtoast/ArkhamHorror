@@ -21,7 +21,7 @@ import Arkham.Scenarios.APhantomOfTruth.Helpers
 import Arkham.Target
 
 newtype StalkedByShadows = StalkedByShadows ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stalkedByShadows :: ActCard StalkedByShadows

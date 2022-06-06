@@ -21,7 +21,7 @@ newtype YogSothoth = YogSothoth EffectAttrs
 yogSothoth :: EffectArgs -> YogSothoth
 yogSothoth = YogSothoth . uncurry4 (baseAttrs "02323")
 
-instance HasModifiersFor env YogSothoth where
+instance HasModifiersFor YogSothoth where
   getModifiersFor _ target (YogSothoth attrs) = case effectMetadata attrs of
     Just (EffectInt n) -> case target of
       EnemyTarget eid -> case effectSource attrs of

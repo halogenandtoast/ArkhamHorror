@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype ArtStudent = ArtStudent AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 artStudent :: AssetCard ArtStudent

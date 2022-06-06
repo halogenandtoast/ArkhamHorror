@@ -26,7 +26,7 @@ newtype Parlor = Parlor LocationAttrs
 parlor :: LocationCard Parlor
 parlor = location Parlor Cards.parlor 2 (Static 0) Diamond [Square]
 
-instance HasModifiersFor env Parlor where
+instance HasModifiersFor Parlor where
   getModifiersFor _ target (Parlor attrs) | isTarget attrs target =
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []

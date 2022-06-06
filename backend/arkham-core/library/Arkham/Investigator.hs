@@ -30,7 +30,7 @@ instance
   ( HasCount StartingUsesCount env (AssetId, UseType)
   , Query AssetMatcher env
   )
-  => HasModifiersFor env Investigator where
+  => HasModifiersFor Investigator where
   getModifiersFor = $(entityF2 "Investigator" "getModifiersFor")
 
 instance HasTokenValue env Investigator where

@@ -24,7 +24,7 @@ newtype FrozenInFear = FrozenInFear TreacheryAttrs
 frozenInFear :: TreacheryCard FrozenInFear
 frozenInFear = treachery FrozenInFear Cards.frozenInFear
 
-instance HasModifiersFor env FrozenInFear where
+instance HasModifiersFor FrozenInFear where
   getModifiersFor _ (InvestigatorTarget iid) (FrozenInFear attrs) =
     pure $ toModifiers
       attrs

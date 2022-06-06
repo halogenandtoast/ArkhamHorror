@@ -28,7 +28,7 @@ instance
   ( HasId LocationId env InvestigatorId
   , HasId LocationId env AssetId
   )
-  => HasModifiersFor env CharlesRossEsq where
+  => HasModifiersFor CharlesRossEsq where
   getModifiersFor (InvestigatorSource iid) (CardIdTarget _) (CharlesRossEsq attrs)
     = do
       case effectSource attrs of

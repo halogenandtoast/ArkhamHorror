@@ -20,7 +20,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 
 newtype TheStrangerACityAflame = TheStrangerACityAflame ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theStrangerACityAflame :: ActCard TheStrangerACityAflame

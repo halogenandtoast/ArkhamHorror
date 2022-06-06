@@ -14,7 +14,7 @@ import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Target
 
 newtype Painkillers = Painkillers AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 painkillers :: AssetCard Painkillers

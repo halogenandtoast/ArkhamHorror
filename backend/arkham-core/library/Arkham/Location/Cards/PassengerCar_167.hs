@@ -38,7 +38,7 @@ passengerCar_167 = locationWith
   []
   (connectsToL .~ setFromList [LeftOf, RightOf])
 
-instance HasCount ClueCount env LocationId => HasModifiersFor env PassengerCar_167 where
+instance HasCount ClueCount env LocationId => HasModifiersFor PassengerCar_167 where
   getModifiersFor _ target (PassengerCar_167 l@LocationAttrs {..})
     | isTarget l target = case lookup LeftOf locationDirections of
       Just leftLocation -> do

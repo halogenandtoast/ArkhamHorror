@@ -21,7 +21,7 @@ import Arkham.Trait
 import Arkham.Treachery.Attrs
 
 newtype AngeredSpirits = AngeredSpirits TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m)
+  deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 angeredSpirits :: TreacheryCard AngeredSpirits

@@ -27,7 +27,7 @@ houseInTheReeds_210 = location
   Squiggle
   [Diamond, Moon]
 
-instance HasModifiersFor env HouseInTheReeds_210 where
+instance HasModifiersFor HouseInTheReeds_210 where
   getModifiersFor _ (InvestigatorTarget iid) (HouseInTheReeds_210 attrs) =
     pure $ toModifiers
       attrs

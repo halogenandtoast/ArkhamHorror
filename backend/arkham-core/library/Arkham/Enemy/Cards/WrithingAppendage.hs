@@ -16,7 +16,7 @@ import Arkham.Message hiding (EnemyAttacks, EnemyDefeated)
 import Arkham.Timing qualified as Timing
 
 newtype WrithingAppendage = WrithingAppendage EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 writhingAppendage :: EnemyCard WrithingAppendage

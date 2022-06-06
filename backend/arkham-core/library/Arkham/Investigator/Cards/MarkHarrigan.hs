@@ -16,7 +16,7 @@ import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype MarkHarrigan = MarkHarrigan InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor env)
+  deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 markHarrigan :: InvestigatorCard MarkHarrigan

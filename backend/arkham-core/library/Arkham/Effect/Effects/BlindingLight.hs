@@ -15,7 +15,7 @@ import Arkham.Target
 import Arkham.Token
 
 newtype BlindingLight = BlindingLight EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor env)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blindingLight :: EffectArgs -> BlindingLight

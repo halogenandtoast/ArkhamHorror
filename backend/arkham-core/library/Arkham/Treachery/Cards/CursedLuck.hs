@@ -27,7 +27,7 @@ newtype CursedLuck = CursedLuck TreacheryAttrs
 cursedLuck :: TreacheryCard CursedLuck
 cursedLuck = treachery CursedLuck Cards.cursedLuck
 
-instance HasModifiersFor env CursedLuck where
+instance HasModifiersFor CursedLuck where
   getModifiersFor SkillTestSource{} (InvestigatorTarget iid) (CursedLuck attrs)
     = pure $ toModifiers
       attrs

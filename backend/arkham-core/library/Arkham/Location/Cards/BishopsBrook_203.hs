@@ -26,7 +26,7 @@ bishopsBrook_203 = location
   Square
   [Plus, Circle, Triangle]
 
-instance HasModifiersFor env BishopsBrook_203 where
+instance HasModifiersFor BishopsBrook_203 where
   getModifiersFor (InvestigatorSource iid) target (BishopsBrook_203 attrs@LocationAttrs {..})
     | isTarget attrs target
     = pure $ toModifiers

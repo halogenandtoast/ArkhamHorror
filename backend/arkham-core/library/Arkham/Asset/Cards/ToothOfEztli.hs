@@ -24,7 +24,7 @@ newtype ToothOfEztli = ToothOfEztli AssetAttrs
 toothOfEztli :: AssetCard ToothOfEztli
 toothOfEztli = asset ToothOfEztli Cards.toothOfEztli
 
-instance HasModifiersFor env ToothOfEztli where
+instance HasModifiersFor ToothOfEztli where
   getModifiersFor (SkillTestSource _ _ (TreacherySource _) _) (InvestigatorTarget iid) (ToothOfEztli a)
     | controlledBy a iid
     = pure $ toModifiers

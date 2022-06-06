@@ -16,7 +16,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype ThePathToTheHill = ThePathToTheHill ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePathToTheHill :: ActCard ThePathToTheHill

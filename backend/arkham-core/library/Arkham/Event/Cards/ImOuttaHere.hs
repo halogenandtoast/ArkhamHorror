@@ -11,7 +11,7 @@ import Arkham.Event.Attrs
 import Arkham.Message
 
 newtype ImOuttaHere = ImOuttaHere EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 imOuttaHere :: EventCard ImOuttaHere

@@ -32,7 +32,7 @@ instance HasAbilities StrangeSolutionFreezingVariant4 where
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Supply 1]
     ]
 
-instance HasModifiersFor env StrangeSolutionFreezingVariant4 where
+instance HasModifiersFor StrangeSolutionFreezingVariant4 where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Evade)) (InvestigatorTarget iid) (StrangeSolutionFreezingVariant4 a)
     | controlledBy a iid && isSource a source
     = pure $ toModifiers a [BaseSkillOf SkillAgility 6]

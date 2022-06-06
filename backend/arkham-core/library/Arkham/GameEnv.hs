@@ -7,7 +7,8 @@ import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import {-# SOURCE #-} Arkham.Game
 import Arkham.Message
-import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
+import Arkham.SkillTest.Base
+import Control.Monad.Random.Lazy hiding ( filterM, foldM, fromList )
 
 newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
   deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO)
@@ -24,29 +25,29 @@ data GameEnv = GameEnv
   }
 
 instance HasStdGen GameEnv where
-  genL = lens gameRandomGen $ \m x -> m {gameRandomGen = x}
+  genL = lens gameRandomGen $ \m x -> m { gameRandomGen = x }
 
 instance HasGame GameT where
   getGame = asks $ gameEnvGame
 
 instance HasQueue GameEnv where
-  messageQueue = lens gameEnvQueue $ \m x -> m {gameEnvQueue = x}
+  messageQueue = lens gameEnvQueue $ \m x -> m { gameEnvQueue = x }
 
 instance HasDepth GameEnv where
-  depthL = lens gameDepthLock $ \m x -> m {gameDepthLock = x}
+  depthL = lens gameDepthLock $ \m x -> m { gameDepthLock = x }
 
 instance HasGameLogger GameEnv where
-  gameLoggerL = lens gameLogger $ \m x -> m {gameLogger = x}
+  gameLoggerL = lens gameLogger $ \m x -> m { gameLogger = x }
 
-toGameEnv ::
-  ( HasGameRef env
-  , HasQueue env
-  , HasStdGen env
-  , HasGameLogger env
-  , MonadReader env m
-  , MonadIO m
-  ) =>
-  m GameEnv
+toGameEnv
+  :: ( HasGameRef env
+     , HasQueue env
+     , HasStdGen env
+     , HasGameLogger env
+     , MonadReader env m
+     , MonadIO m
+     )
+  => m GameEnv
 toGameEnv = do
   game <- readIORef =<< view gameRefL
   gen <- view genL
@@ -70,3 +71,6 @@ instance MonadRandom GameT where
     ref <- view genL
     gen <- atomicModifyIORef' ref split
     pure $ randoms gen
+
+getSkillTest :: GameT (Maybe SkillTest)
+getSkillTest = asks $ gameSkillTest . gameEnvGame

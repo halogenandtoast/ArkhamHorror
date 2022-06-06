@@ -21,7 +21,7 @@ import Arkham.Target
 import Arkham.Trait
 
 newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rivertownAbandonedWarehouse :: LocationCard RivertownAbandonedWarehouse

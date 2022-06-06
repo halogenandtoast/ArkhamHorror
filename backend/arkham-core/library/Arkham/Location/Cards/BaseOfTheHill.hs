@@ -19,7 +19,7 @@ import Arkham.SkillType
 import Arkham.Source
 
 newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseOfTheHill :: LocationCard BaseOfTheHill

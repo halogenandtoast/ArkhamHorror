@@ -20,7 +20,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype BindMonster2 = BindMonster2 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env)
+  deriving anyclass (IsEvent, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bindMonster2 :: EventCard BindMonster2

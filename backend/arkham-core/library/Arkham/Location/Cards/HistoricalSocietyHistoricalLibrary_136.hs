@@ -19,7 +19,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype HistoricalSocietyHistoricalLibrary_136 = HistoricalSocietyHistoricalLibrary_136 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 historicalSocietyHistoricalLibrary_136

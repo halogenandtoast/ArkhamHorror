@@ -23,7 +23,7 @@ dormitories :: LocationCard Dormitories
 dormitories =
   location Dormitories Cards.dormitories 1 (PerPlayer 3) Equals [Diamond]
 
-instance HasModifiersFor env Dormitories where
+instance HasModifiersFor Dormitories where
   getModifiersFor _ target (Dormitories attrs) | isTarget attrs target =
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []

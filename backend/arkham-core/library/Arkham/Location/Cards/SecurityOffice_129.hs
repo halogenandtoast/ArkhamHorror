@@ -19,7 +19,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype SecurityOffice_129 = SecurityOffice_129 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 securityOffice_129 :: LocationCard SecurityOffice_129

@@ -17,7 +17,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype ChicagoTypewriter4 = ChicagoTypewriter4 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chicagoTypewriter4 :: AssetCard ChicagoTypewriter4

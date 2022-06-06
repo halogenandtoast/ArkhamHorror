@@ -15,7 +15,7 @@ import Arkham.Message
 import Arkham.Timing qualified as Timing
 
 newtype TommyMalloy = TommyMalloy EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tommyMalloy :: EnemyCard TommyMalloy

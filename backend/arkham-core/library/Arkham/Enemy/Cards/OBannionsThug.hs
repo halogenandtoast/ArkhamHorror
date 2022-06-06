@@ -18,7 +18,7 @@ newtype OBannionsThug = OBannionsThug EnemyAttrs
 oBannionsThug :: EnemyCard OBannionsThug
 oBannionsThug = enemy OBannionsThug Cards.oBannionsThug (4, Static 2, 2) (2, 0)
 
-instance HasModifiersFor env OBannionsThug where
+instance HasModifiersFor OBannionsThug where
   getModifiersFor _ (InvestigatorTarget iid) (OBannionsThug a@EnemyAttrs {..})
     | iid `elem` enemyEngagedInvestigators = pure
     $ toModifiers a [CannotGainResources]

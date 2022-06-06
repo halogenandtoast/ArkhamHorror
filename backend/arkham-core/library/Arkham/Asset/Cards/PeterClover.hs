@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype PeterClover = PeterClover AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 peterClover :: AssetCard PeterClover

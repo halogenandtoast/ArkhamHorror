@@ -22,7 +22,7 @@ newtype InsatiableBloodlust = InsatiableBloodlust TreacheryAttrs
 insatiableBloodlust :: TreacheryCard InsatiableBloodlust
 insatiableBloodlust = treachery InsatiableBloodlust Cards.insatiableBloodlust
 
-instance HasModifiersFor env InsatiableBloodlust where
+instance HasModifiersFor InsatiableBloodlust where
   getModifiersFor _ (EnemyTarget eid) (InsatiableBloodlust attrs)
     | treacheryOnEnemy eid attrs = pure $ toModifiers
       attrs

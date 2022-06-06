@@ -23,7 +23,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype CurtainCall = CurtainCall ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curtainCall :: ActCard CurtainCall

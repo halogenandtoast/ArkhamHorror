@@ -32,7 +32,7 @@ import Arkham.Trait hiding (Cultist, Expert)
 import Data.Maybe (fromJust)
 
 newtype WhereDoomAwaits = WhereDoomAwaits ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor env)
+  deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whereDoomAwaits :: Difficulty -> WhereDoomAwaits

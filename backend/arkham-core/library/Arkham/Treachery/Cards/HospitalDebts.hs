@@ -28,7 +28,7 @@ hospitalDebts :: TreacheryCard HospitalDebts
 hospitalDebts =
   treacheryWith HospitalDebts Cards.hospitalDebts (resourcesL ?~ 0)
 
-instance HasModifiersFor env HospitalDebts where
+instance HasModifiersFor HospitalDebts where
   getModifiersFor _ (InvestigatorTarget iid) (HospitalDebts attrs) = do
     let resources' = fromJustNote "must be set" $ treacheryResources attrs
     pure $ toModifiers

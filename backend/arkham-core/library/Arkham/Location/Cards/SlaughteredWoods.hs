@@ -17,7 +17,7 @@ import Arkham.Message hiding (RevealLocation)
 import Arkham.Timing qualified as Timing
 
 newtype SlaughteredWoods = SlaughteredWoods LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 slaughteredWoods :: LocationCard SlaughteredWoods

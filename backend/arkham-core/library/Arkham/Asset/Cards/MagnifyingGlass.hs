@@ -16,7 +16,7 @@ newtype MagnifyingGlass = MagnifyingGlass AssetAttrs
 magnifyingGlass :: AssetCard MagnifyingGlass
 magnifyingGlass = asset MagnifyingGlass Cards.magnifyingGlass
 
-instance HasModifiersFor env MagnifyingGlass where
+instance HasModifiersFor MagnifyingGlass where
   getModifiersFor _ (InvestigatorTarget iid) (MagnifyingGlass a) = pure
     [ toModifier a $ ActionSkillModifier Action.Investigate SkillIntellect 1
     | controlledBy a iid

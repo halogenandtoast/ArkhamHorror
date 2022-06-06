@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Skill.Attrs
 
 newtype InquiringMind = InquiringMind SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 inquiringMind :: SkillCard InquiringMind

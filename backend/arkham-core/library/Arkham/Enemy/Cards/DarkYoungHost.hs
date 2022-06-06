@@ -18,7 +18,7 @@ import Arkham.Window (Window(..))
 import qualified Arkham.Window as Window
 
 newtype DarkYoungHost = DarkYoungHost EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkYoungHost :: EnemyCard DarkYoungHost

@@ -7,7 +7,7 @@ import Arkham.Investigator.Runner
 import Arkham.Message
 
 newtype JennyBarnes = JennyBarnes InvestigatorAttrs
-  deriving anyclass (IsInvestigator, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsInvestigator, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jennyBarnes :: InvestigatorCard JennyBarnes

@@ -34,7 +34,7 @@ chargesSpent (Payments xs) = sum $ map chargesSpent xs
 chargesSpent (UsesPayment n) = n
 chargesSpent _ = 0
 
-instance HasModifiersFor env TorrentOfPower where
+instance HasModifiersFor TorrentOfPower where
   getModifiersFor (SkillTestSource{}) (CardIdTarget cid) (TorrentOfPower attrs)
     | toCardId attrs == cid = do
       let n = maybe 0 chargesSpent (skillAdditionalPayment attrs)

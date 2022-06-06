@@ -20,7 +20,7 @@ newtype TheOrganistDrapedInMystery = TheOrganistDrapedInMystery EnemyAttrs
   deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-instance HasModifiersFor env TheOrganistDrapedInMystery where
+instance HasModifiersFor TheOrganistDrapedInMystery where
   getModifiersFor _ target (TheOrganistDrapedInMystery attrs)
     | isTarget attrs target = pure $ toModifiers attrs [CannotBeDamaged]
   getModifiersFor _ _ _ = pure []

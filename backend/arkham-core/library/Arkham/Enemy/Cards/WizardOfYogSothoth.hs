@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype WizardOfYogSothoth = WizardOfYogSothoth EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wizardOfYogSothoth :: EnemyCard WizardOfYogSothoth

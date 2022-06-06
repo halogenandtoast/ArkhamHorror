@@ -29,7 +29,7 @@ instance HasAbilities Lure1 where
   getAbilities (Lure1 attrs) =
     [restrictedAbility attrs 1 OwnsThis $ ForcedAbility $ RoundEnds Timing.When]
 
-instance HasModifiersFor env Lure1 where
+instance HasModifiersFor Lure1 where
   getModifiersFor _ (EnemyTarget _) (Lure1 attrs) =
     case eventAttachedTarget attrs of
       Just target@(LocationTarget _) ->

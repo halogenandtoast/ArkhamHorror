@@ -12,7 +12,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype MomentOfRespite3 = MomentOfRespite3 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 momentOfRespite3 :: EventCard MomentOfRespite3

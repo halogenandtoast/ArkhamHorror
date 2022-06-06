@@ -26,7 +26,7 @@ newtype Garden = Garden LocationAttrs
 garden :: LocationCard Garden
 garden = location Garden Cards.garden 3 (PerPlayer 1) Plus [Diamond]
 
-instance HasModifiersFor env Garden where
+instance HasModifiersFor Garden where
   getModifiersFor _ (LocationTarget lid) (Garden attrs) | lid == toId attrs =
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []

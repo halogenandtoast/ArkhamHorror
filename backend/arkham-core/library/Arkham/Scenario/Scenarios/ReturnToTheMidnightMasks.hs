@@ -26,7 +26,7 @@ import Arkham.Scenario.Scenarios.TheMidnightMasks
 
 newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
   deriving stock Generic
-  deriving anyclass (IsScenario, HasModifiersFor env)
+  deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
 
 returnToTheMidnightMasks :: Difficulty -> ReturnToTheMidnightMasks

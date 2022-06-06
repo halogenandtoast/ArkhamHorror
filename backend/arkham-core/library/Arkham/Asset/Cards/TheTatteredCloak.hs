@@ -21,7 +21,7 @@ theTatteredCloak :: AssetCard TheTatteredCloak
 theTatteredCloak =
   assetWith TheTatteredCloak Cards.theTatteredCloak (healthL ?~ 1)
 
-instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env TheTatteredCloak where
+instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor TheTatteredCloak where
   getModifiersFor _ (InvestigatorTarget iid) (TheTatteredCloak attrs)
     | controlledBy attrs iid = do
       remainingSanity <- unRemainingSanity <$> getCount iid

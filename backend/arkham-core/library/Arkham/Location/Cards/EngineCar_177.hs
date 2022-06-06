@@ -34,7 +34,7 @@ engineCar_177 = locationWith
   []
   (connectsToL .~ singleton LeftOf)
 
-instance HasCount ClueCount env LocationId => HasModifiersFor env EngineCar_177 where
+instance HasCount ClueCount env LocationId => HasModifiersFor EngineCar_177 where
   getModifiersFor _ target (EngineCar_177 l@LocationAttrs {..})
     | isTarget l target = case lookup LeftOf locationDirections of
       Just leftLocation -> do

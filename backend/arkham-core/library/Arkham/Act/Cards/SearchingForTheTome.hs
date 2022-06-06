@@ -18,7 +18,7 @@ import Arkham.Message
 import Arkham.Resolution
 
 newtype SearchingForTheTome = SearchingForTheTome ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 searchingForTheTome :: ActCard SearchingForTheTome

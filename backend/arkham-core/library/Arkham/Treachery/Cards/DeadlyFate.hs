@@ -15,7 +15,7 @@ import Arkham.Treachery.Attrs
 import qualified Arkham.Treachery.Cards as Cards
 
 newtype DeadlyFate = DeadlyFate TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deadlyFate :: TreacheryCard DeadlyFate

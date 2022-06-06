@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 
 newtype SethBishop = SethBishop EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 sethBishop :: EnemyCard SethBishop

@@ -24,7 +24,7 @@ newtype CallingInFavors = CallingInFavors EffectAttrs
 callingInFavors :: EffectArgs -> CallingInFavors
 callingInFavors = CallingInFavors . uncurry4 (baseAttrs "03158")
 
-instance HasModifiersFor env CallingInFavors where
+instance HasModifiersFor CallingInFavors where
   getModifiersFor source (CardIdTarget _) (CallingInFavors attrs)
     | source == effectSource attrs = do
       case effectMetadata attrs of

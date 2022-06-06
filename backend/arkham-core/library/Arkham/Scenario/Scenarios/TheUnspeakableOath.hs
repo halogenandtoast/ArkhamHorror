@@ -33,7 +33,7 @@ import Arkham.Token
 import Arkham.Trait hiding (Cultist, Expert)
 
 newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor env)
+  deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theUnspeakableOath :: Difficulty -> TheUnspeakableOath

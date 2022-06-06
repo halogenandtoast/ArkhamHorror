@@ -16,7 +16,7 @@ import Arkham.Matcher
 import Arkham.Message
 
 newtype PeterWarren = PeterWarren EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 peterWarren :: EnemyCard PeterWarren

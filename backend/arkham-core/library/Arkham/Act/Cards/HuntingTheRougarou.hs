@@ -24,7 +24,7 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype HuntingTheRougarou = HuntingTheRougarou ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntingTheRougarou :: ActCard HuntingTheRougarou

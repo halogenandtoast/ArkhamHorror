@@ -39,7 +39,7 @@ instance HasAbilities TheRedGlovedMan5 where
       $ ForcedAbility (PhaseEnds Timing.When $ PhaseIs MythosPhase)
     ]
 
-instance HasModifiersFor env TheRedGlovedMan5 where
+instance HasModifiersFor TheRedGlovedMan5 where
   getModifiersFor _ (InvestigatorTarget iid) (TheRedGlovedMan5 (a `With` Metadata {..}))
     | controlledBy a iid
     = pure $ toModifiers a $ map (`BaseSkillOf` 6) chosenSkills

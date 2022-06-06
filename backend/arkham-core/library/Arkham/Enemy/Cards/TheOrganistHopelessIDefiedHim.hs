@@ -19,7 +19,7 @@ newtype TheOrganistHopelessIDefiedHim = TheOrganistHopelessIDefiedHim EnemyAttrs
   deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-instance HasModifiersFor env TheOrganistHopelessIDefiedHim where
+instance HasModifiersFor TheOrganistHopelessIDefiedHim where
   getModifiersFor _ target (TheOrganistHopelessIDefiedHim attrs)
     | isTarget attrs target = pure $ toModifiers attrs [CannotBeDamaged]
   getModifiersFor _ _ _ = pure []

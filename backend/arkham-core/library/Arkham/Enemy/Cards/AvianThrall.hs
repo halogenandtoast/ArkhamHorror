@@ -27,7 +27,7 @@ avianThrall = enemyWith
   (1, 1)
   (preyL .~ Prey (InvestigatorWithLowestSkill SkillIntellect))
 
-instance HasSet Trait env AssetId => HasModifiersFor env AvianThrall where
+instance HasSet Trait env AssetId => HasModifiersFor AvianThrall where
   getModifiersFor (AssetSource aid) target (AvianThrall attrs)
     | isTarget attrs target = do
       traits <- getSet aid

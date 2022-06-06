@@ -18,7 +18,7 @@ stealthyByakhee :: EnemyCard StealthyByakhee
 stealthyByakhee =
   enemy StealthyByakhee Cards.stealthyByakhee (5, Static 2, 3) (2, 1)
 
-instance HasModifiersFor env StealthyByakhee where
+instance HasModifiersFor StealthyByakhee where
   getModifiersFor _ target (StealthyByakhee attrs) | isTarget attrs target =
     pure $ toModifiers attrs [ EnemyFight (-3) | enemyExhausted attrs ]
   getModifiersFor _ _ _ = pure []

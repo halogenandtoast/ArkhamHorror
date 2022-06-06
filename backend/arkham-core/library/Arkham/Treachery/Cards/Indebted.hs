@@ -21,7 +21,7 @@ newtype Indebted = Indebted TreacheryAttrs
 indebted :: TreacheryCard Indebted
 indebted = treachery Indebted Cards.indebted
 
-instance HasModifiersFor env Indebted where
+instance HasModifiersFor Indebted where
   getModifiersFor _ (InvestigatorTarget iid) (Indebted attrs) =
     pure $ toModifiers
       attrs

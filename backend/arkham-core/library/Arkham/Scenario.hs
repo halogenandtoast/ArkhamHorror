@@ -31,7 +31,7 @@ $(buildEntity "Scenario")
 
 $(deriveJSON defaultOptions ''Scenario)
 
-instance HasRecord env () => HasModifiersFor env Scenario where
+instance HasRecord env () => HasModifiersFor Scenario where
   getModifiersFor = $(entityF2 "Scenario" "getModifiersFor")
 
 instance HasRecord env Scenario where

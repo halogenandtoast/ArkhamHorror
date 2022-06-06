@@ -23,7 +23,7 @@ newtype TorturousChords = TorturousChords TreacheryAttrs
 torturousChords :: TreacheryCard TorturousChords
 torturousChords = treachery TorturousChords Cards.torturousChords
 
-instance HasModifiersFor env TorturousChords where
+instance HasModifiersFor TorturousChords where
   getModifiersFor _ target (TorturousChords a)
     | treacheryOn target a = pure $ toModifiers a [IncreaseCostOf AnyCard 1]
   getModifiersFor _ _ _ = pure []

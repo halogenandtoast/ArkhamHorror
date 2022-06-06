@@ -26,7 +26,7 @@ import Arkham.Trait
 import Arkham.Window
 
 newtype BeginnersLuck = BeginnersLuck ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 -- Advancement is forced

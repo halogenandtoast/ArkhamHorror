@@ -22,7 +22,7 @@ newtype TommyMalloy = TommyMalloy EffectAttrs
 tommyMalloy :: EffectArgs -> TommyMalloy
 tommyMalloy = TommyMalloy . uncurry4 (baseAttrs "60103")
 
-instance HasModifiersFor env TommyMalloy where
+instance HasModifiersFor TommyMalloy where
   getModifiersFor _ target (TommyMalloy attrs) | effectTarget attrs == target =
     pure $ toModifiers attrs [MaxDamageTaken 1]
   getModifiersFor _ _ _ = pure []

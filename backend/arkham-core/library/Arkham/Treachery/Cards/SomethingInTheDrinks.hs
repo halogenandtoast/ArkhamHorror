@@ -14,7 +14,7 @@ import Arkham.Treachery.Attrs
 import Arkham.Treachery.Runner
 
 newtype SomethingInTheDrinks = SomethingInTheDrinks TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 somethingInTheDrinks :: TreacheryCard SomethingInTheDrinks

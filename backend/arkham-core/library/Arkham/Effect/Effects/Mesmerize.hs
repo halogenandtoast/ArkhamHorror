@@ -15,7 +15,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype Mesmerize = Mesmerize EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor m)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mesmerize :: EffectArgs -> Mesmerize

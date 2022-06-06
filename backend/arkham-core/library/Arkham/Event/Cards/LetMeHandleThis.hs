@@ -14,7 +14,7 @@ import Arkham.Source
 import Arkham.Target
 
 newtype LetMeHandleThis = LetMeHandleThis EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 letMeHandleThis :: EventCard LetMeHandleThis

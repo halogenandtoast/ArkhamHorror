@@ -17,7 +17,7 @@ import Arkham.Message
 import Arkham.Query
 
 newtype ATearInReality = ATearInReality AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aTearInReality :: AgendaCard ATearInReality

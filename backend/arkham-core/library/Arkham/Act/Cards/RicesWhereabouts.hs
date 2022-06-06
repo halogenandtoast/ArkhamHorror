@@ -25,7 +25,7 @@ import Arkham.Window qualified as Window
 import Data.List.Extra (firstJust)
 
 newtype RicesWhereabouts = RicesWhereabouts ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ricesWhereabouts :: ActCard RicesWhereabouts

@@ -20,7 +20,7 @@ import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
 newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 studyAberrantGateway :: LocationCard StudyAberrantGateway

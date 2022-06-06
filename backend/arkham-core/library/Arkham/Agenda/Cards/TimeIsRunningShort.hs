@@ -17,7 +17,7 @@ import Arkham.Message
 import Arkham.Resolution
 
 newtype TimeIsRunningShort = TimeIsRunningShort AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor env)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 timeIsRunningShort :: AgendaCard TimeIsRunningShort

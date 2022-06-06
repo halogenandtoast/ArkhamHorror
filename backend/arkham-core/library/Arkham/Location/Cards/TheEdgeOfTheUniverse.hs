@@ -31,7 +31,7 @@ theEdgeOfTheUniverse = location
   Moon
   [Plus, Squiggle]
 
-instance HasPhase env => HasModifiersFor env TheEdgeOfTheUniverse where
+instance HasPhase env => HasModifiersFor TheEdgeOfTheUniverse where
   getModifiersFor _ (InvestigatorTarget iid) (TheEdgeOfTheUniverse attrs)
     | iid `on` attrs = do
       phase <- getPhase

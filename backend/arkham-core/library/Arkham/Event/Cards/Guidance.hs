@@ -13,7 +13,7 @@ import Arkham.Matcher
 import Arkham.Message
 
 newtype Guidance = Guidance EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guidance :: EventCard Guidance

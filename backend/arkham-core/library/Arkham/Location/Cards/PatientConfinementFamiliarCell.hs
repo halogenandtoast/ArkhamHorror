@@ -20,7 +20,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype PatientConfinementFamiliarCell = PatientConfinementFamiliarCell LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 patientConfinementFamiliarCell :: LocationCard PatientConfinementFamiliarCell

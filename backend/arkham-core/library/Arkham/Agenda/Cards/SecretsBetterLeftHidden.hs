@@ -33,7 +33,7 @@ secretsBetterLeftHidden = agenda
   Cards.secretsBetterLeftHidden
   (PerPlayer 3)
 
-instance HasModifiersFor env SecretsBetterLeftHidden where
+instance HasModifiersFor SecretsBetterLeftHidden where
   getModifiersFor _ (PhaseTarget MythosPhase) (SecretsBetterLeftHidden attrs) =
     pure $ toModifiers attrs [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
   getModifiersFor _ _ _ = pure []

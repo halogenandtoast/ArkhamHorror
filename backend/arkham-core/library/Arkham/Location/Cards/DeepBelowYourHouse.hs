@@ -15,7 +15,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype DeepBelowYourHouse = DeepBelowYourHouse LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepBelowYourHouse :: LocationCard DeepBelowYourHouse

@@ -17,7 +17,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype Fieldwork = Fieldwork AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fieldwork :: AssetCard Fieldwork

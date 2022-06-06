@@ -23,7 +23,7 @@ arkhamWoodsTwistingPaths :: EffectArgs -> ArkhamWoodsTwistingPaths
 arkhamWoodsTwistingPaths =
   ArkhamWoodsTwistingPaths . uncurry4 (baseAttrs "01151")
 
-instance HasModifiersFor env ArkhamWoodsTwistingPaths
+instance HasModifiersFor ArkhamWoodsTwistingPaths
 
 instance (Query LocationMatcher env, HasQueue env) => RunMessage ArkhamWoodsTwistingPaths where
   runMessage msg e@(ArkhamWoodsTwistingPaths attrs) = case msg of

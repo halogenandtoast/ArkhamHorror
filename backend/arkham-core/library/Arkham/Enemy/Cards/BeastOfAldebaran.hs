@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 import Arkham.Strategy
 
 newtype BeastOfAldebaran = BeastOfAldebaran EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 beastOfAldebaran :: EnemyCard BeastOfAldebaran

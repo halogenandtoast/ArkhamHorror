@@ -25,7 +25,7 @@ theNecronomiconAdvanced =
     $ (horrorL ?~ 3)
     . (canLeavePlayByNormalMeansL .~ False)
 
-instance HasModifiersFor env TheNecronomiconAdvanced where
+instance HasModifiersFor TheNecronomiconAdvanced where
   getModifiersFor _ (InvestigatorTarget iid) (TheNecronomiconAdvanced a) =
     pure $ toModifiers
       a

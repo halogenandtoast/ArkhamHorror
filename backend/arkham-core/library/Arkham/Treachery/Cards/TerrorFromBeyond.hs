@@ -15,7 +15,7 @@ import Arkham.Message
 import Arkham.Treachery.Attrs
 
 newtype TerrorFromBeyond = TerrorFromBeyond TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 terrorFromBeyond :: TreacheryCard TerrorFromBeyond

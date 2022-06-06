@@ -40,7 +40,7 @@ stoneArchways = locationWith
     )
   )
 
-instance Query LocationMatcher env => HasModifiersFor env StoneArchways where
+instance Query LocationMatcher env => HasModifiersFor StoneArchways where
   getModifiersFor _ (LocationTarget lid) (StoneArchways attrs) = do
     isUnrevealedAdjacent <- member lid <$> select
       (UnrevealedLocation <> LocationMatchAny

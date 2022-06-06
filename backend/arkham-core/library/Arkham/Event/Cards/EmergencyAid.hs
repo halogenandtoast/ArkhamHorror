@@ -13,7 +13,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype EmergencyAid = EmergencyAid EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 emergencyAid :: EventCard EmergencyAid

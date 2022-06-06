@@ -16,7 +16,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype DisruptingTheRitual = DisruptingTheRitual ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 disruptingTheRitual :: ActCard DisruptingTheRitual

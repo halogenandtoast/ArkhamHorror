@@ -18,7 +18,7 @@ newtype TrueGrit = TrueGrit AssetAttrs
 trueGrit :: AssetCard TrueGrit
 trueGrit = assetWith TrueGrit Cards.trueGrit (healthL ?~ 3)
 
-instance (HasId LocationId env InvestigatorId) => HasModifiersFor env TrueGrit where
+instance (HasId LocationId env InvestigatorId) => HasModifiersFor TrueGrit where
   getModifiersFor (InvestigatorSource iid) target (TrueGrit a)
     | isTarget a target = do
       locationId <- getId @LocationId iid

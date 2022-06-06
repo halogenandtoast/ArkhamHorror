@@ -20,7 +20,7 @@ fineClothes :: AssetCard FineClothes
 fineClothes =
   assetWith FineClothes Cards.fineClothes $ (healthL ?~ 1) . (sanityL ?~ 1)
 
-instance HasModifiersFor env FineClothes where
+instance HasModifiersFor FineClothes where
   getModifiersFor (SkillTestSource iid _ _ (Just Action.Parley)) (InvestigatorTarget iid') (FineClothes a)
     | controlledBy a iid && iid == iid'
     = pure $ toModifiers a [Difficulty (-2)]

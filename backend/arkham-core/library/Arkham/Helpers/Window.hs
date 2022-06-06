@@ -5,22 +5,24 @@ import Arkham.Prelude
 import Arkham.Window
 import Arkham.Matcher
 import Arkham.Message
+import {-# SOURCE #-} Arkham.GameEnv
+import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Timing qualified as Timing
 import Arkham.Classes.Query
 
-checkWindows :: Query InvestigatorMatcher m => [Window] -> m Message
+checkWindows :: [Window] -> GameT Message
 checkWindows windows' = do
   iids <- selectList Anyone
   pure $ CheckWindow iids windows'
 
-windows :: Query InvestigatorMatcher m => [WindowType] -> m [Message]
+windows :: [WindowType] -> GameT [Message]
 windows windows' = do
   iids <- selectList Anyone
   pure $ do
     timing <- [Timing.When, Timing.After]
     [CheckWindow iids $ map (Window timing) windows']
 
-splitWithWindows :: Query InvestigatorMatcher m => Message -> [WindowType] -> m [Message]
+splitWithWindows :: Message -> [WindowType] -> GameT [Message]
 splitWithWindows msg windows' = do
   iids <- selectList Anyone
   pure

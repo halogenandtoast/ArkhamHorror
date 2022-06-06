@@ -24,7 +24,7 @@ newtype Metadata = Metadata { chosenSkills :: HashSet SkillType }
   deriving newtype (Show, Eq)
 
 newtype ArkhamAsylum = ArkhamAsylum (ActAttrs `With` Metadata)
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamAsylum :: ActCard ArkhamAsylum

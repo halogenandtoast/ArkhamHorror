@@ -21,7 +21,7 @@ ashleighClarke :: EnemyCard AshleighClarke
 ashleighClarke =
   enemy AshleighClarke Cards.ashleighClarke (2, Static 5, 4) (0, 2)
 
-instance (HasId LocationId env InvestigatorId, HasPhase env) => HasModifiersFor env AshleighClarke where
+instance (HasId LocationId env InvestigatorId, HasPhase env) => HasModifiersFor AshleighClarke where
   getModifiersFor _ (InvestigatorTarget iid) (AshleighClarke attrs) = do
     lid <- getId iid
     phase <- getPhase

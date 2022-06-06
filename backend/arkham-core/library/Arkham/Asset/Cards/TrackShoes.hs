@@ -23,7 +23,7 @@ newtype TrackShoes = TrackShoes AssetAttrs
 trackShoes :: AssetCard TrackShoes
 trackShoes = asset TrackShoes Cards.trackShoes
 
-instance HasModifiersFor env TrackShoes where
+instance HasModifiersFor TrackShoes where
   getModifiersFor _ (InvestigatorTarget iid) (TrackShoes attrs)
     | attrs `controlledBy` iid = pure
     $ toModifiers attrs [SkillModifier SkillAgility 1]

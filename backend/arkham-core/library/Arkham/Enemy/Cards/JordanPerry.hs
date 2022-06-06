@@ -16,7 +16,7 @@ import Arkham.Phase
 import Arkham.Timing qualified as Timing
 
 newtype JordanPerry = JordanPerry EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jordanPerry :: EnemyCard JordanPerry

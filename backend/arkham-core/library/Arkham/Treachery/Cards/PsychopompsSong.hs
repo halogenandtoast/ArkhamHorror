@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Attrs
 
 newtype PsychopompsSong = PsychopompsSong TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor m)
+  deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 psychopompsSong :: TreacheryCard PsychopompsSong

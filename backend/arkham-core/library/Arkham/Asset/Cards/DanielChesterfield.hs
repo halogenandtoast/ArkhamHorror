@@ -15,7 +15,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype DanielChesterfield = DanielChesterfield AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 danielChesterfield :: AssetCard DanielChesterfield

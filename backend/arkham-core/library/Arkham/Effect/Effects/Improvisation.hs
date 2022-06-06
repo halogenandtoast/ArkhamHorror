@@ -23,7 +23,7 @@ newtype Improvisation = Improvisation EffectAttrs
 improvisation :: EffectArgs -> Improvisation
 improvisation = Improvisation . uncurry4 (baseAttrs "03018")
 
-instance HasSet ClassSymbol env InvestigatorId => HasModifiersFor env Improvisation where
+instance HasSet ClassSymbol env InvestigatorId => HasModifiersFor Improvisation where
   getModifiersFor _ target@(InvestigatorTarget iid) (Improvisation attrs)
     | effectTarget attrs == target = do
       roles <- getSetList iid

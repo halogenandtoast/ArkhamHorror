@@ -14,7 +14,7 @@ import Arkham.Message hiding (EnemyAttacks)
 import Arkham.Timing qualified as Timing
 
 newtype SilverTwilightAcolyte = SilverTwilightAcolyte EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor env)
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 silverTwilightAcolyte :: EnemyCard SilverTwilightAcolyte

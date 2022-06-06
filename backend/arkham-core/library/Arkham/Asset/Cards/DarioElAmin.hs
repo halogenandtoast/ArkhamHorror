@@ -24,7 +24,7 @@ newtype DarioElAmin = DarioElAmin AssetAttrs
 darioElAmin :: AssetCard DarioElAmin
 darioElAmin = ally DarioElAmin Cards.darioElAmin (2, 2)
 
-instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env DarioElAmin where
+instance HasCount ResourceCount env InvestigatorId => HasModifiersFor DarioElAmin where
   getModifiersFor _ (InvestigatorTarget iid) (DarioElAmin attrs)
     | attrs `controlledBy` iid = do
       resources <- unResourceCount <$> getCount iid

@@ -12,7 +12,7 @@ import Arkham.Skill.Attrs
 import Arkham.Token
 
 newtype StrokeOfLuck2 = StrokeOfLuck2 SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strokeOfLuck2 :: SkillCard StrokeOfLuck2

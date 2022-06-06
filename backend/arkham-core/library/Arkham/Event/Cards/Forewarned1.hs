@@ -12,7 +12,7 @@ import Arkham.Event.Runner
 import Arkham.Message
 
 newtype Forewarned1 = Forewarned1 EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor env, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forewarned1 :: EventCard Forewarned1

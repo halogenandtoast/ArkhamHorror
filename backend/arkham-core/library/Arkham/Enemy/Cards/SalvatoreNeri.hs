@@ -22,7 +22,7 @@ salvatoreNeri :: EnemyCard SalvatoreNeri
 salvatoreNeri = enemy SalvatoreNeri Cards.salvatoreNeri (0, Static 3, 0) (0, 2)
 
 instance
-  ( HasModifiersFor env ()
+  ( HasModifiersFor ()
   , HasSkillValue env InvestigatorId
   )
   => HasModifiersFor env SalvatoreNeri where

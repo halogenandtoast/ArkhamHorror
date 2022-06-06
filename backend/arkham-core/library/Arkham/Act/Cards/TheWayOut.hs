@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Resolution
 
 newtype TheWayOut = TheWayOut ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor env)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theWayOut :: ActCard TheWayOut

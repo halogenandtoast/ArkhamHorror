@@ -30,7 +30,7 @@ instance
   ( HasId LocationId env InvestigatorId
   , HasSet Trait env LocationId
   )
-  => HasModifiersFor env CursedSwamp where
+  => HasModifiersFor CursedSwamp where
   getModifiersFor (SkillTestSource _ _ source _) (InvestigatorTarget iid) (CursedSwamp attrs)
     | isSource attrs source
     = do

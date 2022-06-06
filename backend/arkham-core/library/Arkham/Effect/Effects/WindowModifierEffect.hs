@@ -37,7 +37,7 @@ windowModifierEffect eid metadata effectWindow source target =
     , effectWindow = Just effectWindow
     }
 
-instance Monad m => HasModifiersFor m WindowModifierEffect where
+instance Monad m => HasModifiersFor WindowModifierEffect where
   getModifiersFor _ target (WindowModifierEffect EffectAttrs {..})
     | target == effectTarget = case effectMetadata of
       Just (EffectModifiers modifiers) -> pure modifiers

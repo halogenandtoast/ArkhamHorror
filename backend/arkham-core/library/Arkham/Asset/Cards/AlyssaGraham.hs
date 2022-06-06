@@ -28,7 +28,7 @@ instance HasAbilities AlyssaGraham where
         [ExhaustCost (toTarget a)]
     ]
 
-instance HasModifiersFor env AlyssaGraham where
+instance HasModifiersFor AlyssaGraham where
   getModifiersFor _ (InvestigatorTarget iid) (AlyssaGraham a) =
     pure [ toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid ]
   getModifiersFor _ _ _ = pure []

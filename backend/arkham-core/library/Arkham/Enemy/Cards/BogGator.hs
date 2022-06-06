@@ -26,7 +26,7 @@ bogGator = enemyWith
   (1, 1)
   (preyL .~ Prey (InvestigatorWithLowestSkill SkillAgility))
 
-instance Query LocationMatcher env => HasModifiersFor env BogGator where
+instance Query LocationMatcher env => HasModifiersFor BogGator where
   getModifiersFor _ (EnemyTarget eid) (BogGator a@EnemyAttrs {..})
     | spawned a && eid == enemyId = do
       bayouLocation <- selectAny $ LocationWithTrait Bayou <> locationWithEnemy eid

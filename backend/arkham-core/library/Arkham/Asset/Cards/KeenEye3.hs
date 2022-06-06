@@ -15,7 +15,7 @@ import Arkham.SkillType
 import Arkham.Target
 
 newtype KeenEye3 = KeenEye3 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor env)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 keenEye3 :: AssetCard KeenEye3

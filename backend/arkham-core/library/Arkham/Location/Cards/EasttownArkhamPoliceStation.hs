@@ -19,7 +19,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor env)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 easttownArkhamPoliceStation :: LocationCard EasttownArkhamPoliceStation

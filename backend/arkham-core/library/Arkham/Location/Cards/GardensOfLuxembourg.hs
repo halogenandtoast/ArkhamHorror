@@ -31,7 +31,7 @@ gardensOfLuxembourg = location
 instance HasAbilities GardensOfLuxembourg where
   getAbilities (GardensOfLuxembourg attrs) = getAbilities attrs
 
-instance Query EnemyMatcher env => HasModifiersFor env GardensOfLuxembourg where
+instance Query EnemyMatcher env => HasModifiersFor GardensOfLuxembourg where
   getModifiersFor _ (LocationTarget lid) (GardensOfLuxembourg attrs)
     | toId attrs == lid && locationRevealed attrs= do
       byakheeIsMoving <-

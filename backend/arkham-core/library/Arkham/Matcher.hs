@@ -18,7 +18,6 @@ import Arkham.Label
 import Arkham.LocationSymbol
 import Arkham.Modifier
 import Arkham.Phase
-import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.SlotType
@@ -784,7 +783,10 @@ pattern AgendaWithAnyDoom :: AgendaMatcher
 pattern AgendaWithAnyDoom <- AgendaWithDoom (GreaterThan (Static 0)) where
   AgendaWithAnyDoom = AgendaWithDoom (GreaterThan (Static 0))
 
-data AgendaMatcher = AgendaWithId AgendaId | AgendaWithDoom ValueMatcher | AnyAgenda
+data AgendaMatcher
+  = AgendaWithId AgendaId
+  | AgendaWithDoom ValueMatcher
+  | AnyAgenda
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -797,32 +799,18 @@ newtype RemainingActMatcher = RemainingActMatcher { unRemainingActMatcher :: Act
   deriving anyclass (ToJSON, FromJSON)
   deriving newtype (Hashable)
 
-data DamageEffectMatcher = AttackDamageEffect | NonAttackDamageEffect | AnyDamageEffect
+data DamageEffectMatcher
+  = AttackDamageEffect
+  | NonAttackDamageEffect
+  | AnyDamageEffect
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data EnemyAttackMatcher = AnyEnemyAttack | AttackOfOpportunityAttack
+data EnemyAttackMatcher
+  = AnyEnemyAttack
+  | AttackOfOpportunityAttack
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
-
-newtype ScenarioLogKeyMatcher = KeyIs ScenarioLogKey
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-data ScenarioDeckMatcher = AnyScenarioDeck | ScenarioDeckWithCards | ScenarioDeckWithKey ScenarioDeckKey | ScenarioDeckMatches [ScenarioDeckMatcher]
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-instance Semigroup ScenarioDeckMatcher where
-  AnyScenarioDeck <> x = x
-  x <> AnyScenarioDeck = x
-  ScenarioDeckMatches xs <> ScenarioDeckMatches ys = ScenarioDeckMatches $ xs <> ys
-  ScenarioDeckMatches xs <> x = ScenarioDeckMatches $ xs <> [x]
-  x <> ScenarioDeckMatches xs = ScenarioDeckMatches $ x : xs
-  x <> y = ScenarioDeckMatches [x, y]
-
-instance Monoid ScenarioDeckMatcher where
-  mempty = AnyScenarioDeck
 
 data ScenarioMatcher = TheScenario
   deriving stock (Show, Eq, Generic)

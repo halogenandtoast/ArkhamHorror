@@ -43,6 +43,7 @@ class IsEnemy a
 type EnemyCard a = CardBuilder EnemyId a
 
 data instance Field EnemyAttrs :: Type -> Type where
+  EnemyEngagedInvestigators :: Field EnemyAttrs (HashSet InvestigatorId)
   EnemyDoom :: Field EnemyAttrs Int
   EnemyEvade :: Field EnemyAttrs Int
   EnemyFight :: Field EnemyAttrs Int

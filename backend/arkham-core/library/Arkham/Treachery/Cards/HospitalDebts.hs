@@ -56,7 +56,7 @@ instance HasAbilities HospitalDebts where
         | iid <- maybeToList (treacheryOwner a)
         ]
 
-instance TreacheryRunner env => RunMessage HospitalDebts where
+instance RunMessage HospitalDebts where
   runMessage msg t@(HospitalDebts attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) (InvestigatorTarget iid))

@@ -12,9 +12,8 @@ import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Runner
 
 newtype ShadowSpawned = ShadowSpawned TreacheryAttrs
@@ -24,10 +23,10 @@ newtype ShadowSpawned = ShadowSpawned TreacheryAttrs
 shadowSpawned :: TreacheryCard ShadowSpawned
 shadowSpawned = treachery ShadowSpawned Cards.shadowSpawned
 
-instance HasCount ResourceCount env TreacheryId => HasModifiersFor ShadowSpawned where
+instance HasModifiersFor ShadowSpawned where
   getModifiersFor _ (EnemyTarget eid) (ShadowSpawned attrs)
     | treacheryOnEnemy eid attrs = do
-      n <- unResourceCount <$> getCount (treacheryId attrs)
+      n <- field TreacheryResources (treacheryId attrs)
       pure $ toModifiers
         attrs
         ([EnemyFight n, HealthModifier n, EnemyEvade n]
@@ -35,7 +34,7 @@ instance HasCount ResourceCount env TreacheryId => HasModifiersFor ShadowSpawned
         )
   getModifiersFor _ _ _ = pure []
 
-instance TreacheryRunner env => RunMessage ShadowSpawned where
+instance RunMessage ShadowSpawned where
   runMessage msg t@(ShadowSpawned attrs) = case msg of
     PlaceEnemyInVoid eid
       | EnemyTarget eid `elem` treacheryAttachedTarget attrs -> pure t

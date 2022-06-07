@@ -28,7 +28,7 @@ instance HasModifiersFor Indebted where
       [ StartingResources (-2) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance TreacheryRunner env => RunMessage Indebted where
+instance RunMessage Indebted where
   runMessage msg t@(Indebted attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)

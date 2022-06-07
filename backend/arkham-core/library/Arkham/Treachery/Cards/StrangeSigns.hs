@@ -21,7 +21,7 @@ newtype StrangeSigns = StrangeSigns TreacheryAttrs
 strangeSigns :: TreacheryCard StrangeSigns
 strangeSigns = treachery StrangeSigns Cards.strangeSigns
 
-instance TreacheryRunner env => RunMessage StrangeSigns where
+instance RunMessage StrangeSigns where
   runMessage msg t@(StrangeSigns attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillIntellect 3)

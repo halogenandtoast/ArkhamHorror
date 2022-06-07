@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Skill.Runner
   ( module X
   ) where
@@ -7,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Skill.Attrs as X
 
 import Arkham.Classes.RunMessage
+import Arkham.Classes.Entity
 import Arkham.Message
 
 instance RunMessage SkillAttrs where

@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Skill.Runner
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.SkillType
@@ -43,6 +42,6 @@ instance HasModifiersFor TorrentOfPower where
         [AddSkillIcons $ cycleN n [SkillWillpower, SkillWild]]
   getModifiersFor _ _ _ = pure []
 
-instance SkillRunner env => RunMessage TorrentOfPower where
+instance RunMessage TorrentOfPower where
   runMessage msg (TorrentOfPower attrs) =
     TorrentOfPower <$> runMessage msg attrs

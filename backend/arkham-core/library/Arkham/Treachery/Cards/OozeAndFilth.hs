@@ -33,7 +33,7 @@ instance HasAbilities OozeAndFilth where
   getAbilities (OozeAndFilth a) =
     [mkAbility a 1 $ ForcedAbility $ RoundEnds Timing.When]
 
-instance TreacheryRunner env => RunMessage OozeAndFilth where
+instance RunMessage OozeAndFilth where
   runMessage msg t@(OozeAndFilth attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       targetAgendas <- map AgendaTarget . setToList <$> getSet ()

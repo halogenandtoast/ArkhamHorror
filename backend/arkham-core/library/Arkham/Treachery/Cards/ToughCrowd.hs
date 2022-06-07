@@ -34,7 +34,7 @@ instance HasAbilities ToughCrowd where
   getAbilities (ToughCrowd a) =
     [mkAbility a 1 $ ForcedAbility $ RoundEnds Timing.When]
 
-instance TreacheryRunner env => RunMessage ToughCrowd where
+instance RunMessage ToughCrowd where
   runMessage msg t@(ToughCrowd attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       agendaId <- fromJustNote "missing agenda" . headMay <$> getSetList ()

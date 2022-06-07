@@ -18,7 +18,9 @@ import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Campaign
 import Arkham.Id
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message
@@ -50,18 +52,12 @@ theUnspeakableOath difficulty =
     & decksL
     .~ mapFromList [(LunaticsDeck, []), (MonstersDeck, [])]
 
-instance HasRecord env TheUnspeakableOath where
+instance HasRecord TheUnspeakableOath where
   hasRecord _ _ = pure False
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
 
-instance
-  ( HasTokenValue env InvestigatorId
-  , HasCount Shroud env LocationId
-  , HasCount HorrorCount env InvestigatorId
-  , HasId LocationId env InvestigatorId
-  )
-  => HasTokenValue env TheUnspeakableOath where
+instance HasTokenValue TheUnspeakableOath where
   getTokenValue iid tokenFace (TheUnspeakableOath attrs) = case tokenFace of
     Skull -> pure $ if isEasyStandard attrs
       then TokenValue Skull (NegativeModifier 1)
@@ -96,12 +92,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-investigatorDefeat
-  :: ( MonadReader env m
-     , HasSet DefeatedInvestigatorId env ()
-     , HasSet InvestigatorId env ()
-     )
-  => m [Message]
+investigatorDefeat :: GameT [Message]
 investigatorDefeat = do
   investigatorIds <- getInvestigatorIds
   defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
@@ -119,7 +110,7 @@ investigatorDefeat = do
            )
          ]
 
-instance ScenarioRunner env => RunMessage TheUnspeakableOath where
+instance RunMessage TheUnspeakableOath where
   runMessage msg s@(TheUnspeakableOath attrs) = case msg of
     SetTokensForScenario -> do
       whenM getIsStandalone $ do
@@ -175,7 +166,7 @@ instance ScenarioRunner env => RunMessage TheUnspeakableOath where
         then concat <$> for
           investigatorIds
           \iid -> do
-            deck <- map unDeckCard <$> getList iid
+            deck <- field InvestigatorDeck iid
             case deck of
               (x : _) -> do
                 courageProxy <- genPlayerCard Assets.courage

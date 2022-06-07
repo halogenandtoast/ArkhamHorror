@@ -11,6 +11,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Helpers.Investigator
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.SkillType
@@ -46,7 +47,7 @@ instance RunMessage SpectralMist where
       targets <-
         selectListMap LocationTarget $ LocationWithTrait Bayou <> NotLocation
           (LocationWithTreachery $ treacheryIs Cards.spectralMist)
-      when (notNull targetLocations) $ push $ chooseOne
+      when (notNull targets) $ push $ chooseOne
         iid
         [ AttachTreachery treacheryId target | target <- targets ]
       SpectralMist <$> runMessage msg attrs

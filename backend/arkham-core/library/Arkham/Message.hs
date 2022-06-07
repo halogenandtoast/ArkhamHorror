@@ -528,11 +528,11 @@ data Message
   | SkillTestApplyResults
   | SkillTestApplyResultsAfter
   | SkillTestAsk Message
-  | SkillTestCommitCard InvestigatorId CardId
+  | SkillTestCommitCard InvestigatorId Card
   | SkillTestEnds Source
   | AfterSkillTestEnds Source Target Int
   | SkillTestResults Int Int Int Int
-  | SkillTestUncommitCard InvestigatorId CardId
+  | SkillTestUncommitCard InvestigatorId Card
   | SpawnEnemyAt Card LocationId
   | SpawnEnemyAtEngagedWith Card LocationId InvestigatorId
   | SpendClues Int [InvestigatorId]

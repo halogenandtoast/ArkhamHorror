@@ -23,6 +23,7 @@ data instance Field EventAttrs :: Type -> Type where
   EventTraits :: Field EventAttrs (HashSet Trait)
   EventAbilities :: Field EventAttrs [Ability]
   EventOwner :: Field EventAttrs InvestigatorId
+  EventCard :: Field EventAttrs Card
 
 data EventAttrs = EventAttrs
   { eventCardCode :: CardCode

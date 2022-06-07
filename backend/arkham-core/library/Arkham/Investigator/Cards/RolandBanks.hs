@@ -45,13 +45,13 @@ instance HasAbilities RolandBanks where
         $ EnemyDefeated Timing.After You AnyEnemy
     ]
 
-instance HasTokenValue env RolandBanks where
+instance HasTokenValue RolandBanks where
   getTokenValue iid ElderSign (RolandBanks attrs) | iid == toId attrs = do
     clues <- field LocationClues (investigatorLocation attrs)
     pure $ TokenValue ElderSign (PositiveModifier clues)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage RolandBanks where
+instance RunMessage RolandBanks where
   runMessage msg rb@(RolandBanks a) = case msg of
     UseCardAbility _ (isSource a -> True) _ 1 _ -> do
       push (DiscoverCluesAtLocation (toId a) (investigatorLocation a) 1 Nothing)

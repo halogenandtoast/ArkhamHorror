@@ -62,7 +62,7 @@ instance HasAbilities NormanWithers where
         $ ForcedAbility AnyWindow
     ]
 
-instance HasTokenValue env NormanWithers where
+instance HasTokenValue NormanWithers where
   getTokenValue iid ElderSign (NormanWithers (a `With` _)) | iid == toId a = do
     let
       x = case unDeck (investigatorDeck a) of
@@ -71,7 +71,7 @@ instance HasTokenValue env NormanWithers where
     pure $ TokenValue ElderSign (PositiveModifier x)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage NormanWithers where
+instance RunMessage NormanWithers where
   runMessage msg nw@(NormanWithers (a `With` metadata)) = case msg of
     UseCardAbility iid source _ 1 _ | isSource a source ->
       nw <$ push (DrawCards iid 1 False)

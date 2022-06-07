@@ -50,13 +50,13 @@ instance HasAbilities MarkHarrigan where
         & (abilityLimitL .~ PlayerLimit PerPhase 1)
     ]
 
-instance HasTokenValue env MarkHarrigan where
+instance HasTokenValue MarkHarrigan where
   getTokenValue iid ElderSign (MarkHarrigan attrs) | iid == toId attrs = do
     let tokenValue' = PositiveModifier $ investigatorHealthDamage attrs
     pure $ TokenValue ElderSign tokenValue'
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance (InvestigatorRunner env) => RunMessage MarkHarrigan where
+instance RunMessage MarkHarrigan where
   runMessage msg i@(MarkHarrigan attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       i <$ push (DrawCards iid 1 False)

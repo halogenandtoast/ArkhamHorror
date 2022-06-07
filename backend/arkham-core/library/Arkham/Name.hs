@@ -46,14 +46,5 @@ instance ToJSON Name where
 instance FromJSON Name where
   parseJSON = genericParseJSON $ aesonOptions $ Just "name"
 
-newtype LocationName = LocationName { unLocationName :: Name }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
-
-newtype EnemyName = EnemyName { unEnemyName :: Name }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
-
-newtype TreacheryName = TreacheryName { unTreacheryName :: Name }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
-
 nameToLabel :: Name -> Text
 nameToLabel = pack . toLabel . replaceNonLetters . unpack . nameTitle

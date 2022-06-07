@@ -6,15 +6,17 @@ module Arkham.Investigator.Cards.DaisyWalkerParallel
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Investigator.Cards qualified as Cards
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Card.CardType
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -41,14 +43,17 @@ instance HasModifiersFor DaisyWalkerParallel where
   getModifiersFor _ (InvestigatorTarget iid) (DaisyWalkerParallel attrs@InvestigatorAttrs {..})
     | iid == investigatorId
     = do
-      tomeCount <- selectCount $ AssetControlledBy (InvestigatorWithId investigatorId) <> AssetWithTrait Tome
+      tomeCount <-
+        selectCount
+        $ AssetControlledBy (InvestigatorWithId investigatorId)
+        <> AssetWithTrait Tome
       pure
         $ toModifiers attrs
         $ SkillModifier SkillWillpower tomeCount
         : [SanityModifier tomeCount]
   getModifiersFor _ _ _ = pure []
 
-instance HasTokenValue env DaisyWalkerParallel where
+instance HasTokenValue DaisyWalkerParallel where
   getTokenValue iid ElderSign (DaisyWalkerParallel attrs)
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 1)
@@ -64,34 +69,29 @@ instance HasAbilities DaisyWalkerParallel where
         & (abilityLimitL .~ PlayerLimit PerGame 1)
     ]
 
-instance InvestigatorRunner env => RunMessage DaisyWalkerParallel where
+instance RunMessage DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs@InvestigatorAttrs {..}) =
     case msg of
       UseCardAbility iid (InvestigatorSource iid') windows' 1 _
         | investigatorId == iid' -> do
           tomeAssets <- filterM
-            ((elem Tome <$>) . getSet)
+            (fieldMap AssetTraits (member Tome))
             (setToList investigatorAssets)
-          allAbilities <- asks getAbilities
+          allAbilities <- getAllAbilities
           let
             abilitiesForAsset aid =
               filter ((AssetSource aid ==) . abilitySource) allAbilities
             pairs' = filter (notNull . snd)
               $ map (\a -> (a, abilitiesForAsset a)) tomeAssets
-          if null pairs'
-            then pure i
-            else i <$ push
-              (chooseOneAtATime iid $ map
-                (\(tome, actions) -> TargetLabel
-                  (AssetTarget tome)
-                  [ Run
-                      [ chooseOne iid
-                          $ map (($ windows') . UseAbility iid) actions
-                      ]
-                  ]
-                )
-                pairs'
-              )
+          unless (null pairs') $ push $ chooseOneAtATime iid $ map
+            (\(tome, actions) -> TargetLabel
+              (AssetTarget tome)
+              [ Run
+                  [chooseOne iid $ map (($ windows') . UseAbility iid) actions]
+              ]
+            )
+            pairs'
+          pure i
       UseCardAbility iid (TokenEffectSource ElderSign) _ 2 _
         | iid == investigatorId -> i <$ push
           (Search
@@ -102,12 +102,11 @@ instance InvestigatorRunner env => RunMessage DaisyWalkerParallel where
               (CardWithType AssetType <> CardWithTrait Tome)
           $ DrawFound iid 1
           )
-      ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
-        i <$ push
-          (chooseOne
-            iid
-            [ UseCardAbility iid (TokenEffectSource ElderSign) [] 2 NoPayment
-            , Continue "Do not use Daisy's ability"
-            ]
-          )
+      ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> do
+        push $ chooseOne
+          iid
+          [ UseCardAbility iid (TokenEffectSource ElderSign) [] 2 NoPayment
+          , Continue "Do not use Daisy's ability"
+          ]
+        pure i
       _ -> DaisyWalkerParallel <$> runMessage msg attrs

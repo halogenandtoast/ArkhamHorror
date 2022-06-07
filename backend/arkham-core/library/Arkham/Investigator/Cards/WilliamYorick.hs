@@ -35,7 +35,7 @@ williamYorick = investigator
     , agility = 3
     }
 
-instance HasTokenValue env WilliamYorick where
+instance HasTokenValue WilliamYorick where
   getTokenValue iid ElderSign (WilliamYorick attrs)
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 2)
@@ -53,7 +53,7 @@ instance HasAbilities WilliamYorick where
         & (abilityLimitL .~ PlayerLimit PerRound 1)
     ]
 
-instance (InvestigatorRunner env) => RunMessage WilliamYorick where
+instance RunMessage WilliamYorick where
   runMessage msg i@(WilliamYorick attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let

@@ -2,17 +2,24 @@ module Arkham.Helpers.Enemy where
 
 import Arkham.Prelude
 
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Card.CardDef
 import Arkham.Classes.Entity
+import Arkham.Classes.HasQueue
+import Arkham.Classes.Query
 import Arkham.Enemy.Attrs
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Location
-import Arkham.Asset.Attrs ( Field (..) )
-import Arkham.Id
+import Arkham.GameValue
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
+import Arkham.Helpers.SkillTest
+import Arkham.Helpers.Window
+import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
+import Arkham.Message ( Message (EnemySpawnAtLocationMatching), resolve )
 import Arkham.Modifier qualified as Modifier
 import Arkham.Projection
 import Arkham.Source
@@ -97,9 +104,9 @@ canEnterLocation eid lid = do
 
 getFightableEnemyIds :: InvestigatorId -> Source -> GameT [EnemyId]
 getFightableEnemyIds iid source = do
-  fightAnywhereEnemyIds <- getSetList () >>= filterM \eid -> do
+  fightAnywhereEnemyIds <- selectList AnyEnemy >>= filterM \eid -> do
     modifiers' <- getModifiers source (EnemyTarget eid)
-    pure $ CanBeFoughtAsIfAtYourLocation `elem` modifiers'
+    pure $ Modifier.CanBeFoughtAsIfAtYourLocation `elem` modifiers'
   locationId <- getJustLocation iid
   enemyIds <- union (setFromList fightAnywhereEnemyIds)
     <$> select (EnemyAt $ LocationWithId locationId)
@@ -120,16 +127,19 @@ getFightableEnemyIds iid source = do
               _ -> pure False
             )
             modifiers'
-  pure . setFromList . coerce $ fightableEnemyIds
+  pure $ fightableEnemyIds
 
 getEnemyAccessibleLocations :: EnemyId -> GameT [LocationId]
 getEnemyAccessibleLocations eid = do
   location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
   matcher <- getConnectedMatcher location
   connectedLocationIds <- selectList matcher
+  enemyIsElite <- fieldMap EnemyTraits (member Elite) eid
   let
-    enemyIsElite = Elite `member` toTraits enemy
     unblocked lid' = do
       modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid')
-      pure $ enemyIsElite || CannotBeEnteredByNonElite `notElem` modifiers'
-  setFromList . coerce <$> filterM unblocked connectedLocationIds
+      pure
+        $ enemyIsElite
+        || Modifier.CannotBeEnteredByNonElite
+        `notElem` modifiers'
+  filterM unblocked connectedLocationIds

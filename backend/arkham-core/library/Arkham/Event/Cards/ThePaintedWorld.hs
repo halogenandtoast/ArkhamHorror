@@ -13,6 +13,7 @@ import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Matcher hiding ( DuringTurn )
+import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
@@ -32,7 +33,7 @@ instance RunMessage ThePaintedWorld where
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       candidates <- fieldMap
         InvestigatorCardsUnderneath
-        (filter (`cardMatch` (NonExceptional <> EventCard)))
+        (filter (`cardMatch` (NonExceptional <> Matcher.EventCard)))
         iid
       playableCards <- filterM
         (getIsPlayable iid (toSource attrs) UnpaidCost

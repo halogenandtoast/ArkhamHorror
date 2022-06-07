@@ -31,7 +31,6 @@ import Arkham.Modifier
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
@@ -290,7 +289,7 @@ instance RunMessage TheLastKing where
         (traverseToSnd (field InvestigatorName))
         investigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
-      clueCounts <- traverse (field ActClues) =<< select AnyAct
+      clueCounts <- traverse (field ActClues) =<< selectList AnyAct
       vipsSlain <-
         selectListMap toCardCode $ VictoryDisplayCardMatch $ CardWithTrait
           Trait.Lunatic

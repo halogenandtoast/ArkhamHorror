@@ -24,7 +24,7 @@ instance HasModifiersFor Fieldwork where
     | target == effectTarget = pure [toModifier a (AnySkillValue 2)]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage Fieldwork where
+instance RunMessage Fieldwork where
   runMessage msg e@(Fieldwork attrs) = case msg of
     EndPhase -> e <$ push (DisableEffect $ effectId attrs)
     _ -> Fieldwork <$> runMessage msg attrs

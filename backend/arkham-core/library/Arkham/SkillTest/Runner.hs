@@ -210,11 +210,10 @@ instance RunMessage SkillTest where
           )
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (SkillTarget skillId :)
-    SkillTestCommitCard iid cardId -> do
-      card <- getCard cardId iid
-      pure $ s & committedCardsL %~ insertMap cardId (iid, card)
-    SkillTestUncommitCard _ cardId ->
-      pure $ s & committedCardsL %~ deleteMap cardId
+    SkillTestCommitCard iid card -> do
+      pure $ s & committedCardsL %~ insertMap (toCardId card) (iid, card)
+    SkillTestUncommitCard _ card ->
+      pure $ s & committedCardsL %~ deleteMap (toCardId card)
     ReturnSkillTestRevealedTokens -> do
       -- Rex's Curse timing keeps effects on stack so we do
       -- not want to remove them as subscribers from the stack

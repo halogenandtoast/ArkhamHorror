@@ -42,12 +42,12 @@ instance HasAbilities StellaClark where
         .~ PlayerLimit PerRound 1
     ]
 
-instance HasTokenValue env StellaClark where
+instance HasTokenValue StellaClark where
   getTokenValue iid ElderSign (StellaClark attrs) | iid == toId attrs = do
     pure $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage StellaClark where
+instance RunMessage StellaClark where
   runMessage msg i@(StellaClark attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       i <$ push (GainActions iid source 1)

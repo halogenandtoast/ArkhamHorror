@@ -47,12 +47,12 @@ instance HasAbilities AshcanPete where
         .~ PlayerLimit PerRound 1
     ]
 
-instance HasTokenValue env AshcanPete where
+instance HasTokenValue AshcanPete where
   getTokenValue iid ElderSign (AshcanPete attrs) | iid == toId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage AshcanPete where
+instance RunMessage AshcanPete where
   runMessage msg i@(AshcanPete attrs) = case msg of
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs ->
       i <$ push (Ready $ CardCodeTarget "02014")

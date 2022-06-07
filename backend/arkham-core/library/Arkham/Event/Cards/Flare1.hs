@@ -6,7 +6,6 @@ import Arkham.Event.Cards qualified as Cards (flare1)
 import Arkham.Asset.Helpers
 import Arkham.Classes
 import Arkham.Event.Runner
-import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Helpers.Enemy
 import Arkham.Matcher

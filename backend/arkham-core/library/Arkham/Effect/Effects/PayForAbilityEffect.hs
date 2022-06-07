@@ -8,23 +8,24 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action hiding (Ability, TakenAction)
 import Arkham.Action qualified as Action
+import Arkham.Asset.Attrs (Field(AssetCard))
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Effect.Runner
 import Arkham.EffectId
-import Arkham.EffectMetadata
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
-import Arkham.Matcher
+import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Trait
 import Arkham.Window (Window(..))
 import Arkham.Window qualified as Window
 
@@ -59,16 +60,12 @@ matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
 getActionCostModifier
-  :: ( MonadReader env m
-     , HasModifiersFor env ()
-     , HasList Action.TakenAction env InvestigatorId
-     )
-  => InvestigatorId
+  :: InvestigatorId
   -> Maybe Action
-  -> m Int
+  -> GameT Int
 getActionCostModifier _ Nothing = pure 0
 getActionCostModifier iid (Just a) = do
-  takenActions <- map unTakenAction <$> getList iid
+  takenActions <- field InvestigatorActionsTaken iid
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   pure $ foldr (applyModifier takenActions) 0 modifiers
  where
@@ -83,13 +80,12 @@ countAdditionalActionPayments (Payments ps) =
 countAdditionalActionPayments _ = 0
 
 startPayment
-  :: (MonadReader env m, MonadIO m, HasQueue env)
-  => InvestigatorId
+  :: InvestigatorId
   -> Window
   -> AbilityType
   -> Source
   -> Bool
-  -> m ()
+  -> GameT ()
 startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOfOpportunity
   = case abilityType of
     Objective aType -> startPayment
@@ -157,16 +153,7 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
           : [ TakenAction iid action | action <- maybeToList mAction ]
           )
 
-instance
-  ( HasQueue env
-  , HasCostPayment env
-  , HasSet Trait env Source
-  , HasSet InvestigatorId env ()
-  , HasModifiersFor env ()
-  , HasCount ActionRemainingCount env InvestigatorId
-  , HasId LeadInvestigatorId env ()
-  )
-  => RunMessage PayForAbilityEffect where
+instance RunMessage PayForAbilityEffect where
   runMessage msg e@(PayForAbilityEffect (attrs `With` payments)) = case msg of
     CreatedEffect eid (Just (EffectAbility (Ability {..}, _))) source (InvestigatorTarget iid)
       | eid == toId attrs
@@ -297,7 +284,7 @@ instance
           push (SpendResources iid x)
           withPayment $ ResourcePayment x
         AdditionalActionsCost -> do
-          actionRemainingCount <- unActionRemainingCount <$> getCount iid
+          actionRemainingCount <- field InvestigatorRemainingActions iid
           let currentlyPaid = countAdditionalActionPayments payments
           e <$ if actionRemainingCount == 0
             then pure ()
@@ -352,7 +339,7 @@ instance
           iidsWithClues <-
             filter ((> 0) . snd)
               <$> traverse
-                    (traverseToSnd (fmap unSpendableClueCount . getCount))
+                    (traverseToSnd (getSpendableClueCount . pure))
                     iids
           case iidsWithClues of
             [(iid', _)] ->
@@ -385,8 +372,7 @@ instance
           -- push (SpendClues totalClues iids)
           -- withPayment $ CluePayment totalClues
         HandDiscardCost x cardMatcher -> do
-          handCards <- mapMaybe (preview _PlayerCard . unHandCard)
-            <$> getList iid
+          handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
           let cards = filter (`cardMatch` cardMatcher) handCards
           e <$ push
             (chooseN
@@ -409,9 +395,9 @@ instance
             getCards = \case
               FromHandOf whoMatcher ->
                 selectList (InHandOf whoMatcher <> BasicCardMatch cardMatcher)
-              FromPlayAreaOf whoMatcher ->
-                map unInPlayCard
-                  <$> (selectList whoMatcher >>= concatMapM getList)
+              FromPlayAreaOf whoMatcher -> do
+                assets <- selectList $ AssetControlledBy whoMatcher
+                traverse (field AssetCard) assets
               CostZones zs -> concatMapM getCards zs
           cards <- getCards zone
           e <$ push
@@ -431,8 +417,7 @@ instance
               ]
             )
         SkillIconCost x skillTypes -> do
-          handCards <- mapMaybe (preview _PlayerCard . unHandCard)
-            <$> getList iid
+          handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
           let
             cards = filter ((> 0) . fst) $ map
               (toFst

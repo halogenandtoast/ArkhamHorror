@@ -10,12 +10,14 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
+import Arkham.Projection
 
 newtype TheHiddenChamber = TheHiddenChamber LocationAttrs
   deriving anyclass IsLocation
@@ -25,7 +27,7 @@ theHiddenChamber :: LocationCard TheHiddenChamber
 theHiddenChamber =
   location TheHiddenChamber Cards.theHiddenChamber 3 (Static 0) NoSymbol []
 
-instance Query AssetMatcher env => HasModifiersFor TheHiddenChamber where
+instance HasModifiersFor TheHiddenChamber where
   getModifiersFor _ target (TheHiddenChamber attrs) | isTarget attrs target = do
     mKeyToTheChamber <- selectOne (assetIs Assets.keyToTheChamber)
     pure $ toModifiers
@@ -40,8 +42,8 @@ instance Query AssetMatcher env => HasModifiersFor TheHiddenChamber where
 instance RunMessage TheHiddenChamber where
   runMessage msg (TheHiddenChamber attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      connectedLocation <- getId iid
-      name <- getName connectedLocation
+      connectedLocation <- getJustLocation iid
+      name <- field LocationName connectedLocation
       pushAll
         [ PlaceLocation (toCard attrs)
         , AddDirectConnection (toId attrs) connectedLocation

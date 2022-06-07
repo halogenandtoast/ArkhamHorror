@@ -16,7 +16,7 @@ import Arkham.Modifier
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 

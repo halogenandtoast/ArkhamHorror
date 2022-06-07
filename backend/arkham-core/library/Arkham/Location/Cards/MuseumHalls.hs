@@ -83,6 +83,6 @@ instance RunMessage MuseumHalls where
       l <$ pushAll (map PlaceLocation cards)
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        actId <- fromJustNote "missing act" . headMay <$> getSetList ()
+        actId <- selectJust AnyAct
         l <$ push (AdvanceAct actId source AdvancedWithOther)
     _ -> MuseumHalls <$> runMessage msg attrs

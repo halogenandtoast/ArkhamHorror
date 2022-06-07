@@ -10,7 +10,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import qualified Arkham.Treachery.Cards as Cards
 
 newtype TwinSuns = TwinSuns TreacheryAttrs

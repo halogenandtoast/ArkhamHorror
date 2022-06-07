@@ -13,7 +13,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype Metadata = Metadata { active :: Bool }
   deriving stock (Show, Eq, Generic)

@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards (acrossSpaceAndTime)
 import Arkham.Classes
 import Arkham.Message
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype AcrossSpaceAndTime = AcrossSpaceAndTime TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

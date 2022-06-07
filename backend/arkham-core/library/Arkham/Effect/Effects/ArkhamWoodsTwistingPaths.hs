@@ -7,9 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.EffectMetadata
 import Arkham.Game.Helpers
-import Arkham.Matcher
 import Arkham.Message
 import Arkham.Name
 import Arkham.Source
@@ -25,7 +23,7 @@ arkhamWoodsTwistingPaths =
 
 instance HasModifiersFor ArkhamWoodsTwistingPaths
 
-instance (Query LocationMatcher env, HasQueue env) => RunMessage ArkhamWoodsTwistingPaths where
+instance RunMessage ArkhamWoodsTwistingPaths where
   runMessage msg e@(ArkhamWoodsTwistingPaths attrs) = case msg of
     PassedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget{} _ _ ->
       do

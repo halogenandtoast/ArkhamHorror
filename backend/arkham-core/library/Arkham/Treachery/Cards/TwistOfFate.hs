@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Message
 import Arkham.RequestedTokenStrategy
 import Arkham.Token
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype TwistOfFate = TwistOfFate TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

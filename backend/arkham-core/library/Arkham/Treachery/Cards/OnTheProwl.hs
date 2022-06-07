@@ -11,7 +11,7 @@ import Arkham.Classes
 import Arkham.Message
 import Arkham.Query
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Runner
 
 newtype OnTheProwl = OnTheProwl TreacheryAttrs

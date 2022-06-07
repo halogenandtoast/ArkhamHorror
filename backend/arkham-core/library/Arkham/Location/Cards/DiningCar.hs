@@ -11,13 +11,12 @@ import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher
 import Arkham.Message hiding (RevealLocation)
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype DiningCar = DiningCar LocationAttrs
@@ -34,11 +33,11 @@ diningCar = locationWith
   []
   (connectsToL .~ setFromList [LeftOf, RightOf])
 
-instance HasCount ClueCount env LocationId => HasModifiersFor DiningCar where
+instance HasModifiersFor DiningCar where
   getModifiersFor _ target (DiningCar l@LocationAttrs {..})
     | isTarget l target = case lookup LeftOf locationDirections of
       Just leftLocation -> do
-        clueCount <- unClueCount <$> getCount leftLocation
+        clueCount <- field LocationClues leftLocation
         pure $ toModifiers l [ Blocked | not locationRevealed && clueCount > 0 ]
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []

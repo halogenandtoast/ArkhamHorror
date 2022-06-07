@@ -14,7 +14,7 @@ import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Investigator.Attrs ( Field(..) )
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype SordidAndSilent = SordidAndSilent TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)

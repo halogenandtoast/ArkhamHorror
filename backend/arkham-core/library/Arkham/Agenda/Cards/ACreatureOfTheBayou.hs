@@ -11,9 +11,10 @@ import Arkham.Agenda.Attrs
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
+import Arkham.Location.Attrs (Field(..))
 import Arkham.GameValue
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 
 newtype ACreatureOfTheBayou = ACreatureOfTheBayou AgendaAttrs
@@ -39,7 +40,7 @@ instance RunMessage ACreatureOfTheBayou where
           targets <- setToList <$> nonBayouLocations
           nonBayouLocationsWithClueCounts <-
             sortOn snd
-              <$> traverse (traverseToSnd (fmap unClueCount . getCount)) targets
+              <$> traverse (traverseToSnd (field LocationClues)) targets
           let
             moveMessage = case nonBayouLocationsWithClueCounts of
               [] -> error "there has to be such a location"

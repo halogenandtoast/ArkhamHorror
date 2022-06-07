@@ -15,11 +15,10 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Id
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
@@ -30,7 +29,7 @@ import Arkham.Token
 newtype TheHouseAlwaysWins = TheHouseAlwaysWins ScenarioAttrs
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 theHouseAlwaysWins :: Difficulty -> TheHouseAlwaysWins
 theHouseAlwaysWins difficulty =
@@ -61,14 +60,14 @@ theHouseAlwaysWinsIntro = FlavorText
     \ open the restaurant’s front door."
   ]
 
-instance HasTokenValue env InvestigatorId => HasTokenValue env TheHouseAlwaysWins where
+instance HasTokenValue TheHouseAlwaysWins where
   getTokenValue iid tokenFace (TheHouseAlwaysWins attrs) = case tokenFace of
     Skull -> pure $ toTokenValue attrs Skull 2 3
     Cultist -> pure $ TokenValue Cultist (NegativeModifier 3)
     Tablet -> pure $ TokenValue Tablet (NegativeModifier 2)
     otherFace -> getTokenValue iid otherFace attrs
 
-instance ScenarioRunner env => RunMessage TheHouseAlwaysWins where
+instance RunMessage TheHouseAlwaysWins where
   runMessage msg s@(TheHouseAlwaysWins attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
@@ -134,7 +133,7 @@ instance ScenarioRunner env => RunMessage TheHouseAlwaysWins where
     ResolveToken _ Tablet iid -> s <$ push (SpendResources iid 3)
     ResolveToken drawnToken Skull iid -> do
       let requiredResources = if isEasyStandard attrs then 2 else 3
-      resourceCount <- unResourceCount <$> getCount iid
+      resourceCount <- field InvestigatorResources iid
       if resourceCount >= requiredResources
         then push $ chooseOne
           iid
@@ -201,7 +200,7 @@ instance ScenarioRunner env => RunMessage TheHouseAlwaysWins where
               Cheated{} -> True
               _ -> False
             )
-          <$> getSet ()
+          <$> scenarioField ScenarioRemembered
       xp <- getXp
       s <$ pushAll
         ([ chooseOne
@@ -251,7 +250,7 @@ instance ScenarioRunner env => RunMessage TheHouseAlwaysWins where
               Cheated{} -> True
               _ -> False
             )
-          <$> getSet ()
+          <$> scenarioField ScenarioRemembered
       xp <- getXp
       s <$ pushAll
         ([ chooseOne
@@ -302,7 +301,7 @@ instance ScenarioRunner env => RunMessage TheHouseAlwaysWins where
               Cheated{} -> True
               _ -> False
             )
-          <$> getSet ()
+          <$> scenarioField ScenarioRemembered
       xp <- getXp
       s <$ pushAll
         ([ chooseOne

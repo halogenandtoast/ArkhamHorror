@@ -14,11 +14,9 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Exception
-import Arkham.Id
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Source
@@ -29,7 +27,7 @@ import Arkham.Trait qualified as Trait
 newtype TheGathering = TheGathering ScenarioAttrs
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 theGathering :: Difficulty -> TheGathering
 theGathering difficulty =
@@ -41,7 +39,7 @@ theGathering difficulty =
        , "   .   cellar  .     "
        ]
 
-instance (Query EnemyMatcher env, HasTokenValue env InvestigatorId) => HasTokenValue env TheGathering where
+instance HasTokenValue TheGathering where
   getTokenValue iid tokenFace (TheGathering attrs) = case tokenFace of
     Skull -> do
       ghoulCount <- selectCount $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid) <> EnemyWithTrait Trait.Ghoul
@@ -56,7 +54,7 @@ theGatheringAgendaDeck :: [CardDef]
 theGatheringAgendaDeck =
   [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
 
-instance ScenarioRunner env => RunMessage TheGathering where
+instance RunMessage TheGathering where
   runMessage msg s@(TheGathering attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds

@@ -6,7 +6,10 @@ module Arkham.Scenario.Scenarios.WhereDoomAwaits
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Attrs ( Field (..) )
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.Sequence qualified as AS
+import Arkham.AgendaId
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.Cost
@@ -17,19 +20,19 @@ import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
+import Arkham.Scenario.Runner
 import Arkham.Scenario.Helpers
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait hiding (Cultist, Expert)
-import Data.Maybe (fromJust)
+import Arkham.Trait hiding ( Cultist, Expert )
+import Data.Maybe ( fromJust )
 
 newtype WhereDoomAwaits = WhereDoomAwaits ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -116,7 +119,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance HasRecord env WhereDoomAwaits where
+instance HasRecord WhereDoomAwaits where
   hasRecord NaomiHasTheInvestigatorsBacks _ = pure False
   hasRecord TheInvestigatorsPutSilasBishopOutOfHisMisery _ = pure False
   hasRecord NoBroodEscapedIntoTheWild _ = pure True
@@ -124,23 +127,20 @@ instance HasRecord env WhereDoomAwaits where
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
 
-instance
-  ( HasTokenValue env InvestigatorId
-  , HasStep AgendaStep env ()
-  , HasSet Trait env LocationId
-  , HasId LocationId env InvestigatorId
-  )
-  => HasTokenValue env WhereDoomAwaits where
+instance HasTokenValue WhereDoomAwaits where
   getTokenValue iid tokenFace (WhereDoomAwaits attrs) = case tokenFace of
     Skull -> do
-      lid <- getId @LocationId iid
-      isAltered <- member Altered <$> getSet lid
+      isAltered <-
+        selectAny
+        $ LocationWithInvestigator (InvestigatorWithId iid)
+        <> LocationWithTrait Altered
       if isAltered
         then pure $ toTokenValue attrs Skull 3 5
         else pure $ toTokenValue attrs Skull 1 2
     Cultist -> pure $ TokenValue Cultist NoModifier
     Tablet -> do
-      agendaStep <- unAgendaStep <$> getStep ()
+      agendaId <- selectJust AnyAgenda
+      agendaStep <- fieldMap AgendaSequence (unAgendaStep . AS.agendaStep) agendaId
       pure $ TokenValue
         Tablet
         (if isEasyStandard attrs
@@ -150,14 +150,7 @@ instance
     ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 0) -- determined by an effect
     otherFace -> getTokenValue iid otherFace attrs
 
-instance
-  ( HasCount XPCount env ()
-  , HasSet LocationId env [Trait]
-  , HasRecord env ()
-  , ScenarioAttrsRunner env
-  , HasModifiersFor env ()
-  )
-  => RunMessage WhereDoomAwaits where
+instance RunMessage WhereDoomAwaits where
   runMessage msg s@(WhereDoomAwaits attrs) = case msg of
     SetTokensForScenario -> do
       standalone <- getIsStandalone
@@ -358,10 +351,10 @@ instance
         )
     PlacedLocation name _ lid -> do
       when (name == "Altered Path") $ do
-        alteredCount <- length <$> getSetList @LocationId [Woods]
+        alteredCount <- selectCount $ LocationWithTrait Altered
         push (SetLocationLabel lid $ "alteredPath" <> tshow alteredCount)
       when (name == "Diverging Path") $ do
-        woodsCount <- length <$> getSetList @LocationId [Woods]
+        woodsCount <- selectCount $ LocationWithTrait Woods
         push (SetLocationLabel lid $ "divergingPath" <> tshow woodsCount)
       pure s
     _ -> WhereDoomAwaits <$> runMessage msg attrs

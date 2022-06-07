@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
-import Arkham.Skill.Attrs
+import Arkham.Skill.Runner
 
 newtype UnexpectedCourage2 = UnexpectedCourage2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

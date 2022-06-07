@@ -7,12 +7,14 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Asset.Attrs (Field(..))
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
@@ -24,42 +26,30 @@ newtype CharlesRossEsq = CharlesRossEsq EffectAttrs
 charlesRossEsq :: EffectArgs -> CharlesRossEsq
 charlesRossEsq = CharlesRossEsq . uncurry4 (baseAttrs "03149")
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , HasId LocationId env AssetId
-  )
-  => HasModifiersFor CharlesRossEsq where
+instance HasModifiersFor CharlesRossEsq where
   getModifiersFor (InvestigatorSource iid) (CardIdTarget _) (CharlesRossEsq attrs)
     = do
       case effectSource attrs of
         AssetSource aid -> do
-          sameLocation <- liftA2
-            (==)
-            (getId @LocationId aid)
-            (getId @LocationId iid)
+          assetLid <- field AssetLocation aid
+          investigatorLid <- field InvestigatorLocation iid
           pure $ toModifiers
             attrs
             [ ReduceCostOf (CardWithType AssetType <> CardWithTrait Item) 1
-            | sameLocation
+            | isJust assetLid && assetLid == investigatorLid
             ]
         _ -> error "invalid source"
   getModifiersFor _ _ _ = pure []
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , HasId LocationId env AssetId
-  , HasQueue env
-  )
-  => RunMessage CharlesRossEsq where
+instance RunMessage CharlesRossEsq where
   runMessage msg e@(CharlesRossEsq attrs) = case msg of
     PlayedCard iid card -> case effectSource attrs of
       AssetSource aid -> do
-        sameLocation <- liftA2
-          (==)
-          (getId @LocationId aid)
-          (getId @LocationId iid)
-        if sameLocation
-            && cardMatch card (CardWithType AssetType <> CardWithTrait Item)
+        assetLid <- field AssetLocation aid
+        investigatorLid <- field InvestigatorLocation iid
+        if isJust assetLid && assetLid == investigatorLid && cardMatch
+            card
+            (CardWithType AssetType <> CardWithTrait Item)
           then e <$ push (DisableEffect $ toId attrs)
           else pure e
       _ -> error "Invalid source"

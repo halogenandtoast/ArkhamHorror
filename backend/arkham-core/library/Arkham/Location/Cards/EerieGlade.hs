@@ -12,9 +12,10 @@ import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Matcher
 import Arkham.Message hiding (RevealLocation)
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype EerieGlade = EerieGlade LocationAttrs
@@ -50,6 +51,6 @@ instance HasAbilities EerieGlade where
 instance RunMessage EerieGlade where
   runMessage msg l@(EerieGlade attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      actionRemainingCount <- unActionRemainingCount <$> getCount iid
+      actionRemainingCount <- field InvestigatorRemainingActions iid
       l <$ push (DiscardTopOfDeck iid (actionRemainingCount * 2) Nothing)
     _ -> EerieGlade <$> runMessage msg attrs

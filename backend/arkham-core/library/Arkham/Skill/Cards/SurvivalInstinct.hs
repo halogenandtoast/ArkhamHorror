@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Message
-import Arkham.Skill.Attrs
+import Arkham.Skill.Runner
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Target
 

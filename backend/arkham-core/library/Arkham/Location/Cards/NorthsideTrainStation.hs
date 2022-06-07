@@ -13,8 +13,8 @@ import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
+import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Trait
 
 newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
@@ -41,11 +41,11 @@ instance HasAbilities NorthsideTrainStation where
 instance RunMessage NorthsideTrainStation where
   runMessage msg l@(NorthsideTrainStation attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationIds <- getSetList [Arkham]
+      locationIds <- selectList $ LocationWithTrait Arkham
       l <$ push
         (chooseOne
           iid
-          [ TargetLabel (LocationTarget lid) [MoveTo (toSource attrs) iid lid]
+          [ targetLabel lid [MoveTo (toSource attrs) iid lid]
           | lid <- locationIds
           ]
         )

@@ -11,10 +11,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Id
-import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheGathering
@@ -22,7 +19,7 @@ import Arkham.Scenario.Scenarios.TheGathering
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 returnToTheGathering :: Difficulty -> ReturnToTheGathering
 returnToTheGathering difficulty =
@@ -37,11 +34,11 @@ returnToTheGathering difficulty =
        , ".     .         deepBelowYourHouse ."
        ]
 
-instance (HasTokenValue env InvestigatorId, Query EnemyMatcher env) => HasTokenValue env ReturnToTheGathering where
+instance HasTokenValue ReturnToTheGathering where
   getTokenValue iid tokenFace (ReturnToTheGathering theGathering') =
     getTokenValue iid tokenFace theGathering'
 
-instance ScenarioRunner env => RunMessage ReturnToTheGathering where
+instance RunMessage ReturnToTheGathering where
   runMessage msg (ReturnToTheGathering theGathering'@(TheGathering attrs)) =
     case msg of
       Setup -> do

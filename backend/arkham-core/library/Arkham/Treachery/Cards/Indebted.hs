@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 

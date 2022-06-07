@@ -5,29 +5,34 @@ module Arkham.Scenario.Scenarios.LostInTimeAndSpace
 
 import Arkham.Prelude
 
+import Arkham.Act.Attrs ( Field (..) )
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.Sequence qualified as AS
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Attack
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
+import Arkham.Scenario.Runner
 import Arkham.Scenario.Helpers
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding ( Cultist )
 
 newtype LostInTimeAndSpace = LostInTimeAndSpace ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -52,21 +57,15 @@ lostInTimeAndSpace difficulty =
        , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
        ]
 
-instance HasRecord env LostInTimeAndSpace where
+instance HasRecord LostInTimeAndSpace where
   hasRecord _ _ = pure False
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
 
-instance
-  ( HasSet LocationId env [Trait]
-  , HasTokenValue env InvestigatorId
-  , HasCount Shroud env LocationId
-  , HasId LocationId env InvestigatorId
-  )
-  => HasTokenValue env LostInTimeAndSpace where
+instance HasTokenValue LostInTimeAndSpace where
   getTokenValue iid tokenFace (LostInTimeAndSpace attrs) = case tokenFace of
     Skull -> do
-      extradimensionalCount <- length <$> getSet @LocationId [Extradimensional]
+      extradimensionalCount <- selectCount $ LocationWithTrait Extradimensional
       pure $ TokenValue
         Skull
         (NegativeModifier $ if isEasyStandard attrs
@@ -76,8 +75,10 @@ instance
     Cultist -> pure $ TokenValue Cultist NoModifier
     Tablet -> pure $ toTokenValue attrs Tablet 3 5
     ElderThing -> do
-      lid <- getId @LocationId iid
-      shroud <- unShroud <$> getCount lid
+      mlid <- field InvestigatorLocation iid
+      shroud <- case mlid of
+        Nothing -> pure 0
+        Just lid -> field LocationShroud lid
       pure $ toTokenValue attrs ElderThing shroud (shroud * 2)
     otherFace -> getTokenValue iid otherFace attrs
 
@@ -121,16 +122,10 @@ lostInTimeAndSpaceIntro = FlavorText
     \ of this awful place, you may never be the same again."
   ]
 
-investigatorDefeat
-  :: ( MonadReader env m
-     , HasSet DefeatedInvestigatorId env ()
-     , HasId LeadInvestigatorId env ()
-     )
-  => ScenarioAttrs
-  -> m [Message]
+investigatorDefeat :: ScenarioAttrs -> GameT [Message]
 investigatorDefeat a = do
   leadInvestigatorId <- getLeadInvestigatorId
-  defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
+  defeatedInvestigatorIds <- selectList DefeatedInvestigator
   if null defeatedInvestigatorIds
     then pure []
     else
@@ -156,15 +151,7 @@ investigatorDefeat a = do
          | iid <- defeatedInvestigatorIds
          ]
 
-instance
-  ( HasSet DefeatedInvestigatorId env ()
-  , ScenarioAttrsRunner env
-  , HasStep ActStep env ()
-  , HasId (Maybe EnemyId) env EnemyMatcher
-  , HasCount XPCount env ()
-  , HasModifiersFor env ()
-  )
-  => RunMessage LostInTimeAndSpace where
+instance RunMessage LostInTimeAndSpace where
   runMessage msg s@(LostInTimeAndSpace attrs) = case msg of
     SetTokensForScenario -> do
       standalone <- getIsStandalone
@@ -232,7 +219,7 @@ instance
               (CardWithType LocationType)
             )
         (_, Tablet) -> do
-          mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")
+          mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
           case mYogSothothId of
             Nothing -> pure ()
             Just eid -> push (EnemyAttack iid eid DamageAny RegularAttack)
@@ -245,7 +232,7 @@ instance
             (CardWithType LocationType)
           )
         Tablet -> do
-          mYogSothothId <- getId (EnemyWithTitle "Yog-Sothoth")
+          mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
           case mYogSothothId of
             Nothing -> pure ()
             Just eid -> push (EnemyAttack iid eid DamageAny RegularAttack)
@@ -258,7 +245,8 @@ instance
           , MoveTo (toSource attrs) iid (LocationId $ toCardId card)
           ]
     ScenarioResolution NoResolution -> do
-      step <- unActStep <$> getStep ()
+      actId <- selectJust AnyAct
+      step <- fieldMap ActSequence (unActStep . AS.actStep) actId
       push (ScenarioResolution . Resolution $ if step == 4 then 2 else 4)
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 1) -> do

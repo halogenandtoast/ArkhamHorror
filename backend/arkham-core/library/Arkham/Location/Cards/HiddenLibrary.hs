@@ -23,7 +23,7 @@ hiddenLibrary :: LocationCard HiddenLibrary
 hiddenLibrary =
   location HiddenLibrary Cards.hiddenLibrary 4 (PerPlayer 3) NoSymbol []
 
-instance Query EnemyMatcher env => HasModifiersFor HiddenLibrary where
+instance HasModifiersFor HiddenLibrary where
   getModifiersFor _ (LocationTarget lid) (HiddenLibrary attrs)
     | toId attrs == lid = do
       enemyIsMoving <- isJust <$> selectOne MovingEnemy

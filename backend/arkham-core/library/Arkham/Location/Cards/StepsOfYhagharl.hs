@@ -6,14 +6,14 @@ module Arkham.Location.Cards.StepsOfYhagharl
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (stepsOfYhagharl)
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( stepsOfYhagharl )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -34,19 +34,19 @@ stepsOfYhagharl = location
 
 instance HasAbilities StepsOfYhagharl where
   getAbilities (StepsOfYhagharl attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ Leaves Timing.When You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ Leaves Timing.When You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage StepsOfYhagharl where
   runMessage msg l@(StepsOfYhagharl attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      encounterDiscard <- map unDiscardedEncounterCard <$> getList ()
+      encounterDiscard <- scenarioField ScenarioDiscard
       let
         mMadnessCard = find (member Madness . toTraits) encounterDiscard
         revelationMsgs = case mMadnessCard of

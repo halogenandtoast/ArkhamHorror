@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Runner
 
 newtype BeastOfTheBayou = BeastOfTheBayou TreacheryAttrs

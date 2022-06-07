@@ -12,7 +12,7 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype MassHysteria = MassHysteria TreacheryAttrs

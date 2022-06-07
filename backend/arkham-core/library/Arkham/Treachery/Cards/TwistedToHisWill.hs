@@ -11,7 +11,7 @@ import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype TwistedToHisWill = TwistedToHisWill TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

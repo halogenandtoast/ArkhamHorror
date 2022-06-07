@@ -6,14 +6,13 @@ module Arkham.Location.Cards.SecurityOffice_129
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (securityOffice_129)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Id
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( securityOffice_129 )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -42,8 +41,8 @@ instance HasAbilities SecurityOffice_129 where
 instance RunMessage SecurityOffice_129 where
   runMessage msg l@(SecurityOffice_129 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      unrevealedExhibitHalls <- map unUnrevealedLocationId
-        <$> getSetList (LocationWithTitle "ExhibitHall")
+      unrevealedExhibitHalls <-
+        selectList $ UnrevealedLocation <> LocationWithTitle "ExhibitHall"
       l <$ push
         (chooseOne
           iid

@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype BlackStarsRise = BlackStarsRise TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

@@ -51,7 +51,6 @@ instance RunMessage HouseInTheReeds_211 where
       <> CardWithTrait Nightgaunt
       )
     FoundEncounterCard _iid target card | isTarget attrs target -> do
-      villageCommonsId <- fromJustNote "missing village commons"
-        <$> getId (LocationWithTitle "Village Commons")
+      villageCommonsId <- selectJust $ LocationWithTitle "Village Commons"
       l <$ push (SpawnEnemyAt (EncounterCard card) villageCommonsId)
     _ -> HouseInTheReeds_211 <$> runMessage msg attrs

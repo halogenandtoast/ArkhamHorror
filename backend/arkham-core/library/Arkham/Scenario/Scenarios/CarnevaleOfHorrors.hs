@@ -9,33 +9,35 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Direction
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Investigator
 import Arkham.Id
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Query
 import Arkham.Resolution
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding ( Cultist )
 import Data.List.NonEmpty qualified as NE
 
 newtype CarnevaleOfHorrors = CarnevaleOfHorrors ScenarioAttrs
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 carnevaleOfHorrors :: Difficulty -> CarnevaleOfHorrors
 carnevaleOfHorrors difficulty =
@@ -51,7 +53,7 @@ carnevaleOfHorrors difficulty =
        , ".         .         .         location5  .         .         ."
        ]
 
-instance HasTokenValue env InvestigatorId => HasTokenValue env CarnevaleOfHorrors where
+instance HasTokenValue CarnevaleOfHorrors where
   getTokenValue iid tokenFace (CarnevaleOfHorrors attrs) = case tokenFace of
     Skull -> do
       let
@@ -118,13 +120,7 @@ abbessSatisfied leadInvestigatorId investigatorIds =
           Assets.abbessAllegriaDiBiase
       ]
 
-additionalRewards
-  :: ( MonadReader env m
-     , HasId LeadInvestigatorId env ()
-     , HasSet InvestigatorId env ()
-     )
-  => ScenarioAttrs
-  -> m [Message]
+additionalRewards :: ScenarioAttrs -> GameT [Message]
 additionalRewards s = do
   leadInvestigatorId <- getLeadInvestigatorId
   investigatorIds <- getInvestigatorIds
@@ -145,11 +141,7 @@ additionalRewards s = do
     <> proceedToSacrificesMade
     <> proceedToAbbessSatisfied
 
-instance
-  ( HasSet ClosestAssetId env (InvestigatorId, AssetMatcher)
-  , ScenarioRunner env
-  )
-  => RunMessage CarnevaleOfHorrors where
+instance RunMessage CarnevaleOfHorrors where
   runMessage msg s@(CarnevaleOfHorrors attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
@@ -330,8 +322,9 @@ instance
       s <$ push (SetTokens tokens)
     ResolveToken _ Cultist iid -> s <$ push (DrawAnotherToken iid)
     ResolveToken token Tablet iid | isHardExpert attrs -> do
-      closestInnocentRevelers <- map unClosestAssetId
-        <$> getSetList (iid, assetIs Assets.innocentReveler)
+      lid <- getJustLocation iid
+      closestInnocentRevelers <- selectList $ ClosestAsset lid $ assetIs
+        Assets.innocentReveler
       case closestInnocentRevelers of
         [] -> pure ()
         [x] -> push

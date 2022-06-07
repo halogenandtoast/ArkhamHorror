@@ -6,7 +6,7 @@ import Arkham.Classes
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype Paranoia = Paranoia TreacheryAttrs

@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
-import Arkham.Skill.Attrs
+import Arkham.Skill.Runner
 import Arkham.Target
 
 newtype Overpower = Overpower SkillAttrs

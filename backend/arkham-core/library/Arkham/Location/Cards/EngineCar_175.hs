@@ -9,11 +9,10 @@ import Arkham.Location.Cards qualified as Cards (engineCar_175)
 import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 
 newtype EngineCar_175 = EngineCar_175 LocationAttrs
   deriving anyclass IsLocation
@@ -29,11 +28,11 @@ engineCar_175 = locationWith
   []
   (connectsToL .~ singleton LeftOf)
 
-instance HasCount ClueCount env LocationId => HasModifiersFor EngineCar_175 where
+instance HasModifiersFor EngineCar_175 where
   getModifiersFor _ target (EngineCar_175 l@LocationAttrs {..})
     | isTarget l target = case lookup LeftOf locationDirections of
       Just leftLocation -> do
-        clueCount <- unClueCount <$> getCount leftLocation
+        clueCount <- field LocationClues leftLocation
         pure $ toModifiers l [ Blocked | not locationRevealed && clueCount > 0 ]
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []

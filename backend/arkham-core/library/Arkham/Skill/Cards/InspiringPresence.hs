@@ -13,7 +13,7 @@ import Arkham.Matcher hiding (AssetExhausted)
 import Arkham.Message hiding (AssetDamage)
 import Arkham.Projection
 import Arkham.Target
-import Arkham.Skill.Attrs
+import Arkham.Skill.Runner
 
 newtype InspiringPresence = InspiringPresence SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

@@ -9,7 +9,7 @@ import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype OnWingsOfDarkness = OnWingsOfDarkness TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

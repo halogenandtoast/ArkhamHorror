@@ -11,7 +11,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Id
+import Arkham.Matcher
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Message
@@ -36,7 +36,7 @@ instance RunMessage Gondola where
   runMessage msg l@(Gondola attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       locationIds <-
-        setToList . deleteSet (toId attrs) <$> getSet @LocationId ()
+        setToList . deleteSet (toId attrs) <$> select Anywhere
       l <$ pushAll
         (MoveAllTo (toSource attrs) (toId attrs)
         : [ RemoveLocation lid | lid <- locationIds ]

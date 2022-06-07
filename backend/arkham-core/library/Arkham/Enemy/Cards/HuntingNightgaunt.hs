@@ -22,7 +22,7 @@ huntingNightgaunt :: EnemyCard HuntingNightgaunt
 huntingNightgaunt =
   enemy HuntingNightgaunt Cards.huntingNightgaunt (3, Static 4, 1) (1, 1)
 
-instance HasSkillTest env => HasModifiersFor HuntingNightgaunt where
+instance HasModifiersFor HuntingNightgaunt where
   getModifiersFor (SkillTestSource _ _ _ (Just Evade)) (TokenTarget _) (HuntingNightgaunt a) = do
     mtarget <- getSkillTestTarget
     case mtarget of

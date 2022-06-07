@@ -20,14 +20,14 @@ import Arkham.Difficulty
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
+import Arkham.Enemy.Attrs ( Field(..) )
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Source
@@ -50,21 +50,16 @@ echoesOfThePast difficulty =
        , "groundFloor1 entryHall   groundFloor2 . ."
        ]
 
-instance HasRecord env EchoesOfThePast where
+instance HasRecord EchoesOfThePast where
   hasRecord _ _ = pure False
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
 
-instance
-  ( Query EnemyMatcher env
-  , HasCount DoomCount env EnemyId
-  , HasTokenValue env InvestigatorId
-  )
-  => HasTokenValue env EchoesOfThePast where
+instance HasTokenValue EchoesOfThePast where
   getTokenValue iid tokenFace (EchoesOfThePast attrs) = case tokenFace of
     Skull -> do
       enemies <- selectList AnyEnemy
-      doomCounts <- traverse (fmap unDoomCount . getCount) enemies
+      doomCounts <- traverse (field EnemyDoom) enemies
       pure $ toTokenValue
         attrs
         Skull
@@ -75,7 +70,7 @@ instance
     ElderThing -> pure $ toTokenValue attrs ElderThing 2 4
     otherFace -> getTokenValue iid otherFace attrs
 
-gatherTheMidnightMasks :: MonadRandom m => m [EncounterCard]
+gatherTheMidnightMasks :: GameT [EncounterCard]
 gatherTheMidnightMasks = traverse
   genEncounterCard
   [ Cards.falseLead
@@ -112,7 +107,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance ScenarioRunner env => RunMessage EchoesOfThePast where
+instance RunMessage EchoesOfThePast where
   runMessage msg s@(EchoesOfThePast attrs) = case msg of
     SetTokensForScenario -> do
       -- TODO: move to helper since consistent

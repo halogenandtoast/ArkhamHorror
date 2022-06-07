@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype AncientEvils = AncientEvils TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

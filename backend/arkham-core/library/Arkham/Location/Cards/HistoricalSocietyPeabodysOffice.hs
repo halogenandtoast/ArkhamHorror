@@ -33,7 +33,7 @@ historicalSocietyPeabodysOffice = locationWithRevealedSideConnections
   Moon
   [Star]
 
-instance Query AssetMatcher env => HasModifiersFor HistoricalSocietyPeabodysOffice where
+instance HasModifiersFor HistoricalSocietyPeabodysOffice where
   getModifiersFor _ (LocationTarget lid) (HistoricalSocietyPeabodysOffice attrs)
     | toId attrs == lid = do
       modifierIsActive <- notNull <$> select

@@ -9,7 +9,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Runner
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Attrs hiding (EnemyDamage)
 import Arkham.Id
 import Arkham.Message
 import Arkham.Projection

@@ -28,23 +28,7 @@ createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)
 instance HasAbilities Asset where
   getAbilities = $(entityF "Asset" "getAbilities")
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , HasId InvestigatorId env EventId
-  , HasId CardCode env EnemyId
-  , HasCount ResourceCount env InvestigatorId
-  , HasCount CardCount env InvestigatorId
-  , HasCount ClueCount env EnemyId
-  , HasCount ClueCount env InvestigatorId
-  , HasSet Trait env LocationId
-  , HasSet CommittedCardId env InvestigatorId
-  , HasCount RemainingSanity env InvestigatorId
-  , HasId LocationId env AssetId
-  , Query LocationMatcher env
-  , Query AssetMatcher env
-  , HasSkillTest env
-  )
-  => HasModifiersFor Asset where
+instance HasModifiersFor Asset where
   getModifiersFor = $(entityF2 "Asset" "getModifiersFor")
 
 instance RunMessage Asset where

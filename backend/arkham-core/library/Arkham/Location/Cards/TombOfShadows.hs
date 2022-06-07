@@ -37,7 +37,7 @@ tombOfShadows = locationWith
     )
   )
 
-instance Query EnemyMatcher env => HasModifiersFor TombOfShadows where
+instance HasModifiersFor TombOfShadows where
   getModifiersFor _ (EnemyTarget eid) (TombOfShadows attrs) = do
     active <- member eid <$> select
       (enemyIs Enemies.theManInThePallidMask
@@ -61,7 +61,7 @@ instance HasAbilities TombOfShadows where
 instance RunMessage TombOfShadows where
   runMessage msg l@(TombOfShadows attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      actIds <- getSetList ()
+      actIds <- selectList AnyAct
       pushAll (map (\aid -> AdvanceAct aid source AdvancedWithOther) actIds)
       pure l
     _ -> TombOfShadows <$> runMessage msg attrs

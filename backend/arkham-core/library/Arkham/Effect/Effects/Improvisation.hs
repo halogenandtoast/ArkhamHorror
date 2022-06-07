@@ -6,14 +6,14 @@ module Arkham.Effect.Effects.Improvisation
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.ClassSymbol
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Target
 
 newtype Improvisation = Improvisation EffectAttrs
@@ -23,22 +23,19 @@ newtype Improvisation = Improvisation EffectAttrs
 improvisation :: EffectArgs -> Improvisation
 improvisation = Improvisation . uncurry4 (baseAttrs "03018")
 
-instance HasSet ClassSymbol env InvestigatorId => HasModifiersFor Improvisation where
+instance HasModifiersFor Improvisation where
   getModifiersFor _ target@(InvestigatorTarget iid) (Improvisation attrs)
     | effectTarget attrs == target = do
-      roles <- getSetList iid
-      case roles of
-        [] -> pure []
-        role : _ ->
-          pure $ toModifiers attrs [ReduceCostOf (CardWithClass role) 3]
+      role <- field InvestigatorClass iid
+      pure $ toModifiers attrs [ReduceCostOf (CardWithClass role) 3]
   getModifiersFor _ _ _ = pure []
 
-instance (HasSet ClassSymbol env InvestigatorId, HasQueue env) => RunMessage Improvisation where
+instance RunMessage Improvisation where
   runMessage msg e@(Improvisation attrs) = case msg of
     PlayedCard iid card | effectTarget attrs == InvestigatorTarget iid -> do
-      roles <- getSetList iid
+      role <- field InvestigatorClass iid
       e <$ when
-        (maybe False (`elem` roles) $ cdClassSymbol (toCardDef card))
+        (maybe False (== role) $ cdClassSymbol (toCardDef card))
         (push $ DisableEffect $ toId attrs)
     EndTurn iid | effectTarget attrs == InvestigatorTarget iid ->
       e <$ push (DisableEffect $ toId attrs)

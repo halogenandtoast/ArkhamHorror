@@ -7,11 +7,12 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Game.Helpers
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import qualified Arkham.Treachery.Cards as Cards
 
 newtype PassageIntoTheVeil = PassageIntoTheVeil TreacheryAttrs
@@ -25,7 +26,7 @@ instance RunMessage PassageIntoTheVeil where
   runMessage msg t@(PassageIntoTheVeil attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       huntingHorrorAtYourLocation <-
-        selectAny $ enemyIs Enemies.huntingHorror <> EnemyAtLocation
+        selectAny $ enemyIs Enemies.huntingHorror <> EnemyAt
           (LocationWithInvestigator $ InvestigatorWithId iid)
       t <$ push
         (BeginSkillTest

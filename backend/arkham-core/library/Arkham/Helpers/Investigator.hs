@@ -29,11 +29,10 @@ getSkillValue st iid = \case
   SkillAgility -> field InvestigatorAgility iid
 
 skillValueFor
-  :: SkillType -> Maybe Action -> [ModifierType] -> InvestigatorAttrs -> Int
-skillValueFor skill maction tempModifiers attrs = foldr
-  applyModifier
-  (baseSkillValueFor skill maction tempModifiers attrs)
-  tempModifiers
+  :: SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> GameT Int
+skillValueFor skill maction tempModifiers iid = do
+  base <- baseSkillValueFor skill maction tempModifiers iid
+  foldr applyModifier base tempModifiers
  where
   canBeIncreased = SkillCannotBeIncreased skill `notElem` tempModifiers
   applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 = max 0 (n + m)
@@ -46,20 +45,13 @@ skillValueFor skill maction tempModifiers attrs = foldr
   applyModifier _ n = n
 
 baseSkillValueFor
-  :: SkillType -> Maybe Action -> [ModifierType] -> InvestigatorAttrs -> Int
-baseSkillValueFor skill _maction tempModifiers attrs = foldr
-  applyModifier
-  baseSkillValue
-  tempModifiers
+  :: SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> GameT Int
+baseSkillValueFor skill _maction tempModifiers iid = do
+  baseValue <- getSkillValue skill iid
+  foldr applyModifier baseSkillValue tempModifiers
  where
   applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
   applyModifier _ n = n
-  baseSkillValue = case skill of
-    SkillWillpower -> investigatorWillpower attrs
-    SkillIntellect -> investigatorIntellect attrs
-    SkillCombat -> investigatorCombat attrs
-    SkillAgility -> investigatorAgility attrs
-    SkillWild -> error "investigators do not have wild skills"
 
 damageValueFor :: Int -> InvestigatorAttrs -> GameT Int
 damageValueFor baseValue attrs = do
@@ -130,22 +122,6 @@ getCanSpendClues attrs = do
  where
   match CannotSpendClues{} = True
   match _ = False
-
-getModifiedHealth :: InvestigatorAttrs -> GameT Int
-getModifiedHealth attrs@InvestigatorAttrs {..} = do
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
-  pure $ foldr applyModifier investigatorHealth modifiers
- where
-  applyModifier (HealthModifier m) n = max 0 (n + m)
-  applyModifier _ n = n
-
-getModifiedSanity :: InvestigatorAttrs -> GameT Int
-getModifiedSanity attrs@InvestigatorAttrs {..} = do
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
-  pure $ foldr applyModifier investigatorSanity modifiers
- where
-  applyModifier (SanityModifier m) n = max 0 (n + m)
-  applyModifier _ n = n
 
 removeFromSlots
   :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
@@ -362,3 +338,25 @@ getJustLocation =
 
 enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
 enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId
+
+modifiedStatsOf
+  :: Source
+  -> Maybe Action
+  -> InvestigatorId
+  -> GameT Stats
+modifiedStatsOf source maction i = do
+  modifiers' <- getModifiers source (InvestigatorTarget i)
+  remainingHealth <- field InvestigatorRemainingHealth i
+  remainingSanity <- field InvestigatorRemainingSanity i
+  willpower' <- skillValueFor SkillWillpower maction modifiers' i
+  intellect' <- skillValueFor SkillIntellect maction modifiers' i
+  combat' <- skillValueFor SkillCombat maction modifiers' i
+  agility' <- skillValueFor SkillAgility maction modifiers' i
+  pure Stats
+    { willpower = willpower'
+    , intellect = intellect'
+    , combat = combat'
+    , agility = agility'
+    , health = remainingHealth
+    , sanity = remainingSanity
+    }

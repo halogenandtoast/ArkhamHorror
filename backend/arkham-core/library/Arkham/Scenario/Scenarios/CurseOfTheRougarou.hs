@@ -5,33 +5,36 @@ module Arkham.Scenario.Scenarios.CurseOfTheRougarou
 
 import Arkham.Prelude
 
-import Arkham.Attack
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Scenarios.CurseOfTheRougarou.Helpers
+import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Investigator
 import Arkham.Id
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Resolution
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait hiding (Cultist)
-import Control.Monad.Extra (findM)
-import Data.Maybe (fromJust)
+import Arkham.Trait hiding ( Cultist )
+import Control.Monad.Extra ( findM )
+import Data.Maybe ( fromJust )
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou ScenarioAttrs
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 curseOfTheRougarou :: Difficulty -> CurseOfTheRougarou
 curseOfTheRougarou difficulty =
@@ -44,7 +47,7 @@ curseOfTheRougarou difficulty =
        , "     .       riverside1      wilderness1       ."
        ]
 
-instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId LocationId env InvestigatorId) => HasTokenValue env CurseOfTheRougarou where
+instance HasTokenValue CurseOfTheRougarou where
   getTokenValue iid tokenFace (CurseOfTheRougarou attrs) = case tokenFace of
     Skull -> do
       lid <- getId @LocationId iid
@@ -57,7 +60,7 @@ instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId L
     ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 4)
     otherFace -> getTokenValue iid otherFace attrs
 
-instance ScenarioRunner env => RunMessage CurseOfTheRougarou where
+instance RunMessage CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
@@ -206,17 +209,20 @@ instance ScenarioRunner env => RunMessage CurseOfTheRougarou where
       s <$ when rougarouAtYourLocation (push $ DrawAnotherToken iid)
     ResolveToken _ ElderThing iid -> if isEasyStandard attrs
       then do
-        lid <- getId @LocationId iid
-        enemyIds <- getSetList @EnemyId lid
-        mrougarou <- findM (((== "81028") <$>) . getId @CardCode) enemyIds
-        s <$ for_ mrougarou (\eid -> push $ EnemyWillAttack iid eid DamageAny RegularAttack)
+        mrougarou <- selectOne $ enemyIs Enemies.theRougarou <> EnemyAt
+          (LocationWithInvestigator $ InvestigatorWithId iid)
+        s <$ for_
+          mrougarou
+          (\eid -> push $ EnemyWillAttack iid eid DamageAny RegularAttack)
       else do
-        lid <- getId @LocationId iid
+        lid <- getJustLocation iid
         connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
-        enemyIds <- concat
-          <$> for (lid : connectedLocationIds) (getSetList @EnemyId)
-        mrougarou <- findM (((== "81028") <$>) . getId @CardCode) enemyIds
-        s <$ for_ mrougarou (\eid -> push $ EnemyWillAttack iid eid DamageAny RegularAttack)
+        mrougarou <-
+          selectOne $ enemyIs Enemies.theRougarou <> EnemyAt
+            (LocationMatchAny $ map LocationWithId $ lid : connectedLocationIds)
+        s <$ for_
+          mrougarou
+          (\eid -> push $ EnemyWillAttack iid eid DamageAny RegularAttack)
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> s <$ when
       (tokenFace token == Tablet)
       (push $ CreateEffect

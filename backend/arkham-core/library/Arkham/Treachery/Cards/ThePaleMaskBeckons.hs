@@ -12,7 +12,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 

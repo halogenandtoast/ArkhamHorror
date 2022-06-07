@@ -12,7 +12,7 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.History
 import Arkham.Message
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype TerrorFromBeyond = TerrorFromBeyond TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

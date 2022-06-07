@@ -7,7 +7,7 @@ import Arkham.Classes
 import Arkham.Message
 import Arkham.RequestedTokenStrategy
 import Arkham.Token
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype FinalRhapsody = FinalRhapsody TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

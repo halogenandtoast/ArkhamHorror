@@ -2,34 +2,26 @@ module Arkham.Scenarios.CurseOfTheRougarou.Helpers where
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Json
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Game.Helpers
+import Arkham.Enemy.Cards qualified as Cards
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
+import Arkham.Json
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Trait
 
-bayouLocations
-  :: (MonadReader env m, HasSet LocationId env [Trait])
-  => m (HashSet LocationId)
-bayouLocations = getSet [Bayou]
+bayouLocations :: GameT (HashSet LocationId)
+bayouLocations = select $ LocationWithTrait Bayou
 
-nonBayouLocations
-  :: ( MonadReader env m
-     , HasSet LocationId env ()
-     , HasSet LocationId env [Trait]
-     )
-  => m (HashSet LocationId)
-nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
+nonBayouLocations :: GameT (HashSet LocationId)
+nonBayouLocations = select $ LocationWithoutTrait Bayou
 
-getTheRougarou
-  :: (MonadReader env m, Query EnemyMatcher env) => m (Maybe EnemyId)
+getTheRougarou :: GameT (Maybe EnemyId)
 getTheRougarou = selectOne $ enemyIs Cards.theRougarou
 
-locationsWithLabels :: MonadRandom m => Trait -> [Card] -> m [(Text, Card)]
+locationsWithLabels :: Trait -> [Card] -> GameT [(Text, Card)]
 locationsWithLabels trait locationSet = do
   shuffled <- shuffleM (before <> after)
   pure $ zip labels (bayou : shuffled)

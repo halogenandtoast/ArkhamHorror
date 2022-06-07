@@ -10,7 +10,7 @@ import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorDamage)
 import Arkham.Projection
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype BrokenRails = BrokenRails TreacheryAttrs

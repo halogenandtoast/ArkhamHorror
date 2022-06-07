@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards.FrozenInFear
 

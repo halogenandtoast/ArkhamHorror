@@ -9,7 +9,7 @@ import Arkham.Classes
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype EyesInTheWalls = EyesInTheWalls TreacheryAttrs

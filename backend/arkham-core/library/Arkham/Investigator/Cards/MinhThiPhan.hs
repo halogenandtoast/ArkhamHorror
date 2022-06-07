@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Card hiding ( CommittedCard )
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Game.Helpers
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
@@ -47,14 +46,14 @@ instance HasAbilities MinhThiPhan where
             Free
     ]
 
-instance HasTokenValue env MinhThiPhan where
+instance HasTokenValue MinhThiPhan where
   getTokenValue iid ElderSign (MinhThiPhan attrs)
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
 -- TODO: Should we let card selection for ability
-instance (InvestigatorRunner env) => RunMessage MinhThiPhan where
+instance RunMessage MinhThiPhan where
   runMessage msg i@(MinhThiPhan attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.CommittedCard _ card)] 1 _
       | isSource attrs source -> i <$ push
@@ -65,25 +64,18 @@ instance (InvestigatorRunner env) => RunMessage MinhThiPhan where
           (CardIdTarget $ toCardId card)
         )
     ResolveToken _ ElderSign iid | iid == toId attrs -> do
-      investigatorIds <- getInvestigatorIds
-      skills <-
-        concat
-          <$> traverse
-                (fmap (map unCommitedSkillId) . getSetList @CommittedSkillId)
-                investigatorIds
-      i <$ when
-        (notNull skills)
-        (push $ chooseOne
-          iid
-          [ TargetLabel
-              (SkillTarget skill)
-              [ CreateEffect
-                  (unInvestigatorId $ toId attrs)
-                  Nothing
-                  (TokenEffectSource ElderSign)
-                  (SkillTarget skill)
-              ]
-          | skill <- skills
-          ]
-        )
+      skills <- selectList AnySkill
+      when (notNull skills) $ push $ chooseOne
+        iid
+        [ targetLabel
+            skill
+            [ CreateEffect
+                (unInvestigatorId $ toId attrs)
+                Nothing
+                (TokenEffectSource ElderSign)
+                (SkillTarget skill)
+            ]
+        | skill <- skills
+        ]
+      pure i
     _ -> MinhThiPhan <$> runMessage msg attrs

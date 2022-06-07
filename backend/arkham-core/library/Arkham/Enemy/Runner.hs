@@ -18,6 +18,8 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Direction
 import Arkham.EnemyId
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -29,6 +31,7 @@ import Arkham.Matcher
   , preyWith
   )
 import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.Modifier
 import Arkham.Query
 import Arkham.SkillTest
@@ -40,49 +43,6 @@ import Arkham.Trait
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Data.List.Extra ( firstJust )
-
-type EnemyRunner env
-  = ( HasQueue env
-    , HasName env AssetId
-    , HasSet EnemyId env ()
-    , Query LocationMatcher env
-    , Query EnemyMatcher env
-    , Query InvestigatorMatcher env
-    , Query PreyMatcher env
-    , HasCount (Maybe Distance) env (LocationId, LocationId)
-    , HasCount CardCount env InvestigatorId
-    , HasCount ClueCount env LocationId
-    , HasCount PlayerCount env ()
-    , HasCount RemainingSanity env InvestigatorId
-    , HasId (Maybe LocationId) env LocationMatcher
-    , HasId (Maybe LocationId) env (Direction, LocationId)
-    , HasId LeadInvestigatorId env ()
-    , HasId LocationId env InvestigatorId
-    , HasModifiersFor ()
-    , HasSet ActId env ()
-    , HasList (InvestigatorId, Distance) env EnemyMatcher
-    , HasSet
-        ClosestPathLocationId
-        env
-        (LocationId, LocationId, HashMap LocationId [LocationId])
-    , HasSet ConnectedLocationId env LocationId
-    , HasSet EmptyLocationId env ()
-    , HasSet FarthestLocationId env InvestigatorId
-    , HasSet FarthestLocationId env [InvestigatorId]
-    , HasSet InvestigatorId env ()
-    , HasSet InvestigatorId env LocationId
-    , HasSet LocationId env ()
-    , HasSet LocationId env [Trait]
-    , HasSet Trait env EnemyId
-    , HasSet Trait env InvestigatorId
-    , HasSet Trait env SkillId
-    , HasSet Trait env AssetId
-    , HasSet Trait env EventId
-    , HasSet Trait env LocationId
-    , HasSet Trait env Source
-    , HasSkillTest env
-    , HasStep AgendaStep env ()
-    )
 
 -- | Handle when enemy no longer exists
 -- When an enemy is defeated we need to remove related messages from choices
@@ -114,15 +74,12 @@ filterOutEnemyMessages eid msg = case msg of
   Discarded (EnemyTarget eid') _ | eid == eid' -> Nothing
   m -> Just m
 
-getInvestigatorsAtSameLocation
-  :: (Query InvestigatorMatcher env, MonadReader env m)
-  => EnemyAttrs
-  -> m [InvestigatorId]
+getInvestigatorsAtSameLocation :: EnemyAttrs -> GameT [InvestigatorId]
 getInvestigatorsAtSameLocation attrs = case enemyLocation attrs of
   Nothing -> pure []
   Just loc -> selectList $ InvestigatorAt $ LocationWithId loc
 
-instance EnemyRunner env => RunMessage EnemyAttrs where
+instance RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
     EndPhase -> pure $ a & movedFromHunterKeywordL .~ False
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
@@ -142,7 +99,7 @@ instance EnemyRunner env => RunMessage EnemyAttrs where
     SetBearer (EnemyTarget eid) iid | eid == enemyId -> do
       pure $ a & bearerL ?~ iid
     EnemySpawn miid lid eid | eid == enemyId -> do
-      locations' <- getSet ()
+      locations' <- select Anywhere
       keywords <- getModifiedKeywords a
       if lid `notElem` locations'
         then a <$ push (Discard (EnemyTarget eid))
@@ -173,8 +130,8 @@ instance EnemyRunner env => RunMessage EnemyAttrs where
                 iids -> push
                   (chooseOne
                     leadInvestigatorId
-                    [ TargetLabel
-                        (InvestigatorTarget iid)
+                    [ targetLabel
+                        iid
                         [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
                     | iid <- iids
                     ]
@@ -187,7 +144,8 @@ instance EnemyRunner env => RunMessage EnemyAttrs where
           a <$ when
             (Keyword.Massive `elem` keywords)
             do
-              investigatorIds <- getSetList @InvestigatorId lid
+              investigatorIds <- selectList $ InvestigatorAt $ LocationWithId
+                lid
               pushAll
                 $ EnemyEntered eid lid
                 : [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
@@ -243,15 +201,14 @@ instance EnemyRunner env => RunMessage EnemyAttrs where
       case enemyLocation of
         Nothing -> pure a
         Just loc -> do
-          lid <- fromJustNote "can't move toward" <$> getId locationMatcher
+          lid <- fromJustNote "can't move toward" <$> selectOne locationMatcher
           if lid == loc
             then pure a
             else do
               leadInvestigatorId <- getLeadInvestigatorId
-              adjacentLocationIds <- map unConnectedLocationId
-                <$> getSetList loc
-              closestLocationIds <- map unClosestPathLocationId
-                <$> getSetList (loc, lid, emptyLocationMap)
+              adjacentLocationIds <-
+                selectList $ AccessibleFrom $ LocationWithId loc
+              closestLocationIds <- selectList $ ClosestPathLocation loc lid
               if lid `elem` adjacentLocationIds
                 then
                   a <$ push
@@ -267,9 +224,9 @@ instance EnemyRunner env => RunMessage EnemyAttrs where
         then pure a
         else do
           leadInvestigatorId <- getLeadInvestigatorId
-          adjacentLocationIds <- map unConnectedLocationId <$> getSetList loc
-          closestLocationIds <- map unClosestPathLocationId
-            <$> getSetList (loc, lid, emptyLocationMap)
+          adjacentLocationIds <- selectList $ AccessibleFrom $ LocationWithId
+            loc
+          closestLocationIds <- selectList $ ClosestPathLocation loc lid
           if lid `elem` adjacentLocationIds
             then a
               <$ push (chooseOne leadInvestigatorId [EnemyMove enemyId lid])
@@ -375,7 +332,7 @@ instance EnemyRunner env => RunMessage EnemyAttrs where
           preyIds <- select enemyPrey
 
           filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
-            $ \lid -> notNull . intersect preyIds <$> getSet lid
+            $ \lid -> notNull . intersect preyIds <$> selectList (InvestigatorAt $ LocationWithId lid)
 
           -- If we have any locations with prey, that takes priority, otherwise
           -- we return all locations which may have matched via AnyPrey
@@ -386,11 +343,10 @@ instance EnemyRunner env => RunMessage EnemyAttrs where
 
           leadInvestigatorId <- getLeadInvestigatorId
           pathIds <-
-            map unClosestPathLocationId
-            . concat
-            <$> traverse
-                  (getSetList . (loc, , emptyLocationMap))
-                  destinationLocationIds
+            concat
+              <$> traverse
+                    (selectList . ClosestPathLocation loc)
+                    destinationLocationIds
           case pathIds of
             [] -> pure a
             [lid] -> do
@@ -419,7 +375,10 @@ instance EnemyRunner env => RunMessage EnemyAttrs where
         modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
         unless (CannotAttack `elem` modifiers')
           $ pushAll
-          $ map (\iid -> EnemyWillAttack iid enemyId enemyDamageStrategy RegularAttack)
+          $ map
+              (\iid ->
+                EnemyWillAttack iid enemyId enemyDamageStrategy RegularAttack
+              )
           $ setToList enemyEngagedInvestigators
         pure a
     AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
@@ -540,20 +499,21 @@ instance EnemyRunner env => RunMessage EnemyAttrs where
         , PerformEnemyAttack iid eid damageStrategy attackType
         , After (PerformEnemyAttack iid eid damageStrategy attackType)
         ]
-    PerformEnemyAttack iid eid damageStrategy attackType | eid == enemyId -> a <$ pushAll
-      [ InvestigatorAssignDamage
-        iid
-        (EnemySource enemyId)
-        damageStrategy
-        enemyHealthDamage
-        enemySanityDamage
-      , After (EnemyAttack iid enemyId damageStrategy attackType)
-      ]
+    PerformEnemyAttack iid eid damageStrategy attackType | eid == enemyId ->
+      a <$ pushAll
+        [ InvestigatorAssignDamage
+          iid
+          (EnemySource enemyId)
+          damageStrategy
+          enemyHealthDamage
+          enemySanityDamage
+        , After (EnemyAttack iid enemyId damageStrategy attackType)
+        ]
     HealDamage (EnemyTarget eid) n | eid == enemyId ->
       pure $ a & damageL %~ max 0 . subtract n
     HealAllDamage (EnemyTarget eid) | eid == enemyId -> pure $ a & damageL .~ 0
     EnemySetDamage eid _ amount | eid == enemyId -> pure $ a & damageL .~ amount
-    EnemyDamage eid iid source damageEffect amount | eid == enemyId -> do
+    Msg.EnemyDamage eid iid source damageEffect amount | eid == enemyId -> do
       canDamage <- sourceCanDamageEnemy eid source
       a <$ when
         canDamage
@@ -666,7 +626,7 @@ instance EnemyRunner env => RunMessage EnemyAttrs where
         )
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
-      lid <- getId @LocationId iid
+      lid <- getJustLocation iid
       when (Just lid /= enemyLocation) (push $ EnemyEntered eid lid)
       pure $ a & engagedInvestigatorsL %~ insertSet iid
     EngageEnemy iid eid False | eid == enemyId ->
@@ -682,7 +642,10 @@ instance EnemyRunner env => RunMessage EnemyAttrs where
         modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
         a <$ unless
           (CannotMakeAttacksOfOpportunity `elem` modifiers')
-          (push (EnemyWillAttack iid enemyId enemyDamageStrategy AttackOfOpportunity))
+          (push
+            (EnemyWillAttack iid enemyId enemyDamageStrategy AttackOfOpportunity
+            )
+          )
     InvestigatorDrawEnemy iid lid eid | eid == enemyId -> do
       modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
       let

@@ -12,7 +12,6 @@ import Arkham.Modifier
 import Arkham.Target
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
 
 newtype Indebted = Indebted TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)

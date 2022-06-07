@@ -28,12 +28,16 @@ data instance Field AssetAttrs :: Type -> Type where
   AssetClues :: Field AssetAttrs Int
   AssetHorror :: Field AssetAttrs Int
   AssetDamage :: Field AssetAttrs Int
+  AssetRemainingHealth :: Field AssetAttrs (Maybe Int)
+  AssetRemainingSanity :: Field AssetAttrs (Maybe Int)
   AssetDoom :: Field AssetAttrs Int
   AssetExhausted :: Field AssetAttrs Bool
   AssetUses :: Field AssetAttrs Uses
+  AssetStartingUses :: Field AssetAttrs Uses
   AssetController :: Field AssetAttrs (Maybe InvestigatorId)
   AssetLocation :: Field AssetAttrs (Maybe LocationId)
   AssetCardCode :: Field AssetAttrs CardCode
+  AssetSlots :: Field AssetAttrs [SlotType]
   -- virtual
   AssetClasses :: Field AssetAttrs (HashSet ClassSymbol)
   AssetTraits :: Field AssetAttrs (HashSet Trait)

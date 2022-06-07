@@ -55,6 +55,6 @@ instance RunMessage LivreDeibon where
       deckCards <- fieldMap InvestigatorDeck unDeck iid
       case deckCards of
         [] -> error "Missing deck card"
-        x : _ -> push (SkillTestCommitCard iid (toCardId x))
+        x : _ -> push (SkillTestCommitCard iid $ PlayerCard x)
       pure a
     _ -> LivreDeibon <$> runMessage msg attrs

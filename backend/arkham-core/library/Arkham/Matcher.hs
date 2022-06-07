@@ -387,6 +387,7 @@ data LocationMatcher
   | LocationMatchAll [LocationMatcher]
   | LocationMatchAny [LocationMatcher]
   | FirstLocation [LocationMatcher]
+  | NotLocation LocationMatcher
   | ClosestPathLocation LocationId LocationId
   -- ^ start destination / end destination
   | ThisLocation

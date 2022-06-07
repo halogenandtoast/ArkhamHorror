@@ -5,13 +5,10 @@ module Arkham.Scenario.Scenarios.BloodOnTheAltar
 
 import Arkham.Prelude
 
-import Arkham.Scenarios.BloodOnTheAltar.Story
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
 import Arkham.AgendaId
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.EncounterCard
@@ -19,16 +16,23 @@ import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
 import Arkham.InvestigatorId
+import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Cards qualified as Locations
 import Arkham.LocationId
+import Arkham.Matcher hiding ( PlaceUnderneath, RevealLocation )
 import Arkham.Message
 import Arkham.Name
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.BloodOnTheAltar.Story
 import Arkham.Target
 import Arkham.Token
 
@@ -53,15 +57,16 @@ bloodOnTheAltar difficulty =
   where base = baseAttrs "02195" "Blood on the Altar" difficulty
 
 instance HasTokenValue BloodOnTheAltar where
-  getTokenValue iid tokenFace (BloodOnTheAltar (attrs `With` _)) = case tokenFace of
-    Skull -> do
-      numLocations <- countM ((null <$>) . getList @UnderneathCard)
-        =<< getSetList @LocationId ()
-      pure $ toTokenValue attrs Skull (min 4 numLocations) numLocations
-    Cultist -> pure $ toTokenValue attrs Cultist 2 4
-    Tablet -> pure $ toTokenValue attrs Tablet 2 3
-    ElderThing -> pure $ toTokenValue attrs ElderThing 3 3
-    otherFace -> getTokenValue iid otherFace attrs
+  getTokenValue iid tokenFace (BloodOnTheAltar (attrs `With` _)) =
+    case tokenFace of
+      Skull -> do
+        numLocations <- countM (fieldMap LocationUnderneathCards null)
+          =<< selectList Anywhere
+        pure $ toTokenValue attrs Skull (min 4 numLocations) numLocations
+      Cultist -> pure $ toTokenValue attrs Cultist 2 4
+      Tablet -> pure $ toTokenValue attrs Tablet 2 3
+      ElderThing -> pure $ toTokenValue attrs ElderThing 3 3
+      otherFace -> getTokenValue iid otherFace attrs
 
 standaloneTokens :: [TokenFace]
 standaloneTokens =
@@ -85,9 +90,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-findOwner
-  :: CardCode
-  -> GameT (Maybe InvestigatorId)
+findOwner :: CardCode -> GameT (Maybe InvestigatorId)
 findOwner cardCode = do
   campaignStoryCards <- getCampaignStoryCards
   pure
@@ -96,9 +99,7 @@ findOwner cardCode = do
           ((== cardCode) . toCardCode . campaignStoryCardPlayerCard)
           campaignStoryCards
 
-getRemoveSacrificedMessages
-  :: [CardCode]
-  -> GameT [Message]
+getRemoveSacrificedMessages :: [CardCode] -> GameT [Message]
 getRemoveSacrificedMessages sacrifices = do
   sacrificedOwnerPairs <- catMaybes <$> for
     sacrifices
@@ -265,14 +266,13 @@ instance RunMessage BloodOnTheAltar where
             )
           )
       ResolveToken _ Tablet iid -> do
-        lid <- getId @LocationId iid
-        matches <- (== "Hidden Chamber") . nameTitle <$> getName lid
+        lid <- getJustLocation iid
+        matches <- (== "Hidden Chamber") . nameTitle <$> field LocationName lid
         s <$ when
           (isHardExpert attrs || (isEasyStandard attrs && matches))
           (push $ DrawAnotherToken iid)
       ResolveToken _ ElderThing _ | isHardExpert attrs -> do
-        agendaId <-
-          fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
+        agendaId <- selectJust AnyAgenda
         s <$ push (PlaceDoom (AgendaTarget agendaId) 1)
       FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
         s <$ case tokenFace token of
@@ -280,14 +280,12 @@ instance RunMessage BloodOnTheAltar where
             lid <- getJustLocation iid
             push (PlaceClues (LocationTarget lid) 1)
           ElderThing | isEasyStandard attrs -> do
-            agendaId <-
-              fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
+            agendaId <- selectJust AnyAgenda
             push (PlaceDoom (AgendaTarget agendaId) 1)
           _ -> pure ()
       ScenarioResolution NoResolution -> do
         leadInvestigatorId <- getLeadInvestigatorId
-        agendaId <-
-          fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
+        agendaId <- selectJust AnyAgenda
         xp <- getXp
         let
           potentialSacrifices =

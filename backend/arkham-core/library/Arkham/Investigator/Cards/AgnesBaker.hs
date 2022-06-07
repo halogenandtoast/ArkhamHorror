@@ -45,13 +45,13 @@ instance HasAbilities AgnesBaker where
             Free
     ]
 
-instance HasTokenValue env AgnesBaker where
+instance HasTokenValue AgnesBaker where
   getTokenValue iid ElderSign (AgnesBaker attrs) | iid == toId attrs =
     pure $ TokenValue ElderSign $ PositiveModifier $ investigatorSanityDamage
       attrs
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage AgnesBaker where
+instance RunMessage AgnesBaker where
   runMessage msg i@(AgnesBaker attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       enemyIds <- selectList $ EnemyAt YourLocation

@@ -3,10 +3,11 @@ module Arkham.Investigator.Cards.LolaHayes where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -35,7 +36,7 @@ lolaHayes = investigator
     , agility = 3
     }
 
-instance HasTokenValue env LolaHayes where
+instance HasTokenValue LolaHayes where
   getTokenValue iid ElderSign (LolaHayes attrs) | iid == investigatorId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue _ token _ = pure $ TokenValue token mempty
@@ -49,8 +50,7 @@ instance HasAbilities LolaHayes where
       & (abilityLimitL .~ PlayerLimit PerRound 1)
     ]
 
-switchRole
-  :: (MonadIO m, MonadReader env m, HasQueue env) => InvestigatorAttrs -> m ()
+switchRole :: InvestigatorAttrs -> GameT ()
 switchRole attrs = push
   (chooseOne
     (toId attrs)
@@ -59,7 +59,7 @@ switchRole attrs = push
     ]
   )
 
-instance (InvestigatorRunner env) => RunMessage LolaHayes where
+instance RunMessage LolaHayes where
   runMessage msg i@(LolaHayes attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       i <$ switchRole attrs

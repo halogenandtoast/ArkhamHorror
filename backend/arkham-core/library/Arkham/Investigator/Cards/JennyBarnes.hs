@@ -23,13 +23,13 @@ jennyBarnes = investigator
     , agility = 3
     }
 
-instance HasTokenValue env JennyBarnes where
+instance HasTokenValue JennyBarnes where
   getTokenValue iid ElderSign (JennyBarnes attrs)
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier $ investigatorResources attrs)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance (InvestigatorRunner env) => RunMessage JennyBarnes where
+instance RunMessage JennyBarnes where
   runMessage msg (JennyBarnes attrs) = case msg of
     -- TODO: Move this to a modifier
     AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) ->

@@ -30,7 +30,7 @@ sefinaRousseau = investigator
     , agility = 4
     }
 
-instance HasTokenValue env SefinaRousseau where
+instance HasTokenValue SefinaRousseau where
   getTokenValue iid ElderSign (SefinaRousseau attrs)
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 3)
@@ -43,7 +43,7 @@ instance HasAbilities SefinaRousseau where
     | notNull (investigatorCardsUnderneath attrs)
     ]
 
-instance InvestigatorRunner env => RunMessage SefinaRousseau where
+instance RunMessage SefinaRousseau where
   runMessage msg i@(SefinaRousseau attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> i <$ push
       (chooseOne

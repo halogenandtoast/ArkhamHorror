@@ -13,13 +13,11 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Name
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
@@ -100,7 +98,7 @@ instance HasTokenValue TheMiskatonicMuseum where
   getTokenValue iid tokenFace (TheMiskatonicMuseum attrs) = case tokenFace of
     Skull -> do
       huntingHorrorAtYourLocation <-
-        selectAny $ enemyIs Enemies.huntingHorror <> EnemyAtLocation
+        selectAny $ enemyIs Enemies.huntingHorror <> EnemyAt
           (LocationWithInvestigator $ InvestigatorWithId iid)
       pure $ if huntingHorrorAtYourLocation
         then toTokenValue attrs Skull 3 4
@@ -230,8 +228,7 @@ instance RunMessage TheMiskatonicMuseum where
     PlacedLocation name _ lid -> do
       s <$ if nameTitle name == "Exhibit Hall"
         then do
-          hallCount <- length
-            <$> getSet @LocationId (LocationWithTitle "Exhibit Hall")
+          hallCount <- selectCount $ LocationWithTitle "Exhibit Hall"
           push (SetLocationLabel lid $ "hall" <> tshow hallCount)
         else pure ()
     ResolveToken _ Tablet iid | isEasyStandard attrs ->

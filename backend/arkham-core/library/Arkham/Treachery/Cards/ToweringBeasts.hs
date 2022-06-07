@@ -5,11 +5,9 @@ module Arkham.Treachery.Cards.ToweringBeasts
 
 import Arkham.Prelude
 
-import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -37,7 +35,7 @@ instance RunMessage ToweringBeasts where
       broodOfYogSothoth <- getBroodOfYogSothoth
       unless (null broodOfYogSothoth) $ do
         locationId <- getJustLocation iid
-        broodWithLocationIds <- for xs
+        broodWithLocationIds <- for broodOfYogSothoth
           $ \x -> (x, ) <$> selectJust (LocationWithEnemy $ EnemyWithId x)
         push $ chooseOne
           iid

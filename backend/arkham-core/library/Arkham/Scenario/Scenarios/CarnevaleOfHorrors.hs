@@ -22,9 +22,7 @@ import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
-import Arkham.Query
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
@@ -353,31 +351,28 @@ instance RunMessage CarnevaleOfHorrors where
       case tokenFace token of
         Cultist -> push $ InvestigatorDrawEncounterCard iid
         Tablet -> do
-          closestInnocentRevelers <- map unClosestAssetId
-            <$> getSetList (iid, assetIs Assets.innocentReveler)
+          lid <- getJustLocation iid
+          closestInnocentRevelers <- selectList $ ClosestAsset lid $ assetIs
+            Assets.innocentReveler
           case closestInnocentRevelers of
             [] -> pure ()
-            [x] -> push
-              (chooseOne
-                iid
-                [ AssetDamage x (TokenSource token) 1 0
-                , AssetDamage x (TokenSource token) 0 1
-                ]
-              )
-            xs -> push
-              (chooseOne
-                iid
-                [ TargetLabel
-                    (AssetTarget x)
-                    [ chooseOne
-                        iid
-                        [ AssetDamage x (TokenSource token) 1 0
-                        , AssetDamage x (TokenSource token) 0 1
-                        ]
-                    ]
-                | x <- xs
-                ]
-              )
+            [x] -> push $ chooseOne
+              iid
+              [ AssetDamage x (TokenSource token) 1 0
+              , AssetDamage x (TokenSource token) 0 1
+              ]
+            xs -> push $ chooseOne
+              iid
+              [ targetLabel
+                  x
+                  [ chooseOne
+                      iid
+                      [ AssetDamage x (TokenSource token) 1 0
+                      , AssetDamage x (TokenSource token) 0 1
+                      ]
+                  ]
+              | x <- xs
+              ]
         ElderThing -> do
           mCnidathquaId <- getCnidathqua
           case mCnidathquaId of

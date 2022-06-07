@@ -20,7 +20,6 @@ import Arkham.Id
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
@@ -28,7 +27,6 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding ( Cultist )
-import Control.Monad.Extra ( findM )
 import Data.Maybe ( fromJust )
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou ScenarioAttrs
@@ -50,8 +48,7 @@ curseOfTheRougarou difficulty =
 instance HasTokenValue CurseOfTheRougarou where
   getTokenValue iid tokenFace (CurseOfTheRougarou attrs) = case tokenFace of
     Skull -> do
-      lid <- getId @LocationId iid
-      isBayou <- member Bayou <$> getSet lid
+      isBayou <- selectAny $ LocationWithTrait Bayou <> LocationWithInvestigator (InvestigatorWithId iid)
       pure $ if isBayou
         then toTokenValue attrs Skull 4 6
         else toTokenValue attrs Skull 2 3
@@ -203,9 +200,9 @@ instance RunMessage CurseOfTheRougarou where
             ]
       s <$ push (SetTokens tokens)
     ResolveToken _ Cultist iid -> do
-      lid <- getId @LocationId iid
-      enemyIds <- getSetList @EnemyId lid
-      rougarouAtYourLocation <- elem "81028" <$> for enemyIds (getId @CardCode)
+      rougarouAtYourLocation <-
+        selectAny $ enemyIs Enemies.theRougarou <> EnemyAt
+          (LocationWithInvestigator $ InvestigatorWithId iid)
       s <$ when rougarouAtYourLocation (push $ DrawAnotherToken iid)
     ResolveToken _ ElderThing iid -> if isEasyStandard attrs
       then do
@@ -216,7 +213,7 @@ instance RunMessage CurseOfTheRougarou where
           (\eid -> push $ EnemyWillAttack iid eid DamageAny RegularAttack)
       else do
         lid <- getJustLocation iid
-        connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
+        connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
         mrougarou <-
           selectOne $ enemyIs Enemies.theRougarou <> EnemyAt
             (LocationMatchAny $ map LocationWithId $ lid : connectedLocationIds)

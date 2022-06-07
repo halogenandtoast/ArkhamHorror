@@ -42,12 +42,12 @@ instance HasAbilities ZoeySamaras where
         $ ReactionAbility (EnemyEngaged Timing.After You AnyEnemy) Free
     ]
 
-instance HasTokenValue env ZoeySamaras where
+instance HasTokenValue ZoeySamaras where
   getTokenValue iid ElderSign (ZoeySamaras attrs) | iid == toId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage ZoeySamaras where
+instance RunMessage ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == toId attrs ->
       i <$ push (TakeResources (toId attrs) 1 False)

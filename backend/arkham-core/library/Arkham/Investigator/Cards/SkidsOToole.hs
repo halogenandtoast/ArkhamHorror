@@ -39,13 +39,13 @@ instance HasAbilities SkidsOToole where
         $ ResourceCost 2
     ]
 
-instance HasTokenValue env SkidsOToole where
+instance HasTokenValue SkidsOToole where
   getTokenValue iid ElderSign (SkidsOToole attrs)
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
-instance InvestigatorRunner env => RunMessage SkidsOToole where
+instance RunMessage SkidsOToole where
   runMessage msg i@(SkidsOToole attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       i <$ push (GainActions (toId attrs) source 1)

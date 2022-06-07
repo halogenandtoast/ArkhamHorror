@@ -18,39 +18,32 @@ import Arkham.Trait as X hiding ( Cultist )
 import Arkham.Ability
 import Arkham.Action ( Action )
 import Arkham.Action qualified as Action
-import Arkham.Asset.Uses ( UseType )
+import Arkham.Asset.Attrs ( Field(..) )
+import Arkham.Location.Attrs ( Field(..) )
+import Arkham.Event.Attrs ( Field(..) )
 import Arkham.Card
-import Arkham.Card.EncounterCard
-import Arkham.Card.Id
 import Arkham.Card.PlayerCard
 import Arkham.CommitRestriction
 import Arkham.Cost
 import Arkham.DamageEffect
-import Arkham.Deck
 import Arkham.Deck qualified as Deck
-import Arkham.Direction
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Game.Helpers hiding ( windows )
 import Arkham.Game.Helpers qualified as Helpers
 import Arkham.Helpers
 import Arkham.Id
-import Arkham.Keyword
-import Arkham.LocationSymbol
 import Arkham.Matcher
   ( AssetMatcher (..)
   , CardMatcher (..)
   , EnemyMatcher (..)
-  , EventMatcher
   , InvestigatorMatcher (..)
   , LocationMatcher (..)
-  , SkillMatcher
   , assetIs
   )
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Modifier
-import Arkham.Query
-import Arkham.ScenarioLogKey
+import Arkham.Projection
 import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Slot
@@ -261,8 +254,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & engagedEnemiesL %~ insertSet eid
   RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId -> do
-    slots <- getList aid
-    traits <- getSetList aid
+    slots <- field AssetSlots aid
+    traits <- fieldMap AssetTraits setToList aid
     a <$ push (InvestigatorPlayAsset iid aid slots traits)
   TakeControlOfAsset iid aid | iid /= investigatorId ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
@@ -317,7 +310,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ShuffleIntoDeck iid (TreacheryTarget tid) | iid == investigatorId ->
     pure $ a & treacheriesL %~ deleteSet tid
   ShuffleIntoDeck iid (AssetTarget aid) | iid == investigatorId -> do
-    card <- fromJustNote "missing card" <$> getPlayerCard aid
+    card <- fromJustNote "missing card" . preview _PlayerCard <$> field AssetCard aid
     deck' <- shuffleM (card : unDeck investigatorDeck)
     push $ After msg
     pure
@@ -326,7 +319,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (deckL .~ Deck deck')
       & (slotsL %~ removeFromSlots aid)
   ShuffleIntoDeck iid (EventTarget eid) | iid == investigatorId -> do
-    card <- fromJustNote "missing card" <$> getPlayerCard eid
+    card <- fromJustNote "missing card" . preview _PlayerCard <$> field EventCard eid
     deck' <- shuffleM (card : unDeck investigatorDeck)
     push $ After msg
     pure $ a & (deckL .~ Deck deck')
@@ -421,7 +414,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       a
       DoesNotDamageOtherInvestigator
     unless doesNotDamageOtherInvestigators $ do
-      investigatorIds <- getSetList eid
+      investigatorIds <- selectList $ InvestigatorEngagedWith $ EnemyWithId  eid
       case investigatorIds of
         [x] | x /= iid -> push (InvestigatorDamageInvestigator iid x)
         _ -> pure ()
@@ -668,7 +661,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           0
         -- N.B. we have to add to the end of targets to handle the drop logic
         damageAsset aid = Run
-          [ AssetDamage aid source 1 0
+          [ Msg.AssetDamage aid source 1 0
           , assignRestOfHealthDamage (damageTargets <> [AssetTarget aid]) mempty
           ]
         damageInvestigator = Run
@@ -710,7 +703,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (sanity - 1)
         -- N.B. we have to add to the end of targets to handle the drop logic
         damageAsset aid = Run
-          [ AssetDamage aid source 1 0
+          [ Msg.AssetDamage aid source 1 0
           , assignRestOfHealthDamage mempty (horrorTargets <> [AssetTarget aid])
           ]
         damageInvestigator = Run
@@ -752,12 +745,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (horrorTargets <> [ t | s > 0 ])
         toAssetMessage (asset, (h, s)) = TargetLabel
           (AssetTarget asset)
-          [ AssetDamage asset source (min h health) (min s sanity)
+          [ Msg.AssetDamage asset source (min h health) (min s sanity)
           , continue h s (AssetTarget asset)
           ]
       assetsWithCounts <- for damageableAssets $ \asset -> do
-        health' <- unRemainingHealth <$> getCount asset
-        sanity' <- unRemainingSanity <$> getCount asset
+        health' <- fieldMap AssetRemainingHealth (fromMaybe 0) asset
+        sanity' <- fieldMap AssetRemainingSanity (fromMaybe 0) asset
         pure (asset, (health', sanity'))
 
       push
@@ -783,7 +776,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               (health - 1)
               sanity
             damageAsset aid = Run
-              [ AssetDamage aid source 1 0
+              [ Msg.AssetDamage aid source 1 0
               , assignRestOfHealthDamage
                 (AssetTarget aid : damageTargets)
                 horrorTargets
@@ -829,7 +822,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 (InvestigatorTarget investigatorId : horrorTargets)
               ]
             damageAsset aid = Run
-              [ AssetDamage aid source 0 1
+              [ Msg.AssetDamage aid source 0 1
               , assignRestOfSanityDamage
                 damageTargets
                 (AssetTarget aid : horrorTargets)
@@ -927,7 +920,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then pure $ a & resourcesL -~ cost
       else do
         iidsWithResources <- traverse
-          (traverseToSnd (fmap unResourceCount . getCount))
+          (traverseToSnd (field InvestigatorResources))
           (iid : map fst canHelpPay)
         a <$ push
           (Ask iid
@@ -1081,7 +1074,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (pure $ cardMatch card cMatcher)
         _ -> pure False
     additionalResources <-
-      sum <$> traverse ((fmap unResourceCount . getCount) . fst) canHelpPay
+      sum <$> traverse ((field InvestigatorResources) . fst) canHelpPay
 
     if investigatorRemainingActions
         >= actionCost
@@ -1137,7 +1130,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       slotTypes
   RemoveAllCopiesOfCardFromGame iid cardCode | iid == investigatorId -> do
     for_ investigatorAssets $ \assetId -> do
-      cardCode' <- getId @CardCode assetId
+      cardCode' <- field AssetCardCode assetId
       when (cardCode == cardCode') (push $ RemoveFromGame (AssetTarget assetId))
     pure
       $ a
@@ -1223,7 +1216,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ findWithDefault [] slotType investigatorSlots
       emptiedSlots = sort $ map emptySlot slots
     assetsWithTraits <- for assetIds $ \assetId -> do
-      traits <- getSetList assetId
+      traits <- fieldMap AssetTraits setToList assetId
       pure (assetId, traits)
     let
       updatedSlots = foldl'
@@ -1403,12 +1396,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & update
   BeforeSkillTest iid skillType skillDifficulty | iid == investigatorId -> do
     modifiers' <- getModifiers (toSource a) (toTarget a)
-    committedCardIds <- map unCommittedCardId <$> getSetList iid
-    committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
+    skillTest <- fromJustNote "missing skill test" <$> getSkillTest
+    committedCards <- field InvestigatorCommittedCards iid
+    let committedCardCodes = map (toCardCode . snd) . HashMap.elems $ skillTestCommittedCards skillTest
     let window = Window Timing.When (Window.SkillTest skillType)
     actions <- getActions iid window
     isScenarioAbility <- getIsScenarioAbility
-    clueCount <- unClueCount <$> getCount investigatorLocation
+    clueCount <- field LocationClues investigatorLocation
     source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
 
     skillTestModifiers' <- getModifiers (toSource a) SkillTestTarget
@@ -1432,10 +1426,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               OnlyIfYourLocationHasClues -> pure $ clueCount > 0
               ScenarioAbility -> pure isScenarioAbility
               SelfCanCommitWhen matcher -> notNull <$> select (You <> matcher)
-              MinSkillTestValueDifference n ->
-                pure
-                  $ (skillDifficulty - baseSkillValueFor skillType Nothing [] a)
-                  >= n
+              MinSkillTestValueDifference n -> do
+                baseValue <- baseSkillValueFor skillType Nothing [] (toId a)
+                pure $ (skillDifficulty - baseValue) >= n
             prevented = flip
               any
               modifiers'
@@ -1449,8 +1442,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             passesCommitRestriction
             (cdCommitRestrictions $ toCardDef card)
           pure
-            $ toCardId card
-            `notElem` committedCardIds
+            $ PlayerCard card
+            `notElem` committedCards
             && (SkillWild
                `elem` cdSkills (toCardDef card)
                || skillType
@@ -1463,20 +1456,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             && passesCommitRestrictions
             && not prevented
         _ -> pure False
-    if notNull committableCards || notNull committedCardIds || notNull actions
+    if notNull committableCards || notNull committedCards || notNull actions
       then push
         (SkillTestAsk $ chooseOne
           iid
           (map
               (\card ->
-                Run [SkillTestCommitCard iid (toCardId card), beginMessage]
+                Run [SkillTestCommitCard iid card, beginMessage]
               )
               committableCards
           <> map
-               (\cardId ->
-                 Run [SkillTestUncommitCard iid cardId, beginMessage]
+               (\card ->
+                 Run [SkillTestUncommitCard iid card, beginMessage]
                )
-               committedCardIds
+               committedCards
           <> map
                (\action -> Run [UseAbility iid action [window], beginMessage])
                actions
@@ -1488,16 +1481,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         (push (SkillTestAsk $ chooseOne iid triggerMessage))
     pure a
   BeforeSkillTest iid skillType skillDifficulty | iid /= investigatorId -> do
-    locationId <- getId iid
+    locationId <- getJustLocation iid
     isScenarioAbility <- getIsScenarioAbility
-    clueCount <- unClueCount <$> getCount locationId
+    clueCount <- field LocationClues locationId
     canCommit <- canCommitToAnotherLocation a
+    skillTest <- fromJustNote "missing skill test" <$> getSkillTest
     when (locationId == investigatorLocation || canCommit) $ do
-      committedCardIds <- map unCommittedCardId <$> getSetList investigatorId
-      committedCardCodes <- mapSet unCommittedCardCode <$> getSet ()
+      committedCards <- field InvestigatorCommittedCards iid
+      let committedCardCodes = map (toCardCode . snd) . HashMap.elems $ skillTestCommittedCards skillTest
       modifiers' <- getModifiers (toSource a) (toTarget a)
       let beginMessage = BeforeSkillTest iid skillType skillDifficulty
-      committableCards <- if notNull committedCardIds
+      committableCards <- if notNull committedCards
         then pure []
         else flip
           filterM
@@ -1513,12 +1507,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   ScenarioAbility -> pure isScenarioAbility
                   SelfCanCommitWhen matcher ->
                     notNull <$> select (You <> matcher)
-                  MinSkillTestValueDifference n ->
-                    pure
-                      $ (skillDifficulty
-                        - baseSkillValueFor skillType Nothing [] a
-                        )
-                      >= n
+                  MinSkillTestValueDifference n -> do
+                    baseValue <- baseSkillValueFor skillType Nothing [] (toId a)
+                    pure $ (skillDifficulty - baseValue) >= n
                 prevented = flip
                   any
                   modifiers'
@@ -1531,8 +1522,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 passesCommitRestriction
                 (cdCommitRestrictions $ toCardDef card)
               pure
-                $ toCardId card
-                `notElem` committedCardIds
+                $ PlayerCard card
+                `notElem` committedCards
                 && (SkillWild
                    `elem` cdSkills (toCardDef card)
                    || skillType
@@ -1541,23 +1532,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 && passesCriterias
                 && not prevented
             _ -> pure False
-      when (notNull committableCards || notNull committedCardIds) $ push
+      when (notNull committableCards || notNull committedCards) $ push
         (SkillTestAsk $ chooseOne
           investigatorId
           (map
               (\card ->
                 Run
-                  [ SkillTestCommitCard investigatorId (toCardId card)
+                  [ SkillTestCommitCard investigatorId card
                   , beginMessage
                   ]
               )
               committableCards
           <> map
-               (\cardId ->
+               (\card ->
                  Run
-                   [SkillTestUncommitCard investigatorId cardId, beginMessage]
+                   [SkillTestUncommitCard investigatorId card, beginMessage]
                )
-               committedCardIds
+               committedCards
           )
         )
     pure a
@@ -1989,3 +1980,20 @@ getFacingDefeat a@InvestigatorAttrs {..} = do
     || investigatorSanityDamage
     >= modifiedSanity
 
+getModifiedHealth
+  :: InvestigatorAttrs -> GameT Int
+getModifiedHealth attrs@InvestigatorAttrs {..} = do
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
+  pure $ foldr applyModifier investigatorHealth modifiers
+ where
+  applyModifier (HealthModifier m) n = max 0 (n + m)
+  applyModifier _ n = n
+
+getModifiedSanity
+  :: InvestigatorAttrs -> GameT Int
+getModifiedSanity attrs@InvestigatorAttrs {..} = do
+  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
+  pure $ foldr applyModifier investigatorSanity modifiers
+ where
+  applyModifier (SanityModifier m) n = max 0 (n + m)
+  applyModifier _ n = n

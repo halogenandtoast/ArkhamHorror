@@ -51,6 +51,7 @@ instance Query EventMatcher
 instance Query ExtendedCardMatcher
 instance Query InvestigatorMatcher
 instance Query LocationMatcher
+instance Query PreyMatcher
 instance Query RemainingActMatcher
 instance Query ScenarioMatcher
 instance Query SkillMatcher

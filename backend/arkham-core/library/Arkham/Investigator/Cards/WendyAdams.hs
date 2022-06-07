@@ -34,7 +34,7 @@ wendyAdams = investigator
     , agility = 4
     }
 
-instance HasTokenValue env WendyAdams where
+instance HasTokenValue WendyAdams where
   getTokenValue iid ElderSign (WendyAdams attrs) | iid == investigatorId attrs =
     pure $ TokenValue ElderSign $ PositiveModifier 0
   getTokenValue _ token _ = pure $ TokenValue token mempty
@@ -47,7 +47,7 @@ instance HasAbilities WendyAdams where
         $ HandDiscardCost 1 AnyCard
     ]
 
-instance (InvestigatorRunner env) => RunMessage WendyAdams where
+instance RunMessage WendyAdams where
   runMessage msg i@(WendyAdams attrs@InvestigatorAttrs {..}) = case msg of
     UseCardAbility _ (isSource attrs -> True) [Window _ (Window.RevealToken _ token)] 1 _
       -> do

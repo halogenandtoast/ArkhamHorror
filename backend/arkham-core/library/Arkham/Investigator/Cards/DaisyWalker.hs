@@ -5,10 +5,12 @@ module Arkham.Investigator.Cards.DaisyWalker
 
 import Arkham.Prelude
 
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 
@@ -30,25 +32,28 @@ daisyWalker = investigatorWith
     }
   (tomeActionsL ?~ 1)
 
-instance HasTokenValue env DaisyWalker where
+instance HasTokenValue DaisyWalker where
   getTokenValue iid ElderSign (DaisyWalker attrs) | iid == toId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 0)
   getTokenValue _ token _ = pure $ TokenValue token mempty
 
 -- Passing a skill test effect
-instance InvestigatorRunner env => RunMessage DaisyWalker where
+instance RunMessage DaisyWalker where
   runMessage msg i@(DaisyWalker attrs@InvestigatorAttrs {..}) = case msg of
     ResetGame -> do
       attrs' <- runMessage msg attrs
       pure $ DaisyWalker $ attrs' & tomeActionsL ?~ 1
     SpendActions iid (AssetSource aid) actionCost
       | iid == toId attrs && actionCost > 0 -> do
-        isTome <- elem Tome <$> getSet aid
-        DaisyWalker <$> if isTome && fromJustNote "Must be set" investigatorTomeActions > 0
-          then runMessage
-            (SpendActions iid (AssetSource aid) (actionCost - 1))
-            (attrs & tomeActionsL %~ fmap (max 0 . subtract 1))
-          else runMessage msg attrs
+        isTome <- fieldMap AssetTraits (member Tome) aid
+        DaisyWalker
+          <$> if isTome
+                  && fromJustNote "Must be set" investigatorTomeActions
+                  > 0
+                then runMessage
+                  (SpendActions iid (AssetSource aid) (actionCost - 1))
+                  (attrs & tomeActionsL %~ fmap (max 0 . subtract 1))
+                else runMessage msg attrs
     PassedSkillTest iid _ _ (TokenTarget token) _ _ | iid == investigatorId ->
       do
         when (tokenFace token == ElderSign) $ do

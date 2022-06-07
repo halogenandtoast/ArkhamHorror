@@ -14,7 +14,6 @@ import Arkham.SkillType
 import Arkham.Card
 import Arkham.Card.Id
 import Arkham.Id
-import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token

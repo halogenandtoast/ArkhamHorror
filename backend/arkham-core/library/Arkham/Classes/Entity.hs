@@ -39,7 +39,7 @@ instance TargetEntity a => TargetEntity (a `With` b) where
   isTarget (a `With` _) = isTarget a
 
 insertEntity ::
-  (Entity v, EntityId v ~ k, Hashable k) =>
+  (Entity v, EntityId v ~ k, Eq k, Hashable k) =>
   v ->
   HashMap k v ->
   HashMap k v
@@ -92,7 +92,7 @@ entityRunMessage nm = do
   pure $ LamE [VarP msg, VarP a] $ CaseE (VarE a) matches
  where
   toMatch msg x (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ Match
-    (ConP (TH.mkName $ nameBase name <> "'") [] [VarP x])
+    (ConP (TH.mkName $ nameBase name <> "'") [VarP x])
     (NormalB $ AppE
       (AppE (VarE $ TH.mkName "fmap") (ConE $ TH.mkName $ nameBase name ++ "'"))
       (AppE (AppE (VarE $ TH.mkName "runMessage") (VarE msg)) (VarE x))
@@ -110,7 +110,7 @@ entityF nm fName = do
   pure $ LamE [VarP a] $ CaseE (VarE a) matches
  where
   toMatch f x (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ Match
-    (ConP (TH.mkName $ nameBase name <> "'") [] [VarP x])
+    (ConP (TH.mkName $ nameBase name <> "'") [VarP x])
     (NormalB $ AppE (VarE f) (VarE x))
     []
   toMatch _ _ _ = Nothing
@@ -127,7 +127,7 @@ entityF2 nm fName = do
   pure $ LamE [VarP p1, VarP p2, VarP a] $ CaseE (VarE a) matches
  where
   toMatch f p1 p2 x (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ Match
-    (ConP (TH.mkName $ nameBase name <> "'") [] [VarP x])
+    (ConP (TH.mkName $ nameBase name <> "'") [VarP x])
     (NormalB $ AppE (AppE (AppE (VarE f) (VarE p1)) (VarE p2)) (VarE x))
 
     []
@@ -144,7 +144,7 @@ entityF1 nm fName = do
   pure $ LamE [VarP p1, VarP a] $ CaseE (VarE a) matches
  where
   toMatch f p1 x (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ Match
-    (ConP (TH.mkName $ nameBase name <> "'") [] [VarP x])
+    (ConP (TH.mkName $ nameBase name <> "'") [VarP x])
     (NormalB $ AppE (AppE (VarE f) (VarE p1)) (VarE x))
 
     []

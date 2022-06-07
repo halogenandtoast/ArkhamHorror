@@ -22,7 +22,7 @@ returnToNightOfTheZealot difficulty =
     difficulty
     (chaosBagContents difficulty)
 
-instance (CampaignRunner env) => RunMessage ReturnToNightOfTheZealot where
+instance RunMessage ReturnToNightOfTheZealot where
   runMessage msg (ReturnToNightOfTheZealot nightOfTheZealot'@(NightOfTheZealot attrs@CampaignAttrs {..}))
     = case msg of
       NextCampaignStep _ -> do

@@ -4,6 +4,7 @@ module Arkham.Game where
 import Arkham.Act.Attrs
 import Arkham.Agenda.Attrs
 import Arkham.Asset.Attrs
+import Arkham.Campaign.Attrs
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasTokenValue
 import Arkham.Classes.HasRecord
@@ -60,6 +61,7 @@ instance Query TreacheryMatcher
 instance Projection ActAttrs
 instance Projection AgendaAttrs
 instance Projection AssetAttrs
+instance Projection CampaignAttrs
 instance Projection EffectAttrs
 instance Projection EnemyAttrs
 instance Projection EventAttrs

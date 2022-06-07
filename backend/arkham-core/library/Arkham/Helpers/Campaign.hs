@@ -5,9 +5,11 @@ import Arkham.Prelude
 import Arkham.Campaign.Attrs
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.GameEnv
+import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.ScenarioId
+import Arkham.CampaignStep
 
 getCompletedScenarios :: GameT (HashSet ScenarioId)
 getCompletedScenarios = do

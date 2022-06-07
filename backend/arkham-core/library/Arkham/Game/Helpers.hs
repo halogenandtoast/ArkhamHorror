@@ -63,7 +63,7 @@ import Arkham.Scenario.Attrs ( Field (..), ScenarioAttrs )
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Skill.Attrs ( Field (..), SkillAttrs )
-import Arkham.SkillTest
+import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Slot

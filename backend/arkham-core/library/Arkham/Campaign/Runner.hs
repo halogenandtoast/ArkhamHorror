@@ -1,15 +1,29 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Campaign.Runner (module X) where
 
 import Arkham.Prelude
 
+import Arkham.Card.CardDef
 import Arkham.Campaign.Attrs as X
+import Arkham.Classes.HasQueue
+import Arkham.Classes.RunMessage
+import Arkham.Helpers
+import Arkham.Helpers.Query
+import Arkham.Id
+import Arkham.Message
+import Arkham.Projection
+import Arkham.CampaignStep
+import Arkham.CampaignLog
+import Arkham.CampaignLogKey
+import Arkham.Card.PlayerCard
+import Arkham.Scenario.Attrs (Field(..))
 
 instance RunMessage CampaignAttrs where
   runMessage msg a@CampaignAttrs {..} = case msg of
     StartCampaign -> a <$ push (CampaignStep campaignStep)
     CampaignStep Nothing -> a <$ push GameOver -- TODO: move to generic
     CampaignStep (Just (ScenarioStep sid)) -> do
-      scenarioName <- getName sid
+      scenarioName <- field ScenarioName sid
       a <$ pushAll [ResetGame, StartScenario scenarioName sid]
     CampaignStep (Just (UpgradeDeckStep _)) -> do
       investigatorIds <- getInvestigatorIds

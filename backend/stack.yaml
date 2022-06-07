@@ -2,14 +2,13 @@
 require-stack-version: ">= 2.3.1"
 concurrent-tests: false
 
-resolver: nightly-2022-06-06
+resolver: lts-19.10
 
 ghc-options:
   "$locals":
     -fhide-source-paths
     -Weverything
     -Wno-missing-exported-signatures
-    -Wno-missing-kind-signatures
     -Wno-missed-specialisations
     -Wno-all-missed-specialisations
     -Wno-unsafe

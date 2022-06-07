@@ -5,9 +5,9 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Game.Helpers
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Message
-import Arkham.Query
-import Arkham.Treachery.Runner
+import Arkham.Projection
 import Arkham.Treachery.Runner
 
 newtype MaskedHorrors = MaskedHorrors TreacheryAttrs
@@ -17,14 +17,14 @@ newtype MaskedHorrors = MaskedHorrors TreacheryAttrs
 maskedHorrors :: TreacheryCard MaskedHorrors
 maskedHorrors = treachery MaskedHorrors Cards.maskedHorrors
 
-instance TreacheryRunner env => RunMessage MaskedHorrors where
+instance RunMessage MaskedHorrors where
   runMessage msg t@(MaskedHorrors attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       iids <- getInvestigatorIds
       targetInvestigators <- map fst . filter ((>= 2) . snd) <$> for
         iids
         (\iid -> do
-          clueCount <- unClueCount <$> getCount iid
+          clueCount <- field InvestigatorClues iid
           pure (iid, clueCount)
         )
       t <$ if null targetInvestigators

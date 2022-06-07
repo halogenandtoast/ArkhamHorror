@@ -53,7 +53,7 @@ instance HasAbilities UnhallowedCountry where
         You
     ]
 
-instance TreacheryRunner env => RunMessage UnhallowedCountry where
+instance RunMessage UnhallowedCountry where
   runMessage msg t@(UnhallowedCountry attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)

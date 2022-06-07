@@ -8,6 +8,8 @@ import Arkham.Prelude
 
 import Arkham.Treachery.Attrs as X
 
+import Arkham.Classes.Entity
+import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage
 import Arkham.Message
 import Arkham.Target

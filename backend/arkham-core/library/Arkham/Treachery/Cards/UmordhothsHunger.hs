@@ -19,7 +19,7 @@ newtype UmordhothsHunger = UmordhothsHunger TreacheryAttrs
 umordhothsHunger :: TreacheryCard UmordhothsHunger
 umordhothsHunger = treachery UmordhothsHunger Cards.umordhothsHunger
 
-instance TreacheryRunner env => RunMessage UmordhothsHunger where
+instance RunMessage UmordhothsHunger where
   runMessage msg t@(UmordhothsHunger attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds

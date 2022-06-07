@@ -5,15 +5,16 @@ module Arkham.Treachery.Cards.RitesHowled
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Runner
-import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Trait
+import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype RitesHowled = RitesHowled TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -22,7 +23,7 @@ newtype RitesHowled = RitesHowled TreacheryAttrs
 ritesHowled :: TreacheryCard RitesHowled
 ritesHowled = treachery RitesHowled Cards.ritesHowled
 
-instance TreacheryRunner env => RunMessage RitesHowled where
+instance RunMessage RitesHowled where
   runMessage msg t@(RitesHowled attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
@@ -33,11 +34,13 @@ instance TreacheryRunner env => RunMessage RitesHowled where
         <> [Discard $ toTarget attrs]
         )
     DiscardedTopOfDeck iid _cards target | isTarget attrs target -> do
-      isAltered <- member Altered <$> (getSet =<< getId @LocationId iid)
+      isAltered <-
+        selectAny $ LocationWithTrait Altered <> LocationWithInvestigator
+          (InvestigatorWithId iid)
       t <$ when
         isAltered
         (do
-          discardPile <- map unDiscardedPlayerCard <$> getList iid
+          discardPile <- field InvestigatorDiscard iid
           push $ ShuffleCardsIntoDeck
             iid
             (filter (isJust . cdCardSubType . toCardDef) discardPile)

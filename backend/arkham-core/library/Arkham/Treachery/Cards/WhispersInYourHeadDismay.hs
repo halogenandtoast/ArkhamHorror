@@ -35,7 +35,7 @@ instance HasAbilities WhispersInYourHeadDismay where
   getAbilities (WhispersInYourHeadDismay a) =
     [restrictedAbility a 1 InYourHand $ ActionAbility Nothing $ ActionCost 2]
 
-instance TreacheryRunner env => RunMessage WhispersInYourHeadDismay where
+instance RunMessage WhispersInYourHeadDismay where
   runMessage msg t@(WhispersInYourHeadDismay attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AddTreacheryToHand iid $ toId attrs)

@@ -21,7 +21,7 @@ newtype OnTheProwl = OnTheProwl TreacheryAttrs
 onTheProwl :: TreacheryCard OnTheProwl
 onTheProwl = treachery OnTheProwl Cards.onTheProwl
 
-instance TreacheryRunner env => RunMessage OnTheProwl where
+instance RunMessage OnTheProwl where
   runMessage msg t@(OnTheProwl attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mrougarou <- getTheRougarou

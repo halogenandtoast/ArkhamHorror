@@ -30,7 +30,7 @@ import Arkham.Trait qualified as Trait
 newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 theMidnightMasks :: Difficulty -> TheMidnightMasks
 theMidnightMasks difficulty =
@@ -43,13 +43,13 @@ theMidnightMasks difficulty =
     , scenarioDecks = mapFromList [(CultistDeck, [])]
     }
 
-instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), Projection env EnemyAttrs, Query EnemyMatcher env) => HasTokenValue env TheMidnightMasks where
+instance HasTokenValue TheMidnightMasks where
   getTokenValue iid tokenFace (TheMidnightMasks attrs) = case tokenFace of
     Skull | isEasyStandard attrs -> do
       tokenValue' <- selectAgg max EnemyDoom (EnemyWithTrait Trait.Cultist)
       pure $ TokenValue Skull (NegativeModifier tokenValue')
     Skull | isHardExpert attrs -> do
-      doomCount <- unDoomCount <$> getCount ()
+      doomCount <- getDoomCount
       pure $ TokenValue Skull (NegativeModifier doomCount)
     Cultist -> pure $ TokenValue Cultist (NegativeModifier 2)
     Tablet -> pure $ toTokenValue attrs Tablet 3 4
@@ -58,7 +58,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), Projectio
 allCultists :: HashSet CardCode
 allCultists = setFromList ["01137", "01138", "01139", "01140", "01141", "01121b"]
 
-instance ScenarioRunner env => RunMessage TheMidnightMasks where
+instance RunMessage TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs) = case msg of
     Setup -> do
       count' <- getPlayerCount
@@ -158,8 +158,7 @@ instance ScenarioRunner env => RunMessage TheMidnightMasks where
           )
         )
     ResolveToken _ Cultist iid | isEasyStandard attrs -> do
-      closestCultists <- map unClosestEnemyId
-        <$> getSetList (iid, [Trait.Cultist])
+      closestCultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
       s <$ case closestCultists of
         [] -> pure ()
         [x] -> push (PlaceDoom (EnemyTarget x) 1)

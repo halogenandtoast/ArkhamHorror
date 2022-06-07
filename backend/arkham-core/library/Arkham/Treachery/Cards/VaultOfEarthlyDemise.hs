@@ -41,7 +41,7 @@ instance HasCount PlayerCount env () => HasModifiersFor VaultOfEarthlyDemise whe
       pure $ toModifiers attrs [HealthModifier additionalHealth, EnemyFight x]
   getModifiersFor _ _ _ = pure []
 
-instance TreacheryRunner env => RunMessage VaultOfEarthlyDemise where
+instance RunMessage VaultOfEarthlyDemise where
   runMessage msg t@(VaultOfEarthlyDemise attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       actsRemaining <- selectCount $ RemainingActMatcher AnyAct

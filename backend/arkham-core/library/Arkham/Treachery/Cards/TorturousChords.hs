@@ -28,7 +28,7 @@ instance HasModifiersFor TorturousChords where
     | treacheryOn target a = pure $ toModifiers a [IncreaseCostOf AnyCard 1]
   getModifiersFor _ _ _ = pure []
 
-instance TreacheryRunner env => RunMessage TorturousChords where
+instance RunMessage TorturousChords where
   runMessage msg t@(TorturousChords attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       [ RevelationSkillTest iid source SkillWillpower 5

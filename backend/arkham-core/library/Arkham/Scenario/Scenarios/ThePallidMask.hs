@@ -20,6 +20,7 @@ import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
+import Arkham.Helpers.Campaign
 import Arkham.Id
 import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs )
 import Arkham.Label ( unLabel )
@@ -75,26 +76,20 @@ thePallidMask difficulty =
        , "pos0000 pos0100 pos0200 pos0300 pos0400 pos0500 pos0600 pos0700 pos0800 pos0900 pos1000 pos1100 pos1200 pos1300"
        ]
 
-instance HasRecord env () => HasModifiersFor ThePallidMask where
+instance HasModifiersFor ThePallidMask where
   getModifiersFor _ (InvestigatorTarget iid) (ThePallidMask a) = do
     extraXp <- elem (Recorded $ unInvestigatorId iid) <$> getRecordSet ReadActII
     pure $ toModifiers a [XPModifier 2 | extraXp]
   getModifiersFor _ _ _ = pure []
 
-instance HasRecord env ThePallidMask where
+instance HasRecord ThePallidMask where
   hasRecord YouFoundNigelsHome _ = pure True
   hasRecord YouEnteredTheCatacombsOnYourOwn _ = pure True
   hasRecord _ _ = pure False
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
 
-instance
-  ( Query LocationMatcher env
-  , Projection env InvestigatorAttrs
-  , HasCount (Maybe Distance) env (LocationId, LocationId)
-  , HasTokenValue env InvestigatorId
-  )
-  => HasTokenValue env ThePallidMask where
+instance HasTokenValue ThePallidMask where
   getTokenValue iid tokenFace (ThePallidMask attrs) = case tokenFace of
     Skull -> do
       -- -X where X is the number of locations away from the starting location
@@ -132,7 +127,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance ScenarioRunner env => RunMessage ThePallidMask where
+instance RunMessage ThePallidMask where
   runMessage msg s@(ThePallidMask attrs) = case msg of
     SetTokensForScenario -> do
       whenM getIsStandalone $ do

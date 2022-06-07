@@ -39,7 +39,7 @@ instance
       pure $ toModifiers attrs [ CannotCommitCards AnyCard | isBayou ]
   getModifiersFor _ _ _ = pure []
 
-instance TreacheryRunner env => RunMessage RipplesOnTheSurface where
+instance RunMessage RipplesOnTheSurface where
   runMessage msg t@(RipplesOnTheSurface attrs@TreacheryAttrs {..}) =
     case msg of
       Revelation iid source | isSource attrs source ->

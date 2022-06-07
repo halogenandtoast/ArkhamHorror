@@ -10,9 +10,9 @@ import Arkham.Action
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Game.Helpers
-import Arkham.Message
-import Arkham.Query
-import Arkham.Skill.Runner
+import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Message hiding (InvestigatorDamage)
+import Arkham.Projection
 import Arkham.Skill.Runner
 import Arkham.SkillTest
 import Arkham.Target
@@ -24,11 +24,11 @@ newtype TheHomeFront = TheHomeFront SkillAttrs
 theHomeFront :: SkillCard TheHomeFront
 theHomeFront = skill TheHomeFront Cards.theHomeFront
 
-instance SkillRunner env => RunMessage TheHomeFront where
+instance RunMessage TheHomeFront where
   runMessage msg s@(TheHomeFront attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest _ (Just Fight) _ target _ _ | isTarget attrs target -> do
       mSkillTestTarget <- getSkillTestTarget
-      damageCount <- unDamageCount <$> getCount skillOwner
+      damageCount <- field InvestigatorDamage skillOwner
       s <$ case mSkillTestTarget of
         Just (EnemyTarget eid) -> do
           canDamage <- sourceCanDamageEnemy eid (toSource attrs)

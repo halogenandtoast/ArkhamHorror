@@ -21,7 +21,7 @@ somethingInTheDrinks :: TreacheryCard SomethingInTheDrinks
 somethingInTheDrinks =
   treachery SomethingInTheDrinks Cards.somethingInTheDrinks
 
-instance TreacheryRunner env => RunMessage SomethingInTheDrinks where
+instance RunMessage SomethingInTheDrinks where
   runMessage msg t@(SomethingInTheDrinks attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       scenarioLogs <- getSet ()

@@ -6,29 +6,31 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
-import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Investigator
 import Arkham.Id
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Name
 import Arkham.Resolution
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Target
 import Arkham.Token
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 theMiskatonicMuseum :: Difficulty -> TheMiskatonicMuseum
 theMiskatonicMuseum difficulty =
@@ -94,13 +96,7 @@ theMiskatonicMuseumIntro2 False = FlavorText
     \                                                        contained in its pages…”"
   ]
 
-instance
-  ( HasTokenValue env InvestigatorId
-  , HasId CardCode env EnemyId
-  , HasId LocationId env InvestigatorId
-  , HasSet EnemyId env LocationId
-  )
-  => HasTokenValue env TheMiskatonicMuseum where
+instance HasTokenValue TheMiskatonicMuseum where
   getTokenValue iid tokenFace (TheMiskatonicMuseum attrs) = case tokenFace of
     Skull -> do
       huntingHorrorAtYourLocation <-
@@ -135,10 +131,10 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance ScenarioRunner env => RunMessage TheMiskatonicMuseum where
+instance RunMessage TheMiskatonicMuseum where
   runMessage msg s@(TheMiskatonicMuseum attrs@ScenarioAttrs {..}) = case msg of
     SetTokensForScenario -> do
-      standalone <- isNothing <$> getId @(Maybe CampaignId) ()
+      standalone <- getIsStandalone
       s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
     LookAtTopOfDeck _ ScenarioDeckTarget n ->
       case fromJustNote "must be set" (lookup ExhibitDeck scenarioDecks) of
@@ -241,7 +237,7 @@ instance ScenarioRunner env => RunMessage TheMiskatonicMuseum where
     ResolveToken _ Tablet iid | isEasyStandard attrs ->
       s <$ push (InvestigatorPlaceCluesOnLocation iid 1)
     ResolveToken _ Tablet iid | isHardExpert attrs -> do
-      lid <- getId @LocationId iid
+      lid <- getJustLocation iid
       mHuntingHorrorId <- getHuntingHorrorWith $ EnemyAt $ LocationWithId lid
       case mHuntingHorrorId of
         Just huntingHorrorId ->
@@ -254,10 +250,10 @@ instance ScenarioRunner env => RunMessage TheMiskatonicMuseum where
         ElderThing -> push $ ChooseAndDiscardAsset iid AnyAsset
         _ -> pure ()
     FoundEncounterCard iid target ec | isTarget attrs target -> do
-      lid <- getId @LocationId iid
+      lid <- getJustLocation iid
       s <$ push (SpawnEnemyAt (EncounterCard ec) lid)
     FoundEnemyInVoid iid target eid | isTarget attrs target -> do
-      lid <- getId @LocationId iid
+      lid <- getJustLocation iid
       s <$ push (EnemySpawnFromVoid Nothing lid eid)
     ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId

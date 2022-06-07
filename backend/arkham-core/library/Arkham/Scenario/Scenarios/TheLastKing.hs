@@ -5,15 +5,11 @@ module Arkham.Scenario.Scenarios.TheLastKing
 
 import Arkham.Prelude
 
+import Arkham.Act.Attrs ( Field (..) )
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Scenarios.TheLastKing.Story
-import Arkham.Story.Cards qualified as Story
-import Arkham.Act.Attrs (Field(..))
-import Arkham.Investigator.Attrs (Field(..))
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
@@ -22,8 +18,13 @@ import Arkham.Difficulty
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -34,7 +35,9 @@ import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.TheLastKing.Story
 import Arkham.Source
+import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait qualified as Trait
@@ -63,8 +66,8 @@ instance HasTokenValue TheLastKing where
     Cultist -> pure $ toTokenValue attrs Cultist 2 3
     Tablet -> pure $ TokenValue Tablet (NegativeModifier 4)
     ElderThing -> do
-      lid <- getId @LocationId iid
-      shroud <- unShroud <$> getCount lid
+      lid <- getJustLocation iid
+      shroud <- field LocationShroud lid
       pure $ TokenValue ElderThing (NegativeModifier shroud)
     otherFace -> getTokenValue iid otherFace attrs
 
@@ -191,7 +194,7 @@ instance RunMessage TheLastKing where
       s <$ case token of
         Skull -> push (DrawAnotherToken iid)
         Cultist | isHardExpert attrs -> do
-          clueCount <- unClueCount <$> getCount iid
+          clueCount <- field InvestigatorClues iid
           when (clueCount > 0) (push $ InvestigatorPlaceCluesOnLocation iid 1)
 
         Tablet | isHardExpert attrs ->
@@ -217,7 +220,7 @@ instance RunMessage TheLastKing where
               [ TargetLabel target [PlaceDoom target 1] | target <- targets ]
             )
         Cultist | isEasyStandard attrs -> do
-          clueCount <- unClueCount <$> getCount iid
+          clueCount <- field InvestigatorClues iid
           when (clueCount > 0) (push $ InvestigatorPlaceCluesOnLocation iid 1)
         Tablet | isEasyStandard attrs -> push
           (InvestigatorAssignDamage iid (TokenSource token) DamageAny 0 1)
@@ -243,9 +246,12 @@ instance RunMessage TheLastKing where
 
       assetId <- fromJustNote "missing" <$> selectOne (assetIs asset)
       enemyCard <- genCard enemy
-      lid <- getId @LocationId assetId
+      lid <- fieldMap
+        AssetLocation
+        (fromJustNote "must be at a location")
+        assetId
       iids <- selectList $ InvestigatorAt $ LocationWithId lid
-      clues <- unClueCount <$> getCount assetId
+      clues <- field AssetClues assetId
       s <$ pushAll
         ([ InvestigatorAssignDamage
              iid
@@ -284,8 +290,7 @@ instance RunMessage TheLastKing where
         (traverseToSnd (field InvestigatorName))
         investigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
-      clueCounts <- traverse (field ActClues)
-        =<< select AnyAct
+      clueCounts <- traverse (field ActClues) =<< select AnyAct
       vipsSlain <-
         selectListMap toCardCode $ VictoryDisplayCardMatch $ CardWithTrait
           Trait.Lunatic

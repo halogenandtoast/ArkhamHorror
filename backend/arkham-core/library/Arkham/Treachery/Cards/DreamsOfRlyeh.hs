@@ -38,7 +38,7 @@ instance HasAbilities DreamsOfRlyeh where
         1
     ]
 
-instance TreacheryRunner env => RunMessage DreamsOfRlyeh where
+instance RunMessage DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))

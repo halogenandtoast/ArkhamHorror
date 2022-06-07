@@ -6,32 +6,34 @@ module Arkham.Scenario.Scenarios.UndimensionedAndUnseen
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
-import Arkham.Action qualified as Action
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Attrs ( Field (..) )
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
-import Arkham.Id
-import Arkham.Matcher hiding (ChosenRandomLocation, RevealLocation)
+import Arkham.Helpers
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher hiding ( ChosenRandomLocation, RevealLocation )
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding ( Cultist )
 
 newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -134,23 +136,24 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance HasRecord env UndimensionedAndUnseen where
+instance HasRecord UndimensionedAndUnseen where
   hasRecord _ _ = pure False
   hasRecordSet SacrificedToYogSothoth _ = pure [Recorded "02040"]
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
 
-instance (Query EnemyMatcher env, HasTokenValue env InvestigatorId) => HasTokenValue env UndimensionedAndUnseen where
-  getTokenValue iid tokenFace (UndimensionedAndUnseen attrs) = case tokenFace of
-    Skull -> do
-      broodCount <- length <$> getBroodOfYogSothoth
-      pure $ toTokenValue attrs Skull broodCount (2 * broodCount)
-    Cultist -> pure $ TokenValue Cultist NoModifier
-    Tablet -> pure $ TokenValue Tablet ZeroModifier
-    ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
-    otherFace -> getTokenValue iid otherFace attrs
+instance HasTokenValue UndimensionedAndUnseen where
+  getTokenValue iid tokenFace (UndimensionedAndUnseen attrs) =
+    case tokenFace of
+      Skull -> do
+        broodCount <- length <$> getBroodOfYogSothoth
+        pure $ toTokenValue attrs Skull broodCount (2 * broodCount)
+      Cultist -> pure $ TokenValue Cultist NoModifier
+      Tablet -> pure $ TokenValue Tablet ZeroModifier
+      ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
+      otherFace -> getTokenValue iid otherFace attrs
 
-instance ScenarioRunner env => RunMessage UndimensionedAndUnseen where
+instance RunMessage UndimensionedAndUnseen where
   runMessage msg s@(UndimensionedAndUnseen attrs) = case msg of
     SetTokensForScenario -> do
       standalone <- getIsStandalone
@@ -209,7 +212,7 @@ instance ScenarioRunner env => RunMessage UndimensionedAndUnseen where
         investigatorIds
         (\iid -> do
           powderOfIbnGhazi <-
-            find ((== "02219") . toCardCode) . map unDeckCard <$> getList iid
+            find ((== "02219") . toCardCode) <$> fieldMap InvestigatorDeck unDeck iid
           pure $ (iid, ) <$> powderOfIbnGhazi
         )
 
@@ -319,7 +322,7 @@ instance ScenarioRunner env => RunMessage UndimensionedAndUnseen where
           mtarget <- getSkillTestTarget
           case mtarget of
             Just (EnemyTarget eid) -> do
-              enemyCardCode <- getId @CardCode eid
+              enemyCardCode <- field EnemyCardCode eid
               s <$ when
                 (enemyCardCode
                 == "02255"

@@ -748,6 +748,7 @@ library
       Arkham.Helpers.Modifiers
       Arkham.Helpers.Query
       Arkham.Helpers.Scenario
+      Arkham.Helpers.SkillTest
       Arkham.Helpers.Window
       Arkham.Helpers.Xp
       Arkham.History

@@ -1,28 +1,20 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Agenda.Runner (module Arkham.Agenda.Runner, module X) where
+module Arkham.Agenda.Runner
+  ( module X
+  ) where
 
 import Arkham.Prelude
 
-import Arkham.ActId
 import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Attrs as X
 import Arkham.Agenda.Sequence as X
-import Arkham.Act.Attrs (ActAttrs)
-import Arkham.Card
 import Arkham.Classes
-import Arkham.Direction
 import Arkham.Game.Helpers
 import Arkham.Id
-import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message
-import Arkham.Name
-import Arkham.Query
-import Arkham.Projection
-import Arkham.Scenario.Deck
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Trait
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 instance RunMessage AgendaAttrs

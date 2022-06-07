@@ -8,10 +8,10 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Game.Helpers
+import Arkham.Helpers.Investigator
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Runner
 
 newtype StrangeSigns = StrangeSigns TreacheryAttrs
@@ -28,7 +28,7 @@ instance RunMessage StrangeSigns where
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         playerCount <- getPlayerCount
-        lid <- getId iid
+        lid <- getJustLocation iid
         let clueCount = if playerCount == 3 || playerCount == 4 then 2 else 1
         t <$ push (PlaceClues (LocationTarget lid) clueCount)
     _ -> StrangeSigns <$> runMessage msg attrs

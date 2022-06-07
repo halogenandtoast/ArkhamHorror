@@ -18,7 +18,6 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
 
 newtype CursedLuck = CursedLuck TreacheryAttrs
   deriving anyclass IsTreachery

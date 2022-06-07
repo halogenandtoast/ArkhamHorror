@@ -5,9 +5,7 @@ module Arkham.Treachery.Cards.RipplesOnTheSurface
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -15,7 +13,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Treachery.Runner
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -26,16 +24,12 @@ newtype RipplesOnTheSurface = RipplesOnTheSurface TreacheryAttrs
 ripplesOnTheSurface :: TreacheryCard RipplesOnTheSurface
 ripplesOnTheSurface = treachery RipplesOnTheSurface Cards.ripplesOnTheSurface
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , HasSet Trait env LocationId
-  )
-  => HasModifiersFor RipplesOnTheSurface where
+instance HasModifiersFor RipplesOnTheSurface where
   getModifiersFor (SkillTestSource _ _ source _) (InvestigatorTarget iid) (RipplesOnTheSurface attrs)
     | isSource attrs source
     = do
-      locationId <- getId @LocationId iid
-      isBayou <- member Bayou <$> getSet locationId
+      isBayou <- selectAny $ LocationWithTrait Bayou <> LocationWithInvestigator
+        (InvestigatorWithId iid)
       pure $ toModifiers attrs [ CannotCommitCards AnyCard | isBayou ]
   getModifiersFor _ _ _ = pure []
 
@@ -45,14 +39,12 @@ instance RunMessage RipplesOnTheSurface where
       Revelation iid source | isSource attrs source ->
         t <$ push (RevelationSkillTest iid source SkillWillpower 3)
       FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
-        | tid == treacheryId
-        -> t
-          <$ push
-               (InvestigatorAssignDamage
-                 iid
-                 (TreacherySource treacheryId)
-                 DamageAny
-                 0
-                 n
-               )
+        | tid == treacheryId -> do
+          push $ InvestigatorAssignDamage
+            iid
+            (TreacherySource treacheryId)
+            DamageAny
+            0
+            n
+          pure t
       _ -> RipplesOnTheSurface <$> runMessage msg attrs

@@ -5,13 +5,13 @@ module Arkham.Treachery.Cards.OnTheProwl
 
 import Arkham.Prelude
 
-import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Target
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype OnTheProwl = OnTheProwl TreacheryAttrs
@@ -30,7 +30,7 @@ instance RunMessage OnTheProwl where
         Just eid -> do
           locationIds <- setToList <$> nonBayouLocations
           locationsWithClueCounts <- for locationIds
-            $ \lid -> (lid, ) . unClueCount <$> getCount lid
+            $ \lid -> (lid, ) <$> field LocationClues lid
           let
             sortedLocationsWithClueCounts = sortOn snd locationsWithClueCounts
           case sortedLocationsWithClueCounts of
@@ -42,10 +42,7 @@ instance RunMessage OnTheProwl where
               in
                 case matches of
                   [(x, _)] -> push (MoveUntil x (EnemyTarget eid))
-                  xs ->
-                    push
-                      (chooseOne
-                        iid
-                        [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
-                      )
+                  xs -> push $ chooseOne
+                    iid
+                    [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
     _ -> OnTheProwl <$> runMessage msg attrs

@@ -2,14 +2,14 @@ module Arkham.Treachery.Cards.UmordhothsHunger where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Game.Helpers
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype UmordhothsHunger = UmordhothsHunger TreacheryAttrs
@@ -24,11 +24,10 @@ instance RunMessage UmordhothsHunger where
     Revelation _ source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       msgs <- for investigatorIds $ \iid -> do
-        handCount <- unCardCount <$> getCount iid
+        handCount <- fieldMap InvestigatorHand length iid
         pure $ if handCount == 0
           then InvestigatorKilled source iid
           else RandomDiscard iid
-      enemyIds <- getSetList @EnemyId ()
-      t <$ pushAll
-        (msgs <> [ HealDamage (EnemyTarget eid) 1 | eid <- enemyIds ])
+      targets <- selectListMap EnemyTarget AnyEnemy
+      t <$ pushAll (msgs <> [ HealDamage target 1 | target <- targets ])
     _ -> UmordhothsHunger <$> runMessage msg attrs

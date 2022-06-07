@@ -1,7 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Treachery.Runner
-  ( module Arkham.Treachery.Runner
-  , module X
+  ( module X
   ) where
 
 import Arkham.Prelude

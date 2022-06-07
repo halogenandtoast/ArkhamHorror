@@ -6,19 +6,19 @@ module Arkham.Treachery.Cards.UnhallowedCountry
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -29,7 +29,7 @@ newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
 unhallowedCountry :: TreacheryCard UnhallowedCountry
 unhallowedCountry = treachery UnhallowedCountry Cards.unhallowedCountry
 
-instance (HasSet Trait env AssetId, Query InvestigatorMatcher env) => HasModifiersFor UnhallowedCountry where
+instance HasModifiersFor UnhallowedCountry where
   getModifiersFor _ (InvestigatorTarget iid) (UnhallowedCountry attrs) =
     pure $ toModifiers
       attrs
@@ -37,12 +37,12 @@ instance (HasSet Trait env AssetId, Query InvestigatorMatcher env) => HasModifie
       | treacheryOnInvestigator iid attrs
       ]
   getModifiersFor _ (AssetTarget aid) (UnhallowedCountry attrs) = do
-    traits <- getSet @Trait aid
+    isAlly <- fieldMap AssetTraits (member Ally) aid
     miid <- selectAssetController aid
     pure $ case miid of
       Just iid -> toModifiers
         attrs
-        [ Blank | treacheryOnInvestigator iid attrs && Ally `member` traits ]
+        [ Blank | treacheryOnInvestigator iid attrs && isAlly ]
       Nothing -> []
   getModifiersFor _ _ _ = pure []
 

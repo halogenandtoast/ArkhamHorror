@@ -3,14 +3,14 @@ module Arkham.Treachery.Cards.ObscuringFog where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Target
-import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Runner
+import qualified Arkham.Timing as Timing
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -41,13 +41,16 @@ instance HasAbilities ObscuringFog where
 instance RunMessage ObscuringFog where
   runMessage msg t@(ObscuringFog attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      currentLocationId <- getId iid
-      obscuringFogCount <- selectCount $ TreacheryAt (LocationWithId currentLocationId) <> treacheryIs Cards.obscuringFog
-      if obscuringFogCount > 0
-        then pure t
-        else do
-          t <$ push
-            (AttachTreachery treacheryId $ LocationTarget currentLocationId)
+      currentLocationId <- getJustLocation iid
+      withoutObscuringFog <-
+        selectNone
+        $ TreacheryAt (LocationWithId currentLocationId)
+        <> treacheryIs Cards.obscuringFog
+      when withoutObscuringFog
+        $ push
+        $ AttachTreachery treacheryId
+        $ LocationTarget currentLocationId
+      pure t
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       t <$ push (Discard $ toTarget attrs)
     _ -> ObscuringFog <$> runMessage msg attrs

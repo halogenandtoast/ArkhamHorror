@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.PassageIntoTheVeil
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message

@@ -15,7 +15,6 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
 
 newtype OozeAndFilth = OozeAndFilth TreacheryAttrs
   deriving anyclass IsTreachery
@@ -36,7 +35,7 @@ instance HasAbilities OozeAndFilth where
 instance RunMessage OozeAndFilth where
   runMessage msg t@(OozeAndFilth attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      targetAgendas <- map AgendaTarget . setToList <$> getSet ()
+      targetAgendas <- selectListMap AgendaTarget AnyAgenda
       push $ chooseOrRunOne
         iid
         [ AttachTreachery (toId attrs) target | target <- targetAgendas ]

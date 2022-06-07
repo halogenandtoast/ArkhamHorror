@@ -5,9 +5,7 @@ module Arkham.Treachery.Cards.CursedSwamp
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -15,7 +13,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -26,16 +24,12 @@ newtype CursedSwamp = CursedSwamp TreacheryAttrs
 cursedSwamp :: TreacheryCard CursedSwamp
 cursedSwamp = treachery CursedSwamp Cards.cursedSwamp
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , HasSet Trait env LocationId
-  )
-  => HasModifiersFor CursedSwamp where
+instance HasModifiersFor CursedSwamp where
   getModifiersFor (SkillTestSource _ _ source _) (InvestigatorTarget iid) (CursedSwamp attrs)
     | isSource attrs source
     = do
-      locationId <- getId @LocationId iid
-      isBayou <- member Bayou <$> getSet locationId
+      isBayou <- selectAny $ LocationWithTrait Bayou <> LocationWithInvestigator
+        (InvestigatorWithId iid)
       pure $ toModifiers attrs [ CannotCommitCards AnyCard | isBayou ]
   getModifiersFor _ _ _ = pure []
 

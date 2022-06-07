@@ -5,12 +5,12 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Game.Helpers
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Runner
 
 newtype TheZealotsSeal = TheZealotsSeal TreacheryAttrs
@@ -28,7 +28,7 @@ instance RunMessage TheZealotsSeal where
       t <$ for_
         investigatorIds
         (\iid' -> do
-          handCardCount <- unCardCount <$> getCount iid'
+          handCardCount <- fieldMap InvestigatorHand length iid'
           if handCardCount <= 3
             then push
               (InvestigatorAssignDamage iid' (toSource attrs) DamageAny 1 1)

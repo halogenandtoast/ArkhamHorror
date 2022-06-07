@@ -11,10 +11,8 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Runner
 
 newtype VaultOfEarthlyDemise = VaultOfEarthlyDemise TreacheryAttrs
@@ -33,10 +31,10 @@ instance HasAbilities VaultOfEarthlyDemise where
       $ enemyIs Cards.umordhoth
     ]
 
-instance HasCount PlayerCount env () => HasModifiersFor VaultOfEarthlyDemise where
+instance HasModifiersFor VaultOfEarthlyDemise where
   getModifiersFor _ target@(EnemyTarget _) (VaultOfEarthlyDemise attrs)
     | Just target == treacheryAttachedTarget attrs = do
-      let x = fromJustNote "had to be set" (treacheryResources attrs)
+      let x = treacheryResources attrs
       additionalHealth <- getPlayerCountValue (PerPlayer x)
       pure $ toModifiers attrs [HealthModifier additionalHealth, EnemyFight x]
   getModifiersFor _ _ _ = pure []

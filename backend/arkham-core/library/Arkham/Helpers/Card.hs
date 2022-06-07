@@ -7,19 +7,22 @@ import Arkham.Projection
 import Arkham.Matcher
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Classes.Query
+import Arkham.InvestigatorId
+import Arkham.Helpers.Scenario
 import Arkham.Campaign.Attrs ( Field (..) )
 import Arkham.Scenario.Attrs ( Field (..) )
+import Data.HashMap.Strict qualified as HashMap
 
-getCampaignStoryCards :: GameT [PlayerCard]
+getCampaignStoryCards :: GameT (HashMap InvestigatorId [PlayerCard])
 getCampaignStoryCards = do
   mCampaignId <- selectOne TheCampaign
   case mCampaignId of
-    Just campaignId -> fieldMap CampaignStoryCards (concat . toList) campaignId
-    Nothing -> scenarioFieldMap ScenarioStoryCards (concat . toList)
+    Just campaignId -> field CampaignStoryCards campaignId
+    Nothing -> scenarioField ScenarioStoryCards
 
 getCampaignStoryCard :: CardDef -> GameT PlayerCard
 getCampaignStoryCard def = do
-  cards <- getCampaignStoryCards
+  cards <- concat . HashMap.elems <$> getCampaignStoryCards
   pure . fromJustNote "missing card" $ find ((== def) . toCardDef) cards
 
 isDiscardable :: Card -> Bool

@@ -11,20 +11,22 @@ import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Game.Helpers
 import Arkham.InvestigatorId
 import Arkham.Message
+import Arkham.Helpers.Card
+import Arkham.Helpers.Query
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
   deriving anyclass IsCampaign
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 findOwner
-  :: (MonadReader env m, HasList CampaignStoryCard env ())
-  => CardCode
-  -> m (Maybe InvestigatorId)
+  :: CardCode
+  -> GameT (Maybe InvestigatorId)
 findOwner cardCode = do
-  campaignStoryCards <- getList ()
+  campaignStoryCards <- getCampaignStoryCards
   pure
     $ campaignStoryCardInvestigatorId
     <$> find
@@ -38,10 +40,10 @@ theDunwichLegacy difficulty = TheDunwichLegacy $ baseAttrs
   difficulty
   (chaosBagContents difficulty)
 
-instance CampaignRunner env => RunMessage TheDunwichLegacy where
+instance RunMessage TheDunwichLegacy where
   runMessage msg c@(TheDunwichLegacy attrs@CampaignAttrs {..}) = case msg of
     CampaignStep (Just PrologueStep) -> do
-      investigatorIds <- getSetList ()
+      investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       c <$ pushAll
         [ story investigatorIds prologue
@@ -58,7 +60,7 @@ instance CampaignRunner env => RunMessage TheDunwichLegacy where
     CampaignStep (Just (InterludeStep 1 _)) -> do
       unconsciousForSeveralHours <- getHasRecord
         InvestigatorsWereUnconsciousForSeveralHours
-      investigatorIds <- getSetList ()
+      investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       if unconsciousForSeveralHours
         then c <$ pushAll
@@ -78,7 +80,7 @@ instance CampaignRunner env => RunMessage TheDunwichLegacy where
           ]
     CampaignStep (Just (InterludeStep 2 _)) -> do
       sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
-      investigatorIds <- getSetList ()
+      investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       drHenryArmitageUnowned <- isNothing <$> findOwner "02040"
       professorWarrenRiceUnowned <- isNothing <$> findOwner "02061"

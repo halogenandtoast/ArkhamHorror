@@ -9,13 +9,9 @@ import Arkham.Prelude hiding (fold)
 
 import Arkham.Act.Acts
 import Arkham.Act.Attrs
-import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
-import Arkham.Matcher
-import Arkham.Name
-import Arkham.Query
 import Data.Aeson.TH
 
 $(buildEntity "Act")
@@ -28,23 +24,14 @@ instance HasAbilities Act where
 instance RunMessage Act where
   runMessage = $(entityRunMessage "Act")
 
-instance Query LocationMatcher env => HasModifiersFor env Act where
+instance HasModifiersFor Act where
   getModifiersFor = $(entityF2 "Act" "getModifiersFor")
-
-instance HasStep ActStep env Act where
-  getStep = getStep . toAttrs
-
-instance HasCount ClueCount env Act where
-  getCount = pure . ClueCount . fromMaybe 0 . actClues . toAttrs
 
 instance Entity Act where
   type EntityId Act = ActId
   type EntityAttrs Act = ActAttrs
   toId = toId . toAttrs
   toAttrs = $(entityF "Act" "toAttrs")
-
-instance Named Act where
-  toName = toName . toAttrs
 
 instance TargetEntity Act where
   toTarget = toTarget . toAttrs

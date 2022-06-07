@@ -39,6 +39,8 @@ data instance Field ScenarioAttrs :: Type -> Type where
   ScenarioResignedCardCodes :: Field ScenarioAttrs [CardCode]
   ScenarioChaosBag :: Field ScenarioAttrs ChaosBag
   ScenarioSetAsideCards :: Field ScenarioAttrs [Card]
+  ScenarioName :: Field ScenarioAttrs Name
+  ScenarioStoryCards :: Field ScenarioAttrs (HashMap InvestigatorId [PlayerCard])
 
 data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Name

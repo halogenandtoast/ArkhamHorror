@@ -10,12 +10,11 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Card.PlayerCard
-import Arkham.Classes
+import Arkham.Classes.Entity
 import Arkham.Difficulty
-import Arkham.Game.Helpers
 import Arkham.Helpers
 import Arkham.Id
-import Arkham.Investigator
+import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Message
 import Arkham.Name
 import Arkham.Projection

@@ -13,7 +13,7 @@ import Arkham.Message
 import Arkham.Target
 import Arkham.Projection
 import Arkham.Investigator.Attrs ( Field(..) )
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype Mesmerize = Mesmerize TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

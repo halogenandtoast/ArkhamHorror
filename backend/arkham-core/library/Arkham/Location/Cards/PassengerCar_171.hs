@@ -12,13 +12,12 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -38,11 +37,11 @@ passengerCar_171 = locationWith
   []
   (connectsToL .~ setFromList [LeftOf, RightOf])
 
-instance HasCount ClueCount env LocationId => HasModifiersFor PassengerCar_171 where
+instance HasModifiersFor PassengerCar_171 where
   getModifiersFor _ target (PassengerCar_171 l@LocationAttrs {..})
     | isTarget l target = case lookup LeftOf locationDirections of
       Just leftLocation -> do
-        clueCount <- unClueCount <$> getCount leftLocation
+        clueCount <- field LocationClues leftLocation
         pure $ toModifiers l [ Blocked | not locationRevealed && clueCount > 0 ]
       Nothing -> pure []
   getModifiersFor _ _ _ = pure []

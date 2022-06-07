@@ -13,8 +13,10 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Id
+import Arkham.Location.Attrs (Field(..))
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -25,7 +27,7 @@ import Arkham.Token
 newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 returnToTheDevourerBelow :: Difficulty -> ReturnToTheDevourerBelow
 returnToTheDevourerBelow difficulty =
@@ -41,11 +43,11 @@ returnToTheDevourerBelow difficulty =
           ]
         }
 
-instance (HasTokenValue env InvestigatorId, Query EnemyMatcher env) => HasTokenValue env ReturnToTheDevourerBelow where
+instance HasTokenValue ReturnToTheDevourerBelow where
   getTokenValue iid tokenFace (ReturnToTheDevourerBelow theDevourerBelow') =
     getTokenValue iid tokenFace theDevourerBelow'
 
-instance ScenarioRunner env => RunMessage ReturnToTheDevourerBelow where
+instance RunMessage ReturnToTheDevourerBelow where
   runMessage msg s@(ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs))
     = case msg of
       Setup -> do
@@ -135,7 +137,7 @@ instance ScenarioRunner env => RunMessage ReturnToTheDevourerBelow where
           & (agendaStackL . at 1 ?~ agendaDeck)
           )
       CreateEnemyAt card lid _ | toCardCode card == "01157" -> do
-        name <- getName lid
+        name <- field LocationName lid
         if name == "Ritual Site"
           then do
             vaultOfEarthlyDemise <- EncounterCard

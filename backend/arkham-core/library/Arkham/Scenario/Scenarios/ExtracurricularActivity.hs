@@ -5,17 +5,19 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Campaign
 import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
@@ -26,7 +28,7 @@ import Arkham.Token
 newtype ExtracurricularActivity = ExtracurricularActivity ScenarioAttrs
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 extracurricularActivity :: Difficulty -> ExtracurricularActivity
 extracurricularActivity difficulty =
@@ -47,26 +49,27 @@ extracurricularActivityIntro = FlavorText
     \ Professor Rice has only been “missing” for a matter of hours…"
   ]
 
-instance (HasTokenValue env InvestigatorId, HasCount DiscardCount env InvestigatorId) => HasTokenValue env ExtracurricularActivity where
-  getTokenValue iid tokenFace (ExtracurricularActivity attrs) = case tokenFace of
-    Skull -> pure $ toTokenValue attrs Skull 1 2
-    Cultist -> do
-      discardCount <- unDiscardCount <$> getCount iid
-      pure $ TokenValue
-        Cultist
-        (NegativeModifier $ if discardCount >= 10
-          then (if isEasyStandard attrs then 3 else 5)
-          else 1
-        )
-    ElderThing -> pure $ TokenValue Tablet (NegativeModifier 0) -- determined by an effect
-    otherFace -> getTokenValue iid otherFace attrs
+instance HasTokenValue ExtracurricularActivity where
+  getTokenValue iid tokenFace (ExtracurricularActivity attrs) =
+    case tokenFace of
+      Skull -> pure $ toTokenValue attrs Skull 1 2
+      Cultist -> do
+        discardCount <- field InvestigatorDiscard iid
+        pure $ TokenValue
+          Cultist
+          (NegativeModifier $ if discardCount >= 10
+            then (if isEasyStandard attrs then 3 else 5)
+            else 1
+          )
+      ElderThing -> pure $ TokenValue Tablet (NegativeModifier 0) -- determined by an effect
+      otherFace -> getTokenValue iid otherFace attrs
 
-instance ScenarioRunner env => RunMessage ExtracurricularActivity where
+instance RunMessage ExtracurricularActivity where
   runMessage msg s@(ExtracurricularActivity attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
       completedTheHouseAlwaysWins <-
-        elem "02062" . map unCompletedScenarioId <$> getSetList ()
+        elem "02062" <$> getCompletedScenarios
       encounterDeck <- buildEncounterDeckExcluding
         [ Enemies.theExperiment
         , Assets.jazzMulligan

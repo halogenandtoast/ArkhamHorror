@@ -1,6 +1,5 @@
 module Arkham.Skill.Runner
-  ( module Arkham.Skill.Runner
-  , module X
+  ( module X
   ) where
 
 import Arkham.Prelude

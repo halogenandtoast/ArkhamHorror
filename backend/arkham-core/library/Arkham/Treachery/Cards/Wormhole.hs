@@ -12,7 +12,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype Wormhole = Wormhole TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

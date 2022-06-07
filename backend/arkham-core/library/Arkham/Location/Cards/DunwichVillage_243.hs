@@ -6,17 +6,16 @@ module Arkham.Location.Cards.DunwichVillage_243
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (dunwichVillage_243)
-import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.EnemyId
 import Arkham.Exception
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( dunwichVillage_243 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Target
 
 newtype DunwichVillage_243 = DunwichVillage_243 LocationAttrs
@@ -49,7 +48,7 @@ instance HasAbilities DunwichVillage_243 where
 instance RunMessage DunwichVillage_243 where
   runMessage msg l@(DunwichVillage_243 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      broodOfYogSothoth <- getSetList @EnemyId (CardCode "02255")
+      broodOfYogSothoth <- getBroodOfYogSothoth
       when
         (null broodOfYogSothoth)
         (throwIO $ InvalidState "should not have been able to use this ability")

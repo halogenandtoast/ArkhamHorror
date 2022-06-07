@@ -10,11 +10,12 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -46,7 +47,7 @@ instance RunMessage Gallery where
       )
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
-        clueCount <- unClueCount <$> getCount iid
+        clueCount <- field InvestigatorClues iid
         l <$ when
           (clueCount > 0)
           (pushAll [InvestigatorSpendClues iid 1, PlaceClues (toTarget attrs) 1]

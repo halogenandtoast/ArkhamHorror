@@ -61,155 +61,13 @@ import Arkham.Zone qualified as Zone
 import Data.HashMap.Strict qualified as HashMap
 import Data.Monoid
 
-type InvestigatorRunner env
-  = ( HasQueue env
-    , CanBeWeakness env TreacheryId
-    , CanCheckPlayable env
-    , HasTokenValue env ()
-    , Query AssetMatcher env
-    , Query InvestigatorMatcher env
-    , HasCount UsesCount env (AssetId, UseType)
-    , HasList SlotType env AssetId
-    , HasAbilities env
-    , ( HasCount ActionTakenCount env InvestigatorId
-      , HasCount ActionRemainingCount env InvestigatorId
-      , HasCount
-          ActionRemainingCount
-          env
-          (Maybe Action, [Trait], InvestigatorId)
-      , HasCount CardCount env InvestigatorId
-      , HasCount ClueCount env InvestigatorId
-      , HasCount ClueCount env LocationId
-      , HasCount DamageCount env InvestigatorId
-      , HasCount DiscardCount env InvestigatorId
-      , HasCount DoomCount env AssetId
-      , HasCount DoomCount env InvestigatorId
-      , HasCount FightCount env EnemyId
-      , HasCount HealthDamageCount env EnemyId
-      , HasCount HorrorCount env InvestigatorId
-      , HasCount PlayerCount env ()
-      , HasCount RemainingSanity env InvestigatorId
-      , HasCount RemainingSanity env AssetId
-      , HasCount RemainingHealth env AssetId
-      , HasCount ResourceCount env InvestigatorId
-      , HasCount SanityDamageCount env EnemyId
-      , HasCount SetAsideCount env CardCode
-      , HasCount Shroud env LocationId
-      , HasCount SpendableClueCount env InvestigatorId
-      , HasCount SpendableClueCount env ()
-      , HasCount UsesCount env AssetId
-      )
-    , ( HasId (Maybe AssetId) env CardCode
-      , HasId (Maybe LocationId) env (Direction, LocationId)
-      , HasId (Maybe LocationId) env AssetId
-      , HasId (Maybe LocationId) env LocationMatcher
-      , HasId ActiveInvestigatorId env ()
-      , HasId CardCode env AssetId
-      , HasId CardCode env EnemyId
-      , GetCardDef env LocationId
-      , HasId LeadInvestigatorId env ()
-      , HasId LocationId env InvestigatorId
-      )
-    , ( HasList CommittedCard env InvestigatorId
-      , HasList CommittedSkillIcon env InvestigatorId
-      , HasList DeckCard env InvestigatorId
-      , HasList DiscardedEncounterCard env ()
-      , HasList DiscardableHandCard env InvestigatorId
-      , HasList DiscardedPlayerCard env InvestigatorId
-      , HasList HandCard env InvestigatorId
-      , HasList InPlayCard env InvestigatorId
-      , HasList LocationName env ()
-      , HasList UnderneathCard env InvestigatorId
-      , HasList UsedAbility env ()
-      , HasList SetAsideCard env ()
-      )
-    , HasModifiersFor ()
-    , (HasName env AssetId, HasName env LocationId)
-    , HasPlayerCard env AssetId
-    , HasPlayerCard env EventId
-    , HasRecord env ()
-    , ( ( HasSet AccessibleLocationId env LocationId
-        , HasSet ActId env TreacheryCardCode
-        , HasSet ActId env ()
-        , HasSet AgendaId env ()
-        , HasSet AgendaId env TreacheryCardCode
-        , HasSet ClassSymbol env InvestigatorId
-        , HasSet EventId env EventMatcher
-        , HasSet SkillId env SkillMatcher
-        , Query AssetMatcher env
-        , HasSet BlockedLocationId env ()
-        , HasSet ClosestEnemyId env (LocationId, [Trait])
-        , HasSet ClosestLocationId env (LocationId, [Trait])
-        , HasSet ClosestLocationId env (InvestigatorId, LocationMatcher)
-        , HasSet ClosestPathLocationId env (LocationId, LocationId)
-        , HasSet
-            ClosestPathLocationId
-            env
-            (LocationId, LocationId, HashMap LocationId [LocationId])
-        , HasSet CommittedCardCode env ()
-        , HasSet CommittedCardId env InvestigatorId
-        , HasSet CommittedSkillId env InvestigatorId
-        , HasSet ConnectedLocationId env LocationId
-        , HasSet EmptyLocationId env ()
-        , HasSet EnemyAccessibleLocationId env (EnemyId, LocationId)
-        , HasSet EnemyId env CardCode
-        , HasSet EnemyId env InvestigatorId
-        , HasSet EnemyId env LocationId
-        , HasSet EnemyId env Trait
-        , HasSet EnemyId env ()
-        , HasSet EnemyId env ([Trait], LocationId)
-        , HasSet EnemyId env EnemyMatcher
-        , HasSet EventId env ()
-        , HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait)
-        , HasSet FarthestLocationId env InvestigatorId
-        , HasSet FarthestLocationId env (InvestigatorId, LocationMatcher)
-        , HasSet FarthestLocationId env [InvestigatorId]
-        , HasSet FightableEnemyId env (InvestigatorId, Source)
-        , HasSet HandCardId env (InvestigatorId, CardType)
-        , HasSet HandCardId env InvestigatorId
-        , HasSet InScenarioInvestigatorId env ()
-        )
-      , ( HasSet InvestigatorId env ()
-        , HasSet InvestigatorId env EnemyId
-        , HasSet InvestigatorId env LocationId
-        , HasSet InvestigatorId env TreacheryCardCode
-        , HasSet InvestigatorId env (HashSet LocationId)
-        , HasSet Keyword env EnemyId
-        , HasSet LocationId env LocationMatcher
-        , HasSet LocationId env TreacheryCardCode
-        , HasSet LocationId env (HashSet LocationSymbol)
-        , HasSet LocationId env [Trait]
-        , HasSet LocationId env ()
-        , HasSet RevealedLocationId env ()
-        , HasSet ScenarioLogKey env ()
-        , HasSet Trait env AssetId
-        , HasSet Trait env EnemyId
-        , HasSet Trait env LocationId
-        , HasSet Trait env Source
-        , HasSet Trait env (InvestigatorId, CardId)
-        , HasSet TreacheryId env LocationId
-        , HasSet UnrevealedLocationId env ()
-        , HasSet UnrevealedLocationId env LocationMatcher
-        )
-      )
-    , (HasStep ActStep env (), HasStep AgendaStep env ())
-    , HasSkillTest env
-    , GetCardDef env EnemyId
-    )
-
-instance InvestigatorRunner env => RunMessage InvestigatorAttrs where
+instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
 
 runInvestigatorMessage
-  :: ( InvestigatorRunner env
-     , MonadReader env m
-     , MonadRandom m
-     , MonadIO m
-     , HasGameLogger env
-     )
-  => Message
+  :: Message
   -> InvestigatorAttrs
-  -> m InvestigatorAttrs
+  -> GameT InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ResetGame ->
     pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) ())
@@ -2118,7 +1976,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   _ -> pure a
 
 getFacingDefeat
-  :: (MonadReader env m, HasModifiersFor env ()) => InvestigatorAttrs -> m Bool
+  :: InvestigatorAttrs -> GameT Bool
 getFacingDefeat a@InvestigatorAttrs {..} = do
   modifiedHealth <- getModifiedHealth a
   modifiedSanity <- getModifiedSanity a

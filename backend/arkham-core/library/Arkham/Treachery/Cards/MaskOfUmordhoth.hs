@@ -12,7 +12,7 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -23,7 +23,7 @@ newtype MaskOfUmordhoth = MaskOfUmordhoth TreacheryAttrs
 maskOfUmordhoth :: TreacheryCard MaskOfUmordhoth
 maskOfUmordhoth = treachery MaskOfUmordhoth Cards.maskOfUmordhoth
 
-instance Query EnemyMatcher env => HasModifiersFor MaskOfUmordhoth where
+instance HasModifiersFor MaskOfUmordhoth where
   getModifiersFor _ (EnemyTarget eid) (MaskOfUmordhoth attrs)
     | treacheryOnEnemy eid attrs = do
       isUnique <- member eid <$> select UniqueEnemy

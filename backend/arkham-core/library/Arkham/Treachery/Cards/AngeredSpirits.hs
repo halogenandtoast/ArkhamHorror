@@ -18,7 +18,7 @@ import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype AngeredSpirits = AngeredSpirits TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)

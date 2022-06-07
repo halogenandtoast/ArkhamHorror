@@ -16,7 +16,7 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype Metadata = Metadata { hasUsedAbility :: Bool }

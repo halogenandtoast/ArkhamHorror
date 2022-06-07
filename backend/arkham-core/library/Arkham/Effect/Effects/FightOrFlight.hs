@@ -8,10 +8,10 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Id
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -22,16 +22,16 @@ newtype FightOrFlight = FightOrFlight EffectAttrs
 fightOrFlight :: EffectArgs -> FightOrFlight
 fightOrFlight = FightOrFlight . uncurry4 (baseAttrs "03155")
 
-instance HasCount HorrorCount env InvestigatorId => HasModifiersFor FightOrFlight where
+instance HasModifiersFor FightOrFlight where
   getModifiersFor _ target@(InvestigatorTarget iid) (FightOrFlight attrs)
     | effectTarget attrs == target = do
-      horror <- unHorrorCount <$> getCount iid
+      horror <- field InvestigatorHorror iid
       pure $ toModifiers
         attrs
         [SkillModifier SkillCombat horror, SkillModifier SkillAgility horror]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage FightOrFlight where
+instance RunMessage FightOrFlight where
   runMessage msg e@(FightOrFlight attrs) = case msg of
     EndRound -> e <$ push (DisableEffect $ toId attrs)
     _ -> FightOrFlight <$> runMessage msg attrs

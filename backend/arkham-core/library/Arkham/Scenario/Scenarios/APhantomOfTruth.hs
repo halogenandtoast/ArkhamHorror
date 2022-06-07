@@ -10,6 +10,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Scenarios.APhantomOfTruth.Helpers
 import Arkham.Scenarios.APhantomOfTruth.Story
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.CampaignLogKey
@@ -18,18 +19,18 @@ import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.Distance
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Source
@@ -56,15 +57,15 @@ aPhantomOfTruth difficulty =
          , ".            montparnasse        .                ."
          ]
 
-instance HasRecord env APhantomOfTruth where
+instance HasRecord APhantomOfTruth where
   hasRecord _ _ = pure False
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
 
-instance (HasCount DoomCount env (), HasTokenValue env InvestigatorId) => HasTokenValue env APhantomOfTruth where
+instance HasTokenValue APhantomOfTruth where
   getTokenValue iid tokenFace (APhantomOfTruth attrs) = case tokenFace of
     Skull -> do
-      doom <- unDoomCount <$> getCount ()
+      doom <- getDoomCount
       pure $ toTokenValue attrs Skull (min 5 doom) doom
     Cultist -> pure $ TokenValue Cultist (NegativeModifier 2)
     Tablet -> pure $ toTokenValue attrs Tablet 3 4
@@ -91,7 +92,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-gatherTheMidnightMasks :: MonadRandom m => Int -> Int -> m [EncounterCard]
+gatherTheMidnightMasks :: Int -> Int -> GameT [EncounterCard]
 gatherTheMidnightMasks conviction doubt =
   traverse
     genEncounterCard
@@ -104,39 +105,34 @@ gatherTheMidnightMasks conviction doubt =
         else [Treacheries.falseLead, Treacheries.falseLead]
     )
 
-cultistEffect ::
-  forall m env.
-  ( HasList (InvestigatorId, Distance) env EnemyMatcher
-  , MonadReader env m
-  , HasId LeadInvestigatorId env ()
-  , Query EnemyMatcher env
-  , HasQueue env
-  , MonadIO m
-  ) =>
-  m ()
+cultistEffect :: GameT ()
 cultistEffect = do
   leadInvestigatorId <- getLeadInvestigatorId
   byakhee <- selectList (EnemyWithTrait Byakhee <> UnengagedEnemy)
-  byakheePairs <- traverse (traverseToSnd investigatorsNearestToByakhee) byakhee
+  byakheePairs :: [(EnemyId, (Distance, [InvestigatorId]))] <- traverse (traverseToSnd investigatorsNearestToEnemy) byakhee
+  let minDistance :: Int =
+        fromJustNote "error" . minimumMay $ map (unDistance . fst . snd) byakheePairs
+  let
+    hset = concatMap (snd . snd) $ filter ((== minDistance) . unDistance . fst . snd) byakheePairs
   push $
     chooseOneAtATime
       leadInvestigatorId
       [ TargetLabel
         (EnemyTarget eid)
-        (moveTowardMessages leadInvestigatorId eid is)
-      | (eid, is) <- byakheePairs
+        (moveTowardMessages leadInvestigatorId eid hset)
+      | (eid, _) <- byakheePairs
       ]
  where
-  investigatorsNearestToByakhee :: EnemyId -> m (HashSet InvestigatorId)
-  investigatorsNearestToByakhee eid = do
-    mappings :: [(InvestigatorId, Distance)] <- getList (EnemyWithId eid)
-    let minDistance :: Int =
-          fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
-    pure . setFromList . map fst $
-      filter
-        ((== minDistance) . unDistance . snd)
-        mappings
-  moveTowardMessages leadId eid hset = case toList hset of
+  -- investigatorsNearestToByakhee :: EnemyId -> GameT (HashSet InvestigatorId)
+  -- investigatorsNearestToByakhee eid = do
+  --   mappings :: [(InvestigatorId, Distance)] <- getList (EnemyWithId eid)
+  --   let minDistance :: Int =
+  --         fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
+  --   pure . setFromList . map fst $
+  --     filter
+  --       ((== minDistance) . unDistance . snd)
+  --       mappings
+  moveTowardMessages leadId eid hset = case hset of
     [] -> []
     [x] -> [moveToward eid x]
     xs ->
@@ -149,7 +145,7 @@ cultistEffect = do
       (EnemyTarget eid)
       (LocationWithInvestigator $ InvestigatorWithId x)
 
-instance ScenarioRunner env => RunMessage APhantomOfTruth where
+instance RunMessage APhantomOfTruth where
   runMessage msg s@(APhantomOfTruth attrs) = case msg of
     SetTokensForScenario -> do
       whenM getIsStandalone $ do

@@ -12,7 +12,7 @@ import Arkham.Cost
 import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Skill.Attrs
+import Arkham.Skill.Runner
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.SkillType

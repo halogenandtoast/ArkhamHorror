@@ -24,17 +24,21 @@ getTheOrganist = selectJust $ EnemyWithTitle "The Organist"
 investigatorsNearestToTheOrganist :: GameT (Distance, [InvestigatorId])
 investigatorsNearestToTheOrganist = do
   theOrganist <- getTheOrganist
-  organistLocation <- fieldMap
+  investigatorsNearestToEnemy theOrganist
+
+investigatorsNearestToEnemy :: EnemyId -> GameT (Distance, [InvestigatorId])
+investigatorsNearestToEnemy eid = do
+  enemyLocation <- fieldMap
     EnemyLocation
     (fromJustNote "must be at a location")
-    theOrganist
+    eid
   investigatorIdWithLocationId <-
     fmap catMaybes
     . traverse (\i -> fmap (i, ) <$> field InvestigatorLocation i)
     =<< selectList UneliminatedInvestigator
 
   mappings <- catMaybes <$> traverse
-    (\(i, l) -> fmap (i, ) <$> getDistance organistLocation l)
+    (\(i, l) -> fmap (i, ) <$> getDistance enemyLocation l)
     investigatorIdWithLocationId
 
   let

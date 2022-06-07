@@ -9,7 +9,7 @@ import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype FalseLead = FalseLead TreacheryAttrs

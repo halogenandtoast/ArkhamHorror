@@ -9,9 +9,10 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
-import Arkham.Id
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Message
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window(..))
@@ -39,11 +40,11 @@ isTakeDamage attrs window = case effectTarget attrs of
       eid == eid' && windowTiming window == Timing.After
     _ -> False
 
-instance (HasList DiscardedPlayerCard env InvestigatorId, HasQueue env) => RunMessage NathanielCho where
+instance RunMessage NathanielCho where
   runMessage msg e@(NathanielCho attrs) = case msg of
     PassedSkillTest iid _ _ _ _ _
       | effectTarget attrs == InvestigatorTarget iid -> do
-        discardedCards <- map unDiscardedPlayerCard <$> getList iid
+        discardedCards <- field InvestigatorDiscard iid
         let events = filter ((== EventType) . toCardType) discardedCards
         if null events
           then e <$ push (DisableEffect $ toId attrs)

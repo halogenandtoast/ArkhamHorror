@@ -46,6 +46,7 @@ data instance Field LocationAttrs :: Type -> Type where
   LocationShroud :: Field LocationAttrs Int
   LocationTraits :: Field LocationAttrs (HashSet Trait)
   LocationUnrevealedName :: Field LocationAttrs Name
+  LocationName :: Field LocationAttrs Name
   LocationConnectedMatchers :: Field LocationAttrs [LocationMatcher]
   LocationRevealedConnectedMatchers :: Field LocationAttrs [LocationMatcher]
   LocationRevealed :: Field LocationAttrs Bool

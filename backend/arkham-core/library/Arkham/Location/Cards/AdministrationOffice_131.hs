@@ -8,11 +8,11 @@ import Arkham.Prelude
 import Arkham.Location.Cards qualified as Cards (administrationOffice_131)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.InvestigatorId
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Source
 
 newtype AdministrationOffice_131 = AdministrationOffice_131 LocationAttrs
@@ -28,11 +28,11 @@ administrationOffice_131 = location
   Triangle
   [Square]
 
-instance HasCount CardCount env InvestigatorId => HasModifiersFor AdministrationOffice_131 where
+instance HasModifiersFor AdministrationOffice_131 where
   getModifiersFor (InvestigatorSource iid) target (AdministrationOffice_131 attrs)
     | isTarget attrs target
     = do
-      cardsInHand <- unCardCount <$> getCount iid
+      cardsInHand <- fieldMap InvestigatorHand length iid
       pure $ toModifiers attrs [ CannotInvestigate | cardsInHand <= 4 ]
   getModifiersFor _ _ _ = pure []
 

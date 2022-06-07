@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype MarkedByTheSign = MarkedByTheSign TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

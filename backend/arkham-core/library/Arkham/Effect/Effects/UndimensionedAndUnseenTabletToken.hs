@@ -6,16 +6,16 @@ module Arkham.Effect.Effects.UndimensionedAndUnseenTabletToken
 import Arkham.Prelude
 
 
-import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Classes
 import Arkham.Difficulty
-import Arkham.Effect.Runner
 import Arkham.Effect.Helpers
-import Arkham.EnemyId
-import Arkham.Matcher
+import Arkham.Effect.Runner
+import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
+import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Target
 import Arkham.Token
 
@@ -28,10 +28,10 @@ undimensionedAndUnseenTabletToken
 undimensionedAndUnseenTabletToken =
   UndimensionedAndUnseenTabletToken . uncurry4 (baseAttrs "02236")
 
-instance HasId Difficulty env () => HasModifiersFor UndimensionedAndUnseenTabletToken where
+instance HasModifiersFor UndimensionedAndUnseenTabletToken where
   getModifiersFor _ (TokenTarget (Token _ Tablet)) (UndimensionedAndUnseenTabletToken attrs)
     = do
-      difficulty <- getId @Difficulty ()
+      difficulty <- scenarioField ScenarioDifficulty
       pure
         [ toModifier
             attrs
@@ -42,20 +42,14 @@ instance HasId Difficulty env () => HasModifiersFor UndimensionedAndUnseenTablet
         ]
   getModifiersFor _ _ _ = pure []
 
-instance
-  ( HasId Difficulty env ()
-  , HasQueue env
-  , Query EnemyMatcher env
-  , HasCount ClueCount env EnemyId
-  )
-  => RunMessage UndimensionedAndUnseenTabletToken where
+instance RunMessage UndimensionedAndUnseenTabletToken where
   runMessage msg e@(UndimensionedAndUnseenTabletToken attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs -> do
       broodOfYogSothoth <- getBroodOfYogSothoth
       broodOfYogSothothWithClues <- filterM
-        (fmap ((> 0) . unClueCount) . getCount)
+        (fieldMap EnemyClues (> 0))
         broodOfYogSothoth
-      difficulty <- getId @Difficulty ()
+      difficulty <- scenarioField ScenarioDifficulty
       let
         result = if difficulty `elem` [Easy, Standard]
           then "token is -4"
@@ -67,8 +61,8 @@ instance
           $ Label
               ("Do not remove clues from Brood of Yog-Sothoth and " <> result)
               []
-          : [ TargetLabel
-                (EnemyTarget enemyId)
+          : [ targetLabel
+                enemyId
                 [ RemoveAllClues (EnemyTarget enemyId)
                 , DisableEffect $ effectId attrs
                 ]

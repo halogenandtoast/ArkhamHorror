@@ -9,7 +9,7 @@ import Arkham.EffectMetadata
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Skill.Attrs
+import Arkham.Skill.Runner
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Target
 

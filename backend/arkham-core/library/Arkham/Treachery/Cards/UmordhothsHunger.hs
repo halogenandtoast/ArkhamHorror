@@ -9,7 +9,7 @@ import Arkham.Id
 import Arkham.Message
 import Arkham.Query
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Runner
 
 newtype UmordhothsHunger = UmordhothsHunger TreacheryAttrs

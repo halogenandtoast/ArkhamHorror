@@ -7,7 +7,7 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.Query
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Runner
 
 newtype MaskedHorrors = MaskedHorrors TreacheryAttrs

@@ -50,7 +50,6 @@ instance RunMessage CongregationalChurch_208 where
         <> CardWithTrait Humanoid
         )
     FoundEncounterCard _iid target card | isTarget attrs target -> do
-      villageCommonsId <- fromJustNote "missing village commons"
-        <$> getId (LocationWithTitle "Village Commons")
+      villageCommonsId <- selectJust $ LocationWithTitle "Village Commons"
       l <$ push (SpawnEnemyAt (EncounterCard card) villageCommonsId)
     _ -> CongregationalChurch_208 <$> runMessage msg attrs

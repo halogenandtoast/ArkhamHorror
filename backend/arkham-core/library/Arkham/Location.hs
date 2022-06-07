@@ -47,18 +47,7 @@ instance IsCard Location where
 instance HasAbilities Location where
   getAbilities = $(entityF "Location" "getAbilities")
 
-instance
-  ( HasPhase env
-  , HasSkillTest env
-  , HasCount CardCount env InvestigatorId
-  , HasCount ClueCount env LocationId
-  , HasCount ResourceCount env InvestigatorId
-  , HasCount HorrorCount env InvestigatorId
-  , Query AssetMatcher env
-  , Query EnemyMatcher env
-  , Query LocationMatcher env
-  )
-  => HasModifiersFor Location where
+instance HasModifiersFor Location where
   getModifiersFor = $(entityF2 "Location" "getModifiersFor")
 
 instance RunMessage Location where

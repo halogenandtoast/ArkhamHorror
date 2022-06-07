@@ -12,7 +12,7 @@ import Arkham.DamageEffect
 import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.Query
-import Arkham.Skill.Attrs
+import Arkham.Skill.Runner
 import Arkham.Skill.Runner
 import Arkham.SkillTest
 import Arkham.Target

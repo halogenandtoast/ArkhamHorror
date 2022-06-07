@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.ScenarioLogKey
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Runner
 
 newtype SomethingInTheDrinks = SomethingInTheDrinks TreacheryAttrs

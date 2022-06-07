@@ -12,12 +12,11 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 
 newtype ParlorCar = ParlorCar LocationAttrs
   deriving anyclass IsLocation
@@ -33,11 +32,11 @@ parlorCar = locationWith
   []
   (connectsToL .~ setFromList [LeftOf, RightOf])
 
-instance HasCount ClueCount env LocationId => HasModifiersFor ParlorCar where
+instance HasModifiersFor ParlorCar where
   getModifiersFor _ target (ParlorCar l@LocationAttrs {..})
     | isTarget l target = case lookup LeftOf locationDirections of
       Just leftLocation -> do
-        clueCount <- unClueCount <$> getCount leftLocation
+        clueCount <- field LocationClues leftLocation
         pure $ toModifiers
           l
           (CannotInvestigate

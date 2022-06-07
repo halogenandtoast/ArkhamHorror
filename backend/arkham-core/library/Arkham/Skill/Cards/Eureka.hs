@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Skill.Attrs
+import Arkham.Skill.Runner
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Target
 

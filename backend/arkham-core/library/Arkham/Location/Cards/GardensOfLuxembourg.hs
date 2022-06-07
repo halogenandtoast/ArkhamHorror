@@ -31,11 +31,11 @@ gardensOfLuxembourg = location
 instance HasAbilities GardensOfLuxembourg where
   getAbilities (GardensOfLuxembourg attrs) = getAbilities attrs
 
-instance Query EnemyMatcher env => HasModifiersFor GardensOfLuxembourg where
+instance HasModifiersFor GardensOfLuxembourg where
   getModifiersFor _ (LocationTarget lid) (GardensOfLuxembourg attrs)
     | toId attrs == lid && locationRevealed attrs= do
       byakheeIsMoving <-
-        isJust <$> selectOne (MovingEnemy <> EnemyWithTrait Byakhee <> EnemyAt (LocationWithId lid))
+        selectAny (MovingEnemy <> EnemyWithTrait Byakhee <> EnemyAt (LocationWithId lid))
       pure $ toModifiers
         attrs
         [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId attrs)

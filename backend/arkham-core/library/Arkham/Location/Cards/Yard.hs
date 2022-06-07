@@ -12,12 +12,12 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Id
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest
 import Arkham.Source
@@ -30,17 +30,13 @@ newtype Yard = Yard LocationAttrs
 yard :: LocationCard Yard
 yard = location Yard Cards.yard 1 (PerPlayer 1) Diamond [Circle, Plus]
 
-instance
-  ( HasCount HorrorCount env InvestigatorId
-  , HasSkillTest env
-  )
-  => HasModifiersFor Yard where
+instance HasModifiersFor Yard where
   getModifiersFor _ (LocationTarget lid) (Yard attrs) | lid == toId attrs = do
     mskillTestSource <- getSkillTestSource
     case mskillTestSource of
       Just (SkillTestSource iid _ source (Just Action.Investigate))
         | isSource attrs source -> do
-          horror <- unHorrorCount <$> getCount iid
+          horror <- field InvestigatorHorror iid
           pure $ toModifiers
             attrs
             [ ShroudModifier horror | locationRevealed attrs ]

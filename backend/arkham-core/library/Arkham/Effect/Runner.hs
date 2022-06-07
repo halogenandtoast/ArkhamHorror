@@ -7,6 +7,7 @@ import Arkham.Effect.Window as X
 import Arkham.EffectMetadata as X
 
 import Arkham.Classes.RunMessage
+import Arkham.Classes.HasQueue
 import Arkham.Source
 import Arkham.Message
 

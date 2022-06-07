@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Message hiding (InvestigatorEliminated)
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)

@@ -6,16 +6,17 @@ module Arkham.Location.Cards.DimensionalDoorway
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (dimensionalDoorway)
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Cards qualified as Cards ( dimensionalDoorway )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (EndTurn)
-import Arkham.Query
+import Arkham.Message hiding ( EndTurn )
+import Arkham.Projection
+import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
@@ -34,17 +35,17 @@ dimensionalDoorway = location
 
 instance HasAbilities DimensionalDoorway where
   getAbilities (DimensionalDoorway attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds
-          Timing.When
-          You
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds
+            Timing.When
+            You
+        | locationRevealed attrs
+        ]
 
 instance RunMessage DimensionalDoorway where
   runMessage msg l@(DimensionalDoorway attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      encounterDiscard <- map unDiscardedEncounterCard <$> getList ()
+      encounterDiscard <- scenarioField ScenarioDiscard
       let
         mHexCard = find (member Hex . toTraits) encounterDiscard
         revelationMsgs = case mHexCard of
@@ -56,7 +57,7 @@ instance RunMessage DimensionalDoorway where
       pushAll revelationMsgs
       DimensionalDoorway <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      resourceCount <- unResourceCount <$> getCount iid
+      resourceCount <- field InvestigatorResources iid
       if resourceCount >= 2
         then l <$ push
           (chooseOne

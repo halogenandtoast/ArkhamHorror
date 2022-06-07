@@ -7,7 +7,7 @@ import Arkham.Classes
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Investigator.Attrs
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype Amnesia = Amnesia TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

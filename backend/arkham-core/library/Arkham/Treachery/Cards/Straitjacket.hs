@@ -14,7 +14,7 @@ import Arkham.Matcher hiding (Discarded)
 import Arkham.Message
 import Arkham.Slot
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype Straitjacket = Straitjacket TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

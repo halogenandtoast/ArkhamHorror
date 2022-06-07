@@ -10,7 +10,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Matcher hiding (ChosenRandomLocation)
 import Arkham.Message
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype TheCreaturesTracks = TheCreaturesTracks TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

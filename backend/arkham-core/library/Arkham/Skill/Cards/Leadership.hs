@@ -10,7 +10,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Modifier
-import Arkham.Skill.Attrs
+import Arkham.Skill.Runner
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target

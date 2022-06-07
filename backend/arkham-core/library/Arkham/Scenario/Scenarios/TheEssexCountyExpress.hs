@@ -18,7 +18,10 @@ import Arkham.Direction
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Helpers.Card
+import Arkham.Helpers.Scenario
 import Arkham.Id
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Query
@@ -34,7 +37,7 @@ import Arkham.Trait qualified as Trait
 newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 theEssexCountyExpress :: Difficulty -> TheEssexCountyExpress
 theEssexCountyExpress difficulty =
@@ -81,11 +84,7 @@ theEssexCountyExpressIntro = FlavorText
     \ violent halt, and you hear a rattling noise behind you…"
   ]
 
-instance
-  ( HasTokenValue env InvestigatorId
-  , HasStep AgendaStep env ()
-  )
-  => HasTokenValue env TheEssexCountyExpress where
+instance HasTokenValue TheEssexCountyExpress where
   getTokenValue iid tokenFace (TheEssexCountyExpress attrs) = case tokenFace of
     Skull -> do
       step <- unAgendaStep <$> getStep ()
@@ -117,17 +116,11 @@ standaloneTokens =
   , ElderSign
   ]
 
-investigatorDefeat
-  :: ( MonadReader env m
-     , HasSet DefeatedInvestigatorId env ()
-     , HasId LeadInvestigatorId env ()
-     , HasList CampaignStoryCard env ()
-     )
-  => m [Message]
+investigatorDefeat :: GameT [Message]
 investigatorDefeat = do
-  campaignStoryCards <- getList ()
+  campaignStoryCards <- getCampaignStoryCards
   leadInvestigatorId <- getLeadInvestigatorId
-  defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
+  defeatedInvestigatorIds <- selectList DefeatedInvestigator
   let
     findOwner cardCode =
       (\iid -> iid <$ guard (iid `elem` defeatedInvestigatorIds))
@@ -185,11 +178,11 @@ investigatorDefeat = do
          | iid <- defeatedInvestigatorIds
          ]
 
-instance ScenarioRunner env => RunMessage TheEssexCountyExpress where
+instance RunMessage TheEssexCountyExpress where
   runMessage msg s@(TheEssexCountyExpress attrs@ScenarioAttrs {..}) =
     case msg of
       SetTokensForScenario -> do
-        standalone <- isNothing <$> getId @(Maybe CampaignId) ()
+        standalone <- getIsStandalone
         s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
       Setup -> do
         investigatorIds <- getInvestigatorIds

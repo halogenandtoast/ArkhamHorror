@@ -16,10 +16,13 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Game.Helpers
+import Arkham.Helpers.Investigator
 import Arkham.Id
+import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Location.Attrs (Field(..))
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
@@ -42,19 +45,15 @@ curtainCall difficulty =
        , "lobbyDoorway2 .     .       .         backstageDoorway2"
        ]
 
-instance HasRecord env CurtainCall where
+instance HasRecord CurtainCall where
   hasRecord _ _ = pure False
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
 
-instance
-  ( HasTokenValue env InvestigatorId
-  , HasCount HorrorCount env InvestigatorId
-  )
-  => HasTokenValue env CurtainCall where
+instance HasTokenValue CurtainCall where
   getTokenValue iid tokenFace (CurtainCall attrs) = case tokenFace of
     Skull -> do
-      horrorCount <- unHorrorCount <$> getCount iid
+      horrorCount <- field InvestigatorHorror iid
       let easyStandardModifier = if horrorCount >= 3 then 3 else 1
       let hardExpertModifier = max 1 horrorCount
       pure $ toTokenValue attrs Skull easyStandardModifier hardExpertModifier
@@ -62,7 +61,7 @@ instance
       pure $ toTokenValue attrs face 4 5
     otherFace -> getTokenValue iid otherFace attrs
 
-instance ScenarioRunner env => RunMessage CurtainCall where
+instance RunMessage CurtainCall where
   runMessage msg s@(CurtainCall attrs) = case msg of
     Setup -> do
       encounterDeck <- buildEncounterDeckExcluding
@@ -181,8 +180,8 @@ instance ScenarioRunner env => RunMessage CurtainCall where
         _ -> error "Invalid resolution"
     ResolveToken _ tokenFace iid
       | tokenFace `elem` [Cultist, Tablet, ElderThing] -> do
-        lid <- getId iid
-        horrorCount <- unHorrorCount <$> getCount lid
+        lid <- getJustLocation iid
+        horrorCount <- field LocationHorror lid
         s <$ push
           (if horrorCount > 0
             then InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1

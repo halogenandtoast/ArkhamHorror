@@ -11,10 +11,11 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.Target
@@ -43,7 +44,7 @@ instance HasAbilities PatientConfinementFamiliarCell where
 instance RunMessage PatientConfinementFamiliarCell where
   runMessage msg l@(PatientConfinementFamiliarCell attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      horror <- unHorrorCount <$> getCount iid
+      horror <- field InvestigatorHorror iid
       push $ BeginSkillTest
         iid
         source

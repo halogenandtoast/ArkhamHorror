@@ -16,7 +16,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheDevourerBelow.Story
@@ -28,7 +27,7 @@ import Arkham.Trait hiding ( Cultist )
 newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 theDevourerBelow :: Difficulty -> TheDevourerBelow
 theDevourerBelow difficulty =
@@ -42,7 +41,7 @@ theDevourerBelow difficulty =
       ]
     }
 
-instance (HasTokenValue env InvestigatorId, Query EnemyMatcher env) => HasTokenValue env TheDevourerBelow where
+instance HasTokenValue TheDevourerBelow where
   getTokenValue iid tokenFace (TheDevourerBelow attrs) = case tokenFace of
     Skull -> do
       monsterCount <- selectCount $ EnemyWithTrait Monster
@@ -60,7 +59,7 @@ agendaDeck :: [CardDef]
 agendaDeck =
   [Agendas.theArkhamWoods, Agendas.theRitualBegins, Agendas.vengeanceAwaits]
 
-instance ScenarioRunner env => RunMessage TheDevourerBelow where
+instance RunMessage TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
@@ -143,7 +142,7 @@ instance ScenarioRunner env => RunMessage TheDevourerBelow where
         )
     ResolveToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
-      closestEnemyIds <- map unClosestEnemyId <$> getSetList iid
+      closestEnemyIds <- selectList $ NearestEnemy AnyEnemy
       case closestEnemyIds of
         [] -> pure ()
         [x] -> push (PlaceDoom (EnemyTarget x) doom)

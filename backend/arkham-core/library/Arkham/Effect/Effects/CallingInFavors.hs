@@ -35,7 +35,7 @@ instance HasModifiersFor CallingInFavors where
   getModifiersFor _ _ _ = pure []
 
 
-instance HasQueue env => RunMessage CallingInFavors where
+instance RunMessage CallingInFavors where
   runMessage msg e@(CallingInFavors attrs) = case msg of
     Discard (EventTarget eid) | EventSource eid == effectSource attrs ->
       e <$ push (DisableEffect $ toId attrs)

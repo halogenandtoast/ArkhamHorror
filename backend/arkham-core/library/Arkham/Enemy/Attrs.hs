@@ -33,6 +33,7 @@ data instance Field EnemyAttrs :: Type -> Type where
   EnemyEvade :: Field EnemyAttrs Int
   EnemyFight :: Field EnemyAttrs Int
   EnemyClues :: Field EnemyAttrs Int
+  EnemyDamage :: Field EnemyAttrs Int
   EnemyHealthDamage :: Field EnemyAttrs Int
   EnemySanityDamage :: Field EnemyAttrs Int
   EnemyTraits :: Field EnemyAttrs (HashSet Trait)

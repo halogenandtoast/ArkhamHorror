@@ -26,11 +26,7 @@ $(buildEntity "Investigator")
 
 $(deriveJSON defaultOptions ''Investigator)
 
-instance
-  ( HasCount StartingUsesCount env (AssetId, UseType)
-  , Query AssetMatcher env
-  )
-  => HasModifiersFor Investigator where
+instance HasModifiersFor Investigator where
   getModifiersFor = $(entityF2 "Investigator" "getModifiersFor")
 
 instance HasTokenValue env Investigator where
@@ -267,20 +263,6 @@ locationOf = investigatorLocation . toAttrs
 foundOf :: Investigator -> HashMap Zone [Card]
 foundOf = investigatorFoundCards . toAttrs
 
-getRemainingSanity
-  :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Int
-getRemainingSanity i = do
-  modifiedSanity <- getModifiedSanity a
-  pure $ modifiedSanity - investigatorSanityDamage a
-  where a = toAttrs i
-
-getRemainingHealth
-  :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Int
-getRemainingHealth i = do
-  modifiedHealth <- getModifiedHealth a
-  pure $ modifiedHealth - investigatorHealthDamage a
-  where a = toAttrs i
-
 instance Entity Investigator where
   type EntityId Investigator = InvestigatorId
   type EntityAttrs Investigator = InvestigatorAttrs
@@ -300,31 +282,6 @@ instance TargetEntity Investigator where
 instance SourceEntity Investigator where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
-
-modifiedStatsOf
-  :: (MonadReader env m, HasModifiersFor env ())
-  => Source
-  -> Maybe Action
-  -> Investigator
-  -> m Stats
-modifiedStatsOf source maction i = do
-  modifiers' <- getModifiers source (toTarget i)
-  remainingHealth <- getRemainingHealth i
-  remainingSanity <- getRemainingSanity i
-  let
-    a = toAttrs i
-    willpower' = skillValueFor SkillWillpower maction modifiers' a
-    intellect' = skillValueFor SkillIntellect maction modifiers' a
-    combat' = skillValueFor SkillCombat maction modifiers' a
-    agility' = skillValueFor SkillAgility maction modifiers' a
-  pure Stats
-    { willpower = willpower'
-    , intellect = intellect'
-    , combat = combat'
-    , agility = agility'
-    , health = remainingHealth
-    , sanity = remainingSanity
-    }
 
 getHasSpendableClues
   :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Bool

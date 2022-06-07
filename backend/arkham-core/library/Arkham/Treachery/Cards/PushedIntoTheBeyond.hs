@@ -14,7 +14,7 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Asset.Attrs ( Field(..) )
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype PushedIntoTheBeyond = PushedIntoTheBeyond TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

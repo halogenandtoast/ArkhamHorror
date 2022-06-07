@@ -11,7 +11,7 @@ import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype VisionsOfFuturesPast = VisionsOfFuturesPast TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

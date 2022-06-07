@@ -92,6 +92,7 @@ data InvestigatorMatcher
   | MostClues
   | UneliminatedInvestigator
   | ResignedInvestigator
+  | DefeatedInvestigator
   | ContributedMatchingIcons ValueMatcher
   | HandWith CardListMatcher
   | DiscardWith CardListMatcher
@@ -181,6 +182,7 @@ data AssetMatcher
   | AssetWithFewestClues AssetMatcher
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeAssignedHorrorBy InvestigatorId
+  | ClosestAsset LocationId AssetMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

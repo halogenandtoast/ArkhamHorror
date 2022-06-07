@@ -12,6 +12,8 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenarios.TheLastKing.Story
 import Arkham.Story.Cards qualified as Story
+import Arkham.Act.Attrs (Field(..))
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
@@ -26,7 +28,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
@@ -50,17 +52,12 @@ theLastKing difficulty =
        , "ballroom   courtyard livingRoom"
        , ".          foyer     ."
        ]
-instance HasRecord env TheLastKing where
+instance HasRecord TheLastKing where
   hasRecord _ _ = pure False
   hasRecordSet _ _ = pure []
   hasRecordCount _ _ = pure 0
 
-instance
-  ( HasCount Shroud env LocationId
-  , HasId LocationId env InvestigatorId
-  , HasTokenValue env InvestigatorId
-  )
-  => HasTokenValue env TheLastKing where
+instance HasTokenValue TheLastKing where
   getTokenValue iid tokenFace (TheLastKing attrs) = case tokenFace of
     Skull -> pure $ TokenValue Skull NoModifier
     Cultist -> pure $ toTokenValue attrs Cultist 2 3
@@ -99,7 +96,7 @@ interviewedToCardCode = \case
   InterviewedAshleigh -> Just $ toCardCode Assets.ashleighClarke
   _ -> Nothing
 
-instance ScenarioRunner env => RunMessage TheLastKing where
+instance RunMessage TheLastKing where
   runMessage msg s@(TheLastKing attrs) = case msg of
     SetTokensForScenario -> do
       standalone <- getIsStandalone
@@ -284,11 +281,11 @@ instance ScenarioRunner env => RunMessage TheLastKing where
       -- add XP modifiers to the players in order to have `getXp` resolve "normally"
       investigatorIds <- getInvestigatorIds
       investigatorIdsWithNames <- traverse
-        (traverseToSnd getName)
+        (traverseToSnd (field InvestigatorName))
         investigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
-      clueCounts <- traverse (fmap unClueCount . getCount)
-        =<< getSetList @ActId ()
+      clueCounts <- traverse (field ActClues)
+        =<< select AnyAct
       vipsSlain <-
         selectListMap toCardCode $ VictoryDisplayCardMatch $ CardWithTrait
           Trait.Lunatic

@@ -19,13 +19,14 @@ import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Investigator
 import Arkham.InvestigatorId
 import Arkham.LocationId
 import Arkham.Message
 import Arkham.Name
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Target
@@ -38,7 +39,7 @@ newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata { sacrifices :: [Card]
 newtype BloodOnTheAltar = BloodOnTheAltar (ScenarioAttrs `With` BloodOnTheAltarMetadata)
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord env)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasRecord)
 
 bloodOnTheAltar :: Difficulty -> BloodOnTheAltar
 bloodOnTheAltar difficulty =
@@ -51,12 +52,7 @@ bloodOnTheAltar difficulty =
     }
   where base = baseAttrs "02195" "Blood on the Altar" difficulty
 
-instance
-  ( HasTokenValue env InvestigatorId
-  , HasSet LocationId env ()
-  , HasList UnderneathCard env LocationId
-  )
-  => HasTokenValue env BloodOnTheAltar where
+instance HasTokenValue BloodOnTheAltar where
   getTokenValue iid tokenFace (BloodOnTheAltar (attrs `With` _)) = case tokenFace of
     Skull -> do
       numLocations <- countM ((null <$>) . getList @UnderneathCard)
@@ -90,11 +86,10 @@ standaloneTokens =
   ]
 
 findOwner
-  :: (MonadReader env m, HasList CampaignStoryCard env ())
-  => CardCode
-  -> m (Maybe InvestigatorId)
+  :: CardCode
+  -> GameT (Maybe InvestigatorId)
 findOwner cardCode = do
-  campaignStoryCards <- getList ()
+  campaignStoryCards <- getCampaignStoryCards
   pure
     $ campaignStoryCardInvestigatorId
     <$> find
@@ -102,9 +97,8 @@ findOwner cardCode = do
           campaignStoryCards
 
 getRemoveSacrificedMessages
-  :: (MonadReader env m, HasList CampaignStoryCard env ())
-  => [CardCode]
-  -> m [Message]
+  :: [CardCode]
+  -> GameT [Message]
 getRemoveSacrificedMessages sacrifices = do
   sacrificedOwnerPairs <- catMaybes <$> for
     sacrifices
@@ -117,12 +111,7 @@ getRemoveSacrificedMessages sacrifices = do
     | (sacrificed, owner) <- sacrificedOwnerPairs
     ]
 
-getRemoveNecronomicon
-  :: ( MonadReader env m
-     , HasList CampaignStoryCard env ()
-     , HasSet DefeatedInvestigatorId env ()
-     )
-  => m [Message]
+getRemoveNecronomicon :: GameT [Message]
 getRemoveNecronomicon = do
   defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
   mNecronomiconOwner <- findOwner "02140"
@@ -132,7 +121,7 @@ getRemoveNecronomicon = do
     , owner `elem` defeatedInvestigatorIds
     ]
 
-instance ScenarioRunner env => RunMessage BloodOnTheAltar where
+instance RunMessage BloodOnTheAltar where
   runMessage msg s@(BloodOnTheAltar (attrs@ScenarioAttrs {..} `With` metadata@(BloodOnTheAltarMetadata sacrificed)))
     = case msg of
       SetTokensForScenario -> do
@@ -288,7 +277,7 @@ instance ScenarioRunner env => RunMessage BloodOnTheAltar where
       FailedSkillTest iid _ _ (TokenTarget token) _ _ ->
         s <$ case tokenFace token of
           Cultist -> do
-            lid <- getId @LocationId iid
+            lid <- getJustLocation iid
             push (PlaceClues (LocationTarget lid) 1)
           ElderThing | isEasyStandard attrs -> do
             agendaId <-

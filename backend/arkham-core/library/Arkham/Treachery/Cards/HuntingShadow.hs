@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Query
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 

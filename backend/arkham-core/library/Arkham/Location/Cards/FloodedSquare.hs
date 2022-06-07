@@ -6,18 +6,17 @@ module Arkham.Location.Cards.FloodedSquare
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
-import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Id
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Location.Runner
+import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Message
+import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Target
 
 newtype FloodedSquare = FloodedSquare LocationAttrs
@@ -40,9 +39,11 @@ instance HasAbilities FloodedSquare where
       $ [ restrictedAbility
             attrs
             1
-            (Here <> EnemyCriteria (EnemyExists $ NonEliteEnemy <> EnemyAt
-              (LocationInDirection RightOf $ LocationWithId $ toId attrs)
-            ))
+            (Here <> EnemyCriteria
+              (EnemyExists $ NonEliteEnemy <> EnemyAt
+                (LocationInDirection RightOf $ LocationWithId $ toId attrs)
+              )
+            )
           $ ActionAbility Nothing
           $ ActionCost 1
         | locationRevealed attrs
@@ -52,8 +53,8 @@ instance RunMessage FloodedSquare where
   runMessage msg l@(FloodedSquare attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       counterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
-      nonEliteEnemies <- getSetList @EnemyId $ EnemyMatchAll
-        [NonEliteEnemy, EnemyAt $ LocationWithId counterClockwiseLocation]
+      nonEliteEnemies <- selectList $ NonEliteEnemy <> EnemyAt
+        (LocationWithId counterClockwiseLocation)
       l <$ push
         (chooseOne
           iid

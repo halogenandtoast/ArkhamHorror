@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Cost
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Matcher
@@ -29,7 +30,7 @@ instance HasModifiersFor Montmartre209 where
     pure $ toModifiers a [TopCardOfDeckIsRevealed, CanPlayTopOfDeck AnyCard]
   getModifiersFor _ _ _ = pure []
 
-instance (CanCheckPlayable env, HasQueue env) => RunMessage Montmartre209 where
+instance RunMessage Montmartre209 where
   runMessage msg e@(Montmartre209 attrs) = case msg of
     CreatedEffect eid _ source (InvestigatorTarget iid) | eid == effectId attrs -> do
       cards <-

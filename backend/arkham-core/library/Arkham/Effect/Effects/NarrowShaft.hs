@@ -7,9 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.EffectMetadata
 import Arkham.Game.Helpers
-import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target
@@ -24,7 +22,7 @@ narrowShaft =
 
 instance HasModifiersFor NarrowShaft
 
-instance (Query LocationMatcher env, HasQueue env) => RunMessage NarrowShaft where
+instance RunMessage NarrowShaft where
   runMessage msg e@(NarrowShaft attrs) = case msg of
     PassedSkillTest _ _ (LocationSource lid) SkillTestInitiatorTarget{} _ _ ->
       do

@@ -14,7 +14,7 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Query
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 import Arkham.Treachery.Runner
 
 newtype ShadowSpawned = ShadowSpawned TreacheryAttrs

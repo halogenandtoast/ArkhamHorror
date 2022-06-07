@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards (abandonedAndAlone)
 import Arkham.Classes
 import Arkham.Message
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype AbandonedAndAlone = AbandonedAndAlone TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

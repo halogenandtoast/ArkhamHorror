@@ -10,7 +10,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Target
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype Overzealous = Overzealous TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

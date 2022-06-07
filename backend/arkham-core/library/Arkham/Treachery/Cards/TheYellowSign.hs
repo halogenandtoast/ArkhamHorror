@@ -10,7 +10,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Runner
 
 newtype TheYellowSign = TheYellowSign TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

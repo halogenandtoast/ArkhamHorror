@@ -12,8 +12,10 @@ import Arkham.SkillType
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Location.Attrs
+import Arkham.Helpers.Investigator
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Projection
@@ -28,21 +30,7 @@ import Arkham.Window qualified as Window
 import Data.HashMap.Strict qualified as HashMap
 import Data.Semigroup
 
-type SkillTestRunner m =
-  ( HasQueue m
-  , HasCard m InvestigatorId
-  , HasStats m (InvestigatorId, Maybe Action)
-  , HasSkillTest m
-  , HasModifiersFor ()
-  , HasTokenValue m ()
-  , HasId LocationId m InvestigatorId
-  , HasSet ConnectedLocationId m LocationId
-  , HasSet InvestigatorId m ()
-  , Projection m LocationAttrs
-  )
-
-skillIconCount ::
-  HasModifiersFor m () => SkillTest -> m Int
+skillIconCount :: SkillTest -> GameT Int
 skillIconCount st@SkillTest {..} = do
   investigatorModifiers <-
     getModifiers
@@ -65,8 +53,7 @@ skillIconCount st@SkillTest {..} = do
   applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
   applySkillModifiers _ ys = ys
 
-getModifiedSkillTestDifficulty ::
-  HasModifiersFor m () => SkillTest -> m Int
+getModifiedSkillTestDifficulty :: SkillTest -> GameT Int
 getModifiedSkillTestDifficulty s = do
   modifiers' <- getModifiers (toSource s) SkillTestTarget
   let preModifiedDifficulty =
@@ -82,10 +69,9 @@ getModifiedSkillTestDifficulty s = do
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
 getModifiedTokenValue ::
-  (HasModifiersFor m (), HasTokenValue m (), Projection m LocationAttrs) =>
   SkillTest ->
   Token ->
-  m Int
+  GameT Int
 getModifiedTokenValue s t = do
   tokenModifiers' <- getModifiers (toSource s) (TokenTarget t)
   modifiedTokenFaces' <- getModifiedTokenFaces s [t]
@@ -114,7 +100,7 @@ getModifiedTokenValue s t = do
     TokenValue token (NegativeModifier (max 0 (n - m)))
   applyModifier _ currentTokenValue = currentTokenValue
 
-instance SkillTestRunner m => RunMessage m SkillTest where
+instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers (toSource s) (InvestigatorTarget iid)
@@ -176,7 +162,7 @@ instance SkillTestRunner m => RunMessage m SkillTest where
                 %~ (<> [TokenTarget token' | token' <- skillTestRevealedTokens])
             )
     PassSkillTest -> do
-      stats <- getStats (skillTestInvestigator, skillTestAction) (toSource s)
+      stats <- modifiedStatsOf (toSource s) skillTestAction skillTestInvestigator
       iconCount <- skillIconCount s
       let currentSkillValue = statsSkillValue stats skillTestSkillType
           modifiedSkillValue' =
@@ -479,7 +465,7 @@ instance SkillTestRunner m => RunMessage m SkillTest where
           <$> for
             (skillTestRevealedTokens <> skillTestResolvedTokens)
             (getModifiedTokenValue s)
-      stats <- getStats (skillTestInvestigator, skillTestAction) (toSource s)
+      stats <- modifiedStatsOf (toSource s) skillTestAction skillTestInvestigator
       modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
       iconCount <-
         if CancelSkills `elem` modifiers'

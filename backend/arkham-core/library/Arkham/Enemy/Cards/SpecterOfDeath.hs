@@ -37,7 +37,7 @@ instance HasAbilities SpecterOfDeath where
         (FailureResult AnyValue)
     ]
 
-instance EnemyRunner env => RunMessage SpecterOfDeath where
+instance RunMessage SpecterOfDeath where
   runMessage msg e@(SpecterOfDeath attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       push $ EnemyAttack iid (toId attrs) (enemyDamageStrategy attrs) RegularAttack

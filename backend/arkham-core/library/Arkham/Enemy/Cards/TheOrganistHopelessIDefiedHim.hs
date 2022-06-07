@@ -42,7 +42,7 @@ theOrganistHopelessIDefiedHim = enemy
   (5, Static 1, 3)
   (0, 3)
 
-instance EnemyRunner env => RunMessage TheOrganistHopelessIDefiedHim where
+instance RunMessage TheOrganistHopelessIDefiedHim where
   runMessage msg e@(TheOrganistHopelessIDefiedHim attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       isEngaged <- selectAny

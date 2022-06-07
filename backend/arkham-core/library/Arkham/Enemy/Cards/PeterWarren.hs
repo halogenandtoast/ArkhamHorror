@@ -34,7 +34,7 @@ instance HasAbilities PeterWarren where
         $ ActionAbility (Just Parley) (Costs [ActionCost 1, ClueCost 2])
     ]
 
-instance EnemyRunner env => RunMessage PeterWarren where
+instance RunMessage PeterWarren where
   runMessage msg e@(PeterWarren attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (AddToVictory $ toTarget attrs)

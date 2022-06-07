@@ -22,6 +22,6 @@ corpseHungryGhoul = enemyWith
   (2, 2)
   (spawnAtL ?~ LocationWithTitle "Bedroom")
 
-instance EnemyRunner env => RunMessage CorpseHungryGhoul where
+instance RunMessage CorpseHungryGhoul where
   runMessage msg (CorpseHungryGhoul attrs) =
     CorpseHungryGhoul <$> runMessage msg attrs

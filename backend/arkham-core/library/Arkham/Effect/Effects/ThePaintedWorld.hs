@@ -25,6 +25,6 @@ instance HasModifiersFor ThePaintedWorld where
     $ toModifiers a [RemoveFromGameInsteadOfDiscard]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage ThePaintedWorld where
+instance RunMessage ThePaintedWorld where
   runMessage msg (ThePaintedWorld attrs) =
     ThePaintedWorld <$> runMessage msg attrs

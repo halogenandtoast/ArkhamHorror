@@ -37,7 +37,7 @@ instance HasAbilities BillyCooper where
     | loc <- maybeToList (enemyLocation attrs)
     ]
 
-instance EnemyRunner env => RunMessage BillyCooper where
+instance RunMessage BillyCooper where
   runMessage msg e@(BillyCooper attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (AddToVictory $ toTarget attrs)

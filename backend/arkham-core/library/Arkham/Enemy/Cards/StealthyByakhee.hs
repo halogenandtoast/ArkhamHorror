@@ -6,7 +6,7 @@ module Arkham.Enemy.Cards.StealthyByakhee
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Modifier
+import Arkham.Modifier qualified as Modifier
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
 
@@ -20,9 +20,9 @@ stealthyByakhee =
 
 instance HasModifiersFor StealthyByakhee where
   getModifiersFor _ target (StealthyByakhee attrs) | isTarget attrs target =
-    pure $ toModifiers attrs [ EnemyFight (-3) | enemyExhausted attrs ]
+    pure $ toModifiers attrs [ Modifier.EnemyFight (-3) | enemyExhausted attrs ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage StealthyByakhee where
+instance RunMessage StealthyByakhee where
   runMessage msg (StealthyByakhee attrs) =
     StealthyByakhee <$> runMessage msg attrs

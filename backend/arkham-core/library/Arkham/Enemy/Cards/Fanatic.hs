@@ -41,7 +41,7 @@ instance HasAbilities Fanatic where
     <> EnemyWithAnyClues
     ]
 
-instance EnemyRunner env => RunMessage Fanatic where
+instance RunMessage Fanatic where
   runMessage msg e@(Fanatic attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> case enemyLocation attrs of
       Nothing -> pure e

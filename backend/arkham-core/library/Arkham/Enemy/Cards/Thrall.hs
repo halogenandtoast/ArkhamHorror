@@ -22,5 +22,5 @@ thrall = enemyWith
   (1, 1)
   (spawnAtL ?~ LocationWithMostClues Anywhere)
 
-instance EnemyRunner env => RunMessage Thrall where
+instance RunMessage Thrall where
   runMessage msg (Thrall attrs) = Thrall <$> runMessage msg attrs

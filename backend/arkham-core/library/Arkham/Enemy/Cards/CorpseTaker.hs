@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Classes
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
@@ -35,7 +34,7 @@ instance HasAbilities CorpseTaker where
     , mkAbility x 2 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs EnemyPhase
     ]
 
-instance EnemyRunner env => RunMessage CorpseTaker where
+instance RunMessage CorpseTaker where
   runMessage msg e@(CorpseTaker attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ pure (PlaceDoom (toTarget attrs) 1)
@@ -55,8 +54,7 @@ instance EnemyRunner env => RunMessage CorpseTaker where
               pure $ CorpseTaker $ attrs & doomL .~ 0
             else do
               leadInvestigatorId <- getLeadInvestigatorId
-              closestLocationIds <- map unClosestPathLocationId
-                <$> getSetList (loc, locationId, emptyLocationMap)
+              closestLocationIds <- selectList $ ClosestPathLocation loc locationId
               case closestLocationIds of
                 [lid] -> e <$ push (EnemyMove enemyId lid)
                 lids ->

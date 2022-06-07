@@ -37,7 +37,7 @@ instance HasAbilities TheThingThatFollows where
       $ toId x
     ]
 
-instance EnemyRunner env => RunMessage TheThingThatFollows where
+instance RunMessage TheThingThatFollows where
   runMessage msg e@(TheThingThatFollows attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ pushAll
       [CancelNext EnemyDefeatedMessage, ShuffleIntoDeck iid $ toTarget attrs]

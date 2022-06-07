@@ -5,6 +5,7 @@ module Arkham.Enemy.Cards.TheOrganistDrapedInMystery
 
 import Arkham.Prelude
 
+import Arkham.Scenarios.APhantomOfTruth.Helpers
 import Arkham.Ability
 import Arkham.Classes
 import qualified Arkham.Enemy.Cards as Cards
@@ -39,43 +40,11 @@ theOrganistDrapedInMystery = enemy
   (3, Static 1, 5)
   (0, 1)
 
-instance EnemyRunner env => RunMessage TheOrganistDrapedInMystery where
+instance RunMessage TheOrganistDrapedInMystery where
   runMessage msg e@(TheOrganistDrapedInMystery attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      engagedInvestigators <-
-        selectList $ InvestigatorEngagedWith $ EnemyWithId $ toId attrs
-      if null engagedInvestigators
-        then do
-          leadInvestigatorId <- getLeadInvestigatorId
-          mappings <- getList (EnemyWithId $ toId attrs)
-
-          let
-            minDistance = fromJustNote "error" . minimumMay $ map
-              (unDistance . snd)
-              mappings
-            investigatorIds =
-              map fst $ filter ((== minDistance) . unDistance . snd) mappings
-
-          choices <- fmap (nub . concat) $ for investigatorIds $ \iid ->
-            selectList $ LocationWithDistanceFrom
-              (minDistance + 1)
-              (LocationWithInvestigator $ InvestigatorWithId iid)
-
-          emptyLocations <-
-            selectList $ LocationWithoutInvestigators <> LocationMatchAny
-              (map LocationWithId choices)
-          let
-            locations = if null emptyLocations then choices else emptyLocations
-
-          push $ chooseOrRunOne
-            leadInvestigatorId
-            [ targetLabel
-                location
-                [MoveToward (toTarget attrs) (LocationWithId location)]
-            | location <- locations
-            ]
-          pure e
-        else
-          e <$ pushAll
-            [ DisengageEnemy iid $ toId attrs | iid <- engagedInvestigators ]
+      if null (enemyEngagedInvestigators attrs)
+        then push =<< moveOrganistAwayFromNearestInvestigator
+        else pushAll [ DisengageEnemy iid $ toId attrs | iid <- setToList (enemyEngagedInvestigators attrs) ]
+      pure e
     _ -> TheOrganistDrapedInMystery <$> runMessage msg attrs

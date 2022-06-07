@@ -23,7 +23,7 @@ instance HasModifiersFor PereLachaiseCemetery where
     | target == effectTarget attrs = pure $ toModifiers attrs [CannotMove]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage PereLachaiseCemetery where
+instance RunMessage PereLachaiseCemetery where
   runMessage msg e@(PereLachaiseCemetery attrs) = case msg of
     EndRoundWindow -> e <$ push (DisableEffect $ toId attrs)
     _ -> PereLachaiseCemetery <$> runMessage msg attrs

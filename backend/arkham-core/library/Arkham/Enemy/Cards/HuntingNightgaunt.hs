@@ -30,6 +30,6 @@ instance HasModifiersFor HuntingNightgaunt where
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage HuntingNightgaunt where
+instance RunMessage HuntingNightgaunt where
   runMessage msg (HuntingNightgaunt attrs) =
     HuntingNightgaunt <$> runMessage msg attrs

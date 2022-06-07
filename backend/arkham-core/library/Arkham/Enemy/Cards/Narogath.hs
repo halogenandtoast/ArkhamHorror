@@ -9,11 +9,9 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Action
 import Arkham.Classes
 import Arkham.Enemy.Runner
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Trait qualified as Trait
@@ -30,13 +28,11 @@ narogath = enemyWith
   (1, 2)
   (preyL .~ Prey (NearestToEnemy (EnemyWithTrait Trait.Cultist <> NotEnemy (enemyIs Cards.narogath))))
 
-instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env LocationId) => HasModifiersFor Narogath where
+instance HasModifiersFor Narogath where
   getModifiersFor _ (InvestigatorTarget iid) (Narogath a@EnemyAttrs {..}) = case enemyLocation of
     Nothing -> pure []
     Just loc -> do
-      connectedLocationIds <- map unConnectedLocationId
-        <$> getSetList loc
-      iids <- concatMapM getSetList (loc : connectedLocationIds)
+      iids <- select $ InvestigatorAt $ AccessibleFrom $ LocationWithId loc
       pure $ toModifiers
         a
         [ CannotTakeAction (EnemyAction Parley [Cultist])
@@ -44,10 +40,10 @@ instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env L
         ]
   getModifiersFor _ _ _ = pure []
 
-instance (EnemyRunner env) => RunMessage Narogath where
+instance RunMessage Narogath where
   runMessage msg (Narogath attrs@EnemyAttrs {..}) = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
-      playerCount <- unPlayerCount <$> getCount ()
+      playerCount <- getPlayerCount
       Narogath
         <$> runMessage msg (attrs & healthL %~ fmap (+ (3 * playerCount)))
     _ -> Narogath <$> runMessage msg attrs

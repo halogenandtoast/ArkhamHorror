@@ -45,7 +45,7 @@ instance HasAbilities RoyalEmissary where
       $ PhaseIs EnemyPhase
     ]
 
-instance EnemyRunner env => RunMessage RoyalEmissary where
+instance RunMessage RoyalEmissary where
   runMessage msg e@(RoyalEmissary attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       iids <- selectList (investigatorMatcher attrs)

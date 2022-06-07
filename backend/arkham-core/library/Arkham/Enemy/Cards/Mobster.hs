@@ -30,7 +30,7 @@ instance HasAbilities Mobster where
       $ toId x
     ]
 
-instance EnemyRunner env => RunMessage Mobster where
+instance RunMessage Mobster where
   runMessage msg e@(Mobster attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       e <$ push (SpendResources iid 1)

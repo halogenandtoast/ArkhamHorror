@@ -15,7 +15,6 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyAttacks)
 import Arkham.Modifier
-import Arkham.Query
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -26,7 +25,7 @@ newtype YogSothoth = YogSothoth EnemyAttrs
 yogSothoth :: EnemyCard YogSothoth
 yogSothoth = enemy YogSothoth Cards.yogSothoth (4, Static 4, 0) (1, 5)
 
-instance HasCount PlayerCount env () => HasModifiersFor YogSothoth where
+instance HasModifiersFor YogSothoth where
   getModifiersFor _ target (YogSothoth a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 6)
     pure $ toModifiers
@@ -46,7 +45,7 @@ instance HasAbilities YogSothoth where
             Free
     ]
 
-instance EnemyRunner env => RunMessage YogSothoth where
+instance RunMessage YogSothoth where
   runMessage msg e@(YogSothoth attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       e <$ push

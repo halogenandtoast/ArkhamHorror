@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
-import Arkham.Id
+import Arkham.Helpers.Agenda
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Modifier
@@ -29,10 +29,10 @@ possessedOathspeaker = enemy
   (4, PerPlayer 5, 3)
   (2, 2)
 
-instance HasStep AgendaStep env () => HasModifiersFor PossessedOathspeaker where
+instance HasModifiersFor PossessedOathspeaker where
   getModifiersFor _ (EnemyTarget eid) (PossessedOathspeaker attrs)
     | toId attrs == eid = do
-      step <- unAgendaStep <$> getStep ()
+      step <- getCurrentAgendaStep
       pure $ toModifiers attrs [ CannotBeDamaged | step == 1 || step == 2 ]
   getModifiersFor _ _ _ = pure []
 
@@ -48,7 +48,7 @@ instance HasAbilities PossessedOathspeaker where
     $ toId a
     ]
 
-instance EnemyRunner env => RunMessage PossessedOathspeaker where
+instance RunMessage PossessedOathspeaker where
   runMessage msg e@(PossessedOathspeaker attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       leadInvestigatorIdL <- getLeadInvestigatorId

@@ -27,6 +27,6 @@ emergentMonstrosity = enemyWith
   . (exhaustedL .~ True)
   )
 
-instance EnemyRunner env => RunMessage EmergentMonstrosity where
+instance RunMessage EmergentMonstrosity where
   runMessage msg (EmergentMonstrosity attrs) =
     EmergentMonstrosity <$> runMessage msg attrs

@@ -24,7 +24,7 @@ instance HasModifiersFor CurseOfTheRougarouTabletToken where
     | target == effectTarget = pure [toModifier a CannotMove]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage CurseOfTheRougarouTabletToken where
+instance RunMessage CurseOfTheRougarouTabletToken where
   runMessage msg e@(CurseOfTheRougarouTabletToken attrs) = case msg of
     EndRound -> e <$ push (DisableEffect $ effectId attrs)
     _ -> CurseOfTheRougarouTabletToken <$> runMessage msg attrs

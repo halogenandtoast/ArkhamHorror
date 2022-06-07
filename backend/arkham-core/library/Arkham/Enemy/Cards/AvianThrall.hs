@@ -5,12 +5,13 @@ module Arkham.Enemy.Cards.AvianThrall
 
 import Arkham.Prelude
 
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
-import Arkham.Id
+import Arkham.Enemy.Runner hiding ( EnemyFight )
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Trait
@@ -27,14 +28,14 @@ avianThrall = enemyWith
   (1, 1)
   (preyL .~ Prey (InvestigatorWithLowestSkill SkillIntellect))
 
-instance HasSet Trait env AssetId => HasModifiersFor AvianThrall where
+instance HasModifiersFor AvianThrall where
   getModifiersFor (AssetSource aid) target (AvianThrall attrs)
     | isTarget attrs target = do
-      traits <- getSet aid
+      traits <- field AssetTraits aid
       pure $ toModifiers
         attrs
         [ EnemyFight (-3) | any (`elem` [Ranged, Firearm, Spell]) traits ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage AvianThrall where
+instance RunMessage AvianThrall where
   runMessage msg (AvianThrall attrs) = AvianThrall <$> runMessage msg attrs

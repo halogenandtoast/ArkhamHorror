@@ -12,6 +12,7 @@ import Arkham.DamageEffect
 import Arkham.Enemy.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.Timing qualified as Timing
 
 newtype Maniac = Maniac EnemyAttrs
@@ -31,10 +32,10 @@ instance HasAbilities Maniac where
 maniac :: EnemyCard Maniac
 maniac = enemy Maniac Cards.maniac (3, Static 4, 1) (1, 0)
 
-instance EnemyRunner env => RunMessage Maniac where
+instance RunMessage Maniac where
   runMessage msg e@(Maniac attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ pushAll
       [ InvestigatorAssignDamage iid source DamageAny 1 0
-      , EnemyDamage (toId attrs) iid source NonAttackDamageEffect 1
+      , Msg.EnemyDamage (toId attrs) iid source NonAttackDamageEffect 1
       ]
     _ -> Maniac <$> runMessage msg attrs

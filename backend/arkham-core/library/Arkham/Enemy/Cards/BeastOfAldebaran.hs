@@ -22,6 +22,6 @@ beastOfAldebaran = enemyWith
   (2, 1)
   (damageStrategyL .~ SingleTarget)
 
-instance EnemyRunner env => RunMessage BeastOfAldebaran where
+instance RunMessage BeastOfAldebaran where
   runMessage msg (BeastOfAldebaran attrs) =
     BeastOfAldebaran <$> runMessage msg attrs

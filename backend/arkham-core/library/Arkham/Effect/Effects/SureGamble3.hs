@@ -23,7 +23,7 @@ instance HasModifiersFor SureGamble3 where
     | target == effectTarget = pure [toModifier a NegativeToPositive]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage SureGamble3 where
+instance RunMessage SureGamble3 where
   runMessage msg e@(SureGamble3 attrs) = case msg of
     SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> SureGamble3 <$> runMessage msg attrs

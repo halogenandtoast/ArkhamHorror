@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
-import Arkham.Modifier
+import Arkham.Modifier qualified as Modifier
 import Arkham.Target
 
 newtype ConstanceDumaine = ConstanceDumaine EnemyAttrs
@@ -21,9 +21,9 @@ constanceDumaine =
 
 instance HasModifiersFor ConstanceDumaine where
   getModifiersFor _ (EnemyTarget eid) (ConstanceDumaine a) | eid == toId a =
-    pure $ toModifiers a [ EnemyFight 3 | enemyExhausted a ]
+    pure $ toModifiers a [ Modifier.EnemyFight 3 | enemyExhausted a ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage ConstanceDumaine where
+instance RunMessage ConstanceDumaine where
   runMessage msg (ConstanceDumaine attrs) =
     ConstanceDumaine <$> runMessage msg attrs

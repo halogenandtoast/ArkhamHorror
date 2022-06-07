@@ -1,8 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Skill (
-  module Arkham.Skill,
-) where
+module Arkham.Skill where
 
 import Arkham.Prelude
 
@@ -11,12 +9,10 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
 import Arkham.Name
-import Arkham.Skill.Attrs
 import Arkham.Skill.Runner
 import Arkham.Skill.Skills
 
 $(buildEntity "Skill")
-
 $(deriveJSON defaultOptions ''Skill)
 
 createSkill :: IsCard a => a -> InvestigatorId -> Skill
@@ -31,7 +27,7 @@ instance HasCardDef Skill where
 instance HasAbilities Skill where
   getAbilities = $(entityF "Skill" "getAbilities")
 
-instance SkillRunner env => RunMessage Skill where
+instance RunMessage Skill where
   runMessage = $(entityRunMessage "Skill")
 
 instance HasModifiersFor Skill where
@@ -68,6 +64,3 @@ allSkills =
     map
       (cbCardCode &&& (curry . cbCardBuilder))
       $(buildEntityLookupList "Skill")
-
-ownerOfSkill :: Skill -> InvestigatorId
-ownerOfSkill = skillOwner . toAttrs

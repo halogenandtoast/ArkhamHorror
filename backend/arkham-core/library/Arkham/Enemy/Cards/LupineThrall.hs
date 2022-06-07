@@ -25,5 +25,5 @@ lupineThrall = enemyWith
   . (spawnAtL ?~ FarthestLocationFromYou Anywhere)
   )
 
-instance EnemyRunner env => RunMessage LupineThrall where
+instance RunMessage LupineThrall where
   runMessage msg (LupineThrall attrs) = LupineThrall <$> runMessage msg attrs

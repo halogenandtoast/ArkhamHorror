@@ -31,7 +31,7 @@ instance HasAbilities JordanPerry where
       $ PhaseIs EnemyPhase
     ]
 
-instance EnemyRunner env => RunMessage JordanPerry where
+instance RunMessage JordanPerry where
   runMessage msg e@(JordanPerry attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (HealDamage (toTarget attrs) 1)

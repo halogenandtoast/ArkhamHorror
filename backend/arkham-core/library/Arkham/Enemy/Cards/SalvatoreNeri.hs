@@ -5,11 +5,11 @@ module Arkham.Enemy.Cards.SalvatoreNeri
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Enemy.Runner hiding (EnemyEvade)
-import Arkham.Id
-import Arkham.Modifier
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.Runner hiding ( EnemyEvade )
+import Arkham.Helpers.Investigator
+import Arkham.Modifier qualified as Modifier
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -21,18 +21,16 @@ newtype SalvatoreNeri = SalvatoreNeri EnemyAttrs
 salvatoreNeri :: EnemyCard SalvatoreNeri
 salvatoreNeri = enemy SalvatoreNeri Cards.salvatoreNeri (0, Static 3, 0) (0, 2)
 
-instance
-  ( HasModifiersFor ()
-  , HasSkillValue env InvestigatorId
-  )
-  => HasModifiersFor env SalvatoreNeri where
+instance HasModifiersFor SalvatoreNeri where
   getModifiersFor (InvestigatorSource iid) (EnemyTarget eid) (SalvatoreNeri attrs)
     | eid == toId attrs
     = do
       fightValue <- getSkillValue SkillCombat iid
       evadeValue <- getSkillValue SkillAgility iid
-      pure $ toModifiers attrs [EnemyFight fightValue, EnemyEvade evadeValue]
+      pure $ toModifiers
+        attrs
+        [Modifier.EnemyFight fightValue, Modifier.EnemyEvade evadeValue]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage SalvatoreNeri where
+instance RunMessage SalvatoreNeri where
   runMessage msg (SalvatoreNeri attrs) = SalvatoreNeri <$> runMessage msg attrs

@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaign.Attrs
 import Arkham.Campaign.Runner
 import Arkham.CampaignId
 import Arkham.CampaignLogKey

@@ -31,20 +31,15 @@ $(buildEntity "Scenario")
 
 $(deriveJSON defaultOptions ''Scenario)
 
-instance HasRecord env () => HasModifiersFor Scenario where
+instance HasModifiersFor Scenario where
   getModifiersFor = $(entityF2 "Scenario" "getModifiersFor")
 
-instance HasRecord env Scenario where
+instance HasRecord Scenario where
   hasRecord = $(entityF1 "Scenario" "hasRecord")
   hasRecordSet = $(entityF1 "Scenario" "hasRecordSet")
   hasRecordCount = $(entityF1 "Scenario" "hasRecordCount")
 
-instance
-  ( HasSet ClosestAssetId env (InvestigatorId, AssetMatcher)
-  , HasStep ActStep env ()
-  , ScenarioRunner env
-  )
-  => RunMessage Scenario where
+instance RunMessage Scenario where
   runMessage msg s = case msg of
     ResolveToken _ tokenFace _ -> do
       modifiers' <- getModifiers
@@ -71,29 +66,7 @@ instance
    where
      go = $(entityRunMessage "Scenario")
 
-instance
-  ( HasCount DiscardCount env InvestigatorId
-  , HasCount DoomCount env ()
-  , HasCount DoomCount env EnemyId
-  , HasCount (Maybe Distance) env (LocationId, LocationId)
-  , Projection env EnemyAttrs
-  , Projection env InvestigatorAttrs
-  , HasCount Shroud env LocationId
-  , Query EnemyMatcher env
-  , Query LocationMatcher env
-  , HasSet EnemyId env LocationId
-  , HasSet LocationId env [Trait]
-  , HasSet LocationId env ()
-  , HasSet Trait env LocationId
-  , HasList UnderneathCard env LocationId
-  , HasTokenValue env InvestigatorId
-  , HasId LocationId env InvestigatorId
-  , HasId CardCode env EnemyId
-  , HasStep AgendaStep env ()
-  , HasCount HorrorCount env InvestigatorId
-  , HasModifiersFor env ()
-  )
-  => HasTokenValue env Scenario where
+instance HasTokenValue Scenario where
   getTokenValue iid tokenFace s = do
     modifiers' <- getModifiers
       (toSource $ toAttrs s)
@@ -107,30 +80,6 @@ instance Entity Scenario where
   type EntityAttrs Scenario = ScenarioAttrs
   toId = toId . toAttrs
   toAttrs = $(entityF "Scenario" "toAttrs")
-
-instance HasSet ScenarioLogKey env Scenario where
-  getSet = pure . scenarioLog . toAttrs
-
-instance HasCount ScenarioDeckCount env (Scenario, ScenarioDeckKey) where
-  getCount (scenario, key) = getCount (toAttrs scenario, key)
-
-instance HasCount SetAsideCount env (Scenario, CardCode) where
-  getCount = getCount . first toAttrs
-
-instance HasList SetAsideCard env Scenario where
-  getList = getList . toAttrs
-
-instance HasList UnderScenarioReferenceCard env Scenario where
-  getList = getList . toAttrs
-
-instance HasList UnderneathCard env (Scenario, ActDeck) where
-  getList (s, _) = getList (toAttrs s, ActDeck)
-
-instance HasList UnderneathCard env (Scenario, AgendaDeck) where
-  getList (s, _) = getList (toAttrs s, AgendaDeck)
-
-instance HasName env Scenario where
-  getName = getName . toAttrs
 
 lookupScenario :: ScenarioId -> Difficulty -> Scenario
 lookupScenario = fromJustNote "Unknown scenario" . flip lookup allScenarios

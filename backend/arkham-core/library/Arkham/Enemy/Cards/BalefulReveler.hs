@@ -6,17 +6,17 @@ module Arkham.Enemy.Cards.BalefulReveler
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Id
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.RequestedTokenStrategy
+import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Timing qualified as Timing
 import Arkham.Token
-import Control.Monad.Extra (findM)
+import Control.Monad.Extra ( findM )
 
 newtype BalefulReveler = BalefulReveler EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -39,14 +39,14 @@ instance HasAbilities BalefulReveler where
         & (abilityLimitL .~ GroupLimit PerRound 1)
     ]
 
-instance EnemyRunner env => RunMessage BalefulReveler where
+instance RunMessage BalefulReveler where
   runMessage msg e@(BalefulReveler attrs) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == toId attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      start <- getId @LocationId leadInvestigatorId
+      start <- getJustLocation leadInvestigatorId
       locations <- getCounterClockwiseLocations start
 
-      mSpawnLocation <- findM (fmap null . getSet @InvestigatorId) locations
+      mSpawnLocation <- findM (selectNone . InvestigatorAt . LocationWithId) locations
 
       case mSpawnLocation of
         Just spawnLocation -> BalefulReveler <$> runMessage

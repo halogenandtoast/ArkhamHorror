@@ -66,7 +66,7 @@ moveOrganistAwayFromNearestInvestigator = do
   let
     forced = lids `intersect` withNoInvestigators
     targets = toList $ if null forced then lids else forced
-  pure $ chooseOne
+  pure $ chooseOrRunOne
     leadInvestigatorId
     [ targetLabel lid [EnemyMove organist lid] | lid <- targets ]
 

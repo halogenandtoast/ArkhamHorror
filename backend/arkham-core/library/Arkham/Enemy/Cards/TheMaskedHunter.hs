@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Query
 import Arkham.Target
 
 newtype TheMaskedHunter = TheMaskedHunter EnemyAttrs
@@ -25,7 +24,7 @@ theMaskedHunter = enemyWith
   (2, 1)
   (preyL .~ Prey MostClues)
 
-instance HasCount PlayerCount env () => HasModifiersFor TheMaskedHunter where
+instance HasModifiersFor TheMaskedHunter where
   getModifiersFor _ target (TheMaskedHunter a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 2)
     pure $ toModifiers a [HealthModifier healthModifier]
@@ -35,6 +34,6 @@ instance HasCount PlayerCount env () => HasModifiersFor TheMaskedHunter where
       else pure []
   getModifiersFor _ _ _ = pure []
 
-instance (EnemyRunner env) => RunMessage TheMaskedHunter where
+instance RunMessage TheMaskedHunter where
   runMessage msg (TheMaskedHunter attrs) =
     TheMaskedHunter <$> runMessage msg attrs

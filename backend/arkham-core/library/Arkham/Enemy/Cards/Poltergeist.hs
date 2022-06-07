@@ -15,6 +15,7 @@ import Arkham.DamageEffect
 import Arkham.Enemy.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
@@ -45,7 +46,7 @@ instance HasModifiersFor Poltergeist where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage Poltergeist where
+instance RunMessage Poltergeist where
   runMessage msg e@(Poltergeist attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ push
       (BeginSkillTest
@@ -58,5 +59,5 @@ instance EnemyRunner env => RunMessage Poltergeist where
       )
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> e
-      <$ push (EnemyDamage (toId attrs) iid source NonAttackDamageEffect 1)
+      <$ push (Msg.EnemyDamage (toId attrs) iid source NonAttackDamageEffect 1)
     _ -> Poltergeist <$> runMessage msg attrs

@@ -2,10 +2,11 @@ module Arkham.GameEnv where
 
 import Arkham.Prelude
 
-import Arkham.SkillTest.Base
+import Arkham.Classes.HasQueue
 import Arkham.Distance
 import Arkham.LocationId
 import Arkham.Phase
+import Arkham.SkillTest.Base
 
 data GameEnv
 
@@ -16,6 +17,9 @@ instance Applicative GameT
 instance Monad GameT
 instance MonadIO GameT
 instance MonadRandom GameT
+instance MonadReader GameEnv GameT
+
+instance HasQueue GameEnv
 
 getPhase :: GameT Phase
 getSkillTest :: GameT (Maybe SkillTest)

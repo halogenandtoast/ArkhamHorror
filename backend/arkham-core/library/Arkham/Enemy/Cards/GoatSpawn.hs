@@ -30,7 +30,7 @@ instance HasAbilities GoatSpawn where
       $ toId a
     ]
 
-instance EnemyRunner env => RunMessage GoatSpawn where
+instance RunMessage GoatSpawn where
   runMessage msg e@(GoatSpawn attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorsAtSameLocation attrs

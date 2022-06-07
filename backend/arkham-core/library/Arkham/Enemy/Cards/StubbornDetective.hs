@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
-import Arkham.Id
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Target
@@ -25,14 +25,14 @@ stubbornDetective = enemyWith
   (1, 0)
   (\a -> a & preyL .~ BearerOf (toId a))
 
-instance HasId LocationId env InvestigatorId => HasModifiersFor StubbornDetective where
+instance HasModifiersFor StubbornDetective where
   getModifiersFor _ (InvestigatorTarget iid) (StubbornDetective a@EnemyAttrs {..})
     | spawned a
     = do
-      locationId <- getId @LocationId iid
+      locationId <- getJustLocation iid
       pure $ toModifiers a [ Blank | Just locationId == enemyLocation ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage StubbornDetective where
+instance RunMessage StubbornDetective where
   runMessage msg (StubbornDetective attrs) =
     StubbornDetective <$> runMessage msg attrs

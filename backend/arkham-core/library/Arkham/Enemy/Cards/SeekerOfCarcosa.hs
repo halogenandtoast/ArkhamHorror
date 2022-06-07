@@ -9,10 +9,11 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -35,19 +36,14 @@ instance HasAbilities SeekerOfCarcosa where
         MythosPhase
     ]
 
-instance EnemyRunner env => RunMessage SeekerOfCarcosa where
+instance RunMessage SeekerOfCarcosa where
   runMessage msg e@(SeekerOfCarcosa attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      case enemyLocation attrs of
-        Nothing -> pure e
-        Just loc -> do
-          clueCount <- unClueCount <$> getCount loc
-          e <$ pushAll
-            (if clueCount > 0
-              then
-                [ RemoveClues (LocationTarget loc) 1
-                , PlaceClues (toTarget attrs) 1
-                ]
-              else [PlaceDoom (toTarget attrs) 1]
-            )
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      for_ (enemyLocation attrs) $ \loc -> do
+        clueCount <- field LocationClues loc
+        pushAll $ if clueCount > 0
+          then
+            [RemoveClues (LocationTarget loc) 1, PlaceClues (toTarget attrs) 1]
+          else [PlaceDoom (toTarget attrs) 1]
+      pure e
     _ -> SeekerOfCarcosa <$> runMessage msg attrs

@@ -24,7 +24,7 @@ instance HasModifiersFor MindWipe3 where
     $ toModifiers a [Blank, DamageDealt (-1), HorrorDealt (-1)]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage MindWipe3 where
+instance RunMessage MindWipe3 where
   runMessage msg e@(MindWipe3 attrs) = case msg of
     EndPhase -> e <$ push (DisableEffect $ effectId attrs)
     _ -> MindWipe3 <$> runMessage msg attrs

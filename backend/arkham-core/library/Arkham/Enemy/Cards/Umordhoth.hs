@@ -15,7 +15,6 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
@@ -26,7 +25,7 @@ newtype Umordhoth = Umordhoth EnemyAttrs
 umordhoth :: EnemyCard Umordhoth
 umordhoth = enemy Umordhoth Cards.umordhoth (5, Static 6, 6) (3, 3)
 
-instance HasCount PlayerCount env () => HasModifiersFor Umordhoth where
+instance HasModifiersFor Umordhoth where
   getModifiersFor _ target (Umordhoth a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 4)
     pure $ toModifiers a [HealthModifier healthModifier]
@@ -46,7 +45,7 @@ instance HasAbilities Umordhoth where
     $ ActionCost 1
     ]
 
-instance EnemyRunner env => RunMessage Umordhoth where
+instance RunMessage Umordhoth where
   runMessage msg e@(Umordhoth attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (Ready $ toTarget attrs)

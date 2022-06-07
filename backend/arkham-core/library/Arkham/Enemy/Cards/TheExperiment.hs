@@ -13,7 +13,6 @@ import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
 import Arkham.Modifier
 import Arkham.Phase
-import Arkham.Query
 import Arkham.Timing qualified as Timing
 
 newtype TheExperiment = TheExperiment EnemyAttrs
@@ -36,17 +35,17 @@ instance HasAbilities TheExperiment where
     $ toId x
     ]
 
-instance HasCount PlayerCount env () => HasModifiersFor TheExperiment where
+instance HasModifiersFor TheExperiment where
   getModifiersFor _ target (TheExperiment attrs) | isTarget attrs target = do
     modifier <- getPlayerCountValue (PerPlayer 3)
     pure $ toModifiers attrs [HealthModifier modifier]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage TheExperiment where
+instance RunMessage TheExperiment where
   runMessage msg e@(TheExperiment attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (Ready $ toTarget attrs)
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
-      actId <- fromJustNote "missing act" . headMay <$> getSetList ()
+      actId <- selectJust AnyAct
       e <$ push (AdvanceAct actId (toSource attrs) AdvancedWithOther)
     _ -> TheExperiment <$> runMessage msg attrs

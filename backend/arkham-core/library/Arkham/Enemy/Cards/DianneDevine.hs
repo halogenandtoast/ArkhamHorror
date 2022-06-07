@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
-import Arkham.Id
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -25,9 +25,9 @@ newtype DianneDevine = DianneDevine EnemyAttrs
 dianneDevine :: EnemyCard DianneDevine
 dianneDevine = enemy DianneDevine Cards.dianneDevine (2, Static 3, 2) (0, 0)
 
-instance HasId LocationId env InvestigatorId => HasModifiersFor DianneDevine where
+instance HasModifiersFor DianneDevine where
   getModifiersFor _ (InvestigatorTarget iid) (DianneDevine a) = do
-    lid <- getId iid
+    lid <- getJustLocation iid
     pure $ toModifiers a $ if Just lid == enemyLocation a
       then [CannotDiscoverClues, CannotTakeControlOfClues]
       else []
@@ -40,7 +40,7 @@ instance HasAbilities DianneDevine where
         EnemyPhase
     ]
 
-instance EnemyRunner env => RunMessage DianneDevine where
+instance RunMessage DianneDevine where
   runMessage msg e@(DianneDevine attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId

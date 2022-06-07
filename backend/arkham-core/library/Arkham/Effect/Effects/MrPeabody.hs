@@ -26,7 +26,7 @@ instance HasModifiersFor MrPeabody where
     pure $ toModifiers attrs [ShroudModifier (-1), AddTrait Passageway]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage MrPeabody where
+instance RunMessage MrPeabody where
   runMessage msg e@(MrPeabody attrs) = case msg of
     Ready (AssetTarget aid) | AssetSource aid == effectSource attrs ->
       e <$ push (DisableEffect $ toId attrs)

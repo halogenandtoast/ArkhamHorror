@@ -7,6 +7,8 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Distance
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Enemy.Cards qualified as Cards
@@ -51,7 +53,7 @@ choosePrey attrs (iid, pathId, distance) =
     (toSource attrs)
     (toTarget attrs)
 
-instance EnemyRunner env => RunMessage SwiftByakhee where
+instance RunMessage SwiftByakhee where
   runMessage msg e@(SwiftByakhee attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       for_ (enemyLocation attrs) $ \loc -> do

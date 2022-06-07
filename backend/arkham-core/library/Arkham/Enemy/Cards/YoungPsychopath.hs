@@ -13,7 +13,7 @@ import Arkham.EffectMetadata
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
+import Arkham.Modifier qualified as Modifier
 import Arkham.Timing qualified as Timing
 
 newtype YoungPsychopath = YoungPsychopath EnemyAttrs
@@ -34,7 +34,7 @@ instance HasAbilities YoungPsychopath where
       $ toId a
     ]
 
-instance EnemyRunner env => RunMessage YoungPsychopath where
+instance RunMessage YoungPsychopath where
   runMessage msg e@(YoungPsychopath attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ push
       (chooseOne
@@ -46,7 +46,7 @@ instance EnemyRunner env => RunMessage YoungPsychopath where
           "Young Psycopath gets +3 fight until the end of the investigation phase"
           [ CreateWindowModifierEffect
               EffectPhaseWindow
-              (EffectModifiers $ toModifiers attrs [EnemyFight 3])
+              (EffectModifiers $ toModifiers attrs [Modifier.EnemyFight 3])
               source
               (toTarget attrs)
           ]

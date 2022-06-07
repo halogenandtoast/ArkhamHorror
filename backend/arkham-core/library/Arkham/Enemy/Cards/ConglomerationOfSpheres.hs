@@ -39,7 +39,7 @@ instance HasAbilities ConglomerationOfSpheres where
       $ toId x
     ]
 
-instance EnemyRunner env => RunMessage ConglomerationOfSpheres where
+instance RunMessage ConglomerationOfSpheres where
   runMessage msg e@(ConglomerationOfSpheres attrs) = case msg of
     UseCardAbility _ source [Window _ (Window.EnemyAttacked _ attackSource _)] 1 _
       | isSource attrs source

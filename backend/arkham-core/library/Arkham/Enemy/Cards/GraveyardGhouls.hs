@@ -30,6 +30,6 @@ instance HasModifiersFor GraveyardGhouls where
     $ toModifiers attrs [CardsCannotLeaveYourDiscardPile]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage GraveyardGhouls where
+instance RunMessage GraveyardGhouls where
   runMessage msg (GraveyardGhouls attrs) =
     GraveyardGhouls <$> runMessage msg attrs

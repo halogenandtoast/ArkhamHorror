@@ -6,12 +6,13 @@ module Arkham.Enemy.Cards.InterstellarTraveler
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
@@ -38,12 +39,13 @@ instance HasAbilities InterstellarTraveler where
       $ toId attrs
     ]
 
-instance EnemyRunner env => RunMessage InterstellarTraveler where
+instance RunMessage InterstellarTraveler where
   runMessage msg e@(InterstellarTraveler attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> case enemyLocation attrs of
-      Nothing -> pure e
-      Just loc -> do
-        clueCount <- unClueCount <$> getCount loc
-        push (PlaceDoom (toTarget attrs) 1)
-        e <$ when (clueCount > 0) (push $ RemoveClues (LocationTarget loc) 1)
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      case enemyLocation attrs of
+        Nothing -> pure e
+        Just loc -> do
+          clueCount <- field LocationClues loc
+          push (PlaceDoom (toTarget attrs) 1)
+          e <$ when (clueCount > 0) (push $ RemoveClues (LocationTarget loc) 1)
     _ -> InterstellarTraveler <$> runMessage msg attrs

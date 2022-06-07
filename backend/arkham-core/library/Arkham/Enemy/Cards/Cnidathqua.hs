@@ -6,13 +6,13 @@ module Arkham.Enemy.Cards.Cnidathqua
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Id
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Modifier
 import Arkham.Resolution
 import Arkham.Target
@@ -53,7 +53,7 @@ instance HasAbilities Cnidathqua where
     $ toId attrs
     ]
 
-instance EnemyRunner env => RunMessage Cnidathqua where
+instance RunMessage Cnidathqua where
   runMessage msg e@(Cnidathqua attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       e <$ push
@@ -63,7 +63,7 @@ instance EnemyRunner env => RunMessage Cnidathqua where
           (CardWithTitle "Writhing Appendage")
         )
     FoundEncounterCard iid target card | isTarget attrs target -> do
-      lid <- getId @LocationId iid
+      lid <- getJustLocation iid
       e <$ push (SpawnEnemyAtEngagedWith (EncounterCard card) lid iid)
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       e <$ push (ScenarioResolution $ Resolution 2)

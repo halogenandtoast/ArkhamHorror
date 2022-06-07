@@ -40,7 +40,7 @@ instance HasAbilities WizardOfYogSothoth where
           AnyDeck
     ]
 
-instance EnemyRunner env => RunMessage WizardOfYogSothoth where
+instance RunMessage WizardOfYogSothoth where
   runMessage msg e@(WizardOfYogSothoth attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       e <$ push (EnemyAttack iid enemyId DamageAny RegularAttack)

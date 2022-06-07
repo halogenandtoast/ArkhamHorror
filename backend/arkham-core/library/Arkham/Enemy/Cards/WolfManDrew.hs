@@ -35,7 +35,7 @@ instance HasAbilities WolfManDrew where
       $ toId a
     ]
 
-instance EnemyRunner env => RunMessage WolfManDrew where
+instance RunMessage WolfManDrew where
   runMessage msg e@(WolfManDrew attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (HealDamage (toTarget attrs) 1)

@@ -2,13 +2,13 @@ module Arkham.Enemy.Cards.AcolyteOfUmordhoth where
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Id
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Target
 
 newtype AcolyteOfUmordhoth = AcolyteOfUmordhoth EnemyAttrs
@@ -23,15 +23,15 @@ acolyteOfUmordhoth = enemyWith
   (1, 1)
   (preyL .~ Prey FewestCardsInHand)
 
-instance HasCount CardCount env InvestigatorId => HasModifiersFor AcolyteOfUmordhoth where
+instance HasModifiersFor AcolyteOfUmordhoth where
   getModifiersFor _ (EnemyTarget eid) (AcolyteOfUmordhoth a@EnemyAttrs {..})
     | eid == enemyId = do
       anyWithoutCards <- or <$> for
         (setToList enemyEngagedInvestigators)
-        (\iid -> (== 0) . unCardCount <$> getCount iid)
+        (fieldMap InvestigatorHand null)
       pure $ toModifiers a [ CannotBeEvaded | anyWithoutCards ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage AcolyteOfUmordhoth where
+instance RunMessage AcolyteOfUmordhoth where
   runMessage msg (AcolyteOfUmordhoth attrs) =
     AcolyteOfUmordhoth <$> runMessage msg attrs

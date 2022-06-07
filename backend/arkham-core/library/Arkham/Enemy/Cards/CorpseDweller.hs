@@ -26,7 +26,7 @@ corpseDweller = enemyWith
   (2, 1)
   ((spawnAtL ?~ LocationWithEnemy (EnemyWithTrait Humanoid)) . (surgeIfUnableToSpawnL .~ True))
 
-instance EnemyRunner env => RunMessage CorpseDweller where
+instance RunMessage CorpseDweller where
   runMessage msg (CorpseDweller attrs) = case msg of
     EnemySpawn miid lid eid | eid == toId attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

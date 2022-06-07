@@ -22,7 +22,7 @@ instance HasModifiersFor OnTheLam where
   getModifiersFor _ target (OnTheLam a@EffectAttrs {..}) =
     pure $ toModifiers a [ CannotBeAttackedByNonElite | target == effectTarget ]
 
-instance HasQueue env => RunMessage OnTheLam where
+instance RunMessage OnTheLam where
   runMessage msg e@(OnTheLam attrs) = case msg of
     EndRound -> e <$ push (DisableEffect $ toId attrs)
     _ -> OnTheLam <$> runMessage msg attrs

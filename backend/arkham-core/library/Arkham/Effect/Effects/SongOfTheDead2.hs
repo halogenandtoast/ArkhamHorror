@@ -22,7 +22,7 @@ songOfTheDead2 = SongOfTheDead2 . uncurry4 (baseAttrs "02112")
 
 instance HasModifiersFor SongOfTheDead2
 
-instance HasQueue env => RunMessage SongOfTheDead2 where
+instance RunMessage SongOfTheDead2 where
   runMessage msg e@(SongOfTheDead2 attrs@EffectAttrs {..}) = case msg of
     RevealToken _ iid (Token _ Skull)
       | InvestigatorTarget iid == effectTarget -> e

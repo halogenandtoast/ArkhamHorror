@@ -6,13 +6,14 @@ module Arkham.Enemy.Cards.TheManInThePallidMask
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Investigator
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -39,10 +40,10 @@ instance HasAbilities TheManInThePallidMask where
       $ ActionCost 1
     ]
 
-instance EnemyRunner env => RunMessage TheManInThePallidMask where
+instance RunMessage TheManInThePallidMask where
   runMessage msg e@(TheManInThePallidMask attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- getId iid
+      lid <- getJustLocation iid
       e <$ pushAll
         [ skillTestModifier source (LocationTarget lid) (ShroudModifier 2)
         , Investigate
@@ -53,13 +54,16 @@ instance EnemyRunner env => RunMessage TheManInThePallidMask where
           SkillIntellect
           False
         ]
-    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target -> do
+    Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->
+      do
       -- Tomb of Shadows will prevent the man in the pallid mask from being
       -- defeated, but because we have no good way of cancelling an aspect of
       -- an ability, we handle it here
-      canBeDefeated <- case enemyLocation attrs of
-        Just lid -> notMember lid <$> select (locationIs Locations.tombOfShadows)
-        _ -> pure True
-      when canBeDefeated $ push (DefeatEnemy (toId attrs) iid (toSource attrs))
-      pure e
+        canBeDefeated <- case enemyLocation attrs of
+          Just lid ->
+            notMember lid <$> select (locationIs Locations.tombOfShadows)
+          _ -> pure True
+        when canBeDefeated
+          $ push (DefeatEnemy (toId attrs) iid (toSource attrs))
+        pure e
     _ -> TheManInThePallidMask <$> runMessage msg attrs

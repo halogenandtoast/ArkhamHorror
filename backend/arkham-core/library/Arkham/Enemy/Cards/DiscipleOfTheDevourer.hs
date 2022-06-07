@@ -6,12 +6,15 @@ module Arkham.Enemy.Cards.DiscipleOfTheDevourer
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.AgendaId
+import Arkham.Agenda.Attrs (Field(..))
+import Arkham.Agenda.Sequence (agendaStep)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype DiscipleOfTheDevourer = DiscipleOfTheDevourer EnemyAttrs
@@ -36,12 +39,13 @@ instance HasAbilities DiscipleOfTheDevourer where
       $ toId x
     ]
 
-instance EnemyRunner env => RunMessage DiscipleOfTheDevourer where
+instance RunMessage DiscipleOfTheDevourer where
   runMessage msg e@(DiscipleOfTheDevourer attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let
         messages =
           [PlaceDoom (toTarget attrs) 1, InvestigatorPlaceCluesOnLocation iid 1]
-      step <- unAgendaStep <$> getStep ()
-      e <$ if step == 1 then push (chooseOne iid messages) else pushAll messages
+      agendaId <- selectJust AnyAgenda
+      step <- fieldMap AgendaSequence agendaStep agendaId
+      e <$ if step == AgendaStep 1 then push (chooseOne iid messages) else pushAll messages
     _ -> DiscipleOfTheDevourer <$> runMessage msg attrs

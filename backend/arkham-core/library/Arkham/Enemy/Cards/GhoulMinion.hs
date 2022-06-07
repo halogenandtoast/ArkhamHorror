@@ -16,5 +16,5 @@ newtype GhoulMinion = GhoulMinion EnemyAttrs
 ghoulMinion :: EnemyCard GhoulMinion
 ghoulMinion = enemy GhoulMinion Cards.ghoulMinion (2, Static 2, 2) (1, 1)
 
-instance (EnemyRunner env) => RunMessage GhoulMinion where
+instance RunMessage GhoulMinion where
   runMessage msg (GhoulMinion attrs) = GhoulMinion <$> runMessage msg attrs

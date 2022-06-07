@@ -24,7 +24,7 @@ instance HasModifiersFor WillToSurvive3 where
       [toModifier a DoNotDrawChaosTokensForSkillChecks]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage WillToSurvive3 where
+instance RunMessage WillToSurvive3 where
   runMessage msg e@(WillToSurvive3 attrs) = case msg of
     EndTurn _ -> e <$ push (DisableEffect $ effectId attrs) -- TODO: should we actually check who?
     _ -> WillToSurvive3 <$> runMessage msg attrs

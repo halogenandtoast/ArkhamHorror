@@ -34,7 +34,7 @@ instance HasAbilities AlmaHill where
         $ ActionAbility (Just Parley) (ActionCost 1)
     ]
 
-instance EnemyRunner env => RunMessage AlmaHill where
+instance RunMessage AlmaHill where
   runMessage msg e@(AlmaHill attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ pushAll
       (replicate 3 (InvestigatorDrawEncounterCard iid)

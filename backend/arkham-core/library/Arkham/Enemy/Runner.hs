@@ -332,7 +332,7 @@ instance RunMessage EnemyAttrs where
           preyIds <- select enemyPrey
 
           filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
-            $ \lid -> notNull . intersect preyIds <$> selectList (InvestigatorAt $ LocationWithId lid)
+            $ \lid -> notNull . intersect preyIds <$> select (InvestigatorAt $ LocationWithId lid)
 
           -- If we have any locations with prey, that takes priority, otherwise
           -- we return all locations which may have matched via AnyPrey

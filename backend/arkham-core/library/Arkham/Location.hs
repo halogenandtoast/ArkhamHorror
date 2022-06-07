@@ -10,6 +10,7 @@ import Arkham.Card.Id
 import Arkham.Classes
 import Arkham.Direction
 import Arkham.Id
+import Arkham.Helpers.Modifiers
 import Arkham.Label qualified as L
 import Arkham.Location.Locations
 import Arkham.Location.Runner
@@ -39,10 +40,6 @@ toLocationLabel = L.Label . locationLabel . toAttrs
 
 instance HasCardCode Location where
   toCardCode = toCardCode . toAttrs
-
-instance IsCard Location where
-  toCardId = toCardId . toAttrs
-  toCardOwner = toCardOwner . toAttrs
 
 instance HasAbilities Location where
   getAbilities = $(entityF "Location" "getAbilities")
@@ -75,83 +72,6 @@ instance TargetEntity Location where
 instance SourceEntity Location where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
-
-instance HasCardDef Location where
-  toCardDef = toCardDef . toAttrs
-
-instance HasName env Location where
-  getName = getName . toAttrs
-
-instance HasName env (Unrevealed Location) where
-  getName (Unrevealed l) = getName . Unrevealed $ toAttrs l
-
-instance HasVictoryPoints Location where
-  getVictoryPoints l =
-    let LocationAttrs { locationClues, locationRevealed } = toAttrs l
-    in
-      if locationClues == 0 && locationRevealed
-        then cdVictoryPoints (toCardDef l)
-        else Nothing
-
-instance HasCount ResourceCount env Location where
-  getCount = pure . ResourceCount . locationResources . toAttrs
-
-instance HasCount HorrorCount env Location where
-  getCount = pure . HorrorCount . locationHorror . toAttrs
-
-instance HasCount ClueCount env Location where
-  getCount = pure . ClueCount . locationClues . toAttrs
-
-instance HasCount Shroud env Location where
-  getCount = pure . Shroud . locationShroud . toAttrs
-
-instance HasModifiersFor env () => HasCount DoomCount env Location where
-  getCount l = do
-    modifiers <- getModifiers (toSource l) (toTarget l)
-    let f = if DoomSubtracts `elem` modifiers then negate else id
-    pure . DoomCount . f . locationDoom $ toAttrs l
-
-instance HasList UnderneathCard env Location where
-  getList = getList . toAttrs
-
-instance HasModifiersFor env () => HasSet Trait env Location where
-  getSet l = do
-    additionalTraits <- foldl' applyModifier mempty
-      <$> getModifiers (toSource attrs) (toTarget attrs)
-    pure $ HashSet.union base (setFromList additionalTraits)
-   where
-    applyModifier base' (AddTrait t) = t : base'
-    applyModifier base' _ = base'
-    def = toCardDef l
-    attrs = toAttrs l
-    base = if locationRevealed attrs
-      then cdRevealedCardTraits def
-      else cdCardTraits def
-
-
-instance HasSet EnemyId env Location where
-  getSet = pure . locationEnemies . toAttrs
-
-instance HasSet TreacheryId env Location where
-  getSet = pure . locationTreacheries . toAttrs
-
-instance HasSet EventId env Location where
-  getSet = pure . locationEvents . toAttrs
-
-instance HasSet AssetId env Location where
-  getSet = pure . locationAssets . toAttrs
-
-instance HasSet InvestigatorId env Location where
-  getSet = pure . locationInvestigators . toAttrs
-
-instance HasId LocationId env Location where
-  getId = pure . toId
-
-instance HasId LocationSymbol env Location where
-  getId = getId . toAttrs
-
-instance HasId (Maybe LocationId) env (Direction, Location) where
-  getId (dir, location') = getId (dir, toAttrs location')
 
 lookupLocationStub :: CardCode -> Location
 lookupLocationStub = ($ LocationId (CardId nil)) . lookupLocation

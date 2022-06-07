@@ -2,13 +2,14 @@
 require-stack-version: ">= 2.3.1"
 concurrent-tests: false
 
-resolver: lts-19.7
+resolver: nightly-2022-06-06
 
 ghc-options:
   "$locals":
     -fhide-source-paths
     -Weverything
     -Wno-missing-exported-signatures
+    -Wno-missing-kind-signatures
     -Wno-missed-specialisations
     -Wno-all-missed-specialisations
     -Wno-unsafe
@@ -21,7 +22,6 @@ ghc-options:
     -Wno-partial-fields
     -Wno-implicit-prelude
     -Wno-deriving-typeable
-    -Wno-missing-monadfail-instances
     -fignore-optim-changes
     -Wno-missing-safe-haskell-mode
     -Wno-prepositive-qualified-module

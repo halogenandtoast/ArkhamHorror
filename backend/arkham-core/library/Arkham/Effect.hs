@@ -82,17 +82,7 @@ createPayForAbilityEffect ability source target windows' = do
   eid <- getRandom
   pure (eid, buildPayForAbilityEffect eid ability source target windows')
 
-instance
-  ( HasSet ClassSymbol env InvestigatorId
-  , HasId Difficulty env ()
-  , HasCount HorrorCount env InvestigatorId
-  , HasCount DoomCount env EnemyId
-  , HasCount ClueCount env EnemyId
-  , HasId LocationId env InvestigatorId
-  , HasId LocationId env AssetId
-  ) =>
-  HasModifiersFor Effect
-  where
+instance HasModifiersFor Effect where
   getModifiersFor = $(entityF2 "Effect" "getModifiersFor")
 
 instance HasAbilities Effect where
@@ -114,9 +104,6 @@ instance TargetEntity Effect where
 instance SourceEntity Effect where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
-
-instance HasSet Trait env Effect where
-  getSet = const (pure mempty)
 
 lookupEffect ::
   CardCode ->

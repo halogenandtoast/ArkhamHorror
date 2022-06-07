@@ -28,7 +28,7 @@ instance HasModifiersFor MindOverMatter where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage MindOverMatter where
+instance RunMessage MindOverMatter where
   runMessage msg e@(MindOverMatter attrs) = case msg of
     EndRound -> e <$ push (DisableEffect $ effectId attrs)
     _ -> MindOverMatter <$> runMessage msg attrs

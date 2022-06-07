@@ -16,5 +16,5 @@ newtype SwarmOfRats = SwarmOfRats EnemyAttrs
 swarmOfRats :: EnemyCard SwarmOfRats
 swarmOfRats = enemy SwarmOfRats Cards.swarmOfRats (1, Static 1, 3) (1, 0)
 
-instance EnemyRunner env => RunMessage SwarmOfRats where
+instance RunMessage SwarmOfRats where
   runMessage msg (SwarmOfRats attrs) = SwarmOfRats <$> runMessage msg attrs

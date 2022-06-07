@@ -5,13 +5,13 @@ module Arkham.Enemy.Cards.ScreechingByakhee
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Enemy.Runner hiding (EnemyEvade)
-import Arkham.Id
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.Runner hiding ( EnemyEvade )
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
-import Arkham.Modifier
-import Arkham.Query
+import Arkham.Modifier qualified as Modifier
+import Arkham.Projection
 
 newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
   deriving anyclass IsEnemy
@@ -25,16 +25,17 @@ screechingByakhee = enemyWith
   (1, 2)
   (preyL .~ Prey LowestRemainingSanity)
 
-instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor ScreechingByakhee where
+instance HasModifiersFor ScreechingByakhee where
   getModifiersFor _ target (ScreechingByakhee attrs) | isTarget attrs target =
     do
-      sanities <- map unRemainingSanity
-        <$> traverse getCount (setToList $ enemyEngagedInvestigators attrs)
+      sanities <- traverse
+        (field InvestigatorRemainingSanity)
+        (setToList $ enemyEngagedInvestigators attrs)
       pure $ toModifiers attrs $ if any (<= 4) sanities
-        then [EnemyFight 1, EnemyEvade 1]
+        then [Modifier.EnemyFight 1, Modifier.EnemyEvade 1]
         else []
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage ScreechingByakhee where
+instance RunMessage ScreechingByakhee where
   runMessage msg (ScreechingByakhee attrs) =
     ScreechingByakhee <$> runMessage msg attrs

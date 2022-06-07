@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Classes
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
@@ -34,11 +33,7 @@ instance HasAbilities DevoteeOfTheKey where
         EnemyPhase
     ]
 
-instance
-  ( Query LocationMatcher env
-  , EnemyRunner env
-  )
-  => RunMessage DevoteeOfTheKey where
+instance RunMessage DevoteeOfTheKey where
   runMessage msg e@(DevoteeOfTheKey attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       case enemyLocation of
@@ -51,8 +46,7 @@ instance
               e <$ pushAll
                 [Discard (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
             else do
-              choices <- map unClosestPathLocationId
-                <$> getSetList (loc, sentinelPeak, emptyLocationMap)
+              choices <- selectList $ ClosestPathLocation loc sentinelPeak
               case choices of
                 [] -> error "should not happen"
                 [x] -> e <$ push (EnemyMove enemyId x)

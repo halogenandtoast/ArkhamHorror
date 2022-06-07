@@ -8,11 +8,12 @@ import Arkham.Prelude
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Card.CardCode
 import Arkham.Classes
+import Arkham.Asset.Attrs (Field(..))
 import Arkham.Enemy.Runner
-import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.Modifier
 import Arkham.Name
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Source
 
 newtype BroodOfYogSothoth = BroodOfYogSothoth EnemyAttrs
@@ -23,7 +24,7 @@ broodOfYogSothoth :: EnemyCard BroodOfYogSothoth
 broodOfYogSothoth =
   enemy BroodOfYogSothoth Cards.broodOfYogSothoth (6, Static 1, 3) (2, 2)
 
-instance HasCount PlayerCount env () => HasModifiersFor BroodOfYogSothoth where
+instance HasModifiersFor BroodOfYogSothoth where
   getModifiersFor _ target (BroodOfYogSothoth a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 1)
     pure $ toModifiers
@@ -33,12 +34,12 @@ instance HasCount PlayerCount env () => HasModifiersFor BroodOfYogSothoth where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage BroodOfYogSothoth where
+instance RunMessage BroodOfYogSothoth where
   runMessage msg e@(BroodOfYogSothoth attrs) = case msg of
-    EnemyDamage eid _ (AssetSource aid) _ _ | eid == enemyId attrs -> do
-      name <- getName aid
+    Msg.EnemyDamage eid _ (AssetSource aid) _ _ | eid == enemyId attrs -> do
+      name <- field AssetName aid
       if name == mkName "Esoteric Formula"
         then BroodOfYogSothoth <$> runMessage msg attrs
         else pure e
-    EnemyDamage eid _ _ _ _ | eid == enemyId attrs -> pure e
+    Msg.EnemyDamage eid _ _ _ _ | eid == enemyId attrs -> pure e
     _ -> BroodOfYogSothoth <$> runMessage msg attrs

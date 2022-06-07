@@ -35,16 +35,7 @@ instance HasAbilities Treachery where
 instance RunMessage Treachery where
   runMessage = $(entityRunMessage "Treachery")
 
-instance
-  ( HasCount PlayerCount env ()
-  , HasId LocationId env InvestigatorId
-  , HasSet Trait env AssetId
-  , HasSet Trait env LocationId
-  , HasCount ResourceCount env TreacheryId
-  , Query EnemyMatcher env
-  , Query InvestigatorMatcher env
-  )
-  => HasModifiersFor Treachery where
+instance HasModifiersFor Treachery where
   getModifiersFor = $(entityF2 "Treachery" "getModifiersFor")
 
 instance HasCardCode Treachery where
@@ -70,18 +61,6 @@ instance SourceEntity Treachery where
 instance IsCard Treachery where
   toCardId = toCardId . toAttrs
   toCardOwner = toCardOwner . toAttrs
-
-instance HasModifiersFor env () => HasCount DoomCount env Treachery where
-  getCount t = do
-    modifiers <- getModifiers (toSource t) (toTarget t)
-    let f = if DoomSubtracts `elem` modifiers then negate else id
-    pure . DoomCount . f . treacheryDoom $ toAttrs t
-
-instance HasCount ResourceCount env Treachery where
-  getCount = getCount . toAttrs
-
-instance HasCount (Maybe ClueCount) env Treachery where
-  getCount = pure . (ClueCount <$>) . treacheryClues . toAttrs
 
 lookupTreachery :: CardCode -> (InvestigatorId -> TreacheryId -> Treachery)
 lookupTreachery cardCode =

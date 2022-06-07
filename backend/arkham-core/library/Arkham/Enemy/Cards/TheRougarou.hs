@@ -12,9 +12,9 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Enemy.Runner
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -70,16 +70,13 @@ instance HasAbilities TheRougarou where
         forcedAbility : filter (not . isEngage) actions' <> [engageAction]
       else forcedAbility : actions'
 
-instance EnemyRunner env => RunMessage TheRougarou where
+instance RunMessage TheRougarou where
   runMessage msg (TheRougarou (attrs@EnemyAttrs {..} `With` metadata)) =
     case msg of
       UseCardAbility _ source _ 1 _ | isSource attrs source -> do
         damageThreshold <- getPlayerCountValue (PerPlayer 1)
-        investigatorIds <- getInvestigatorIds
         leadInvestigatorId <- getLeadInvestigatorId
-        farthestLocationIds <- case investigatorIds of
-          [iid] -> map unFarthestLocationId <$> getSetList iid
-          iids -> map unFarthestLocationId <$> getSetList iids
+        farthestLocationIds <- selectList $ FarthestLocationFromAll Anywhere
         case farthestLocationIds of
           [] -> error "can't happen"
           [x] -> push (MoveUntil x (EnemyTarget enemyId))
@@ -96,7 +93,7 @@ instance EnemyRunner env => RunMessage TheRougarou where
           <$> runMessage msg attrs
       EndPhase ->
         TheRougarou . (`with` TheRougarouMetadata 0) <$> runMessage msg attrs
-      EnemyDamage eid _ _ _ n | eid == enemyId ->
+      Msg.EnemyDamage eid _ _ _ n | eid == enemyId ->
         TheRougarou
           . (`with` TheRougarouMetadata (damagePerPhase metadata + n))
           <$> runMessage msg attrs

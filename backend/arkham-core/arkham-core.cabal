@@ -370,6 +370,7 @@ library
       Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
       Arkham.Campaign.Campaigns.TheDunwichLegacy
       Arkham.Campaign.Campaigns.ThePathToCarcosa
+      Arkham.Campaign.Runner
       Arkham.CampaignId
       Arkham.CampaignLog
       Arkham.CampaignLogKey
@@ -733,11 +734,13 @@ library
       Arkham.EventId
       Arkham.Exception
       Arkham.Game
+      Arkham.Game.Base
       Arkham.Game.Helpers
       Arkham.GameEnv
       Arkham.GameValue
       Arkham.Helpers
       Arkham.Helpers.Ability
+      Arkham.Helpers.Agenda
       Arkham.Helpers.Campaign
       Arkham.Helpers.Card
       Arkham.Helpers.ChaosBag

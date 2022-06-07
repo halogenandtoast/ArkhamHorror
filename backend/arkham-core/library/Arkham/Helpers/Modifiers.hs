@@ -5,7 +5,8 @@ import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
 import Arkham.Modifier
-import Arkham.GameEnv
+import {-# SOURCE #-} Arkham.GameEnv
+import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Classes.HasModifiersFor
 
 getModifiers

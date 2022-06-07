@@ -24,6 +24,7 @@ class IsAsset a
 type AssetCard a = CardBuilder AssetId a
 
 data instance Field AssetAttrs :: Type -> Type where
+  AssetName :: Field AssetAttrs Name
   AssetCost :: Field AssetAttrs Int
   AssetClues :: Field AssetAttrs Int
   AssetHorror :: Field AssetAttrs Int

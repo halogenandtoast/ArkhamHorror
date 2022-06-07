@@ -6,13 +6,14 @@ module Arkham.Enemy.Cards.WrithingAppendage
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Classes
 import Arkham.DamageEffect
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Message hiding (EnemyAttacks, EnemyDefeated)
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
+import Arkham.Message hiding ( EnemyAttacks, EnemyDefeated )
+import Arkham.Message qualified as Msg
+import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Timing qualified as Timing
 
 newtype WrithingAppendage = WrithingAppendage EnemyAttrs
@@ -38,7 +39,7 @@ instance HasAbilities WrithingAppendage where
     $ toId attrs
     ]
 
-instance EnemyRunner env => RunMessage WrithingAppendage where
+instance RunMessage WrithingAppendage where
   runMessage msg e@(WrithingAppendage attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       e <$ push (RandomDiscard iid)
@@ -47,15 +48,12 @@ instance EnemyRunner env => RunMessage WrithingAppendage where
       -- triggering any abilities
       mCnidathquaId <- getCnidathqua
       case mCnidathquaId of
-        Just cnidathquaId ->
-          push
-            (EnemyDamage
-              cnidathquaId
-              iid
-              (toSource attrs)
-              NonAttackDamageEffect
-              1
-            )
+        Just cnidathquaId -> push $ Msg.EnemyDamage
+          cnidathquaId
+          iid
+          (toSource attrs)
+          NonAttackDamageEffect
+          1
         Nothing -> pure ()
       WrithingAppendage <$> runMessage msg attrs
     _ -> WrithingAppendage <$> runMessage msg attrs

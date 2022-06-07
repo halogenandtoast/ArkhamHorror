@@ -26,5 +26,5 @@ instance HasModifiersFor AsylumGorger where
 asylumGorger :: EnemyCard AsylumGorger
 asylumGorger = enemy AsylumGorger Cards.asylumGorger (4, Static 5, 4) (3, 3)
 
-instance EnemyRunner env => RunMessage AsylumGorger where
+instance RunMessage AsylumGorger where
   runMessage msg (AsylumGorger attrs) = AsylumGorger <$> runMessage msg attrs

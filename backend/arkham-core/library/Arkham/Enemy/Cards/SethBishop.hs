@@ -16,5 +16,5 @@ newtype SethBishop = SethBishop EnemyAttrs
 sethBishop :: EnemyCard SethBishop
 sethBishop = enemy SethBishop Cards.sethBishop (5, PerPlayer 3, 5) (1, 1)
 
-instance EnemyRunner env => RunMessage SethBishop where
+instance RunMessage SethBishop where
   runMessage msg (SethBishop attrs) = SethBishop <$> runMessage msg attrs

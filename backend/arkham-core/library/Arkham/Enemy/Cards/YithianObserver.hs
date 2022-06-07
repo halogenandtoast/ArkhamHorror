@@ -6,13 +6,14 @@ module Arkham.Enemy.Cards.YithianObserver
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyAttacks)
+import Arkham.Message hiding ( EnemyAttacks )
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype YithianObserver = YithianObserver EnemyAttrs
@@ -37,18 +38,15 @@ instance HasAbilities YithianObserver where
       $ toId a
     ]
 
-instance EnemyRunner env => RunMessage YithianObserver where
+instance RunMessage YithianObserver where
   runMessage msg e@(YithianObserver attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      cardCount' <- unCardCount <$> getCount iid
-      if cardCount' == 0
-        then
-          e
-            <$ push
-                 (skillTestModifiers
-                   source
-                   (toTarget attrs)
-                   [DamageDealt 1, HorrorDealt 1]
-                 )
-        else e <$ push (RandomDiscard iid)
+      emptyHand<- fieldMap InvestigatorHand null iid
+      if emptyHand
+        then push $ skillTestModifiers
+          source
+          (toTarget attrs)
+          [DamageDealt 1, HorrorDealt 1]
+        else push (RandomDiscard iid)
+      pure e
     _ -> YithianObserver <$> runMessage msg attrs

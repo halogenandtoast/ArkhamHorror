@@ -37,7 +37,7 @@ instance HasAbilities CatacombsDocent where
         $ ActionAbility (Just Action.Parley) (ActionCost 1)
     ]
 
-instance EnemyRunner env => RunMessage CatacombsDocent where
+instance RunMessage CatacombsDocent where
   runMessage msg e@(CatacombsDocent attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) _ 1 _ -> do
       push $ BeginSkillTest

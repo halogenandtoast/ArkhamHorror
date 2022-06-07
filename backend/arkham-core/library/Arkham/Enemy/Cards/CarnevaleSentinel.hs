@@ -9,11 +9,12 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Classes
 import Arkham.Enemy.Runner
-import Arkham.Id
+import Arkham.Asset.Attrs (Field(..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
+import Arkham.Projection
 import Arkham.Target
 
 newtype CarnevaleSentinel = CarnevaleSentinel EnemyAttrs
@@ -25,19 +26,19 @@ carnevaleSentinel :: EnemyCard CarnevaleSentinel
 carnevaleSentinel =
   enemy CarnevaleSentinel Cards.carnevaleSentinel (3, Static 3, 3) (2, 0)
 
-instance (HasName env AssetId, HasId (Maybe LocationId) env AssetId) => HasModifiersFor CarnevaleSentinel where
+instance HasModifiersFor CarnevaleSentinel where
   getModifiersFor _ (AssetTarget aid) (CarnevaleSentinel attrs) = do
-    mlid <- getId @(Maybe LocationId) aid
+    mlid <- field AssetLocation aid
     case mlid of
       Just lid | Just lid == enemyLocation attrs -> do
-        name <- getName aid
+        name <- field AssetName aid
         pure $ toModifiers
           attrs
           [ CannotBeRevealed | nameTitle name == "Masked Carnevale-Goer" ]
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage CarnevaleSentinel where
+instance RunMessage CarnevaleSentinel where
   runMessage msg (CarnevaleSentinel attrs) = case msg of
     InvestigatorDrawEnemy _ lid eid | eid == toId attrs -> do
       acrossLocationId <- getAcrossLocation lid

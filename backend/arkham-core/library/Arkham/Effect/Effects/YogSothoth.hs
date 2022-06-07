@@ -31,7 +31,7 @@ instance HasModifiersFor YogSothoth where
       _ -> pure []
     _ -> pure []
 
-instance HasQueue env => RunMessage YogSothoth where
+instance RunMessage YogSothoth where
   runMessage msg e@(YogSothoth attrs) = case msg of
     DeckHasNoCards iid _ | isTarget attrs (InvestigatorTarget iid) ->
       e <$ push (DrivenInsane iid)

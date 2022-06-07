@@ -20,7 +20,7 @@ newtype SavioCorvi = SavioCorvi EnemyAttrs
 savioCorvi :: EnemyCard SavioCorvi
 savioCorvi = enemy SavioCorvi Cards.savioCorvi (3, Static 5, 3) (1, 1)
 
-instance (HasSet ConnectedLocationId env LocationId, HasSet LocationId env ()) => HasModifiersFor SavioCorvi where
+instance HasModifiersFor SavioCorvi where
   getModifiersFor _ (EnemyTarget eid) (SavioCorvi attrs) | eid == toId attrs =
     case enemyLocation attrs of
       Nothing -> pure []
@@ -29,5 +29,5 @@ instance (HasSet ConnectedLocationId env LocationId, HasSet LocationId env ()) =
         pure $ toModifiers attrs [HunterConnectedTo acrossLocationId]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage SavioCorvi where
+instance RunMessage SavioCorvi where
   runMessage msg (SavioCorvi attrs) = SavioCorvi <$> runMessage msg attrs

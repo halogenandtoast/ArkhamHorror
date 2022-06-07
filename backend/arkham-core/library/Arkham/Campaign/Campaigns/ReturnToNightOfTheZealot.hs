@@ -3,7 +3,6 @@ module Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot where
 import Arkham.Prelude
 
 import Arkham.Campaigns.NightOfTheZealot.Import
-import Arkham.Campaign.Attrs
 import Arkham.Campaign.Campaigns.NightOfTheZealot
 import Arkham.Campaign.Runner
 import Arkham.CampaignId

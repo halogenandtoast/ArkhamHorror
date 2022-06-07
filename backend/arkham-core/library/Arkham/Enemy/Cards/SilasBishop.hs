@@ -22,5 +22,5 @@ instance HasModifiersFor SilasBishop where
     pure $ toModifiers attrs [CannotMakeAttacksOfOpportunity]
   getModifiersFor _ _ _ = pure []
 
-instance EnemyRunner env => RunMessage SilasBishop where
+instance RunMessage SilasBishop where
   runMessage msg (SilasBishop attrs) = SilasBishop <$> runMessage msg attrs

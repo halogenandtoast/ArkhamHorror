@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Campaign.Attrs
 import Arkham.Campaign.Runner
 import Arkham.CampaignId
 import Arkham.CampaignLogKey

@@ -36,5 +36,5 @@ instance HasAbilities MadPatient where
       $ toId a
     ]
 
-instance EnemyRunner env => RunMessage MadPatient where
+instance RunMessage MadPatient where
   runMessage msg (MadPatient attrs) = MadPatient <$> runMessage msg attrs

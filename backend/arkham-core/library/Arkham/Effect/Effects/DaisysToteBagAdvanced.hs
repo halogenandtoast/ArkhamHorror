@@ -25,7 +25,7 @@ instance HasModifiersFor DaisysToteBagAdvanced where
     | target == effectTarget = pure (toModifiers attrs [BecomesFast])
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage DaisysToteBagAdvanced where
+instance RunMessage DaisysToteBagAdvanced where
   runMessage msg e@(DaisysToteBagAdvanced attrs) = case msg of
     PlayedCard _ card | CardIdTarget (toCardId card) == effectTarget attrs ->
       e <$ push (DisableEffect $ toId attrs)

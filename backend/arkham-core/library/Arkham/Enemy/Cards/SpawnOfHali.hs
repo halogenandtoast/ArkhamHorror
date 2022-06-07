@@ -35,7 +35,7 @@ instance HasAbilities SpawnOfHali where
         (SuccessResult $ LessThanOrEqualTo $ Static 2)
     ]
 
-instance EnemyRunner env => RunMessage SpawnOfHali where
+instance RunMessage SpawnOfHali where
   runMessage msg e@(SpawnOfHali attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       e <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)

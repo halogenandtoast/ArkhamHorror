@@ -26,12 +26,6 @@ instance HasRecord env Campaign where
   hasRecordSet key = hasRecordSet key . campaignLog . toAttrs
   hasRecordCount key = hasRecordCount key . campaignLog . toAttrs
 
-instance HasSet CompletedScenarioId env Campaign where
-  getSet = getSet . toAttrs
-
-instance HasList CampaignStoryCard env Campaign where
-  getList = getList . toAttrs
-
 instance Entity Campaign where
   type EntityId Campaign = CampaignId
   type EntityAttrs Campaign = CampaignAttrs

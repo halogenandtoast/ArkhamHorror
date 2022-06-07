@@ -6,10 +6,10 @@ module Arkham.Enemy.Cards.BogGator
 import Arkham.Prelude
 
 import Arkham.Classes
-import qualified Arkham.Enemy.Cards as Cards
-import Arkham.Enemy.Runner hiding (EnemyEvade)
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Enemy.Runner hiding ( EnemyEvade )
 import Arkham.Matcher
-import Arkham.Modifier
+import Arkham.Modifier qualified as Modifier
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait
@@ -26,14 +26,15 @@ bogGator = enemyWith
   (1, 1)
   (preyL .~ Prey (InvestigatorWithLowestSkill SkillAgility))
 
-instance Query LocationMatcher env => HasModifiersFor BogGator where
+instance HasModifiersFor BogGator where
   getModifiersFor _ (EnemyTarget eid) (BogGator a@EnemyAttrs {..})
     | spawned a && eid == enemyId = do
-      bayouLocation <- selectAny $ LocationWithTrait Bayou <> locationWithEnemy eid
+      bayouLocation <-
+        selectAny $ LocationWithTrait Bayou <> locationWithEnemy eid
       pure $ toModifiers a $ if bayouLocation
-        then [EnemyFight 2, EnemyEvade 2]
+        then [Modifier.EnemyFight 2, Modifier.EnemyEvade 2]
         else []
   getModifiersFor _ _ _ = pure []
 
-instance (EnemyRunner env) => RunMessage BogGator where
+instance RunMessage BogGator where
   runMessage msg (BogGator attrs) = BogGator <$> runMessage msg attrs

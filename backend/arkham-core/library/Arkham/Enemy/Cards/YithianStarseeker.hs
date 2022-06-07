@@ -38,7 +38,7 @@ instance HasAbilities YithianStarseeker where
       $ toId attrs
     ]
 
-instance EnemyRunner env => RunMessage YithianStarseeker where
+instance RunMessage YithianStarseeker where
   runMessage msg e@(YithianStarseeker attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       e <$ push (PlaceDoom (toTarget attrs) 1)

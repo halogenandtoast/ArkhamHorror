@@ -35,7 +35,7 @@ instance HasAbilities MobEnforcer where
         $ ActionAbility (Just Parley) (Costs [ActionCost 1, ResourceCost 4])
     ]
 
-instance EnemyRunner env => RunMessage MobEnforcer where
+instance RunMessage MobEnforcer where
   runMessage msg e@(MobEnforcer attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->
       e <$ push (Discard $ toTarget attrs)

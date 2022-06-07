@@ -6,19 +6,18 @@ module Arkham.Treachery.Cards.SpectralMist
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
+import Arkham.Helpers.Investigator
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -29,9 +28,9 @@ newtype SpectralMist = SpectralMist TreacheryAttrs
 spectralMist :: TreacheryCard SpectralMist
 spectralMist = treachery SpectralMist Cards.spectralMist
 
-instance HasId LocationId env InvestigatorId => HasModifiersFor SpectralMist where
+instance HasModifiersFor SpectralMist where
   getModifiersFor (SkillTestSource iid _ _ _) _ (SpectralMist a) = do
-    lid <- getId @LocationId iid
+    lid <- getJustLocation iid
     pure $ toModifiers a [ Difficulty 1 | treacheryOnLocation lid a ]
   getModifiersFor _ _ _ = pure []
 
@@ -41,22 +40,15 @@ instance HasAbilities SpectralMist where
         1
     ]
 
-instance (TreacheryRunner env) => RunMessage SpectralMist where
+instance RunMessage SpectralMist where
   runMessage msg t@(SpectralMist attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      exemptLocations <- getSet @LocationId
-        (TreacheryCardCode $ CardCode "81025")
-      targetLocations <-
-        setToList . (`difference` exemptLocations) <$> getSet @LocationId
-          [Bayou]
-      when
-        (notNull targetLocations)
-        (push $ chooseOne
-          iid
-          [ AttachTreachery treacheryId (LocationTarget x)
-          | x <- targetLocations
-          ]
-        )
+      targets <-
+        selectListMap LocationTarget $ LocationWithTrait Bayou <> NotLocation
+          (LocationWithTreachery $ treacheryIs Cards.spectralMist)
+      when (notNull targetLocations) $ push $ chooseOne
+        iid
+        [ AttachTreachery treacheryId target | target <- targets ]
       SpectralMist <$> runMessage msg attrs
     UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       t <$ push

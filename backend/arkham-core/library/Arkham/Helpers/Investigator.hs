@@ -2,15 +2,20 @@ module Arkham.Helpers.Investigator where
 
 import Arkham.Prelude
 
+import Data.UUID (nil)
 import Arkham.Action
 import Arkham.Card
 import Arkham.Card.Id
+import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest
 import Arkham.Id
+import Arkham.SkillTest.Base
 import Arkham.Investigator.Attrs
 import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Treachery.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Projection
@@ -22,7 +27,7 @@ import Arkham.Target
 import Arkham.Trait
 
 getSkillValue :: SkillType -> InvestigatorId -> GameT Int
-getSkillValue st iid = \case
+getSkillValue st iid = case st of
   SkillWillpower -> field InvestigatorWillpower iid
   SkillIntellect -> field InvestigatorIntellect iid
   SkillCombat -> field InvestigatorCombat iid
@@ -32,7 +37,7 @@ skillValueFor
   :: SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> GameT Int
 skillValueFor skill maction tempModifiers iid = do
   base <- baseSkillValueFor skill maction tempModifiers iid
-  foldr applyModifier base tempModifiers
+  pure $ foldr applyModifier base tempModifiers
  where
   canBeIncreased = SkillCannotBeIncreased skill `notElem` tempModifiers
   applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 = max 0 (n + m)
@@ -48,7 +53,7 @@ baseSkillValueFor
   :: SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> GameT Int
 baseSkillValueFor skill _maction tempModifiers iid = do
   baseValue <- getSkillValue skill iid
-  foldr applyModifier baseSkillValue tempModifiers
+  pure $ foldr applyModifier baseValue tempModifiers
  where
   applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
   applyModifier _ n = n
@@ -73,7 +78,7 @@ getIsScenarioAbility = do
       LocationSource _ -> pure True
       TreacherySource tid ->
         -- If treachery has a subtype then it is a weakness not an encounter card
-        isNothing . cdCardSubType <$> getCardDef tid
+        isNothing . cdCardSubType <$> field TreacheryCardDef tid
       ActSource _ -> pure True
       _ -> pure False
     _ -> pure False

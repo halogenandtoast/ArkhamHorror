@@ -5,13 +5,12 @@ module Arkham.Treachery.Cards.LightOfAforgomon
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Card
 import Arkham.Classes
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Target
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -30,15 +29,14 @@ instance HasModifiersFor LightOfAforgomon where
 instance RunMessage LightOfAforgomon where
   runMessage msg (LightOfAforgomon attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      exemptActs <- getSet (TreacheryCardCode $ CardCode "81025")
-      exemptAgendas <- getSet (TreacheryCardCode $ CardCode "81025")
       targetActs <-
-        map ActTarget . setToList . (`difference` exemptActs) <$> getSet ()
+        selectListMap ActTarget $ NotAct $ ActWithTreachery $ treacheryIs
+          Cards.lightOfAforgomon
       targetAgendas <-
-        map AgendaTarget
-        . setToList
-        . (`difference` exemptAgendas)
-        <$> getSet ()
+        selectListMap AgendaTarget
+        $ NotAgenda
+        $ AgendaWithTreachery
+        $ treacheryIs Cards.lightOfAforgomon
       when
         (notNull $ targetActs <> targetAgendas)
         (push $ chooseOne

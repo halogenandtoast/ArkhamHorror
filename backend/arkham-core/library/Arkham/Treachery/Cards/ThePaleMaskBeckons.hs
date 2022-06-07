@@ -5,14 +5,14 @@ module Arkham.Treachery.Cards.ThePaleMaskBeckons
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Helpers.Card
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 

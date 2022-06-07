@@ -3,6 +3,7 @@ module Arkham.SkillTest.Base where
 import Arkham.Prelude
 
 import Arkham.Action (Action)
+import Arkham.Classes.Entity
 import Arkham.Card
 import Arkham.Card.Id
 import Arkham.Id
@@ -37,3 +38,19 @@ instance ToJSON SkillTest where
 
 instance FromJSON SkillTest where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
+
+instance TargetEntity SkillTest where
+  toTarget _ = SkillTestTarget
+  isTarget _ SkillTestTarget = True
+  isTarget _ _ = False
+
+instance SourceEntity SkillTest where
+  toSource SkillTest {..} =
+    SkillTestSource
+      skillTestInvestigator
+      skillTestSkillType
+      skillTestSource
+      skillTestAction
+  isSource _ SkillTestSource {} = True
+  isSource _ _ = False
+

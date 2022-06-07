@@ -14,7 +14,6 @@ import Arkham.Target
 import Arkham.Helpers.Investigator
 import Arkham.SkillType
 import Arkham.Treachery.Runner
-import Arkham.Treachery.Runner
 
 newtype LostSoul = LostSoul TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

@@ -247,6 +247,7 @@ data EnemyMatcher
   | EnemyWithDoom ValueMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
   | NearestEnemy EnemyMatcher
+  | FarthestEnemyFrom InvestigatorId EnemyMatcher
   | EnemyIs CardCode
   | AnyEnemy
   | CanFightEnemy
@@ -789,10 +790,16 @@ data AgendaMatcher
   = AgendaWithId AgendaId
   | AgendaWithDoom ValueMatcher
   | AnyAgenda
+  | AgendaWithTreachery TreacheryMatcher
+  | NotAgenda AgendaMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data ActMatcher = ActWithId ActId | AnyAct
+data ActMatcher
+  = ActWithId ActId
+  | AnyAct
+  | ActWithTreachery TreacheryMatcher
+  | NotAct ActMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

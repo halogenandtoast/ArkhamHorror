@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.ScenarioLogKey
-import Arkham.Treachery.Runner
+import Arkham.Scenario.Attrs (Field(..))
 import Arkham.Treachery.Runner
 
 newtype SomethingInTheDrinks = SomethingInTheDrinks TreacheryAttrs
@@ -24,7 +24,7 @@ somethingInTheDrinks =
 instance RunMessage SomethingInTheDrinks where
   runMessage msg t@(SomethingInTheDrinks attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
-      scenarioLogs <- getSet ()
+      scenarioLogs <- scenarioField ScenarioRemembered
       investigatorIds <- getInvestigatorIds
       t <$ pushAll
         ([ LoseActions iid source 1

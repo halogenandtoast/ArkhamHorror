@@ -16,7 +16,6 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Treachery.Runner
-import Arkham.Treachery.Runner
 
 newtype ClawsOfSteam = ClawsOfSteam TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

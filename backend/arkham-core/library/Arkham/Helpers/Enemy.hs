@@ -3,11 +3,14 @@ module Arkham.Helpers.Enemy where
 import Arkham.Prelude
 
 import Arkham.Card.CardDef
+import Arkham.Classes.Entity
 import Arkham.Enemy.Attrs
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Location
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Id
+import Arkham.Helpers.Investigator
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
@@ -97,10 +100,10 @@ getFightableEnemyIds iid source = do
   fightAnywhereEnemyIds <- getSetList () >>= filterM \eid -> do
     modifiers' <- getModifiers source (EnemyTarget eid)
     pure $ CanBeFoughtAsIfAtYourLocation `elem` modifiers'
-  locationId <- getId @LocationId iid
+  locationId <- getJustLocation iid
   enemyIds <- union (setFromList fightAnywhereEnemyIds)
-    <$> getSet @EnemyId locationId
-  investigatorEnemyIds <- getSet @EnemyId iid
+    <$> select (EnemyAt $ LocationWithId locationId)
+  investigatorEnemyIds <- select $ EnemyIsEngagedWith $ InvestigatorWithId iid
   aloofEnemyIds <- select $ AloofEnemy <> EnemyAt (LocationWithId locationId)
   let
     potentials = setToList
@@ -110,9 +113,9 @@ getFightableEnemyIds iid source = do
     not
       <$> anyM
             (\case
-              CanOnlyBeAttackedByAbilityOn cardCodes -> case source of
+              Modifier.CanOnlyBeAttackedByAbilityOn cardCodes -> case source of
                 (AssetSource aid) ->
-                  (`member` cardCodes) <$> getId @CardCode aid
+                  (`member` cardCodes) <$> field AssetCardCode aid
                 _ -> pure True
               _ -> pure False
             )

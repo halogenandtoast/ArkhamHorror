@@ -17,7 +17,6 @@ import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
 
 newtype LockedDoor = LockedDoor TreacheryAttrs
   deriving anyclass IsTreachery
@@ -39,7 +38,7 @@ instance HasAbilities LockedDoor where
         1
     ]
 
-instance (TreacheryRunner env) => RunMessage LockedDoor where
+instance RunMessage LockedDoor where
   runMessage msg t@(LockedDoor attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       targets <-

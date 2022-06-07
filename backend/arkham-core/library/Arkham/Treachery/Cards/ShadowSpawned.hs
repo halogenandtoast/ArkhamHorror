@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Game.Helpers
-import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Message
 import Arkham.Modifier

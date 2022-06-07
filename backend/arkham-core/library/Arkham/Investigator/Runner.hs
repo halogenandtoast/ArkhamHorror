@@ -27,7 +27,9 @@ import Arkham.CommitRestriction
 import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
+import Arkham.Deck qualified as Deck
 import Arkham.Direction
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Game.Helpers hiding ( windows )
 import Arkham.Game.Helpers qualified as Helpers
 import Arkham.Helpers
@@ -45,6 +47,7 @@ import Arkham.Matcher
   , assetIs
   )
 import Arkham.Message
+import Arkham.Message qualified as Msg
 import Arkham.Modifier
 import Arkham.Query
 import Arkham.ScenarioLogKey
@@ -516,8 +519,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       map
       queue
       \case
-        InvestigatorDamage iid' s damage' horror' ->
-          InvestigatorDamage iid' s (max 0 (damage' - n)) horror'
+        Msg.InvestigatorDamage iid' s damage' horror' ->
+          Msg.InvestigatorDamage iid' s (max 0 (damage' - n)) horror'
         InvestigatorDoAssignDamage iid' s t damage' horror' aa b ->
           InvestigatorDoAssignDamage iid' s t (max 0 (damage' - n)) horror' aa b
         other -> other
@@ -526,8 +529,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       map
       queue
       \case
-        InvestigatorDamage iid' s damage' horror' ->
-          InvestigatorDamage iid' s damage' (max 0 (horror' - n))
+        Msg.InvestigatorDamage iid' s damage' horror' ->
+          Msg.InvestigatorDamage iid' s damage' (max 0 (horror' - n))
         InvestigatorDoAssignDamage iid' s t damage' horror' aa b ->
           InvestigatorDoAssignDamage iid' s t damage' (max 0 (horror' - n)) aa b
         other -> other
@@ -558,7 +561,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              ]
          | horror > 0 || damage > 0
          ]
-      <> [InvestigatorDamage iid source damage horror, CheckDefeated source]
+      <> [Msg.InvestigatorDamage iid source damage horror, CheckDefeated source]
       <> [After (InvestigatorTakeDamage iid source damage horror)]
       <> [ CheckWindow
              [iid]
@@ -669,7 +672,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           , assignRestOfHealthDamage (damageTargets <> [AssetTarget aid]) mempty
           ]
         damageInvestigator = Run
-          [ InvestigatorDamage investigatorId source 1 0
+          [ Msg.InvestigatorDamage investigatorId source 1 0
           , assignRestOfHealthDamage
             (damageTargets <> [InvestigatorTarget investigatorId])
             mempty
@@ -711,7 +714,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           , assignRestOfHealthDamage mempty (horrorTargets <> [AssetTarget aid])
           ]
         damageInvestigator = Run
-          [ InvestigatorDamage investigatorId source 1 0
+          [ Msg.InvestigatorDamage investigatorId source 1 0
           , assignRestOfHealthDamage
             mempty
             (horrorTargets <> [InvestigatorTarget investigatorId])
@@ -761,7 +764,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ chooseOne iid
         $ TargetLabel
             (toTarget a)
-            [ InvestigatorDamage investigatorId source health sanity
+            [ Msg.InvestigatorDamage investigatorId source health sanity
             , continue health sanity (toTarget a)
             ]
         : map toAssetMessage assetsWithCounts
@@ -786,7 +789,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 horrorTargets
               ]
             damageInvestigator = Run
-              [ InvestigatorDamage investigatorId source 1 0
+              [ Msg.InvestigatorDamage investigatorId source 1 0
               , assignRestOfHealthDamage
                 (InvestigatorTarget investigatorId : damageTargets)
                 horrorTargets
@@ -820,7 +823,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               health
               (sanity - 1)
             damageInvestigator = Run
-              [ InvestigatorDamage investigatorId source 0 1
+              [ Msg.InvestigatorDamage investigatorId source 0 1
               , assignRestOfSanityDamage
                 damageTargets
                 (InvestigatorTarget investigatorId : horrorTargets)
@@ -1141,7 +1144,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (deckL %~ Deck . filter ((/= cardCode) . toCardCode) . unDeck)
       & (discardL %~ filter ((/= cardCode) . toCardCode))
       & (handL %~ filter ((/= cardCode) . toCardCode))
-  InvestigatorDamage iid _ health sanity | iid == investigatorId ->
+  Msg.InvestigatorDamage iid _ health sanity | iid == investigatorId ->
     pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
   DrivenInsane iid | iid == investigatorId ->
     pure $ a & mentalTraumaL .~ investigatorSanity
@@ -1268,7 +1271,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     , CheckAttackOfOpportunity iid False
     , DrawCards iid n False
     ]
-  MoveTopOfDeckToBottom _ (InvestigatorDeck iid) n | iid == investigatorId -> do
+  MoveTopOfDeckToBottom _ (Deck.InvestigatorDeck iid) n | iid == investigatorId -> do
     let (cards, deck) = splitAt n (unDeck investigatorDeck)
     pure $ a & deckL .~ Deck (deck <> cards)
   DrawCards iid 0 False | iid == investigatorId -> pure a
@@ -1317,7 +1320,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     windowMsg <- checkWindows
       [ Window
           Timing.After
-          (Window.DrawCard iid (PlayerCard card) $ InvestigatorDeck iid)
+          (Window.DrawCard iid (PlayerCard card) $ Deck.InvestigatorDeck iid)
       ]
     a <$ push windowMsg
   InvestigatorSpendClues iid n | iid == investigatorId -> pure $ a & cluesL -~ n
@@ -1341,7 +1344,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     a <$ when
       (CardsCannotLeaveYourDiscardPile `notElem` modifiers')
       (pushAll
-        [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
+        [ShuffleDiscardBackIn iid, Msg.InvestigatorDamage iid EmptyDeckSource 0 1]
       )
   UseAbility iid ability@Ability {..} windows | iid == investigatorId ->
     a <$ push
@@ -1798,7 +1801,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             then chooseOne
               iid
               [Label "No cards found" [SearchNoneFound iid searchTarget]]
-            else SearchFound iid searchTarget (InvestigatorDeck iid) targetCards
+            else SearchFound iid searchTarget (Deck.InvestigatorDeck iid) targetCards
         ReturnCards -> pure ()
 
       push $ CheckWindow

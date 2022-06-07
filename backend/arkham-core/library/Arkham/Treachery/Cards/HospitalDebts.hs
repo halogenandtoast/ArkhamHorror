@@ -15,7 +15,6 @@ import Arkham.Message hiding ( InvestigatorEliminated )
 import Arkham.Modifier
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -25,12 +24,11 @@ newtype HospitalDebts = HospitalDebts TreacheryAttrs
   deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
 
 hospitalDebts :: TreacheryCard HospitalDebts
-hospitalDebts =
-  treacheryWith HospitalDebts Cards.hospitalDebts (resourcesL ?~ 0)
+hospitalDebts = treachery HospitalDebts Cards.hospitalDebts
 
 instance HasModifiersFor HospitalDebts where
   getModifiersFor _ (InvestigatorTarget iid) (HospitalDebts attrs) = do
-    let resources' = fromJustNote "must be set" $ treacheryResources attrs
+    let resources' = treacheryResources attrs
     pure $ toModifiers
       attrs
       [ XPModifier (-2) | treacheryOnInvestigator iid attrs && resources' < 6 ]

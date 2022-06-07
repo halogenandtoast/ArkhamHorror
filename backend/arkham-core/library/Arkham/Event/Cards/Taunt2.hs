@@ -10,7 +10,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Message
-import Arkham.Target
 
 newtype Taunt2 = Taunt2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -22,7 +21,7 @@ taunt2 = event Taunt2 Cards.taunt2
 instance RunMessage Taunt2 where
   runMessage msg e@(Taunt2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      enemyIds <- select $ enemiesColocatedWith iid
+      enemyIds <- selectList $ enemiesColocatedWith iid
       e <$ push
         (chooseSome
           iid

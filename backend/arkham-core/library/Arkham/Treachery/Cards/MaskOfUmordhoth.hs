@@ -2,17 +2,16 @@ module Arkham.Treachery.Cards.MaskOfUmordhoth where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
-import Arkham.Keyword qualified as Keyword
+import qualified Arkham.Keyword as Keyword
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Target
 import Arkham.Trait
-import Arkham.Treachery.Runner
+import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -34,18 +33,16 @@ instance HasModifiersFor MaskOfUmordhoth where
 instance RunMessage MaskOfUmordhoth where
   runMessage msg t@(MaskOfUmordhoth attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      enemies <- map unFarthestEnemyId <$> getSetList (iid, EnemyTrait Cultist)
-      t <$ case enemies of
+      enemies <- selectList $ FarthestEnemyFrom iid $ EnemyWithTrait Cultist
+      case enemies of
         [] -> pushAll
           [ FindAndDrawEncounterCard
             iid
             (CardWithType EnemyType <> CardWithTrait Cultist)
           , Revelation iid source
           ]
-        [eid] -> push (AttachTreachery treacheryId (EnemyTarget eid))
-        eids -> push
-          (chooseOne
-            iid
-            [ AttachTreachery treacheryId (EnemyTarget eid) | eid <- eids ]
-          )
+        eids -> push $ chooseOrRunOne
+          iid
+          [ AttachTreachery treacheryId (EnemyTarget eid) | eid <- eids ]
+      pure t
     _ -> MaskOfUmordhoth <$> runMessage msg attrs

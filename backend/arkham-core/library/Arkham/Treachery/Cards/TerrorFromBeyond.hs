@@ -5,13 +5,16 @@ module Arkham.Treachery.Cards.TerrorFromBeyond
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
-import Arkham.Card.Id
 import Arkham.Classes
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.History
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype TerrorFromBeyond = TerrorFromBeyond TreacheryAttrs
@@ -30,13 +33,28 @@ instance RunMessage TerrorFromBeyond where
         secondCopy =
           toCardCode attrs `elem` historyTreacheriesDrawn phaseHistory
       iidsWithAssets <- traverse
-        (traverseToSnd $ (map unHandCardId <$>) . getSetList . (, AssetType))
+        (traverseToSnd
+          (fieldMap
+            InvestigatorHand
+            (map toCardId . filter (`cardMatch` CardWithType AssetType))
+          )
+        )
         iids
       iidsWithEvents <- traverse
-        (traverseToSnd $ (map unHandCardId <$>) . getSetList . (, EventType))
+        (traverseToSnd
+          (fieldMap
+            InvestigatorHand
+            (map toCardId . filter (`cardMatch` CardWithType EventType))
+          )
+        )
         iids
       iidsWithSkills <- traverse
-        (traverseToSnd $ (map unHandCardId <$>) . getSetList . (, SkillType))
+        (traverseToSnd
+          (fieldMap
+            InvestigatorHand
+            (map toCardId . filter (`cardMatch` CardWithType SkillType))
+          )
+        )
         iids
       t <$ push
         (chooseN

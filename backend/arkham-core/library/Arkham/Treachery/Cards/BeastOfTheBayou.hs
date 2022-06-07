@@ -3,15 +3,13 @@ module Arkham.Treachery.Cards.BeastOfTheBayou where
 import Arkham.Prelude
 
 import Arkham.Attack
-import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Source
 import Arkham.Target
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype BeastOfTheBayou = BeastOfTheBayou TreacheryAttrs
@@ -29,14 +27,16 @@ instance RunMessage BeastOfTheBayou where
         Nothing -> pushAll [PlaceDoomOnAgenda]
         Just eid -> do
           locationId <- selectJust $ LocationWithEnemy $ EnemyWithId eid
-          connectedLocationIds <- map unConnectedLocationId
-            <$> getSetList locationId
-          investigatorIds <- concat <$> traverse
-            (getSetList @InvestigatorId)
-            (locationId : connectedLocationIds)
+          connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId
+            locationId
+          investigatorIds <-
+            selectList $ InvestigatorAt $ LocationMatchAny $ map
+              LocationWithId
+              (locationId : connectedLocationIds)
           case investigatorIds of
             [] -> pushAll [PlaceDoomOnAgenda]
-            xs -> pushAll [ EnemyAttack iid' eid DamageAny RegularAttack | iid' <- xs ]
+            xs -> pushAll
+              [ EnemyAttack iid' eid DamageAny RegularAttack | iid' <- xs ]
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == treacheryId
       -> t

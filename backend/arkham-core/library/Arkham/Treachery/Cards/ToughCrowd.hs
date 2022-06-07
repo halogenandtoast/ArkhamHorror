@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.ToughCrowd
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Action
 import Arkham.Classes
 import Arkham.Matcher
@@ -14,7 +13,7 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -37,7 +36,7 @@ instance HasAbilities ToughCrowd where
 instance RunMessage ToughCrowd where
   runMessage msg t@(ToughCrowd attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
-      agendaId <- fromJustNote "missing agenda" . headMay <$> getSetList ()
+      agendaId <- selectJust AnyAgenda
       t <$ push (AttachTreachery (toId attrs) (AgendaTarget agendaId))
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       t <$ push (Discard $ toTarget attrs)

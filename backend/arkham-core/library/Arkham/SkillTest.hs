@@ -9,22 +9,15 @@ import Arkham.Prelude
 import Arkham.Action (Action)
 import Arkham.SkillTestResult
 import Arkham.SkillTest.Base as X
+import Arkham.Helpers.SkillTest as X
 import Arkham.SkillType
-import Arkham.Classes.Entity
 import Arkham.Card
 import Arkham.Card.Id
 import Arkham.Id
-import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-
-getSkillTestTarget :: GameT (Maybe Target)
-getSkillTestTarget = fmap skillTestTarget <$> getSkillTest
-
-getSkillTestSource :: GameT (Maybe Source)
-getSkillTestSource = fmap toSource <$> getSkillTest
 
 data SkillTestResultsData = SkillTestResultsData
   { skillTestResultsSkillValue :: Int
@@ -61,21 +54,6 @@ resultL = lens skillTestResult $ \m x -> m {skillTestResult = x}
 valueModifierL :: Lens' SkillTest Int
 valueModifierL =
   lens skillTestValueModifier $ \m x -> m {skillTestValueModifier = x}
-
-instance TargetEntity SkillTest where
-  toTarget _ = SkillTestTarget
-  isTarget _ SkillTestTarget = True
-  isTarget _ _ = False
-
-instance SourceEntity SkillTest where
-  toSource SkillTest {..} =
-    SkillTestSource
-      skillTestInvestigator
-      skillTestSkillType
-      skillTestSource
-      skillTestAction
-  isSource _ SkillTestSource {} = True
-  isSource _ _ = False
 
 initSkillTest ::
   InvestigatorId ->

@@ -18,7 +18,6 @@ import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
 
 newtype GiftOfMadnessMisery = GiftOfMadnessMisery TreacheryAttrs
   deriving anyclass IsTreachery

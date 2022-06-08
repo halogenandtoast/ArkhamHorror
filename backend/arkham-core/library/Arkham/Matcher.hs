@@ -329,6 +329,16 @@ pattern LeadInvestigatorLocation <-
   LocationWithInvestigator LeadInvestigator where
   LeadInvestigatorLocation = LocationWithInvestigator LeadInvestigator
 
+pattern LocationWithoutEnemies :: LocationMatcher
+pattern LocationWithoutEnemies <-
+  NotLocation (LocationWithEnemy AnyEnemy) where
+  LocationWithoutEnemies = NotLocation (LocationWithEnemy AnyEnemy)
+
+pattern LocationWithoutInvestigators :: LocationMatcher
+pattern LocationWithoutInvestigators <-
+  NotLocation (LocationWithInvestigator Anyone) where
+  LocationWithoutInvestigators = NotLocation (LocationWithInvestigator Anyone)
+
 locationIs :: HasCardCode a => a -> LocationMatcher
 locationIs = LocationIs . toCardCode
 {-# INLINE locationIs #-}
@@ -366,8 +376,6 @@ data LocationMatcher
   | LocationWithClues ValueMatcher
   | LocationWithHorror ValueMatcher
   | LocationWithMostClues LocationMatcher
-  | LocationWithoutInvestigators
-  | LocationWithoutEnemies
   | LocationWithEnemy EnemyMatcher
   | LocationWithAsset AssetMatcher
   | LocationWithInvestigator InvestigatorMatcher

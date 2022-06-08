@@ -14,7 +14,6 @@ import Arkham.Helpers.SkillTest
 import Arkham.Id
 import Arkham.SkillTest.Base
 import Arkham.Investigator.Attrs
-import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Treachery.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Modifier
@@ -32,6 +31,7 @@ getSkillValue st iid = case st of
   SkillIntellect -> field InvestigatorIntellect iid
   SkillCombat -> field InvestigatorCombat iid
   SkillAgility -> field InvestigatorAgility iid
+  SkillWild -> error "no wild skill"
 
 skillValueFor
   :: SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> GameT Int

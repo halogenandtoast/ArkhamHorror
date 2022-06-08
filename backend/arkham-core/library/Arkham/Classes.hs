@@ -1,9 +1,6 @@
 module Arkham.Classes
-  ( module Arkham.Classes
-  , module X
+  ( module X
   ) where
-
-import Arkham.Prelude hiding ( to )
 
 import Arkham.Classes.Depth as X
 import Arkham.Classes.Entity as X

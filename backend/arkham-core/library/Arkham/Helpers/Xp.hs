@@ -3,18 +3,17 @@ module Arkham.Helpers.Xp where
 import Arkham.Prelude
 
 import Arkham.Card.CardDef
-import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.Query
 import Arkham.Helpers.Query
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Location.Attrs ( Field (..), LocationAttrs )
+import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Projection
-import Arkham.Scenario.Attrs ( Field (..), ScenarioAttrs )
+import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.Source
 import Arkham.Target
 import Data.Monoid ( Sum (..) )

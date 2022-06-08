@@ -27,10 +27,12 @@ import Arkham.Id
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Phase
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
+import Arkham.Treachery.Attrs (Field(..))
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
@@ -325,4 +327,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   MoveTopOfDeckToBottom _ Deck.EncounterDeck n -> do
     let (cards, deck) = splitAt n (unDeck scenarioEncounterDeck)
     pure $ a & encounterDeckL .~ Deck (deck <> cards)
+  Discard (TreacheryTarget tid) -> do
+    card <- field TreacheryCard tid
+    case card of
+      PlayerCard _ -> pure a
+      EncounterCard ec -> pure $ a & discardL %~ (ec :)
   _ -> pure a

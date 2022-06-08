@@ -96,3 +96,6 @@ getDistance l1 l2 = do
 
 getPhase :: GameT Phase
 getPhase = asks $ gamePhase . gameEnvGame
+
+getWindowDepth :: GameT Int
+getWindowDepth = asks $ gameWindowDepth . gameEnvGame

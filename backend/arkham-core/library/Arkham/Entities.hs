@@ -7,6 +7,7 @@ import Arkham.Act
 import Arkham.Agenda
 import Arkham.Asset
 import Arkham.Classes.Entity
+import Arkham.Classes.RunMessage
 import Arkham.Effect
 import Arkham.Enemy
 import Arkham.Event
@@ -50,4 +51,15 @@ defaultEntities = Entities
   , entitiesSkills = mempty
   }
 
-
+instance RunMessage Entities where
+  runMessage msg entities =
+    traverseOf (actsL . traverse) (runMessage msg) entities
+      >>= traverseOf (agendasL . traverse) (runMessage msg)
+      >>= traverseOf (treacheriesL . traverse) (runMessage msg)
+      >>= traverseOf (eventsL . traverse) (runMessage msg)
+      >>= traverseOf (locationsL . traverse) (runMessage msg)
+      >>= traverseOf (enemiesL . traverse) (runMessage msg)
+      >>= traverseOf (effectsL . traverse) (runMessage msg)
+      >>= traverseOf (assetsL . traverse) (runMessage msg)
+      >>= traverseOf (skillsL . traverse) (runMessage msg)
+      >>= traverseOf (investigatorsL . traverse) (runMessage msg)

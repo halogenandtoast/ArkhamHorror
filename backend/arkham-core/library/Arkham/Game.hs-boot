@@ -78,6 +78,7 @@ instance HasRecord ()
 
 gamePhase :: Game -> Phase
 gameSkillTest :: Game -> Maybe SkillTest
+gameWindowDepth :: Game -> Int
 gamePhaseHistory :: Game -> HashMap InvestigatorId History
 gameTurnHistory :: Game -> HashMap InvestigatorId History
 gameRoundHistory :: Game -> HashMap InvestigatorId History

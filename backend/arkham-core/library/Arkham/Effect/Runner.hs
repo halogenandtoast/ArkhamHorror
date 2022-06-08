@@ -1,4 +1,5 @@
-module Arkham.Effect.Runner (module Arkham.Effect.Runner, module X) where
+{-# OPTIONS_GHC -Wno-orphans #-}
+module Arkham.Effect.Runner (module X) where
 
 import Arkham.Prelude
 

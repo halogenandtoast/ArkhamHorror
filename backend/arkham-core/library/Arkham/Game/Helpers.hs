@@ -1886,6 +1886,12 @@ targetMatches s = \case
 enemyMatches :: EnemyId -> Matcher.EnemyMatcher -> GameT Bool
 enemyMatches !enemyId !mtchr = member enemyId <$> select mtchr
 
+matches :: Query a => QueryElement a -> a -> GameT Bool
+matches a matcher = member a <$> select matcher
+
+(<=~>) :: Query a => QueryElement a -> a -> GameT Bool
+(<=~>) = matches
+
 locationMatches
   :: InvestigatorId
   -> Source
@@ -1895,41 +1901,57 @@ locationMatches
   -> GameT Bool
 locationMatches investigatorId source window locationId matcher =
   case matcher of
-    Matcher.LocationNotInPlay -> pure False
-    Matcher.LocationWithLabel label ->
-      member locationId <$> select (Matcher.LocationWithLabel label)
-    Matcher.LocationWithTitle title ->
-      member locationId <$> select (Matcher.LocationWithTitle title)
-    Matcher.LocationWithFullTitle title subtitle -> member locationId
-      <$> select (Matcher.LocationWithFullTitle title subtitle)
-    Matcher.LocationWithSymbol locationSymbol ->
-      member locationId <$> select (Matcher.LocationWithSymbol locationSymbol)
-    Matcher.LocationWithUnrevealedTitle title ->
-      member locationId <$> select (Matcher.LocationWithUnrevealedTitle title)
-    Matcher.LocationWithId lid -> pure $ lid == locationId
-    Matcher.LocationIs cardCode ->
-      member locationId <$> select (Matcher.LocationIs cardCode)
-    Matcher.Anywhere -> pure True
+    -- special cases
     Matcher.Unblocked -> notElem Blocked <$> getModifiers
       (InvestigatorSource investigatorId)
       (LocationTarget locationId)
-    Matcher.EmptyLocation -> member locationId <$> select matcher
-    Matcher.LocationWithoutInvestigators ->
-      member locationId <$> select matcher
-    Matcher.LocationWithoutEnemies -> member locationId <$> select matcher
+
     Matcher.LocationWithEnemy enemyMatcher -> notNull <$> select
       (Matcher.EnemyAt (Matcher.LocationWithId locationId) <> enemyMatcher)
     Matcher.LocationWithAsset assetMatcher -> notNull <$> select
       (Matcher.AssetAt (Matcher.LocationWithId locationId) <> assetMatcher)
     Matcher.LocationWithInvestigator whoMatcher -> notNull <$> select
       (Matcher.InvestigatorAt (Matcher.LocationWithId locationId) <> whoMatcher)
-    Matcher.AccessibleLocation ->
-      member locationId <$> select Matcher.AccessibleLocation
-    Matcher.AccessibleFrom _ -> member locationId <$> select matcher
-    Matcher.AccessibleTo _ -> member locationId <$> select matcher
-    Matcher.ConnectedLocation -> member locationId <$> select matcher
-    Matcher.RevealedLocation -> member locationId <$> select matcher
-    Matcher.UnrevealedLocation -> member locationId <$> select matcher
+    Matcher.LocationWithoutTreachery treacheryMatcher -> do
+      null <$> select
+        (Matcher.TreacheryAt (Matcher.LocationWithId locationId)
+        <> treacheryMatcher
+        )
+    Matcher.LocationWithTreachery treacheryMatcher -> do
+      notNull <$> select
+        (Matcher.TreacheryAt (Matcher.LocationWithId locationId)
+        <> treacheryMatcher
+        )
+
+    -- normal cases
+    Matcher.LocationNotInPlay -> locationId <=~> matcher
+    Matcher.LocationWithLabel _ -> locationId <=~> matcher
+    Matcher.LocationWithTitle _ -> locationId <=~> matcher
+    Matcher.LocationWithFullTitle _ _ -> locationId <=~> matcher
+    Matcher.LocationWithSymbol _ -> locationId <=~> matcher
+    Matcher.LocationWithUnrevealedTitle _ -> locationId <=~> matcher
+    Matcher.LocationWithId _ -> locationId <=~> matcher
+    Matcher.LocationIs _ -> locationId <=~> matcher
+    Matcher.Anywhere -> locationId <=~> matcher
+    Matcher.EmptyLocation -> locationId <=~> matcher
+    Matcher.LocationWithoutInvestigators -> locationId <=~> matcher
+    Matcher.LocationWithoutEnemies -> locationId <=~> matcher
+    Matcher.AccessibleLocation -> locationId <=~> matcher
+    Matcher.AccessibleFrom _ -> locationId <=~> matcher
+    Matcher.AccessibleTo _ -> locationId <=~> matcher
+    Matcher.ConnectedLocation -> locationId <=~> matcher
+    Matcher.RevealedLocation -> locationId <=~> matcher
+    Matcher.UnrevealedLocation -> locationId <=~> matcher
+    Matcher.FarthestLocationFromYou _ -> locationId <=~> matcher
+    Matcher.FarthestLocationFromLocation _ _ -> locationId <=~> matcher
+    Matcher.FarthestLocationFromAll _ -> locationId <=~> matcher
+    Matcher.NearestLocationToYou _ -> locationId <=~> matcher
+    Matcher.LocationWithTrait _ -> locationId <=~> matcher
+    Matcher.LocationWithoutTrait _ -> locationId <=~> matcher
+    Matcher.LocationInDirection direction matcher' -> locationId <=~> matcher
+
+    Matcher.LocationWithDistanceFrom distance matcher' -> member locationId
+      <$> select (Matcher.LocationWithDistanceFrom distance matcher')
     Matcher.LocationWithClues valueMatcher ->
       (`gameValueMatches` valueMatcher) =<< field LocationClues locationId
     Matcher.LocationWithDoom valueMatcher ->
@@ -1962,35 +1984,12 @@ locationMatches investigatorId source window locationId matcher =
     Matcher.NotYourLocation -> do
       yourLocationId <- field InvestigatorLocation investigatorId
       pure $ Just locationId /= yourLocationId
-    Matcher.LocationInDirection direction matcher' -> do
-      member locationId
-        <$> select (Matcher.LocationInDirection direction matcher')
-    Matcher.FarthestLocationFromYou _ -> member locationId <$> select matcher
-    Matcher.FarthestLocationFromLocation _ _ ->
-      member locationId <$> select matcher
-    Matcher.FarthestLocationFromAll _ -> do
-      member locationId <$> select matcher
-    Matcher.LocationWithDistanceFrom distance matcher' -> member locationId
-      <$> select (Matcher.LocationWithDistanceFrom distance matcher')
-    Matcher.NearestLocationToYou _ -> member locationId <$> select matcher
-    Matcher.LocationWithTrait _ -> member locationId <$> select matcher
-    Matcher.LocationWithoutTrait _ -> member locationId <$> select matcher
     Matcher.LocationMatchAll ms ->
       allM (locationMatches investigatorId source window locationId) ms
     Matcher.LocationMatchAny ms ->
       anyM (locationMatches investigatorId source window locationId) ms
     Matcher.FirstLocation ms ->
       anyM (locationMatches investigatorId source window locationId) ms -- a bit weird here since first means nothing
-    Matcher.LocationWithoutTreachery treacheryMatcher -> do
-      null <$> select
-        (Matcher.TreacheryAt (Matcher.LocationWithId locationId)
-        <> treacheryMatcher
-        )
-    Matcher.LocationWithTreachery treacheryMatcher -> do
-      notNull <$> select
-        (Matcher.TreacheryAt (Matcher.LocationWithId locationId)
-        <> treacheryMatcher
-        )
     Matcher.InvestigatableLocation -> do
       modifiers <- getModifiers
         (InvestigatorSource investigatorId)

@@ -22,11 +22,11 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
+import Arkham.Helpers.Agenda
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Source
@@ -87,7 +87,7 @@ theEssexCountyExpressIntro = FlavorText
 instance HasTokenValue TheEssexCountyExpress where
   getTokenValue iid tokenFace (TheEssexCountyExpress attrs) = case tokenFace of
     Skull -> do
-      step <- unAgendaStep <$> getStep ()
+      step <- getCurrentAgendaStep
       pure $ toTokenValue attrs Skull step (step + 1)
     Cultist -> pure $ toTokenValue attrs Cultist 1 0
     Tablet -> pure $ toTokenValue attrs Tablet 2 4
@@ -124,9 +124,8 @@ investigatorDefeat = do
   let
     findOwner cardCode =
       (\iid -> iid <$ guard (iid `elem` defeatedInvestigatorIds))
-        . campaignStoryCardInvestigatorId
-        =<< find
-              ((== cardCode) . toCardCode . campaignStoryCardPlayerCard)
+        =<< findKey
+              (any ((== cardCode) . toCardCode))
               campaignStoryCards
     mNecronomiconOwner = findOwner "02140"
     mDrHenryArmitageOwner = findOwner "02040"
@@ -283,14 +282,13 @@ instance RunMessage TheEssexCountyExpress where
             )
           )
       ResolveToken _ Tablet iid | isEasyStandard attrs -> do
-        closestCultists <- map unClosestEnemyId
-          <$> getSetList (iid, [Trait.Cultist])
+        closestCultists <- selectList $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
         s <$ case closestCultists of
           [] -> pure ()
           [x] -> push (PlaceDoom (EnemyTarget x) 1)
           xs -> push (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
       ResolveToken _ Tablet _ | isHardExpert attrs -> do
-        cultists <- getSetList @EnemyId Trait.Cultist
+        cultists <- selectList $ EnemyWithTrait Trait.Cultist
         s <$ pushAll [ PlaceDoom (EnemyTarget eid) 1 | eid <- cultists ]
       FailedSkillTest iid _ _ (TokenTarget token) _ n ->
         s <$ case tokenFace token of
@@ -305,8 +303,7 @@ instance RunMessage TheEssexCountyExpress where
       ScenarioResolution (Resolution 1) -> do
         msgs <- investigatorDefeat
         leadInvestigatorId <- getLeadInvestigatorId
-        defeatedInvestigatorIds <- map unDefeatedInvestigatorId
-          <$> getSetList ()
+        defeatedInvestigatorIds <- selectList DefeatedInvestigator
         xp <- getXp
         s <$ pushAll
           (msgs
@@ -338,8 +335,7 @@ instance RunMessage TheEssexCountyExpress where
       ScenarioResolution (Resolution 2) -> do
         msgs <- investigatorDefeat
         leadInvestigatorId <- getLeadInvestigatorId
-        defeatedInvestigatorIds <- map unDefeatedInvestigatorId
-          <$> getSetList ()
+        defeatedInvestigatorIds <- selectList DefeatedInvestigator
         xp <- getXp
         s <$ pushAll
           (msgs

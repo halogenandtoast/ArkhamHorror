@@ -69,58 +69,8 @@ data ScenarioAttrs = ScenarioAttrs
   }
   deriving stock (Show, Eq)
 
-cardsUnderneathAgendaDeckL :: Lens' ScenarioAttrs [Card]
-cardsUnderneathAgendaDeckL = lens scenarioCardsUnderAgendaDeck
-  $ \m x -> m { scenarioCardsUnderAgendaDeck = x }
-
-cardsUnderneathActDeckL :: Lens' ScenarioAttrs [Card]
-cardsUnderneathActDeckL =
-  lens scenarioCardsUnderActDeck $ \m x -> m { scenarioCardsUnderActDeck = x }
-
-cardsNextToActDeckL :: Lens' ScenarioAttrs [Card]
-cardsNextToActDeckL =
-  lens scenarioCardsNextToActDeck $ \m x -> m { scenarioCardsNextToActDeck = x }
-
-locationLayoutL :: Lens' ScenarioAttrs (Maybe [GridTemplateRow])
-locationLayoutL =
-  lens scenarioLocationLayout $ \m x -> m { scenarioLocationLayout = x }
-
-inResolutionL :: Lens' ScenarioAttrs Bool
-inResolutionL =
-  lens scenarioInResolution $ \m x -> m { scenarioInResolution = x }
-
-noRemainingInvestigatorsHandlerL :: Lens' ScenarioAttrs Target
-noRemainingInvestigatorsHandlerL = lens scenarioNoRemainingInvestigatorsHandler
-  $ \m x -> m { scenarioNoRemainingInvestigatorsHandler = x }
-
-decksL :: Lens' ScenarioAttrs (HashMap ScenarioDeckKey [Card])
-decksL = lens scenarioDecks $ \m x -> m { scenarioDecks = x }
-
-actStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
-actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
-
-agendaStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
-agendaStackL = lens scenarioAgendaStack $ \m x -> m { scenarioAgendaStack = x }
-
-completedAgendaStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
-completedAgendaStackL = lens scenarioCompletedAgendaStack
-  $ \m x -> m { scenarioCompletedAgendaStack = x }
-
-logL :: Lens' ScenarioAttrs (HashSet ScenarioLogKey)
-logL = lens scenarioLog $ \m x -> m { scenarioLog = x }
-
-setAsideCardsL :: Lens' ScenarioAttrs [Card]
-setAsideCardsL =
-  lens scenarioSetAsideCards $ \m x -> m { scenarioSetAsideCards = x }
-
-cardsUnderScenarioReferenceL :: Lens' ScenarioAttrs [Card]
-cardsUnderScenarioReferenceL = lens scenarioCardsUnderScenarioReference
-  $ \m x -> m { scenarioCardsUnderScenarioReference = x }
-
-storyCardsL :: Lens' ScenarioAttrs (HashMap InvestigatorId [PlayerCard])
-storyCardsL = lens scenarioStoryCards $ \m x -> m { scenarioStoryCards = x }
-
 $(deriveJSON (aesonOptions $ Just "Scenario") ''ScenarioAttrs)
+makeLensesWith suffixedFields ''ScenarioAttrs
 
 instance HasRecord ScenarioAttrs where
   hasRecord _ _ = pure False

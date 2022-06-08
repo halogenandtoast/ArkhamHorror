@@ -8,9 +8,6 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Scenarios.TheUnspeakableOath.Story
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
@@ -18,21 +15,26 @@ import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Campaign
+import Arkham.Helpers.Card
+import Arkham.Helpers.Investigator
 import Arkham.Id
-import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.TheUnspeakableOath.Story
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait hiding (Cultist, Expert)
+import Arkham.Trait hiding ( Cultist, Expert )
 
 newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -63,11 +65,11 @@ instance HasTokenValue TheUnspeakableOath where
       then TokenValue Skull (NegativeModifier 1)
       else TokenValue Skull NoModifier
     Cultist -> do
-      horror <- unHorrorCount <$> getCount iid
+      horror <- field InvestigatorHorror iid
       pure $ TokenValue Cultist (NegativeModifier horror)
     Tablet -> do
-      lid <- getId @LocationId iid
-      shroud <- unShroud <$> getCount lid
+      lid <- getJustLocation iid
+      shroud <- field LocationShroud lid
       pure $ TokenValue Tablet (NegativeModifier shroud)
     ElderThing -> pure $ TokenValue ElderThing ZeroModifier
     otherFace -> getTokenValue iid otherFace attrs
@@ -95,7 +97,7 @@ standaloneTokens =
 investigatorDefeat :: GameT [Message]
 investigatorDefeat = do
   investigatorIds <- getInvestigatorIds
-  defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
+  defeatedInvestigatorIds <- selectList DefeatedInvestigator
   if null defeatedInvestigatorIds
     then pure []
     else
@@ -166,7 +168,7 @@ instance RunMessage TheUnspeakableOath where
         then concat <$> for
           investigatorIds
           \iid -> do
-            deck <- field InvestigatorDeck iid
+            deck <- fieldMap InvestigatorDeck unDeck iid
             case deck of
               (x : _) -> do
                 courageProxy <- genPlayerCard Assets.courage
@@ -324,7 +326,7 @@ instance RunMessage TheUnspeakableOath where
           youTookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
           claspMessages <- if youTookTheOnyxClasp
             then do
-              onyxClasp <- getCampaignStoryCard Assets.claspOfBlackOnyx ()
+              onyxClasp <- getCampaignStoryCard Assets.claspOfBlackOnyx
               pure
                 [ RemoveCampaignCardFromDeck
                   (fromJustNote "must have bearer" $ pcBearer onyxClasp)

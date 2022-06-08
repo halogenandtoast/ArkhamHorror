@@ -2,15 +2,16 @@ module Arkham.Agenda.Cards.QuietHalls where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Game.Helpers
-import Arkham.Helpers.Campaign
 import Arkham.GameValue
+import Arkham.Helpers.Campaign
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
-import Arkham.Query
+import Arkham.Projection
 import Arkham.ScenarioId
 
 newtype QuietHalls = QuietHalls AgendaAttrs
@@ -23,9 +24,11 @@ quietHalls = agenda (1, A) QuietHalls Cards.quietHalls (Static 7)
 instance RunMessage QuietHalls where
   runMessage msg a@(QuietHalls attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
+      leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
+      completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
       messages <- flip mapMaybeM investigatorIds $ \iid -> do
-        discardCount <- unDiscardCount <$> getCount iid
+        discardCount <- fieldMap InvestigatorDiscard length iid
         if discardCount >= 5
           then pure $ Just
             (InvestigatorAssignDamage
@@ -38,11 +41,6 @@ instance RunMessage QuietHalls where
           else pure Nothing
 
       pushAll messages
-
-      leadInvestigatorId <- getLeadInvestigatorId
-
-      completedTheHouseAlwaysWins <-
-        elem "02062" <$> getCompletedScenarios
 
       let
         continueMessages = if completedTheHouseAlwaysWins

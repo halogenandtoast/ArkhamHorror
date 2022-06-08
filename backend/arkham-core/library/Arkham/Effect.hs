@@ -7,22 +7,17 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.ClassSymbol
 import Arkham.Classes
-import Arkham.Difficulty
 import Arkham.Effect.Attrs
 import Arkham.Effect.Effects
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
-import Arkham.Game.Helpers
 import Arkham.Id
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait
 import Arkham.Window (Window)
 import Data.Aeson.TH
 

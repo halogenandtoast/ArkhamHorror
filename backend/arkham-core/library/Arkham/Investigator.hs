@@ -5,22 +5,13 @@ module Arkham.Investigator
 
 import Arkham.Prelude
 
-import Arkham.Action (Action, TakenAction)
-import Arkham.Asset.Uses
-import Arkham.SkillType
 import Arkham.Card
-import Arkham.Helpers
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner
-import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
-import Arkham.Slot
-import Arkham.Source
-import Arkham.Zone (Zone)
 import Data.Aeson.TH
 
 $(buildEntity "Investigator")

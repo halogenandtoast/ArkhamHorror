@@ -7,20 +7,13 @@ module Arkham.Agenda (
 import Arkham.Prelude
 
 import Arkham.Agenda.Agendas
-import Arkham.Agenda.Attrs
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
-import Arkham.Matcher
-import Arkham.Modifier
-import Arkham.Name
-import Arkham.Query
-import Arkham.Trait (Trait)
 import Data.Aeson.TH
 
 $(buildEntity "Agenda")
-
 $(deriveJSON defaultOptions ''Agenda)
 
 lookupAgenda :: AgendaId -> (Int -> Agenda)
@@ -35,25 +28,13 @@ allAgendas =
       (\cb -> (AgendaId (cbCardCode cb), \deckId -> cbCardBuilder cb (deckId, AgendaId (cbCardCode cb))))
       $(buildEntityLookupList "Agenda")
 
-instance HasList UnderneathCard env Agenda where
-  getList = getList . toAttrs
-
-instance HasModifiersFor () => HasCount DoomCount env Agenda where
-  getCount a = do
-    modifiers <- getModifiers (toSource a) (toTarget a)
-    let f = if DoomSubtracts `elem` modifiers then negate else id
-    DoomCount . f . unDoomCount <$> getCount (toAttrs a)
-
-instance HasStep AgendaStep env Agenda where
-  getStep = getStep . toAttrs
-
 instance HasAbilities Agenda where
   getAbilities = $(entityF "Agenda" "getAbilities")
 
-instance (HasId (Maybe EnemyId) env EnemyMatcher, AgendaRunner env) => RunMessage Agenda where
+instance RunMessage Agenda where
   runMessage = $(entityRunMessage "Agenda")
 
-instance (Query EnemyMatcher env, HasSet Trait env EnemyId, HasRecord env ()) => HasModifiersFor env Agenda where
+instance HasModifiersFor Agenda where
   getModifiersFor = $(entityF2 "Agenda" "getModifiersFor")
 
 instance Entity Agenda where
@@ -61,9 +42,6 @@ instance Entity Agenda where
   type EntityAttrs Agenda = AgendaAttrs
   toId = toId . toAttrs
   toAttrs = $(entityF "Agenda" "toAttrs")
-
-instance Named Agenda where
-  toName = toName . toAttrs
 
 instance TargetEntity Agenda where
   toTarget = toTarget . toAttrs

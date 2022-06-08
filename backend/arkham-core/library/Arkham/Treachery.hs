@@ -3,19 +3,11 @@ module Arkham.Treachery where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Attrs hiding (treacheryInHandOf, treacheryOwner)
-import Arkham.Treachery.Attrs qualified as Attrs
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Treacheries
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
-import Arkham.Matcher
-import Arkham.Modifier
-import Arkham.Name
-import Arkham.Query
-import Arkham.Target
-import Arkham.Trait (Trait)
 import Data.Aeson.TH
 
 $(buildEntity "Treachery")
@@ -47,9 +39,6 @@ instance Entity Treachery where
   toId = toId . toAttrs
   toAttrs = $(entityF "Treachery" "toAttrs")
 
-instance Named Treachery where
-  toName = toName . toAttrs
-
 instance TargetEntity Treachery where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
@@ -71,15 +60,3 @@ allTreacheries :: HashMap CardCode (InvestigatorId -> TreacheryId -> Treachery)
 allTreacheries = mapFromList $ map
   (cbCardCode &&& (curry . cbCardBuilder))
   $(buildEntityLookupList "Treachery")
-
-isWeakness :: Treachery -> Bool
-isWeakness = isJust . cdCardSubType . toCardDef
-
-treacheryInHandOf :: Treachery -> Maybe InvestigatorId
-treacheryInHandOf = Attrs.treacheryInHandOf . toAttrs
-
-treacheryOwner :: Treachery -> Maybe InvestigatorId
-treacheryOwner = Attrs.treacheryOwner . toAttrs
-
-treacheryTarget :: Treachery -> Maybe Target
-treacheryTarget = treacheryAttachedTarget . toAttrs

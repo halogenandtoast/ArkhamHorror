@@ -389,8 +389,8 @@ instance RunMessage CarnevaleOfHorrors where
       xp <- getXp
       additionalRewardsMsg <- additionalRewards
         (attrs
-        & (cardsUnderneathActDeckL %~ drop 1)
-        & (cardsUnderneathAgendaDeckL
+        & (cardsUnderActDeckL %~ drop 1)
+        & (cardsUnderAgendaDeckL
           <>~ take 1 (scenarioCardsUnderActDeck attrs)
           )
         )

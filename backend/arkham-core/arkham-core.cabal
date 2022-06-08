@@ -734,7 +734,6 @@ library
       Arkham.EventId
       Arkham.Exception
       Arkham.Game
-      Arkham.Game.Base
       Arkham.Game.Helpers
       Arkham.GameEnv
       Arkham.GameValue

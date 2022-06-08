@@ -17,14 +17,12 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
-import Arkham.Id
 import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Location.Attrs (Field(..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey

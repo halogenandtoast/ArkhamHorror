@@ -6,17 +6,12 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Event.Attrs
 import Arkham.Event.Events
 import Arkham.Event.Runner
 import Arkham.Id
-import Arkham.Matcher
-import Arkham.Name
-import Arkham.Query
 import Data.Aeson.TH
 
 $(buildEntity "Event")
-
 $(deriveJSON defaultOptions ''Event)
 
 createEvent :: IsCard a => a -> InvestigatorId -> Event
@@ -31,12 +26,7 @@ instance HasCardDef Event where
 instance HasAbilities Event where
   getAbilities = $(entityF "Event" "getAbilities")
 
-instance
-  ( HasCount ClueCount env InvestigatorId
-  , Query EnemyMatcher env
-  ) =>
-  HasModifiersFor Event
-  where
+instance HasModifiersFor Event where
   getModifiersFor = $(entityF2 "Event" "getModifiersFor")
 
 instance RunMessage Event where
@@ -47,9 +37,6 @@ instance Entity Event where
   type EntityAttrs Event = EventAttrs
   toId = toId . toAttrs
   toAttrs = $(entityF "Event" "toAttrs")
-
-instance Named Event where
-  toName = toName . toAttrs
 
 instance TargetEntity Event where
   toTarget = toTarget . toAttrs
@@ -63,9 +50,6 @@ instance IsCard Event where
   toCardId = toCardId . toAttrs
   toCard e = lookupCard (eventOriginalCardCode . toAttrs $ e) (toCardId e)
   toCardOwner = toCardOwner . toAttrs
-
-instance HasId InvestigatorId env Event where
-  getId = pure . eventOwner . toAttrs
 
 getEventId :: Event -> EventId
 getEventId = eventId . toAttrs

@@ -65,6 +65,15 @@ runInvestigatorMessage
   -> InvestigatorAttrs
   -> GameT InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
+  EndCheckWindow -> do
+    depth <- getWindowDepth
+    pure $ a & usedAbilitiesL %~ filter
+      (\UsedAbility {..} -> case abilityLimit usedAbility of
+        NoLimit -> False
+        PlayerLimit PerWindow _ -> depth >= usedTimes
+        GroupLimit PerWindow _ -> depth >= usedTimes
+        _ -> True
+      )
   ResetGame ->
     pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) ())
       { investigatorXp = investigatorXp

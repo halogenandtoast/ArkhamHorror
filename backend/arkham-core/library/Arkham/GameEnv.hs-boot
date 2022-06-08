@@ -22,5 +22,6 @@ instance MonadReader GameEnv GameT
 instance HasQueue GameEnv
 
 getPhase :: GameT Phase
+getWindowDepth :: GameT Int
 getSkillTest :: GameT (Maybe SkillTest)
 getDistance :: LocationId -> LocationId -> GameT (Maybe Distance)

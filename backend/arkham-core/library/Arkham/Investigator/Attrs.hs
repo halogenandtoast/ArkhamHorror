@@ -91,7 +91,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorStartsWith :: [CardDef]
   , investigatorCardsUnderneath :: [Card]
   , investigatorFoundCards :: HashMap Zone [Card]
-  , investigatorUsedAbilities :: HashMap Ability Int
+  , investigatorUsedAbilities :: [UsedAbility]
   -- investigator-specific fields
   , investigatorTomeActions :: Maybe Int
   }

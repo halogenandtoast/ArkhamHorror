@@ -26,6 +26,7 @@ data instance Field TreacheryAttrs :: Type -> Type where
   TreacheryTraits :: Field TreacheryAttrs (HashSet Trait)
   TreacheryAbilities :: Field TreacheryAttrs [Ability]
   TreacheryCardDef :: Field TreacheryAttrs CardDef
+  TreacheryCard :: Field TreacheryAttrs Card
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId

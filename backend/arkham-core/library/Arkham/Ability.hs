@@ -90,6 +90,8 @@ data UsedAbility = UsedAbility
   , usedAbilityWindow :: Window
   , usedTimes :: Int
   }
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 data AbilityMetadata
   = IntMetadata Int

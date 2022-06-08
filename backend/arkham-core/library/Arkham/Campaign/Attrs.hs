@@ -25,6 +25,7 @@ class IsCampaign a
 data instance Field CampaignAttrs :: Type -> Type where
   CampaignCompletedSteps :: Field CampaignAttrs [CampaignStep]
   CampaignStoryCards :: Field CampaignAttrs (HashMap InvestigatorId [PlayerCard])
+  CampaignCampaignLog :: Field CampaignAttrs CampaignLog
 
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId

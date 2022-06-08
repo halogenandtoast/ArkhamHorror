@@ -87,7 +87,7 @@ instance FromJSON Ability where
 data UsedAbility = UsedAbility
   { usedAbility :: Ability
   , usedAbilityInitiator :: InvestigatorId
-  , usedAbilityWindow :: Window
+  , usedAbilityWindows :: [Window]
   , usedTimes :: Int
   }
   deriving stock (Eq, Show, Generic)

@@ -15,7 +15,7 @@ import Arkham.Id
 import Arkham.SkillTest.Base
 import Arkham.Investigator.Attrs
 import Arkham.Treachery.Attrs ( Field (..) )
-import Arkham.Matcher
+import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType
@@ -24,6 +24,7 @@ import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
 import Arkham.Trait
+import Control.Monad.Extra (orM)
 
 getSkillValue :: SkillType -> InvestigatorId -> GameT Int
 getSkillValue st iid = case st of
@@ -299,16 +300,6 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     then go m (c : d, h, cs)
     else go (m - 1) (d, PlayerCard c : h, cs)
 
-getPossibleSkillTypeChoices
-  :: SkillType -> InvestigatorAttrs -> GameT [SkillType]
-getPossibleSkillTypeChoices skillType attrs = do
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
-  pure $ foldr applyModifier [skillType] modifiers
- where
-  applyModifier (UseSkillInPlaceOf toReplace toUse) skills
-    | toReplace == skillType = toUse : skills
-  applyModifier _ skills = skills
-
 canCommitToAnotherLocation :: InvestigatorAttrs -> GameT Bool
 canCommitToAnotherLocation attrs = do
   commitedCards <-
@@ -365,3 +356,15 @@ modifiedStatsOf source maction i = do
     , health = remainingHealth
     , sanity = remainingSanity
     }
+
+getAvailableSkillsFor :: SkillType -> InvestigatorId -> GameT [SkillType]
+getAvailableSkillsFor skillType iid = do
+  modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
+  pure $ foldr applyModifier [skillType] modifiers
+ where
+  applyModifier (UseSkillInPlaceOf toReplace toUse) skills
+    | toReplace == skillType = toUse : skills
+  applyModifier _ skills = skills
+
+isEliminated :: InvestigatorId -> GameT Bool
+isEliminated iid = orM $ sequence [field InvestigatorResigned, field InvestigatorDefeated] iid

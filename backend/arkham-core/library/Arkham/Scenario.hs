@@ -26,11 +26,6 @@ $(deriveJSON defaultOptions ''Scenario)
 instance HasModifiersFor Scenario where
   getModifiersFor = $(entityF2 "Scenario" "getModifiersFor")
 
-instance HasRecord Scenario where
-  hasRecord = $(entityF1 "Scenario" "hasRecord")
-  hasRecordSet = $(entityF1 "Scenario" "hasRecordSet")
-  hasRecordCount = $(entityF1 "Scenario" "hasRecordCount")
-
 instance RunMessage Scenario where
   runMessage msg s = case msg of
     ResolveToken _ tokenFace _ -> do

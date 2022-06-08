@@ -14,6 +14,7 @@ import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
+import Arkham.Keyword
 import Arkham.Location.Cards
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher(..))
@@ -45,6 +46,7 @@ data instance Field LocationAttrs :: Type -> Type where
   LocationDoom :: Field LocationAttrs Int
   LocationShroud :: Field LocationAttrs Int
   LocationTraits :: Field LocationAttrs (HashSet Trait)
+  LocationKeywords :: Field LocationAttrs (HashSet Keyword)
   LocationUnrevealedName :: Field LocationAttrs Name
   LocationName :: Field LocationAttrs Name
   LocationConnectedMatchers :: Field LocationAttrs [LocationMatcher]
@@ -54,6 +56,7 @@ data instance Field LocationAttrs :: Type -> Type where
   LocationCardsUnderneath :: Field LocationAttrs [Card]
   -- virtual
   LocationCardDef :: Field LocationAttrs CardDef
+  LocationCard :: Field LocationAttrs Card
   LocationAbilities :: Field LocationAttrs [Ability]
 
 data LocationAttrs = LocationAttrs

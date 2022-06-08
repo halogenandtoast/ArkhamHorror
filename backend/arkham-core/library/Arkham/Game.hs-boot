@@ -7,7 +7,6 @@ import Arkham.Asset.Attrs
 import Arkham.Campaign.Attrs
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasTokenValue
-import Arkham.Classes.HasRecord
 import Arkham.Classes.Query
 import Arkham.Distance
 import Arkham.Effect.Attrs
@@ -73,8 +72,6 @@ instance Projection TreacheryAttrs
 
 instance HasTokenValue InvestigatorId
 instance HasTokenValue ()
-
-instance HasRecord ()
 
 gamePhase :: Game -> Phase
 gameSkillTest :: Game -> Maybe SkillTest

@@ -53,6 +53,8 @@ data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorTraits :: Field InvestigatorAttrs (HashSet Trait)
   InvestigatorAbilities :: Field InvestigatorAttrs [Ability]
   InvestigatorCommittedCards :: Field InvestigatorAttrs [Card]
+  InvestigatorDefeated :: Field InvestigatorAttrs Bool
+  InvestigatorResigned :: Field InvestigatorAttrs Bool
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId

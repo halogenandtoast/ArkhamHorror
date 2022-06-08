@@ -19,8 +19,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Campaign
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Query
-import Arkham.ScenarioId
 import Arkham.Trait
 
 newtype SkinGame = SkinGame ActAttrs

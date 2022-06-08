@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Id
 import qualified Arkham.Keyword as Keyword
 import Arkham.Matcher
 import Arkham.Message

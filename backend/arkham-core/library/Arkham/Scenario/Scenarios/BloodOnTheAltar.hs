@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.AgendaId
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
@@ -30,7 +29,7 @@ import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
+import Arkham.Scenario.Helpers hiding (matches)
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BloodOnTheAltar.Story
 import Arkham.Target

@@ -6,15 +6,13 @@ module Arkham.Treachery.Cards.HuntedDown
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Id
-import Arkham.Investigator.Attrs ( Field(..) )
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Target
 import Arkham.Trait
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype HuntedDown = HuntedDown TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -37,16 +35,17 @@ instance RunMessage HuntedDown where
               case mLocationId of
                 Nothing -> pure Nothing
                 Just locationId -> do
-                  closestLocationIds <- selectList $ ClosestPathLocation locationId destinationId
+                  closestLocationIds <- selectList
+                    $ ClosestPathLocation locationId destinationId
                   case closestLocationIds of
                     [] -> pure Nothing
-                    [x] -> pure $ Just $ TargetLabel
-                      (EnemyTarget eid)
+                    [x] -> pure $ Just $ targetLabel
+                      eid
                       ([ EnemyMove eid x | locationId /= x ]
                       <> [EnemyAttackIfEngaged eid (Just iid)]
                       )
-                    xs -> pure $ Just $ TargetLabel
-                      (EnemyTarget eid)
+                    xs -> pure $ Just $ targetLabel
+                      eid
                       [ chooseOne
                         iid
                         [ EnemyMove eid x | x <- xs, x /= locationId ]

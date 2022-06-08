@@ -6,7 +6,6 @@ module Arkham.Location.Cards.WhateleyRuins_251
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria

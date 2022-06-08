@@ -14,7 +14,6 @@ import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner

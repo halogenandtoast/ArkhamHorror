@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards (blindingLight)
 import Arkham.Classes
 import Arkham.Event.Runner
-import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType

@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Event.Runner
-import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message

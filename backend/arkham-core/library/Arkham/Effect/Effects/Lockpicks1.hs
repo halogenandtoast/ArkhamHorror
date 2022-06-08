@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Asset.Uses
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.EffectMetadata
 import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.Modifier

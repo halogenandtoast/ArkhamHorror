@@ -28,7 +28,7 @@ import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Enemy.Attrs ( Field(..) )
-import Arkham.Scenario.Helpers
+import Arkham.Scenario.Helpers hiding (matches)
 import Arkham.Scenario.Runner
 import Arkham.Source
 import Arkham.Target

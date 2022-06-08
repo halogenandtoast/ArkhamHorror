@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Helpers.Campaign
-import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Message

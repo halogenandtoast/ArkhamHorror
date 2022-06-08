@@ -9,7 +9,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Classes
 import Arkham.Enemy.Runner
-import Arkham.Id
 import Arkham.Modifier
 import Arkham.Target
 

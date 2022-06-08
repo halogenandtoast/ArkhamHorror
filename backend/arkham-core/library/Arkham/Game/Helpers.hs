@@ -13,19 +13,18 @@ import Arkham.Helpers.Xp as X
 import Arkham.Helpers.Modifiers as X
 
 import Arkham.Ability
-import Arkham.Act.Attrs ( ActAttrs, Field (..) )
+import Arkham.Act.Attrs ( Field (..) )
 import Arkham.Act.Sequence qualified as AS
-import Arkham.Action ( Action, TakenAction (..) )
+import Arkham.Action ( Action )
 import Arkham.Action qualified as Action
-import Arkham.Agenda.Attrs ( AgendaAttrs, Field (..) )
-import Arkham.Asset.Attrs ( AssetAttrs, Field (..) )
+import Arkham.Agenda.Attrs ( Field (..) )
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Asset.Uses ( useCount )
 import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
-import Arkham.Card.Id
 import Arkham.Classes
 import Arkham.ClassSymbol
 import Arkham.Cost
@@ -33,15 +32,13 @@ import Arkham.Criteria ( Criterion )
 import Arkham.Criteria qualified as Criteria
 import Arkham.DamageEffect
 import Arkham.Deck hiding ( InvestigatorDiscard )
-import Arkham.Decks
-import Arkham.Direction
-import Arkham.Effect.Attrs ( EffectAttrs, Field (..) )
+import Arkham.Effect.Attrs ( Field (..) )
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterCard
 import Arkham.EncounterSet
-import Arkham.Enemy.Attrs ( EnemyAttrs, Field (..) )
-import Arkham.Event.Attrs ( EventAttrs, Field (..) )
+import Arkham.Enemy.Attrs ( Field (..) )
+import Arkham.Event.Attrs ( Field (..) )
 import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.GameValue
@@ -49,9 +46,7 @@ import Arkham.Helpers
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs (..) )
-import Arkham.Keyword
 import Arkham.Keyword qualified as Keyword
-import Arkham.Label qualified as Location
 import Arkham.Location.Attrs hiding ( location )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message hiding ( InvestigatorDamage )
@@ -59,10 +54,9 @@ import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Projection
-import Arkham.Scenario.Attrs ( Field (..), ScenarioAttrs )
-import Arkham.Scenario.Deck
+import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.ScenarioLogKey
-import Arkham.Skill.Attrs ( Field (..), SkillAttrs )
+import Arkham.Skill.Attrs ( Field (..) )
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
 import Arkham.SkillType
@@ -72,13 +66,10 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait ( Trait (Tome), toTraits )
-import Arkham.Treachery.Attrs ( Field (..), TreacheryAttrs )
+import Arkham.Treachery.Attrs ( Field (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
-import Data.HashMap.Strict qualified as HashMap
-import Data.HashSet ( size )
 import Data.HashSet qualified as HashSet
-import Data.UUID ( nil )
 import System.IO.Unsafe
 
 gatherEncounterSet :: EncounterSet -> GameT [EncounterCard]
@@ -124,20 +115,20 @@ withBaseAbilities :: HasAbilities a => a -> [Ability] -> [Ability]
 withBaseAbilities a f = getAbilities a <> f
 
 getPlayableCards :: InvestigatorAttrs -> CostStatus -> [Window] -> GameT [Card]
-getPlayableCards a@InvestigatorAttrs {..} costStatus windows = do
+getPlayableCards a@InvestigatorAttrs {..} costStatus windows' = do
   asIfInHandCards <- getAsIfInHandCards a
-  playableDiscards <- getPlayableDiscards a costStatus windows
+  playableDiscards <- getPlayableDiscards a costStatus windows'
   playableHandCards <- filterM
-    (getIsPlayable (toId a) (toSource a) costStatus windows)
+    (getIsPlayable (toId a) (toSource a) costStatus windows')
     (investigatorHand <> asIfInHandCards)
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards
   :: InvestigatorAttrs -> CostStatus -> [Window] -> GameT [Card]
-getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows = do
+getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   filterM
-    (getIsPlayable (toId attrs) (toSource attrs) costStatus windows)
+    (getIsPlayable (toId attrs) (toSource attrs) costStatus windows')
     (possibleCards modifiers)
  where
   possibleCards modifiers = map (PlayerCard . snd) $ filter
@@ -1183,7 +1174,6 @@ getModifiedCardCost iid c@(EncounterCard _) = do
   applyModifier n (ReduceCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n (IncreaseCostOf cardMatcher m) = do
-    matches <- selectList cardMatcher
     pure $ if c `cardMatch` cardMatcher then n + m else n
   applyModifier n _ = pure n
 
@@ -1803,6 +1793,8 @@ sourceTraits = \case
   TestSource traits -> pure traits
   TokenEffectSource _ -> pure mempty
   TokenSource _ -> pure mempty
+  YouSource -> selectJust Matcher.You >>= field InvestigatorTraits
+  LocationMatcherSource _ -> pure mempty
 
 sourceMatches :: Source -> Matcher.SourceMatcher -> GameT Bool
 sourceMatches s = \case
@@ -1902,6 +1894,7 @@ locationMatches
 locationMatches investigatorId source window locationId matcher =
   case matcher of
     -- special cases
+    Matcher.NotLocation m -> not <$> locationMatches investigatorId source window locationId m
     Matcher.Unblocked -> notElem Blocked <$> getModifiers
       (InvestigatorSource investigatorId)
       (LocationTarget locationId)
@@ -1948,7 +1941,8 @@ locationMatches investigatorId source window locationId matcher =
     Matcher.NearestLocationToYou _ -> locationId <=~> matcher
     Matcher.LocationWithTrait _ -> locationId <=~> matcher
     Matcher.LocationWithoutTrait _ -> locationId <=~> matcher
-    Matcher.LocationInDirection direction matcher' -> locationId <=~> matcher
+    Matcher.LocationInDirection _ _ -> locationId <=~> matcher
+    Matcher.ClosestPathLocation _ _ -> locationId <=~> matcher
 
     Matcher.LocationWithDistanceFrom distance matcher' -> member locationId
       <$> select (Matcher.LocationWithDistanceFrom distance matcher')

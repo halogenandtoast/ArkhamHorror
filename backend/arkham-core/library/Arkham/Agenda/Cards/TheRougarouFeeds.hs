@@ -7,8 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Agenda.Attrs
-import Arkham.Agenda.Helpers
+import Arkham.Agenda.Helpers hiding (matches)
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue

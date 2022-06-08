@@ -6,7 +6,6 @@ module Arkham.Scenario.Helpers
 import Arkham.Prelude
 
 import Arkham.EncounterSet
-import Arkham.CampaignId
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes

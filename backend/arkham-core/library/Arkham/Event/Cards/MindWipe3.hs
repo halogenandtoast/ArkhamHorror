@@ -5,12 +5,10 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Runner
-import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
-import Arkham.Trait
 
 newtype MindWipe3 = MindWipe3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

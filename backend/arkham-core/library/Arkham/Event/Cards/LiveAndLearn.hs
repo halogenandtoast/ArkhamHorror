@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
-import Arkham.Event.Runner
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Message

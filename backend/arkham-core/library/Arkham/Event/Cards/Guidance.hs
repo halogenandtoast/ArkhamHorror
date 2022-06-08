@@ -6,7 +6,6 @@ module Arkham.Event.Cards.Guidance
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Event.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher

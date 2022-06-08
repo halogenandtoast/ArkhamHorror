@@ -10,7 +10,7 @@ import Arkham.Scenario.Attrs as X
 import Arkham.Act.Sequence
 import Arkham.Card
 import Arkham.Card.PlayerCard
-import Arkham.ChaosBag
+import Arkham.ChaosBag ()
 import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
 import Arkham.Classes.HasTokenValue

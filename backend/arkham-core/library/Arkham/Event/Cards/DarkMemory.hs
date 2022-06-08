@@ -8,7 +8,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Event.Runner
-import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source

@@ -14,10 +14,8 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Id
 import Arkham.Location.Attrs (Field(..))
-import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheDevourerBelow

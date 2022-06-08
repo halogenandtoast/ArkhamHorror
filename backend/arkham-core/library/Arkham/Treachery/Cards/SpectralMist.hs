@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.SpectralMist
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria

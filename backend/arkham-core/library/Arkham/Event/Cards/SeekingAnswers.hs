@@ -13,7 +13,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
-import Arkham.Target
 
 newtype SeekingAnswers = SeekingAnswers EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

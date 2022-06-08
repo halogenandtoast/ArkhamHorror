@@ -12,11 +12,9 @@ import Arkham.GameValue as X
 import Arkham.Helpers.Enemy as X
 
 import Arkham.Action qualified as Action
-import Arkham.AssetId
 import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Direction
 import Arkham.EnemyId
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
@@ -33,8 +31,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Modifier
-import Arkham.Query
-import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target

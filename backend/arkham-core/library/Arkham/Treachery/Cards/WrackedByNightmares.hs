@@ -15,7 +15,6 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Source
 import Arkham.Target
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 

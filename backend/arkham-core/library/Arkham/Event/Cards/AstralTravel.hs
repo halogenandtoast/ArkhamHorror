@@ -9,7 +9,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Event.Runner
-import Arkham.Event.Runner
 import Arkham.Matcher hiding (MoveAction)
 import Arkham.Message
 import Arkham.RequestedTokenStrategy

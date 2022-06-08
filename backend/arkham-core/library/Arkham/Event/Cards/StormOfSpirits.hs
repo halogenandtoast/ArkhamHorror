@@ -11,7 +11,6 @@ import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Runner
-import Arkham.Event.Runner
 import Arkham.Matcher hiding (AttackDamageEffect)
 import Arkham.Message
 import Arkham.SkillType

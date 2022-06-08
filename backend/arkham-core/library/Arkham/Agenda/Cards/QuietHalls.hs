@@ -12,7 +12,6 @@ import Arkham.Helpers.Campaign
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.ScenarioId
 
 newtype QuietHalls = QuietHalls AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

@@ -21,7 +21,6 @@ import Arkham.Exception
 import Arkham.Helpers.Campaign
 import Arkham.Matcher
 import Arkham.Message hiding ( Discarded )
-import Arkham.ScenarioId
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )

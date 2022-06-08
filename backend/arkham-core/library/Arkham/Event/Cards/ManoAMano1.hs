@@ -10,7 +10,6 @@ import qualified Arkham.Event.Cards as Cards
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Runner
-import Arkham.Event.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
 

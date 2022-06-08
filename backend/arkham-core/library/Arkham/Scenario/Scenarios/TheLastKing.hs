@@ -54,10 +54,6 @@ theLastKing difficulty =
        , "ballroom   courtyard livingRoom"
        , ".          foyer     ."
        ]
-instance HasRecord TheLastKing where
-  hasRecord _ _ = pure False
-  hasRecordSet _ _ = pure []
-  hasRecordCount _ _ = pure 0
 
 instance HasTokenValue TheLastKing where
   getTokenValue iid tokenFace (TheLastKing attrs) = case tokenFace of

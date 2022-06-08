@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Id
 import Arkham.Json
+import Arkham.Keyword
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
@@ -24,6 +25,7 @@ data instance Field TreacheryAttrs :: Type -> Type where
   TreacheryDoom :: Field TreacheryAttrs Int
   TreacheryAttachedTarget :: Field TreacheryAttrs (Maybe Target)
   TreacheryTraits :: Field TreacheryAttrs (HashSet Trait)
+  TreacheryKeywords :: Field TreacheryAttrs (HashSet Keyword)
   TreacheryAbilities :: Field TreacheryAttrs [Ability]
   TreacheryCardDef :: Field TreacheryAttrs CardDef
   TreacheryCard :: Field TreacheryAttrs Card

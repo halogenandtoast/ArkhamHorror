@@ -54,11 +54,6 @@ theUnspeakableOath difficulty =
     & decksL
     .~ mapFromList [(LunaticsDeck, []), (MonstersDeck, [])]
 
-instance HasRecord TheUnspeakableOath where
-  hasRecord _ _ = pure False
-  hasRecordSet _ _ = pure []
-  hasRecordCount _ _ = pure 0
-
 instance HasTokenValue TheUnspeakableOath where
   getTokenValue iid tokenFace (TheUnspeakableOath attrs) = case tokenFace of
     Skull -> pure $ if isEasyStandard attrs

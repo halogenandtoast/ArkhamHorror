@@ -17,11 +17,6 @@ $(deriveJSON defaultOptions ''Campaign)
 instance RunMessage Campaign where
   runMessage = $(entityRunMessage "Campaign")
 
-instance HasRecord Campaign where
-  hasRecord key = hasRecord key . campaignLog . toAttrs
-  hasRecordSet key = hasRecordSet key . campaignLog . toAttrs
-  hasRecordCount key = hasRecordCount key . campaignLog . toAttrs
-
 instance Entity Campaign where
   type EntityId Campaign = CampaignId
   type EntityAttrs Campaign = CampaignAttrs

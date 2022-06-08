@@ -57,11 +57,6 @@ lostInTimeAndSpace difficulty =
        , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
        ]
 
-instance HasRecord LostInTimeAndSpace where
-  hasRecord _ _ = pure False
-  hasRecordSet _ _ = pure []
-  hasRecordCount _ _ = pure 0
-
 instance HasTokenValue LostInTimeAndSpace where
   getTokenValue iid tokenFace (LostInTimeAndSpace attrs) = case tokenFace of
     Skull -> do

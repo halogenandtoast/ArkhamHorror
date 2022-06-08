@@ -408,7 +408,6 @@ library
       Arkham.Classes.HasAbilities
       Arkham.Classes.HasModifiersFor
       Arkham.Classes.HasQueue
-      Arkham.Classes.HasRecord
       Arkham.Classes.HasSet
       Arkham.Classes.HasTokenValue
       Arkham.Classes.Query

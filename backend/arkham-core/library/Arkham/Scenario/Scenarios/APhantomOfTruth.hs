@@ -57,11 +57,6 @@ aPhantomOfTruth difficulty =
          , ".            montparnasse        .                ."
          ]
 
-instance HasRecord APhantomOfTruth where
-  hasRecord _ _ = pure False
-  hasRecordSet _ _ = pure []
-  hasRecordCount _ _ = pure 0
-
 instance HasTokenValue APhantomOfTruth where
   getTokenValue iid tokenFace (APhantomOfTruth attrs) = case tokenFace of
     Skull -> do

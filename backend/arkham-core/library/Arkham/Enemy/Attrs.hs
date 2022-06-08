@@ -39,6 +39,7 @@ data instance Field EnemyAttrs :: Type -> Type where
   EnemyTraits :: Field EnemyAttrs (HashSet Trait)
   EnemyKeywords :: Field EnemyAttrs (HashSet Keyword)
   EnemyAbilities :: Field EnemyAttrs [Ability]
+  EnemyCard :: Field EnemyAttrs Card
   EnemyCardCode :: Field EnemyAttrs CardCode
   EnemyLocation :: Field EnemyAttrs (Maybe LocationId)
 

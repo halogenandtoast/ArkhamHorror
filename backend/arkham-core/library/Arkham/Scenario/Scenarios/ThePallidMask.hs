@@ -10,6 +10,7 @@ import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.PlayerCard
@@ -83,12 +84,8 @@ instance HasModifiersFor ThePallidMask where
     pure $ toModifiers a [ XPModifier 2 | extraXp ]
   getModifiersFor _ _ _ = pure []
 
-instance HasRecord ThePallidMask where
-  hasRecord YouFoundNigelsHome _ = pure True
-  hasRecord YouEnteredTheCatacombsOnYourOwn _ = pure True
-  hasRecord _ _ = pure False
-  hasRecordSet _ _ = pure []
-  hasRecordCount _ _ = pure 0
+standaloneCampaignLog :: CampaignLog
+standaloneCampaignLog = mkCampaignLog { campaignLogRecorded = setFromList [YouFoundNigelsHome, YouEnteredTheCatacombsOnYourOwn] }
 
 instance HasTokenValue ThePallidMask where
   getTokenValue iid tokenFace (ThePallidMask attrs) = case tokenFace of
@@ -139,7 +136,7 @@ instance RunMessage ThePallidMask where
       leadInvestigatorId <- getLeadInvestigatorId
       theManInThePallidMask <- genPlayerCard Enemies.theManInThePallidMask
       push $ ShuffleCardsIntoDeck leadInvestigatorId [theManInThePallidMask]
-      pure s
+      pure . ThePallidMask $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- getInvestigatorIds
       didNotEscapeGazeOfThePhantom <- getHasRecord

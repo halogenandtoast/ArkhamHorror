@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
-import Arkham.Classes.HasRecord
 
 data CampaignLog = CampaignLog
   { campaignLogRecorded :: HashSet CampaignLogKey
@@ -36,11 +35,6 @@ instance ToJSON CampaignLog where
 
 instance FromJSON CampaignLog where
   parseJSON = genericParseJSON $ aesonOptions $ Just "campaignLog"
-
-instance HasRecord CampaignLog where
-  hasRecord key = pure . member key . campaignLogRecorded
-  hasRecordSet key = pure . findWithDefault [] key . campaignLogRecordedSets
-  hasRecordCount key = pure . findWithDefault 0 key . campaignLogRecordedCounts
 
 mkCampaignLog :: CampaignLog
 mkCampaignLog = CampaignLog

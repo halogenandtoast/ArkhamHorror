@@ -21,7 +21,9 @@ import Arkham.Agenda.Attrs ( Field (..) )
 import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Asset.Uses ( useCount )
 import Arkham.Attack
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.Campaign.Attrs (Field(..))
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
@@ -301,7 +303,7 @@ getCanAffordUse iid ability window = case abilityLimit ability of
         let
           matchingPerInvestigatorCount =
             flip count usedAbilities $ \usedAbility ->
-              case usedAbilityWindow usedAbility of
+              flip any (usedAbilityWindows usedAbility) $ \case
                 Window _ (Window.CommittedCard iid'' _) -> iid' == iid''
                 _ -> False
         pure $ matchingPerInvestigatorCount < n
@@ -480,14 +482,26 @@ getActions iid window = do
   let forcedActions = filter isForcedAbility actions'''
   pure $ if null forcedActions then actions''' else forcedActions
 
+withStandalone :: (CampaignId -> GameT a) -> (ScenarioId -> GameT a) -> GameT a
+withStandalone cf sf = maybe (sf =<< selectJust Matcher.TheScenario) cf =<< selectOne Matcher.TheCampaign
+
+getCampaignLog :: GameT CampaignLog
+getCampaignLog = withStandalone (field CampaignCampaignLog) (field ScenarioStandaloneCampaignLog)
+
 getHasRecord :: CampaignLogKey -> GameT Bool
-getHasRecord k = hasRecord k ()
+getHasRecord k = do
+  campaignLog <- getCampaignLog
+  pure $ k `member` (campaignLogRecorded campaignLog)
 
 getRecordCount :: CampaignLogKey -> GameT Int
-getRecordCount k = hasRecordCount k ()
+getRecordCount k = do
+  campaignLog <- getCampaignLog
+  pure $ findWithDefault 0 k (campaignLogRecordedCounts campaignLog)
 
 getRecordSet :: CampaignLogKey -> GameT [Recorded CardCode]
-getRecordSet k = hasRecordSet k ()
+getRecordSet k = do
+  campaignLog <- getCampaignLog
+  pure $ findWithDefault [] k (campaignLogRecordedSets campaignLog)
 
 getInvestigatorModifiers :: InvestigatorId -> Source -> GameT [ModifierType]
 getInvestigatorModifiers iid source =

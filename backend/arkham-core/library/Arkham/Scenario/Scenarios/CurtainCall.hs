@@ -43,11 +43,6 @@ curtainCall difficulty =
        , "lobbyDoorway2 .     .       .         backstageDoorway2"
        ]
 
-instance HasRecord CurtainCall where
-  hasRecord _ _ = pure False
-  hasRecordSet _ _ = pure []
-  hasRecordCount _ _ = pure 0
-
 instance HasTokenValue CurtainCall where
   getTokenValue iid tokenFace (CurtainCall attrs) = case tokenFace of
     Skull -> do

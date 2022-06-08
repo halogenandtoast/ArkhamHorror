@@ -10,6 +10,7 @@ import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.EncounterCard
@@ -136,11 +137,10 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance HasRecord UndimensionedAndUnseen where
-  hasRecord _ _ = pure False
-  hasRecordSet SacrificedToYogSothoth _ = pure [Recorded "02040"]
-  hasRecordSet _ _ = pure []
-  hasRecordCount _ _ = pure 0
+standaloneCampaignLog :: CampaignLog
+standaloneCampaignLog = mkCampaignLog
+  { campaignLogRecordedSets = mapFromList [(SacrificedToYogSothoth, [Recorded "02040"])]
+  }
 
 instance HasTokenValue UndimensionedAndUnseen where
   getTokenValue iid tokenFace (UndimensionedAndUnseen attrs) =
@@ -158,6 +158,8 @@ instance RunMessage UndimensionedAndUnseen where
     SetTokensForScenario -> do
       standalone <- getIsStandalone
       s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
+    StandaloneSetup ->
+      pure . UndimensionedAndUnseen $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId

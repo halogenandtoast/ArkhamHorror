@@ -9,8 +9,8 @@ import Arkham.Prelude
 
 import Data.Aeson.TH
 import Arkham.Card
+import Arkham.CampaignLog
 import Arkham.ChaosBag.Base
-import Arkham.Classes.HasRecord
 import Arkham.Classes.Entity
 import Arkham.Difficulty
 import Arkham.Helpers
@@ -36,6 +36,7 @@ data instance Field ScenarioAttrs :: Type -> Type where
   ScenarioDecks :: Field ScenarioAttrs (HashMap ScenarioDeckKey [Card])
   ScenarioVictoryDisplay :: Field ScenarioAttrs [Card]
   ScenarioRemembered :: Field ScenarioAttrs (HashSet ScenarioLogKey)
+  ScenarioStandaloneCampaignLog :: Field ScenarioAttrs CampaignLog
   ScenarioResignedCardCodes :: Field ScenarioAttrs [CardCode]
   ScenarioChaosBag :: Field ScenarioAttrs ChaosBag
   ScenarioSetAsideCards :: Field ScenarioAttrs [Card]
@@ -56,6 +57,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDecks :: HashMap ScenarioDeckKey [Card]
   , scenarioLog :: HashSet ScenarioLogKey
+  , scenarioStandaloneCampaignLog :: CampaignLog
   , scenarioSetAsideCards :: [Card]
   , scenarioInResolution :: Bool
   , scenarioNoRemainingInvestigatorsHandler :: Target
@@ -72,11 +74,6 @@ data ScenarioAttrs = ScenarioAttrs
 $(deriveJSON (aesonOptions $ Just "Scenario") ''ScenarioAttrs)
 makeLensesWith suffixedFields ''ScenarioAttrs
 
-instance HasRecord ScenarioAttrs where
-  hasRecord _ _ = pure False
-  hasRecordSet _ _ = pure []
-  hasRecordCount _ _ = pure 0
-
 baseAttrs :: CardCode -> Name -> Difficulty -> ScenarioAttrs
 baseAttrs cardCode name difficulty = ScenarioAttrs
   { scenarioId = ScenarioId cardCode
@@ -92,6 +89,7 @@ baseAttrs cardCode name difficulty = ScenarioAttrs
   , scenarioDecks = mempty
   , scenarioLog = mempty
   , scenarioSetAsideCards = mempty
+  , scenarioStandaloneCampaignLog = mkCampaignLog
   , scenarioCardsUnderScenarioReference = mempty
   , scenarioInResolution = False
   , scenarioNoRemainingInvestigatorsHandler = ScenarioTarget

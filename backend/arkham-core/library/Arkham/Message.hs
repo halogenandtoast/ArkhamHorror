@@ -147,6 +147,7 @@ data Message
     AddSlot InvestigatorId SlotType Slot
   | -- Adding Cards to Encounter Deck
     AddToEncounterDeck EncounterCard
+  | AddToTopOfEncounterDeck EncounterCard
   | -- Scenario Deck Messages
     AddToScenarioDeck ScenarioDeckKey Target
   | AddCardToScenarioDeck ScenarioDeckKey Card
@@ -502,6 +503,7 @@ data Message
   | SearchCollectionForRandom InvestigatorId Source CardMatcher
   | Search InvestigatorId Source Target [(Zone, ZoneReturnStrategy)] CardMatcher FoundCardsStrategy
   | SearchFound InvestigatorId Target DeckSignifier [Card]
+  | FoundCards (HashMap Zone [Card])
   | SearchNoneFound InvestigatorId Target
   | SetActions InvestigatorId Source Int
   | SetEncounterDeck (Deck EncounterCard)

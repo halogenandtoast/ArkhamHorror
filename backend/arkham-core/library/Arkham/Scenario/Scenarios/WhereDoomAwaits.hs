@@ -10,6 +10,7 @@ import Arkham.Agenda.Attrs ( Field (..) )
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.AgendaId
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.Cost
@@ -119,13 +120,10 @@ standaloneTokens =
   , ElderSign
   ]
 
-instance HasRecord WhereDoomAwaits where
-  hasRecord NaomiHasTheInvestigatorsBacks _ = pure False
-  hasRecord TheInvestigatorsPutSilasBishopOutOfHisMisery _ = pure False
-  hasRecord NoBroodEscapedIntoTheWild _ = pure True
-  hasRecord _ _ = pure False
-  hasRecordSet _ _ = pure []
-  hasRecordCount _ _ = pure 0
+standaloneCampaignLog :: CampaignLog
+standaloneCampaignLog = mkCampaignLog
+  { campaignLogRecorded = setFromList [NoBroodEscapedIntoTheWild]
+  }
 
 instance HasTokenValue WhereDoomAwaits where
   getTokenValue iid tokenFace (WhereDoomAwaits attrs) = case tokenFace of
@@ -155,6 +153,8 @@ instance RunMessage WhereDoomAwaits where
     SetTokensForScenario -> do
       standalone <- getIsStandalone
       s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
+    StandaloneSetup -> do
+      pure . WhereDoomAwaits $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId

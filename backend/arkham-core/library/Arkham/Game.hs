@@ -5,7 +5,6 @@ module Arkham.Game where
 
 import Arkham.Prelude
 
-import Arkham.Game.Base
 import Arkham.Ability
 import Arkham.Act
 import Arkham.Action (Action, TakenAction)
@@ -28,20 +27,21 @@ import Arkham.Deck qualified as Deck
 import Arkham.Decks
 import Arkham.Difficulty
 import Arkham.Direction
+import Arkham.Distance
 import Arkham.Effect
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Enemy
+import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Attrs (eventAttachedTarget, eventExhausted)
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.GameRunner
 import Arkham.Helpers
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator
-import Arkham.Investigator.Attrs (getPlayableCards, InvestigatorAttrs(..), Field(..))
+import Arkham.Investigator.Attrs (InvestigatorAttrs(..), Field(..))
 import Arkham.Keyword (HasKeywords(..), Keyword)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Label qualified as L
@@ -67,6 +67,7 @@ import Arkham.Matcher hiding
   )
 import Arkham.Matcher qualified as M
 import Arkham.Message hiding (AssetDamage)
+import Arkham.Message qualified as Msg
 import Arkham.Modifier hiding (EnemyEvade)
 import Arkham.ModifierData
 import Arkham.Name
@@ -126,6 +127,50 @@ data GameParams = GameParams
   deriving stock (Eq, Show)
 
 $(deriveJSON defaultOptions ''GameParams)
+
+data Game = Game
+  { gamePhaseHistory :: HashMap InvestigatorId History
+  , gameTurnHistory :: HashMap InvestigatorId History
+  , gameRoundHistory :: HashMap InvestigatorId History
+  , gameInitialSeed :: Int
+  , gameSeed :: Int
+  , gameParams :: GameParams
+  , gameWindowDepth :: Int
+  , -- Active Scenario/Campaign
+    gameMode :: GameMode
+  , -- Entities
+    gameEntities :: Entities
+  , gameEncounterDiscardEntities :: Entities
+  , gameInHandEntities :: HashMap InvestigatorId Entities
+  , gameInDiscardEntities :: HashMap InvestigatorId Entities
+  , gameInSearchEntities :: Entities
+  , gameEnemiesInVoid :: EntityMap Enemy
+  , -- Player Details
+    gamePlayerCount :: Int -- used for determining if game should start
+  , gameActiveInvestigatorId :: InvestigatorId
+  , gameTurnPlayerInvestigatorId :: Maybe InvestigatorId
+  , gameLeadInvestigatorId :: InvestigatorId
+  , gamePlayerOrder :: [InvestigatorId] -- For "in player order"
+  , -- Game Details
+    gamePhase :: Phase
+  , gameSkillTest :: Maybe SkillTest
+  , gameFocusedCards :: [Card]
+  , gameFoundCards :: HashMap Zone [Card]
+  , gameFocusedTargets :: [Target]
+  , gameFocusedTokens :: [Token]
+  , gameActiveCard :: Maybe Card
+  , gameRemovedFromPlay :: [Card]
+  , gameGameState :: GameState
+  , gameSkillTestResults :: Maybe SkillTestResultsData
+  , gameEnemyMoving :: Maybe EnemyId
+  , -- Active questions
+    gameQuestion :: HashMap InvestigatorId (Question Message)
+  }
+  deriving stock (Eq, Show)
+
+$(deriveJSON defaultOptions ''Game)
+
+makeLensesWith suffixedFields ''Game
 
 
 -- the issue is the following we want GameT
@@ -209,19 +254,14 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameTurnPlayerInvestigatorId = Nothing
       , gameLeadInvestigatorId = initialInvestigatorId
       , gamePhase = CampaignPhase
-      , gameEncounterDeck = mempty
-      , gameDiscard = mempty
       , gameSkillTest = Nothing
-      , gameChaosBag = emptyChaosBag
       , gameGameState = state
-      , gameUsedAbilities = mempty
       , gameFocusedCards = mempty
       , gameFoundCards = mempty
       , gameFocusedTargets = mempty
       , gameFocusedTokens = mempty
       , gameActiveCard = Nothing
       , gamePlayerOrder = toList playersMap
-      , gameVictoryDisplay = mempty
       , gameRemovedFromPlay = mempty
       , gameQuestion = mempty
       , gameSkillTestResults = Nothing
@@ -244,11 +284,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
     scenarioOrCampaignId
   mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
 
-addInvestigator
-  :: (MonadIO m, MonadReader env m, HasQueue env, HasGameRef env)
-  => Investigator
-  -> [PlayerCard]
-  -> m ()
+addInvestigator :: Investigator -> [PlayerCard] -> GameT ()
 addInvestigator i d = do
   gameRef <- view gameRefL
   game <- liftIO $ readIORef gameRef
@@ -289,16 +325,12 @@ addInvestigator i d = do
     )
 
 -- TODO: Rename this
-toExternalGame
-  :: MonadRandom m => Game -> HashMap InvestigatorId (Question Message) -> m Game
+toExternalGame :: MonadRandom m => Game -> HashMap InvestigatorId (Question Message) -> m Game
 toExternalGame g mq = do
   newGameSeed <- getRandom
   pure $ g { gameQuestion = mq, gameSeed = newGameSeed }
 
-replayChoices
-  :: (MonadIO m, HasGameRef env, HasStdGen env, MonadReader env m)
-  => [Diff.Patch]
-  -> m ()
+replayChoices :: [Diff.Patch] -> GameT ()
 replayChoices choices = do
   gameRef <- view gameRefL
   genRef <- view genL
@@ -320,9 +352,6 @@ replayChoices choices = do
     Error e -> error e
     Success g -> writeIORef gameRef g
 
-getGame :: (HasGame env, MonadReader env m) => m Game
-getGame = view gameL
-
 modeScenario :: GameMode -> Maybe Scenario
 modeScenario = \case
   That s -> Just s
@@ -343,36 +372,26 @@ patch g p = case Diff.patch p (toJSON g) of
   Error e -> Error e
   Success a -> fromJSON a
 
-getScenario :: (HasGame env, MonadReader env m) => m (Maybe Scenario)
+getScenario :: GameT (Maybe Scenario)
 getScenario = modeScenario . view modeL <$> getGame
 
-withModifiers
-  :: ( MonadReader env m
-     , TargetEntity a
-     , HasModifiersFor ()
-     , HasId ActiveInvestigatorId env ()
-     , HasCallStack
-     )
-  => a
-  -> m (With a ModifierData)
+withModifiers :: a -> GameT (With a ModifierData)
 withModifiers a = do
   source <- InvestigatorSource . unActiveInvestigatorId <$> getId ()
   modifiers' <- getModifiersFor source (toTarget a) ()
   pure $ a `with` ModifierData modifiers'
 
 withLocationConnectionData
-  :: (MonadReader env m, HasGame env, HasCallStack)
-  => With Location ModifierData
-  -> m (With (With Location ModifierData) ConnectionData)
+  :: With Location ModifierData
+  -> GameT (With (With Location ModifierData) ConnectionData)
 withLocationConnectionData inner@(With target _) = do
   matcher <- getConnectedMatcher target
   connectedLocationIds <- selectList matcher
   pure $ inner `with` ConnectionData connectedLocationIds
 
 withInvestigatorConnectionData
-  :: (MonadReader env m, HasGame env, HasCallStack)
-  => With WithDeckSize ModifierData
-  -> m (With (With WithDeckSize ModifierData) ConnectionData)
+  :: With WithDeckSize ModifierData
+  -> GameT (With (With WithDeckSize ModifierData) ConnectionData)
 withInvestigatorConnectionData inner@(With target _) = case target of
   WithDeckSize investigator -> do
     location <- getLocation =<< getId @LocationId (toId investigator)
@@ -389,11 +408,7 @@ instance ToJSON WithDeckSize where
       Object $ KeyMap.insert "deckSize" (toJSON $ length $ deckOf i) o
     _ -> error "failed to serialize investigator"
 
-withSkillTestModifiers
-  :: (MonadReader env m, TargetEntity a, HasModifiersFor env (), HasCallStack)
-  => SkillTest
-  -> a
-  -> m (With a ModifierData)
+withSkillTestModifiers :: SkillTest -> a -> GameT (With a ModifierData)
 withSkillTestModifiers st a = do
   modifiers' <- getModifiersFor (toSource st) (toTarget a) ()
   pure $ a `with` ModifierData modifiers'
@@ -437,7 +452,6 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "id" .= toJSON gid
     , "log" .= toJSON glog
     , "mode" .= toJSON gameMode
-    , "encounterDeckSize" .= toJSON (length $ unDeck gameEncounterDeck)
     , "locations" .= toJSON
       (runReader
         (traverse withLocationConnectionData
@@ -495,26 +509,21 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "question" .= toJSON gameQuestion
     ]
 
-getInvestigator
-  :: (HasCallStack, MonadReader env m, HasGame env)
-  => InvestigatorId
-  -> m Investigator
+getInvestigator :: InvestigatorId -> GameT Investigator
 getInvestigator iid =
   fromJustNote missingInvestigator
     . preview (entitiesL . investigatorsL . ix iid)
     <$> getGame
   where missingInvestigator = "Unknown investigator: " <> show iid
 
-getLocation
-  :: (HasCallStack, MonadReader env m, HasGame env) => LocationId -> m Location
+getLocation :: LocationId -> GameT Location
 getLocation lid =
   fromJustNote missingLocation . preview (entitiesL . locationsL . ix lid) <$> getGame
   where missingLocation = "Unknown location: " <> show lid
 
 getInvestigatorsMatching
-  :: (HasCallStack, MonadReader env m, HasGame env)
-  => InvestigatorMatcher
-  -> m [Investigator]
+  :: InvestigatorMatcher
+  -> GameT [Investigator]
 getInvestigatorsMatching matcher = do
   investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
   filterM (go matcher) investigators
@@ -656,7 +665,7 @@ getInvestigatorsMatching matcher = do
           skillTestCount <- length <$> getList @CommittedSkillIcon (toId i, st)
           gameValueMatches skillTestCount valueMatcher
 
-getAgendasMatching :: (MonadReader env m, HasGame env) => AgendaMatcher -> m [Agenda]
+getAgendasMatching :: AgendaMatcher -> GameT [Agenda]
 getAgendasMatching matcher = do
   allGameAgendas <- toList . view (entitiesL . agendasL) <$> getGame
   filterM (matcherFilter matcher) allGameAgendas
@@ -666,7 +675,7 @@ getAgendasMatching matcher = do
     AgendaWithId agendaId -> pure . (== agendaId) . toId
     AgendaWithDoom gameValueMatcher -> getCount >=> (`gameValueMatches` gameValueMatcher) . unDoomCount
 
-getActsMatching :: (MonadReader env m, HasGame env) => ActMatcher -> m [Act]
+getActsMatching :: ActMatcher -> GameT [Act]
 getActsMatching matcher = do
   allGameActs <- toList . view (entitiesL . actsL) <$> getGame
   filterM (matcherFilter matcher) allGameActs
@@ -675,7 +684,7 @@ getActsMatching matcher = do
     AnyAct -> pure . const True
     ActWithId actId -> pure . (== actId) . toId
 
-getRemainingActsMatching :: (MonadReader env m, HasGame env) => RemainingActMatcher -> m [CardDef]
+getRemainingActsMatching :: RemainingActMatcher -> GameT [CardDef]
 getRemainingActsMatching matcher = do
   acts <-
     scenarioActs
@@ -696,8 +705,7 @@ getRemainingActsMatching matcher = do
     AnyAct -> pure . const True
     ActWithId _ -> pure . const False
 
-getTreacheriesMatching
-  :: (MonadReader env m, HasGame env) => TreacheryMatcher -> m [Treachery]
+getTreacheriesMatching :: TreacheryMatcher -> GameT [Treachery]
 getTreacheriesMatching matcher = do
   allGameTreacheries <- toList . view (entitiesL . treacheriesL) <$> getGame
   filterM (matcherFilter matcher) allGameTreacheries
@@ -732,7 +740,7 @@ getTreacheriesMatching matcher = do
       \treachery -> allM (`matcherFilter` treachery) matchers
 
 getAbilitiesMatching
-  :: (HasGame env, MonadReader env m) => AbilityMatcher -> m [Ability]
+  :: AbilityMatcher -> GameT [Ability]
 getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   g <- getGame
   let abilities = getAbilities g
@@ -758,15 +766,13 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
       abilities
 
 getLocationMatching
-  :: (HasCallStack, MonadReader env m, HasGame env)
-  => LocationMatcher
-  -> m (Maybe Location)
+  :: LocationMatcher
+  -> GameT (Maybe Location)
 getLocationMatching = (listToMaybe <$>) . getLocationsMatching
 
 getLocationsMatching
-  :: (HasCallStack, MonadReader env m, HasGame env)
-  => LocationMatcher
-  -> m [Location]
+  :: LocationMatcher
+  -> GameT [Location]
 getLocationsMatching = \case
   FirstLocation [] -> pure []
   FirstLocation xs ->
@@ -979,14 +985,12 @@ getLocationsMatching = \case
   SameLocation -> pure []
   ThisLocation -> pure []
 
-guardYourLocation
-  :: (MonadReader env m, HasGame env) => (LocationId -> m [a]) -> m [a]
+guardYourLocation :: (LocationId -> GameT [a]) -> GameT [a]
 guardYourLocation body = do
   mlid <- locationFor . view activeInvestigatorIdL =<< getGame
   if mlid /= LocationId (CardId nil) then body mlid else pure []
 
-getAssetsMatching
-  :: (HasCallStack, MonadReader env m, HasGame env) => AssetMatcher -> m [Asset]
+getAssetsMatching :: AssetMatcher -> GameT [Asset]
 getAssetsMatching matcher = do
   assets <- toList . view (entitiesL . assetsL) <$> getGame
   filterMatcher assets matcher
@@ -1063,8 +1067,7 @@ getAssetsMatching matcher = do
         isSanityDamageable
         (investigatorAssets <> otherDamageableAssets)
 
-getEventsMatching
-  :: (MonadReader env m, HasGame env) => EventMatcher -> m [Event]
+getEventsMatching :: EventMatcher -> GameT [Event]
 getEventsMatching matcher = do
   events <- toList . view (entitiesL . eventsL) <$> getGame
   filterMatcher events matcher
@@ -1082,8 +1085,7 @@ getEventsMatching matcher = do
     EventReady -> pure $ filter (not . eventExhausted . toAttrs) as
     EventMatches ms -> foldM filterMatcher as ms
 
-getSkillsMatching
-  :: (MonadReader env m, HasGame env) => SkillMatcher -> m [Skill]
+getSkillsMatching :: SkillMatcher -> GameT [Skill]
 getSkillsMatching matcher = do
   skills <- toList . view (entitiesL . skillsL) <$> getGame
   filterMatcher skills matcher
@@ -1104,33 +1106,27 @@ getSkillsMatching matcher = do
       iid <- view activeInvestigatorIdL <$> getGame
       pure $ filter ((== iid) . ownerOfSkill) as
 
-getSkill
-  :: (HasCallStack, MonadReader env m, HasGame env) => SkillId -> m Skill
+getSkill :: SkillId -> GameT Skill
 getSkill sid =
   fromJustNote missingSkill . preview (entitiesL . skillsL . ix sid) <$> getGame
   where missingSkill = "Unknown skill: " <> show sid
 
-getEnemy
-  :: (HasCallStack, MonadReader env m, HasGame env) => EnemyId -> m Enemy
+getEnemy :: EnemyId -> GameT Enemy
 getEnemy eid =
   fromJustNote missingEnemy . preview (entitiesL . enemiesL . ix eid) <$> getGame
   where missingEnemy = "Unknown enemy: " <> show eid
 
-getEnemyMatching
-  :: (MonadReader env m, HasGame env, HasAbilities env)
-  => EnemyMatcher
-  -> m (Maybe Enemy)
+getEnemyMatching :: EnemyMatcher -> GameT (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
 getEnemiesMatching
-  :: (MonadReader env m, HasGame env, HasAbilities env, HasDepth env, MonadIO m)
-  => EnemyMatcher
-  -> m [Enemy]
+  :: EnemyMatcher
+  -> GameT [Enemy]
 getEnemiesMatching matcher = do
   allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
   filterM (enemyMatcherFilter matcher) allGameEnemies
 
-enemyMatcherFilter :: (MonadReader env m, MonadIO m, HasDepth env, HasGame env, HasAbilities env) => EnemyMatcher -> Enemy -> m Bool
+enemyMatcherFilter :: EnemyMatcher -> Enemy -> GameT Bool
 enemyMatcherFilter = \case
   NotEnemy m -> fmap not . enemyMatcherFilter m
   EnemyWithTitle title -> pure . (== title) . nameTitle . toName
@@ -1233,49 +1229,42 @@ enemyMatcherFilter = \case
       then pure $ toId enemy `elem` matchingEnemyIds
       else pure $ maybe False (`elem` matches) (getEnemyLocation enemy)
 
-getAct :: (HasCallStack, MonadReader env m, HasGame env) => ActId -> m Act
+getAct :: ActId -> GameT Act
 getAct aid = fromJustNote missingAct . preview (entitiesL . actsL . ix aid) <$> getGame
   where missingAct = "Unknown act: " <> show aid
 
-getAgenda
-  :: (HasCallStack, MonadReader env m, HasGame env) => AgendaId -> m Agenda
+getAgenda :: AgendaId -> GameT Agenda
 getAgenda aid =
   fromJustNote missingAgenda . preview (entitiesL . agendasL . ix aid) <$> getGame
   where missingAgenda = "Unknown agenda: " <> show aid
 
-getAsset
-  :: (HasCallStack, MonadReader env m, HasGame env) => AssetId -> m Asset
+getAsset :: AssetId -> GameT Asset
 getAsset aid =
   fromJustNote missingAsset . preview (entitiesL . assetsL . ix aid) <$> getGame
   where missingAsset = "Unknown asset: " <> show aid
 
-getTreachery
-  :: (HasCallStack, MonadReader env m, HasGame env)
-  => TreacheryId
-  -> m Treachery
+getTreachery :: TreacheryId -> GameT Treachery
 getTreachery tid =
   fromJustNote missingTreachery . preview (entitiesL . treacheriesL . ix tid) <$> getGame
   where missingTreachery = "Unknown treachery: " <> show tid
 
-getEvent
-  :: (HasCallStack, MonadReader env m, HasGame env) => EventId -> m Event
+getEvent :: EventId -> GameT Event
 getEvent eid =
   fromJustNote missingEvent . preview (entitiesL . eventsL . ix eid) <$> getGame
   where missingEvent = "Unknown event: " <> show eid
 
-getEffect
-  :: (HasCallStack, MonadReader env m, HasGame env) => EffectId -> m Effect
+getEffect :: EffectId -> GameT Effect
 getEffect eid =
   fromJustNote missingEffect . preview (entitiesL . effectsL . ix eid) <$> getGame
   where missingEffect = "Unknown effect: " <> show eid
 
-instance HasGame env => Projection env LocationAttrs where
+instance Projection LocationAttrs where
   field f lid = do
     l <- getLocation lid
     case f of
       LocationClues -> pure . locationClues $ toAttrs l
 
-instance HasGame env => Projection env AssetAttrs where
+instance Projection AssetAttrs where
   field f aid = do
     a <- getAsset aid
     case f of
@@ -1283,20 +1272,20 @@ instance HasGame env => Projection env AssetAttrs where
       AssetHorror -> pure . assetSanityDamage $ toAttrs a
       AssetExhausted -> pure . assetExhausted $ toAttrs a
 
-instance HasGame env => Projection env ActAttrs where
+instance Projection ActAttrs where
   field f aid = do
     l <- getAct aid
     case f of
-      ActSequenceNumber -> pure . unActStep . actStep . actSequence $ toAttrs l
+      ActSequence -> pure . actSequence $ toAttrs l
 
-instance HasGame env => Projection env EnemyAttrs where
+instance Projection EnemyAttrs where
   field f eid = do
     e <- getEnemy eid
     case f of
       EnemyDoom -> pure . enemyDoom $ toAttrs e
       EnemyEvade -> pure . enemyEvade $ toAttrs e
 
-instance HasGame env => Projection env InvestigatorAttrs where
+instance Projection InvestigatorAttrs where
   field f iid = do
     i <- getInvestigator iid
     case f of
@@ -1307,22 +1296,22 @@ instance HasGame env => Projection env InvestigatorAttrs where
       InvestigatorHand -> pure . investigatorHand $ toAttrs i
       -- NOTE: For Abilities do not for get inhand, indiscard, insearch
 
-instance HasGame env => Query AssetMatcher env where
+instance Query AssetMatcher where
   select = fmap (setFromList . map toId) . getAssetsMatching
 
-instance HasGame env => Query EventMatcher env where
+instance Query EventMatcher where
   select = fmap (setFromList . map toId) . getEventsMatching
 
-instance HasGame env => Query LocationMatcher env where
+instance Query LocationMatcher where
   select = fmap (setFromList . map toId) . getLocationsMatching
 
-instance HasGame env => Query EnemyMatcher env where
+instance Query EnemyMatcher where
   select = fmap (setFromList . map toId) . getEnemiesMatching
 
-instance HasGame env => Query InvestigatorMatcher env where
+instance Query InvestigatorMatcher where
   select = fmap (setFromList . map toId) . getInvestigatorsMatching
 
-instance HasGame env => Query PreyMatcher env where
+instance Query PreyMatcher where
   select = \case
     Prey matcher -> select matcher
     OnlyPrey matcher -> select matcher
@@ -1477,11 +1466,10 @@ instance HasModifiersFor Entities where
 -- the results will have the initial location at 0, we need to drop
 -- this otherwise this will only ever return the current location
 getShortestPath
-  :: (HasGame env, MonadReader env m)
-  => LocationId
-  -> (LocationId -> m Bool)
+  :: LocationId
+  -> (LocationId -> GameT Bool)
   -> HashMap LocationId [LocationId]
-  -> m [LocationId]
+  -> GameT [LocationId]
 getShortestPath !initialLocation !target !extraConnectionsMap = do
   let
     !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
@@ -1504,10 +1492,9 @@ data LPState = LPState
   }
 
 getLongestPath
-  :: (HasGame env, MonadReader env m)
-  => LocationId
-  -> (LocationId -> m Bool)
-  -> m [LocationId]
+  :: LocationId
+  -> (LocationId -> GameT Bool)
+  -> GameT [LocationId]
 getLongestPath !initialLocation !target = do
   let
     !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
@@ -1521,11 +1508,10 @@ getLongestPath !initialLocation !target = do
     $ result
 
 markDistances
-  :: (HasGame env, MonadReader env m)
-  => LocationId
-  -> (LocationId -> m Bool)
+  :: LocationId
+  -> (LocationId -> GameT Bool)
   -> HashMap LocationId [LocationId]
-  -> StateT LPState m (HashMap Int [LocationId])
+  -> StateT LPState GameT (HashMap Int [LocationId])
 markDistances initialLocation target extraConnectionsMap = do
   LPState searchQueue visitedSet parentsMap <- get
   if Seq.null searchQueue
@@ -1577,34 +1563,27 @@ distanceAggregates :: HashMap LocationId Int -> HashMap Int [LocationId]
 distanceAggregates hmap = unionsWith (<>) (map convert $ mapToList hmap)
   where convert = uncurry singletonMap . second pure . swap
 
-instance HasGame env => Query AgendaMatcher env where
+instance Query AgendaMatcher where
   select = fmap (setFromList . map toId) . getAgendasMatching
 
-instance HasGame env => Query ActMatcher env where
+instance Query ActMatcher where
   select = fmap (setFromList . map toId) . getActsMatching
 
-instance HasGame env => Query RemainingActMatcher env where
+instance Query RemainingActMatcher where
   select = fmap (setFromList . map toCardCode) . getRemainingActsMatching
 
-instance HasGame env => Query AbilityMatcher env where
+instance Query AbilityMatcher where
   select = fmap setFromList . getAbilitiesMatching
 
-instance HasGame env => Query SkillMatcher env where
+instance Query SkillMatcher where
   select = fmap (setFromList . map toId) . getSkillsMatching
 
-instance HasGame env => Query TreacheryMatcher env where
+instance Query TreacheryMatcher where
   select = fmap (setFromList . map toId) . getTreacheriesMatching
 
 runMessages
-  :: ( MonadIO m
-     , HasGameRef env
-     , HasStdGen env
-     , HasQueue env
-     , MonadReader env m
-     , HasGameLogger env
-     )
-  => Maybe (Message -> IO ())
-  -> m ()
+  :: Maybe (Message -> IO ())
+  -> GameT ()
 runMessages mLogger = do
   gameRef <- view gameRefL
   g <- liftIO $ readIORef gameRef
@@ -1699,7 +1678,7 @@ runMessages mLogger = do
               runMessages mLogger
 
 runPreGameMessage
-  :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game
+  :: Message -> Game -> GameT Game
 runPreGameMessage msg g = case msg of
   CheckWindow{} -> do
     push EndCheckWindow
@@ -1712,18 +1691,9 @@ runPreGameMessage msg g = case msg of
   _ -> pure g
 
 runGameMessage
-  :: ( HasQueue env
-     , MonadReader env m
-     , MonadRandom m
-     , MonadIO m
-     , HasGame env
-     , HasDepth env
-     , HasAbilities env
-     , HasGameLogger env
-     )
-  => Message
+  :: Message
   -> Game
-  -> m Game
+  -> GameT Game
 runGameMessage msg g = case msg of
   Run msgs -> g <$ pushAll msgs
   Label _ msgs -> g <$ pushAll msgs
@@ -1855,12 +1825,6 @@ runGameMessage msg g = case msg of
     pure $ g & leadInvestigatorIdL .~ iid
   ChoosePlayer iid SetTurnPlayer ->
     g <$ pushAll [BeginTurn iid, After (BeginTurn iid)]
-  LookAtTopOfDeck _ EncounterDeckTarget n -> do
-    let cards = map EncounterCard . take n $ unDeck (gameEncounterDeck g)
-    g <$ pushAll [FocusCards cards, Label "Continue" [UnfocusCards]]
-  MoveTopOfDeckToBottom _ Deck.EncounterDeck n -> do
-    let (cards, deck) = splitAt n (unDeck $ gameEncounterDeck g)
-    pure $ g & encounterDeckL .~ Deck (deck <> cards)
   MoveTo _ iid _ -> do
     let
       historyItem = mempty { historyMoved = True }
@@ -2881,7 +2845,7 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  EnemyDamage eid iid _ _ n | n > 0 -> do
+  Msg.EnemyDamage eid iid _ _ n | n > 0 -> do
     let
       historyItem = mempty { historyDealtDamageTo = [EnemyTarget eid] }
       turn = isJust $ view turnPlayerInvestigatorIdL g
@@ -3285,7 +3249,6 @@ instance RunMessage Game where
   runMessage msg g = do
     preloadEntities g
       >>= runPreGameMessage msg
-      >>= traverseOf chaosBagL (runMessage msg)
       >>= traverseOf (modeL . here) (runMessage msg)
       >>= traverseOf (modeL . there) (runMessage msg)
       >>= traverseOf entitiesL (runMessage msg)

@@ -60,7 +60,7 @@ instance HasTokenValue BloodOnTheAltar where
   getTokenValue iid tokenFace (BloodOnTheAltar (attrs `With` _)) =
     case tokenFace of
       Skull -> do
-        numLocations <- countM (fieldMap LocationUnderneathCards null)
+        numLocations <- countM (fieldMap LocationCardsUnderneath null)
           =<< selectList Anywhere
         pure $ toTokenValue attrs Skull (min 4 numLocations) numLocations
       Cultist -> pure $ toTokenValue attrs Cultist 2 4
@@ -93,11 +93,7 @@ standaloneTokens =
 findOwner :: CardCode -> GameT (Maybe InvestigatorId)
 findOwner cardCode = do
   campaignStoryCards <- getCampaignStoryCards
-  pure
-    $ campaignStoryCardInvestigatorId
-    <$> find
-          ((== cardCode) . toCardCode . campaignStoryCardPlayerCard)
-          campaignStoryCards
+  pure $ findKey (any ((== cardCode) . toCardCode)) campaignStoryCards
 
 getRemoveSacrificedMessages :: [CardCode] -> GameT [Message]
 getRemoveSacrificedMessages sacrifices = do
@@ -114,7 +110,7 @@ getRemoveSacrificedMessages sacrifices = do
 
 getRemoveNecronomicon :: GameT [Message]
 getRemoveNecronomicon = do
-  defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
+  defeatedInvestigatorIds <- selectList DefeatedInvestigator
   mNecronomiconOwner <- findOwner "02140"
   pure
     [ RemoveCampaignCardFromDeck owner "02140"

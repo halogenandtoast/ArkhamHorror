@@ -8,23 +8,15 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Decks
 import Arkham.Difficulty
-import Arkham.Enemy.Attrs (EnemyAttrs)
-import Arkham.Investigator.Attrs (InvestigatorAttrs)
-import Arkham.Projection
+import Arkham.Helpers.Modifiers
 import Arkham.Id
-import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Query
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios
-import Arkham.ScenarioLogKey
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait (Trait)
 import Data.Aeson.TH
 
 $(buildEntity "Scenario")
@@ -63,8 +55,7 @@ instance RunMessage Scenario where
         then pure s
         else go msg s
     _ -> go msg s
-   where
-     go = $(entityRunMessage "Scenario")
+    where go = $(entityRunMessage "Scenario")
 
 instance HasTokenValue Scenario where
   getTokenValue iid tokenFace s = do

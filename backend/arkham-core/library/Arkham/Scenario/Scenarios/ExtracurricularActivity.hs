@@ -13,13 +13,11 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign
-import Arkham.Id
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Target
@@ -54,7 +52,7 @@ instance HasTokenValue ExtracurricularActivity where
     case tokenFace of
       Skull -> pure $ toTokenValue attrs Skull 1 2
       Cultist -> do
-        discardCount <- field InvestigatorDiscard iid
+        discardCount <- fieldMap InvestigatorDiscard length iid
         pure $ TokenValue
           Cultist
           (NegativeModifier $ if discardCount >= 10

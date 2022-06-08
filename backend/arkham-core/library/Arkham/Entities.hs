@@ -6,6 +6,7 @@ import Arkham.Prelude
 import Arkham.Act
 import Arkham.Agenda
 import Arkham.Asset
+import Arkham.Classes.Entity
 import Arkham.Effect
 import Arkham.Enemy
 import Arkham.Event
@@ -13,6 +14,7 @@ import Arkham.Investigator
 import Arkham.Location
 import Arkham.Skill
 import Arkham.Treachery
+import Data.Aeson.TH
 
 type EntityMap a = HashMap (EntityId a) a
 

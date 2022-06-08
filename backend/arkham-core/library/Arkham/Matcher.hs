@@ -248,6 +248,7 @@ data EnemyMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
   | NearestEnemy EnemyMatcher
   | FarthestEnemyFrom InvestigatorId EnemyMatcher
+  | NearestEnemyTo InvestigatorId EnemyMatcher
   | EnemyIs CardCode
   | AnyEnemy
   | CanFightEnemy

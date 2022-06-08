@@ -2,36 +2,29 @@ module Arkham.Campaign.Campaigns.TheDunwichLegacy where
 
 import Arkham.Prelude
 
-import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Runner
 import Arkham.CampaignId
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Card
 import Arkham.InvestigatorId
 import Arkham.Message
-import Arkham.Helpers.Card
-import Arkham.Helpers.Query
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
   deriving anyclass IsCampaign
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
-findOwner
-  :: CardCode
-  -> GameT (Maybe InvestigatorId)
+findOwner :: CardCode -> GameT (Maybe InvestigatorId)
 findOwner cardCode = do
   campaignStoryCards <- getCampaignStoryCards
-  pure
-    $ campaignStoryCardInvestigatorId
-    <$> find
-          ((== cardCode) . toCardCode . campaignStoryCardPlayerCard)
-          campaignStoryCards
+  pure $ findKey (any ((== cardCode) . toCardCode)) campaignStoryCards
 
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
 theDunwichLegacy difficulty = TheDunwichLegacy $ baseAttrs
@@ -148,8 +141,7 @@ instance RunMessage TheDunwichLegacy where
                  `notElem` sacrificedToYogSothoth
                  )
       c <$ pushAll
-        ([ story investigatorIds interlude2
-         ]
+        ([story investigatorIds interlude2]
         <> [ story investigatorIds interlude2DrHenryArmitage
            | Recorded "02040" `notElem` sacrificedToYogSothoth
            ]

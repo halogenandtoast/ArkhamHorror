@@ -15,14 +15,16 @@ import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.Distance
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
-import Arkham.Helpers.Campaign
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Card
 import Arkham.Id
-import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs )
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Label ( unLabel )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( RevealLocation )
@@ -30,7 +32,6 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
@@ -79,7 +80,7 @@ thePallidMask difficulty =
 instance HasModifiersFor ThePallidMask where
   getModifiersFor _ (InvestigatorTarget iid) (ThePallidMask a) = do
     extraXp <- elem (Recorded $ unInvestigatorId iid) <$> getRecordSet ReadActII
-    pure $ toModifiers a [XPModifier 2 | extraXp]
+    pure $ toModifiers a [ XPModifier 2 | extraXp ]
   getModifiersFor _ _ _ = pure []
 
 instance HasRecord ThePallidMask where
@@ -189,7 +190,6 @@ instance RunMessage ThePallidMask where
 
       theManInThePallidMask <- getCampaignStoryCard
         Enemies.theManInThePallidMask
-        ()
 
       let (bottom3, rest) = splitAt 3 remainingCatacombs
       bottom <- shuffleM ([tombOfShadows, blockedPassage] <> bottom3)
@@ -275,7 +275,9 @@ instance RunMessage ThePallidMask where
               iid
               [ targetLabel
                   enemy
-                  [Ready (EnemyTarget enemy), InitiateEnemyAttack iid enemy RegularAttack]
+                  [ Ready (EnemyTarget enemy)
+                  , InitiateEnemyAttack iid enemy RegularAttack
+                  ]
               | enemy <- enemies
               ]
         pure ()
@@ -294,8 +296,7 @@ instance RunMessage ThePallidMask where
       leadInvestigatorId <- getLeadInvestigatorId
       harukoSlain <- selectOne
         (VictoryDisplayCardMatch $ cardIs Enemies.ishimaruHaruko)
-      chasingTheStrangerTallies <- getRecordCount
-        ChasingTheStranger
+      chasingTheStrangerTallies <- getRecordCount ChasingTheStranger
       let
         updateSlain =
           [ RecordSetInsert VIPsSlain [toCardCode haruko]
@@ -321,7 +322,8 @@ instance RunMessage ThePallidMask where
                      <> CardWithOneOf (map CardWithTrait [Madness, Pact])
                      )
                    ]
-                   | iid <- investigatorIds]
+               | iid <- investigatorIds
+               ]
            ]
         <> [ RemoveAllTokens Cultist
            , RemoveAllTokens Tablet

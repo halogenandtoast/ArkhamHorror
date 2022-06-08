@@ -12,14 +12,10 @@ import Arkham.Classes
 import Arkham.Enemy.Enemies
 import Arkham.Enemy.Runner
 import Arkham.Id
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Name
-import Arkham.Query
-import Arkham.SkillTest
-import Arkham.Trait (Trait, toTraits)
+import Arkham.Trait (toTraits)
 import Data.Aeson.TH
 
 $(buildEntity "Enemy")

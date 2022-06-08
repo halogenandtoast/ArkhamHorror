@@ -184,3 +184,6 @@ with = With
 
 withBase :: a `With` b -> a
 withBase (a `With` _) = a
+
+findKey :: (Hashable k, Eq k) => (v -> Bool) -> HashMap k v -> Maybe k
+findKey p = fmap fst . find (p . snd) . mapToList

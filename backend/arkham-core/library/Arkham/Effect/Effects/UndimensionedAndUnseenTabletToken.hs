@@ -47,7 +47,7 @@ instance RunMessage UndimensionedAndUnseenTabletToken where
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs -> do
       broodOfYogSothoth <- getBroodOfYogSothoth
       broodOfYogSothothWithClues <- filterM
-        (fieldF EnemyClues (> 0))
+        (fieldMap EnemyClues (> 0))
         broodOfYogSothoth
       difficulty <- scenarioField ScenarioDifficulty
       let

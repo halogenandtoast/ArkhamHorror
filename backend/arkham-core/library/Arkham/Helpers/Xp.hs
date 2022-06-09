@@ -36,7 +36,7 @@ getXpWithBonus bonus = do
       locationVictory <-
         fmap mconcat
         . traverse
-            (fieldF LocationCardDef (Sum . fromMaybe 0 . cdVictoryPoints))
+            (fieldMap LocationCardDef (Sum . fromMaybe 0 . cdVictoryPoints))
         =<< selectList (RevealedLocation <> LocationWithoutClues)
       let amount = getSum $ victoryPileVictory <> locationVictory
       pure (iid, foldl' applyModifier (amount + bonus) modifiers')

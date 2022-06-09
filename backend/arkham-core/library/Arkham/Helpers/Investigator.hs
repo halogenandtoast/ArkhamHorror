@@ -188,7 +188,7 @@ investigator f cardDef Stats {..} =
         , investigatorName = cdName cardDef
         , investigatorCardCode = cdCardCode cardDef
         , investigatorClass = fromJustNote "missing class symbol"
-          $ cdClassSymbol cardDef
+          . headMay . setToList $ cdClassSymbols cardDef
         , investigatorHealth = health
         , investigatorSanity = sanity
         , investigatorWillpower = willpower
@@ -330,7 +330,7 @@ findCard cardId a =
 
 getJustLocation :: InvestigatorId -> GameT LocationId
 getJustLocation =
-  fieldF InvestigatorLocation (fromJustNote "must be at a location")
+  fieldMap InvestigatorLocation (fromJustNote "must be at a location")
 
 enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
 enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId

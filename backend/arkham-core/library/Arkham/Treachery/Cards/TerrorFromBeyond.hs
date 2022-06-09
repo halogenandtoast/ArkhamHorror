@@ -34,7 +34,7 @@ instance RunMessage TerrorFromBeyond where
           toCardCode attrs `elem` historyTreacheriesDrawn phaseHistory
       iidsWithAssets <- traverse
         (traverseToSnd
-          (fieldF
+          (fieldMap
             InvestigatorHand
             (map toCardId . filter (`cardMatch` CardWithType AssetType))
           )
@@ -42,7 +42,7 @@ instance RunMessage TerrorFromBeyond where
         iids
       iidsWithEvents <- traverse
         (traverseToSnd
-          (fieldF
+          (fieldMap
             InvestigatorHand
             (map toCardId . filter (`cardMatch` CardWithType EventType))
           )
@@ -50,7 +50,7 @@ instance RunMessage TerrorFromBeyond where
         iids
       iidsWithSkills <- traverse
         (traverseToSnd
-          (fieldF
+          (fieldMap
             InvestigatorHand
             (map toCardId . filter (`cardMatch` CardWithType SkillType))
           )

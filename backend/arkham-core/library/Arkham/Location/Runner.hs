@@ -291,14 +291,14 @@ locationEnemiesWithTrait
   -> Trait
   -> GameT [EnemyId]
 locationEnemiesWithTrait LocationAttrs { locationEnemies } trait =
-  filterM (fieldF EnemyTraits (member trait)) (setToList locationEnemies)
+  filterM (fieldMap EnemyTraits (member trait)) (setToList locationEnemies)
 
 locationInvestigatorsWithClues
   :: LocationAttrs
   -> GameT [InvestigatorId]
 locationInvestigatorsWithClues LocationAttrs { locationInvestigators } =
   filterM
-    (fieldF InvestigatorClues (> 0))
+    (fieldMap InvestigatorClues (> 0))
     (setToList locationInvestigators)
 
 getModifiedShroudValueFor

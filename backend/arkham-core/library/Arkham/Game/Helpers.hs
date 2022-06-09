@@ -12,6 +12,7 @@ import Arkham.Helpers.Window as X
 import Arkham.Helpers.Xp as X
 import Arkham.Helpers.Modifiers as X
 
+import Data.Semigroup (Sum(..))
 import Arkham.Ability
 import Arkham.Act.Attrs ( Field (..) )
 import Arkham.Act.Sequence qualified as AS
@@ -269,16 +270,16 @@ getCanAffordUse iid ability window = case abilityLimit ability of
   NoLimit -> case abilityType ability of
     ReactionAbility _ _ ->
       notElem ability
-        <$> fieldF InvestigatorUsedAbilities (map usedAbility) iid
+        <$> fieldMap InvestigatorUsedAbilities (map usedAbility) iid
     ForcedAbility _ ->
       notElem ability
-        <$> fieldF InvestigatorUsedAbilities (map usedAbility) iid
+        <$> fieldMap InvestigatorUsedAbilities (map usedAbility) iid
     SilentForcedAbility _ ->
       notElem ability
-        <$> fieldF InvestigatorUsedAbilities (map usedAbility) iid
+        <$> fieldMap InvestigatorUsedAbilities (map usedAbility) iid
     ForcedAbilityWithCost _ _ ->
       notElem ability
-        <$> fieldF InvestigatorUsedAbilities (map usedAbility) iid
+        <$> fieldMap InvestigatorUsedAbilities (map usedAbility) iid
     ActionAbility _ _ -> pure True
     ActionAbilityWithBefore{} -> pure True
     ActionAbilityWithSkill{} -> pure True
@@ -310,7 +311,7 @@ getCanAffordUse iid ability window = case abilityLimit ability of
       _ -> error "Unhandled per investigator limit"
   GroupLimit _ n -> do
     usedAbilities <-
-      concatMapM (fieldF InvestigatorUsedAbilities (map usedAbility))
+      concatMapM (fieldMap InvestigatorUsedAbilities (map usedAbility))
         =<< getInvestigatorIds
     let total = count (== ability) usedAbilities
     pure $ total < n
@@ -357,7 +358,7 @@ getCanAffordCost iid source mAction windows' = \case
           modifiedActionCost =
             foldr (applyActionCostModifier takenActions mAction) n modifiers
         traits <- case source of
-          AssetSource aid -> fieldF AssetTraits HashSet.toList aid
+          AssetSource aid -> fieldMap AssetTraits HashSet.toList aid
           _ -> pure []
 
         tomeActions <- if Tome `elem` traits
@@ -512,9 +513,9 @@ getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
 
 getSpendableClueCount :: [InvestigatorId] -> GameT Int
 getSpendableClueCount investigatorIds =
-  selectAgg (+) InvestigatorClues
-    $ Matcher.InvestigatorWithoutModifier CannotSpendClues
-    <> Matcher.AnyInvestigator (map Matcher.InvestigatorWithId investigatorIds)
+  getSum <$> selectAgg Sum InvestigatorClues
+    (Matcher.InvestigatorWithoutModifier CannotSpendClues
+    <> Matcher.AnyInvestigator (map Matcher.InvestigatorWithId investigatorIds))
 
 -- TODO: canFight _ a@Attrs {..} = canDo Action.Fight a
 getCanFight :: EnemyId -> InvestigatorId -> GameT Bool
@@ -524,7 +525,7 @@ getCanFight eid iid = do
   sameLocation <- (isJust mLocationId &&) . (== mLocationId) <$> selectOne
     (Matcher.locationWithEnemy eid)
   modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
-  takenActions <- fieldF InvestigatorActionsTaken setFromList iid
+  takenActions <- fieldMap InvestigatorActionsTaken setFromList iid
   keywords <- field EnemyKeywords eid
   canAffordActions <- getCanAffordCost
     iid
@@ -569,7 +570,7 @@ getCanEvade eid iid = do
   engaged <- elem iid <$> field EnemyEngagedInvestigators eid
   enemyModifiers <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
   modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
-  takenActions <- fieldF InvestigatorActionsTaken setFromList iid
+  takenActions <- fieldMap InvestigatorActionsTaken setFromList iid
   canAffordActions <- getCanAffordCost
     iid
     (EnemySource eid)
@@ -862,7 +863,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
  where
   pcDef = toCardDef c
   prevents (CanOnlyUseCardsInRole role) =
-    cdClassSymbol pcDef `notElem` [Just Neutral, Just role, Nothing]
+    null $ intersect (cdClassSymbols pcDef) (setFromList [Neutral, role])
   prevents (CannotPlay typePairs) = any
     (\(cType, traits) ->
       cdCardType pcDef
@@ -902,7 +903,7 @@ passesCriteria iid source windows' = \case
       (select investigatorMatcher)
   Criteria.Never -> pure False
   Criteria.InYourHand -> do
-    hand <- fieldF InvestigatorHand (map toCardId) iid
+    hand <- fieldMap InvestigatorHand (map toCardId) iid
     case source of
       EventSource eid -> pure $ unEventId eid `elem` hand
       TreacherySource tid -> do
@@ -959,7 +960,7 @@ passesCriteria iid source windows' = \case
       (`gameValueMatches` valueMatcher) =<< field TreacheryResources tid
     _ -> error "missing ChargesOnThis check"
   Criteria.ResourcesOnLocation locationMatcher valueMatcher -> do
-    total <- selectAgg (+) LocationResources locationMatcher
+    total <- getSum <$> selectAgg Sum LocationResources locationMatcher
     gameValueMatches total valueMatcher
   Criteria.CluesOnThis valueMatcher -> case source of
     LocationSource lid ->
@@ -1094,8 +1095,8 @@ passesCriteria iid source windows' = \case
     -- The You matcher by the Id of the investigator asking
     notNull <$> select (Matcher.replaceYouMatcher iid matcher)
   Criteria.InvestigatorsHaveSpendableClues valueMatcher -> do
-    total <- selectAgg (+) InvestigatorClues
-      $ Matcher.InvestigatorWithoutModifier CannotSpendClues
+    total <- getSum <$> selectAgg Sum InvestigatorClues
+      (Matcher.InvestigatorWithoutModifier CannotSpendClues)
     total `gameValueMatches` valueMatcher
   Criteria.Criteria rs -> allM (passesCriteria iid source windows') rs
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid source windows') rs
@@ -1767,6 +1768,51 @@ gameValueMatches n = \case
   Matcher.GreaterThanOrEqualTo gv -> (n >=) <$> getPlayerCountValue gv
   Matcher.EqualTo gv -> (n ==) <$> getPlayerCountValue gv
 
+targetTraits :: Target -> GameT (HashSet Trait)
+targetTraits = \case
+  ActDeckTarget -> pure mempty
+  ActTarget _ -> pure mempty
+  AfterSkillTestTarget -> pure mempty
+  AgendaDeckTarget -> pure mempty
+  AgendaTarget _ -> pure mempty
+  AssetTarget aid -> field AssetTraits aid
+
+  CardCodeTarget _ -> pure mempty
+  CardIdTarget _ -> pure mempty
+  EffectTarget _ -> pure mempty
+
+  EnemyTarget eid -> field EnemyTraits eid
+  EventTarget eid -> field EventTraits eid
+
+
+  InvestigatorTarget iid -> field InvestigatorTraits iid
+  LocationTarget lid -> field LocationTraits lid
+
+  ProxyTarget t _ -> targetTraits t
+  ResourceTarget -> pure mempty
+
+  ScenarioTarget _ -> pure mempty
+  SkillTarget sid -> field SkillTraits sid
+  SkillTestTarget{} -> pure mempty
+  TreacheryTarget tid -> field TreacheryTraits tid
+
+  StoryTarget _ -> pure mempty
+  TestTarget -> pure mempty
+  TokenTarget _ -> pure mempty
+  YouTarget -> selectJust Matcher.You >>= field InvestigatorTraits
+
+  InvestigatorHandTarget _ -> pure mempty
+  InvestigatorDiscardTarget _ -> pure mempty
+  SetAsideLocationsTarget _ -> pure mempty
+  EncounterDeckTarget -> pure mempty
+  ScenarioDeckTarget -> pure mempty
+  CardTarget c -> pure $ toTraits c
+  SearchedCardTarget _ -> pure mempty
+  SkillTestInitiatorTarget _ -> pure mempty
+  PhaseTarget _ -> pure mempty
+  TokenFaceTarget _ -> pure mempty
+  InvestigationTarget _ _ -> pure mempty
+
 sourceTraits :: Source -> GameT (HashSet Trait)
 sourceTraits = \case
   AbilitySource s _ -> sourceTraits s
@@ -1940,6 +1986,8 @@ locationMatches investigatorId source window locationId matcher =
     Matcher.LocationWithId _ -> locationId <=~> matcher
     Matcher.LocationIs _ -> locationId <=~> matcher
     Matcher.Anywhere -> locationId <=~> matcher
+    Matcher.Nowhere -> locationId <=~> matcher
+    Matcher.BlockedLocation -> locationId <=~> matcher
     Matcher.EmptyLocation -> locationId <=~> matcher
     Matcher.LocationWithoutInvestigators -> locationId <=~> matcher
     Matcher.LocationWithoutEnemies -> locationId <=~> matcher
@@ -2165,13 +2213,13 @@ remembered :: ScenarioLogKey -> GameT Bool
 remembered k = member k <$> scenarioField ScenarioRemembered
 
 getDoomCount :: GameT Int
-getDoomCount = sum <$> sequence
-  [ selectAgg (+) AssetDoom Matcher.AnyAsset
-  , selectAgg (+) EnemyDoom Matcher.AnyEnemy
-  , selectAgg (+) LocationDoom Matcher.Anywhere
-  , selectAgg (+) TreacheryDoom Matcher.AnyTreachery
-  , selectAgg (+) AgendaDoom Matcher.AnyAgenda
-  , selectAgg (+) InvestigatorDoom Matcher.Anyone
+getDoomCount = getSum . fold <$> sequence
+  [ selectAgg Sum AssetDoom Matcher.AnyAsset
+  , selectAgg Sum EnemyDoom Matcher.AnyEnemy
+  , selectAgg Sum LocationDoom Matcher.Anywhere
+  , selectAgg Sum TreacheryDoom Matcher.AnyTreachery
+  , selectAgg Sum AgendaDoom Matcher.AnyAgenda
+  , selectAgg Sum InvestigatorDoom Matcher.Anyone
   ]
 
 getPotentialSlots :: HashSet Trait -> InvestigatorId -> GameT [SlotType]

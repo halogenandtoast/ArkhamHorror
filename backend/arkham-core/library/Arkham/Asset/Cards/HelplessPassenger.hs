@@ -46,7 +46,7 @@ instance HasAbilities HelplessPassenger where
 instance RunMessage HelplessPassenger where
   runMessage msg a@(HelplessPassenger attrs@AssetAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lid <- fieldF
+      lid <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid

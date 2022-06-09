@@ -37,7 +37,7 @@ instance HasAbilities Lockpicks1 where
 instance RunMessage Lockpicks1 where
   runMessage msg a@(Lockpicks1 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- fieldF
+      lid <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid

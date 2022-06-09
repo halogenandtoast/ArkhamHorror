@@ -39,7 +39,7 @@ instance RunMessage AChanceEncounter2 where
       discards <-
         concat
           <$> traverse
-                (fieldF InvestigatorDiscard (map PlayerCard))
+                (fieldMap InvestigatorDiscard (map PlayerCard))
                 investigatorIds
       let
         filteredDiscards = filter

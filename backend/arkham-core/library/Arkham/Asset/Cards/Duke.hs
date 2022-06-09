@@ -66,7 +66,7 @@ instance RunMessage Duke where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)
     UseCardAbility iid source windows' 2 _ | isSource attrs source -> do
-      lid <- fieldF InvestigatorLocation (fromJustNote "must be at a location") iid
+      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
       investigateAbilities :: [Ability] <-
         filterM
             (andM . sequence

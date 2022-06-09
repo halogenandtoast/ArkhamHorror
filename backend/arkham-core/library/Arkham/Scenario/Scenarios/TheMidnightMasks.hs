@@ -2,7 +2,6 @@ module Arkham.Scenario.Scenarios.TheMidnightMasks where
 
 import Arkham.Prelude
 
-import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
@@ -11,17 +10,20 @@ import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Attrs
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher (EnemyMatcher(..), ExtendedCardMatcher(..), CardMatcher(..))
+import Arkham.Matcher
+  ( CardMatcher (..), EnemyMatcher (..), ExtendedCardMatcher (..) )
 import Arkham.Message
 import Arkham.Resolution
-import Arkham.Enemy.Attrs
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait qualified as Trait
+import Data.Semigroup ( Max (..) )
 
 newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
   deriving stock Generic
@@ -42,7 +44,8 @@ theMidnightMasks difficulty =
 instance HasTokenValue TheMidnightMasks where
   getTokenValue iid tokenFace (TheMidnightMasks attrs) = case tokenFace of
     Skull | isEasyStandard attrs -> do
-      tokenValue' <- selectAgg max EnemyDoom (EnemyWithTrait Trait.Cultist)
+      tokenValue' <- getMax
+        <$> selectAgg Max EnemyDoom (EnemyWithTrait Trait.Cultist)
       pure $ TokenValue Skull (NegativeModifier tokenValue')
     Skull | isHardExpert attrs -> do
       doomCount <- getDoomCount
@@ -52,7 +55,8 @@ instance HasTokenValue TheMidnightMasks where
     otherFace -> getTokenValue iid otherFace attrs
 
 allCultists :: HashSet CardCode
-allCultists = setFromList ["01137", "01138", "01139", "01140", "01141", "01121b"]
+allCultists =
+  setFromList ["01137", "01138", "01139", "01140", "01141", "01121b"]
 
 instance RunMessage TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs) = case msg of
@@ -154,7 +158,8 @@ instance RunMessage TheMidnightMasks where
           )
         )
     ResolveToken _ Cultist iid | isEasyStandard attrs -> do
-      closestCultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
+      closestCultists <- selectList $ NearestEnemy $ EnemyWithTrait
+        Trait.Cultist
       s <$ case closestCultists of
         [] -> pure ()
         [x] -> push (PlaceDoom (EnemyTarget x) 1)

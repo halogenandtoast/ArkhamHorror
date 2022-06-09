@@ -46,6 +46,6 @@ instance RunMessage DiscipleOfTheDevourer where
         messages =
           [PlaceDoom (toTarget attrs) 1, InvestigatorPlaceCluesOnLocation iid 1]
       agendaId <- selectJust AnyAgenda
-      step <- fieldF AgendaSequence agendaStep agendaId
+      step <- fieldMap AgendaSequence agendaStep agendaId
       e <$ if step == AgendaStep 1 then push (chooseOne iid messages) else pushAll messages
     _ -> DiscipleOfTheDevourer <$> runMessage msg attrs

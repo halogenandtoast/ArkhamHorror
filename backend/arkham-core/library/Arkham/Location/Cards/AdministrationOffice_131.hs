@@ -32,7 +32,7 @@ instance HasModifiersFor AdministrationOffice_131 where
   getModifiersFor (InvestigatorSource iid) target (AdministrationOffice_131 attrs)
     | isTarget attrs target
     = do
-      cardsInHand <- fieldF InvestigatorHand length iid
+      cardsInHand <- fieldMap InvestigatorHand length iid
       pure $ toModifiers attrs [ CannotInvestigate | cardsInHand <= 4 ]
   getModifiersFor _ _ _ = pure []
 

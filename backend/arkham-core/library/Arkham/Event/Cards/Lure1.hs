@@ -42,7 +42,7 @@ instance HasModifiersFor Lure1 where
 instance RunMessage Lure1 where
   runMessage msg e@(Lure1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- fieldF
+      lid <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid

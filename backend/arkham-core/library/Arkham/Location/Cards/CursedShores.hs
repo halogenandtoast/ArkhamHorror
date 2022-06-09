@@ -54,7 +54,7 @@ instance RunMessage CursedShores where
       , CreateEffect "81007" Nothing (toSource attrs) (InvestigatorTarget iid)
       ]
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
-      skillCards <- fieldF InvestigatorHand (map toCardId . filter (`cardMatch` CardWithType SkillType)) iid
+      skillCards <- fieldMap InvestigatorHand (map toCardId . filter (`cardMatch` CardWithType SkillType)) iid
       l <$ case skillCards of
         [] -> pure ()
         [x] -> push (DiscardCard iid x)

@@ -16,7 +16,7 @@ import Arkham.Target
 getConnectedMatcher :: LocationId -> GameT LocationMatcher
 getConnectedMatcher l = do
   isRevealed <- field LocationRevealed l
-  directionalMatchers <- fieldF
+  directionalMatchers <- fieldMap
     LocationConnectsTo
     (map (`LocationInDirection` self) . setToList)
     l

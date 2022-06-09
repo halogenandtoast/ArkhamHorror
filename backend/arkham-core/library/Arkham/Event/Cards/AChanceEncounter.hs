@@ -37,7 +37,7 @@ instance RunMessage AChanceEncounter where
           =<< getInvestigatorIds
       discards <-
         concat
-          <$> traverse (fieldF InvestigatorDiscard (map PlayerCard)) investigatorIds
+          <$> traverse (fieldMap InvestigatorDiscard (map PlayerCard)) investigatorIds
       let filteredDiscards = filter (elem Ally . toTraits) discards
       e <$ pushAll
         [ FocusCards filteredDiscards

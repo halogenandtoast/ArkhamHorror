@@ -49,7 +49,7 @@ instance RunMessage Corrosion where
     RevelationChoice iid source n | n > 0 -> do
       assets <- selectList assetMatcher
       assetsWithCosts <- traverse (traverseToSnd (field AssetCost)) assets
-      handAssets <- fieldF
+      handAssets <- fieldMap
         InvestigatorHand
         (filter (`cardMatch` handMatcher))
         iid

@@ -1017,7 +1017,6 @@ library
       Arkham.PlayerCard
       Arkham.Prelude
       Arkham.Projection
-      Arkham.Query
       Arkham.Question
       Arkham.RequestedTokenStrategy
       Arkham.Resolution

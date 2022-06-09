@@ -41,7 +41,7 @@ data CardDef = CardDef
   , cdLevel :: Int
   , cdCardType :: CardType
   , cdCardSubType :: Maybe CardSubType
-  , cdClassSymbol :: Maybe ClassSymbol
+  , cdClassSymbols :: HashSet ClassSymbol
   , cdSkills :: [SkillType]
   , cdCardTraits :: HashSet Trait
   , cdRevealedCardTraits :: HashSet Trait
@@ -133,7 +133,7 @@ testCardDef cardType cardCode =
     , cdLevel = 0
     , cdCardType = cardType
     , cdCardSubType = Nothing
-    , cdClassSymbol = Nothing
+    , cdClassSymbols = mempty
     , cdSkills = []
     , cdCardTraits = mempty
     , cdRevealedCardTraits = mempty

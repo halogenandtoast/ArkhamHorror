@@ -28,7 +28,7 @@ instance RunMessage TheZealotsSeal where
       t <$ for_
         investigatorIds
         (\iid' -> do
-          handCardCount <- fieldF InvestigatorHand length iid'
+          handCardCount <- fieldMap InvestigatorHand length iid'
           if handCardCount <= 3
             then push
               (InvestigatorAssignDamage iid' (toSource attrs) DamageAny 1 1)

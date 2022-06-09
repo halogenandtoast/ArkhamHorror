@@ -241,7 +241,7 @@ instance RunMessage TheLastKing where
 
       assetId <- fromJustNote "missing" <$> selectOne (assetIs asset)
       enemyCard <- genCard enemy
-      lid <- fieldF
+      lid <- fieldMap
         AssetLocation
         (fromJustNote "must be at a location")
         assetId

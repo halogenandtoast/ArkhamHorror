@@ -32,7 +32,7 @@ instance HasAbilities Burglary where
 instance RunMessage Burglary where
   runMessage msg a@(Burglary attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- fieldMap
+      lid <- fieldF
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid

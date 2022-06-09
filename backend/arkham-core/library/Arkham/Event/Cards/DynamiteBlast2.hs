@@ -24,7 +24,7 @@ instance RunMessage DynamiteBlast2 where
   -- TODO: Does not provoke attacks of opportunity
   runMessage msg e@(DynamiteBlast2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      currentLocationId <- fieldMap
+      currentLocationId <- fieldF
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid

@@ -28,7 +28,7 @@ instance HasModifiersFor AcolyteOfUmordhoth where
     | eid == enemyId = do
       anyWithoutCards <- or <$> for
         (setToList enemyEngagedInvestigators)
-        (fieldMap InvestigatorHand null)
+        (fieldF InvestigatorHand null)
       pure $ toModifiers a [ CannotBeEvaded | anyWithoutCards ]
   getModifiersFor _ _ _ = pure []
 

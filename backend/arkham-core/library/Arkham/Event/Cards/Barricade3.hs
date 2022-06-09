@@ -34,7 +34,7 @@ instance HasModifiersFor Barricade3 where
 instance RunMessage Barricade3 where
   runMessage msg e@(Barricade3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
+      lid <- fieldF InvestigatorLocation (fromJustNote "must be at a location") iid
       e <$ push (AttachEvent eid (LocationTarget lid))
     MoveFrom _ _ lid | LocationTarget lid `elem` eventAttachedTarget ->
       e <$ push (Discard (EventTarget eventId))

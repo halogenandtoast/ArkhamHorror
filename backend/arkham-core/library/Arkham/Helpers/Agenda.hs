@@ -15,4 +15,4 @@ getCurrentAgendaStep :: GameT Int
 getCurrentAgendaStep = selectJust AnyAgenda >>= getAgendaStep
 
 getAgendaStep :: AgendaId -> GameT Int
-getAgendaStep = fieldMap AgendaSequence (unAgendaStep . AS.agendaStep)
+getAgendaStep = fieldF AgendaSequence (unAgendaStep . AS.agendaStep)

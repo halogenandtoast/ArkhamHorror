@@ -37,7 +37,7 @@ instance HasModifiersFor UnhallowedCountry where
       | treacheryOnInvestigator iid attrs
       ]
   getModifiersFor _ (AssetTarget aid) (UnhallowedCountry attrs) = do
-    isAlly <- fieldMap AssetTraits (member Ally) aid
+    isAlly <- fieldF AssetTraits (member Ally) aid
     miid <- selectAssetController aid
     pure $ case miid of
       Just iid -> toModifiers

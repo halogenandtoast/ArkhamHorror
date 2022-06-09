@@ -75,7 +75,7 @@ instance RunMessage DaisyWalkerParallel where
       UseCardAbility iid (InvestigatorSource iid') windows' 1 _
         | investigatorId == iid' -> do
           tomeAssets <- filterM
-            (fieldMap AssetTraits (member Tome))
+            (fieldF AssetTraits (member Tome))
             (setToList investigatorAssets)
           allAbilities <- getAllAbilities
           let

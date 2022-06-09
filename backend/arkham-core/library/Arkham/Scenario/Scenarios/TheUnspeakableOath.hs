@@ -163,7 +163,7 @@ instance RunMessage TheUnspeakableOath where
         then concat <$> for
           investigatorIds
           \iid -> do
-            deck <- fieldMap InvestigatorDeck unDeck iid
+            deck <- fieldF InvestigatorDeck unDeck iid
             case deck of
               (x : _) -> do
                 courageProxy <- genPlayerCard Assets.courage

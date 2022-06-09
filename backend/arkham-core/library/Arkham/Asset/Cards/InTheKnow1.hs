@@ -34,7 +34,7 @@ instance HasAbilities InTheKnow1 where
 instance RunMessage InTheKnow1 where
   runMessage msg a@(InTheKnow1 attrs) = case msg of
     UseCardAbility iid source windows' 1 _ | isSource attrs source -> do
-      investigatorLocation <- fieldMap
+      investigatorLocation <- fieldF
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid

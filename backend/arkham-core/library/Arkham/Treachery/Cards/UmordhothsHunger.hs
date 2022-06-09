@@ -24,7 +24,7 @@ instance RunMessage UmordhothsHunger where
     Revelation _ source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       msgs <- for investigatorIds $ \iid -> do
-        handCount <- fieldMap InvestigatorHand length iid
+        handCount <- fieldF InvestigatorHand length iid
         pure $ if handCount == 0
           then InvestigatorKilled source iid
           else RandomDiscard iid

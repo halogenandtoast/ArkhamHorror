@@ -372,7 +372,7 @@ instance RunMessage PayForAbilityEffect where
           -- push (SpendClues totalClues iids)
           -- withPayment $ CluePayment totalClues
         HandDiscardCost x cardMatcher -> do
-          handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
+          handCards <- fieldF InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
           let cards = filter (`cardMatch` cardMatcher) handCards
           e <$ push
             (chooseN
@@ -417,7 +417,7 @@ instance RunMessage PayForAbilityEffect where
               ]
             )
         SkillIconCost x skillTypes -> do
-          handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
+          handCards <- fieldF InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
           let
             cards = filter ((> 0) . fst) $ map
               (toFst

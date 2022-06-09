@@ -71,7 +71,7 @@ instance RunMessage RicesWhereabouts where
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       agendaId <- selectJust AnyAgenda
-      step <- fieldMap AgendaSequence (unAgendaStep . AS.agendaStep) agendaId
+      step <- fieldF AgendaSequence (unAgendaStep . AS.agendaStep) agendaId
       alchemyLabsInPlay <- isJust
         <$> selectOne (LocationWithTitle "Alchemy Labs")
       completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios

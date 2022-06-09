@@ -330,7 +330,7 @@ findCard cardId a =
 
 getJustLocation :: InvestigatorId -> GameT LocationId
 getJustLocation =
-  fieldMap InvestigatorLocation (fromJustNote "must be at a location")
+  fieldF InvestigatorLocation (fromJustNote "must be at a location")
 
 enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
 enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId

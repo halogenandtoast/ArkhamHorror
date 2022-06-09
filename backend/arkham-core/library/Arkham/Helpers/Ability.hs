@@ -14,7 +14,7 @@ getIsUnused'
   -> Ability
   -> GameT Bool
 getIsUnused' iid ability = do
-  usedAbilities <- fieldMap InvestigatorUsedAbilities (map usedAbility) iid
+  usedAbilities <- fieldF InvestigatorUsedAbilities (map usedAbility) iid
   pure $ ability `notElem` usedAbilities
 
 getGroupIsUnused
@@ -23,6 +23,6 @@ getGroupIsUnused
 getGroupIsUnused ability = do
   investigatorIds <- getInvestigatorIds
   usedAbilities <- concatMapM
-    (fieldMap InvestigatorUsedAbilities (map usedAbility))
+    (fieldF InvestigatorUsedAbilities (map usedAbility))
     investigatorIds
   pure $ ability `notElem` usedAbilities

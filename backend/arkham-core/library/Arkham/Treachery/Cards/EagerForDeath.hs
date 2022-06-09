@@ -24,7 +24,7 @@ eagerForDeath = treachery EagerForDeath Cards.eagerForDeath
 instance RunMessage EagerForDeath where
   runMessage msg t@(EagerForDeath attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      difficulty <- fieldMap InvestigatorDamage (+ 2) iid
+      difficulty <- fieldF InvestigatorDamage (+ 2) iid
       t <$ push (RevelationSkillTest iid source SkillWillpower difficulty)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t

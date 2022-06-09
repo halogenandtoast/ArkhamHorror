@@ -59,7 +59,7 @@ instance HasTokenValue BloodOnTheAltar where
   getTokenValue iid tokenFace (BloodOnTheAltar (attrs `With` _)) =
     case tokenFace of
       Skull -> do
-        numLocations <- countM (fieldMap LocationCardsUnderneath null)
+        numLocations <- countM (fieldF LocationCardsUnderneath null)
           =<< selectList Anywhere
         pure $ toTokenValue attrs Skull (min 4 numLocations) numLocations
       Cultist -> pure $ toTokenValue attrs Cultist 2 4

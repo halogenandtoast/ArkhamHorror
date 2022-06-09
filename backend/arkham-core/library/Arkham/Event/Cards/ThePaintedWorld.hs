@@ -31,7 +31,7 @@ thePaintedWorld = event ThePaintedWorld Cards.thePaintedWorld
 instance RunMessage ThePaintedWorld where
   runMessage msg e@(ThePaintedWorld attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      candidates <- fieldMap
+      candidates <- fieldF
         InvestigatorCardsUnderneath
         (filter (`cardMatch` (NonExceptional <> Matcher.EventCard)))
         iid

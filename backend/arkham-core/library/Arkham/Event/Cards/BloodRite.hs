@@ -43,7 +43,7 @@ instance RunMessage BloodRite where
         if length discardedCards == 2
           then push (UseCardAbility iid source windows 1 payment)
           else do
-            cards <- fieldMap InvestigatorHand (filter isDiscardable) iid
+            cards <- fieldF InvestigatorHand (filter isDiscardable) iid
             push
               $ (chooseOne iid
                 $ [ Run

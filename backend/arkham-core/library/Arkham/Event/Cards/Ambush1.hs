@@ -45,7 +45,7 @@ instance HasAbilities Ambush1 where
 instance RunMessage Ambush1 where
   runMessage msg e@(Ambush1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- fieldMap
+      lid <- fieldF
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid

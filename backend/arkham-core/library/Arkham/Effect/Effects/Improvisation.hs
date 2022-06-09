@@ -35,7 +35,7 @@ instance RunMessage Improvisation where
     PlayedCard iid card | effectTarget attrs == InvestigatorTarget iid -> do
       role <- field InvestigatorClass iid
       e <$ when
-        (maybe False (== role) $ cdClassSymbol (toCardDef card))
+        (maybe False (== role) . headMay . toList $ cdClassSymbols (toCardDef card))
         (push $ DisableEffect $ toId attrs)
     EndTurn iid | effectTarget attrs == InvestigatorTarget iid ->
       e <$ push (DisableEffect $ toId attrs)

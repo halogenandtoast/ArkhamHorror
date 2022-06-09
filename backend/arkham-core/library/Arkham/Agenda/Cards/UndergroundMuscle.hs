@@ -43,7 +43,7 @@ instance RunMessage UndergroundMuscle where
         laBellaLunaId
       laBellaLunaEnemies <- selectList $ EnemyAt $ LocationWithId laBellaLunaId
       unEngagedEnemiesAtLaBellaLuna <- filterM
-        (fieldF EnemyEngagedInvestigators null)
+        (fieldMap EnemyEngagedInvestigators null)
         laBellaLunaEnemies
       push
         (chooseOne

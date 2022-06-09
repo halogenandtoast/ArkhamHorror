@@ -29,7 +29,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
     then PlayerTreacheryType
     else TreacheryType
   , cdCardSubType = isWeakness
-  , cdClassSymbol = if isJust isWeakness then Just Neutral else Nothing
+  , cdClassSymbols = if isJust isWeakness then singleton Neutral else mempty
   , cdSkills = mempty
   , cdCardTraits = mempty
   , cdRevealedCardTraits = mempty

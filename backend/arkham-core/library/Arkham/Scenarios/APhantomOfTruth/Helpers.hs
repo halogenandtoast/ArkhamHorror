@@ -28,7 +28,7 @@ investigatorsNearestToTheOrganist = do
 
 investigatorsNearestToEnemy :: EnemyId -> GameT (Distance, [InvestigatorId])
 investigatorsNearestToEnemy eid = do
-  enemyLocation <- fieldF
+  enemyLocation <- fieldMap
     EnemyLocation
     (fromJustNote "must be at a location")
     eid
@@ -58,7 +58,7 @@ moveOrganistAwayFromNearestInvestigator = do
   lids <- setFromList . concat <$> for
     iids
     (\iid -> do
-      currentLocation <- fieldF InvestigatorLocation (fromJustNote "must be at a location") iid
+      currentLocation <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
       rs <- traverse (traverseToSnd (fmap (fromMaybe (Distance 0)) . getDistance currentLocation)) everywhere
       pure $ map fst $ filter ((> minDistance) . snd) rs
     )

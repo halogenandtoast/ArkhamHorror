@@ -44,7 +44,7 @@ instance HasAbilities TheKingInYellow where
 instance HasModifiersFor TheKingInYellow where
   getModifiersFor _ SkillTestTarget (TheKingInYellow attrs) = do
     let minhId = fromJustNote "not owned" $ assetController attrs
-    commitedCardsCount <- fieldF InvestigatorCommittedCards length minhId
+    commitedCardsCount <- fieldMap InvestigatorCommittedCards length minhId
     pure $ toModifiers
       attrs
       [ CannotPerformSkillTest

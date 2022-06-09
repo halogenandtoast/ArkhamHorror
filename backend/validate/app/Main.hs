@@ -340,7 +340,7 @@ runValidations cards = do
           (throw $ CardCostMismatch code (cdName card) cost (cdCost card))
         when
           (toClassSymbol faction_name
-          /= normalizeClassSymbol (cdClassSymbol card)
+          /= normalizeClassSymbol (headMay . setToList $ cdClassSymbols card)
           )
           (throw $ ClassMismatch
             code

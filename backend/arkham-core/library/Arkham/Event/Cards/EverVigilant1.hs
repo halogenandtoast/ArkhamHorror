@@ -41,7 +41,7 @@ instance RunMessage EverVigilant1 where
         <> [Discard (toTarget attrs)]
         )
     ResolveEvent iid eid mtarget | eid == toId attrs -> do
-      cards <- fieldF InvestigatorHand (filter (`cardMatch` CardWithType AssetType)) iid
+      cards <- fieldMap InvestigatorHand (filter (`cardMatch` CardWithType AssetType)) iid
       playableCards <- filterM
         (getIsPlayable
           iid

@@ -214,7 +214,7 @@ instance RunMessage UndimensionedAndUnseen where
         investigatorIds
         (\iid -> do
           powderOfIbnGhazi <-
-            find ((== "02219") . toCardCode) <$> fieldF InvestigatorDeck unDeck iid
+            find ((== "02219") . toCardCode) <$> fieldMap InvestigatorDeck unDeck iid
           pure $ (iid, ) <$> powderOfIbnGhazi
         )
 

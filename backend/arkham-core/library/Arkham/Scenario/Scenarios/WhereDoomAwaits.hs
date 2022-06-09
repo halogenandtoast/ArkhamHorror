@@ -138,7 +138,7 @@ instance HasTokenValue WhereDoomAwaits where
     Cultist -> pure $ TokenValue Cultist NoModifier
     Tablet -> do
       agendaId <- selectJust AnyAgenda
-      agendaStep <- fieldF AgendaSequence (unAgendaStep . AS.agendaStep) agendaId
+      agendaStep <- fieldMap AgendaSequence (unAgendaStep . AS.agendaStep) agendaId
       pure $ TokenValue
         Tablet
         (if isEasyStandard attrs

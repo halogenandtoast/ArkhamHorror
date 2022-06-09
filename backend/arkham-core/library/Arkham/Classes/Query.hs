@@ -67,15 +67,15 @@ selectJust matcher = fromJustNote errorNote <$> selectOne matcher
   where errorNote = "Could not find any matches for: " <> show matcher
 
 selectAgg
-  :: (Query a, Num typ, QueryElement a ~ EntityId attrs, Projection attrs)
-  => (typ -> typ -> typ)
+  :: (Monoid monoid, Query a, QueryElement a ~ EntityId attrs, Projection attrs)
+  => (typ -> monoid)
   -> Field attrs typ
   -> a
-  -> GameT typ
+  -> GameT monoid
 selectAgg f p matcher = do
   results <- selectList matcher
-  values <- traverse (field p) results
-  pure $ foldl' f 0 values
+  values <- traverse (fieldMap p f) results
+  pure $ fold values
 
 selectOne
   :: (HasCallStack, Query a)

@@ -55,7 +55,7 @@ instance RunMessage Row where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 1)
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
-      lid <- fieldF
+      lid <- fieldMap
         InvestigatorLocation
         (fromJustNote "Must be at a location")
         iid

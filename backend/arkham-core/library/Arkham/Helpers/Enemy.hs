@@ -131,10 +131,10 @@ getFightableEnemyIds iid source = do
 
 getEnemyAccessibleLocations :: EnemyId -> GameT [LocationId]
 getEnemyAccessibleLocations eid = do
-  location <- fieldF EnemyLocation (fromJustNote "must be at a location") eid
+  location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
   matcher <- getConnectedMatcher location
   connectedLocationIds <- selectList matcher
-  enemyIsElite <- fieldF EnemyTraits (member Elite) eid
+  enemyIsElite <- fieldMap EnemyTraits (member Elite) eid
   let
     unblocked lid' = do
       modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid')

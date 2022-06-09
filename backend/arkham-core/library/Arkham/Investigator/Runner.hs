@@ -761,8 +761,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           , continue h s (AssetTarget asset)
           ]
       assetsWithCounts <- for damageableAssets $ \asset -> do
-        health' <- fieldF AssetRemainingHealth (fromMaybe 0) asset
-        sanity' <- fieldF AssetRemainingSanity (fromMaybe 0) asset
+        health' <- fieldMap AssetRemainingHealth (fromMaybe 0) asset
+        sanity' <- fieldMap AssetRemainingSanity (fromMaybe 0) asset
         pure (asset, (health', sanity'))
 
       push
@@ -1112,7 +1112,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
   InvestigatorPlayAsset iid aid | iid == investigatorId -> do
     slotTypes <- field AssetSlots aid
-    traits <- fieldF AssetTraits setToList aid
+    traits <- fieldMap AssetTraits setToList aid
     a <$ if fitsAvailableSlots slotTypes traits a
       then push (InvestigatorPlayedAsset iid aid)
       else do
@@ -1140,7 +1140,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorPlayedAsset iid aid | iid == investigatorId -> do
     let assetsUpdate = assetsL %~ insertSet aid
     slotTypes <- field AssetSlots aid
-    traits <- fieldF AssetTraits setToList aid
+    traits <- fieldMap AssetTraits setToList aid
     pure $ foldl'
       (\a' slotType ->
         a' & slotsL . ix slotType %~ placeInAvailableSlot aid traits
@@ -1235,7 +1235,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ findWithDefault [] slotType investigatorSlots
       emptiedSlots = sort $ map emptySlot slots
     assetsWithTraits <- for assetIds $ \assetId -> do
-      traits <- fieldF AssetTraits setToList assetId
+      traits <- fieldMap AssetTraits setToList assetId
       pure (assetId, traits)
     let
       updatedSlots = foldl'
@@ -1459,8 +1459,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               modifiers'
               \case
                 CanOnlyUseCardsInRole role ->
-                  cdClassSymbol (toCardDef card)
-                    `notElem` [Just Neutral, Just role, Nothing]
+                  null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
                 CannotCommitCards matcher -> cardMatch card matcher
                 _ -> False
           passesCommitRestrictions <- allM
@@ -1539,8 +1538,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   modifiers'
                   \case
                     CanOnlyUseCardsInRole role ->
-                      cdClassSymbol (toCardDef card)
-                        `notElem` [Just Neutral, Just role, Nothing]
+                      null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
                     _ -> False
               passesCriterias <- allM
                 passesCommitRestriction

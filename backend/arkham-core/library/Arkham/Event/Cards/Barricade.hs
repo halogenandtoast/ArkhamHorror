@@ -44,7 +44,7 @@ instance HasAbilities Barricade where
 instance RunMessage Barricade where
   runMessage msg e@(Barricade attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- fieldF InvestigatorLocation (fromJustNote "must be at a location") iid
+      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
       e <$ push (AttachEvent eid (LocationTarget lid))
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)

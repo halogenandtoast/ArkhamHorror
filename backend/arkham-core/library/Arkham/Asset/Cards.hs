@@ -64,7 +64,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdLevel = 0
   , cdCardType = AssetType
   , cdCardSubType = Nothing
-  , cdClassSymbol = Just classSymbol
+  , cdClassSymbols = singleton classSymbol
   , cdSkills = mempty
   , cdCardTraits = mempty
   , cdRevealedCardTraits = mempty
@@ -1642,7 +1642,7 @@ straitjacket = (storyAsset "03185" "Straitjacket" 0 TheUnspeakableOath)
   , cdSlots = [BodySlot, HandSlot, HandSlot]
   , cdEncounterSetQuantity = Just 2
   , cdCost = Nothing
-  , cdClassSymbol = Just Mythos
+  , cdClassSymbols = singleton Mythos
   }
 
 fortyFiveAutomatic2 :: CardDef

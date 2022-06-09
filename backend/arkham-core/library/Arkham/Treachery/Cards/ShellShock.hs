@@ -22,6 +22,6 @@ shellShock = treachery ShellShock Cards.shellShock
 instance RunMessage ShellShock where
   runMessage msg t@(ShellShock attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      horrorCount <- fieldF InvestigatorDamage (`div` 2) iid
+      horrorCount <- fieldMap InvestigatorDamage (`div` 2) iid
       t <$ push (InvestigatorAssignDamage iid source DamageAny 0 horrorCount)
     _ -> ShellShock <$> runMessage msg attrs

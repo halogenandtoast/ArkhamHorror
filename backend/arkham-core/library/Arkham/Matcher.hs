@@ -366,6 +366,7 @@ data LocationMatcher
   | NotYourLocation
   | LocationIs CardCode
   | Anywhere
+  | Nowhere
   | Unblocked
   | EmptyLocation
   | AccessibleLocation
@@ -399,6 +400,7 @@ data LocationMatcher
   | FirstLocation [LocationMatcher]
   | NotLocation LocationMatcher
   | ClosestPathLocation LocationId LocationId
+  | BlockedLocation
   -- ^ start destination / end destination
   | ThisLocation
   -- ^ only useful for windows
@@ -406,10 +408,26 @@ data LocationMatcher
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Semigroup LocationMatcher where
+  Nowhere <> _ = Nowhere
+  _ <> Nowhere = Nowhere
   LocationMatchAll xs <> LocationMatchAll ys = LocationMatchAll $ xs <> ys
   LocationMatchAll xs <> x = LocationMatchAll (x : xs)
   x <> LocationMatchAll xs = LocationMatchAll (x : xs)
   x <> y = LocationMatchAll [x, y]
+
+newtype AnyLocationMatcher = AnyLocationMatcher { getAnyLocationMatcher :: LocationMatcher }
+
+instance Semigroup AnyLocationMatcher where
+  AnyLocationMatcher l <> AnyLocationMatcher r = AnyLocationMatcher $ case (l, r) of
+    (Nowhere, x) -> x
+    (x, Nowhere) -> x
+    (LocationMatchAny xs, LocationMatchAny ys) -> LocationMatchAny $ xs <> ys
+    (LocationMatchAny xs, x) -> LocationMatchAny (x : xs)
+    (x, LocationMatchAny xs) -> LocationMatchAny (x : xs)
+    (x, y) -> LocationMatchAny [x, y]
+
+instance Monoid AnyLocationMatcher where
+  mempty = AnyLocationMatcher Nowhere
 
 data SkillMatcher
   = SkillWithTitle Text

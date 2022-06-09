@@ -54,6 +54,7 @@ data instance Field LocationAttrs :: Type -> Type where
   LocationRevealed :: Field LocationAttrs Bool
   LocationConnectsTo :: Field LocationAttrs (HashSet Direction)
   LocationCardsUnderneath :: Field LocationAttrs [Card]
+  LocationConnectedLocations :: Field LocationAttrs (HashSet LocationId)
   -- virtual
   LocationCardDef :: Field LocationAttrs CardDef
   LocationCard :: Field LocationAttrs Card

@@ -27,7 +27,7 @@ wingingIt = event WingingIt Cards.wingingIt
 instance RunMessage WingingIt where
   runMessage msg e@(WingingIt attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
-      lid <- fieldF
+      lid <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid

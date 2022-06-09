@@ -28,7 +28,7 @@ instance RunMessage ATearInReality where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      locationId <- fieldF
+      locationId <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be at location")
         leadInvestigatorId

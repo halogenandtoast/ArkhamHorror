@@ -28,7 +28,7 @@ instance RunMessage TheMawWidens where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      locationId <- fieldF
+      locationId <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be at a location")
         leadInvestigatorId

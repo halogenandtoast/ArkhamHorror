@@ -56,7 +56,7 @@ instance RunMessage CatBurglar1 where
       CatBurglar1 <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       engagedEnemyIds <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
-      locationId <- fieldF
+      locationId <- fieldMap
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid

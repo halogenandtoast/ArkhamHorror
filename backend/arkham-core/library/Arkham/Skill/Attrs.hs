@@ -21,6 +21,7 @@ type SkillCard a = CardBuilder (InvestigatorId, SkillId) a
 
 data instance Field SkillAttrs :: Type -> Type where
   SkillTraits :: Field SkillAttrs (HashSet Trait)
+  SkillCard :: Field SkillAttrs Card
 
 data SkillAttrs = SkillAttrs
   { skillCardCode :: CardCode

@@ -288,6 +288,7 @@ data EventMatcher
   | EventWithTrait Trait
   | EventWithClass ClassSymbol
   | EventControlledBy InvestigatorMatcher
+  | EventAt LocationMatcher
   | EventReady
   | EventMatches [EventMatcher]
   | AnyEvent

@@ -370,6 +370,8 @@ data LocationMatcher
   | Unblocked
   | EmptyLocation
   | AccessibleLocation
+  | ConnectedFrom LocationMatcher
+  | ConnectedTo LocationMatcher
   | AccessibleFrom LocationMatcher
   | AccessibleTo LocationMatcher
   | ConnectedLocation

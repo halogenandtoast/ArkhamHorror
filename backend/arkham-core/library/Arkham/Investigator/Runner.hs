@@ -264,9 +264,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & engagedEnemiesL %~ insertSet eid
   RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId -> do
-    slots <- field AssetSlots aid
-    traits <- fieldMap AssetTraits setToList aid
-    a <$ push (InvestigatorPlayAsset iid aid slots traits)
+    a <$ push (InvestigatorPlayAsset iid aid)
   TakeControlOfAsset iid aid | iid /= investigatorId ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   ChooseAndDiscardAsset iid assetMatcher | iid == investigatorId -> do
@@ -1112,9 +1110,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (handL %~ filter (/= card))
       & (discardL %~ filter ((/= card) . PlayerCard))
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
-  InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
+  InvestigatorPlayAsset iid aid | iid == investigatorId -> do
+    slotTypes <- field AssetSlots aid
+    traits <- fieldMap AssetTraits setToList aid
     a <$ if fitsAvailableSlots slotTypes traits a
-      then push (InvestigatorPlayedAsset iid aid slotTypes traits)
+      then push (InvestigatorPlayedAsset iid aid)
       else do
         let
           missingSlotTypes = slotTypes \\ concatMap
@@ -1126,19 +1126,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> DiscardableAsset
           <> AssetOneOf (map AssetInSlot missingSlotTypes)
         if null assetsThatCanProvideSlots
-          then push $ InvestigatorPlayedAsset iid aid slotTypes traits
+          then push $ InvestigatorPlayedAsset iid aid
           else push
             (chooseOne
               iid
               [ Run
                   [ Discard (AssetTarget aid')
-                  , InvestigatorPlayAsset iid aid slotTypes traits
+                  , InvestigatorPlayAsset iid aid
                   ]
               | aid' <- assetsThatCanProvideSlots
               ]
             )
-  InvestigatorPlayedAsset iid aid slotTypes traits | iid == investigatorId -> do
+  InvestigatorPlayedAsset iid aid | iid == investigatorId -> do
     let assetsUpdate = assetsL %~ insertSet aid
+    slotTypes <- field AssetSlots aid
+    traits <- fieldMap AssetTraits setToList aid
     pure $ foldl'
       (\a' slotType ->
         a' & slotsL . ix slotType %~ placeInAvailableSlot aid traits

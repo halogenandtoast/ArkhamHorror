@@ -21,7 +21,7 @@ slot attrs = Slot (toSource attrs) Nothing
 
 instance RunMessage Charisma3 where
   runMessage msg (Charisma3 attrs) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
+    InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
       push $ AddSlot iid AllySlot (slot attrs)
       Charisma3 <$> runMessage msg attrs
     _ -> Charisma3 <$> runMessage msg attrs

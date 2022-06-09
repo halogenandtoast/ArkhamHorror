@@ -40,7 +40,7 @@ instance HasAbilities PowderOfIbnGhazi where
 
 instance RunMessage PowderOfIbnGhazi where
   runMessage msg (PowderOfIbnGhazi attrs) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == toId attrs -> do
+    InvestigatorPlayAsset _ aid | aid == toId attrs -> do
       survivedCount <- countM
         getHasRecord
         [ DrHenryArmitageSurvivedTheDunwichLegacy

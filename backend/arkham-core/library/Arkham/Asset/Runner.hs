@@ -9,7 +9,7 @@ import Arkham.Asset.Attrs as X
 import Arkham.Asset.Helpers as X
 import Arkham.Asset.Uses as X
 import Arkham.Classes as X
-import Arkham.Message as X hiding (AssetDamage)
+import Arkham.Message as X hiding ( AssetDamage )
 
 import Arkham.Card
 import Arkham.Message qualified as Msg
@@ -103,7 +103,7 @@ instance RunMessage AssetAttrs where
         <$> [Timing.When, Timing.After]
         )
       pure a
-    InvestigatorPlayedAsset iid aid _ _ | aid == assetId -> do
+    InvestigatorPlayedAsset iid aid | aid == assetId -> do
       -- we specifically use the investigator source here because the
       -- asset has no knowledge of being owned yet, and this will allow
       -- us to bring the investigator's id into scope
@@ -126,8 +126,8 @@ instance RunMessage AssetAttrs where
             then foldl' applyModifier startingUses modifiers
             else assetUses
           )
-    InvestigatorPlayDynamicAsset iid aid slots traits _ | aid == assetId ->
-      a <$ push (InvestigatorPlayAsset iid aid slots traits)
+    InvestigatorPlayDynamicAsset iid aid _ | aid == assetId -> do
+      a <$ push (InvestigatorPlayAsset iid aid)
     TakeControlOfAsset iid aid | aid == assetId -> do
       push =<< checkWindows
         ((`Window` Window.TookControlOfAsset iid aid)

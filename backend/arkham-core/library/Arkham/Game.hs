@@ -2138,7 +2138,6 @@ runGameMessage msg g = case msg of
               iid
               aid
               (assetSlots $ toAttrs asset)
-              (toList $ toTraits asset)
               n
             , ResolvedCard iid card
             ]
@@ -2211,11 +2210,7 @@ runGameMessage msg g = case msg of
             (createAsset card)
           pushAll
             [ PlayedCard iid card
-            , InvestigatorPlayAsset
-              iid
-              aid
-              (assetSlots $ toAttrs asset)
-              (toList $ toTraits asset)
+            , InvestigatorPlayAsset iid aid
             , ResolvedCard iid card
             ]
           pure $ g & entitiesL . assetsL %~ insertMap aid asset

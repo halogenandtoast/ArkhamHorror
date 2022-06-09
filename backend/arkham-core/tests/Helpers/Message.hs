@@ -58,8 +58,7 @@ disengageEnemy :: Investigator -> Enemy -> Message
 disengageEnemy i e = DisengageEnemy (toId i) (toId e)
 
 playAsset :: Investigator -> Asset -> Message
-playAsset i a =
-  InvestigatorPlayAsset (toId i) (toId a) (slotsOf a) (toList $ toTraits a)
+playAsset i a = InvestigatorPlayAsset (toId i) (toId a)
 
 placedLocation :: Location -> Message
 placedLocation l = PlacedLocation (toName l) (toCardCode l) (toId l)

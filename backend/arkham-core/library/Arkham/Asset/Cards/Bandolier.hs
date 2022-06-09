@@ -22,7 +22,7 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing
 
 instance RunMessage Bandolier where
   runMessage msg (Bandolier attrs) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
+    InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
       push $ AddSlot iid HandSlot (slot attrs)
       Bandolier <$> runMessage msg attrs
     _ -> Bandolier <$> runMessage msg attrs

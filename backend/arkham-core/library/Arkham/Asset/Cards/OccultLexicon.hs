@@ -17,7 +17,7 @@ occultLexicon = asset OccultLexicon Cards.occultLexicon
 
 instance RunMessage OccultLexicon where
   runMessage msg (OccultLexicon attrs) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
+    InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
       handBloodRite <- PlayerCard <$> genPlayerCard Events.bloodRite
       deckBloodRites <- replicateM 2 (genPlayerCard Events.bloodRite)
       canShuffleDeck <- getCanShuffleDeck iid

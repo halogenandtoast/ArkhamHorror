@@ -37,7 +37,7 @@ instance HasAbilities BookOfShadows3 where
 
 instance RunMessage BookOfShadows3 where
   runMessage msg a@(BookOfShadows3 attrs) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
+    InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
       push (AddSlot iid ArcaneSlot (slot attrs))
       BookOfShadows3 <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do

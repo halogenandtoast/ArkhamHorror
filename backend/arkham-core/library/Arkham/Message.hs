@@ -375,9 +375,9 @@ data Message
   | -- | This message exists in case the number of clues will change
     InvestigatorPlaceAllCluesOnLocation InvestigatorId
   | InvestigatorPlaceCluesOnLocation InvestigatorId Int
-  | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
-  | InvestigatorPlayedAsset InvestigatorId AssetId [SlotType] [Trait]
-  | InvestigatorPlayDynamicAsset InvestigatorId AssetId [SlotType] [Trait] Int
+  | InvestigatorPlayAsset InvestigatorId AssetId
+  | InvestigatorPlayedAsset InvestigatorId AssetId
+  | InvestigatorPlayDynamicAsset InvestigatorId AssetId Int
   | InvestigatorPlayDynamicEvent InvestigatorId EventId Int
   | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target) [Window] Zone
   | InvestigatorResigned InvestigatorId

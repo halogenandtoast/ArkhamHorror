@@ -32,7 +32,7 @@ instance HasAbilities JennysTwin45s where
 
 instance RunMessage JennysTwin45s where
   runMessage msg a@(JennysTwin45s attrs) = case msg of
-    InvestigatorPlayDynamicAsset _ aid _ n | aid == assetId attrs ->
+    InvestigatorPlayDynamicAsset _ aid n | aid == assetId attrs ->
       JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Ammo n)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers

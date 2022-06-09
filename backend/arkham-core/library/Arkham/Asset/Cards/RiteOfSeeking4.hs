@@ -35,7 +35,7 @@ instance HasAbilities RiteOfSeeking4 where
 instance RunMessage RiteOfSeeking4 where
   runMessage msg a@(RiteOfSeeking4 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
+      lid <- fieldF InvestigatorLocation (fromJustNote "must be at a location") iid
       a <$ pushAll
         [ CreateEffect "02233" Nothing source (InvestigationTarget iid lid) -- same effect as base
         , skillTestModifier

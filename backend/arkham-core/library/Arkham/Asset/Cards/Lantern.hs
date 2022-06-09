@@ -42,7 +42,7 @@ instance HasAbilities Lantern where
 instance RunMessage Lantern where
   runMessage msg a@(Lantern attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
+      lid <- fieldF InvestigatorLocation (fromJustNote "must be at a location") iid
       a <$ pushAll
         [ skillTestModifier source (LocationTarget lid) (ShroudModifier (-1))
         , Investigate iid lid source Nothing SkillIntellect False

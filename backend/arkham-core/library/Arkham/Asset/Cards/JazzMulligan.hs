@@ -49,7 +49,7 @@ instance HasModifiersFor JazzMulligan where
 instance RunMessage JazzMulligan where
   runMessage msg a@(JazzMulligan attrs@AssetAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      lid <- fieldMap
+      lid <- fieldF
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid

@@ -21,7 +21,7 @@ instance HasModifiersFor AkachiOnyele where
   getModifiersFor (InvestigatorSource iid) (AssetTarget aid) (AkachiOnyele attrs)
     | toId attrs == iid
     = do
-      startingChargesCount <- fieldMap
+      startingChargesCount <- fieldF
         AssetStartingUses
         (\u -> if useType u == Just Charge then useCount u else 0)
         aid
@@ -53,7 +53,7 @@ instance RunMessage AkachiOnyele where
   runMessage msg i@(AkachiOnyele attrs) = case msg of
     ResolveToken _ ElderSign iid | iid == toId attrs -> do
       targets <- map AssetTarget <$> filterM
-        (fieldMap
+        (fieldF
           AssetUses
           (\u -> useType u == Just Charge && useCount u > 0)
         )

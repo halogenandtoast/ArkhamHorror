@@ -27,7 +27,7 @@ instance RunMessage QuietHalls where
       investigatorIds <- getInvestigatorIds
       completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
       messages <- flip mapMaybeM investigatorIds $ \iid -> do
-        discardCount <- fieldMap InvestigatorDiscard length iid
+        discardCount <- fieldF InvestigatorDiscard length iid
         if discardCount >= 5
           then pure $ Just
             (InvestigatorAssignDamage

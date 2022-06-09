@@ -761,8 +761,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           , continue h s (AssetTarget asset)
           ]
       assetsWithCounts <- for damageableAssets $ \asset -> do
-        health' <- fieldMap AssetRemainingHealth (fromMaybe 0) asset
-        sanity' <- fieldMap AssetRemainingSanity (fromMaybe 0) asset
+        health' <- fieldF AssetRemainingHealth (fromMaybe 0) asset
+        sanity' <- fieldF AssetRemainingSanity (fromMaybe 0) asset
         pure (asset, (health', sanity'))
 
       push
@@ -1112,7 +1112,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
   InvestigatorPlayAsset iid aid | iid == investigatorId -> do
     slotTypes <- field AssetSlots aid
-    traits <- fieldMap AssetTraits setToList aid
+    traits <- fieldF AssetTraits setToList aid
     a <$ if fitsAvailableSlots slotTypes traits a
       then push (InvestigatorPlayedAsset iid aid)
       else do
@@ -1140,7 +1140,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorPlayedAsset iid aid | iid == investigatorId -> do
     let assetsUpdate = assetsL %~ insertSet aid
     slotTypes <- field AssetSlots aid
-    traits <- fieldMap AssetTraits setToList aid
+    traits <- fieldF AssetTraits setToList aid
     pure $ foldl'
       (\a' slotType ->
         a' & slotsL . ix slotType %~ placeInAvailableSlot aid traits
@@ -1235,7 +1235,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ findWithDefault [] slotType investigatorSlots
       emptiedSlots = sort $ map emptySlot slots
     assetsWithTraits <- for assetIds $ \assetId -> do
-      traits <- fieldMap AssetTraits setToList assetId
+      traits <- fieldF AssetTraits setToList assetId
       pure (assetId, traits)
     let
       updatedSlots = foldl'

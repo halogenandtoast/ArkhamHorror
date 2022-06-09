@@ -52,7 +52,7 @@ instance RunMessage LivreDeibon where
           ]
         )
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
-      deckCards <- fieldMap InvestigatorDeck unDeck iid
+      deckCards <- fieldF InvestigatorDeck unDeck iid
       case deckCards of
         [] -> error "Missing deck card"
         x : _ -> push (SkillTestCommitCard iid $ PlayerCard x)

@@ -20,7 +20,7 @@ celaenoFragments = asset CelaenoFragments Cards.celaenoFragments
 instance HasModifiersFor CelaenoFragments where
   getModifiersFor _ (InvestigatorTarget iid) (CelaenoFragments attrs)
     | controlledBy attrs iid = do
-      count' <- fieldMap InvestigatorHand length iid
+      count' <- fieldF InvestigatorHand length iid
       pure
         . toModifiers attrs
         $ [ SkillModifier SkillIntellect 1 | count' >= 5 ]

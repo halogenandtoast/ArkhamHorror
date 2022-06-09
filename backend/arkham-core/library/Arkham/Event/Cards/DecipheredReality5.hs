@@ -29,7 +29,7 @@ decipheredReality5 = event DecipheredReality5 Cards.decipheredReality5
 instance RunMessage DecipheredReality5 where
   runMessage msg e@(DecipheredReality5 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
+      lid <- fieldF InvestigatorLocation (fromJustNote "must be at a location") iid
       locationIds <- selectList RevealedLocation
       maxShroud <-
         maximum . ncons 0 <$> traverse (field LocationShroud) locationIds

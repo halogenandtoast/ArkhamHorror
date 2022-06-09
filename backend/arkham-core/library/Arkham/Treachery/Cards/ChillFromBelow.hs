@@ -24,7 +24,7 @@ instance RunMessage ChillFromBelow where
       t <$ push (RevelationSkillTest iid source SkillWillpower 3)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
-        handCount <- fieldMap InvestigatorHand length iid
+        handCount <- fieldF InvestigatorHand length iid
         if handCount < n
           then
             pushAll

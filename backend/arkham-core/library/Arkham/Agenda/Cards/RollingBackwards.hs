@@ -31,7 +31,7 @@ instance RunMessage RollingBackwards where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      locationId <- fieldMap
+      locationId <- fieldF
         InvestigatorLocation
         (fromJustNote "must be at a location")
         leadInvestigatorId

@@ -52,7 +52,7 @@ instance HasTokenValue ExtracurricularActivity where
     case tokenFace of
       Skull -> pure $ toTokenValue attrs Skull 1 2
       Cultist -> do
-        discardCount <- fieldMap InvestigatorDiscard length iid
+        discardCount <- fieldF InvestigatorDiscard length iid
         pure $ TokenValue
           Cultist
           (NegativeModifier $ if discardCount >= 10

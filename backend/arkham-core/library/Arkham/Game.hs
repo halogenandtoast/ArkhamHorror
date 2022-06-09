@@ -535,10 +535,10 @@ getEffectsMatching
   -> GameT [Effect]
 getEffectsMatching _matcher = pure []
 
-getCampaignssMatching
-  :: CampaignsMatcher
-  -> GameT [Campaigns]
-getCampaignssMatching _matcher = pure []
+getCampaignsMatching
+  :: CampaignMatcher
+  -> GameT [Campaign]
+getCampaignsMatching _matcher = pure []
 
 getInvestigatorsMatching
   :: InvestigatorMatcher
@@ -1346,55 +1346,43 @@ instance Query PreyMatcher where
 
 instance Query ExtendedCardMatcher where
   select matcher = do
-    investigatorIds <- getInvestigatorIds
-    handCards <- map unHandCard . concat <$> traverse getList investigatorIds
-    deckCards <-
-      map (PlayerCard . unDeckCard)
-      . concat
-      <$> traverse getList investigatorIds
-    discards <- getDiscards investigatorIds
-    setAsideCards <- map unSetAsideCard <$> getList ()
-    victoryDisplayCards <- map unVictoryDisplayCard <$> getSetList ()
-    underScenarioReferenceCards <- map unUnderScenarioReferenceCard
-      <$> getList ()
-    underneathCards <-
-      map unUnderneathCard . concat <$> traverse getList investigatorIds
+    investigatorIds :: [InvestigatorId] <- getInvestigatorIds
+    handCards :: [Card] <- concat <$> traverse (field InvestigatorHand) investigatorIds
+    -- deckCards <- concat <$> traverse (fieldF InvestigatorDeck (map PlayerCard . unDeck)) investigatorIds
+    -- discards <- concat <$> traverse (fieldMap InvestigatorDiscard PlayerCard) investigatorIds
+    -- setAsideCards <- scenarioField ScenarioSetAsideCards
+    -- victoryDisplayCards <- scenarioField ScenarioVictoryDisplay
+    -- underScenarioReferenceCards <- scenarioField ScenarioCardsUnderScenarioReference
+    -- underneathCards <- concat <$> traverse (field InvestigatorCardsUnderneath) investigatorIds
     filterM
       (`matches` matcher)
-      (handCards
-      <> deckCards
-      <> underneathCards
-      <> underScenarioReferenceCards
-      <> discards
-      <> setAsideCards
-      <> victoryDisplayCards
-      )
+      $ handCards
+      -- <> deckCards
+      -- <> underneathCards
+      -- <> underScenarioReferenceCards
+      -- <> discards
+      -- <> setAsideCards
+      -- <> victoryDisplayCards
    where
-    getDiscards iids =
-      map PlayerCard
-        . concat
-        <$> traverse (fmap discardOf . getInvestigator) iids
+    matches :: Card -> ExtendedCardMatcher -> GameT Bool
     matches c = \case
       SetAsideCardMatch matcher' -> do
-        cards <- map unSetAsideCard <$> getList ()
+        cards <- scenarioField ScenarioSetAsideCards
         pure $ c `elem` filter (`cardMatch` matcher') cards
       UnderScenarioReferenceMatch matcher' -> do
-        cards <- map unUnderScenarioReferenceCard <$> getList ()
+        cards <- scenarioField ScenarioCardsUnderScenarioReference
         pure $ c `elem` filter (`cardMatch` matcher') cards
       VictoryDisplayCardMatch matcher' -> do
-        cards <- map unVictoryDisplayCard <$> getSetList ()
+        cards <- scenarioField ScenarioVictoryDisplay
         pure $ c `elem` filter (`cardMatch` matcher') cards
       BasicCardMatch cm -> pure $ cardMatch c cm
       InHandOf who -> do
         iids <- selectList who
-        cards <- map unHandCard . concat <$> traverse getList iids
+        cards <- concat <$> traverse (field InvestigatorHand) iids
         pure $ c `elem` cards
       TopOfDeckOf who -> do
         iids <- selectList who
-        cards <-
-          map (PlayerCard . unDeckCard)
-          . concatMap (take 1)
-          <$> traverse getList iids
+        cards <- concatMap (take 1) <$> traverse (fieldF InvestigatorDeck (map PlayerCard . unDeck)) iids
         pure $ c `elem` cards
       EligibleForCurrentSkillTest -> do
         mSkillTest <- getSkillTest
@@ -1409,11 +1397,11 @@ instance Query ExtendedCardMatcher where
             )
       InDiscardOf who -> do
         iids <- selectList who
-        discards <- getDiscards iids
+        discards <- concat <$> traverse (fieldMap InvestigatorDiscard PlayerCard) iids
         pure $ c `elem` discards
       CardIsBeneathInvestigator who -> do
-        iids <- getSetList @InvestigatorId who
-        cards <- map unUnderneathCard . concat <$> traverse getList iids
+        iids <- selectList who
+        cards <- concat <$> traverse (field InvestigatorCardsUnderneath) iids
         pure $ c `elem` cards
       ExtendedCardWithOneOf ms -> anyM (matches c) ms
       ExtendedCardMatches ms -> allM (matches c) ms
@@ -1531,11 +1519,10 @@ getLongestPath !initialLocation !target = do
     $ result
 
 markDistances
-  :: HasGame m
-  => LocationId
+  :: LocationId
   -> (LocationId -> GameT Bool)
   -> HashMap LocationId [LocationId]
-  -> StateT LPState m (HashMap Int [LocationId])
+  -> StateT LPState GameT (HashMap Int [LocationId])
 markDistances initialLocation target extraConnectionsMap = do
   LPState searchQueue visitedSet parentsMap <- get
   if Seq.null searchQueue

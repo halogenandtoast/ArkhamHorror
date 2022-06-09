@@ -21,7 +21,7 @@ scenarioField :: Field ScenarioAttrs a -> GameT a
 scenarioField fld = scenarioFieldMap fld id
 
 scenarioFieldMap :: Field ScenarioAttrs a -> (a -> b) -> GameT b
-scenarioFieldMap fld f = selectJust TheScenario >>= fieldMap fld f
+scenarioFieldMap fld f = selectJust TheScenario >>= fieldF fld f
 
 getIsStandalone :: GameT Bool
 getIsStandalone = isNothing <$> selectOne TheCampaign

@@ -67,7 +67,7 @@ instance RunMessage BidingItsTime where
         (throwIO $ InvalidState "wrong card")
       let enemyId = EnemyId $ toCardId card
       leadInvestigatorId <- getLeadInvestigatorId
-      locationId <- fieldMap
+      locationId <- fieldF
         InvestigatorLocation
         (fromJustNote "must be somewhere")
         leadInvestigatorId

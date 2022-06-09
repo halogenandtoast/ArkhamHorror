@@ -37,7 +37,7 @@ instance RunMessage UmordhothsWrath where
       <$ push (HandlePointOfFailure iid (toTarget attrs) n)
     HandlePointOfFailure _ target 0 | isTarget attrs target -> pure t
     HandlePointOfFailure iid target n | isTarget attrs target -> do
-      hasCards <- fieldMap InvestigatorHand notNull iid
+      hasCards <- fieldF InvestigatorHand notNull iid
       if hasCards
         then t <$ pushAll
           [ chooseOne

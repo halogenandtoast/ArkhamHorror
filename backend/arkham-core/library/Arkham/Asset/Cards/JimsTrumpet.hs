@@ -45,7 +45,7 @@ instance RunMessage JimsTrumpet where
   runMessage msg a@(JimsTrumpet attrs@AssetAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       let controllerId = fromJustNote "must be controller" assetController
-      locationId <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") controllerId
+      locationId <- fieldF InvestigatorLocation (fromJustNote "must be at a location") controllerId
       connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId locationId
       investigatorIds <-
         concat <$> for (locationId : connectedLocationIds) (selectList . InvestigatorAt . LocationWithId)

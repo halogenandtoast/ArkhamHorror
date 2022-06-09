@@ -269,16 +269,16 @@ getCanAffordUse iid ability window = case abilityLimit ability of
   NoLimit -> case abilityType ability of
     ReactionAbility _ _ ->
       notElem ability
-        <$> fieldMap InvestigatorUsedAbilities (map usedAbility) iid
+        <$> fieldF InvestigatorUsedAbilities (map usedAbility) iid
     ForcedAbility _ ->
       notElem ability
-        <$> fieldMap InvestigatorUsedAbilities (map usedAbility) iid
+        <$> fieldF InvestigatorUsedAbilities (map usedAbility) iid
     SilentForcedAbility _ ->
       notElem ability
-        <$> fieldMap InvestigatorUsedAbilities (map usedAbility) iid
+        <$> fieldF InvestigatorUsedAbilities (map usedAbility) iid
     ForcedAbilityWithCost _ _ ->
       notElem ability
-        <$> fieldMap InvestigatorUsedAbilities (map usedAbility) iid
+        <$> fieldF InvestigatorUsedAbilities (map usedAbility) iid
     ActionAbility _ _ -> pure True
     ActionAbilityWithBefore{} -> pure True
     ActionAbilityWithSkill{} -> pure True
@@ -310,7 +310,7 @@ getCanAffordUse iid ability window = case abilityLimit ability of
       _ -> error "Unhandled per investigator limit"
   GroupLimit _ n -> do
     usedAbilities <-
-      concatMapM (fieldMap InvestigatorUsedAbilities (map usedAbility))
+      concatMapM (fieldF InvestigatorUsedAbilities (map usedAbility))
         =<< getInvestigatorIds
     let total = count (== ability) usedAbilities
     pure $ total < n
@@ -357,7 +357,7 @@ getCanAffordCost iid source mAction windows' = \case
           modifiedActionCost =
             foldr (applyActionCostModifier takenActions mAction) n modifiers
         traits <- case source of
-          AssetSource aid -> fieldMap AssetTraits HashSet.toList aid
+          AssetSource aid -> fieldF AssetTraits HashSet.toList aid
           _ -> pure []
 
         tomeActions <- if Tome `elem` traits
@@ -524,7 +524,7 @@ getCanFight eid iid = do
   sameLocation <- (isJust mLocationId &&) . (== mLocationId) <$> selectOne
     (Matcher.locationWithEnemy eid)
   modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
-  takenActions <- fieldMap InvestigatorActionsTaken setFromList iid
+  takenActions <- fieldF InvestigatorActionsTaken setFromList iid
   keywords <- field EnemyKeywords eid
   canAffordActions <- getCanAffordCost
     iid
@@ -569,7 +569,7 @@ getCanEvade eid iid = do
   engaged <- elem iid <$> field EnemyEngagedInvestigators eid
   enemyModifiers <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
   modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
-  takenActions <- fieldMap InvestigatorActionsTaken setFromList iid
+  takenActions <- fieldF InvestigatorActionsTaken setFromList iid
   canAffordActions <- getCanAffordCost
     iid
     (EnemySource eid)
@@ -902,7 +902,7 @@ passesCriteria iid source windows' = \case
       (select investigatorMatcher)
   Criteria.Never -> pure False
   Criteria.InYourHand -> do
-    hand <- fieldMap InvestigatorHand (map toCardId) iid
+    hand <- fieldF InvestigatorHand (map toCardId) iid
     case source of
       EventSource eid -> pure $ unEventId eid `elem` hand
       TreacherySource tid -> do

@@ -25,11 +25,11 @@ starsOfHyades = treachery StarsOfHyades Cards.starsOfHyades
 instance RunMessage StarsOfHyades where
   runMessage msg t@(StarsOfHyades attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      events <- fieldMap InvestigatorCardsUnderneath (filter ((== EventType) . toCardType)) iid
+      events <- fieldF InvestigatorCardsUnderneath (filter ((== EventType) . toCardType)) iid
       t <$ case nonEmpty events of
         Nothing -> push (InvestigatorAssignDamage iid source DamageAny 1 1)
         Just targets -> do
-          deckSize <- fieldMap InvestigatorDeck (length . unDeck) iid
+          deckSize <- fieldF InvestigatorDeck (length . unDeck) iid
           discardedEvent <- sample targets
           pushAll
             (chooseOne

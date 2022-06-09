@@ -23,7 +23,7 @@ dynamiteBlast = event DynamiteBlast Cards.dynamiteBlast
 instance RunMessage DynamiteBlast where
   runMessage msg e@(DynamiteBlast attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      currentLocationId <- fieldMap
+      currentLocationId <- fieldF
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid

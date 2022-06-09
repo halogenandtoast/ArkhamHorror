@@ -31,6 +31,7 @@ newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
 data instance Field ScenarioAttrs :: Type -> Type where
   ScenarioCardsUnderActDeck :: Field ScenarioAttrs [Card]
   ScenarioCardsUnderAgendaDeck :: Field ScenarioAttrs [Card]
+  ScenarioCardsUnderScenarioReference :: Field ScenarioAttrs [Card]
   ScenarioDiscard :: Field ScenarioAttrs [EncounterCard]
   ScenarioDifficulty :: Field ScenarioAttrs Difficulty
   ScenarioDecks :: Field ScenarioAttrs (HashMap ScenarioDeckKey [Card])

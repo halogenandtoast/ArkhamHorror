@@ -12,6 +12,7 @@ import Arkham.Helpers.Window as X
 import Arkham.Helpers.Xp as X
 import Arkham.Helpers.Modifiers as X
 
+import Control.Monad.Reader (local)
 import Data.Semigroup (Sum(..))
 import Arkham.Ability
 import Arkham.Act.Attrs ( Field (..) )
@@ -43,7 +44,7 @@ import Arkham.EncounterSet
 import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Event.Attrs ( Field (..) )
 import {-# SOURCE #-} Arkham.GameEnv
-import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.Game
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.History
@@ -73,7 +74,6 @@ import Arkham.Treachery.Attrs ( Field (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Data.HashSet qualified as HashSet
-import System.IO.Unsafe
 
 gatherEncounterSet :: MonadRandom m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet encounterSet = concat <$> for
@@ -783,83 +783,89 @@ getIsPlayableWithResources
 getIsPlayableWithResources _ _ _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
 getIsPlayableWithResources iid source availableResources costStatus windows' c@(PlayerCard _)
   = do
-    iids <- filter (/= iid) <$> getInvestigatorIds
-    iidsWithModifiers <- for iids $ \iid' -> do
-      modifiers <- getModifiers
-        (InvestigatorSource iid')
-        (InvestigatorTarget iid')
-      pure (iid', modifiers)
-    canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) -> do
-      flip anyM modifiers $ \case
-        CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher -> liftA2
-          (&&)
-          (member iid <$> select iMatcher)
-          (pure $ cardMatch c cMatcher)
-        _ -> pure False
-    additionalResources <-
-      sum <$> traverse (field InvestigatorResources . fst) canHelpPay
-    modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
-    let title = nameTitle (cdName pcDef)
-    passesUnique <- case (cdUnique pcDef, cdCardType pcDef) of
-      (True, AssetType) -> not <$> case nameSubtitle (cdName pcDef) of
-        Nothing -> selectAny (Matcher.AssetWithTitle title)
-        Just subtitle -> selectAny (Matcher.AssetWithFullTitle title subtitle)
-      _ -> pure True
-    let
-      duringTurnWindow = Window Timing.When (Window.DuringTurn iid)
-      notFastWindow = any (`elem` windows') [duringTurnWindow]
-      canBecomeFast = foldr applyModifier False modifiers
-      canBecomeFastWindow =
-        if canBecomeFast then Just (Matcher.DuringTurn Matcher.You) else Nothing
-      applyModifier (CanBecomeFast (mcardType, traits)) _
-        | maybe True (== cdCardType pcDef) mcardType
-          && notNull (setFromList traits `intersect` toTraits pcDef)
-        = True
-      applyModifier _ val = val
-    modifiedCardCost <- getModifiedCardCost iid c
-    passesCriterias <- maybe
-      (pure True)
-      (passesCriteria iid source windows')
-      (cdCriteria pcDef)
-    inFastWindow <- maybe
-      (pure False)
-      (cardInFastWindows iid source c windows')
-      (cdFastWindow pcDef <|> canBecomeFastWindow)
-    canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You)
-    canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You)
-    passesLimits <- allM passesLimit (cdLimits pcDef)
-    cardModifiers <- getModifiers
-      (CardIdSource $ toCardId c)
-      (CardIdTarget $ toCardId c)
-    let
-      additionalCosts = flip mapMaybe cardModifiers $ \case
-        AdditionalCost x -> Just x
-        _ -> Nothing
+    game <- getGame
+    flip runReaderT game $ do
+      depth <- getWindowDepth
+      if depth >= 3
+         then pure False
+         else local delve $ do
+            iids <- filter (/= iid) <$> getInvestigatorIds
+            iidsWithModifiers <- for iids $ \iid' -> do
+              modifiers <- getModifiers
+                (InvestigatorSource iid')
+                (InvestigatorTarget iid')
+              pure (iid', modifiers)
+            canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) -> do
+              flip anyM modifiers $ \case
+                CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher -> liftA2
+                  (&&)
+                  (member iid <$> select iMatcher)
+                  (pure $ cardMatch c cMatcher)
+                _ -> pure False
+            additionalResources <-
+              sum <$> traverse (field InvestigatorResources . fst) canHelpPay
+            modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
+            let title = nameTitle (cdName pcDef)
+            passesUnique <- case (cdUnique pcDef, cdCardType pcDef) of
+              (True, AssetType) -> not <$> case nameSubtitle (cdName pcDef) of
+                Nothing -> selectAny (Matcher.AssetWithTitle title)
+                Just subtitle -> selectAny (Matcher.AssetWithFullTitle title subtitle)
+              _ -> pure True
+            let
+              duringTurnWindow = Window Timing.When (Window.DuringTurn iid)
+              notFastWindow = any (`elem` windows') [duringTurnWindow]
+              canBecomeFast = foldr applyModifier False modifiers
+              canBecomeFastWindow =
+                if canBecomeFast then Just (Matcher.DuringTurn Matcher.You) else Nothing
+              applyModifier (CanBecomeFast (mcardType, traits)) _
+                | maybe True (== cdCardType pcDef) mcardType
+                  && notNull (setFromList traits `intersect` toTraits pcDef)
+                = True
+              applyModifier _ val = val
+            modifiedCardCost <- getModifiedCardCost iid c
+            passesCriterias <- maybe
+              (pure True)
+              (passesCriteria iid source windows')
+              (cdCriteria pcDef)
+            inFastWindow <- maybe
+              (pure False)
+              (cardInFastWindows iid source c windows')
+              (cdFastWindow pcDef <|> canBecomeFastWindow)
+            canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You)
+            canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You)
+            passesLimits <- allM passesLimit (cdLimits pcDef)
+            cardModifiers <- getModifiers
+              (CardIdSource $ toCardId c)
+              (CardIdTarget $ toCardId c)
+            let
+              additionalCosts = flip mapMaybe cardModifiers $ \case
+                AdditionalCost x -> Just x
+                _ -> Nothing
 
-    canAffordAdditionalCosts <- allM
-      (getCanAffordCost iid (CardIdSource $ toCardId c) Nothing windows')
-      additionalCosts
+            canAffordAdditionalCosts <- allM
+              (getCanAffordCost iid (CardIdSource $ toCardId c) Nothing windows')
+              additionalCosts
 
-    passesSlots <- if null (cdSlots pcDef)
-      then pure True
-      else do
-        possibleSlots <- getPotentialSlots (cdCardTraits pcDef) iid
-        pure $ null $ cdSlots pcDef \\ possibleSlots
+            passesSlots <- if null (cdSlots pcDef)
+              then pure True
+              else do
+                possibleSlots <- getPotentialSlots (cdCardTraits pcDef) iid
+                pure $ null $ cdSlots pcDef \\ possibleSlots
 
-    pure
-      $ (cdCardType pcDef /= SkillType)
-      && ((costStatus == PaidCost)
-         || (modifiedCardCost <= (availableResources + additionalResources))
-         )
-      && none prevents modifiers
-      && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
-      && (cdAction pcDef /= Just Action.Evade || canEvade)
-      && (cdAction pcDef /= Just Action.Fight || canFight)
-      && passesCriterias
-      && passesLimits
-      && passesUnique
-      && passesSlots
-      && canAffordAdditionalCosts
+            pure
+              $ (cdCardType pcDef /= SkillType)
+              && ((costStatus == PaidCost)
+                 || (modifiedCardCost <= (availableResources + additionalResources))
+                 )
+              && none prevents modifiers
+              && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
+              && (cdAction pcDef /= Just Action.Evade || canEvade)
+              && (cdAction pcDef /= Just Action.Fight || canFight)
+              && passesCriterias
+              && passesLimits
+              && passesUnique
+              && passesSlots
+              && canAffordAdditionalCosts
  where
   pcDef = toCardDef c
   prevents (CanOnlyUseCardsInRole role) =

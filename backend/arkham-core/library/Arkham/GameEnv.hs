@@ -21,6 +21,9 @@ newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
 class HasGame m where
   getGame :: m Game
 
+instance {-# OVERLAPPABLE #-} MonadReader Game m => HasGame m where
+  getGame = ask
+
 runGameEnvT :: MonadIO m => GameEnv -> GameT a -> m a
 runGameEnvT gameEnv = liftIO . flip runReaderT gameEnv . unGameT
 

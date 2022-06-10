@@ -11,12 +11,10 @@ import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Message
-import Arkham.Projection
 import Arkham.CampaignStep
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card.PlayerCard
-import Arkham.Scenario.Attrs (Field(..))
 
 instance RunMessage CampaignAttrs where
   runMessage msg a@CampaignAttrs {..} = case msg of

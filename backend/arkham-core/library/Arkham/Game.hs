@@ -516,9 +516,7 @@ getCampaignsMatching
   -> GameT [Campaign]
 getCampaignsMatching _matcher = pure []
 
-getInvestigatorsMatching
-  :: InvestigatorMatcher
-  -> GameT [Investigator]
+getInvestigatorsMatching :: InvestigatorMatcher -> GameT [Investigator]
 getInvestigatorsMatching matcher = do
   investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
   filterM (go matcher) investigators
@@ -527,26 +525,33 @@ getInvestigatorsMatching matcher = do
     NoOne -> pure . const False
     FewestCardsInHand -> \i -> do
       let cardCount = length . investigatorHand $ toAttrs i
-      minCardCount <- getMin . fold <$> traverse (fieldMap InvestigatorHand (Min . length)) =<< getInvestigatorIds
+      minCardCount <-
+        fmap (getMin . fold)
+        . traverse (fieldMap InvestigatorHand (Min . length))
+        =<< getInvestigatorIds
       pure $ minCardCount == cardCount
     LowestRemainingHealth -> \i -> do
       h <- field InvestigatorRemainingHealth (toId i)
-      lowestRemainingHealth <- getMin <$> selectAgg Min InvestigatorRemainingHealth Anyone
+      lowestRemainingHealth <-
+        getMin <$> selectAgg Min InvestigatorRemainingHealth Anyone
       pure $ lowestRemainingHealth == h
     LowestRemainingSanity -> \i -> do
       remainingSanity <- field InvestigatorRemainingSanity (toId i)
-      lowestRemainingSanity <- getMin <$> selectAgg Min InvestigatorRemainingSanity Anyone
+      lowestRemainingSanity <-
+        getMin <$> selectAgg Min InvestigatorRemainingSanity Anyone
       pure $ lowestRemainingSanity == remainingSanity
     MostRemainingSanity -> \i -> do
       remainingSanity <- field InvestigatorRemainingSanity (toId i)
-      mostRemainingSanity <- getMax <$> selectAgg Max InvestigatorRemainingSanity Anyone
+      mostRemainingSanity <-
+        getMax <$> selectAgg Max InvestigatorRemainingSanity Anyone
       pure $ mostRemainingSanity == remainingSanity
     MostHorror -> \i -> do
       mostHorrorCount <- getMax <$> selectAgg Max InvestigatorHorror Anyone
       pure $ mostHorrorCount == investigatorSanityDamage (toAttrs i)
     NearestToEnemy enemyMatcher -> \i -> do
       let
-        hasMatchingEnemy lid = selectAny $ EnemyAt (LocationWithId lid) <> enemyMatcher
+        hasMatchingEnemy lid =
+          selectAny $ EnemyAt (LocationWithId lid) <> enemyMatcher
         getDistance start =
           Distance . fromJustNote "error" . minimumMay . keys <$> evalStateT
             (markDistances start hasMatchingEnemy mempty)
@@ -603,7 +608,7 @@ getInvestigatorsMatching matcher = do
         else member (investigatorLocation $ toAttrs i) <$> select locationMatcher
     InvestigatorWithId iid -> pure . (== iid) . toId
     InvestigatorWithLowestSkill skillType -> \i -> do
-      lowestSkillValue <- fromMaybe 100 . minimumMay <$> getSetList skillType
+      lowestSkillValue <- getMin <$> (traverse (fmap Min . getSkillValue skillType) =<< getInvestigatorIds)
       skillValue <- getSkillValue skillType (toId i)
       pure $ lowestSkillValue == skillValue
     InvestigatorWithHighestSkill skillType -> \i -> do
@@ -634,7 +639,7 @@ getInvestigatorsMatching matcher = do
     ResignedInvestigator -> pure . investigatorResigned . toAttrs
     InvestigatorEngagedWith enemyMatcher -> \i -> do
       enemyIds <- select enemyMatcher
-      any (`member` enemyIds) <$> getSet i
+      pure $ any (`member` enemyIds) (investigatorEngagedEnemies $ toAttrs i)
     TopCardOfDeckIs cardMatcher -> \i ->
       pure $ case (unDeck . investigatorDeck $ toAttrs i) of
         [] -> False

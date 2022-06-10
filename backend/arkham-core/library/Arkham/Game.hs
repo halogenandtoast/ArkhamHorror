@@ -1277,34 +1277,36 @@ enemyMatcherFilter :: EnemyMatcher -> Enemy -> GameT Bool
 enemyMatcherFilter = \case
   FarthestEnemyFrom iid enemyMatcher -> \enemy -> do
     eids <- selectList enemyMatcher
-    if toId enemy `member` eids
+    if toId enemy `elem` eids
       then do
         milid <- field InvestigatorLocation iid
         case (milid, enemyLocation (toAttrs enemy)) of
           (Just ilid, Just elid) -> do
-            let distance = getDistance ilid elid
-            maxDistance <-
-              getMax
-              . fold
-              . map Max
-              <$> mapMaybeM (fieldMap EnemyLocation (fmap (getDistance ilid))) eids
-            pure $ distance == maxDistance
+            mdistance <- getDistance ilid elid
+            distances :: [Distance] <- catMaybes <$> for eids \eid -> do
+              melid' <- field EnemyLocation eid
+              case melid' of
+                Nothing -> pure Nothing
+                Just elid' -> getDistance ilid elid'
+            let maxDistance = getMax $ foldMap Max distances
+            pure $ mdistance == Just maxDistance
           _ -> pure False
       else pure False
   NearestEnemyTo iid enemyMatcher -> \enemy -> do
     eids <- selectList enemyMatcher
-    if toId enemy `member` eids
+    if toId enemy `elem` eids
       then do
         milid <- field InvestigatorLocation iid
         case (milid, enemyLocation (toAttrs enemy)) of
           (Just ilid, Just elid) -> do
-            let distance = getDistance ilid elid
-            minDistance <-
-              getMin
-              . fold
-              . map Min
-              <$> mapMaybeM (fieldMap EnemyLocation (fmap (getDistance ilid))) eids
-            pure $ distance == minDistance
+            mdistance <- getDistance ilid elid
+            distances :: [Distance] <- catMaybes <$> for eids \eid -> do
+              melid' <- field EnemyLocation eid
+              case melid' of
+                Nothing -> pure Nothing
+                Just elid' -> getDistance ilid elid'
+            let minDistance = getMin $ foldMap Min distances
+            pure $ mdistance == Just minDistance
           _ -> pure False
       else pure False
   NotEnemy m -> fmap not . enemyMatcherFilter m

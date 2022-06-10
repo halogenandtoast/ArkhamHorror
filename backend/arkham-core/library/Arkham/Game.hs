@@ -293,7 +293,11 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
     scenarioOrCampaignId
   mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
 
-addInvestigator :: Investigator -> [PlayerCard] -> GameT ()
+addInvestigator
+  :: (MonadIO m, MonadReader env m, HasQueue env, HasGameRef env)
+  => Investigator
+  -> [PlayerCard]
+  -> m ()
 addInvestigator i d = do
   gameRef <- view gameRefL
   game <- liftIO $ readIORef gameRef
@@ -339,7 +343,10 @@ toExternalGame g mq = do
   newGameSeed <- getRandom
   pure $ g { gameQuestion = mq, gameSeed = newGameSeed }
 
-replayChoices :: [Diff.Patch] -> GameT ()
+replayChoices
+  :: (MonadIO m, HasGameRef env, HasStdGen env, MonadReader env m)
+  => [Diff.Patch]
+  -> m ()
 replayChoices choices = do
   gameRef <- view gameRefL
   genRef <- view genL
@@ -601,18 +608,18 @@ getInvestigatorsMatching matcher = do
       , pure $ not $ investigatorEndedTurn $ toAttrs i
       ]
     LeadInvestigator -> \i -> (== toId i) <$> getLeadInvestigatorId
-    InvestigatorWithTitle title -> pure . (== title) . nameTitle . toName
+    InvestigatorWithTitle title -> pure . (== title) . nameTitle . toName . toAttrs
     InvestigatorAt locationMatcher -> \i ->
       if investigatorLocation (toAttrs i) == LocationId (CardId nil)
         then pure False
         else member (investigatorLocation $ toAttrs i) <$> select locationMatcher
     InvestigatorWithId iid -> pure . (== iid) . toId
     InvestigatorWithLowestSkill skillType -> \i -> do
-      lowestSkillValue <- getMin <$> (traverse (fmap Min . getSkillValue skillType) =<< getInvestigatorIds)
+      lowestSkillValue <- getMin . fold <$> (traverse (fmap Min . getSkillValue skillType) =<< getInvestigatorIds)
       skillValue <- getSkillValue skillType (toId i)
       pure $ lowestSkillValue == skillValue
     InvestigatorWithHighestSkill skillType -> \i -> do
-      highestSkillValue <- fromMaybe 0 . maximumMay <$> getSetList skillType
+      highestSkillValue <- getMax . fold <$> (traverse (fmap Max . getSkillValue skillType) =<< getInvestigatorIds)
       skillValue <- getSkillValue skillType (toId i)
       pure $ highestSkillValue == skillValue
     InvestigatorWithClues gameValueMatcher ->

@@ -964,17 +964,9 @@ getLocationsMatching = \case
       . view (entitiesL . locationsL)
       <$> getGame
   AccessibleLocation -> guardYourLocation $ \yourLocation -> do
-    accessibleLocations <- getSet yourLocation
-    filter ((`member` accessibleLocations) . AccessibleLocationId . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
+    getLocationsMatching (AccessibleTo $ LocationWithId yourLocation)
   ConnectedLocation -> guardYourLocation $ \yourLocation -> do
-    connectedLocations <- getSet yourLocation
-    filter ((`member` connectedLocations) . ConnectedLocationId . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
+    getLocationsMatching (ConnectedTo $ LocationWithId yourLocation)
   YourLocation -> guardYourLocation $ fmap pure . getLocation
   NotYourLocation -> guardYourLocation $ \yourLocation ->
     filter ((/= yourLocation) . toId)
@@ -986,10 +978,10 @@ getLocationsMatching = \case
     . toList
     . view (entitiesL . locationsL)
     =<< getGame
-    where hasMatchingTrait = fmap (trait `member`) . getSet
+    where hasMatchingTrait = fieldP LocationTraits (trait `member`). toId
   LocationWithoutTrait trait ->
-    filter missingTrait . toList . view (entitiesL . locationsL) <$> getGame
-    where missingTrait = (trait `notMember`) . toTraits
+    filterM missingTrait . toList . view (entitiesL . locationsL) =<< getGame
+    where missingTrait = fieldP LocationTraits (trait `notMember`). toId
   LocationMatchAll [] -> pure []
   LocationMatchAll (x : xs) -> do
     matches :: HashSet LocationId <-
@@ -1011,25 +1003,25 @@ getLocationsMatching = \case
       . view (entitiesL . locationsL)
       <$> getGame
   InvestigatableLocation -> toList . view (entitiesL . locationsL) <$> getGame
-  ConnectedTo mathcer -> do
+  ConnectedTo matcher -> do
     locations <- selectList matcher
-    matcher' <- getAnyLocationMatcher <$> mconcat
-      [ selectAgg
-        (mconcat . map AnyLocationMatcher)
-        LocationConnectedMatchers
-        (UnrevealedLocation <> matcher)
-      , selectAgg
-        (mconcat . map AnyLocationMatcher)
-        LocationRevealedConnectedMatchers
-        (RevealedLocation <> matcher)
-      ]
-    accessibleLocations <- selectList (NotLocation BlockedLocation <> matcher')
-    filter ((`elem` accessibleLocations) . toId)
+    -- matcher' <- getAnyLocationMatcher <$> mconcat
+    unrevealedMatcher <- selectAgg
+      (mconcat . map AnyLocationMatcher)
+      LocationConnectedMatchers
+      (UnrevealedLocation <> matcher)
+    revealedMatcher <- selectAgg
+      (mconcat . map AnyLocationMatcher)
+      LocationRevealedConnectedMatchers
+      (RevealedLocation <> matcher)
+    let matcher' = getAnyLocationMatcher $ unrevealedMatcher <> revealedMatcher
+    connectedLocations <- selectList (NotLocation BlockedLocation <> matcher')
+    filter ((`elem` connectedLocations) . toId)
       . toList
       . view (entitiesL . locationsL)
       <$> getGame
-  AccessibleFrom matcher -> do
-    accessibleLocations <- getLocationsMatching (Unblocked <> ConnectedFrom matcher)
+  AccessibleFrom matcher ->
+    getLocationsMatching (Unblocked <> ConnectedFrom matcher)
     -- locations <- selectList matcher
     -- matcher' <- getAnyLocationMatcher <$> mconcat
     --   [ selectAgg
@@ -1042,16 +1034,8 @@ getLocationsMatching = \case
     --     (RevealedLocation <> matcher)
     --   ]
     -- accessibleLocations <- selectList (NotLocation BlockedLocation <> matcher')
-    filter ((`elem` accessibleLocations) . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  AccessibleTo matcher -> do
-    accessibleLocations <- getLocationsMatching (Unblocked <> ConnectedTo matcher)
-    filter ((`elem` accessibleLocations) . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
+  AccessibleTo matcher ->
+    getLocationsMatching (Unblocked <> ConnectedTo matcher)
     -- returns locations which have access to the locations found by the matcher
     -- targets <- map AccessibleLocationId <$> getSetList matcher
     -- locations <- toList . view (entitiesL . locationsL) <$> getGame

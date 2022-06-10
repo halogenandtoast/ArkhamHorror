@@ -20,7 +20,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 
-advanceActSideA :: ActAttrs -> AdvancementMethod -> GameT [Message]
+advanceActSideA :: (Monad m, HasGame m) => ActAttrs -> AdvancementMethod -> m [Message]
 advanceActSideA attrs advanceMode = do
   leadInvestigatorId <- getLeadInvestigatorId
   pure

@@ -17,17 +17,17 @@ import Control.Monad.Writer hiding ( filterM )
 import Data.HashMap.Strict qualified as HashMap
 import Data.List.NonEmpty qualified as NE
 
-scenarioField :: Field ScenarioAttrs a -> GameT a
+scenarioField :: (HasGame m, Monad m) => Field ScenarioAttrs a -> m a
 scenarioField fld = scenarioFieldMap fld id
 
-scenarioFieldMap :: Field ScenarioAttrs a -> (a -> b) -> GameT b
+scenarioFieldMap :: (Monad m, HasGame m) => Field ScenarioAttrs a -> (a -> b) -> m b
 scenarioFieldMap fld f = selectJust TheScenario >>= fieldMap fld f
 
-getIsStandalone :: GameT Bool
+getIsStandalone :: (Monad m, HasGame m) => m Bool
 getIsStandalone = isNothing <$> selectOne TheCampaign
 
 addRandomBasicWeaknessIfNeeded
-  :: Deck PlayerCard -> GameT (Deck PlayerCard, [CardDef])
+  :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
 addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
   Deck <$> flip
     filterM
@@ -51,5 +51,5 @@ isHardExpert :: ScenarioAttrs -> Bool
 isHardExpert ScenarioAttrs { scenarioDifficulty } =
   scenarioDifficulty `elem` [Hard, Expert]
 
-getScenarioDeck :: ScenarioDeckKey -> GameT [Card]
+getScenarioDeck :: (Monad m, HasGame m) => ScenarioDeckKey -> m [Card]
 getScenarioDeck k = scenarioFieldMap ScenarioDecks (HashMap.findWithDefault [] k)

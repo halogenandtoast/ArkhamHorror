@@ -117,7 +117,7 @@ lostInTimeAndSpaceIntro = FlavorText
     \ of this awful place, you may never be the same again."
   ]
 
-investigatorDefeat :: ScenarioAttrs -> GameT [Message]
+investigatorDefeat :: (Monad m, HasGame m) => ScenarioAttrs -> m [Message]
 investigatorDefeat a = do
   leadInvestigatorId <- getLeadInvestigatorId
   defeatedInvestigatorIds <- selectList DefeatedInvestigator

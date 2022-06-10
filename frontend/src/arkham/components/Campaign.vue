@@ -5,8 +5,8 @@
   <div v-else-if="game.gameState === 'IsActive'" id="game" class="game">
     <Scenario
       v-if="game.scenario"
-
       :game="game"
+      :scenario="game.scenario"
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
       @update="update"

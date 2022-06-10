@@ -12,16 +12,16 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Trait
 
-bayouLocations :: GameT (HashSet LocationId)
+bayouLocations :: (Monad m, HasGame m) => m (HashSet LocationId)
 bayouLocations = select $ LocationWithTrait Bayou
 
-nonBayouLocations :: GameT (HashSet LocationId)
+nonBayouLocations :: (Monad m, HasGame m) => m (HashSet LocationId)
 nonBayouLocations = select $ LocationWithoutTrait Bayou
 
-getTheRougarou :: GameT (Maybe EnemyId)
+getTheRougarou :: (Monad m, HasGame m) => m (Maybe EnemyId)
 getTheRougarou = selectOne $ enemyIs Cards.theRougarou
 
-locationsWithLabels :: Trait -> [Card] -> GameT [(Text, Card)]
+locationsWithLabels :: MonadRandom m => Trait -> [Card] -> m [(Text, Card)]
 locationsWithLabels trait locationSet = do
   shuffled <- shuffleM (before <> after)
   pure $ zip labels (bayou : shuffled)

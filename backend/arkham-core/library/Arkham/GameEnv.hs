@@ -18,6 +18,9 @@ import Control.Monad.Random.Lazy hiding ( filterM, foldM, fromList )
 newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
   deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO)
 
+class HasGame m where
+  getGame :: m Game
+
 runGameEnvT :: MonadIO m => GameEnv -> GameT a -> m a
 runGameEnvT gameEnv = liftIO . flip runReaderT gameEnv . unGameT
 
@@ -77,10 +80,10 @@ instance MonadRandom GameT where
     gen <- atomicModifyIORef' ref split
     pure $ randoms gen
 
-getSkillTest :: GameT (Maybe SkillTest)
-getSkillTest = asks $ gameSkillTest . gameEnvGame
+getSkillTest :: (Monad m, HasGame m) => m (Maybe SkillTest)
+getSkillTest = gameSkillTest <$> getGame
 
-getHistory :: HistoryType -> InvestigatorId -> GameT History
+getHistory :: (Monad m, HasGame m) => HistoryType -> InvestigatorId -> m History
 getHistory TurnHistory iid =
   findWithDefault mempty iid . gameTurnHistory <$> getGame
 getHistory PhaseHistory iid =
@@ -90,13 +93,13 @@ getHistory RoundHistory iid = do
   phaseH <- getHistory PhaseHistory iid
   pure $ roundH <> phaseH
 
-getDistance :: LocationId -> LocationId -> GameT (Maybe Distance)
+getDistance :: (Monad m, HasGame m) => LocationId -> LocationId -> m (Maybe Distance)
 getDistance l1 l2 = do
   game <- getGame
   getDistance' game l1 l2
 
-getPhase :: GameT Phase
-getPhase = asks $ gamePhase . gameEnvGame
+getPhase :: (Monad m, HasGame m) => m Phase
+getPhase = gamePhase <$> getGame
 
-getWindowDepth :: GameT Int
-getWindowDepth = asks $ gameWindowDepth . gameEnvGame
+getWindowDepth :: (Monad m, HasGame m) => m Int
+getWindowDepth = gameWindowDepth <$> getGame

@@ -31,56 +31,56 @@ type family QueryElement a where
   QueryElement RemainingActMatcher = CardCode
   QueryElement CardMatcher = Card
 
-selectCount :: (HasCallStack, Query a) => a -> GameT Int
+selectCount :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m Int
 selectCount = fmap HashSet.size . select
 
-selectAny :: (HasCallStack, Query a) => a -> GameT Bool
+selectAny :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m Bool
 selectAny = fmap notNull . selectListMap id
 
-selectNone :: (HasCallStack, Query a) => a -> GameT Bool
+selectNone :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m Bool
 selectNone = fmap null . selectListMap id
 
 selectList
-  :: (HasCallStack, Query a) => a -> GameT [QueryElement a]
+  :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m [QueryElement a]
 selectList = selectListMap id
 
 selectRandom
-  :: (HasCallStack, Query a)
+  :: (HasCallStack, Query a, HasGame m, Monad m, MonadRandom m)
   => a
-  -> GameT (Maybe (QueryElement a))
+  -> m (Maybe (QueryElement a))
 selectRandom matcher = do
   results <- selectList matcher
   maybe (pure Nothing) (fmap Just . sample) (nonEmpty results)
 
 selectListMap
-  :: (HasCallStack, Query a)
+  :: (HasCallStack, Query a, HasGame m, Monad m)
   => (QueryElement a -> b)
   -> a
-  -> GameT [b]
+  -> m [b]
 selectListMap f = fmap (map f . setToList) . select
 
 selectJust
-  :: (HasCallStack, Show a, Query a)
+  :: (HasCallStack, Show a, Query a, HasGame m, Monad m)
   => a
-  -> GameT (QueryElement a)
+  -> m (QueryElement a)
 selectJust matcher = fromJustNote errorNote <$> selectOne matcher
   where errorNote = "Could not find any matches for: " <> show matcher
 
 selectAgg
-  :: (Monoid monoid, Query a, QueryElement a ~ EntityId attrs, Projection attrs)
+  :: (Monoid monoid, Query a, QueryElement a ~ EntityId attrs, Projection attrs, HasGame m, Monad m)
   => (typ -> monoid)
   -> Field attrs typ
   -> a
-  -> GameT monoid
+  -> m monoid
 selectAgg f p matcher = do
   results <- selectList matcher
   values <- traverse (fieldMap p f) results
   pure $ fold values
 
 selectOne
-  :: (HasCallStack, Query a)
+  :: (HasCallStack, Query a, HasGame m, Monad m)
   => a
-  -> GameT (Maybe (QueryElement a))
+  -> m (Maybe (QueryElement a))
 selectOne matcher = do
   result <- selectList matcher
   pure $ case result of
@@ -88,4 +88,4 @@ selectOne matcher = do
     x : _ -> Just x
 
 class (Hashable (QueryElement a), Eq (QueryElement a)) => Query a where
-  select :: HasCallStack => a -> GameT (HashSet (QueryElement a))
+  select :: (HasCallStack, HasGame m, Monad m) => a -> m (HashSet (QueryElement a))

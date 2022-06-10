@@ -89,12 +89,12 @@ standaloneTokens =
   , ElderSign
   ]
 
-findOwner :: CardCode -> GameT (Maybe InvestigatorId)
+findOwner :: (Monad m, HasGame m) => CardCode -> m (Maybe InvestigatorId)
 findOwner cardCode = do
   campaignStoryCards <- getCampaignStoryCards
   pure $ findKey (any ((== cardCode) . toCardCode)) campaignStoryCards
 
-getRemoveSacrificedMessages :: [CardCode] -> GameT [Message]
+getRemoveSacrificedMessages :: (Monad m, HasGame m) => [CardCode] -> m [Message]
 getRemoveSacrificedMessages sacrifices = do
   sacrificedOwnerPairs <- catMaybes <$> for
     sacrifices
@@ -107,7 +107,7 @@ getRemoveSacrificedMessages sacrifices = do
     | (sacrificed, owner) <- sacrificedOwnerPairs
     ]
 
-getRemoveNecronomicon :: GameT [Message]
+getRemoveNecronomicon :: (Monad m, HasGame m) => m [Message]
 getRemoveNecronomicon = do
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   mNecronomiconOwner <- findOwner "02140"

@@ -26,7 +26,7 @@ import Arkham.Target
 import Arkham.Trait
 import Control.Monad.Extra (orM)
 
-getSkillValue :: SkillType -> InvestigatorId -> GameT Int
+getSkillValue :: (Monad m, HasGame m) => SkillType -> InvestigatorId -> m Int
 getSkillValue st iid = case st of
   SkillWillpower -> field InvestigatorWillpower iid
   SkillIntellect -> field InvestigatorIntellect iid
@@ -35,7 +35,7 @@ getSkillValue st iid = case st of
   SkillWild -> error "no wild skill"
 
 skillValueFor
-  :: SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> GameT Int
+  :: (Monad m, HasGame m) => SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> m Int
 skillValueFor skill maction tempModifiers iid = do
   base <- baseSkillValueFor skill maction tempModifiers iid
   pure $ foldr applyModifier base tempModifiers
@@ -51,7 +51,7 @@ skillValueFor skill maction tempModifiers iid = do
   applyModifier _ n = n
 
 baseSkillValueFor
-  :: SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> GameT Int
+  :: (Monad m, HasGame m) => SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> m Int
 baseSkillValueFor skill _maction tempModifiers iid = do
   baseValue <- getSkillValue skill iid
   pure $ foldr applyModifier baseValue tempModifiers
@@ -59,7 +59,7 @@ baseSkillValueFor skill _maction tempModifiers iid = do
   applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
   applyModifier _ n = n
 
-damageValueFor :: Int -> InvestigatorAttrs -> GameT Int
+damageValueFor :: (Monad m, HasGame m) => Int -> InvestigatorAttrs -> m Int
 damageValueFor baseValue attrs = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
@@ -69,7 +69,7 @@ damageValueFor baseValue attrs = do
   applyModifier NoDamageDealt _ = 0
   applyModifier _ n = n
 
-getIsScenarioAbility :: GameT Bool
+getIsScenarioAbility :: (Monad m, HasGame m) => m Bool
 getIsScenarioAbility = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   case source of
@@ -84,7 +84,7 @@ getIsScenarioAbility = do
       _ -> pure False
     _ -> pure False
 
-getHandSize :: InvestigatorAttrs -> GameT Int
+getHandSize :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getHandSize attrs = do
   source <- fromMaybe (toSource attrs) <$> getSkillTestSource
   modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
@@ -93,7 +93,7 @@ getHandSize attrs = do
   applyModifier (HandSize m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getInHandCount :: InvestigatorAttrs -> GameT Int
+getInHandCount :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getInHandCount attrs = do
   let
     cards = investigatorHand attrs
@@ -105,7 +105,7 @@ getInHandCount attrs = do
       pure $ foldl' applyModifier 1 modifiers
   sum <$> traverse getCardHandSize cards
 
-getAbilitiesForTurn :: InvestigatorAttrs -> GameT Int
+getAbilitiesForTurn :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getAbilitiesForTurn attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier 3 modifiers
@@ -113,7 +113,7 @@ getAbilitiesForTurn attrs = do
   applyModifier (AdditionalActions m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getCanDiscoverClues :: InvestigatorAttrs -> GameT Bool
+getCanDiscoverClues :: (Monad m, HasGame m) => InvestigatorAttrs -> m Bool
 getCanDiscoverClues attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ not (any match modifiers)
@@ -121,7 +121,7 @@ getCanDiscoverClues attrs = do
   match CannotDiscoverClues{} = True
   match _ = False
 
-getCanSpendClues :: InvestigatorAttrs -> GameT Bool
+getCanSpendClues :: (Monad m, HasGame m) => InvestigatorAttrs -> m Bool
 getCanSpendClues attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ not (any match modifiers)
@@ -246,7 +246,7 @@ matchTarget attrs (FirstOneOf as) action =
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
-getActionCost :: InvestigatorAttrs -> Action -> GameT Int
+getActionCost :: (Monad m, HasGame m) => InvestigatorAttrs -> Action -> m Int
 getActionCost attrs a = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier 1 modifiers
@@ -255,7 +255,7 @@ getActionCost attrs a = do
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
-getActionCostModifier :: InvestigatorAttrs -> Maybe Action -> GameT Int
+getActionCostModifier :: (Monad m, HasGame m) => InvestigatorAttrs -> Maybe Action -> m Int
 getActionCostModifier _ Nothing = pure 0
 getActionCostModifier attrs (Just a) = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
@@ -265,12 +265,12 @@ getActionCostModifier attrs (Just a) = do
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
-getSpendableClueCount :: InvestigatorAttrs -> GameT Int
+getSpendableClueCount :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a
   pure $ if canSpendClues then investigatorClues a else 0
 
-cluesToDiscover :: InvestigatorAttrs -> Int -> GameT Int
+cluesToDiscover :: (Monad m, HasGame m) => InvestigatorAttrs -> Int -> m Int
 cluesToDiscover attrs startValue = do
   msource <- getSkillTestSource
   case msource of
@@ -284,7 +284,7 @@ cluesToDiscover attrs startValue = do
   applyModifier (DiscoveredClues m) n = n + m
   applyModifier _ n = n
 
-getCanAfford :: InvestigatorAttrs -> Action -> GameT Bool
+getCanAfford :: (Monad m, HasGame m) => InvestigatorAttrs -> Action -> m Bool
 getCanAfford a@InvestigatorAttrs {..} actionType = do
   actionCost <- getActionCost a actionType
   pure $ actionCost <= investigatorRemainingActions
@@ -300,7 +300,7 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     then go m (c : d, h, cs)
     else go (m - 1) (d, PlayerCard c : h, cs)
 
-canCommitToAnotherLocation :: InvestigatorAttrs -> GameT Bool
+canCommitToAnotherLocation :: (Monad m, HasGame m) => InvestigatorAttrs -> m Bool
 canCommitToAnotherLocation attrs = do
   commitedCards <-
     skillTestCommittedCards . fromJustNote "no skill test" <$> getSkillTest
@@ -314,7 +314,7 @@ canCommitToAnotherLocation attrs = do
     m > length n
   permit _ _ = False
 
-hasModifier :: InvestigatorAttrs -> ModifierType -> GameT Bool
+hasModifier :: (Monad m, HasGame m) => InvestigatorAttrs -> ModifierType -> m Bool
 hasModifier InvestigatorAttrs { investigatorId } m = elem m <$> getModifiers
   (InvestigatorSource investigatorId)
   (InvestigatorTarget investigatorId)
@@ -328,7 +328,7 @@ findCard cardId a =
     <> map PlayerCard (unDeck $ a ^. deckL)
   where findMatch = find ((== cardId) . toCardId)
 
-getJustLocation :: InvestigatorId -> GameT LocationId
+getJustLocation :: (Monad m, HasGame m) => InvestigatorId -> m LocationId
 getJustLocation =
   fieldMap InvestigatorLocation (fromJustNote "must be at a location")
 
@@ -336,10 +336,10 @@ enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
 enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId
 
 modifiedStatsOf
-  :: Source
+  :: (Monad m, HasGame m) => Source
   -> Maybe Action
   -> InvestigatorId
-  -> GameT Stats
+  -> m Stats
 modifiedStatsOf source maction i = do
   modifiers' <- getModifiers source (InvestigatorTarget i)
   remainingHealth <- field InvestigatorRemainingHealth i
@@ -357,7 +357,7 @@ modifiedStatsOf source maction i = do
     , sanity = remainingSanity
     }
 
-getAvailableSkillsFor :: SkillType -> InvestigatorId -> GameT [SkillType]
+getAvailableSkillsFor :: (Monad m, HasGame m) => SkillType -> InvestigatorId -> m [SkillType]
 getAvailableSkillsFor skillType iid = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   pure $ foldr applyModifier [skillType] modifiers
@@ -366,5 +366,5 @@ getAvailableSkillsFor skillType iid = do
     | toReplace == skillType = toUse : skills
   applyModifier _ skills = skills
 
-isEliminated :: InvestigatorId -> GameT Bool
+isEliminated :: (Monad m, HasGame m) => InvestigatorId -> m Bool
 isEliminated iid = orM $ sequence [field InvestigatorResigned, field InvestigatorDefeated] iid

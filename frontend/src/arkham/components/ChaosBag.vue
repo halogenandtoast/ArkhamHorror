@@ -53,12 +53,14 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { SkillTest } from '@/arkham/types/SkillTest';
 import { MessageType } from '@/arkham/types/Message';
 import { ChaosToken } from '@/arkham/types/ChaosToken';
+import { ChaosBag } from '@/arkham/types/ChaosBag';
 
 
 export default defineComponent({
   props: {
     game: { type: Object as () => Game, required: true },
     skillTest: { type: Object as () => SkillTest, required: false },
+    chaosBag: { type: Object as () => ChaosBag, required: true },
     investigatorId: { type: String, required: true }
   },
   setup(props) {
@@ -141,7 +143,7 @@ export default defineComponent({
     const debug = inject('debug')
     const debugChoose = inject('debugChoose')
 
-    const tokenFaces = computed(() => [...new Set(props.game.chaosBag.tokens.map(t => t.tokenFace))])
+    const tokenFaces = computed(() => [...new Set(props.chaosBag.tokens.map(t => t.tokenFace))])
 
     const tokenGroups = computed(() => {
       return Object.

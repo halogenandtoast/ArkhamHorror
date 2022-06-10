@@ -20,7 +20,6 @@ import Arkham.Difficulty
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Matcher
 import Arkham.Message
@@ -65,7 +64,7 @@ instance HasTokenValue EchoesOfThePast where
     ElderThing -> pure $ toTokenValue attrs ElderThing 2 4
     otherFace -> getTokenValue iid otherFace attrs
 
-gatherTheMidnightMasks :: GameT [EncounterCard]
+gatherTheMidnightMasks :: MonadRandom m => m [EncounterCard]
 gatherTheMidnightMasks = traverse
   genEncounterCard
   [ Cards.falseLead

@@ -9,25 +9,25 @@ import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Game ()
 
-getLeadInvestigatorId :: GameT InvestigatorId
+getLeadInvestigatorId :: (Monad m, HasGame m) => m InvestigatorId
 getLeadInvestigatorId = selectJust LeadInvestigator
 
-getActiveInvestigatorId :: GameT InvestigatorId
+getActiveInvestigatorId :: (Monad m, HasGame m) => m InvestigatorId
 getActiveInvestigatorId = selectJust TurnInvestigator
 
-getInvestigatorIds :: GameT [InvestigatorId]
+getInvestigatorIds :: (Monad m, HasGame m) => m [InvestigatorId]
 getInvestigatorIds = selectList Anyone
 
-selectAssetController :: AssetId -> GameT (Maybe InvestigatorId)
+selectAssetController :: (Monad m, HasGame m) => AssetId -> m (Maybe InvestigatorId)
 selectAssetController = selectOne . HasMatchingAsset . AssetWithId
 
-selectEventController :: EventId -> GameT (Maybe InvestigatorId)
+selectEventController :: (Monad m, HasGame m) => EventId -> m (Maybe InvestigatorId)
 selectEventController = selectOne . HasMatchingEvent . EventWithId
 
-selectSkillController :: SkillId -> GameT (Maybe InvestigatorId)
+selectSkillController :: (Monad m, HasGame m) => SkillId -> m (Maybe InvestigatorId)
 selectSkillController = selectOne . HasMatchingSkill . SkillWithId
 
-getPlayerCount :: GameT Int
+getPlayerCount :: (Monad m, HasGame m) => m Int
 getPlayerCount = selectCount Anyone
 
 -- | Get a set aside card
@@ -39,8 +39,8 @@ getPlayerCount = selectCount Anyone
 -- This logic is a bit too generous and we may want to specify
 -- on double sided cards which card code is on the other side.
 getSetAsideCard
-  :: CardDef
-  -> GameT Card
+  :: (Monad m, HasGame m) => CardDef
+  -> m Card
 getSetAsideCard def = do
   card <- selectJust . SetAsideCardMatch $ cardIs def
   pure $ if cardCodeExactEq (toCardCode card) (toCardCode def)
@@ -48,13 +48,13 @@ getSetAsideCard def = do
     else lookupCard (toCardCode def) (toCardId card)
 
 getSetAsideEncounterCard
-  :: CardDef
-  -> GameT EncounterCard
+  :: (Monad m, HasGame m) => CardDef
+  -> m EncounterCard
 getSetAsideEncounterCard =
   fmap (fromJustNote "must be encounter card" . preview _EncounterCard)
     . getSetAsideCard
 
 getSetAsideCardsMatching
-  :: CardMatcher
-  -> GameT [Card]
+  :: (Monad m, HasGame m) => CardMatcher
+  -> m [Card]
 getSetAsideCardsMatching = selectList . SetAsideCardMatch

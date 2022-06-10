@@ -60,9 +60,9 @@ matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
 getActionCostModifier
-  :: InvestigatorId
+  :: (Monad m, HasGame m) => InvestigatorId
   -> Maybe Action
-  -> GameT Int
+  -> m Int
 getActionCostModifier _ Nothing = pure 0
 getActionCostModifier iid (Just a) = do
   takenActions <- field InvestigatorActionsTaken iid

@@ -25,7 +25,7 @@ moveTheManInThePalidMaskToLobbyInsteadOfDiscarding = do
       _ -> False
     (const [EnemyMove theManInThePallidMask lobbyId])
 
-getTheManInThePallidMask :: GameT EnemyId
+getTheManInThePallidMask :: (Monad m, HasGame m) => m EnemyId
 getTheManInThePallidMask =
   fromJustNote "the man in the pallid mask must still be in play"
     <$> selectOne (enemyIs Cards.theManInThePallidMask)

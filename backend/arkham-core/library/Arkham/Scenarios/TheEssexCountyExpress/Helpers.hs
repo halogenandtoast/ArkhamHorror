@@ -8,7 +8,7 @@ import Arkham.Matcher
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 
-leftmostLocation :: LocationId -> GameT LocationId
+leftmostLocation :: (Monad m, HasGame m) => LocationId -> m LocationId
 leftmostLocation lid = do
   mlid' <- selectOne $ LocationInDirection LeftOf $ LocationWithId lid
   maybe (pure lid) leftmostLocation mlid'

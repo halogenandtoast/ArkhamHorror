@@ -2071,7 +2071,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Blanked msg' -> runMessage msg' a
   _ -> pure a
 
-getFacingDefeat :: InvestigatorAttrs -> GameT Bool
+getFacingDefeat :: (Monad m, HasGame m) => InvestigatorAttrs -> m Bool
 getFacingDefeat a@InvestigatorAttrs {..} = do
   modifiedHealth <- getModifiedHealth a
   modifiedSanity <- getModifiedSanity a
@@ -2081,7 +2081,7 @@ getFacingDefeat a@InvestigatorAttrs {..} = do
     || investigatorSanityDamage
     >= modifiedSanity
 
-getModifiedHealth :: InvestigatorAttrs -> GameT Int
+getModifiedHealth :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getModifiedHealth attrs@InvestigatorAttrs {..} = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier investigatorHealth modifiers
@@ -2089,7 +2089,7 @@ getModifiedHealth attrs@InvestigatorAttrs {..} = do
   applyModifier (HealthModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getModifiedSanity :: InvestigatorAttrs -> GameT Int
+getModifiedSanity :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getModifiedSanity attrs@InvestigatorAttrs {..} = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier investigatorSanity modifiers

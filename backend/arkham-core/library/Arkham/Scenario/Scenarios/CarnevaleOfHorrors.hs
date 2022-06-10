@@ -118,7 +118,7 @@ abbessSatisfied leadInvestigatorId investigatorIds =
           Assets.abbessAllegriaDiBiase
       ]
 
-additionalRewards :: ScenarioAttrs -> GameT [Message]
+additionalRewards :: (Monad m, HasGame m) => ScenarioAttrs -> m [Message]
 additionalRewards s = do
   leadInvestigatorId <- getLeadInvestigatorId
   investigatorIds <- getInvestigatorIds

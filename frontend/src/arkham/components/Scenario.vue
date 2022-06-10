@@ -39,7 +39,7 @@
           :key="scenarioDeck[0]"
           v-for="[,scenarioDeck] in scenarioDecks"
         />
-        <VictoryDisplay :game="game" @show="doShowCards" />
+        <VictoryDisplay :game="game" :victoryDisplay="scenario.contents.victoryDisplay" @show="doShowCards" />
         <div v-if="topOfEncounterDiscard" class="discard">
           <img
             :src="topOfEncounterDiscard"
@@ -84,6 +84,7 @@
         />
         <ChaosBag
           :game="game"
+          :chaosBag="scenario.contents.chaosBag"
           :skillTest="game.skillTest"
           :investigatorId="investigatorId"
           @choose="$emit('choose', $event)"
@@ -147,6 +148,7 @@
 import throttle from 'lodash/throttle'
 import { defineComponent, computed, onMounted, onUnmounted, onUpdated, nextTick, ref, ComputedRef, reactive } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import { Scenario } from '@/arkham/types/Scenario';
 import { Card } from '@/arkham/types/Card';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
@@ -239,6 +241,7 @@ export default defineComponent({
   },
   props: {
     game: { type: Object as () => Game, required: true },
+    scenario: { type: Object as () => Scenario, required: true },
     investigatorId: { type: String, required: true },
   },
   setup(props, { emit }) {
@@ -265,12 +268,7 @@ export default defineComponent({
     })
 
     const scenarioGuide = computed(() => {
-      const { scenario } = props.game;
-      if (!scenario) {
-        return '';
-      }
-
-      const { id, difficulty } = scenario.contents;
+      const { id, difficulty } = props.scenario.contents;
       const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
         ? 'b'
         : '';
@@ -279,21 +277,16 @@ export default defineComponent({
     })
 
     const scenarioDecks = computed(() => {
-      const { scenario } = props.game;
-      if (!scenario || !scenario.contents.decks) {
+      if (!props.scenario.contents.decks) {
         return null;
       }
 
-      return Object.entries(scenario.contents.decks);
+      return Object.entries(props.scenario.contents.decks);
 
     })
 
     const locationStyles = computed(() => {
-      const { scenario } = props.game;
-      if (!scenario) {
-        return null;
-      }
-      const { locationLayout } = scenario.contents;
+      const { locationLayout } = props.scenario.contents;
       if (locationLayout) {
         return {
           display: 'grid',
@@ -315,8 +308,8 @@ export default defineComponent({
 
     const players = computed(() => props.game.investigators)
     const playerOrder = computed(() => props.game.playerOrder)
-    const discards = computed<Card[]>(() => props.game.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
-    const outOfPlay = computed(() => (props.game.scenario?.contents?.setAsideCards || []))
+    const discards = computed<Card[]>(() => props.scenario.contents.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
+    const outOfPlay = computed(() => (props.scenario.contents?.setAsideCards || []))
     const removedFromPlay = computed(() => props.game.removedFromPlay)
     const noCards = computed<Card[]>(() => [])
 
@@ -339,8 +332,8 @@ export default defineComponent({
 
     const viewDiscardLabel = computed(() => `${discards.value.length} Cards`)
     const topOfEncounterDiscard = computed(() => {
-      if (props.game.discard[0]) {
-        const { cardCode } = props.game.discard[0];
+      if (props.scenario.contents.discard[0]) {
+        const { cardCode } = props.scenario.contents.discard[0];
 
         return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
       }
@@ -358,30 +351,15 @@ export default defineComponent({
     const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.contents.asSelfLocation !== null))
 
     const cardsUnderAgenda = computed(() => {
-      const { scenario } = props.game
-      if (!scenario) {
-        return []
-      }
-
-      return scenario.contents.cardsUnderAgendaDeck
+      return props.scenario.contents.cardsUnderAgendaDeck
     })
 
     const cardsUnderAct = computed(() => {
-      const { scenario } = props.game
-      if (!scenario) {
-        return []
-      }
-
-      return scenario.contents.cardsUnderActDeck
+      return props.scenario.contents.cardsUnderActDeck
     })
 
     const cardsNextToAct = computed(() => {
-      const { scenario } = props.game
-      if (!scenario) {
-        return []
-      }
-
-      return scenario.contents.cardsNextToActDeck
+      return props.scenario.contents.cardsNextToActDeck
     })
 
     const skills = computed(() => Object.values(props.game.skills))

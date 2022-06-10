@@ -21,7 +21,11 @@ instance MonadReader GameEnv GameT
 
 instance HasQueue GameEnv
 
-getPhase :: GameT Phase
-getWindowDepth :: GameT Int
-getSkillTest :: GameT (Maybe SkillTest)
-getDistance :: LocationId -> LocationId -> GameT (Maybe Distance)
+getPhase :: (Monad m, HasGame m) => m Phase
+getWindowDepth :: (Monad m, HasGame m) => m Int
+getSkillTest :: (Monad m, HasGame m) => m (Maybe SkillTest)
+getDistance :: (Monad m, HasGame m) => LocationId -> LocationId -> m (Maybe Distance)
+
+class HasGame (m :: Type -> Type)
+
+instance HasGame GameT

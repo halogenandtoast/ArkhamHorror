@@ -89,7 +89,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-investigatorDefeat :: GameT [Message]
+investigatorDefeat :: (Monad m, HasGame m) => m [Message]
 investigatorDefeat = do
   investigatorIds <- getInvestigatorIds
   defeatedInvestigatorIds <- selectList DefeatedInvestigator

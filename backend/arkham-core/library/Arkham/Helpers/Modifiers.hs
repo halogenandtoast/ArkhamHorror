@@ -10,8 +10,8 @@ import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Classes.HasModifiersFor
 
 getModifiers
-  :: Source
+  :: (Monad m, HasGame m) => Source
   -> Target
-  -> GameT [ModifierType]
+  -> m [ModifierType]
 getModifiers source target =
   map modifierType <$> getModifiersFor source target ()

@@ -10,16 +10,16 @@ import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Projection
 
 getIsUnused'
-  :: InvestigatorId
+  :: (Monad m, HasGame m) => InvestigatorId
   -> Ability
-  -> GameT Bool
+  -> m Bool
 getIsUnused' iid ability = do
   usedAbilities <- fieldMap InvestigatorUsedAbilities (map usedAbility) iid
   pure $ ability `notElem` usedAbilities
 
 getGroupIsUnused
-  :: Ability
-  -> GameT Bool
+  :: (Monad m, HasGame m) => Ability
+  -> m Bool
 getGroupIsUnused ability = do
   investigatorIds <- getInvestigatorIds
   usedAbilities <- concatMapM

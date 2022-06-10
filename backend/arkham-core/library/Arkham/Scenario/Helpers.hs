@@ -15,18 +15,18 @@ import Arkham.Game.Helpers as X
 import Arkham.Helpers
 
 getHasRecordOrStandalone
-  :: CampaignLogKey
+  :: (Monad m, HasGame m) => CampaignLogKey
   -> Bool
-  -> GameT Bool
+  -> m Bool
 getHasRecordOrStandalone key def = do
   standalone <- selectNone TheCampaign
   if standalone then pure def else getHasRecord key
 
-buildEncounterDeck :: [EncounterSet] -> GameT (Deck EncounterCard)
+buildEncounterDeck :: MonadRandom m => [EncounterSet] -> m (Deck EncounterCard)
 buildEncounterDeck = buildEncounterDeckWith id
 
 buildEncounterDeckExcluding
-  :: [CardDef] -> [EncounterSet] -> GameT (Deck EncounterCard)
+  :: MonadRandom m => [CardDef] -> [EncounterSet] -> m (Deck EncounterCard)
 buildEncounterDeckExcluding defs =
   buildEncounterDeckWith (filter ((`notElem` defs) . toCardDef))
 
@@ -37,9 +37,9 @@ excludeBSides :: [EncounterCard] -> [EncounterCard]
 excludeBSides = filter (not . isSuffixOf "b" . unCardCode . toCardCode)
 
 buildEncounterDeckWith
-  :: ([EncounterCard] -> [EncounterCard])
+  :: MonadRandom m => ([EncounterCard] -> [EncounterCard])
   -> [EncounterSet]
-  -> GameT (Deck EncounterCard)
+  -> m (Deck EncounterCard)
 buildEncounterDeckWith f encounterSets =
   Deck
     <$> (shuffleM

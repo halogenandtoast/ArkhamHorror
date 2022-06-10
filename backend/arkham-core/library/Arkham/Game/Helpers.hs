@@ -1192,18 +1192,6 @@ getModifiedCardCost iid c@(EncounterCard _) = do
     pure $ if c `cardMatch` cardMatcher then n + m else n
   applyModifier n _ = pure n
 
-depthGuard :: IORef Int
-depthGuard = unsafePerformIO $ newIORef 0
-{-# NOINLINE depthGuard #-}
-
-withDepthGuard :: Applicative m => Int -> a -> m a -> m a
-withDepthGuard n def body = unsafePerformIO $ do
-  m <- readIORef depthGuard
-  if m > n
-     then pure (pure def)
-     else do
-       atomicWriteIORef depthGuard (m + 1) *> pure body <* atomicWriteIORef depthGuard m
-
 cardInFastWindows
   :: (Monad m, HasGame m) => InvestigatorId
   -> Source
@@ -1213,32 +1201,6 @@ cardInFastWindows
   -> m Bool
 cardInFastWindows iid source _ windows' matcher =
   anyM (\window -> windowMatches iid source window matcher) windows'
-
--- withDepthLock :: Int -> a -> GameT a -> GameT a
--- withDepthLock d defaultValue action = do
---   depth <- getDepth
---   if depth >= d
---     then pure defaultValue
---     else do
---       delveDeeper
---       result <- action
---       resurface
---       pure result
---
--- getDepth :: GameT Int
--- getDepth = readIORef =<< view depthL
---
--- delveDeeper :: GameT ()
--- delveDeeper = do
---   ref <- view depthL
---   current <- readIORef ref
---   writeIORef ref (current + 1)
-
--- resurface :: GameT ()
--- resurface = do
---   ref <- view depthL
---   current <- readIORef ref
---   writeIORef ref (max 0 (current - 1))
 
 windowMatches
   :: (Monad m, HasGame m) => InvestigatorId -> Source -> Window -> Matcher.WindowMatcher -> m Bool
@@ -1392,7 +1354,7 @@ windowMatches iid source window' = \case
   Matcher.PlayerHasPlayableCard cardMatcher -> do
     -- TODO: do we need to grab the card source?
     -- cards <- filter (/= c) <$> getList cardMatcher
-    cards <- withDepthGuard 3 [] $ selectList cardMatcher
+    cards <- selectList cardMatcher
     anyM (getIsPlayable iid source UnpaidCost [window']) cards
   Matcher.PhaseBegins whenMatcher phaseMatcher -> case window' of
     Window t Window.AnyPhaseBegins | whenMatcher == t ->

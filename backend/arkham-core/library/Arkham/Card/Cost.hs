@@ -3,9 +3,7 @@ module Arkham.Card.Cost
   , toPrintedCost
   ) where
 
-import ClassyPrelude
-
-import Arkham.Json
+import Arkham.Prelude
 
 toPrintedCost :: CardCost -> Int
 toPrintedCost (StaticCost n) = n

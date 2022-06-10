@@ -5,7 +5,6 @@ module Arkham.Game where
 
 import Arkham.Prelude
 
-import Data.Semigroup (Min(..), Max(..), Sum(..))
 import Arkham.Ability
 import Arkham.Act
 import Arkham.Act.Attrs ( ActAttrs (..), Field (..) )
@@ -16,17 +15,19 @@ import Arkham.Agenda
 import Arkham.Agenda.Attrs ( AgendaAttrs (..), Field (..) )
 import Arkham.Asset
 import Arkham.Asset.Attrs ( AssetAttrs (..), Field (..) )
-import Arkham.Asset.Uses ( UseType, useType, useCount )
+import Arkham.Asset.Uses ( UseType, useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
 import Arkham.Campaign.Attrs
 import Arkham.CampaignId
 import Arkham.Card
+import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
 import Arkham.Card.Id
 import Arkham.Card.PlayerCard
 import Arkham.ChaosBag
-import Arkham.Classes hiding ( getDistance )
+import Arkham.Classes
+import Arkham.Classes.HasDistance
 import Arkham.ClassSymbol
 import Arkham.Cost
 import Arkham.Deck qualified as Deck
@@ -43,7 +44,7 @@ import Arkham.Enemy.Attrs ( EnemyAttrs (..), Field (..) )
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Attrs
-import Arkham.Game.Helpers hiding (getSpendableClueCount)
+import Arkham.Game.Helpers hiding ( getSpendableClueCount )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Investigator
@@ -58,25 +59,32 @@ import Arkham.Location
 import Arkham.Location.Attrs ( Field (..), LocationAttrs (..) )
 import Arkham.LocationSymbol
 import Arkham.Matcher hiding
-  ( AssetDefeated
+  ( AssetCard
+  , AssetDefeated
   , AssetExhausted
   , Discarded
   , DuringTurn
   , EncounterCardSource
   , EnemyAttacks
   , EnemyDefeated
+  , EventCard
   , FastPlayerWindow
   , InvestigatorDefeated
   , InvestigatorEliminated
   , PlayCard
   , RevealLocation
-  , AssetCard
-  , EventCard
   )
 import Arkham.Matcher qualified as M
-import Arkham.Message hiding ( AssetDamage, EnemyDamage )
+import Arkham.Message hiding
+  ( AssetDamage
+  , EnemyDamage
+  , EnemyFight
+  , InvestigatorDamage
+  , InvestigatorDefeated
+  , InvestigatorResigned
+  )
 import Arkham.Message qualified as Msg
-import Arkham.Modifier hiding ( EnemyEvade )
+import Arkham.Modifier hiding ( EnemyEvade, EnemyFight )
 import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
@@ -87,7 +95,7 @@ import Arkham.Scenario.Attrs
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Skill
-import Arkham.Skill.Attrs ( Field(..), SkillAttrs (..) )
+import Arkham.Skill.Attrs ( Field (..), SkillAttrs (..) )
 import Arkham.SkillTest.Runner
 import Arkham.SkillType
 import Arkham.Slot
@@ -97,7 +105,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery
-import Arkham.Treachery.Attrs ( Field(..), TreacheryAttrs (..) )
+import Arkham.Treachery.Attrs ( Field (..), TreacheryAttrs (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
@@ -114,6 +122,7 @@ import Data.HashMap.Strict ( size )
 import Data.HashMap.Strict qualified as HashMap
 import Data.List.Extra ( groupOn )
 import Data.Monoid ( First (..) )
+import Data.Semigroup ( Max (..), Min (..), Sum (..) )
 import Data.Sequence qualified as Seq
 import Data.These
 import Data.These.Lens
@@ -1266,6 +1275,38 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: EnemyMatcher -> Enemy -> GameT Bool
 enemyMatcherFilter = \case
+  FarthestEnemyFrom iid enemyMatcher -> \enemy -> do
+    eids <- selectList enemyMatcher
+    if toId enemy `member` eids
+      then do
+        milid <- field InvestigatorLocation iid
+        case (milid, enemyLocation (toAttrs enemy)) of
+          (Just ilid, Just elid) -> do
+            let distance = getDistance ilid elid
+            maxDistance <-
+              getMax
+              . fold
+              . map Max
+              <$> mapMaybeM (fieldMap EnemyLocation (fmap (getDistance ilid))) eids
+            pure $ distance == maxDistance
+          _ -> pure False
+      else pure False
+  NearestEnemyTo iid enemyMatcher -> \enemy -> do
+    eids <- selectList enemyMatcher
+    if toId enemy `member` eids
+      then do
+        milid <- field InvestigatorLocation iid
+        case (milid, enemyLocation (toAttrs enemy)) of
+          (Just ilid, Just elid) -> do
+            let distance = getDistance ilid elid
+            minDistance <-
+              getMin
+              . fold
+              . map Min
+              <$> mapMaybeM (fieldMap EnemyLocation (fmap (getDistance ilid))) eids
+            pure $ distance == minDistance
+          _ -> pure False
+      else pure False
   NotEnemy m -> fmap not . enemyMatcherFilter m
   EnemyWithTitle title -> pure . (== title) . nameTitle . toName . toAttrs
   EnemyWithFullTitle title subtitle ->
@@ -1294,7 +1335,8 @@ enemyMatcherFilter = \case
   EnemyIsEngagedWith investigatorMatcher -> \enemy -> do
     iids <-
       setFromList . map toId <$> getInvestigatorsMatching investigatorMatcher
-    pure . notNull . intersection iids . enemyEngagedInvestigators $ toAttrs enemy
+    pure . notNull . intersection iids . enemyEngagedInvestigators $ toAttrs
+      enemy
   EnemyEngagedWithYou -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     pure . member iid . enemyEngagedInvestigators $ toAttrs enemy
@@ -1302,11 +1344,14 @@ enemyMatcherFilter = \case
     iid <- view activeInvestigatorIdL <$> getGame
     pure . notMember iid . enemyEngagedInvestigators $ toAttrs enemy
   EnemyWithMostRemainingHealth enemyMatcher -> \enemy -> do
-    matches <- getEnemiesMatching enemyMatcher
-    elem enemy . maxes <$> traverse (traverseToSnd (field EnemyRemainingHealth . toId)) matches
+    matches' <- getEnemiesMatching enemyMatcher
+    elem enemy
+      . maxes
+      <$> traverse (traverseToSnd (field EnemyRemainingHealth . toId)) matches'
   EnemyWithoutModifier modifier -> \enemy ->
     notElem modifier <$> getModifiers (toSource enemy) (toTarget enemy)
-  UnengagedEnemy -> \enemy -> selectNone $ InvestigatorEngagedWith $ EnemyWithId $ toId enemy
+  UnengagedEnemy ->
+    \enemy -> selectNone $ InvestigatorEngagedWith $ EnemyWithId $ toId enemy
   UniqueEnemy -> pure . cdUnique . toCardDef . toAttrs
   MovingEnemy ->
     \enemy -> (== Just (toId enemy)) . view enemyMovingL <$> getGame
@@ -1361,14 +1406,14 @@ enemyMatcherFilter = \case
       (getAbilities enemy)
   NearestEnemy matcher' -> \enemy -> do
     matchingEnemyIds <- map toId <$> getEnemiesMatching matcher'
-    matches <- guardYourLocation $ \start -> do
+    matches' <- guardYourLocation $ \start -> do
       getShortestPath
         start
         (fieldP LocationEnemies (any (`elem` matchingEnemyIds)))
         mempty
-    if null matches
+    if null matches'
       then pure $ toId enemy `elem` matchingEnemyIds
-      else pure $ maybe False (`elem` matches) (enemyLocation $ toAttrs enemy)
+      else pure $ maybe False (`elem` matches') (enemyLocation $ toAttrs enemy)
 
 getAct :: ActId -> GameT Act
 getAct aid = fromJustNote missingAct . preview (entitiesL . actsL . ix aid) <$> getGame
@@ -1402,39 +1447,128 @@ getEffect eid =
 instance Projection LocationAttrs where
   field f lid = do
     l <- getLocation lid
+    let attrs@LocationAttrs {..} = toAttrs l
     case f of
-      LocationClues -> pure . locationClues $ toAttrs l
+      LocationClues -> pure locationClues
+      LocationResources -> pure locationResources
+      LocationHorror -> pure locationHorror
+      LocationDoom -> pure locationDoom
+      LocationShroud -> pure locationShroud
+      LocationTraits -> pure . cdCardTraits $ toCardDef attrs
+      LocationKeywords -> pure . cdKeywords $ toCardDef attrs
+      LocationUnrevealedName -> pure $ toName (Unrevealed l)
+      LocationName -> pure $ toName l
+      LocationConnectedMatchers -> pure locationConnectedMatchers
+      LocationRevealedConnectedMatchers -> pure locationRevealedConnectedMatchers
+      LocationRevealed -> pure locationRevealed
+      LocationConnectsTo -> pure locationConnectsTo
+      LocationCardsUnderneath -> pure locationCardsUnderneath
+      LocationConnectedLocations -> select (ConnectedFrom $ LocationWithId lid)
+      LocationInvestigators -> pure locationInvestigators
+      LocationEnemies -> pure locationEnemies
+      LocationAssets -> pure locationAssets
+      LocationTreacheries -> pure locationTreacheries
+      -- virtual
+      LocationCardDef -> pure $ toCardDef attrs
+      LocationCard -> pure $ lookupCard locationCardCode (unLocationId lid)
+      LocationAbilities -> pure $ getAbilities l
 
 instance Projection AssetAttrs where
   field f aid = do
     a <- getAsset aid
+    let attrs@AssetAttrs {..} = toAttrs a
     case f of
-      AssetDamage -> pure . assetHealthDamage $ toAttrs a
-      AssetHorror -> pure . assetSanityDamage $ toAttrs a
-      AssetExhausted -> pure . assetExhausted $ toAttrs a
+      AssetName -> pure $ toName attrs
+      AssetCost -> pure . maybe 0 toPrintedCost . cdCost $ toCardDef attrs
+      AssetClues -> pure assetClues
+      AssetHorror -> pure assetHorror
+      AssetDamage -> pure assetHealthDamage
+      AssetRemainingHealth -> pure $ case assetHealth of
+        Nothing -> Nothing
+        Just n -> Just $ max 0 (n - assetHealthDamage)
+      AssetRemainingSanity -> pure $ case assetSanity of
+        Nothing -> Nothing
+        Just n -> Just $ max 0 (n - assetSanityDamage)
+      AssetDoom -> pure assetDoom
+      AssetExhausted -> pure assetExhausted
+      AssetUses -> pure assetUses
+      AssetStartingUses -> pure . cdUses $ toCardDef attrs
+      AssetController -> pure assetController
+      AssetLocation -> pure assetLocation
+      AssetCardCode -> pure assetCardCode
+      AssetSlots -> pure assetSlots
+      -- virtual
+      AssetClasses -> pure . cdClassSymbols $ toCardDef attrs
+      AssetTraits -> pure . cdCardTraits $ toCardDef attrs
+      AssetCardDef -> pure $ toCardDef attrs
+      AssetCard -> pure $ lookupCard assetCardCode (unAssetId aid)
+      AssetAbilities -> pure $ getAbilities a
 
 instance Projection ActAttrs where
   field f aid = do
-    l <- getAct aid
+    a <- getAct aid
+    let ActAttrs {..} = toAttrs a
     case f of
-      ActSequence -> pure . actSequence $ toAttrs l
+      ActSequence -> pure actSequence
+      ActClues -> pure actClues
+      ActAbilities -> pure $ getAbilities a
 
 instance Projection EnemyAttrs where
   field f eid = do
     e <- getEnemy eid
+    let attrs@EnemyAttrs {..} = toAttrs e
     case f of
-      EnemyDoom -> pure . enemyDoom $ toAttrs e
-      EnemyEvade -> pure . enemyEvade $ toAttrs e
+      EnemyEngagedInvestigators -> pure enemyEngagedInvestigators
+      EnemyDoom -> pure enemyDoom
+      EnemyEvade -> pure enemyEvade
+      EnemyFight -> pure enemyFight
+      EnemyClues -> pure enemyClues
+      EnemyDamage -> pure enemyDamage
+      EnemyRemainingHealth -> do
+        totalHealth <- getPlayerCountValue enemyHealth
+        pure (totalHealth - enemyDamage)
+      EnemyHealthDamage -> pure enemyHealthDamage
+      EnemySanityDamage -> pure enemySanityDamage
+      EnemyTraits -> pure . cdCardTraits $ toCardDef attrs
+      EnemyKeywords -> pure . cdKeywords $ toCardDef attrs
+      EnemyAbilities -> pure $ getAbilities e
+      EnemyCard -> pure $ lookupCard enemyCardCode (unEnemyId eid)
+      EnemyCardCode -> pure enemyCardCode
+      EnemyLocation -> pure enemyLocation
 
 instance Projection InvestigatorAttrs where
   field f iid = do
     i <- getInvestigator iid
+    let InvestigatorAttrs {..} = toAttrs i
     case f of
-      InvestigatorRemainingActions -> pure . investigatorRemainingActions $ toAttrs i
-      InvestigatorLocation -> pure . Just . investigatorLocation $ toAttrs i
-      InvestigatorHorror -> pure . investigatorSanityDamage $ toAttrs i
-      InvestigatorResources -> pure . investigatorResources $ toAttrs i
-      InvestigatorHand -> pure . investigatorHand $ toAttrs i
+      InvestigatorName -> pure investigatorName
+      InvestigatorRemainingActions -> pure investigatorRemainingActions
+      InvestigatorTomeActions -> pure investigatorTomeActions
+      InvestigatorRemainingSanity -> pure (investigatorSanity - investigatorSanityDamage)
+      InvestigatorRemainingHealth -> pure (investigatorHealth - investigatorHealthDamage)
+      InvestigatorLocation -> pure $ Just investigatorLocation
+      InvestigatorWillpower -> pure investigatorWillpower
+      InvestigatorIntellect -> pure investigatorIntellect
+      InvestigatorCombat -> pure investigatorCombat
+      InvestigatorAgility -> pure investigatorAgility
+      InvestigatorHorror -> pure investigatorSanityDamage
+      InvestigatorDamage -> pure investigatorHealthDamage
+      InvestigatorResources -> pure investigatorResources
+      InvestigatorDoom -> pure investigatorDoom
+      InvestigatorClues -> pure investigatorClues
+      InvestigatorHand -> pure investigatorHand
+      InvestigatorCardsUnderneath -> pure investigatorCardsUnderneath
+      InvestigatorDeck -> pure investigatorDeck
+      InvestigatorDiscard -> pure investigatorDiscard
+      InvestigatorClass -> pure investigatorClass
+      InvestigatorActionsTaken -> pure investigatorActionsTaken
+      InvestigatorSlots -> pure investigatorSlots
+      InvestigatorUsedAbilities -> pure investigatorUsedAbilities
+      InvestigatorTraits -> pure investigatorTraits
+      InvestigatorAbilities -> pure $ getAbilities i
+      InvestigatorCommittedCards -> pure []
+      InvestigatorDefeated -> pure investigatorDefeated
+      InvestigatorResigned -> pure investigatorResigned
       -- NOTE: For Abilities do not for get inhand, indiscard, insearch
 
 instance Query AssetMatcher where
@@ -1476,7 +1610,7 @@ instance Query ExtendedCardMatcher where
     underScenarioReferenceCards <- scenarioField ScenarioCardsUnderScenarioReference
     underneathCards <- selectAgg id InvestigatorCardsUnderneath Anyone
     setFromList <$> filterM
-      (`matches` matcher)
+      (`matches'` matcher)
       (handCards
       <> deckCards
       <> underneathCards
@@ -1486,7 +1620,7 @@ instance Query ExtendedCardMatcher where
       <> victoryDisplayCards
       )
    where
-    matches c = \case
+    matches' c = \case
       SetAsideCardMatch matcher' -> do
         cards <- scenarioField ScenarioSetAsideCards
         pure $ c `elem` filter (`cardMatch` matcher') cards
@@ -1529,8 +1663,8 @@ instance Query ExtendedCardMatcher where
         iids <- selectList who
         cards <- concat <$> traverse (field InvestigatorCardsUnderneath) iids
         pure $ c `elem` cards
-      ExtendedCardWithOneOf ms -> anyM (matches c) ms
-      ExtendedCardMatches ms -> allM (matches c) ms
+      ExtendedCardWithOneOf ms -> anyM (matches' c) ms
+      ExtendedCardMatches ms -> allM (matches' c) ms
 
 setScenario :: Scenario -> GameMode -> GameMode
 setScenario c (This a) = These a c
@@ -1546,8 +1680,8 @@ instance HasTokenValue () where
 
 instance HasTokenValue InvestigatorId where
   getTokenValue iid token iid' = do
-    investigator <- getInvestigator iid'
-    getTokenValue iid token investigator
+    investigator' <- getInvestigator iid'
+    getTokenValue iid token investigator'
 
 instance HasModifiersFor () where
   getModifiersFor source target _ = do
@@ -1678,11 +1812,11 @@ markDistances initialLocation target extraConnectionsMap = do
     locationIds <- filterM target (keys map')
     pure $ foldr
       (\locationId distanceMap ->
-        insertWith (<>) (getDistance map' locationId) [locationId] distanceMap
+        insertWith (<>) (getDistance'' map' locationId) [locationId] distanceMap
       )
       mempty
       locationIds
-  getDistance map' lid = length $ unwindPath map' [lid]
+  getDistance'' map' lid = length $ unwindPath map' [lid]
   unwindPath parentsMap currentPath =
     case lookup (fromJustNote "failed bfs" $ headMay currentPath) parentsMap of
       Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
@@ -1783,6 +1917,7 @@ instance Projection ScenarioAttrs where
       ScenarioSetAsideCards -> pure scenarioSetAsideCards
       ScenarioName -> pure scenarioName
       ScenarioStoryCards -> pure scenarioStoryCards
+      ScenarioCardsUnderScenarioReference -> pure scenarioCardsUnderScenarioReference
 
 instance Projection SkillAttrs where
   field fld sid = do
@@ -1812,11 +1947,11 @@ instance Projection TreacheryAttrs where
 instance {-# OVERLAPPABLE #-} MonadReader Game m => HasGame m where
   getGame = ask
 
-gameGetDistance :: LocationId -> LocationId -> GameT (Maybe Distance)
-gameGetDistance start fin = do
-  let !state' = LPState (pure start) (singleton start) mempty
-  result <- evalStateT (markDistances start (pure . (== fin)) mempty) state'
-  pure $ fmap Distance . headMay . drop 1 . map fst . sortOn fst . mapToList $ result
+instance HasDistance Game where
+  getDistance' _ start fin = do
+    let !state' = LPState (pure start) (singleton start) mempty
+    result <- evalStateT (markDistances start (pure . (== fin)) mempty) state'
+    pure $ fmap Distance . headMay . drop 1 . map fst . sortOn fst . mapToList $ result
 
 runMessages
   :: ( MonadIO m

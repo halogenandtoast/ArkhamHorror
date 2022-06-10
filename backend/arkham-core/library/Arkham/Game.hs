@@ -1931,9 +1931,6 @@ instance Projection TreacheryAttrs where
       TreacheryCardDef -> pure cdef
       TreacheryCard -> pure $ lookupCard treacheryCardCode (unTreacheryId tid)
 
-instance {-# OVERLAPPABLE #-} MonadReader Game m => HasGame m where
-  getGame = ask
-
 instance HasDistance Game where
   getDistance' _ start fin = do
     let !state' = LPState (pure start) (singleton start) mempty
@@ -3302,3 +3299,6 @@ instance RunMessage Game where
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= runGameMessage msg
       >>= (pure . set enemyMovingL Nothing)
+
+delve :: Game -> Game
+delve g = g { gameWindowDepth = gameWindowDepth g + 1 }

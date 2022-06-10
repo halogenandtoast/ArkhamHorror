@@ -31,9 +31,6 @@ data Game
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
 
-class HasGame m where
-  getGame :: m Game
-
 class HasStdGen a where
   genL :: Lens' a (IORef StdGen)
 

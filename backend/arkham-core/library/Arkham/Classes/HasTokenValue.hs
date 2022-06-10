@@ -1,8 +1,10 @@
 module Arkham.Classes.HasTokenValue where
 
+import Arkham.Prelude
+
 import Arkham.InvestigatorId
 import Arkham.Token
 import {-# SOURCE #-} Arkham.GameEnv
 
 class HasTokenValue a where
-  getTokenValue :: InvestigatorId -> TokenFace -> a -> GameT TokenValue
+  getTokenValue :: (Monad m, HasGame m) => InvestigatorId -> TokenFace -> a -> m TokenValue

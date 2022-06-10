@@ -14,9 +14,9 @@ import Arkham.Name
 broodTitle :: Text
 broodTitle = nameTitle . toName $ Cards.broodOfYogSothoth
 
-getBroodOfYogSothoth :: GameT [EnemyId]
+getBroodOfYogSothoth :: (Monad m, HasGame m) => m [EnemyId]
 getBroodOfYogSothoth = selectList $ EnemyWithTitle broodTitle
 
-getSetAsideBroodOfYogSothoth :: GameT [Card]
+getSetAsideBroodOfYogSothoth :: (Monad m, HasGame m) => m [Card]
 getSetAsideBroodOfYogSothoth =
   getSetAsideCardsMatching $ CardWithTitle broodTitle

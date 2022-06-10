@@ -13,7 +13,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 
-getConnectedMatcher :: LocationId -> GameT LocationMatcher
+getConnectedMatcher :: (Monad m, HasGame m) => LocationId -> m LocationMatcher
 getConnectedMatcher l = do
   isRevealed <- field LocationRevealed l
   directionalMatchers <- fieldMap

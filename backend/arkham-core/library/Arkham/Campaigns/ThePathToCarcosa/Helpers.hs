@@ -6,11 +6,11 @@ import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.CampaignLogKey
 
-getConviction :: GameT Int
+getConviction :: (Monad m, HasGame m) => m Int
 getConviction = getRecordCount Conviction
 
-getDoubt :: GameT Int
+getDoubt :: (Monad m, HasGame m) => m Int
 getDoubt = getRecordCount Doubt
 
-getMoreConvictionThanDoubt :: GameT Bool
+getMoreConvictionThanDoubt :: (Monad m, HasGame m) => m Bool
 getMoreConvictionThanDoubt = liftA2 (>) getConviction getDoubt

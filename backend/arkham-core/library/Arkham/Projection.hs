@@ -8,12 +8,12 @@ import {-# SOURCE #-} Arkham.GameEnv
 data family Field a :: Type -> Type
 
 class Projection a where
-  field :: Field a typ -> EntityId a -> GameT typ
+  field :: (Monad m, HasGame m) => Field a typ -> EntityId a -> m typ
 
-fieldP :: Projection a => Field a typ -> (typ -> Bool) -> EntityId a -> GameT Bool
+fieldP :: (Monad m, HasGame m, Projection a) => Field a typ -> (typ -> Bool) -> EntityId a -> m Bool
 fieldP = fieldMap
 
-fieldMap :: Projection a => (Field a typ) -> (typ -> b) -> EntityId a -> GameT b
+fieldMap :: (Monad m, HasGame m, Projection a) => (Field a typ) -> (typ -> b) -> EntityId a -> m b
 fieldMap f g eid = g <$> field f eid
 
 -- fieldMap :: (Functor f, Projection a) => Field a (f typ) -> (typ -> b) -> EntityId a -> GameT (f b)

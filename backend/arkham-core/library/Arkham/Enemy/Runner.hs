@@ -70,7 +70,7 @@ filterOutEnemyMessages eid msg = case msg of
   Discarded (EnemyTarget eid') _ | eid == eid' -> Nothing
   m -> Just m
 
-getInvestigatorsAtSameLocation :: EnemyAttrs -> GameT [InvestigatorId]
+getInvestigatorsAtSameLocation :: (Monad m, HasGame m) => EnemyAttrs -> m [InvestigatorId]
 getInvestigatorsAtSameLocation attrs = case enemyLocation attrs of
   Nothing -> pure []
   Just loc -> selectList $ InvestigatorAt $ LocationWithId loc

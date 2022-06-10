@@ -18,10 +18,10 @@ import Arkham.Source
 import Arkham.Target
 import Data.Monoid ( Sum (..) )
 
-getXp :: GameT [(InvestigatorId, Int)]
+getXp :: (Monad m, HasGame m) => m [(InvestigatorId, Int)]
 getXp = getXpWithBonus 0
 
-getXpWithBonus :: Int -> GameT [(InvestigatorId, Int)]
+getXpWithBonus :: (Monad m, HasGame m) => Int -> m [(InvestigatorId, Int)]
 getXpWithBonus bonus = do
   investigatorIds <- getInvestigatorIds
   for

@@ -12,28 +12,29 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import { Card } from '@/arkham/types/Card';
 
 export default defineComponent({
   props: {
     game: { type: Object as () => Game, required: true },
+    victoryDisplay: { type: Array as () => Card[], required: true }
   },
   setup(props, context) {
     const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-    const victoryDisplay = computed(() => props.game.victoryDisplay)
     const topOfVictoryDisplay = computed(() => {
-      if (victoryDisplay.value[0]) {
-        const { cardCode } = victoryDisplay.value[0].contents;
+      if (props.victoryDisplay[0]) {
+        const { cardCode } = props.victoryDisplay[0].contents;
         return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
       }
 
       return null;
     })
 
-    const viewVictoryDisplayLabel = computed(() => `${victoryDisplay.value.length} Cards`)
+    const viewVictoryDisplayLabel = computed(() => `${props.victoryDisplay.length} Cards`)
 
-    const showVictoryDisplay = (e: Event) => context.emit('show', e, victoryDisplay, 'Victory Display', true)
+    const showVictoryDisplay = (e: Event) => context.emit('show', e, props.victoryDisplay, 'Victory Display', true)
 
-    return { victoryDisplay, topOfVictoryDisplay, viewVictoryDisplayLabel, showVictoryDisplay }
+    return { topOfVictoryDisplay, viewVictoryDisplayLabel, showVictoryDisplay }
   }
 })
 </script>

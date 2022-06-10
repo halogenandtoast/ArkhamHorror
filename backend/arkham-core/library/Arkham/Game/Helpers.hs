@@ -75,7 +75,7 @@ import Arkham.Window qualified as Window
 import Data.HashSet qualified as HashSet
 import System.IO.Unsafe
 
-gatherEncounterSet :: EncounterSet -> GameT [EncounterCard]
+gatherEncounterSet :: MonadRandom m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet encounterSet = concat <$> for
   defs
   \def -> traverse genEncounterCard
@@ -117,7 +117,7 @@ replaceToken token = withQueue $ \queue ->
 withBaseAbilities :: HasAbilities a => a -> [Ability] -> [Ability]
 withBaseAbilities a f = getAbilities a <> f
 
-getPlayableCards :: InvestigatorAttrs -> CostStatus -> [Window] -> GameT [Card]
+getPlayableCards :: (Monad m, HasGame m) => InvestigatorAttrs -> CostStatus -> [Window] -> m [Card]
 getPlayableCards a@InvestigatorAttrs {..} costStatus windows' = do
   asIfInHandCards <- getAsIfInHandCards a
   playableDiscards <- getPlayableDiscards a costStatus windows'
@@ -127,7 +127,7 @@ getPlayableCards a@InvestigatorAttrs {..} costStatus windows' = do
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards
-  :: InvestigatorAttrs -> CostStatus -> [Window] -> GameT [Card]
+  :: (Monad m, HasGame m) => InvestigatorAttrs -> CostStatus -> [Window] -> m [Card]
 getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   filterM
@@ -148,7 +148,7 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
          )
   allowsPlayFromDiscard _ _ _ = False
 
-getAsIfInHandCards :: InvestigatorAttrs -> GameT [Card]
+getAsIfInHandCards :: (Monad m, HasGame m) => InvestigatorAttrs -> m [Card]
 getAsIfInHandCards attrs = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   let
@@ -184,7 +184,7 @@ getAsIfInHandCards attrs = do
     <> cardsAddedViaModifiers
 
 getCanPerformAbility
-  :: InvestigatorId -> Source -> Window -> Ability -> GameT Bool
+  :: (Monad m, HasGame m) => InvestigatorId -> Source -> Window -> Ability -> m Bool
 getCanPerformAbility !iid !source !window !ability = do
 -- can perform an ability means you can afford it
 -- it is in the right window
@@ -204,7 +204,7 @@ getCanPerformAbility !iid !source !window !ability = do
       (abilityCriteria ability)
     ]
 
-meetsActionRestrictions :: InvestigatorId -> Window -> Ability -> GameT Bool
+meetsActionRestrictions :: (Monad m, HasGame m) => InvestigatorId -> Window -> Ability -> m Bool
 meetsActionRestrictions _ _ Ability {..} = go abilityType
  where
   go = \case
@@ -242,13 +242,13 @@ meetsActionRestrictions _ _ Ability {..} = go abilityType
     ForcedAbilityWithCost _ _ -> pure True
     AbilityEffect _ -> pure True
 
-getCanAffordAbility :: InvestigatorId -> Ability -> Window -> GameT Bool
+getCanAffordAbility :: (Monad m, HasGame m) => InvestigatorId -> Ability -> Window -> m Bool
 getCanAffordAbility iid ability window =
   (&&)
     <$> getCanAffordUse iid ability window
     <*> getCanAffordAbilityCost iid ability
 
-getCanAffordAbilityCost :: InvestigatorId -> Ability -> GameT Bool
+getCanAffordAbilityCost :: (Monad m, HasGame m) => InvestigatorId -> Ability -> m Bool
 getCanAffordAbilityCost iid Ability {..} = case abilityType of
   ActionAbility mAction cost ->
     getCanAffordCost iid abilitySource mAction [] cost
@@ -265,7 +265,7 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
   AbilityEffect _ -> pure True
   Objective{} -> pure True
 
-getCanAffordUse :: InvestigatorId -> Ability -> Window -> GameT Bool
+getCanAffordUse :: (Monad m, HasGame m) => InvestigatorId -> Ability -> Window -> m Bool
 getCanAffordUse iid ability window = case abilityLimit ability of
   NoLimit -> case abilityType ability of
     ReactionAbility _ _ ->
@@ -327,7 +327,7 @@ applyActionCostModifier _ _ (ActionCostModifier m) n = n + m
 applyActionCostModifier _ _ _ n = n
 
 getCanAffordCost
-  :: InvestigatorId -> Source -> Maybe Action -> [Window] -> Cost -> GameT Bool
+  :: (Monad m, HasGame m) => InvestigatorId -> Source -> Maybe Action -> [Window] -> Cost -> m Bool
 getCanAffordCost iid source mAction windows' = \case
   Free -> pure True
   UpTo{} -> pure True
@@ -413,7 +413,7 @@ getCanAffordCost iid source mAction windows' = \case
     cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
     pure $ length (filter (`cardMatch` cardMatcher) cards) >= n
 
-getActions :: InvestigatorId -> Window -> GameT [Ability]
+getActions :: (Monad m, HasGame m) => InvestigatorId -> Window -> m [Ability]
 getActions iid window = do
   modifiersForFilter <- getModifiers
     (InvestigatorSource iid)
@@ -483,42 +483,42 @@ getActions iid window = do
   let forcedActions = filter isForcedAbility actions'''
   pure $ if null forcedActions then actions''' else forcedActions
 
-withStandalone :: (CampaignId -> GameT a) -> (ScenarioId -> GameT a) -> GameT a
+withStandalone :: (Monad m, HasGame m) => (CampaignId -> m a) -> (ScenarioId -> m a) -> m a
 withStandalone cf sf = maybe (sf =<< selectJust Matcher.TheScenario) cf =<< selectOne Matcher.TheCampaign
 
-getCampaignLog :: GameT CampaignLog
+getCampaignLog :: (Monad m, HasGame m) => m CampaignLog
 getCampaignLog = withStandalone (field CampaignCampaignLog) (field ScenarioStandaloneCampaignLog)
 
-getHasRecord :: CampaignLogKey -> GameT Bool
+getHasRecord :: (Monad m, HasGame m) => CampaignLogKey -> m Bool
 getHasRecord k = do
   campaignLog <- getCampaignLog
   pure $ k `member` (campaignLogRecorded campaignLog)
 
-getRecordCount :: CampaignLogKey -> GameT Int
+getRecordCount :: (Monad m, HasGame m) => CampaignLogKey -> m Int
 getRecordCount k = do
   campaignLog <- getCampaignLog
   pure $ findWithDefault 0 k (campaignLogRecordedCounts campaignLog)
 
-getRecordSet :: CampaignLogKey -> GameT [Recorded CardCode]
+getRecordSet :: (Monad m, HasGame m) => CampaignLogKey -> m [Recorded CardCode]
 getRecordSet k = do
   campaignLog <- getCampaignLog
   pure $ findWithDefault [] k (campaignLogRecordedSets campaignLog)
 
-getInvestigatorModifiers :: InvestigatorId -> Source -> GameT [ModifierType]
+getInvestigatorModifiers :: (Monad m, HasGame m) => InvestigatorId -> Source -> m [ModifierType]
 getInvestigatorModifiers iid source =
   getModifiers source (InvestigatorTarget iid)
 
-getPlayerCountValue :: GameValue Int -> GameT Int
+getPlayerCountValue :: (Monad m, HasGame m) => GameValue Int -> m Int
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
 
-getSpendableClueCount :: [InvestigatorId] -> GameT Int
+getSpendableClueCount :: (Monad m, HasGame m) => [InvestigatorId] -> m Int
 getSpendableClueCount investigatorIds =
   getSum <$> selectAgg Sum InvestigatorClues
     (Matcher.InvestigatorWithoutModifier CannotSpendClues
     <> Matcher.AnyInvestigator (map Matcher.InvestigatorWithId investigatorIds))
 
 -- TODO: canFight _ a@Attrs {..} = canDo Action.Fight a
-getCanFight :: EnemyId -> InvestigatorId -> GameT Bool
+getCanFight :: (Monad m, HasGame m) => EnemyId -> InvestigatorId -> m Bool
 getCanFight eid iid = do
   mLocationId <- field InvestigatorLocation iid
   enemyModifiers <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
@@ -551,7 +551,7 @@ getCanFight eid iid = do
       _ -> costToFight
   applyFightCostModifiers _ costToFight _ = costToFight
 
-getCanEngage :: EnemyId -> InvestigatorId -> GameT Bool
+getCanEngage :: (Monad m, HasGame m) => EnemyId -> InvestigatorId -> m Bool
 getCanEngage eid iid = do
   mLocationId <- field InvestigatorLocation iid
   sameLocation <- (isJust mLocationId &&) . (== mLocationId) <$> selectOne
@@ -565,7 +565,7 @@ getCanEngage eid iid = do
     (ActionCost 1)
   pure $ notEngaged && canAffordActions && sameLocation
 
-getCanEvade :: EnemyId -> InvestigatorId -> GameT Bool
+getCanEvade :: (Monad m, HasGame m) => EnemyId -> InvestigatorId -> m Bool
 getCanEvade eid iid = do
   engaged <- elem iid <$> field EnemyEngagedInvestigators eid
   enemyModifiers <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
@@ -591,7 +591,7 @@ getCanEvade eid iid = do
       _ -> costToFight
   applyEvadeCostModifiers _ costToFight _ = costToFight
 
-getCanMoveTo :: LocationId -> InvestigatorId -> GameT Bool
+getCanMoveTo :: (Monad m, HasGame m) => LocationId -> InvestigatorId -> m Bool
 getCanMoveTo lid iid = do
   history <- getHistory TurnHistory iid
   mLocationId <- field InvestigatorLocation iid
@@ -739,11 +739,11 @@ skillTestModifiers source target modifiers = CreateWindowModifierEffect
   (toSource source)
   (toTarget target)
 
-getJustLocationIdByName :: Name -> GameT LocationId
+getJustLocationIdByName :: (Monad m, HasGame m) => Name -> m LocationId
 getJustLocationIdByName name =
   fromJustNote ("Missing " <> show name) <$> getLocationIdByName name
 
-getLocationIdByName :: Name -> GameT (Maybe LocationId)
+getLocationIdByName :: (Monad m, HasGame m) => Name -> m (Maybe LocationId)
 getLocationIdByName name = selectOne matcher
  where
   matcher = case (nameTitle name, nameSubtitle name) of
@@ -754,32 +754,32 @@ fightAction :: SourceEntity source => source -> Int -> [Cost] -> Ability
 fightAction source n costs =
   mkAbility source n (ActionAbility (Just Action.Fight) (Costs costs))
 
-hasFightActions :: InvestigatorId -> Matcher.WindowMatcher -> GameT Bool
+hasFightActions :: (Monad m, HasGame m) => InvestigatorId -> Matcher.WindowMatcher -> m Bool
 hasFightActions _ window = notNull <$> select
   (Matcher.AbilityIsAction Action.Fight <> Matcher.AbilityWindow window)
 
-hasEvadeActions :: InvestigatorId -> Matcher.WindowMatcher -> GameT Bool
+hasEvadeActions :: (Monad m, HasGame m) => InvestigatorId -> Matcher.WindowMatcher -> m Bool
 hasEvadeActions _ window = notNull <$> select
   (Matcher.AbilityIsAction Action.Evade <> Matcher.AbilityWindow window)
 
-hasInvestigateActions :: InvestigatorId -> Matcher.WindowMatcher -> GameT Bool
+hasInvestigateActions :: (Monad m, HasGame m) => InvestigatorId -> Matcher.WindowMatcher -> m Bool
 hasInvestigateActions _ window = notNull <$> select
   (Matcher.AbilityIsAction Action.Investigate <> Matcher.AbilityWindow window)
 
 getIsPlayable
-  :: InvestigatorId -> Source -> CostStatus -> [Window] -> Card -> GameT Bool
+  :: (Monad m, HasGame m) => InvestigatorId -> Source -> CostStatus -> [Window] -> Card -> m Bool
 getIsPlayable iid source costStatus windows' c = do
   availableResources <- field InvestigatorResources iid
   getIsPlayableWithResources iid source availableResources costStatus windows' c
 
 getIsPlayableWithResources
-  :: InvestigatorId
+  :: (Monad m, HasGame m) => InvestigatorId
   -> Source
   -> Int
   -> CostStatus
   -> [Window]
   -> Card
-  -> GameT Bool
+  -> m Bool
 getIsPlayableWithResources _ _ _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
 getIsPlayableWithResources iid source availableResources costStatus windows' c@(PlayerCard _)
   = do
@@ -887,7 +887,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     _ -> error $ "Not handling card type: " <> show (toCardType c)
 
 passesCriteria
-  :: InvestigatorId -> Source -> [Window] -> Criterion -> GameT Bool
+  :: (Monad m, HasGame m) => InvestigatorId -> Source -> [Window] -> Criterion -> m Bool
 passesCriteria iid source windows' = \case
   Criteria.DoomCountIs valueMatcher -> do
     doomCount <- getDoomCount
@@ -1128,11 +1128,11 @@ passesCriteria iid source windows' = \case
 
 -- | Build a matcher and check the list
 passesEnemyCriteria
-  :: InvestigatorId
+  :: (Monad m, HasGame m) => InvestigatorId
   -> Source
   -> [Window]
   -> Criteria.EnemyCriterion
-  -> GameT Bool
+  -> m Bool
 passesEnemyCriteria _iid source windows' criterion = selectAny
   =<< matcher criterion
  where
@@ -1161,7 +1161,7 @@ passesEnemyCriteria _iid source windows' criterion = selectAny
           [] -> error "can not be called without enemy source"
           xs -> pure $ Matcher.NotEnemy (concatMap Matcher.EnemyWithId xs)
 
-getModifiedCardCost :: InvestigatorId -> Card -> GameT Int
+getModifiedCardCost :: (Monad m, HasGame m) => InvestigatorId -> Card -> m Int
 getModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   cardModifiers <- getModifiers
@@ -1196,44 +1196,52 @@ depthGuard :: IORef Int
 depthGuard = unsafePerformIO $ newIORef 0
 {-# NOINLINE depthGuard #-}
 
+withDepthGuard :: Applicative m => Int -> a -> m a -> m a
+withDepthGuard n def body = unsafePerformIO $ do
+  m <- readIORef depthGuard
+  if m > n
+     then pure (pure def)
+     else do
+       atomicWriteIORef depthGuard (m + 1) *> pure body <* atomicWriteIORef depthGuard m
+
 cardInFastWindows
-  :: InvestigatorId
+  :: (Monad m, HasGame m) => InvestigatorId
   -> Source
   -> Card
   -> [Window]
   -> Matcher.WindowMatcher
-  -> GameT Bool
+  -> m Bool
 cardInFastWindows iid source _ windows' matcher =
   anyM (\window -> windowMatches iid source window matcher) windows'
 
-withDepthLock :: Int -> a -> GameT a -> GameT a
-withDepthLock d defaultValue action = do
-  depth <- getDepth
-  if depth >= d
-    then pure defaultValue
-    else do
-      delveDeeper
-      result <- action
-      resurface
-      pure result
+-- withDepthLock :: Int -> a -> GameT a -> GameT a
+-- withDepthLock d defaultValue action = do
+--   depth <- getDepth
+--   if depth >= d
+--     then pure defaultValue
+--     else do
+--       delveDeeper
+--       result <- action
+--       resurface
+--       pure result
+--
+-- getDepth :: GameT Int
+-- getDepth = readIORef =<< view depthL
+--
+-- delveDeeper :: GameT ()
+-- delveDeeper = do
+--   ref <- view depthL
+--   current <- readIORef ref
+--   writeIORef ref (current + 1)
 
-getDepth :: GameT Int
-getDepth = readIORef =<< view depthL
-
-delveDeeper :: GameT ()
-delveDeeper = do
-  ref <- view depthL
-  current <- readIORef ref
-  writeIORef ref (current + 1)
-
-resurface :: GameT ()
-resurface = do
-  ref <- view depthL
-  current <- readIORef ref
-  writeIORef ref (max 0 (current - 1))
+-- resurface :: GameT ()
+-- resurface = do
+--   ref <- view depthL
+--   current <- readIORef ref
+--   writeIORef ref (max 0 (current - 1))
 
 windowMatches
-  :: InvestigatorId -> Source -> Window -> Matcher.WindowMatcher -> GameT Bool
+  :: (Monad m, HasGame m) => InvestigatorId -> Source -> Window -> Matcher.WindowMatcher -> m Bool
 windowMatches iid source window' = \case
   Matcher.AnyWindow -> pure True
   Matcher.DrawingStartingHand timing whoMatcher -> case window' of
@@ -1384,7 +1392,7 @@ windowMatches iid source window' = \case
   Matcher.PlayerHasPlayableCard cardMatcher -> do
     -- TODO: do we need to grab the card source?
     -- cards <- filter (/= c) <$> getList cardMatcher
-    cards <- withDepthLock 2 [] $ selectList cardMatcher
+    cards <- withDepthGuard 3 [] $ selectList cardMatcher
     anyM (getIsPlayable iid source UnpaidCost [window']) cards
   Matcher.PhaseBegins whenMatcher phaseMatcher -> case window' of
     Window t Window.AnyPhaseBegins | whenMatcher == t ->
@@ -1756,10 +1764,10 @@ windowMatches iid source window' = \case
       member eid <$> select enemyMatcher
     _ -> pure False
 
-matchWho :: InvestigatorId -> Matcher.InvestigatorMatcher -> GameT Bool
+matchWho :: (Monad m, HasGame m) => InvestigatorId -> Matcher.InvestigatorMatcher -> m Bool
 matchWho who matcher = member who <$> select matcher
 
-gameValueMatches :: Int -> Matcher.ValueMatcher -> GameT Bool
+gameValueMatches :: (Monad m, HasGame m) => Int -> Matcher.ValueMatcher -> m Bool
 gameValueMatches n = \case
   Matcher.AnyValue -> pure True
   Matcher.LessThan gv -> (n <) <$> getPlayerCountValue gv
@@ -1768,7 +1776,7 @@ gameValueMatches n = \case
   Matcher.GreaterThanOrEqualTo gv -> (n >=) <$> getPlayerCountValue gv
   Matcher.EqualTo gv -> (n ==) <$> getPlayerCountValue gv
 
-targetTraits :: Target -> GameT (HashSet Trait)
+targetTraits :: (Monad m, HasGame m) => Target -> m (HashSet Trait)
 targetTraits = \case
   ActDeckTarget -> pure mempty
   ActTarget _ -> pure mempty
@@ -1813,7 +1821,7 @@ targetTraits = \case
   TokenFaceTarget _ -> pure mempty
   InvestigationTarget _ _ -> pure mempty
 
-sourceTraits :: Source -> GameT (HashSet Trait)
+sourceTraits :: (Monad m, HasGame m) => Source -> m (HashSet Trait)
 sourceTraits = \case
   AbilitySource s _ -> sourceTraits s
   ActDeckSource -> pure mempty
@@ -1856,7 +1864,7 @@ sourceTraits = \case
   YouSource -> selectJust Matcher.You >>= field InvestigatorTraits
   LocationMatcherSource _ -> pure mempty
 
-sourceMatches :: Source -> Matcher.SourceMatcher -> GameT Bool
+sourceMatches :: (Monad m, HasGame m) => Source -> Matcher.SourceMatcher -> m Bool
 sourceMatches s = \case
   Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms
   Matcher.SourceWithTrait t -> elem t <$> sourceTraits s
@@ -1928,29 +1936,29 @@ sourceMatches s = \case
     TreacherySource _ -> True
     _ -> False
 
-targetMatches :: Target -> Matcher.TargetMatcher -> GameT Bool
+targetMatches :: (Monad m, HasGame m) => Target -> Matcher.TargetMatcher -> m Bool
 targetMatches s = \case
   Matcher.TargetMatchesAny ms -> anyM (targetMatches s) ms
   Matcher.TargetIs s' -> pure $ s == s'
   Matcher.AnyTarget -> pure True
   Matcher.TargetMatches ms -> allM (targetMatches s) ms
 
-enemyMatches :: EnemyId -> Matcher.EnemyMatcher -> GameT Bool
+enemyMatches :: (Monad m, HasGame m) => EnemyId -> Matcher.EnemyMatcher -> m Bool
 enemyMatches !enemyId !mtchr = member enemyId <$> select mtchr
 
-matches :: Query a => QueryElement a -> a -> GameT Bool
+matches :: (Monad m, HasGame m, Query a) => QueryElement a -> a -> m Bool
 matches a matcher = member a <$> select matcher
 
-(<=~>) :: Query a => QueryElement a -> a -> GameT Bool
+(<=~>) :: (Monad m, HasGame m, Query a) => QueryElement a -> a -> m Bool
 (<=~>) = matches
 
 locationMatches
-  :: InvestigatorId
+  :: (Monad m, HasGame m) => InvestigatorId
   -> Source
   -> Window
   -> LocationId
   -> Matcher.LocationMatcher
-  -> GameT Bool
+  -> m Bool
 locationMatches investigatorId source window locationId matcher =
   case matcher of
     -- special cases
@@ -2055,11 +2063,11 @@ locationMatches investigatorId source window locationId matcher =
       pure $ CannotInvestigate `notElem` modifiers
 
 skillTestMatches
-  :: InvestigatorId
+  :: (Monad m, HasGame m) => InvestigatorId
   -> Source
   -> SkillTest
   -> Matcher.SkillTestMatcher
-  -> GameT Bool
+  -> m Bool
 skillTestMatches iid source st = \case
   Matcher.AnySkillTest -> pure True
   Matcher.SkillTestWasFailed -> pure $ case skillTestResult st of
@@ -2100,7 +2108,7 @@ skillTestMatches iid source st = \case
       _ -> pure False
   Matcher.SkillTestMatches ms -> allM (skillTestMatches iid source st) ms
 
-matchToken :: InvestigatorId -> Token -> Matcher.TokenMatcher -> GameT Bool
+matchToken :: (Monad m, HasGame m) => InvestigatorId -> Token -> Matcher.TokenMatcher -> m Bool
 matchToken iid' t = \case
   Matcher.WithNegativeModifier -> do
     tv <- getTokenValue iid' (tokenFace t) ()
@@ -2114,13 +2122,13 @@ matchToken iid' t = \case
   Matcher.TokenMatchesAny ms -> anyM (matchToken iid' t) ms
   Matcher.TokenMatches ms -> allM (matchToken iid' t) ms
 
-matchPhase :: Phase -> Matcher.PhaseMatcher -> GameT Bool
+matchPhase :: Monad m => Phase -> Matcher.PhaseMatcher -> m Bool
 matchPhase p = \case
   Matcher.AnyPhase -> pure True
   Matcher.PhaseIs p' -> pure $ p == p'
 
 getModifiedTokenFaces
-  :: SourceEntity source => source -> [Token] -> GameT [TokenFace]
+  :: (Monad m, HasGame m, SourceEntity source) => source -> [Token] -> m [TokenFace]
 getModifiedTokenFaces source tokens = flip
   concatMapM
   tokens
@@ -2132,13 +2140,13 @@ getModifiedTokenFaces source tokens = flip
   applyModifier [f'] (ForcedTokenChange f fs) | f == f' = fs
   applyModifier fs _ = fs
 
-cardListMatches :: [Card] -> Matcher.CardListMatcher -> GameT Bool
+cardListMatches :: (Monad m, HasGame m) => [Card] -> Matcher.CardListMatcher -> m Bool
 cardListMatches cards = \case
   Matcher.AnyCards -> pure True
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
   Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards
 
-targetListMatches :: [Target] -> Matcher.TargetListMatcher -> GameT Bool
+targetListMatches :: (Monad m, HasGame m) => [Target] -> Matcher.TargetListMatcher -> m Bool
 targetListMatches targets = \case
   Matcher.AnyTargetList -> pure True
   Matcher.HasTarget targetMatcher ->
@@ -2147,23 +2155,23 @@ targetListMatches targets = \case
     noneM (`targetMatches` targetMatcher) targets
 
 rememberedListMatches
-  :: [ScenarioLogKey] -> Matcher.ScenarioLogKeyListMatcher -> GameT Bool
+  :: (Monad m, HasGame m) => [ScenarioLogKey] -> Matcher.ScenarioLogKeyListMatcher -> m Bool
 rememberedListMatches targets = \case
   Matcher.HasRemembered k -> pure $ k `elem` targets
   Matcher.RememberedLengthIs valueMatcher ->
     gameValueMatches (length targets) valueMatcher
 
 deckMatch
-  :: InvestigatorId -> DeckSignifier -> Matcher.DeckMatcher -> GameT Bool
+  :: (Monad m, HasGame m) => InvestigatorId -> DeckSignifier -> Matcher.DeckMatcher -> m Bool
 deckMatch iid deckSignifier = \case
   Matcher.EncounterDeck -> pure $ deckSignifier == EncounterDeck
   Matcher.DeckOf investigatorMatcher -> matchWho iid investigatorMatcher
   Matcher.AnyDeck -> pure True
 
-agendaMatches :: AgendaId -> Matcher.AgendaMatcher -> GameT Bool
+agendaMatches :: (Monad m, HasGame m) => AgendaId -> Matcher.AgendaMatcher -> m Bool
 agendaMatches !agendaId !mtchr = member agendaId <$> select mtchr
 
-actionMatches :: Action -> Matcher.ActionMatcher -> GameT Bool
+actionMatches :: Monad m => Action -> Matcher.ActionMatcher -> m Bool
 actionMatches a (Matcher.ActionIs a') = pure $ a == a'
 
 enemyAttackMatches :: EnemyAttackType -> Matcher.EnemyAttackMatcher -> Bool
@@ -2171,8 +2179,7 @@ enemyAttackMatches atkType = \case
   Matcher.AnyEnemyAttack -> True
   Matcher.AttackOfOpportunityAttack -> atkType == AttackOfOpportunity
 
-damageEffectMatches
-  :: DamageEffect -> Matcher.DamageEffectMatcher -> GameT Bool
+damageEffectMatches :: Monad m => DamageEffect -> Matcher.DamageEffectMatcher -> m Bool
 damageEffectMatches a = \case
   Matcher.AnyDamageEffect -> pure True
   Matcher.AttackDamageEffect -> pure $ a == AttackDamageEffect
@@ -2194,7 +2201,7 @@ spawnAtOneOf iid eid targetLids = do
         ]
       )
 
-sourceCanDamageEnemy :: EnemyId -> Source -> GameT Bool
+sourceCanDamageEnemy :: (Monad m, HasGame m) => EnemyId -> Source -> m Bool
 sourceCanDamageEnemy eid source = do
   modifiers' <- getModifiers source (EnemyTarget eid)
   not <$> anyM prevents modifiers'
@@ -2206,15 +2213,15 @@ sourceCanDamageEnemy eid source = do
     CannotBeDamaged -> pure True
     _ -> pure False
 
-getCanShuffleDeck :: InvestigatorId -> GameT Bool
+getCanShuffleDeck :: (Monad m, HasGame m) => InvestigatorId -> m Bool
 getCanShuffleDeck iid = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   pure $ CannotManipulateDeck `notElem` modifiers
 
-remembered :: ScenarioLogKey -> GameT Bool
+remembered :: (Monad m, HasGame m) => ScenarioLogKey -> m Bool
 remembered k = member k <$> scenarioField ScenarioRemembered
 
-getDoomCount :: GameT Int
+getDoomCount :: (Monad m, HasGame m) => m Int
 getDoomCount = getSum . fold <$> sequence
   [ selectAgg Sum AssetDoom Matcher.AnyAsset
   , selectAgg Sum EnemyDoom Matcher.AnyEnemy
@@ -2224,7 +2231,7 @@ getDoomCount = getSum . fold <$> sequence
   , selectAgg Sum InvestigatorDoom Matcher.Anyone
   ]
 
-getPotentialSlots :: HashSet Trait -> InvestigatorId -> GameT [SlotType]
+getPotentialSlots :: (Monad m, HasGame m) => HashSet Trait -> InvestigatorId -> m [SlotType]
 getPotentialSlots traits iid = do
   slots <- field InvestigatorSlots iid
   let
@@ -2244,7 +2251,7 @@ getPotentialSlots traits iid = do
           )
           slotTypesAndSlots
 
-getAllAbilities :: GameT [Ability]
+getAllAbilities :: (Monad m, HasGame m) => m [Ability]
 getAllAbilities = do
   enemyAbilities <- concatMapM (field EnemyAbilities)
     =<< selectList Matcher.AnyEnemy

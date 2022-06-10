@@ -11,7 +11,7 @@ import Arkham.Projection
 import Arkham.ScenarioId
 import Arkham.CampaignStep
 
-getCompletedScenarios :: GameT (HashSet ScenarioId)
+getCompletedScenarios :: (Monad m, HasGame m) => m (HashSet ScenarioId)
 getCompletedScenarios = do
   mcampaignId <- selectOne TheCampaign
   case mcampaignId of

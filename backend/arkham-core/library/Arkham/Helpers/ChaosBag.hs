@@ -1,10 +1,12 @@
 module Arkham.Helpers.ChaosBag where
 
+import Arkham.Prelude
+
 import Arkham.ChaosBag.Base
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Scenario
 import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.Token
 
-getTokensInBag :: GameT [Token]
+getTokensInBag :: (Monad m, HasGame m) => m [Token]
 getTokensInBag = scenarioFieldMap ScenarioChaosBag chaosBagTokens

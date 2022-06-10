@@ -12,7 +12,6 @@ import { Agenda, agendaDecoder } from '@/arkham/types/Agenda';
 import { Phase, phaseDecoder } from '@/arkham/types/Phase';
 import { Asset, assetDecoder } from '@/arkham/types/Asset';
 import { Event, eventDecoder } from '@/arkham/types/Event';
-import { ChaosBag, chaosBagDecoder } from '@/arkham/types/ChaosBag';
 import { Question, questionDecoder } from '@/arkham/types/Question';
 import { Skill, skillDecoder } from '@/arkham/types/Skill';
 import { Treachery, treacheryDecoder } from '@/arkham/types/Treachery';
@@ -20,8 +19,6 @@ import { SkillTest, skillTestDecoder, SkillTestResults, skillTestResultsDecoder 
 import {
   Card,
   cardDecoder,
-  EncounterCardContents,
-  encounterCardContentsDecoder,
 } from '@/arkham/types/Card';
 
 export interface Game {
@@ -34,8 +31,6 @@ export interface Game {
   agendas: Record<string, Agenda>;
   assets: Record<string, Asset>;
   events: Record<string, Event>;
-  chaosBag: ChaosBag;
-  discard: EncounterCardContents[];
   enemies: Record<string, Enemy>;
   enemiesInVoid: Record<string, Enemy>;
   gameState: string;
@@ -56,7 +51,6 @@ export interface Game {
   focusedTokens: ChaosToken[];
   skillTestTokens: ChaosToken[];
   activeCard: Card | null;
-  victoryDisplay: Card[];
   removedFromPlay: Card[];
   encounterDeckSize: number;
 }
@@ -135,8 +129,6 @@ export const gameDecoder = JsonDecoder.object<Game>(
     agendas: JsonDecoder.dictionary<Agenda>(agendaDecoder, 'Dict<UUID, Agenda>'),
     assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
     events: JsonDecoder.dictionary<Event>(eventDecoder, 'Dict<UUID, Event>'),
-    chaosBag: chaosBagDecoder,
-    discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
     enemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     enemiesInVoid: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     gameState: JsonDecoder.string,
@@ -157,7 +149,6 @@ export const gameDecoder = JsonDecoder.object<Game>(
     focusedTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
     skillTestTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
     activeCard: JsonDecoder.nullable(cardDecoder),
-    victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
     removedFromPlay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
     encounterDeckSize: JsonDecoder.number,
   },

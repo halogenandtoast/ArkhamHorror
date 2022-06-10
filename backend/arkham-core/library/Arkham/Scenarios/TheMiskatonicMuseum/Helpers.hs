@@ -8,9 +8,9 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
 
-getHuntingHorror :: GameT (Maybe EnemyId)
+getHuntingHorror :: (Monad m, HasGame m) => m (Maybe EnemyId)
 getHuntingHorror = getHuntingHorrorWith AnyEnemy
 
-getHuntingHorrorWith :: EnemyMatcher -> GameT (Maybe EnemyId)
+getHuntingHorrorWith :: (Monad m, HasGame m) => EnemyMatcher -> m (Maybe EnemyId)
 getHuntingHorrorWith matcher =
   selectOne $ enemyIs Cards.huntingHorror <> matcher

@@ -87,7 +87,7 @@ standaloneTokens =
   , ElderSign
   ]
 
-gatherTheMidnightMasks :: Int -> Int -> GameT [EncounterCard]
+gatherTheMidnightMasks :: MonadRandom m => Int -> Int -> m [EncounterCard]
 gatherTheMidnightMasks conviction doubt =
   traverse
     genEncounterCard

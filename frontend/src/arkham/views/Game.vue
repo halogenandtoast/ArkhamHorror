@@ -29,6 +29,7 @@
         v-else-if="game.scenario && !game.gameOver"
         :game="game"
         :gameLog="gameLog"
+        :scenario="game.scenario"
         :investigatorId="investigatorId"
         @choose="choose"
         @update="update"

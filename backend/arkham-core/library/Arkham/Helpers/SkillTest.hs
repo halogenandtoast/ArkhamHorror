@@ -8,9 +8,9 @@ import Arkham.SkillTest.Base
 import Arkham.Source
 import Arkham.Target
 
-getSkillTestTarget :: GameT (Maybe Target)
+getSkillTestTarget :: (Monad m, HasGame m) => m (Maybe Target)
 getSkillTestTarget = fmap skillTestTarget <$> getSkillTest
 
-getSkillTestSource :: GameT (Maybe Source)
+getSkillTestSource :: (Monad m, HasGame m) => m (Maybe Source)
 getSkillTestSource = fmap toSource <$> getSkillTest
 

@@ -13,14 +13,14 @@ import Arkham.Campaign.Attrs ( Field (..) )
 import Arkham.Scenario.Attrs ( Field (..) )
 import Data.HashMap.Strict qualified as HashMap
 
-getCampaignStoryCards :: GameT (HashMap InvestigatorId [PlayerCard])
+getCampaignStoryCards :: (Monad m, HasGame m) => m (HashMap InvestigatorId [PlayerCard])
 getCampaignStoryCards = do
   mCampaignId <- selectOne TheCampaign
   case mCampaignId of
     Just campaignId -> field CampaignStoryCards campaignId
     Nothing -> scenarioField ScenarioStoryCards
 
-getCampaignStoryCard :: CardDef -> GameT PlayerCard
+getCampaignStoryCard :: (Monad m, HasGame m) => CardDef -> m PlayerCard
 getCampaignStoryCard def = do
   cards <- concat . HashMap.elems <$> getCampaignStoryCards
   pure . fromJustNote "missing card" $ find ((== def) . toCardDef) cards

@@ -30,7 +30,7 @@ import Arkham.Window qualified as Window
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs { enemyLocation } = enemyLocation /= Nothing
 
-getModifiedHealth :: EnemyAttrs -> GameT Int
+getModifiedHealth :: (Monad m, HasGame m) => EnemyAttrs -> m Int
 getModifiedHealth EnemyAttrs {..} = do
   playerCount <- getPlayerCount
   modifiers' <- getModifiers (EnemySource enemyId) (EnemyTarget enemyId)
@@ -51,7 +51,7 @@ spawnAt eid locationMatcher = do
   pushAll $ windows' <> resolve
     (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
 
-modifiedEnemyFight :: EnemyAttrs -> GameT Int
+modifiedEnemyFight :: (Monad m, HasGame m) => EnemyAttrs -> m Int
 modifiedEnemyFight EnemyAttrs {..} = do
   msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
@@ -61,7 +61,7 @@ modifiedEnemyFight EnemyAttrs {..} = do
   applyModifier (Modifier.EnemyFight m) n = max 0 (n + m)
   applyModifier _ n = n
 
-modifiedEnemyEvade :: EnemyAttrs -> GameT Int
+modifiedEnemyEvade :: (Monad m, HasGame m) => EnemyAttrs -> m Int
 modifiedEnemyEvade EnemyAttrs {..} = do
   msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
@@ -71,7 +71,7 @@ modifiedEnemyEvade EnemyAttrs {..} = do
   applyModifier (Modifier.EnemyEvade m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getModifiedDamageAmount :: EnemyAttrs -> Bool -> Int -> GameT Int
+getModifiedDamageAmount :: (Monad m, HasGame m) => EnemyAttrs -> Bool -> Int -> m Int
 getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
@@ -84,7 +84,7 @@ getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   applyModifierCaps (Modifier.MaxDamageTaken m) n = min m n
   applyModifierCaps _ n = n
 
-getModifiedKeywords :: EnemyAttrs -> GameT (HashSet Keyword)
+getModifiedKeywords :: (Monad m, HasGame m) => EnemyAttrs -> m (HashSet Keyword)
 getModifiedKeywords e@EnemyAttrs {..} = do
   msource <- getSkillTestSource
   let source = fromMaybe (EnemySource enemyId) msource
@@ -94,7 +94,7 @@ getModifiedKeywords e@EnemyAttrs {..} = do
   applyModifier (Modifier.AddKeyword k) n = insertSet k n
   applyModifier _ n = n
 
-canEnterLocation :: EnemyId -> LocationId -> GameT Bool
+canEnterLocation :: (Monad m, HasGame m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
   traits <- field EnemyTraits eid
   modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid)
@@ -102,7 +102,7 @@ canEnterLocation eid lid = do
     Modifier.CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
 
-getFightableEnemyIds :: InvestigatorId -> Source -> GameT [EnemyId]
+getFightableEnemyIds :: (Monad m, HasGame m) => InvestigatorId -> Source -> m [EnemyId]
 getFightableEnemyIds iid source = do
   fightAnywhereEnemyIds <- selectList AnyEnemy >>= filterM \eid -> do
     modifiers' <- getModifiers source (EnemyTarget eid)
@@ -129,7 +129,7 @@ getFightableEnemyIds iid source = do
             modifiers'
   pure $ fightableEnemyIds
 
-getEnemyAccessibleLocations :: EnemyId -> GameT [LocationId]
+getEnemyAccessibleLocations :: (Monad m, HasGame m) => EnemyId -> m [LocationId]
 getEnemyAccessibleLocations eid = do
   location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
   matcher <- getConnectedMatcher location

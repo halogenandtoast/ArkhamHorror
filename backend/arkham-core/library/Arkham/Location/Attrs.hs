@@ -58,6 +58,7 @@ data instance Field LocationAttrs :: Type -> Type where
   LocationInvestigators :: Field LocationAttrs (HashSet InvestigatorId)
   LocationEnemies :: Field LocationAttrs (HashSet EnemyId)
   LocationAssets :: Field LocationAttrs (HashSet AssetId)
+  LocationEvents :: Field LocationAttrs (HashSet EventId)
   LocationTreacheries :: Field LocationAttrs (HashSet TreacheryId)
   -- virtual
   LocationCardDef :: Field LocationAttrs CardDef

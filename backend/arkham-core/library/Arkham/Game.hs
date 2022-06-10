@@ -8,37 +8,29 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Act
 import Arkham.Act.Attrs ( ActAttrs (..), Field (..) )
-import Arkham.Act.Sequence ( actStep )
-import Arkham.Action ( Action, TakenAction )
 import Arkham.Action qualified as Action
 import Arkham.Agenda
 import Arkham.Agenda.Attrs ( AgendaAttrs (..), Field (..) )
 import Arkham.Asset
 import Arkham.Asset.Attrs ( AssetAttrs (..), Field (..) )
-import Arkham.Asset.Uses ( UseType, useCount, useType )
+import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
 import Arkham.Campaign.Attrs
 import Arkham.CampaignId
 import Arkham.Card
 import Arkham.Card.Cost
-import Arkham.Card.EncounterCard
 import Arkham.Card.Id
 import Arkham.Card.PlayerCard
-import Arkham.ChaosBag
 import Arkham.Classes
 import Arkham.Classes.HasDistance
-import Arkham.ClassSymbol
 import Arkham.Cost
 import Arkham.Deck qualified as Deck
-import Arkham.Decks
 import Arkham.Difficulty
-import Arkham.Direction
 import Arkham.Distance
 import Arkham.Effect
 import Arkham.Effect.Attrs
 import Arkham.EffectMetadata
-import Arkham.EncounterCard.Source
 import Arkham.Enemy
 import Arkham.Enemy.Attrs ( EnemyAttrs (..), Field (..) )
 import Arkham.Entities
@@ -52,12 +44,9 @@ import Arkham.History
 import Arkham.Id
 import Arkham.Investigator
 import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs (..) )
-import Arkham.Keyword ( HasKeywords (..), Keyword )
 import Arkham.Keyword qualified as Keyword
-import Arkham.Label qualified as L
 import Arkham.Location
 import Arkham.Location.Attrs ( Field (..), LocationAttrs (..) )
-import Arkham.LocationSymbol
 import Arkham.Matcher hiding
   ( AssetCard
   , AssetDefeated
@@ -78,27 +67,22 @@ import Arkham.Matcher qualified as M
 import Arkham.Message hiding
   ( AssetDamage
   , EnemyDamage
-  , EnemyFight
   , InvestigatorDamage
   , InvestigatorDefeated
   , InvestigatorResigned
   )
 import Arkham.Message qualified as Msg
 import Arkham.Modifier hiding ( EnemyEvade, EnemyFight )
-import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario
 import Arkham.Scenario.Attrs
-import Arkham.Scenario.Deck
-import Arkham.ScenarioLogKey
 import Arkham.Skill
 import Arkham.Skill.Attrs ( Field (..), SkillAttrs (..) )
 import Arkham.SkillTest.Runner
 import Arkham.SkillType
-import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -112,17 +96,14 @@ import Arkham.Zone ( Zone )
 import Arkham.Zone qualified as Zone
 import Control.Lens ( each, itraverseOf, itraversed, set )
 import Control.Monad.Random ( StdGen, mkStdGen )
-import Control.Monad.Reader ( runReader )
 import Control.Monad.State.Strict hiding ( filterM, foldM, state )
 import Data.Aeson.Diff qualified as Diff
-import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
 import Data.Align hiding ( nil )
 import Data.HashMap.Strict ( size )
 import Data.HashMap.Strict qualified as HashMap
-import Data.List.Extra ( groupOn )
 import Data.Monoid ( First (..) )
-import Data.Semigroup ( Max (..), Min (..), Sum (..) )
+import Data.Semigroup ( Max (..), Min (..) )
 import Data.Sequence qualified as Seq
 import Data.These
 import Data.These.Lens
@@ -568,12 +549,12 @@ getInvestigatorsMatching matcher = do
       let
         hasMatchingEnemy lid =
           selectAny $ EnemyAt (LocationWithId lid) <> enemyMatcher
-        getDistance start =
+        getEnemyDistance start =
           Distance . fromJustNote "error" . minimumMay . keys <$> evalStateT
             (markDistances start hasMatchingEnemy mempty)
             (LPState (pure start) (singleton start) mempty)
 
-      mappings <- traverse (traverseToSnd (getDistance <=< getJustLocation)) =<< getInvestigatorIds
+      mappings <- traverse (traverseToSnd (getEnemyDistance <=< getJustLocation)) =<< getInvestigatorIds
 
       let
         mappingsMap :: HashMap InvestigatorId Distance = mapFromList mappings
@@ -618,6 +599,7 @@ getInvestigatorsMatching matcher = do
       ]
     LeadInvestigator -> \i -> (== toId i) <$> getLeadInvestigatorId
     InvestigatorWithTitle title -> pure . (== title) . nameTitle . toName . toAttrs
+    DefeatedInvestigator  -> pure . investigatorDefeated . toAttrs
     InvestigatorAt locationMatcher -> \i ->
       if investigatorLocation (toAttrs i) == LocationId (CardId nil)
         then pure False
@@ -691,6 +673,10 @@ getAgendasMatching matcher = do
     AnyAgenda -> pure . const True
     AgendaWithId agendaId -> pure . (== agendaId) . toId
     AgendaWithDoom gameValueMatcher -> field AgendaDoom . toId >=> (`gameValueMatches` gameValueMatcher)
+    AgendaWithTreachery treacheryMatcher -> \agenda -> do
+      treacheries <- select treacheryMatcher
+      pure $ any (`member` treacheries) (agendaTreacheries $ toAttrs agenda)
+    NotAgenda matcher' -> fmap not . matcherFilter matcher'
 
 getActsMatching :: ActMatcher -> GameT [Act]
 getActsMatching matcher = do
@@ -700,6 +686,10 @@ getActsMatching matcher = do
   matcherFilter = \case
     AnyAct -> pure . const True
     ActWithId actId -> pure . (== actId) . toId
+    ActWithTreachery treacheryMatcher -> \act -> do
+      treacheries <- select treacheryMatcher
+      pure $ any (`member` treacheries) (actTreacheries $ toAttrs act)
+    NotAct matcher' -> fmap not . matcherFilter matcher'
 
 getRemainingActsMatching :: RemainingActMatcher -> GameT [CardDef]
 getRemainingActsMatching matcher = do
@@ -721,6 +711,8 @@ getRemainingActsMatching matcher = do
   matcherFilter = \case
     AnyAct -> pure . const True
     ActWithId _ -> pure . const False
+    ActWithTreachery _ -> pure . const False
+    NotAct matcher' -> fmap not . matcherFilter matcher'
 
 getTreacheriesMatching :: TreacheryMatcher -> GameT [Treachery]
 getTreacheriesMatching matcher = do
@@ -839,284 +831,202 @@ getLocationMatching
 getLocationMatching = (listToMaybe <$>) . getLocationsMatching
 
 getLocationsMatching :: LocationMatcher -> GameT [Location]
-getLocationsMatching = \case
-  FirstLocation [] -> pure []
-  FirstLocation xs ->
-    fromMaybe []
-      . getFirst
-      <$> foldM
-            (\b a ->
-              (b <>)
-                . First
-                . (\s -> if null s then Nothing else Just s)
-                <$> getLocationsMatching a
-            )
-            (First Nothing)
-            xs
-  LocationWithLabel label ->
-    filter ((== label) . toLocationLabel)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithTitle title ->
-    filter ((== title) . nameTitle . toName)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithFullTitle title subtitle ->
-    filter ((== Name title (Just subtitle)) . toName)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithUnrevealedTitle title ->
-    filter ((== title) . nameTitle . toName . Unrevealed)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithId locationId ->
-    filter ((== locationId) . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithSymbol locationSymbol ->
-    filter ((== locationSymbol) . toLocationSymbol)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationNotInPlay -> pure [] -- TODO: Should this check out of play locations
-  Anywhere -> toList . view (entitiesL . locationsL) <$> getGame
-  Unblocked -> do
-    filterM (\l -> notElem Blocked <$> getModifiers (toSource l) (toTarget l))
-      . toList
-      . view (entitiesL . locationsL)
-      =<< getGame
-  LocationIs cardCode ->
-    filter ((== cardCode) . toCardCode)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  EmptyLocation ->
-    filter isEmptyLocation . toList . view (entitiesL . locationsL) <$> getGame
-  LocationWithoutInvestigators ->
-    filter noInvestigatorsAtLocation
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithoutEnemies ->
-    filter noEnemiesAtLocation
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithEnemy enemyMatcher -> do
-    enemies <- select enemyMatcher
-    filter (notNull . intersection enemies . locationEnemies . toAttrs)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithAsset assetMatcher -> do
-    assets <- select assetMatcher
-    filter (notNull . intersection assets . locationAssets . toAttrs)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithInvestigator whoMatcher -> do
-    investigators <- select whoMatcher
-    filter (notNull . intersection investigators . locationInvestigators . toAttrs)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  RevealedLocation ->
-    filter isRevealed . toList . view (entitiesL . locationsL) <$> getGame
-  UnrevealedLocation ->
-    filter (not . isRevealed)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithClues gameValueMatcher -> do
-    allLocations' <- toList . view (entitiesL . locationsL) <$> getGame
-    filterM
-      (field LocationClues . toId >=> (`gameValueMatches` gameValueMatcher))
-      allLocations'
-  LocationWithDoom gameValueMatcher -> do
-    allLocations' <- toList . view (entitiesL . locationsL) <$> getGame
-    filterM
-      (field LocationDoom . toId >=> (`gameValueMatches` gameValueMatcher))
-      allLocations'
-  LocationWithHorror gameValueMatcher -> do
-    allLocations' <- toList . view (entitiesL . locationsL) <$> getGame
-    filterM
-      (field LocationHorror . toId >=> (`gameValueMatches` gameValueMatcher))
-      allLocations'
-  LocationWithMostClues locationMatcher -> do
-    matches <- getLocationsMatching locationMatcher
-    maxes <$> traverse (traverseToSnd (pure . locationClues . toAttrs)) matches
-  LocationWithoutTreachery matcher -> do
-    treacheryIds <- select matcher
-    filter (none (`elem` treacheryIds) . locationTreacheries . toAttrs)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithTreachery matcher -> do
-    treacheryIds <- select matcher
-    filter (any (`elem` treacheryIds) . locationTreacheries . toAttrs)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationInDirection direction matcher -> do
-    starts <- getLocationsMatching matcher
-    let
-      matches =
-        mapMaybe (lookup direction . locationDirections . toAttrs) starts
-    filter ((`elem` matches) . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  FarthestLocationFromYou matcher -> guardYourLocation $ \start -> do
-    matchingLocationIds <- map toId <$> getLocationsMatching matcher
-    matches <- getLongestPath start (pure . (`elem` matchingLocationIds))
-    filter ((`elem` matches) . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  FarthestLocationFromLocation start matcher -> do
-    matchingLocationIds <- map toId <$> getLocationsMatching matcher
-    matches <- getLongestPath start (pure . (`elem` matchingLocationIds))
-    filter ((`elem` matches) . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithDistanceFrom distance matcher -> do
-    iids <- getInvestigatorIds
-    candidates <- map toId <$> getLocationsMatching matcher
-    distances <- for iids $ \iid -> do
-      start <- getJustLocation iid
-      distanceSingletons <$> evalStateT
-        (markDistances start (pure . (`elem` candidates)) mempty)
-        (LPState (pure start) (singleton start) mempty)
-    let
-      matches = HashMap.findWithDefault
-        []
-        distance
-        (foldr (unionWith (<>)) mempty $ map distanceAggregates distances)
-    filter ((`elem` matches) . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  FarthestLocationFromAll matcher -> do
-    iids <- getInvestigatorIds
-    candidates <- map toId <$> getLocationsMatching matcher
-    distances <- for iids $ \iid -> do
-      start <- getJustLocation iid
-      distanceSingletons <$> evalStateT
-        (markDistances start (pure . (`elem` candidates)) mempty)
-        (LPState (pure start) (singleton start) mempty)
-    let
-      overallDistances =
-        distanceAggregates $ foldr (unionWith min) mempty distances
-      resultIds =
-        maybe [] coerce
-          . headMay
-          . map snd
-          . sortOn (Down . fst)
-          . mapToList
-          $ overallDistances
-    traverse getLocation resultIds
-  NearestLocationToYou matcher -> guardYourLocation $ \start -> do
-    matchingLocationIds <- map toId <$> getLocationsMatching matcher
-    matches <- getShortestPath
-      start
-      (pure . (`elem` matchingLocationIds))
-      mempty
-    filter ((`elem` matches) . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  AccessibleLocation -> guardYourLocation $ \yourLocation -> do
-    getLocationsMatching (AccessibleTo $ LocationWithId yourLocation)
-  ConnectedLocation -> guardYourLocation $ \yourLocation -> do
-    getLocationsMatching (ConnectedTo $ LocationWithId yourLocation)
-  YourLocation -> guardYourLocation $ fmap pure . getLocation
-  NotYourLocation -> guardYourLocation $ \yourLocation ->
-    filter ((/= yourLocation) . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationWithTrait trait ->
-    filterM hasMatchingTrait
-    . toList
-    . view (entitiesL . locationsL)
-    =<< getGame
-    where hasMatchingTrait = fieldP LocationTraits (trait `member`). toId
-  LocationWithoutTrait trait ->
-    filterM missingTrait . toList . view (entitiesL . locationsL) =<< getGame
-    where missingTrait = fieldP LocationTraits (trait `notMember`). toId
-  LocationMatchAll [] -> pure []
-  LocationMatchAll (x : xs) -> do
-    matches :: HashSet LocationId <-
-      foldl' intersection
-      <$> (setFromList . map toId <$> getLocationsMatching x)
-      <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
-    filter ((`member` matches) . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  LocationMatchAny [] -> pure []
-  LocationMatchAny (x : xs) -> do
-    matches :: HashSet LocationId <-
-      foldl' union
-      <$> (setFromList . map toId <$> getLocationsMatching x)
-      <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
-    filter ((`member` matches) . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  InvestigatableLocation -> toList . view (entitiesL . locationsL) <$> getGame
-  ConnectedTo matcher -> do
-    locations <- selectList matcher
-    -- matcher' <- getAnyLocationMatcher <$> mconcat
-    unrevealedMatcher <- selectAgg
-      (mconcat . map AnyLocationMatcher)
-      LocationConnectedMatchers
-      (UnrevealedLocation <> matcher)
-    revealedMatcher <- selectAgg
-      (mconcat . map AnyLocationMatcher)
-      LocationRevealedConnectedMatchers
-      (RevealedLocation <> matcher)
-    let matcher' = getAnyLocationMatcher $ unrevealedMatcher <> revealedMatcher
-    connectedLocations <- selectList (NotLocation BlockedLocation <> matcher')
-    filter ((`elem` connectedLocations) . toId)
-      . toList
-      . view (entitiesL . locationsL)
-      <$> getGame
-  AccessibleFrom matcher ->
-    getLocationsMatching (Unblocked <> ConnectedFrom matcher)
-    -- locations <- selectList matcher
-    -- matcher' <- getAnyLocationMatcher <$> mconcat
-    --   [ selectAgg
-    --     (mconcat . map AnyLocationMatcher)
-    --     LocationConnectedMatchers
-    --     (UnrevealedLocation <> matcher)
-    --   , selectAgg
-    --     (mconcat . map AnyLocationMatcher)
-    --     LocationRevealedConnectedMatchers
-    --     (RevealedLocation <> matcher)
-    --   ]
-    -- accessibleLocations <- selectList (NotLocation BlockedLocation <> matcher')
-  AccessibleTo matcher ->
-    getLocationsMatching (Unblocked <> ConnectedTo matcher)
-    -- returns locations which have access to the locations found by the matcher
-    -- targets <- map AccessibleLocationId <$> getSetList matcher
-    -- locations <- toList . view (entitiesL . locationsL) <$> getGame
-    -- filterM
-    --   (fmap (\locationSet -> all (`member` locationSet) targets) . getSet . toId
-    --   )
-    --   locations
-  -- TODO: to lazy to do these right now
-  LocationWithResources _ -> pure []
-  -- these can not be queried
-  LocationLeavingPlay -> pure []
-  SameLocation -> pure []
-  ThisLocation -> pure []
+getLocationsMatching lmatcher = do
+  ls <- toList . view (entitiesL . locationsL) <$> getGame
+  case lmatcher of
+    FirstLocation [] -> pure []
+    FirstLocation xs ->
+      fromMaybe []
+        . getFirst
+        <$> foldM
+              (\b a ->
+                (b <>)
+                  . First
+                  . (\s -> if null s then Nothing else Just s)
+                  <$> getLocationsMatching a
+              )
+              (First Nothing)
+              xs
+    LocationWithLabel label -> pure $ filter ((== label) . toLocationLabel) ls
+    LocationWithTitle title ->
+      pure $ filter ((== title) . nameTitle . toName) ls
+    LocationWithFullTitle title subtitle ->
+      pure $ filter ((== Name title (Just subtitle)) . toName) ls
+    LocationWithUnrevealedTitle title ->
+      pure $ filter ((== title) . nameTitle . toName . Unrevealed) ls
+    LocationWithId locationId -> pure $ filter ((== locationId) . toId) ls
+    LocationWithSymbol locationSymbol ->
+      pure $ filter ((== locationSymbol) . toLocationSymbol) ls
+    LocationNotInPlay -> pure [] -- TODO: Should this check out of play locations
+    Anywhere -> pure ls
+    Unblocked -> filterM
+      (\l -> notElem Blocked <$> getModifiers (toSource l) (toTarget l))
+      ls
+    LocationIs cardCode -> pure $ filter ((== cardCode) . toCardCode) ls
+    EmptyLocation -> pure $ filter isEmptyLocation ls
+    LocationWithoutInvestigators -> pure $ filter noInvestigatorsAtLocation ls
+    LocationWithoutEnemies -> pure $ filter noEnemiesAtLocation ls
+    LocationWithEnemy enemyMatcher -> do
+      enemies <- select enemyMatcher
+      pure $ filter
+        (notNull . intersection enemies . locationEnemies . toAttrs)
+        ls
+    LocationWithAsset assetMatcher -> do
+      assets <- select assetMatcher
+      pure
+        $ filter (notNull . intersection assets . locationAssets . toAttrs) ls
+    LocationWithInvestigator whoMatcher -> do
+      investigators <- select whoMatcher
+      pure $ filter
+        (notNull . intersection investigators . locationInvestigators . toAttrs)
+        ls
+    RevealedLocation ->
+      filter isRevealed . toList . view (entitiesL . locationsL) <$> getGame
+    UnrevealedLocation -> pure $ filter (not . isRevealed) ls
+    LocationWithClues gameValueMatcher -> do
+      filterM
+        (field LocationClues . toId >=> (`gameValueMatches` gameValueMatcher))
+        ls
+    LocationWithDoom gameValueMatcher -> do
+      filterM
+        (field LocationDoom . toId >=> (`gameValueMatches` gameValueMatcher))
+        ls
+    LocationWithHorror gameValueMatcher -> do
+      filterM
+        (field LocationHorror . toId >=> (`gameValueMatches` gameValueMatcher))
+        ls
+    LocationWithMostClues locationMatcher -> do
+      matches' <- getLocationsMatching locationMatcher
+      maxes
+        <$> traverse (traverseToSnd (pure . locationClues . toAttrs)) matches'
+    LocationWithoutTreachery matcher -> do
+      treacheryIds <- select matcher
+      pure $ filter
+        (none (`elem` treacheryIds) . locationTreacheries . toAttrs)
+        ls
+    LocationWithTreachery matcher -> do
+      treacheryIds <- select matcher
+      pure $ filter
+        (any (`elem` treacheryIds) . locationTreacheries . toAttrs)
+        ls
+    LocationInDirection direction matcher -> do
+      starts <- getLocationsMatching matcher
+      let
+        matches' =
+          mapMaybe (lookup direction . locationDirections . toAttrs) starts
+      pure $ filter ((`elem` matches') . toId) ls
+    FarthestLocationFromYou matcher -> guardYourLocation $ \start -> do
+      matchingLocationIds <- map toId <$> getLocationsMatching matcher
+      matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
+      pure $ filter ((`elem` matches') . toId) ls
+    FarthestLocationFromLocation start matcher -> do
+      matchingLocationIds <- map toId <$> getLocationsMatching matcher
+      matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
+      pure $ filter ((`elem` matches') . toId) ls
+    LocationWithDistanceFrom distance matcher -> do
+      iids <- getInvestigatorIds
+      candidates <- map toId <$> getLocationsMatching matcher
+      distances <- for iids $ \iid -> do
+        start <- getJustLocation iid
+        distanceSingletons <$> evalStateT
+          (markDistances start (pure . (`elem` candidates)) mempty)
+          (LPState (pure start) (singleton start) mempty)
+      let
+        matches' = HashMap.findWithDefault
+          []
+          distance
+          (foldr (unionWith (<>)) mempty $ map distanceAggregates distances)
+      pure $ filter ((`elem` matches') . toId) ls
+    FarthestLocationFromAll matcher -> do
+      iids <- getInvestigatorIds
+      candidates <- map toId <$> getLocationsMatching matcher
+      distances <- for iids $ \iid -> do
+        start <- getJustLocation iid
+        distanceSingletons <$> evalStateT
+          (markDistances start (pure . (`elem` candidates)) mempty)
+          (LPState (pure start) (singleton start) mempty)
+      let
+        overallDistances =
+          distanceAggregates $ foldr (unionWith min) mempty distances
+        resultIds =
+          maybe [] coerce
+            . headMay
+            . map snd
+            . sortOn (Down . fst)
+            . mapToList
+            $ overallDistances
+      pure $ filter ((`elem` resultIds) . toId) ls
+    NearestLocationToYou matcher -> guardYourLocation $ \start -> do
+      matchingLocationIds <- map toId <$> getLocationsMatching matcher
+      matches' <- getShortestPath
+        start
+        (pure . (`elem` matchingLocationIds))
+        mempty
+      pure $ filter ((`elem` matches') . toId) ls
+    AccessibleLocation -> guardYourLocation $ \yourLocation -> do
+      getLocationsMatching (AccessibleTo $ LocationWithId yourLocation)
+    ConnectedLocation -> guardYourLocation $ \yourLocation -> do
+      getLocationsMatching (ConnectedTo $ LocationWithId yourLocation)
+    YourLocation -> guardYourLocation $ fmap pure . getLocation
+    NotYourLocation -> guardYourLocation
+      $ \yourLocation -> pure $ filter ((/= yourLocation) . toId) ls
+    LocationWithTrait trait -> do
+      let hasMatchingTrait = fieldP LocationTraits (trait `member`) . toId
+      filterM hasMatchingTrait ls
+    LocationWithoutTrait trait -> do
+      let missingTrait = fieldP LocationTraits (trait `notMember`) . toId
+      filterM missingTrait ls
+    LocationMatchAll [] -> pure []
+    LocationMatchAll (x : xs) -> do
+      matches' :: HashSet LocationId <-
+        foldl' intersection
+        <$> (setFromList . map toId <$> getLocationsMatching x)
+        <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
+      pure $ filter ((`member` matches') . toId) ls
+    LocationMatchAny [] -> pure []
+    LocationMatchAny (x : xs) -> do
+      matches' :: HashSet LocationId <-
+        foldl' union
+        <$> (setFromList . map toId <$> getLocationsMatching x)
+        <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
+      pure $ filter ((`member` matches') . toId) ls
+    InvestigatableLocation -> flip filterM ls $ \l ->
+      notElem CannotInvestigate <$> getModifiers (toSource l) (toTarget l)
+    ConnectedTo matcher -> do
+      unrevealedMatcher <- selectAgg
+        (foldMap AnyLocationMatcher)
+        LocationConnectedMatchers
+        (UnrevealedLocation <> matcher)
+      revealedMatcher <- selectAgg
+        (foldMap AnyLocationMatcher)
+        LocationRevealedConnectedMatchers
+        (RevealedLocation <> matcher)
+      let
+        matcher' = getAnyLocationMatcher $ unrevealedMatcher <> revealedMatcher
+      connectedLocations <- selectList matcher'
+      pure $ filter ((`elem` connectedLocations) . toId) ls
+    ConnectedFrom matcher -> do
+      reverseMatcher <- getAnyLocationMatcher . fold <$> selectListMap (AnyLocationMatcher . LocationWithId) matcher
+      getLocationsMatching (ConnectedTo reverseMatcher)
+    AccessibleFrom matcher ->
+      getLocationsMatching (Unblocked <> ConnectedFrom matcher)
+    AccessibleTo matcher ->
+      getLocationsMatching (Unblocked <> ConnectedTo matcher)
+    LocationWithResources valueMatcher ->
+      filterM ((`gameValueMatches` valueMatcher) . locationResources . toAttrs) ls
+    Nowhere -> pure []
+    NotLocation matcher -> do
+      excludes <- getLocationsMatching matcher
+      pure $ filter (`elem` excludes) ls
+    ClosestPathLocation start fin -> do
+      lids <- getShortestPath start (pure . (== fin)) mempty
+      pure $ filter ((`elem` lids) . toId) ls
+    BlockedLocation -> flip filterM ls $ \l ->
+      notElem Blocked <$> getModifiers (toSource l) (toTarget l)
+    -- these can not be queried
+    LocationLeavingPlay -> pure []
+    SameLocation -> pure []
+    ThisLocation -> pure []
 
 guardYourLocation :: (LocationId -> GameT [a]) -> GameT [a]
 guardYourLocation body = do
@@ -1131,15 +1041,20 @@ getAssetsMatching matcher = do
   filterMatcher assets matcher
  where
   canBeDiscarded = and . sequence
-    [assetCanLeavePlayByNormalMeans . toAttrs, not . cdPermanent . toCardDef . toAttrs]
+    [ assetCanLeavePlayByNormalMeans . toAttrs
+    , not . cdPermanent . toCardDef . toAttrs
+    ]
   filterMatcher as = \case
     AnyAsset -> pure as
-    AssetWithTitle title -> pure $ filter ((== title) . nameTitle . toName . toAttrs) as
+    AssetWithTitle title ->
+      pure $ filter ((== title) . nameTitle . toName . toAttrs) as
     AssetWithFullTitle title subtitle ->
       pure $ filter ((== Name title (Just subtitle)) . toName . toAttrs) as
     AssetWithId assetId -> pure $ filter ((== assetId) . toId) as
-    AssetWithClass role -> pure $ filter (member role . cdClassSymbols . toCardDef . toAttrs) as
+    AssetWithClass role ->
+      pure $ filter (member role . cdClassSymbols . toCardDef . toAttrs) as
     AssetWithDamage -> filterM (fieldMap AssetDamage (> 0) . toId) as
+    AssetWithDoom valueMatcher -> filterM ((`gameValueMatches` valueMatcher) . assetDoom . toAttrs) as
     AssetWithHorror -> filterM (fieldMap AssetHorror (> 0) . toId) as
     AssetWithTrait t -> filterM (fieldMap AssetTraits (member t) . toId) as
     AssetInSlot slot -> pure $ filter (elem slot . assetSlots . toAttrs) as
@@ -1173,8 +1088,8 @@ getAssetsMatching matcher = do
       (fmap ((== Just uType) . useType) . field AssetStartingUses . toId)
       as
     AssetWithFewestClues assetMatcher -> do
-      matches <- getAssetsMatching assetMatcher
-      mins <$> traverse (traverseToSnd (field AssetClues . toId)) matches
+      matches' <- getAssetsMatching assetMatcher
+      mins <$> traverse (traverseToSnd (field AssetClues . toId)) matches'
     AssetWithUses uType -> filterM
       (fmap (and . sequence [(> 0) . useCount, (== Just uType) . useType])
       . field AssetUses
@@ -1213,6 +1128,24 @@ getAssetsMatching matcher = do
       pure $ filter
         isSanityDamageable
         (investigatorAssets <> otherDamageableAssets)
+    ClosestAsset start assetMatcher -> flip filterM as $ \asset -> do
+      aids <- selectList assetMatcher
+      if toId asset `elem` aids
+        then do
+          case assetLocation (toAttrs asset) of
+            Nothing -> pure False
+            Just alid -> do
+              mdistance <- getDistance start alid
+              distances :: [Distance] <- catMaybes <$> for
+                aids
+                \aid -> do
+                  malid' <- field AssetLocation aid
+                  case malid' of
+                    Nothing -> pure Nothing
+                    Just alid' -> getDistance start alid'
+              let minDistance = getMin $ foldMap Min distances
+              pure $ mdistance == Just minDistance
+        else pure False
 
 getEventsMatching :: EventMatcher -> GameT [Event]
 getEventsMatching matcher = do
@@ -1231,6 +1164,10 @@ getEventsMatching matcher = do
       pure $ filter ((`elem` iids) . ownerOfEvent) as
     EventReady -> pure $ filter (not . eventExhausted . toAttrs) as
     EventMatches ms -> foldM filterMatcher as ms
+    AnyEvent -> pure as
+    EventAt locationMatcher -> do
+      eids <- selectAgg id LocationEvents locationMatcher
+      pure $ filter ((`member` eids) . toId) as
 
 getSkillsMatching :: SkillMatcher -> GameT [Skill]
 getSkillsMatching matcher = do
@@ -1469,6 +1406,7 @@ instance Projection LocationAttrs where
       LocationInvestigators -> pure locationInvestigators
       LocationEnemies -> pure locationEnemies
       LocationAssets -> pure locationAssets
+      LocationEvents -> pure locationEvents
       LocationTreacheries -> pure locationTreacheries
       -- virtual
       LocationCardDef -> pure $ toCardDef attrs
@@ -2073,7 +2011,7 @@ runPreGameMessage msg g = case msg of
   _ -> pure g
 
 getActiveInvestigator :: GameT Investigator
-getActiveInvestigator = getInvestigator =<< getActiveInvestigatorId
+getActiveInvestigator = getGame >>= getInvestigator . gameActiveInvestigatorId
 
 runGameMessage
   :: Message
@@ -3295,11 +3233,8 @@ preloadEntities g = do
          else do
            handEntities <- foldM (addEntity investigator') defaultEntities handEffectCards
            pure $ insertMap (toId investigator') handEntities entities
-  let
-    foundOfElems :: Investigator -> [Card]
     foundOfElems = concat . HashMap.elems . investigatorFoundCards . toAttrs
-
-    searchEffectCards :: [Card] = filter (cdCardInSearchEffects . toCardDef) $
+    searchEffectCards = filter (cdCardInSearchEffects . toCardDef) $
       ((concat . HashMap.elems $ gameFoundCards g) :: [Card])
       <> (concatMap foundOfElems (view (entitiesL . investigatorsL) g) :: [Card])
   active <- getInvestigator =<< getActiveInvestigatorId

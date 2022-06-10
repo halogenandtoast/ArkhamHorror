@@ -709,25 +709,25 @@ getTreacheriesMatching matcher = do
   matcherFilter :: TreacheryMatcher -> Treachery -> GameT Bool
   matcherFilter = \case
     AnyTreachery -> pure . const True
-    TreacheryWithTitle title -> pure . (== title) . nameTitle . toName
+    TreacheryWithTitle title -> pure . (== title) . nameTitle . toName . toAttrs
     TreacheryWithFullTitle title subtitle ->
-      pure . (== Name title (Just subtitle)) . toName
+      pure . (== Name title (Just subtitle)) . toName . toAttrs
     TreacheryWithId treacheryId -> pure . (== treacheryId) . toId
-    TreacheryWithTrait t -> fmap (member t) . getSet . toId
+    TreacheryWithTrait t -> fmap (member t) . field TreacheryTraits . toId
     TreacheryIs cardCode -> pure . (== cardCode) . toCardCode
     TreacheryAt locationMatcher -> \treachery -> do
-      locations <- selectList locationMatcher
-      matches <- concat <$> traverse getSetList locations
-      pure $ toId treachery `elem` matches
+      targets <- selectListMap (Just . LocationTarget) locationMatcher
+      let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
+      pure $ any (== treacheryTarget) targets
     TreacheryInHandOf investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
       pure $ case treacheryInHandOf (toAttrs treachery) of
         Just iid -> iid `member` iids
         Nothing -> False
     TreacheryInThreatAreaOf investigatorMatcher -> \treachery -> do
-      iids <- selectList investigatorMatcher
-      matches <- concat <$> traverse getSetList iids
-      pure $ toId treachery `elem` matches
+      targets <- selectListMap (Just . InvestigatorTarget) investigatorMatcher
+      let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
+      pure $ any (== treacheryTarget) targets
     TreacheryOwnedBy investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
       pure $ case treacheryOwner (toAttrs treachery) of
@@ -742,8 +742,7 @@ getScenariosMatching _ = pure []
 getAbilitiesMatching
   :: AbilityMatcher -> GameT [Ability]
 getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
-  g <- getGame
-  let abilities = getAbilities g
+  abilities <- getGameAbilities
   case matcher of
     AnyAbility -> pure abilities
     AbilityOnLocation locationMatcher ->
@@ -764,6 +763,54 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AbilityOnScenarioCard -> filterM
       ((`sourceMatches` M.EncounterCardSource) . abilitySource)
       abilities
+
+getGameAbilities :: GameT [Ability]
+getGameAbilities = do
+  g <- getGame
+  let
+    blanked a = do
+      modifiers <- getModifiers (toSource a) (toTarget a)
+      pure $ Blank `elem` modifiers
+    unblanked a = do
+      modifiers <- getModifiers (toSource a) (toTarget a)
+      pure $ Blank `notElem` modifiers
+  enemyAbilities <- concatMap getAbilities
+    <$> filterM unblanked (toList $ g ^. entitiesL . enemiesL)
+  blankedEnemyAbilities <- concatMap (getAbilities . toAttrs)
+    <$> filterM blanked (toList $ g ^. entitiesL . enemiesL)
+  locationAbilities <- concatMap getAbilities
+    <$> filterM unblanked (toList $ g ^. entitiesL . locationsL)
+  blankedLocationAbilities <- concatMap (getAbilities . toAttrs)
+    <$> filterM blanked (toList $ g ^. entitiesL . locationsL)
+  assetAbilities <- concatMap getAbilities
+    <$> filterM unblanked (toList $ g ^. entitiesL . assetsL)
+  treacheryAbilities <- concatMap getAbilities
+    <$> filterM unblanked (toList $ g ^. entitiesL . treacheriesL)
+  actAbilities <- concatMap getAbilities
+    <$> filterM unblanked (toList $ g ^. entitiesL . actsL)
+  agendaAbilities <- concatMap getAbilities
+    <$> filterM unblanked (toList $ g ^. entitiesL . agendasL)
+  eventAbilities <- concatMap getAbilities
+    <$> filterM unblanked (toList (g ^. entitiesL . eventsL) <> toList (g ^. inSearchEntitiesL . eventsL))
+  effectAbilities <- concatMap getAbilities
+    <$> filterM unblanked (toList $ g ^. entitiesL . effectsL)
+  investigatorAbilities <- concatMap getAbilities
+    <$> filterM unblanked (toList $ g ^. entitiesL . investigatorsL)
+  inHandEventAbilities <- filter inHandAbility . concatMap getAbilities
+    <$> filterM unblanked (toList $ g ^. inHandEntitiesL . each . eventsL)
+  pure
+    $ enemyAbilities
+    <> blankedEnemyAbilities
+    <> locationAbilities
+    <> blankedLocationAbilities
+    <> assetAbilities
+    <> treacheryAbilities
+    <> eventAbilities
+    <> inHandEventAbilities
+    <> actAbilities
+    <> agendaAbilities
+    <> effectAbilities
+    <> investigatorAbilities
 
 getLocationMatching
   :: LocationMatcher
@@ -841,22 +888,22 @@ getLocationsMatching = \case
       <$> getGame
   LocationWithEnemy enemyMatcher -> do
     enemies <- select enemyMatcher
-    filterM (fmap (notNull . intersection enemies) . getSet . toId)
+    filter (notNull . intersection enemies . locationEnemies . toAttrs)
       . toList
       . view (entitiesL . locationsL)
-      =<< getGame
+      <$> getGame
   LocationWithAsset assetMatcher -> do
     assets <- select assetMatcher
-    filterM (fmap (notNull . intersection assets) . getSet . toId)
+    filter (notNull . intersection assets . locationAssets . toAttrs)
       . toList
       . view (entitiesL . locationsL)
-      =<< getGame
+      <$> getGame
   LocationWithInvestigator whoMatcher -> do
     investigators <- select whoMatcher
-    filterM (fmap (notNull . intersection investigators) . getSet . toId)
+    filter (notNull . intersection investigators . locationInvestigators . toAttrs)
       . toList
       . view (entitiesL . locationsL)
-      =<< getGame
+      <$> getGame
   RevealedLocation ->
     filter isRevealed . toList . view (entitiesL . locationsL) <$> getGame
   UnrevealedLocation ->
@@ -1305,7 +1352,7 @@ enemyMatcherFilter = \case
     matches <- guardYourLocation $ \start -> do
       getShortestPath
         start
-        (fmap (any (`elem` matchingEnemyIds)) . getSet)
+        (fieldP LocationEnemies (any (`elem` matchingEnemyIds)))
         mempty
     if null matches
       then pure $ toId enemy `elem` matchingEnemyIds

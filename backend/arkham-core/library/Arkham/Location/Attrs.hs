@@ -55,6 +55,10 @@ data instance Field LocationAttrs :: Type -> Type where
   LocationConnectsTo :: Field LocationAttrs (HashSet Direction)
   LocationCardsUnderneath :: Field LocationAttrs [Card]
   LocationConnectedLocations :: Field LocationAttrs (HashSet LocationId)
+  LocationInvestigators :: Field LocationAttrs (HashSet InvestigatorId)
+  LocationEnemies :: Field LocationAttrs (HashSet EnemyId)
+  LocationAssets :: Field LocationAttrs (HashSet AssetId)
+  LocationTreacheries :: Field LocationAttrs (HashSet TreacheryId)
   -- virtual
   LocationCardDef :: Field LocationAttrs CardDef
   LocationCard :: Field LocationAttrs Card

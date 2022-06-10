@@ -362,7 +362,7 @@ getCanAffordCost iid source mAction windows' = \case
           _ -> pure []
 
         tomeActions <- if Tome `elem` traits
-          then field InvestigatorTomeActions iid
+          then fieldMap InvestigatorTomeActions (fromMaybe 0) iid
           else pure 0
         actionCount <- field InvestigatorRemainingActions iid
         pure $ (actionCount + tomeActions) >= modifiedActionCost

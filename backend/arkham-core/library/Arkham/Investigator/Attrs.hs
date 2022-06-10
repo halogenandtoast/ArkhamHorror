@@ -29,7 +29,7 @@ type InvestigatorCard a = CardBuilder () a
 data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorName :: Field InvestigatorAttrs Name
   InvestigatorRemainingActions :: Field InvestigatorAttrs Int
-  InvestigatorTomeActions :: Field InvestigatorAttrs Int
+  InvestigatorTomeActions :: Field InvestigatorAttrs (Maybe Int)
   InvestigatorRemainingSanity :: Field InvestigatorAttrs Int
   InvestigatorRemainingHealth :: Field InvestigatorAttrs Int
   InvestigatorLocation :: Field InvestigatorAttrs (Maybe LocationId)

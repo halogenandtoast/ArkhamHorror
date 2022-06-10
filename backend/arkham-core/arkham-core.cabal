@@ -406,6 +406,7 @@ library
       Arkham.Classes.Entity.Source
       Arkham.Classes.GameLogger
       Arkham.Classes.HasAbilities
+      Arkham.Classes.HasDistance
       Arkham.Classes.HasModifiersFor
       Arkham.Classes.HasQueue
       Arkham.Classes.HasSet

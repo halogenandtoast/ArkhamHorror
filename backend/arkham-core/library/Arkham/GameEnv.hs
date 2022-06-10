@@ -6,6 +6,7 @@ import Arkham.Phase
 import Arkham.Classes.Depth
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
+import Arkham.Classes.HasDistance
 import Arkham.Distance
 import {-# SOURCE #-} Arkham.Game
 import Arkham.History
@@ -92,7 +93,7 @@ getHistory RoundHistory iid = do
 getDistance :: LocationId -> LocationId -> GameT (Maybe Distance)
 getDistance l1 l2 = do
   game <- getGame
-  pure $ gameGetDistance game l1 l2
+  getDistance' game l1 l2
 
 getPhase :: GameT Phase
 getPhase = asks $ gamePhase . gameEnvGame

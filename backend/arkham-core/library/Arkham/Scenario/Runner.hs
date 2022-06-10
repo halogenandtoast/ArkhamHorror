@@ -68,7 +68,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   Setup -> a <$ pushEnd (Begin InvestigationPhase)
   StartCampaign -> do
     standalone <- getIsStandalone
-    a <$ when standalone (push $ StartScenario scenarioName scenarioId)
+    a <$ when standalone (push $ StartScenario scenarioId)
   InitDeck iid deck -> do
     standalone <- getIsStandalone
     a <$ when

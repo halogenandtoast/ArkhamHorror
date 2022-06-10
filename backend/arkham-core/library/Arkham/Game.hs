@@ -1888,7 +1888,7 @@ instance Projection EventAttrs where
 
 instance Projection ScenarioAttrs where
   field fld _ = do
-    s <- fromJustNote "impossible" <$> getScenario
+    s <- fromJustNote "should be impossible" <$> getScenario
     let ScenarioAttrs {..} = toAttrs s
     case fld of
       ScenarioCardsUnderActDeck -> pure scenarioCardsUnderActDeck
@@ -2096,7 +2096,7 @@ runGameMessage msg g = case msg of
       & (focusedCardsL .~ mempty)
       & (activeCardL .~ Nothing)
       & (playerOrderL .~ (g ^. entitiesL . investigatorsL . to keys))
-  StartScenario _ sid -> do
+  StartScenario sid -> do
     let
       difficulty = these
         difficultyOf

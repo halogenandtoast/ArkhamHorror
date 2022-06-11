@@ -401,7 +401,6 @@ library
       Arkham.ChaosBag.Base
       Arkham.ChaosBagStepState
       Arkham.Classes
-      Arkham.Classes.Depth
       Arkham.Classes.Entity
       Arkham.Classes.Entity.Source
       Arkham.Classes.GameLogger

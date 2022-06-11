@@ -138,6 +138,7 @@ data Game = Game
   , gameSeed :: Int
   , gameParams :: GameParams
   , gameWindowDepth :: Int
+  , gameDepthLock :: Int
   , -- Active Scenario/Campaign
     gameMode :: GameMode
   , -- Entities
@@ -236,6 +237,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
         investigatorsList
         difficulty
       , gameWindowDepth = 0
+      , gameDepthLock = 0
       , gameRoundHistory = mempty
       , gamePhaseHistory = mempty
       , gameTurnHistory = mempty
@@ -803,8 +805,13 @@ getTreacheriesMatching matcher = do
     TreacheryMatches matchers ->
       \treachery -> allM (`matcherFilter` treachery) matchers
 
-getScenariosMatching :: Monad m => ScenarioMatcher -> m [Scenario]
-getScenariosMatching _ = pure []
+getScenariosMatching :: (Monad m, HasGame m) => ScenarioMatcher -> m [Scenario]
+getScenariosMatching matcher = do
+  scenarios <- maybeToList . modeScenario . view modeL <$> getGame
+  filterM (go matcher) scenarios
+ where
+   go = \case
+    TheScenario -> pure . const True
 
 getAbilitiesMatching
   :: (Monad m, HasGame m) => AbilityMatcher -> m [Ability]
@@ -1560,7 +1567,7 @@ instance Projection InvestigatorAttrs where
       InvestigatorUsedAbilities -> pure investigatorUsedAbilities
       InvestigatorTraits -> pure investigatorTraits
       InvestigatorAbilities -> pure $ getAbilities i
-      InvestigatorCommittedCards -> pure []
+      InvestigatorCommittedCards -> pure [] -- TODO: Guess we need this
       InvestigatorDefeated -> pure investigatorDefeated
       InvestigatorResigned -> pure investigatorResigned
       -- NOTE: For Abilities do not for get inhand, indiscard, insearch
@@ -2058,7 +2065,9 @@ runPreGameMessage msg g = case msg of
     push EndCheckWindow
     pure $ g & windowDepthL +~ 1
   -- We want to empty the queue for triggering a resolution
-  EndCheckWindow -> pure $ g & windowDepthL -~ 1
+  EndCheckWindow -> do
+    liftIO $ print $ gameWindowDepth g
+    pure $ g & windowDepthL -~ 1
   ScenarioResolution _ -> do
     clearQueue
     pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)
@@ -3311,4 +3320,4 @@ instance RunMessage Game where
       >>= (pure . set enemyMovingL Nothing)
 
 delve :: Game -> Game
-delve g = g { gameWindowDepth = gameWindowDepth g + 1 }
+delve g = g { gameDepthLock = gameDepthLock g + 1 }

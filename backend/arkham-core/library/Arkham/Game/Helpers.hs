@@ -296,22 +296,22 @@ getCanAffordUse iid ability window = do
       -- This is difficult and based on the window, so we need to match out the
       -- relevant investigator ids from the window. If this becomes more prevalent
       -- we may want a method from `Window -> Maybe InvestigatorId`
-      usedAbilities <- field InvestigatorUsedAbilities iid
+      usedAbilities' <- field InvestigatorUsedAbilities iid
       case window of
         Window _ (Window.CommittedCards iid' _) -> do
           let
             matchingPerInvestigatorCount =
-              flip count usedAbilities $ \usedAbility ->
+              flip count usedAbilities' $ \usedAbility ->
                 flip any (usedAbilityWindows usedAbility) $ \case
                   Window _ (Window.CommittedCard iid'' _) -> iid' == iid''
                   _ -> False
           pure $ matchingPerInvestigatorCount < n
         _ -> error "Unhandled per investigator limit"
     GroupLimit _ n -> do
-      usedAbilities <-
+      usedAbilities' <-
         concatMapM (fieldMap InvestigatorUsedAbilities (map usedAbility))
           =<< getInvestigatorIds
-      let total = count (== ability) usedAbilities
+      let total = count (== ability) usedAbilities'
       pure $ total < n
 
 applyActionCostModifier

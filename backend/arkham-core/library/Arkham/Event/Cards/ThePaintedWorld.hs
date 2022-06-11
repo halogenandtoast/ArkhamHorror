@@ -11,7 +11,7 @@ import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher hiding ( DuringTurn )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
@@ -35,11 +35,12 @@ instance RunMessage ThePaintedWorld where
         InvestigatorCardsUnderneath
         (filter (`cardMatch` (NonExceptional <> Matcher.EventCard)))
         iid
+      let
+        playableWindows = if null windows'
+          then [Window Timing.When (DuringTurn iid)]
+          else windows'
       playableCards <- filterM
-        (getIsPlayable iid (toSource attrs) UnpaidCost
-        $ Window Timing.When (DuringTurn iid)
-        : windows'
-        )
+        (getIsPlayable iid (toSource attrs) UnpaidCost playableWindows)
         candidates
       push $ InitiatePlayCardAsChoose
         iid

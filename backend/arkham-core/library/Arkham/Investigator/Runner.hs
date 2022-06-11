@@ -1482,10 +1482,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         (SkillTestAsk $ chooseOne
           iid
           (map
-              (\card -> Run [SkillTestCommitCard iid card, beginMessage])
+              (\card -> TargetLabel (CardIdTarget $ toCardId card) [SkillTestCommitCard iid card, beginMessage])
               committableCards
           <> map
-               (\card -> Run [SkillTestUncommitCard iid card, beginMessage])
+               (\card -> TargetLabel (CardIdTarget $ toCardId card) [SkillTestUncommitCard iid card, beginMessage])
                committedCards
           <> map
                (\action -> Run [UseAbility iid action [window], beginMessage])
@@ -1556,11 +1556,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           investigatorId
           (map
               (\card ->
-                Run [SkillTestCommitCard investigatorId card, beginMessage]
+                TargetLabel (CardIdTarget $ toCardId card) [SkillTestCommitCard investigatorId card, beginMessage]
               )
               committableCards
           <> map
-               (\card -> Run
+               (\card -> TargetLabel (CardIdTarget $ toCardId card)
                  [SkillTestUncommitCard investigatorId card, beginMessage]
                )
                committedCards

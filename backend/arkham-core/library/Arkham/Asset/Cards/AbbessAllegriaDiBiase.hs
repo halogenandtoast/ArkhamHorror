@@ -58,7 +58,7 @@ instance RunMessage AbbessAllegriaDiBiase where
           a <$ if locationId == abbessLocationId
             then do
               connectedLocationIds <-
-                traceShowId <$> (selectList $ AccessibleFrom $ LocationWithId locationId)
+                selectList $ AccessibleFrom $ LocationWithId locationId
               push
                 (chooseOrRunOne
                   iid

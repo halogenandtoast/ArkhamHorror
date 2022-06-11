@@ -405,11 +405,13 @@ withInvestigatorConnectionData
   :: (Monad m, HasGame m) => With WithDeckSize ModifierData
   -> m (With (With WithDeckSize ModifierData) ConnectionData)
 withInvestigatorConnectionData inner@(With target _) = case target of
-  WithDeckSize investigator' -> do
-    location <- getLocation $ investigatorLocation (toAttrs investigator')
-    matcher <- getConnectedMatcher location
-    connectedLocationIds <- selectList (AccessibleLocation <> matcher)
-    pure $ inner `with` ConnectionData connectedLocationIds
+  WithDeckSize investigator' -> if investigatorLocation (toAttrs investigator') == LocationId (CardId nil)
+    then pure $ inner `with` ConnectionData []
+    else do
+      location <- getLocation $ investigatorLocation (toAttrs investigator')
+      matcher <- getConnectedMatcher location
+      connectedLocationIds <- selectList (AccessibleLocation <> matcher)
+      pure $ inner `with` ConnectionData connectedLocationIds
 
 newtype WithDeckSize = WithDeckSize Investigator
   deriving newtype TargetEntity
@@ -543,7 +545,7 @@ getInvestigator iid =
     <$> getGame
   where missingInvestigator = "Unknown investigator: " <> show iid
 
-getLocation :: (Monad m, HasGame m) => LocationId -> m Location
+getLocation :: (HasCallStack, Monad m, HasGame m) => LocationId -> m Location
 getLocation lid =
   fromJustNote missingLocation . preview (entitiesL . locationsL . ix lid) <$> getGame
   where missingLocation = "Unknown location: " <> show lid
@@ -1064,7 +1066,7 @@ getLocationsMatching lmatcher = do
         (RevealedLocation <> matcher)
       let
         matcher' = getAnyLocationMatcher $ unrevealedMatcher <> revealedMatcher
-      connectedLocations <- selectList matcher'
+      connectedLocations <- selectList (traceShowId matcher')
       pure $ filter ((`elem` connectedLocations) . toId) ls
     ConnectedFrom matcher -> do
       reverseMatcher <- getAnyLocationMatcher . fold <$> selectListMap (AnyLocationMatcher . LocationWithId) matcher
@@ -1072,7 +1074,7 @@ getLocationsMatching lmatcher = do
     AccessibleFrom matcher ->
       getLocationsMatching (Unblocked <> ConnectedFrom matcher)
     AccessibleTo matcher ->
-      getLocationsMatching (Unblocked <> ConnectedTo matcher)
+      getLocationsMatching (ConnectedTo (Unblocked <> matcher))
     LocationWithResources valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . locationResources . toAttrs) ls
     Nowhere -> pure []
@@ -1458,8 +1460,12 @@ instance Projection LocationAttrs where
       LocationKeywords -> pure . cdKeywords $ toCardDef attrs
       LocationUnrevealedName -> pure $ toName (Unrevealed l)
       LocationName -> pure $ toName l
-      LocationConnectedMatchers -> pure locationConnectedMatchers
-      LocationRevealedConnectedMatchers -> pure locationRevealedConnectedMatchers
+      LocationConnectedMatchers -> do
+        let directionMatchers = map (flip LocationInDirection (LocationWithId lid)) (setToList locationConnectsTo)
+        pure $ locationConnectedMatchers <> directionMatchers
+      LocationRevealedConnectedMatchers -> do
+        let directionMatchers = map (flip LocationInDirection (LocationWithId lid)) (setToList locationConnectsTo)
+        pure $ locationRevealedConnectedMatchers <> directionMatchers
       LocationRevealed -> pure locationRevealed
       LocationConnectsTo -> pure locationConnectsTo
       LocationCardsUnderneath -> pure locationCardsUnderneath
@@ -1547,7 +1553,9 @@ instance Projection InvestigatorAttrs where
       InvestigatorTomeActions -> pure investigatorTomeActions
       InvestigatorRemainingSanity -> pure (investigatorSanity - investigatorSanityDamage)
       InvestigatorRemainingHealth -> pure (investigatorHealth - investigatorHealthDamage)
-      InvestigatorLocation -> pure $ Just investigatorLocation
+      InvestigatorLocation -> pure $ if investigatorLocation == LocationId (CardId nil)
+         then Nothing
+         else Just investigatorLocation
       InvestigatorWillpower -> pure investigatorWillpower
       InvestigatorIntellect -> pure investigatorIntellect
       InvestigatorCombat -> pure investigatorCombat

@@ -89,6 +89,7 @@ data UsedAbility = UsedAbility
   , usedAbilityInitiator :: InvestigatorId
   , usedAbilityWindows :: [Window]
   , usedTimes :: Int
+  , usedDepth :: Int
   }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

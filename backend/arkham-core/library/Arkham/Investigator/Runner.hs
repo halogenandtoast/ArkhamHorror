@@ -68,8 +68,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & usedAbilitiesL %~ filter
       (\UsedAbility {..} -> case abilityLimit usedAbility of
         NoLimit -> False
-        PlayerLimit PerWindow _ -> depth >= usedTimes
-        GroupLimit PerWindow _ -> depth >= usedTimes
+        PlayerLimit PerWindow _ -> depth >= usedDepth
+        GroupLimit PerWindow _ -> depth >= usedDepth
         _ -> True
       )
   ResetGame ->
@@ -1361,9 +1361,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , Msg.InvestigatorDamage iid EmptyDeckSource 0 1
         ]
       )
-  UseAbility iid ability@Ability {..} windows | iid == investigatorId ->
-    a <$ push
-      (CreatePayAbilityCostEffect ability abilitySource (toTarget a) windows)
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     unlessM (hasModifier a CannotDrawCards)
       $ push (DrawCards investigatorId 1 False)
@@ -2036,8 +2033,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       abilityLimitType (abilityLimit usedAbility) /= Just PerTurn
     )
   UseAbility iid ability windows | iid == investigatorId -> do
+    push
+      $ CreatePayAbilityCostEffect ability (abilitySource ability) (toTarget a) windows
     case find ((== ability) . usedAbility) investigatorUsedAbilities of
       Nothing -> do
+        depth <- getWindowDepth
         let
           used =
             UsedAbility
@@ -2045,6 +2045,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             , usedAbilityInitiator = iid
             , usedAbilityWindows = windows
             , usedTimes = 1
+            , usedDepth = depth
             }
         pure $ a & usedAbilitiesL %~ (used :)
       Just current -> do

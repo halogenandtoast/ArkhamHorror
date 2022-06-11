@@ -73,6 +73,7 @@ instance HasTokenValue ()
 gamePhase :: Game -> Phase
 gameSkillTest :: Game -> Maybe SkillTest
 gameWindowDepth :: Game -> Int
+gameDepthLock :: Game -> Int
 gamePhaseHistory :: Game -> HashMap InvestigatorId History
 gameTurnHistory :: Game -> HashMap InvestigatorId History
 gameRoundHistory :: Game -> HashMap InvestigatorId History

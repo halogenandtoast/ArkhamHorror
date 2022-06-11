@@ -3,7 +3,6 @@ module Arkham.GameEnv where
 import Arkham.Prelude
 
 import Arkham.Phase
-import Arkham.Classes.Depth
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import Arkham.Classes.HasDistance
@@ -32,7 +31,6 @@ data GameEnv = GameEnv
   , gameEnvQueue :: IORef [Message]
   , gameRandomGen :: IORef StdGen
   , gameLogger :: Text -> IO ()
-  , gameDepthLock :: IORef Int
   }
 
 instance HasStdGen GameEnv where
@@ -43,9 +41,6 @@ instance HasGame GameT where
 
 instance HasQueue GameEnv where
   messageQueue = lens gameEnvQueue $ \m x -> m { gameEnvQueue = x }
-
-instance HasDepth GameEnv where
-  depthL = lens gameDepthLock $ \m x -> m { gameDepthLock = x }
 
 instance HasGameLogger GameEnv where
   gameLoggerL = lens gameLogger $ \m x -> m { gameLogger = x }
@@ -64,8 +59,7 @@ toGameEnv = do
   gen <- view genL
   queueRef <- view messageQueue
   logger <- view gameLoggerL
-  depthLock <- newIORef 0
-  pure $ GameEnv game queueRef gen logger depthLock
+  pure $ GameEnv game queueRef gen logger
 
 instance MonadRandom GameT where
   getRandomR lohi = do
@@ -106,3 +100,6 @@ getPhase = gamePhase <$> getGame
 
 getWindowDepth :: (Monad m, HasGame m) => m Int
 getWindowDepth = gameWindowDepth <$> getGame
+
+getDepthLock :: (Monad m, HasGame m) => m Int
+getDepthLock = gameDepthLock <$> getGame

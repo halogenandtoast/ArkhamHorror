@@ -2,7 +2,6 @@ module Arkham.Classes
   ( module X
   ) where
 
-import Arkham.Classes.Depth as X
 import Arkham.Classes.Entity as X
 import Arkham.Classes.GameLogger as X
 import Arkham.Classes.HasAbilities as X

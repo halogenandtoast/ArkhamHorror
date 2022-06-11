@@ -23,6 +23,7 @@ instance HasQueue GameEnv
 
 getPhase :: (Monad m, HasGame m) => m Phase
 getWindowDepth :: (Monad m, HasGame m) => m Int
+getDepthLock :: (Monad m, HasGame m) => m Int
 getSkillTest :: (Monad m, HasGame m) => m (Maybe SkillTest)
 getDistance :: (Monad m, HasGame m) => LocationId -> LocationId -> m (Maybe Distance)
 

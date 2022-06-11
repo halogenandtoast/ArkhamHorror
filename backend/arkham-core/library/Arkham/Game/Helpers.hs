@@ -245,7 +245,7 @@ meetsActionRestrictions _ _ Ability {..} = go abilityType
 getCanAffordAbility :: (Monad m, HasGame m) => InvestigatorId -> Ability -> Window -> m Bool
 getCanAffordAbility iid ability window =
   (&&)
-    <$> getCanAffordUse iid ability window
+    <$> (getCanAffordUse iid ability window)
     <*> getCanAffordAbilityCost iid ability
 
 getCanAffordAbilityCost :: (Monad m, HasGame m) => InvestigatorId -> Ability -> m Bool
@@ -266,55 +266,53 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
   Objective{} -> pure True
 
 getCanAffordUse :: (Monad m, HasGame m) => InvestigatorId -> Ability -> Window -> m Bool
-getCanAffordUse iid ability window = case abilityLimit ability of
-  NoLimit -> case abilityType ability of
-    ReactionAbility _ _ ->
-      notElem ability
-        <$> fieldMap InvestigatorUsedAbilities (map usedAbility) iid
-    ForcedAbility _ ->
-      notElem ability
-        <$> fieldMap InvestigatorUsedAbilities (map usedAbility) iid
-    SilentForcedAbility _ ->
-      notElem ability
-        <$> fieldMap InvestigatorUsedAbilities (map usedAbility) iid
-    ForcedAbilityWithCost _ _ ->
-      notElem ability
-        <$> fieldMap InvestigatorUsedAbilities (map usedAbility) iid
-    ActionAbility _ _ -> pure True
-    ActionAbilityWithBefore{} -> pure True
-    ActionAbilityWithSkill{} -> pure True
-    FastAbility _ -> pure True
-    AbilityEffect _ -> pure True
-    Objective{} -> pure True
-  PlayerLimit (PerSearch (Just _)) n ->
-    (< n)
-      . count ((== ability) . usedAbility)
-      <$> field InvestigatorUsedAbilities iid
-  PlayerLimit _ n ->
-    (< n)
-      . count ((== ability) . usedAbility)
-      <$> field InvestigatorUsedAbilities iid
-  PerInvestigatorLimit _ n -> do
-    -- This is difficult and based on the window, so we need to match out the
-    -- relevant investigator ids from the window. If this becomes more prevalent
-    -- we may want a method from `Window -> Maybe InvestigatorId`
-    usedAbilities <- field InvestigatorUsedAbilities iid
-    case window of
-      Window _ (Window.CommittedCards iid' _) -> do
-        let
-          matchingPerInvestigatorCount =
-            flip count usedAbilities $ \usedAbility ->
-              flip any (usedAbilityWindows usedAbility) $ \case
-                Window _ (Window.CommittedCard iid'' _) -> iid' == iid''
-                _ -> False
-        pure $ matchingPerInvestigatorCount < n
-      _ -> error "Unhandled per investigator limit"
-  GroupLimit _ n -> do
-    usedAbilities <-
-      concatMapM (fieldMap InvestigatorUsedAbilities (map usedAbility))
-        =<< getInvestigatorIds
-    let total = count (== ability) usedAbilities
-    pure $ total < n
+getCanAffordUse iid ability window = do
+  usedAbilities <- field InvestigatorUsedAbilities iid
+  case abilityLimit ability of
+    NoLimit -> case abilityType ability of
+      ReactionAbility _ _ ->
+        pure $ notElem ability (map usedAbility usedAbilities)
+      ForcedAbility _ ->
+        pure $ notElem ability (map usedAbility usedAbilities)
+      SilentForcedAbility _ ->
+        pure $ notElem ability (map usedAbility usedAbilities)
+      ForcedAbilityWithCost _ _ ->
+        pure $ notElem ability (map usedAbility usedAbilities)
+      ActionAbility _ _ -> pure True
+      ActionAbilityWithBefore{} -> pure True
+      ActionAbilityWithSkill{} -> pure True
+      FastAbility _ -> pure True
+      AbilityEffect _ -> pure True
+      Objective{} -> pure True
+    PlayerLimit (PerSearch (Just _)) n ->
+      (< n)
+        . count ((== ability) . usedAbility)
+        <$> field InvestigatorUsedAbilities iid
+    PlayerLimit _ n ->
+      (< n)
+        . count ((== ability) . usedAbility)
+        <$> field InvestigatorUsedAbilities iid
+    PerInvestigatorLimit _ n -> do
+      -- This is difficult and based on the window, so we need to match out the
+      -- relevant investigator ids from the window. If this becomes more prevalent
+      -- we may want a method from `Window -> Maybe InvestigatorId`
+      usedAbilities <- field InvestigatorUsedAbilities iid
+      case window of
+        Window _ (Window.CommittedCards iid' _) -> do
+          let
+            matchingPerInvestigatorCount =
+              flip count usedAbilities $ \usedAbility ->
+                flip any (usedAbilityWindows usedAbility) $ \case
+                  Window _ (Window.CommittedCard iid'' _) -> iid' == iid''
+                  _ -> False
+          pure $ matchingPerInvestigatorCount < n
+        _ -> error "Unhandled per investigator limit"
+    GroupLimit _ n -> do
+      usedAbilities <-
+        concatMapM (fieldMap InvestigatorUsedAbilities (map usedAbility))
+          =<< getInvestigatorIds
+      let total = count (== ability) usedAbilities
+      pure $ total < n
 
 applyActionCostModifier
   :: [Action] -> Maybe Action -> ModifierType -> Int -> Int
@@ -776,7 +774,7 @@ withDepthGuard :: (Monad m, HasGame m) => Int -> a -> ReaderT Game m a -> m a
 withDepthGuard maxDepth defaultValue body = do
   game <- getGame
   flip runReaderT game $ do
-    depth <- getWindowDepth
+    depth <- getDepthLock
     if depth > maxDepth
        then pure defaultValue
        else local delve body

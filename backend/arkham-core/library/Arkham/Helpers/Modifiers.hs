@@ -2,16 +2,51 @@ module Arkham.Helpers.Modifiers where
 
 import Arkham.Prelude
 
+import Arkham.Classes.Entity
+import Arkham.Classes.HasModifiersFor
+import Arkham.Effect.Window
+import Arkham.EffectMetadata
+import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.InvestigatorId
+import Arkham.Message
+import Arkham.Modifier
 import Arkham.Source
 import Arkham.Target
-import Arkham.Modifier
-import {-# SOURCE #-} Arkham.GameEnv
-import {-# SOURCE #-} Arkham.Game ()
-import Arkham.Classes.HasModifiersFor
 
-getModifiers
-  :: (Monad m, HasGame m) => Source
-  -> Target
-  -> m [ModifierType]
+getModifiers :: (Monad m, HasGame m) => Source -> Target -> m [ModifierType]
 getModifiers source target =
   map modifierType <$> getModifiersFor source target ()
+
+toModifier :: SourceEntity a => a -> ModifierType -> Modifier
+toModifier = Modifier . toSource
+
+toModifiers :: SourceEntity a => a -> [ModifierType] -> [Modifier]
+toModifiers = map . toModifier
+
+getInvestigatorModifiers
+  :: (Monad m, HasGame m) => InvestigatorId -> Source -> m [ModifierType]
+getInvestigatorModifiers iid source =
+  getModifiers source (InvestigatorTarget iid)
+
+skillTestModifier
+  :: (SourceEntity source, TargetEntity target)
+  => source
+  -> target
+  -> ModifierType
+  -> Message
+skillTestModifier source target modifier =
+  skillTestModifiers source target [modifier]
+
+skillTestModifiers
+  :: (SourceEntity source, TargetEntity target)
+  => source
+  -> target
+  -> [ModifierType]
+  -> Message
+skillTestModifiers source target modifiers = CreateWindowModifierEffect
+  EffectSkillTestWindow
+  (EffectModifiers $ toModifiers source modifiers)
+  (toSource source)
+  (toTarget target)
+

@@ -122,7 +122,6 @@ allEffects =
   mapFromList
     [ ("01010", OnTheLam' . onTheLam)
     , ("01036", MindOverMatter' . mindOverMatter)
-    , ("01039", Deduction' . deduction)
     , ("01060", Shrivelling' . shrivelling)
     , ("01066", BlindingLight' . blindingLight)
     , ("01068", MindWipe1' . mindWipe1)

@@ -37,8 +37,6 @@ import Arkham.Criteria qualified as Criteria
 import Arkham.DamageEffect
 import Arkham.Deck hiding ( InvestigatorDiscard )
 import Arkham.Effect.Attrs ( Field (..) )
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.EncounterCard
 import Arkham.EncounterSet
 import Arkham.Enemy.Attrs ( Field (..) )
@@ -503,10 +501,6 @@ getRecordSet k = do
   campaignLog <- getCampaignLog
   pure $ findWithDefault [] k (campaignLogRecordedSets campaignLog)
 
-getInvestigatorModifiers :: (Monad m, HasGame m) => InvestigatorId -> Source -> m [ModifierType]
-getInvestigatorModifiers iid source =
-  getModifiers source (InvestigatorTarget iid)
-
 getPlayerCountValue :: (Monad m, HasGame m) => GameValue Int -> m Int
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
 
@@ -619,12 +613,6 @@ getCanMoveTo lid iid = do
            )
         && (Blocked `notElem` locationModifiers')
 
-toModifier :: SourceEntity a => a -> ModifierType -> Modifier
-toModifier = Modifier . toSource
-
-toModifiers :: SourceEntity a => a -> [ModifierType] -> [Modifier]
-toModifiers = map . toModifier
-
 targetToSource :: Target -> Source
 targetToSource = \case
   InvestigatorTarget iid -> InvestigatorSource iid
@@ -716,27 +704,6 @@ addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
     , Label ("Do not add " <> display name <> " to any deck") []
     ]
   where name = cdName cardDef
-
-skillTestModifier
-  :: (SourceEntity source, TargetEntity target)
-  => source
-  -> target
-  -> ModifierType
-  -> Message
-skillTestModifier source target modifier =
-  skillTestModifiers source target [modifier]
-
-skillTestModifiers
-  :: (SourceEntity source, TargetEntity target)
-  => source
-  -> target
-  -> [ModifierType]
-  -> Message
-skillTestModifiers source target modifiers = CreateWindowModifierEffect
-  EffectSkillTestWindow
-  (EffectModifiers $ toModifiers source modifiers)
-  (toSource source)
-  (toTarget target)
 
 getJustLocationIdByName :: (Monad m, HasGame m) => Name -> m LocationId
 getJustLocationIdByName name =
@@ -1000,6 +967,12 @@ passesCriteria iid source windows' = \case
     TreacherySource tid -> field TreacheryAttachedTarget tid >>= \case
       Just (LocationTarget lid) ->
         fieldP InvestigatorLocation (== Just lid) iid
+      Just (InvestigatorTarget iid') -> if iid == iid'
+        then pure True
+        else do
+          l1 <- field InvestigatorLocation iid
+          l2 <- field InvestigatorLocation iid'
+          pure $ isJust l1 && l1 == l2
       Just _ -> pure False
       Nothing -> pure False
     ProxySource (AssetSource aid) _ ->

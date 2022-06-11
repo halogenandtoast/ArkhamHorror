@@ -4,10 +4,9 @@ import Arkham.Prelude
 
 import qualified Arkham.Action as Action
 import Arkham.Classes
-import Arkham.EffectMetadata
-import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Message
-import Arkham.Projection
+import Arkham.Modifier
+import Arkham.Helpers.Modifiers
 import Arkham.Skill.Runner
 import qualified Arkham.Skill.Cards as Cards
 import Arkham.Target
@@ -23,11 +22,9 @@ instance RunMessage Deduction where
   runMessage msg s@(Deduction attrs@SkillAttrs {..}) = case msg of
     PassedSkillTest iid (Just Action.Investigate) _ (SkillTarget sid) _ _
       | sid == skillId -> do
-        mlid <- field InvestigatorLocation iid
-        for_ mlid $ \lid -> push $ CreateEffect
-          "01039"
-          (Just $ EffectMetaTarget (LocationTarget lid))
+        push $ skillTestModifier
           (toSource attrs)
           (InvestigatorTarget iid)
+          (DiscoveredClues 1)
         pure s
     _ -> Deduction <$> runMessage msg attrs

@@ -45,7 +45,7 @@ instance RunMessage DaisyWalker where
       pure $ DaisyWalker $ attrs' & tomeActionsL ?~ 1
     SpendActions iid (AssetSource aid) actionCost
       | iid == toId attrs && actionCost > 0 -> do
-        isTome <- fieldMap AssetTraits (member Tome) aid
+        isTome <- fieldP AssetTraits (member Tome) aid
         DaisyWalker
           <$> if isTome
                   && fromJustNote "Must be set" investigatorTomeActions

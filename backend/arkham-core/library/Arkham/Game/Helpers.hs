@@ -471,6 +471,7 @@ getActions iid window = do
       if any prevents investigatorModifiers || needsToBeFast
         then pure Nothing
         else pure $ Just $ applyAbilityModifiers ability modifiers'
+
   actions''' <- filterM
     (\action -> liftA2
       (&&)

@@ -15,8 +15,8 @@ import Arkham.Matcher qualified as Matcher
 import Arkham.Message hiding ( InvestigatorEliminated )
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype CoverUp = CoverUp TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -51,17 +51,13 @@ instance RunMessage CoverUp where
     Revelation iid (isSource attrs -> True) ->
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
     UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
-      cluesToRemove <- withQueue $ \queue -> do
-        let
-          (before, after) = flip break queue $ \case
-            DiscoverClues{} -> True
-            _ -> False
-          (DiscoverClues _ _ m _, remaining) = case after of
-            [] -> error "DiscoverClues has to be present"
-            (x : xs) -> (x, xs)
-        (before <> remaining, m)
-      let remainingClues = max 0 (treacheryClues - cluesToRemove)
-      pure $ CoverUp (attrs { treacheryClues = remainingClues })
+      mMsg <- popMessageMatching $ \case
+        DiscoverClues{} -> True
+        _ -> False
+      case mMsg of
+        Just (DiscoverClues _ _ cluesToRemove _) ->
+          pure $ CoverUp $ attrs & cluesL %~ max 0 . subtract cluesToRemove
+        _ -> error "DiscoverClues has to be present"
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       withTreacheryInvestigator attrs
         $ \tormented -> t <$ push (SufferTrauma tormented 0 1)

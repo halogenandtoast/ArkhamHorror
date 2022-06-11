@@ -6,6 +6,7 @@ module Arkham.Investigator.Cards.WendyAdams
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
@@ -61,6 +62,6 @@ instance RunMessage WendyAdams where
           , DrawAnotherToken (toId attrs)
           ]
     ResolveToken _ ElderSign iid | iid == investigatorId -> do
-      maid <- selectOne $ AssetWithTitle "Wendy's Amulet"
+      maid <- selectOne $ assetIs Assets.wendysAmulet
       i <$ when (isJust maid) (push PassSkillTest)
     _ -> WendyAdams <$> runMessage msg attrs

@@ -236,6 +236,11 @@ workingAHunch = (event "01037" "Working a Hunch" 2 Seeker)
   { cdSkills = [SkillIntellect, SkillIntellect]
   , cdCardTraits = setFromList [Insight]
   , cdFastWindow = Just (DuringTurn You)
+  , cdCriteria = Just
+    (Criteria.LocationExists
+    $ YourLocation
+    <> LocationWithAnyClues
+    )
   }
 
 barricade :: CardDef

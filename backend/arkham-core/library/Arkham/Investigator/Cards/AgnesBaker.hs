@@ -54,11 +54,13 @@ instance HasTokenValue AgnesBaker where
 instance RunMessage AgnesBaker where
   runMessage msg i@(AgnesBaker attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      enemyIds <- selectList $ EnemyAt YourLocation
+      targets <- selectList $ EnemyAt YourLocation
       push $ chooseOne
         (toId attrs)
-        [ EnemyDamage eid (toId attrs) source NonAttackDamageEffect 1
-        | eid <- enemyIds
+        [ targetLabel
+            target
+            [EnemyDamage target (toId attrs) source NonAttackDamageEffect 1]
+        | target <- targets
         ]
       pure i
     _ -> AgnesBaker <$> runMessage msg attrs

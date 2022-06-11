@@ -1066,7 +1066,7 @@ getLocationsMatching lmatcher = do
         (RevealedLocation <> matcher)
       let
         matcher' = getAnyLocationMatcher $ unrevealedMatcher <> revealedMatcher
-      connectedLocations <- selectList (traceShowId matcher')
+      connectedLocations <- selectList matcher'
       pure $ filter ((`elem` connectedLocations) . toId) ls
     ConnectedFrom matcher -> do
       reverseMatcher <- getAnyLocationMatcher . fold <$> selectListMap (AnyLocationMatcher . LocationWithId) matcher

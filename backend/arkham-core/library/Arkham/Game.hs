@@ -547,16 +547,26 @@ getLocation lid =
   where missingLocation = "Unknown location: " <> show lid
 
 getEffectsMatching
-  :: Monad m
+  :: (HasGame m, Monad m)
   => EffectMatcher
   -> m [Effect]
-getEffectsMatching _matcher = pure []
+getEffectsMatching matcher = do
+  effects <- toList . view (entitiesL . effectsL) <$> getGame
+  filterM (go matcher) effects
+ where
+   go = \case
+    AnyEffect -> pure . const True
 
 getCampaignsMatching
-  :: Monad m
+  :: (HasGame m, Monad m)
   => CampaignMatcher
   -> m [Campaign]
-getCampaignsMatching _matcher = pure []
+getCampaignsMatching matcher = do
+  campaigns <- maybeToList . modeCampaign . view modeL <$> getGame
+  filterM (go matcher) campaigns
+ where
+   go = \case
+    TheCampaign -> pure . const True
 
 getInvestigatorsMatching :: (Monad m, HasGame m) => InvestigatorMatcher -> m [Investigator]
 getInvestigatorsMatching matcher = do

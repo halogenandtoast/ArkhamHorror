@@ -893,6 +893,15 @@ getLocationMatching
   -> m (Maybe Location)
 getLocationMatching = (listToMaybe <$>) . getLocationsMatching
 
+getConnectionMatcher :: Location -> LocationMatcher
+getConnectionMatcher l = getAnyLocationMatcher $ foldMap AnyLocationMatcher (connections <> directionMatchers)
+  where
+    LocationAttrs {..} = toAttrs l
+    connections = if locationRevealed
+      then locationRevealedConnectedMatchers
+      else locationConnectedMatchers
+    directionMatchers = map (flip LocationInDirection (LocationWithId $ toId l)) (setToList locationConnectsTo)
+
 getLocationsMatching :: (Monad m, HasGame m) => LocationMatcher -> m [Location]
 getLocationsMatching lmatcher = do
   ls <- toList . view (entitiesL . locationsL) <$> getGame
@@ -1027,9 +1036,9 @@ getLocationsMatching lmatcher = do
         mempty
       pure $ filter ((`elem` matches') . toId) ls
     AccessibleLocation -> guardYourLocation $ \yourLocation -> do
-      getLocationsMatching (AccessibleTo $ LocationWithId yourLocation)
+      getLocationsMatching (AccessibleFrom $ LocationWithId yourLocation)
     ConnectedLocation -> guardYourLocation $ \yourLocation -> do
-      getLocationsMatching (ConnectedTo $ LocationWithId yourLocation)
+      getLocationsMatching (ConnectedFrom $ LocationWithId yourLocation)
     YourLocation -> guardYourLocation $ fmap pure . getLocation
     NotYourLocation -> guardYourLocation
       $ \yourLocation -> pure $ filter ((/= yourLocation) . toId) ls
@@ -1056,21 +1065,17 @@ getLocationsMatching lmatcher = do
     InvestigatableLocation -> flip filterM ls $ \l ->
       notElem CannotInvestigate <$> getModifiers (toSource l) (toTarget l)
     ConnectedTo matcher -> do
-      unrevealedMatcher <- selectAgg
-        (foldMap AnyLocationMatcher)
-        LocationConnectedMatchers
-        (UnrevealedLocation <> matcher)
-      revealedMatcher <- selectAgg
-        (foldMap AnyLocationMatcher)
-        LocationRevealedConnectedMatchers
-        (RevealedLocation <> matcher)
-      let
-        matcher' = getAnyLocationMatcher $ unrevealedMatcher <> revealedMatcher
-      connectedLocations <- selectList matcher'
-      pure $ filter ((`elem` connectedLocations) . toId) ls
+      -- locations with connections to locations that match
+      -- so we filter each location by generating it's connections
+      -- querying those locations and seeing if they match the matcher
+      flip filterM ls $ \l -> do
+        let matchAny = getConnectionMatcher l
+        selectAny $ matcher <> matchAny
     ConnectedFrom matcher -> do
-      reverseMatcher <- getAnyLocationMatcher . fold <$> selectListMap (AnyLocationMatcher . LocationWithId) matcher
-      getLocationsMatching (ConnectedTo reverseMatcher)
+      startIds <- select matcher
+      let starts = filter ((`elem` startIds) . toId) ls
+          matcherSupreme = foldMap (AnyLocationMatcher . getConnectionMatcher) starts
+      getLocationsMatching $ getAnyLocationMatcher matcherSupreme
     AccessibleFrom matcher ->
       getLocationsMatching (Unblocked <> ConnectedFrom matcher)
     AccessibleTo matcher ->

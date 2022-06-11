@@ -32,10 +32,8 @@ instance HasAbilities AbbessAllegriaDiBiase where
           attrs
           1
           (AnyCriterion
-            [ LocationExists
-              (LocationWithId abbessLocation <> AccessibleLocation)
-            , LocationExists $ YourLocation <> AccessibleFrom
-              (LocationWithId abbessLocation)
+            [ LocationExists $ AccessibleFrom (YourLocation <> LocationWithId abbessLocation)
+            , OnLocation $ AccessibleTo $ LocationWithId abbessLocation
             ]
           )
           (FastAbility $ ExhaustCost (toTarget attrs))
@@ -60,7 +58,7 @@ instance RunMessage AbbessAllegriaDiBiase where
           a <$ if locationId == abbessLocationId
             then do
               connectedLocationIds <-
-                selectList $ AccessibleFrom $ LocationWithId locationId
+                traceShowId <$> (selectList $ AccessibleFrom $ LocationWithId locationId)
               push
                 (chooseOrRunOne
                   iid

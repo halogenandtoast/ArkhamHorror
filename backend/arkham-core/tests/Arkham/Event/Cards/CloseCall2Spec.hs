@@ -35,7 +35,7 @@ spec = describe "Close Call (2)" $ do
               _ -> False
             )
           game <- getTestGame
-          length (game ^. encounterDeckL . to unDeck) `shouldBe` 1
+          scenarioFieldMap ScenarioEncounterDeck (length . unDeck) `shouldBe` 1
           length (game ^. entitiesL . enemiesL) `shouldBe` 0
 
   it "does not work on Elite enemies" $ do

@@ -6,6 +6,7 @@ import TestImport.Lifted hiding (EnemyDamage)
 
 import Arkham.Enemy.Attrs qualified as EnemyAttrs
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Enemy.Attrs (Field(..))
 
 spec :: Spec
 spec = do

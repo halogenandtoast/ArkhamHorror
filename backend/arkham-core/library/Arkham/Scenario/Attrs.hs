@@ -33,6 +33,7 @@ data instance Field ScenarioAttrs :: Type -> Type where
   ScenarioCardsUnderAgendaDeck :: Field ScenarioAttrs [Card]
   ScenarioCardsUnderScenarioReference :: Field ScenarioAttrs [Card]
   ScenarioDiscard :: Field ScenarioAttrs [EncounterCard]
+  ScenarioEncounterDeck :: Field ScenarioAttrs (Deck EncounterCard)
   ScenarioDifficulty :: Field ScenarioAttrs Difficulty
   ScenarioDecks :: Field ScenarioAttrs (HashMap ScenarioDeckKey [Card])
   ScenarioVictoryDisplay :: Field ScenarioAttrs [Card]

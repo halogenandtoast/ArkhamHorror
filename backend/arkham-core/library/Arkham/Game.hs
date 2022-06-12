@@ -1924,6 +1924,7 @@ instance Projection ScenarioAttrs where
       ScenarioCardsUnderActDeck -> pure scenarioCardsUnderActDeck
       ScenarioCardsUnderAgendaDeck -> pure scenarioCardsUnderAgendaDeck
       ScenarioDiscard -> pure scenarioDiscard
+      ScenarioEncounterDeck -> pure scenarioEncounterDeck
       ScenarioDifficulty -> pure scenarioDifficulty
       ScenarioDecks -> pure scenarioDecks
       ScenarioVictoryDisplay -> pure scenarioVictoryDisplay

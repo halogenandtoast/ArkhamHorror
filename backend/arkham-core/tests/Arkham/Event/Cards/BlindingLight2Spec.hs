@@ -2,10 +2,12 @@ module Arkham.Event.Cards.BlindingLight2Spec
   ( spec
   ) where
 
-import TestImport.Lifted
+import TestImport.Lifted hiding (EnemyDamage)
 
 import Arkham.Enemy.Attrs qualified as EnemyAttrs
-import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..))
+import Arkham.Enemy.Attrs (Field(..))
+import Arkham.Projection
 
 spec :: Spec
 spec = do
@@ -16,6 +18,7 @@ spec = do
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
       blindingLight2 <- buildEvent "01069" investigator
+      let Just blindingLight2Card = preview _PlayerCard (toCard $ toAttrs blindingLight2)
       location <- testLocation id
       gameTest
           investigator
@@ -33,14 +36,15 @@ spec = do
             chooseOnlyOption "Evade enemy"
             chooseOnlyOption "Run skill check"
             chooseOnlyOption "Apply results"
-            isInDiscardOf investigator blindingLight2 `shouldReturn` True
-            evadedBy investigator enemy `shouldReturn` True
+            assert $ fieldP InvestigatorDiscard (== [blindingLight2Card]) (toId investigator)
+            assert $ fieldP EnemyEngagedInvestigators null (toId enemy)
 
     it "deals 2 damage to the evaded enemy" $ do
       investigator <- testInvestigator id
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
       blindingLight2 <- buildEvent "01069" investigator
+      let Just blindingLight2Card = preview _PlayerCard (toCard $ toAttrs blindingLight2)
       location <- testLocation id
       gameTest
           investigator
@@ -58,8 +62,8 @@ spec = do
             chooseOnlyOption "Evade enemy"
             chooseOnlyOption "Run skill check"
             chooseOnlyOption "Apply results"
-            isInDiscardOf investigator blindingLight2 `shouldReturn` True
-            updated enemy `shouldSatisfyM` hasDamage (2, 0)
+            assert $ fieldP InvestigatorDiscard (== [blindingLight2Card]) (toId investigator)
+            assert $ fieldP EnemyDamage (== 2) (toId enemy)
 
     it
         "On Skull, Cultist, Tablet, ElderThing, or AutoFail the investigator loses an action and takes 1 horror"
@@ -69,6 +73,7 @@ spec = do
           enemy <- testEnemy
             ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 3))
           blindingLight2 <- buildEvent "01069" investigator
+          let Just blindingLight2Card = preview _PlayerCard (toCard $ toAttrs blindingLight2)
           location <- testLocation id
           gameTest
               investigator
@@ -87,6 +92,6 @@ spec = do
                 chooseOnlyOption "Run skill check"
                 chooseOnlyOption "Apply results"
                 chooseOnlyOption "take event damage"
-                isInDiscardOf investigator blindingLight2 `shouldReturn` True
-                getRemainingActions investigator `shouldReturn` 2
-                updated investigator `shouldSatisfyM` hasDamage (0, 1)
+                fieldAssert InvestigatorDiscard (== [blindingLight2Card]) investigator
+                fieldAssert InvestigatorRemainingActions (== 2) investigator
+                fieldAssert InvestigatorHorror (== 1) investigator

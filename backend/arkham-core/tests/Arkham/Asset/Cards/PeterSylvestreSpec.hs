@@ -5,6 +5,8 @@ module Arkham.Asset.Cards.PeterSylvestreSpec
 import TestImport.Lifted
 
 import Arkham.Modifier
+import Arkham.Projection
+import Arkham.Asset.Attrs qualified as Asset
 
 spec :: Spec
 spec = describe "Peter Sylvestre" $ do
@@ -38,4 +40,4 @@ spec = describe "Peter Sylvestre" $ do
               Run{} -> True
               _ -> False
             )
-          updated peterSylvestre `shouldSatisfyM` hasDamage (0, 1)
+          assert $ fieldP Asset.AssetHorror (== 1) (toId peterSylvestre)

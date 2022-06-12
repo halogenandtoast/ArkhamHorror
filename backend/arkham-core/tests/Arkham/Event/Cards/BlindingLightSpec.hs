@@ -61,7 +61,7 @@ spec = do
             chooseOnlyOption "Apply results"
 
             isInDiscardOf investigator blindingLight `shouldReturn` True
-            updated enemy `shouldSatisfyM` hasDamage (1, 0)
+            fieldAssert EnemyDamage (== 1) enemy
 
     it
         "On Skull, Cultist, Tablet, ElderThing, or AutoFail the investigator loses an action"

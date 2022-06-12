@@ -5,6 +5,9 @@ module Arkham.Event.Cards.Barricade3Spec
 import TestImport.Lifted
 
 import Arkham.Modifier
+import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Location.Attrs (Field(..))
+import Arkham.Projection
 
 spec :: Spec
 spec = do
@@ -27,13 +30,14 @@ spec = do
                   `shouldReturn` [ CannotBeEnteredByNonElite
                                  , SpawnNonEliteAtConnectingInstead
                                  ]
-                isAttachedTo location barricade3 `shouldReturn` True
+                assert $ fieldP LocationEvents (== setFromList [toId barricade3]) (toId location)
 
     it "should be discarded if an investigator leaves the location" $ do
       location <- testLocation id
       investigator <- testInvestigator id
       investigator2 <- testInvestigator id
       barricade3 <- buildEvent "50004" investigator
+      let Just barricade3Card = preview _PlayerCard (toCard $ toAttrs barricade3)
       gameTest
           investigator
           [ moveAllTo location
@@ -48,5 +52,5 @@ spec = do
             runMessages
             getModifiers (TestSource mempty) (toTarget location)
               `shouldReturn` []
-            isAttachedTo location barricade3 `shouldReturn` False
-            isInDiscardOf investigator barricade3 `shouldReturn` True
+            assert $ fieldP LocationEvents null (toId location)
+            assert $ fieldP InvestigatorDiscard (== [barricade3Card]) (toId investigator)

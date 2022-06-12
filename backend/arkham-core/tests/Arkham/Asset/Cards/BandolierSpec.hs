@@ -4,9 +4,10 @@ module Arkham.Asset.Cards.BandolierSpec
 
 import TestImport.Lifted
 
-import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Slot
 import Arkham.Trait
+import Arkham.Projection
 
 spec :: Spec
 spec = describe "Bandolier" $ do
@@ -19,12 +20,6 @@ spec = describe "Bandolier" $ do
         (entitiesL . assetsL %~ insertEntity bandolier)
       $ do
           runMessages
-          investigator' <- updated investigator
-          let
-            slots =
-              fromMaybe []
-                $ toAttrs investigator'
-                ^? Investigator.slotsL
-                . ix HandSlot
+          slots <- findWithDefault [] HandSlot <$> field InvestigatorSlots (toId investigator)
           slots `shouldSatisfy` elem
             (TraitRestrictedSlot (toSource bandolier) Weapon Nothing)

@@ -7,7 +7,7 @@ module TestImport
   , module TestImport
   ) where
 
-import Arkham.Prelude as X
+import Arkham.Prelude as X hiding (assert)
 
 import Arkham.Ability
 import Arkham.Action
@@ -43,9 +43,11 @@ import Arkham.Game.Helpers as X hiding ( getCanAffordCost )
 import Arkham.Game.Helpers qualified as Helpers
 import Arkham.GameValue as X
 import Arkham.Helpers as X
+import Arkham.Helpers.Modifiers as Arkham
 import Arkham.Investigator as X
-import Arkham.Investigator.Attrs hiding (investigator)
+import Arkham.Investigator.Attrs hiding (investigator, assetsL)
 import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Helpers.Investigator qualified as Investigator
 import Arkham.Investigator.Cards.JennyBarnes
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.InvestigatorId
@@ -58,7 +60,6 @@ import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
 import Arkham.Message as X
 import Arkham.Modifier
 import Arkham.Phase
-import Arkham.Query as X
 import Arkham.Scenario as X
 import Arkham.Scenario.Attrs
 import Arkham.Scenario.Attrs qualified as Scenario
@@ -78,7 +79,6 @@ import Control.Monad.State hiding ( replicateM )
 import Data.HashMap.Strict qualified as HashMap
 import Data.These
 import Data.UUID.V4 as X
-import Helpers.Matchers as X
 import Helpers.Message as X
 import System.Random ( StdGen, mkStdGen )
 import Test.Hspec as X
@@ -88,33 +88,13 @@ import Arkham.LocationSymbol
 import Arkham.Agenda.Sequence
 import Arkham.Name
 import Data.IntMap.Strict qualified as IntMap
+import Arkham.Entities as X
 
-runMessages
-  :: ( MonadIO m
-     , HasGameRef env
-     , HasStdGen env
-     , HasQueue env
-     , MonadReader env m
-     , HasGameLogger env
-     , env ~ TestApp
-     )
-  => m ()
+runMessages :: TestAppT ()
 runMessages = asks testLogger >>= Game.runMessages
 
-pushAndRun
-  :: ( MonadIO m
-     , HasGameRef env
-     , HasStdGen env
-     , HasQueue env
-     , MonadReader env m
-     , HasGameLogger env
-     , env ~ TestApp
-     )
-  => Message
-  -> m ()
+pushAndRun :: Message -> TestAppT ()
 pushAndRun msg = push msg >> runMessages
-
-
 
 shouldSatisfyM
   :: (HasCallStack, Show a, MonadIO m) => m a -> (a -> Bool) -> m ()
@@ -138,90 +118,6 @@ fastPlayerWindow = Window Timing.When FastPlayerWindow
 duringTurn :: InvestigatorId -> Window
 duringTurn = Window Timing.When . DuringTurn
 
-getId
-  :: ( HasId id GameEnv a
-     , HasGameLogger env
-     , HasGameRef env
-     , HasQueue env
-     , HasStdGen env
-     , MonadReader env m
-     , MonadIO m
-     )
-  => a
-  -> m id
-getId a = toGameEnv >>= runReaderT (Arkham.getId a)
-
-getCount
-  :: ( HasCount count GameEnv a
-     , HasGameLogger env
-     , HasGameRef env
-     , HasQueue env
-     , HasStdGen env
-     , MonadReader env m
-     , MonadIO m
-     )
-  => a
-  -> m count
-getCount a = toGameEnv >>= runReaderT (Arkham.getCount a)
-
-getAsset
-  :: ( HasCallStack
-     , HasGameLogger env
-     , MonadReader env m
-     , HasGameRef env
-     , MonadIO m
-     , HasQueue env
-     , HasStdGen env
-     )
-  => AssetId
-  -> m Asset
-getAsset aid = toGameEnv >>= runReaderT (Game.getAsset aid)
-
-getTokenValue
-  :: ( MonadReader env m
-     , HasGameLogger env
-     , MonadIO m
-     , HasGameRef env
-     , HasQueue env
-     , HasStdGen env
-     , HasTokenValue GameEnv a
-     )
-  => a
-  -> InvestigatorId
-  -> TokenFace
-  -> m TokenValue
-getTokenValue a iid token =
-  toGameEnv >>= runReaderT (Arkham.getTokenValue iid token a)
-
-getCanAffordCost
-  :: ( MonadReader env m
-     , HasGameLogger env
-     , HasGameRef env
-     , HasQueue env
-     , MonadIO m
-     , HasStdGen env
-     )
-  => InvestigatorId
-  -> Source
-  -> Maybe Action
-  -> Cost
-  -> m Bool
-getCanAffordCost iid source maction cost =
-  toGameEnv >>= runReaderT (Helpers.getCanAffordCost iid source maction [] cost)
-
-getModifiers
-  :: ( MonadReader env m
-     , HasGameLogger env
-     , HasGameRef env
-     , MonadIO m
-     , HasQueue env
-     , HasStdGen env
-     )
-  => Source
-  -> Target
-  -> m [ModifierType]
-getModifiers s t = toGameEnv >>= runReaderT (Arkham.getModifiers s t)
-
 data TestApp = TestApp
   { game :: IORef Game
   , messageQueueRef :: IORef [Message]
@@ -230,10 +126,15 @@ data TestApp = TestApp
   , testGameLogger :: Text -> IO ()
   }
 
-newtype TestAppT m a = TestAppT { unTestAppT :: ReaderT TestApp m a }
-  deriving newtype (MonadReader TestApp, Functor, Applicative, Monad, MonadTrans, MonadFail, MonadIO)
+newtype TestAppT a = TestAppT { unTestAppT :: ReaderT TestApp IO a }
+  deriving newtype (MonadReader TestApp, Functor, Applicative, Monad, MonadFail, MonadIO)
 
-runTestApp :: TestApp -> TestAppT m a -> m a
+instance HasGame TestAppT where
+  getGame = do
+    env <- ask
+    readIORef $ game env
+
+runTestApp :: TestApp -> TestAppT a -> IO a
 runTestApp testApp = flip runReaderT testApp . unTestAppT
 
 instance HasGameRef TestApp where
@@ -386,22 +287,6 @@ testUnconnectedLocations f1 f2 = do
     (f2 . (symbolL .~ Triangle) . (revealedSymbolL .~ Triangle))
   pure (location1, location2)
 
-getAbilitiesOf
-  :: ( HasAbilities a
-     , TestEntity a
-     , MonadIO m
-     , MonadReader env m
-     , HasGameRef env
-     )
-  => a
-  -> m [Ability]
-getAbilitiesOf e = getAbilities <$> updated e
-
-getChaosBagTokens
-  :: (HasGameRef env, MonadIO m, MonadReader env m) => m [TokenFace]
-getChaosBagTokens =
-  map tokenFace . view (chaosBagL . ChaosBag.tokensL) <$> getTestGame
-
 createMessageMatcher :: MonadIO m => Message -> m (IORef Bool, Message -> m ())
 createMessageMatcher msg = do
   ref <- liftIO $ newIORef False
@@ -439,9 +324,14 @@ didFailSkillTestBy investigator skillType n = createMessageMatcher
     n
   )
 
-withGame :: (MonadReader env m, HasGameRef env, MonadIO m) => ReaderT Game m b -> m b
+assert :: TestAppT Bool -> TestAppT ()
+assert body = do
+  result <- body
+  liftIO $ result `shouldBe` True
+
+withGame :: (MonadReader env m, HasGame m, MonadIO m) => ReaderT Game m b -> m b
 withGame b = do
-  g <- getTestGame
+  g <- getGame
   runReaderT b g
 
 replaceScenario :: (MonadReader env m, HasGameRef env, MonadIO m) => (ScenarioAttrs -> ScenarioAttrs) -> m ()
@@ -451,20 +341,10 @@ replaceScenario f = do
   atomicModifyIORef' ref (\g -> (g { gameMode = That scenario' }, ()))
 
 chooseOnlyOption
-  :: ( MonadFail m
-     , MonadIO m
-     , HasQueue env
-     , MonadReader env m
-     , HasGameRef env
-     , HasStdGen env
-     , HasGameLogger env
-     , HasCallStack
-     , env ~ TestApp
-     )
-  => String
-  -> m ()
+  :: String
+  -> TestAppT ()
 chooseOnlyOption _reason = do
-  questionMap <- gameQuestion <$> getTestGame
+  questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
     [(_, question)] -> case question of
       ChooseOne [msg] -> push msg <* runMessages
@@ -474,19 +354,10 @@ chooseOnlyOption _reason = do
     _ -> error "There must be only one choice to use this function"
 
 chooseFirstOption
-  :: ( MonadFail m
-     , MonadIO m
-     , MonadReader env m
-     , HasGameRef env
-     , HasQueue env
-     , HasStdGen env
-     , HasGameLogger env
-     , env ~ TestApp
-     )
-  => String
-  -> m ()
+  :: String
+  -> TestAppT ()
 chooseFirstOption _reason = do
-  questionMap <- gameQuestion <$> getTestGame
+  questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
     [(_, question)] -> case question of
       ChooseOne (msg : _) -> push msg >> runMessages
@@ -495,20 +366,11 @@ chooseFirstOption _reason = do
     _ -> error "There must be at least one option"
 
 chooseOptionMatching
-  :: ( MonadFail m
-     , MonadIO m
-     , MonadReader env m
-     , HasGameRef env
-     , HasQueue env
-     , HasStdGen env
-     , HasGameLogger env
-     , env ~ TestApp
-     )
-  => String
+  :: String
   -> (Message -> Bool)
-  -> m ()
+  -> TestAppT ()
 chooseOptionMatching _reason f = do
-  questionMap <- gameQuestion <$> getTestGame
+  questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
     [(_, question)] -> case question of
       ChooseOne msgs -> case find f msgs of
@@ -524,7 +386,7 @@ chooseOptionMatching _reason f = do
     _ -> error "There must be only one question to use this function"
 
 gameTest
-  :: Investigator -> [Message] -> (Game -> Game) -> TestAppT IO () -> IO ()
+  :: Investigator -> [Message] -> (Game -> Game) -> TestAppT () -> IO ()
 gameTest = gameTestWithLogger (pure . const ())
 
 gameTestWithLogger
@@ -532,7 +394,7 @@ gameTestWithLogger
   -> Investigator
   -> [Message]
   -> (Game -> Game)
-  -> TestAppT IO ()
+  -> TestAppT ()
   -> IO ()
 gameTestWithLogger logger investigator queue f body = do
   g <- newGame investigator
@@ -550,6 +412,7 @@ newGame investigator = do
   pure $ Game
     { gameParams = GameParams (Left "00000") 1 mempty Easy -- Not used in tests
     , gameWindowDepth = 0
+    , gameDepthLock = 0
     , gamePhaseHistory = mempty
     , gameRoundHistory = mempty
     , gameTurnHistory = mempty
@@ -562,8 +425,6 @@ newGame investigator = do
     , gameActiveInvestigatorId = investigatorId
     , gameLeadInvestigatorId = investigatorId
     , gamePhase = CampaignPhase -- TODO: maybe this should be a TestPhase or something?
-    , gameEncounterDeck = mempty
-    , gameDiscard = mempty
     , gameSkillTest = Nothing
     , gameSkillTestResults = Nothing
     , gameEntities = defaultEntities { entitiesInvestigators = HashMap.singleton investigatorId investigator }
@@ -571,17 +432,13 @@ newGame investigator = do
     , gameInHandEntities = mempty
     , gameInDiscardEntities = mempty
     , gameInSearchEntities = defaultEntities
-    , gameChaosBag = emptyChaosBag
     , gameGameState = IsActive
-    , gameResignedCardCodes = mempty
-    , gameUsedAbilities = mempty
     , gameFoundCards = mempty
     , gameFocusedCards = mempty
     , gameFocusedTargets = mempty
     , gameFocusedTokens = mempty
     , gameActiveCard = Nothing
     , gamePlayerOrder = [investigatorId]
-    , gameVictoryDisplay = mempty
     , gameRemovedFromPlay = mempty
     , gameEnemyMoving = Nothing
     , gameQuestion = mempty

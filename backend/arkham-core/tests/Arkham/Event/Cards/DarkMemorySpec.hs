@@ -6,6 +6,7 @@ import TestImport.Lifted
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Agenda.Attrs qualified as Agenda
+import Arkham.Investigator.Attrs (Field(..))
 
 spec :: Spec
 spec = do
@@ -57,5 +58,5 @@ spec = do
             chooseOnlyOption "trigger dark memory"
             chooseOnlyOption "assign first horror"
             chooseOnlyOption "assign second horror"
-            updated investigator `shouldSatisfyM` hasDamage (0, 2)
+            fieldAssert InvestigatorHorror (== 2) investigator
             didReveal `refShouldBe` True

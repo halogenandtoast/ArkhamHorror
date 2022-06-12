@@ -7,6 +7,8 @@ import TestImport.Lifted
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Scenario.Attrs (Field(..))
+import Arkham.GameEnv
 
 spec :: Spec
 spec = describe "Close Call (2)" $ do
@@ -34,8 +36,9 @@ spec = describe "Close Call (2)" $ do
               Run{} -> True
               _ -> False
             )
-          game <- getTestGame
-          scenarioFieldMap ScenarioEncounterDeck (length . unDeck) `shouldBe` 1
+          game <- getGame
+          deckSize <- scenarioFieldMap ScenarioEncounterDeck (length . unDeck)
+          deckSize `shouldBe` (1 :: Int)
           length (game ^. entitiesL . enemiesL) `shouldBe` 0
 
   it "does not work on Elite enemies" $ do

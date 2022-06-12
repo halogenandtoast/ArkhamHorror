@@ -2,10 +2,12 @@ module Arkham.Asset.Cards.KnifeSpec
   ( spec
   ) where
 
-import TestImport.Lifted
+import TestImport.Lifted hiding (EnemyDamage)
 
-import Arkham.Enemy.Attrs ( EnemyAttrs (..) )
-import Arkham.Investigator.Attrs ( InvestigatorAttrs (..) )
+import Arkham.Asset.Attrs ( Field(..) )
+import Arkham.Enemy.Attrs ( Field(..), EnemyAttrs (..) )
+import Arkham.Investigator.Attrs ( Field(..), InvestigatorAttrs (..) )
+import Arkham.Projection
 
 spec :: Spec
 spec = describe "Knife" $ do
@@ -29,19 +31,20 @@ spec = describe "Knife" $ do
         )
       $ do
           runMessages
-          [knifeFightAction, _] <- getAbilitiesOf knife
+          [knifeFightAction, _] <- field AssetAbilities (toId knife)
           push $ UseAbility (toId investigator) knifeFightAction []
           runMessages
           chooseOnlyOption "Fight enemy"
           chooseOnlyOption "Start skill test"
           chooseOnlyOption "Apply Results"
-          updated enemy `shouldSatisfyM` hasDamage (1, 0)
-          isInDiscardOf investigator knife `shouldReturn` False
+          assert $ fieldP EnemyDamage (== 2) (toId enemy)
+          assert $ fieldP InvestigatorDiscard null (toId investigator)
 
   it
       "Discard Knife: Fight. You get +2 for this attack. This attack deals +1 damage."
     $ do
         knife <- buildAsset "01086"
+        let Just knifeCard = preview _PlayerCard (toCard $ toAttrs knife)
         investigator <- testInvestigator
           $ \attrs -> attrs { investigatorCombat = 1 }
         enemy <- testEnemy
@@ -60,11 +63,11 @@ spec = describe "Knife" $ do
             )
           $ do
               runMessages
-              [_, knifeDiscardFightAction] <- getAbilitiesOf knife
+              [_, knifeDiscardFightAction] <- field AssetAbilities (toId knife)
               push $ UseAbility (toId investigator) knifeDiscardFightAction []
               runMessages
               chooseOnlyOption "Fight enemy"
               chooseOnlyOption "Start skill test"
               chooseOnlyOption "Apply Results"
-              updated enemy `shouldSatisfyM` hasDamage (2, 0)
-              isInDiscardOf investigator knife `shouldReturn` True
+              assert $ fieldP EnemyDamage (== 2) (toId enemy)
+              assert $ fieldP InvestigatorDiscard (== [knifeCard]) (toId investigator)

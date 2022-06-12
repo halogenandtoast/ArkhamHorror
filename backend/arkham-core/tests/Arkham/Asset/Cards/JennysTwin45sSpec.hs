@@ -2,12 +2,17 @@ module Arkham.Asset.Cards.JennysTwin45sSpec
   ( spec
   ) where
 
-import TestImport.Lifted
+import TestImport.Lifted hiding (EnemyDamage)
 
 import Arkham.Asset.Cards qualified as Cards
+import Arkham.Asset.Uses (useCount)
 import Arkham.AssetId
 import Arkham.Enemy.Attrs qualified as Enemy
+import Arkham.Enemy.Attrs (Field(..))
+import Arkham.Asset.Attrs (Field(..))
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Projection
+import Arkham.Matcher (assetIs)
 
 spec :: Spec
 spec = describe "Jenny's Twin .45s" $ do
@@ -28,8 +33,8 @@ spec = describe "Jenny's Twin .45s" $ do
             , PlayDynamicCard (toId investigator) (toCardId jennysTwin45s) 5 Nothing False
             ]
           runMessages
-          updatedJennysTwin45s <- getAsset (AssetId $ pcId jennysTwin45s)
-          updatedJennysTwin45s `shouldSatisfy` hasUses 5
+          assetId <- selectJust $ assetIs Cards.jennysTwin45s
+          assert $ fieldP AssetUses ((== 5) . useCount) assetId
 
   it "gives +2 combat and does +1 damage" $ do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
@@ -66,4 +71,4 @@ spec = describe "Jenny's Twin .45s" $ do
           chooseOnlyOption "choose enemy"
           chooseOnlyOption "start skill test"
           chooseOnlyOption "apply results"
-          updated enemy `shouldSatisfyM` hasDamage (2, 0)
+          assert $ fieldP EnemyDamage (== 2) (toId enemy)

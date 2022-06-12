@@ -1389,7 +1389,6 @@ test-suite spec
       Arkham.Treachery.Cards.SearchingForIzzieSpec
       Arkham.Treachery.Cards.SmiteTheWickedSpec
       Arkham.Treachery.Cards.WrackedByNightmaresSpec
-      Helpers.Matchers
       Helpers.Message
       TestImport
       TestImport.Lifted
@@ -1433,6 +1432,7 @@ test-suite spec
     , base >=4.7 && <5
     , containers
     , hspec
+    , hspec-expectations
     , hspec-expectations-lifted
     , lens
     , mtl

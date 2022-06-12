@@ -66,6 +66,7 @@ tests:
     dependencies:
       - arkham-core
       - hspec
+      - hspec-expectations
       - hspec-expectations-lifted
       - lens
       - these

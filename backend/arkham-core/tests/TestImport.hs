@@ -456,5 +456,8 @@ isInDiscardOf i a = do
 getRemainingActions :: Investigator -> TestAppT Int
 getRemainingActions = field InvestigatorRemainingActions . toId
 
+evadedBy :: Investigator -> Enemy -> TestAppT Bool
+evadedBy _investigator = fieldP EnemyEngagedInvestigators null . toId
+
 fieldAssert :: (Projection attrs, Entity a, EntityId a ~ EntityId attrs) => Field attrs typ -> (typ -> Bool) -> a -> TestAppT ()
 fieldAssert fld p a = assert $ fieldP fld p (toId a)

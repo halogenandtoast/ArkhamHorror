@@ -2,7 +2,7 @@ module Arkham.Event.Cards.BlindingLightSpec
   ( spec
   ) where
 
-import TestImport.Lifted
+import TestImport.Lifted hiding (EnemyDamage)
 
 import Arkham.Enemy.Attrs qualified as EnemyAttrs
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))

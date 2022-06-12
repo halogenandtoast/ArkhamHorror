@@ -6,7 +6,7 @@ import TestImport.Lifted
 
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Drawn to the flame" $ do
@@ -43,5 +43,5 @@ spec = describe "Drawn to the flame" $ do
               chooseFirstOption "apply horror/damage"
               chooseFirstOption "apply horror/damage"
               chooseOnlyOption "move to central location"
-              updated investigator `shouldSatisfyM` hasClueCount 2
+              fieldAssert InvestigatorClues (== 2) investigator
               isInDiscardOf investigator drawnToTheFlame `shouldReturn` True

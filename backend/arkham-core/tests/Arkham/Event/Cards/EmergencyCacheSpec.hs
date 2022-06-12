@@ -2,6 +2,8 @@ module Arkham.Event.Cards.EmergencyCacheSpec where
 
 import TestImport.Lifted
 
+import Arkham.Investigator.Attrs (Field(..))
+
 spec :: Spec
 spec = do
   describe "Emergency Cache" $ do
@@ -14,4 +16,4 @@ spec = do
           (entitiesL . eventsL %~ insertEntity emergencyCache)
         $ do
             runMessages
-            updatedResourceCount investigator `shouldReturn` 3
+            fieldAssert InvestigatorResources (== 3) investigator

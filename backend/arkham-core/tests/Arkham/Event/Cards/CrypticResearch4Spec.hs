@@ -26,7 +26,7 @@ spec = do
             chooseOnlyOption "choose self"
 
             isInDiscardOf investigator crypticResearch4 `shouldReturn` True
-            updated investigator `shouldSatisfyM` handIs (map PlayerCard cards)
+            handIs (map PlayerCard cards) investigator `shouldReturn` True
 
     it "can select any investigator at the same location" $ do
       investigator <- testInvestigator id
@@ -53,4 +53,4 @@ spec = do
                 _ -> False
               )
             isInDiscardOf investigator crypticResearch4 `shouldReturn` True
-            updated investigator2 `shouldSatisfyM` handIs (map PlayerCard cards)
+            handIs (map PlayerCard cards) investigator2 `shouldReturn` True

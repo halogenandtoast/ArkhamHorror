@@ -5,8 +5,9 @@ module Arkham.Event.Cards.BaitAndSwitchSpec
 import TestImport.Lifted
 
 import Arkham.Enemy.Attrs qualified as EnemyAttrs
-import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
-import Arkham.Matcher
+import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..))
+import Arkham.Enemy.Attrs (Field(..))
+import Arkham.Projection
 
 spec :: Spec
 spec = describe "Bait and Switch" $ do
@@ -15,6 +16,7 @@ spec = describe "Bait and Switch" $ do
       $ \attrs -> attrs { investigatorAgility = 3 }
     enemy <- testEnemy (EnemyAttrs.evadeL .~ 3)
     baitAndSwitch <- buildEvent "02034" investigator
+    let Just baitAndSwitchCard = preview _PlayerCard (toCard $ toAttrs baitAndSwitch)
     (location1, location2) <- testConnectedLocations id id
     gameTest
         investigator
@@ -37,7 +39,6 @@ spec = describe "Bait and Switch" $ do
           chooseOnlyOption "Apply results"
           chooseOnlyOption "Move enemy"
 
-          isInDiscardOf investigator baitAndSwitch `shouldReturn` True
-          evadedBy investigator enemy `shouldReturn` True
-          enemyLocation <- withGame $ selectJust $ LocationWithEnemy $ EnemyWithId (toId enemy)
-          enemyLocation `shouldBe` toId location2
+          assert $ fieldP InvestigatorDiscard (== [baitAndSwitchCard]) (toId investigator)
+          assert $ fieldP EnemyEngagedInvestigators null (toId enemy)
+          assert $ fieldP EnemyLocation (== Just (toId location2)) (toId enemy)

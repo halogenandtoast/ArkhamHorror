@@ -10,6 +10,7 @@ module TestImport
 import Arkham.Prelude as X hiding (assert)
 
 import Arkham.Ability
+import Arkham.Projection
 import Arkham.Action
 import Arkham.Agenda as X
 import Arkham.Agenda.Attrs
@@ -444,3 +445,16 @@ newGame investigator = do
     , gameQuestion = mempty
     }
   where investigatorId = toId investigator
+
+-- Helpers
+
+isInDiscardOf :: (IsCard (EntityAttrs a), Entity a) => Investigator -> a -> TestAppT Bool
+isInDiscardOf i a = do
+  let Just pc = preview _PlayerCard (toCard $ toAttrs a)
+  fieldP InvestigatorDiscard (elem pc) (toId i)
+
+getRemainingActions :: Investigator -> TestAppT Int
+getRemainingActions = field InvestigatorRemainingActions . toId
+
+fieldAssert :: (Projection attrs, Entity a, EntityId a ~ EntityId attrs) => Field attrs typ -> (typ -> Bool) -> a -> TestAppT ()
+fieldAssert fld p a = assert $ fieldP fld p (toId a)

@@ -2,10 +2,12 @@ module Arkham.Event.Cards.BackstabSpec
   ( spec
   ) where
 
-import TestImport.Lifted
+import TestImport.Lifted hiding (EnemyDamage)
 
 import Arkham.Enemy.Attrs qualified as EnemyAttrs
-import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Enemy.Attrs (Field(..))
+import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..))
+import Arkham.Projection
 
 spec :: Spec
 spec = do
@@ -15,6 +17,7 @@ spec = do
       investigator <- testInvestigator
         $ \attrs -> attrs { investigatorCombat = 1, investigatorAgility = 4 }
       backstab <- buildEvent "01051" investigator
+      let Just backstabCard = preview _PlayerCard (toCard $ toAttrs backstab)
       enemy <- testEnemy
         ((EnemyAttrs.fightL .~ 3) . (EnemyAttrs.healthL .~ Static 4))
       gameTest
@@ -33,6 +36,5 @@ spec = do
             chooseOnlyOption "Fight enemy"
             chooseOnlyOption "Run skill check"
             chooseOnlyOption "Apply results"
-
-            updated enemy `shouldSatisfyM` hasDamage (3, 0)
-            isInDiscardOf investigator backstab `shouldReturn` True
+            assert $ fieldP EnemyDamage (== 3) (toId enemy)
+            assert $ fieldP InvestigatorDiscard (== [backstabCard]) (toId investigator)

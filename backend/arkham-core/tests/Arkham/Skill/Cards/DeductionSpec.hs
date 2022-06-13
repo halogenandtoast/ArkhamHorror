@@ -5,7 +5,7 @@ module Arkham.Skill.Cards.DeductionSpec
 import TestImport.Lifted
 
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..))
 import Arkham.Location.Attrs (LocationAttrs(..))
 
 spec :: Spec
@@ -39,4 +39,4 @@ spec = describe "Deduction" $ do
               _ -> False
             )
           chooseOnlyOption "apply results"
-          getCount (toId investigator) `shouldReturn` ClueCount 2
+          fieldAssert InvestigatorClues (== 2) investigator

@@ -2,9 +2,13 @@ module Arkham.Investigator.Cards.ZoeySamarasSpec
   ( spec
   ) where
 
-import TestImport.Lifted
+import TestImport.Lifted hiding (EnemyDamage)
 
 import Arkham.Enemy.Attrs qualified as Enemy
+import Arkham.Investigator.Attrs (Field (..))
+import Arkham.Enemy.Attrs (Field (..))
+import Arkham.Game ()
+import Arkham.Classes.HasTokenValue
 
 spec :: Spec
 spec = do
@@ -13,7 +17,7 @@ spec = do
       let zoeySamaras = lookupInvestigator "02001"
       gameTest zoeySamaras [] id $ do
         runMessages
-        token <- getTokenValue zoeySamaras (toId zoeySamaras) ElderSign
+        token <- getTokenValue (toId zoeySamaras) ElderSign (toId zoeySamaras)
         tokenValue token `shouldBe` Just 1
 
     it "elder sign token gives +1 and does +1 damage for attacks" $ do
@@ -40,7 +44,7 @@ spec = do
               )
             chooseOnlyOption "start skill test"
             chooseOnlyOption "apply results"
-            updated enemy `shouldSatisfyM` hasDamage (2, 0)
+            fieldAssert EnemyDamage (== 2) enemy
 
     it "allows you to gain a resource each time you are engaged by an enemy"
       $ do
@@ -72,4 +76,4 @@ spec = do
                     Run{} -> True
                     _ -> False
                   )
-                updatedResourceCount zoeySamaras `shouldReturn` 2
+                fieldAssert InvestigatorResources (== 2) zoeySamaras

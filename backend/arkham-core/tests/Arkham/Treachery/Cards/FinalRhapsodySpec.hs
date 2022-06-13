@@ -2,9 +2,10 @@ module Arkham.Treachery.Cards.FinalRhapsodySpec
   ( spec
   ) where
 
-import TestImport.Lifted
+import TestImport.Lifted hiding (InvestigatorDamage)
 
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Investigator.Attrs (Field(..))
 
 spec :: Spec
 spec = describe "Final Rhapsody" $ do
@@ -27,5 +28,6 @@ spec = describe "Final Rhapsody" $ do
           chooseFirstOption "take horror"
           chooseFirstOption "take horror"
           chooseFirstOption "take horror"
-          updated investigator `shouldSatisfyM` hasDamage (3, 3)
-          isInDiscardOf investigator finalRhapsody `shouldReturn` True
+          fieldAssert InvestigatorDamage (== 3) investigator
+          fieldAssert InvestigatorHorror (== 3) investigator
+          fieldAssert InvestigatorDiscard (== [finalRhapsody]) investigator

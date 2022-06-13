@@ -4,8 +4,9 @@ module Arkham.Treachery.Cards.RexsCurseSpec
 
 import TestImport.Lifted
 
+import Arkham.Investigator.Attrs
+import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Investigator.Attrs hiding (investigator)
 
 spec :: Spec
 spec = describe "Rex's Curse" $ do
@@ -18,8 +19,10 @@ spec = describe "Rex's Curse" $ do
         id
       $ do
           runMessages
-          investigator' <- updated investigator
-          hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'
+          selectAny
+              (TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
+              <> treacheryIs Cards.rexsCurse
+              )
             `shouldReturn` True
 
   it "causes you to reveal another token" $ do
@@ -49,14 +52,16 @@ spec = describe "Rex's Curse" $ do
           chooseOnlyOption "apply results"
           chooseOnlyOption "trigger rex's curse"
           chooseOnlyOption "apply results"
-          investigator' <- updated investigator
-          hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'
+          selectAny
+              (TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
+              <> treacheryIs Cards.rexsCurse
+              )
             `shouldReturn` True
           didRunMessage `refShouldBe` True
 
   it "is shuffled back into your deck if you fail the test" $ do
-    investigator <- testInvestigator $ \attrs ->
-      attrs { investigatorIntellect = 5 }
+    investigator <- testInvestigator
+      $ \attrs -> attrs { investigatorIntellect = 5 }
     rexsCurse <- genPlayerCard Cards.rexsCurse
     gameTest
         investigator
@@ -72,7 +77,9 @@ spec = describe "Rex's Curse" $ do
           chooseOnlyOption "apply results"
           chooseOnlyOption "trigger rex's curse"
           chooseOnlyOption "apply results"
-          investigator' <- updated investigator
-          hasTreacheryWithMatchingCardCode (PlayerCard rexsCurse) investigator'
+          selectAny
+              (TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
+              <> treacheryIs Cards.rexsCurse
+              )
             `shouldReturn` False
-          updated investigator `shouldSatisfyM` deckMatches ((== 1) . length)
+          fieldAssert InvestigatorDeck ((== 1) . length . unDeck) investigator

@@ -6,6 +6,11 @@ import TestImport.Lifted
 
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Location.Attrs qualified as Location
+import Arkham.Location.Attrs (Field(..))
+import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Treachery.Attrs (Field(..))
+import Arkham.Projection
+import Arkham.Matcher
 
 spec :: Spec
 spec = describe "Cover Up" $ do
@@ -18,9 +23,8 @@ spec = describe "Cover Up" $ do
         id
       $ do
           runMessages
-          game <- getTestGame
-          let coverUpTreachery = game ^?! entitiesL . treacheriesL . to toList . ix 0
-          getCount coverUpTreachery `shouldReturn` Just (ClueCount 3)
+          coverUpId <- selectJust $ treacheryIs Cards.coverUp
+          field TreacheryClues coverUpId `shouldReturn` 3
 
   it "allows you to remove a clue instead of discovering clues" $ do
     investigator <- testInvestigator id
@@ -42,10 +46,9 @@ spec = describe "Cover Up" $ do
               Run{} -> True
               _ -> False
             )
-          game <- getTestGame
-          let coverUpTreachery = game ^?! entitiesL . treacheriesL . to toList . ix 0
-          getCount coverUpTreachery `shouldReturn` Just (ClueCount 2)
-          getCount location `shouldReturn` ClueCount 1
+          coverUpId <- selectJust $ treacheryIs Cards.coverUp
+          field TreacheryClues coverUpId `shouldReturn` 2
+          fieldAssert LocationClues (== 1) location
 
   it "causes one mental trauma when the game ends if there are any clues on it"
     $ do
@@ -61,7 +64,7 @@ spec = describe "Cover Up" $ do
           $ do
               runMessages
               chooseOnlyOption "trigger cover up"
-              getCount (toId investigator) `shouldReturn` MentalTraumaCount 1
+              fieldAssert InvestigatorMentalTrauma (== 0) investigator
 
   it "does not cause trauma when the game ends if there are no clues on it" $ do
     investigator <- testInvestigator id
@@ -84,7 +87,6 @@ spec = describe "Cover Up" $ do
               Run{} -> True
               _ -> False
             )
-          game <- getTestGame
-          let coverUpTreachery = game ^?! entitiesL . treacheriesL . to toList . ix 0
-          getCount (toId coverUpTreachery) `shouldReturn` Just (ClueCount 0)
-          getCount (toId investigator) `shouldReturn` MentalTraumaCount 0
+          coverUpId <- selectJust $ treacheryIs Cards.coverUp
+          field TreacheryClues coverUpId `shouldReturn` 0
+          fieldAssert InvestigatorMentalTrauma (== 0) investigator

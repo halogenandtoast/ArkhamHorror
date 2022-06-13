@@ -790,6 +790,10 @@ getTreacheriesMatching matcher = do
       targets <- selectListMap (Just . LocationTarget) locationMatcher
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
       pure $ any (== treacheryTarget) targets
+    TreacheryOnEnemy enemyMatcher -> \treachery -> do
+      targets <- selectListMap (Just . EnemyTarget) enemyMatcher
+      let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
+      pure $ any (== treacheryTarget) targets
     TreacheryInHandOf investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
       pure $ case treacheryInHandOf (toAttrs treachery) of
@@ -1567,6 +1571,8 @@ instance Projection InvestigatorAttrs where
       InvestigatorAgility -> pure investigatorAgility
       InvestigatorHorror -> pure investigatorSanityDamage
       InvestigatorDamage -> pure investigatorHealthDamage
+      InvestigatorMentalTrauma -> pure investigatorMentalTrauma
+      InvestigatorPhysicalTrauma -> pure investigatorPhysicalTrauma
       InvestigatorResources -> pure investigatorResources
       InvestigatorDoom -> pure investigatorDoom
       InvestigatorClues -> pure investigatorClues

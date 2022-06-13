@@ -4,6 +4,10 @@ module Arkham.Treachery.Cards.SearchingForIzzieSpec
 
 import TestImport.Lifted
 
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Treachery.Attrs ( Field (..) )
+import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 
 spec :: Spec
@@ -25,10 +29,10 @@ spec = describe "Searching for Izzie" $ do
         )
       $ do
           runMessages
-          location2' <- updated location2
-          hasTreacheryWithMatchingCardCode
-              (PlayerCard searchingForIzzie)
-              location2'
+          selectAny
+              (TreacheryAt (LocationWithId $ toId location2)
+              <> treacheryIs Cards.searchingForIzzie
+              )
             `shouldReturn` True
 
   it "takes 2 actions and is discarded on a successful investigation" $ do
@@ -46,26 +50,23 @@ spec = describe "Searching for Izzie" $ do
         (entitiesL . locationsL %~ insertEntity location)
       $ do
           runMessages
-          game <- getTestGame
-          let
-            updatedSearchingForIzzie = game ^?! entitiesL . treacheriesL . to toList . ix 0
-
-          [searchingForIzzieAction, _] <- getAbilitiesOf updatedSearchingForIzzie
-
+          searchingForIzzieId <- selectJust
+            $ treacheryIs Cards.searchingForIzzie
+          [searchingForIzzieAction, _] <- field
+            TreacheryAbilities
+            searchingForIzzieId
           push $ UseAbility (toId investigator) searchingForIzzieAction []
           runMessages
           chooseOnlyOption "start skill test"
           chooseOnlyOption "apply results"
-          location' <- updated location
-          hasTreacheryWithMatchingCardCode
-              (PlayerCard searchingForIzzie)
-              location'
+          selectAny
+              (TreacheryAt (LocationWithId $ toId location)
+              <> treacheryIs Cards.searchingForIzzie
+              )
             `shouldReturn` False
-          investigator' <- updated investigator
-          isInDiscardOf investigator' updatedSearchingForIzzie
-            `shouldReturn` True
-          actionsRemaining investigator' `shouldBe` 1
-          investigator' `shouldSatisfy` hasTrauma (0, 0)
+          fieldAssert InvestigatorDiscard (== [searchingForIzzie]) investigator
+          fieldAssert InvestigatorRemainingActions (== 1) investigator
+          fieldAssert InvestigatorMentalTrauma (== 0) investigator
 
   it "causes 1 mental trauma if not discarded" $ do
     investigator <- testInvestigator id
@@ -82,4 +83,4 @@ spec = describe "Searching for Izzie" $ do
       $ do
           runMessages
           chooseOnlyOption "trigger searching for izzie"
-          updated investigator `shouldSatisfyM` hasTrauma (0, 1)
+          fieldAssert InvestigatorMentalTrauma (== 1) investigator

@@ -4,6 +4,10 @@ module Arkham.Investigator.Cards.SkidsOTooleSpec
 
 import TestImport.Lifted
 
+import Arkham.Game.Helpers (getCanAffordCost)
+import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Projection
+
 spec :: Spec
 spec = describe "\"Skids\" O'Toole" $ do
   context "ability" $ do
@@ -17,14 +21,14 @@ spec = describe "\"Skids\" O'Toole" $ do
           id
         $ do
             runMessages
-            skidsOToole' <- updated skidsOToole
-            [buyAction] <- getAbilitiesOf skidsOToole'
+            [buyAction] <- field InvestigatorAbilities (toId skidsOToole)
             push $ UseAbility (toId skidsOToole) buyAction []
             runMessages
             getCanAffordCost
-                (toId skidsOToole')
+                (toId skidsOToole)
                 (TestSource mempty)
                 Nothing
+                []
                 (ActionCost 1)
               `shouldReturn` True
 
@@ -39,4 +43,4 @@ spec = describe "\"Skids\" O'Toole" $ do
             runMessages
             chooseOnlyOption "start skill test"
             chooseOnlyOption "apply results"
-            updatedResourceCount skidsOToole `shouldReturn` 2
+            fieldAssert InvestigatorResources (== 2) skidsOToole

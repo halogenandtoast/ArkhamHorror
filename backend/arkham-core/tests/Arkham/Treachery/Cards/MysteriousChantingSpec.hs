@@ -6,6 +6,7 @@ import TestImport.Lifted
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Enemy.Attrs (Field(..))
 
 spec :: Spec
 spec = describe "Mysterious Chanting" $ do
@@ -31,4 +32,4 @@ spec = describe "Mysterious Chanting" $ do
       $ do
           runMessages
           chooseOnlyOption "choose cultist"
-          getCount (toId cultist) `shouldReturn` DoomCount 2
+          fieldAssert EnemyDoom (== 2) cultist

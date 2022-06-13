@@ -2,11 +2,14 @@ module Arkham.Asset.Cards.DukeSpec
   ( spec
   ) where
 
-import TestImport
+import TestImport hiding (EnemyDamage)
 
 import Arkham.Enemy.Attrs qualified as Enemy
-import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Attrs (Field (..), InvestigatorAttrs(..))
+import Arkham.Asset.Attrs (Field (..) )
+import Arkham.Enemy.Attrs (Field (..) )
 import Arkham.Location.Attrs (LocationAttrs(..))
+import Arkham.Projection
 
 spec :: Spec
 spec = describe "Duke" $ do
@@ -30,14 +33,13 @@ spec = describe "Duke" $ do
           )
         $ do
             runMessages
-            duke' <- updated duke
-            [doFight, _] <- getAbilitiesOf duke'
+            [doFight, _] <- field AssetAbilities (toId duke)
             push $ UseAbility (toId investigator) doFight []
             runMessages
             chooseOnlyOption "Fight enemy"
             chooseOnlyOption "Start skill test"
             chooseOnlyOption "Apply Results"
-            updated enemy `shouldSatisfyM` hasDamage (2, 0)
+            fieldAssert EnemyDamage (== 2) enemy
   context "investigate action" $ do
     it "uses a base intellect skill of 4" $ do
       duke <- buildAsset "02014"
@@ -56,13 +58,12 @@ spec = describe "Duke" $ do
           )
         $ do
             runMessages
-            duke' <- updated duke
-            [_, investigateAction] <- getAbilitiesOf duke'
+            [_, investigateAction] <- field AssetAbilities (toId duke)
             push $ UseAbility (toId investigator) investigateAction []
             runMessages
             chooseOnlyOption "Start skill test"
             chooseOnlyOption "Apply results"
-            updated investigator `shouldSatisfyM` hasClueCount 1
+            fieldAssert InvestigatorClues (== 1) investigator
     it "you may move to a connecting location immediately before investigating"
       $ do
           duke <- buildAsset "02014"
@@ -84,8 +85,7 @@ spec = describe "Duke" $ do
               )
             $ do
                 runMessages
-                duke' <- updated duke
-                [_, investigateAction] <- getAbilitiesOf duke'
+                [_, investigateAction] <- field AssetAbilities (toId duke)
                 pushAll
                   [ moveTo investigator location1
                   , UseAbility (toId investigator) investigateAction []
@@ -99,4 +99,4 @@ spec = describe "Duke" $ do
                   )
                 chooseOnlyOption "Start skill test"
                 chooseOnlyOption "Apply results"
-                updated investigator `shouldSatisfyM` hasClueCount 1
+                fieldAssert InvestigatorClues (== 1) investigator

@@ -39,7 +39,7 @@ spec = describe "Lucky! (2)" $ do
             )
           chooseOnlyOption "apply results"
           didPassTest `refShouldBe` True
-          updated investigator `shouldSatisfyM` handIs [PlayerCard cardToDraw]
+          handIs [PlayerCard cardToDraw] investigator `shouldReturn` True
 
   it "does not cause an autofail to pass" $ do
     cardToDraw <- testPlayerCard id
@@ -71,4 +71,4 @@ spec = describe "Lucky! (2)" $ do
             )
           chooseOnlyOption "apply results"
           didFailTest `refShouldBe` True
-          updated investigator `shouldSatisfyM` handIs [PlayerCard cardToDraw]
+          handIs [PlayerCard cardToDraw] investigator `shouldReturn` True

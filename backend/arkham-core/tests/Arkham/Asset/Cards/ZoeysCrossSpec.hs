@@ -2,8 +2,9 @@ module Arkham.Asset.Cards.ZoeysCrossSpec
   ( spec
   ) where
 
-import TestImport
+import TestImport hiding (EnemyDamage)
 
+import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Enemy.Attrs qualified as Enemy
 import Arkham.Investigator.Attrs qualified as Investigator
 
@@ -34,4 +35,4 @@ spec = do
                   Run{} -> True
                   _ -> False
                 )
-              updated enemy `shouldSatisfyM` hasDamage (1, 0)
+              fieldAssert EnemyDamage (== 1) enemy

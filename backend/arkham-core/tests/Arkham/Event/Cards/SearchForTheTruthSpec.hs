@@ -5,6 +5,7 @@ module Arkham.Event.Cards.SearchForTheTruthSpec
 import TestImport
 
 import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Investigator.Attrs (Field (..))
 
 spec :: Spec
 spec = describe "Search for the Truth" $ do
@@ -20,8 +21,7 @@ spec = describe "Search for the Truth" $ do
         (entitiesL . eventsL %~ insertEntity searchForTheTruth)
       $ do
           runMessages
-          updated investigator
-            `shouldSatisfyM` handIs (map PlayerCard playerCards)
+          fieldAssert InvestigatorHand (== map PlayerCard playerCards) investigator
 
   it "has a maximum of 5 cards" $ do
     investigator <- testInvestigator (Investigator.cluesL .~ 6)
@@ -35,4 +35,4 @@ spec = describe "Search for the Truth" $ do
         (entitiesL . eventsL %~ insertEntity searchForTheTruth)
       $ do
           runMessages
-          updated investigator `shouldSatisfyM` handMatches ((== 5) . length)
+          fieldAssert InvestigatorHand ((== 5) . length) investigator

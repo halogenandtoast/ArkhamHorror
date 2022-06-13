@@ -2,11 +2,14 @@ module Arkham.Event.Cards.OopsSpec
   ( spec
   ) where
 
-import TestImport
+import TestImport hiding (EnemyDamage)
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Enemy.Attrs qualified as Enemy
+import Arkham.Asset.Attrs (Field (..))
+import Arkham.Enemy.Attrs (Field (..))
 import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Projection
 
 spec :: Spec
 spec = describe "Oops!" $ do
@@ -37,7 +40,7 @@ spec = describe "Oops!" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf rolands38Special
+          [doFight] <- field AssetAbilities (toId rolands38Special)
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOptionMatching
@@ -59,8 +62,8 @@ spec = describe "Oops!" $ do
               Run{} -> True
               _ -> False
             )
-          updated enemy `shouldSatisfyM` hasDamage (0, 0)
-          updated enemy2 `shouldSatisfyM` hasDamage (2, 0)
+          fieldAssert EnemyDamage (== 0) enemy
+          fieldAssert EnemyDamage (== 2) enemy2
 
   it "[FAQ] does not deal on success damage" $ do
     investigator <-
@@ -89,7 +92,7 @@ spec = describe "Oops!" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf fortyOneDerringer
+          [doFight] <- field AssetAbilities (toId  fortyOneDerringer)
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOptionMatching
@@ -111,8 +114,8 @@ spec = describe "Oops!" $ do
               Run{} -> True
               _ -> False
             )
-          updated enemy `shouldSatisfyM` hasDamage (0, 0)
-          updated enemy2 `shouldSatisfyM` hasDamage (1, 0)
+          fieldAssert EnemyDamage (== 0) enemy
+          fieldAssert EnemyDamage (== 1) enemy2
 
   it "[FAQ] shotgun only deals 1 damage" $ do
     investigator <-
@@ -141,7 +144,7 @@ spec = describe "Oops!" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf shotgun4
+          [doFight] <- field AssetAbilities (toId shotgun4)
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOptionMatching
@@ -163,5 +166,5 @@ spec = describe "Oops!" $ do
               Run{} -> True
               _ -> False
             )
-          updated enemy `shouldSatisfyM` hasDamage (0, 0)
-          updated enemy2 `shouldSatisfyM` hasDamage (1, 0)
+          fieldAssert EnemyDamage (== 0)  enemy
+          fieldAssert EnemyDamage (== 1) enemy2

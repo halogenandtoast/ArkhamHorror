@@ -2,9 +2,9 @@ module Arkham.Investigator.Cards.AgnesBakerSpec
   ( spec
   ) where
 
-import TestImport
+import TestImport hiding (EnemyDamage)
 
-import Arkham.Enemy.Attrs (EnemyAttrs(..))
+import Arkham.Enemy.Attrs (Field (..), EnemyAttrs(..))
 
 spec :: Spec
 spec = describe "Agnes Baker" $ do
@@ -32,7 +32,7 @@ spec = describe "Agnes Baker" $ do
                 _ -> False
               )
             chooseOnlyOption "damage enemy"
-            updated enemy `shouldSatisfyM` hasDamage (1, 0)
+            fieldAssert EnemyDamage (== 1) enemy
 
   context "elder sign" $ do
     it "gives +1 for each horror on Agnes" $ do

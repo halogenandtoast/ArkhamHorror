@@ -7,6 +7,7 @@ import TestImport
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Investigator.Attrs (Field(..))
 
 spec :: Spec
 spec = describe "Jim's Trumpet" $ do
@@ -35,7 +36,7 @@ spec = describe "Jim's Trumpet" $ do
                 _ -> False
               )
             chooseOnlyOption "choose self"
-            updated investigator `shouldSatisfyM` hasDamage (0, 0)
+            fieldAssert InvestigatorHorror (== 0) investigator
 
     it "on an investigator at your location" $ do
       investigator <- testInvestigator id
@@ -64,7 +65,7 @@ spec = describe "Jim's Trumpet" $ do
                 _ -> False
               )
             chooseOnlyOption "choose investigator at same location"
-            updated investigator2 `shouldSatisfyM` hasDamage (0, 0)
+            fieldAssert InvestigatorHorror (== 0) investigator2
 
     it "even when another player draws token" $ do
       investigator <- testInvestigator id
@@ -93,7 +94,7 @@ spec = describe "Jim's Trumpet" $ do
                 _ -> False
               )
             chooseOnlyOption "choose investigator at same location"
-            updated investigator2 `shouldSatisfyM` hasDamage (0, 0)
+            fieldAssert InvestigatorHorror (== 0) investigator2
 
     it "on an investigator at a connected location" $ do
       investigator <- testInvestigator id
@@ -128,7 +129,7 @@ spec = describe "Jim's Trumpet" $ do
                 _ -> False
               )
             chooseOnlyOption "choose investigator at connected location"
-            updated investigator2 `shouldSatisfyM` hasDamage (0, 0)
+            fieldAssert InvestigatorHorror (== 0) investigator2
 
     it "cannot target an investigator at an unconnected location" $ do
       investigator <- testInvestigator id
@@ -156,4 +157,4 @@ spec = describe "Jim's Trumpet" $ do
             runMessages
             chooseOnlyOption "start skill test"
             chooseOnlyOption "apply results"
-            updated investigator2 `shouldSatisfyM` hasDamage (0, 1)
+            fieldAssert InvestigatorHorror (== 1) investigator2

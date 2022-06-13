@@ -2,11 +2,13 @@ module Arkham.Asset.Cards.Rolands38SpecialSpec
   ( spec
   ) where
 
-import TestImport
+import TestImport hiding (EnemyDamage)
 
-import Arkham.Enemy.Attrs (EnemyAttrs(..))
+import Arkham.Asset.Attrs (Field(..))
+import Arkham.Enemy.Attrs (Field(..), EnemyAttrs(..))
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Location.Attrs (LocationAttrs(..))
+import Arkham.Projection
 
 spec :: Spec
 spec = describe "Roland's .39 Special" $ do
@@ -31,14 +33,14 @@ spec = describe "Roland's .39 Special" $ do
         )
       $ do
           runMessages
-          [doFight] <- getAbilitiesOf rolands38Special
+          [doFight] <- field AssetAbilities (toId rolands38Special)
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOnlyOption "choose enemy"
           chooseOnlyOption "start skill test"
           chooseOnlyOption "apply results"
 
-          updated enemy `shouldSatisfyM` hasDamage (2, 0)
+          fieldAssert EnemyDamage (== 2) enemy
 
   it
       "gives +3 combat and +1 damage if there are 1 or more clues on your location"
@@ -63,11 +65,10 @@ spec = describe "Roland's .39 Special" $ do
             )
           $ do
               runMessages
-              [doFight] <- getAbilitiesOf rolands38Special
+              [doFight] <- field AssetAbilities (toId rolands38Special)
               push $ UseAbility (toId investigator) doFight []
               runMessages
               chooseOnlyOption "choose enemy"
               chooseOnlyOption "start skill test"
               chooseOnlyOption "apply results"
-
-              updated enemy `shouldSatisfyM` hasDamage (2, 0)
+              fieldAssert EnemyDamage (== 2) enemy

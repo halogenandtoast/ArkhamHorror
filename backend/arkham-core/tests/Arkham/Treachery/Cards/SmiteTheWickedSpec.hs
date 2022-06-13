@@ -4,8 +4,13 @@ module Arkham.Treachery.Cards.SmiteTheWickedSpec
 
 import TestImport.Lifted
 
+import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
+import TestImport.Lifted qualified as Msg
 
 spec :: Spec
 spec = describe "Smite the Wicked" $ do
@@ -30,12 +35,10 @@ spec = describe "Smite the Wicked" $ do
       $ do
           runMessages
           chooseOnlyOption "place enemy"
-          game <- getTestGame
-          let enemy' = game ^?! entitiesL . enemiesL . to toList . ix 0
-          location2' <- updated location2
-          hasEnemy enemy' location2' `shouldReturn` True
-          hasTreacheryWithMatchingCardCode (PlayerCard smiteTheWicked) enemy'
+          enemyId <- selectJust AnyEnemy
+          fieldP EnemyLocation (== Just (toId location2)) enemyId
             `shouldReturn` True
+          selectAny (TreacheryOnEnemy (EnemyWithId enemyId)) `shouldReturn` True
 
   it "causes 1 mental trauma if enemy not defeated" $ do
     investigator <- testInvestigator id
@@ -55,7 +58,7 @@ spec = describe "Smite the Wicked" $ do
           runMessages
           chooseOnlyOption "place enemy"
           chooseOnlyOption "trigger smite the wicked"
-          updated investigator `shouldSatisfyM` hasTrauma (0, 1)
+          fieldAssert InvestigatorMentalTrauma (== 1) investigator
 
   it "won't cause trauma if enemy is defeated" $ do
     investigator <- testInvestigator id
@@ -74,11 +77,10 @@ spec = describe "Smite the Wicked" $ do
       $ do
           runMessages
           chooseOnlyOption "place enemy"
-          game <- getTestGame
-          let updatedEnemy = game ^?! entitiesL . enemiesL . to toList . ix 0
+          enemyId <- selectJust AnyEnemy
           pushAll
-            [ EnemyDefeated
-              (toId updatedEnemy)
+            [ Msg.EnemyDefeated
+              enemyId
               (toId investigator)
               (toCardCode enemy)
               (toSource investigator)
@@ -86,9 +88,8 @@ spec = describe "Smite the Wicked" $ do
             , EndOfGame Nothing
             ]
           runMessages
-
-          updated investigator `shouldSatisfyM` hasTrauma (0, 0)
-          isInDiscardOf investigator smiteTheWicked `shouldReturn` True
+          fieldAssert InvestigatorMentalTrauma (== 0) investigator
+          fieldAssert InvestigatorDiscard (elem smiteTheWicked) investigator
 
   it "will cause trauma if player is eliminated" $ do
     investigator <- testInvestigator id
@@ -109,4 +110,4 @@ spec = describe "Smite the Wicked" $ do
           runMessages
           chooseOnlyOption "place enemy"
           chooseOnlyOption "trigger smite the wicked"
-          updated investigator `shouldSatisfyM` hasTrauma (0, 1)
+          fieldAssert InvestigatorMentalTrauma (== 1) investigator

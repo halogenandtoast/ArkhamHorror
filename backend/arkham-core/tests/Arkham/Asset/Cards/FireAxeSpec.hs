@@ -2,10 +2,12 @@ module Arkham.Asset.Cards.FireAxeSpec
   ( spec
   ) where
 
-import TestImport
+import TestImport hiding (EnemyDamage)
 
-import Arkham.Enemy.Attrs (EnemyAttrs(..))
-import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Enemy.Attrs ( Field (..), EnemyAttrs (..) )
+import Arkham.Investigator.Attrs ( InvestigatorAttrs (..) )
+import Arkham.Projection
 
 spec :: Spec
 spec = describe "Fire Axe" $ do
@@ -29,13 +31,13 @@ spec = describe "Fire Axe" $ do
         )
       $ do
           runMessages
-          [doFight, _] <- getAbilitiesOf fireAxe
+          [doFight, _] <- field AssetAbilities (toId fireAxe)
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOnlyOption "Fight enemy"
           chooseOnlyOption "Start skill test"
           chooseOnlyOption "Apply Results"
-          updated enemy `shouldSatisfyM` hasDamage (2, 0)
+          fieldAssert EnemyDamage (== 2) enemy
 
   it "allows you to spend 1 resource to get +2 combat" $ do
     investigator <- testInvestigator
@@ -57,7 +59,7 @@ spec = describe "Fire Axe" $ do
         )
       $ do
           runMessages
-          [doFight, _] <- getAbilitiesOf fireAxe
+          [doFight, _] <- field AssetAbilities (toId fireAxe)
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOnlyOption "Fight enemy"
@@ -86,7 +88,7 @@ spec = describe "Fire Axe" $ do
               _ -> False
             )
           chooseOnlyOption "Apply Results"
-          updated enemy `shouldSatisfyM` hasDamage (1, 0)
+          fieldAssert EnemyDamage (== 1) enemy
 
   it "if you spend your resources before tokens, you stil get +1 damage" $ do
     investigator <- testInvestigator
@@ -108,7 +110,7 @@ spec = describe "Fire Axe" $ do
         )
       $ do
           runMessages
-          [doFight, _] <- getAbilitiesOf fireAxe
+          [doFight, _] <- field AssetAbilities (toId fireAxe)
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOnlyOption "Fight enemy"
@@ -125,7 +127,7 @@ spec = describe "Fire Axe" $ do
               _ -> False
             )
           chooseOnlyOption "Apply Results"
-          updated enemy `shouldSatisfyM` hasDamage (2, 0)
+          fieldAssert EnemyDamage (== 2) enemy
 
   it "limit of 3 resources can be spent" $ do
     investigator <- testInvestigator
@@ -147,7 +149,7 @@ spec = describe "Fire Axe" $ do
         )
       $ do
           runMessages
-          [doFight, _] <- getAbilitiesOf fireAxe
+          [doFight, _] <- field AssetAbilities (toId fireAxe)
           push $ UseAbility (toId investigator) doFight []
           runMessages
           chooseOnlyOption "Fight enemy"
@@ -171,4 +173,4 @@ spec = describe "Fire Axe" $ do
             )
           chooseOnlyOption "Start skill test"
           chooseOnlyOption "Apply Results"
-          updated enemy `shouldSatisfyM` hasDamage (1, 0)
+          fieldAssert EnemyDamage (== 1) enemy

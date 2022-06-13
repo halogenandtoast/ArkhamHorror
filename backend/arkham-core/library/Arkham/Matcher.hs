@@ -467,6 +467,7 @@ data TreacheryMatcher
   | TreacheryInThreatAreaOf InvestigatorMatcher
   | TreacheryIs CardCode
   | TreacheryAt LocationMatcher
+  | TreacheryOnEnemy EnemyMatcher
   | AnyTreachery
   | TreacheryOwnedBy InvestigatorMatcher
   | TreacheryMatches [TreacheryMatcher]

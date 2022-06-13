@@ -6,6 +6,7 @@ import TestImport.Lifted
 
 import Arkham.Action qualified as Action
 import Arkham.Location.Attrs as Location
+import Arkham.Investigator.Attrs (Field(..))
 
 spec :: Spec
 spec = describe "Rex Murphy" $ do
@@ -30,8 +31,8 @@ spec = describe "Rex Murphy" $ do
                 Run{} -> True
                 _ -> False
               )
-            updated rexMurphy `shouldSatisfyM` hasClueCount 2
-            updated location1 `shouldSatisfyM` hasClueCount 0
+            fieldAssert InvestigatorClues (== 2) rexMurphy
+            fieldAssert LocationClues (== 0) location1
 
   context "elder sign token" $ do
     it "can autofail to draw 3 cards" $ do
@@ -61,7 +62,7 @@ spec = describe "Rex Murphy" $ do
               )
 
             chooseOnlyOption "apply results"
-            updated rexMurphy `shouldSatisfyM` handIs (map PlayerCard cards)
+            handIs (map PlayerCard cards) rexMurphy `shouldReturn` True
 
     it "can resolve normally with +2" $ do
       let rexMurphy = lookupInvestigator "02002"
@@ -94,5 +95,5 @@ spec = describe "Rex Murphy" $ do
               )
 
             chooseOnlyOption "apply results"
-            updated rexMurphy `shouldSatisfyM` handIs []
+            handIs [] rexMurphy `shouldReturn` True
             didPassTest `refShouldBe` True

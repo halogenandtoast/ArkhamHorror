@@ -4,8 +4,13 @@ module Arkham.Treachery.Cards.WrackedByNightmaresSpec
 
 import TestImport.Lifted
 
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Asset.Attrs qualified as Asset
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Treachery.Attrs ( Field (..) )
+import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Matcher hiding (AssetExhausted)
+import Arkham.Projection
 
 spec :: Spec
 spec = describe "Wracked by Nightmares" $ do
@@ -23,12 +28,12 @@ spec = describe "Wracked by Nightmares" $ do
         (entitiesL . assetsL %~ insertEntity asset)
       $ do
           runMessages
-          investigator' <- updated investigator
-          hasTreacheryWithMatchingCardCode
-              (PlayerCard wrackedByNightmares)
-              investigator'
+          selectAny
+              (TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
+              <> treacheryIs Cards.wrackedByNightmares
+              )
             `shouldReturn` True
-          updated asset `shouldSatisfyM` isExhausted
+          fieldAssert AssetExhausted (== True) asset
 
   it "trigger actions removes restriction and takes two actions" $ do
     investigator <- testInvestigator id
@@ -41,22 +46,23 @@ spec = describe "Wracked by Nightmares" $ do
         (entitiesL . assetsL %~ insertEntity asset)
       $ do
           runMessages
-          game <- getTestGame
-          let
-            wrackedByNightmaresTreachery =
-              game ^?! entitiesL . treacheriesL . to toList . ix 0
-          [discardWrackedByNightmares] <- getAbilitiesOf
-            wrackedByNightmaresTreachery
+          wrackedByNightmaresId <- selectJust AnyTreachery
+          [discardWrackedByNightmares] <- field
+            TreacheryAbilities
+            wrackedByNightmaresId
           pushAll
             [ UseAbility (toId investigator) discardWrackedByNightmares []
             , ReadyExhausted
             ]
           runMessages
-          investigator' <- updated investigator
-          hasTreacheryWithMatchingCardCode
-              (PlayerCard wrackedByNightmares)
-              investigator'
+          selectAny
+              (TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
+              <> treacheryIs Cards.wrackedByNightmares
+              )
             `shouldReturn` False
-          updated asset `shouldSatisfyM` isReady
-          isInDiscardOf investigator wrackedByNightmares `shouldReturn` True
-          getRemainingActions investigator `shouldReturn` 1
+          fieldAssert AssetExhausted (== True) asset
+          fieldAssert
+            InvestigatorDiscard
+            (== [wrackedByNightmares])
+            investigator
+          fieldAssert InvestigatorRemainingActions (== 1) investigator

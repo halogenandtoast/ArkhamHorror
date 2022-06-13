@@ -4,6 +4,7 @@ module Arkham.Investigator.Cards.RolandBanksSpec
 
 import TestImport.Lifted
 
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Enemy.Attrs (EnemyAttrs(..))
 import Arkham.Location.Attrs (LocationAttrs(..))
 
@@ -37,8 +38,7 @@ spec = describe "Roland Banks" $ do
                     Run{} -> True
                     _ -> False
                   )
-                rolandBanks' <- updated rolandBanks
-                getCount rolandBanks' `shouldReturn` ClueCount 1
+                fieldAssert InvestigatorClues (== 1) rolandBanks
 
   context "elder sign" $ do
     it "gives +1 for each clue on your location" $ do
@@ -56,5 +56,4 @@ spec = describe "Roland Banks" $ do
             runMessages
             chooseOnlyOption "start skill test"
             chooseOnlyOption "apply results"
-            rolandBanks' <- updated rolandBanks
-            getCount rolandBanks' `shouldReturn` ClueCount 1
+            fieldAssert InvestigatorClues (== 1) rolandBanks

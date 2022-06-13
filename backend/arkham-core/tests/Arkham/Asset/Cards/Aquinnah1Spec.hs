@@ -2,9 +2,12 @@ module Arkham.Asset.Cards.Aquinnah1Spec
   ( spec
   ) where
 
-import TestImport
+import TestImport hiding (EnemyDamage)
 
+import Arkham.Message qualified as Msg
 import Arkham.Enemy.Attrs qualified as Enemy
+import Arkham.Investigator.Attrs (Field (..))
+import Arkham.Enemy.Attrs (Field (..))
 
 spec :: Spec
 spec = describe "Aquinnah (1)" $ do
@@ -42,8 +45,8 @@ spec = describe "Aquinnah (1)" $ do
           chooseOptionMatching
             "assign sanity damage to investigator"
             (\case
-              Run (InvestigatorDamage{} : _) -> True
+              Run (Msg.InvestigatorDamage{} : _) -> True
               _ -> False
             )
-          updated investigator `shouldSatisfyM` hasDamage (0, 1)
-          updated enemy2 `shouldSatisfyM` hasDamage (2, 0)
+          fieldAssert InvestigatorHorror (== 1) investigator
+          fieldAssert EnemyDamage (== 2) enemy2

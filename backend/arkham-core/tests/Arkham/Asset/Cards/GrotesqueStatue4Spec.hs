@@ -5,6 +5,8 @@ module Arkham.Asset.Cards.GrotesqueStatue4Spec
 import TestImport
 
 import Arkham.ChaosBagStepState
+import Arkham.ChaosBag.Base
+import Arkham.Scenario.Attrs (Field(..))
 
 spec :: Spec
 spec = describe "Grotesque Statue (4)" $ do
@@ -44,4 +46,5 @@ spec = describe "Grotesque Statue (4)" $ do
             chooseOnlyOption "apply results"
 
             didRunMessage `refShouldBe` True
-            getChaosBagTokens `shouldMatchListM` [Zero, AutoFail]
+            tokens <- scenarioFieldMap ScenarioChaosBag (map tokenFace . chaosBagTokens)
+            liftIO $ tokens `shouldMatchList` [Zero, AutoFail]

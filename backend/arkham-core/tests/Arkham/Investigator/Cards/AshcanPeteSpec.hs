@@ -6,6 +6,8 @@ import TestImport.Lifted
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Event.Cards qualified as Events
+import Arkham.Asset.Attrs (Field(..))
+import Arkham.Matcher (assetIs)
 
 spec :: Spec
 spec = describe "\"Ashcan\" Pete" $ do
@@ -20,8 +22,7 @@ spec = describe "\"Ashcan\" Pete" $ do
         id
       $ do
           runMessages
-          ashcanPete' <- updated ashcanPete
-          hasCardInPlay (PlayerCard duke) ashcanPete' `shouldReturn` True
+          selectAny (assetIs Assets.duke) `shouldReturn` True
 
   context "Ability" $ do
     it "allows to discard to ready an asset" $ do
@@ -47,7 +48,7 @@ spec = describe "\"Ashcan\" Pete" $ do
               )
             chooseOnlyOption "discard card"
             chooseOnlyOption "ready asset"
-            updated asset `shouldSatisfyM` isReady
+            fieldAssert AssetExhausted (== False) asset
 
   context "Elder Sign" $ do
     it "gives +2 and readies duke" $ do
@@ -68,5 +69,5 @@ spec = describe "\"Ashcan\" Pete" $ do
             runMessages
             chooseOnlyOption "start skill test"
             chooseOnlyOption "apply results"
-            updated duke `shouldSatisfyM` isReady
+            fieldAssert AssetExhausted (== False) duke
             didPassTest `refShouldBe` True

@@ -5,7 +5,7 @@ module Arkham.Investigator.Cards.DaisyWalkerSpec
 import TestImport.Lifted
 
 import Arkham.Trait
-
+import Arkham.Game.Helpers
 import Arkham.Asset.Cards qualified as Cards
 
 spec :: Spec
@@ -23,6 +23,7 @@ spec = describe "Daisy Walker" $ do
                 (toId daisyWalker)
                 (TestSource $ singleton Tome)
                 Nothing
+                []
                 (ActionCost 1)
               `shouldReturn` True
 
@@ -47,5 +48,4 @@ spec = describe "Daisy Walker" $ do
             runMessages
             chooseOnlyOption "start skill test"
             chooseOnlyOption "apply results"
-            (handOf <$> updated daisyWalker)
-              `shouldMatchListM` map PlayerCard deckCards
+            handIs (map PlayerCard deckCards) daisyWalker `shouldReturn` True

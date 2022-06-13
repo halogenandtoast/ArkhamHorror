@@ -3,6 +3,9 @@ module Arkham.Investigator.Cards.JennyBarnesSpec
   ) where
 
 import TestImport.Lifted
+import Arkham.Game ()
+import Arkham.Classes.HasTokenValue
+import Arkham.Investigator.Attrs (Field(..))
 
 spec :: Spec
 spec = describe "Jenny Barnes" $ do
@@ -11,13 +14,12 @@ spec = describe "Jenny Barnes" $ do
       let jennyBarnes = lookupInvestigator "02003"
       gameTest jennyBarnes [AllDrawCardAndResource] id $ do
         runMessages
-        updatedResourceCount jennyBarnes `shouldReturn` 2
+        fieldAssert InvestigatorResources (== 2) jennyBarnes
 
   context "elder sign token" $ do
     it "modifier is number of resources" $ do
       let jennyBarnes = lookupInvestigator "02003"
       gameTest jennyBarnes [TakeResources (toId jennyBarnes) 5 False] id $ do
         runMessages
-        jennyBarnes' <- updated jennyBarnes
-        token <- getTokenValue jennyBarnes' (toId jennyBarnes') ElderSign
+        token <- getTokenValue (toId jennyBarnes) ElderSign (toId jennyBarnes)
         tokenValue token `shouldBe` Just 5

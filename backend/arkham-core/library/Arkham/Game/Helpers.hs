@@ -2196,32 +2196,32 @@ getPotentialSlots traits iid = do
           )
           slotTypesAndSlots
 
-getAllAbilities :: (Monad m, HasGame m) => m [Ability]
-getAllAbilities = do
-  enemyAbilities <- concatMapM (field EnemyAbilities)
-    =<< selectList Matcher.AnyEnemy
-  locationAbilities <- concatMapM (field LocationAbilities)
-    =<< selectList Matcher.Anywhere
-  assetAbilities <- concatMapM (field AssetAbilities)
-    =<< selectList Matcher.AnyAsset
-  treacheryAbilities <- concatMapM (field TreacheryAbilities)
-    =<< selectList Matcher.AnyTreachery
-  actAbilities <- concatMapM (field ActAbilities) =<< selectList Matcher.AnyAct
-  agendaAbilities <- concatMapM (field AgendaAbilities)
-    =<< selectList Matcher.AnyAgenda
-  eventAbilities <- concatMapM (field EventAbilities)
-    =<< selectList Matcher.AnyEvent
-  effectAbilities <- concatMapM (field EffectAbilities)
-    =<< selectList Matcher.AnyEffect
-  investigatorAbilities <- concatMapM (field InvestigatorAbilities)
-    =<< selectList Matcher.Anyone
-  pure
-    $ enemyAbilities
-    <> locationAbilities
-    <> assetAbilities
-    <> treacheryAbilities
-    <> eventAbilities
-    <> actAbilities
-    <> agendaAbilities
-    <> effectAbilities
-    <> investigatorAbilities
+-- getAllAbilities :: (Monad m, HasGame m) => m [Ability]
+-- getAllAbilities = do
+--   enemyAbilities <- concatMapM (field EnemyAbilities)
+--     =<< selectList Matcher.AnyEnemy
+--   locationAbilities <- concatMapM (field LocationAbilities)
+--     =<< selectList Matcher.Anywhere
+--   assetAbilities <- concatMapM (field AssetAbilities)
+--     =<< selectList Matcher.AnyAsset
+--   treacheryAbilities <- concatMapM (field TreacheryAbilities)
+--     =<< selectList Matcher.AnyTreachery
+--   actAbilities <- concatMapM (field ActAbilities) =<< selectList Matcher.AnyAct
+--   agendaAbilities <- concatMapM (field AgendaAbilities)
+--     =<< selectList Matcher.AnyAgenda
+--   eventAbilities <- concatMapM (field EventAbilities)
+--     =<< selectList Matcher.AnyEvent
+--   effectAbilities <- concatMapM (field EffectAbilities)
+--     =<< selectList Matcher.AnyEffect
+--   investigatorAbilities <- concatMapM (field InvestigatorAbilities)
+--     =<< selectList Matcher.Anyone
+--   pure
+--     $ enemyAbilities
+--     <> locationAbilities
+--     <> assetAbilities
+--     <> treacheryAbilities
+--     <> eventAbilities
+--     <> actAbilities
+--     <> agendaAbilities
+--     <> effectAbilities
+--     <> investigatorAbilities

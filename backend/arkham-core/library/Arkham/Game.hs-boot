@@ -8,6 +8,7 @@ import Arkham.Campaign.Attrs
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasTokenValue
 import Arkham.Classes.HasDistance
+import Arkham.Classes.HasAbilities
 import Arkham.Classes.Query
 import Arkham.Effect.Attrs
 import Arkham.Enemy.Attrs
@@ -80,3 +81,4 @@ gameRoundHistory :: Game -> HashMap InvestigatorId History
 delve :: Game -> Game
 
 instance HasDistance Game
+instance HasAbilities Game

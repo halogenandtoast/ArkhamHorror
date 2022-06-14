@@ -11,6 +11,7 @@ import Arkham.Card.CardType
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher

@@ -459,8 +459,10 @@ getRemainingActions = field InvestigatorRemainingActions . toId
 evadedBy :: Investigator -> Enemy -> TestAppT Bool
 evadedBy _investigator = fieldP EnemyEngagedInvestigators null . toId
 
-fieldAssert :: (Projection attrs, Entity a, EntityId a ~ EntityId attrs) => Field attrs typ -> (typ -> Bool) -> a -> TestAppT ()
-fieldAssert fld p a = assert $ fieldP fld p (toId a)
+fieldAssert :: (HasCallStack, Projection attrs, Entity a, EntityId a ~ EntityId attrs) => Field attrs typ -> (typ -> Bool) -> a -> TestAppT ()
+fieldAssert fld p a = do
+  result <- fieldP fld p (toId a)
+  liftIO $ result `shouldBe` True
 
 handIs :: [Card] -> Investigator -> TestAppT Bool
 handIs cards = fieldP InvestigatorHand (== cards) . toId

@@ -4,8 +4,9 @@ module Arkham.Event.Cards.SearchForTheTruthSpec
 
 import TestImport
 
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Investigator.Attrs qualified as Investigator
-import Arkham.Investigator.Attrs (Field (..))
+import Arkham.Projection
 
 spec :: Spec
 spec = describe "Search for the Truth" $ do
@@ -21,7 +22,8 @@ spec = describe "Search for the Truth" $ do
         (entitiesL . eventsL %~ insertEntity searchForTheTruth)
       $ do
           runMessages
-          fieldAssert InvestigatorHand (== map PlayerCard playerCards) investigator
+          field InvestigatorHand (toId investigator)
+            `shouldMatchListM` map PlayerCard playerCards
 
   it "has a maximum of 5 cards" $ do
     investigator <- testInvestigator (Investigator.cluesL .~ 6)

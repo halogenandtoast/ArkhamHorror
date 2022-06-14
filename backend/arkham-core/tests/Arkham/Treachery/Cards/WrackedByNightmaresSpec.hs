@@ -60,7 +60,7 @@ spec = describe "Wracked by Nightmares" $ do
               <> treacheryIs Cards.wrackedByNightmares
               )
             `shouldReturn` False
-          fieldAssert AssetExhausted (== True) asset
+          fieldAssert AssetExhausted (== False) asset
           fieldAssert
             InvestigatorDiscard
             (== [wrackedByNightmares])

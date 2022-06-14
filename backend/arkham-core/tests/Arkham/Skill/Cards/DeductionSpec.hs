@@ -29,7 +29,7 @@ spec = describe "Deduction" $ do
           chooseOptionMatching
             "commit skill card"
             (\case
-              Run{} -> True
+              TargetLabel{} -> True
               _ -> False
             )
           chooseOptionMatching

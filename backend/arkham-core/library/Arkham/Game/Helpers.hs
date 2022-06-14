@@ -355,6 +355,7 @@ getCanAffordCost iid source mAction windows' = \case
             foldr (applyActionCostModifier takenActions mAction) n modifiers
         traits <- case source of
           AssetSource aid -> fieldMap AssetTraits HashSet.toList aid
+          TestSource traits -> pure $ HashSet.toList traits
           _ -> pure []
 
         tomeActions <- if Tome `elem` traits

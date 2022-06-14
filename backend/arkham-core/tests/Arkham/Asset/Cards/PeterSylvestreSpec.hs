@@ -22,7 +22,7 @@ spec = describe "Peter Sylvestre" $ do
           getModifiers (TestSource mempty) (toTarget investigator)
             `shouldReturn` [SkillModifier SkillAgility 1]
 
-  it "removes one horror at the end of your turn" $ do
+  fit "removes one horror at the end of your turn" $ do
     investigator <- testInvestigator id
     peterSylvestre <- buildAsset "02033"
     gameTest

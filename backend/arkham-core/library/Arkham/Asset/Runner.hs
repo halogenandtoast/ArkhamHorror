@@ -52,11 +52,11 @@ instance RunMessage AssetAttrs where
       pure a
     AssetDefeated aid | aid == assetId -> a <$ push (Discard $ toTarget a)
     Msg.AssetDamage aid _ health sanity | aid == assetId ->
-      pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
+      pure $ a & damageL +~ health & horrorL +~ sanity
     HealDamage (isTarget a -> True) n ->
-      pure $ a & healthDamageL %~ max 0 . subtract n
+      pure $ a & damageL %~ max 0 . subtract n
     HealHorror (isTarget a -> True) n ->
-      pure $ a & sanityDamageL %~ max 0 . subtract n
+      pure $ a & horrorL %~ max 0 . subtract n
     When (InvestigatorResigned iid) | assetController == Just iid ->
       a <$ push (ResignWith (AssetTarget assetId))
     InvestigatorEliminated iid | assetController == Just iid ->

@@ -1397,14 +1397,28 @@ enemyMatcherFilter = \case
         (getAbilities enemy)
   CanEvadeEnemy -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
-    let window = Window Timing.When Window.NonFast
-    anyM
-      (andM . sequence
-        [ pure . (`abilityIs` Action.Evade)
-        , getCanPerformAbility iid (InvestigatorSource iid) window
-        ]
-      )
-      (getAbilities enemy)
+    modifiers' <- getModifiers (toSource enemy) (InvestigatorTarget iid)
+    let
+      enemyFilters = mapMaybe
+        (\case
+          CannotFight m -> Just m
+          _ -> Nothing
+        )
+        modifiers'
+      window = Window Timing.When (Window.DuringTurn iid)
+    excluded <- if null enemyFilters
+      then pure False
+      else member (toId enemy) <$> select (mconcat enemyFilters)
+    if excluded
+       then pure False
+       else anyM
+        (andM . sequence
+          [ pure . (`abilityIs` Action.Evade)
+          , getCanPerformAbility iid (InvestigatorSource iid) window
+            . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+          ]
+        )
+        (traceShowId $ getAbilities enemy)
   CanEngageEnemy -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     let window = Window Timing.When Window.NonFast

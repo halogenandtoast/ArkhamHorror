@@ -25,6 +25,7 @@ import Arkham.Stats
 import Arkham.Target
 import Arkham.Trait
 import Control.Monad.Extra (orM)
+import Data.Foldable (foldrM)
 
 getSkillValue :: (Monad m, HasGame m) => SkillType -> InvestigatorId -> m Int
 getSkillValue st iid = case st of
@@ -38,17 +39,20 @@ skillValueFor
   :: (Monad m, HasGame m) => SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> m Int
 skillValueFor skill maction tempModifiers iid = do
   base <- baseSkillValueFor skill maction tempModifiers iid
-  pure $ foldr applyModifier base tempModifiers
+  foldrM applyModifier base tempModifiers
  where
   canBeIncreased = SkillCannotBeIncreased skill `notElem` tempModifiers
-  applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 = max 0 (n + m)
+  applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 = pure $ max 0 (n + m)
+  applyModifier (AddSkillValue sv) n | canBeIncreased = do
+    m <- getSkillValue sv iid
+    pure $ max 0 (n + m)
   applyModifier (SkillModifier skillType m) n | canBeIncreased || m < 0 =
-    if skillType == skill then max 0 (n + m) else n
+    pure $ if skillType == skill then max 0 (n + m) else n
   applyModifier (ActionSkillModifier action skillType m) n
-    | canBeIncreased || m < 0 = if skillType == skill && Just action == maction
+    | canBeIncreased || m < 0 = pure $ if skillType == skill && Just action == maction
       then max 0 (n + m)
       else n
-  applyModifier _ n = n
+  applyModifier _ n = pure n
 
 baseSkillValueFor
   :: (Monad m, HasGame m) => SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> m Int

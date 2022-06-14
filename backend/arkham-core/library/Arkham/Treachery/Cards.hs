@@ -94,6 +94,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , hypochondria
   , indebted
   , internalInjury
+  , lostSoul
   , overzealous
   , paranoia
   , psychosis
@@ -153,7 +154,6 @@ allEncounterTreacheryCards = mapFromList $ map
   , lightOfAforgomon
   , lockedDoor
   , lostInVenice
-  , lostSoul
   , markedByTheSign
   , maskOfUmordhoth
   , maskedHorrors

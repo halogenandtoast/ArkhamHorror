@@ -264,6 +264,7 @@ allPlayerAssetCards = mapFromList $ map
   , strangeSolutionFreezingVariant4
   , strangeSolutionRestorativeConcoction4
   , strayCat
+  , suggestion4
   , switchblade
   , switchblade2
   , theGoldPocketWatch4
@@ -1727,6 +1728,15 @@ arcaneInsight4 :: CardDef
 arcaneInsight4 = (asset "03266" "Arcane Insight" 3 Seeker)
   { cdCardTraits = singleton Spell
   , cdSkills = [SkillWillpower, SkillIntellect]
+  , cdUses = Uses Charge 3
+  , cdSlots = [ArcaneSlot]
+  , cdLevel = 4
+  }
+
+suggestion4 :: CardDef
+suggestion4 = (asset "03268" "Suggestion" 3 Rogue)
+  { cdCardTraits = singleton Spell
+  , cdSkills = [SkillWillpower, SkillAgility]
   , cdUses = Uses Charge 3
   , cdSlots = [ArcaneSlot]
   , cdLevel = 4

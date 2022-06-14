@@ -13,6 +13,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
 import Arkham.Investigator.Attrs ( Field(..) )
+import Arkham.Location.Attrs ( Field(..) )
 import Arkham.Matcher hiding (MoveAction)
 import Arkham.Modifier
 import Arkham.Projection
@@ -75,7 +76,7 @@ instance RunMessage Duke where
                 . (`applyAbilityModifiers` [ActionCostModifier (-1)])
               ]
             )
-          =<< selectList (AbilityOnLocation $ LocationWithId lid)
+          =<< field LocationAbilities lid
       let
         investigateActions :: [Message] = map
           (($ windows')
@@ -88,7 +89,7 @@ instance RunMessage Duke where
           . (`applyAbilityModifiers` [ActionCostModifier (-1)])
           )
           investigateAbilities
-      accessibleLocationIds <- selectList AccessibleLocation
+      accessibleLocationIds <- selectList $ AccessibleTo $ LocationWithId lid
       a <$ if null accessibleLocationIds
         then pushAll investigateActions
         else push

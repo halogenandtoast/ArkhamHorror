@@ -23,6 +23,17 @@ class IsAsset a
 
 type AssetCard a = CardBuilder AssetId a
 
+newtype DiscardedAttrs a = DiscardedAttrs a
+
+instance Entity a => Entity (DiscardedAttrs a) where
+  type EntityId (DiscardedAttrs a) = EntityId a
+  type EntityAttrs (DiscardedAttrs a) = EntityAttrs a
+  toId (DiscardedAttrs a) = toId a
+  toAttrs (DiscardedAttrs a) = toAttrs a
+
+data instance Field (DiscardedAttrs AssetAttrs) :: Type -> Type where
+  DiscardedAssetTraits :: Field (DiscardedAttrs AssetAttrs) (HashSet Trait)
+
 data instance Field AssetAttrs :: Type -> Type where
   AssetName :: Field AssetAttrs Name
   AssetCost :: Field AssetAttrs Int

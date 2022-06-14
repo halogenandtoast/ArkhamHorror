@@ -37,8 +37,8 @@ spec = describe "Knife" $ do
           chooseOnlyOption "Fight enemy"
           chooseOnlyOption "Start skill test"
           chooseOnlyOption "Apply Results"
-          assert $ fieldP EnemyDamage (== 2) (toId enemy)
-          assert $ fieldP InvestigatorDiscard null (toId investigator)
+          fieldAssert EnemyDamage (== 1) enemy
+          fieldAssert InvestigatorDiscard null investigator
 
   it
       "Discard Knife: Fight. You get +2 for this attack. This attack deals +1 damage."
@@ -69,5 +69,5 @@ spec = describe "Knife" $ do
               chooseOnlyOption "Fight enemy"
               chooseOnlyOption "Start skill test"
               chooseOnlyOption "Apply Results"
-              assert $ fieldP EnemyDamage (== 2) (toId enemy)
-              assert $ fieldP InvestigatorDiscard (== [knifeCard]) (toId investigator)
+              fieldAssert EnemyDamage (== 2) enemy
+              fieldAssert InvestigatorDiscard (== [knifeCard]) investigator

@@ -2,6 +2,8 @@ module Arkham.GameEnv where
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Classes.HasAbilities
 import Arkham.Phase
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
@@ -103,3 +105,6 @@ getWindowDepth = gameWindowDepth <$> getGame
 
 getDepthLock :: (Monad m, HasGame m) => m Int
 getDepthLock = gameDepthLock <$> getGame
+
+getAllAbilities :: (Monad m, HasGame m) => m [Ability]
+getAllAbilities = getAbilities <$> getGame

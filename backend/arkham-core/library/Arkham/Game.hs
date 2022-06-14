@@ -3339,3 +3339,23 @@ instance RunMessage Game where
 
 delve :: Game -> Game
 delve g = g { gameDepthLock = gameDepthLock g + 1 }
+
+instance HasAbilities Game where
+  getAbilities g =
+    getAbilities (gameEntities g)
+    <> getAbilities (gameInSearchEntities g)
+    <> concatMap getAbilities (toList $ gameInHandEntities g)
+    <> concatMap getAbilities (toList $ gameInDiscardEntities g)
+
+instance HasAbilities Entities where
+  getAbilities Entities {..} =
+    concatMap getAbilities (toList entitiesLocations)
+    <> concatMap getAbilities (toList entitiesInvestigators)
+    <> concatMap getAbilities (toList entitiesEnemies)
+    <> concatMap getAbilities (toList entitiesAssets)
+    <> concatMap getAbilities (toList entitiesActs)
+    <> concatMap getAbilities (toList entitiesAgendas)
+    <> concatMap getAbilities (toList entitiesTreacheries)
+    <> concatMap getAbilities (toList entitiesEvents)
+    <> concatMap getAbilities (toList entitiesEffects)
+    <> concatMap getAbilities (toList entitiesSkills)

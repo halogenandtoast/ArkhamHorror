@@ -1432,7 +1432,6 @@ test-suite spec
     , base >=4.7 && <5
     , containers
     , hspec
-    , hspec-expectations
     , hspec-expectations-lifted
     , lens
     , mtl

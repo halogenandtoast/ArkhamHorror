@@ -7,6 +7,9 @@ import TestImport.Lifted
 import Arkham.Trait
 import Arkham.Game.Helpers
 import Arkham.Asset.Cards qualified as Cards
+import Arkham.Timing qualified as Timing
+import Arkham.Investigator.Attrs (Field (..))
+import Arkham.Projection
 
 spec :: Spec
 spec = describe "Daisy Walker" $ do
@@ -23,7 +26,7 @@ spec = describe "Daisy Walker" $ do
                 (toId daisyWalker)
                 (TestSource $ singleton Tome)
                 Nothing
-                []
+                [Window Timing.When $ DuringTurn $ toId daisyWalker]
                 (ActionCost 1)
               `shouldReturn` True
 
@@ -48,4 +51,4 @@ spec = describe "Daisy Walker" $ do
             runMessages
             chooseOnlyOption "start skill test"
             chooseOnlyOption "apply results"
-            handIs (map PlayerCard deckCards) daisyWalker `shouldReturn` True
+            field InvestigatorHand (toId daisyWalker) `shouldMatchListM` map PlayerCard deckCards

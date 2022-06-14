@@ -19,8 +19,11 @@ data PlayerCard = MkPlayerCard
   , pcCardCode :: CardCode
   , pcOriginalCardCode :: CardCode
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Generic)
   deriving anyclass Hashable
+
+instance Eq PlayerCard where
+  pc1 == pc2 = pcId pc1 == pcId pc2
 
 instance ToJSON PlayerCard where
   toJSON = genericToJSON $ aesonOptions $ Just "pc"

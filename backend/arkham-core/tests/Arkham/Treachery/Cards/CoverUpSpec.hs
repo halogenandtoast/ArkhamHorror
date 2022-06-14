@@ -64,7 +64,7 @@ spec = describe "Cover Up" $ do
           $ do
               runMessages
               chooseOnlyOption "trigger cover up"
-              fieldAssert InvestigatorMentalTrauma (== 0) investigator
+              fieldAssert InvestigatorMentalTrauma (== 1) investigator
 
   it "does not cause trauma when the game ends if there are no clues on it" $ do
     investigator <- testInvestigator id

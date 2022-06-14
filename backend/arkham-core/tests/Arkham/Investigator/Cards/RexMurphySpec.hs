@@ -5,8 +5,9 @@ module Arkham.Investigator.Cards.RexMurphySpec
 import TestImport.Lifted
 
 import Arkham.Action qualified as Action
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Location.Attrs as Location
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Projection
 
 spec :: Spec
 spec = describe "Rex Murphy" $ do
@@ -18,7 +19,12 @@ spec = describe "Rex Murphy" $ do
           rexMurphy
           [ SetTokens [Zero]
           , moveTo rexMurphy location1
-          , beginActionSkillTest rexMurphy Action.Investigate (Just $ toTarget location1) SkillIntellect 2
+          , beginActionSkillTest
+            rexMurphy
+            Action.Investigate
+            (Just $ toTarget location1)
+            SkillIntellect
+            2
           ]
           (entitiesL . locationsL %~ insertEntity location1)
         $ do
@@ -62,7 +68,8 @@ spec = describe "Rex Murphy" $ do
               )
 
             chooseOnlyOption "apply results"
-            handIs (map PlayerCard cards) rexMurphy `shouldReturn` True
+            field InvestigatorHand (toId rexMurphy)
+              `shouldMatchListM` map PlayerCard cards
 
     it "can resolve normally with +2" $ do
       let rexMurphy = lookupInvestigator "02002"

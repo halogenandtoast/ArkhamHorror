@@ -17,7 +17,6 @@ import Arkham.Name
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Trait (toTraits)
 import Arkham.Zone
 
 playEvent :: Investigator -> Event -> Message

@@ -57,12 +57,11 @@ data AssetAttrs = AssetAttrs
   , assetSlots :: [SlotType]
   , assetHealth :: Maybe Int
   , assetSanity :: Maybe Int
-  , assetHealthDamage :: Int
-  , assetSanityDamage :: Int
   , assetUses :: Uses
   , assetExhausted :: Bool
   , assetDoom :: Int
   , assetClues :: Int
+  , assetDamage :: Int
   , assetHorror :: Int
   , assetCanLeavePlayByNormalMeans :: Bool
   , assetDiscardWhenNoUses :: Bool
@@ -103,14 +102,11 @@ doomL = lens assetDoom $ \m x -> m {assetDoom = x}
 cluesL :: Lens' AssetAttrs Int
 cluesL = lens assetClues $ \m x -> m {assetClues = x}
 
-healthDamageL :: Lens' AssetAttrs Int
-healthDamageL = lens assetHealthDamage $ \m x -> m {assetHealthDamage = x}
-
-sanityDamageL :: Lens' AssetAttrs Int
-sanityDamageL = lens assetSanityDamage $ \m x -> m {assetSanityDamage = x}
-
 usesL :: Lens' AssetAttrs Uses
 usesL = lens assetUses $ \m x -> m {assetUses = x}
+
+damageL :: Lens' AssetAttrs Int
+damageL = lens assetDamage $ \m x -> m {assetDamage = x}
 
 locationL :: Lens' AssetAttrs (Maybe LocationId)
 locationL = lens assetLocation $ \m x -> m {assetLocation = x}
@@ -192,12 +188,11 @@ assetWith f cardDef g =
             , assetSlots = cdSlots cardDef
             , assetHealth = Nothing
             , assetSanity = Nothing
-            , assetHealthDamage = 0
-            , assetSanityDamage = 0
             , assetUses = NoUses
             , assetExhausted = False
             , assetDoom = 0
             , assetClues = 0
+            , assetDamage = 0
             , assetHorror = 0
             , assetCanLeavePlayByNormalMeans = True
             , assetDiscardWhenNoUses = False
@@ -244,5 +239,5 @@ getController = fromJustNote "asset must be owned" . view controllerL
 
 defeated :: AssetAttrs -> Bool
 defeated AssetAttrs {..} =
-  maybe False (assetHealthDamage >=) assetHealth
-    || maybe False (assetSanityDamage >=) assetSanity
+  maybe False (assetDamage >=) assetHealth
+    || maybe False (assetHorror >=) assetSanity

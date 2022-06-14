@@ -1498,13 +1498,13 @@ instance Projection AssetAttrs where
       AssetCost -> pure . maybe 0 toPrintedCost . cdCost $ toCardDef attrs
       AssetClues -> pure assetClues
       AssetHorror -> pure assetHorror
-      AssetDamage -> pure assetHealthDamage
+      AssetDamage -> pure assetDamage
       AssetRemainingHealth -> pure $ case assetHealth of
         Nothing -> Nothing
-        Just n -> Just $ max 0 (n - assetHealthDamage)
+        Just n -> Just $ max 0 (n - assetDamage)
       AssetRemainingSanity -> pure $ case assetSanity of
         Nothing -> Nothing
-        Just n -> Just $ max 0 (n - assetSanityDamage)
+        Just n -> Just $ max 0 (n - assetHorror)
       AssetDoom -> pure assetDoom
       AssetExhausted -> pure assetExhausted
       AssetUses -> pure assetUses

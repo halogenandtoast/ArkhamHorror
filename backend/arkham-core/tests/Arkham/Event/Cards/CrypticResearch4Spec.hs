@@ -4,6 +4,9 @@ module Arkham.Event.Cards.CrypticResearch4Spec
 
 import TestImport.Lifted
 
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Projection
+
 spec :: Spec
 spec = do
   describe "Cryptic Research 4" $ do
@@ -26,7 +29,8 @@ spec = do
             chooseOnlyOption "choose self"
 
             isInDiscardOf investigator crypticResearch4 `shouldReturn` True
-            handIs (map PlayerCard cards) investigator `shouldReturn` True
+            field InvestigatorHand (toId investigator)
+              `shouldMatchListM` map PlayerCard cards
 
     it "can select any investigator at the same location" $ do
       investigator <- testInvestigator id
@@ -49,8 +53,10 @@ spec = do
             chooseOptionMatching
               "choose other investigator"
               (\case
-                TargetLabel (InvestigatorTarget iid') _ | iid' == toId investigator2 -> True
+                TargetLabel (InvestigatorTarget iid') _
+                  | iid' == toId investigator2 -> True
                 _ -> False
               )
             isInDiscardOf investigator crypticResearch4 `shouldReturn` True
-            handIs (map PlayerCard cards) investigator2 `shouldReturn` True
+            field InvestigatorHand (toId investigator2)
+              `shouldMatchListM` map PlayerCard cards

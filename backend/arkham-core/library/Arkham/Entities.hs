@@ -63,3 +63,20 @@ instance RunMessage Entities where
       >>= traverseOf (assetsL . traverse) (runMessage msg)
       >>= traverseOf (skillsL . traverse) (runMessage msg)
       >>= traverseOf (investigatorsL . traverse) (runMessage msg)
+
+instance Monoid Entities where
+  mempty = defaultEntities
+
+instance Semigroup Entities where
+  a <> b = Entities
+    { entitiesLocations = entitiesLocations a <> entitiesLocations b
+    , entitiesInvestigators = entitiesInvestigators a <> entitiesInvestigators b
+    , entitiesEnemies = entitiesEnemies a <> entitiesEnemies b
+    , entitiesAssets = entitiesAssets a <> entitiesAssets b
+    , entitiesActs = entitiesActs a <> entitiesActs b
+    , entitiesAgendas = entitiesAgendas a <> entitiesAgendas b
+    , entitiesTreacheries = entitiesTreacheries a <> entitiesTreacheries b
+    , entitiesEvents = entitiesEvents a <> entitiesEvents b
+    , entitiesEffects = entitiesEffects a <> entitiesEffects b
+    , entitiesSkills = entitiesSkills a <> entitiesSkills b
+    }

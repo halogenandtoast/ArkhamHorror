@@ -10,6 +10,7 @@ import Arkham.Asset.Attrs (Field (..) )
 import Arkham.Enemy.Attrs (Field (..) )
 import Arkham.Location.Attrs (LocationAttrs(..))
 import Arkham.Projection
+import Arkham.Timing qualified as Timing
 
 spec :: Spec
 spec = describe "Duke" $ do
@@ -59,7 +60,7 @@ spec = describe "Duke" $ do
         $ do
             runMessages
             [_, investigateAction] <- field AssetAbilities (toId duke)
-            push $ UseAbility (toId investigator) investigateAction []
+            push $ UseAbility (toId investigator) investigateAction [Window Timing.When (DuringTurn $ toId investigator)]
             runMessages
             chooseOnlyOption "Start skill test"
             chooseOnlyOption "Apply results"

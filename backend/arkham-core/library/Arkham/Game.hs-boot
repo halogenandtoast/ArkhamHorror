@@ -58,6 +58,7 @@ instance Query TreacheryMatcher
 instance Projection ActAttrs
 instance Projection AgendaAttrs
 instance Projection AssetAttrs
+instance Projection (DiscardedAttrs AssetAttrs)
 instance Projection CampaignAttrs
 instance Projection EffectAttrs
 instance Projection EnemyAttrs

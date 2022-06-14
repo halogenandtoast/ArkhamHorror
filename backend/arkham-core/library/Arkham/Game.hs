@@ -15,7 +15,7 @@ import Arkham.Action qualified as Action
 import Arkham.Agenda
 import Arkham.Agenda.Attrs ( AgendaAttrs (..), Field (..) )
 import Arkham.Asset
-import Arkham.Asset.Attrs ( AssetAttrs (..), Field (..) )
+import Arkham.Asset.Attrs ( DiscardedAttrs (..), AssetAttrs (..), Field (..) )
 import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
@@ -1435,7 +1435,7 @@ getAgenda aid =
   fromJustNote missingAgenda . preview (entitiesL . agendasL . ix aid) <$> getGame
   where missingAgenda = "Unknown agenda: " <> show aid
 
-getAsset :: (Monad m, HasGame m) => AssetId -> m Asset
+getAsset :: (HasCallStack, Monad m, HasGame m) => AssetId -> m Asset
 getAsset aid =
   fromJustNote missingAsset . preview (entitiesL . assetsL . ix aid) <$> getGame
   where missingAsset = "Unknown asset: " <> show aid
@@ -1519,6 +1519,14 @@ instance Projection AssetAttrs where
       AssetCardDef -> pure $ toCardDef attrs
       AssetCard -> pure $ lookupCard assetCardCode (unAssetId aid)
       AssetAbilities -> pure $ getAbilities a
+
+instance Projection (DiscardedAttrs AssetAttrs) where
+  field f aid = do
+    let missingAsset = "Unknown asset: " <> show aid
+    a <- fromJustNote missingAsset . lookup aid . entitiesAssets . mconcat . HashMap.elems . gameInDiscardEntities <$> getGame
+    let attrs = toAttrs a
+    case f of
+      DiscardedAssetTraits -> pure . cdCardTraits $ toCardDef attrs
 
 instance Projection ActAttrs where
   field f aid = do

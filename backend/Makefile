@@ -25,7 +25,7 @@ core:
 .PHONY: test
 test:
 	cd arkham-core && \
-	stack build --test --fast arkham-core \
+	stack build --pedantic --test --fast arkham-core \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
 	  --file-watch \

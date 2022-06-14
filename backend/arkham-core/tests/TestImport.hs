@@ -9,9 +9,7 @@ module TestImport
 
 import Arkham.Prelude as X hiding (assert)
 
-import Arkham.Ability
 import Arkham.Projection
-import Arkham.Action
 import Arkham.Agenda as X
 import Arkham.Agenda.Attrs
 import Arkham.Agenda.Cards qualified as Cards
@@ -21,16 +19,12 @@ import Arkham.Asset as X ( Asset (Adaptable1'), createAsset, lookupAsset )
 import Arkham.Asset.Attrs
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Cards.Adaptable1
-import Arkham.AssetId
 import Arkham.Card as X
 import Arkham.Card.CardDef qualified as CardDef
 import Arkham.Card.EncounterCard as X
 import Arkham.Card.PlayerCard as X
 import Arkham.ChaosBag as X
-import Arkham.ChaosBag qualified as ChaosBag
-import Arkham.Classes as X hiding
-  ( getCount, getId, getModifiers, getTokenValue )
-import Arkham.Classes qualified as Arkham
+import Arkham.Classes as X hiding ( getTokenValue )
 import Arkham.Cost as X
 import Arkham.Difficulty
 import Arkham.Enemy as X
@@ -41,13 +35,10 @@ import Arkham.Event as X
 import Arkham.Game as X hiding ( getAsset, newGame, runMessages )
 import Arkham.Game qualified as Game
 import Arkham.Game.Helpers as X hiding ( getCanAffordCost )
-import Arkham.Game.Helpers qualified as Helpers
 import Arkham.GameValue as X
 import Arkham.Helpers as X
-import Arkham.Helpers.Modifiers as Arkham
 import Arkham.Investigator as X
-import Arkham.Investigator.Attrs hiding (investigator, assetsL)
-import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Investigator.Attrs hiding (assetsL)
 import Arkham.Helpers.Investigator qualified as Investigator
 import Arkham.Investigator.Cards.JennyBarnes
 import Arkham.Investigator.Cards qualified as Cards
@@ -59,7 +50,6 @@ import Arkham.Location.Cards.Study
 import Arkham.LocationId as X
 import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
 import Arkham.Message as X
-import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Scenario as X
 import Arkham.Scenario.Attrs
@@ -330,7 +320,7 @@ assert body = do
   result <- body
   liftIO $ result `shouldBe` True
 
-withGame :: (MonadReader env m, HasGame m, MonadIO m) => ReaderT Game m b -> m b
+withGame :: (MonadReader env m, HasGame m) => ReaderT Game m b -> m b
 withGame b = do
   g <- getGame
   runReaderT b g

@@ -144,6 +144,7 @@ data ModifierType
   | SetDifficulty Int
   | ShroudModifier Int
   | SkillModifier SkillType Int
+  | AddSkillValue SkillType
   | SkillCannotBeIncreased SkillType
   | SkipMythosPhaseStep MythosPhaseStep
   | SpawnNonEliteAtConnectingInstead

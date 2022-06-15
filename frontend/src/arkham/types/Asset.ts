@@ -17,13 +17,12 @@ export interface AssetContents {
   cardCode: string;
   owner: string | null;
   health: number | null;
-  healthDamage: number;
+  damage: number;
   sanity: number | null;
   clues: number;
-  sanityDamage: number;
   uses: Uses | null;
   exhausted: boolean;
-  horror?: number;
+  horror: number;
   doom: number;
   cardsUnderneath: Card[];
 }
@@ -33,13 +32,12 @@ export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
   cardCode: JsonDecoder.string,
   owner: JsonDecoder.nullable(JsonDecoder.string),
   health: JsonDecoder.nullable(JsonDecoder.number),
-  healthDamage: JsonDecoder.number,
+  damage: JsonDecoder.number,
   sanity: JsonDecoder.nullable(JsonDecoder.number),
   clues: JsonDecoder.number,
-  sanityDamage: JsonDecoder.number,
   uses: JsonDecoder.nullable(usesDecoder),
   exhausted: JsonDecoder.boolean,
-  horror: JsonDecoder.optional(JsonDecoder.number),
+  horror: JsonDecoder.number,
   doom: JsonDecoder.number,
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
 }, 'AssetContents');

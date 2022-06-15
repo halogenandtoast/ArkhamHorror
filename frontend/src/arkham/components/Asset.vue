@@ -25,21 +25,16 @@
         :amount="asset.contents.uses.amount"
       />
       <PoolItem
-        v-if="asset.contents.horror"
-        type="sanity"
-        :amount="asset.contents.horror"
-      />
-      <PoolItem
-        v-if="asset.contents.health"
+        v-if="asset.contents.damage > 0"
         type="health"
-        :amount="asset.contents.healthDamage"
+        :amount="asset.contents.daamage"
         :class="{ 'health--can-interact': healthAction !== -1 }"
         @choose="$emit('choose', healthAction)"
       />
       <PoolItem
-        v-if="asset.contents.sanity"
+        v-if="asset.contents.horror > 0"
         type="sanity"
-        :amount="asset.contents.sanityDamage"
+        :amount="asset.contents.horror"
         :class="{ 'sanity--can-interact': sanityAction !== -1 }"
         @choose="$emit('choose', sanityAction)"
       />

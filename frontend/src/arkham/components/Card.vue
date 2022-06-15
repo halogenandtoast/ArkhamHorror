@@ -106,7 +106,6 @@ export default defineComponent({
     })
 
     function abilityLabel(idx: number) {
-      console.log()
       const label = choices.value[idx].tag === 'Run'
         ? ( choices.value[idx].contents[0].contents[1].type.contents[0].tag === 'AmongSearchedCards'
             ? null

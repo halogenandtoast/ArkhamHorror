@@ -10,7 +10,6 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Attrs
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Classes.Entity
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher

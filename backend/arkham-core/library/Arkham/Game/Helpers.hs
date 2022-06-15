@@ -34,6 +34,7 @@ import Arkham.Criteria ( Criterion )
 import Arkham.Criteria qualified as Criteria
 import Arkham.DamageEffect
 import Arkham.Deck hiding ( InvestigatorDiscard )
+import Arkham.DefeatedBy
 import Arkham.EncounterCard
 import Arkham.EncounterSet
 import Arkham.Enemy.Attrs ( Field (..) )
@@ -1326,13 +1327,14 @@ windowMatches iid source window' = \case
           (matchWho who whoMatcher)
           (locationMatches iid source window' locationId whereMatcher)
       _ -> pure False
-  Matcher.InvestigatorDefeated timingMatcher sourceMatcher whoMatcher ->
-    case window' of
-      Window t (Window.InvestigatorDefeated source' who) | t == timingMatcher ->
-        liftA2
-          (&&)
-          (matchWho who whoMatcher)
-          (sourceMatches source' sourceMatcher)
+  Matcher.InvestigatorDefeated timingMatcher sourceMatcher defeatedByMatcher whoMatcher
+    -> case window' of
+      Window t (Window.InvestigatorDefeated source' defeatedBy who)
+        | t == timingMatcher -> andM
+          [ matchWho who whoMatcher
+          , sourceMatches source' sourceMatcher
+          , defeatedByMatches defeatedBy defeatedByMatcher
+          ]
       _ -> pure False
   Matcher.AgendaWouldAdvance timingMatcher advancementReason agendaMatcher ->
     case window' of
@@ -2286,32 +2288,16 @@ getPotentialSlots traits iid = do
           )
           slotTypesAndSlots
 
--- getAllAbilities :: (Monad m, HasGame m) => m [Ability]
--- getAllAbilities = do
---   enemyAbilities <- concatMapM (field EnemyAbilities)
---     =<< selectList Matcher.AnyEnemy
---   locationAbilities <- concatMapM (field LocationAbilities)
---     =<< selectList Matcher.Anywhere
---   assetAbilities <- concatMapM (field AssetAbilities)
---     =<< selectList Matcher.AnyAsset
---   treacheryAbilities <- concatMapM (field TreacheryAbilities)
---     =<< selectList Matcher.AnyTreachery
---   actAbilities <- concatMapM (field ActAbilities) =<< selectList Matcher.AnyAct
---   agendaAbilities <- concatMapM (field AgendaAbilities)
---     =<< selectList Matcher.AnyAgenda
---   eventAbilities <- concatMapM (field EventAbilities)
---     =<< selectList Matcher.AnyEvent
---   effectAbilities <- concatMapM (field EffectAbilities)
---     =<< selectList Matcher.AnyEffect
---   investigatorAbilities <- concatMapM (field InvestigatorAbilities)
---     =<< selectList Matcher.Anyone
---   pure
---     $ enemyAbilities
---     <> locationAbilities
---     <> assetAbilities
---     <> treacheryAbilities
---     <> eventAbilities
---     <> actAbilities
---     <> agendaAbilities
---     <> effectAbilities
---     <> investigatorAbilities
+defeatedByMatches
+  :: Applicative m => DefeatedBy -> Matcher.DefeatedByMatcher -> m Bool
+defeatedByMatches defeatedBy = \case
+  Matcher.ByHorror ->
+    pure
+      $ (defeatedBy == DefeatedByHorror)
+      || (defeatedBy == DefeatedByDamageAndHorror)
+  Matcher.ByDamage ->
+    pure
+      $ (defeatedBy == DefeatedByDamage)
+      || (defeatedBy == DefeatedByDamageAndHorror)
+  Matcher.ByOther -> pure $ defeatedBy == DefeatedByOther
+  Matcher.ByAny -> pure True

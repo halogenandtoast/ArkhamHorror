@@ -25,6 +25,7 @@ import Arkham.CommitRestriction
 import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck qualified as Deck
+import Arkham.DefeatedBy
 import Arkham.Event.Attrs ( Field (..) )
 import Arkham.Game.Helpers hiding ( windows )
 import Arkham.Game.Helpers qualified as Helpers
@@ -64,14 +65,14 @@ runInvestigatorMessage
   :: Message -> InvestigatorAttrs -> GameT InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   EndCheckWindow -> do
-    depth <- getWindowDepth
+    depth <- traceShowId <$> getWindowDepth
     pure $ a & usedAbilitiesL %~ filter
       (\UsedAbility {..} -> case abilityLimit usedAbility of
         NoLimit -> False
-        PlayerLimit PerWindow _ -> depth >= usedDepth
-        GroupLimit PerWindow _ -> depth >= usedDepth
+        PlayerLimit PerWindow _ -> depth > usedDepth
+        GroupLimit PerWindow _ -> depth > usedDepth
         _ -> True
-      )
+      ) . traceShowId
   ResetGame ->
     pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) ())
       { investigatorXp = investigatorXp
@@ -245,12 +246,33 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll $ resolve $ Msg.InvestigatorResigned iid
     pure $ a & resignedL .~ True
   Msg.InvestigatorDefeated source iid | iid == investigatorId -> do
+    modifiedHealth <- getModifiedHealth a
+    modifiedSanity <- getModifiedSanity a
+    let
+      defeatedByHorror = investigatorSanityDamage >= modifiedSanity
+      defeatedByDamage = investigatorHealthDamage >= modifiedHealth
+      defeatedBy = case (defeatedByHorror, defeatedByDamage) of
+        (True, True) -> DefeatedByDamageAndHorror
+        (True, False) -> DefeatedByHorror
+        (False, True) -> DefeatedByDamage
+        (False, False) -> DefeatedByOther
+      physicalTrauma =
+        if investigatorHealthDamage >= modifiedHealth then 1 else 0
+      mentalTrauma =
+        if investigatorSanityDamage >= modifiedSanity then 1 else 0
     windowMsg <- checkWindows
-      ((`Window` Window.InvestigatorDefeated source iid)
-      <$> [Timing.When, Timing.After]
-      )
+      ((`Window` Window.InvestigatorDefeated source defeatedBy iid) <$> [Timing.After])
     pushAll [windowMsg, InvestigatorWhenEliminated (toSource a) iid]
-    pure $ a & defeatedL .~ True
+    pure
+      $ a
+      & defeatedL
+      .~ True
+      & endedTurnL
+      .~ True
+      & physicalTraumaL
+      +~ physicalTrauma
+      & mentalTraumaL
+      +~ mentalTrauma
   Msg.InvestigatorResigned iid | iid == investigatorId -> do
     push (InvestigatorWhenEliminated (toSource a) iid)
     pure $ a & resignedL .~ True
@@ -1130,10 +1152,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           else push
             (chooseOne
               iid
-              [ Run
-                  [ Discard (AssetTarget aid')
-                  , InvestigatorPlayAsset iid aid
-                  ]
+              [ Run [Discard (AssetTarget aid'), InvestigatorPlayAsset iid aid]
               | aid' <- assetsThatCanProvideSlots
               ]
             )
@@ -1162,23 +1181,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & mentalTraumaL .~ investigatorSanity
   CheckDefeated source -> do
     facingDefeat <- getFacingDefeat a
-    if facingDefeat
-      then do
-        modifiedHealth <- getModifiedHealth a
-        modifiedSanity <- getModifiedSanity a
-        push (InvestigatorWhenDefeated source investigatorId)
-        let
-          physicalTrauma =
-            if investigatorHealthDamage >= modifiedHealth then 1 else 0
-          mentalTrauma =
-            if investigatorSanityDamage >= modifiedSanity then 1 else 0
-        pure
-          $ a
-          & physicalTraumaL
-          +~ physicalTrauma
-          & mentalTraumaL
-          +~ mentalTrauma
-      else pure a
+    when facingDefeat $ do
+      modifiedHealth <- getModifiedHealth a
+      modifiedSanity <- getModifiedSanity a
+      let
+        defeatedByHorror = investigatorSanityDamage >= modifiedSanity
+        defeatedByDamage = investigatorHealthDamage >= modifiedHealth
+        defeatedBy = case (defeatedByHorror, defeatedByDamage) of
+          (True, True) -> DefeatedByDamageAndHorror
+          (True, False) -> DefeatedByHorror
+          (False, True) -> DefeatedByDamage
+          (False, False) -> DefeatedByOther
+      push (InvestigatorWhenDefeated source investigatorId)
+    pure a
   HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->
     pure $ a & healthDamageL %~ max 0 . subtract amount
   HealHorror (InvestigatorTarget iid) amount | iid == investigatorId -> do
@@ -1187,10 +1202,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then a
       else a & sanityDamageL %~ max 0 . subtract amount
   InvestigatorWhenDefeated source iid | iid == investigatorId -> do
-    push (Msg.InvestigatorDefeated source iid)
-    pure $ a & defeatedL .~ True & endedTurnL .~ True
+    modifiedHealth <- getModifiedHealth a
+    modifiedSanity <- getModifiedSanity a
+    let
+      defeatedByHorror = investigatorSanityDamage >= modifiedSanity
+      defeatedByDamage = investigatorHealthDamage >= modifiedHealth
+      defeatedBy = case (defeatedByHorror, defeatedByDamage) of
+        (True, True) -> DefeatedByDamageAndHorror
+        (True, False) -> DefeatedByHorror
+        (False, True) -> DefeatedByDamage
+        (False, False) -> DefeatedByOther
+    windowMsg <- checkWindows
+      ((`Window` Window.InvestigatorDefeated source defeatedBy iid) <$> [Timing.When])
+    pushAll $ [windowMsg, Msg.InvestigatorDefeated source iid]
+    pure a
   InvestigatorKilled source iid | iid == investigatorId -> do
-    unless investigatorDefeated $ push (Msg.InvestigatorDefeated source iid)
+    unless investigatorDefeated
+      $ push (Msg.InvestigatorDefeated source iid)
     pure $ a & defeatedL .~ True & endedTurnL .~ True
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) ->
     a <$ push (MoveTo source investigatorId lid)
@@ -1455,8 +1483,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               any
               modifiers'
               \case
-                CanOnlyUseCardsInRole role ->
-                  null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
+                CanOnlyUseCardsInRole role -> null $ intersect
+                  (cdClassSymbols $ toCardDef card)
+                  (setFromList [Neutral, role])
                 CannotCommitCards matcher -> cardMatch card matcher
                 _ -> False
           passesCommitRestrictions <- allM
@@ -1482,10 +1511,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         (SkillTestAsk $ chooseOne
           iid
           (map
-              (\card -> TargetLabel (CardIdTarget $ toCardId card) [SkillTestCommitCard iid card, beginMessage])
+              (\card -> TargetLabel
+                (CardIdTarget $ toCardId card)
+                [SkillTestCommitCard iid card, beginMessage]
+              )
               committableCards
           <> map
-               (\card -> TargetLabel (CardIdTarget $ toCardId card) [SkillTestUncommitCard iid card, beginMessage])
+               (\card -> TargetLabel
+                 (CardIdTarget $ toCardId card)
+                 [SkillTestUncommitCard iid card, beginMessage]
+               )
                committedCards
           <> map
                (\action -> Run [UseAbility iid action [window], beginMessage])
@@ -1534,8 +1569,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   any
                   modifiers'
                   \case
-                    CanOnlyUseCardsInRole role ->
-                      null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
+                    CanOnlyUseCardsInRole role -> null $ intersect
+                      (cdClassSymbols $ toCardDef card)
+                      (setFromList [Neutral, role])
                     _ -> False
               passesCriterias <- allM
                 passesCommitRestriction
@@ -1555,12 +1591,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         (SkillTestAsk $ chooseOne
           investigatorId
           (map
-              (\card ->
-                TargetLabel (CardIdTarget $ toCardId card) [SkillTestCommitCard investigatorId card, beginMessage]
+              (\card -> TargetLabel
+                (CardIdTarget $ toCardId card)
+                [SkillTestCommitCard investigatorId card, beginMessage]
               )
               committableCards
           <> map
-               (\card -> TargetLabel (CardIdTarget $ toCardId card)
+               (\card -> TargetLabel
+                 (CardIdTarget $ toCardId card)
                  [SkillTestUncommitCard investigatorId card, beginMessage]
                )
                committedCards
@@ -1988,29 +2026,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   EndInvestigation -> do
     pure
       $ a
-      & (usedAbilitiesL
-        %~ filter
-             (\UsedAbility {..} ->
-               abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-             )
+      & (usedAbilitiesL %~ filter
+          (\UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
+          )
         )
   EndEnemy -> do
     pure
       $ a
-      & (usedAbilitiesL
-        %~ filter
-             (\UsedAbility {..} ->
-               abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-             )
+      & (usedAbilitiesL %~ filter
+          (\UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
+          )
         )
   EndUpkeep -> do
     pure
       $ a
-      & (usedAbilitiesL
-        %~ filter
-             (\UsedAbility {..} ->
-               abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-             )
+      & (usedAbilitiesL %~ filter
+          (\UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
+          )
         )
   EndMythos -> do
     pure
@@ -2033,14 +2068,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       abilityLimitType (abilityLimit usedAbility) /= Just PerTurn
     )
   UseAbility iid ability windows | iid == investigatorId -> do
-    push
-      $ CreatePayAbilityCostEffect ability (abilitySource ability) (toTarget a) windows
+    push $ CreatePayAbilityCostEffect
+      ability
+      (abilitySource ability)
+      (toTarget a)
+      windows
     case find ((== ability) . usedAbility) investigatorUsedAbilities of
       Nothing -> do
         depth <- getWindowDepth
         let
-          used =
-            UsedAbility
+          used = UsedAbility
             { usedAbility = ability
             , usedAbilityInitiator = iid
             , usedAbilityWindows = windows
@@ -2049,24 +2086,27 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             }
         pure $ a & usedAbilitiesL %~ (used :)
       Just current -> do
-        let updated = current { usedTimes = usedTimes current + 1 }
-            updatedUsedAbilities = updated : deleteFirst current investigatorUsedAbilities
+        let
+          updated = current { usedTimes = usedTimes current + 1 }
+          updatedUsedAbilities =
+            updated : deleteFirst current investigatorUsedAbilities
         pure $ a & usedAbilitiesL .~ updatedUsedAbilities
   EndSearch iid _ _ _ | iid == investigatorId -> do
     pure
       $ a
       & (usedAbilitiesL %~ filter
-          (\UsedAbility {..} -> case abilityLimitType (abilityLimit usedAbility) of
-            Just (PerSearch _) -> False
-            _ -> True
+          (\UsedAbility {..} ->
+            case abilityLimitType (abilityLimit usedAbility) of
+              Just (PerSearch _) -> False
+              _ -> True
           )
         )
   SkillTestEnds _ -> do
     pure
       $ a
       & (usedAbilitiesL %~ filter
-          (\UsedAbility {..} ->
-            abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility
+          (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility)
+            /= Just PerTestOrAbility
           )
         )
   Blanked msg' -> runMessage msg' a

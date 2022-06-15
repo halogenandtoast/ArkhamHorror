@@ -32,6 +32,7 @@ instance HasAbilities CrazedShoggoth where
     [ mkAbility attrs 1 $ ForcedAbility $ InvestigatorDefeated
         Timing.When
         (SourceIsEnemyAttack $ EnemyWithId $ toId attrs)
+        ByAny
         You
     ]
 

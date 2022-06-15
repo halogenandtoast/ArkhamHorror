@@ -577,7 +577,7 @@ data WindowMatcher
   | AddedToVictory Timing CardMatcher
   | PerformAction Timing Who ActionMatcher
   | DrawingStartingHand Timing Who
-  | InvestigatorDefeated Timing SourceMatcher Who
+  | InvestigatorDefeated Timing SourceMatcher DefeatedByMatcher Who
   | AmongSearchedCards Who
   | DeckHasNoCards Timing Who
   | MovedBy Timing Who SourceMatcher
@@ -653,6 +653,10 @@ data WindowMatcher
   | AnyWindow
   | CommittedCards Timing Who CardListMatcher
   | CommittedCard Timing Who CardMatcher
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data DefeatedByMatcher = ByHorror | ByDamage | ByOther | ByAny
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

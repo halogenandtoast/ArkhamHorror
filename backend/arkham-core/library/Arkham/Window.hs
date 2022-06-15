@@ -10,6 +10,7 @@ import Arkham.SkillType (SkillType)
 import Arkham.Card (Card)
 import Arkham.DamageEffect (DamageEffect)
 import Arkham.Deck
+import Arkham.DefeatedBy
 import Arkham.Id
 import Arkham.Matcher (LocationMatcher)
 import Arkham.Phase (Phase)
@@ -76,7 +77,7 @@ data WindowType
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window
   | InitiatedSkillTest InvestigatorId (Maybe Action) Int
-  | InvestigatorDefeated Source InvestigatorId
+  | InvestigatorDefeated Source DefeatedBy InvestigatorId
   | InvestigatorEliminated InvestigatorId
   | LastClueRemovedFromAsset AssetId
   | LeavePlay Target

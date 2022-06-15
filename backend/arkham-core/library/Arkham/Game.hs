@@ -1418,7 +1418,7 @@ enemyMatcherFilter = \case
             . (`applyAbilityModifiers` [ActionCostModifier (-1)])
           ]
         )
-        (traceShowId $ getAbilities enemy)
+        (getAbilities enemy)
   CanEngageEnemy -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     let window = Window Timing.When Window.NonFast

@@ -331,6 +331,7 @@ library
       Arkham.Asset.Cards.SpiritSpeaker
       Arkham.Asset.Cards.SpringfieldM19034
       Arkham.Asset.Cards.Stealth
+      Arkham.Asset.Cards.StHubertsKey
       Arkham.Asset.Cards.StickToThePlan
       Arkham.Asset.Cards.Straitjacket
       Arkham.Asset.Cards.StrangeSolution
@@ -420,6 +421,7 @@ library
       Arkham.DamageEffect
       Arkham.Deck
       Arkham.Decks
+      Arkham.DefeatedBy
       Arkham.Difficulty
       Arkham.Direction
       Arkham.Distance

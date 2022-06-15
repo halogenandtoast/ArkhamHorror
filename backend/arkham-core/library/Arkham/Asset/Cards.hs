@@ -259,6 +259,7 @@ allPlayerAssetCards = mapFromList $ map
   , songOfTheDead2
   , spiritSpeaker
   , springfieldM19034
+  , stHubertsKey
   , strangeSolution
   , strangeSolutionAcidicIchor4
   , strangeSolutionFreezingVariant4
@@ -1740,6 +1741,13 @@ suggestion4 = (asset "03268" "Suggestion" 3 Rogue)
   , cdUses = Uses Charge 3
   , cdSlots = [ArcaneSlot]
   , cdLevel = 4
+  }
+
+stHubertsKey :: CardDef
+stHubertsKey = (asset "03269" ("St. Hubert's Key" <:> "Cleansing Fire") 4 Mystic)
+  { cdCardTraits = setFromList [Item, Charm]
+  , cdSkills = [SkillWillpower]
+  , cdSlots = [AccessorySlot]
   }
 
 toothOfEztli :: CardDef

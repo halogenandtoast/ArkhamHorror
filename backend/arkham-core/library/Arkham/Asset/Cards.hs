@@ -1750,6 +1750,14 @@ stHubertsKey = (asset "03269" ("St. Hubert's Key" <:> "Cleansing Fire") 4 Mystic
   , cdSlots = [AccessorySlot]
   }
 
+arcaneInitiate3 :: CardDef
+arcaneInitiate3 = (asset "03271" "Arcane Initiate" 0 Mystic)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdCardTraits = setFromList [Ally, Sorcerer]
+  , cdSlots = [AllySlot]
+  , cdLevel = 3
+  }
+
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
                )

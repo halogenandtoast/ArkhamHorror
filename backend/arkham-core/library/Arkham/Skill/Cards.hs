@@ -68,6 +68,7 @@ allPlayerSkillCards = mapFromList $ map
   , leadership
   , manualDexterity
   , neitherRainNorSnow
+  , notWithoutAFight
   , opportunist
   , opportunist2
   , overpower
@@ -330,6 +331,12 @@ watchThis = (skill "03233" "\"Watch this!\"" [SkillWillpower, SkillCombat, Skill
 torrentOfPower :: CardDef
 torrentOfPower = (skill "03235" "Torrent of Power" [SkillWild] Mystic)
   { cdCardTraits = singleton Practiced
+  }
+
+notWithoutAFight :: CardDef
+notWithoutAFight = (skill "03272" "\"Not without a fight!\"" [SkillWillpower, SkillCombat, SkillAgility] Survivor)
+  { cdCardTraits = setFromList [Innate]
+  , cdCommitRestrictions = [SelfCanCommitWhen $ InvestigatorEngagedWith AnyEnemy]
   }
 
 trueUnderstanding :: CardDef

@@ -163,6 +163,7 @@ library
       Arkham.Asset.Cards.Aquinnah3
       Arkham.Asset.Cards.ArcaneEnlightenment
       Arkham.Asset.Cards.ArcaneInitiate
+      Arkham.Asset.Cards.ArcaneInitiate3
       Arkham.Asset.Cards.ArcaneInsight4
       Arkham.Asset.Cards.ArcaneStudies
       Arkham.Asset.Cards.ArcaneStudies2
@@ -724,6 +725,7 @@ library
       Arkham.Event.Cards.ThinkOnYourFeet
       Arkham.Event.Cards.UncageTheSoul
       Arkham.Event.Cards.WardOfProtection
+      Arkham.Event.Cards.WardOfProtection2
       Arkham.Event.Cards.WardOfProtection5
       Arkham.Event.Cards.Waylay
       Arkham.Event.Cards.WillToSurvive3

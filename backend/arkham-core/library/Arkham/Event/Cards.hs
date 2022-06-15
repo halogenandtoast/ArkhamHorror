@@ -166,6 +166,7 @@ allPlayerEventCards = mapFromList $ map
   , thinkOnYourFeet
   , uncageTheSoul
   , wardOfProtection
+  , wardOfProtection2
   , wardOfProtection5
   , waylay
   , willToSurvive3
@@ -1003,6 +1004,18 @@ narrowEscape = (event "03267" "Narrow Escape" 0 Rogue)
     (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AttackOfOpportunityAttack
     $ EnemyWithoutModifier AttacksCannotBeCancelled
     )
+  }
+
+wardOfProtection2 :: CardDef
+wardOfProtection2 = (event "03270" "Ward of Protection" 1 Mystic)
+  { cdSkills = [SkillWild]
+  , cdCardTraits = setFromList [Spell, Spirit]
+  , cdFastWindow = Just $ DrawCard
+    Timing.When
+    Anyone
+    (BasicCardMatch NonWeaknessTreachery)
+    EncounterDeck
+  , cdLevel = 2
   }
 
 secondWind :: CardDef

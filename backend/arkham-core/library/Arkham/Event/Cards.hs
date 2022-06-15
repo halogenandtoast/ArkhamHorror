@@ -164,6 +164,7 @@ allPlayerEventCards = mapFromList $ map
   , teamwork
   , thePaintedWorld
   , thinkOnYourFeet
+  , trueSurvivor3
   , uncageTheSoul
   , wardOfProtection
   , wardOfProtection2
@@ -1016,6 +1017,14 @@ wardOfProtection2 = (event "03270" "Ward of Protection" 1 Mystic)
     (BasicCardMatch NonWeaknessTreachery)
     EncounterDeck
   , cdLevel = 2
+  }
+
+trueSurvivor3 :: CardDef
+trueSurvivor3 = (event "03273" "True Survivor" 3 Survivor)
+  { cdCardTraits = singleton Spirit
+  , cdCriteria = Just
+    $ Criteria.CardInDiscard (Criteria.DiscardOf You) (CardWithTrait Innate)
+  , cdLevel = 3
   }
 
 secondWind :: CardDef

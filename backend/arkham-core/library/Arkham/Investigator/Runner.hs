@@ -65,14 +65,14 @@ runInvestigatorMessage
   :: Message -> InvestigatorAttrs -> GameT InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   EndCheckWindow -> do
-    depth <- traceShowId <$> getWindowDepth
+    depth <- getWindowDepth
     pure $ a & usedAbilitiesL %~ filter
       (\UsedAbility {..} -> case abilityLimit usedAbility of
         NoLimit -> False
         PlayerLimit PerWindow _ -> depth > usedDepth
         GroupLimit PerWindow _ -> depth > usedDepth
         _ -> True
-      ) . traceShowId
+      )
   ResetGame ->
     pure $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) ())
       { investigatorXp = investigatorXp
@@ -1181,17 +1181,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & mentalTraumaL .~ investigatorSanity
   CheckDefeated source -> do
     facingDefeat <- getFacingDefeat a
-    when facingDefeat $ do
-      modifiedHealth <- getModifiedHealth a
-      modifiedSanity <- getModifiedSanity a
-      let
-        defeatedByHorror = investigatorSanityDamage >= modifiedSanity
-        defeatedByDamage = investigatorHealthDamage >= modifiedHealth
-        defeatedBy = case (defeatedByHorror, defeatedByDamage) of
-          (True, True) -> DefeatedByDamageAndHorror
-          (True, False) -> DefeatedByHorror
-          (False, True) -> DefeatedByDamage
-          (False, False) -> DefeatedByOther
+    when facingDefeat $
       push (InvestigatorWhenDefeated source investigatorId)
     pure a
   HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->

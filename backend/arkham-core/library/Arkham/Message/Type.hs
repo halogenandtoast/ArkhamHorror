@@ -11,6 +11,7 @@ data MessageType
     | RunWindowMessage
     | EnemySpawnMessage
     | EnemyDefeatedMessage
+    | InvestigatorDefeatedMessage
     | DamageMessage
     | DrawEncounterCardMessage
     deriving stock (Eq, Show, Generic)

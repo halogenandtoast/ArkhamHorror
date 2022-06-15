@@ -33,7 +33,7 @@ import Arkham.EncounterCard.Source
 import Arkham.Exception
 import Arkham.Helpers
 import Arkham.Id
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher hiding (EnemyDefeated, InvestigatorDefeated)
 import Arkham.Name
 import Arkham.Phase
 import Arkham.RequestedTokenStrategy
@@ -61,6 +61,7 @@ messageType RevealToken {} = Just RevealTokenMessage
 messageType InvestigatorDamage {} = Just DamageMessage
 messageType InvestigatorDoAssignDamage {} = Just DamageMessage
 messageType InvestigatorDrewEncounterCard {} = Just DrawEncounterCardMessage
+messageType InvestigatorDefeated {} = Just InvestigatorDefeatedMessage
 messageType RunWindow {} = Just RunWindowMessage
 messageType _ = Nothing
 

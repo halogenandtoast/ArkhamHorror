@@ -148,6 +148,10 @@ const scenarios = [
     name: 'The Pallid Mask',
   },
   {
+    id: '03274',
+    name: 'Black Stars Rise [Not working]',
+  },
+  {
     id: '81001',
     name: 'Curse of the Rougarou',
   },

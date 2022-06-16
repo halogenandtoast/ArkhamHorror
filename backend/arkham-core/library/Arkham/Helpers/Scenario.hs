@@ -8,6 +8,7 @@ import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Id
 import Arkham.Matcher
 import Arkham.PlayerCard
 import Arkham.Projection
@@ -20,7 +21,8 @@ import Data.List.NonEmpty qualified as NE
 scenarioField :: (HasGame m, Monad m) => Field ScenarioAttrs a -> m a
 scenarioField fld = scenarioFieldMap fld id
 
-scenarioFieldMap :: (Monad m, HasGame m) => Field ScenarioAttrs a -> (a -> b) -> m b
+scenarioFieldMap
+  :: (Monad m, HasGame m) => Field ScenarioAttrs a -> (a -> b) -> m b
 scenarioFieldMap fld f = selectJust TheScenario >>= fieldMap fld f
 
 getIsStandalone :: (Monad m, HasGame m) => m Bool
@@ -52,4 +54,10 @@ isHardExpert ScenarioAttrs { scenarioDifficulty } =
   scenarioDifficulty `elem` [Hard, Expert]
 
 getScenarioDeck :: (Monad m, HasGame m) => ScenarioDeckKey -> m [Card]
-getScenarioDeck k = scenarioFieldMap ScenarioDecks (HashMap.findWithDefault [] k)
+getScenarioDeck k =
+  scenarioFieldMap ScenarioDecks (HashMap.findWithDefault [] k)
+
+withStandalone
+  :: (Monad m, HasGame m) => (CampaignId -> m a) -> (ScenarioId -> m a) -> m a
+withStandalone cf sf =
+  maybe (sf =<< selectJust TheScenario) cf =<< selectOne TheCampaign

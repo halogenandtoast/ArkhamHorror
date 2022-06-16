@@ -223,6 +223,7 @@ allLocationCards = mapFromList $ map
   , patientConfinementDrearyCell
   , patientConfinementFamiliarCell
   , pereLachaiseCemetery
+  , porteDeLAvancee
   , prismaticCascade
   , quietHalls_131
   , quietHalls_135
@@ -1320,6 +1321,9 @@ tombOfShadows :: CardDef
 tombOfShadows = (locationWithUnrevealed "03257" "Catacombs" [] "Tomb of Shadows" [] ThePallidMask)
   { cdVictoryPoints = Just 1
   }
+
+porteDeLAvancee :: CardDef
+porteDeLAvancee = location "03283" "Porte de l’Avancée" [] BlackStarsRise
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

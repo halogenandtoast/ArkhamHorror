@@ -131,12 +131,14 @@ library
       Arkham.Agenda.Cards.TheMawWidens
       Arkham.Agenda.Cards.TheOldOnesHunger
       Arkham.Agenda.Cards.TheRitualBegins
+      Arkham.Agenda.Cards.TheRitualBeginsBlackStarsRise
       Arkham.Agenda.Cards.TheRougarouFeeds
       Arkham.Agenda.Cards.TheSecondNight
       Arkham.Agenda.Cards.TheShadowOfTheEclipse
       Arkham.Agenda.Cards.TheTerrifyingTruth
       Arkham.Agenda.Cards.TheThirdAct
       Arkham.Agenda.Cards.TheThirdNight
+      Arkham.Agenda.Cards.TheTideRises
       Arkham.Agenda.Cards.TheTruthIsHidden
       Arkham.Agenda.Cards.TheyreGettingOut
       Arkham.Agenda.Cards.TimeIsRunningShort
@@ -751,6 +753,7 @@ library
       Arkham.Helpers.Event
       Arkham.Helpers.Investigator
       Arkham.Helpers.Location
+      Arkham.Helpers.Log
       Arkham.Helpers.Modifiers
       Arkham.Helpers.Query
       Arkham.Helpers.Scenario
@@ -955,6 +958,7 @@ library
       Arkham.Location.Cards.PatientConfinementFamiliarCell
       Arkham.Location.Cards.PatientConfinementOccupiedCell
       Arkham.Location.Cards.PereLachaiseCemetery
+      Arkham.Location.Cards.PorteDeLAvancee
       Arkham.Location.Cards.PrismaticCascade
       Arkham.Location.Cards.QuietHalls_131
       Arkham.Location.Cards.QuietHalls_135
@@ -1032,6 +1036,7 @@ library
       Arkham.Scenario.Runner
       Arkham.Scenario.Scenarios
       Arkham.Scenario.Scenarios.APhantomOfTruth
+      Arkham.Scenario.Scenarios.BlackStarsRise
       Arkham.Scenario.Scenarios.BloodOnTheAltar
       Arkham.Scenario.Scenarios.CarnevaleOfHorrors
       Arkham.Scenario.Scenarios.CurseOfTheRougarou
@@ -1057,6 +1062,7 @@ library
       Arkham.ScenarioLogKey
       Arkham.Scenarios.APhantomOfTruth.Helpers
       Arkham.Scenarios.APhantomOfTruth.Story
+      Arkham.Scenarios.BlackStarsRise.Story
       Arkham.Scenarios.BloodOnTheAltar.Story
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
       Arkham.Scenarios.CurseOfTheRougarou.Helpers

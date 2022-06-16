@@ -52,6 +52,7 @@ data EncounterSet
   | TheUnspeakableOath
   | APhantomOfTruth
   | ThePallidMask
+  | BlackStarsRise
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

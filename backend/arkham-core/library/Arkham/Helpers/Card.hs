@@ -20,7 +20,7 @@ getCampaignStoryCards = do
     Just campaignId -> field CampaignStoryCards campaignId
     Nothing -> scenarioField ScenarioStoryCards
 
-getCampaignStoryCard :: (Monad m, HasGame m) => CardDef -> m PlayerCard
+getCampaignStoryCard :: (HasCallStack, Monad m, HasGame m) => CardDef -> m PlayerCard
 getCampaignStoryCard def = do
   cards <- concat . HashMap.elems <$> getCampaignStoryCards
   pure . fromJustNote "missing card" $ find ((== def) . toCardDef) cards

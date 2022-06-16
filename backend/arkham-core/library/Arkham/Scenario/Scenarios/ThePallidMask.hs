@@ -13,7 +13,6 @@ import Arkham.Attack
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Distance
@@ -134,8 +133,7 @@ instance RunMessage ThePallidMask where
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      theManInThePallidMask <- genPlayerCard Enemies.theManInThePallidMask
-      push $ ShuffleCardsIntoDeck leadInvestigatorId [theManInThePallidMask]
+      push $ AddCampaignCardToDeck leadInvestigatorId Enemies.theManInThePallidMask
       pure . ThePallidMask $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- getInvestigatorIds
@@ -197,6 +195,8 @@ instance RunMessage ThePallidMask where
         <> [ story investigatorIds harukosInformation | harukoInterviewed ]
         <> [ Remember YouOpenedASecretPassageway | harukoInterviewed ]
         <> [ SetEncounterDeck encounterDeck
+           , SetAgendaDeck
+           , SetActDeck
            , PlaceLocation startingLocation
            , SetLocationLabel
              (toLocationId startingLocation)

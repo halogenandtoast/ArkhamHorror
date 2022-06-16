@@ -5,6 +5,7 @@ module Arkham.Game.Helpers
 
 import Arkham.Prelude
 
+import Arkham.Helpers.Log as X
 import Arkham.Helpers.Ability as X
 import Arkham.Helpers.Modifiers as X
 import Arkham.Helpers.Query as X
@@ -21,9 +22,6 @@ import Arkham.Agenda.Attrs ( Field (..) )
 import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Asset.Uses ( useCount )
 import Arkham.Attack
-import Arkham.Campaign.Attrs ( Field (..) )
-import Arkham.CampaignLog
-import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
@@ -514,31 +512,6 @@ getActions iid window = do
     actions''
   let forcedActions = filter isForcedAbility actions'''
   pure $ if null forcedActions then actions''' else forcedActions
-
-withStandalone
-  :: (Monad m, HasGame m) => (CampaignId -> m a) -> (ScenarioId -> m a) -> m a
-withStandalone cf sf = maybe (sf =<< selectJust Matcher.TheScenario) cf
-  =<< selectOne Matcher.TheCampaign
-
-getCampaignLog :: (Monad m, HasGame m) => m CampaignLog
-getCampaignLog = withStandalone
-  (field CampaignCampaignLog)
-  (field ScenarioStandaloneCampaignLog)
-
-getHasRecord :: (Monad m, HasGame m) => CampaignLogKey -> m Bool
-getHasRecord k = do
-  campaignLog <- getCampaignLog
-  pure $ k `member` (campaignLogRecorded campaignLog)
-
-getRecordCount :: (Monad m, HasGame m) => CampaignLogKey -> m Int
-getRecordCount k = do
-  campaignLog <- getCampaignLog
-  pure $ findWithDefault 0 k (campaignLogRecordedCounts campaignLog)
-
-getRecordSet :: (Monad m, HasGame m) => CampaignLogKey -> m [Recorded CardCode]
-getRecordSet k = do
-  campaignLog <- getCampaignLog
-  pure $ findWithDefault [] k (campaignLogRecordedSets campaignLog)
 
 getPlayerCountValue :: (Monad m, HasGame m) => GameValue Int -> m Int
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount

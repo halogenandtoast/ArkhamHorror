@@ -24,7 +24,6 @@ import Arkham.Game.Helpers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Runner

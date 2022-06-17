@@ -18,7 +18,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message hiding (RevealToken)
-import Arkham.Modifier
 import Arkham.ScenarioLogKey
 import Arkham.Target
 import Arkham.Timing qualified as Timing

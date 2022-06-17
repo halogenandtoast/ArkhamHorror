@@ -10,7 +10,6 @@ import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Message
-import Arkham.Modifier
 
 newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

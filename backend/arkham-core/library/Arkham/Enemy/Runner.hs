@@ -7,7 +7,7 @@ module Arkham.Enemy.Runner
 import Arkham.Prelude
 
 import Arkham.Enemy.Attrs as X
-import Arkham.Enemy.Helpers as X
+import Arkham.Enemy.Helpers as X hiding (EnemyFight, EnemyEvade)
 import Arkham.GameValue as X
 import Arkham.Helpers.Enemy as X
 
@@ -30,7 +30,6 @@ import Arkham.Matcher
   )
 import Arkham.Message
 import Arkham.Message qualified as Msg
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target

@@ -16,7 +16,6 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
 import Arkham.Message qualified as Msg
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait

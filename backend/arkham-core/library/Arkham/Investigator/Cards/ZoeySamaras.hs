@@ -12,7 +12,6 @@ import Arkham.Game.Helpers
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Source
 import Arkham.Timing qualified as Timing
 

@@ -17,7 +17,6 @@ import Arkham.Location.Cards qualified as Cards ( whateleyRuins_251 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.SkillType
 import Arkham.Target

@@ -9,7 +9,6 @@ import Arkham.Skill.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Skill.Runner
 import Arkham.Target
 import Arkham.Token

@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Message
-import Arkham.Modifier
 
 newtype LeMarais218 = LeMarais218 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

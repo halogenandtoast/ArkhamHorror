@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Source
 
 newtype Fieldwork = Fieldwork EffectAttrs

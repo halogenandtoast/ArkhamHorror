@@ -10,7 +10,6 @@ import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target

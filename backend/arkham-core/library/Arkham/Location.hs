@@ -14,7 +14,6 @@ import Arkham.Label qualified as L
 import Arkham.Location.Locations
 import Arkham.Location.Runner
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Name
 import Data.UUID (nil)
 import Data.Aeson.TH

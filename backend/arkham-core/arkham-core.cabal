@@ -107,6 +107,8 @@ library
       Arkham.Agenda.Cards.HisDomain
       Arkham.Agenda.Cards.HorrorsUnleashed
       Arkham.Agenda.Cards.InEveryShadow
+      Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow
+      Arkham.Agenda.Cards.LetTheStormRageTheVortexAbove
       Arkham.Agenda.Cards.LockedInside
       Arkham.Agenda.Cards.OutOfTime
       Arkham.Agenda.Cards.PastPresentAndFuture
@@ -121,11 +123,15 @@ library
       Arkham.Agenda.Cards.SecretsBetterLeftHidden
       Arkham.Agenda.Cards.ShadowsDeepen
       Arkham.Agenda.Cards.StrangeDisappearances
+      Arkham.Agenda.Cards.SwallowedSky
       Arkham.Agenda.Cards.TheArkhamWoods
       Arkham.Agenda.Cards.TheBeastUnleashed
+      Arkham.Agenda.Cards.TheCityFloods
       Arkham.Agenda.Cards.TheCloverClub
       Arkham.Agenda.Cards.TheCurseSpreads
       Arkham.Agenda.Cards.TheEndOfAllThings
+      Arkham.Agenda.Cards.TheEntityAboveTheFloodBelow
+      Arkham.Agenda.Cards.TheEntityAboveTheVortexAbove
       Arkham.Agenda.Cards.TheFestivitiesBegin
       Arkham.Agenda.Cards.TheFirstNight
       Arkham.Agenda.Cards.TheMawWidens

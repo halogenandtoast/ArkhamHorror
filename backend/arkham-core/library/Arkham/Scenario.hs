@@ -12,7 +12,6 @@ import Arkham.Difficulty
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios
 import Arkham.Target

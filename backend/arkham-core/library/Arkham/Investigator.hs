@@ -11,7 +11,6 @@ import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner
 import Arkham.Message
-import Arkham.Modifier
 import Data.Aeson.TH
 
 $(buildEntity "Investigator")

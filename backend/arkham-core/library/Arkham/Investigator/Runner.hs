@@ -43,7 +43,6 @@ import Arkham.Matcher
   )
 import Arkham.Message
 import Arkham.Message qualified as Msg
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillTest
 import Arkham.SkillType

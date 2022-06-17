@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 

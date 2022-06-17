@@ -12,7 +12,6 @@ import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import qualified Arkham.Timing as Timing
 
 newtype TheOrganistHopelessIDefiedHim = TheOrganistHopelessIDefiedHim EnemyAttrs

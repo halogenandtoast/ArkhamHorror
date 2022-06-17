@@ -8,7 +8,6 @@ import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target

@@ -15,7 +15,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (ChosenRandomLocation)
 import Arkham.Message qualified as Message
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing

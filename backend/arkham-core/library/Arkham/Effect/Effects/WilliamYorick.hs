@@ -11,7 +11,6 @@ import Arkham.Effect.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Target
 

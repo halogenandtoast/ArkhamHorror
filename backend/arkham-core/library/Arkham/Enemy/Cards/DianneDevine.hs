@@ -12,7 +12,6 @@ import Arkham.Enemy.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Target
 import qualified Arkham.Timing as Timing

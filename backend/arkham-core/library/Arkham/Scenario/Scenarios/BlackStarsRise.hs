@@ -12,14 +12,18 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
 import Arkham.InvestigatorId
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BlackStarsRise.Story
+import Arkham.Target
 import Arkham.Token
+import Arkham.Trait qualified as Trait
 
 newtype BlackStarsRise = BlackStarsRise ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -45,6 +49,7 @@ instance HasTokenValue BlackStarsRise where
     otherFace -> getTokenValue iid otherFace attrs
 
 data Version = TheFloodBelow | TheVortexAbove
+  deriving stock Eq
 
 versions :: NonEmpty Version
 versions = TheFloodBelow :| [TheVortexAbove]
@@ -58,7 +63,8 @@ instance RunMessage BlackStarsRise where
 
       version <- sample versions
 
-      gatheredCards <- buildEncounterDeck
+      encounterDeck <- buildEncounterDeckExcluding
+        [Enemies.beastOfAldebaran]
         [ EncounterSet.BlackStarsRise
         , EncounterSet.EvilPortents
         , EncounterSet.Byakhee
@@ -85,11 +91,34 @@ instance RunMessage BlackStarsRise where
       brokenSteps <- genCard
         =<< sample (Locations.brokenSteps_289 :| [Locations.brokenSteps_290])
 
+      let
+        (agenda2a, agenda2c) = if version == TheVortexAbove
+          then
+            ( Agendas.letTheStormRageTheVortexAbove
+            , Agendas.theEntityAboveTheVortexAbove
+            )
+          else
+            ( Agendas.letTheStormRageTheFloodBelow
+            , Agendas.theEntityAboveTheFloodBelow
+            )
+
       pushAll
         $ [story investigatorIds intro]
         <> [ story investigatorIds ashleighsInformation | ashleighInterviewed ]
+        <> [ SearchCollectionForRandom
+               iid
+               (toSource attrs)
+               (CardWithType PlayerTreacheryType <> CardWithOneOf
+                 (map
+                   CardWithTrait
+                   [Trait.Madness, Trait.Pact, Trait.Cultist, Trait.Detective]
+                 )
+               )
+           | iid <- investigatorIds
+           ]
         <> [ AddToken tokenToAdd
            , SetAgendaDeck
+           , SetEncounterDeck encounterDeck
            , PlaceLocation porteDeLAvancee
            , PlaceLocation northTower
            , PlaceLocation outerWall
@@ -101,7 +130,25 @@ instance RunMessage BlackStarsRise where
       BlackStarsRise <$> runMessage
         msg
         (attrs
-        & (agendaStackL . at 1 ?~ [Agendas.theTideRises])
-        & (agendaStackL . at 2 ?~ [Agendas.theRitualBeginsBlackStarsRise])
+        & (agendaStackL
+          . at 1
+          ?~ [Agendas.theTideRises, agenda2a, Agendas.theCityFloods]
+          )
+        & (agendaStackL
+          . at 2
+          ?~ [ Agendas.theRitualBeginsBlackStarsRise
+             , agenda2c
+             , Agendas.swallowedSky
+             ]
+          )
         )
+    PlaceDoomOnAgenda -> do
+      agendaIds <- selectList AnyAgenda
+      leadInvestigatorId <- getLeadInvestigatorId
+      push $ chooseOne
+        leadInvestigatorId
+        [ targetLabel agendaId [PlaceDoom (AgendaTarget agendaId) 1]
+        | agendaId <- agendaIds
+        ]
+      pure s
     _ -> BlackStarsRise <$> runMessage msg attrs

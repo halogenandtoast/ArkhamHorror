@@ -6,9 +6,9 @@ module Arkham.Enemy.Cards.StealthyByakhee
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Modifier qualified as Modifier
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
+import Arkham.Modifier qualified as Modifier
 
 newtype StealthyByakhee = StealthyByakhee EnemyAttrs
   deriving anyclass IsEnemy

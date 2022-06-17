@@ -13,7 +13,6 @@ import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Target
 
 newtype AnatomicalDiagrams = AnatomicalDiagrams EventAttrs

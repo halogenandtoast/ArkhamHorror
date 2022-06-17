@@ -11,7 +11,6 @@ import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait

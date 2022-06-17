@@ -14,7 +14,6 @@ import Arkham.Enemy.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Trait (toTraits)
 import Data.Aeson.TH
 

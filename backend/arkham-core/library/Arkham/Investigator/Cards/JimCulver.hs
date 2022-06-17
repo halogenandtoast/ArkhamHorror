@@ -7,7 +7,6 @@ import Arkham.EffectMetadata
 import Arkham.Game.Helpers
 import Arkham.Investigator.Runner
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Source
 import Arkham.Target
 

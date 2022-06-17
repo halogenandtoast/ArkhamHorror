@@ -10,7 +10,6 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards

@@ -12,7 +12,6 @@ import Arkham.Enemy.Runner
 import Arkham.Helpers.Agenda
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
-import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Resolution
 import Arkham.Target

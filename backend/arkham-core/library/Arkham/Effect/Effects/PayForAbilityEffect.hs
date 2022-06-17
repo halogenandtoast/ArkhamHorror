@@ -20,7 +20,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source

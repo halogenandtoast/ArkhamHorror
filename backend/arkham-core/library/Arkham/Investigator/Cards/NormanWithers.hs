@@ -12,7 +12,6 @@ import Arkham.Helpers
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Target
 
 newtype Metadata = Metadata { playedFromTopOfDeck :: Bool }

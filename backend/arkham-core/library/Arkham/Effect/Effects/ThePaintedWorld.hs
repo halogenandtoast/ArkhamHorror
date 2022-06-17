@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Id
-import Arkham.Modifier
 import Arkham.Target
 
 newtype ThePaintedWorld = ThePaintedWorld EffectAttrs

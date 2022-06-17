@@ -794,6 +794,7 @@ library
       Arkham.Location
       Arkham.Location.Attrs
       Arkham.Location.Cards
+      Arkham.Location.Cards.AbbeyChurch
       Arkham.Location.Cards.AccademiaBridge
       Arkham.Location.Cards.AdministrationBuilding
       Arkham.Location.Cards.AdministrationOffice_130
@@ -837,6 +838,8 @@ library
       Arkham.Location.Cards.BrackishWaters
       Arkham.Location.Cards.BridgeOfSighs
       Arkham.Location.Cards.Broadmoor
+      Arkham.Location.Cards.BrokenSteps_289
+      Arkham.Location.Cards.BrokenSteps_290
       Arkham.Location.Cards.BurnedRuins_204
       Arkham.Location.Cards.BurnedRuins_205
       Arkham.Location.Cards.CanalSaintMartin
@@ -898,6 +901,7 @@ library
       Arkham.Location.Cards.GareDOrsay
       Arkham.Location.Cards.Gondola
       Arkham.Location.Cards.GrandGuignol
+      Arkham.Location.Cards.GrandRue
       Arkham.Location.Cards.Graveyard
       Arkham.Location.Cards.GreenRoom
       Arkham.Location.Cards.GuestHall
@@ -939,12 +943,16 @@ library
       Arkham.Location.Cards.NarrowShaft
       Arkham.Location.Cards.Northside
       Arkham.Location.Cards.NorthsideTrainStation
+      Arkham.Location.Cards.NorthTower_287
+      Arkham.Location.Cards.NorthTower_288
       Arkham.Location.Cards.NotreDame
       Arkham.Location.Cards.OperaGarnier212
       Arkham.Location.Cards.OperaGarnier213
       Arkham.Location.Cards.OrneLibrary
       Arkham.Location.Cards.OsbornsGeneralStore_206
       Arkham.Location.Cards.OsbornsGeneralStore_207
+      Arkham.Location.Cards.OuterWall_285
+      Arkham.Location.Cards.OuterWall_286
       Arkham.Location.Cards.OvergrownCairns
       Arkham.Location.Cards.Parlor
       Arkham.Location.Cards.ParlorCar

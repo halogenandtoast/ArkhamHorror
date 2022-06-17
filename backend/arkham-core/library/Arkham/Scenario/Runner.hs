@@ -42,6 +42,8 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
 import Arkham.Zone qualified as Zone
+import Data.IntMap.Strict qualified as IntMap
+import Data.Ord ( Down (..) )
 
 instance HasTokenValue ScenarioAttrs where
   getTokenValue iid tokenFace _ = case tokenFace of
@@ -338,9 +340,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       _ -> pure ()
     pure a
   SetAgendaDeck -> do
-    case a ^. agendaStackL . at 1 of
-      Just (x : _) -> push (AddAgenda x)
-      _ -> pure ()
+    let ks = sortOn Down $ a ^. agendaStackL . to IntMap.keys
+    for_ ks $ \k -> do
+      case a ^. agendaStackL . at k of
+        Just (x : _) -> push (AddAgenda x)
+        _ -> pure ()
     pure a
   AddCampaignCardToDeck iid cardDef -> do
     standalone <- getIsStandalone

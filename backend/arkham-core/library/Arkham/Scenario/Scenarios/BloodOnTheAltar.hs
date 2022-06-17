@@ -29,7 +29,7 @@ import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (matches)
+import Arkham.Scenario.Helpers hiding ( matches )
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BloodOnTheAltar.Story
 import Arkham.Target
@@ -94,7 +94,8 @@ findOwner cardCode = do
   campaignStoryCards <- getCampaignStoryCards
   pure $ findKey (any ((== cardCode) . toCardCode)) campaignStoryCards
 
-getRemoveSacrificedMessages :: (Monad m, HasGame m) => [CardCode] -> m [Message]
+getRemoveSacrificedMessages
+  :: (Monad m, HasGame m) => [CardCode] -> m [Message]
 getRemoveSacrificedMessages sacrifices = do
   sacrificedOwnerPairs <- catMaybes <$> for
     sacrifices
@@ -124,24 +125,26 @@ instance RunMessage BloodOnTheAltar where
         standalone <- getIsStandalone
         s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
       Setup -> do
-        let toLocationCard = fmap EncounterCard . genEncounterCard
         investigatorIds <- getInvestigatorIds
-        bishopsBrook <- toLocationCard =<< sample
-          (Locations.bishopsBrook_202 :| [Locations.bishopsBrook_203])
-        burnedRuins <- toLocationCard =<< sample
-          (Locations.burnedRuins_204 :| [Locations.burnedRuins_205])
-        osbornsGeneralStore <- toLocationCard =<< sample
+        bishopsBrook <-
+          genCard =<< sample
+            (Locations.bishopsBrook_202 :| [Locations.bishopsBrook_203])
+        burnedRuins <-
+          genCard =<< sample
+            (Locations.burnedRuins_204 :| [Locations.burnedRuins_205])
+        osbornsGeneralStore <- genCard =<< sample
           (Locations.osbornsGeneralStore_206
           :| [Locations.osbornsGeneralStore_207]
           )
-        congregationalChurch <- toLocationCard =<< sample
+        congregationalChurch <- genCard =<< sample
           (Locations.congregationalChurch_208
           :| [Locations.congregationalChurch_209]
           )
-        houseInTheReeds <- toLocationCard =<< sample
+        houseInTheReeds <- genCard =<< sample
           (Locations.houseInTheReeds_210 :| [Locations.houseInTheReeds_211])
-        schoolhouse <- toLocationCard =<< sample
-          (Locations.schoolhouse_212 :| [Locations.schoolhouse_213])
+        schoolhouse <-
+          genCard =<< sample
+            (Locations.schoolhouse_212 :| [Locations.schoolhouse_213])
 
         oBannionGangHasABoneToPick <- getHasRecordOrStandalone
           OBannionGangHasABoneToPickWithTheInvestigators

@@ -60,6 +60,7 @@ allLocationCards :: HashMap CardCode CardDef
 allLocationCards = mapFromList $ map
   (toCardCode &&& id)
   [ aTearInThePath
+  , abbeyChurch
   , accademiaBridge
   , administrationBuilding
   , administrationOffice_130
@@ -102,6 +103,8 @@ allLocationCards = mapFromList $ map
   , brackishWaters
   , bridgeOfSighs
   , broadmoor
+  , brokenSteps_289
+  , brokenSteps_290
   , burnedRuins_204
   , burnedRuins_205
   , canalSaintMartin
@@ -163,6 +166,7 @@ allLocationCards = mapFromList $ map
   , gareDOrsay
   , gondola
   , grandGuignol
+  , grandRue
   , graveyard
   , greenRoom
   , guestHall
@@ -204,12 +208,16 @@ allLocationCards = mapFromList $ map
   , narrowShaft
   , northside
   , northsideTrainStation
+  , northTower_287
+  , northTower_288
   , notreDame
   , operaGarnier212
   , operaGarnier213
   , orneLibrary
   , osbornsGeneralStore_206
   , osbornsGeneralStore_207
+  , outerWall_285
+  , outerWall_286
   , overgrownCairns
   , parlor
   , parlorCar
@@ -1324,6 +1332,38 @@ tombOfShadows = (locationWithUnrevealed "03257" "Catacombs" [] "Tomb of Shadows"
 
 porteDeLAvancee :: CardDef
 porteDeLAvancee = location "03283" "Porte de l’Avancée" [] BlackStarsRise
+
+grandRue :: CardDef
+grandRue = location "03284" "Grand Rue" [] BlackStarsRise
+
+outerWall_285 :: CardDef
+outerWall_285 = (location "03285" "Outer Wall" [] BlackStarsRise)
+  { cdVictoryPoints = Just 1
+  }
+
+outerWall_286 :: CardDef
+outerWall_286 = (location "03286" "Outer Wall" [] BlackStarsRise)
+  { cdVictoryPoints = Just 1
+  }
+
+northTower_287 :: CardDef
+northTower_287 = (location "03287" "North Tower" [] BlackStarsRise)
+  { cdVictoryPoints = Just 1
+  }
+
+northTower_288 :: CardDef
+northTower_288 = (location "03288" "North Tower" [] BlackStarsRise)
+  { cdVictoryPoints = Just 1
+  }
+
+brokenSteps_289 :: CardDef
+brokenSteps_289 = location "03289" "Broken Steps" [] BlackStarsRise
+
+brokenSteps_290 :: CardDef
+brokenSteps_290 = location "03290" "Broken Steps" [] BlackStarsRise
+
+abbeyChurch :: CardDef
+abbeyChurch = location "03291" "Abbey Church" [] BlackStarsRise
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

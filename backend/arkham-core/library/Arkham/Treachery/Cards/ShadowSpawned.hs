@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Treachery.Runner

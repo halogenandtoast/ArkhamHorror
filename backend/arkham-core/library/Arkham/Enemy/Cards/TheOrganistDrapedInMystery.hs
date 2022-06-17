@@ -13,7 +13,6 @@ import Arkham.Enemy.Helpers
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Phase
 import qualified Arkham.Timing as Timing
 

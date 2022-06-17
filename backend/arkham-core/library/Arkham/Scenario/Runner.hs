@@ -43,7 +43,6 @@ import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
 import Arkham.Zone qualified as Zone
 import Data.IntMap.Strict qualified as IntMap
-import Data.Ord ( Down (..) )
 
 instance HasTokenValue ScenarioAttrs where
   getTokenValue iid tokenFace _ = case tokenFace of

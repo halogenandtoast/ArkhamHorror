@@ -8,7 +8,6 @@ import Arkham.Asset.Runner hiding (assetEnemy, assetLocation)
 import Arkham.Card
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Modifier
 import Data.Aeson.TH
 
 $(buildEntity "Asset")

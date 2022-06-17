@@ -17,7 +17,6 @@ import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target

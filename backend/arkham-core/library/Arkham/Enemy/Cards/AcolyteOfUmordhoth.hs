@@ -7,7 +7,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Target
 

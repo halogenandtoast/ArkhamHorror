@@ -10,7 +10,6 @@ import Arkham.Action
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Skill.Runner
 import Arkham.Target
 

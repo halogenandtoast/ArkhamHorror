@@ -1,4 +1,7 @@
-module Arkham.Helpers.Modifiers where
+module Arkham.Helpers.Modifiers
+  ( module Arkham.Helpers.Modifiers
+  , module X
+  ) where
 
 import Arkham.Prelude
 
@@ -10,7 +13,7 @@ import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.InvestigatorId
 import Arkham.Message
-import Arkham.Modifier
+import Arkham.Modifier as X
 import Arkham.Source
 import Arkham.Target
 

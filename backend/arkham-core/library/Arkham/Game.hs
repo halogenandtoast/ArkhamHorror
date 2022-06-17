@@ -39,7 +39,7 @@ import Arkham.Enemy.Attrs ( EnemyAttrs (..), Field (..) )
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Attrs
-import Arkham.Game.Helpers hiding ( getSpendableClueCount )
+import Arkham.Game.Helpers hiding ( getSpendableClueCount, EnemyEvade, EnemyFight )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Investigator
@@ -75,7 +75,6 @@ import Arkham.Message hiding
   , InvestigatorResigned
   )
 import Arkham.Message qualified as Msg
-import Arkham.Modifier hiding ( EnemyEvade, EnemyFight )
 import Arkham.Name
 import Arkham.Phase
 import Arkham.PlayerCard
@@ -1911,10 +1910,17 @@ instance Query ScenarioMatcher where
 instance Projection AgendaAttrs where
   field fld aid = do
     a <- getAgenda aid
-    let AgendaAttrs {..} = toAttrs a
+    let attrs@AgendaAttrs {..} = toAttrs a
     case fld of
       AgendaSequence -> pure agendaSequence
-      AgendaDoom -> pure agendaDoom
+      AgendaDoom -> do
+        modifiers' <- getModifiers (toSource attrs) (toTarget attrs)
+        let
+          applyModifiers n = \case
+            DoomSubtracts -> negate (abs n)
+            DoNotCountDoom -> 0
+            _ -> n
+        pure $ foldl' applyModifiers agendaDoom modifiers'
       AgendaAbilities -> pure $ getAbilities a
 
 instance Projection CampaignAttrs where

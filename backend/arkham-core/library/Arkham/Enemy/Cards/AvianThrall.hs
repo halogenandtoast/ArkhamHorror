@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding ( EnemyFight )
 import Arkham.Matcher
-import Arkham.Modifier
+import Arkham.Modifier qualified as Modifier
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
@@ -34,7 +34,7 @@ instance HasModifiersFor AvianThrall where
       traits <- field AssetTraits aid
       pure $ toModifiers
         attrs
-        [ EnemyFight (-3) | any (`elem` [Ranged, Firearm, Spell]) traits ]
+        [ Modifier.EnemyFight (-3) | any (`elem` [Ranged, Firearm, Spell]) traits ]
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage AvianThrall where

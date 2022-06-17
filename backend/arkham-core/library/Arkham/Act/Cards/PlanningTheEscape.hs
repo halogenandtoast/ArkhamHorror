@@ -16,7 +16,6 @@ import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.ScenarioLogKey
 import Arkham.SkillType

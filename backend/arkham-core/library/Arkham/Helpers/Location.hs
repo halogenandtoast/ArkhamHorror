@@ -8,7 +8,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Attrs ( Field (..) )
 import Arkham.LocationId
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target

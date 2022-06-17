@@ -17,7 +17,6 @@ import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (RevealLocation)
-import Arkham.Modifier
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 import Arkham.Trait

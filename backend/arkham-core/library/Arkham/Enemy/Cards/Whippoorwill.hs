@@ -9,7 +9,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Investigator
-import Arkham.Modifier
 import Arkham.Target
 
 newtype Whippoorwill = Whippoorwill EnemyAttrs

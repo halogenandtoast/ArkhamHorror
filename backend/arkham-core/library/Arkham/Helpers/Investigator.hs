@@ -16,7 +16,6 @@ import Arkham.SkillTest.Base
 import Arkham.Investigator.Attrs
 import Arkham.Treachery.Attrs ( Field (..) )
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Slot

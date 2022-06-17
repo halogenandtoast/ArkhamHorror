@@ -10,7 +10,6 @@ import Arkham.Effect.Runner
 import Arkham.Enemy.Attrs (Field(EnemyClues, EnemyDoom))
 import Arkham.Game.Helpers
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Target
 

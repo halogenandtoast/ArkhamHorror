@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import qualified Arkham.Enemy.Cards as Cards
 import Arkham.Enemy.Runner
-import Arkham.Modifier
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Target
 

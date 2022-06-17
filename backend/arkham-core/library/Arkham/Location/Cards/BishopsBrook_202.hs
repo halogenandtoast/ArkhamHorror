@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Runner
-import Arkham.Modifier
 import Arkham.Target
 
 newtype BishopsBrook_202 = BishopsBrook_202 LocationAttrs

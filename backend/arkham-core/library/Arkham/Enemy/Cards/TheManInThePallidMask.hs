@@ -16,7 +16,6 @@ import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
 

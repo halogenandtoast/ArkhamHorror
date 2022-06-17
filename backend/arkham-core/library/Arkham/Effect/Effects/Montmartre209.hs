@@ -12,7 +12,6 @@ import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window(..))

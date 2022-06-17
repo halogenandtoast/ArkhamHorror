@@ -29,7 +29,6 @@ import Arkham.Helpers
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner

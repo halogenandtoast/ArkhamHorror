@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Target
 
 newtype StubbornDetective = StubbornDetective EnemyAttrs

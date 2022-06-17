@@ -14,7 +14,6 @@ import Arkham.Game.Helpers hiding ( matches )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.RequestedTokenStrategy
 import Arkham.SkillTestResult
 import Arkham.SkillType

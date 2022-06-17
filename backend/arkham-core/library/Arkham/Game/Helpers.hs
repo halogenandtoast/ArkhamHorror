@@ -48,7 +48,6 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Attrs hiding ( location )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message hiding ( InvestigatorDamage )
-import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Projection

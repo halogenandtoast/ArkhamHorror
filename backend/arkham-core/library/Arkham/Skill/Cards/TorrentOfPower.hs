@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Game.Helpers
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 import Arkham.SkillType

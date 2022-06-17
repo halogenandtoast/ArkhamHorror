@@ -11,7 +11,6 @@ import Arkham.Id
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.Source

@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Asset.Attrs (Field(..))
 import Arkham.Enemy.Runner
 import Arkham.Message qualified as Msg
-import Arkham.Modifier
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Source

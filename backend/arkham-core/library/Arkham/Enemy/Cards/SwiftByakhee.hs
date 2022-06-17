@@ -16,7 +16,6 @@ import Arkham.Enemy.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Timing qualified as Timing
 
 newtype SwiftByakhee = SwiftByakhee EnemyAttrs

@@ -11,7 +11,6 @@ import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Location.Runner
-import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Target
 

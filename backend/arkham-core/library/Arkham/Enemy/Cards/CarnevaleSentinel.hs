@@ -12,7 +12,6 @@ import Arkham.Enemy.Runner
 import Arkham.Asset.Attrs (Field(..))
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Target

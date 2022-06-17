@@ -1,6 +1,6 @@
-module Arkham.Agenda.Cards.TheTideRises
-  ( TheTideRises
-  , theTideRises
+module Arkham.Agenda.Cards.TheCityFloods
+  ( TheCityFloods
+  , theCityFloods
   ) where
 
 import Arkham.Prelude
@@ -11,20 +11,20 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message
 
-newtype TheTideRises = TheTideRises AgendaAttrs
+newtype TheCityFloods = TheCityFloods AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-theTideRises :: AgendaCard TheTideRises
-theTideRises = agenda (1, A) TheTideRises Cards.theTideRises (Static 5)
+theCityFloods :: AgendaCard TheCityFloods
+theCityFloods = agenda (3, A) TheCityFloods Cards.theCityFloods (Static 8)
 
-instance HasModifiersFor TheTideRises where
-  getModifiersFor _ (AgendaTarget aid) (TheTideRises attrs)
+instance HasModifiersFor TheCityFloods where
+  getModifiersFor _ (AgendaTarget aid) (TheCityFloods attrs)
     | aid /= toId attrs = pure $ toModifiers attrs [DoNotCountDoom]
   getModifiersFor _ _ _ = pure []
 
-instance RunMessage TheTideRises where
-  runMessage msg a@(TheTideRises attrs) = case msg of
+instance RunMessage TheCityFloods where
+  runMessage msg a@(TheCityFloods attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
       a <$ pushAll [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
-    _ -> TheTideRises <$> runMessage msg attrs
+    _ -> TheCityFloods <$> runMessage msg attrs

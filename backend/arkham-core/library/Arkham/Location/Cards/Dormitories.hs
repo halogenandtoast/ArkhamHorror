@@ -12,7 +12,6 @@ import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Resolution
 
 newtype Dormitories = Dormitories LocationAttrs

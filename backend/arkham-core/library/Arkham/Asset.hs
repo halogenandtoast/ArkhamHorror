@@ -6,6 +6,7 @@ import Arkham.Prelude
 import Arkham.Asset.Assets
 import Arkham.Asset.Runner hiding (assetEnemy, assetLocation)
 import Arkham.Card
+import Arkham.Classes.Entity.TH
 import Arkham.Id
 import Arkham.Matcher
 import Data.Aeson.TH

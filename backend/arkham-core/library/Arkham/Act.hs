@@ -11,11 +11,11 @@ import Arkham.Act.Acts
 import Arkham.Act.Attrs
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Classes.Entity.TH
 import Arkham.Id
 import Data.Aeson.TH
 
 $(buildEntity "Act")
-
 $(deriveJSON defaultOptions ''Act)
 
 instance HasAbilities Act where

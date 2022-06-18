@@ -6,6 +6,7 @@ import Arkham.Prelude
 import Arkham.Campaign.Campaigns
 import Arkham.Campaign.Runner
 import Arkham.Classes
+import Arkham.Classes.Entity.TH
 import Arkham.Difficulty
 import Arkham.Id
 import Arkham.Token

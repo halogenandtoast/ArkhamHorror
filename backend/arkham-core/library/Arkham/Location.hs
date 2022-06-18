@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Card.Id
 import Arkham.Classes
+import Arkham.Classes.Entity.TH
 import Arkham.Id
 import Arkham.Helpers.Modifiers
 import Arkham.Label qualified as L

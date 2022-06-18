@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Data.Aeson.TH
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Classes.Entity.TH
 import Arkham.Id
 import Arkham.Name
 import Arkham.Skill.Runner

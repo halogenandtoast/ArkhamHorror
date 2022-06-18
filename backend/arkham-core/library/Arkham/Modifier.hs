@@ -107,7 +107,6 @@ data ModifierType
   | DiscoveredClues Int
   | DoNotDrawChaosTokensForSkillChecks
   | DoesNotDamageOtherInvestigator
-  | DoNotCountDoom
   | DoomSubtracts
   | DoubleDifficulty
   | DoubleNegativeModifiersOnTokens

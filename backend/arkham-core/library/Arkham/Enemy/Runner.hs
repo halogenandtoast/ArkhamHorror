@@ -677,7 +677,7 @@ instance RunMessage EnemyAttrs where
       pure $ a & engagedInvestigatorsL %~ deleteSet iid
     AdvanceAgenda{} -> pure $ a & doomL .~ 0
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
-    RemoveAllDoom -> pure $ a & doomL .~ 0
+    RemoveAllDoom _ -> pure $ a & doomL .~ 0
     PlaceDoom target amount | isTarget a target -> pure $ a & doomL +~ amount
     PlaceClues target n | isTarget a target -> do
       windows' <- windows [Window.PlacedClues (toTarget a) n]

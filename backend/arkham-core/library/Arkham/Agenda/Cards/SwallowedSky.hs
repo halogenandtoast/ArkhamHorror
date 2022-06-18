@@ -14,16 +14,11 @@ import Arkham.Message
 import Arkham.Target
 
 newtype SwallowedSky = SwallowedSky AgendaAttrs
-  deriving anyclass (IsAgenda, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 swallowedSky :: AgendaCard SwallowedSky
 swallowedSky = agenda (3, C) SwallowedSky Cards.swallowedSky (Static 8)
-
-instance HasModifiersFor SwallowedSky where
-  getModifiersFor _ (AgendaTarget aid) (SwallowedSky attrs)
-    | aid /= toId attrs = pure $ toModifiers attrs [DoNotCountDoom]
-  getModifiersFor _ _ _ = pure []
 
 instance RunMessage SwallowedSky where
   runMessage msg a@(SwallowedSky attrs) = case msg of

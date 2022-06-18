@@ -30,7 +30,7 @@ instance RunMessage AssetAttrs where
           then pure a
           else a <$ push (Ready $ toTarget a)
       Nothing -> a <$ push (Ready $ toTarget a)
-    RemoveAllDoom -> pure $ a & doomL .~ 0
+    RemoveAllDoom _ -> pure $ a & doomL .~ 0
     PlaceClues target n | isTarget a target -> pure $ a & cluesL +~ n
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
     RemoveDoom target n | isTarget a target ->

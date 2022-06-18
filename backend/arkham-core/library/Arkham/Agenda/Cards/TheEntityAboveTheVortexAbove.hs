@@ -14,16 +14,11 @@ import Arkham.Message
 import Arkham.Target
 
 newtype TheEntityAboveTheVortexAbove = TheEntityAboveTheVortexAbove AgendaAttrs
-  deriving anyclass (IsAgenda, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEntityAboveTheVortexAbove :: AgendaCard TheEntityAboveTheVortexAbove
 theEntityAboveTheVortexAbove = agenda (2, C) TheEntityAboveTheVortexAbove Cards.theEntityAboveTheVortexAbove (Static 6)
-
-instance HasModifiersFor TheEntityAboveTheVortexAbove where
-  getModifiersFor _ (AgendaTarget aid) (TheEntityAboveTheVortexAbove attrs)
-    | aid /= toId attrs = pure $ toModifiers attrs [DoNotCountDoom]
-  getModifiersFor _ _ _ = pure []
 
 instance RunMessage TheEntityAboveTheVortexAbove where
   runMessage msg a@(TheEntityAboveTheVortexAbove attrs) =

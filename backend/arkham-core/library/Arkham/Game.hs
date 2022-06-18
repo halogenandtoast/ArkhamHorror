@@ -1910,17 +1910,10 @@ instance Query ScenarioMatcher where
 instance Projection AgendaAttrs where
   field fld aid = do
     a <- getAgenda aid
-    let attrs@AgendaAttrs {..} = toAttrs a
+    let AgendaAttrs {..} = toAttrs a
     case fld of
       AgendaSequence -> pure agendaSequence
-      AgendaDoom -> do
-        modifiers' <- getModifiers (toSource attrs) (toTarget attrs)
-        let
-          applyModifiers n = \case
-            DoomSubtracts -> negate (abs n)
-            DoNotCountDoom -> 0
-            _ -> n
-        pure $ foldl' applyModifiers agendaDoom modifiers'
+      AgendaDoom -> pure agendaDoom
       AgendaAbilities -> pure $ getAbilities a
 
 instance Projection CampaignAttrs where

@@ -11,11 +11,13 @@ import Arkham.Agenda.Sequence as X
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Id
+import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
+import Data.Monoid ( Sum (..) )
 
 instance RunMessage AgendaAttrs
   where
@@ -35,7 +37,12 @@ instance RunMessage AgendaAttrs
         & (flippedL .~ True)
     AdvanceAgendaIfThresholdSatisfied -> do
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
-      totalDoom <- getDoomCount
+      -- handle multiple agendas, this might need to be specific to the
+      -- scenario, but for now given there is only once scenario and the rules
+      -- are likely to be the same in the future
+      otherAgendaDoom <- getSum
+        <$> selectAgg Sum AgendaDoom (NotAgenda $ AgendaWithId $ toId a)
+      totalDoom <- subtract otherAgendaDoom <$> getDoomCount
       when
         (totalDoom >= perPlayerDoomThreshold)
         do
@@ -54,7 +61,9 @@ instance RunMessage AgendaAttrs
     Do AdvanceAgendaIfThresholdSatisfied -> do
       -- This status can change due to the above windows so we much check again
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
-      totalDoom <- getDoomCount
+      otherAgendaDoom <- getSum
+        <$> selectAgg Sum AgendaDoom (NotAgenda $ AgendaWithId $ toId a)
+      totalDoom <- subtract otherAgendaDoom <$> getDoomCount
       when (totalDoom >= perPlayerDoomThreshold) $ do
         leadInvestigatorId <- getLeadInvestigatorId
         pushAll
@@ -62,11 +71,13 @@ instance RunMessage AgendaAttrs
             [leadInvestigatorId]
             [Window Timing.When (Window.AgendaAdvance agendaId)]
           , AdvanceAgenda agendaId
-          , RemoveAllDoom
+          , RemoveAllDoom (toSource a)
           ]
       pure a
-    RemoveAllDoom -> do
-      pure $ a & doomL .~ 0
+    RemoveAllDoom source -> do
+      if toSource a == source
+        then pure $ a & doomL .~ 0
+        else pure a
     RevertAgenda aid | aid == agendaId && onSide B a ->
       pure
         $ a

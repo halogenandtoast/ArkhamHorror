@@ -14,7 +14,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype TheRitualBeginsBlackStarsRise = TheRitualBeginsBlackStarsRise AgendaAttrs
-  deriving anyclass (IsAgenda, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRitualBeginsBlackStarsRise :: AgendaCard TheRitualBeginsBlackStarsRise
@@ -23,11 +23,6 @@ theRitualBeginsBlackStarsRise = agenda
   TheRitualBeginsBlackStarsRise
   Cards.theRitualBeginsBlackStarsRise
   (Static 5)
-
-instance HasModifiersFor TheRitualBeginsBlackStarsRise where
-  getModifiersFor _ (AgendaTarget aid) (TheRitualBeginsBlackStarsRise attrs)
-    | aid /= toId attrs = pure $ toModifiers attrs [DoNotCountDoom]
-  getModifiersFor _ _ _ = pure []
 
 instance RunMessage TheRitualBeginsBlackStarsRise where
   runMessage msg a@(TheRitualBeginsBlackStarsRise attrs) = case msg of

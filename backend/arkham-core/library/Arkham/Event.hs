@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Classes.Entity.TH
 import Arkham.Event.Events
 import Arkham.Event.Runner
 import Arkham.Id

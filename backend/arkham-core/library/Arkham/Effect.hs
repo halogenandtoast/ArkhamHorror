@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Classes.Entity.TH
 import Arkham.Effect.Attrs
 import Arkham.Effect.Effects
 import Arkham.Effect.Window

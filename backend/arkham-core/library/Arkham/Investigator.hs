@@ -6,6 +6,7 @@ module Arkham.Investigator
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.Classes.Entity.TH
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Investigators

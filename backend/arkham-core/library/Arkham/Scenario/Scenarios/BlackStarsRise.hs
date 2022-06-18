@@ -14,7 +14,6 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
-import Arkham.InvestigatorId
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message

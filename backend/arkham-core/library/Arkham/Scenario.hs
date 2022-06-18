@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Classes.Entity.TH
 import Arkham.Difficulty
 import Arkham.Helpers.Modifiers
 import Arkham.Id

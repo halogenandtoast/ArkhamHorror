@@ -455,7 +455,7 @@ data Message
   | Remember ScenarioLogKey
   | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
   | RemoveAllClues Target
-  | RemoveAllDoom
+  | RemoveAllDoom Source
   | RemoveCampaignCardFromDeck InvestigatorId CardCode
   | RemoveCardFromHand InvestigatorId CardId
   | RemoveCardFromSearch InvestigatorId CardId

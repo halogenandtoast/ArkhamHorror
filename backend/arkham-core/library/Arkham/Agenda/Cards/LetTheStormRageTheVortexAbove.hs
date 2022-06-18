@@ -12,7 +12,7 @@ import Arkham.GameValue
 import Arkham.Message
 
 newtype LetTheStormRageTheVortexAbove = LetTheStormRageTheVortexAbove AgendaAttrs
-  deriving anyclass (IsAgenda, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 letTheStormRageTheVortexAbove :: AgendaCard LetTheStormRageTheVortexAbove
@@ -21,11 +21,6 @@ letTheStormRageTheVortexAbove = agenda
   LetTheStormRageTheVortexAbove
   Cards.letTheStormRageTheVortexAbove
   (Static 6)
-
-instance HasModifiersFor LetTheStormRageTheVortexAbove where
-  getModifiersFor _ (AgendaTarget aid) (LetTheStormRageTheVortexAbove attrs)
-    | aid /= toId attrs = pure $ toModifiers attrs [DoNotCountDoom]
-  getModifiersFor _ _ _ = pure []
 
 instance RunMessage LetTheStormRageTheVortexAbove where
   runMessage msg a@(LetTheStormRageTheVortexAbove attrs) = case msg of

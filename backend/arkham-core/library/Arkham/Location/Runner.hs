@@ -28,7 +28,6 @@ import Arkham.Matcher
   , locationWithEnemy
   )
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Name
 import Arkham.Projection
 import Arkham.SkillType
@@ -235,7 +234,7 @@ instance RunMessage LocationAttrs where
     RemoveClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & cluesL %~ max 0 . subtract n
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
-    RemoveAllDoom -> pure $ a & doomL .~ 0
+    RemoveAllDoom _ -> pure $ a & doomL .~ 0
     RevealLocation miid lid | lid == locationId -> do
       modifiers' <- getModifiers (toSource a) (toTarget a)
       locationClueCount <- if CannotPlaceClues `elem` modifiers'

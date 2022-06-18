@@ -12,16 +12,11 @@ import Arkham.GameValue
 import Arkham.Message
 
 newtype TheTideRises = TheTideRises AgendaAttrs
-  deriving anyclass (IsAgenda, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theTideRises :: AgendaCard TheTideRises
 theTideRises = agenda (1, A) TheTideRises Cards.theTideRises (Static 5)
-
-instance HasModifiersFor TheTideRises where
-  getModifiersFor _ (AgendaTarget aid) (TheTideRises attrs)
-    | aid /= toId attrs = pure $ toModifiers attrs [DoNotCountDoom]
-  getModifiersFor _ _ _ = pure []
 
 instance RunMessage TheTideRises where
   runMessage msg a@(TheTideRises attrs) = case msg of

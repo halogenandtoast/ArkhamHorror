@@ -14,7 +14,7 @@ import Arkham.Message
 import Arkham.Target
 
 newtype TheEntityAboveTheFloodBelow = TheEntityAboveTheFloodBelow AgendaAttrs
-  deriving anyclass (IsAgenda, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEntityAboveTheFloodBelow :: AgendaCard TheEntityAboveTheFloodBelow
@@ -23,11 +23,6 @@ theEntityAboveTheFloodBelow = agenda
   TheEntityAboveTheFloodBelow
   Cards.theEntityAboveTheFloodBelow
   (Static 6)
-
-instance HasModifiersFor TheEntityAboveTheFloodBelow where
-  getModifiersFor _ (AgendaTarget aid) (TheEntityAboveTheFloodBelow attrs)
-    | aid /= toId attrs = pure $ toModifiers attrs [DoNotCountDoom]
-  getModifiersFor _ _ _ = pure []
 
 instance RunMessage TheEntityAboveTheFloodBelow where
   runMessage msg a@(TheEntityAboveTheFloodBelow attrs) = case msg of

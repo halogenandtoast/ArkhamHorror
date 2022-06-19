@@ -92,7 +92,7 @@ instance RunMessage BlackStarsRise where
       version <- sample versions
 
       encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.beastOfAldebaran, Enemies.tidalTerror]
+        [Enemies.beastOfAldebaran, Enemies.tidalTerror, Enemies.riftSeeker]
         [ EncounterSet.BlackStarsRise
         , EncounterSet.EvilPortents
         , EncounterSet.Byakhee

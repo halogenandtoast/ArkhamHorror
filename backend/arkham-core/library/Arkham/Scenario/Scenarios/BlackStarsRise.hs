@@ -184,4 +184,20 @@ instance RunMessage BlackStarsRise where
         | agendaId <- agendaIds
         ]
       pure s
+    PassedSkillTest iid _ _ (TokenTarget token) _ n | n < 1 -> do
+      when (tokenFace token == Tablet) $ do
+        agendas <- selectList AnyAgenda
+        pushAll [ PlaceDoom (AgendaTarget aid) 1 | aid <- agendas ]
+      pure s
+    FailedSkillTest iid _ _ (TokenTarget token) _ n -> do
+      when (tokenFace token == Tablet) $ do
+        agendas <- selectList AnyAgenda
+        pushAll [ PlaceDoom (AgendaTarget aid) 1 | aid <- agendas ]
+      when (tokenFace token == ElderThing) $ do
+        push $ FindAndDrawEncounterCard
+          iid
+          (CardWithType EnemyType
+          <> CardWithOneOf (map CardWithTrait [Trait.Byakhee])
+          )
+      pure s
     _ -> BlackStarsRise <$> runMessage msg attrs

@@ -5,6 +5,8 @@ module Arkham.Scenario.Scenarios.BlackStarsRise
 
 import Arkham.Prelude
 
+import Arkham.Action qualified as Action
+import Arkham.Agenda.Attrs ( Field (..) )
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
@@ -12,17 +14,22 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BlackStarsRise.Story
+import Arkham.SkillTest
+import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait qualified as Trait
+import Data.Semigroup
 
 newtype BlackStarsRise = BlackStarsRise ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -41,10 +48,32 @@ blackStarsRise difficulty =
 
 instance HasTokenValue BlackStarsRise where
   getTokenValue iid tokenFace (BlackStarsRise attrs) = case tokenFace of
-    Skull -> pure $ toTokenValue attrs Skull 3 5
-    Cultist -> pure $ TokenValue Cultist NoModifier
+    Skull -> do
+      maxDoom <- getMax <$> selectAgg Max AgendaDoom AnyAgenda
+      totalDoom <- getSum <$> selectAgg Sum AgendaDoom AnyAgenda
+      pure $ toTokenValue attrs Skull maxDoom totalDoom
+    Cultist -> if isEasyStandard attrs
+      then do
+        modifier <- do
+          mSkillTestSource <- getSkillTestSource
+          case mSkillTestSource of
+            Just (SkillTestSource _ _ _ (Just action))
+              | action `elem` [Action.Evade, Action.Fight] -> do
+                mtarget <- getSkillTestTarget
+                case mtarget of
+                  Just (EnemyTarget eid) -> do
+                    hasDoom <- fieldP EnemyDoom (> 0) eid
+                    pure $ if hasDoom then AutoFailModifier else NoModifier
+                  _ -> pure NoModifier
+            _ -> pure NoModifier
+        pure $ TokenValue Cultist modifier
+      else do
+        anyEnemyWithDoom <- selectAny EnemyWithAnyDoom
+        let
+          modifier = if anyEnemyWithDoom then AutoFailModifier else NoModifier
+        pure $ TokenValue Cultist NoModifier
     Tablet -> pure $ TokenValue Tablet NoModifier
-    ElderThing -> pure $ TokenValue ElderThing NoModifier
+    ElderThing -> pure $ toTokenValue attrs ElderThing 2 3
     otherFace -> getTokenValue iid otherFace attrs
 
 data Version = TheFloodBelow | TheVortexAbove
@@ -73,7 +102,9 @@ instance RunMessage BlackStarsRise where
         , EncounterSet.AncientEvils
         ]
 
-      setAsideCards <- traverse genCard [Enemies.tidalTerror, Enemies.tidalTerror]
+      setAsideCards <- traverse
+        genCard
+        [Enemies.tidalTerror, Enemies.tidalTerror]
 
       let
         tokenToAdd = case scenarioDifficulty attrs of

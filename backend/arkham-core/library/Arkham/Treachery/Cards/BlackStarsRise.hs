@@ -5,11 +5,12 @@ module Arkham.Treachery.Cards.BlackStarsRise
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype BlackStarsRise = BlackStarsRise TreacheryAttrs
@@ -24,15 +25,17 @@ instance RunMessage BlackStarsRise where
     Revelation iid source | isSource attrs source ->
       t <$ push (RevelationSkillTest iid source SkillIntellect 4)
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
-      | isSource attrs source -> t <$ push
-        (chooseOne
-          iid
-          [ Label
-            "Place 1 doom on current agenda. This effect can cause the current agenda to advance."
-            [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
-          , Label
-            ("Take " <> tshow n <> " horror")
-            [InvestigatorAssignDamage iid source DamageAny 0 n]
-          ]
-        )
+      | isSource attrs source -> do
+        hasAgenda <- selectAny AnyAgenda
+        push $ chooseOrRunOne iid
+          $ [ Label
+                "Place 1 doom on current agenda. This effect can cause the current agenda to advance."
+                [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+            | hasAgenda
+            ]
+          <> [ Label
+                 ("Take " <> tshow n <> " horror")
+                 [InvestigatorAssignDamage iid source DamageAny 0 n]
+             ]
+        pure t
     _ -> BlackStarsRise <$> runMessage msg attrs

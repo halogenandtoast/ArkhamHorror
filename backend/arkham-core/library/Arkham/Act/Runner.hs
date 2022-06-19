@@ -11,8 +11,8 @@ import Arkham.Act.Sequence as X
 import Arkham.Classes
 import Arkham.Cost as X
 import Arkham.Game.Helpers
-import Arkham.Id
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Id
 import Arkham.Matcher hiding ( FastPlayerWindow )
 import Arkham.Message
 import Arkham.Source
@@ -20,7 +20,8 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window
 
-advanceActSideA :: (Monad m, HasGame m) => ActAttrs -> AdvancementMethod -> m [Message]
+advanceActSideA
+  :: (Monad m, HasGame m) => ActAttrs -> AdvancementMethod -> m [Message]
 advanceActSideA attrs advanceMode = do
   leadInvestigatorId <- getLeadInvestigatorId
   pure
@@ -39,6 +40,10 @@ instance RunMessage ActAttrs where
       pure $ a & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
     AttachTreachery tid (ActTarget aid) | aid == actId ->
       pure $ a & treacheriesL %~ insertSet tid
+    Discard (ActTarget aid) | aid == toId a -> do
+      pushAll
+        [ Discard (TreacheryTarget tid) | tid <- setToList actTreacheries ]
+      pure a
     Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     InvestigatorResigned _ -> do
       investigatorIds <- select UneliminatedInvestigator

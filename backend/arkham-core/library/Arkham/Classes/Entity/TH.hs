@@ -107,6 +107,5 @@ entityF1 nm fName = do
   toMatch f p1 x (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ Match
     (ConP (TH.mkName $ nameBase name <> "'") [VarP x])
     (NormalB $ AppE (AppE (VarE f) (VarE p1)) (VarE x))
-
     []
   toMatch _ _ _ _ = Nothing

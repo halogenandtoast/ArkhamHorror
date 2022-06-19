@@ -46,6 +46,8 @@ library
       Arkham.Act.Cards.MysteriousGateway
       Arkham.Act.Cards.NightAtTheMuseum
       Arkham.Act.Cards.NoAsylum
+      Arkham.Act.Cards.OpenThePathAbove
+      Arkham.Act.Cards.OpenThePathBelow
       Arkham.Act.Cards.OutOfThisWorld
       Arkham.Act.Cards.PlanningTheEscape
       Arkham.Act.Cards.PursuingShadows
@@ -606,6 +608,7 @@ library
       Arkham.Enemy.Cards.TheRougarou
       Arkham.Enemy.Cards.TheThingThatFollows
       Arkham.Enemy.Cards.Thrall
+      Arkham.Enemy.Cards.TidalTerror
       Arkham.Enemy.Cards.TommyMalloy
       Arkham.Enemy.Cards.Umordhoth
       Arkham.Enemy.Cards.VictoriaDevereux

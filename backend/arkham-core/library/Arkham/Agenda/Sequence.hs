@@ -12,8 +12,8 @@ agendaSide (Agenda _ side) = side
 
 data AgendaSide = A | B | C | D
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data AgendaSequence = Agenda Int AgendaSide
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)

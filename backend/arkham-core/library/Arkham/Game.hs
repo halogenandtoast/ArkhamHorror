@@ -734,6 +734,7 @@ getAgendasMatching matcher = do
     AgendaWithTreachery treacheryMatcher -> \agenda -> do
       treacheries <- select treacheryMatcher
       pure $ any (`member` treacheries) (agendaTreacheries $ toAttrs agenda)
+    AgendaWithSequence s -> pure . (== s) . agendaSequence . toAttrs
     NotAgenda matcher' -> fmap not . matcherFilter matcher'
 
 getActsMatching :: (Monad m, HasGame m) => ActMatcher -> m [Act]
@@ -1984,7 +1985,13 @@ instance Projection TreacheryAttrs where
       TreacheryDoom -> pure treacheryDoom
       TreacheryAttachedTarget -> pure treacheryAttachedTarget
       TreacheryTraits -> pure $ cdCardTraits cdef
-      TreacheryKeywords -> pure $ cdKeywords cdef
+      TreacheryKeywords -> do
+        modifiers' <- getModifiers (toSource t) (toTarget t)
+        let additionalKeywords = foldl' applyModifier [] modifiers'
+            applyModifier ks = \case
+              AddKeyword k -> k : ks
+              _ -> ks
+        pure $ cdKeywords cdef <> setFromList additionalKeywords
       TreacheryAbilities -> pure $ getAbilities t
       TreacheryCardDef -> pure cdef
       TreacheryCard -> pure $ lookupCard treacheryCardCode (unTreacheryId tid)
@@ -2755,7 +2762,8 @@ runGameMessage msg g = case msg of
         pushAll [RemoveCardFromSearch (toId investigator') cardId, AddToDiscard (toId investigator') pc]
         pure $ g & focusedCardsL %~ filter (/= card)
       _ -> error "should not be an option for other cards"
-  Discard (ActTarget _) -> pure $ g & entitiesL . actsL .~ mempty
+  Discard (ActTarget aid) -> pure $ g & entitiesL . actsL %~ HashMap.filterWithKey (\k _ -> k /= aid)
+  Discard (AgendaTarget aid) -> pure $ g & entitiesL . agendasL %~ HashMap.filterWithKey (\k _ -> k /= aid)
   Discarded (EnemyTarget eid) _ -> do
     enemy <- getEnemy eid
     card <- field EnemyCard eid

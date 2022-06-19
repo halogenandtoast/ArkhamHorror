@@ -758,6 +758,11 @@ tidalTerror = (enemy "03300" "Tidal Terror" BlackStarsRise 2)
   , cdKeywords = singleton Keyword.Hunter
   }
 
+riftSeeker :: CardDef
+riftSeeker = (enemy "03301" "Rift Seeker" BlackStarsRise 2)
+  { cdCardTraits = setFromList [Monster, Byakhee, Cultist]
+  }
+
 corpseHungryGhoul :: CardDef
 corpseHungryGhoul = (enemy "50022" "Corpse-Hungry Ghoul" ReturnToTheGathering 1
                     )

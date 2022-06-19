@@ -71,7 +71,7 @@ instance HasTokenValue BlackStarsRise where
         anyEnemyWithDoom <- selectAny EnemyWithAnyDoom
         let
           modifier = if anyEnemyWithDoom then AutoFailModifier else NoModifier
-        pure $ TokenValue Cultist NoModifier
+        pure $ TokenValue Cultist modifier
     Tablet -> pure $ TokenValue Tablet NoModifier
     ElderThing -> pure $ toTokenValue attrs ElderThing 2 3
     otherFace -> getTokenValue iid otherFace attrs
@@ -184,20 +184,19 @@ instance RunMessage BlackStarsRise where
         | agendaId <- agendaIds
         ]
       pure s
-    PassedSkillTest iid _ _ (TokenTarget token) _ n | n < 1 -> do
+    PassedSkillTest _ _ _ (TokenTarget token) _ n | n < 1 -> do
       when (tokenFace token == Tablet) $ do
-        agendas <- selectList AnyAgenda
-        pushAll [ PlaceDoom (AgendaTarget aid) 1 | aid <- agendas ]
+        targets <- selectListMap AgendaTarget AnyAgenda
+        pushAll [ PlaceDoom target 1 | target <- targets ]
       pure s
-    FailedSkillTest iid _ _ (TokenTarget token) _ n -> do
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
       when (tokenFace token == Tablet) $ do
-        agendas <- selectList AnyAgenda
-        pushAll [ PlaceDoom (AgendaTarget aid) 1 | aid <- agendas ]
+        targets <- selectListMap AgendaTarget AnyAgenda
+        pushAll [ PlaceDoom target 1 | target <- targets ]
       when (tokenFace token == ElderThing) $ do
-        push $ FindAndDrawEncounterCard
-          iid
-          (CardWithType EnemyType
+        push
+          $ FindAndDrawEncounterCard iid
+          $ CardWithType EnemyType
           <> CardWithOneOf (map CardWithTrait [Trait.Byakhee])
-          )
       pure s
     _ -> BlackStarsRise <$> runMessage msg attrs

@@ -16,7 +16,6 @@ import qualified Arkham.Enemy.Cards as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheSecondNight = TheSecondNight AgendaAttrs

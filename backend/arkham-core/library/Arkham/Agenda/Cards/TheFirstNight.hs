@@ -12,7 +12,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheFirstNight = TheFirstNight AgendaAttrs

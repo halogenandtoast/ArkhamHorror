@@ -63,7 +63,7 @@ instance RunMessage BlackStarsRise where
       version <- sample versions
 
       encounterDeck <- buildEncounterDeckExcluding
-        [Enemies.beastOfAldebaran]
+        [Enemies.beastOfAldebaran, Enemies.tidalTerror]
         [ EncounterSet.BlackStarsRise
         , EncounterSet.EvilPortents
         , EncounterSet.Byakhee
@@ -72,6 +72,8 @@ instance RunMessage BlackStarsRise where
         , EncounterSet.DarkCult
         , EncounterSet.AncientEvils
         ]
+
+      setAsideCards <- traverse genCard [Enemies.tidalTerror, Enemies.tidalTerror]
 
       let
         tokenToAdd = case scenarioDifficulty attrs of
@@ -129,6 +131,7 @@ instance RunMessage BlackStarsRise where
       BlackStarsRise <$> runMessage
         msg
         (attrs
+        & (setAsideCardsL .~ setAsideCards)
         & (agendaStackL
           . at 1
           ?~ [Agendas.theTideRises, agenda2a, Agendas.theCityFloods]

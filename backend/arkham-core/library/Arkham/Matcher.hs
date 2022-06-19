@@ -25,6 +25,7 @@ import {-# SOURCE #-} Arkham.Target
 import Arkham.Timing
 import Arkham.Token
 import Arkham.Trait
+import Arkham.Agenda.Sequence
 
 data Matcher = MatchInvestigator InvestigatorMatcher | MatchLocation LocationMatcher
   deriving stock (Show, Eq, Generic)
@@ -827,6 +828,7 @@ data AgendaMatcher
   | AgendaWithDoom ValueMatcher
   | AnyAgenda
   | AgendaWithTreachery TreacheryMatcher
+  | AgendaWithSequence AgendaSequence
   | NotAgenda AgendaMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

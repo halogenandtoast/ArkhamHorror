@@ -266,10 +266,10 @@ theTideRises :: CardDef
 theTideRises = agenda "03275" "The Tide Rises" 1 BlackStarsRise
 
 letTheStormRageTheFloodBelow :: CardDef
-letTheStormRageTheFloodBelow = agenda "03276aa" "Let The Storm Rage" 2 BlackStarsRise
+letTheStormRageTheFloodBelow = agenda "03276a" "Let The Storm Rage" 2 BlackStarsRise
 
 letTheStormRageTheVortexAbove :: CardDef
-letTheStormRageTheVortexAbove = agenda "03276ba" "Let The Storm Rage" 2 BlackStarsRise
+letTheStormRageTheVortexAbove = agenda "03276b" "Let The Storm Rage" 2 BlackStarsRise
 
 theCityFloods :: CardDef
 theCityFloods = agenda "03277" "The City Floods" 3 BlackStarsRise
@@ -278,10 +278,10 @@ theRitualBeginsBlackStarsRise :: CardDef
 theRitualBeginsBlackStarsRise = agenda "03278" "The Ritual Begins" 1 BlackStarsRise
 
 theEntityAboveTheFloodBelow :: CardDef
-theEntityAboveTheFloodBelow = agenda "03279aa" "The Entity Above" 2 BlackStarsRise
+theEntityAboveTheFloodBelow = agenda "03279a" "The Entity Above" 2 BlackStarsRise
 
 theEntityAboveTheVortexAbove :: CardDef
-theEntityAboveTheVortexAbove = agenda "03279ba" "The Entity Above" 2 BlackStarsRise
+theEntityAboveTheVortexAbove = agenda "03279b" "The Entity Above" 2 BlackStarsRise
 
 swallowedSky :: CardDef
 swallowedSky = agenda "03280" "Swallowed Sky" 3 BlackStarsRise

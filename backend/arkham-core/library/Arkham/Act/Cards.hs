@@ -78,6 +78,8 @@ allActCards = mapFromList $ map
   , mysteriousGateway
   , nightAtTheMuseum
   , noAsylum
+  , openThePathAbove
+  , openThePathBelow
   , outOfThisWorld
   , planningTheEscape
   , pursuingShadows
@@ -286,6 +288,12 @@ theWayOut = act "03245" "The Way Out" 3 ThePallidMask
 
 leadingTheWay :: CardDef
 leadingTheWay = act "03246" "Leading the Way" 3 ThePallidMask
+
+openThePathBelow :: CardDef
+openThePathBelow = act "03281" "Open The Path Below" 3 BlackStarsRise
+
+openThePathAbove :: CardDef
+openThePathAbove = act "03282" "Open The Path Above" 3 BlackStarsRise
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

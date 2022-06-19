@@ -165,6 +165,7 @@ allEncounterEnemyCards = mapFromList $ map
   , theOrganistHopelessIDefiedHim
   , theRougarou
   , thrall
+  , tidalTerror
   , umordhoth
   , victoriaDevereux
   , whippoorwill
@@ -749,6 +750,12 @@ corpseDweller :: CardDef
 corpseDweller = (enemy "03259" "Corpse Dweller" ThePallidMask 3)
   { cdCardTraits = singleton Monster
   , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+  }
+
+tidalTerror :: CardDef
+tidalTerror = (enemy "03300" "Tidal Terror" BlackStarsRise 2)
+  { cdCardTraits = singleton Monster
+  , cdKeywords = singleton Keyword.Hunter
   }
 
 corpseHungryGhoul :: CardDef

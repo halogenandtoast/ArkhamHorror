@@ -26,6 +26,10 @@ instance RunMessage AgendaAttrs
       pure $ a & cardsUnderneathL %~ (<> cards)
     PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doomL +~ n
     Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
+    Discard (AgendaTarget aid) | aid == toId a -> do
+      pushAll
+        [ Discard (TreacheryTarget tid) | tid <- setToList agendaTreacheries ]
+      pure a
     AttachTreachery tid (AgendaTarget aid) | aid == agendaId ->
       pure $ a & treacheriesL %~ insertSet tid
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == A -> do

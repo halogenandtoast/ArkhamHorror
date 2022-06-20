@@ -140,6 +140,7 @@ allEncounterEnemyCards = mapFromList $ map
   , possessedOathspeaker
   , ravenousGhoul
   , relentlessDarkYoung
+  , riftSeeker
   , roachSwarm
   , royalEmissary
   , ruthTurner

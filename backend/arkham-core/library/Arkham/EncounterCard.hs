@@ -2,6 +2,8 @@ module Arkham.EncounterCard where
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards
+import Arkham.Agenda.Cards
 import Arkham.Asset.Cards
 import Arkham.Enemy.Cards
 import Arkham.Location.Cards
@@ -22,3 +24,5 @@ allEncounterCards =
     <> allEncounterTreacheryCards
     <> allEncounterAssetCards
     <> allStoryCards
+    <> allActCards
+    <> allAgendaCards

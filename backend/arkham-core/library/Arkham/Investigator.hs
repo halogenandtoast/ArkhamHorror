@@ -18,13 +18,13 @@ $(buildEntity "Investigator")
 $(deriveJSON defaultOptions ''Investigator)
 
 instance HasModifiersFor Investigator where
-  getModifiersFor = $(entityF2 "Investigator" "getModifiersFor")
+  getModifiersFor = $(entityF2 "Investigator" 'getModifiersFor)
 
 instance HasTokenValue Investigator where
-  getTokenValue = $(entityF2 "Investigator" "getTokenValue")
+  getTokenValue = $(entityF2 "Investigator" 'getTokenValue)
 
 instance HasAbilities Investigator where
-  getAbilities = $(entityF "Investigator" "getAbilities")
+  getAbilities = $(entityF "Investigator" 'getAbilities)
 
 instance RunMessage Investigator where
   runMessage msg i = do
@@ -59,7 +59,7 @@ instance Entity Investigator where
   type EntityId Investigator = InvestigatorId
   type EntityAttrs Investigator = InvestigatorAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Investigator" "toAttrs")
+  toAttrs = $(entityF "Investigator" 'toAttrs)
 
 instance TargetEntity Investigator where
   toTarget = toTarget . toAttrs

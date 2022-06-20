@@ -79,10 +79,10 @@ createPayForAbilityEffect ability source target windows' = do
   pure (eid, buildPayForAbilityEffect eid ability source target windows')
 
 instance HasModifiersFor Effect where
-  getModifiersFor = $(entityF2 "Effect" "getModifiersFor")
+  getModifiersFor = $(entityF2 "Effect" 'getModifiersFor)
 
 instance HasAbilities Effect where
-  getAbilities = $(entityF "Effect" "getAbilities")
+  getAbilities = $(entityF "Effect" 'getAbilities)
 
 instance RunMessage Effect where
   runMessage = $(entityRunMessage "Effect")
@@ -91,7 +91,7 @@ instance Entity Effect where
   type EntityId Effect = EffectId
   type EntityAttrs Effect = EffectAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Effect" "toAttrs")
+  toAttrs = $(entityF "Effect" 'toAttrs)
 
 instance TargetEntity Effect where
   toTarget = toTarget . toAttrs

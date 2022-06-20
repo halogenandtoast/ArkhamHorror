@@ -19,19 +19,19 @@ $(buildEntity "Act")
 $(deriveJSON defaultOptions ''Act)
 
 instance HasAbilities Act where
-  getAbilities = $(entityF "Act" "getAbilities")
+  getAbilities = $(entityF "Act" 'getAbilities)
 
 instance RunMessage Act where
   runMessage = $(entityRunMessage "Act")
 
 instance HasModifiersFor Act where
-  getModifiersFor = $(entityF2 "Act" "getModifiersFor")
+  getModifiersFor = $(entityF2 "Act" 'getModifiersFor)
 
 instance Entity Act where
   type EntityId Act = ActId
   type EntityAttrs Act = ActAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Act" "toAttrs")
+  toAttrs = $(entityF "Act" 'toAttrs)
 
 instance TargetEntity Act where
   toTarget = toTarget . toAttrs

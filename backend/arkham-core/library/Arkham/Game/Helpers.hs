@@ -662,6 +662,7 @@ targetToSource = \case
   ProxyTarget{} -> error "can not convert"
   CardTarget{} -> error "can not convert"
   StoryTarget code -> StorySource code
+  EachAgendaTarget -> error "can not convert"
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -1803,6 +1804,7 @@ targetTraits = \case
   PhaseTarget _ -> pure mempty
   TokenFaceTarget _ -> pure mempty
   InvestigationTarget _ _ -> pure mempty
+  EachAgendaTarget -> pure mempty
 
 sourceTraits :: (Monad m, HasGame m) => Source -> m (HashSet Trait)
 sourceTraits = \case

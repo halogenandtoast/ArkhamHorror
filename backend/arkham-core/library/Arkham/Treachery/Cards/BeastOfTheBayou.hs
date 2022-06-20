@@ -7,7 +7,6 @@ import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Source
 import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -20,7 +19,7 @@ beastOfTheBayou :: TreacheryCard BeastOfTheBayou
 beastOfTheBayou = treachery BeastOfTheBayou Cards.beastOfTheBayou
 
 instance RunMessage BeastOfTheBayou where
-  runMessage msg t@(BeastOfTheBayou attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(BeastOfTheBayou attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       mrougarou <- getTheRougarou
       t <$ case mrougarou of

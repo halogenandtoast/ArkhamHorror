@@ -6,7 +6,7 @@ import Arkham.Asset.Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
-import Arkham.EncounterSet hiding (Dunwich)
+import Arkham.EncounterSet hiding ( Dunwich )
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name
 import Arkham.Trait
@@ -61,6 +61,8 @@ allLocationCards = mapFromList $ map
   (toCardCode &&& id)
   [ aTearInThePath
   , abbeyChurch
+  , abbeyTowerSpiresForbidden
+  , abbeyTowerThePathIsOpen
   , accademiaBridge
   , administrationBuilding
   , administrationOffice_130
@@ -111,6 +113,11 @@ allLocationCards = mapFromList $ map
   , canalSide
   , candlelitTunnels
   , cellar
+  , chapelOfStAubertThePathIsOpen
+  , chapelOfStAubertWatersForbidden
+  , choeurGothique_292
+  , choeurGothique_293
+  , cloister
   , cloverClubBar
   , cloverClubCardroom
   , cloverClubLounge
@@ -187,6 +194,7 @@ allLocationCards = mapFromList $ map
   , humanitiesBuilding
   , infirmary
   , kitchen
+  , knightsHall
   , laBellaLuna
   , labyrinthOfBones
   , leMarais217
@@ -1282,51 +1290,121 @@ gardensOfLuxembourg =
     }
 
 theGateToHell :: CardDef
-theGateToHell = locationWithUnrevealed "03247" "Catacombs" [] "The Gate to Hell" [] ThePallidMask
+theGateToHell = locationWithUnrevealed
+  "03247"
+  "Catacombs"
+  []
+  "The Gate to Hell"
+  []
+  ThePallidMask
 
 stoneArchways :: CardDef
-stoneArchways = (locationWithUnrevealed "03248" "Catacombs" [] "Stone Archways" [] ThePallidMask)
+stoneArchways = (locationWithUnrevealed
+                  "03248"
+                  "Catacombs"
+                  []
+                  "Stone Archways"
+                  []
+                  ThePallidMask
+                )
   { cdEncounterSetQuantity = Just 2
   }
 
 cryptOfTheSepulchralLamp :: CardDef
-cryptOfTheSepulchralLamp = locationWithUnrevealed "03249" "Catacombs" [] "Crypt of the Sepulchral Lamp" [] ThePallidMask
+cryptOfTheSepulchralLamp = locationWithUnrevealed
+  "03249"
+  "Catacombs"
+  []
+  "Crypt of the Sepulchral Lamp"
+  []
+  ThePallidMask
 
 boneFilledCaverns :: CardDef
-boneFilledCaverns = (locationWithUnrevealed "03250" "Catacombs" [] "Bone-Filled Caverns" [] ThePallidMask)
+boneFilledCaverns = (locationWithUnrevealed
+                      "03250"
+                      "Catacombs"
+                      []
+                      "Bone-Filled Caverns"
+                      []
+                      ThePallidMask
+                    )
   { cdVictoryPoints = Just 1
   }
 
 wellOfSouls :: CardDef
-wellOfSouls = (locationWithUnrevealed "03251" "Catacombs" [] "Well of Souls" [] ThePallidMask)
-  { cdVictoryPoints = Just 1
-  }
+wellOfSouls =
+  (locationWithUnrevealed
+      "03251"
+      "Catacombs"
+      []
+      "Well of Souls"
+      []
+      ThePallidMask
+    )
+    { cdVictoryPoints = Just 1
+    }
 
 candlelitTunnels :: CardDef
-candlelitTunnels = (locationWithUnrevealed "03252" "Catacombs" [] "Candlelit Tunnels" [] ThePallidMask)
+candlelitTunnels = (locationWithUnrevealed
+                     "03252"
+                     "Catacombs"
+                     []
+                     "Candlelit Tunnels"
+                     []
+                     ThePallidMask
+                   )
   { cdEncounterSetQuantity = Just 2
   }
 
 labyrinthOfBones :: CardDef
-labyrinthOfBones = (locationWithUnrevealed "03253" "Catacombs" [] "Labyrinth of Bones" [] ThePallidMask)
+labyrinthOfBones = (locationWithUnrevealed
+                     "03253"
+                     "Catacombs"
+                     []
+                     "Labyrinth of Bones"
+                     []
+                     ThePallidMask
+                   )
   { cdEncounterSetQuantity = Just 2
   }
 
 narrowShaft :: CardDef
-narrowShaft = (locationWithUnrevealed "03254" "Catacombs" [] "Narrow Shaft" [] ThePallidMask)
-  { cdVictoryPoints = Just 1
-  }
+narrowShaft =
+  (locationWithUnrevealed "03254" "Catacombs" [] "Narrow Shaft" [] ThePallidMask
+    )
+    { cdVictoryPoints = Just 1
+    }
 
 shiveringPools :: CardDef
-shiveringPools = (locationWithUnrevealed "03255" "Catacombs" [] "Shivering Pools" [] ThePallidMask)
+shiveringPools = (locationWithUnrevealed
+                   "03255"
+                   "Catacombs"
+                   []
+                   "Shivering Pools"
+                   []
+                   ThePallidMask
+                 )
   { cdVictoryPoints = Just 1
   }
 
 blockedPassage :: CardDef
-blockedPassage = locationWithUnrevealed "03256" "Catacombs" [] "Blocked Passage" [] ThePallidMask
+blockedPassage = locationWithUnrevealed
+  "03256"
+  "Catacombs"
+  []
+  "Blocked Passage"
+  []
+  ThePallidMask
 
 tombOfShadows :: CardDef
-tombOfShadows = (locationWithUnrevealed "03257" "Catacombs" [] "Tomb of Shadows" [] ThePallidMask)
+tombOfShadows = (locationWithUnrevealed
+                  "03257"
+                  "Catacombs"
+                  []
+                  "Tomb of Shadows"
+                  []
+                  ThePallidMask
+                )
   { cdVictoryPoints = Just 1
   }
 
@@ -1337,14 +1415,12 @@ grandRue :: CardDef
 grandRue = location "03284" "Grand Rue" [] BlackStarsRise
 
 outerWall_285 :: CardDef
-outerWall_285 = (location "03285" "Outer Wall" [] BlackStarsRise)
-  { cdVictoryPoints = Just 1
-  }
+outerWall_285 =
+  (location "03285" "Outer Wall" [] BlackStarsRise) { cdVictoryPoints = Just 1 }
 
 outerWall_286 :: CardDef
-outerWall_286 = (location "03286" "Outer Wall" [] BlackStarsRise)
-  { cdVictoryPoints = Just 1
-  }
+outerWall_286 =
+  (location "03286" "Outer Wall" [] BlackStarsRise) { cdVictoryPoints = Just 1 }
 
 northTower_287 :: CardDef
 northTower_287 = (location "03287" "North Tower" [] BlackStarsRise)
@@ -1364,6 +1440,62 @@ brokenSteps_290 = location "03290" "Broken Steps" [] BlackStarsRise
 
 abbeyChurch :: CardDef
 abbeyChurch = location "03291" "Abbey Church" [] BlackStarsRise
+
+choeurGothique_292 :: CardDef
+choeurGothique_292 = location "03292" "Chœur Gothique" [] BlackStarsRise
+
+choeurGothique_293 :: CardDef
+choeurGothique_293 = location "03292" "Chœur Gothique" [] BlackStarsRise
+
+cloister :: CardDef
+cloister = location "03294" "Cloister" [] BlackStarsRise
+
+knightsHall :: CardDef
+knightsHall = location "03295" "Knight's Hall" [] BlackStarsRise
+
+chapelOfStAubertThePathIsOpen :: CardDef
+chapelOfStAubertThePathIsOpen = locationWithUnrevealed
+  "03296"
+  "Chapel of St. Aubert"
+  []
+  ("Chapel of St. Aubert" <:> "The Path is Open")
+  []
+  BlackStarsRise
+
+chapelOfStAubertWatersForbidden :: CardDef
+chapelOfStAubertWatersForbidden = (locationWithUnrevealed
+                                    "03297"
+                                    "Chapel of St. Aubert"
+                                    []
+                                    ("Chapel of St. Aubert"
+                                    <:> "Waters Forbidden"
+                                    )
+                                    []
+                                    BlackStarsRise
+                                  )
+  { cdVictoryPoints = Just 2
+  }
+
+abbeyTowerThePathIsOpen :: CardDef
+abbeyTowerThePathIsOpen = locationWithUnrevealed
+  "03298"
+  "Abbey Tower"
+  []
+  ("Abbey Tower" <:> "The Path is Open")
+  []
+  BlackStarsRise
+
+abbeyTowerSpiresForbidden :: CardDef
+abbeyTowerSpiresForbidden = (locationWithUnrevealed
+                              "03299"
+                              "Abbey Tower"
+                              []
+                              ("Abbey Tower" <:> "Spires Forbidden")
+                              []
+                              BlackStarsRise
+                            )
+  { cdVictoryPoints = Just 2
+  }
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

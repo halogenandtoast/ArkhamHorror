@@ -12,8 +12,8 @@ import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype AlteredBeast = AlteredBeast TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -36,13 +36,14 @@ instance RunMessage AlteredBeast where
   runMessage msg t@(AlteredBeast attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       abominations <- selectListMap EnemyTarget $ EnemyWithTrait Abomination
-      t <$ case abominations of
-        [] -> push $ Surge iid source
-        xs -> push $ chooseOrRunOne
+      push $ case abominations of
+        [] -> Surge iid source
+        xs -> chooseOrRunOne
           iid
           [ TargetLabel x [AttachTreachery treacheryId x, HealAllDamage x]
           | x <- xs
           ]
+      pure t
     UseCardAbility iid source _ 1 _ ->
       t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     _ -> AlteredBeast <$> runMessage msg attrs

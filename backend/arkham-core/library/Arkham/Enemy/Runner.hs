@@ -669,10 +669,6 @@ instance RunMessage EnemyAttrs where
         xs -> spawnAtOneOf (fromMaybe leadInvestigatorId miid) eid xs
     InvestigatorEliminated iid ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid
-    UnengageNonMatching iid traits
-      | iid `elem` enemyEngagedInvestigators && null
-        (setFromList traits `intersection` toTraits a)
-      -> a <$ push (DisengageEnemy iid enemyId)
     DisengageEnemy iid eid | eid == enemyId ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid
     AdvanceAgenda{} -> pure $ a & doomL .~ 0

@@ -2,11 +2,11 @@ module Arkham.Event.Cards.BaitAndSwitch where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards (baitAndSwitch)
 import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards ( baitAndSwitch )
 import Arkham.Event.Runner
-import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
@@ -37,10 +37,17 @@ instance RunMessage BaitAndSwitch where
         pure e
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _)
       | isTarget attrs target -> do
-        enemyMoveChoices <- chooseOne iid
-          <$> selectListMap (EnemyMove enemyId) ConnectedLocation
-        insertAfterMatching enemyMoveChoices \case
-          AfterEvadeEnemy{} -> True
-          _ -> False
+        choices <- selectList ConnectedLocation
+        let
+          enemyMoveChoices = chooseOne
+            iid
+            [ targetLabel choice [EnemyMove enemyId choice]
+            | choice <- choices
+            ]
+        insertAfterMatching
+          enemyMoveChoices
+          \case
+            AfterEvadeEnemy{} -> True
+            _ -> False
         pure e
     _ -> BaitAndSwitch <$> runMessage msg attrs

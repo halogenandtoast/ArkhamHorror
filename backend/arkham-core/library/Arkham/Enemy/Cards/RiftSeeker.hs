@@ -24,10 +24,16 @@ riftSeeker = enemy RiftSeeker Cards.riftSeeker (3, Static 3, 3) (1, 1)
 instance HasAbilities RiftSeeker where
   getAbilities (RiftSeeker a) = withBaseAbilities
     a
-    [ restrictedAbility a 1 OnSameLocation
+    [ mkAbility a 1 $ ForcedAbility $ EnemyAttacks Timing.After AnyEnemyAttack $ EnemyWithId (toId a)
+    , restrictedAbility a 2 OnSameLocation
       $ ActionAbility (Just Action.Parley)
       $ HorrorCost (toSource a) YouTarget 2
     ]
 
 instance RunMessage RiftSeeker where
-  runMessage msg (RiftSeeker attrs) = RiftSeeker <$> runMessage msg attrs
+  runMessage msg e@(RiftSeeker attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      pure e
+    UseCardAbility iid source _ 2 _ | isSource attrs source ->
+      e <$ push (Discard $ toTarget attrs)
+    _ -> RiftSeeker <$> runMessage msg attrs

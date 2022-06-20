@@ -353,6 +353,18 @@ locationWithInvestigator :: InvestigatorId -> LocationMatcher
 locationWithInvestigator = LocationWithInvestigator . InvestigatorWithId
 {-# INLINE locationWithInvestigator #-}
 
+locationWithTreachery :: TreacheryId -> LocationMatcher
+locationWithTreachery = LocationWithTreachery . TreacheryWithId
+{-# INLINE locationWithTreachery #-}
+
+locationWithoutTreachery :: HasCardCode a => a -> LocationMatcher
+locationWithoutTreachery = LocationWithoutTreachery . treacheryIs
+{-# INLINE locationWithoutTreachery #-}
+
+accessibleFrom :: LocationId -> LocationMatcher
+accessibleFrom = AccessibleFrom . LocationWithId
+{-# INLINE accessibleFrom #-}
+
 data LocationMatcher
   = LocationWithTitle Text
   | LocationWithFullTitle Text Text

@@ -806,6 +806,8 @@ library
       Arkham.Location.Attrs
       Arkham.Location.Cards
       Arkham.Location.Cards.AbbeyChurch
+      Arkham.Location.Cards.AbbeyTowerSpiresForbidden
+      Arkham.Location.Cards.AbbeyTowerThePathIsOpen
       Arkham.Location.Cards.AccademiaBridge
       Arkham.Location.Cards.AdministrationBuilding
       Arkham.Location.Cards.AdministrationOffice_130
@@ -857,6 +859,11 @@ library
       Arkham.Location.Cards.CanalSide
       Arkham.Location.Cards.CandlelitTunnels
       Arkham.Location.Cards.Cellar
+      Arkham.Location.Cards.ChapelOfStAubertThePathIsOpen
+      Arkham.Location.Cards.ChapelOfStAubertWatersForbidden
+      Arkham.Location.Cards.ChoeurGothique_292
+      Arkham.Location.Cards.ChoeurGothique_293
+      Arkham.Location.Cards.Cloister
       Arkham.Location.Cards.CloverClubBar
       Arkham.Location.Cards.CloverClubCardroom
       Arkham.Location.Cards.CloverClubLounge
@@ -933,6 +940,7 @@ library
       Arkham.Location.Cards.HumanitiesBuilding
       Arkham.Location.Cards.Infirmary
       Arkham.Location.Cards.Kitchen
+      Arkham.Location.Cards.KnightsHall
       Arkham.Location.Cards.LaBellaLuna
       Arkham.Location.Cards.LabyrinthOfBones
       Arkham.Location.Cards.LeMarais217

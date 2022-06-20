@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Attrs ( Field (..) )
+import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
@@ -102,16 +103,43 @@ instance RunMessage BlackStarsRise where
         , EncounterSet.AncientEvils
         ]
 
-      setAsideCards <- traverse
-        genCard
-        [Enemies.tidalTerror, Enemies.tidalTerror]
-
       let
         tokenToAdd = case scenarioDifficulty attrs of
           Easy -> MinusThree
           Standard -> MinusFive
           Hard -> MinusSix
           Expert -> MinusSeven
+        (agenda2a, agenda2c, abbeyTower, chapelOfStAubert) = if version == TheVortexAbove
+          then
+            ( Agendas.letTheStormRageTheVortexAbove
+            , Agendas.theEntityAboveTheVortexAbove
+            , Locations.abbeyTowerThePathIsOpen
+            , Locations.chapelOfStAubertWatersForbidden
+            )
+          else
+            ( Agendas.letTheStormRageTheFloodBelow
+            , Agendas.theEntityAboveTheFloodBelow
+            , Locations.abbeyTowerSpiresForbidden
+            , Locations.chapelOfStAubertThePathIsOpen
+            )
+
+      choeurGothique <- sample (Locations.choeurGothique_292 :| [Locations.choeurGothique_293])
+
+      setAsideCards <- traverse
+        genCard
+        [ Enemies.tidalTerror
+        , Enemies.tidalTerror
+        , Enemies.riftSeeker
+        , Enemies.riftSeeker
+        , Acts.openThePathAbove
+        , Acts.openThePathBelow
+        , Enemies.beastOfAldebaran
+        , Locations.cloister
+        , Locations.knightsHall
+        , abbeyTower
+        , chapelOfStAubert
+        , choeurGothique
+        ]
 
       porteDeLAvancee <- genCard Locations.porteDeLAvancee
       grandRue <- genCard Locations.grandRue
@@ -122,17 +150,6 @@ instance RunMessage BlackStarsRise where
         =<< sample (Locations.outerWall_285 :| [Locations.outerWall_286])
       brokenSteps <- genCard
         =<< sample (Locations.brokenSteps_289 :| [Locations.brokenSteps_290])
-
-      let
-        (agenda2a, agenda2c) = if version == TheVortexAbove
-          then
-            ( Agendas.letTheStormRageTheVortexAbove
-            , Agendas.theEntityAboveTheVortexAbove
-            )
-          else
-            ( Agendas.letTheStormRageTheFloodBelow
-            , Agendas.theEntityAboveTheFloodBelow
-            )
 
       pushAll
         $ [story investigatorIds intro]

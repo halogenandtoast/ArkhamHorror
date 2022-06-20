@@ -332,6 +332,8 @@ data Message
   | HealAllDamage Target
   | HealDamage Target Int
   | HealHorror Target Int
+  | HealHorrorWithAdditional Target Int
+  | AdditionalHealHorror Target Int
   | HuntersMove
   | HunterMove EnemyId
   | InDiscard InvestigatorId Message

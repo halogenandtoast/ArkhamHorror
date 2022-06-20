@@ -240,6 +240,7 @@ investigator f cardDef Stats {..} =
         , investigatorFoundCards = mempty
         , investigatorUsedAbilities = mempty
         , investigatorTomeActions = Nothing
+        , investigatorHorrorHealed = 0
         }
       }
 

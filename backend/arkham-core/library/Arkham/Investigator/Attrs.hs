@@ -98,6 +98,8 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorUsedAbilities :: [UsedAbility]
   -- investigator-specific fields
   , investigatorTomeActions :: Maybe Int
+  -- handling liquid courage
+  , investigatorHorrorHealed :: Int
   }
   deriving stock (Show, Eq, Generic)
 

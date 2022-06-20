@@ -1185,6 +1185,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->
     pure $ a & healthDamageL %~ max 0 . subtract amount
+  HealHorrorWithAdditional (InvestigatorTarget iid) amount | iid == investigatorId -> do
+    -- exists to have no callbacks
+    cannotHealHorror <- hasModifier a CannotHealHorror
+    pure $ if cannotHealHorror
+      then a
+      else a & sanityDamageL %~ max 0 . subtract amount & horrorHealedL .~ (min amount investigatorSanityDamage)
+  AdditionalHealHorror (InvestigatorTarget iid) additional | iid == investigatorId -> do
+    -- exists to have Callbacks for the total, get from investigatorHorrorHealed
+    cannotHealHorror <- hasModifier a CannotHealHorror
+    pure $ if cannotHealHorror
+      then a & horrorHealedL .~ 0
+      else a & sanityDamageL %~ max 0 . subtract additional & horrorHealedL .~ 0
   HealHorror (InvestigatorTarget iid) amount | iid == investigatorId -> do
     cannotHealHorror <- hasModifier a CannotHealHorror
     pure $ if cannotHealHorror

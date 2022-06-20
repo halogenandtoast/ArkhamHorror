@@ -18,6 +18,7 @@ replaceNonLetters [] = []
 replaceNonLetters (x : xs) = if not (isLetter x)
   then case x of
     '\'' -> replaceNonLetters xs
+    '.' -> replaceNonLetters xs
     _ -> ' ' : replaceNonLetters xs
   else x : replaceNonLetters xs
 

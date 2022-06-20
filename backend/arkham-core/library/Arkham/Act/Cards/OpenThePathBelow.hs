@@ -5,14 +5,14 @@ module Arkham.Act.Cards.OpenThePathBelow
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
+import Arkham.Ability
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
-import Arkham.Resolution
-import Arkham.Message
 import Arkham.Criteria
 import Arkham.Matcher
-import Arkham.Ability
+import Arkham.Message
+import Arkham.Resolution
 
 newtype OpenThePathBelow = OpenThePathBelow ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -24,13 +24,15 @@ openThePathBelow = act (3, A) OpenThePathBelow Cards.openThePathBelow Nothing
 instance HasAbilities OpenThePathBelow where
   getAbilities (OpenThePathBelow x) =
     [ restrictedAbility
-        x
-        1
-        (EachUndefeatedInvestigator $ InvestigatorAt $
-          LocationWithTitle "Chapel of St. Aubert" <> LocationWithoutClues
-        )
-      $ Objective
-      $ ForcedAbility AnyWindow
+          x
+          1
+          (EachUndefeatedInvestigator
+          $ InvestigatorAt
+          $ LocationWithTitle "Chapel of St. Aubert"
+          <> LocationWithoutClues
+          )
+        $ Objective
+        $ ForcedAbility AnyWindow
     ]
 
 instance RunMessage OpenThePathBelow where

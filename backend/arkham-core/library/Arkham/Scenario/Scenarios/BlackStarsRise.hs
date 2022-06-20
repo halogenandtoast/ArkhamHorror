@@ -41,10 +41,14 @@ blackStarsRise difficulty =
   BlackStarsRise
     $ baseAttrs "03274" "Black Stars Rise" difficulty
     & locationLayoutL
-    ?~ [ ".           .           northTower      ."
-       , "abbeyChurch brokenSteps .               outerWall"
-       , ".           .           grandRue        ."
-       , ".           .           porteDeLAvancée ."
+    ?~ [ ".                cloister      .           northTower      ."
+       , "knightsHall      cloister      .           northTower      ."
+       , "knightsHall      abbeyChurch    brokenSteps .               outerWall"
+       , "chapelOfStAubert abbeyChurch    brokenSteps .               outerWall"
+       , "chapelOfStAubert chœurGothique  .           grandRue        ."
+       , ".                chœurGothique  .           grandRue        ."
+       , ".                abbeyTower     .           porteDeLAvancée ."
+       , ".                abbeyTower     .           porteDeLAvancée ."
        ]
 
 instance HasTokenValue BlackStarsRise where

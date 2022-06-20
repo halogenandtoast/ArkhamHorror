@@ -4,7 +4,6 @@ module Arkham.Event.Cards.BarricadeSpec
 
 import TestImport.Lifted
 
-import Arkham.Modifier
 import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Location.Attrs (Field(..))
 import Arkham.Projection

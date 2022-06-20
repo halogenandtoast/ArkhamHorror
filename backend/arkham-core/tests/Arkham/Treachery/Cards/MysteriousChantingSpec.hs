@@ -22,7 +22,7 @@ spec = describe "Mysterious Chanting" $ do
         , placedLocation location2
         , enemySpawn location1 cultist
         , moveTo investigator location1
-        , RemoveAllDoom (toSource attrs)
+        , RemoveAllDoom (TestSource mempty)
         , InvestigatorDrawEncounterCard (toId investigator)
         ]
         ((entitiesL . enemiesL %~ insertEntity cultist)

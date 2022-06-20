@@ -4,8 +4,6 @@ module Arkham.Enemy.Cards.TheMaskedHunterSpec
 
 import TestImport.Lifted
 
-import Arkham.Modifier
-
 spec :: Spec
 spec = describe "The Masked Hunter" $ do
   context "modifiers" $ do

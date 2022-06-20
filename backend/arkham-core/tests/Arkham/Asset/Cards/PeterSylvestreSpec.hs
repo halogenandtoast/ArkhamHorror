@@ -4,7 +4,6 @@ module Arkham.Asset.Cards.PeterSylvestreSpec
 
 import TestImport.Lifted
 
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Asset.Attrs qualified as Asset
 

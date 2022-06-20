@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
-import Arkham.Modifier
 import Arkham.Target
 
 newtype AsylumHallsWesternPatientWing_169 = AsylumHallsWesternPatientWing_169 LocationAttrs

@@ -11,7 +11,6 @@ import Arkham.Action (Action(Fight))
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
 

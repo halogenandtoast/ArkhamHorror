@@ -7,7 +7,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
-import Arkham.Modifier
 
 newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs
   deriving anyclass IsLocation

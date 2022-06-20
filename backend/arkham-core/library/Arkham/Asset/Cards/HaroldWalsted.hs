@@ -10,7 +10,6 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target

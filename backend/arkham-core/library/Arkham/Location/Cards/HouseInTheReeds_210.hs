@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
-import Arkham.Modifier
 import Arkham.Target
 
 newtype HouseInTheReeds_210 = HouseInTheReeds_210 LocationAttrs

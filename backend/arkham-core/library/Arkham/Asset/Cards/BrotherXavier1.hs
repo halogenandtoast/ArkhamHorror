@@ -14,7 +14,6 @@ import Arkham.DamageEffect
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Matcher qualified as Matcher
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source

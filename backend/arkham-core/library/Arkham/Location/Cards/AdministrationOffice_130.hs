@@ -11,7 +11,6 @@ import Arkham.GameValue
 import Arkham.Investigator.Attrs (Field (..))
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Source
 

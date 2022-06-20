@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
 

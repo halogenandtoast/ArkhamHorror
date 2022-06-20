@@ -11,7 +11,6 @@ import qualified Arkham.Location.Cards as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Target
 import Arkham.Trait
 

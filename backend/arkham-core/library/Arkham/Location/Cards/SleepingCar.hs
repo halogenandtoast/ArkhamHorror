@@ -15,7 +15,6 @@ import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 

@@ -18,7 +18,6 @@ import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
 

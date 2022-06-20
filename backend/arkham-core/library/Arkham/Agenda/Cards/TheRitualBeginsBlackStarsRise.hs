@@ -9,9 +9,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers
 import Arkham.Message
-import Arkham.Target
 
 newtype TheRitualBeginsBlackStarsRise = TheRitualBeginsBlackStarsRise AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Modifier
 import Arkham.Investigator.Attrs ( Field(..) )
 import Arkham.Projection
 import Arkham.SkillType

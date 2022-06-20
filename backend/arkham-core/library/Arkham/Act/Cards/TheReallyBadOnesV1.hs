@@ -16,7 +16,6 @@ import Arkham.Classes
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.Target
 import Arkham.Trait

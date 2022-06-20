@@ -15,7 +15,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing

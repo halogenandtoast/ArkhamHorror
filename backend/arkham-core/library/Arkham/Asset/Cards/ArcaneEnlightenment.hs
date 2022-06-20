@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Modifier
 import Arkham.Slot
 import Arkham.Target
 import Arkham.Trait

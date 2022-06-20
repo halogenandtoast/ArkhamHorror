@@ -15,7 +15,6 @@ import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher
 import Arkham.Message hiding (RevealLocation)
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 

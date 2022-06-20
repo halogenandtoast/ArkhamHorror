@@ -12,7 +12,6 @@ import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Target
 
 newtype Schoolhouse_212 = Schoolhouse_212 LocationAttrs

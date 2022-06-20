@@ -13,7 +13,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Name
 import Arkham.Target
 import Arkham.Trait

@@ -9,9 +9,7 @@ import qualified Arkham.Agenda.Cards as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers
 import Arkham.Message
-import Arkham.Target
 
 newtype TheEntityAboveTheVortexAbove = TheEntityAboveTheVortexAbove AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

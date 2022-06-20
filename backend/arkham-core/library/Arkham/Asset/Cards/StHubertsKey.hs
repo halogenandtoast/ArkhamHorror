@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing

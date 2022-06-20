@@ -15,7 +15,6 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher hiding ( DuringTurn )
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Target
 

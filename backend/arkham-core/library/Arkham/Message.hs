@@ -563,7 +563,6 @@ data Message
   | ChosenEvadeEnemy Source EnemyId
   | TriggerSkillTest InvestigatorId
   | TryEvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
-  | UnengageNonMatching InvestigatorId [Trait]
   | UnfocusCards
   | UnfocusTargets
   | UnfocusTokens

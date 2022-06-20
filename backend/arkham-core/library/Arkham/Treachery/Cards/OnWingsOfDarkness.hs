@@ -2,13 +2,13 @@ module Arkham.Treachery.Cards.OnWingsOfDarkness where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype OnWingsOfDarkness = OnWingsOfDarkness TreacheryAttrs
@@ -25,17 +25,18 @@ instance RunMessage OnWingsOfDarkness where
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         centralLocations <- selectList $ LocationWithTrait Central
-        t <$ pushAll
-          ([ InvestigatorAssignDamage iid source DamageAny 1 1
-           , UnengageNonMatching iid [Nightgaunt]
-           ]
+        enemiesToDisengage <-
+          selectList
+          $ EnemyIsEngagedWith (InvestigatorWithId iid)
+          <> EnemyWithoutTrait Nightgaunt
+        pushAll
+          $ InvestigatorAssignDamage iid source DamageAny 1 1
+          : map (DisengageEnemy iid) enemiesToDisengage
           <> [ chooseOne
                  iid
-                 [ TargetLabel
-                     (LocationTarget lid)
-                     [MoveTo (toSource attrs) iid lid]
+                 [ targetLabel lid [MoveTo (toSource attrs) iid lid]
                  | lid <- centralLocations
                  ]
              ]
-          )
+        pure t
     _ -> OnWingsOfDarkness <$> runMessage msg attrs

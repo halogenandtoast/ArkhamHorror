@@ -42,16 +42,16 @@ preventedByModifier e msg (CannotTakeAction matcher) =
 preventedByModifier _ _ _ = False
 
 instance HasAbilities Enemy where
-  getAbilities = $(entityF "Enemy" "getAbilities")
+  getAbilities = $(entityF "Enemy" 'getAbilities)
 
 instance HasModifiersFor Enemy where
-  getModifiersFor = $(entityF2 "Enemy" "getModifiersFor")
+  getModifiersFor = $(entityF2 "Enemy" 'getModifiersFor)
 
 instance Entity Enemy where
   type EntityId Enemy = EnemyId
   type EntityAttrs Enemy = EnemyAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Enemy" "toAttrs")
+  toAttrs = $(entityF "Enemy" 'toAttrs)
 
 instance TargetEntity Enemy where
   toTarget = toTarget . toAttrs

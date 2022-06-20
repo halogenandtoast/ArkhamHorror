@@ -26,19 +26,19 @@ instance HasCardDef Skill where
   toCardDef = toCardDef . toAttrs
 
 instance HasAbilities Skill where
-  getAbilities = $(entityF "Skill" "getAbilities")
+  getAbilities = $(entityF "Skill" 'getAbilities)
 
 instance RunMessage Skill where
   runMessage = $(entityRunMessage "Skill")
 
 instance HasModifiersFor Skill where
-  getModifiersFor = $(entityF2 "Skill" "getModifiersFor")
+  getModifiersFor = $(entityF2 "Skill" 'getModifiersFor)
 
 instance Entity Skill where
   type EntityId Skill = SkillId
   type EntityAttrs Skill = SkillAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Skill" "toAttrs")
+  toAttrs = $(entityF "Skill" 'toAttrs)
 
 instance Named Skill where
   toName = toName . toAttrs

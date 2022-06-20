@@ -36,10 +36,10 @@ instance HasCardCode Location where
   toCardCode = toCardCode . toAttrs
 
 instance HasAbilities Location where
-  getAbilities = $(entityF "Location" "getAbilities")
+  getAbilities = $(entityF "Location" 'getAbilities)
 
 instance HasModifiersFor Location where
-  getModifiersFor = $(entityF2 "Location" "getModifiersFor")
+  getModifiersFor = $(entityF2 "Location" 'getModifiersFor)
 
 instance RunMessage Location where
   runMessage msg l = do
@@ -51,7 +51,7 @@ instance Entity Location where
   type EntityId Location = LocationId
   type EntityAttrs Location = LocationAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Location" "toAttrs")
+  toAttrs = $(entityF "Location" 'toAttrs)
 
 instance Named Location where
   toName = toName . toAttrs

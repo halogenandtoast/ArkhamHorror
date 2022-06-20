@@ -23,13 +23,13 @@ instance HasCardDef Treachery where
   toCardDef = toCardDef . toAttrs
 
 instance HasAbilities Treachery where
-  getAbilities = $(entityF "Treachery" "getAbilities")
+  getAbilities = $(entityF "Treachery" 'getAbilities)
 
 instance RunMessage Treachery where
   runMessage = $(entityRunMessage "Treachery")
 
 instance HasModifiersFor Treachery where
-  getModifiersFor = $(entityF2 "Treachery" "getModifiersFor")
+  getModifiersFor = $(entityF2 "Treachery" 'getModifiersFor)
 
 instance HasCardCode Treachery where
   toCardCode = toCardCode . toAttrs
@@ -38,7 +38,7 @@ instance Entity Treachery where
   type EntityId Treachery = TreacheryId
   type EntityAttrs Treachery = TreacheryAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Treachery" "toAttrs")
+  toAttrs = $(entityF "Treachery" 'toAttrs)
 
 instance TargetEntity Treachery where
   toTarget = toTarget . toAttrs

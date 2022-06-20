@@ -24,7 +24,7 @@ $(buildEntity "Scenario")
 $(deriveJSON defaultOptions ''Scenario)
 
 instance HasModifiersFor Scenario where
-  getModifiersFor = $(entityF2 "Scenario" "getModifiersFor")
+  getModifiersFor = $(entityF2 "Scenario" 'getModifiersFor)
 
 instance RunMessage Scenario where
   runMessage msg s = case msg of
@@ -59,13 +59,13 @@ instance HasTokenValue Scenario where
       (TokenFaceTarget tokenFace)
     if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
       then pure $ TokenValue tokenFace NoModifier
-      else $(entityF2 "Scenario" "getTokenValue") iid tokenFace s
+      else $(entityF2 "Scenario" 'getTokenValue) iid tokenFace s
 
 instance Entity Scenario where
   type EntityId Scenario = ScenarioId
   type EntityAttrs Scenario = ScenarioAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Scenario" "toAttrs")
+  toAttrs = $(entityF "Scenario" 'toAttrs)
 
 lookupScenario :: ScenarioId -> Difficulty -> Scenario
 lookupScenario = fromJustNote "Unknown scenario" . flip lookup allScenarios

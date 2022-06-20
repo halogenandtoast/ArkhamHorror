@@ -18,10 +18,10 @@ createAsset :: IsCard a => a -> Asset
 createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)
 
 instance HasAbilities Asset where
-  getAbilities = $(entityF "Asset" "getAbilities")
+  getAbilities = $(entityF "Asset" 'getAbilities)
 
 instance HasModifiersFor Asset where
-  getModifiersFor = $(entityF2 "Asset" "getModifiersFor")
+  getModifiersFor = $(entityF2 "Asset" 'getModifiersFor)
 
 instance RunMessage Asset where
   runMessage msg x = do
@@ -36,7 +36,7 @@ instance Entity Asset where
   type EntityId Asset = AssetId
   type EntityAttrs Asset = AssetAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Asset" "toAttrs")
+  toAttrs = $(entityF "Asset" 'toAttrs)
 
 instance TargetEntity Asset where
   toTarget = toTarget . toAttrs

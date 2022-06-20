@@ -30,19 +30,19 @@ allAgendas =
       $(buildEntityLookupList "Agenda")
 
 instance HasAbilities Agenda where
-  getAbilities = $(entityF "Agenda" "getAbilities")
+  getAbilities = $(entityF "Agenda" 'getAbilities)
 
 instance RunMessage Agenda where
   runMessage = $(entityRunMessage "Agenda")
 
 instance HasModifiersFor Agenda where
-  getModifiersFor = $(entityF2 "Agenda" "getModifiersFor")
+  getModifiersFor = $(entityF2 "Agenda" 'getModifiersFor)
 
 instance Entity Agenda where
   type EntityId Agenda = AgendaId
   type EntityAttrs Agenda = AgendaAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Agenda" "toAttrs")
+  toAttrs = $(entityF "Agenda" 'toAttrs)
 
 instance TargetEntity Agenda where
   toTarget = toTarget . toAttrs

@@ -22,7 +22,7 @@ instance Entity Campaign where
   type EntityId Campaign = CampaignId
   type EntityAttrs Campaign = CampaignAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Campaign" "toAttrs")
+  toAttrs = $(entityF "Campaign" 'toAttrs)
 
 allCampaigns :: HashMap CampaignId (Difficulty -> Campaign)
 allCampaigns = mapFromList

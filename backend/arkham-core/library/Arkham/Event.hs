@@ -25,10 +25,10 @@ instance HasCardDef Event where
   toCardDef = toCardDef . toAttrs
 
 instance HasAbilities Event where
-  getAbilities = $(entityF "Event" "getAbilities")
+  getAbilities = $(entityF "Event" 'getAbilities)
 
 instance HasModifiersFor Event where
-  getModifiersFor = $(entityF2 "Event" "getModifiersFor")
+  getModifiersFor = $(entityF2 "Event" 'getModifiersFor)
 
 instance RunMessage Event where
   runMessage = $(entityRunMessage "Event")
@@ -37,7 +37,7 @@ instance Entity Event where
   type EntityId Event = EventId
   type EntityAttrs Event = EventAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Event" "toAttrs")
+  toAttrs = $(entityF "Event" 'toAttrs)
 
 instance TargetEntity Event where
   toTarget = toTarget . toAttrs

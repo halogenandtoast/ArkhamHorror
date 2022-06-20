@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
 

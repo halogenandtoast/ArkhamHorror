@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Matcher hiding (PlayCard)
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing

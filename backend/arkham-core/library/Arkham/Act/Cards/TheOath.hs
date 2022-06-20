@@ -14,7 +14,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Resolution
 import Arkham.Target
 import Arkham.Trait

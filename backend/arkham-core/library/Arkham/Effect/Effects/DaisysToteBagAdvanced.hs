@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Effect.Helpers
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Target
 
 newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced EffectAttrs

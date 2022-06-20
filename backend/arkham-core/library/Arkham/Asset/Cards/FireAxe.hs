@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source

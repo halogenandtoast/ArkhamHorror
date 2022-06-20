@@ -13,7 +13,6 @@ import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target

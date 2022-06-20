@@ -14,7 +14,6 @@ import Arkham.Event.Runner
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing

@@ -12,7 +12,6 @@ import Arkham.Asset.Runner
 import Arkham.Card.CardCode
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Modifier
 import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Projection
 import Arkham.SkillType

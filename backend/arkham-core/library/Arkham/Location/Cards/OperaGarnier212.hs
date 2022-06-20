@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Modifier
 import qualified Arkham.Location.Cards as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner

@@ -14,7 +14,6 @@ import Arkham.Event.Helpers
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Target
 import Arkham.Timing qualified as Timing

@@ -12,7 +12,6 @@ import Arkham.Effect.Helpers
 import Arkham.Effect.Runner
 import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers

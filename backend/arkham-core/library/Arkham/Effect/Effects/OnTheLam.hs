@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Effect.Helpers
 import Arkham.Message
-import Arkham.Modifier
 
 newtype OnTheLam = OnTheLam EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

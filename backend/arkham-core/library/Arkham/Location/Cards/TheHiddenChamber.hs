@@ -15,7 +15,6 @@ import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Name
 import Arkham.Projection
 

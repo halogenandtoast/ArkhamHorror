@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Target
 
 newtype FishingNet = FishingNet AssetAttrs

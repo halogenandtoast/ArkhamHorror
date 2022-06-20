@@ -8,7 +8,6 @@ import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Target
 import Arkham.Trait
 

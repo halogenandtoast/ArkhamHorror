@@ -12,7 +12,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
 

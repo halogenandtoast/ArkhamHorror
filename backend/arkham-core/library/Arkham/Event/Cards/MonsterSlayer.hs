@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Target
 

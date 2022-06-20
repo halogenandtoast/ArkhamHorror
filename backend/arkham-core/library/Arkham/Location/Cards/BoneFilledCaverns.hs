@@ -17,7 +17,6 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message hiding ( RevealLocation )
-import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
 import Arkham.SlotType

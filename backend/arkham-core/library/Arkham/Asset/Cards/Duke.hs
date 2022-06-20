@@ -15,7 +15,6 @@ import Arkham.Id
 import Arkham.Investigator.Attrs ( Field(..) )
 import Arkham.Location.Attrs ( Field(..) )
 import Arkham.Matcher hiding (MoveAction)
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source

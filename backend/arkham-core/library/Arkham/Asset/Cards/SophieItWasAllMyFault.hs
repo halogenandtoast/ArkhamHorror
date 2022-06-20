@@ -13,7 +13,6 @@ import Arkham.Card.PlayerCard
 import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Target
 
 newtype SophieItWasAllMyFault = SophieItWasAllMyFault AssetAttrs

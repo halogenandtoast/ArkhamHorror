@@ -13,7 +13,6 @@ import Arkham.Message as X hiding ( AssetDamage )
 
 import Arkham.Card
 import Arkham.Message qualified as Msg
-import Arkham.Modifier
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing

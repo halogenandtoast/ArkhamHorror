@@ -11,7 +11,6 @@ import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
-import Arkham.Modifier
 import Arkham.Projection
 
 newtype EngineCar_175 = EngineCar_175 LocationAttrs

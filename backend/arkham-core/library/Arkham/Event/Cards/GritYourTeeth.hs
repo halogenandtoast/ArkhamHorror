@@ -12,7 +12,6 @@ import Arkham.EffectMetadata
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Message
-import Arkham.Modifier
 import Arkham.Target
 
 newtype GritYourTeeth = GritYourTeeth EventAttrs

@@ -634,6 +634,7 @@ data WindowMatcher
   | PlacedCounter Timing Who CounterMatcher ValueMatcher
   | PlacedCounterOnLocation Timing Where CounterMatcher ValueMatcher
   | PlacedCounterOnEnemy Timing EnemyMatcher CounterMatcher ValueMatcher
+  | PlacedCounterOnAgenda Timing AgendaMatcher CounterMatcher ValueMatcher
   | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemySpawns Timing Where EnemyMatcher
@@ -789,7 +790,7 @@ data WindowMythosStepMatcher = WhenAllDrawEncounterCard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter
+data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter | DoomCounter
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -841,6 +842,7 @@ data AgendaMatcher
   | AnyAgenda
   | AgendaWithTreachery TreacheryMatcher
   | AgendaWithSequence AgendaSequence
+  | AgendaWithSide AgendaSide
   | NotAgenda AgendaMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

@@ -14,6 +14,7 @@ import Arkham.Act.Attrs ( ActAttrs (..), Field (..) )
 import Arkham.Action qualified as Action
 import Arkham.Agenda
 import Arkham.Agenda.Attrs ( AgendaAttrs (..), Field (..) )
+import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset
 import Arkham.Asset.Attrs ( DiscardedAttrs (..), AssetAttrs (..), Field (..) )
 import Arkham.Asset.Uses ( useCount, useType )
@@ -735,6 +736,7 @@ getAgendasMatching matcher = do
       treacheries <- select treacheryMatcher
       pure $ any (`member` treacheries) (agendaTreacheries $ toAttrs agenda)
     AgendaWithSequence s -> pure . (== s) . agendaSequence . toAttrs
+    AgendaWithSide s -> pure . (== s) . AS.agendaSide . agendaSequence . toAttrs
     NotAgenda matcher' -> fmap not . matcherFilter matcher'
 
 getActsMatching :: (Monad m, HasGame m) => ActMatcher -> m [Act]

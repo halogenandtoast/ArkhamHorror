@@ -24,7 +24,10 @@ instance RunMessage AgendaAttrs
   runMessage msg a@AgendaAttrs {..} = case msg of
     PlaceUnderneath target cards | isTarget a target ->
       pure $ a & cardsUnderneathL %~ (<> cards)
-    PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doomL +~ n
+    PlaceDoom (AgendaTarget aid) n | aid == agendaId -> do
+      windows' <- windows [Window.PlacedDoom (toTarget a) n]
+      pushAll windows'
+      pure $ a & doomL +~ n
     RemoveDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doomL %~ max 0 . subtract n
     Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     Discard (AgendaTarget aid) | aid == toId a -> do

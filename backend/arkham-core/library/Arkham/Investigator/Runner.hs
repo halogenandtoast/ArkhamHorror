@@ -260,7 +260,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       mentalTrauma =
         if investigatorSanityDamage >= modifiedSanity then 1 else 0
     windowMsg <- checkWindows
-      ((`Window` Window.InvestigatorDefeated source defeatedBy iid) <$> [Timing.After])
+      ((`Window` Window.InvestigatorDefeated source defeatedBy iid)
+      <$> [Timing.After]
+      )
     pushAll [windowMsg, InvestigatorWhenEliminated (toSource a) iid]
     pure
       $ a
@@ -1180,23 +1182,31 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & mentalTraumaL .~ investigatorSanity
   CheckDefeated source -> do
     facingDefeat <- getFacingDefeat a
-    when facingDefeat $
-      push (InvestigatorWhenDefeated source investigatorId)
+    when facingDefeat $ push (InvestigatorWhenDefeated source investigatorId)
     pure a
   HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->
     pure $ a & healthDamageL %~ max 0 . subtract amount
-  HealHorrorWithAdditional (InvestigatorTarget iid) amount | iid == investigatorId -> do
+  HealHorrorWithAdditional (InvestigatorTarget iid) amount
+    | iid == investigatorId -> do
     -- exists to have no callbacks
-    cannotHealHorror <- hasModifier a CannotHealHorror
-    pure $ if cannotHealHorror
-      then a
-      else a & sanityDamageL %~ max 0 . subtract amount & horrorHealedL .~ (min amount investigatorSanityDamage)
-  AdditionalHealHorror (InvestigatorTarget iid) additional | iid == investigatorId -> do
+      cannotHealHorror <- hasModifier a CannotHealHorror
+      pure $ if cannotHealHorror
+        then a
+        else
+          a
+          & sanityDamageL
+          %~ max 0
+          . subtract amount
+          & horrorHealedL
+          .~ (min amount investigatorSanityDamage)
+  AdditionalHealHorror (InvestigatorTarget iid) additional
+    | iid == investigatorId -> do
     -- exists to have Callbacks for the total, get from investigatorHorrorHealed
-    cannotHealHorror <- hasModifier a CannotHealHorror
-    pure $ if cannotHealHorror
-      then a & horrorHealedL .~ 0
-      else a & sanityDamageL %~ max 0 . subtract additional & horrorHealedL .~ 0
+      cannotHealHorror <- hasModifier a CannotHealHorror
+      pure $ if cannotHealHorror
+        then a & horrorHealedL .~ 0
+        else
+          a & sanityDamageL %~ max 0 . subtract additional & horrorHealedL .~ 0
   HealHorror (InvestigatorTarget iid) amount | iid == investigatorId -> do
     cannotHealHorror <- hasModifier a CannotHealHorror
     pure $ if cannotHealHorror
@@ -1214,12 +1224,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         (False, True) -> DefeatedByDamage
         (False, False) -> DefeatedByOther
     windowMsg <- checkWindows
-      ((`Window` Window.InvestigatorDefeated source defeatedBy iid) <$> [Timing.When])
+      ((`Window` Window.InvestigatorDefeated source defeatedBy iid)
+      <$> [Timing.When]
+      )
     pushAll $ [windowMsg, Msg.InvestigatorDefeated source iid]
     pure a
   InvestigatorKilled source iid | iid == investigatorId -> do
-    unless investigatorDefeated
-      $ push (Msg.InvestigatorDefeated source iid)
+    unless investigatorDefeated $ push (Msg.InvestigatorDefeated source iid)
     pure $ a & defeatedL .~ True & endedTurnL .~ True
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) ->
     a <$ push (MoveTo source investigatorId lid)

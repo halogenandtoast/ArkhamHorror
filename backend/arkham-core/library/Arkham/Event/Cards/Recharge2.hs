@@ -5,6 +5,7 @@ module Arkham.Event.Cards.Recharge2
 
 import Arkham.Prelude
 
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Asset.Uses
 import Arkham.Classes
@@ -44,7 +45,7 @@ instance RunMessage Recharge2 where
         )
     ResolveEvent iid eid (Just (AssetTarget aid)) | eid == toId attrs -> do
       pushAll
-        [ RequestTokens (toSource attrs) (Just iid) 1 SetAside
+        [ RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
         , Discard (toTarget attrs)
         ]
       pure $ Recharge2 $ attrs `with` Meta (Just aid)

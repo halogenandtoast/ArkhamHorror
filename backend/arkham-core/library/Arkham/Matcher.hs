@@ -667,6 +667,7 @@ data WindowMatcher
   | AnyWindow
   | CommittedCards Timing Who CardListMatcher
   | CommittedCard Timing Who CardMatcher
+  | ActivateAbility Timing Who AbilityMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -806,6 +807,7 @@ data AbilityMatcher
   | AbilityMatches [AbilityMatcher]
   | AnyAbility
   | AbilityOnScenarioCard
+  | AssetAbility AssetMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

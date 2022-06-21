@@ -6,6 +6,7 @@ module Arkham.Location.Cards.DiningRoom
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
@@ -43,7 +44,7 @@ instance RunMessage DiningRoom where
   runMessage msg l@(DiningRoom attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ pushAll
       [ HealHorror (InvestigatorTarget iid) 1
-      , RequestTokens source (Just iid) 1 SetAside
+      , RequestTokens source (Just iid) (Reveal 1) SetAside
       ]
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       tokenFaces <- getModifiedTokenFaces source tokens

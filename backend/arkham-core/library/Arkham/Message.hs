@@ -1,8 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Message (
-  module Arkham.Message,
-  module X,
-) where
+module Arkham.Message
+  ( module Arkham.Message
+  , module X
+  ) where
 
 import Arkham.Prelude
 
@@ -10,7 +10,6 @@ import Arkham.Message.Type as X
 import Arkham.Question as X
 import Arkham.Strategy as X
 
-import Data.Aeson.TH
 import Arkham.Ability
 import Arkham.Act.Sequence
 import Arkham.Action
@@ -20,6 +19,7 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Card.Id
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ClassSymbol
 import Arkham.Cost
@@ -33,7 +33,7 @@ import Arkham.EncounterCard.Source
 import Arkham.Exception
 import Arkham.Helpers
 import Arkham.Id
-import Arkham.Matcher hiding (EnemyDefeated, InvestigatorDefeated)
+import Arkham.Matcher hiding ( EnemyDefeated, InvestigatorDefeated )
 import Arkham.Name
 import Arkham.Phase
 import Arkham.RequestedTokenStrategy
@@ -46,38 +46,38 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
-import Arkham.Window (Window)
+import Arkham.Window ( Window )
 import Arkham.Zone
 import Control.Exception
+import Data.Aeson.TH
 
 messageType :: Message -> Maybe MessageType
-messageType PerformEnemyAttack {} = Just AttackMessage
-messageType Revelation {} = Just RevelationMessage
-messageType DrawToken {} = Just DrawTokenMessage
-messageType ResolveToken {} = Just ResolveTokenMessage
-messageType EnemySpawn {} = Just EnemySpawnMessage
-messageType EnemyDefeated {} = Just EnemyDefeatedMessage
-messageType RevealToken {} = Just RevealTokenMessage
-messageType InvestigatorDamage {} = Just DamageMessage
-messageType InvestigatorDoAssignDamage {} = Just DamageMessage
-messageType InvestigatorDrewEncounterCard {} = Just DrawEncounterCardMessage
-messageType InvestigatorDefeated {} = Just InvestigatorDefeatedMessage
-messageType RunWindow {} = Just RunWindowMessage
+messageType PerformEnemyAttack{} = Just AttackMessage
+messageType Revelation{} = Just RevelationMessage
+messageType DrawToken{} = Just DrawTokenMessage
+messageType ResolveToken{} = Just ResolveTokenMessage
+messageType EnemySpawn{} = Just EnemySpawnMessage
+messageType EnemyDefeated{} = Just EnemyDefeatedMessage
+messageType RevealToken{} = Just RevealTokenMessage
+messageType InvestigatorDamage{} = Just DamageMessage
+messageType InvestigatorDoAssignDamage{} = Just DamageMessage
+messageType InvestigatorDrewEncounterCard{} = Just DrawEncounterCardMessage
+messageType InvestigatorDefeated{} = Just InvestigatorDefeatedMessage
+messageType RunWindow{} = Just RunWindowMessage
 messageType _ = Nothing
 
 isBlanked :: Message -> Bool
-isBlanked Blanked {} = True
+isBlanked Blanked{} = True
 isBlanked _ = False
 
 resolve :: Message -> [Message]
 resolve msg = [When msg, msg, After msg]
 
 story :: [InvestigatorId] -> Message -> Message
-story iids msg =
-  AskMap
-    ( mapFromList
-        [(iid, ChooseOne [Run [Continue "Continue", msg]]) | iid <- iids]
-    )
+story iids msg = AskMap
+  (mapFromList
+    [ (iid, ChooseOne [Run [Continue "Continue", msg]]) | iid <- iids ]
+  )
 
 -- TODO: Better handle in play and out of play
 -- Out of play refers to player's hand, in any deck,
@@ -96,7 +96,7 @@ may be cases where we can trigger abilities without paying the cost, so we want
 it to be accessible from both.
 -}
 doNotMask :: Message -> Bool
-doNotMask UseCardAbility {} = True
+doNotMask UseCardAbility{} = True
 doNotMask _ = False
 
 data Message
@@ -474,7 +474,7 @@ data Message
   | RemovedFromPlay Source
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
   | RequestSetAsideCard Source CardCode
-  | RequestTokens Source (Maybe InvestigatorId) Int RequestedTokenStrategy
+  | RequestTokens Source (Maybe InvestigatorId) RevealStrategy RequestedTokenStrategy
   | RequestedEncounterCard Source (Maybe EncounterCard)
   | RequestedEncounterCards Target [EncounterCard]
   | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
@@ -611,8 +611,8 @@ chooseN :: InvestigatorId -> Int -> [Message] -> Message
 chooseN _ _ [] = throw $ InvalidState "No messages for chooseN"
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
 
-chooseAmounts ::
-  InvestigatorId -> Text -> Int -> [(Text, (Int, Int))] -> Target -> Message
+chooseAmounts
+  :: InvestigatorId -> Text -> Int -> [(Text, (Int, Int))] -> Target -> Message
 chooseAmounts iid label total choiceMap target =
   Ask iid (ChooseAmounts label total choiceMap target)
 

@@ -827,6 +827,9 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   abilities <- getGameAbilities
   case matcher of
     AnyAbility -> pure abilities
+    AssetAbility assetMatcher ->
+      concatMap getAbilities
+        <$> (traverse getAsset =<< selectList assetMatcher)
     AbilityOnLocation locationMatcher ->
       concatMap getAbilities
         <$> (traverse getLocation =<< selectList locationMatcher)

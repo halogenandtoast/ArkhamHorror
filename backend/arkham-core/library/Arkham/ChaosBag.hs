@@ -9,6 +9,7 @@ import Arkham.Prelude
 
 import Arkham.ChaosBagStepState
 import Arkham.ChaosBag.Base
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
 import Arkham.Helpers.Window
 import Arkham.Helpers.Query
@@ -231,17 +232,27 @@ instance RunMessage ChaosBag where
         %~ (<> chaosBagSetAsideTokens)
         & setAsideTokensL
         .~ mempty
-    RequestTokens source miid n strategy -> do
+    RequestTokens source miid revealStrategy strategy -> do
       push (RunBag source miid strategy)
-      case n of
-        0 -> pure $ c & revealedTokensL .~ []
-        1 -> pure $ c & choiceL ?~ Undecided Draw & revealedTokensL .~ []
-        x ->
-          pure
-            $ c
-            & (choiceL ?~ Undecided (Choose x (replicate x (Undecided Draw)) [])
-              )
-            & (revealedTokensL .~ [])
+      case revealStrategy of
+        Reveal n -> case n of
+          0 -> pure $ c & revealedTokensL .~ []
+          1 -> pure $ c & choiceL ?~ Undecided Draw & revealedTokensL .~ []
+          x ->
+            pure
+              $ c
+              & (choiceL ?~ Undecided (Choose x (replicate x (Undecided Draw)) [])
+                )
+              & (revealedTokensL .~ [])
+        RevealAndChoose n m -> case n of
+          0 -> error "should be more than 1"
+          1 -> error "should be more than 1"
+          x ->
+            pure
+              $ c
+              & (choiceL ?~ Undecided (Choose m (replicate x (Undecided Draw)) [])
+                )
+              & (revealedTokensL .~ [])
     RunBag source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> if isUndecided choice'

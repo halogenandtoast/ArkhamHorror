@@ -92,6 +92,7 @@ allPlayerEventCards = mapFromList $ map
   , drawnToTheFlame
   , dynamiteBlast
   , dynamiteBlast2
+  , eatLead2
   , elusive
   , emergencyAid
   , emergencyCache
@@ -1025,6 +1026,13 @@ trueSurvivor3 = (event "03273" "True Survivor" 3 Survivor)
   , cdCriteria = Just
     $ Criteria.CardInDiscard (Criteria.DiscardOf You) (CardWithTrait Innate)
   , cdLevel = 3
+  }
+
+eatLead2 :: CardDef
+eatLead2 = (event "03304" "\"Eat Lead!\"" 0 Guardian)
+  { cdCardTraits = singleton Tactic
+  , cdFastWindow = Just $ ActivateAbility Timing.When You (AssetAbility (AssetWithTrait Firearm) <> AbilityIsAction Action.Fight)
+  , cdLevel = 2
   }
 
 secondWind :: CardDef

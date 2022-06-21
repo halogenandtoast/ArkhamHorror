@@ -6,6 +6,7 @@ module Arkham.Enemy.Cards.BalefulReveler
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
@@ -54,7 +55,7 @@ instance RunMessage BalefulReveler where
           (attrs & spawnAtL ?~ LocationWithId spawnLocation)
         Nothing -> error "could not find location for baleful reveler"
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      e <$ push (RequestTokens source (Just iid) 1 SetAside)
+      e <$ push (RequestTokens source (Just iid) (Reveal 1) SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       tokenFaces <- getModifiedTokenFaces source tokens
       let

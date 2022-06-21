@@ -1,17 +1,17 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Modifier (
-  Modifier (..),
-  ModifierType (..),
-  ActionTarget (..),
-) where
+module Arkham.Modifier
+  ( Modifier(..)
+  , ModifierType(..)
+  , ActionTarget(..)
+  ) where
 
 import Arkham.Prelude
 
-import Data.Aeson.TH
 import Arkham.Action
 import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.ClassSymbol
 import {-# SOURCE #-} Arkham.Cost
 import Arkham.Id
@@ -19,19 +19,20 @@ import Arkham.Json
 import Arkham.Keyword
 import {-# SOURCE #-} Arkham.Matcher
 import Arkham.Phase
-import Arkham.SlotType
 import Arkham.SkillType
+import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Token
 import Arkham.Trait
+import Data.Aeson.TH
 
 data Modifier = Modifier
   { modifierSource :: Source
   , modifierType :: ModifierType
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (Hashable)
+  deriving anyclass Hashable
 
 data ModifierType
   = ActionCostOf ActionTarget Int
@@ -46,6 +47,7 @@ data ModifierType
   | AdditionalActions Int
   | AdditionalStartingUses Int
   | AdditionalCost Cost
+  | ChangeRevealStrategy RevealStrategy
   | CannotTriggerAbilityMatching AbilityMatcher
   | ConnectedToWhen LocationMatcher LocationMatcher
   | AlternateSuccessfullEvasion

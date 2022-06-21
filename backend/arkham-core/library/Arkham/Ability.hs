@@ -19,7 +19,7 @@ import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Window
+import {-# SOURCE #-} Arkham.Window
 
 data Ability = Ability
   { abilitySource :: Source

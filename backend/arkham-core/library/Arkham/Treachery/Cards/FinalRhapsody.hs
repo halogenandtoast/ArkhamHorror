@@ -2,11 +2,12 @@ module Arkham.Treachery.Cards.FinalRhapsody where
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
 import Arkham.Message
 import Arkham.RequestedTokenStrategy
 import Arkham.Token
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype FinalRhapsody = FinalRhapsody TreacheryAttrs
@@ -19,7 +20,7 @@ finalRhapsody = treachery FinalRhapsody Cards.finalRhapsody
 instance RunMessage FinalRhapsody where
   runMessage msg t@(FinalRhapsody attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      t <$ push (RequestTokens source (Just iid) 5 SetAside)
+      t <$ push (RequestTokens source (Just iid) (Reveal 5) SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       let damageCount = count ((`elem` [Skull, AutoFail]) . tokenFace) tokens
       t <$ pushAll

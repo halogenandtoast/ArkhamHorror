@@ -1237,6 +1237,10 @@ windowMatches iid source window' = \case
       (targetMatches target' targetMatcher)
       (pure $ cardMatch card cardMatcher)
     _ -> pure False
+  Matcher.ActivateAbility timing whoMatcher abilityMatcher -> case window' of
+    Window t (Window.ActivateAbility who ability) | t == timing ->
+      liftA2 (&&) (matchWho who whoMatcher) (member ability <$> select abilityMatcher)
+    _ -> pure False
   Matcher.CommittedCard timing whoMatcher cardMatcher -> case window' of
     Window t (Window.CommittedCard who card) | t == timing ->
       liftA2 (&&) (matchWho who whoMatcher) (pure $ cardMatch card cardMatcher)

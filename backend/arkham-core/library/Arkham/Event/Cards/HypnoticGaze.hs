@@ -5,6 +5,7 @@ module Arkham.Event.Cards.HypnoticGaze
 
 import Arkham.Prelude
 
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.DamageEffect
@@ -32,7 +33,7 @@ instance RunMessage HypnoticGaze where
       enemyId <- withQueue $ \queue ->
         let PerformEnemyAttack _ eid _ _ : queue' = dropUntilAttack queue
         in (queue', eid)
-      push (RequestTokens (toSource attrs) (Just iid) 1 SetAside)
+      push (RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside)
       pure $ HypnoticGaze (attrs `with` Just enemyId)
     RequestedTokens source (Just iid) faces | isSource attrs source -> do
       let

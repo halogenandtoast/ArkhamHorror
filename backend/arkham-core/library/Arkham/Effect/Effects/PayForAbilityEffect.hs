@@ -461,6 +461,7 @@ instance RunMessage PayForAbilityEffect where
     PayAbilityCostFinished eid source iid | eid == toId attrs ->
       case effectMetadata attrs of
         Just (EffectAbility (ability@Ability {..}, windows')) -> do
+          whenActivateAbilityWindow <- checkWindows [Window Timing.When (Window.ActivateAbility iid ability)]
           afterWindowMsgs <- case abilityAction ability of
             Just action ->
               pure <$> checkWindows
@@ -468,6 +469,7 @@ instance RunMessage PayForAbilityEffect where
             Nothing -> pure []
           e <$ pushAll
             ([ DisableEffect $ toId attrs
+             , whenActivateAbilityWindow
              , UseCardAbility iid source windows' abilityIndex payments
              , ClearDiscardCosts
              ]

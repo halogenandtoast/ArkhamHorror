@@ -5,11 +5,12 @@ module Arkham.Treachery.Cards.TwistOfFate
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
 import Arkham.Message
 import Arkham.RequestedTokenStrategy
 import Arkham.Token
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype TwistOfFate = TwistOfFate TreacheryAttrs
@@ -22,7 +23,7 @@ twistOfFate = treachery TwistOfFate Cards.twistOfFate
 instance RunMessage TwistOfFate where
   runMessage msg t@(TwistOfFate attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ push (RequestTokens source (Just iid) 1 SetAside)
+      t <$ push (RequestTokens source (Just iid) (Reveal 1) SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       let
         msgs = mapMaybe

@@ -6,6 +6,7 @@ module Arkham.Enemy.Cards.HuntingHorror
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
@@ -38,7 +39,7 @@ instance HasAbilities HuntingHorror where
 instance RunMessage HuntingHorror where
   runMessage msg e@(HuntingHorror attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      e <$ push (RequestTokens source Nothing 1 SetAside)
+      e <$ push (RequestTokens source Nothing (Reveal 1) SetAside)
     RequestedTokens source _ tokens | isSource attrs source -> do
       e <$ when
         (any

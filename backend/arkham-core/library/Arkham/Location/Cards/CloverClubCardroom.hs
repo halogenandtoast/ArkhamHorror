@@ -6,6 +6,7 @@ module Arkham.Location.Cards.CloverClubCardroom
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Location.Cards qualified as Cards (cloverClubCardroom)
 import Arkham.Classes
 import Arkham.Cost
@@ -45,7 +46,7 @@ instance HasAbilities CloverClubCardroom where
 instance RunMessage CloverClubCardroom where
   runMessage msg l@(CloverClubCardroom attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      l <$ push (RequestTokens source (Just iid) 1 SetAside)
+      l <$ push (RequestTokens source (Just iid) (Reveal 1) SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       tokenFaces <- getModifiedTokenFaces source tokens
       let

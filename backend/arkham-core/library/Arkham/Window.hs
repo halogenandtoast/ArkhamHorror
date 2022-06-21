@@ -2,6 +2,7 @@ module Arkham.Window where
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Attack
 import Arkham.Action (Action)
 import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)
@@ -28,6 +29,7 @@ data Window = Window
 
 data WindowType
   = ActAdvance ActId
+  | ActivateAbility InvestigatorId Ability
   | AddedToVictory Card
   | AgendaAdvance AgendaId
   | AgendaWouldAdvance AgendaAdvancementReason AgendaId

@@ -5,6 +5,7 @@ module Arkham.Event.Cards.AstralTravel
 
 import Arkham.Prelude
 
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
@@ -33,7 +34,7 @@ instance RunMessage AstralTravel where
           [ TargetLabel (LocationTarget lid) [MoveAction iid lid Free False]
           | lid <- locations
           ]
-        , RequestTokens (toSource attrs) Nothing 1 SetAside
+        , RequestTokens (toSource attrs) Nothing (Reveal 1) SetAside
         , Discard (toTarget attrs)
         ]
     RequestedTokens source _ tokens | isSource attrs source -> e <$ when

@@ -412,6 +412,7 @@ library
       Arkham.Card.PlayerCard
       Arkham.ChaosBag
       Arkham.ChaosBag.Base
+      Arkham.ChaosBag.RevealStrategy
       Arkham.ChaosBagStepState
       Arkham.Classes
       Arkham.Classes.Entity
@@ -664,6 +665,7 @@ library
       Arkham.Event.Cards.DrawnToTheFlame
       Arkham.Event.Cards.DynamiteBlast
       Arkham.Event.Cards.DynamiteBlast2
+      Arkham.Event.Cards.EatLead2
       Arkham.Event.Cards.Elusive
       Arkham.Event.Cards.EmergencyAid
       Arkham.Event.Cards.EmergencyCache

@@ -9,8 +9,9 @@ import Arkham.Prelude
 import Arkham.SkillTest as X
 
 import Arkham.Card
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
-import Arkham.Game.Helpers hiding ( matches )
+import Arkham.Game.Helpers hiding (matches)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Message
@@ -20,11 +21,11 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 import Arkham.Token
-import Arkham.Window ( Window (..) )
-import Arkham.Window qualified as Window
-import Data.HashMap.Strict qualified as HashMap
+import Arkham.Window (Window(..))
+import qualified Arkham.Window as Window
+import qualified Data.HashMap.Strict as HashMap
 import Data.Semigroup
 
 skillIconCount :: SkillTest -> GameT Int
@@ -40,7 +41,10 @@ skillIconCount st@SkillTest {..} = do
  where
   iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
     modifiers' <- getModifiers (toSource st) (CardIdTarget pcId)
-    pure $ foldr applyAfterSkillModifiers (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers') modifiers'
+    pure $ foldr
+      applyAfterSkillModifiers
+      (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')
+      modifiers'
   iconsForCard _ = pure []
   matches SkillWild = True
   matches s = s == skillTestSkillType
@@ -100,8 +104,14 @@ instance RunMessage SkillTest where
       modifiers' <- getModifiers (toSource s) (InvestigatorTarget iid)
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then s <$ push (RunSkillTest iid)
-        else s <$ pushAll
-          [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
+        else do
+          let applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
+              applyRevealStategyModifier n _ = n
+              revealStrategy = foldl' applyRevealStategyModifier (Reveal 1) modifiers'
+          s <$ pushAll
+            [ RequestTokens (toSource s) (Just iid) revealStrategy SetAside
+            , RunSkillTest iid
+            ]
     DrawAnotherToken iid -> do
       withQueue_ $ filter $ \case
         Will FailedSkillTest{} -> False
@@ -116,7 +126,9 @@ instance RunMessage SkillTest where
           | skillTestInvestigator == skillTestInvestigator' -> False
         _ -> True
       pushAll
-        [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
+        [ RequestTokens (toSource s) (Just iid) (Reveal 1) SetAside
+        , RunSkillTest iid
+        ]
       pure $ s & (resolvedTokensL %~ (<> skillTestRevealedTokens))
     RequestedTokens (SkillTestSource siid skillType source maction) (Just iid) tokenFaces
       -> do

@@ -18,7 +18,6 @@ import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.Source
-import Arkham.Target
 
 newtype KnightsHall = KnightsHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -51,6 +50,6 @@ instance RunMessage KnightsHall where
         SkillAgility
         False
       )
-    Successful (Action.Investigate, _) iid (AbilitySource source 1) _ _
+    Successful (Action.Investigate, _) _ (AbilitySource source 1) _ _
       | isSource attrs source -> l <$ push (Remember FoundTheTowerKey)
     _ -> KnightsHall <$> runMessage msg attrs

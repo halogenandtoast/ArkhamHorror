@@ -40,12 +40,14 @@ skillIconCount st@SkillTest {..} = do
  where
   iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
     modifiers' <- getModifiers (toSource st) (CardIdTarget pcId)
-    pure $ foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers'
+    pure $ foldr applyAfterSkillModifiers (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers') modifiers'
   iconsForCard _ = pure []
   matches SkillWild = True
   matches s = s == skillTestSkillType
   applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
   applySkillModifiers _ ys = ys
+  applyAfterSkillModifiers DoubleSkillIcons ys = ys <> ys
+  applyAfterSkillModifiers _ ys = ys
 
 getModifiedSkillTestDifficulty :: SkillTest -> GameT Int
 getModifiedSkillTestDifficulty s = do

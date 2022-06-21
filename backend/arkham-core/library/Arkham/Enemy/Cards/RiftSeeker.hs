@@ -36,7 +36,7 @@ instance HasAbilities RiftSeeker where
     , restrictedAbility a 2 OnSameLocation
     $ ActionAbility (Just Action.Parley)
     $ HorrorCost (toSource a) YouTarget 2
-    <> DoomCost (toSource a) EachAgendaTarget 1
+    <> DoomCost (toSource a) (AgendaMatcherTarget AnyAgenda) 1
     ]
 
 instance RunMessage RiftSeeker where

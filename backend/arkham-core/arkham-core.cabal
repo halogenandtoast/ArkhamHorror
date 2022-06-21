@@ -1194,6 +1194,7 @@ library
       Arkham.Treachery.Cards.CollapsingReality
       Arkham.Treachery.Cards.Corrosion
       Arkham.Treachery.Cards.CoverUp
+      Arkham.Treachery.Cards.CrashingFloods
       Arkham.Treachery.Cards.CrisisOfIdentity
       Arkham.Treachery.Cards.CryptChill
       Arkham.Treachery.Cards.CursedLuck
@@ -1299,6 +1300,7 @@ library
       Arkham.Treachery.Cards.WhispersInYourHeadDismay
       Arkham.Treachery.Cards.WhispersInYourHeadDoubt
       Arkham.Treachery.Cards.WhispersInYourHeadDread
+      Arkham.Treachery.Cards.WorldsMerge
       Arkham.Treachery.Cards.Wormhole
       Arkham.Treachery.Cards.WrackedByNightmares
       Arkham.Treachery.Helpers

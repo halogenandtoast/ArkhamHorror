@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.Card.Id
 import Arkham.EffectId
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Phase
 import Arkham.Token
 import Arkham.Trait
@@ -49,7 +50,7 @@ data Target
   | InvestigationTarget InvestigatorId LocationId
   | ProxyTarget Target Target
   | StoryTarget CardCode
-  | EachAgendaTarget
+  | AgendaMatcherTarget AgendaMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

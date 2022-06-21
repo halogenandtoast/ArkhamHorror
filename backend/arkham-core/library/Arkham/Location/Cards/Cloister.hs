@@ -1,28 +1,50 @@
 module Arkham.Location.Cards.Cloister
   ( cloister
   , Cloister(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Ability
+import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Message
+import Arkham.ScenarioLogKey
+import Arkham.SkillType
+import Arkham.Target
 
 newtype Cloister = Cloister LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloister :: LocationCard Cloister
-cloister = location Cloister Cards.cloister 2 (PerPlayer 1) Heart [Square, Hourglass]
+cloister =
+  location Cloister Cards.cloister 2 (PerPlayer 1) Heart [Square, Hourglass]
 
 instance HasAbilities Cloister where
-  getAbilities (Cloister attrs) =
-    getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (Cloister a) = withBaseAbilities
+    a
+    [ restrictedAbility a 1 (Here <> NoCluesOnThis)
+        $ ActionAbility (Just Action.Parley) Free
+    ]
 
 instance RunMessage Cloister where
-  runMessage msg (Cloister attrs) =
-    Cloister <$> runMessage msg attrs
+  runMessage msg l@(Cloister attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
+      (BeginSkillTest
+        iid
+        source
+        (InvestigatorTarget iid)
+        (Just Action.Parley)
+        SkillWillpower
+        3
+      )
+    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> l <$ push (Remember FoundAGuide)
+    _ -> Cloister <$> runMessage msg attrs

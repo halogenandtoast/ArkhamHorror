@@ -662,7 +662,7 @@ targetToSource = \case
   ProxyTarget{} -> error "can not convert"
   CardTarget{} -> error "can not convert"
   StoryTarget code -> StorySource code
-  EachAgendaTarget -> error "can not convert"
+  AgendaMatcherTarget _ -> error "can not convert"
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -1813,7 +1813,7 @@ targetTraits = \case
   PhaseTarget _ -> pure mempty
   TokenFaceTarget _ -> pure mempty
   InvestigationTarget _ _ -> pure mempty
-  EachAgendaTarget -> pure mempty
+  AgendaMatcherTarget _ -> pure mempty
 
 sourceTraits :: (Monad m, HasGame m) => Source -> m (HashSet Trait)
 sourceTraits = \case
@@ -2236,9 +2236,6 @@ getCanShuffleDeck :: (Monad m, HasGame m) => InvestigatorId -> m Bool
 getCanShuffleDeck iid = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   pure $ CannotManipulateDeck `notElem` modifiers
-
-remembered :: (Monad m, HasGame m) => ScenarioLogKey -> m Bool
-remembered k = member k <$> scenarioField ScenarioRemembered
 
 getDoomCount :: (Monad m, HasGame m) => m Int
 getDoomCount = getSum . fold <$> sequence

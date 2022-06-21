@@ -97,6 +97,7 @@ data WindowType
   | PlacedClues Target Int
   | PlacedDamage InvestigatorId Int
   | PlacedHorror InvestigatorId Int
+  | PlacedDoom Target Int
   | PlayCard InvestigatorId Card
   | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId

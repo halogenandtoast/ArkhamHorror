@@ -1346,6 +1346,14 @@ windowMatches iid source window' = \case
           (enemyMatches enemyId enemyMatcher)
           (gameValueMatches n valueMatcher)
       _ -> pure False
+  Matcher.PlacedCounterOnAgenda whenMatcher agendaMatcher counterMatcher valueMatcher
+    -> case window' of
+      Window t (Window.PlacedDoom (AgendaTarget agendaId) n)
+        | t == whenMatcher && counterMatcher == Matcher.DoomCounter -> liftA2
+          (&&)
+          (agendaMatches agendaId agendaMatcher)
+          (gameValueMatches n valueMatcher)
+      _ -> pure False
   Matcher.RevealLocation timingMatcher whoMatcher locationMatcher ->
     case window' of
       Window t (Window.RevealLocation who locationId) | t == timingMatcher ->

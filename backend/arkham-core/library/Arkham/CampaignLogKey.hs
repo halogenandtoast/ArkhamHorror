@@ -89,6 +89,9 @@ data CampaignLogKey
   | YouEnteredTheCatacombsOnYourOwn
   | YouKnowTheSiteOfTheGate
   | ReadActII
+  | YouOpenedThePathBelow
+  | YouOpenedThePathAbove
+  | TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
   -- ^ The Path to Carcosa
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

@@ -5,12 +5,13 @@ module Arkham.Scenario.Scenarios.BlackStarsRise
 
 import Arkham.Prelude
 
+import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Attrs ( Field (..) )
-import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
+import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes
@@ -22,6 +23,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.BlackStarsRise.Story
@@ -142,21 +144,23 @@ instance RunMessage BlackStarsRise where
           Standard -> MinusFive
           Hard -> MinusSix
           Expert -> MinusSeven
-        (agenda2a, agenda2c, abbeyTower, chapelOfStAubert) = if version == TheVortexAbove
-          then
-            ( Agendas.letTheStormRageTheVortexAbove
-            , Agendas.theEntityAboveTheVortexAbove
-            , Locations.abbeyTowerThePathIsOpen
-            , Locations.chapelOfStAubertWatersForbidden
-            )
-          else
-            ( Agendas.letTheStormRageTheFloodBelow
-            , Agendas.theEntityAboveTheFloodBelow
-            , Locations.abbeyTowerSpiresForbidden
-            , Locations.chapelOfStAubertThePathIsOpen
-            )
+        (agenda2a, agenda2c, abbeyTower, chapelOfStAubert) =
+          if version == TheVortexAbove
+            then
+              ( Agendas.letTheStormRageTheVortexAbove
+              , Agendas.theEntityAboveTheVortexAbove
+              , Locations.abbeyTowerThePathIsOpen
+              , Locations.chapelOfStAubertWatersForbidden
+              )
+            else
+              ( Agendas.letTheStormRageTheFloodBelow
+              , Agendas.theEntityAboveTheFloodBelow
+              , Locations.abbeyTowerSpiresForbidden
+              , Locations.chapelOfStAubertThePathIsOpen
+              )
 
-      choeurGothique <- sample (Locations.choeurGothique_292 :| [Locations.choeurGothique_293])
+      choeurGothique <- sample
+        (Locations.choeurGothique_292 :| [Locations.choeurGothique_293])
 
       setAsideCards <- traverse
         genCard
@@ -198,7 +202,8 @@ instance RunMessage BlackStarsRise where
                    [Trait.Madness, Trait.Pact, Trait.Cultist, Trait.Detective]
                  )
                )
-           | iid <- investigatorIds, not isStandalone
+           | iid <- investigatorIds
+           , not isStandalone
            ]
         <> [ AddToken tokenToAdd
            , SetAgendaDeck
@@ -250,5 +255,50 @@ instance RunMessage BlackStarsRise where
           $ FindAndDrawEncounterCard iid
           $ CardWithType EnemyType
           <> CardWithOneOf (map CardWithTrait [Trait.Byakhee])
+      pure s
+    ScenarioResolution res -> do
+      ashleighSlain <- selectOne
+        (VictoryDisplayCardMatch $ cardIs Enemies.ashleighClarke)
+      gainXp <- map (uncurry GainXP) <$> getXp
+      let
+        updateSlain =
+          [ RecordSetInsert VIPsSlain [toCardCode ashleigh]
+          | ashleigh <- maybeToList ashleighSlain
+          ]
+      case res of
+        NoResolution -> push $ ScenarioResolution $ Resolution 3
+        Resolution 1 -> do
+          pushAll
+            $ [ Record YouOpenedThePathBelow
+              , RemoveAllTokens Cultist
+              , RemoveAllTokens Tablet
+              , RemoveAllTokens ElderThing
+              , AddToken Cultist
+              , AddToken Cultist
+              , AddToken Tablet
+              , AddToken Tablet
+              ]
+            <> updateSlain
+            <> gainXp
+        Resolution 2 -> do
+          pushAll
+            $ [ Record YouOpenedThePathAbove
+              , RemoveAllTokens Cultist
+              , RemoveAllTokens Tablet
+              , RemoveAllTokens ElderThing
+              , AddToken Cultist
+              , AddToken Cultist
+              , AddToken ElderThing
+              , AddToken ElderThing
+              ]
+            <> updateSlain
+            <> gainXp
+        Resolution 3 -> do
+          iids <- getInvestigatorIds
+          pushAll
+            $ Record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
+            : map DrivenInsane iids
+            <> [GameOver]
+        _ -> error "Unknown resolution"
       pure s
     _ -> BlackStarsRise <$> runMessage msg attrs

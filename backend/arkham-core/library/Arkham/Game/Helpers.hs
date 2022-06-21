@@ -897,7 +897,7 @@ passesCriteria iid source windows' = \case
   Criteria.Negate restriction ->
     not <$> passesCriteria iid source windows' restriction
   Criteria.AllUndefeatedInvestigatorsResigned ->
-    null <$> select Matcher.UneliminatedInvestigator
+    selectNone Matcher.UneliminatedInvestigator
   Criteria.EachUndefeatedInvestigator investigatorMatcher -> do
     liftA2
       (==)
@@ -1095,12 +1095,13 @@ passesCriteria iid source windows' = \case
   Criteria.OnAct step -> do
     actId <- selectJust Matcher.AnyAct
     (== ActStep step) . AS.actStep <$> field ActSequence actId
-  Criteria.AssetExists matcher -> notNull <$> select matcher
-  Criteria.TreacheryExists matcher -> notNull <$> select matcher
+  Criteria.AgendaExists matcher -> selectAny matcher
+  Criteria.AssetExists matcher -> selectAny matcher
+  Criteria.TreacheryExists matcher -> selectAny matcher
   Criteria.InvestigatorExists matcher ->
     -- Because the matcher can't tell who is asking, we need to replace
     -- The You matcher by the Id of the investigator asking
-    notNull <$> select (Matcher.replaceYouMatcher iid matcher)
+    selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.InvestigatorsHaveSpendableClues valueMatcher -> do
     total <- getSum <$> selectAgg
       Sum
@@ -1109,7 +1110,7 @@ passesCriteria iid source windows' = \case
     total `gameValueMatches` valueMatcher
   Criteria.Criteria rs -> allM (passesCriteria iid source windows') rs
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid source windows') rs
-  Criteria.LocationExists matcher -> notNull <$> select matcher
+  Criteria.LocationExists matcher -> selectAny matcher
   Criteria.InvestigatorIsAlone ->
     (== 1) <$> selectCount (Matcher.colocatedWith iid)
   Criteria.InVictoryDisplay cardMatcher valueMatcher -> do
@@ -1255,7 +1256,7 @@ windowMatches iid source window' = \case
               liftA2
                 (&&)
                 (enemyMatches eid enemyMatcher)
-                (null <$> select locationMatcher')
+                (selectNone locationMatcher')
             _ -> pure False -- TODO: We may need more things here
       _ -> pure False
   Matcher.TookControlOfAsset timing whoMatcher assetMatcher -> case window' of
@@ -1957,19 +1958,19 @@ locationMatches investigatorId source window locationId matcher =
       (InvestigatorSource investigatorId)
       (LocationTarget locationId)
 
-    Matcher.LocationWithEnemy enemyMatcher -> notNull <$> select
+    Matcher.LocationWithEnemy enemyMatcher -> selectAny
       (Matcher.EnemyAt (Matcher.LocationWithId locationId) <> enemyMatcher)
-    Matcher.LocationWithAsset assetMatcher -> notNull <$> select
+    Matcher.LocationWithAsset assetMatcher -> selectAny
       (Matcher.AssetAt (Matcher.LocationWithId locationId) <> assetMatcher)
-    Matcher.LocationWithInvestigator whoMatcher -> notNull <$> select
+    Matcher.LocationWithInvestigator whoMatcher -> selectAny
       (Matcher.InvestigatorAt (Matcher.LocationWithId locationId) <> whoMatcher)
     Matcher.LocationWithoutTreachery treacheryMatcher -> do
-      null <$> select
+      selectNone
         (Matcher.TreacheryAt (Matcher.LocationWithId locationId)
         <> treacheryMatcher
         )
     Matcher.LocationWithTreachery treacheryMatcher -> do
-      notNull <$> select
+      selectAny
         (Matcher.TreacheryAt (Matcher.LocationWithId locationId)
         <> treacheryMatcher
         )
@@ -2089,7 +2090,7 @@ skillTestMatches iid source st = \case
       EnemyTarget eid -> member eid <$> select enemyMatcher
       _ -> pure False
     _ -> pure False
-  Matcher.SkillTestWithSkill sk -> notNull <$> select sk
+  Matcher.SkillTestWithSkill sk -> selectAny sk
   Matcher.SkillTestWithSkillType sType -> pure $ skillTestSkillType st == sType
   Matcher.SkillTestAtYourLocation -> do
     mlid1 <- field InvestigatorLocation iid

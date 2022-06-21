@@ -25,6 +25,7 @@ instance RunMessage AgendaAttrs
     PlaceUnderneath target cards | isTarget a target ->
       pure $ a & cardsUnderneathL %~ (<> cards)
     PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doomL +~ n
+    RemoveDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doomL %~ max 0 . subtract n
     Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     Discard (AgendaTarget aid) | aid == toId a -> do
       pushAll

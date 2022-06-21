@@ -12,6 +12,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -87,8 +88,39 @@ data Version = TheFloodBelow | TheVortexAbove
 versions :: NonEmpty Version
 versions = TheFloodBelow :| [TheVortexAbove]
 
+standaloneTokens :: [TokenFace]
+standaloneTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusThree
+  , MinusFour
+  , MinusFive
+  , Skull
+  , Skull
+  , Skull
+  , AutoFail
+  , ElderSign
+  ]
+
 instance RunMessage BlackStarsRise where
   runMessage msg s@(BlackStarsRise attrs) = case msg of
+    SetTokensForScenario -> do
+      whenM getIsStandalone $ do
+        randomToken <- sample (Cultist :| [Tablet, ElderThing])
+        push (SetTokens $ standaloneTokens <> [randomToken, randomToken])
+      pure s
+    StandaloneSetup -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      theManInThePallidMask <- genPlayerCard Enemies.theManInThePallidMask
+      push $ ShuffleCardsIntoDeck leadInvestigatorId [theManInThePallidMask]
+      pure s
     Setup -> do
       investigatorIds <- getInvestigatorIds
       ashleighInterviewed <- elem (Recorded $ toCardCode Assets.ashleighClarke)
@@ -155,6 +187,8 @@ instance RunMessage BlackStarsRise where
       brokenSteps <- genCard
         =<< sample (Locations.brokenSteps_289 :| [Locations.brokenSteps_290])
 
+      isStandalone <- getIsStandalone
+
       pushAll
         $ [story investigatorIds intro]
         <> [ story investigatorIds ashleighsInformation | ashleighInterviewed ]
@@ -167,7 +201,7 @@ instance RunMessage BlackStarsRise where
                    [Trait.Madness, Trait.Pact, Trait.Cultist, Trait.Detective]
                  )
                )
-           | iid <- investigatorIds
+           | iid <- investigatorIds, not isStandalone
            ]
         <> [ AddToken tokenToAdd
            , SetAgendaDeck

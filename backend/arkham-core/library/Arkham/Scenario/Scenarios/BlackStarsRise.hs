@@ -10,7 +10,7 @@ import Arkham.Agenda.Attrs ( Field (..) )
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes
@@ -18,7 +18,6 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Log
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
@@ -123,9 +122,7 @@ instance RunMessage BlackStarsRise where
       pure s
     Setup -> do
       investigatorIds <- getInvestigatorIds
-      ashleighInterviewed <- elem (Recorded $ toCardCode Assets.ashleighClarke)
-        <$> getRecordSet VIPsInterviewed
-
+      ashleighInterviewed <- interviewed Assets.ashleighClarke
       version <- sample versions
 
       encounterDeck <- buildEncounterDeckExcluding

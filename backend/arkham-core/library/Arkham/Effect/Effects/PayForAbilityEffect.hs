@@ -247,8 +247,8 @@ instance RunMessage PayForAbilityEffect where
         RemoveCost target -> do
           push (RemoveFromGame target)
           withPayment $ RemovePayment [target]
-        DoomCost _ EachAgendaTarget x -> do
-          agendas <- selectListMap AgendaTarget AnyAgenda
+        DoomCost _ (AgendaMatcherTarget matcher) x -> do
+          agendas <- selectListMap AgendaTarget matcher
           pushAll [PlaceDoom target x | target <- agendas]
           withPayment $ DoomPayment (x * length agendas)
         DoomCost _ target x -> do

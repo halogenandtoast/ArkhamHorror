@@ -47,7 +47,7 @@ instance RunMessage BrokenSteps_289 where
   runMessage msg l@(BrokenSteps_289 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       actionsRemaining <- field InvestigatorRemainingActions iid
-      mOmenCard <- find (`cardMatch` CardWithTrait Omen)
+      mOmenCard <- find (`cardMatch` (CardWithTrait Omen <> CardWithType TreacheryType))
         <$> scenarioField ScenarioDiscard
       let
         choices =
@@ -55,7 +55,7 @@ instance RunMessage BrokenSteps_289 where
           | actionsRemaining > 0
           ]
           <> [ Label
-                 "Draw the topmost omen card"
+                 "Draw the topmost omen treachery in the encounter discard pile"
                  [FindAndDrawEncounterCard iid $ CardWithId $ toCardId c]
              | c <- maybeToList mOmenCard
              ]

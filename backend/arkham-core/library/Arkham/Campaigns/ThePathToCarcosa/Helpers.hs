@@ -2,9 +2,11 @@ module Arkham.Campaigns.ThePathToCarcosa.Helpers where
 
 import Arkham.Prelude
 
-import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.CampaignLogKey
+import Arkham.Card.CardCode
+import Arkham.Card.CardDef
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Log
 import Arkham.Message
 
 getConviction :: (Monad m, HasGame m) => m Int
@@ -25,3 +27,7 @@ markDoubt :: (Monad m, HasGame m) => m Message
 markDoubt = do
   n <- getDoubt
   pure $ RecordCount Doubt (n + 1)
+
+interviewed :: (Monad m, HasGame m) => CardDef -> m Bool
+interviewed assetDef =
+  elem (Recorded $ toCardCode assetDef) <$> getRecordSet VIPsInterviewed

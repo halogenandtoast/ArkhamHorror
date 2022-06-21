@@ -773,6 +773,16 @@ thePitBelow = (treachery "03262" "The Pit Below" ThePallidMask 3)
   { cdCardTraits = singleton Hazard
   }
 
+crashingFloods :: CardDef
+crashingFloods = (treachery "03302" "Crashing Floods" BlackStarsRise 3)
+  { cdCardTraits = singleton Omen
+  }
+
+worldsMerge :: CardDef
+worldsMerge = (treachery "03303" "Worlds Merge" BlackStarsRise 3)
+  { cdCardTraits = singleton Omen
+  }
+
 theHarbinger :: CardDef
 theHarbinger = (weakness "08006" "The Harbinger")
   { cdCardTraits = setFromList [Omen, Endtimes]

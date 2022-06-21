@@ -31,5 +31,8 @@ data ScenarioLogKey
   -- ^ The Unspeakable Oath
   | YouOpenedASecretPassageway
   -- ^ The Pallid Mask
+  | FoundAGuide
+  | FoundTheTowerKey
+  -- ^ Black Stars Rise
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

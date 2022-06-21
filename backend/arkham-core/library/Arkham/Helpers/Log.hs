@@ -10,6 +10,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Scenario
 import Arkham.Projection
 import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.ScenarioLogKey
 
 getCampaignLog :: (Monad m, HasGame m) => m CampaignLog
 getCampaignLog = withStandalone
@@ -30,3 +31,6 @@ getRecordSet :: (Monad m, HasGame m) => CampaignLogKey -> m [Recorded CardCode]
 getRecordSet k = do
   campaignLog <- getCampaignLog
   pure $ findWithDefault [] k (campaignLogRecordedSets campaignLog)
+
+remembered :: (Monad m, HasGame m) => ScenarioLogKey -> m Bool
+remembered k = member k <$> scenarioField ScenarioRemembered

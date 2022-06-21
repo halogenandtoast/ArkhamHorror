@@ -121,7 +121,7 @@ data EnemyDamageMismatch = EnemyDamageMismatch
   (Int, Int)
   deriving stock Show
 
-data ClassMismatch = ClassMismatch CardCode Name String (Maybe ClassSymbol)
+data ClassMismatch = ClassMismatch CardCode Name String (HashSet ClassSymbol)
   deriving stock Show
 
 data SkillsMismatch = SkillsMismatch CardCode Name [SkillType] [SkillType]
@@ -346,7 +346,7 @@ runValidations cards = do
             code
             (cdName card)
             faction_name
-            (cdClassSymbol card)
+            (cdClassSymbols card)
           )
         when
           (sort (normalizeSkills code $ getSkills cardJson)

@@ -5,10 +5,6 @@ module Arkham.Game where
 
 import Arkham.Prelude
 
-import Control.Monad.Reader (runReader)
-import Data.List.Extra (groupOn)
-import Data.Aeson.KeyMap qualified as KeyMap
-import Arkham.ModifierData
 import Arkham.Ability
 import Arkham.Act
 import Arkham.Act.Attrs ( ActAttrs (..), Field (..) )
@@ -17,7 +13,7 @@ import Arkham.Agenda
 import Arkham.Agenda.Attrs ( AgendaAttrs (..), Field (..) )
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset
-import Arkham.Asset.Attrs ( DiscardedAttrs (..), AssetAttrs (..), Field (..) )
+import Arkham.Asset.Attrs ( AssetAttrs (..), DiscardedAttrs (..), Field (..) )
 import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
@@ -41,7 +37,8 @@ import Arkham.Enemy.Attrs ( EnemyAttrs (..), Field (..) )
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Attrs
-import Arkham.Game.Helpers hiding ( getSpendableClueCount, EnemyEvade, EnemyFight )
+import Arkham.Game.Helpers hiding
+  ( EnemyEvade, EnemyFight, getSpendableClueCount )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Investigator
@@ -77,6 +74,7 @@ import Arkham.Message hiding
   , InvestigatorResigned
   )
 import Arkham.Message qualified as Msg
+import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
 import Arkham.PlayerCard
@@ -100,12 +98,15 @@ import Arkham.Zone ( Zone )
 import Arkham.Zone qualified as Zone
 import Control.Lens ( each, itraverseOf, itraversed, set )
 import Control.Monad.Random ( StdGen, mkStdGen )
+import Control.Monad.Reader ( runReader )
 import Control.Monad.State.Strict hiding ( filterM, foldM, state )
 import Data.Aeson.Diff qualified as Diff
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
 import Data.Align hiding ( nil )
 import Data.HashMap.Strict ( size )
 import Data.HashMap.Strict qualified as HashMap
+import Data.List.Extra ( groupOn )
 import Data.Monoid ( First (..) )
 import Data.Semigroup ( Max (..), Min (..) )
 import Data.Sequence qualified as Seq

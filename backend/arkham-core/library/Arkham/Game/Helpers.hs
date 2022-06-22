@@ -2087,6 +2087,7 @@ skillTestMatches iid source st = \case
   Matcher.WhileInvestigating locationMatcher -> case skillTestAction st of
     Just Action.Investigate -> case skillTestTarget st of
       LocationTarget lid -> member lid <$> select locationMatcher
+      ProxyTarget (LocationTarget lid) _ -> member lid <$> select locationMatcher
       _ -> pure False
     _ -> pure False
   Matcher.SkillTestOnTreachery treacheryMatcher -> case skillTestSource st of

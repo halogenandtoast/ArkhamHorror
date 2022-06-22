@@ -1018,7 +1018,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [ TakeAction iid (Just Action.Play) (ActionCost actionCost)
       , PayDynamicCardCost iid cardId 0 aooMessage
       ]
-  InitiatePlayCardAsChoose iid cardId choices msgs asAction
+  InitiatePlayCardAsChoose iid cardId choices msgs chosenCardStrategy asAction
     | iid == investigatorId -> do
       a <$ push
         (chooseOne
@@ -1026,12 +1026,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           [ TargetLabel
               (CardIdTarget $ toCardId choice)
               [ ReturnToHand iid (EventTarget $ EventId cardId)
-              , InitiatePlayCardAs iid cardId choice msgs asAction
+              , InitiatePlayCardAs iid cardId choice msgs chosenCardStrategy asAction
               ]
           | choice <- choices
           ]
         )
-  InitiatePlayCardAs iid cardId choice msgs asAction | iid == investigatorId ->
+  InitiatePlayCardAs iid cardId choice msgs chosenCardStrategy asAction | iid == investigatorId ->
     do
       let
         card = findCard cardId a
@@ -1039,7 +1039,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         choiceAsCard = (lookupPlayerCard choiceDef cardId)
           { pcOriginalCardCode = toCardCode card
           }
-      pushAll $ msgs <> [InitiatePlayCard iid cardId Nothing asAction]
+        chosenCardMsgs = case chosenCardStrategy of
+          LeaveChosenCard -> []
+          RemoveChosenCardFromGame -> [RemovePlayerCardFromGame choice]
+
+      pushAll $ chosenCardMsgs <> msgs <> [InitiatePlayCard iid cardId Nothing asAction]
       pure $ a & handL %~ (PlayerCard choiceAsCard :) . filter
         ((/= cardId) . toCardId)
   InitiatePlayCard iid cardId mtarget asAction | iid == investigatorId -> do
@@ -1888,6 +1892,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & (discardL %~ filter (/= card))
         & (deckL %~ Deck . filter (/= card) . unDeck)
       else pure a
+  RemovePlayerCardFromGame card -> do
+    push $ RemovedFromGame card
+    case preview _PlayerCard card of
+      Just pc ->
+        pure
+          $ a
+          & (discardL %~ filter (/= pc))
+          & (handL %~ filter (/= card))
+          & (deckL %~ Deck . filter (/= pc) . unDeck)
+      Nothing ->
+        -- encounter cards can only be in hand
+        pure
+          $ a
+          & (handL %~ filter (/= card))
   RemoveDiscardFromGame iid | iid == investigatorId -> do
     pushAll $ map (RemovedFromGame . PlayerCard) investigatorDiscard
     pure $ a & discardL .~ []

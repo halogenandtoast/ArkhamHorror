@@ -9,6 +9,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Card.PlayerCard
@@ -156,9 +157,7 @@ instance RunMessage TheUnspeakableOath where
           partition (`cardMatch` CardWithTrait Lunatic) deck'
         encounterDeck = Deck deck''
       investigatorIds <- getInvestigatorIds
-      constanceInterviewed <-
-        elem (Recorded $ toCardCode Assets.constanceDumaine)
-          <$> getRecordSet VIPsInterviewed
+      constanceInterviewed <- interviewed Assets.constanceDumaine
       courageMessages <- if constanceInterviewed
         then concat <$> for
           investigatorIds
@@ -172,7 +171,13 @@ instance RunMessage TheUnspeakableOath where
                     (courageProxy { pcOriginalCardCode = toCardCode x })
                 pure
                   [ DrawCards iid 1 False
-                  , InitiatePlayCardAs iid (toCardId x) courage [] False
+                  , InitiatePlayCardAs
+                    iid
+                    (toCardId x)
+                    courage
+                    []
+                    LeaveChosenCard
+                    False
                   ]
               _ -> error "empty investigator deck"
         else pure []

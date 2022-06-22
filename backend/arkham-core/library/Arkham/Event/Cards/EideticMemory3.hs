@@ -17,6 +17,7 @@ import Arkham.Matcher hiding ( DuringTurn )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Source
+import Arkham.Strategy
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Timing qualified as Timing
@@ -53,6 +54,7 @@ instance RunMessage EideticMemory3 where
             (CardIdSource $ toCardId attrs)
             (CardIdTarget $ toCardId attrs)
         ]
+        RemoveChosenCardFromGame
         True
       pure e
     _ -> EideticMemory3 <$> runMessage msg attrs

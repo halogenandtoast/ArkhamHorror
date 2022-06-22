@@ -1947,7 +1947,9 @@ instance Projection EventAttrs where
       EventTraits -> pure $ cdCardTraits cdef
       EventAbilities -> pure $ getAbilities e
       EventOwner -> pure eventOwner
-      EventCard -> pure $ lookupCard eventCardCode (unEventId eid)
+      EventCard ->
+        -- an event might need to be converted back to its original card
+        pure $ lookupCard eventOriginalCardCode (unEventId eid)
 
 instance Projection ScenarioAttrs where
   field fld _ = do
@@ -3292,7 +3294,6 @@ runGameMessage msg g = case msg of
   Discarded (TreacheryTarget aid) _ -> pure $ g & entitiesL . treacheriesL %~ deleteMap aid
   Exiled (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
-    -- an event might need to be converted back to its original card
     event' <- getEvent eid
     modifiers' <- getModifiers GameSource (EventTarget eid)
     if RemoveFromGameInsteadOfDiscard `elem` modifiers'

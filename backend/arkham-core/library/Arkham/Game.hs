@@ -2785,6 +2785,12 @@ runGameMessage msg g = case msg of
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
     windowMsgs <- windows [Window.AddedToVictory card]
+    pushAll $ windowMsgs <> [RemoveEnemy eid]
+    pure g
+  DefeatedAddToVictory (EnemyTarget eid) -> do
+    -- when defeated, removal is handled by the defeat effect
+    card <- field EnemyCard eid
+    windowMsgs <- windows [Window.AddedToVictory card]
     pushAll windowMsgs
     pure g
   AddToVictory (EventTarget eid) -> do

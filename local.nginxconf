@@ -9,6 +9,7 @@ http {
   server {
     listen 8082;
     server_name .arkham-horror-api.com;
+    client_max_body_size 10M;
 
     location / {
       proxy_pass http://localhost:8081;

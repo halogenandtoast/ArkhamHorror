@@ -107,6 +107,9 @@ instance Yesod App where
   makeLogger :: App -> IO Logger
   makeLogger = pure . appLogger
 
+  maximumContentLength :: App -> Maybe (Route App) -> Maybe Word64
+  maximumContentLength _ _ = Just $ 10 * 1024 * 1024
+
 -- How to run database actions.
 instance YesodPersist App where
   type YesodPersistBackend App = SqlBackend

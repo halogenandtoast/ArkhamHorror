@@ -6,6 +6,7 @@ module Arkham.Game where
 import Arkham.Prelude
 
 import Control.Monad.Reader (runReader)
+import Data.List.Extra (groupOn)
 import Data.Aeson.KeyMap qualified as KeyMap
 import Arkham.ModifierData
 import Arkham.Ability
@@ -1095,9 +1096,43 @@ getLocationsMatching lmatcher = do
     NotLocation matcher -> do
       excludes <- getLocationsMatching matcher
       pure $ filter (`elem` excludes) ls
-    ClosestPathLocation start fin -> do
-      lids <- getShortestPath start (pure . (== fin)) mempty
-      pure $ filter ((`elem` lids) . toId) ls
+    ClosestPathLocation start destination -> do
+      -- lids <- getShortestPath start (pure . (== fin)) mempty
+      -- pure $ filter ((`elem` lids) . toId) ls
+      -- logic is to get each adjacent location and determine which is closest to
+      -- the destination
+      let extraConnectionsMap = mempty
+      connectedLocationIds <- selectList $ ConnectedFrom $ LocationWithId start
+      matches' <- if start == destination || destination `elem` connectedLocationIds
+        then pure $ singleton destination
+        else do
+          candidates :: [(LocationId, Int)] <- mapMaybeM
+            (\initialLocation -> do
+              let
+                !state' = LPState
+                  (pure initialLocation)
+                  (singleton initialLocation)
+                  mempty
+              result <- evalStateT
+                (markDistances
+                  initialLocation
+                  (pure . (== destination))
+                  extraConnectionsMap
+                )
+                state'
+              let
+                mdistance :: Maybe Int =
+                  headMay . drop 1 . map fst . sortOn fst . mapToList $ result
+              pure $ (initialLocation, ) <$> mdistance
+            )
+            connectedLocationIds
+          pure
+            $ setFromList @(HashSet LocationId)
+            . maybe [] (coerce . map fst)
+            . headMay
+            . groupOn snd
+            $ sortOn snd candidates
+      pure $ filter ((`member` matches') . toId) ls
     BlockedLocation -> flip filterM ls $ \l ->
       notElem Blocked <$> getModifiers (toSource l) (toTarget l)
     -- these can not be queried

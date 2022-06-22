@@ -595,7 +595,7 @@ instance RunMessage EnemyAttrs where
         [Window Timing.After (Window.EnemyDefeated iid eid)]
       let
         victory = cdVictoryPoints $ toCardDef a
-        victoryMsgs = [ AddToVictory $ toTarget a | isJust victory ]
+        victoryMsgs = [ DefeatedAddToVictory $ toTarget a | isJust victory ]
         defeatMsgs =
           if isJust victory then [RemoveEnemy eid] else [Discard $ toTarget a]
 

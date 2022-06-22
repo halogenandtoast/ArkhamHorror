@@ -159,6 +159,7 @@ instance RunMessage LocationAttrs where
     SetLocationAsIf iid lid | lid /= locationId -> do
       pure $ a & investigatorsL %~ deleteSet iid
     AddToVictory (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
+    DefeatedAddToVictory (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
     EnemyEngageInvestigator eid iid -> do
       mlid <- field InvestigatorLocation iid
       if mlid == Just locationId then pure $ a & enemiesL %~ insertSet eid else pure a

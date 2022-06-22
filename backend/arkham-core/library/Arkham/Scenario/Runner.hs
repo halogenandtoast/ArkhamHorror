@@ -275,6 +275,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
     pure $ a & (victoryDisplayL %~ (card :))
+  DefeatedAddToVictory (EnemyTarget eid) -> do
+    card <- field EnemyCard eid
+    pure $ a & (victoryDisplayL %~ (card :))
   Discarded (EnemyTarget eid) _ -> do
     card <- field EnemyCard eid
     case card of

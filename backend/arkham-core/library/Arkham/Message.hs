@@ -158,6 +158,7 @@ data Message
   | DrewFromScenarioDeck InvestigatorId ScenarioDeckKey Target [Card]
   | -- Victory
     AddToVictory Target
+  | DefeatedAddToVictory Target
   | -- Tokens
     AddToken TokenFace
   | RemoveAllTokens TokenFace

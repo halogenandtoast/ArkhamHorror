@@ -344,8 +344,8 @@ data Message
   | FinishedUpgradingDecks
   | Flip Source Target
   | Flipped Source Card
-  | InitiatePlayCardAsChoose InvestigatorId CardId [Card] [Message] Bool
-  | InitiatePlayCardAs InvestigatorId CardId Card [Message] Bool
+  | InitiatePlayCardAsChoose InvestigatorId CardId [Card] [Message] ChosenCardStrategy Bool
+  | InitiatePlayCardAs InvestigatorId CardId Card [Message] ChosenCardStrategy Bool
   | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
   | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
   | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
@@ -456,6 +456,7 @@ data Message
   | RefillSlots InvestigatorId SlotType [AssetId]
   | Remember ScenarioLogKey
   | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
+  | RemovePlayerCardFromGame Card
   | RemoveAllClues Target
   | RemoveAllDoom Source
   | RemoveCampaignCardFromDeck InvestigatorId CardCode

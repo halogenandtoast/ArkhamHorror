@@ -104,12 +104,14 @@ allPlayerAssetCards = mapFromList $ map
   , aquinnah3
   , arcaneEnlightenment
   , arcaneInitiate
+  , arcaneInitiate3
   , arcaneInsight4
   , arcaneStudies
   , arcaneStudies2
   , archaicGlyphs
   , archaicGlyphsGuidingStones3
   , archaicGlyphsProphecyForetold3
+  , armorOfArdennes5
   , artStudent
   , bandolier
   , baseballBat
@@ -1756,6 +1758,14 @@ arcaneInitiate3 = (asset "03271" "Arcane Initiate" 0 Mystic)
   , cdCardTraits = setFromList [Ally, Sorcerer]
   , cdSlots = [AllySlot]
   , cdLevel = 3
+  }
+
+armorOfArdennes5 :: CardDef
+armorOfArdennes5 = (asset "03305" "Armor of Ardennes" 4 Guardian)
+  { cdSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillCombat]
+  , cdCardTraits = setFromList [Item, Armor, Relic]
+  , cdSlots = [BodySlot]
+  , cdLevel = 5
   }
 
 toothOfEztli :: CardDef

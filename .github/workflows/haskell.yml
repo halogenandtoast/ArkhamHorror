@@ -47,6 +47,6 @@ jobs:
       run: |
         stack build --system-ghc --test --no-run-tests --bench --no-run-benchmarks --only-dependencies
     - name: Build
-      run: stack build --system-ghc --test --no-run-tests --bench --no-run-benchmarks
+      run: stack build --system-ghc --test --no-run-tests --bench --no-run-benchmarks cards-discover && stack build --system-ghc --test --no-run-tests --bench --no-run-benchmarks
     - name: Run tests
       run: stack test --system-ghc

@@ -18,6 +18,9 @@ instance RunMessage TreacheryAttrs where
     InvestigatorEliminated iid
       | InvestigatorTarget iid `elem` treacheryAttachedTarget -> a
       <$ push (Discard $ toTarget a)
+    InvestigatorEliminated iid
+      | Just iid == treacheryOwner -> a
+      <$ push (Discard $ toTarget a)
     AttachTreachery tid target | tid == treacheryId ->
       pure $ a & attachedTargetL ?~ target
     PlaceResources target n | isTarget a target -> do

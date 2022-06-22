@@ -9,6 +9,11 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+    working-directory: ./backend
+
 jobs:
   build:
     name: stack / ghc ${{ matrix.ghc }}
@@ -20,9 +25,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      working-directory: ./backend
     - uses: haskell/actions/setup@v1.2
-      working-directory: ./backend
       name: Setup Haskell Stack
       with:
         ghc-version: ${{ matrix.ghc }}
@@ -30,7 +33,6 @@ jobs:
 
     - name: Cache
       uses: actions/cache@v3
-      working-directory: ./backend
       env:
         cache-name: cache-stack
       with:
@@ -42,12 +44,9 @@ jobs:
           ${{ runner.os }}-
 
     - name: Install dependencies
-      working-directory: ./backend
       run: |
         stack build --system-ghc --test --no-run-tests --bench --no-run-benchmarks --only-dependencies
     - name: Build
-      working-directory: ./backend
       run: stack build --system-ghc --test --no-run-tests --bench --no-run-benchmarks
     - name: Run tests
-      working-directory: ./backend
       run: stack test --system-ghc

@@ -175,6 +175,7 @@ allEffects =
     , ("03215", PereLachaiseCemetery' . pereLachaiseCemetery)
     , ("03218", LeMarais218' . leMarais218)
     , ("03254", NarrowShaft' . narrowShaft)
+    , ("03306", EideticMemory3' . eideticMemory3)
     , ("05114", MeatCleaver' . meatCleaver)
     , ("50008", MindWipe3' . mindWipe3)
     , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)

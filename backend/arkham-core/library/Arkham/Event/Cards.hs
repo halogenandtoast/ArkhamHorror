@@ -779,7 +779,7 @@ hidingSpot :: CardDef
 hidingSpot = (event "03038" "Hiding Spot" 1 Survivor)
   { cdSkills = [SkillAgility, SkillAgility]
   , cdCardTraits = setFromList [Tactic, Trick]
-  , cdFastWindow = Just AnyWindow
+  , cdFastWindow = Just FastPlayerWindow
   }
 
 heroicRescue :: CardDef

@@ -93,6 +93,7 @@ allPlayerEventCards = mapFromList $ map
   , dynamiteBlast
   , dynamiteBlast2
   , eatLead2
+  , eideticMemory3
   , elusive
   , emergencyAid
   , emergencyCache
@@ -1033,6 +1034,18 @@ eatLead2 = (event "03304" "\"Eat Lead!\"" 0 Guardian)
   { cdCardTraits = singleton Tactic
   , cdFastWindow = Just $ ActivateAbility Timing.When You (AssetAbility (AssetWithTrait Firearm) <> AbilityIsAction Action.Fight)
   , cdLevel = 2
+  }
+
+eideticMemory3 :: CardDef
+eideticMemory3 = (event "03306" "Eidetic Memory" 0 Seeker)
+  { cdSkills = [SkillIntellect, SkillAgility]
+  , cdCardTraits = singleton Spirit
+  , cdFastWindow = Just
+    (PlayerHasPlayableCard $ InDiscardOf Anyone <> BasicCardMatch
+      (CardWithTrait Insight <> EventCard)
+    )
+  , cdLevel = 3
+  , cdCost = Nothing
   }
 
 secondWind :: CardDef

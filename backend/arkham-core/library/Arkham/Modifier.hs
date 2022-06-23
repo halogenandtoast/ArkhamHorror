@@ -131,6 +131,7 @@ data ModifierType
   | IgnoreToken
   | IgnoreTokenEffects
   | IncreaseCostOf CardMatcher Int
+  | KilledIfDefeated
   | MaxDamageTaken Int
   | MayChooseNotToTakeUpkeepResources
   | ModifierIfSucceededBy Int Modifier

@@ -7,12 +7,23 @@ import Arkham.Event.Attrs as X
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Target
+import {-# SOURCE #-} Arkham.GameEnv
 
 instance RunMessage EventAttrs where
-  runMessage msg a@EventAttrs {..} = case msg of
+  runMessage msg a@EventAttrs {..} = do
+    result <- runEventMessage msg a
+    pure $ if eventBeingPaidFor
+      then case msg of
+        SpendResources _ _ -> result & paymentMessagesL %~ (<> [msg])
+        _ -> result
+      else result
+
+runEventMessage :: Message -> EventAttrs -> GameT EventAttrs
+runEventMessage msg a@EventAttrs{..} = case msg of
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     InvestigatorEliminated iid
       | eventAttachedTarget == Just (InvestigatorTarget iid) -> a
@@ -21,4 +32,8 @@ instance RunMessage EventAttrs where
       pure $ a & attachedTargetL ?~ target
     Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
     Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
+    PayCardCost _ cid | toCardId a == cid ->
+      pure $ a & beingPaidForL .~ True
+    PlayedCard _ card | toCardId a == toCardId card ->
+      pure $ a & beingPaidForL .~ False
     _ -> pure a

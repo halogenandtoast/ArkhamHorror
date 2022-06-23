@@ -892,7 +892,7 @@ passesCriteria
   -> m Bool
 passesCriteria iid source windows' = \case
   Criteria.ActionCanBeUndone -> do
-    getActionCanBeUndone
+    traceShowId . trace "Action can be undone" <$> getActionCanBeUndone
   Criteria.DoomCountIs valueMatcher -> do
     doomCount <- getDoomCount
     gameValueMatches doomCount valueMatcher
@@ -1005,7 +1005,8 @@ passesCriteria iid source windows' = \case
     ProxySource (AssetSource aid) _ ->
       liftA2 (==) (field AssetLocation aid) (field InvestigatorLocation iid)
     _ -> error $ "missing OnSameLocation check for source: " <> show source
-  Criteria.DuringTurn who -> selectAny $ Matcher.TurnInvestigator <> who
+  Criteria.DuringTurn who ->
+    traceShowId . traceShow "During turn: " <$> selectAny (Matcher.TurnInvestigator <> who)
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
   Criteria.ExtendedCardExists cardMatcher -> selectAny cardMatcher
   Criteria.PlayableCardExistsWithCostReduction n cardMatcher -> do

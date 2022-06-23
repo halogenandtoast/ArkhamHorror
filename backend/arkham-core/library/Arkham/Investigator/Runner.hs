@@ -1011,12 +1011,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (pure $ cardMatch card cMatcher)
         _ -> pure False
     if null canHelpPay
-      then pure $ a & resourcesL -~ cost
+      then push (SpendResources iid cost)
       else do
         iidsWithResources <- traverse
           (traverseToSnd (field InvestigatorResources))
           (iid : map fst canHelpPay)
-        a <$ push
+        push
           (Ask iid
           $ ChoosePaymentAmounts
               ("Pay " <> tshow cost <> " resources")
@@ -1027,6 +1027,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               )
               iidsWithResources
           )
+    pure a
   PayDynamicCardCost iid cardId _n beforePlayMessages | iid == investigatorId ->
     a <$ push
       (Ask iid $ ChooseDynamicCardAmounts

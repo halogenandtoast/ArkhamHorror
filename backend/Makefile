@@ -22,6 +22,14 @@ core:
 	  --file-watch \
 		$(EXTRA_STACK_FLAGS)
 
+.PHONY: validate
+validate:
+	cd validate && \
+	stack build --test --no-run-tests --pedantic --fast validate \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+		$(EXTRA_STACK_FLAGS)
+
 .PHONY: test
 test:
 	cd arkham-core && \

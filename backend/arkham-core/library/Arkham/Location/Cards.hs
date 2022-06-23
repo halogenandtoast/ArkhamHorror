@@ -1445,7 +1445,7 @@ choeurGothique_292 :: CardDef
 choeurGothique_292 = location "03292" "Chœur Gothique" [] BlackStarsRise
 
 choeurGothique_293 :: CardDef
-choeurGothique_293 = location "03292" "Chœur Gothique" [] BlackStarsRise
+choeurGothique_293 = location "03293" "Chœur Gothique" [] BlackStarsRise
 
 cloister :: CardDef
 cloister = location "03294" "Cloister" [] BlackStarsRise

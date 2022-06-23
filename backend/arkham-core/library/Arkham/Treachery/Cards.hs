@@ -126,6 +126,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , clawsOfSteam
   , collapsingReality
   , corrosion
+  , crashingFloods
   , cryptChill
   , cursedLuck
   , cursedSwamp
@@ -212,6 +213,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , whispersInYourHeadDread
   , whispersInYourHeadAnxiety
   , whispersInYourHeadDoubt
+  , worldsMerge
   , wormhole
   ]
 

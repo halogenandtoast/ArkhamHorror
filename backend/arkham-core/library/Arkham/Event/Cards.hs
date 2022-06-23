@@ -1048,6 +1048,13 @@ eideticMemory3 = (event "03306" "Eidetic Memory" 0 Seeker)
   , cdCost = Nothing
   }
 
+noStoneUnturned5 :: CardDef
+noStoneUnturned5 = (event "03307" "No Stone Unturned" 2 Seeker)
+  { cdCardTraits = singleton Insight
+  , cdFastWindow = Just FastPlayerWindow
+  , cdLevel = 5
+  }
+
 secondWind :: CardDef
 secondWind = (event "04149" "Second Wind" 1 Guardian)
   { cdSkills = [SkillWillpower]

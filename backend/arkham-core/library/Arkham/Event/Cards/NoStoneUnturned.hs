@@ -5,10 +5,11 @@ module Arkham.Event.Cards.NoStoneUnturned
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Message
 import Arkham.Target
 
@@ -22,8 +23,12 @@ noStoneUnturned = event NoStoneUnturned Cards.noStoneUnturned
 instance RunMessage NoStoneUnturned where
   runMessage msg e@(NoStoneUnturned attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      investigatorIds <- selectList $ InvestigatorAt YourLocation
-      e <$ pushAll
+      iids <-
+        selectList
+        $ InvestigatorAt YourLocation
+        <> InvestigatorWithoutModifier CannotManipulateDeck
+
+      pushAll
         [ chooseOne
           iid
           [ Search
@@ -33,8 +38,9 @@ instance RunMessage NoStoneUnturned where
               [fromTopOfDeck 6]
               AnyCard
               (DrawFound iid' 1)
-          | iid' <- investigatorIds
+          | iid' <- iids
           ]
         , Discard (toTarget attrs)
         ]
+      pure e
     _ -> NoStoneUnturned <$> runMessage msg attrs

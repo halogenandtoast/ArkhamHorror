@@ -263,17 +263,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ((`Window` Window.InvestigatorDefeated source defeatedBy iid)
       <$> [Timing.After]
       )
-    pushAll [windowMsg, InvestigatorWhenEliminated (toSource a) iid]
+    killed <- hasModifier a KilledIfDefeated
+    pushAll
+      $ windowMsg
+      : [ InvestigatorKilled (toSource a) iid | killed ]
+      <> [InvestigatorWhenEliminated (toSource a) iid]
     pure
       $ a
-      & defeatedL
-      .~ True
-      & endedTurnL
-      .~ True
-      & physicalTraumaL
-      +~ physicalTrauma
-      & mentalTraumaL
-      +~ mentalTrauma
+      & (defeatedL .~ True)
+      & (endedTurnL .~ True)
+      & (physicalTraumaL +~ physicalTrauma)
+      & (mentalTraumaL +~ mentalTrauma)
   Msg.InvestigatorResigned iid | iid == investigatorId -> do
     push (InvestigatorWhenEliminated (toSource a) iid)
     pure $ a & resignedL .~ True
@@ -470,7 +470,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push =<< checkWindows [Window Timing.After (Window.EnemyEvaded iid eid)]
     pure $ a & engagedEnemiesL %~ deleteSet eid
   AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
-  DefeatedAddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
+  DefeatedAddToVictory (EnemyTarget eid) ->
+    pure $ a & engagedEnemiesL %~ deleteSet eid
   -- TODO: WARNING: HERE BE DRAGONS
   ChooseEvadeEnemy iid source mTarget skillType enemyMatcher isAction
     | iid == investigatorId -> do
@@ -1027,13 +1028,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           [ TargetLabel
               (CardIdTarget $ toCardId choice)
               [ ReturnToHand iid (EventTarget $ EventId cardId)
-              , InitiatePlayCardAs iid cardId choice msgs chosenCardStrategy asAction
+              , InitiatePlayCardAs
+                iid
+                cardId
+                choice
+                msgs
+                chosenCardStrategy
+                asAction
               ]
           | choice <- choices
           ]
         )
-  InitiatePlayCardAs iid cardId choice msgs chosenCardStrategy asAction | iid == investigatorId ->
-    do
+  InitiatePlayCardAs iid cardId choice msgs chosenCardStrategy asAction
+    | iid == investigatorId -> do
       let
         card = findCard cardId a
         choiceDef = toCardDef choice
@@ -1044,7 +1051,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           LeaveChosenCard -> []
           RemoveChosenCardFromGame -> [RemovePlayerCardFromGame choice]
 
-      pushAll $ chosenCardMsgs <> msgs <> [InitiatePlayCard iid cardId Nothing asAction]
+      pushAll
+        $ chosenCardMsgs
+        <> msgs
+        <> [InitiatePlayCard iid cardId Nothing asAction]
       pure $ a & handL %~ (PlayerCard choiceAsCard :) . filter
         ((/= cardId) . toCardId)
   InitiatePlayCard iid cardId mtarget asAction | iid == investigatorId -> do
@@ -1904,9 +1914,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           & (deckL %~ Deck . filter (/= pc) . unDeck)
       Nothing ->
         -- encounter cards can only be in hand
-        pure
-          $ a
-          & (handL %~ filter (/= card))
+        pure $ a & (handL %~ filter (/= card))
   RemoveDiscardFromGame iid | iid == investigatorId -> do
     pushAll $ map (RemovedFromGame . PlayerCard) investigatorDiscard
     pure $ a & discardL .~ []

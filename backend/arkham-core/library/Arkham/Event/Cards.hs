@@ -12,7 +12,7 @@ import Arkham.ClassSymbol
 import Arkham.Criteria qualified as Criteria
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Modifier (ModifierType(..))
+import Arkham.Modifier ( ModifierType (..) )
 import Arkham.Name
 import Arkham.Phase
 import Arkham.SkillType
@@ -241,10 +241,7 @@ workingAHunch = (event "01037" "Working a Hunch" 2 Seeker)
   , cdCardTraits = setFromList [Insight]
   , cdFastWindow = Just (DuringTurn You)
   , cdCriteria = Just
-    (Criteria.LocationExists
-    $ YourLocation
-    <> LocationWithAnyClues
-    )
+    (Criteria.LocationExists $ YourLocation <> LocationWithAnyClues)
   }
 
 barricade :: CardDef
@@ -735,6 +732,11 @@ noStoneUnturned :: CardDef
 noStoneUnturned = (event "03026" "No Stone Unturned" 2 Seeker)
   { cdSkills = [SkillWild]
   , cdCardTraits = singleton Insight
+  , cdCriteria =
+    Just
+    $ Criteria.InvestigatorExists
+    $ InvestigatorAt YourLocation
+    <> InvestigatorWithoutModifier CannotManipulateDeck
   }
 
 sleightOfHand :: CardDef
@@ -947,10 +949,8 @@ manoAMano1 :: CardDef
 manoAMano1 = (event "03229" "Mano a Mano" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillCombat]
   , cdCardTraits = setFromList [Spirit, Bold]
-  , cdCriteria =
-    Just
-    $ Criteria.FirstAction
-    <> Criteria.EnemyCriteria (Criteria.EnemyExists EnemyEngagedWithYou)
+  , cdCriteria = Just $ Criteria.FirstAction <> Criteria.EnemyCriteria
+    (Criteria.EnemyExists EnemyEngagedWithYou)
   , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
   , cdLevel = 1
   }
@@ -967,8 +967,12 @@ waylay :: CardDef
 waylay = (event "03237" "Waylay" 3 Survivor)
   { cdSkills = [SkillAgility, SkillAgility]
   , cdCardTraits = singleton Tactic
-  , cdCriteria =
-    Just $ Criteria.EnemyCriteria (Criteria.EnemyExists $ NonEliteEnemy <> EnemyAt YourLocation <> ExhaustedEnemy)
+  , cdCriteria = Just $ Criteria.EnemyCriteria
+    (Criteria.EnemyExists
+    $ NonEliteEnemy
+    <> EnemyAt YourLocation
+    <> ExhaustedEnemy
+    )
   }
 
 aChanceEncounter2 :: CardDef
@@ -990,13 +994,15 @@ emergencyCache3 = (event "03239" "Emergency Cache" 0 Neutral)
 onTheHunt :: CardDef
 onTheHunt = (event "03263" "On the Hunt" 1 Guardian)
   { cdCardTraits = singleton Tactic
-  , cdFastWindow = Just $ WouldDrawEncounterCard Timing.When You (PhaseIs MythosPhase)
+  , cdFastWindow = Just
+    $ WouldDrawEncounterCard Timing.When You (PhaseIs MythosPhase)
   }
 
 guidance :: CardDef
 guidance = (event "03265" "Guidance" 0 Seeker)
   { cdCardTraits = singleton Insight
-  , cdCriteria = Just $ Criteria.InvestigatorExists (NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn)
+  , cdCriteria = Just $ Criteria.InvestigatorExists
+    (NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn)
   }
 
 narrowEscape :: CardDef
@@ -1004,7 +1010,10 @@ narrowEscape = (event "03267" "Narrow Escape" 0 Rogue)
   { cdCardTraits = singleton Fortune
   , cdSkills = [SkillAgility, SkillAgility]
   , cdFastWindow = Just
-    (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AttackOfOpportunityAttack
+    (EnemyAttacks
+        Timing.When
+        (InvestigatorAt YourLocation)
+        AttackOfOpportunityAttack
     $ EnemyWithoutModifier AttacksCannotBeCancelled
     )
   }
@@ -1032,7 +1041,10 @@ trueSurvivor3 = (event "03273" "True Survivor" 3 Survivor)
 eatLead2 :: CardDef
 eatLead2 = (event "03304" "\"Eat Lead!\"" 0 Guardian)
   { cdCardTraits = singleton Tactic
-  , cdFastWindow = Just $ ActivateAbility Timing.When You (AssetAbility (AssetWithTrait Firearm) <> AbilityIsAction Action.Fight)
+  , cdFastWindow = Just $ ActivateAbility
+    Timing.When
+    You
+    (AssetAbility (AssetWithTrait Firearm) <> AbilityIsAction Action.Fight)
   , cdLevel = 2
   }
 
@@ -1052,6 +1064,11 @@ noStoneUnturned5 :: CardDef
 noStoneUnturned5 = (event "03307" "No Stone Unturned" 2 Seeker)
   { cdCardTraits = singleton Insight
   , cdFastWindow = Just FastPlayerWindow
+  , cdCriteria =
+    Just
+    $ Criteria.InvestigatorExists
+    $ InvestigatorAt YourLocation
+    <> InvestigatorWithoutModifier CannotManipulateDeck
   , cdLevel = 5
   }
 

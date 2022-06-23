@@ -128,6 +128,7 @@ allPlayerAssetCards = mapFromList $ map
   , celaenoFragments
   , charisma3
   , charlesRossEsq
+  , charonsObol1
   , cherishedKeepsake
   , chicagoTypewriter4
   , clarityOfMind
@@ -1766,6 +1767,13 @@ armorOfArdennes5 = (asset "03305" "Armor of Ardennes" 4 Guardian)
   , cdCardTraits = setFromList [Item, Armor, Relic]
   , cdSlots = [BodySlot]
   , cdLevel = 5
+  }
+
+charonsObol1 :: CardDef
+charonsObol1 = permanent $ (asset "03308" ("Charon's Obol" <:> "The Ferryman's Pay") 0 Rogue)
+  { cdCardTraits = setFromList [Item, Relic]
+  , cdLevel = 1
+  , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional ]
   }
 
 toothOfEztli :: CardDef

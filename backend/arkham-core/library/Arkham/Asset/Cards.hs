@@ -204,6 +204,7 @@ allPlayerAssetCards = mapFromList $ map
   , lockpicks1
   , loneWolf
   , luckyDice2
+  , lupara3
   , machete
   , madameLabranche
   , magnifyingGlass
@@ -1774,6 +1775,16 @@ charonsObol1 = permanent $ (asset "03308" ("Charon's Obol" <:> "The Ferryman's P
   { cdCardTraits = setFromList [Item, Relic]
   , cdLevel = 1
   , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional ]
+  }
+
+lupara3 :: CardDef
+lupara3 = (asset "03309" "Lupara" 3 Rogue)
+  { cdSkills = [SkillCombat]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdLevel = 3
+  , cdUses = Uses Ammo 2
+  , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+  , cdSlots = [HandSlot]
   }
 
 toothOfEztli :: CardDef

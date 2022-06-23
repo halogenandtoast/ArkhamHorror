@@ -24,15 +24,16 @@ instance RunMessage TimeWarp2 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       -- we need to extract the payments
       card <- field EventCard eid
-      let pc = fromJustNote "has to be a player card" $ preview _PlayerCard card
-      e <$ pushAll
-        [ UndoAction
-        -- when we undo action timewarp will either be in hand or on the deck
-        -- so we just remove it from the game to find it no matter where it is
-        , RemovePlayerCardFromGame card
-        -- Then we add it directly to the discard
-        , AddToDiscard iid pc
-        -- Then we also handle payment
-        , SpendResources iid 1 -- TODO: we need to get the exact payment msgs somehow
-        ]
+      let
+        pc = fromJustNote "has to be a player card" $ preview _PlayerCard card
+      pushAll
+        $ [ UndoAction
+          -- when we undo action timewarp will either be in hand or on the deck
+          -- so we just remove it from the game to find it no matter where it is
+          , RemovePlayerCardFromGame card
+          -- Then we add it directly to the discard
+          , AddToDiscard iid pc
+          ]
+        <> eventPaymentMessages attrs
+      pure e
     _ -> TimeWarp2 <$> runMessage msg attrs

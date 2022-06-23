@@ -9,6 +9,7 @@ import Arkham.Json
 import Arkham.Card
 import Arkham.Id
 import Arkham.Name
+import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
@@ -33,6 +34,8 @@ data EventAttrs = EventAttrs
   , eventOwner :: InvestigatorId
   , eventDoom :: Int
   , eventExhausted :: Bool
+  , eventBeingPaidFor :: Bool
+  , eventPaymentMessages :: [Message]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -43,6 +46,14 @@ attachedTargetL =
 exhaustedL :: Lens' EventAttrs Bool
 exhaustedL =
   lens eventExhausted $ \m x -> m {eventExhausted = x}
+
+paymentMessagesL :: Lens' EventAttrs [Message]
+paymentMessagesL =
+  lens eventPaymentMessages $ \m x -> m {eventPaymentMessages = x}
+
+beingPaidForL :: Lens' EventAttrs Bool
+beingPaidForL =
+  lens eventBeingPaidFor $ \m x -> m {eventBeingPaidFor = x}
 
 originalCardCodeL :: Lens' EventAttrs CardCode
 originalCardCodeL =
@@ -85,6 +96,9 @@ event f cardDef =
             , eventOwner = iid
             , eventDoom = 0
             , eventExhausted = False
+            -- currently only relevant to time warp
+            , eventBeingPaidFor = False
+            , eventPaymentMessages = []
             }
     }
 

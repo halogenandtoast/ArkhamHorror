@@ -27,6 +27,7 @@ import Arkham.Classes
 import Arkham.Classes.HasDistance
 import Arkham.Cost
 import Arkham.Deck qualified as Deck
+import Arkham.DefeatedBy
 import Arkham.Difficulty
 import Arkham.Distance
 import Arkham.Effect
@@ -1096,7 +1097,7 @@ getLocationsMatching lmatcher = do
     Nowhere -> pure []
     NotLocation matcher -> do
       excludes <- getLocationsMatching matcher
-      pure $ filter (`elem` excludes) ls
+      pure $ filter (`notElem` excludes) ls
     ClosestPathLocation start destination -> do
       -- lids <- getShortestPath start (pure . (== fin)) mempty
       -- pure $ filter ((`elem` lids) . toId) ls
@@ -2344,6 +2345,18 @@ runGameMessage msg g = case msg of
       [Window Timing.When (Window.LeavePlay $ LocationTarget lid)]
     g <$ push window
   RemoveLocation lid -> do
+    investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
+    windowMsgs <- for investigatorIds $ \iid ->
+      checkWindows
+        $ (`Window` Window.InvestigatorWouldBeDefeated
+           (LocationSource lid)
+           DefeatedByOther
+           iid
+         )
+        <$> [Timing.When]
+    pushAll $ windowMsgs <> [RemovedLocation lid]
+    pure g
+  RemovedLocation lid -> do
     treacheryIds <- selectList $ TreacheryAt $ LocationWithId lid
     pushAll $ concatMap (resolve . Discard . TreacheryTarget) treacheryIds
     enemyIds <- selectList $ EnemyAt $ LocationWithId lid
@@ -2353,8 +2366,11 @@ runGameMessage msg g = case msg of
     assetIds <- selectList (AssetAt $ LocationWithId lid)
     pushAll $ concatMap (resolve . Discard . AssetTarget) assetIds
     investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
+    -- since we handle the would be defeated window in the previous message we
+    -- skip directly to the is defeated message even though we would normally
+    -- not want to do this
     pushAll $ concatMap
-      (resolve . Msg.InvestigatorDefeated (LocationSource lid))
+      (resolve . Msg.InvestigatorIsDefeated (LocationSource lid))
       investigatorIds
     pure $ g & entitiesL . locationsL %~ deleteMap lid
   SpendClues 0 _ -> pure g

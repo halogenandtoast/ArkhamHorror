@@ -80,6 +80,7 @@ data WindowType
   | InHandWindow InvestigatorId Window
   | InitiatedSkillTest InvestigatorId (Maybe Action) Int
   | InvestigatorDefeated Source DefeatedBy InvestigatorId
+  | InvestigatorWouldBeDefeated Source DefeatedBy InvestigatorId
   | InvestigatorEliminated InvestigatorId
   | LastClueRemovedFromAsset AssetId
   | LeavePlay Target

@@ -591,6 +591,7 @@ data WindowMatcher
   | PerformAction Timing Who ActionMatcher
   | DrawingStartingHand Timing Who
   | InvestigatorDefeated Timing SourceMatcher DefeatedByMatcher Who
+  | InvestigatorWouldBeDefeated Timing SourceMatcher DefeatedByMatcher Who
   | AmongSearchedCards Who
   | DeckHasNoCards Timing Who
   | MovedBy Timing Who SourceMatcher

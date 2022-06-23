@@ -361,6 +361,7 @@ data Message
   | InvestigatorDamageEnemy InvestigatorId EnemyId Source
   | InvestigatorDamageInvestigator InvestigatorId InvestigatorId
   | InvestigatorDefeated Source InvestigatorId
+  | InvestigatorIsDefeated Source InvestigatorId
   | InvestigatorDirectDamage InvestigatorId Source Int Int
   | InvestigatorDiscardAllClues InvestigatorId
   | InvestigatorDiscoverClues InvestigatorId LocationId Int (Maybe Action)
@@ -472,6 +473,7 @@ data Message
   | RemoveFromGame Target
   | RemovedFromGame Card
   | RemoveLocation LocationId
+  | RemovedLocation LocationId
   | RemoveTraits Target [Trait]
   | RemovedFromPlay Source
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep

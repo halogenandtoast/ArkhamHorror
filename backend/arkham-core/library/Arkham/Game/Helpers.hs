@@ -1314,6 +1314,15 @@ windowMatches iid source window' = \case
           , defeatedByMatches defeatedBy defeatedByMatcher
           ]
       _ -> pure False
+  Matcher.InvestigatorWouldBeDefeated timingMatcher sourceMatcher defeatedByMatcher whoMatcher
+    -> case window' of
+      Window t (Window.InvestigatorWouldBeDefeated source' defeatedBy who)
+        | t == timingMatcher -> andM
+          [ matchWho who whoMatcher
+          , sourceMatches source' sourceMatcher
+          , defeatedByMatches defeatedBy defeatedByMatcher
+          ]
+      _ -> pure False
   Matcher.AgendaWouldAdvance timingMatcher advancementReason agendaMatcher ->
     case window' of
       Window t (Window.AgendaWouldAdvance advancementReason' aid)

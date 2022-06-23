@@ -257,7 +257,7 @@ instance RunMessage LocationAttrs where
     After (LookAtRevealed _ target) | isTarget a target ->
       pure $ a & revealedL .~ False
     UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False
-    RemoveLocation lid -> pure $ a & directionsL %~ filterMap (/= lid)
+    RemovedLocation lid -> pure $ a & directionsL %~ filterMap (/= lid)
     UseResign iid source | isSource a source -> a <$ push (Resign iid)
     UseDrawCardUnderneath iid source | isSource a source ->
       case locationCardsUnderneath of

@@ -78,6 +78,7 @@ allPlayerEventCards = mapFromList $ map
   , buryThemDeep
   , callingInFavors
   , cheapShot
+  , cheatDeath5
   , closeCall2
   , contraband
   , contraband2
@@ -139,6 +140,7 @@ allPlayerEventCards = mapFromList $ map
   , moonlightRitual
   , narrowEscape
   , noStoneUnturned
+  , noStoneUnturned5
   , onTheHunt
   , onTheLam
   , oops
@@ -1069,6 +1071,15 @@ noStoneUnturned5 = (event "03307" "No Stone Unturned" 2 Seeker)
     $ Criteria.InvestigatorExists
     $ InvestigatorAt YourLocation
     <> InvestigatorWithoutModifier CannotManipulateDeck
+  , cdLevel = 5
+  }
+
+cheatDeath5 :: CardDef
+cheatDeath5 = (event "03310" "Cheat Death" 1 Rogue)
+  { cdSkills = [SkillWild]
+  , cdCardTraits = setFromList [Trick, Fated]
+  , cdFastWindow = Just
+    $ InvestigatorWouldBeDefeated Timing.When AnySource ByAny You
   , cdLevel = 5
   }
 

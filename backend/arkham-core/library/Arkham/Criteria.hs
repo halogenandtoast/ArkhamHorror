@@ -98,6 +98,7 @@ data Criterion
   | ValueIs Int ValueMatcher
   | UnderneathCardCount ValueMatcher UnderZone CardMatcher
   | Remembered ScenarioLogKeyListMatcher [ScenarioLogKey]
+  | ActionCanBeUndone
   -- Special Criterion
   | Criteria [Criterion]
   | AnyCriterion [Criterion]

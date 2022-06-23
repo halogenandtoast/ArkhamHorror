@@ -28,6 +28,7 @@ getDepthLock :: (Monad m, HasGame m) => m Int
 getSkillTest :: (Monad m, HasGame m) => m (Maybe SkillTest)
 getDistance :: (Monad m, HasGame m) => LocationId -> LocationId -> m (Maybe Distance)
 getAllAbilities :: (Monad m, HasGame m) => m [Ability]
+getActionCanBeUndone :: (Monad m, HasGame m) => m Bool
 
 class HasGame (m :: Type -> Type)
 

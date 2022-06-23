@@ -433,6 +433,9 @@ newGame investigator = do
     , gameRemovedFromPlay = mempty
     , gameEnemyMoving = Nothing
     , gameQuestion = mempty
+    , gameActionCanBeUndone = False
+    , gameActionDiff = []
+    , gameInAction = False
     }
   where investigatorId = toId investigator
 

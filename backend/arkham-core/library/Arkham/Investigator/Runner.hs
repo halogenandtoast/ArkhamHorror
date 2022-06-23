@@ -418,13 +418,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
   EngageEnemy iid eid True | iid == investigatorId -> do
     modifiers' <- getModifiers (toSource a) (toTarget a)
+    beforeWindowMsg <- checkWindows
+      [Window Timing.When (Window.PerformAction iid Action.Engage)]
+    afterWindowMsg <- checkWindows
+      [Window Timing.After (Window.PerformAction iid Action.Engage)]
+
     a <$ pushAll
-      ([TakeAction iid (Just Action.Engage) (ActionCost 1)]
+      ([BeginAction, beforeWindowMsg, TakeAction iid (Just Action.Engage) (ActionCost 1)]
       <> [ CheckAttackOfOpportunity iid False
          | ActionDoesNotCauseAttacksOfOpportunity Action.Engage
            `notElem` modifiers'
          ]
-      <> [EngageEnemy iid eid False]
+      <> [EngageEnemy iid eid False, afterWindowMsg, FinishAction]
       )
   EngageEnemy iid eid False | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ insertSet eid
@@ -432,6 +437,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & engagedEnemiesL %~ deleteSet eid
   FightEnemy iid eid source mTarget skillType True | iid == investigatorId -> do
     modifiers' <- getModifiers (EnemySource eid) (toTarget a)
+    beforeWindowMsg <- checkWindows
+      [Window Timing.When (Window.PerformAction iid Action.Fight)]
+    afterWindowMsg <- checkWindows
+      [Window Timing.After (Window.PerformAction iid Action.Fight)]
     let
       takenActions = setFromList @(HashSet Action) investigatorActionsTaken
       applyFightCostModifiers :: Cost -> ModifierType -> Cost
@@ -445,11 +454,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           _ -> costToEnter
       applyFightCostModifiers costToEnter _ = costToEnter
     a <$ pushAll
-      [ TakeAction
+      [ BeginAction, beforeWindowMsg, TakeAction
         iid
         (Just Action.Fight)
         (foldl' applyFightCostModifiers (ActionCost 1) modifiers')
-      , FightEnemy iid eid source mTarget skillType False
+      , FightEnemy iid eid source mTarget skillType False, afterWindowMsg
+      , FinishAction
       ]
   FightEnemy iid eid source mTarget skillType False | iid == investigatorId ->
     do
@@ -501,6 +511,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
   EvadeEnemy iid eid source mTarget skillType True | iid == investigatorId -> do
     modifiers' <- getModifiers (EnemySource eid) (toTarget a)
+    beforeWindowMsg <- checkWindows
+      [Window Timing.When (Window.PerformAction iid Action.Evade)]
+    afterWindowMsg <- checkWindows
+      [Window Timing.After (Window.PerformAction iid Action.Evade)]
     let
       takenActions = setFromList @(HashSet Action) investigatorActionsTaken
       applyEvadeCostModifiers :: Cost -> ModifierType -> Cost
@@ -514,17 +528,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           _ -> costToEnter
       applyEvadeCostModifiers costToEnter _ = costToEnter
     a <$ pushAll
-      [ TakeAction
+      [ BeginAction
+      , beforeWindowMsg
+      , TakeAction
         iid
         (Just Action.Evade)
         (foldl' applyEvadeCostModifiers (ActionCost 1) modifiers')
       , EvadeEnemy iid eid source mTarget skillType False
+      , afterWindowMsg
+      , FinishAction
       ]
   EvadeEnemy iid eid source mTarget skillType False | iid == investigatorId ->
     a <$ pushAll
       [TryEvadeEnemy iid eid source mTarget skillType, AfterEvadeEnemy iid eid]
-  MoveAction iid lid cost True | iid == investigatorId -> a <$ pushAll
-    [TakeAction iid (Just Action.Move) cost, MoveAction iid lid cost False]
+  MoveAction iid lid cost True | iid == investigatorId -> do
+    beforeWindowMsg <- checkWindows
+      [Window Timing.When (Window.PerformAction iid Action.Move)]
+    afterWindowMsg <- checkWindows
+      [Window Timing.After (Window.PerformAction iid Action.Move)]
+    a <$ pushAll [BeginAction, beforeWindowMsg, TakeAction iid (Just Action.Move) cost, MoveAction iid lid cost False, afterWindowMsg, FinishAction]
   MoveAction iid lid _cost False | iid == investigatorId -> do
     afterWindowMsg <- Helpers.checkWindows
       [Window Timing.After $ Window.MoveAction iid investigatorLocation lid]
@@ -905,6 +927,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       a <$ push (chooseOne iid $ healthDamageMessages <> sanityDamageMessages)
   Investigate iid lid source mTarget skillType True | iid == investigatorId ->
     do
+      beforeWindowMsg <- checkWindows
+        [Window Timing.When (Window.PerformAction iid Action.Investigate)]
+      afterWindowMsg <- checkWindows
+        [Window Timing.After (Window.PerformAction iid Action.Investigate)]
       modifiers <- getModifiers (toSource a) (LocationTarget lid)
       modifiers' <- getModifiers (toSource a) (toTarget a)
       let
@@ -913,12 +939,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           max 0 (n + m)
         applyModifier _ n = n
       a <$ pushAll
-        ([TakeAction iid (Just Action.Investigate) (ActionCost investigateCost)]
+        ([BeginAction, beforeWindowMsg, TakeAction iid (Just Action.Investigate) (ActionCost investigateCost)]
         <> [ CheckAttackOfOpportunity iid False
            | ActionDoesNotCauseAttacksOfOpportunity Action.Investigate
              `notElem` modifiers'
            ]
-        <> [Investigate iid lid source mTarget skillType False]
+        <> [Investigate iid lid source mTarget skillType False, afterWindowMsg, FinishAction]
         )
   InvestigatorDiscoverCluesAtTheirLocation iid n maction
     | iid == investigatorId -> runMessage
@@ -1100,16 +1126,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         PlayerCard pc ->
           isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` modifiers'
         _ -> False
-      maction = case card of
-        PlayerCard pc -> cdAction (toCardDef pc)
-        _ -> Nothing
+      action = case card of
+        PlayerCard pc -> fromMaybe Action.Play $ cdAction (toCardDef pc)
+        _ -> Action.Play
+
       actionProvokesAttackOfOpportunities =
-        maction
-          `notElem` [ Just Action.Evade
-                    , Just Action.Parley
-                    , Just Action.Resign
-                    , Just Action.Fight
-                    ]
+        action
+          `notElem` [Action.Evade, Action.Parley, Action.Resign, Action.Fight]
       provokesAttackOfOpportunities = case card of
         PlayerCard pc ->
           actionProvokesAttackOfOpportunities
@@ -1118,9 +1141,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         _ -> actionProvokesAttackOfOpportunities
       aooMessage =
         [ CheckAttackOfOpportunity iid isFast | provokesAttackOfOpportunities ]
-    actionCost <- if isFast
-      then pure 0
-      else maybe (pure 1) (getActionCost a) maction
+    actionCost <- if isFast then pure 0 else getActionCost a action
+
+    beforeWindowMsg <- checkWindows
+      [Window Timing.When (Window.PerformAction iid action)]
+    afterWindowMsg <- checkWindows
+      [Window Timing.After (Window.PerformAction iid action)]
 
     iids <- filter (/= iid) <$> getInvestigatorIds
     iidsWithModifiers <- for iids $ \iid' -> do
@@ -1142,14 +1168,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         >= actionCost
         && (investigatorResources + additionalResources >= getCost card)
       then a <$ pushAll
-        ([ TakeAction
+        ([ BeginAction, beforeWindowMsg
+         , TakeAction
            iid
            (Just Action.Play)
            (mconcat $ ActionCost actionCost : additionalCosts)
          , PayCardCost iid cardId
          ]
         <> aooMessage
-        <> [PlayCard iid cardId mtarget False]
+        <> [PlayCard iid cardId mtarget False, afterWindowMsg, FinishAction]
         )
       else pure a
   PlayedCard iid card | iid == investigatorId -> do
@@ -1221,10 +1248,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (False, True) -> DefeatedByDamage
           (False, False) -> DefeatedByOther
       windowMsg <- checkWindows
-        ((`Window` Window.InvestigatorWouldBeDefeated
-           source
-           defeatedBy
-           (toId a)
+        ((`Window` Window.InvestigatorWouldBeDefeated source defeatedBy (toId a)
          )
         <$> [Timing.When]
         )
@@ -1364,11 +1388,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [ DeckHasNoCards investigatorId mTarget | null deck' ]
       <> [ DiscardedTopOfDeck iid cs target | target <- maybeToList mTarget ]
     pure $ a & deckL .~ Deck deck' & discardL %~ (reverse cs <>)
-  DrawCards iid n True | iid == investigatorId -> a <$ pushAll
-    [ TakeAction iid (Just Action.Draw) (ActionCost 1)
-    , CheckAttackOfOpportunity iid False
-    , DrawCards iid n False
-    ]
+  DrawCards iid n True | iid == investigatorId -> do
+    beforeWindowMsg <- checkWindows
+      [Window Timing.When (Window.PerformAction iid Action.Draw)]
+    afterWindowMsg <- checkWindows
+      [Window Timing.After (Window.PerformAction iid Action.Draw)]
+    a <$ pushAll
+      [ BeginAction
+      , beforeWindowMsg
+      , TakeAction iid (Just Action.Draw) (ActionCost 1)
+      , CheckAttackOfOpportunity iid False
+      , DrawCards iid n False
+      , afterWindowMsg
+      , FinishAction
+      ]
   MoveTopOfDeckToBottom _ (Deck.InvestigatorDeck iid) n
     | iid == investigatorId -> do
       let (cards, deck) = splitAt n (unDeck investigatorDeck)
@@ -1429,10 +1462,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & resourcesL %~ max 0 . subtract n
   LoseAllResources iid | iid == investigatorId -> pure $ a & resourcesL .~ 0
   TakeResources iid n True | iid == investigatorId -> do
+    beforeWindowMsg <- checkWindows
+      [Window Timing.When (Window.PerformAction iid Action.Resource)]
+    afterWindowMsg <- checkWindows
+      [Window Timing.After (Window.PerformAction iid Action.Resource)]
     unlessM (hasModifier a CannotGainResources) $ pushAll
-      [ TakeAction iid (Just Action.Resource) (ActionCost 1)
+      [ BeginAction
+      , beforeWindowMsg
+      , TakeAction iid (Just Action.Resource) (ActionCost 1)
       , CheckAttackOfOpportunity iid False
       , TakeResources iid n False
+      , afterWindowMsg
+      , FinishAction
       ]
     pure a
   TakeResources iid n False | iid == investigatorId -> do

@@ -171,6 +171,10 @@ data Game = Game
   , gameEnemyMoving :: Maybe EnemyId
   , -- Active questions
     gameQuestion :: HashMap InvestigatorId (Question Message)
+  , -- handling time warp
+    gameActionCanBeUndone :: Bool
+  , gameActionDiff :: [Diff.Patch]
+  , gameInAction :: Bool
   }
   deriving stock (Eq, Show)
 
@@ -270,6 +274,9 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameQuestion = mempty
       , gameSkillTestResults = Nothing
       , gameEnemyMoving = Nothing
+      , gameActionCanBeUndone = False
+      , gameActionDiff = []
+      , gameInAction = False
       }
     )
  where
@@ -382,6 +389,11 @@ patch :: Game -> Diff.Patch -> Result Game
 patch g p = case Diff.patch p (toJSON g) of
   Error e -> Error e
   Success a -> fromJSON a
+
+unsafePatch :: Game -> Diff.Patch -> Game
+unsafePatch g p = case patch g p of
+  Success a -> a
+  _ -> error "Could not patch safely"
 
 getScenario :: (Monad m, HasGame m) => m  (Maybe Scenario)
 getScenario = modeScenario . view modeL <$> getGame
@@ -654,7 +666,7 @@ getInvestigatorsMatching matcher = do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
       pure $ you /= i
     Anyone -> pure . const True
-    TurnInvestigator -> \i -> (== i) <$> getActiveInvestigator
+    TurnInvestigator -> \i -> (== Just i) <$> getTurnInvestigator
     YetToTakeTurn -> \i -> andM
       [ (/= i) <$> getActiveInvestigator
       , pure $ not $ investigatorEndedTurn $ toAttrs i
@@ -2166,6 +2178,9 @@ runPreGameMessage msg g = case msg of
 getActiveInvestigator :: (Monad m, HasGame m) => m Investigator
 getActiveInvestigator = getGame >>= getInvestigator . gameActiveInvestigatorId
 
+getTurnInvestigator :: (Monad m, HasGame m) => m (Maybe Investigator)
+getTurnInvestigator = getGame >>= maybe (pure Nothing) (fmap Just . getInvestigator) . gameTurnPlayerInvestigatorId
+
 runGameMessage
   :: Message
   -> Game
@@ -2177,6 +2192,13 @@ runGameMessage msg g = case msg of
   EvadeLabel _ msgs -> g <$ pushAll msgs
   CardLabel _ msgs -> g <$ pushAll msgs
   Continue _ -> pure g
+  BeginAction -> pure $ g & inActionL .~ True & actionCanBeUndoneL .~ True & actionDiffL .~ []
+  FinishAction -> pure $ g & inActionL .~ False & actionCanBeUndoneL .~ False & actionDiffL .~ []
+  ActionCannotBeUndone -> pure $ g & actionCanBeUndoneL .~ False
+  UndoAction -> do
+    -- gameActionDiff contains a list of diffs, in order, to revert the game
+    let g' = foldl' unsafePatch g (gameActionDiff g)
+    pure g'
   EndOfGame mNextCampaignStep -> do
     window <- checkWindows [Window Timing.When Window.EndOfGame]
     push window
@@ -2897,7 +2919,7 @@ runGameMessage msg g = case msg of
       , Window Timing.After (Window.TurnEnds iid)
       ]
     g <$ pushAll (resolve $ EndTurn iid)
-  EndTurn _ -> pure $ g & turnHistoryL .~ mempty
+  EndTurn _ -> pure $ g & turnHistoryL .~ mempty & turnPlayerInvestigatorIdL .~ Nothing
   EndPhase -> do
     clearQueue
     case g ^. phaseL of
@@ -3428,7 +3450,15 @@ instance RunMessage Game where
       >>= traverseOf inSearchEntitiesL (runMessage (InSearch msg))
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= runGameMessage msg
+      >>= handleActionDiff g
       >>= (pure . set enemyMovingL Nothing)
+
+handleActionDiff :: Game -> Game -> GameT Game
+handleActionDiff old new = if gameInAction new
+  then do
+    let diff' = diff new old
+    pure $ new & actionDiffL %~ (diff':)
+  else pure new
 
 delve :: Game -> Game
 delve g = g { gameDepthLock = gameDepthLock g + 1 }

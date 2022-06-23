@@ -38,7 +38,7 @@ selectAny :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m Bool
 selectAny = fmap notNull . selectListMap id
 
 selectNone :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m Bool
-selectNone = fmap null . selectListMap id
+selectNone = fmap not . selectAny
 
 selectList
   :: (HasCallStack, Query a, HasGame m, Monad m) => a -> m [QueryElement a]

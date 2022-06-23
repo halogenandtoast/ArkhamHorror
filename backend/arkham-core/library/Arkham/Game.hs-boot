@@ -81,5 +81,8 @@ gameTurnHistory :: Game -> HashMap InvestigatorId History
 gameRoundHistory :: Game -> HashMap InvestigatorId History
 delve :: Game -> Game
 
+-- Time Warp
+gameActionCanBeUndone :: Game -> Bool
+
 instance HasDistance Game
 instance HasAbilities Game

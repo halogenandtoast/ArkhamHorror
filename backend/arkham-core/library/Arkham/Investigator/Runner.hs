@@ -244,7 +244,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Resign iid | iid == investigatorId -> do
     pushAll $ resolve $ Msg.InvestigatorResigned iid
     pure $ a & resignedL .~ True
-  Msg.InvestigatorDefeated source iid | iid == investigatorId -> do
+  Msg.InvestigatorDefeated source iid -> do
+    -- a card effect defeats an investigator directly
+    windowMsg <- checkWindows
+      ((`Window` Window.InvestigatorWouldBeDefeated
+         source
+         DefeatedByOther
+         (toId a)
+       )
+      <$> [Timing.When]
+      )
+    pushAll [windowMsg, InvestigatorIsDefeated source iid]
+    pure a
+  InvestigatorIsDefeated source iid | iid == investigatorId -> do
     modifiedHealth <- getModifiedHealth a
     modifiedSanity <- getModifiedSanity a
     let
@@ -1197,7 +1209,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & mentalTraumaL .~ investigatorSanity
   CheckDefeated source -> do
     facingDefeat <- getFacingDefeat a
-    when facingDefeat $ push (InvestigatorWhenDefeated source investigatorId)
+    when facingDefeat $ do
+      modifiedHealth <- getModifiedHealth a
+      modifiedSanity <- getModifiedSanity a
+      let
+        defeatedByHorror = investigatorSanityDamage >= modifiedSanity
+        defeatedByDamage = investigatorHealthDamage >= modifiedHealth
+        defeatedBy = case (defeatedByHorror, defeatedByDamage) of
+          (True, True) -> DefeatedByDamageAndHorror
+          (True, False) -> DefeatedByHorror
+          (False, True) -> DefeatedByDamage
+          (False, False) -> DefeatedByOther
+      windowMsg <- checkWindows
+        ((`Window` Window.InvestigatorWouldBeDefeated
+           source
+           defeatedBy
+           (toId a)
+         )
+        <$> [Timing.When]
+        )
+      pushAll [windowMsg, InvestigatorWhenDefeated source investigatorId]
     pure a
   HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->
     pure $ a & healthDamageL %~ max 0 . subtract amount
@@ -1242,7 +1273,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ((`Window` Window.InvestigatorDefeated source defeatedBy iid)
       <$> [Timing.When]
       )
-    pushAll $ [windowMsg, Msg.InvestigatorDefeated source iid]
+    pushAll $ [windowMsg, InvestigatorIsDefeated source iid]
     pure a
   InvestigatorKilled source iid | iid == investigatorId -> do
     unless investigatorDefeated $ push (Msg.InvestigatorDefeated source iid)

@@ -796,7 +796,7 @@ data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter | DoomCounter
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-newtype ActionMatcher = ActionIs Action
+data ActionMatcher = ActionIs Action | AnyAction
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

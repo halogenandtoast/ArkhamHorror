@@ -117,7 +117,7 @@ instance RunMessage AssetAttrs where
       afterEnterMsg <- checkWindows
         [Window Timing.After (Window.EnterPlay $ toTarget a)]
 
-      pushAll [whenEnterMsg, afterEnterMsg]
+      pushAll $ [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans] <> [whenEnterMsg, afterEnterMsg]
       pure
         $ a
         & (controllerL ?~ iid)

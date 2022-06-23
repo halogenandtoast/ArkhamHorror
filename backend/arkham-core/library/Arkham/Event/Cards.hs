@@ -168,6 +168,7 @@ allPlayerEventCards = mapFromList $ map
   , teamwork
   , thePaintedWorld
   , thinkOnYourFeet
+  , timeWarp2
   , trueSurvivor3
   , uncageTheSoul
   , wardOfProtection
@@ -1081,6 +1082,15 @@ cheatDeath5 = (event "03310" "Cheat Death" 1 Rogue)
   , cdFastWindow = Just
     $ InvestigatorWouldBeDefeated Timing.When AnySource ByAny You
   , cdLevel = 5
+  }
+
+timeWarp2 :: CardDef
+timeWarp2 = (event "03311" "Time Warp" 1 Mystic)
+  { cdCardTraits = setFromList [Spell, Paradox]
+  , cdFastWindow = Just
+    $ PerformAction Timing.After (InvestigatorAt YourLocation) AnyAction
+  , cdCriteria = Just $ Criteria.ActionCanBeUndone <> Criteria.DuringTurn Anyone
+  , cdLevel = 2
   }
 
 secondWind :: CardDef

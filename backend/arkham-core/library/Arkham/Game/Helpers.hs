@@ -891,6 +891,8 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid source windows' = \case
+  Criteria.ActionCanBeUndone -> do
+    getActionCanBeUndone
   Criteria.DoomCountIs valueMatcher -> do
     doomCount <- getDoomCount
     gameValueMatches doomCount valueMatcher
@@ -1003,15 +1005,7 @@ passesCriteria iid source windows' = \case
     ProxySource (AssetSource aid) _ ->
       liftA2 (==) (field AssetLocation aid) (field InvestigatorLocation iid)
     _ -> error $ "missing OnSameLocation check for source: " <> show source
-  Criteria.DuringTurn who -> do
-    iids <- select who
-    pure
-      $ any ((`elem` windows') . Window Timing.When . Window.DuringTurn) iids
-      || (iid
-         `elem` iids
-         && Window Timing.When Window.FastPlayerWindow
-         `elem` windows'
-         )
+  Criteria.DuringTurn who -> selectAny $ Matcher.TurnInvestigator <> who
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
   Criteria.ExtendedCardExists cardMatcher -> selectAny cardMatcher
   Criteria.PlayableCardExistsWithCostReduction n cardMatcher -> do
@@ -2204,6 +2198,7 @@ agendaMatches
 agendaMatches !agendaId !mtchr = member agendaId <$> select mtchr
 
 actionMatches :: Monad m => Action -> Matcher.ActionMatcher -> m Bool
+actionMatches _ Matcher.AnyAction = pure True
 actionMatches a (Matcher.ActionIs a') = pure $ a == a'
 
 enemyAttackMatches :: EnemyAttackType -> Matcher.EnemyAttackMatcher -> Bool

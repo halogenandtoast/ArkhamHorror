@@ -583,6 +583,11 @@ data Message
   | WillMoveEnemy EnemyId Message
   | -- must be called on instance directly
     SetOriginalCardCode CardCode
+  | -- Time Warp
+    ActionCannotBeUndone
+  | UndoAction
+  | BeginAction
+  | FinishAction
   deriving stock (Show, Eq)
 
 $(deriveJSON defaultOptions ''Message)

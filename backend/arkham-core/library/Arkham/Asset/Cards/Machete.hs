@@ -6,8 +6,8 @@ module Arkham.Asset.Cards.Machete
 import Arkham.Prelude
 
 import Arkham.Ability
-import qualified Arkham.Action as Action
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
@@ -35,8 +35,6 @@ instance HasModifiersFor Machete where
             iid
           pure $ toModifiers attrs [ DamageDealt 1 | engagedEnemies == [eid] ]
       _ -> pure []
-
-
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities Machete where

@@ -588,6 +588,8 @@ data Message
   | UndoAction
   | BeginAction
   | FinishAction
+  | BeginCardPayment Card
+  | FinishCardPayment Card
   deriving stock (Show, Eq)
 
 $(deriveJSON defaultOptions ''Message)

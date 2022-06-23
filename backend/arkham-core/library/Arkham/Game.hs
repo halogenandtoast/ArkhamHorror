@@ -2197,8 +2197,7 @@ runGameMessage msg g = case msg of
   ActionCannotBeUndone -> pure $ g & actionCanBeUndoneL .~ False
   UndoAction -> do
     -- gameActionDiff contains a list of diffs, in order, to revert the game
-    let g' = foldl' unsafePatch g (gameActionDiff g)
-    pure g'
+    pure $ foldl' unsafePatch g (gameActionDiff g)
   EndOfGame mNextCampaignStep -> do
     window <- checkWindows [Window Timing.When Window.EndOfGame]
     push window
@@ -2856,6 +2855,8 @@ runGameMessage msg g = case msg of
           Just iid' -> push (AddToDiscard iid' pc)
       EncounterCard _ -> pure ()
     pure $ g & (entitiesL . enemiesL %~ deleteMap eid)
+  AddToDiscard _ pc ->
+    pure $ g & removedFromPlayL %~ filter (/= PlayerCard pc)
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
     windowMsgs <- windows [Window.AddedToVictory card]

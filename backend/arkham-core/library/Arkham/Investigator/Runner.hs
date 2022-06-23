@@ -424,7 +424,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [Window Timing.After (Window.PerformAction iid Action.Engage)]
 
     a <$ pushAll
-      ([BeginAction, beforeWindowMsg, TakeAction iid (Just Action.Engage) (ActionCost 1)]
+      ([ BeginAction
+       , beforeWindowMsg
+       , TakeAction iid (Just Action.Engage) (ActionCost 1)
+       ]
       <> [ CheckAttackOfOpportunity iid False
          | ActionDoesNotCauseAttacksOfOpportunity Action.Engage
            `notElem` modifiers'
@@ -454,11 +457,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           _ -> costToEnter
       applyFightCostModifiers costToEnter _ = costToEnter
     a <$ pushAll
-      [ BeginAction, beforeWindowMsg, TakeAction
+      [ BeginAction
+      , beforeWindowMsg
+      , TakeAction
         iid
         (Just Action.Fight)
         (foldl' applyFightCostModifiers (ActionCost 1) modifiers')
-      , FightEnemy iid eid source mTarget skillType False, afterWindowMsg
+      , FightEnemy iid eid source mTarget skillType False
+      , afterWindowMsg
       , FinishAction
       ]
   FightEnemy iid eid source mTarget skillType False | iid == investigatorId ->
@@ -546,7 +552,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [Window Timing.When (Window.PerformAction iid Action.Move)]
     afterWindowMsg <- checkWindows
       [Window Timing.After (Window.PerformAction iid Action.Move)]
-    a <$ pushAll [BeginAction, beforeWindowMsg, TakeAction iid (Just Action.Move) cost, MoveAction iid lid cost False, afterWindowMsg, FinishAction]
+    a <$ pushAll
+      [ BeginAction
+      , beforeWindowMsg
+      , TakeAction iid (Just Action.Move) cost
+      , MoveAction iid lid cost False
+      , afterWindowMsg
+      , FinishAction
+      ]
   MoveAction iid lid _cost False | iid == investigatorId -> do
     afterWindowMsg <- Helpers.checkWindows
       [Window Timing.After $ Window.MoveAction iid investigatorLocation lid]
@@ -939,12 +952,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           max 0 (n + m)
         applyModifier _ n = n
       a <$ pushAll
-        ([BeginAction, beforeWindowMsg, TakeAction iid (Just Action.Investigate) (ActionCost investigateCost)]
+        ([ BeginAction
+         , beforeWindowMsg
+         , TakeAction iid (Just Action.Investigate) (ActionCost investigateCost)
+         ]
         <> [ CheckAttackOfOpportunity iid False
            | ActionDoesNotCauseAttacksOfOpportunity Action.Investigate
              `notElem` modifiers'
            ]
-        <> [Investigate iid lid source mTarget skillType False, afterWindowMsg, FinishAction]
+        <> [ Investigate iid lid source mTarget skillType False
+           , afterWindowMsg
+           , FinishAction
+           ]
         )
   InvestigatorDiscoverCluesAtTheirLocation iid n maction
     | iid == investigatorId -> runMessage
@@ -1168,7 +1187,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         >= actionCost
         && (investigatorResources + additionalResources >= getCost card)
       then a <$ pushAll
-        ([ BeginAction, beforeWindowMsg
+        ([ BeginAction
+         , beforeWindowMsg
          , TakeAction
            iid
            (Just Action.Play)

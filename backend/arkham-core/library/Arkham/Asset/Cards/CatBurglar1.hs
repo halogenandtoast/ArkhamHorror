@@ -64,7 +64,7 @@ instance RunMessage CatBurglar1 where
         $ [ DisengageEnemy iid eid | eid <- engagedEnemyIds ]
         <> [ chooseOne
                iid
-               [ MoveAction iid lid Free False | lid <- accessibleLocationIds ]
+               [ targetLabel lid [MoveAction iid lid Free False] | lid <- accessibleLocationIds ]
            | notNull accessibleLocationIds
            ]
       pure $ CatBurglar1 $ attrs & exhaustedL .~ True

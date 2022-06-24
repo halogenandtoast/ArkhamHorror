@@ -31,7 +31,7 @@ instance RunMessage SurvivalInstinct where
           moveOptions = chooseOne
             iid
             ([Label "Do not move to a connecting location" []]
-            <> [ MoveAction iid lid Free False
+            <> [ targetLabel lid [MoveAction iid lid Free False]
                | lid <- unblockedConnectedLocationIds
                ]
             )

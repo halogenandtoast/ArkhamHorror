@@ -15,7 +15,6 @@ import Arkham.Projection
 import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.Source
 import Arkham.Target
-import Data.Monoid ( Sum (..) )
 
 getXp :: (Monad m, HasGame m) => m [(InvestigatorId, Int)]
 getXp = getXpWithBonus 0

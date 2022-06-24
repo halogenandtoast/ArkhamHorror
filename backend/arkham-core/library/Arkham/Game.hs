@@ -2135,7 +2135,6 @@ runMessages mLogger = do
           liftIO $ maybe (pure ()) ($ msg) mLogger
           case msg of
             Ask iid q -> do
-              push $ SetActiveInvestigator $ g ^. activeInvestigatorIdL
               toGameEnv >>= flip
                 runGameEnvT
                 (toExternalGame
@@ -2302,21 +2301,21 @@ runGameMessage msg g = case msg of
   UnfocusTargets -> pure $ g & focusedTargetsL .~ mempty
   FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens
   UnfocusTokens -> pure $ g & focusedTokensL .~ mempty
-  ChooseLeadInvestigator -> if length (g ^. entitiesL . investigatorsL) == 1
-    then pure g
-    else g <$ push
-      (chooseOne
+  ChooseLeadInvestigator -> do
+    when (length (g ^. entitiesL . investigatorsL) > 1) $ push $
+      chooseOne
         (g ^. leadInvestigatorIdL)
         [ ChoosePlayer iid SetLeadInvestigator
         | iid <- g ^. entitiesL . investigatorsL . to keys
         ]
-      )
+    pure g
   ChoosePlayer iid SetLeadInvestigator -> do
     let allPlayers = view playerOrderL g
     push $ ChoosePlayerOrder (filter (/= iid) allPlayers) [iid]
     pure $ g & leadInvestigatorIdL .~ iid
-  ChoosePlayer iid SetTurnPlayer ->
-    g <$ pushAll [BeginTurn iid, After (BeginTurn iid)]
+  ChoosePlayer iid SetTurnPlayer -> do
+    pushAll [BeginTurn iid, After (BeginTurn iid)]
+    pure $ g & activeInvestigatorIdL .~ iid & turnPlayerInvestigatorIdL ?~ iid
   MoveTo _ iid _ -> do
     let
       historyItem = mempty { historyMoved = True }

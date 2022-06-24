@@ -29,7 +29,7 @@ wizardOfTheOrder = enemyWith
 instance HasAbilities WizardOfTheOrder where
   getAbilities (WizardOfTheOrder a) = withBaseAbilities
     a
-    [ mkAbility a 1 $ ForcedAbility $ PhaseEnds Timing.After $ PhaseIs
+    [ mkAbility a 1 $ ForcedAbility $ PhaseEnds Timing.When $ PhaseIs
         MythosPhase
     ]
 

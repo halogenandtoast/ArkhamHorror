@@ -2123,13 +2123,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       windows =
         [ Window Timing.When (Window.DuringTurn iid)
         , Window Timing.When Window.FastPlayerWindow
-        , Window Timing.When Window.NonFast
         ]
     actions <- nub <$> concatMapM (getActions investigatorId) windows
     if any isForcedAbility actions
       then pure a -- handled by active player
       else do
-        playableCards <- getPlayableCards a UnpaidCost windows
+        playableCards <- traceShowId <$> getPlayableCards a UnpaidCost windows
         let
           usesAction = not isAdditional
           choices =

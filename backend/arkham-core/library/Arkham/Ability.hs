@@ -140,3 +140,6 @@ isForcedAbility Ability {abilityType} = isForcedAbilityType abilityType
 
 isFastAbility :: Ability -> Bool
 isFastAbility Ability {abilityType} = isFastAbilityType abilityType
+
+isActionAbility :: Ability -> Bool
+isActionAbility Ability {abilityType} = isJust $ abilityTypeAction abilityType

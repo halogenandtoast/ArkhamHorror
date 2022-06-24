@@ -133,24 +133,24 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
           (PayAbilityCost abilitySource iid mAction False cost
           : [ TakenAction iid action | action <- maybeToList mAction ]
           )
-    ActionAbility mAction cost ->
-      if mAction
-          `notElem` [ Just Action.Fight
-                    , Just Action.Evade
-                    , Just Action.Resign
-                    , Just Action.Parley
+    ActionAbility mAction cost -> do
+      let action = fromMaybe Action.Ability mAction
+      beforeWindowMsg <- checkWindows
+        [Window Timing.When (Window.PerformAction iid action)]
+      if action
+          `notElem` [ Action.Fight
+                    , Action.Evade
+                    , Action.Resign
+                    , Action.Parley
                     ]
         then pushAll
-          (PayAbilityCost abilitySource iid mAction False cost
-          : [ TakenAction iid action | action <- maybeToList mAction ]
+          ([BeginAction, beforeWindowMsg, PayAbilityCost abilitySource iid mAction False cost, TakenAction iid action ]
           <> [ CheckAttackOfOpportunity iid False
              | not abilityDoesNotProvokeAttacksOfOpportunity
              ]
           )
         else pushAll
-          (PayAbilityCost abilitySource iid mAction False cost
-          : [ TakenAction iid action | action <- maybeToList mAction ]
-          )
+          $ [BeginAction, beforeWindowMsg, PayAbilityCost abilitySource iid mAction False cost, TakenAction iid action ]
 
 instance RunMessage PayForAbilityEffect where
   runMessage msg e@(PayForAbilityEffect (attrs `With` payments)) = case msg of
@@ -461,19 +461,18 @@ instance RunMessage PayForAbilityEffect where
     PayAbilityCostFinished eid source iid | eid == toId attrs ->
       case effectMetadata attrs of
         Just (EffectAbility (ability@Ability {..}, windows')) -> do
+          let action = fromMaybe Action.Ability (abilityAction ability)
           whenActivateAbilityWindow <- checkWindows [Window Timing.When (Window.ActivateAbility iid ability)]
-          afterWindowMsgs <- case abilityAction ability of
-            Just action ->
-              pure <$> checkWindows
+          afterWindowMsgs <- 
+              checkWindows
                 [Window Timing.After (Window.PerformAction iid action)]
-            Nothing -> pure []
           e <$ pushAll
             ([ DisableEffect $ toId attrs
              , whenActivateAbilityWindow
              , UseCardAbility iid source windows' abilityIndex payments
              , ClearDiscardCosts
              ]
-            <> afterWindowMsgs
+            <> [afterWindowMsgs, FinishAction]
             )
         _ -> e <$ push (DisableEffect $ toId attrs)
     _ -> PayForAbilityEffect . (`with` payments) <$> runMessage msg attrs

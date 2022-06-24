@@ -68,7 +68,6 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Control.Monad.Reader ( local )
 import Data.HashSet qualified as HashSet
-import Data.Semigroup ( Sum (..) )
 
 gatherEncounterSet :: MonadRandom m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet encounterSet = concat <$> for

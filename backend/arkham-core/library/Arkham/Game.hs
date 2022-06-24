@@ -109,7 +109,6 @@ import Data.HashMap.Strict ( size )
 import Data.HashMap.Strict qualified as HashMap
 import Data.List.Extra ( groupOn )
 import Data.Monoid ( First (..) )
-import Data.Semigroup ( Max (..), Min (..) )
 import Data.Sequence qualified as Seq
 import Data.These
 import Data.These.Lens
@@ -614,10 +613,10 @@ getInvestigatorsMatching matcher = do
     MostRemainingSanity -> \i -> do
       remainingSanity <- field InvestigatorRemainingSanity (toId i)
       mostRemainingSanity <-
-        getMax <$> selectAgg Max InvestigatorRemainingSanity Anyone
+        getMax0 <$> selectAgg Max InvestigatorRemainingSanity Anyone
       pure $ mostRemainingSanity == remainingSanity
     MostHorror -> \i -> do
-      mostHorrorCount <- getMax <$> selectAgg Max InvestigatorHorror Anyone
+      mostHorrorCount <- getMax0 <$> selectAgg Max InvestigatorHorror Anyone
       pure $ mostHorrorCount == investigatorSanityDamage (toAttrs i)
     NearestToEnemy enemyMatcher -> \i -> do
       let
@@ -657,7 +656,7 @@ getInvestigatorsMatching matcher = do
     HasMatchingSkill skillMatcher -> \i ->
       selectAny (skillMatcher <> SkillControlledBy (InvestigatorWithId $ toId i))
     MostClues -> \i -> do
-      mostClueCount <- getMax <$> selectAgg Max InvestigatorClues Anyone
+      mostClueCount <- getMax0 <$> selectAgg Max InvestigatorClues Anyone
       pure $ mostClueCount == (investigatorClues $ toAttrs i)
     You -> \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
@@ -684,7 +683,7 @@ getInvestigatorsMatching matcher = do
       skillValue <- getSkillValue skillType (toId i)
       pure $ lowestSkillValue == skillValue
     InvestigatorWithHighestSkill skillType -> \i -> do
-      highestSkillValue <- getMax . fold <$> (traverse (fmap Max . getSkillValue skillType) =<< getInvestigatorIds)
+      highestSkillValue <- getMax0 . fold <$> (traverse (fmap Max . getSkillValue skillType) =<< getInvestigatorIds)
       skillValue <- getSkillValue skillType (toId i)
       pure $ highestSkillValue == skillValue
     InvestigatorWithClues gameValueMatcher ->
@@ -1351,7 +1350,7 @@ enemyMatcherFilter = \case
               case melid' of
                 Nothing -> pure Nothing
                 Just elid' -> getDistance ilid elid'
-            let maxDistance = getMax $ foldMap Max distances
+            let maxDistance = getMax0 $ foldMap Max distances
             pure $ mdistance == Just maxDistance
           _ -> pure False
       else pure False

@@ -17,7 +17,6 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
-import Data.Monoid ( Sum (..) )
 
 instance RunMessage AgendaAttrs
   where
@@ -78,8 +77,8 @@ instance RunMessage AgendaAttrs
           [ CheckWindow
             [leadInvestigatorId]
             [Window Timing.When (Window.AgendaAdvance agendaId)]
-          , AdvanceAgenda agendaId
           , RemoveAllDoom (toSource a)
+          , AdvanceAgenda agendaId
           ]
       pure a
     RemoveAllDoom source -> do

@@ -565,6 +565,7 @@ data Message
   | TakeStartingResources InvestigatorId
   | TakenAction InvestigatorId Action
   | TargetLabel Target [Message]
+  | SkillLabel SkillType [Message]
   | EvadeLabel EnemyId [Message]
   | ChosenEvadeEnemy Source EnemyId
   | TriggerSkillTest InvestigatorId

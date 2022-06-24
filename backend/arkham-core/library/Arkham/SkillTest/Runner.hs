@@ -26,7 +26,6 @@ import Arkham.Token
 import Arkham.Window (Window(..))
 import qualified Arkham.Window as Window
 import qualified Data.HashMap.Strict as HashMap
-import Data.Semigroup
 
 skillIconCount :: SkillTest -> GameT Int
 skillIconCount st@SkillTest {..} = do

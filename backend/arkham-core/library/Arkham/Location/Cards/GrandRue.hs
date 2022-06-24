@@ -17,7 +17,6 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Data.Semigroup
 
 newtype GrandRue = GrandRue LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -46,7 +45,7 @@ instance HasAbilities GrandRue where
 instance RunMessage GrandRue where
   runMessage msg l@(GrandRue attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      maxDoom <- getMax <$> selectAgg Max AgendaDoom AnyAgenda
+      maxDoom <- getMax0 <$> selectAgg Max AgendaDoom AnyAgenda
       agendas <- selectListMap AgendaTarget $ AgendaWithDoom $ EqualTo $ Static
         maxDoom
       push $ chooseOrRunOne

@@ -5,6 +5,7 @@ module Arkham.Prelude
 
 import ClassyPrelude as X hiding (on, (\\))
 
+import Data.Semigroup as X (Max(..), Min(..), Sum(..))
 import Data.Kind as X (Type)
 import Control.Lens as X
   ( Lens'
@@ -187,3 +188,10 @@ withBase (a `With` _) = a
 
 findKey :: (Hashable k, Eq k) => (v -> Bool) -> HashMap k v -> Maybe k
 findKey p = fmap fst . find (p . snd) . mapToList
+
+-- getMax will return a very low number
+-- minBound :: Max Int
+-- Max {getMax = -9223372036854775808}
+-- so we clamp it to 0
+getMax0 :: (Ord a, Num a) => Max a -> a
+getMax0 current = getMax $ Max 0 <> current

@@ -23,7 +23,6 @@ import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait qualified as Trait
-import Data.Semigroup ( Max (..) )
 
 newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
   deriving stock Generic
@@ -44,7 +43,7 @@ theMidnightMasks difficulty =
 instance HasTokenValue TheMidnightMasks where
   getTokenValue iid tokenFace (TheMidnightMasks attrs) = case tokenFace of
     Skull | isEasyStandard attrs -> do
-      tokenValue' <- getMax
+      tokenValue' <- getMax0
         <$> selectAgg Max EnemyDoom (EnemyWithTrait Trait.Cultist)
       pure $ TokenValue Skull (NegativeModifier tokenValue')
     Skull | isHardExpert attrs -> do

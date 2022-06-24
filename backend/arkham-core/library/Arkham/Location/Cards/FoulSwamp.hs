@@ -17,7 +17,6 @@ import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.Target
-import Data.Semigroup
 
 newtype FoulSwamp = FoulSwamp LocationAttrs
   deriving anyclass IsLocation

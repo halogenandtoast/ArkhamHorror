@@ -32,7 +32,6 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait qualified as Trait
-import Data.Semigroup
 
 newtype BlackStarsRise = BlackStarsRise ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -56,7 +55,7 @@ blackStarsRise difficulty =
 instance HasTokenValue BlackStarsRise where
   getTokenValue iid tokenFace (BlackStarsRise attrs) = case tokenFace of
     Skull -> do
-      maxDoom <- getMax <$> selectAgg Max AgendaDoom AnyAgenda
+      maxDoom <- getMax0 <$> selectAgg Max AgendaDoom AnyAgenda
       totalDoom <- getSum <$> selectAgg Sum AgendaDoom AnyAgenda
       pure $ toTokenValue attrs Skull maxDoom totalDoom
     Cultist -> if isEasyStandard attrs

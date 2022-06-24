@@ -2189,6 +2189,7 @@ runGameMessage msg g = case msg of
   Run msgs -> g <$ pushAll msgs
   Label _ msgs -> g <$ pushAll msgs
   TargetLabel _ msgs -> g <$ pushAll msgs
+  SkillLabel _ msgs -> g <$ pushAll msgs
   EvadeLabel _ msgs -> g <$ pushAll msgs
   CardLabel _ msgs -> g <$ pushAll msgs
   Continue _ -> pure g
@@ -3052,7 +3053,7 @@ runGameMessage msg g = case msg of
       xs -> g <$ push
         (chooseOne
           iid
-          [ Run
+          [ SkillLabel skillType'
               (windows'
               <> [ BeginSkillTestAfterFast
                      iid

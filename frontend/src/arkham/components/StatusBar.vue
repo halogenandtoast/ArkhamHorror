@@ -77,11 +77,11 @@
         </div>
 
         <a
-          v-if="skillTestMessageTypes.includes(choice.tag)"
+          v-if="choice.tag === MessageType.SKILL_LABEL"
           class="button"
           @click="$emit('choose', index)"
         >
-          Use <i :class="`icon${choice.contents[4]}`"></i>
+          Use <i :class="`icon${choice.contents[0]}`"></i>
         </a>
 
         <button
@@ -106,7 +106,6 @@ export default defineComponent({
   },
   setup(props) {
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-    const skillTestMessageTypes= [MessageType.BEGIN_SKILL_TEST_AFTER_FAST, MessageType.BEGIN_SKILL_TEST];
 
     const includeBeginSkillTest = computed(() => {
       return choices
@@ -165,7 +164,7 @@ export default defineComponent({
       }
     })
 
-    return { testResult, tokenOperator, cardLabels, cardLabelImage, skillTestResults, arkhamify, choices, skillTestMessageTypes, applyResultsAction, shouldShow, MessageType }
+    return { testResult, tokenOperator, cardLabels, cardLabelImage, skillTestResults, arkhamify, choices, applyResultsAction, shouldShow, MessageType }
   }
 })
 </script>

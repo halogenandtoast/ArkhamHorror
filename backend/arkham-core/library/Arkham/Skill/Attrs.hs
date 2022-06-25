@@ -11,6 +11,7 @@ import Arkham.InvestigatorId
 import Arkham.Name
 import Arkham.Projection
 import Arkham.SkillId
+import Arkham.Strategy
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
@@ -29,11 +30,15 @@ data SkillAttrs = SkillAttrs
   , skillOwner :: InvestigatorId
   , skillAdditionalCost :: Maybe Cost
   , skillAdditionalPayment :: Maybe Payment
+  , skillAfterPlay :: AfterPlayStrategy
   }
   deriving stock (Show, Eq, Generic)
 
 additionalCostL :: Lens' SkillAttrs (Maybe Cost)
 additionalCostL = lens skillAdditionalCost $ \m x -> m { skillAdditionalCost = x }
+
+afterPlayL :: Lens' SkillAttrs AfterPlayStrategy
+afterPlayL = lens skillAfterPlay $ \m x -> m { skillAfterPlay = x }
 
 allSkillCards :: HashMap CardCode CardDef
 allSkillCards = allPlayerSkillCards
@@ -90,5 +95,6 @@ skill f cardDef = CardBuilder
     , skillOwner = iid
     , skillAdditionalCost = Nothing
     , skillAdditionalPayment = Nothing
+    , skillAfterPlay = DiscardThis
     }
   }

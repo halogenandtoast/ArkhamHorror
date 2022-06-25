@@ -102,7 +102,24 @@ instance RunMessage SkillTest where
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers (toSource s) (InvestigatorTarget iid)
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
-        then s <$ push (RunSkillTest iid)
+        then do
+          let
+            tokensTreatedAsRevealed = flip mapMaybe modifiers' $ \case
+              TreatRevealedTokenAs t -> Just t
+              _ -> Nothing
+          if null tokensTreatedAsRevealed
+            then s <$ push (RunSkillTest iid)
+            else do
+              pushAll [RevealSkillTestTokens iid, RunSkillTest iid]
+              for_ tokensTreatedAsRevealed $ \tokenFace -> do
+                t <- getRandom
+                pushAll $ resolve
+                  (RevealToken
+                    (toSource s)
+                    iid
+                    (Token t tokenFace)
+                  )
+              pure s
         else do
           let applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
               applyRevealStategyModifier n _ = n

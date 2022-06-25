@@ -1315,7 +1315,7 @@ getSkillsMatching matcher = do
       iid <- view activeInvestigatorIdL <$> getGame
       pure $ filter ((== iid) . skillOwner . toAttrs) as
 
-getSkill :: (Monad m, HasGame m) => SkillId -> m Skill
+getSkill :: (HasCallStack, Monad m, HasGame m) => SkillId -> m Skill
 getSkill sid =
   fromJustNote missingSkill . preview (entitiesL . skillsL . ix sid) <$> getGame
   where missingSkill = "Unknown skill: " <> show sid
@@ -2461,12 +2461,17 @@ runGameMessage msg g = case msg of
       modifiers' <- getModifiers GameSource (SkillTarget skillId)
       pure $ if ReturnToHandAfterTest `elem` modifiers'
         then (ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId), Nothing)
-        else
-          ( AddToDiscard
-            (skillOwner $ toAttrs skill)
-            (lookupPlayerCard (toCardDef skill) (unSkillId skillId))
-          , Just skillId
-          )
+        else case skillAfterPlay (toAttrs skill) of
+          DiscardThis ->
+            ( AddToDiscard
+              (skillOwner $ toAttrs skill)
+              (lookupPlayerCard (toCardDef skill) (unSkillId skillId))
+            , Just skillId
+            )
+          RemoveThisFromGame ->
+            ( RemoveFromGame (SkillTarget skillId)
+            , Nothing
+            )
     pushAll $ map fst skillPairs
     let skillsToRemove = mapMaybe snd skillPairs
     pure
@@ -2812,6 +2817,9 @@ runGameMessage msg g = case msg of
   RemoveFromGame (AssetTarget aid) -> do
     card <- field AssetCard aid
     pure $ g & entitiesL . assetsL %~ deleteMap aid & removedFromPlayL %~ (card :)
+  RemoveFromGame (SkillTarget sid) -> do
+    card <- field SkillCard sid
+    pure $ g & entitiesL . skillsL %~ deleteMap sid & removedFromPlayL %~ (card :)
   RemoveFromGame (EventTarget eid) -> do
     card <- field EventCard eid
     pure $ g & entitiesL . eventsL %~ deleteMap eid & removedFromPlayL %~ (card :)

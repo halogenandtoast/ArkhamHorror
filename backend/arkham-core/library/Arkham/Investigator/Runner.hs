@@ -2128,7 +2128,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     if any isForcedAbility actions
       then pure a -- handled by active player
       else do
-        playableCards <- traceShowId <$> getPlayableCards a UnpaidCost windows
+        playableCards <- getPlayableCards a UnpaidCost windows
         let
           usesAction = not isAdditional
           choices =

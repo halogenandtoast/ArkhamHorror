@@ -23,6 +23,10 @@ data FoundCardsStrategy = PlayFound InvestigatorId Int | DrawFound InvestigatorI
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
+data AfterPlayStrategy = DiscardThis | RemoveThisFromGame
+    deriving stock (Show, Eq, Generic)
+    deriving anyclass (ToJSON, FromJSON)
+
 data ChosenCardStrategy = LeaveChosenCard | RemoveChosenCardFromGame
     deriving stock (Show, Eq, Generic)
     deriving anyclass (ToJSON, FromJSON)

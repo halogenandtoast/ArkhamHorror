@@ -1312,6 +1312,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ if cannotHealHorror
       then a
       else a & sanityDamageL %~ max 0 . subtract amount
+  MovedHorror _ (InvestigatorTarget iid) amount | iid == investigatorId -> do
+    pure $ a & sanityDamageL %~ max 0 . subtract amount
   InvestigatorWhenDefeated source iid | iid == investigatorId -> do
     modifiedHealth <- getModifiedHealth a
     modifiedSanity <- getModifiedSanity a

@@ -333,6 +333,7 @@ data Message
   | HealAllDamage Target
   | HealDamage Target Int
   | HealHorror Target Int
+  | MovedHorror Source Target Int
   | HealHorrorWithAdditional Target Int
   | AdditionalHealHorror Target Int
   | HuntersMove

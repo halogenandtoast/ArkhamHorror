@@ -187,6 +187,7 @@ allPlayerAssetCards = mapFromList $ map
   , joeyTheRatVigil
   , keenEye
   , keenEye3
+  , keyOfYs
   , knife
   , knuckleduster
   , kukri
@@ -1794,6 +1795,14 @@ newspaper2 = (asset "03313" "Newspaper" 1 Survivor)
   , cdCardTraits = singleton Item
   , cdLevel = 2
   , cdSlots = [HandSlot]
+  }
+
+keyOfYs :: CardDef
+keyOfYs = (asset "03315" ("Key of Ys" <:> "Let the Storm Rage") 3 Neutral)
+  { cdSkills = [SkillWild, SkillWillpower]
+  , cdCardTraits = setFromList [Item, Relic]
+  , cdLevel = 5
+  , cdSlots = [AccessorySlot]
   }
 
 toothOfEztli :: CardDef

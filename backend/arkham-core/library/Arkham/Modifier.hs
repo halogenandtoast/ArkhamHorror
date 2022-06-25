@@ -72,6 +72,7 @@ data ModifierType
   | CancelSkills
   | CannotAttack
   | CannotBeAttackedByNonElite
+  | CancelAttacksByEnemies EnemyMatcher
   | CannotBeDamaged
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
   | CannotBeDiscarded

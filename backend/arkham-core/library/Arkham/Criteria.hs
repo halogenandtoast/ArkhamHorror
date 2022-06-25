@@ -81,7 +81,7 @@ data Criterion
   | OnLocation LocationMatcher
   | OnSameLocation
   | OwnCardWithDoom
-  | OwnsThis
+  | OwnsThis -- really controls this
   | PlayableCardExists ExtendedCardMatcher
   | PlayableCardExistsWithCostReduction Int ExtendedCardMatcher
   | ResourcesOnThis ValueMatcher

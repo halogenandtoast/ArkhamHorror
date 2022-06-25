@@ -59,6 +59,18 @@ allStoryCards = mapFromList $ map
   , thePattern
   , theFirstShow
   , aboveAndBelow
+  , starsOfAldebaran
+  , bleakDesolation
+  , inhabitantOfCarcosa
+  , aMomentsRest
+  , theCoffin
+  , mappingTheStreets
+  , theKingsParade
+  , theArchway
+  , theHeightOfTheDepths
+  , stepsOfThePalace
+  , theFall
+  , hastursEnd
   ]
 
 sickeningReality_65 :: CardDef
@@ -90,3 +102,43 @@ theFirstShow = story "03079b" "The First Show" TheLastKing
 
 aboveAndBelow :: CardDef
 aboveAndBelow = story "03080b" "Above and Below" TheLastKing
+
+songsThatTheHyadesShallSing :: CardDef
+songsThatTheHyadesShallSing =
+  story "03325c" "Songs That the Hyades Shall Sing" DimCarcosa
+
+starsOfAldebaran :: CardDef
+starsOfAldebaran = story "03326c" "Stars of Aldebaran" DimCarcosa
+
+bleakDesolation :: CardDef
+bleakDesolation = story "03326e" "Bleak Desolation" DimCarcosa
+
+inhabitantOfCarcosa :: CardDef
+inhabitantOfCarcosa = story "03327c" "Inhabitant of Carcosa" DimCarcosa
+
+aMomentsRest :: CardDef
+aMomentsRest = story "03327e" "A Moment's Rest" DimCarcosa
+
+theCoffin :: CardDef
+theCoffin = story "03327g" "The Coffin" DimCarcosa
+
+mappingTheStreets :: CardDef
+mappingTheStreets = story "03328c" "Mapping the Streets" DimCarcosa
+
+theKingsParade :: CardDef
+theKingsParade = story "03328e" "The King's Parade" DimCarcosa
+
+theArchway :: CardDef
+theArchway = story "03328g" "The Archway" DimCarcosa
+
+theHeightOfTheDepths :: CardDef
+theHeightOfTheDepths = story "03329c" "The Height of the Deapths" DimCarcosa
+
+stepsOfThePalace :: CardDef
+stepsOfThePalace = story "03329e" "Steps of the Palace" DimCarcosa
+
+theFall :: CardDef
+theFall = story "03330c" "The Fall" DimCarcosa
+
+hastursEnd :: CardDef
+hastursEnd = story "03331c" "Hastur's End" DimCarcosa

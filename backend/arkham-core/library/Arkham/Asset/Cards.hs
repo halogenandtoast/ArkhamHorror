@@ -219,6 +219,7 @@ allPlayerAssetCards = mapFromList $ map
   , monstrousTransformation
   , moxie1
   , newspaper
+  , newspaper2
   , occultLexicon
   , oldBookOfLore
   , oldKeyring
@@ -1784,6 +1785,14 @@ lupara3 = (asset "03309" "Lupara" 3 Rogue)
   , cdLevel = 3
   , cdUses = Uses Ammo 2
   , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+  , cdSlots = [HandSlot]
+  }
+
+newspaper2 :: CardDef
+newspaper2 = (asset "03313" "Newspaper" 1 Survivor)
+  { cdSkills = [SkillIntellect, SkillIntellect]
+  , cdCardTraits = singleton Item
+  , cdLevel = 2
   , cdSlots = [HandSlot]
   }
 

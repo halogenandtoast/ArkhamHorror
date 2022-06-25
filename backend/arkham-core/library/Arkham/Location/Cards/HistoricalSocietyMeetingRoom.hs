@@ -54,7 +54,7 @@ instance RunMessage HistoricalSocietyMeetingRoom where
   runMessage msg l@(HistoricalSocietyMeetingRoom attrs) = case msg of
     UseCardAbility iid source _ 1 _
       | isSource attrs source && locationRevealed attrs -> l
-      <$ push (DiscoverClues iid (toId attrs) 1 Nothing)
+      <$ push (InvestigatorDiscoverClues iid (toId attrs) 1 Nothing)
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       l <$ push (RevealLocation Nothing $ toId attrs)
     _ -> HistoricalSocietyMeetingRoom <$> runMessage msg attrs

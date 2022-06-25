@@ -133,10 +133,7 @@ instance RunMessage LocationAttrs where
         <>~ [LocationWithId toLid]
     DiscoverCluesAtLocation iid lid n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
-      checkWindowMsg <- checkWindows
-        [Window Timing.When (Window.DiscoverClues iid lid discoveredClues)]
-      a <$ pushAll
-        [checkWindowMsg, DiscoverClues iid lid discoveredClues maction]
+      a <$ push (DiscoverClues iid lid discoveredClues maction)
     Do (DiscoverClues iid lid n _) | lid == locationId -> do
       let lastClue = locationClues - n <= 0
       push =<< checkWindows

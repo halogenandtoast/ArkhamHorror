@@ -52,7 +52,7 @@ instance RunMessage ServantOfManyMouths where
             iid
             [ TargetLabel
                 (LocationTarget lid)
-                [DiscoverCluesAtLocation iid lid 1 Nothing]
+                [InvestigatorDiscoverClues iid lid 1 Nothing]
             | lid <- locationsWithClues
             ]
           )

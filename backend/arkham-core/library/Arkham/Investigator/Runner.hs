@@ -969,7 +969,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     | iid == investigatorId -> runMessage
       (InvestigatorDiscoverClues iid investigatorLocation n maction)
       a
-  InvestigatorDiscoverClues iid lid n maction | iid == investigatorId -> do
+  InvestigatorDiscoverClues iid lid n _ | iid == investigatorId -> do
+    canDiscoverClues <- getCanDiscoverClues a
+    if canDiscoverClues
+      then do
+        checkWindowMsg <- checkWindows
+          [Window Timing.When (Window.DiscoverClues iid lid n)]
+        a <$ pushAll
+          [checkWindowMsg, Do msg]
+      else pure a
+  Do (InvestigatorDiscoverClues iid lid n maction) | iid == investigatorId -> do
     canDiscoverClues <- getCanDiscoverClues a
     if canDiscoverClues
       then do

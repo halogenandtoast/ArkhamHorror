@@ -79,6 +79,7 @@ allPlayerSkillCards = mapFromList $ map
   , riseToTheOccasion
   , runForYourLife
   , sayYourPrayers
+  , sealOfTheElderSign5
   , strokeOfLuck2
   , survivalInstinct
   , survivalInstinct2
@@ -337,6 +338,12 @@ notWithoutAFight :: CardDef
 notWithoutAFight = (skill "03272" "\"Not without a fight!\"" [SkillWillpower, SkillCombat, SkillAgility] Survivor)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [SelfCanCommitWhen $ InvestigatorEngagedWith AnyEnemy]
+  }
+
+sealOfTheElderSign5 :: CardDef
+sealOfTheElderSign5 = (skill "03312" "Seal of the Elder Sign" [SkillWild] Mystic)
+  { cdCardTraits = setFromList [Spell, Expert]
+  , cdLevel = 5
   }
 
 trueUnderstanding :: CardDef

@@ -157,6 +157,7 @@ data ModifierType
   | TokenValueModifier Int
   | TopCardOfDeckIsRevealed
   | TreatAllDamageAsDirect
+  | TreatRevealedTokenAs TokenFace
   | UseSkillInPlaceOf SkillType SkillType
   | XPModifier Int
   deriving stock (Show, Eq, Generic)

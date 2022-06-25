@@ -1,0 +1,109 @@
+module Arkham.Scenario.Scenarios.DimCarcosa
+  ( DimCarcosa(..)
+  , dimCarcosa
+  ) where
+
+import Arkham.Prelude
+
+import Arkham.Act.Cards as Acts
+import Arkham.Campaigns.ThePathToCarcosa.Helpers
+import Arkham.Classes
+import Arkham.Difficulty
+import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.InvestigatorId
+import Arkham.Location.Cards as Locations
+import Arkham.Message
+import Arkham.Projection
+import Arkham.Scenario.Attrs
+import Arkham.Scenarios.DimCarcosa.Story
+import Arkham.Token
+
+newtype DimCarcosa = DimCarcosa ScenarioAttrs
+  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+dimCarcosa :: Difficulty -> DimCarcosa
+dimCarcosa difficulty =
+  DimCarcosa
+    $ baseAttrs "03316" "Dim Carcosa" difficulty
+    & locationLayoutL
+    ?~ [ ".          darkSpires      ."
+       , ".          depthsOfDemhe   ."
+       , "dimStreets palaceOfTheKing ruinsOfCarcosa"
+       , ".          bleakPlains     ."
+       , ".          shoresOfHali    ."
+       ]
+
+instance HasTokenValue DimCarcosa where
+  getTokenValue iid tokenFace (DimCarcosa attrs) = case tokenFace of
+    Skull -> do
+      remainingSanity <- field InvestigatorRemainingSanity iid
+      horror <- field InvestigatorHorror iid
+      pure $ toTokenValue
+        attrs
+        Skull
+        (if remainingSanity == 0 then 4 else 2)
+        horror
+    Cultist -> pure $ TokenValue Cultist NoModifier
+    Tablet -> pure $ toTokenValue attrs 3 5
+    ElderThing -> pure $ toTokenValue attrs 3 5
+    otherFace -> getTokenValue iid otherFace attrs
+
+instance RunMessage DimCarcosa where
+  runMessage msg s@(DimCarcosa attrs) = case msg of
+    Setup -> do
+      investigatorIds <- getInvestigatorIds
+      openedThePathBelow <- getHasRecord YouOpenedThePathBelow
+      let intro = if openedThePathBelow then intro1 else intro2
+      encounterDeck <- buildEncounterDeckExcluding
+        []
+        [ EncounterSet.DimCarcosa
+        , EncounterSet.Delusions
+        , EncounterSet.CultOfTheYellowSign
+        , EncounterSet.InhabitantsOfCarcosa
+        , EncounterSet.AgentsOfHastur
+        , EncounterSet.StrikingFear
+        ]
+      doubt <- getDoubt
+      conviction <- getConviction
+
+      let
+        mAct2 = if doubt + conviction <= 5
+          then Just Acts.searchForTheStrangerV1
+          else case compare doubt conviction of
+            GT -> Just Acts.searchForTheStrangerV2
+            LT -> Just Acts.searchForTheStrangerV3
+            EQ -> Noting
+
+      bleakPlains <- genCard =<< sample
+        (Locations.bleakPlainsBleakDesolation
+        :| [Locations.bleakPlainsStarsOfAldebaran]
+        )
+      ruinsOfCarcosa <- genCard =<< sample
+        (Locations.ruinsOfCarcosaTheCoffin
+        :| [ Locations.ruinsOfCarcosaInhabitantOfCarcosa
+           , Locations.ruinsOfCarcosaAMomentsRest
+           ]
+        )
+      dimStreets <- genCard =<< sample
+        (Locations.dimStreetsMappingTheStreets
+        :| [ Locations.dimStreetsTheArchway
+           , Locations.ruinsOfCarcosaTheKingsParade
+           ]
+        )
+      depthsOfDemhe <- genCard =<< sample
+        (Locations.depthsOfDemheStepsOfThePalace
+        :| [Locations.depthsOfDemheTheHeightOfTheDepths]
+        )
+
+      pushAll
+        [ story investigatorIds intro
+        , SetEncounterDeck encounterDeck
+        , PlaceLocation bleakPlains
+        , PlaceLocation ruinsOfCarcosa
+        , PlaceLocation dimStreets
+        , PlaceLocation depthsOfDemhe
+        ]
+      pure s
+    _ -> DimCarcosa <$> runMessage msg attrs

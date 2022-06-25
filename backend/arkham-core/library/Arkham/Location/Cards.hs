@@ -99,6 +99,8 @@ allLocationCards = mapFromList $ map
   , bishopsBrook_203
   , blastedHeath_248
   , blastedHeath_249
+  , bleakPlainsBleakDesolation
+  , bleakPlainsStarsOfAldebaran
   , blockedPassage
   , boneFilledCaverns
   , boxOffice
@@ -129,12 +131,18 @@ allLocationCards = mapFromList $ map
   , cryptOfTheSepulchralLamp
   , cursedShores
   , darkenedHall
+  , darkSpires
   , deepBelowYourHouse
+  , depthsOfDemheTheHeightOfTheDepths
+  , depthsOfDemheStepsOfThePalace
   , destroyedPath
   , devilsHopYard_252
   , devilsHopYard_253
   , dimensionalDoorway
   , dimensionalGap
+  , dimStreetsMappingTheStreets
+  , dimStreetsTheKingsParade
+  , dimStreetsTheArchway
   , diningCar
   , diningRoom
   , dormitories
@@ -227,6 +235,7 @@ allLocationCards = mapFromList $ map
   , outerWall_285
   , outerWall_286
   , overgrownCairns
+  , palaceOfTheKing
   , parlor
   , parlorCar
   , passengerCar_167
@@ -251,6 +260,9 @@ allLocationCards = mapFromList $ map
   , ritualSite
   , rivertown
   , rivertownAbandonedWarehouse
+  , ruinsOfCarcosaAMomentsRest
+  , ruinsOfCarcosaInhabitantOfCarcosa
+  , ruinsOfCarcosaTheCoffin
   , sanMarcoBasilica
   , schoolhouse_212
   , schoolhouse_213
@@ -259,6 +271,7 @@ allLocationCards = mapFromList $ map
   , securityOffice_129
   , sentinelPeak
   , shiveringPools
+  , shoresOfHali
   , slaughteredWoods
   , sleepingCar
   , southsideHistoricalSociety
@@ -1495,6 +1508,138 @@ abbeyTowerSpiresForbidden = (locationWithUnrevealed
                               BlackStarsRise
                             )
   { cdVictoryPoints = Just 2
+  }
+
+shoresOfHali :: CardDef
+shoresOfHali = (location
+                     "03325"
+                     "Shores of Hali"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
+  }
+
+bleakPlainsStarsOfAldebaran :: CardDef
+bleakPlainsStarsOfAldebaran = (location
+                     "03326b"
+                     "Bleak Plains"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
+  }
+
+bleakPlainsBleakDesolation :: CardDef
+bleakPlainsBleakDesolation = (location
+                     "03326d"
+                     "Bleak Plains"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
+  }
+
+
+ruinsOfCarcosaInhabitantOfCarcosa :: CardDef
+ruinsOfCarcosaInhabitantOfCarcosa = (location
+                     "03327b"
+                     "Ruins of Carcosa"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
+  }
+
+ruinsOfCarcosaAMomentsRest :: CardDef
+ruinsOfCarcosaAMomentsRest = (location
+                     "03327d"
+                     "Ruins of Carcosa"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
+  }
+
+
+ruinsOfCarcosaTheCoffin :: CardDef
+ruinsOfCarcosaTheCoffin = (location
+                     "03327f"
+                     "Ruins of Carcosa"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
+  }
+
+dimStreetsMappingTheStreets :: CardDef
+dimStreetsMappingTheStreets = (location
+                     "03328b"
+                     "Dim Streets"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
+  }
+
+dimStreetsTheKingsParade :: CardDef
+dimStreetsTheKingsParade = (location
+                     "03328d"
+                     "Dim Streets"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
+  }
+
+dimStreetsTheArchway :: CardDef
+dimStreetsTheArchway = (location
+                     "03328f"
+                     "Dim Streets"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
+  }
+
+depthsOfDemheTheHeightOfTheDepths :: CardDef
+depthsOfDemheTheHeightOfTheDepths = (location
+                     "03329b"
+                     "Depths of Demhe"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
+  }
+
+depthsOfDemheStepsOfThePalace :: CardDef
+depthsOfDemheStepsOfThePalace = (location
+                     "03329d"
+                     "Depths of Demhe"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
+  }
+
+darkSpires :: CardDef
+darkSpires = (location
+                     "03330b"
+                     "Dark Spires"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
+  }
+
+palaceOfTheKing :: CardDef
+palaceOfTheKing = (location
+                     "03331b"
+                     "Palace of the King"
+                     [Otherworld]
+                     DimCarcosa
+                   )
+  { cdDoubleSided = False
   }
 
 studyAberrantGateway :: CardDef

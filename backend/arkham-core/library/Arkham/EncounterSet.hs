@@ -53,6 +53,7 @@ data EncounterSet
   | APhantomOfTruth
   | ThePallidMask
   | BlackStarsRise
+  | DimCarcosa
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

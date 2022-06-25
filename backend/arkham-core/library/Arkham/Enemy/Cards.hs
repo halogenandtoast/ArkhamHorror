@@ -119,6 +119,9 @@ allEncounterEnemyCards = mapFromList $ map
   , goatSpawn
   , grapplingHorror
   , graveEater
+  , hasturLordOfCarcosa
+  , hasturTheKingInYellow
+  , hasturTheTatteredKing
   , hermanCollins
   , huntingHorror
   , huntingNightgaunt
@@ -762,6 +765,24 @@ tidalTerror = (enemy "03300" "Tidal Terror" BlackStarsRise 2)
 riftSeeker :: CardDef
 riftSeeker = (enemy "03301" "Rift Seeker" BlackStarsRise 2)
   { cdCardTraits = setFromList [Monster, Byakhee, Cultist]
+  }
+
+hasturTheKingInYellow :: CardDef
+hasturTheKingInYellow = (enemy "03332" ("Hastur" <:> "The King in Yellow") DimCarcosa 1)
+  { cdCardTraits = setFromList [AncientOne, Elite]
+  , cdUnique = True
+  }
+
+hasturLordOfCarcosa :: CardDef
+hasturLordOfCarcosa = (enemy "03333" ("Hastur" <:> "Lord of Carcosa") DimCarcosa 1)
+  { cdCardTraits = setFromList [AncientOne, Elite]
+  , cdUnique = True
+  }
+
+hasturTheTatteredKing :: CardDef
+hasturTheTatteredKing = (enemy "03334" ("Hastur" <:> "The Tattered King") DimCarcosa 1)
+  { cdCardTraits = setFromList [AncientOne, Elite]
+  , cdUnique = True
   }
 
 corpseHungryGhoul :: CardDef

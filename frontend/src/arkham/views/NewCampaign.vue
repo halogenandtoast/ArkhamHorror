@@ -149,7 +149,11 @@ const scenarios = [
   },
   {
     id: '03274',
-    name: 'Black Stars Rise [Not working]',
+    name: 'Black Stars Rise',
+  },
+  {
+    id: '03316',
+    name: 'Dim Carcosa [Not Working]',
   },
   {
     id: '81001',

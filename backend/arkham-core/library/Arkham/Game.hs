@@ -2885,9 +2885,9 @@ runGameMessage msg g = case msg of
     investigatorIds <- getInvestigatorIds
     phaseBeginsWindow <- checkWindows
       [ Window Timing.When Window.AnyPhaseBegins
-      , Window Timing.When (Window.PhaseBegins EnemyPhase)
+      , Window Timing.When (Window.PhaseBegins InvestigationPhase)
       , Window Timing.After Window.AnyPhaseBegins
-      , Window Timing.After (Window.PhaseBegins EnemyPhase)
+      , Window Timing.After (Window.PhaseBegins InvestigationPhase)
       , Window Timing.When Window.FastPlayerWindow
       ]
     case investigatorIds of

@@ -7,7 +7,7 @@ module Arkham.Enemy.Runner
 import Arkham.Prelude
 
 import Arkham.Enemy.Attrs as X
-import Arkham.Enemy.Helpers as X hiding (EnemyFight, EnemyEvade)
+import Arkham.Enemy.Helpers as X hiding ( EnemyEvade, EnemyFight )
 import Arkham.GameValue as X
 import Arkham.Helpers.Enemy as X
 
@@ -69,7 +69,8 @@ filterOutEnemyMessages eid msg = case msg of
   Discarded (EnemyTarget eid') _ | eid == eid' -> Nothing
   m -> Just m
 
-getInvestigatorsAtSameLocation :: (Monad m, HasGame m) => EnemyAttrs -> m [InvestigatorId]
+getInvestigatorsAtSameLocation
+  :: (Monad m, HasGame m) => EnemyAttrs -> m [InvestigatorId]
 getInvestigatorsAtSameLocation attrs = case enemyLocation attrs of
   Nothing -> pure []
   Just loc -> selectList $ InvestigatorAt $ LocationWithId loc
@@ -326,8 +327,10 @@ instance RunMessage EnemyAttrs where
 
           preyIds <- select enemyPrey
 
-          filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
-            $ \lid -> notNull . intersect preyIds <$> select (InvestigatorAt $ LocationWithId lid)
+          filteredClosestLocationIds <-
+            flip filterM matchingClosestLocationIds $ \lid ->
+              notNull . intersect preyIds <$> select
+                (InvestigatorAt $ LocationWithId lid)
 
           -- If we have any locations with prey, that takes priority, otherwise
           -- we return all locations which may have matched via AnyPrey
@@ -494,16 +497,25 @@ instance RunMessage EnemyAttrs where
         , PerformEnemyAttack iid eid damageStrategy attackType
         , After (PerformEnemyAttack iid eid damageStrategy attackType)
         ]
-    PerformEnemyAttack iid eid damageStrategy attackType | eid == enemyId ->
-      a <$ pushAll
-        [ InvestigatorAssignDamage
-          iid
-          (EnemySource enemyId)
-          damageStrategy
-          enemyHealthDamage
-          enemySanityDamage
-        , After (EnemyAttack iid enemyId damageStrategy attackType)
-        ]
+    PerformEnemyAttack iid eid damageStrategy attackType | eid == enemyId -> do
+      modifiers <- getModifiers (EnemySource enemyId) (InvestigatorTarget iid)
+      let
+        validEnemyMatcher =
+          foldl' applyModifiers AnyEnemy modifiers
+        applyModifiers m (CancelAttacksByEnemies n) = m <> (NotEnemy n)
+        applyModifiers m _ = m
+      allowAttack <- member enemyId <$> select validEnemyMatcher
+      pushAll
+        $ [ InvestigatorAssignDamage
+              iid
+              (EnemySource enemyId)
+              damageStrategy
+              enemyHealthDamage
+              enemySanityDamage
+          | allowAttack
+          ]
+        <> [After (EnemyAttack iid enemyId damageStrategy attackType)]
+      pure a
     HealDamage (EnemyTarget eid) n | eid == enemyId ->
       pure $ a & damageL %~ max 0 . subtract n
     HealAllDamage (EnemyTarget eid) | eid == enemyId -> pure $ a & damageL .~ 0

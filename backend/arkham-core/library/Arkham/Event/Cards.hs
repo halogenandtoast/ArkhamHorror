@@ -119,6 +119,7 @@ allPlayerEventCards = mapFromList $ map
   , illSeeYouInHell
   , imOuttaHere
   , improvisation
+  , infighting3
   , iveGotAPlan
   , iveGotAPlan2
   , iveHadWorse4
@@ -1091,6 +1092,14 @@ timeWarp2 = (event "03311" "Time Warp" 1 Mystic)
     $ PerformAction Timing.After (InvestigatorAt YourLocation) AnyAction
   , cdCriteria = Just $ Criteria.ActionCanBeUndone <> Criteria.DuringTurn Anyone
   , cdLevel = 2
+  }
+
+infighting3 :: CardDef
+infighting3 = (event "03314" "Infighting" 1 Survivor)
+  { cdSkills = [SkillIntellect, SkillIntellect, SkillAgility, SkillAgility]
+  , cdCardTraits = singleton Trick
+  , cdLevel = 3
+  , cdFastWindow = Just $ PhaseBegins Timing.After (PhaseIs EnemyPhase)
   }
 
 secondWind :: CardDef

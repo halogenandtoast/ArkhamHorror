@@ -267,6 +267,7 @@ library
       Arkham.Asset.Cards.JordanPerry
       Arkham.Asset.Cards.KeenEye
       Arkham.Asset.Cards.KeenEye3
+      Arkham.Asset.Cards.KeyOfYs
       Arkham.Asset.Cards.KeyToTheChamber
       Arkham.Asset.Cards.Knife
       Arkham.Asset.Cards.Knuckleduster
@@ -697,6 +698,7 @@ library
       Arkham.Event.Cards.IllSeeYouInHell
       Arkham.Event.Cards.ImOuttaHere
       Arkham.Event.Cards.Improvisation
+      Arkham.Event.Cards.Infighting3
       Arkham.Event.Cards.IveGotAPlan
       Arkham.Event.Cards.IveGotAPlan2
       Arkham.Event.Cards.IveHadWorse4

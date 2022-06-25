@@ -52,12 +52,12 @@ instance RunMessage CoverUp where
       t <$ push (AttachTreachery treacheryId (InvestigatorTarget iid))
     UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
       mMsg <- popMessageMatching $ \case
-        DiscoverClues{} -> True
+        Do (InvestigatorDiscoverClues{}) -> True
         _ -> False
       case mMsg of
-        Just (DiscoverClues _ _ cluesToRemove _) ->
+        Just (Do (InvestigatorDiscoverClues _ _ cluesToRemove _)) ->
           pure $ CoverUp $ attrs & cluesL %~ max 0 . subtract cluesToRemove
-        _ -> error "DiscoverClues has to be present"
+        _ -> error "Do InvestigatorDiscoverClues  has to be present"
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       withTreacheryInvestigator attrs
         $ \tormented -> t <$ push (SufferTrauma tormented 0 1)

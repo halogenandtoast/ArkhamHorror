@@ -28,7 +28,7 @@ instance RunMessage Evidence where
       locationClueCount <- field LocationClues currentLocationId
       if locationClueCount > 0
         then e <$ pushAll
-          [ DiscoverCluesAtLocation iid currentLocationId 1 Nothing
+          [ InvestigatorDiscoverClues iid currentLocationId 1 Nothing
           , Discard (EventTarget eid)
           ]
         else e <$ pushAll [Discard (EventTarget eid)]

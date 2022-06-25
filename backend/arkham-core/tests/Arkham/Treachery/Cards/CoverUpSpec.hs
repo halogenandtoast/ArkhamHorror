@@ -35,7 +35,7 @@ spec = describe "Cover Up" $ do
         [ loadDeck investigator [coverUp]
         , drawCards investigator 1
         , moveTo investigator location
-        , DiscoverCluesAtLocation (toId investigator) (toId location) 1 Nothing
+        , InvestigatorDiscoverClues (toId investigator) (toId location) 1 Nothing
         ]
         (entitiesL . locationsL %~ insertEntity location)
       $ do
@@ -75,7 +75,7 @@ spec = describe "Cover Up" $ do
         [ loadDeck investigator [coverUp]
         , drawCards investigator 1
         , moveTo investigator location
-        , DiscoverCluesAtLocation (toId investigator) (toId location) 3 Nothing
+        , InvestigatorDiscoverClues (toId investigator) (toId location) 3 Nothing
         , EndOfGame Nothing
         ]
         (entitiesL . locationsL %~ insertEntity location)

@@ -51,7 +51,7 @@ instance RunMessage DecipheredReality5 where
         locationIds <- selectList RevealedLocation
         e <$ pushAll
           (Successful (Action.Investigate, actionTarget) iid source target n
-          : [ DiscoverCluesAtLocation iid lid' 1 Nothing
+          : [ InvestigatorDiscoverClues iid lid' 1 Nothing
             | lid' <- locationIds
             ]
           )

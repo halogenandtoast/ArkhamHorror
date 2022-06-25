@@ -67,7 +67,7 @@
       "import Arkham.Classes",
       "import Arkham.Difficulty",
       "import Arkham.InvestigatorId",
-      "import Arkham.Scenario.Attrs",
+      "import Arkham.Scenario.Runner",
       "import Arkham.Token",
       "",
       "newtype {dot} = {dot} ScenarioAttrs",

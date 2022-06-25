@@ -68,7 +68,12 @@ allAgendaCards = mapFromList $ map
   , hisDomain
   , horrorsUnleashed
   , inEveryShadow
+  , letTheStormRageTheFloodBelow
+  , letTheStormRageTheVortexAbove
   , lockedInside
+  , madnessCoils
+  , madnessDies
+  , madnessDrowns
   , outOfTime
   , pastPresentAndFuture
   , predatorOrPrey
@@ -82,11 +87,15 @@ allAgendaCards = mapFromList $ map
   , secretsBetterLeftHidden
   , shadowsDeepen
   , strangeDisappearances
+  , swallowedSky
   , theArkhamWoods
   , theBeastUnleashed
+  , theCityFloods
   , theCloverClub
   , theCurseSpreads
   , theEndOfAllThings
+  , theEntityAboveTheFloodBelow
+  , theEntityAboveTheVortexAbove
   , theFestivitiesBegin
   , theFirstNight
   , theMawWidens
@@ -99,6 +108,7 @@ allAgendaCards = mapFromList $ map
   , theTerrifyingTruth
   , theThirdAct
   , theThirdNight
+  , theTideRises
   , theTruthIsHidden
   , theyreGettingOut
   , timeIsRunningShort
@@ -285,6 +295,15 @@ theEntityAboveTheVortexAbove = agenda "03279b" "The Entity Above" 2 BlackStarsRi
 
 swallowedSky :: CardDef
 swallowedSky = agenda "03280" "Swallowed Sky" 3 BlackStarsRise
+
+madnessCoils :: CardDef
+madnessCoils = agenda "03317" "Madness Coils" 1 DimCarcosa
+
+madnessDrowns :: CardDef
+madnessDrowns = agenda "03318" "Madness Drowns" 2 DimCarcosa
+
+madnessDies :: CardDef
+madnessDies = agenda "03318" "Madness Dies" 3 DimCarcosa
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

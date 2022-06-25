@@ -72,6 +72,7 @@ allActCards = mapFromList $ map
   , huntingTheRougarou
   , intoTheBeyond
   , intoTheDarkness
+  , inLostCarcosa
   , investigatingTheTrail
   , leadingTheWay
   , mistakesOfThePast
@@ -88,6 +89,9 @@ allActCards = mapFromList $ map
   , row
   , run
   , saracenicScript
+  , searchForTheStrangerV1
+  , searchForTheStrangerV2
+  , searchForTheStrangerV3
   , searchingForAnswers
   , searchingForTheTome
   , skinGame
@@ -294,6 +298,21 @@ openThePathBelow = act "03281" "Open The Path Below" 3 BlackStarsRise
 
 openThePathAbove :: CardDef
 openThePathAbove = act "03282" "Open The Path Above" 3 BlackStarsRise
+
+inLostCarcosa :: CardDef
+inLostCarcosa = act "03320" "In Lost Carcosa" 1 DimCarcosa
+
+searchForTheStrangerV1 :: CardDef
+searchForTheStrangerV1 = act "03321" "Search For The Stanger (v. I)" 2 DimCarcosa
+
+searchForTheStrangerV2 :: CardDef
+searchForTheStrangerV2 = act "03322" "Search For The Stanger (v. II)" 2 DimCarcosa
+
+searchForTheStrangerV3 :: CardDef
+searchForTheStrangerV3 = act "03323" "Search For The Stanger (v. III)" 2 DimCarcosa
+
+theKingInTatters :: CardDef
+theKingInTatters = act "03324" "The King in Tatters" 3 DimCarcosa
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

@@ -38,6 +38,7 @@ library
       Arkham.Act.Cards.GetTheEngineRunning
       Arkham.Act.Cards.GetToTheBoats
       Arkham.Act.Cards.HuntingTheRougarou
+      Arkham.Act.Cards.InLostCarcosa
       Arkham.Act.Cards.IntoTheBeyond
       Arkham.Act.Cards.IntoTheDarkness
       Arkham.Act.Cards.InvestigatingTheTrail
@@ -56,6 +57,9 @@ library
       Arkham.Act.Cards.Row
       Arkham.Act.Cards.Run
       Arkham.Act.Cards.SaracenicScript
+      Arkham.Act.Cards.SearchForTheStrangerV1
+      Arkham.Act.Cards.SearchForTheStrangerV2
+      Arkham.Act.Cards.SearchForTheStrangerV3
       Arkham.Act.Cards.SearchingForAnswers
       Arkham.Act.Cards.SearchingForTheTome
       Arkham.Act.Cards.SkinGame
@@ -64,6 +68,7 @@ library
       Arkham.Act.Cards.TheCarnevaleConspiracy
       Arkham.Act.Cards.TheChamberOfTheBeast
       Arkham.Act.Cards.TheGateOpens
+      Arkham.Act.Cards.TheKingInTatters
       Arkham.Act.Cards.TheOath
       Arkham.Act.Cards.TheParisianConspiracyV1
       Arkham.Act.Cards.TheParisianConspiracyV2
@@ -112,6 +117,9 @@ library
       Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow
       Arkham.Agenda.Cards.LetTheStormRageTheVortexAbove
       Arkham.Agenda.Cards.LockedInside
+      Arkham.Agenda.Cards.MadnessCoils
+      Arkham.Agenda.Cards.MadnessDies
+      Arkham.Agenda.Cards.MadnessDrowns
       Arkham.Agenda.Cards.OutOfTime
       Arkham.Agenda.Cards.PastPresentAndFuture
       Arkham.Agenda.Cards.PredatorOrPrey
@@ -564,6 +572,9 @@ library
       Arkham.Enemy.Cards.GrapplingHorror
       Arkham.Enemy.Cards.GraveEater
       Arkham.Enemy.Cards.GraveyardGhouls
+      Arkham.Enemy.Cards.HasturLordOfCarcosa
+      Arkham.Enemy.Cards.HasturTheKingInYellow
+      Arkham.Enemy.Cards.HasturTheTatteredKing
       Arkham.Enemy.Cards.HermanCollins
       Arkham.Enemy.Cards.HuntingHorror
       Arkham.Enemy.Cards.HuntingNightgaunt
@@ -858,6 +869,8 @@ library
       Arkham.Location.Cards.BishopsBrook_203
       Arkham.Location.Cards.BlastedHeath_248
       Arkham.Location.Cards.BlastedHeath_249
+      Arkham.Location.Cards.BleakPlainsBleakDesolation
+      Arkham.Location.Cards.BleakPlainsStarsOfAldebaran
       Arkham.Location.Cards.BlockedPassage
       Arkham.Location.Cards.BoneFilledCaverns
       Arkham.Location.Cards.BoxOffice
@@ -888,12 +901,18 @@ library
       Arkham.Location.Cards.CryptOfTheSepulchralLamp
       Arkham.Location.Cards.CursedShores
       Arkham.Location.Cards.DarkenedHall
+      Arkham.Location.Cards.DarkSpires
       Arkham.Location.Cards.DeepBelowYourHouse
+      Arkham.Location.Cards.DepthsOfDemheStepsOfThePalace
+      Arkham.Location.Cards.DepthsOfDemheTheHeightOfTheDepths
       Arkham.Location.Cards.DestroyedPath
       Arkham.Location.Cards.DevilsHopYard_252
       Arkham.Location.Cards.DevilsHopYard_253
       Arkham.Location.Cards.DimensionalDoorway
       Arkham.Location.Cards.DimensionalGap
+      Arkham.Location.Cards.DimStreetsMappingTheStreets
+      Arkham.Location.Cards.DimStreetsTheArchway
+      Arkham.Location.Cards.DimStreetsTheKingsParade
       Arkham.Location.Cards.DiningCar
       Arkham.Location.Cards.DiningRoom
       Arkham.Location.Cards.Dormitories
@@ -986,6 +1005,7 @@ library
       Arkham.Location.Cards.OuterWall_285
       Arkham.Location.Cards.OuterWall_286
       Arkham.Location.Cards.OvergrownCairns
+      Arkham.Location.Cards.PalaceOfTheKing
       Arkham.Location.Cards.Parlor
       Arkham.Location.Cards.ParlorCar
       Arkham.Location.Cards.PassengerCar_167
@@ -1010,6 +1030,9 @@ library
       Arkham.Location.Cards.RitualSite
       Arkham.Location.Cards.Rivertown
       Arkham.Location.Cards.RivertownAbandonedWarehouse
+      Arkham.Location.Cards.RuinsOfCarcosaAMomentsRest
+      Arkham.Location.Cards.RuinsOfCarcosaInhabitantOfCarcosa
+      Arkham.Location.Cards.RuinsOfCarcosaTheCoffin
       Arkham.Location.Cards.SanMarcoBasilica
       Arkham.Location.Cards.Schoolhouse_212
       Arkham.Location.Cards.Schoolhouse_213
@@ -1018,6 +1041,7 @@ library
       Arkham.Location.Cards.SecurityOffice_129
       Arkham.Location.Cards.SentinelPeak
       Arkham.Location.Cards.ShiveringPools
+      Arkham.Location.Cards.ShoresOfHali
       Arkham.Location.Cards.SlaughteredWoods
       Arkham.Location.Cards.SleepingCar
       Arkham.Location.Cards.SouthsideHistoricalSociety
@@ -1081,6 +1105,7 @@ library
       Arkham.Scenario.Scenarios.CarnevaleOfHorrors
       Arkham.Scenario.Scenarios.CurseOfTheRougarou
       Arkham.Scenario.Scenarios.CurtainCall
+      Arkham.Scenario.Scenarios.DimCarcosa
       Arkham.Scenario.Scenarios.EchoesOfThePast
       Arkham.Scenario.Scenarios.ExtracurricularActivity
       Arkham.Scenario.Scenarios.LostInTimeAndSpace
@@ -1108,6 +1133,7 @@ library
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.CurtainCall.Helpers
       Arkham.Scenarios.CurtainCall.Story
+      Arkham.Scenarios.DimCarcosa.Story
       Arkham.Scenarios.EchoesOfThePast.Story
       Arkham.Scenarios.TheDevourerBelow.Story
       Arkham.Scenarios.TheEssexCountyExpress.Helpers

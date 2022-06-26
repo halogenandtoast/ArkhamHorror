@@ -279,6 +279,7 @@ allPlayerAssetCards = mapFromList $ map
   , theNecronomicon
   , theNecronomiconAdvanced
   , theNecronomiconOlausWormiusTranslation
+  , thePallidMask
   , theRedGlovedMan5
   , theTatteredCloak
   , thirtyTwoColt
@@ -1805,6 +1806,12 @@ keyOfYs = (asset "03315" ("Key of Ys" <:> "Let the Storm Rage") 3 Neutral)
   , cdSlots = [AccessorySlot]
   }
 
+thePallidMask :: CardDef
+thePallidMask = (asset "03321b" ("The Pallid Mask" <:> "Chasing Tails") 0 Neutral)
+  { cdCardTraits = setFromList [Item, Relic]
+  , cdRevelation = True
+  }
+
 toothOfEztli :: CardDef
 toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
                )
@@ -2093,11 +2100,8 @@ daisysToteBagAdvanced = (asset "90002" "Daisy's Tote Bag" 2 Neutral)
 
 theNecronomiconAdvanced :: CardDef
 theNecronomiconAdvanced =
-  (asset "90003" ("The Necronomicon" <:> "John Dee Translation") 0 Neutral)
+  (weakness "90003" ("The Necronomicon" <:> "John Dee Translation"))
     { cdCardTraits = setFromList [Item, Tome]
-    , cdCardSubType = Just Weakness
-    , cdRevelation = True
-    , cdCost = Nothing
     , cdSlots = [HandSlot]
     }
 

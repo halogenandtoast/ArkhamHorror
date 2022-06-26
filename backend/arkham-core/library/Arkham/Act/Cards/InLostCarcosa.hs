@@ -9,9 +9,10 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
-import Arkham.Cost
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Ability
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 
@@ -36,5 +37,11 @@ instance RunMessage InLostCarcosa where
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) source AdvancedWithClues)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
+      theManInThePallidMask <- getSetAsideCard Enemies.theManInThePallidMask
+      palaceOfTheKing <- getJustLocationIdByName "Palace of the King"
+      pushAll
+        [ CreateEnemyAt theManInThePallidMask palaceOfTheKing Nothing
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
       pure a
     _ -> InLostCarcosa <$> runMessage msg attrs

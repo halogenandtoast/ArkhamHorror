@@ -87,5 +87,12 @@ selectOne matcher = do
     [] -> Nothing
     x : _ -> Just x
 
+isMatch
+  :: (HasCallStack, Query matcher, HasGame m, Monad m)
+  => QueryElement matcher
+  -> matcher
+  -> m Bool
+isMatch a m = member a <$> select m
+
 class (Hashable (QueryElement a), Eq (QueryElement a)) => Query a where
   select :: (HasCallStack, HasGame m, Monad m) => a -> m (HashSet (QueryElement a))

@@ -7,13 +7,9 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Matcher hiding (PlayCard)
-import Arkham.Message
 import Arkham.Target
 
 newtype ThePallidMask = ThePallidMask AssetAttrs

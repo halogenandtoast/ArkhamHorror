@@ -38,6 +38,7 @@ import Arkham.Trait
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Data.List.Extra ( firstJust )
+import Data.Monoid ( First (..) )
 
 -- | Handle when enemy no longer exists
 -- When an enemy is defeated we need to remove related messages from choices
@@ -586,7 +587,16 @@ instance RunMessage EnemyAttrs where
     EnemyDamaged eid iid source _ amount direct | eid == enemyId -> do
       amount' <- getModifiedDamageAmount a direct amount
       canBeDefeated <- withoutModifier a CannotBeDefeated
-      when canBeDefeated $ do
+      modifiers' <- getModifiers (toSource a) (toTarget a)
+      let
+        canOnlyBeDefeatedByModifier = \case
+          CanOnlyBeDefeatedBy source -> First (Just source)
+          _ -> First Nothing
+        mOnlyBeDefeatedByModifier =
+          getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
+        validDefeat =
+          canBeDefeated && maybe True (== source) mOnlyBeDefeatedByModifier
+      when validDefeat $ do
         modifiedHealth <- getModifiedHealth a
         when (a ^. damageL + amount' >= modifiedHealth) $ do
           whenMsg <- checkWindows
@@ -606,7 +616,21 @@ instance RunMessage EnemyAttrs where
       pure $ a & damageL +~ amount'
     DefeatEnemy eid iid source | eid == enemyId -> do
       canBeDefeated <- withoutModifier a CannotBeDefeated
-      when canBeDefeated $ push $ EnemyDefeated
+      modifiedHealth <- getModifiedHealth a
+      canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
+      modifiers' <- getModifiers (toSource a) (toTarget a)
+      let
+        defeatedByDamage = a ^. damageL >= modifiedHealth
+        canOnlyBeDefeatedByModifier = \case
+          CanOnlyBeDefeatedBy source -> First (Just source)
+          _ -> First Nothing
+        mOnlyBeDefeatedByModifier =
+          getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
+        validDefeat =
+          canBeDefeated
+            && maybe True (== source) mOnlyBeDefeatedByModifier
+            && (not canOnlyBeDefeatedByDamage || defeatedByDamage)
+      when validDefeat $ push $ EnemyDefeated
         eid
         iid
         (toCardCode a)

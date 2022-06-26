@@ -27,6 +27,7 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DimCarcosa.Story
 import Arkham.Source
 import Arkham.Target
@@ -34,7 +35,7 @@ import Arkham.Token
 import Arkham.Trait ( Trait (AncientOne, Monster) )
 
 newtype DimCarcosa = DimCarcosa ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimCarcosa :: Difficulty -> DimCarcosa
@@ -48,6 +49,13 @@ dimCarcosa difficulty =
        , ".          bleakPlains     ."
        , ".          shoresOfHali    ."
        ]
+
+instance HasModifiersFor DimCarcosa where
+  getModifiersFor _ (EnemyTarget eid) (DimCarcosa a) = do
+    isHastur <- member eid <$> select (EnemyWithTitle "Hastur")
+    knowTheSecret <- remembered KnowTheSecret
+    pure $ toModifiers a [ CannotBeDefeated | isHastur && not knowTheSecret ]
+  getModifiersFor _ _ _ = pure []
 
 instance HasTokenValue DimCarcosa where
   getTokenValue iid tokenFace (DimCarcosa attrs) = case tokenFace of
@@ -237,7 +245,7 @@ instance RunMessage DimCarcosa where
           mlid <- field InvestigatorLocation iid
           for_ mlid $ \lid -> push $ PlaceClues (LocationTarget lid) 1
       pure s
-    ResolveToken t ElderThing iid -> do
+    ResolveToken _ ElderThing iid -> do
       mskillTestSource <- getSkillTestSource
       mskillTestTarget <- getSkillTestTarget
       case (mskillTestSource, mskillTestTarget) of
@@ -248,7 +256,8 @@ instance RunMessage DimCarcosa where
                 (EnemyOneOf $ map EnemyWithTrait [Monster, AncientOne])
             when isMonsterOrAncientOne $ push $ LoseActions
               iid
-              (TokenEffectSource token)
+              (TokenEffectSource ElderThing)
               1
+        _ -> pure ()
       pure s
     _ -> DimCarcosa <$> runMessage msg attrs

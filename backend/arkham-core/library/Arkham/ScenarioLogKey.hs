@@ -34,5 +34,7 @@ data ScenarioLogKey
   | FoundAGuide
   | FoundTheTowerKey
   -- ^ Black Stars Rise
+  | KnowTheSecret
+  -- ^ DimCarcosa
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

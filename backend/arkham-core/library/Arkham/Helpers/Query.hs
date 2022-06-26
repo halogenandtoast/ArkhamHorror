@@ -2,12 +2,13 @@ module Arkham.Helpers.Query where
 
 import Arkham.Prelude
 
+import Arkham.Card
 import Arkham.Classes.Query
+import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
-import {-# SOURCE #-} Arkham.Game ()
+import Arkham.Name
 
 getLeadInvestigatorId :: (Monad m, HasGame m) => m InvestigatorId
 getLeadInvestigatorId = selectJust LeadInvestigator
@@ -18,13 +19,16 @@ getActiveInvestigatorId = selectJust TurnInvestigator
 getInvestigatorIds :: (Monad m, HasGame m) => m [InvestigatorId]
 getInvestigatorIds = selectList Anyone
 
-selectAssetController :: (Monad m, HasGame m) => AssetId -> m (Maybe InvestigatorId)
+selectAssetController
+  :: (Monad m, HasGame m) => AssetId -> m (Maybe InvestigatorId)
 selectAssetController = selectOne . HasMatchingAsset . AssetWithId
 
-selectEventController :: (Monad m, HasGame m) => EventId -> m (Maybe InvestigatorId)
+selectEventController
+  :: (Monad m, HasGame m) => EventId -> m (Maybe InvestigatorId)
 selectEventController = selectOne . HasMatchingEvent . EventWithId
 
-selectSkillController :: (Monad m, HasGame m) => SkillId -> m (Maybe InvestigatorId)
+selectSkillController
+  :: (Monad m, HasGame m) => SkillId -> m (Maybe InvestigatorId)
 selectSkillController = selectOne . HasMatchingSkill . SkillWithId
 
 getPlayerCount :: (Monad m, HasGame m) => m Int
@@ -38,23 +42,28 @@ getPlayerCount = selectCount Anyone
 --
 -- This logic is a bit too generous and we may want to specify
 -- on double sided cards which card code is on the other side.
-getSetAsideCard
-  :: (Monad m, HasGame m) => CardDef
-  -> m Card
+getSetAsideCard :: (Monad m, HasGame m) => CardDef -> m Card
 getSetAsideCard def = do
   card <- selectJust . SetAsideCardMatch $ cardIs def
   pure $ if cardCodeExactEq (toCardCode card) (toCardCode def)
     then card
     else lookupCard (toCardCode def) (toCardId card)
 
-getSetAsideEncounterCard
-  :: (Monad m, HasGame m) => CardDef
-  -> m EncounterCard
+getSetAsideEncounterCard :: (Monad m, HasGame m) => CardDef -> m EncounterCard
 getSetAsideEncounterCard =
   fmap (fromJustNote "must be encounter card" . preview _EncounterCard)
     . getSetAsideCard
 
-getSetAsideCardsMatching
-  :: (Monad m, HasGame m) => CardMatcher
-  -> m [Card]
+getSetAsideCardsMatching :: (Monad m, HasGame m) => CardMatcher -> m [Card]
 getSetAsideCardsMatching = selectList . SetAsideCardMatch
+
+getJustLocationIdByName :: (Monad m, HasGame m) => Name -> m LocationId
+getJustLocationIdByName name =
+  fromJustNote ("Missing " <> show name) <$> getLocationIdByName name
+
+getLocationIdByName :: (Monad m, HasGame m) => Name -> m (Maybe LocationId)
+getLocationIdByName name = selectOne matcher
+ where
+  matcher = case (nameTitle name, nameSubtitle name) of
+    (title, Just subtitle) -> LocationWithFullTitle title subtitle
+    (title, Nothing) -> LocationWithTitle title

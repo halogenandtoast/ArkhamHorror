@@ -719,17 +719,6 @@ addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
     ]
   where name = cdName cardDef
 
-getJustLocationIdByName :: (Monad m, HasGame m) => Name -> m LocationId
-getJustLocationIdByName name =
-  fromJustNote ("Missing " <> show name) <$> getLocationIdByName name
-
-getLocationIdByName :: (Monad m, HasGame m) => Name -> m (Maybe LocationId)
-getLocationIdByName name = selectOne matcher
- where
-  matcher = case (nameTitle name, nameSubtitle name) of
-    (title, Just subtitle) -> Matcher.LocationWithFullTitle title subtitle
-    (title, Nothing) -> Matcher.LocationWithTitle title
-
 fightAction :: SourceEntity source => source -> Int -> [Cost] -> Ability
 fightAction source n costs =
   mkAbility source n (ActionAbility (Just Action.Fight) (Costs costs))

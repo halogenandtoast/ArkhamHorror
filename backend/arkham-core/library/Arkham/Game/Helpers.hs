@@ -108,9 +108,6 @@ replaceToken token = withQueue $ \queue ->
   , ()
   )
 
-withBaseAbilities :: HasAbilities a => a -> [Ability] -> [Ability]
-withBaseAbilities a f = getAbilities a <> f
-
 getPlayableCards
   :: (Monad m, HasGame m)
   => InvestigatorAttrs

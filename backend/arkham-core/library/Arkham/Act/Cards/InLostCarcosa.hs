@@ -5,16 +5,36 @@ module Arkham.Act.Cards.InLostCarcosa
 
 import Arkham.Prelude
 
-import qualified Arkham.Act.Cards as Cards
+import Arkham.Ability
+import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Cost
+import Arkham.GameValue
+import Arkham.Helpers.Ability
+import Arkham.Matcher
+import Arkham.Message
 
 newtype InLostCarcosa = InLostCarcosa ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 inLostCarcosa :: ActCard InLostCarcosa
 inLostCarcosa = act (1, A) InLostCarcosa Cards.inLostCarcosa Nothing
 
+instance HasAbilities InLostCarcosa where
+  getAbilities (InLostCarcosa x) = withBaseAbilities x $ if onSide A x
+    then
+      [ mkAbility x 1 $ Objective $ ForcedAbilityWithCost
+          AnyWindow
+          (GroupClueCost (PerPlayer 4) Anywhere)
+      ]
+    else []
+
 instance RunMessage InLostCarcosa where
-  runMessage msg (InLostCarcosa attrs) = InLostCarcosa <$> runMessage msg attrs
+  runMessage msg a@(InLostCarcosa attrs) = case msg of
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
+      a <$ push (AdvanceAct (toId a) source AdvancedWithClues)
+    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
+      pure a
+    _ -> InLostCarcosa <$> runMessage msg attrs

@@ -6,6 +6,7 @@ module Arkham.Scenario.Scenarios.DimCarcosa
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
@@ -18,14 +19,19 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.DimCarcosa.Story
+import Arkham.Source
+import Arkham.Target
 import Arkham.Token
+import Arkham.Trait ( Trait (AncientOne, Monster) )
 
 newtype DimCarcosa = DimCarcosa ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -208,10 +214,7 @@ instance RunMessage DimCarcosa where
         & (setAsideCardsL .~ PlayerCard theManInThePallidMask : setAsideCards)
         & (actStackL
           . at 1
-          ?~ [ Acts.inLostCarcosa
-             , act2
-             , Acts.theKingInTatters
-             ]
+          ?~ [Acts.inLostCarcosa, act2, Acts.theKingInTatters]
           )
         & (agendaStackL
           . at 1
@@ -221,4 +224,31 @@ instance RunMessage DimCarcosa where
              ]
           )
         )
+    FailedSkillTest iid _ _ (TokenTarget token) _ _ -> do
+      when (tokenFace token == Cultist) $ push $ InvestigatorAssignDamage
+        iid
+        (TokenEffectSource Cultist)
+        DamageAny
+        0
+        (if isEasyStandard attrs then 1 else 2)
+      when (tokenFace token == Tablet) $ do
+        hasturInPlay <- selectAny $ EnemyWithTitle "Hastur"
+        when hasturInPlay $ do
+          mlid <- field InvestigatorLocation iid
+          for_ mlid $ \lid -> push $ PlaceClues (LocationTarget lid) 1
+      pure s
+    ResolveToken t ElderThing iid -> do
+      mskillTestSource <- getSkillTestSource
+      mskillTestTarget <- getSkillTestTarget
+      case (mskillTestSource, mskillTestTarget) of
+        (Just (SkillTestSource _ _ _ (Just action)), Just (EnemyTarget eid))
+          | action `elem` [Action.Fight, Action.Evade] -> do
+            isMonsterOrAncientOne <-
+              member eid <$> select
+                (EnemyOneOf $ map EnemyWithTrait [Monster, AncientOne])
+            when isMonsterOrAncientOne $ push $ LoseActions
+              iid
+              (TokenEffectSource token)
+              1
+      pure s
     _ -> DimCarcosa <$> runMessage msg attrs

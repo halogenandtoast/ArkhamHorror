@@ -79,6 +79,13 @@ replaceMessageMatching matcher replacer = withQueue \queue ->
       [] -> (before, ())
       (msg' : rest) -> (before <> replacer msg' <> rest, ())
 
+pushAfter
+  :: (MonadIO m, MonadReader env m, HasQueue env)
+  => (Message -> Bool)
+  -> Message
+  -> m ()
+pushAfter matcher msg = replaceMessageMatching matcher (\m -> [m, msg])
+
 popMessageMatching
   :: (MonadIO m, MonadReader env m, HasQueue env)
   => (Message -> Bool)

@@ -21,6 +21,12 @@ getModifiers :: (Monad m, HasGame m) => Source -> Target -> m [ModifierType]
 getModifiers source target =
   map modifierType <$> getModifiersFor source target ()
 
+hasModifier :: (Monad m, HasGame m, TargetEntity a, SourceEntity a) => a -> ModifierType -> m Bool
+hasModifier a m = (m `elem`) <$> getModifiers (toSource a) (toTarget a)
+
+withoutModifier :: (Monad m, HasGame m, TargetEntity a, SourceEntity a) => a -> ModifierType -> m Bool
+withoutModifier a m = not <$> hasModifier a m
+
 toModifier :: SourceEntity a => a -> ModifierType -> Modifier
 toModifier = Modifier . toSource
 
@@ -52,4 +58,3 @@ skillTestModifiers source target modifiers = CreateWindowModifierEffect
   (EffectModifiers $ toModifiers source modifiers)
   (toSource source)
   (toTarget target)
-

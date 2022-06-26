@@ -500,8 +500,7 @@ instance RunMessage EnemyAttrs where
     PerformEnemyAttack iid eid damageStrategy attackType | eid == enemyId -> do
       modifiers <- getModifiers (EnemySource enemyId) (InvestigatorTarget iid)
       let
-        validEnemyMatcher =
-          foldl' applyModifiers AnyEnemy modifiers
+        validEnemyMatcher = foldl' applyModifiers AnyEnemy modifiers
         applyModifiers m (CancelAttacksByEnemies n) = m <> (NotEnemy n)
         applyModifiers m _ = m
       allowAttack <- member enemyId <$> select validEnemyMatcher
@@ -586,20 +585,34 @@ instance RunMessage EnemyAttrs where
             ]
     EnemyDamaged eid iid source _ amount direct | eid == enemyId -> do
       amount' <- getModifiedDamageAmount a direct amount
-      modifiedHealth <- getModifiedHealth a
-      when (a ^. damageL + amount' >= modifiedHealth) $ do
-        whenMsg <- checkWindows
-          [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
-        afterMsg <- checkWindows
-          [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
-        pushAll
-          [ whenMsg
-          , afterMsg
-          , EnemyDefeated eid iid (toCardCode a) source (setToList $ toTraits a)
-          ]
+      canBeDefeated <- withoutModifier a CannotBeDefeated
+      when canBeDefeated $ do
+        modifiedHealth <- getModifiedHealth a
+        when (a ^. damageL + amount' >= modifiedHealth) $ do
+          whenMsg <- checkWindows
+            [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
+          afterMsg <- checkWindows
+            [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
+          pushAll
+            [ whenMsg
+            , afterMsg
+            , EnemyDefeated
+              eid
+              iid
+              (toCardCode a)
+              source
+              (setToList $ toTraits a)
+            ]
       pure $ a & damageL +~ amount'
-    DefeatEnemy eid iid source | eid == enemyId -> a <$ push
-      (EnemyDefeated eid iid (toCardCode a) source (setToList $ toTraits a))
+    DefeatEnemy eid iid source | eid == enemyId -> do
+      canBeDefeated <- withoutModifier a CannotBeDefeated
+      when canBeDefeated $ push $ EnemyDefeated
+        eid
+        iid
+        (toCardCode a)
+        source
+        (setToList $ toTraits a)
+      pure a
     EnemyDefeated eid iid _ _ _ | eid == toId a -> do
       whenMsg <- checkWindows
         [Window Timing.When (Window.EnemyDefeated iid eid)]

@@ -26,7 +26,7 @@ instance HasModifiersFor DissonantVoices where
   getModifiersFor _ (InvestigatorTarget iid) (DissonantVoices attrs) =
     pure $ toModifiers
       attrs
-      [ CannotPlay [(AssetType, mempty), (EventType, mempty)]
+      [ CannotPlay (CardWithOneOf $ map CardWithType [AssetType, EventType])
       | treacheryOnInvestigator iid attrs
       ]
   getModifiersFor _ _ _ = pure []

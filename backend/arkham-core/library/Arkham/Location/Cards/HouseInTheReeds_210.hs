@@ -11,6 +11,7 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
+import Arkham.Matcher
 import Arkham.Target
 
 newtype HouseInTheReeds_210 = HouseInTheReeds_210 LocationAttrs
@@ -30,7 +31,7 @@ instance HasModifiersFor HouseInTheReeds_210 where
   getModifiersFor _ (InvestigatorTarget iid) (HouseInTheReeds_210 attrs) =
     pure $ toModifiers
       attrs
-      [ CannotPlay [(EventType, mempty)]
+      [ CannotPlay (CardWithType EventType)
       | iid `elem` locationInvestigators attrs
       ]
   getModifiersFor _ _ _ = pure []

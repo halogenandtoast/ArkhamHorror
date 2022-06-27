@@ -99,7 +99,7 @@ data ModifierType
   | CannotMulligan
   | CannotPerformSkillTest
   | CannotPlaceClues
-  | CannotPlay [(CardType, HashSet Trait)]
+  | CannotPlay CardMatcher
   | CannotSpendClues
   | CannotTakeAction ActionTarget
   | CannotTakeControlOfClues

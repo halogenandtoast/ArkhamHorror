@@ -1820,7 +1820,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         when
             (toCardType card
             `notElem` [PlayerTreacheryType, PlayerEnemyType]
-            && isJust (cdCardSubType $ toCardDef card)
+            && cdRevelation (toCardDef card')
             )
           $ push (Revelation iid $ PlayerCardSource card')
       _ -> pure ()

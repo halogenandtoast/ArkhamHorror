@@ -14,7 +14,6 @@ import Arkham.Criteria
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Target
 
 newtype InTheKnow1 = InTheKnow1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

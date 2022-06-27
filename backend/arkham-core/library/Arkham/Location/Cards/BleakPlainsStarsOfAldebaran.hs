@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
@@ -48,22 +47,21 @@ instance HasAbilities BleakPlainsStarsOfAldebaran where
 
 instance RunMessage BleakPlainsStarsOfAldebaran where
   runMessage msg l@(BleakPlainsStarsOfAldebaran attrs) = case msg of
-    Flip _ target | isTarget attrs target -> do
-      push $ ReadStory Story.starsOfAldebaran
+    Flip iid _ target | isTarget attrs target -> do
+      push $ ReadStory iid Story.starsOfAldebaran
       pure . BleakPlainsStarsOfAldebaran $ attrs & canBeFlippedL .~ False
-    ResolveStory story' | story' == Story.starsOfAldebaran -> do
+    ResolveStory iid story' | story' == Story.starsOfAldebaran -> do
       iids <- getInvestigatorIds
-      leadInvestigatorId <- getLeadInvestigatorId
       enemies <- selectList $ NotEnemy $ EnemyWithTitle "Hastur"
       let
         enemyMessages = if null enemies
           then []
           else
             [ chooseOne
-                leadInvestigatorId
+                iid
                 [ EnemyDamage
                     enemy
-                    leadInvestigatorId
+                    iid
                     (toSource attrs)
                     NonAttackDamageEffect
                     4
@@ -76,7 +74,7 @@ instance RunMessage BleakPlainsStarsOfAldebaran where
                            [x] -> pure x
                            (x:xs) -> sample (x :| xs)
       pushAll
-        $ [ HealHorror (InvestigatorTarget iid) 3 | iid <- iids ]
+        $ [ HealHorror (InvestigatorTarget iid') 3 | iid' <- iids ]
         <> enemyMessages
         <> [ReplaceLocation (toId attrs) otherBleakPlain]
       pure l

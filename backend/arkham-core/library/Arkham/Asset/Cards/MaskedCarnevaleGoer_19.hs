@@ -48,10 +48,10 @@ instance RunMessage MaskedCarnevaleGoer_19 where
         enemyId = EnemyId $ toCardId attrs
       investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
       a <$ pushAll
-        (Flip (InvestigatorSource iid) (toTarget attrs)
+        (Flip iid (InvestigatorSource iid) (toTarget attrs)
         : [ EnemyAttack iid' enemyId DamageAny RegularAttack | iid' <- investigatorIds ]
         )
-    Flip _ target | isTarget attrs target -> do
+    Flip _ _ target | isTarget attrs target -> do
       let
         lid = locationOf attrs
         salvatoreNeri = EncounterCard
@@ -60,7 +60,7 @@ instance RunMessage MaskedCarnevaleGoer_19 where
         [ CreateEnemyAt salvatoreNeri lid Nothing
         , Flipped (toSource attrs) salvatoreNeri
         ]
-    LookAtRevealed _ target | isTarget a target -> do
+    LookAtRevealed _ _ target | isTarget a target -> do
       let
         salvatoreNeri = EncounterCard
           $ lookupEncounterCard Enemies.salvatoreNeri (toCardId attrs)

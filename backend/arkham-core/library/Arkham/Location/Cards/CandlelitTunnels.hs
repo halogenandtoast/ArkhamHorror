@@ -81,7 +81,7 @@ instance RunMessage CandlelitTunnels where
         locations <- selectList UnrevealedLocation
         unless (null locations) $ push $ chooseOne
           iid
-          [ targetLabel lid [LookAtRevealed source (LocationTarget lid)]
+          [ targetLabel lid [LookAtRevealed iid source (LocationTarget lid)]
           | lid <- locations
           ]
         pure l

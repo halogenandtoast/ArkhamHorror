@@ -42,6 +42,6 @@ instance RunMessage Mesmerize where
                 (InvestigatorTarget iid)
               , chooseOne
                 iid
-                [ TargetLabel target [Flip source target] | target <- xs ]
+                [ TargetLabel target [Flip iid source target] | target <- xs ]
               ]
     _ -> Mesmerize <$> runMessage msg attrs

@@ -24,7 +24,6 @@ import Arkham.Event.Attrs ( Field (..) )
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Window
 import Arkham.Id
@@ -328,12 +327,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     case rest of
       [] -> pure a
       (_ : xs) -> pure $ a & setAsideCardsL .~ (before <> xs)
-  ReadStory story' -> do
-    leadInvestigatorId <- getLeadInvestigatorId
+  ReadStory iid story' -> do
     push
       (chooseOne
-        leadInvestigatorId
-        [CardLabel (cdCardCode story') [ResolveStory story']]
+        iid
+        [CardLabel (cdCardCode story') [ResolveStory iid story']]
       )
     pure $ a & cardsUnderScenarioReferenceL %~ filter ((/= story') . toCardDef)
   SetActDeck -> do

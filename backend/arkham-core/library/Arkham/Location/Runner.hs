@@ -269,10 +269,10 @@ instance RunMessage LocationAttrs where
         $ [whenWindowMsg, afterWindowMsg]
         <> [ PlaceClues (toTarget a) locationClueCount | locationClueCount > 0 ]
       pure $ a & revealedL .~ True
-    LookAtRevealed source target | isTarget a target -> do
-      push (Label "Continue" [After (LookAtRevealed source target)])
+    LookAtRevealed iid source target | isTarget a target -> do
+      push (Label "Continue" [After (LookAtRevealed iid source target)])
       pure $ a & revealedL .~ True
-    After (LookAtRevealed _ target) | isTarget a target ->
+    After (LookAtRevealed _ _ target) | isTarget a target ->
       pure $ a & revealedL .~ False
     UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False
     RemovedLocation lid -> pure $ a & directionsL %~ filterMap (/= lid)

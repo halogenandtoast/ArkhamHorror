@@ -48,9 +48,9 @@ instance RunMessage SophieInLovingMemory where
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push
         (skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2))
-    UseCardAbility _ source _ 2 _ | isSource attrs source ->
-      a <$ push (Flip (toSource attrs) (toTarget attrs))
-    Flip _ target | isTarget attrs target -> do
+    UseCardAbility iid source _ 2 _ | isSource attrs source ->
+      a <$ push (Flip iid (toSource attrs) (toTarget attrs))
+    Flip _ _ target | isTarget attrs target -> do
       let
         sophieItWasAllMyFault = PlayerCard
           $ lookupPlayerCard Cards.sophieItWasAllMyFault (toCardId attrs)

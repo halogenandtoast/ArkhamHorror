@@ -33,7 +33,7 @@ instance HasModifiersFor UnhallowedCountry where
   getModifiersFor _ (InvestigatorTarget iid) (UnhallowedCountry attrs) =
     pure $ toModifiers
       attrs
-      [ CannotPlay [(AssetType, singleton Ally)]
+      [ CannotPlay (CardWithType AssetType <> CardWithTrait Ally)
       | treacheryOnInvestigator iid attrs
       ]
   getModifiersFor _ (AssetTarget aid) (UnhallowedCountry attrs) = do

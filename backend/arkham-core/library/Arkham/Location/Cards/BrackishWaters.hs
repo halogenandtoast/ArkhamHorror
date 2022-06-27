@@ -38,7 +38,7 @@ instance HasModifiersFor BrackishWaters where
   getModifiersFor _ (InvestigatorTarget iid) (BrackishWaters attrs) =
     pure $ toModifiers
       attrs
-      [ CannotPlay [(AssetType, mempty)]
+      [ CannotPlay (CardWithType AssetType)
       | iid `elem` locationInvestigators attrs
       ]
   getModifiersFor _ _ _ = pure []

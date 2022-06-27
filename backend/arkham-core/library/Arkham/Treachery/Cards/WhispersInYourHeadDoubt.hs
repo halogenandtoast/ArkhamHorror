@@ -11,6 +11,7 @@ import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Target
@@ -26,7 +27,7 @@ whispersInYourHeadDoubt =
   treachery WhispersInYourHeadDoubt Cards.whispersInYourHeadDoubt
 
 instance HasModifiersFor WhispersInYourHeadDoubt where
-  getModifiersFor _ (InvestigatorHandTarget _) (WhispersInYourHeadDoubt a) = pure $ toModifiers a [CannotPlay [(EventType, mempty)]]
+  getModifiersFor _ (InvestigatorHandTarget _) (WhispersInYourHeadDoubt a) = pure $ toModifiers a [CannotPlay (CardWithType EventType)]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities WhispersInYourHeadDoubt where

@@ -851,13 +851,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
   pcDef = toCardDef c
   prevents (CanOnlyUseCardsInRole role) =
     null $ intersect (cdClassSymbols pcDef) (setFromList [Neutral, role])
-  prevents (CannotPlay typePairs) = any
-    (\(cType, traits) ->
-      cdCardType pcDef
-        == cType
-        && (null traits || notNull (intersection (toTraits pcDef) traits))
-    )
-    typePairs
+  prevents (CannotPlay matcher) = cardMatch c matcher
   prevents _ = False
   passesLimit (LimitPerInvestigator m) = case toCardType c of
     AssetType -> do

@@ -1,11 +1,10 @@
-module Arkham.Projection where
+module Arkham.Projection (module Arkham.Projection, module X) where
 
 import Arkham.Prelude
 
+import Arkham.Field as X
 import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.GameEnv
-
-data family Field a :: Type -> Type
 
 class Projection a where
   field :: (HasCallStack, Monad m, HasGame m) => Field a typ -> EntityId a -> m typ

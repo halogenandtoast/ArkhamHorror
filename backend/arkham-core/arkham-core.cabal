@@ -775,6 +775,7 @@ library
       Arkham.Event.Runner
       Arkham.EventId
       Arkham.Exception
+      Arkham.Field
       Arkham.Game
       Arkham.Game.Helpers
       Arkham.GameEnv

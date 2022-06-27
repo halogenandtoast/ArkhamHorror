@@ -163,23 +163,27 @@ instance RunMessage DimCarcosa where
       darkSpires <- genCard Locations.darkSpires
       palaceOfTheKing <- genCard Locations.palaceOfTheKing
 
-      bleakPlains <- genCard =<< sample
+      (bleakPlains, setAsideBleakPlains) <- sampleWithRest =<< traverse
+        genCard
         (Locations.bleakPlainsBleakDesolation
         :| [Locations.bleakPlainsStarsOfAldebaran]
         )
-      ruinsOfCarcosa <- genCard =<< sample
+      (ruinsOfCarcosa, setAsideRuinsOfCarcosa) <- sampleWithRest =<< traverse
+        genCard
         (Locations.ruinsOfCarcosaTheCoffin
         :| [ Locations.ruinsOfCarcosaInhabitantOfCarcosa
            , Locations.ruinsOfCarcosaAMomentsRest
            ]
         )
-      dimStreets <- genCard =<< sample
+      (dimStreets, setAsideDimStreets) <- sampleWithRest =<< traverse
+        genCard
         (Locations.dimStreetsMappingTheStreets
         :| [ Locations.dimStreetsTheArchway
            , Locations.dimStreetsTheKingsParade
            ]
         )
-      depthsOfDemhe <- genCard =<< sample
+      (depthsOfDemhe, setAsideDepthsOfDemhe) <- sampleWithRest =<< traverse
+        genCard
         (Locations.depthsOfDemheStepsOfThePalace
         :| [Locations.depthsOfDemheTheHeightOfTheDepths]
         )
@@ -219,7 +223,15 @@ instance RunMessage DimCarcosa where
       DimCarcosa <$> runMessage
         msg
         (attrs
-        & (setAsideCardsL .~ PlayerCard theManInThePallidMask : setAsideCards)
+        & (setAsideCardsL
+          .~ PlayerCard theManInThePallidMask
+          : (setAsideCards
+            <> setAsideBleakPlains
+            <> setAsideRuinsOfCarcosa
+            <> setAsideDimStreets
+            <> setAsideDepthsOfDemhe
+            )
+          )
         & (actStackL
           . at 1
           ?~ [Acts.inLostCarcosa, act2, Acts.theKingInTatters]

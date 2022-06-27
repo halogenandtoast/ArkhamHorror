@@ -38,8 +38,20 @@ import Arkham.Trait
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
+pattern AfterFailedInvestigate :: InvestigatorId -> Target -> Message
+pattern AfterFailedInvestigate iid target <-
+  After (FailedSkillTest iid (Just Action.Investigate) _ target _ _)
+
+pattern UseResign :: InvestigatorId -> Source -> Message
+pattern UseResign iid source <- UseCardAbility iid source _ 99 _
+
+pattern UseDrawCardUnderneath :: InvestigatorId -> Source -> Message
+pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source _ 100 _
+
 instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
+    UpdateLocation newAttrs lid | lid == locationId -> do
+      pure newAttrs
     Investigate iid lid source mTarget skillType False | lid == locationId -> do
       allowed <- getInvestigateAllowed iid a
       if allowed

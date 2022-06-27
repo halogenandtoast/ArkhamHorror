@@ -18,24 +18,13 @@ import Arkham.Keyword
 import Arkham.Location.Cards
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher(..))
-import Arkham.Message
 import Arkham.Name
-import Arkham.Projection
+import Arkham.Field
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (Trait)
 
 class IsLocation a
-
-pattern AfterFailedInvestigate :: InvestigatorId -> Target -> Message
-pattern AfterFailedInvestigate iid target <-
-  After (FailedSkillTest iid (Just Action.Investigate) _ target _ _)
-
-pattern UseResign :: InvestigatorId -> Source -> Message
-pattern UseResign iid source <- UseCardAbility iid source _ 99 _
-
-pattern UseDrawCardUnderneath :: InvestigatorId -> Source -> Message
-pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source _ 100 _
 
 type LocationCard a = CardBuilder LocationId a
 

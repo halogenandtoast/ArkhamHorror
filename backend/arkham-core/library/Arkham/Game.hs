@@ -2361,6 +2361,24 @@ runGameMessage msg g = case msg of
       push (PlacedLocation (toName location) (toCardCode card) lid)
       pure $ g & entitiesL . locationsL . at lid ?~ location
     else pure g
+  ReplaceLocation lid card -> do
+    location <- getLocation lid
+    let
+      location' = lookupLocation (toCardCode card) lid
+      oldAttrs = toAttrs location
+      attrs = (toAttrs location')
+        { locationInvestigators = locationInvestigators oldAttrs
+        , locationEnemies = locationEnemies oldAttrs
+        , locationEvents = locationEvents oldAttrs
+        , locationAssets = locationAssets oldAttrs
+        , locationTreacheries = locationTreacheries oldAttrs
+        }
+    -- todo: should we just run this in place?
+    pushAll
+      [ UpdateLocation attrs lid
+      , PlacedLocation (toName card) (toCardCode card) lid
+      ]
+    pure $ g & entitiesL . locationsL . at lid ?~ location
   RemoveEnemy eid -> pure $ g & entitiesL . enemiesL %~ deleteMap eid
   When (RemoveLocation lid) -> do
     window <- checkWindows

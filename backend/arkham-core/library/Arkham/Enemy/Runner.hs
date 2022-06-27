@@ -590,7 +590,7 @@ instance RunMessage EnemyAttrs where
       modifiers' <- getModifiers (toSource a) (toTarget a)
       let
         canOnlyBeDefeatedByModifier = \case
-          CanOnlyBeDefeatedBy source -> First (Just source)
+          CanOnlyBeDefeatedBy source' -> First (Just source')
           _ -> First Nothing
         mOnlyBeDefeatedByModifier =
           getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
@@ -622,7 +622,7 @@ instance RunMessage EnemyAttrs where
       let
         defeatedByDamage = a ^. damageL >= modifiedHealth
         canOnlyBeDefeatedByModifier = \case
-          CanOnlyBeDefeatedBy source -> First (Just source)
+          CanOnlyBeDefeatedBy source' -> First (Just source')
           _ -> First Nothing
         mOnlyBeDefeatedByModifier =
           getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'

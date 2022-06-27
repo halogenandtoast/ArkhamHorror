@@ -233,6 +233,15 @@ instance RunMessage LocationAttrs where
       pure $ a & cluesL %~ max 0 . subtract n
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
     RemoveAllDoom _ -> pure $ a & doomL .~ 0
+    PlacedLocation _ _ lid | lid == locationId -> do
+      when locationRevealed $ do
+        modifiers' <- getModifiers (toSource a) (toTarget a)
+        locationClueCount <- if CannotPlaceClues `elem` modifiers'
+          then pure 0
+          else getPlayerCountValue locationRevealClues
+
+        pushAll [ PlaceClues (toTarget a) locationClueCount | locationClueCount > 0 ]
+      pure a
     RevealLocation miid lid | lid == locationId -> do
       modifiers' <- getModifiers (toSource a) (toTarget a)
       locationClueCount <- if CannotPlaceClues `elem` modifiers'

@@ -47,16 +47,15 @@ instance RunMessage InTheKnow1 where
             $ AbilityOnLocation (LocationWithId lid)
             <> AbilityIsAction Action.Investigate
           pure $ map (lid, ) investigateActions
-      a <$ push
-        (chooseOne
-          iid
-          [ TargetLabel
-              (LocationTarget location)
-              [ SetLocationAsIf iid location
-              , UseAbility iid investigate windows'
-              , SetLocationAsIf iid investigatorLocation
-              ]
-          | (location, investigate) <- locationsWithInvestigate
-          ]
-        )
+      push $ chooseOne
+        iid
+        [ targetLabel
+            location
+            [ SetLocationAsIf iid location
+            , UseAbility iid investigate windows'
+            , SetLocationAsIf iid investigatorLocation
+            ]
+        | (location, investigate) <- locationsWithInvestigate
+        ]
+      pure a
     _ -> InTheKnow1 <$> runMessage msg attrs

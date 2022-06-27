@@ -1994,6 +1994,7 @@ locationMatches investigatorId source window locationId matcher =
     Matcher.LocationIs _ -> locationId <=~> matcher
     Matcher.Anywhere -> locationId <=~> matcher
     Matcher.Nowhere -> locationId <=~> matcher
+    Matcher.LocationCanBeFlipped -> locationId <=~> matcher
     Matcher.BlockedLocation -> locationId <=~> matcher
     Matcher.EmptyLocation -> locationId <=~> matcher
     Matcher.LocationWithoutInvestigators -> locationId <=~> matcher

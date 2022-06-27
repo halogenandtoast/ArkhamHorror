@@ -1106,6 +1106,8 @@ getLocationsMatching lmatcher = do
     LocationWithResources valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . locationResources . toAttrs) ls
     Nowhere -> pure []
+    LocationCanBeFlipped ->
+      pure $ filter (locationCanBeFlipped . toAttrs) ls
     NotLocation matcher -> do
       excludes <- getLocationsMatching matcher
       pure $ filter (`notElem` excludes) ls

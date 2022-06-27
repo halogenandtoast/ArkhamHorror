@@ -419,9 +419,10 @@ data LocationMatcher
   | LocationMatchAny [LocationMatcher]
   | FirstLocation [LocationMatcher]
   | NotLocation LocationMatcher
+  | LocationCanBeFlipped
   | ClosestPathLocation LocationId LocationId
-  | BlockedLocation
   -- ^ start destination / end destination
+  | BlockedLocation
   | ThisLocation
   -- ^ only useful for windows
   deriving stock (Show, Eq, Generic)

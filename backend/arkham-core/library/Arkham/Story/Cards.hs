@@ -59,6 +59,7 @@ allStoryCards = mapFromList $ map
   , thePattern
   , theFirstShow
   , aboveAndBelow
+  , songsThatTheHyadesShallSing
   , starsOfAldebaran
   , bleakDesolation
   , inhabitantOfCarcosa

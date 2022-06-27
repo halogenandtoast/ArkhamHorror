@@ -89,11 +89,16 @@ data LocationAttrs = LocationAttrs
   , locationConnectsTo :: HashSet Direction
   , locationCardsUnderneath :: [Card]
   , locationCostToEnterUnrevealed :: Cost
+  , locationCanBeFlipped :: Bool
   }
   deriving stock (Show, Eq)
 
 symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
+
+canBeFlippedL :: Lens' LocationAttrs Bool
+canBeFlippedL = lens locationCanBeFlipped
+  $ \m x -> m { locationCanBeFlipped = x }
 
 costToEnterUnrevealedL :: Lens' LocationAttrs Cost
 costToEnterUnrevealedL = lens locationCostToEnterUnrevealed
@@ -291,6 +296,7 @@ locationWith f def shroud' revealClues symbol' connectedSymbols' g =
       , locationConnectsTo = mempty
       , locationCardsUnderneath = mempty
       , locationCostToEnterUnrevealed = ActionCost 1
+      , locationCanBeFlipped = False
       }
     }
 

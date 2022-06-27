@@ -5,18 +5,58 @@ module Arkham.Location.Cards.ShoresOfHali
 
 import Arkham.Prelude
 
+import Arkham.Card
+import Arkham.Card.EncounterCard
 import Arkham.Classes
+import Arkham.DamageEffect
+import Arkham.Game.Helpers
 import Arkham.GameValue
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
+import Arkham.Message
+import Arkham.Story.Cards qualified as Story
+import Arkham.Target
 
 newtype ShoresOfHali = ShoresOfHali LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 shoresOfHali :: LocationCard ShoresOfHali
-shoresOfHali =
-  location ShoresOfHali Cards.shoresOfHali 3 (PerPlayer 2) Circle [Square]
+shoresOfHali = locationWith
+  ShoresOfHali
+  Cards.shoresOfHali
+  3
+  (PerPlayer 2)
+  Circle
+  [Square]
+  (canBeFlippedL .~ True)
 
 instance RunMessage ShoresOfHali where
-  runMessage msg (ShoresOfHali attrs) = ShoresOfHali <$> runMessage msg attrs
+  runMessage msg l@(ShoresOfHali attrs) = case msg of
+    Flip _ target | isTarget attrs target -> do
+      push
+        $ ReadStory
+        $ EncounterCard
+        $ lookupEncounterCard Story.songsThatTheHyadesShallSing
+        $ toCardId attrs
+      pure . ShoresOfHali $ attrs & canBeFlippedL .~ False
+    ResolveStory card | toCardDef card == Story.songsThatTheHyadesShallSing ->
+      do
+        leadInvestigatorId <- getLeadInvestigatorId
+        hastur <- selectJust $ EnemyWithTitle "Hastur"
+        investigatorIds <- selectList $ InvestigatorEngagedWith $ EnemyWithId
+          hastur
+        n <- getPlayerCountValue (PerPlayer 1)
+        pushAll
+          $ [ EnemyDamage
+              hastur
+              leadInvestigatorId
+              (toSource attrs)
+              NonAttackDamageEffect
+              n
+            , Exhaust (EnemyTarget hastur)
+            ]
+          <> [ DisengageEnemy iid hastur | iid <- investigatorIds ]
+        pure l
+    _ -> ShoresOfHali <$> runMessage msg attrs

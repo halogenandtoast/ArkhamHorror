@@ -33,6 +33,7 @@ import Arkham.EncounterCard.Source
 import Arkham.Exception
 import Arkham.Helpers
 import Arkham.Id
+import Arkham.Location.Attrs (LocationAttrs)
 import Arkham.Matcher hiding ( EnemyDefeated, InvestigatorDefeated )
 import Arkham.Name
 import Arkham.Phase
@@ -125,6 +126,7 @@ data Message
   | AdvanceAgendaIfThresholdSatisfied
   | AdvanceAgendaDeck Int Source
   | AdvanceCurrentAgenda
+  | ReplaceLocation LocationId Card
   | ReplaceAgenda AgendaId AgendaId
   | RevertAgenda AgendaId
   | ResetAgendaDeckToStage Int
@@ -592,6 +594,8 @@ data Message
   | FinishAction
   | BeginCardPayment Card
   | FinishCardPayment Card
+  | -- Fields
+    UpdateLocation LocationAttrs LocationId
   deriving stock (Show, Eq)
 
 $(deriveJSON defaultOptions ''Message)

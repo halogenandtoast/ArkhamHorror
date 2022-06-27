@@ -23,13 +23,14 @@ newtype BleakPlainsBleakDesolation = BleakPlainsBleakDesolation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bleakPlainsBleakDesolation :: LocationCard BleakPlainsBleakDesolation
-bleakPlainsBleakDesolation = location
+bleakPlainsBleakDesolation = locationWith
   BleakPlainsBleakDesolation
   Cards.bleakPlainsBleakDesolation
   4
   (PerPlayer 1)
   Square
   [Circle, Triangle, Diamond]
+  (canBeFlippedL .~ True)
 
 instance HasModifiersFor BleakPlainsBleakDesolation where
   getModifiersFor _ (InvestigatorTarget iid) (BleakPlainsBleakDesolation a) =
@@ -47,9 +48,9 @@ instance HasAbilities BleakPlainsBleakDesolation where
 instance RunMessage BleakPlainsBleakDesolation where
   runMessage msg l@(BleakPlainsBleakDesolation attrs) = case msg of
     Flip _ target | isTarget attrs target -> do
-      push $ ReadStory Story.songsThatTheHyadesShallSing
+      push $ ReadStory Story.bleakDesolation
       pure . BleakPlainsBleakDesolation $ attrs & canBeFlippedL .~ False
-    ResolveStory story' | story' == Story.songsThatTheHyadesShallSing -> do
+    ResolveStory story' | story' == Story.bleakDesolation -> do
       leadInvestigatorId <- getLeadInvestigatorId
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- getPlayerCountValue (PerPlayer 2)

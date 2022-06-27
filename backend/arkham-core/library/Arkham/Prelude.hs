@@ -127,6 +127,11 @@ sample xs = do
   idx <- getRandomR (0, NE.length xs - 1)
   pure $ xs NE.!! idx
 
+sampleWithRest :: (Eq a, MonadRandom m) => NonEmpty a -> m (a, [a])
+sampleWithRest xs = do
+  x <- sample xs
+  pure (x, deleteFirst x $ toList xs)
+
 infix 9 !!?
 (!!?) :: [a] -> Int -> Maybe a
 (!!?) xs i

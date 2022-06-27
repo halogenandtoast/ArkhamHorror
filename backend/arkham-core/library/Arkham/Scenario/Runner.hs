@@ -328,14 +328,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     case rest of
       [] -> pure a
       (_ : xs) -> pure $ a & setAsideCardsL .~ (before <> xs)
-  ReadStory card -> do
+  ReadStory story' -> do
     leadInvestigatorId <- getLeadInvestigatorId
     push
       (chooseOne
         leadInvestigatorId
-        [CardLabel (toCardCode card) [ResolveStory card]]
+        [CardLabel (cdCardCode story') [ResolveStory story']]
       )
-    pure $ a & cardsUnderScenarioReferenceL %~ filter (/= card)
+    pure $ a & cardsUnderScenarioReferenceL %~ filter ((/= story') . toCardDef)
   SetActDeck -> do
     case a ^. actStackL . at 1 of
       Just (x : _) -> push (AddAct x)

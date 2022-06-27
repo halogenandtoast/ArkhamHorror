@@ -47,10 +47,5 @@ instance RunMessage SebastienMoreau where
           (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers)
           (pushAll [RemoveClues (toTarget attrs) 1, GainClues iid 1])
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
-      a <$ push
-        (ReadStory
-        $ EncounterCard
-        $ lookupEncounterCard Story.theFirstShow
-        $ toCardId attrs
-        )
+      a <$ push (ReadStory Story.theFirstShow)
     _ -> SebastienMoreau <$> runMessage msg attrs

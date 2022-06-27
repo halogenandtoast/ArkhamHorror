@@ -102,8 +102,8 @@ doNotMask _ = False
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | -- Story Card Messages
-    ReadStory Card
-  | ResolveStory Card
+    ReadStory CardDef
+  | ResolveStory CardDef
   | Do Message
   | -- Handle discard costs
     DiscardedCost Target

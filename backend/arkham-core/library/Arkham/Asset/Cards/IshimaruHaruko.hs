@@ -54,10 +54,5 @@ instance RunMessage IshimaruHaruko where
           (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers)
           (pushAll [RemoveClues (toTarget attrs) 1, GainClues iid 1])
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
-      a <$ push
-        (ReadStory
-        $ EncounterCard
-        $ lookupEncounterCard Story.thePattern
-        $ toCardId attrs
-        )
+      a <$ push (ReadStory Story.thePattern)
     _ -> IshimaruHaruko <$> runMessage msg attrs

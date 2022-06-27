@@ -10,6 +10,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Attrs
 import Arkham.Agenda.Runner
+import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.GameValue
@@ -45,7 +46,7 @@ instance RunMessage TheTerrifyingTruth where
         [] -> pure $ AdvanceAgenda (toId attrs)
         (x : xs) -> do
           card <- sample $ x :| xs
-          pure $ ReadStory card
+          pure $ ReadStory $ toCardDef card
       a <$ pushAll [RemoveAllDoom (toSource attrs), result]
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 3)

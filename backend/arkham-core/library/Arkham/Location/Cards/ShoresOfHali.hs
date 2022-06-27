@@ -35,13 +35,9 @@ shoresOfHali = locationWith
 instance RunMessage ShoresOfHali where
   runMessage msg l@(ShoresOfHali attrs) = case msg of
     Flip _ target | isTarget attrs target -> do
-      push
-        $ ReadStory
-        $ EncounterCard
-        $ lookupEncounterCard Story.songsThatTheHyadesShallSing
-        $ toCardId attrs
+      push $ ReadStory Story.songsThatTheHyadesShallSing
       pure . ShoresOfHali $ attrs & canBeFlippedL .~ False
-    ResolveStory card | toCardDef card == Story.songsThatTheHyadesShallSing ->
+    ResolveStory story | story == Story.songsThatTheHyadesShallSing ->
       do
         leadInvestigatorId <- getLeadInvestigatorId
         hastur <- selectJust $ EnemyWithTitle "Hastur"

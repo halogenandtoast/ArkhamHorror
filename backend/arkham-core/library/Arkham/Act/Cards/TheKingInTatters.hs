@@ -29,13 +29,13 @@ theKingInTatters :: ActCard TheKingInTatters
 theKingInTatters = act (3, A) TheKingInTatters Cards.theKingInTatters Nothing
 
 instance HasAbilities TheKingInTatters where
-  getAbilities (TheKingInTatters x) =
+  getAbilities (TheKingInTatters a) =
     [ restrictedAbility
-        x
+        a
         1
         (OnLocation $ LocationWithoutClues <> LocationCanBeFlipped)
       $ FastAbility Free
-    , mkAbility x 2
+    , mkAbility a 2
       $ ForcedAbility
       $ EnemyWouldBeDefeated Timing.When
       $ EnemyWithTitle "Hastur"

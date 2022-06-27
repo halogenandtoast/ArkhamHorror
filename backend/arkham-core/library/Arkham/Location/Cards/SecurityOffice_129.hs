@@ -49,7 +49,7 @@ instance RunMessage SecurityOffice_129 where
           (TargetLabel
               ScenarioDeckTarget
               [LookAtTopOfDeck iid ScenarioDeckTarget 1]
-          : [ LookAtRevealed (toSource attrs) (LocationTarget exhibitHall)
+          : [ LookAtRevealed iid (toSource attrs) (LocationTarget exhibitHall)
             | exhibitHall <- unrevealedExhibitHalls
             ]
           )

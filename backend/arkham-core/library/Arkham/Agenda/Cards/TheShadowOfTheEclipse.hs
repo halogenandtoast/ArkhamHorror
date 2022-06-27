@@ -35,7 +35,7 @@ instance RunMessage TheShadowOfTheEclipse where
         xs -> a <$ pushAll
           [ chooseOne
             leadInvestigatorId
-            [ Flip (InvestigatorSource leadInvestigatorId) (AssetTarget x)
+            [ Flip leadInvestigatorId (InvestigatorSource leadInvestigatorId) (AssetTarget x)
             | x <- xs
             ]
           , RevertAgenda aid

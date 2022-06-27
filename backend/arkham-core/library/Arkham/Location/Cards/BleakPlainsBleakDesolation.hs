@@ -47,16 +47,15 @@ instance HasAbilities BleakPlainsBleakDesolation where
 
 instance RunMessage BleakPlainsBleakDesolation where
   runMessage msg l@(BleakPlainsBleakDesolation attrs) = case msg of
-    Flip _ target | isTarget attrs target -> do
-      push $ ReadStory Story.bleakDesolation
+    Flip iid _ target | isTarget attrs target -> do
+      push $ ReadStory iid Story.bleakDesolation
       pure . BleakPlainsBleakDesolation $ attrs & canBeFlippedL .~ False
-    ResolveStory story' | story' == Story.bleakDesolation -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+    ResolveStory iid story' | story' == Story.bleakDesolation -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- getPlayerCountValue (PerPlayer 2)
       push $ EnemyDamage
         hastur
-        leadInvestigatorId
+        iid
         (toSource attrs)
         NonAttackDamageEffect
         n

@@ -55,7 +55,7 @@ instance RunMessage CatacombsDocent where
           iid
           [ targetLabel
               location
-              [LookAtRevealed (toSource attrs) (LocationTarget location)]
+              [LookAtRevealed iid (toSource attrs) (LocationTarget location)]
           | location <- unrevealedLocations
           ]
         pure e

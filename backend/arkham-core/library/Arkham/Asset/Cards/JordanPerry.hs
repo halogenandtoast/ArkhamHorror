@@ -9,8 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Story.Cards qualified as Story
 import Arkham.Asset.Runner
-import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
@@ -53,6 +51,6 @@ instance RunMessage JordanPerry where
         a <$ when
           (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers)
           (pushAll [RemoveClues (toTarget attrs) 1, GainClues iid 1])
-    UseCardAbility _ source _ 2 _ | isSource attrs source -> do
-      a <$ push (ReadStory Story.langneauPerdu)
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
+      a <$ push (ReadStory iid Story.langneauPerdu)
     _ -> JordanPerry <$> runMessage msg attrs

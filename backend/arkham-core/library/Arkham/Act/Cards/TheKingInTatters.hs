@@ -51,7 +51,7 @@ instance RunMessage TheKingInTatters where
         when noClues
           $ pushAll
           $ map InvestigatorDiscardAllClues iids
-          <> [Flip source (LocationTarget lid)]
+          <> [Flip iid source (LocationTarget lid)]
       pure a
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       whenM (selectAny $ enemyIs Enemies.hasturTheTatteredKing)

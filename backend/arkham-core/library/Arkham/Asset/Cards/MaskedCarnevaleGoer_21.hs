@@ -34,8 +34,8 @@ instance HasAbilities MaskedCarnevaleGoer_21 where
 instance RunMessage MaskedCarnevaleGoer_21 where
   runMessage msg a@(MaskedCarnevaleGoer_21 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      a <$ push (Flip (InvestigatorSource iid) (toTarget attrs))
-    Flip _ target | isTarget attrs target -> do
+      a <$ push (Flip iid (InvestigatorSource iid) (toTarget attrs))
+    Flip _ _ target | isTarget attrs target -> do
       case assetLocation attrs of
         Just lid -> do
           let
@@ -46,7 +46,7 @@ instance RunMessage MaskedCarnevaleGoer_21 where
             , Flipped (toSource attrs) innocentReveler
             ]
         Nothing -> error "not possible"
-    LookAtRevealed _ target | isTarget a target -> do
+    LookAtRevealed _ _ target | isTarget a target -> do
       let
         innocentReveler =
           PlayerCard $ lookupPlayerCard Cards.innocentReveler (toCardId attrs)

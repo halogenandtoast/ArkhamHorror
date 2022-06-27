@@ -222,7 +222,7 @@ instance RunMessage TheLastKing where
         ElderThing | isHardExpert attrs ->
           push (InvestigatorAssignDamage iid (TokenSource token) DamageAny 1 0)
         _ -> pure ()
-    ResolveStory story' | cdName story' == "Sickening Reality" -> do
+    ResolveStory _ story' | cdName story' == "Sickening Reality" -> do
       let
         findPair
           | story' == Story.sickeningReality_65
@@ -262,7 +262,7 @@ instance RunMessage TheLastKing where
            , CreateEnemyAt enemyCard lid Nothing
            ]
         )
-    ResolveStory story' -> do
+    ResolveStory _ story' -> do
       let
         remember
           | story' == Story.engramsOath = InterviewedConstance

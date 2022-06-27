@@ -2378,7 +2378,7 @@ runGameMessage msg g = case msg of
       [ UpdateLocation attrs lid
       , PlacedLocation (toName card) (toCardCode card) lid
       ]
-    pure $ g & entitiesL . locationsL . at lid ?~ location
+    pure $ g & entitiesL . locationsL . at lid ?~ location'
   RemoveEnemy eid -> pure $ g & entitiesL . enemiesL %~ deleteMap eid
   When (RemoveLocation lid) -> do
     window <- checkWindows

@@ -5,8 +5,6 @@ module Arkham.Location.Cards.ShoresOfHali
 
 import Arkham.Prelude
 
-import Arkham.Card
-import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Game.Helpers
@@ -34,12 +32,11 @@ shoresOfHali = locationWith
 
 instance RunMessage ShoresOfHali where
   runMessage msg l@(ShoresOfHali attrs) = case msg of
-    Flip _ target | isTarget attrs target -> do
-      push $ ReadStory Story.songsThatTheHyadesShallSing
+    Flip iid _ target | isTarget attrs target -> do
+      push $ ReadStory iid Story.songsThatTheHyadesShallSing
       pure . ShoresOfHali $ attrs & canBeFlippedL .~ False
-    ResolveStory story' | story' == Story.songsThatTheHyadesShallSing ->
+    ResolveStory iid story' | story' == Story.songsThatTheHyadesShallSing ->
       do
-        leadInvestigatorId <- getLeadInvestigatorId
         hastur <- selectJust $ EnemyWithTitle "Hastur"
         investigatorIds <- selectList $ InvestigatorEngagedWith $ EnemyWithId
           hastur
@@ -47,12 +44,12 @@ instance RunMessage ShoresOfHali where
         pushAll
           $ [ EnemyDamage
               hastur
-              leadInvestigatorId
+              iid
               (toSource attrs)
               NonAttackDamageEffect
               n
             , Exhaust (EnemyTarget hastur)
             ]
-          <> [ DisengageEnemy iid hastur | iid <- investigatorIds ]
+          <> [ DisengageEnemy iid' hastur | iid' <- investigatorIds ]
         pure l
     _ -> ShoresOfHali <$> runMessage msg attrs

@@ -103,8 +103,8 @@ doNotMask _ = False
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | -- Story Card Messages
-    ReadStory CardDef
-  | ResolveStory CardDef
+    ReadStory InvestigatorId CardDef
+  | ResolveStory InvestigatorId CardDef
   | Do Message
   | -- Handle discard costs
     DiscardedCost Target
@@ -346,7 +346,7 @@ data Message
   | InitDeck InvestigatorId (Deck PlayerCard) -- used to initialize the deck for the campaign
   | UpgradeDeck InvestigatorId (Deck PlayerCard) -- used to upgrade deck during campaign
   | FinishedUpgradingDecks
-  | Flip Source Target
+  | Flip InvestigatorId Source Target
   | Flipped Source Card
   | InitiatePlayCardAsChoose InvestigatorId CardId [Card] [Message] ChosenCardStrategy Bool
   | InitiatePlayCardAs InvestigatorId CardId Card [Message] ChosenCardStrategy Bool
@@ -396,7 +396,7 @@ data Message
   | Label Text [Message]
   | CardLabel CardCode [Message]
   | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator
-  | LookAtRevealed Source Target
+  | LookAtRevealed InvestigatorId Source Target
   | LookAtTopOfDeck InvestigatorId Target Int
   | LoseActions InvestigatorId Source Int
   | LoseResources InvestigatorId Int

@@ -39,14 +39,14 @@ instance HasAbilities TheTerrifyingTruth where
 
 instance RunMessage TheTerrifyingTruth where
   runMessage msg a@(TheTerrifyingTruth attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       storyCards <- selectList
         (UnderScenarioReferenceMatch $ CardWithType StoryType)
       result <- case storyCards of
         [] -> pure $ AdvanceAgenda (toId attrs)
         (x : xs) -> do
           card <- sample $ x :| xs
-          pure $ ReadStory $ toCardDef card
+          pure $ ReadStory iid $ toCardDef card
       a <$ pushAll [RemoveAllDoom (toSource attrs), result]
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 3)

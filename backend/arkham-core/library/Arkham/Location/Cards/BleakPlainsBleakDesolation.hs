@@ -7,11 +7,14 @@ import Arkham.Prelude
 
 import Arkham.Card.CardType
 import Arkham.Classes
+import Arkham.DamageEffect
+import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Matcher
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
+import Arkham.Message
+import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 import Arkham.Trait
 
@@ -42,5 +45,19 @@ instance HasAbilities BleakPlainsBleakDesolation where
     -- withBaseAbilities attrs []
 
 instance RunMessage BleakPlainsBleakDesolation where
-  runMessage msg (BleakPlainsBleakDesolation attrs) =
-    BleakPlainsBleakDesolation <$> runMessage msg attrs
+  runMessage msg l@(BleakPlainsBleakDesolation attrs) = case msg of
+    Flip _ target | isTarget attrs target -> do
+      push $ ReadStory Story.songsThatTheHyadesShallSing
+      pure . BleakPlainsBleakDesolation $ attrs & canBeFlippedL .~ False
+    ResolveStory story' | story' == Story.songsThatTheHyadesShallSing -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      hastur <- selectJust $ EnemyWithTitle "Hastur"
+      n <- getPlayerCountValue (PerPlayer 2)
+      push $ EnemyDamage
+        hastur
+        leadInvestigatorId
+        (toSource attrs)
+        NonAttackDamageEffect
+        n
+      pure l
+    _ -> BleakPlainsBleakDesolation <$> runMessage msg attrs

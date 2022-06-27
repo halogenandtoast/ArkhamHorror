@@ -37,7 +37,7 @@ instance RunMessage ShoresOfHali where
     Flip _ target | isTarget attrs target -> do
       push $ ReadStory Story.songsThatTheHyadesShallSing
       pure . ShoresOfHali $ attrs & canBeFlippedL .~ False
-    ResolveStory story | story == Story.songsThatTheHyadesShallSing ->
+    ResolveStory story' | story' == Story.songsThatTheHyadesShallSing ->
       do
         leadInvestigatorId <- getLeadInvestigatorId
         hastur <- selectJust $ EnemyWithTitle "Hastur"

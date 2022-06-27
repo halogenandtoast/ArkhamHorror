@@ -222,18 +222,18 @@ instance RunMessage TheLastKing where
         ElderThing | isHardExpert attrs ->
           push (InvestigatorAssignDamage iid (TokenSource token) DamageAny 1 0)
         _ -> pure ()
-    ResolveStory card | toName card == "Sickening Reality" -> do
+    ResolveStory story | cdName story == "Sickening Reality" -> do
       let
         findPair
-          | toCardDef card == Story.sickeningReality_65
+          | story == Story.sickeningReality_65
           = (Assets.constanceDumaine, Enemies.constanceDumaine)
-          | toCardDef card == Story.sickeningReality_66
+          | story == Story.sickeningReality_66
           = (Assets.jordanPerry, Enemies.jordanPerry)
-          | toCardDef card == Story.sickeningReality_67
+          | story == Story.sickeningReality_67
           = (Assets.ishimaruHaruko, Enemies.ishimaruHaruko)
-          | toCardDef card == Story.sickeningReality_68
+          | story == Story.sickeningReality_68
           = (Assets.sebastienMoreau, Enemies.sebastienMoreau)
-          | toCardDef card == Story.sickeningReality_69
+          | story == Story.sickeningReality_69
           = (Assets.ashleighClarke, Enemies.ashleighClarke)
           | otherwise
           = error "Invalid story"
@@ -250,7 +250,7 @@ instance RunMessage TheLastKing where
       s <$ pushAll
         ([ InvestigatorAssignDamage
              iid
-             (StorySource $ toCardCode card)
+             (StorySource $ cdCardCode story)
              DamageAny
              0
              1
@@ -262,14 +262,14 @@ instance RunMessage TheLastKing where
            , CreateEnemyAt enemyCard lid Nothing
            ]
         )
-    ResolveStory card -> do
+    ResolveStory story -> do
       let
         remember
-          | toCardDef card == Story.engramsOath = InterviewedConstance
-          | toCardDef card == Story.langneauPerdu = InterviewedJordan
-          | toCardDef card == Story.thePattern = InterviewedHaruko
-          | toCardDef card == Story.theFirstShow = InterviewedSebastien
-          | toCardDef card == Story.aboveAndBelow = InterviewedAshleigh
+          | story == Story.engramsOath = InterviewedConstance
+          | story == Story.langneauPerdu = InterviewedJordan
+          | story == Story.thePattern = InterviewedHaruko
+          | story == Story.theFirstShow = InterviewedSebastien
+          | story == Story.aboveAndBelow = InterviewedAshleigh
           | otherwise = error "invalid story"
       s <$ push (Remember remember)
     ScenarioResolution NoResolution -> do

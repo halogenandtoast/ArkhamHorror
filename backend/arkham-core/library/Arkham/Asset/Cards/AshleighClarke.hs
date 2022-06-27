@@ -41,10 +41,5 @@ instance RunMessage AshleighClarke where
       (assetClues attrs > 0)
       (pushAll [RemoveClues (toTarget attrs) 1, GainClues iid 1])
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
-      a <$ push
-        (ReadStory
-        $ EncounterCard
-        $ lookupEncounterCard Story.aboveAndBelow
-        $ toCardId attrs
-        )
+      a <$ push (ReadStory Story.aboveAndBelow)
     _ -> AshleighClarke <$> runMessage msg attrs

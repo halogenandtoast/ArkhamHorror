@@ -54,10 +54,5 @@ instance RunMessage JordanPerry where
           (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers)
           (pushAll [RemoveClues (toTarget attrs) 1, GainClues iid 1])
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
-      a <$ push
-        (ReadStory
-        $ EncounterCard
-        $ lookupEncounterCard Story.langneauPerdu
-        $ toCardId attrs
-        )
+      a <$ push (ReadStory Story.langneauPerdu)
     _ -> JordanPerry <$> runMessage msg attrs

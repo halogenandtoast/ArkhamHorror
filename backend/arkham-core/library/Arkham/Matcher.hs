@@ -79,7 +79,7 @@ colocatedWith :: InvestigatorId -> InvestigatorMatcher
 colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId
 
 investigatorEngagedWith :: EnemyId -> InvestigatorMatcher
-investigatorEngagedWith = InvestigatorEngagedWith . EnemyWIthId
+investigatorEngagedWith = InvestigatorEngagedWith . EnemyWithId
 
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher

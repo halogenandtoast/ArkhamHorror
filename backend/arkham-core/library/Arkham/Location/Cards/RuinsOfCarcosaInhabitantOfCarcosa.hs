@@ -5,10 +5,15 @@ module Arkham.Location.Cards.RuinsOfCarcosaInhabitantOfCarcosa
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Timing qualified as Timing
 
 newtype RuinsOfCarcosaInhabitantOfCarcosa = RuinsOfCarcosaInhabitantOfCarcosa LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -16,18 +21,27 @@ newtype RuinsOfCarcosaInhabitantOfCarcosa = RuinsOfCarcosaInhabitantOfCarcosa Lo
 
 ruinsOfCarcosaInhabitantOfCarcosa
   :: LocationCard RuinsOfCarcosaInhabitantOfCarcosa
-ruinsOfCarcosaInhabitantOfCarcosa = location
+ruinsOfCarcosaInhabitantOfCarcosa = locationWith
   RuinsOfCarcosaInhabitantOfCarcosa
   Cards.ruinsOfCarcosaInhabitantOfCarcosa
   2
   (PerPlayer 1)
   Triangle
   [Square, Equals, Star]
+  (canBeFlippedL .~ True)
 
 instance HasAbilities RuinsOfCarcosaInhabitantOfCarcosa where
-  getAbilities (RuinsOfCarcosaInhabitantOfCarcosa attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (RuinsOfCarcosaInhabitantOfCarcosa a) = withBaseAbilities
+    a
+    [ mkAbility a 1 $ ForcedAbility $ DiscoveringLastClue
+        Timing.After
+        You
+        (LocationWithId $ toId a)
+    ]
 
 instance RunMessage RuinsOfCarcosaInhabitantOfCarcosa where
-  runMessage msg (RuinsOfCarcosaInhabitantOfCarcosa attrs) =
-    RuinsOfCarcosaInhabitantOfCarcosa <$> runMessage msg attrs
+  runMessage msg l@(RuinsOfCarcosaInhabitantOfCarcosa attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ InvestigatorAssignDamage iid source DamageAny 1 0
+      pure l
+    _ -> RuinsOfCarcosaInhabitantOfCarcosa <$> runMessage msg attrs

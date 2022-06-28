@@ -253,6 +253,7 @@ data Message
   | DiscoverClues InvestigatorId LocationId Int (Maybe Action)
   | DiscoverCluesAtLocation InvestigatorId LocationId Int (Maybe Action)
   | DisengageEnemy InvestigatorId EnemyId
+  | DisengageEnemyFromAll EnemyId
   | Done Text
   | DrawAnotherToken InvestigatorId
   | DrawCards InvestigatorId Int Bool

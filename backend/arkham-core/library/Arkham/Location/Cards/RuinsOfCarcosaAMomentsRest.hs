@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Ability
+import Arkham.Helpers.Query
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner

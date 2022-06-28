@@ -5,7 +5,6 @@ module Arkham.Location.Cards.BleakPlainsStarsOfAldebaran
 
 import Arkham.Prelude
 
-import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Game.Helpers
@@ -16,11 +15,10 @@ import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
-import Arkham.Trait
 
 newtype BleakPlainsStarsOfAldebaran = BleakPlainsStarsOfAldebaran LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 bleakPlainsStarsOfAldebaran :: LocationCard BleakPlainsStarsOfAldebaran
 bleakPlainsStarsOfAldebaran = locationWith
@@ -34,16 +32,8 @@ bleakPlainsStarsOfAldebaran = locationWith
 
 instance HasModifiersFor BleakPlainsStarsOfAldebaran where
   getModifiersFor _ (InvestigatorTarget iid) (BleakPlainsStarsOfAldebaran a) =
-    pure $ toModifiers
-      a
-      [ CannotPlay (CardWithType AssetType <> CardWithTrait Ally)
-      | iid `member` locationInvestigators a
-      ]
+    pure $ toModifiers a [ CannotPlay IsAlly | iid `on` a ]
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities BleakPlainsStarsOfAldebaran where
-  getAbilities (BleakPlainsStarsOfAldebaran attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
 
 instance RunMessage BleakPlainsStarsOfAldebaran where
   runMessage msg l@(BleakPlainsStarsOfAldebaran attrs) = case msg of
@@ -54,28 +44,17 @@ instance RunMessage BleakPlainsStarsOfAldebaran where
       iids <- getInvestigatorIds
       enemies <- selectList $ NotEnemy $ EnemyWithTitle "Hastur"
       let
-        enemyMessages = if null enemies
-          then []
-          else
-            [ chooseOne
-                iid
-                [ EnemyDamage
-                    enemy
-                    iid
-                    (toSource attrs)
-                    NonAttackDamageEffect
-                    4
-                ]
-            | enemy <- enemies
-            ]
-      otherBleakPlains <- selectList $ SetAsideCardMatch $ CardWithTitle "Bleak Plains"
-      otherBleakPlain <- case otherBleakPlains of
-                           [] -> error "missing"
-                           [x] -> pure x
-                           (x:xs) -> sample (x :| xs)
+        damageEnemy enemy = targetLabel
+          enemy
+          [EnemyDamage enemy iid (toSource attrs) NonAttackDamageEffect 4]
+      setAsideBleakPlains <- getSetAsideCardsMatching
+        $ CardWithTitle "Bleak Plains"
+      otherBleakPlain <- case setAsideBleakPlains of
+        [] -> error "missing"
+        (x : xs) -> sample (x :| xs)
       pushAll
         $ [ HealHorror (InvestigatorTarget iid') 3 | iid' <- iids ]
-        <> enemyMessages
+        <> [ chooseOrRunOne iid $ map damageEnemy enemies | notNull enemies ]
         <> [ReplaceLocation (toId attrs) otherBleakPlain]
       pure l
     _ -> BleakPlainsStarsOfAldebaran <$> runMessage msg attrs

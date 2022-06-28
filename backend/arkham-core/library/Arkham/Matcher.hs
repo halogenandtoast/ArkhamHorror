@@ -78,6 +78,9 @@ pattern InvestigatorCanMove <- InvestigatorWithoutModifier CannotMove where
 colocatedWith :: InvestigatorId -> InvestigatorMatcher
 colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId
 
+investigatorEngagedWith :: EnemyId -> InvestigatorMatcher
+investigatorEngagedWith = InvestigatorEngagedWith . EnemyWIthId
+
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | You

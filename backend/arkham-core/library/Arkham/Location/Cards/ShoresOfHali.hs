@@ -35,21 +35,14 @@ instance RunMessage ShoresOfHali where
     Flip iid _ target | isTarget attrs target -> do
       push $ ReadStory iid Story.songsThatTheHyadesShallSing
       pure . ShoresOfHali $ attrs & canBeFlippedL .~ False
-    ResolveStory iid story' | story' == Story.songsThatTheHyadesShallSing ->
-      do
-        hastur <- selectJust $ EnemyWithTitle "Hastur"
-        investigatorIds <- selectList $ InvestigatorEngagedWith $ EnemyWithId
-          hastur
-        n <- getPlayerCountValue (PerPlayer 1)
-        pushAll
-          $ [ EnemyDamage
-              hastur
-              iid
-              (toSource attrs)
-              NonAttackDamageEffect
-              n
-            , Exhaust (EnemyTarget hastur)
-            ]
-          <> [ DisengageEnemy iid' hastur | iid' <- investigatorIds ]
-        pure l
+    ResolveStory iid story' | story' == Story.songsThatTheHyadesShallSing -> do
+      hastur <- selectJust $ EnemyWithTitle "Hastur"
+      investigatorIds <- selectList $ investigatorEngagedWith hastur
+      n <- getPlayerCountValue (PerPlayer 1)
+      pushAll
+        $ [ EnemyDamage hastur iid (toSource attrs) NonAttackDamageEffect n
+          , Exhaust (EnemyTarget hastur)
+          ]
+        <> [ DisengageEnemy iid' hastur | iid' <- investigatorIds ]
+      pure l
     _ -> ShoresOfHali <$> runMessage msg attrs

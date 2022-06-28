@@ -5,7 +5,6 @@ module Arkham.Location.Cards.BleakPlainsBleakDesolation
 
 import Arkham.Prelude
 
-import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Game.Helpers
@@ -16,11 +15,10 @@ import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
-import Arkham.Trait
 
 newtype BleakPlainsBleakDesolation = BleakPlainsBleakDesolation LocationAttrs
   deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 bleakPlainsBleakDesolation :: LocationCard BleakPlainsBleakDesolation
 bleakPlainsBleakDesolation = locationWith
@@ -34,16 +32,8 @@ bleakPlainsBleakDesolation = locationWith
 
 instance HasModifiersFor BleakPlainsBleakDesolation where
   getModifiersFor _ (InvestigatorTarget iid) (BleakPlainsBleakDesolation a) =
-    pure $ toModifiers
-      a
-      [ CannotPlay (CardWithType AssetType <> CardWithTrait Ally)
-      | iid `member` locationInvestigators a
-      ]
+    pure $ toModifiers a [ CannotPlay IsAlly | iid `on` a ]
   getModifiersFor _ _ _ = pure []
-
-instance HasAbilities BleakPlainsBleakDesolation where
-  getAbilities (BleakPlainsBleakDesolation attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
 
 instance RunMessage BleakPlainsBleakDesolation where
   runMessage msg l@(BleakPlainsBleakDesolation attrs) = case msg of
@@ -53,11 +43,6 @@ instance RunMessage BleakPlainsBleakDesolation where
     ResolveStory iid story' | story' == Story.bleakDesolation -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- getPlayerCountValue (PerPlayer 2)
-      push $ EnemyDamage
-        hastur
-        iid
-        (toSource attrs)
-        NonAttackDamageEffect
-        n
+      push $ EnemyDamage hastur iid (toSource attrs) NonAttackDamageEffect n
       pure l
     _ -> BleakPlainsBleakDesolation <$> runMessage msg attrs

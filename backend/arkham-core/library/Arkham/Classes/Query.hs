@@ -45,7 +45,7 @@ selectList
 selectList = selectListMap id
 
 selectRandom
-  :: (HasCallStack, Query a, HasGame m, Monad m, MonadRandom m)
+  :: (HasCallStack, Query a, HasGame m, MonadRandom m)
   => a
   -> m (Maybe (QueryElement a))
 selectRandom matcher = do

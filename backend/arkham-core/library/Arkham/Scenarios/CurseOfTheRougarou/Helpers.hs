@@ -23,6 +23,10 @@ getTheRougarou = selectOne $ enemyIs Cards.theRougarou
 
 locationsWithLabels :: MonadRandom m => Trait -> [Card] -> m [(Text, Card)]
 locationsWithLabels trait locationSet = do
+  let
+    (before, bayou :| after) = case break (elem Bayou . toTraits) locationSet of
+      (_, []) -> error "not expected"
+      (a, b : c) -> (a, b :| c)
   shuffled <- shuffleM (before <> after)
   pure $ zip labels (bayou : shuffled)
  where
@@ -31,7 +35,6 @@ locationsWithLabels trait locationSet = do
     , pack (camelCase $ show trait) <> "1"
     , pack (camelCase $ show trait) <> "2"
     ]
-  (before, bayou : after) = break (elem Bayou . toTraits) locationSet
 
 locationsByTrait :: HashMap Trait [CardDef]
 locationsByTrait = mapFromList

@@ -257,7 +257,7 @@ getCanAffordAbility
 getCanAffordAbility iid ability window =
   (&&)
     <$> (getCanAffordUse iid ability window)
-    <*> getCanAffordAbilityCost iid ability
+    <*> (getCanAffordAbilityCost iid ability)
 
 getCanAffordAbilityCost
   :: (Monad m, HasGame m) => InvestigatorId -> Ability -> m Bool

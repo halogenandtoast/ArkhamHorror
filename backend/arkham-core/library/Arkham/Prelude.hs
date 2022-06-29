@@ -74,7 +74,7 @@ suffixedFields = defaultFieldRules & lensField .~ suffixedNamer
 guardM :: (Alternative m, Monad m) => m Bool -> m ()
 guardM p = p >>= guard
 
-mapSet :: (Hashable b, Eq b) => (a -> b) -> HashSet a -> HashSet b
+mapSet :: Hashable b => (a -> b) -> HashSet a -> HashSet b
 mapSet = HashSet.map
 
 toFst :: (a -> b) -> a -> (b, a)
@@ -191,7 +191,7 @@ with = With
 withBase :: a `With` b -> a
 withBase (a `With` _) = a
 
-findKey :: (Hashable k, Eq k) => (v -> Bool) -> HashMap k v -> Maybe k
+findKey :: Hashable k => (v -> Bool) -> HashMap k v -> Maybe k
 findKey p = fmap fst . find (p . snd) . mapToList
 
 -- getMax will return a very low number

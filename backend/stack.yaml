@@ -2,7 +2,7 @@
 require-stack-version: ">= 2.3.1"
 concurrent-tests: false
 
-resolver: lts-19.10
+resolver: nightly-2022-06-29
 
 ghc-options:
   "$locals":
@@ -15,6 +15,7 @@ ghc-options:
     -Wno-safe
     -Wno-missing-local-signatures
     -Wno-monomorphism-restriction
+    -Wno-missing-kind-signatures
     -Wno-missing-import-lists
     -Wno-missing-export-lists
     -Wno-incomplete-uni-patterns

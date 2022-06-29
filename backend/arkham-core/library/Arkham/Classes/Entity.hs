@@ -35,7 +35,7 @@ instance TargetEntity a => TargetEntity (a `With` b) where
   isTarget (a `With` _) = isTarget a
 
 insertEntity ::
-  (Entity v, EntityId v ~ k, Eq k, Hashable k) =>
+  (Entity v, EntityId v ~ k, Hashable k) =>
   v ->
   HashMap k v ->
   HashMap k v

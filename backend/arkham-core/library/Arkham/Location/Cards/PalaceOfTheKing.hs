@@ -36,10 +36,14 @@ palaceOfTheKing = locationWith
 instance HasModifiersFor PalaceOfTheKing where
   getModifiersFor _ (LocationTarget lid) (PalaceOfTheKing attrs)
     | lid == toId attrs = do
-      hastur <- selectJust $ EnemyWithTitle "Hastur"
-      n <- getPlayerCountValue (PerPlayer 5)
-      hasEnoughDamage <- fieldP EnemyDamage (>= n) hastur
-      pure $ toModifiers attrs [ CannotBeFlipped | not hasEnoughDamage ]
+      mHastur <- selectOne $ EnemyWithTitle "Hastur"
+      modifiers' <- case mHastur of
+        Nothing -> pure [CannotBeFlipped]
+        Just hastur -> do
+          n <- getPlayerCountValue (PerPlayer 5)
+          hasEnoughDamage <- fieldP EnemyDamage (>= n) hastur
+          pure [ CannotBeFlipped | not hasEnoughDamage ]
+      pure $ toModifiers attrs modifiers'
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage PalaceOfTheKing where

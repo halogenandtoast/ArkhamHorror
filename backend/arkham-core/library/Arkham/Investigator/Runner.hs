@@ -50,6 +50,7 @@ import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Attrs ( Field (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
@@ -1611,46 +1612,49 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       beginMessage = BeforeSkillTest iid skillType skillDifficulty
     committableCards <- if cannotCommitCards
       then pure []
-      else flip filterM investigatorHand $ \case
-        PlayerCard card -> do
-          let
-            passesCommitRestriction = \case
-              MaxOnePerTest ->
-                pure $ toCardCode card `notElem` committedCardCodes
-              OnlyYourTest -> pure True
-              OnlyIfYourLocationHasClues -> pure $ clueCount > 0
-              ScenarioAbility -> pure isScenarioAbility
-              SelfCanCommitWhen matcher -> notNull <$> select (You <> matcher)
-              MinSkillTestValueDifference n -> do
-                baseValue <- baseSkillValueFor skillType Nothing [] (toId a)
-                pure $ (skillDifficulty - baseValue) >= n
-            prevented = flip
-              any
-              modifiers'
-              \case
-                CanOnlyUseCardsInRole role -> null $ intersect
-                  (cdClassSymbols $ toCardDef card)
-                  (setFromList [Neutral, role])
-                CannotCommitCards matcher -> cardMatch card matcher
-                _ -> False
-          passesCommitRestrictions <- allM
-            passesCommitRestriction
-            (cdCommitRestrictions $ toCardDef card)
-          pure
-            $ PlayerCard card
-            `notElem` committedCards
-            && (SkillWild
-               `elem` cdSkills (toCardDef card)
-               || skillType
-               `elem` cdSkills (toCardDef card)
-               || (null (cdSkills $ toCardDef card)
-                  && toCardType card
-                  == SkillType
-                  )
-               )
-            && passesCommitRestrictions
-            && not prevented
-        _ -> pure False
+      else do
+        committableTreacheries <- filterM (field TreacheryCanBeCommitted) (setToList investigatorInHandTreacheries)
+        treacheryCards <- traverse (field TreacheryCard) committableTreacheries
+        flip filterM (investigatorHand <> treacheryCards) $ \case
+          PlayerCard card -> do
+            let
+              passesCommitRestriction = \case
+                MaxOnePerTest ->
+                  pure $ toCardCode card `notElem` committedCardCodes
+                OnlyYourTest -> pure True
+                OnlyIfYourLocationHasClues -> pure $ clueCount > 0
+                ScenarioAbility -> pure isScenarioAbility
+                SelfCanCommitWhen matcher -> notNull <$> select (You <> matcher)
+                MinSkillTestValueDifference n -> do
+                  baseValue <- baseSkillValueFor skillType Nothing [] (toId a)
+                  pure $ (skillDifficulty - baseValue) >= n
+              prevented = flip
+                any
+                modifiers'
+                \case
+                  CanOnlyUseCardsInRole role -> null $ intersect
+                    (cdClassSymbols $ toCardDef card)
+                    (setFromList [Neutral, role])
+                  CannotCommitCards matcher -> cardMatch card matcher
+                  _ -> False
+            passesCommitRestrictions <- allM
+              passesCommitRestriction
+              (cdCommitRestrictions $ toCardDef card)
+            pure
+              $ PlayerCard card
+              `notElem` committedCards
+              && (SkillWild
+                 `elem` cdSkills (toCardDef card)
+                 || skillType
+                 `elem` cdSkills (toCardDef card)
+                 || (null (cdSkills $ toCardDef card)
+                    && toCardType card
+                    == SkillType
+                    )
+                 )
+              && passesCommitRestrictions
+              && not prevented
+          _ -> pure False
     if notNull committableCards || notNull committedCards || notNull actions
       then push
         (SkillTestAsk $ chooseOne

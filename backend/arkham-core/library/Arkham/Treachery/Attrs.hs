@@ -29,6 +29,7 @@ data instance Field TreacheryAttrs :: Type -> Type where
   TreacheryAbilities :: Field TreacheryAttrs [Ability]
   TreacheryCardDef :: Field TreacheryAttrs CardDef
   TreacheryCard :: Field TreacheryAttrs Card
+  TreacheryCanBeCommitted :: Field TreacheryAttrs Bool
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId
@@ -39,6 +40,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryDoom :: Int
   , treacheryClues :: Int
   , treacheryResources :: Int
+  , treacheryCanBeCommitted :: Bool
   }
   deriving stock (Show, Eq, Generic)
 
@@ -54,6 +56,9 @@ inHandOfL = lens treacheryInHandOf $ \m x -> m { treacheryInHandOf = x }
 
 resourcesL :: Lens' TreacheryAttrs Int
 resourcesL = lens treacheryResources $ \m x -> m { treacheryResources = x }
+
+canBeCommittedL :: Lens' TreacheryAttrs Bool
+canBeCommittedL = lens treacheryCanBeCommitted $ \m x -> m { treacheryCanBeCommitted = x }
 
 instance HasCardCode TreacheryAttrs where
   toCardCode = treacheryCardCode
@@ -167,6 +172,7 @@ treacheryWith f cardDef g = CardBuilder
     , treacheryDoom = 0
     , treacheryClues = 0
     , treacheryResources = 0
+    , treacheryCanBeCommitted = False
     }
   }
 

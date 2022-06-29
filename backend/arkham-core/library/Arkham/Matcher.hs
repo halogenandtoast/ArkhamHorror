@@ -349,6 +349,11 @@ pattern LocationWithoutInvestigators <-
   NotLocation (LocationWithInvestigator Anyone) where
   LocationWithoutInvestigators = NotLocation (LocationWithInvestigator Anyone)
 
+pattern Unblocked :: LocationMatcher
+pattern Unblocked <-
+  LocationWithoutModifier Blocked where
+  Unblocked = LocationWithoutModifier Blocked
+
 locationIs :: HasCardCode a => a -> LocationMatcher
 locationIs = LocationIs . toCardCode
 {-# INLINE locationIs #-}
@@ -388,7 +393,6 @@ data LocationMatcher
   | LocationIs CardCode
   | Anywhere
   | Nowhere
-  | Unblocked
   | EmptyLocation
   | AccessibleLocation
   | ConnectedFrom LocationMatcher
@@ -418,6 +422,7 @@ data LocationMatcher
   | LocationInDirection Direction LocationMatcher
   | LocationWithTreachery TreacheryMatcher
   | LocationWithoutTreachery TreacheryMatcher
+  | LocationWithoutModifier ModifierType
   | LocationMatchAll [LocationMatcher]
   | LocationMatchAny [LocationMatcher]
   | FirstLocation [LocationMatcher]
@@ -570,6 +575,7 @@ data CardMatcher
   | NotCard CardMatcher
   | IsEncounterCard
   | CardIsUnique
+  | FastCard
   | NonWeakness
   | WeaknessCard
   | NonExceptional

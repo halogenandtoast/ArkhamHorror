@@ -5,28 +5,69 @@ module Arkham.Location.Cards.DimStreetsTheArchway
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Game.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Message
+import Arkham.SkillType
+import Arkham.Story.Cards qualified as Story
+import Arkham.Target
+import Arkham.Timing qualified as Timing
 
 newtype DimStreetsTheArchway = DimStreetsTheArchway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimStreetsTheArchway :: LocationCard DimStreetsTheArchway
-dimStreetsTheArchway = location
+dimStreetsTheArchway = locationWith
   DimStreetsTheArchway
   Cards.dimStreetsTheArchway
   2
   (PerPlayer 1)
   Diamond
   [Square, Equals, Star]
+  (canBeFlippedL .~ True)
 
 instance HasAbilities DimStreetsTheArchway where
-  getAbilities (DimStreetsTheArchway attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (DimStreetsTheArchway a) = withBaseAbilities
+    a
+    [ mkAbility a 1 $ ForcedAbility $ DiscoveringLastClue
+        Timing.After
+        You
+        (LocationWithId $ toId a)
+    ]
 
 instance RunMessage DimStreetsTheArchway where
-  runMessage msg (DimStreetsTheArchway attrs) =
-    DimStreetsTheArchway <$> runMessage msg attrs
+  runMessage msg l@(DimStreetsTheArchway attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ LoseActions iid source 1
+      pure l
+    Flip iid _ target | isTarget attrs target -> do
+      push $ ReadStory iid Story.theArchway
+      pure . DimStreetsTheArchway $ attrs & canBeFlippedL .~ False
+    ResolveStory iid story' | story' == Story.theArchway -> do
+      setAsideDimStreets <- getSetAsideCardsMatching
+        $ CardWithTitle "Dim Streets"
+      otherDimStreets <- case setAsideDimStreets of
+        [] -> error "missing"
+        (x : xs) -> sample (x :| xs)
+      pushAll
+        [ BeginSkillTest
+          iid
+          (toSource attrs)
+          (InvestigatorTarget iid)
+          Nothing
+          SkillIntellect
+          3
+        , ReplaceLocation (toId attrs) otherDimStreets
+        ]
+      pure l
+    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
+      | isSource attrs source -> do
+        push $ HealHorror (InvestigatorTarget iid) n
+        pure l
+    _ -> DimStreetsTheArchway <$> runMessage msg attrs

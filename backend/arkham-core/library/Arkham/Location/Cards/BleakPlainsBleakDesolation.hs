@@ -43,6 +43,6 @@ instance RunMessage BleakPlainsBleakDesolation where
     ResolveStory iid story' | story' == Story.bleakDesolation -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- getPlayerCountValue (PerPlayer 2)
-      push $ EnemyDamage hastur iid (toSource attrs) NonAttackDamageEffect n
+      push $ EnemyDamage hastur iid (toSource attrs) StoryCardDamageEffect n
       pure l
     _ -> BleakPlainsBleakDesolation <$> runMessage msg attrs

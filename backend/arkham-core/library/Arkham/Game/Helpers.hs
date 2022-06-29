@@ -795,7 +795,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     let
       duringTurnWindow = Window Timing.When (Window.DuringTurn iid)
       notFastWindow = any (`elem` windows') [duringTurnWindow]
-      canBecomeFast = foldr applyModifier False modifiers
+      canBecomeFast = CannotPlay Matcher.FastCard `notElem` modifiers && foldr applyModifier False modifiers
       canBecomeFastWindow =
         if canBecomeFast then Just (Matcher.DuringTurn Matcher.You) else Nothing
       applyModifier (CanBecomeFast (mcardType, traits)) _
@@ -1956,10 +1956,7 @@ locationMatches investigatorId source window locationId matcher =
     -- special cases
     Matcher.NotLocation m ->
       not <$> locationMatches investigatorId source window locationId m
-    Matcher.Unblocked -> notElem Blocked <$> getModifiers
-      (InvestigatorSource investigatorId)
-      (LocationTarget locationId)
-
+    Matcher.LocationWithoutModifier _ -> locationId <=~> matcher
     Matcher.LocationWithEnemy enemyMatcher -> selectAny
       (Matcher.EnemyAt (Matcher.LocationWithId locationId) <> enemyMatcher)
     Matcher.LocationWithAsset assetMatcher -> selectAny

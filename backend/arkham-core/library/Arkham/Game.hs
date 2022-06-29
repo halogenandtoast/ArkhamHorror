@@ -1638,6 +1638,7 @@ instance Projection InvestigatorAttrs where
       InvestigatorName -> pure investigatorName
       InvestigatorRemainingActions -> pure investigatorRemainingActions
       InvestigatorTomeActions -> pure investigatorTomeActions
+      InvestigatorSanity -> pure investigatorSanity
       InvestigatorRemainingSanity -> pure (investigatorSanity - investigatorSanityDamage)
       InvestigatorRemainingHealth -> pure (investigatorHealth - investigatorHealthDamage)
       InvestigatorLocation -> pure $ if investigatorLocation == LocationId (CardId nil)
@@ -2038,6 +2039,7 @@ instance Projection TreacheryAttrs where
     let attrs@TreacheryAttrs {..} = toAttrs t
         cdef = toCardDef attrs
     case fld of
+      TreacheryCanBeCommitted -> pure treacheryCanBeCommitted
       TreacheryClues -> pure treacheryClues
       TreacheryResources -> pure treacheryResources
       TreacheryDoom -> pure treacheryDoom

@@ -167,6 +167,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , onWingsOfDarkness
   , oozeAndFilth
   , passageIntoTheVeil
+  , possessionTraitorous
   , psychopompsSong
   , pushedIntoTheBeyond
   , realmOfMadness
@@ -796,6 +797,13 @@ theFinalAct :: CardDef
 theFinalAct = (treachery "03339" "The Final Act" DimCarcosa 1)
   { cdCardTraits = singleton Terror
   , cdKeywords = setFromList [Keyword.Surge]
+  }
+
+possessionTraitorous :: CardDef
+possessionTraitorous = (treachery "03340" "Possession (Traitorous)" DimCarcosa 1)
+  { cdCardTraits = setFromList [Hex, Terror]
+  , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+  , cdCardInHandEffects = True
   }
 
 theHarbinger :: CardDef

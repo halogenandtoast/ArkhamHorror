@@ -104,6 +104,7 @@ data WindowType
   | PlayCard InvestigatorId Card
   | PutLocationIntoPlay InvestigatorId LocationId
   | RevealLocation InvestigatorId LocationId
+  | FlipLocation InvestigatorId LocationId
   | RevealToken InvestigatorId Token
   | RevealTokenWithNegativeModifier InvestigatorId Token
   | SkillTest SkillType

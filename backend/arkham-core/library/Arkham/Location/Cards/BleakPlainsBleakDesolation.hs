@@ -13,6 +13,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 
@@ -38,7 +39,7 @@ instance HasModifiersFor BleakPlainsBleakDesolation where
 instance RunMessage BleakPlainsBleakDesolation where
   runMessage msg l@(BleakPlainsBleakDesolation attrs) = case msg of
     Flip iid _ target | isTarget attrs target -> do
-      push $ ReadStory iid Story.bleakDesolation
+      readStory iid (toId attrs) Story.bleakDesolation
       pure . BleakPlainsBleakDesolation $ attrs & canBeFlippedL .~ False
     ResolveStory iid story' | story' == Story.bleakDesolation -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"

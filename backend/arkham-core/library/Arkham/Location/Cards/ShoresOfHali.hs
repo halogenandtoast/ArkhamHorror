@@ -5,6 +5,7 @@ module Arkham.Location.Cards.ShoresOfHali
 
 import Arkham.Prelude
 
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Game.Helpers
@@ -33,7 +34,7 @@ shoresOfHali = locationWith
 instance RunMessage ShoresOfHali where
   runMessage msg l@(ShoresOfHali attrs) = case msg of
     Flip iid _ target | isTarget attrs target -> do
-      push $ ReadStory iid Story.songsThatTheHyadesShallSing
+      readStory iid (toId attrs) Story.songsThatTheHyadesShallSing
       pure . ShoresOfHali $ attrs & canBeFlippedL .~ False
     ResolveStory iid story' | story' == Story.songsThatTheHyadesShallSing -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"

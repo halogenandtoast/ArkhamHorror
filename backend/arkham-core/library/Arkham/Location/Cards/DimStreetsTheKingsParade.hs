@@ -14,6 +14,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.SkillType
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -47,7 +48,7 @@ instance RunMessage DimStreetsTheKingsParade where
       push $ LoseActions iid source 1
       pure l
     Flip iid _ target | isTarget attrs target -> do
-      push $ ReadStory iid Story.theKingsParade
+      readStory iid (toId attrs) Story.theKingsParade
       pure . DimStreetsTheKingsParade $ attrs & canBeFlippedL .~ False
     ResolveStory iid story' | story' == Story.theKingsParade -> do
       setAsideDimStreets <- getSetAsideCardsMatching

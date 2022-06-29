@@ -103,6 +103,7 @@ allEncounterEnemyCards = mapFromList $ map
   , corpseHungryGhoul
   , corpseTaker
   , crazedShoggoth
+  , creatureOutOfDemhe
   , danielChesterfield
   , darkYoungHost
   , devoteeOfTheKey
@@ -776,13 +777,21 @@ hasturTheKingInYellow = (enemy "03332" ("Hastur" <:> "The King in Yellow") DimCa
 hasturLordOfCarcosa :: CardDef
 hasturLordOfCarcosa = (enemy "03333" ("Hastur" <:> "Lord of Carcosa") DimCarcosa 1)
   { cdCardTraits = setFromList [AncientOne, Elite]
+  , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
   , cdUnique = True
   }
 
 hasturTheTatteredKing :: CardDef
 hasturTheTatteredKing = (enemy "03334" ("Hastur" <:> "The Tattered King") DimCarcosa 1)
   { cdCardTraits = setFromList [AncientOne, Elite]
+  , cdKeywords = singleton Keyword.Hunter
   , cdUnique = True
+  }
+
+creatureOutOfDemhe :: CardDef
+creatureOutOfDemhe = (enemy "03335" "Creature Out of Demhe" DimCarcosa 1)
+  { cdCardTraits = singleton Monster
+  , cdKeywords = singleton Keyword.Massive
   }
 
 corpseHungryGhoul :: CardDef

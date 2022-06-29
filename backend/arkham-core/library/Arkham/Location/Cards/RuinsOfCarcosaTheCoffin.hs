@@ -15,6 +15,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Timing qualified as Timing
 
@@ -47,7 +48,7 @@ instance RunMessage RuinsOfCarcosaTheCoffin where
       push $ InvestigatorAssignDamage iid source DamageAny 1 0
       pure l
     Flip iid _ target | isTarget attrs target -> do
-      push $ ReadStory iid Story.theCoffin
+      readStory iid (toId attrs) Story.theCoffin
       pure . RuinsOfCarcosaTheCoffin $ attrs & canBeFlippedL .~ False
     ResolveStory iid story' | story' == Story.theCoffin -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"

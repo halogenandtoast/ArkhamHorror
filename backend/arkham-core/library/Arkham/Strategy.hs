@@ -12,6 +12,8 @@ data DamageStrategy
   | DamageFirst CardDef
   | SingleTarget
   | DamageEvenly
+  -- Hastur has specific damage rules
+  | DamageFromHastur
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

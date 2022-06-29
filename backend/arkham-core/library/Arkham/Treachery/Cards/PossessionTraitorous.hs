@@ -1,21 +1,20 @@
 module Arkham.Treachery.Cards.PossessionTraitorous
   ( possessionTraitorous
   , PossessionTraitorous(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Criteria
-import qualified Arkham.Treachery.Cards as Cards
 import Arkham.Classes
+import Arkham.Criteria
 import Arkham.Id
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype PossessionTraitorous = PossessionTraitorous TreacheryAttrs
@@ -23,7 +22,10 @@ newtype PossessionTraitorous = PossessionTraitorous TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 possessionTraitorous :: TreacheryCard PossessionTraitorous
-possessionTraitorous = treacheryWith PossessionTraitorous Cards.possessionTraitorous (canBeCommittedL .~ True)
+possessionTraitorous = treacheryWith
+  PossessionTraitorous
+  Cards.possessionTraitorous
+  (canBeCommittedL .~ True)
 
 -- because we need this ability to check game state, we simply have it use its
 -- ability in every window while it is in your hand
@@ -38,10 +40,10 @@ instance RunMessage PossessionTraitorous where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       horror <- field InvestigatorHorror iid
       sanity <- field InvestigatorSanity iid
-      when (horror > sanity * 2) $
-        push $ InvestigatorKilled source iid
+      when (horror > sanity * 2) $ push $ InvestigatorKilled source iid
       pure t
-    SkillTestCommitCard _ card | toCardId card == unTreacheryId (toId attrs) -> do
-      push $ Discard (toTarget attrs)
-      pure t
+    SkillTestCommitCard _ card | toCardId card == unTreacheryId (toId attrs) ->
+      do
+        push $ Discard (toTarget attrs)
+        pure t
     _ -> PossessionTraitorous <$> runMessage msg attrs

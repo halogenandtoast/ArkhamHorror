@@ -7,12 +7,15 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.GameValue
+import Arkham.DamageEffect
 import Arkham.Helpers.Ability
+import Arkham.GameValue
+import Arkham.Game.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Matcher
+import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
+import Arkham.Story.Cards qualified as Story
 import Arkham.Timing qualified as Timing
 
 newtype RuinsOfCarcosaTheCoffin = RuinsOfCarcosaTheCoffin LocationAttrs
@@ -42,5 +45,13 @@ instance RunMessage RuinsOfCarcosaTheCoffin where
   runMessage msg l@(RuinsOfCarcosaTheCoffin attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push $ InvestigatorAssignDamage iid source DamageAny 1 0
+      pure l
+    Flip iid _ target | isTarget attrs target -> do
+      push $ ReadStory iid Story.theCoffin
+      pure . RuinsOfCarcosaTheCoffin $ attrs & canBeFlippedL .~ False
+    ResolveStory iid story' | story' == Story.theCoffin -> do
+      hastur <- selectJust $ EnemyWithTitle "Hastur"
+      n <- getPlayerCountValue (PerPlayer 1)
+      push $ EnemyDamage hastur iid (toSource attrs) StoryCardDamageEffect n
       pure l
     _ -> RuinsOfCarcosaTheCoffin <$> runMessage msg attrs

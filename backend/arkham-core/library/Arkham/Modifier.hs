@@ -72,6 +72,7 @@ data ModifierType
   | CancelSkills
   | CannotAttack
   | CannotBeAttackedByNonElite
+  | CannotBeFlipped
   | CannotBeDefeated
   | CanOnlyBeDefeatedBy Source
   | CanOnlyBeDefeatedByDamage

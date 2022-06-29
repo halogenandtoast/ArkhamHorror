@@ -90,6 +90,7 @@ cardMatch a = \case
   CardWithTrait trait -> trait `member` toTraits a
   CardWithClass role -> role `member` cdClassSymbols (toCardDef a)
   CardWithLevel n -> cdLevel (toCardDef a) == n
+  FastCard -> isJust $ cdFastWindow (toCardDef a)
   CardMatches ms -> all (cardMatch a) ms
   CardWithOneOf ms -> any (cardMatch a) ms
   CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)

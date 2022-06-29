@@ -1,28 +1,52 @@
 module Arkham.Location.Cards.DarkSpires
   ( darkSpires
   , DarkSpires(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Location.Cards as Cards
 import Arkham.Classes
+import Arkham.DamageEffect
+import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
+import Arkham.Message
+import Arkham.Story.Cards qualified as Story
 
 newtype DarkSpires = DarkSpires LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 darkSpires :: LocationCard DarkSpires
-darkSpires = location DarkSpires Cards.darkSpires 3 (PerPlayer 2) Moon [Moon, Equals]
-
-instance HasAbilities DarkSpires where
-  getAbilities (DarkSpires attrs) =
-    getAbilities attrs
-    -- withBaseAbilities attrs []
+darkSpires = locationWith
+  DarkSpires
+  Cards.darkSpires
+  3
+  (PerPlayer 2)
+  Moon
+  [Moon, Equals]
+  (canBeFlippedL .~ True)
 
 instance RunMessage DarkSpires where
-  runMessage msg (DarkSpires attrs) =
-    DarkSpires <$> runMessage msg attrs
+  runMessage msg l@(DarkSpires attrs) = case msg of
+    Flip iid _ target | isTarget attrs target -> do
+      push $ ReadStory iid Story.theFall
+      pure . DarkSpires $ attrs & canBeFlippedL .~ False
+    ResolveStory iid story' | story' == Story.stepsOfThePalace -> do
+      hastur <- selectJust $ EnemyWithTitle "Hastur"
+      n <- getPlayerCountValue (PerPlayer 2)
+      push $ chooseOne
+        iid
+        [ Label
+          "You cannot bring yourseld to do what must be done."
+          [UpdateLocation (attrs & canBeFlippedL .~ True) (toId attrs)]
+        , Label
+          "Realizing what you must do, you step forward and push her."
+          [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
+          , EnemyDamage hastur iid (toSource attrs) StoryCardDamageEffect n
+          ]
+        ]
+      pure l
+    _ -> DarkSpires <$> runMessage msg attrs

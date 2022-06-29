@@ -954,13 +954,13 @@ getLocationsMatching lmatcher = do
       pure $ filter ((== locationSymbol) . toLocationSymbol) ls
     LocationNotInPlay -> pure [] -- TODO: Should this check out of play locations
     Anywhere -> pure ls
-    Unblocked -> filterM
-      (\l -> notElem Blocked <$> getModifiers (toSource l) (toTarget l))
-      ls
     LocationIs cardCode -> pure $ filter ((== cardCode) . toCardCode) ls
     EmptyLocation -> pure $ filter isEmptyLocation ls
     LocationWithoutInvestigators -> pure $ filter noInvestigatorsAtLocation ls
     LocationWithoutEnemies -> pure $ filter noEnemiesAtLocation ls
+    LocationWithoutModifier modifier' -> filterM
+      (\l -> notElem modifier' <$> getModifiers (toSource l) (toTarget l))
+      ls
     LocationWithEnemy enemyMatcher -> do
       enemies <- select enemyMatcher
       pure $ filter
@@ -1106,8 +1106,9 @@ getLocationsMatching lmatcher = do
     LocationWithResources valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . locationResources . toAttrs) ls
     Nowhere -> pure []
-    LocationCanBeFlipped ->
-      pure $ filter (locationCanBeFlipped . toAttrs) ls
+    LocationCanBeFlipped -> do
+      flippable <- select $ LocationWithoutModifier CannotBeFlipped
+      pure $ filter (and . sequence [locationCanBeFlipped . toAttrs, (`elem` flippable) . toId]) ls
     NotLocation matcher -> do
       excludes <- getLocationsMatching matcher
       pure $ filter (`notElem` excludes) ls

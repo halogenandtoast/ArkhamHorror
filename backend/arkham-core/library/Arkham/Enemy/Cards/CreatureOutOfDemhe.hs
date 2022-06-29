@@ -5,14 +5,21 @@ module Arkham.Enemy.Cards.CreatureOutOfDemhe
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
+import Arkham.Matcher qualified as Matcher
+import Arkham.Message
+import Arkham.Timing qualified as Timing
+import Arkham.Window
+import Arkham.Window qualified as Window
 
 newtype CreatureOutOfDemhe = CreatureOutOfDemhe EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 creatureOutOfDemhe :: EnemyCard CreatureOutOfDemhe
 creatureOutOfDemhe = enemyWith
@@ -22,14 +29,25 @@ creatureOutOfDemhe = enemyWith
   (1, 1)
   (spawnAtL ?~ LocationWithTitle "Depths of Demhe")
 
--- instance HasAbilities CreatureOutOfDemhe where
---   getAbilities (CreatureOutOfDemhe a) = withBaseAbilities a $
---     let
---       matcher = case enemyLocation a of
---                   Nothing -> Nowhere
---                   Just lid -> LocationOneOf [LocationWithId lid, ConnectedFrom (LocationWithId lid)]
---      in [mkAbility a 1 $ ForcedAbility $ FlipLocation Timing.When AnyOne matcher]
+instance HasAbilities CreatureOutOfDemhe where
+  getAbilities (CreatureOutOfDemhe a) =
+    withBaseAbilities a
+      $ let
+          matcher = case enemyLocation a of
+            Nothing -> Nowhere
+            Just lid -> LocationMatchAny
+              [LocationWithId lid, ConnectedFrom (LocationWithId lid)]
+        in
+          [ mkAbility a 1 $ ForcedAbility $ Matcher.FlipLocation
+              Timing.When
+              Anyone
+              matcher
+          ]
 
 instance RunMessage CreatureOutOfDemhe where
-  runMessage msg (CreatureOutOfDemhe attrs) =
-    CreatureOutOfDemhe <$> runMessage msg attrs
+  runMessage msg e@(CreatureOutOfDemhe attrs) = case msg of
+    UseCardAbility _ source [Window _ (Window.FlipLocation _ lid)] 1 _ | isSource attrs source -> do
+      iids <- selectList $ InvestigatorAt $ LocationWithId lid
+      pushAll [InitiateEnemyAttack iid (toId attrs) RegularAttack | iid <- iids]
+      pure e
+    _ -> CreatureOutOfDemhe <$> runMessage msg attrs

@@ -174,6 +174,7 @@ allEncounterEnemyCards = mapFromList $ map
   , umordhoth
   , victoriaDevereux
   , whippoorwill
+  , wingedOne
   , wizardOfTheOrder
   , wizardOfYogSothoth
   , wolfManDrew
@@ -792,6 +793,12 @@ creatureOutOfDemhe :: CardDef
 creatureOutOfDemhe = (enemy "03335" "Creature Out of Demhe" DimCarcosa 1)
   { cdCardTraits = singleton Monster
   , cdKeywords = singleton Keyword.Massive
+  }
+
+wingedOne :: CardDef
+wingedOne = (enemy "03336" "Winged One" DimCarcosa 1)
+  { cdCardTraits = setFromList [Monster, Byakhee]
+  , cdKeywords = singleton Keyword.Retaliate
   }
 
 corpseHungryGhoul :: CardDef

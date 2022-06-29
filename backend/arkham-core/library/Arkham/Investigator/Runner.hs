@@ -1615,7 +1615,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else do
         committableTreacheries <- filterM (field TreacheryCanBeCommitted) (setToList investigatorInHandTreacheries)
         treacheryCards <- traverse (field TreacheryCard) committableTreacheries
-        flip filterM (investigatorHand <> treacheryCards) $ \case
+        flip filterM (investigatorHand <> traceShowId treacheryCards) $ \case
           PlayerCard card -> do
             let
               passesCommitRestriction = \case
@@ -1697,45 +1697,48 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       let beginMessage = BeforeSkillTest iid skillType skillDifficulty
       committableCards <- if notNull committedCards
         then pure []
-        else flip
-          filterM
-          investigatorHand
-          \case
-            PlayerCard card -> do
-              let
-                passesCommitRestriction = \case
-                  MaxOnePerTest ->
-                    pure $ toCardCode card `notElem` committedCardCodes
-                  OnlyYourTest -> pure False
-                  OnlyIfYourLocationHasClues -> pure $ clueCount > 0
-                  ScenarioAbility -> pure isScenarioAbility
-                  SelfCanCommitWhen matcher ->
-                    notNull <$> select (You <> matcher)
-                  MinSkillTestValueDifference n -> do
-                    baseValue <- baseSkillValueFor skillType Nothing [] (toId a)
-                    pure $ (skillDifficulty - baseValue) >= n
-                prevented = flip
-                  any
-                  modifiers'
-                  \case
-                    CanOnlyUseCardsInRole role -> null $ intersect
-                      (cdClassSymbols $ toCardDef card)
-                      (setFromList [Neutral, role])
-                    _ -> False
-              passesCriterias <- allM
-                passesCommitRestriction
-                (cdCommitRestrictions $ toCardDef card)
-              pure
-                $ PlayerCard card
-                `notElem` committedCards
-                && (SkillWild
-                   `elem` cdSkills (toCardDef card)
-                   || skillType
-                   `elem` cdSkills (toCardDef card)
-                   )
-                && passesCriterias
-                && not prevented
-            _ -> pure False
+        else do
+          committableTreacheries <- filterM (field TreacheryCanBeCommitted) (setToList investigatorInHandTreacheries)
+          treacheryCards <- traverse (field TreacheryCard) committableTreacheries
+          flip
+            filterM
+            (investigatorHand <> treacheryCards)
+            \case
+              PlayerCard card -> do
+                let
+                  passesCommitRestriction = \case
+                    MaxOnePerTest ->
+                      pure $ toCardCode card `notElem` committedCardCodes
+                    OnlyYourTest -> pure False
+                    OnlyIfYourLocationHasClues -> pure $ clueCount > 0
+                    ScenarioAbility -> pure isScenarioAbility
+                    SelfCanCommitWhen matcher ->
+                      notNull <$> select (You <> matcher)
+                    MinSkillTestValueDifference n -> do
+                      baseValue <- baseSkillValueFor skillType Nothing [] (toId a)
+                      pure $ (skillDifficulty - baseValue) >= n
+                  prevented = flip
+                    any
+                    modifiers'
+                    \case
+                      CanOnlyUseCardsInRole role -> null $ intersect
+                        (cdClassSymbols $ toCardDef card)
+                        (setFromList [Neutral, role])
+                      _ -> False
+                passesCriterias <- allM
+                  passesCommitRestriction
+                  (cdCommitRestrictions $ toCardDef card)
+                pure
+                  $ PlayerCard card
+                  `notElem` committedCards
+                  && (SkillWild
+                     `elem` cdSkills (toCardDef card)
+                     || skillType
+                     `elem` cdSkills (toCardDef card)
+                     )
+                  && passesCriterias
+                  && not prevented
+              _ -> pure False -- TODO: Fix this
       when (notNull committableCards || notNull committedCards) $ push
         (SkillTestAsk $ chooseOne
           investigatorId

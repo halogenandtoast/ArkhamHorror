@@ -169,6 +169,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , passageIntoTheVeil
   , psychopompsSong
   , pushedIntoTheBeyond
+  , realmOfMadness
   , ripplesOnTheSurface
   , ritesHowled
   , rottingRemains
@@ -783,6 +784,11 @@ crashingFloods = (treachery "03302" "Crashing Floods" BlackStarsRise 3)
 worldsMerge :: CardDef
 worldsMerge = (treachery "03303" "Worlds Merge" BlackStarsRise 3)
   { cdCardTraits = singleton Omen
+  }
+
+realmOfMadness :: CardDef
+realmOfMadness = (treachery "03338" "Realm of Madness" DimCarcosa 2)
+  { cdCardTraits = singleton Terror
   }
 
 theHarbinger :: CardDef

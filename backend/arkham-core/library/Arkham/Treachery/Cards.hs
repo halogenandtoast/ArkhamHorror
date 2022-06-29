@@ -189,6 +189,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , terrorFromBeyond
   , theCreaturesTracks
   , theCultsSearch
+  , theFinalAct
   , theKingsEdict
   , thePaleMaskBeckons
   , thePitBelow
@@ -789,6 +790,12 @@ worldsMerge = (treachery "03303" "Worlds Merge" BlackStarsRise 3)
 realmOfMadness :: CardDef
 realmOfMadness = (treachery "03338" "Realm of Madness" DimCarcosa 2)
   { cdCardTraits = singleton Terror
+  }
+
+theFinalAct :: CardDef
+theFinalAct = (treachery "03339" "The Final Act" DimCarcosa 1)
+  { cdCardTraits = singleton Terror
+  , cdKeywords = setFromList [Keyword.Surge]
   }
 
 theHarbinger :: CardDef

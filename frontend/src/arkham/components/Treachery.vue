@@ -1,3 +1,78 @@
+<script lang="ts" setup>
+import { defineProps, withDefaults, computed } from 'vue';
+import type { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
+import type { Message } from '@/arkham/types/Message';
+import { MessageType } from '@/arkham/types/Message';
+import PoolItem from '@/arkham/components/PoolItem.vue';
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import * as Arkham from '@/arkham/types/Treachery';
+
+export interface Props {
+  game: Game
+  treachery: Arkham.Treachery
+  investigatorId: string
+  attached?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), { attached: false })
+
+const image = computed(() => {
+  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+  return `${baseUrl}/img/arkham/cards/${props.treachery.contents.cardCode.replace('c', '')}.jpg`
+})
+const id = computed(() => props.treachery.contents.id)
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+function canInteract(c: Message): boolean {
+  switch (c.tag) {
+    case MessageType.DISCARD:
+      return c.contents.contents === id.value;
+    case MessageType.ASSET_DAMAGE:
+      return c.contents[0] === id.value;
+    case MessageType.TARGET_LABEL:
+      return c.contents[0].contents === id.value
+    case MessageType.RUN:
+      return c.contents.some((c1: Message) => canInteract(c1));
+    default:
+      return false;
+  }
+}
+
+function isActivate(v: Message) {
+  if (v.tag !== 'UseAbility') {
+    return false
+  }
+
+  const { tag, contents } = v.contents[1].source;
+
+  if (tag === 'TreacherySource' && contents === id.value) {
+    return true
+  }
+
+  if (tag === 'ProxySource' && contents[0].tag === 'TreacherySource' && contents[0].contents === id.value) {
+    return true
+  }
+
+  return false
+}
+
+const abilities = computed(() => {
+  return choices
+    .value
+    .reduce<number[]>((acc, v, i) => {
+      if (v.tag === 'Run' && isActivate(v.contents[0])) {
+        return [...acc, i];
+      } else if (isActivate(v)) {
+        return [...acc, i];
+      }
+
+      return acc;
+    }, []);
+})
+
+const cardAction = computed(() => choices.value.findIndex(canInteract))
+</script>
 <template>
   <div class="treachery" :class="{ attached: attached }">
     <img
@@ -28,82 +103,6 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import * as ArkhamGame from '@/arkham/types/Game';
-import { Message, MessageType } from '@/arkham/types/Message';
-import PoolItem from '@/arkham/components/PoolItem.vue';
-import AbilityButton from '@/arkham/components/AbilityButton.vue'
-import * as Arkham from '@/arkham/types/Treachery';
-
-export default defineComponent({
-  components: { PoolItem, AbilityButton },
-  props: {
-    game: { type: Object as () => Game, required: true },
-    treachery: { type: Object as () => Arkham.Treachery, required: true },
-    investigatorId: { type: String, required: true },
-    attached: { type: Boolean, default: false }
-  },
-  setup(props) {
-    const image = computed(() => {
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/cards/${props.treachery.contents.cardCode.replace('c', '')}.jpg`
-    })
-    const id = computed(() => props.treachery.contents.id)
-    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-
-    function canInteract(c: Message): boolean {
-      switch (c.tag) {
-        case MessageType.DISCARD:
-          return c.contents.contents === id.value;
-        case MessageType.ASSET_DAMAGE:
-          return c.contents[0] === id.value;
-        case MessageType.RUN:
-          return c.contents.some((c1: Message) => canInteract(c1));
-        default:
-          return false;
-      }
-    }
-
-    function isActivate(v: Message) {
-      if (v.tag !== 'UseAbility') {
-        return false
-      }
-
-      const { tag, contents } = v.contents[1].source;
-
-      if (tag === 'TreacherySource' && contents === id.value) {
-        return true
-      }
-
-      if (tag === 'ProxySource' && contents[0].tag === 'TreacherySource' && contents[0].contents === id.value) {
-        return true
-      }
-
-      return false
-    }
-
-    const abilities = computed(() => {
-      return choices
-        .value
-        .reduce<number[]>((acc, v, i) => {
-          if (v.tag === 'Run' && isActivate(v.contents[0])) {
-            return [...acc, i];
-          } else if (isActivate(v)) {
-            return [...acc, i];
-          }
-
-          return acc;
-        }, []);
-    })
-
-    const cardAction = computed(() => choices.value.findIndex(canInteract))
-
-    return { abilities, choices, image, cardAction }
-  }
-})
-</script>
 
 <style lang="scss" scoped>
 .card {

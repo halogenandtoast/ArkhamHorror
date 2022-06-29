@@ -1352,6 +1352,14 @@ windowMatches iid source window' = \case
           (matchWho iid who whoMatcher)
           (locationMatches iid source window' locationId locationMatcher)
       _ -> pure False
+  Matcher.FlipLocation timingMatcher whoMatcher locationMatcher ->
+    case window' of
+      Window t (Window.FlipLocation who locationId) | t == timingMatcher ->
+        liftA2
+          (&&)
+          (matchWho iid who whoMatcher)
+          (locationMatches iid source window' locationId locationMatcher)
+      _ -> pure False
   Matcher.GameEnds timingMatcher -> case window' of
     Window t Window.EndOfGame -> pure $ t == timingMatcher
     _ -> pure False

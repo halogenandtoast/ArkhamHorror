@@ -6,16 +6,46 @@ where
 
 import Arkham.Prelude
 
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher
+import Arkham.Projection
+import Arkham.SkillTest
+import Arkham.Source
+import Arkham.Strategy
+import Arkham.Target
+import Arkham.Token qualified as Token
 
 newtype HasturTheTatteredKing = HasturTheTatteredKing EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hasturTheTatteredKing :: EnemyCard HasturTheTatteredKing
-hasturTheTatteredKing = enemy HasturTheTatteredKing Cards.hasturTheTatteredKing (3, PerPlayer 8, 2) (0, 4)
+hasturTheTatteredKing = enemyWith HasturTheTatteredKing Cards.hasturTheTatteredKing (3, PerPlayer 8, 2) (0, 4)
+  ((damageStrategyL .~ DamageFromHastur) . (preyL .~ Prey MostRemainingSanity)
+  )
+
+instance HasModifiersFor HasturTheTatteredKing where
+  getModifiersFor (SkillTestSource iid _ _ maction) (TokenTarget t) (HasturTheTatteredKing a)
+    | Token.tokenFace t
+      `elem` [Token.PlusOne, Token.Zero, Token.MinusOne, Token.ElderSign]
+    = do
+      mtarget <- getSkillTestTarget
+      if maybe False (isTarget a) mtarget
+          && (maction == Just Action.Fight || maction == Just Action.Evade)
+        then do
+          noRemainingSanity <- fieldP InvestigatorRemainingSanity (== 0) iid
+          pure
+            [ toModifier
+                a
+                (ForcedTokenChange (Token.tokenFace t) [Token.AutoFail])
+            | noRemainingSanity
+            ]
+        else pure []
+  getModifiersFor _ _ _ = pure []
 
 instance RunMessage HasturTheTatteredKing where
   runMessage msg (HasturTheTatteredKing attrs) =

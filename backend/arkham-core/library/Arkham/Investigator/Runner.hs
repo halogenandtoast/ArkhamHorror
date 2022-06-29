@@ -710,20 +710,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       push =<< checkWindows
         (concatMap (\t -> map (Window t) windows) [Timing.When, Timing.After])
       pure a
-  InvestigatorDoAssignDamage iid source _ 0 0 damageTargets horrorTargets
-    | iid == investigatorId -> a <$ push
-      (CheckWindow [iid]
-      $ [ Window
-            Timing.When
-            (Window.DealtDamage source NonAttackDamageEffect target)
-        | target <- nub damageTargets
-        ]
-      <> [ Window Timing.When (Window.DealtHorror source target)
-         | target <- nub horrorTargets
-         ]
-      <> [Window Timing.When (Window.AssignedHorror source iid horrorTargets)]
-      )
-
+  InvestigatorDoAssignDamage iid source damageStrategy 0 0 damageTargets horrorTargets
+    | iid == investigatorId -> do
+      push
+        $ CheckWindow [iid]
+        $ [ Window
+              Timing.When
+              (Window.DealtDamage source NonAttackDamageEffect target)
+          | target <- nub damageTargets
+          ]
+        <> [ Window Timing.When (Window.DealtHorror source target)
+           | target <- nub horrorTargets
+           ]
+        <> [Window Timing.When (Window.AssignedHorror source iid horrorTargets)]
+      when (damageStrategy == DamageFromHastur && toTarget a `elem` horrorTargets && investigatorSanityDamage > investigatorSanity) $
+        push $ InvestigatorDirectDamage iid source 1 0
+      pure a
   InvestigatorDoAssignDamage iid source DamageEvenly health 0 damageTargets _
     | iid == investigatorId -> do
       healthDamageableAssets <- if health > 0
@@ -878,6 +880,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 <> map damageAsset healthDamageableAssets
             DamageAny ->
               pure $ damageInvestigator : map damageAsset healthDamageableAssets
+            DamageFromHastur ->
+              pure $ damageInvestigator : map damageAsset healthDamageableAssets
             DamageFirst def -> do
               validAssets <-
                 setToList
@@ -917,6 +921,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 $ [ damageInvestigator | null sanityDamageableAssets ]
                 <> map damageAsset sanityDamageableAssets
             DamageAny -> do
+              mustBeDamagedFirstBeforeInvestigator <- selectList
+                (AssetCanBeAssignedHorrorBy iid
+                <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
+                )
+              pure
+                $ [ damageInvestigator
+                  | null mustBeDamagedFirstBeforeInvestigator
+                  ]
+                <> map damageAsset sanityDamageableAssets
+            DamageFromHastur -> do
               mustBeDamagedFirstBeforeInvestigator <- selectList
                 (AssetCanBeAssignedHorrorBy iid
                 <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
@@ -1260,8 +1274,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (deckL %~ Deck . filter ((/= cardCode) . toCardCode) . unDeck)
       & (discardL %~ filter ((/= cardCode) . toCardCode))
       & (handL %~ filter ((/= cardCode) . toCardCode))
-  Msg.InvestigatorDamage iid _ health sanity | iid == investigatorId ->
-    pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
+  Msg.InvestigatorDamage iid _ damage horror | iid == investigatorId ->
+    pure $ a & healthDamageL +~ damage & sanityDamageL +~ horror
   DrivenInsane iid | iid == investigatorId ->
     pure $ a & mentalTraumaL .~ investigatorSanity
   CheckDefeated source -> do
@@ -2256,13 +2270,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
 getFacingDefeat :: (Monad m, HasGame m) => InvestigatorAttrs -> m Bool
 getFacingDefeat a@InvestigatorAttrs {..} = do
+  canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
   modifiedHealth <- getModifiedHealth a
   modifiedSanity <- getModifiedSanity a
   pure
     $ investigatorHealthDamage
     >= modifiedHealth
-    || investigatorSanityDamage
-    >= modifiedSanity
+    || (investigatorSanityDamage >= modifiedSanity && not canOnlyBeDefeatedByDamage)
 
 getModifiedHealth :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getModifiedHealth attrs@InvestigatorAttrs {..} = do

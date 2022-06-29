@@ -16,6 +16,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -49,7 +50,7 @@ instance RunMessage RuinsOfCarcosaAMomentsRest where
       push $ InvestigatorAssignDamage iid source DamageAny 1 0
       pure l
     Flip iid _ target | isTarget attrs target -> do
-      push $ ReadStory iid Story.aMomentsRest
+      readStory iid (toId attrs) Story.aMomentsRest
       pure . RuinsOfCarcosaAMomentsRest $ attrs & canBeFlippedL .~ False
     ResolveStory iid story' | story' == Story.aMomentsRest -> do
       enemies <- selectList

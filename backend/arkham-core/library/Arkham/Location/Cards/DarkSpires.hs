@@ -13,6 +13,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 
 newtype DarkSpires = DarkSpires LocationAttrs
@@ -32,7 +33,7 @@ darkSpires = locationWith
 instance RunMessage DarkSpires where
   runMessage msg l@(DarkSpires attrs) = case msg of
     Flip iid _ target | isTarget attrs target -> do
-      push $ ReadStory iid Story.theFall
+      readStory iid (toId attrs) Story.theFall
       pure . DarkSpires $ attrs & canBeFlippedL .~ False
     ResolveStory iid story' | story' == Story.stepsOfThePalace -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"

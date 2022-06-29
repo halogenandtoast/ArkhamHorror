@@ -15,6 +15,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
 import Arkham.SkillType
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -48,7 +49,7 @@ instance RunMessage DimStreetsMappingTheStreets where
       push $ LoseActions iid source 1
       pure l
     Flip iid _ target | isTarget attrs target -> do
-      push $ ReadStory iid Story.mappingTheStreets
+      readStory iid (toId attrs) Story.mappingTheStreets
       pure . DimStreetsMappingTheStreets $ attrs & canBeFlippedL .~ False
     ResolveStory iid story' | story' == Story.mappingTheStreets -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"

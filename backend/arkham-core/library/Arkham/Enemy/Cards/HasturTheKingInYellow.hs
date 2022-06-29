@@ -27,11 +27,12 @@ newtype HasturTheKingInYellow = HasturTheKingInYellow EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hasturTheKingInYellow :: EnemyCard HasturTheKingInYellow
-hasturTheKingInYellow = enemy
+hasturTheKingInYellow = enemyWith
   HasturTheKingInYellow
   Cards.hasturTheKingInYellow
   (4, PerPlayer 7, 2)
   (0, 2)
+  (damageStrategyL .~ DamageFromHastur)
 
 instance HasAbilities HasturTheKingInYellow where
   getAbilities (HasturTheKingInYellow a) = withBaseAbilities

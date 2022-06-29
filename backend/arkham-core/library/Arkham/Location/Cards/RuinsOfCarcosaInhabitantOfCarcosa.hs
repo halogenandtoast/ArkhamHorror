@@ -14,6 +14,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -48,7 +49,7 @@ instance RunMessage RuinsOfCarcosaInhabitantOfCarcosa where
       push $ InvestigatorAssignDamage iid source DamageAny 1 0
       pure l
     Flip iid _ target | isTarget attrs target -> do
-      push $ ReadStory iid Story.inhabitantOfCarcosa
+      readStory iid (toId attrs) Story.inhabitantOfCarcosa
       pure . RuinsOfCarcosaInhabitantOfCarcosa $ attrs & canBeFlippedL .~ False
     ResolveStory _ story' | story' == Story.inhabitantOfCarcosa -> do
       targets <- map InvestigatorTarget <$> getInvestigatorIds

@@ -556,6 +556,7 @@ library
       Arkham.Enemy.Cards.CorpseHungryGhoul
       Arkham.Enemy.Cards.CorpseTaker
       Arkham.Enemy.Cards.CrazedShoggoth
+      Arkham.Enemy.Cards.CreatureOutOfDemhe
       Arkham.Enemy.Cards.DanielChesterfield
       Arkham.Enemy.Cards.DarkYoungHost
       Arkham.Enemy.Cards.DevoteeOfTheKey
@@ -1135,6 +1136,7 @@ library
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.CurtainCall.Helpers
       Arkham.Scenarios.CurtainCall.Story
+      Arkham.Scenarios.DimCarcosa.Helpers
       Arkham.Scenarios.DimCarcosa.Story
       Arkham.Scenarios.EchoesOfThePast.Story
       Arkham.Scenarios.TheDevourerBelow.Story

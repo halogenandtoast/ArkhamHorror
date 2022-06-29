@@ -13,6 +13,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 
@@ -38,7 +39,7 @@ instance HasModifiersFor BleakPlainsStarsOfAldebaran where
 instance RunMessage BleakPlainsStarsOfAldebaran where
   runMessage msg l@(BleakPlainsStarsOfAldebaran attrs) = case msg of
     Flip iid _ target | isTarget attrs target -> do
-      push $ ReadStory iid Story.starsOfAldebaran
+      readStory iid (toId attrs) Story.starsOfAldebaran
       pure . BleakPlainsStarsOfAldebaran $ attrs & canBeFlippedL .~ False
     ResolveStory iid story' | story' == Story.starsOfAldebaran -> do
       iids <- getInvestigatorIds

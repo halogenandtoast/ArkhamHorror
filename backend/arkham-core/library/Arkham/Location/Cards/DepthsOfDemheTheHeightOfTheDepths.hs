@@ -12,6 +12,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 
@@ -39,7 +40,7 @@ depthsOfDemheTheHeightOfTheDepths = locationWith
 instance RunMessage DepthsOfDemheTheHeightOfTheDepths where
   runMessage msg l@(DepthsOfDemheTheHeightOfTheDepths attrs) = case msg of
     Flip iid _ target | isTarget attrs target -> do
-      push $ ReadStory iid Story.theHeightOfTheDepths
+      readStory iid (toId attrs) Story.theHeightOfTheDepths
       pure . DepthsOfDemheTheHeightOfTheDepths $ attrs & canBeFlippedL .~ False
     ResolveStory _ story' | story' == Story.theHeightOfTheDepths -> do
       targets <- map InvestigatorTarget <$> getInvestigatorIds

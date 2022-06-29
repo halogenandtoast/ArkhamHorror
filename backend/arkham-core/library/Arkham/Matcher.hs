@@ -677,6 +677,7 @@ data WindowMatcher
   | PhaseEnds Timing PhaseMatcher
   | PlayerHasPlayableCard ExtendedCardMatcher
   | RevealLocation Timing Who Where
+  | FlipLocation Timing Who Where
   | PutLocationIntoPlay Timing Who Where
   | GameEnds Timing
   | InvestigatorEliminated Timing Who

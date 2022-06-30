@@ -199,13 +199,13 @@ instance RunMessage CarnevaleOfHorrors where
            ]
         <> [ PlacedLocationDirection
                (LocationId $ toCardId l1)
-               LeftOf
+               RightOf
                (LocationId $ toCardId l2)
            | (l1, l2) <- zip (toList locations) (drop 1 $ toList locations)
            ]
         <> [ PlacedLocationDirection
                (LocationId . toCardId $ NE.last locations)
-               LeftOf
+               RightOf
                (LocationId . toCardId $ NE.head locations)
            ]
         <> [ CreateStoryAssetAt asset locationId

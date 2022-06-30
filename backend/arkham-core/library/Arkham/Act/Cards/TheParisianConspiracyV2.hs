@@ -29,7 +29,7 @@ theParisianConspiracyV2 =
     $ GroupClueCost (PerPlayer 2) Anywhere
 
 instance HasAbilities TheParisianConspiracyV2 where
-  getAbilities (TheParisianConspiracyV2 a) =
+  getAbilities (TheParisianConspiracyV2 a) = withBaseAbilities a
     [ restrictedAbility a 1 (DoomCountIs $ AtLeast $ Static 3)
         $ Objective
         $ ForcedAbility

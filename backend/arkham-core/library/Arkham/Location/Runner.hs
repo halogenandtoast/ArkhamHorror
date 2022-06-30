@@ -104,7 +104,9 @@ instance RunMessage LocationAttrs where
       pure $ a & cardsUnderneathL <>~ cards
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & labelL .~ label'
-    PlacedLocationDirection lid direction lid2 | lid == locationId -> do
+    PlacedLocationDirection lid direction lid2 | lid == locationId ->
+      pure $ a & (directionsL %~ insertMap direction lid2)
+    PlacedLocationDirection lid direction lid2 | lid2 == locationId -> do
       let
         reversedDirection = case direction of
           LeftOf -> RightOf
@@ -112,9 +114,7 @@ instance RunMessage LocationAttrs where
           Above -> Below
           Below -> Above
 
-      pure $ a & (directionsL %~ insertMap reversedDirection lid2)
-    PlacedLocationDirection lid direction lid2 | lid2 == locationId ->
-      pure $ a & (directionsL %~ insertMap direction lid)
+      pure $ a & (directionsL %~ insertMap reversedDirection lid)
     AttachTreachery tid (LocationTarget lid) | lid == locationId ->
       pure $ a & treacheriesL %~ insertSet tid
     AttachEvent eid (LocationTarget lid) | lid == locationId ->

@@ -12,7 +12,6 @@ import Arkham.Classes.Entity
 import Arkham.Difficulty
 import Arkham.Helpers
 import Arkham.Id
-import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Token
@@ -30,7 +29,6 @@ data instance Field CampaignAttrs :: Type -> Type where
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
   , campaignName :: Text
-  , campaignInvestigators :: HashMap Int Investigator
   , campaignDecks :: HashMap InvestigatorId (Deck PlayerCard)
   , campaignStoryCards :: HashMap InvestigatorId [PlayerCard]
   , campaignDifficulty :: Difficulty
@@ -92,7 +90,6 @@ baseAttrs :: CampaignId -> Text -> Difficulty -> [TokenFace] -> CampaignAttrs
 baseAttrs campaignId' name difficulty chaosBagContents = CampaignAttrs
   { campaignId = campaignId'
   , campaignName = name
-  , campaignInvestigators = mempty
   , campaignDecks = mempty
   , campaignStoryCards = mempty
   , campaignDifficulty = difficulty

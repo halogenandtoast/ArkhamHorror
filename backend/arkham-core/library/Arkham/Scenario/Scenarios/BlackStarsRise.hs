@@ -259,6 +259,7 @@ instance RunMessage BlackStarsRise where
       ashleighSlain <- selectOne
         (VictoryDisplayCardMatch $ cardIs Enemies.ashleighClarke)
       gainXp <- map (uncurry GainXP) <$> getXp
+      iids <- getInvestigatorIds
       let
         updateSlain =
           [ RecordSetInsert VIPsSlain [toCardCode ashleigh]
@@ -268,7 +269,8 @@ instance RunMessage BlackStarsRise where
         NoResolution -> push $ ScenarioResolution $ Resolution 3
         Resolution 1 -> do
           pushAll
-            $ [ Record YouOpenedThePathBelow
+            $ [ story iids resolution1
+              , Record YouOpenedThePathBelow
               , RemoveAllTokens Cultist
               , RemoveAllTokens Tablet
               , RemoveAllTokens ElderThing
@@ -279,9 +281,11 @@ instance RunMessage BlackStarsRise where
               ]
             <> updateSlain
             <> gainXp
+            <> [EndOfScenario Nothing]
         Resolution 2 -> do
           pushAll
-            $ [ Record YouOpenedThePathAbove
+            $ [ story iids resolution2
+              , Record YouOpenedThePathAbove
               , RemoveAllTokens Cultist
               , RemoveAllTokens Tablet
               , RemoveAllTokens ElderThing
@@ -292,10 +296,11 @@ instance RunMessage BlackStarsRise where
               ]
             <> updateSlain
             <> gainXp
+            <> [EndOfScenario Nothing]
         Resolution 3 -> do
-          iids <- getInvestigatorIds
           pushAll
-            $ Record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
+            $ story iids resolution3
+            : Record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
             : map DrivenInsane iids
             <> [GameOver]
         _ -> error "Unknown resolution"

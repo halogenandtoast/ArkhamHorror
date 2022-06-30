@@ -5,10 +5,14 @@ export interface Campaign {
   contents: CampaignContents;
 }
 
-export type CampaignStep = PrologueStep | ScenarioStep | InterludeStep | UpgradeDeckStep
+export type CampaignStep = PrologueStep | ScenarioStep | InterludeStep | UpgradeDeckStep | EpilogueStep
 
 export interface PrologueStep {
   tag: 'PrologueStep';
+}
+
+export interface EpilogueStep {
+  tag: 'EpilogueStep';
 }
 
 export const prologueStepDecoder = JsonDecoder.object<PrologueStep>(
@@ -16,6 +20,13 @@ export const prologueStepDecoder = JsonDecoder.object<PrologueStep>(
     tag: JsonDecoder.isExactly('PrologueStep'),
   },
   'PrologueStep',
+);
+
+export const epilogueStepDecoder = JsonDecoder.object<EpilogueStep>(
+  {
+    tag: JsonDecoder.isExactly('EpilogueStep'),
+  },
+  'EpilogueStep',
 );
 
 export interface ScenarioStep {
@@ -56,7 +67,8 @@ export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
     prologueStepDecoder,
     scenarioStepDecoder,
     interludeStepDecoder,
-    upgradeStepDecoder
+    upgradeStepDecoder,
+    epilogueStepDecoder
   ],
   'Question',
 );

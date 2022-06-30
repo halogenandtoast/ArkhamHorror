@@ -133,7 +133,7 @@ instance RunMessage ThePathToCarcosa where
         investigatorIds = flip mapMaybe possessed $ \case
           Recorded cardCode -> Just (InvestigatorId cardCode)
           _ -> Nothing
-      pushAll [story investigatorIds epilogue, EndOfGame Nothing]
+      pushAll $ [story investigatorIds epilogue | notNull investigatorIds] <>  [EndOfGame Nothing]
       pure c
     NextCampaignStep _ -> do
       let step = nextStep a

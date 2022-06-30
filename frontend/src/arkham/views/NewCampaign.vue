@@ -1,3 +1,128 @@
+<script lang="ts" setup>
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import * as Arkham from '@/arkham/types/Deck';
+import { fetchDecks, newGame } from '@/arkham/api';
+import type { Difficulty } from '@/arkham/types/Difficulty';
+
+const scenarios = [
+  { id: '02118', name: 'The Miskatonic Museum', },
+  { id: '02159', name: 'The Essex County Express', },
+  { id: '02195', name: 'Blood on the Altar', },
+  { id: '02236', name: 'Undimensioned and Unseen', },
+  { id: '02274', name: 'Where Doom Awaits', },
+  { id: '02311', name: 'Lost in Time and Space', },
+  { id: '03061', name: 'The Last King', },
+  { id: '03120', name: 'Echoes of the Past', },
+  { id: '03159', name: 'The Unspeakable Oath', },
+  { id: '03200', name: 'A Phantom of Truth', },
+  { id: '03240', name: 'The Pallid Mask', },
+  { id: '03274', name: 'Black Stars Rise', },
+  { id: '03316', name: 'Dim Carcosa', },
+  { id: '81001', name: 'Curse of the Rougarou', },
+  { id: '82001', name: 'Carnevale of Horrors', },
+]
+
+const campaigns = [
+  { id: '01', name: 'The Night of the Zealot', returnToId: '50' },
+  { id: '02', name: 'The Dunwich Legacy', },
+  { id: '03', name: 'The Path to Carcosa', },
+]
+
+const difficulties: Difficulty[] = ['Easy', 'Standard', 'Hard', 'Expert']
+
+const router = useRouter()
+const decks = ref<Arkham.Deck[]>([])
+const ready = ref(false)
+const playerCount = ref(1)
+
+const selectedDifficulty = ref<Difficulty>('Easy')
+const deckIds = ref<(string | null)[]>([null, null, null, null])
+const standalone = ref(false)
+const selectedCampaign = ref('01')
+const selectedScenario = ref('81001')
+const campaignName = ref<string | null>(null)
+const multiplayerVariant = ref('WithFriends')
+const returnTo = ref(false)
+
+fetchDecks().then((result) => {
+  decks.value = result;
+  ready.value = true;
+})
+
+const selectedCampaignReturnToId = computed(() => {
+  const campaign = campaigns.find((c) => c.id === selectedCampaign.value);
+  if (campaign) {
+    return campaign.returnToId;
+  }
+
+  return null;
+})
+
+const disabled = computed(() => {
+  if (multiplayerVariant.value == 'WithFriends') {
+    return !deckIds.value[0]
+  } else {
+    return [...Array(playerCount.value)].some((_,n) => !deckIds.value[n])
+  }
+})
+
+const defaultCampaignName = computed(() => {
+  const campaign = campaigns.find((c) => c.id === selectedCampaign.value);
+  const scenario = scenarios.find((c) => c.id === selectedScenario.value);
+
+  if (!standalone.value && campaign) {
+    const returnToPrefix = returnTo.value ? "Return to " : ""
+    return `${returnToPrefix}${campaign.name}`;
+  }
+
+  if (standalone.value && scenario) {
+    return `${scenario.name}`;
+  }
+
+  return '';
+})
+
+const currentCampaignName = computed(() => {
+  if (campaignName.value !== '' && campaignName.value !== null) {
+    return campaignName.value;
+  }
+
+  return defaultCampaignName.value;
+})
+
+async function start() {
+  if (standalone.value) {
+    const mscenario = scenarios.find((scenario) => scenario.id === selectedScenario.value);
+    if (mscenario && currentCampaignName.value) {
+      newGame(
+        deckIds.value,
+        playerCount.value,
+        null,
+        mscenario.id,
+        selectedDifficulty.value,
+        currentCampaignName.value,
+        multiplayerVariant.value,
+      ).then((game) => router.push(`/games/${game.id}`));
+    }
+  } else {
+    const mcampaign = campaigns.find((campaign) => campaign.id === selectedCampaign.value);
+    if (mcampaign && currentCampaignName.value) {
+      const campaignId = returnTo.value && mcampaign.returnToId ? mcampaign.returnToId : mcampaign.id
+      newGame(
+        deckIds.value,
+        playerCount.value,
+        campaignId,
+        null,
+        selectedDifficulty.value,
+        currentCampaignName.value,
+        multiplayerVariant.value,
+      ).then((game) => router.push(`/games/${game.id}`));
+    }
+  }
+}
+</script>
+
 <template>
   <div v-if="ready" class="container">
     <div v-if="decks.length == 0">
@@ -94,210 +219,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import * as Arkham from '@/arkham/types/Deck';
-import { fetchDecks, newGame } from '@/arkham/api';
-import { Difficulty } from '@/arkham/types/Difficulty';
-
-const scenarios = [
-  {
-    id: '02118',
-    name: 'The Miskatonic Museum',
-  },
-  {
-    id: '02159',
-    name: 'The Essex County Express',
-  },
-  {
-    id: '02195',
-    name: 'Blood on the Altar',
-  },
-  {
-    id: '02236',
-    name: 'Undimensioned and Unseen',
-  },
-  {
-    id: '02274',
-    name: 'Where Doom Awaits',
-  },
-  {
-    id: '02311',
-    name: 'Lost in Time and Space',
-  },
-  {
-    id: '03061',
-    name: 'The Last King',
-  },
-  {
-    id: '03120',
-    name: 'Echoes of the Past',
-  },
-  {
-    id: '03159',
-    name: 'The Unspeakable Oath',
-  },
-  {
-    id: '03200',
-    name: 'A Phantom of Truth',
-  },
-  {
-    id: '03240',
-    name: 'The Pallid Mask',
-  },
-  {
-    id: '03274',
-    name: 'Black Stars Rise',
-  },
-  {
-    id: '03316',
-    name: 'Dim Carcosa [Not Working]',
-  },
-  {
-    id: '81001',
-    name: 'Curse of the Rougarou',
-  },
-  {
-    id: '82001',
-    name: 'Carnevale of Horrors',
-  },
-]
-
-const campaigns = [
-  {
-    id: '01',
-    name: 'The Night of the Zealot',
-    returnToId: '50'
-  },
-  {
-    id: '02',
-    name: 'The Dunwich Legacy',
-  },
-  {
-    id: '03',
-    name: 'The Path to Carcosa',
-  },
-]
-
-const difficulties: Difficulty[] = ['Easy', 'Standard', 'Hard', 'Expert']
-
-export default defineComponent({
-  setup() {
-    const router = useRouter()
-    const decks = ref<Arkham.Deck[]>([])
-    const ready = ref(false)
-    const playerCount = ref(1)
-
-    const selectedDifficulty = ref<Difficulty>('Easy')
-    const deckIds = ref<(string | null)[]>([null, null, null, null])
-    const standalone = ref(false)
-    const selectedCampaign = ref('01')
-    const selectedScenario = ref('81001')
-    const campaignName = ref<string | null>(null)
-    const multiplayerVariant = ref('WithFriends')
-    const returnTo = ref(false)
-
-    fetchDecks().then((result) => {
-      decks.value = result;
-      ready.value = true;
-    })
-
-    const selectedCampaignReturnToId = computed(() => {
-      const campaign = campaigns.find((c) => c.id === selectedCampaign.value);
-      if (campaign) {
-        return campaign.returnToId;
-      }
-
-      return null;
-    })
-
-    const disabled = computed(() => {
-      if (multiplayerVariant.value == 'WithFriends') {
-        return !deckIds.value[0]
-      } else {
-        return [...Array(playerCount.value)].some((_,n) => !deckIds.value[n])
-      }
-    })
-    const defaultCampaignName = computed(() => {
-      const campaign = campaigns.find((c) => c.id === selectedCampaign.value);
-      const scenario = scenarios.find((c) => c.id === selectedScenario.value);
-
-      if (!standalone.value && campaign) {
-        const returnToPrefix = returnTo.value ? "Return to " : ""
-        return `${returnToPrefix}${campaign.name}`;
-      }
-
-      if (standalone.value && scenario) {
-        return `${scenario.name}`;
-      }
-
-      return '';
-    })
-
-    const currentCampaignName = computed(() => {
-      if (campaignName.value !== '' && campaignName.value !== null) {
-        return campaignName.value;
-      }
-
-      return defaultCampaignName.value;
-    })
-
-    async function start() {
-      if (standalone.value) {
-        const mscenario = scenarios.find((scenario) => scenario.id === selectedScenario.value);
-        if (mscenario && currentCampaignName.value) {
-          newGame(
-            deckIds.value,
-            playerCount.value,
-            null,
-            mscenario.id,
-            selectedDifficulty.value,
-            currentCampaignName.value,
-            multiplayerVariant.value,
-          ).then((game) => router.push(`/games/${game.id}`));
-        }
-      } else {
-        const mcampaign = campaigns.find((campaign) => campaign.id === selectedCampaign.value);
-        if (mcampaign && currentCampaignName.value) {
-          const campaignId = returnTo.value && mcampaign.returnToId ? mcampaign.returnToId : mcampaign.id
-          newGame(
-            deckIds.value,
-            playerCount.value,
-            campaignId,
-            null,
-            selectedDifficulty.value,
-            currentCampaignName.value,
-            multiplayerVariant.value,
-          ).then((game) => router.push(`/games/${game.id}`));
-        }
-      }
-    }
-
-    return {
-      ready,
-      start,
-      multiplayerVariant,
-      standalone,
-      disabled,
-      campaignName,
-      currentCampaignName,
-      difficulties,
-      scenarios,
-      campaigns,
-      decks,
-      deckIds,
-      playerCount,
-      selectedDifficulty,
-      selectedScenario,
-      selectedCampaign,
-      selectedCampaignReturnToId,
-      returnTo
-    }
-  }
-})
-</script>
 
 <style lang="scss" scoped>
 .container {

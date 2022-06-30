@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Attrs ( Field (..) )
-import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards

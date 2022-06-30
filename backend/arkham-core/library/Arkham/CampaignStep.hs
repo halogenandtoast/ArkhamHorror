@@ -9,6 +9,7 @@ data CampaignStep
   | ScenarioStep ScenarioId
   | InterludeStep Int (Maybe InterludeKey)
   | UpgradeDeckStep CampaignStep
+  | EpilogueStep
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

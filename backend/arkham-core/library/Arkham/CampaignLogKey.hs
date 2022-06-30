@@ -92,6 +92,9 @@ data CampaignLogKey
   | YouOpenedThePathBelow
   | YouOpenedThePathAbove
   | TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
+  | TheInvestigatorsPreventedHasturFromEscapingHisPrison
+  | HasturHasYouInHisGrasp
+  | Possessed
   -- ^ The Path to Carcosa
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

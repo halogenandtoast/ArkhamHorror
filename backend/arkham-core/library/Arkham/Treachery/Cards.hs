@@ -168,6 +168,8 @@ allEncounterTreacheryCards = mapFromList $ map
   , onWingsOfDarkness
   , oozeAndFilth
   , passageIntoTheVeil
+  , possessionMurderous
+  , possessionTorturous
   , possessionTraitorous
   , psychopompsSong
   , pushedIntoTheBeyond
@@ -789,6 +791,11 @@ worldsMerge = (treachery "03303" "Worlds Merge" BlackStarsRise 3)
   { cdCardTraits = singleton Omen
   }
 
+dismalCurse :: CardDef
+dismalCurse = (treachery "03337" "Dismal Curse" DimCarcosa 3)
+  { cdCardTraits = setFromList [Curse, Terror]
+  }
+
 realmOfMadness :: CardDef
 realmOfMadness = (treachery "03338" "Realm of Madness" DimCarcosa 2)
   { cdCardTraits = singleton Terror
@@ -806,6 +813,20 @@ possessionTraitorous = (treachery "03340" "Possession (Traitorous)" DimCarcosa 1
   , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
   , cdCardInHandEffects = True
   , cdCommitRestrictions = [CommittableTreachery]
+  }
+
+possessionTorturous :: CardDef
+possessionTorturous = (treachery "03341" "Possession (Torturous)" DimCarcosa 1)
+  { cdCardTraits = setFromList [Hex, Terror]
+  , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+  , cdCardInHandEffects = True
+  }
+
+possessionMurderous :: CardDef
+possessionMurderous = (treachery "03342" "Possession (Murderous)" DimCarcosa 1)
+  { cdCardTraits = setFromList [Hex, Terror]
+  , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+  , cdCardInHandEffects = True
   }
 
 theHarbinger :: CardDef

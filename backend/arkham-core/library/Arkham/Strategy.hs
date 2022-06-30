@@ -15,7 +15,7 @@ data DamageStrategy
   -- Hastur has specific damage rules
   | DamageFromHastur
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data ZoneReturnStrategy = PutBackInAnyOrder | ShuffleBackIn | PutBack
     deriving stock (Show, Eq, Generic)

@@ -429,6 +429,7 @@ getCanAffordCost iid source mAction windows' = \case
   HorrorCost{} -> pure True -- TODO: Make better
   DamageCost{} -> pure True -- TODO: Make better
   DirectDamageCost{} -> pure True -- TODO: Make better
+  InvestigatorDamageCost{} -> pure True -- TODO: Make better
   DoomCost{} -> pure True -- TODO: Make better
   SkillIconCost n skillTypes -> do
     handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid

@@ -15,6 +15,7 @@ import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Game.Helpers
+import Arkham.Id
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Message
 import Arkham.Token
@@ -126,6 +127,14 @@ instance RunMessage ThePathToCarcosa where
           c <$ pushAll
             [story investigatorIds danielWasPossessed, respondToWarning]
         -- Just _ -> error "Invalid key for The Unspeakable Oath"
+    CampaignStep (Just EpilogueStep) -> do
+      possessed <- getRecordSet Possessed
+      let
+        investigatorIds = flip mapMaybe possessed $ \case
+          Recorded cardCode -> Just (InvestigatorId cardCode)
+          _ -> Nothing
+      pushAll [story investigatorIds epilogue, EndOfGame Nothing]
+      pure c
     NextCampaignStep _ -> do
       let step = nextStep a
       push (CampaignStep step)

@@ -2456,10 +2456,11 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid 1
   CommitCard iid cardId -> do
     investigator' <- getInvestigator iid
+    treacheryCards <- traverse (field TreacheryCard) (setToList $ investigatorInHandTreacheries (toAttrs investigator'))
     let
       card = fromJustNote "could not find card in hand" $ find
         ((== cardId) . toCardId)
-        (investigatorHand (toAttrs investigator') <> map PlayerCard (unDeck . investigatorDeck $ toAttrs investigator'))
+        (investigatorHand (toAttrs investigator') <> map PlayerCard (unDeck . investigatorDeck $ toAttrs investigator') <> treacheryCards)
     push $ InvestigatorCommittedCard iid card
     case card of
       PlayerCard pc -> case toCardType pc of

@@ -31,7 +31,7 @@ dimStreetsTheKingsParade = locationWith
   (PerPlayer 1)
   Diamond
   [Square, Equals, Star]
-  (canBeFlippedL .~ True)
+  ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasAbilities DimStreetsTheKingsParade where
   getAbilities (DimStreetsTheKingsParade a) = withBaseAbilities

@@ -29,7 +29,7 @@ bleakPlainsStarsOfAldebaran = locationWith
   (PerPlayer 1)
   Square
   [Circle, Triangle, Diamond]
-  (canBeFlippedL .~ True)
+  ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasModifiersFor BleakPlainsStarsOfAldebaran where
   getModifiersFor _ (InvestigatorTarget iid) (BleakPlainsStarsOfAldebaran a) =

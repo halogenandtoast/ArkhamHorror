@@ -28,7 +28,7 @@ darkSpires = locationWith
   (PerPlayer 2)
   Moon
   [Moon, Equals]
-  (canBeFlippedL .~ True)
+  ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance RunMessage DarkSpires where
   runMessage msg l@(DarkSpires attrs) = case msg of

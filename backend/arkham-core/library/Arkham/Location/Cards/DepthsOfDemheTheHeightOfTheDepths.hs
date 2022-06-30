@@ -35,7 +35,7 @@ depthsOfDemheTheHeightOfTheDepths = locationWith
   (PerPlayer 1)
   Equals
   [Moon, Triangle, Diamond]
-  (canBeFlippedL .~ True)
+  ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance RunMessage DepthsOfDemheTheHeightOfTheDepths where
   runMessage msg l@(DepthsOfDemheTheHeightOfTheDepths attrs) = case msg of

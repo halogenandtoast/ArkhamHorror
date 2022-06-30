@@ -31,7 +31,7 @@ palaceOfTheKing = locationWith
   (PerPlayer 3)
   Star
   [Triangle, Diamond]
-  (canBeFlippedL .~ True)
+  ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasModifiersFor PalaceOfTheKing where
   getModifiersFor _ (LocationTarget lid) (PalaceOfTheKing attrs)

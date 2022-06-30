@@ -31,7 +31,7 @@ ruinsOfCarcosaTheCoffin = locationWith
   (PerPlayer 1)
   Triangle
   [Square, Equals, Star]
-  (canBeFlippedL .~ True)
+  ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasAbilities RuinsOfCarcosaTheCoffin where
   getAbilities (RuinsOfCarcosaTheCoffin a) = withBaseAbilities

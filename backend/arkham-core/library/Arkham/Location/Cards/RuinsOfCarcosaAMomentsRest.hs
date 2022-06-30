@@ -33,7 +33,7 @@ ruinsOfCarcosaAMomentsRest = locationWith
   (PerPlayer 1)
   Triangle
   [Square, Equals, Star]
-  (canBeFlippedL .~ True)
+  ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasAbilities RuinsOfCarcosaAMomentsRest where
   getAbilities (RuinsOfCarcosaAMomentsRest a) = withBaseAbilities

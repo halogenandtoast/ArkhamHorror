@@ -5,7 +5,6 @@ module Arkham.Location.Cards.ShoresOfHali
 
 import Arkham.Prelude
 
-import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Game.Helpers
@@ -14,6 +13,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 
@@ -29,7 +29,7 @@ shoresOfHali = locationWith
   (PerPlayer 2)
   Circle
   [Square]
-  (canBeFlippedL .~ True)
+  ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance RunMessage ShoresOfHali where
   runMessage msg l@(ShoresOfHali attrs) = case msg of

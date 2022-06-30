@@ -29,7 +29,7 @@ depthsOfDemheStepsOfThePalace = locationWith
   (PerPlayer 1)
   Equals
   [Moon, Triangle, Diamond]
-  (canBeFlippedL .~ True)
+  ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasModifiersFor DepthsOfDemheStepsOfThePalace where
   getModifiersFor _ (InvestigatorTarget iid) (DepthsOfDemheStepsOfThePalace a)

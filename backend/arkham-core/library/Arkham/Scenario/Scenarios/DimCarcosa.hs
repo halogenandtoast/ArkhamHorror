@@ -20,11 +20,13 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
+import Arkham.Id
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
@@ -33,6 +35,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait ( Trait (AncientOne, Monster) )
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype DimCarcosa = DimCarcosa ScenarioAttrs
   deriving anyclass IsScenario
@@ -273,5 +276,42 @@ instance RunMessage DimCarcosa where
               (TokenEffectSource ElderThing)
               1
         _ -> pure ()
+      pure s
+    ScenarioResolution res -> do
+      investigatorIds <- getInvestigatorIds
+      conviction <- getConviction
+      doubt <- getDoubt
+      gainXp <- map (uncurry GainXP) <$> getXpWithBonus 5
+      possessed <- selectList $ InvestigatorWithTreacheryInHand $ TreacheryOneOf $ map treacheryIs [Treacheries.possessionMurderous, Treacheries.possessionTraitorous, Treacheries.possessionTorturous]
+      let recordPossessed = RecordSet Possessed (map unInvestigatorId possessed)
+      case res of
+        NoResolution -> case compare conviction doubt of
+          GT -> push $ ScenarioResolution $ Resolution 4
+          EQ -> push $ ScenarioResolution $ Resolution 4
+          LT -> push $ ScenarioResolution $ Resolution 5
+        Resolution 1 -> do
+          pushAll $ [story investigatorIds resolution1]
+            <> [SufferTrauma iid 2 2 | iid <- investigatorIds]
+            <> gainXp
+            <> [recordPossessed, EndOfGame Nothing]
+        Resolution 2 -> do
+          pushAll $ [story investigatorIds resolution2]
+            <> [SufferTrauma iid 0 2 | iid <- investigatorIds]
+            <> gainXp
+            <> [recordPossessed, EndOfGame Nothing]
+        Resolution 3 -> do
+          pushAll $ [story investigatorIds resolution3]
+            <> [SufferTrauma iid 2 0 | iid <- investigatorIds]
+            <> gainXp
+            <> [recordPossessed, EndOfGame Nothing]
+        Resolution 4 -> do
+          pushAll $ [story investigatorIds resolution4, Record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth]
+            <> map DrivenInsane investigatorIds
+            <> [GameOver]
+        Resolution 5 -> do
+          pushAll $ [story investigatorIds resolution5, Record HasturHasYouInHisGrasp]
+            <> map DrivenInsane investigatorIds
+            <> [GameOver]
+        _ -> error "Unhandled resolution"
       pure s
     _ -> DimCarcosa <$> runMessage msg attrs

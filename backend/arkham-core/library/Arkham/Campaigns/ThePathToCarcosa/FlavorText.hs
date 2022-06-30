@@ -216,3 +216,19 @@ headTheWarning = FlavorText
     \ The King in Yellow. What is true? What is real? Only you can sort\
     \ through this madness."
   ]
+
+epilogue :: Message
+epilogue = FlavorText
+  (Just "Epilogue")
+    [ "It has taken months of preparation, but you are finally ready to unveil your\
+      \ latest work to the world. Gathering financial investments was your first task,\
+      \ of course. That hadn’t taken too long given the connections you’d made during\
+      \ your stay in Paris. You have been assured that the cast assembled is the finest\
+      \ that money could afford, but still you strive to make everything perfect. It\
+      \ must be perfect. The story must be told, so that the world knows. You’ve heard\
+      \ the troupe whisper behind your back: the remarks about your bizarre passion,\
+      \ the concern about your piercing yellow eyes. It matters not to you. All you\
+      \ care about is the performance. The pronunciation of the words. The melody of\
+      \ Cassilda’s song. The design of the Stranger’s mask."
+    , "This would be the greatest performance of The King in Yellow ever."
+    ]

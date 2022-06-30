@@ -1248,6 +1248,7 @@ library
       Arkham.Treachery.Cards.DanceOfTheYellowKing
       Arkham.Treachery.Cards.DeadlyFate
       Arkham.Treachery.Cards.DescentIntoMadness
+      Arkham.Treachery.Cards.DismalCurse
       Arkham.Treachery.Cards.DissonantVoices
       Arkham.Treachery.Cards.DraggedUnder
       Arkham.Treachery.Cards.DrawingTheSign
@@ -1292,6 +1293,8 @@ library
       Arkham.Treachery.Cards.Overzealous
       Arkham.Treachery.Cards.Paranoia
       Arkham.Treachery.Cards.PassageIntoTheVeil
+      Arkham.Treachery.Cards.PossessionMurderous
+      Arkham.Treachery.Cards.PossessionTorturous
       Arkham.Treachery.Cards.PossessionTraitorous
       Arkham.Treachery.Cards.PsychopompsSong
       Arkham.Treachery.Cards.Psychosis

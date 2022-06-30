@@ -26,7 +26,10 @@ possessionTraitorous = treacheryWith
 
 instance RunMessage PossessionTraitorous where
   runMessage msg t@(PossessionTraitorous attrs) = case msg of
-    Revelation iid source | isSource attrs source ->
+    Revelation iid source | isSource attrs source -> do
+      horror <- field InvestigatorHorror iid
+      sanity <- field InvestigatorSanity iid
+      when (horror > sanity * 2) $ push $ InvestigatorKilled (toSource attrs) iid
       t <$ push (AddTreacheryToHand iid (toId attrs))
     EndCheckWindow {} -> case treacheryInHandOf attrs of
       Just iid -> do

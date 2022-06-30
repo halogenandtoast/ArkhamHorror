@@ -114,6 +114,7 @@ data InvestigatorMatcher
   | InvestigatorWithRemainingSanity ValueMatcher
   | InvestigatorWithResources ValueMatcher
   | InvestigatorWithId InvestigatorId
+  | InvestigatorWithTreacheryInHand TreacheryMatcher
   | InvestigatorWithTitle Text
   | InvestigatorMatches [InvestigatorMatcher]
   | InvestigatorWithLowestSkill SkillType
@@ -498,6 +499,7 @@ data TreacheryMatcher
   | AnyTreachery
   | TreacheryOwnedBy InvestigatorMatcher
   | TreacheryMatches [TreacheryMatcher]
+  | TreacheryOneOf [TreacheryMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

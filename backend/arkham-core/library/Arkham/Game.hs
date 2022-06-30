@@ -651,6 +651,8 @@ getInvestigatorsMatching matcher = do
       pure $ selfCount == maximum (ncons selfCount allCounts)
     HasMatchingAsset assetMatcher -> \i ->
       selectAny (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
+    InvestigatorWithTreacheryInHand treacheryMatcher -> \i ->
+      selectAny (treacheryMatcher <> TreacheryInHandOf (InvestigatorWithId $ toId i))
     HasMatchingEvent eventMatcher -> \i ->
       selectAny (eventMatcher <> EventControlledBy (InvestigatorWithId $ toId i))
     HasMatchingSkill skillMatcher -> \i ->
@@ -826,6 +828,8 @@ getTreacheriesMatching matcher = do
         Nothing -> False
     TreacheryMatches matchers ->
       \treachery -> allM (`matcherFilter` treachery) matchers
+    TreacheryMatches matchers ->
+      \treachery -> anyM (`matcherFilter` treachery) matchers
 
 getScenariosMatching :: (Monad m, HasGame m) => ScenarioMatcher -> m [Scenario]
 getScenariosMatching matcher = do

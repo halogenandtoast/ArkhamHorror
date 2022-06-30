@@ -10,6 +10,7 @@ import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Source
+import Arkham.Strategy
 import Arkham.Target
 import Data.Text qualified as T
 
@@ -62,6 +63,7 @@ data Payment
   | HorrorPayment Int
   | DamagePayment Int
   | DirectDamagePayment Int
+  | InvestigatorDamagePayment Int
   | SkillIconPayment [SkillType]
   | Payments [Payment]
   | NoPayment
@@ -80,6 +82,7 @@ data Cost
   | Costs [Cost]
   | DamageCost Source Target Int
   | DirectDamageCost Source InvestigatorMatcher Int
+  | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
   | DiscardCost Target
   | DiscardCardCost Card
   | DiscardFromCost Int CostZone CardMatcher
@@ -123,6 +126,7 @@ displayCostType = \case
   Costs cs -> T.intercalate ", " $ map displayCostType cs
   DamageCost _ _ n -> tshow n <> " Damage"
   DirectDamageCost _ _ n -> tshow n <> " Direct Damage"
+  InvestigatorDamageCost _ _ _ n -> tshow n <> " Damage"
   DiscardCost _ -> "Discard"
   DiscardCardCost _ -> "Discard Card"
   DiscardFromCost n _ _ -> "Discard " <> tshow n

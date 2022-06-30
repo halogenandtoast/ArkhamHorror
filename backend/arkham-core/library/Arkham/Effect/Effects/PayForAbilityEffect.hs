@@ -280,9 +280,13 @@ instance RunMessage PayForAbilityEffect where
           investigators <- selectList investigatorMatcher
           case investigators of
             [iid'] -> do
-              push (InvestigatorDirectDamage iid' source x 0)
+              push $ InvestigatorDirectDamage iid' source x 0
               withPayment $ DirectDamagePayment x
             _ -> error "exactly one investigator expected for direct damage"
+        InvestigatorDamageCost _ investigatorMatcher damageStrategy x -> do
+          investigators <- selectList investigatorMatcher
+          push $ chooseOne iid [targetLabel iid' [InvestigatorAssignDamage iid' source damageStrategy x 0] | iid' <- investigators]
+          withPayment $ InvestigatorDamagePayment x
         ResourceCost x -> do
           push (SpendResources iid x)
           withPayment $ ResourcePayment x

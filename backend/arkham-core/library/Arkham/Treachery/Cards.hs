@@ -7,6 +7,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
+import Arkham.CommitRestriction
 import Arkham.EncounterSet hiding (Byakhee, Dunwich)
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Keyword qualified as Keyword
@@ -804,6 +805,7 @@ possessionTraitorous = (treachery "03340" "Possession (Traitorous)" DimCarcosa 1
   { cdCardTraits = setFromList [Hex, Terror]
   , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
   , cdCardInHandEffects = True
+  , cdCommitRestrictions = [CommittableTreachery]
   }
 
 theHarbinger :: CardDef

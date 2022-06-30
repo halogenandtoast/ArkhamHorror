@@ -29,7 +29,7 @@ bleakPlainsBleakDesolation = locationWith
   (PerPlayer 1)
   Square
   [Circle, Triangle, Diamond]
-  (canBeFlippedL .~ True)
+  ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasModifiersFor BleakPlainsBleakDesolation where
   getModifiersFor _ (InvestigatorTarget iid) (BleakPlainsBleakDesolation a) =

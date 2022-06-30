@@ -32,7 +32,7 @@ dimStreetsMappingTheStreets = locationWith
   (PerPlayer 1)
   Diamond
   [Square, Equals, Star]
-  (canBeFlippedL .~ True)
+  ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasAbilities DimStreetsMappingTheStreets where
   getAbilities (DimStreetsMappingTheStreets a) = withBaseAbilities

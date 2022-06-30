@@ -1511,136 +1511,54 @@ abbeyTowerSpiresForbidden = (locationWithUnrevealed
   }
 
 shoresOfHali :: CardDef
-shoresOfHali = (location
-                     "03325"
-                     "Shores of Hali"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
+shoresOfHali = location "03325b" "Shores of Hali" [Otherworld] DimCarcosa
 
 bleakPlainsStarsOfAldebaran :: CardDef
-bleakPlainsStarsOfAldebaran = (location
-                     "03326b"
-                     "Bleak Plains"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
+bleakPlainsStarsOfAldebaran =
+  location "03326b" "Bleak Plains" [Otherworld] DimCarcosa
 
 bleakPlainsBleakDesolation :: CardDef
-bleakPlainsBleakDesolation = (location
-                     "03326d"
-                     "Bleak Plains"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
-
+bleakPlainsBleakDesolation =
+  location "03326d" "Bleak Plains" [Otherworld] DimCarcosa
 
 ruinsOfCarcosaInhabitantOfCarcosa :: CardDef
-ruinsOfCarcosaInhabitantOfCarcosa = (location
-                     "03327b"
-                     "Ruins of Carcosa"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
+ruinsOfCarcosaInhabitantOfCarcosa =
+  location "03327b" "Ruins of Carcosa" [Otherworld] DimCarcosa
 
 ruinsOfCarcosaAMomentsRest :: CardDef
-ruinsOfCarcosaAMomentsRest = (location
-                     "03327d"
-                     "Ruins of Carcosa"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
+ruinsOfCarcosaAMomentsRest =
+  location "03327d" "Ruins of Carcosa" [Otherworld] DimCarcosa
 
 
 ruinsOfCarcosaTheCoffin :: CardDef
-ruinsOfCarcosaTheCoffin = (location
-                     "03327f"
-                     "Ruins of Carcosa"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
+ruinsOfCarcosaTheCoffin =
+  location "03327f" "Ruins of Carcosa" [Otherworld] DimCarcosa
 
 dimStreetsMappingTheStreets :: CardDef
-dimStreetsMappingTheStreets = (location
-                     "03328b"
-                     "Dim Streets"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
+dimStreetsMappingTheStreets =
+  location "03328b" "Dim Streets" [Otherworld] DimCarcosa
 
 dimStreetsTheKingsParade :: CardDef
-dimStreetsTheKingsParade = (location
-                     "03328d"
-                     "Dim Streets"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
+dimStreetsTheKingsParade =
+  location "03328d" "Dim Streets" [Otherworld] DimCarcosa
 
 dimStreetsTheArchway :: CardDef
-dimStreetsTheArchway = (location
-                     "03328f"
-                     "Dim Streets"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
+dimStreetsTheArchway = location "03328f" "Dim Streets" [Otherworld] DimCarcosa
 
 depthsOfDemheTheHeightOfTheDepths :: CardDef
-depthsOfDemheTheHeightOfTheDepths = (location
-                     "03329b"
-                     "Depths of Demhe"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
+depthsOfDemheTheHeightOfTheDepths =
+  location "03329b" "Depths of Demhe" [Otherworld] DimCarcosa
 
 depthsOfDemheStepsOfThePalace :: CardDef
-depthsOfDemheStepsOfThePalace = (location
-                     "03329d"
-                     "Depths of Demhe"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
+depthsOfDemheStepsOfThePalace =
+  location "03329d" "Depths of Demhe" [Otherworld] DimCarcosa
 
 darkSpires :: CardDef
-darkSpires = (location
-                     "03330b"
-                     "Dark Spires"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
+darkSpires = location "03330b" "Dark Spires" [Otherworld] DimCarcosa
 
 palaceOfTheKing :: CardDef
-palaceOfTheKing = (location
-                     "03331b"
-                     "Palace of the King"
-                     [Otherworld]
-                     DimCarcosa
-                   )
-  { cdDoubleSided = False
-  }
+palaceOfTheKing =
+  location "03331b" "Palace of the King" [Otherworld] DimCarcosa
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

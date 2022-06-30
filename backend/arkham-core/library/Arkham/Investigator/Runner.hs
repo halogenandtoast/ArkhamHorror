@@ -1559,14 +1559,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorCommittedCard iid card | iid == investigatorId -> do
     commitedCardWindows <- Helpers.windows [Window.CommittedCard iid card]
     pushAll $ FocusCards [card] : commitedCardWindows <> [UnfocusCards]
+    inHandTreacheries' <- flip filterM (setToList investigatorInHandTreacheries) $ \tid -> do
+      treacheryCard <- field TreacheryCard tid
+      pure $ treacheryCard /= card
     pure
       $ a
-      & handL
-      %~ filter (/= card)
-      & deckL
-      %~ Deck
-      . filter ((/= card) . PlayerCard)
-      . unDeck
+      & (handL %~ filter (/= card))
+      & (inHandTreacheriesL .~ setFromList inHandTreacheries')
+      & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
   PlaceUnderneath target cards | isTarget a target -> do
     let
       update = appEndo $ foldMap
@@ -1615,10 +1615,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else do
         committableTreacheries <- filterM (field TreacheryCanBeCommitted) (setToList investigatorInHandTreacheries)
         treacheryCards <- traverse (field TreacheryCard) committableTreacheries
-        flip filterM (investigatorHand <> traceShowId treacheryCards) $ \case
+        flip filterM (investigatorHand <> treacheryCards) $ \case
           PlayerCard card -> do
             let
               passesCommitRestriction = \case
+                CommittableTreachery -> error "unhandled"
                 MaxOnePerTest ->
                   pure $ toCardCode card `notElem` committedCardCodes
                 OnlyYourTest -> pure True
@@ -1654,7 +1655,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  )
               && passesCommitRestrictions
               && not prevented
-          _ -> pure False
+          EncounterCard card -> pure $ CommittableTreachery `elem` (cdCommitRestrictions $ toCardDef card)
     if notNull committableCards || notNull committedCards || notNull actions
       then push
         (SkillTestAsk $ chooseOne
@@ -1707,6 +1708,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               PlayerCard card -> do
                 let
                   passesCommitRestriction = \case
+                    CommittableTreachery -> error "unhandled"
                     MaxOnePerTest ->
                       pure $ toCardCode card `notElem` committedCardCodes
                     OnlyYourTest -> pure False
@@ -1738,7 +1740,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                      )
                   && passesCriterias
                   && not prevented
-              _ -> pure False -- TODO: Fix this
+              EncounterCard card -> pure $ CommittableTreachery `elem` (cdCommitRestrictions $ toCardDef card)
       when (notNull committableCards || notNull committedCards) $ push
         (SkillTestAsk $ chooseOne
           investigatorId
@@ -2107,8 +2109,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ]
     actions <- nub <$> concatMapM (getActions iid) windows
     if any isForcedAbility actions
-      then a
-        <$ push (chooseOne iid $ map (($ windows) . UseAbility iid) actions)
+        then do
+          -- Silent forced abilities should trigger automatically
+          let
+            (silent, normal) = partition isSilentForcedAbility actions
+            toUseAbilities = map (($ windows) . UseAbility iid)
+          a <$ pushAll
+            (toUseAbilities silent
+            <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
+            <> [PlayerWindow iid additionalActions isAdditional]
+            )
       else do
         modifiers <- getModifiers
           (InvestigatorSource iid)

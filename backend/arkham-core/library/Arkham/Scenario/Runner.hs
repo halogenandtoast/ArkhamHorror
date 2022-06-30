@@ -9,6 +9,7 @@ import Arkham.Scenario.Attrs as X
 
 import Arkham.Act.Sequence
 import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.ChaosBag ()
@@ -584,4 +585,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   SetEncounterDeck encounterDeck -> pure $ a & encounterDeckL .~ encounterDeck
   RemoveAllCopiesOfCardFromGame _ cCode ->
     pure $ a & setAsideCardsL %~ filter ((/= cCode) . toCardCode)
+  Record key -> do
+    isStandalone <- getIsStandalone
+    if isStandalone
+       then pure $ a & standaloneCampaignLogL . recorded %~ insertSet key
+       else pure a
   _ -> pure a

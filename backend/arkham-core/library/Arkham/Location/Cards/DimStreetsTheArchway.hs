@@ -31,7 +31,7 @@ dimStreetsTheArchway = locationWith
   (PerPlayer 1)
   Diamond
   [Square, Equals, Star]
-  (canBeFlippedL .~ True)
+  ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasAbilities DimStreetsTheArchway where
   getAbilities (DimStreetsTheArchway a) = withBaseAbilities

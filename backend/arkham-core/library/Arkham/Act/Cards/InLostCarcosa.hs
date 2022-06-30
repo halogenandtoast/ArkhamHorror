@@ -28,7 +28,7 @@ instance HasAbilities InLostCarcosa where
     then
       [ mkAbility x 1 $ Objective $ ForcedAbilityWithCost
           AnyWindow
-          (GroupClueCost (PerPlayer 4) Anywhere)
+          (GroupClueCost (PerPlayer 2) Anywhere)
       ]
     else []
 

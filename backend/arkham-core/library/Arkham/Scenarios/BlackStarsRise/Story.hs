@@ -34,3 +34,34 @@ ashleighsInformation = FlavorText
     \ lighting and assaulted by tumultuous waves, you can’t help but wonder\
     \ if Ashleigh was singing about this very moment."
   ]
+
+resolution1 :: Message
+resolution1 = FlavorText
+  (Just "Resolution 1")
+  [ "You hold your breath as you swim through freezing water toward the spires\
+    \ below. As you get closer, you see ripples throughout the water, as though you\
+    \ are peering into a reflection upon the sea’s surface. You break through the\
+    \ surface and gasp as air fills your lungs."
+  ]
+
+resolution2 :: Message
+resolution2 = FlavorText
+  (Just "Resolution 2")
+  [ "You marvel at the cloud-waves encircling you and fly toward the spires above.\
+    \ The desolate and inscrutable city of Carcosa towers before you. You suddenly\
+    \ realize you are falling—not floating—and a pulling force takes hold of your\
+    \ body."
+  ]
+
+resolution3 :: Message
+resolution3 = FlavorText
+  (Just "Resolution 3")
+  [ "When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s\
+    \ abbey. No rain pelts the glass of the windows above, and you hear no thunder,\
+    \ nor the screeching of winged horrors overhead. Somehow, you had escaped the\
+    \ island’s certain doom. You creep to the door of the abbey and open it with\
+    \ trepidation. A dazzling light sears your eyes, and you lift your hand to block\
+    \ the glare of two suns. You stand overlooking the Lake of Hali. Black stars hang\
+    \ in the heavens above. Beyond, over leagues of tossing cloud- waves, the towers\
+    \ of Carcosa rise behind the shattered moon."
+  ]

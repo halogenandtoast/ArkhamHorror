@@ -6,6 +6,7 @@ module Arkham.Location.Cards.PalaceOfTheKing
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.DamageEffect
 import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Game.Helpers
 import Arkham.GameValue
@@ -13,6 +14,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDamage )
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DimCarcosa.Helpers
@@ -51,7 +53,12 @@ instance RunMessage PalaceOfTheKing where
     Flip iid _ target | isTarget attrs target -> do
       readStory iid (toId attrs) Story.hastursEnd
       pure . PalaceOfTheKing $ attrs & canBeFlippedL .~ False
-    ResolveStory _ story' | story' == Story.hastursEnd -> do
-      push $ Remember KnowTheSecret
+    ResolveStory iid story' | story' == Story.hastursEnd -> do
+      hastur <- selectJust $ EnemyWithTitle "Hastur"
+      -- we do 0 damage to hastur to force a defeat check
+      pushAll
+        [ Remember KnowTheSecret
+        , Msg.EnemyDamage hastur iid (toSource attrs) StoryCardDamageEffect 0
+        ]
       pure l
     _ -> PalaceOfTheKing <$> runMessage msg attrs

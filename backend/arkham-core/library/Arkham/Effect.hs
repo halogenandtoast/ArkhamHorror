@@ -174,6 +174,7 @@ allEffects =
     , ("03209", Montmartre209' . montmartre209)
     , ("03215", PereLachaiseCemetery' . pereLachaiseCemetery)
     , ("03218", LeMarais218' . leMarais218)
+    , ("03221a", TheOrganistHopelessIDefiedHim' . theOrganistHopelessIDefiedHim)
     , ("03254", NarrowShaft' . narrowShaft)
     , ("03306", EideticMemory3' . eideticMemory3)
     , ("05114", MeatCleaver' . meatCleaver)

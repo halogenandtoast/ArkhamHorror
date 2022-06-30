@@ -828,7 +828,7 @@ getTreacheriesMatching matcher = do
         Nothing -> False
     TreacheryMatches matchers ->
       \treachery -> allM (`matcherFilter` treachery) matchers
-    TreacheryMatches matchers ->
+    TreacheryOneOf matchers ->
       \treachery -> anyM (`matcherFilter` treachery) matchers
 
 getScenariosMatching :: (Monad m, HasGame m) => ScenarioMatcher -> m [Scenario]

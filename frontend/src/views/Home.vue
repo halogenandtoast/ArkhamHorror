@@ -1,4 +1,4 @@
-<template>;
+<template>
   <div class="home">
     <div v-if="currentUser" class="new-game">
       <router-link to="/campaigns/new" custom v-slot="{ navigate }">
@@ -120,7 +120,7 @@ export default defineComponent({
       e.preventDefault()
       const file = (debugFile.value?.files || [])[0]
       if (file) {
-        var formData = new FormData();
+        const formData = new FormData();
         formData.append("debugFile", file);
         debugGame(formData).then((game) => router.push(`/games/${game.id}`))
       }

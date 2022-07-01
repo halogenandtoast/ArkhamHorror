@@ -9,38 +9,39 @@
     "lint:template": "vue-type-check --workspace ./ --srcDir ./src"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.32",
-    "@fortawesome/free-brands-svg-icons": "^5.15.1",
-    "@fortawesome/free-solid-svg-icons": "^5.15.1",
-    "@fortawesome/vue-fontawesome": "^3.0.0-4",
-    "@types/lodash": "^4.14.171",
-    "axios": "^0.21.1",
-    "core-js": "^3.6.5",
+    "@fortawesome/fontawesome-svg-core": "^6.1.1",
+    "@fortawesome/free-brands-svg-icons": "^6.1.1",
+    "@fortawesome/free-solid-svg-icons": "^6.1.1",
+    "@fortawesome/vue-fontawesome": "^3.0.1",
+    "@types/lodash": "^4.14.182",
+    "axios": "^0.27.2",
+    "core-js": "^3.23.3",
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
-    "ts.data.json": "^1.5.0",
-    "v-jsoneditor": "^1.4.1",
-    "vue": "^3.1.5",
-    "vue-router": "^4.0.10",
+    "ts.data.json": "^2.1.1",
+    "v-jsoneditor": "^1.4.5",
+    "vue": "^3.2.37",
+    "vue-router": "^4.0.16",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
-    "@types/md5": "^2.3.1",
-    "@typescript-eslint/eslint-plugin": "^4.28.4",
-    "@typescript-eslint/parser": "^4.28.4",
-    "@vue/cli-plugin-babel": "~4.5.13",
-    "@vue/cli-plugin-eslint": "^4.5.13",
-    "@vue/cli-plugin-router": "~4.5.13",
-    "@vue/cli-plugin-typescript": "~4.5.13",
-    "@vue/cli-service": "^4.5.13",
-    "@vue/compiler-sfc": "^3.0.0",
-    "@vue/eslint-config-typescript": "^7.0.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0-0",
-    "prettier": "1.19.1",
-    "sass": "^1.26.5",
-    "sass-loader": "^8.0.2",
-    "typescript": "~4.1.5"
+    "@types/md5": "^2.3.2",
+    "@typescript-eslint/eslint-plugin": "^5.30.0",
+    "@typescript-eslint/parser": "^5.30.0",
+    "@vue/cli-plugin-babel": "~5.0.6",
+    "@vue/cli-plugin-eslint": "^5.0.6",
+    "@vue/cli-plugin-router": "~5.0.6",
+    "@vue/cli-plugin-typescript": "~5.0.6",
+    "@vue/cli-service": "^5.0.6",
+    "@vue/compiler-sfc": "^3.2.37",
+    "@vue/eslint-config-typescript": "^11.0.0",
+    "eslint": "^8.5.0",
+    "eslint-plugin-vue": "^9.0.0",
+    "file-loader": "^6.2.0",
+    "prettier": "2.7.1",
+    "sass": "^1.53.0",
+    "sass-loader": "^13.0.2",
+    "typescript": "~4.7.4"
   },
   "eslintConfig": {
     "root": true,
@@ -55,7 +56,9 @@
     "parserOptions": {
       "ecmaVersion": 2020
     },
-    "rules": {}
+    "rules": {
+      "vue/multi-word-component-names": "off"
+    }
   },
   "browserslist": [
     "> 1%",

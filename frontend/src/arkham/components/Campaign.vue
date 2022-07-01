@@ -1,3 +1,28 @@
+<script lang="ts" setup>
+import { computed } from 'vue';
+import type { Game } from '@/arkham/types/Game';
+import StatusBar from '@/arkham/components/StatusBar.vue';
+import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
+import Scenario from '@/arkham/components/Scenario.vue';
+import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
+import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
+import CardOverlay from '@/arkham/components/CardOverlay.vue';
+
+export interface Props {
+  game: Game
+  investigatorId: string
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits(['update', 'choose'])
+
+async function update(game: Game) {
+  emit('update', game);
+}
+
+const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.contents.step?.tag === 'UpgradeDeckStep')
+</script>
+
 <template>
   <div v-if="upgradeDeck" id="game" class="game">
     <UpgradeDeck :game="game" :investigatorId="investigatorId" />
@@ -27,41 +52,6 @@
     </template>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import StatusBar from '@/arkham/components/StatusBar.vue';
-import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
-import Scenario from '@/arkham/components/Scenario.vue';
-import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
-import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
-import CardOverlay from '@/arkham/components/CardOverlay.vue';
-
-export default defineComponent({
-  components: {
-    StatusBar,
-    PlayerOrder,
-    PlayerSelector,
-    CardOverlay,
-    Scenario,
-    UpgradeDeck,
-  },
-  props: {
-    game: { type: Object as () => Game, required: true },
-    investigatorId: { type: String, required: true }
-  },
-  setup(props, { emit }) {
-    async function update(game: Game) {
-      emit('update', game);
-    }
-
-    const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.contents.step?.tag === 'UpgradeDeckStep')
-
-    return { update, upgradeDeck }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 .card {

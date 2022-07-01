@@ -1,3 +1,153 @@
+<script lang="ts" setup>
+import { withDefaults, ref, provide, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
+import * as Arkham from '@/arkham/types/Game'
+import { fetchGame, updateGame, updateGameAmounts, updateGamePaymentAmounts, updateGameRaw } from '@/arkham/api'
+import GameLog from '@/arkham/components/GameLog.vue'
+import api from '@/api';
+import CardOverlay from '@/arkham/components/CardOverlay.vue';
+import Scenario from '@/arkham/components/Scenario.vue'
+import Campaign from '@/arkham/components/Campaign.vue'
+import { onBeforeRouteLeave } from 'vue-router'
+
+export interface Props {
+  gameId: string
+  spectate?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), { spectate: false })
+
+const debug = ref(false)
+provide('debug', debug)
+const ready = ref(false)
+const solo = ref(false)
+const socketError = ref(false)
+const socket = ref<WebSocket | null>(null)
+const game = ref<Arkham.Game | null>(null)
+const investigatorId = ref<string | null>(null)
+const gameLog = ref<readonly string[]>(Object.freeze([]))
+
+const route = useRoute()
+const spectate = route.fullPath.endsWith('/spectate')
+
+function connect() {
+  const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
+  const spectatePrefix = spectate ? "/spectate" : ""
+  socket.value = new WebSocket(`${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}`.replace(/https/, 'wss').replace(/http/, 'ws'));
+  socket.value.addEventListener('open', () => {
+    ready.value = true;
+    socketError.value = false;
+  });
+  socket.value.addEventListener('message', (event: MessageEvent) => {
+    const data = JSON.parse(event.data)
+
+    if (data.tag === "GameMessage") {
+      gameLog.value = Object.freeze([...gameLog.value, data.contents])
+    }
+
+    if (data.tag === "GameUpdate") {
+      Arkham.gameDecoder.decodeToPromise(data.contents)
+        .then((updatedGame) => {
+          game.value = updatedGame;
+          if (solo.value) {
+            if (Object.keys(game.value.question).length == 1) {
+              investigatorId.value = Object.keys(game.value.question)[0]
+            } else if (game.value.activeInvestigatorId !== investigatorId.value) {
+              investigatorId.value = Object.keys(game.value.question)[0]
+            }
+          }
+
+        });
+    }
+  });
+  socket.value.addEventListener('error', () => {
+    socketError.value = true;
+    if (socket.value) {
+      socket.value.close();
+      socket.value = null;
+    }
+  });
+  socket.value.addEventListener('close', () => {
+    socketError.value = true;
+    socket.value = null;
+    setTimeout(() => connect(), 1000);
+  });
+}
+
+fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInvestigatorId, multiplayerMode}) => {
+  game.value = newGame;
+  solo.value = multiplayerMode === "Solo";
+  gameLog.value = Object.freeze(newGame.log);
+  investigatorId.value = newInvestigatorId;
+  connect();
+});
+
+async function choose(idx: number) {
+  if (idx !== -1 && game.value && !spectate) {
+    updateGame(props.gameId, idx, investigatorId.value);
+  }
+}
+
+async function choosePaymentAmounts(amounts: Record<string, number>): Promise<void> {
+  if(game.value && !spectate) {
+    updateGamePaymentAmounts(props.gameId, amounts)
+  }
+}
+
+provide('choosePaymentAmounts', choosePaymentAmounts)
+
+async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
+  if(game.value && !spectate) {
+    updateGameAmounts(props.gameId, amounts)
+  }
+}
+
+provide('chooseAmounts', chooseAmounts)
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const debugChoose = async (message: any) => updateGameRaw(props.gameId, message)
+provide('debugChoose', debugChoose)
+
+const switchInvestigator = (newInvestigatorId: string) => investigatorId.value = newInvestigatorId
+provide('switchInvestigator', switchInvestigator)
+provide('solo', solo)
+
+async function update(state: Arkham.Game) {
+  game.value = state;
+}
+
+onBeforeRouteLeave(() => { if (socket.value) { socket.value.close(); socket.value = null; } })
+onUnmounted(() => { if (socket.value) { socket.value.close(); socket.value = null; }})
+
+const toggleDebug = () => debug.value = !debug.value
+
+const debugExport = () => {
+  fetch(new Request(`${api.defaults.baseURL}/arkham/games/${props.gameId}/export`))
+  .then(resp => resp.blob())
+  .then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    // the filename you want
+    a.download = 'arkham-debug.json';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  })
+  .catch((e) => {
+    console.log(e)
+    alert('Unable to download export')
+  });
+}
+
+const inviteLink = `${window.location.href}/join` // fix-syntax`
+
+const copyInviteLink = () => {
+  navigator.clipboard.writeText(inviteLink);
+}
+</script>
+
 <template>
   <div id="game" v-if="ready">
     <div v-if="socketError" class="socketWarning">
@@ -54,158 +204,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, ref, provide, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
-import * as Arkham from '@/arkham/types/Game'
-import { fetchGame, updateGame, updateGameAmounts, updateGamePaymentAmounts, updateGameRaw } from '@/arkham/api'
-import GameLog from '@/arkham/components/GameLog.vue'
-import api from '@/api';
-import CardOverlay from '@/arkham/components/CardOverlay.vue';
-import Scenario from '@/arkham/components/Scenario.vue'
-import Campaign from '@/arkham/components/Campaign.vue'
-import { onBeforeRouteLeave } from 'vue-router'
-
-export default defineComponent({
-  components: { Scenario, Campaign, GameLog, CardOverlay },
-  props: { gameId: { type: String, required: true }, spectate: { type: Boolean, default: false } },
-  setup(props) {
-    const debug = ref(false)
-    provide('debug', debug)
-    const ready = ref(false)
-    const solo = ref(false)
-    const socketError = ref(false)
-    const socket = ref<WebSocket | null>(null)
-    const game = ref<Arkham.Game | null>(null)
-    const investigatorId = ref<string | null>(null)
-    const gameLog = ref<readonly string[]>(Object.freeze([]))
-
-    const route = useRoute()
-    const spectate = route.fullPath.endsWith('/spectate')
-
-    function connect() {
-      const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
-      const spectatePrefix = spectate ? "/spectate" : ""
-      socket.value = new WebSocket(`${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}`.replace(/https/, 'wss').replace(/http/, 'ws'));
-      socket.value.addEventListener('open', () => {
-        ready.value = true;
-        socketError.value = false;
-      });
-      socket.value.addEventListener('message', (event: MessageEvent) => {
-        const data = JSON.parse(event.data)
-
-        if (data.tag === "GameMessage") {
-          gameLog.value = Object.freeze([...gameLog.value, data.contents])
-        }
-
-        if (data.tag === "GameUpdate") {
-          Arkham.gameDecoder.decodePromise(data.contents)
-            .then((updatedGame) => {
-              game.value = updatedGame;
-              if (solo.value) {
-                if (Object.keys(game.value.question).length == 1) {
-                  investigatorId.value = Object.keys(game.value.question)[0]
-                } else if (game.value.activeInvestigatorId !== investigatorId.value) {
-                  investigatorId.value = Object.keys(game.value.question)[0]
-                }
-              }
-
-            });
-        }
-      });
-      socket.value.addEventListener('error', () => {
-        socketError.value = true;
-        if (socket.value) {
-          socket.value.close();
-          socket.value = null;
-        }
-      });
-      socket.value.addEventListener('close', () => {
-        socketError.value = true;
-        socket.value = null;
-        setTimeout(() => connect(), 1000);
-      });
-    }
-
-    fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInvestigatorId, multiplayerMode}) => {
-      game.value = newGame;
-      solo.value = multiplayerMode === "Solo";
-      gameLog.value = Object.freeze(newGame.log);
-      investigatorId.value = newInvestigatorId;
-      connect();
-    });
-
-    async function choose(idx: number) {
-      if (idx !== -1 && game.value && !spectate) {
-        updateGame(props.gameId, idx, investigatorId.value);
-      }
-    }
-
-    async function choosePaymentAmounts(amounts: Record<string, number>): Promise<void> {
-      if(game.value && !spectate) {
-        updateGamePaymentAmounts(props.gameId, amounts)
-      }
-    }
-
-    provide('choosePaymentAmounts', choosePaymentAmounts)
-
-    async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
-      if(game.value && !spectate) {
-        updateGameAmounts(props.gameId, amounts)
-      }
-    }
-
-    provide('chooseAmounts', chooseAmounts)
-
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    const debugChoose = async (message: any) => updateGameRaw(props.gameId, message)
-    provide('debugChoose', debugChoose)
-
-    const switchInvestigator = (newInvestigatorId: string) => investigatorId.value = newInvestigatorId
-    provide('switchInvestigator', switchInvestigator)
-    provide('solo', solo)
-
-    async function update(state: Arkham.Game) {
-      game.value = state;
-    }
-
-    onBeforeRouteLeave(() => { if (socket.value) { socket.value.close(); socket.value = null; } })
-    onUnmounted(() => { if (socket.value) { socket.value.close(); socket.value = null; }})
-
-    const toggleDebug = () => debug.value = !debug.value
-
-    const debugExport = () => {
-      fetch(new Request(`${api.defaults.baseURL}/arkham/games/${props.gameId}/export`))
-      .then(resp => resp.blob())
-      .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        // the filename you want
-        a.download = 'arkham-debug.json';
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-      })
-      .catch((e) => {
-        console.log(e)
-        alert('Unable to download export')
-      });
-    }
-
-    const inviteLink = `${window.location.href}/join` // fix-syntax`
-
-    const copyInviteLink = () => {
-      navigator.clipboard.writeText(inviteLink);
-    }
-
-
-    return { copyInviteLink, inviteLink, debug, toggleDebug, debugExport, socketError, ready, game, investigatorId, choose, update, gameLog }
-  }
-})
-</script>
 
 <style lang="scss" scoped>
 .action { border: 5px solid $select; border-radius: 15px; }

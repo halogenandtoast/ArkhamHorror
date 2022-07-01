@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { defineProps, computed } from 'vue'
+import { computed } from 'vue'
 import type { Card } from '@/arkham/types/Card'
 import type { Game } from '@/arkham/types/Game'
 import type { Message } from '@/arkham/types/Message'

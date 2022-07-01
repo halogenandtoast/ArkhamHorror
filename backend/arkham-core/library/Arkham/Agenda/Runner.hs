@@ -42,6 +42,13 @@ instance RunMessage AgendaAttrs
         $ a
         & (sequenceL .~ Agenda (unAgendaStep $ agendaStep agendaSequence) B)
         & (flippedL .~ True)
+    AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == C -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      push $ chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
+      pure
+        $ a
+        & (sequenceL .~ Agenda (unAgendaStep $ agendaStep agendaSequence) D)
+        & (flippedL .~ True)
     AdvanceAgendaIfThresholdSatisfied -> do
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
       -- handle multiple agendas, this might need to be specific to the

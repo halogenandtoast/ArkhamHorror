@@ -341,7 +341,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     let ks = sortOn Down $ a ^. agendaStackL . to IntMap.keys
     for_ ks $ \k -> do
       case a ^. agendaStackL . at k of
-        Just (x : _) -> push (AddAgenda x)
+        Just (x : _) -> push (AddAgenda k x)
         _ -> pure ()
     pure a
   AddCampaignCardToDeck iid cardDef -> do

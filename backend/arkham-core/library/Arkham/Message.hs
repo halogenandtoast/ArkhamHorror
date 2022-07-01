@@ -120,7 +120,7 @@ data Message
   | AdvanceToAct Int CardDef ActSide Source
   | -- Agenda Deck Messages
     SetAgendaDeck
-  | AddAgenda CardDef
+  | AddAgenda Int CardDef
   | AdvanceAgenda AgendaId
   | NextAdvanceAgendaStep AgendaId Int
   | AdvanceAgendaIfThresholdSatisfied

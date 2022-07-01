@@ -2457,9 +2457,9 @@ runGameMessage msg g = case msg of
   AddAct def -> do
     let aid = ActId $ toCardCode def
     pure $ g & entitiesL . actsL . at aid ?~ lookupAct aid 1
-  AddAgenda def -> do
+  AddAgenda agendaDeckNum def -> do
     let aid = AgendaId $ toCardCode def
-    pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid 1
+    pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum
   CommitCard iid cardId -> do
     investigator' <- getInvestigator iid
     treacheryCards <- traverse (field TreacheryCard) (setToList $ investigatorInHandTreacheries (toAttrs investigator'))

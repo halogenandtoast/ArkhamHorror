@@ -1,3 +1,28 @@
+<script lang="ts" setup>
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
+import { reactive } from 'vue'
+import { Credentials } from '../types'
+
+const store = useStore()
+const route = useRoute()
+const router = useRouter()
+const credentials = reactive<Credentials>({
+  email: '',
+  password: '',
+})
+
+async function authenticate() {
+  await store.dispatch('authenticate', credentials)
+  const { nextUrl } = route.query
+  if (nextUrl) {
+    router.push({ path: nextUrl as string })
+  } else {
+    router.push({ path: '/' })
+  }
+}
+</script>
+
 <template>
   <form @submit.prevent="authenticate">
     <header><i class="secret"></i></header>
@@ -22,37 +47,6 @@
     </section>
   </form>
 </template>
-
-<script lang="ts">
-import { useStore } from 'vuex'
-import { useRoute, useRouter } from 'vue-router'
-import { defineComponent, reactive } from 'vue'
-import { Credentials } from '../types'
-
-export default defineComponent({
-  setup() {
-    const store = useStore()
-    const route = useRoute()
-    const router = useRouter()
-    const credentials = reactive<Credentials>({
-      email: '',
-      password: '',
-    })
-
-    async function authenticate() {
-      await store.dispatch('authenticate', credentials)
-      const { nextUrl } = route.query
-      if (nextUrl) {
-        router.push({ path: nextUrl as string })
-      } else {
-        router.push({ path: '/' })
-      }
-    }
-
-    return { credentials, authenticate }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 form {

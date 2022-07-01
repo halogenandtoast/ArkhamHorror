@@ -1,3 +1,47 @@
+<script lang="ts" setup>
+import { ref, computed, Ref } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+import { debugGame, deleteGame, fetchGames } from '@/arkham/api';
+import Prompt from '@/components/Prompt.vue'
+import type { Game } from '@/arkham/types/Game';
+import type { User } from '@/types';
+
+const router = useRouter()
+const store = useStore()
+const currentUser = computed<User | null>(() => store.getters.currentUser)
+const deleteId = ref<string | null>(null)
+const games: Ref<Game[]> = ref([])
+
+const activeGames = computed(() => games.value.filter(g => g.gameState !== 'IsOver'))
+const finishedGames = computed(() => games.value.filter(g => g.gameState === 'IsOver'))
+
+fetchGames().then((result) => games.value = result)
+
+async function deleteGameEvent() {
+  const { value } = deleteId
+  if (value) {
+    deleteGame(value).then(() => {
+      games.value = games.value.filter((game) => game.id !== value);
+      deleteId.value = null;
+    });
+  }
+}
+
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+
+const debugFile = ref<HTMLInputElement | null>(null)
+const submitDebugUpload = async (e: Event) => {
+  e.preventDefault()
+  const file = (debugFile.value?.files || [])[0]
+  if (file) {
+    const formData = new FormData();
+    formData.append("debugFile", file);
+    debugGame(formData).then((game) => router.push(`/games/${game.id}`))
+  }
+}
+</script>
+
 <template>
   <div class="home">
     <div v-if="currentUser" class="new-game">
@@ -79,67 +123,6 @@
   </div>
 
 </template>
-
-<script lang="ts">
-import { defineComponent, ref, computed, Ref } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
-import { debugGame, deleteGame, fetchGames } from '@/arkham/api';
-import Prompt from '@/components/Prompt.vue'
-import { Game } from '@/arkham/types/Game';
-import { User } from '@/types';
-
-export default defineComponent({
-  components: { Prompt },
-  setup() {
-    const router = useRouter()
-    const store = useStore()
-    const currentUser = computed<User | null>(() => store.getters.currentUser)
-    const deleteId = ref<string | null>(null)
-    const games: Ref<Game[]> = ref([])
-
-    const activeGames = computed(() => games.value.filter(g => g.gameState !== 'IsOver'))
-    const finishedGames = computed(() => games.value.filter(g => g.gameState === 'IsOver'))
-
-    fetchGames().then((result) => games.value = result)
-
-    async function deleteGameEvent() {
-      const { value } = deleteId
-      if (value) {
-        deleteGame(value).then(() => {
-          games.value = games.value.filter((game) => game.id !== value);
-          deleteId.value = null;
-        });
-      }
-    }
-
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-
-    const debugFile = ref<HTMLInputElement | null>(null)
-    const submitDebugUpload = async (e: Event) => {
-      e.preventDefault()
-      const file = (debugFile.value?.files || [])[0]
-      if (file) {
-        const formData = new FormData();
-        formData.append("debugFile", file);
-        debugGame(formData).then((game) => router.push(`/games/${game.id}`))
-      }
-    }
-
-    return {
-      baseUrl,
-      currentUser,
-      deleteId,
-      games,
-      deleteGameEvent,
-      activeGames,
-      finishedGames,
-      debugFile,
-      submitDebugUpload
-    }
-  }
-})
-</script>
 
 <style lang="scss" scoped>
 h2 {

@@ -32,14 +32,14 @@ And launch http://localhost:3000
 
 ### Player Cards
 
-* All player cards up to the Carcosa deluxe box
+* All player cards through the Carcosa cycle
 
 ### Campaigns
 
 * Night of the Zealot
   * Return to Night of the Zealot
 * The Dunwich Legacy
-* The Path To Carcosa (2/8)
+* The Path To Carcosa
 
 ### Side Stories
 

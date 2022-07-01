@@ -1,3 +1,44 @@
+<script lang="ts" setup>
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { fetchDecks, joinGame, fetchGame } from '@/arkham/api'
+import * as Decks from '@/arkham/types/Deck'
+import * as Arkham from '@/arkham/types/Game'
+
+export interface Props {
+  gameId: string
+}
+const props = defineProps<Props>()
+
+const router = useRouter()
+const decks = ref<Decks.Deck[]>([])
+const game = ref<Arkham.Game | null>(null)
+
+const deckId = ref<string | null>(null)
+const ready = ref(false)
+
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+
+fetchDecks().then((result) => {
+  decks.value = result
+  fetchGame(props.gameId).then(({ game: newGame }) => {
+    game.value = newGame;
+  });
+  ready.value = true
+})
+
+const disabled = computed(() => !deckId.value)
+
+async function join() {
+  if (deckId.value) {
+    joinGame(props.gameId, deckId.value)
+      .then((game) => router.push(`/games/${game.id}`));
+  }
+}
+
+const investigators = computed(() => Object.keys(game.value?.investigators || {}))
+</script>
+
 <template>
   <div v-if="ready" class="container">
     <div v-if="decks.length == 0">
@@ -24,49 +65,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { fetchDecks, joinGame, fetchGame } from '@/arkham/api'
-import * as Decks from '@/arkham/types/Deck'
-import * as Arkham from '@/arkham/types/Game'
-
-export default defineComponent({
-  props: { gameId: { type: String, required: true } },
-  setup(props) {
-    const router = useRouter()
-    const decks = ref<Decks.Deck[]>([])
-    const game = ref<Arkham.Game | null>(null)
-
-    const deckId = ref<string | null>(null)
-    const ready = ref(false)
-
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-
-    fetchDecks().then((result) => {
-      decks.value = result
-      fetchGame(props.gameId).then(({ game: newGame }) => {
-        game.value = newGame;
-      });
-      ready.value = true
-    })
-
-    const disabled = computed(() => !deckId.value)
-
-    async function join() {
-      if (deckId.value) {
-        joinGame(props.gameId, deckId.value)
-          .then((game) => router.push(`/games/${game.id}`));
-      }
-    }
-
-    const investigators = computed(() => Object.keys(game.value?.investigators || {}))
-
-    return { baseUrl, investigators, ready, deckId, decks, join, disabled }
-  }
-})
-</script>
 
 <style lang="scss" scoped>
 .container {

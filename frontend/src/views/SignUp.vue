@@ -1,3 +1,30 @@
+<script lang="ts" setup>
+import { reactive } from 'vue'
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
+import type { Registration } from '@/types'
+
+const route = useRoute()
+const router = useRouter()
+const store = useStore()
+const registration = reactive<Registration>({
+  username: '',
+  email: '',
+  password: '',
+})
+
+async function register() {
+  await store.dispatch('register', registration)
+  const { nextUrl } = route.query
+  if (nextUrl) {
+    router.push({ path: nextUrl as string })
+  } else {
+    router.push({ path: '/' })
+  }
+
+}
+</script>
+
 <template>
   <form @submit.prevent="register">
     <header><i class="secret"></i></header>
@@ -29,39 +56,6 @@
     </section>
   </form>
 </template>
-
-<script lang="ts">
-import { defineComponent, reactive } from 'vue'
-import { useStore } from 'vuex'
-import { useRoute, useRouter } from 'vue-router'
-import { Registration } from '@/types'
-
-export default defineComponent({
-  setup() {
-    const route = useRoute()
-    const router = useRouter()
-    const store = useStore()
-    const registration = reactive<Registration>({
-      username: '',
-      email: '',
-      password: '',
-    })
-
-    async function register() {
-      await store.dispatch('register', registration)
-      const { nextUrl } = route.query
-      if (nextUrl) {
-        router.push({ path: nextUrl as string })
-      } else {
-        router.push({ path: '/' })
-      }
-
-    }
-
-    return { registration, register }
-  }
-});
-</script>
 
 <style scoped lang="scss">
 form {

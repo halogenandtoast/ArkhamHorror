@@ -1,3 +1,37 @@
+<script lang="ts" setup>
+import { ref, provide, watch } from 'vue'
+import * as Arkham from '@/arkham/types/Game'
+import { fetchGameReplay } from '@/arkham/api'
+import GameLog from '@/arkham/components/GameLog.vue'
+import CardOverlay from '@/arkham/components/CardOverlay.vue';
+import Scenario from '@/arkham/components/Scenario.vue'
+import Campaign from '@/arkham/components/Campaign.vue'
+
+export interface Props {
+  gameId: string
+}
+
+const props = defineProps<Props>()
+const debug = ref(false)
+provide('debug', debug)
+const ready = ref(false)
+const game = ref<Arkham.Game | null>(null)
+const investigatorId = ref<string | null>(null)
+const gameLog = ref<readonly string[]>(Object.freeze([]))
+const step = ref(0)
+const totalSteps = ref(0)
+
+watch(step, currentStep => {
+  fetchGameReplay(props.gameId, currentStep).then(({ game: newGame, totalSteps: newTotalSteps }) => {
+    ready.value = true;
+    game.value = newGame;
+    totalSteps.value = newTotalSteps
+    gameLog.value = Object.freeze(newGame.log);
+    investigatorId.value = newGame.activeInvestigatorId;
+  });
+}, {immediate: true})
+</script>
+
 <template>
   <div id="game" v-if="ready">
     <div class="game">
@@ -34,43 +68,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, ref, provide, watch } from 'vue'
-import * as Arkham from '@/arkham/types/Game'
-import { fetchGameReplay } from '@/arkham/api'
-import GameLog from '@/arkham/components/GameLog.vue'
-import CardOverlay from '@/arkham/components/CardOverlay.vue';
-import Scenario from '@/arkham/components/Scenario.vue'
-import Campaign from '@/arkham/components/Campaign.vue'
-
-export default defineComponent({
-  components: { Scenario, Campaign, GameLog, CardOverlay },
-  props: { gameId: { type: String, required: true } },
-  setup(props) {
-    const debug = ref(false)
-    provide('debug', debug)
-    const ready = ref(false)
-    const game = ref<Arkham.Game | null>(null)
-    const investigatorId = ref<string | null>(null)
-    const gameLog = ref<readonly string[]>(Object.freeze([]))
-    const step = ref(0)
-    const totalSteps = ref(0)
-
-    watch(step, currentStep => {
-      fetchGameReplay(props.gameId, currentStep).then(({ game: newGame, totalSteps: newTotalSteps }) => {
-        ready.value = true;
-        game.value = newGame;
-        totalSteps.value = newTotalSteps
-        gameLog.value = Object.freeze(newGame.log);
-        investigatorId.value = newGame.activeInvestigatorId;
-      });
-    }, {immediate: true})
-
-    return { step, ready, game, investigatorId, gameLog }
-  }
-})
-</script>
 
 <style lang="scss" scoped>
 .action { border: 5px solid $select; border-radius: 15px; }

@@ -1,3 +1,123 @@
+<script lang="ts" setup>
+import { ref } from 'vue'
+import * as Arkham from '@/arkham/types/Deck'
+import Prompt from '@/components/Prompt.vue'
+import { fetchInvestigators, fetchDecks, newDeck, deleteDeck } from '@/arkham/api'
+import * as Investigator from '@/arkham/types/Investigator';
+
+interface UnimplementedCardError {
+  tag: string
+  contents: string
+}
+
+interface ArkhamDBCard {
+  name: string
+  code: string
+  xp?: string
+}
+
+const ready = ref(false)
+const decks = ref<Arkham.Deck[]>([])
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : ''
+const errors = ref([])
+const investigatorError = ref<string | null>(null)
+
+const deck = ref<string | null>(null)
+const investigators = ref<Investigator.Investigator[]>([])
+const investigator = ref<string | null>(null)
+const deckId = ref<string | null>(null)
+const deckName = ref<string | null>(null)
+const deckUrl = ref<string | null>(null)
+const deleteId = ref<string | null>(null)
+
+async function deleteDeckEvent() {
+  const { value } = deleteId
+  if (value) {
+    deleteDeck(value).then(() => {
+      decks.value = decks.value.filter((deck) => deck.id !== value)
+      deleteId.value = null
+    })
+  }
+}
+
+fetchDecks().then(async (response) => {
+  decks.value = response
+  await fetchInvestigators().then((response) => investigators.value = response)
+  ready.value = true
+})
+
+function loadDeck() {
+  if (!deck.value) {
+    return
+  }
+
+  const matches = deck.value.match(/\/(deck(list)?)(\/view)?\/([^/]+)/)
+  if (matches) {
+    deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
+    fetch(deckUrl.value)
+      .then((response) => response.json(), () => {
+        investigator.value = null
+        deckId.value = null
+        deckName.value = null
+        deckUrl.value = null
+      })
+      .then((data) => {
+        investigator.value = null
+        investigatorError.value = null
+        if (investigators.value.map(i => i.contents.id.replace(/^c/, '')).includes(data.investigator_code)) {
+          if(data.meta && data.meta.alternate_front) {
+            investigator.value = data.meta.alternate_front
+          } else {
+            investigator.value = data.investigator_code
+          }
+        } else {
+          investigatorError.value = `${data.investigator_name} is not yet implemented, please use a different deck`
+        }
+        deckId.value = matches[4]
+        deckName.value = data.name
+      })
+  } else {
+    investigator.value = null
+    deckId.value = null
+    deckName.value = null
+    deckUrl.value = null
+  }
+}
+
+function pasteDeck(evt: ClipboardEvent) {
+  if (evt.clipboardData) {
+    deck.value = evt.clipboardData.getData('text')
+    loadDeck()
+  }
+}
+
+async function createDeck() {
+  errors.value = []
+  if (deckId.value && deckName.value && deckUrl.value) {
+    newDeck(deckId.value, deckName.value, deckUrl.value).then((newDeck) => {
+      decks.value.push(newDeck)
+      deckId.value = null
+      deckName.value = null
+      deckUrl.value = null
+      investigator.value = null
+      deck.value = null
+    }).catch((error) => {
+      fetch("https://arkhamdb.com/api/public/cards/")
+        .then((response) => response.json()).then((data) => {
+          errors.value = error.response.data.map((error: UnimplementedCardError) => {
+            const match = data.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))
+            if (match) {
+              const { name, xp } = match
+              return xp ? `${name} (${xp})` : name
+            }
+            return "Unknown card"
+          })
+        })
+    })
+  }
+}
+</script>
+
 <template>
   <div id="decks">
     <div>
@@ -46,133 +166,6 @@
     />
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, ref } from 'vue'
-import * as Arkham from '@/arkham/types/Deck'
-import Prompt from '@/components/Prompt.vue'
-import { fetchInvestigators, fetchDecks, newDeck, deleteDeck } from '@/arkham/api'
-import * as Investigator from '@/arkham/types/Investigator';
-
-interface UnimplementedCardError {
-  tag: string
-  contents: string
-}
-
-interface ArkhamDBCard {
-  name: string
-  code: string
-  xp?: string
-}
-
-export default defineComponent({
-  components: { Prompt },
-  setup() {
-    const ready = ref(false)
-    const decks = ref<Arkham.Deck[]>([])
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : ''
-    const errors = ref([])
-    const investigatorError = ref<string | null>(null)
-
-    const deck = ref<string | null>(null)
-    const investigators = ref<Investigator.Investigator[]>([])
-    const investigator = ref<string | null>(null)
-    const deckId = ref<string | null>(null)
-    const deckName = ref<string | null>(null)
-    const deckUrl = ref<string | null>(null)
-    const deleteId = ref<string | null>(null)
-
-    async function deleteDeckEvent() {
-      const { value } = deleteId
-      if (value) {
-        deleteDeck(value).then(() => {
-          decks.value = decks.value.filter((deck) => deck.id !== value)
-          deleteId.value = null
-        })
-      }
-    }
-
-    fetchDecks().then(async (response) => {
-      decks.value = response
-      await fetchInvestigators().then((response) => investigators.value = response)
-      ready.value = true
-    })
-
-    function loadDeck() {
-      if (!deck.value) {
-        return
-      }
-
-      const matches = deck.value.match(/\/(deck(list)?)(\/view)?\/([^/]+)/)
-      if (matches) {
-        deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
-        fetch(deckUrl.value)
-          .then((response) => response.json(), () => {
-            investigator.value = null
-            deckId.value = null
-            deckName.value = null
-            deckUrl.value = null
-          })
-          .then((data) => {
-            investigator.value = null
-            investigatorError.value = null
-            if (investigators.value.map(i => i.contents.id.replace(/^c/, '')).includes(data.investigator_code)) {
-              if(data.meta && data.meta.alternate_front) {
-                investigator.value = data.meta.alternate_front
-              } else {
-                investigator.value = data.investigator_code
-              }
-            } else {
-              investigatorError.value = `${data.investigator_name} is not yet implemented, please use a different deck`
-            }
-            deckId.value = matches[4]
-            deckName.value = data.name
-          })
-      } else {
-        investigator.value = null
-        deckId.value = null
-        deckName.value = null
-        deckUrl.value = null
-      }
-    }
-
-    function pasteDeck(evt: ClipboardEvent) {
-      if (evt.clipboardData) {
-        deck.value = evt.clipboardData.getData('text')
-        loadDeck()
-      }
-    }
-
-    async function createDeck() {
-      errors.value = []
-      if (deckId.value && deckName.value && deckUrl.value) {
-        newDeck(deckId.value, deckName.value, deckUrl.value).then((newDeck) => {
-          decks.value.push(newDeck)
-          deckId.value = null
-          deckName.value = null
-          deckUrl.value = null
-          investigator.value = null
-          deck.value = null
-        }).catch((error) => {
-          fetch("https://arkhamdb.com/api/public/cards/")
-            .then((response) => response.json()).then((data) => {
-              errors.value = error.response.data.map((error: UnimplementedCardError) => {
-                const match = data.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))
-                if (match) {
-                  const { name, xp } = match
-                  return xp ? `${name} (${xp})` : name
-                }
-                return "Unknown card"
-              })
-            })
-        })
-      }
-    }
-
-    return { baseUrl, pasteDeck, createDeck, deleteDeckEvent, deleteId, deck, decks, loadDeck, investigator, deckName, errors, investigators, investigatorError }
-  }
-})
-</script>
 
 <style lang="scss" scoped>
 .new-deck {

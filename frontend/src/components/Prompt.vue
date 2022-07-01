@@ -1,3 +1,17 @@
+<script lang="ts" setup>
+import { computed } from 'vue'
+
+export interface Props {
+  prompt: string
+  yes: () => void
+  no: () => void
+  cancel?: () => void
+}
+
+const props = defineProps<Props>()
+const cancelFun = computed(() => typeof props.cancel === 'function' ? props.cancel : props.no)
+</script>
+
 <template>
   <div class="cd-popup" role="alert">
     <div class="cd-popup-container">
@@ -13,24 +27,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed } from 'vue'
-
-export default defineComponent({
-  props: {
-    prompt: { type: String, required: true },
-    yes: { type: Function, required: true },
-    no: { type: Function, required: true },
-    cancel: { type: Function, required: false }
-  },
-  setup(props) {
-    const cancelFun = computed(() => typeof props.cancel === 'function' ? props.cancel : props.no)
-
-    return { cancelFun }
-  }
-})
-</script>
 
 <style lang="scss" scoped>
 .cd-popup {

@@ -1,3 +1,29 @@
+<script lang="ts" setup>
+import { computed } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+import type { User } from '@/types';
+import md5 from 'md5';
+
+const router = useRouter()
+const store = useStore()
+const currentUser = computed<User | null>(() => store.getters.currentUser)
+const gravatar = computed(() => {
+  const user = currentUser.value
+  if (user) {
+    const hash = md5(user.email.trim().toLowerCase());
+    return `https://www.gravatar.com/avatar/${hash}?d=retro&s=22`;
+  }
+
+  return null
+})
+
+async function logout() {
+  await store.dispatch('logout')
+  router.push({ path: '/' })
+}
+</script>
+
 <template>
   <div id="nav">
     <span class="main-links">
@@ -26,36 +52,6 @@
     </span>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
-import { User } from '@/types';
-import md5 from 'md5';
-
-export default defineComponent({
-  setup() {
-    const router = useRouter()
-    const store = useStore()
-    const currentUser = computed<User | null>(() => store.getters.currentUser)
-    const gravatar = computed(() => {
-      const user = currentUser.value
-      if (user) {
-        const hash = md5(user.email.trim().toLowerCase());
-        return `https://www.gravatar.com/avatar/${hash}?d=retro&s=22`;
-      }
-
-      return null
-    })
-    async function logout() {
-      await store.dispatch('logout')
-      router.push({ path: '/' })
-    }
-    return { currentUser, logout, gravatar }
-  }
-})
-</script>
 
 <style lang="scss" scoped>
 #nav {

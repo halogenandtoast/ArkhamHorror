@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, inject, ref, watch, onMounted } from 'vue';
-import { Game } from '@/arkham/types/Game';
+import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 import Card from '@/arkham/components/Card.vue';

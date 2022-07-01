@@ -600,10 +600,6 @@ addCampaignCardToDeckChoice leadInvestigatorId investigatorIds cardDef =
     ]
   where name = cdName cardDef
 
-fightAction :: SourceEntity source => source -> Int -> [Cost] -> Ability
-fightAction source n costs =
-  mkAbility source n (ActionAbility (Just Action.Fight) (Costs costs))
-
 hasFightActions
   :: (Monad m, HasGame m) => InvestigatorId -> Matcher.WindowMatcher -> m Bool
 hasFightActions _ window = notNull <$> select
@@ -613,11 +609,6 @@ hasEvadeActions
   :: (Monad m, HasGame m) => InvestigatorId -> Matcher.WindowMatcher -> m Bool
 hasEvadeActions _ window = notNull <$> select
   (Matcher.AbilityIsAction Action.Evade <> Matcher.AbilityWindow window)
-
-hasInvestigateActions
-  :: (Monad m, HasGame m) => InvestigatorId -> Matcher.WindowMatcher -> m Bool
-hasInvestigateActions _ window = notNull <$> select
-  (Matcher.AbilityIsAction Action.Investigate <> Matcher.AbilityWindow window)
 
 getIsPlayable
   :: (Monad m, HasGame m)

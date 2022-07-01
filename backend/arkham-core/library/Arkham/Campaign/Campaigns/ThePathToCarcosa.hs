@@ -5,18 +5,18 @@ module Arkham.Campaign.Campaigns.ThePathToCarcosa
 
 import Arkham.Prelude
 
-import Arkham.Campaigns.ThePathToCarcosa.Import
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Campaign.Runner
 import Arkham.CampaignId
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.CampaignStep
 import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Id
-import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Matcher hiding ( EnemyDefeated )
 import Arkham.Message
 import Arkham.Token
 
@@ -37,56 +37,55 @@ instance RunMessage ThePathToCarcosa where
       investigatorIds <- getInvestigatorIds
       lolaHayesChosen <- isJust
         <$> selectOne (InvestigatorWithTitle "Lola Hayes")
-      c <$ pushAll
-        ([story investigatorIds prologue]
+      pushAll
+        $ [story investigatorIds prologue]
         <> [ story investigatorIds lolaPrologue | lolaHayesChosen ]
         <> [NextCampaignStep Nothing]
-        )
+      pure c
     CampaignStep (Just (InterludeStep 1 _)) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       doubt <- getRecordCount Doubt
       conviction <- getRecordCount Conviction
-      c <$ push
-        (chooseOne
-          leadInvestigatorId
-          [ Label
-            "Things seem to have calmed down. Perhaps we should go back inside and investigate further."
-            [ story investigatorIds lunacysReward1
-            , Record YouIntrudedOnASecretMeeting
-            , RecordCount Doubt (doubt + 1)
-            , RemoveAllTokens Cultist
-            , RemoveAllTokens Tablet
-            , RemoveAllTokens ElderThing
-            , AddToken ElderThing
-            , AddToken ElderThing
-            , NextCampaignStep Nothing
-            ]
-          , Label
-            "I don't trust this place one bit. Letbs block the door and get the hell out of here!"
-            [ story investigatorIds lunacysReward2
-            , Record YouFledTheDinnerParty
-            , RemoveAllTokens Cultist
-            , RemoveAllTokens Tablet
-            , RemoveAllTokens ElderThing
-            , AddToken Tablet
-            , AddToken Tablet
-            , NextCampaignStep Nothing
-            ]
-          , Label
-            "If these people are allowed to live, these horrors will only repeat themselves. We have to put an end to this. We have to kill them."
-            [ story investigatorIds lunacysReward3
-            , Record YouSlayedTheMonstersAtTheDinnerParty
-            , RecordCount Conviction (conviction + 1)
-            , RemoveAllTokens Cultist
-            , RemoveAllTokens Tablet
-            , RemoveAllTokens ElderThing
-            , AddToken Cultist
-            , AddToken Cultist
-            , NextCampaignStep Nothing
-            ]
+      push $ chooseOne
+        leadInvestigatorId
+        [ Label
+          "Things seem to have calmed down. Perhaps we should go back inside and investigate further."
+          [ story investigatorIds lunacysReward1
+          , Record YouIntrudedOnASecretMeeting
+          , RecordCount Doubt (doubt + 1)
+          , RemoveAllTokens Cultist
+          , RemoveAllTokens Tablet
+          , RemoveAllTokens ElderThing
+          , AddToken ElderThing
+          , AddToken ElderThing
+          , NextCampaignStep Nothing
           ]
-        )
+        , Label
+          "I don't trust this place one bit. Letbs block the door and get the hell out of here!"
+          [ story investigatorIds lunacysReward2
+          , Record YouFledTheDinnerParty
+          , RemoveAllTokens Cultist
+          , RemoveAllTokens Tablet
+          , RemoveAllTokens ElderThing
+          , AddToken Tablet
+          , AddToken Tablet
+          , NextCampaignStep Nothing
+          ]
+        , Label
+          "If these people are allowed to live, these horrors will only repeat themselves. We have to put an end to this. We have to kill them."
+          [ story investigatorIds lunacysReward3
+          , Record YouSlayedTheMonstersAtTheDinnerParty
+          , RecordCount Conviction (conviction + 1)
+          , RemoveAllTokens Cultist
+          , RemoveAllTokens Tablet
+          , RemoveAllTokens ElderThing
+          , AddToken Cultist
+          , AddToken Cultist
+          , NextCampaignStep Nothing
+          ]
+        ]
+      pure c
     CampaignStep (Just (InterludeStep 2 mInterludeKey)) -> do
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
@@ -133,7 +132,9 @@ instance RunMessage ThePathToCarcosa where
         investigatorIds = flip mapMaybe possessed $ \case
           Recorded cardCode -> Just (InvestigatorId cardCode)
           _ -> Nothing
-      pushAll $ [story investigatorIds epilogue | notNull investigatorIds] <>  [EndOfGame Nothing]
+      pushAll
+        $ [ story investigatorIds epilogue | notNull investigatorIds ]
+        <> [EndOfGame Nothing]
       pure c
     NextCampaignStep _ -> do
       let step = nextStep a

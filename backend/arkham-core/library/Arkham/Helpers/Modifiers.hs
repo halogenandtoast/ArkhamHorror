@@ -11,7 +11,6 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.InvestigatorId
 import Arkham.Message
 import Arkham.Modifier as X
 import Arkham.Source
@@ -32,11 +31,6 @@ toModifier = Modifier . toSource
 
 toModifiers :: SourceEntity a => a -> [ModifierType] -> [Modifier]
 toModifiers = map . toModifier
-
-getInvestigatorModifiers
-  :: (Monad m, HasGame m) => InvestigatorId -> Source -> m [ModifierType]
-getInvestigatorModifiers iid source =
-  getModifiers source (InvestigatorTarget iid)
 
 skillTestModifier
   :: (SourceEntity source, TargetEntity target)

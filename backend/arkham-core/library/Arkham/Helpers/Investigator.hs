@@ -259,16 +259,6 @@ getActionCost attrs a = do
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
-getActionCostModifier :: (Monad m, HasGame m) => InvestigatorAttrs -> Maybe Action -> m Int
-getActionCostModifier _ Nothing = pure 0
-getActionCostModifier attrs (Just a) = do
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
-  pure $ foldr applyModifier 0 modifiers
- where
-  applyModifier (ActionCostOf match m) n =
-    if matchTarget attrs match a then n + m else n
-  applyModifier _ n = n
-
 getSpendableClueCount :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a

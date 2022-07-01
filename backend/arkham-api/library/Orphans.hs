@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
 module Orphans where
 
@@ -81,7 +82,7 @@ instance (ToBackendKey SqlBackend a) => ToJSONKey (Key a) where
 instance (ToBackendKey SqlBackend a) => FromJSONKey (Key a) where
   fromJSONKey = toSqlKey <$> fromJSONKey
 
-instance (ToBackendKey SqlBackend a) => Hashable (Key a) where
+instance (Eq (Key a), ToBackendKey SqlBackend a) => Hashable (Key a) where
   hash = hash . fromSqlKey
   hashWithSalt n = hashWithSalt n . fromSqlKey
 

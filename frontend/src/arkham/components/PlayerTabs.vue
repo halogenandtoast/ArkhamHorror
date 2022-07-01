@@ -1,3 +1,56 @@
+<script lang="ts" setup>
+import { ref, watchEffect, inject } from 'vue';
+import type { Ref } from 'vue';
+import type { Game } from '@/arkham/types/Game';
+import Tab from '@/arkham/components/Tab.vue';
+import Player from '@/arkham/components/Player.vue';
+import * as ArkhamGame from '@/arkham/types/Game';
+import type { Investigator } from '@/arkham/types/Investigator';
+
+export interface Props {
+  game: Game
+  investigatorId: string
+  players: Record<string, Investigator>
+  playerOrder: string[]
+  activePlayerId: string
+}
+
+const props = defineProps<Props>()
+
+const selectedTab = ref(props.investigatorId)
+
+const solo = inject<Ref<boolean>>('solo')
+const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
+
+const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
+
+function tabClass(index: string) {
+  const pid = props.players[index].contents.id
+  return [
+    {
+      'tab--selected': index === selectedTab.value,
+      'tab--active-player': pid == props.activePlayerId,
+      'tab--has-actions': pid !== props.investigatorId && hasChoices(props.players[index].contents.id),
+    },
+    `tab--${props.players[index].contents.class}`,
+  ]
+}
+
+function selectTab(i: string) {
+  selectedTab.value = i
+}
+
+function selectTabExtended(i: string) {
+  selectedTab.value = i
+  if (solo?.value && props.investigatorId !== i && switchInvestigator) {
+    switchInvestigator(i)
+  }
+}
+
+
+watchEffect(() => selectedTab.value = props.investigatorId)
+</script>
+
 <template lang="html">
   <div class="player-info">
     <ul class='tabs__header'>
@@ -29,62 +82,6 @@
     </Tab>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, ref, watchEffect, inject, Ref } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import Tab from '@/arkham/components/Tab.vue';
-import Player from '@/arkham/components/Player.vue';
-import * as ArkhamGame from '@/arkham/types/Game';
-import { Investigator } from '@/arkham/types/Investigator';
-
-export default defineComponent({
-  components: { Tab, Player },
-  props: {
-    game: { type: Object as () => Game, required: true },
-    investigatorId: { type: String, required: true },
-    players: { type: Object as () => Record<string, Investigator>, required: true },
-    playerOrder: { type: Array as () => string[], required: true },
-    activePlayerId: { type: String, required: true }
-  },
-  setup(props) {
-    const selectedTab = ref(props.investigatorId)
-
-    const solo = inject<Ref<boolean>>('solo')
-    const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
-
-    const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
-
-    function tabClass(index: string) {
-      const pid = props.players[index].contents.id
-      return [
-        {
-          'tab--selected': index === selectedTab.value,
-          'tab--active-player': pid == props.activePlayerId,
-          'tab--has-actions': pid !== props.investigatorId && hasChoices(props.players[index].contents.id),
-        },
-        `tab--${props.players[index].contents.class}`,
-      ]
-    }
-
-    function selectTab(i: string) {
-      selectedTab.value = i
-    }
-
-    function selectTabExtended(i: string) {
-      selectedTab.value = i
-      if (solo?.value && props.investigatorId !== i && switchInvestigator) {
-        switchInvestigator(i)
-      }
-    }
-
-
-    watchEffect(() => selectedTab.value = props.investigatorId)
-
-    return { hasChoices, selectedTab, selectTab, selectTabExtended, tabClass }
-  }
-})
-</script>
 
 <style lang="scss">
 ul.tabs__header {

@@ -1,3 +1,42 @@
+<script lang="ts" setup>
+import { computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
+import { Message, MessageType } from '@/arkham/types/Message';
+
+export interface Props {
+  game: Game
+  investigatorId: string
+}
+
+const props = defineProps<Props>()
+
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+const playerOrderChoices = computed(() => {
+  return choices
+    .value
+    .map((choice, idx) => ({ choice, idx }))
+    .filter(({ choice }) => choice.tag === MessageType.CHOOSE_PLAYER_ORDER);
+})
+
+const ordinal = computed(() => {
+  switch (playerOrderChoices.value[0].choice.contents[1].length) {
+    case 1: return 'First';
+    case 2: return 'Second';
+    case 3: return 'Third';
+    case 4: return 'Fourth';
+    default: return 'Unknown';
+  }
+})
+
+const investigatorPortrait = (choice: Message) => {
+  const iid = choice.contents[1].slice(-1)[0];
+  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+  return `${baseUrl}/img/arkham/portraits/${iid.replace('c', '')}.jpg`;
+}
+</script>
+
 <template>
   <div v-if="playerOrderChoices.length > 0" class="player-order">
     <div class="modal-contents choose-player-order">
@@ -17,48 +56,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import * as ArkhamGame from '@/arkham/types/Game';
-import { Message, MessageType } from '@/arkham/types/Message';
-
-export default defineComponent({
-  props: {
-    game: { type: Object as () => Game, required: true },
-    investigatorId: { type: String, required: true }
-  },
-  setup(props) {
-    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-
-    const playerOrderChoices = computed(() => {
-      return choices
-        .value
-        .map((choice, idx) => ({ choice, idx }))
-        .filter(({ choice }) => choice.tag === MessageType.CHOOSE_PLAYER_ORDER);
-    })
-
-    const ordinal = computed(() => {
-      switch (playerOrderChoices.value[0].choice.contents[1].length) {
-        case 1: return 'First';
-        case 2: return 'Second';
-        case 3: return 'Third';
-        case 4: return 'Fourth';
-        default: return 'Unknown';
-      }
-    })
-
-    const investigatorPortrait = (choice: Message) => {
-      const iid = choice.contents[1].slice(-1)[0];
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/portraits/${iid.replace('c', '')}.jpg`;
-    }
-
-    return { investigatorPortrait, ordinal, playerOrderChoices }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 .portrait {

@@ -1,3 +1,205 @@
+<script lang="ts" setup>
+import throttle from 'lodash/throttle'
+import { computed, onMounted, onUnmounted, onUpdated, nextTick, ref, ComputedRef, reactive } from 'vue';
+import type { Game } from '@/arkham/types/Game';
+import type { Scenario } from '@/arkham/types/Scenario';
+import type { Card } from '@/arkham/types/Card';
+import Act from '@/arkham/components/Act.vue';
+import Agenda from '@/arkham/components/Agenda.vue';
+import Enemy from '@/arkham/components/Enemy.vue';
+import CardRow from '@/arkham/components/CardRow.vue';
+import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
+import StatusBar from '@/arkham/components/StatusBar.vue';
+import ChaosBag from '@/arkham/components/ChaosBag.vue';
+import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
+import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
+import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
+import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
+import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
+import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
+import Location from '@/arkham/components/Location.vue';
+
+export interface Props {
+  game: Game
+  scenario: Scenario
+  investigatorId: string
+}
+
+const props = defineProps<Props>()
+
+function handleConnections(investigatorId: string, game: Game) {
+  const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
+    const { id: div1Id } = div1.dataset
+    const { id: div2Id } = div2.dataset
+    const { connectedLocations, contents: investigator } = game.investigators[investigatorId]
+    if(div1Id && div2Id) {
+      const [left, right] = [div1Id, div2Id].sort()
+      const activeLine = (div1Id == investigator.location && connectedLocations.includes(div2Id)) || (div2Id == investigator.location && connectedLocations.includes(div1Id))
+      const connection = left + ":" + right
+      const line = document.querySelector<HTMLElement>(".line")
+      const parentNode = line?.parentNode
+      if(line && parentNode && !document.querySelector(`[data-connection="${connection}"]`)) {
+        const node = line.cloneNode(true) as HTMLElement
+        node.dataset.connection = connection
+        node.classList.remove("original")
+        if (activeLine) {
+          node.classList.add("active")
+        }
+        parentNode.insertBefore(node, line.nextSibling)
+        const {left: bodyLeft, top: bodyTop} = document.body.getBoundingClientRect()
+        const {left: div1Left, top: div1Top, right: div1Right, bottom: div1Bottom } = div1.getBoundingClientRect();
+        const {left: div2Left, top: div2Top, right: div2Right, bottom: div2Bottom } = div2.getBoundingClientRect();
+        const div1Width = div1Right - div1Left;
+        const div2Width = div2Right - div2Left;
+        const div1Height = div1Bottom - div1Top;
+        const div2Height = div2Bottom - div2Top;
+        const x1 = (div1Left - bodyLeft) + (div1Width/2)
+        const y1 = (div1Top - bodyTop) + (div1Height/2)
+        const x2 = (div2Left - bodyLeft) + (div2Width/2)
+        const y2 = (div2Top - bodyTop) + (div2Height/2)
+
+        node.setAttribute('x1',x1.toString())
+        node.setAttribute('y1',y1.toString())
+        node.setAttribute('x2',x2.toString())
+        node.setAttribute('y2',y2.toString())
+      }
+    }
+  }
+
+  document.querySelectorAll(".line:not(.original").forEach((node) => node.parentNode?.removeChild(node))
+
+  for(const [id,location] of Object.entries(game.locations)) {
+    const connections = location.connectedLocations
+    connections.forEach((connection) => {
+      const start = document.querySelector(`[data-id="${id}"]`) as HTMLElement
+      const end = document.querySelector(`[data-id="${connection}"]`) as HTMLElement
+      if(start && end) {
+        makeLine(start, end)
+      }
+    });
+  }
+}
+
+interface RefWrapper<T> {
+  ref: ComputedRef<T>
+}
+
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const locationMap = ref<Element | null>(null)
+
+const drawHandler = throttle(() => handleConnections(props.investigatorId, props.game), 10)
+
+onMounted(async () => {
+  window.addEventListener("resize", drawHandler)
+  await nextTick()
+  locationMap.value?.addEventListener("scroll", drawHandler)
+  handleConnections(props.investigatorId, props.game)
+})
+
+onUnmounted(() => {
+  window.removeEventListener("resize", drawHandler)
+  locationMap.value?.removeEventListener("scroll", drawHandler)
+})
+
+onUpdated(async () => {
+  await nextTick()
+  handleConnections(props.investigatorId, props.game)
+})
+
+const scenarioGuide = computed(() => {
+  const { id, difficulty } = props.scenario.contents;
+  const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
+    ? 'b'
+    : '';
+
+  return `${baseUrl}/img/arkham/cards/${id.replace('c', '')}${difficultySuffix}.jpg`;
+})
+
+const scenarioDecks = computed(() => {
+  if (!props.scenario.contents.decks) {
+    return null;
+  }
+
+  return Object.entries(props.scenario.contents.decks);
+
+})
+
+const locationStyles = computed(() => {
+  const { locationLayout } = props.scenario.contents;
+  if (locationLayout) {
+    return {
+      display: 'grid',
+      'grid-template-areas': locationLayout.map((row) => `"${row}"`).join(' '),
+      'grid-row-gap': '10px',
+    };
+  }
+  return null;
+})
+
+const activeCard = computed(() => {
+  if (props.game.activeCard) {
+    const { cardCode } = props.game.activeCard.contents;
+    return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+  }
+
+  return null;
+})
+
+const players = computed(() => props.game.investigators)
+const playerOrder = computed(() => props.game.playerOrder)
+const discards = computed<Card[]>(() => props.scenario.contents.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
+const outOfPlay = computed(() => (props.scenario.contents?.setAsideCards || []))
+const removedFromPlay = computed(() => props.game.removedFromPlay)
+const noCards = computed<Card[]>(() => [])
+
+// eslint-disable-next-line
+const showCards = reactive<RefWrapper<any>>({ ref: noCards })
+const viewingDiscard = ref(false)
+const cardRowTitle = ref("")
+
+
+const doShowCards = (event: Event, cards: ComputedRef<Card[]>, title: string, isDiscards: boolean) => {
+  cardRowTitle.value = title
+  showCards.ref = cards
+  viewingDiscard.value = isDiscards
+}
+
+const showOutOfPlay = (e: Event) => doShowCards(e, outOfPlay, 'Out of Play', true)
+const showRemovedFromPlay = (e: Event) => doShowCards(e, removedFromPlay, 'Removed from Play', true)
+const showDiscards = (e: Event) => doShowCards(e, discards, 'Discards', true)
+const hideCards = () => showCards.ref = noCards
+
+const viewDiscardLabel = computed(() => `${discards.value.length} Cards`)
+const topOfEncounterDiscard = computed(() => {
+  if (props.scenario.contents.discard[0]) {
+    const { cardCode } = props.scenario.contents.discard[0];
+
+    return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+  }
+
+  return null;
+})
+
+const topEnemyInVoid = computed(() => Object.values(props.game.enemiesInVoid)[0])
+const activePlayerId = computed(() => props.game.activeInvestigatorId)
+
+const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.contents.asSelfLocation !== null))
+
+const cardsUnderAgenda = computed(() => {
+  return props.scenario.contents.cardsUnderAgendaDeck
+})
+
+const cardsUnderAct = computed(() => {
+  return props.scenario.contents.cardsUnderActDeck
+})
+
+const cardsNextToAct = computed(() => {
+  return props.scenario.contents.cardsNextToActDeck
+})
+
+const phase = computed(() => props.game.phase)
+</script>
+
 <template>
   <div v-if="!game.gameOver" id="scenario" class="scenario">
     <div class="scenario-body">
@@ -143,263 +345,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import throttle from 'lodash/throttle'
-import { defineComponent, computed, onMounted, onUnmounted, onUpdated, nextTick, ref, ComputedRef, reactive } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import { Scenario } from '@/arkham/types/Scenario';
-import { Card } from '@/arkham/types/Card';
-import Act from '@/arkham/components/Act.vue';
-import Agenda from '@/arkham/components/Agenda.vue';
-import Enemy from '@/arkham/components/Enemy.vue';
-import CardRow from '@/arkham/components/CardRow.vue';
-import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
-import StatusBar from '@/arkham/components/StatusBar.vue';
-import ChaosBag from '@/arkham/components/ChaosBag.vue';
-import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
-import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
-import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
-import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
-import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
-import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
-import Location from '@/arkham/components/Location.vue';
-
-function handleConnections(investigatorId: string, game: Game) {
-  const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
-    const { id: div1Id } = div1.dataset
-    const { id: div2Id } = div2.dataset
-    const { connectedLocations, contents: investigator } = game.investigators[investigatorId]
-    if(div1Id && div2Id) {
-      const [left, right] = [div1Id, div2Id].sort()
-      const activeLine = (div1Id == investigator.location && connectedLocations.includes(div2Id)) || (div2Id == investigator.location && connectedLocations.includes(div1Id))
-      const connection = left + ":" + right
-      const line = document.querySelector<HTMLElement>(".line")
-      const parentNode = line?.parentNode
-      if(line && parentNode && !document.querySelector(`[data-connection="${connection}"]`)) {
-        const node = line.cloneNode(true) as HTMLElement
-        node.dataset.connection = connection
-        node.classList.remove("original")
-        if (activeLine) {
-          node.classList.add("active")
-        }
-        parentNode.insertBefore(node, line.nextSibling)
-        const {left: bodyLeft, top: bodyTop} = document.body.getBoundingClientRect()
-        const {left: div1Left, top: div1Top, right: div1Right, bottom: div1Bottom } = div1.getBoundingClientRect();
-        const {left: div2Left, top: div2Top, right: div2Right, bottom: div2Bottom } = div2.getBoundingClientRect();
-        const div1Width = div1Right - div1Left;
-        const div2Width = div2Right - div2Left;
-        const div1Height = div1Bottom - div1Top;
-        const div2Height = div2Bottom - div2Top;
-        const x1 = (div1Left - bodyLeft) + (div1Width/2)
-        const y1 = (div1Top - bodyTop) + (div1Height/2)
-        const x2 = (div2Left - bodyLeft) + (div2Width/2)
-        const y2 = (div2Top - bodyTop) + (div2Height/2)
-
-        node.setAttribute('x1',x1.toString())
-        node.setAttribute('y1',y1.toString())
-        node.setAttribute('x2',x2.toString())
-        node.setAttribute('y2',y2.toString())
-      }
-    }
-  }
-
-  document.querySelectorAll(".line:not(.original").forEach((node) => node.parentNode?.removeChild(node))
-
-  for(const [id,location] of Object.entries(game.locations)) {
-    const connections = location.connectedLocations
-    connections.forEach((connection) => {
-      const start = document.querySelector(`[data-id="${id}"]`) as HTMLElement
-      const end = document.querySelector(`[data-id="${connection}"]`) as HTMLElement
-      if(start && end) {
-        makeLine(start, end)
-      }
-    });
-  }
-}
-
-interface RefWrapper<T> {
-  ref: ComputedRef<T>
-}
-
-export default defineComponent({
-  components: {
-    Act,
-    Agenda,
-    Location,
-    StatusBar,
-    ChaosBag,
-    PlayerTabs,
-    CardRow,
-    CommittedSkills,
-    EncounterDeck,
-    PlayerOrder,
-    PlayerSelector,
-    VictoryDisplay,
-    ScenarioDeck,
-    Enemy,
-  },
-  props: {
-    game: { type: Object as () => Game, required: true },
-    scenario: { type: Object as () => Scenario, required: true },
-    investigatorId: { type: String, required: true },
-  },
-  setup(props, { emit }) {
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-    const locationMap = ref<Element | null>(null)
-
-    const drawHandler = throttle(() => handleConnections(props.investigatorId, props.game), 10)
-
-    onMounted(async () => {
-      window.addEventListener("resize", drawHandler)
-      await nextTick()
-      locationMap.value?.addEventListener("scroll", drawHandler)
-      handleConnections(props.investigatorId, props.game)
-    })
-
-    onUnmounted(() => {
-      window.removeEventListener("resize", drawHandler)
-      locationMap.value?.removeEventListener("scroll", drawHandler)
-    })
-
-    onUpdated(async () => {
-      await nextTick()
-      handleConnections(props.investigatorId, props.game)
-    })
-
-    const scenarioGuide = computed(() => {
-      const { id, difficulty } = props.scenario.contents;
-      const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
-        ? 'b'
-        : '';
-
-      return `${baseUrl}/img/arkham/cards/${id.replace('c', '')}${difficultySuffix}.jpg`;
-    })
-
-    const scenarioDecks = computed(() => {
-      if (!props.scenario.contents.decks) {
-        return null;
-      }
-
-      return Object.entries(props.scenario.contents.decks);
-
-    })
-
-    const locationStyles = computed(() => {
-      const { locationLayout } = props.scenario.contents;
-      if (locationLayout) {
-        return {
-          display: 'grid',
-          'grid-template-areas': locationLayout.map((row) => `"${row}"`).join(' '),
-          'grid-row-gap': '10px',
-        };
-      }
-      return null;
-    })
-
-    const activeCard = computed(() => {
-      if (props.game.activeCard) {
-        const { cardCode } = props.game.activeCard.contents;
-        return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
-      }
-
-      return null;
-    })
-
-    const players = computed(() => props.game.investigators)
-    const playerOrder = computed(() => props.game.playerOrder)
-    const discards = computed<Card[]>(() => props.scenario.contents.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
-    const outOfPlay = computed(() => (props.scenario.contents?.setAsideCards || []))
-    const removedFromPlay = computed(() => props.game.removedFromPlay)
-    const noCards = computed<Card[]>(() => [])
-
-    // eslint-disable-next-line
-    const showCards = reactive<RefWrapper<any>>({ ref: noCards })
-    const viewingDiscard = ref(false)
-    const cardRowTitle = ref("")
-
-
-    const doShowCards = (event: Event, cards: ComputedRef<Card[]>, title: string, isDiscards: boolean) => {
-      cardRowTitle.value = title
-      showCards.ref = cards
-      viewingDiscard.value = isDiscards
-    }
-
-    const showOutOfPlay = (e: Event) => doShowCards(e, outOfPlay, 'Out of Play', true)
-    const showRemovedFromPlay = (e: Event) => doShowCards(e, removedFromPlay, 'Removed from Play', true)
-    const showDiscards = (e: Event) => doShowCards(e, discards, 'Discards', true)
-    const hideCards = () => showCards.ref = noCards
-
-    const viewDiscardLabel = computed(() => `${discards.value.length} Cards`)
-    const topOfEncounterDiscard = computed(() => {
-      if (props.scenario.contents.discard[0]) {
-        const { cardCode } = props.scenario.contents.discard[0];
-
-        return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
-      }
-
-      return null;
-    })
-
-    const topEnemyInVoid = computed(() => Object.values(props.game.enemiesInVoid)[0])
-    const activePlayerId = computed(() => props.game.activeInvestigatorId)
-
-    function update(game: Game) {
-      emit('update', game);
-    }
-
-    const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.contents.asSelfLocation !== null))
-
-    const cardsUnderAgenda = computed(() => {
-      return props.scenario.contents.cardsUnderAgendaDeck
-    })
-
-    const cardsUnderAct = computed(() => {
-      return props.scenario.contents.cardsUnderActDeck
-    })
-
-    const cardsNextToAct = computed(() => {
-      return props.scenario.contents.cardsNextToActDeck
-    })
-
-    const skills = computed(() => Object.values(props.game.skills))
-    const phase = computed(() => props.game.phase)
-
-    return {
-      hideCards,
-      showOutOfPlay,
-      showRemovedFromPlay,
-      showDiscards,
-      phase,
-      removedFromPlay,
-      skills,
-      outOfPlay,
-      locationMap,
-      update,
-      activePlayerId,
-      topOfEncounterDiscard,
-      players,
-      playerOrder,
-      activeCard,
-      locationStyles,
-      scenarioGuide,
-      scenarioDecks,
-      topEnemyInVoid,
-      enemiesAsLocations,
-      cardsUnderAgenda,
-      cardsUnderAct,
-      cardsNextToAct,
-      doShowCards,
-      viewDiscardLabel,
-      viewingDiscard,
-      showCards,
-      discards,
-      cardRowTitle,
-    }
-  },
-
-})
-</script>
 
 <style scoped lang="scss">
 .card {

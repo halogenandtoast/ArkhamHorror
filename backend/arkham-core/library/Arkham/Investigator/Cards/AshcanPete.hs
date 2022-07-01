@@ -6,12 +6,12 @@ module Arkham.Investigator.Cards.AshcanPete
 import Arkham.Prelude
 
 import Arkham.Ability
-import qualified Arkham.Asset.Cards as Assets
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Cost
 import Arkham.Criteria
-import qualified Arkham.Investigator.Cards as Cards
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
-import Arkham.Matcher hiding (FastPlayerWindow)
+import Arkham.Matcher hiding ( FastPlayerWindow )
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Target
@@ -36,15 +36,13 @@ ashcanPete = investigatorWith
 
 instance HasAbilities AshcanPete where
   getAbilities (AshcanPete x) =
-    [ restrictedAbility
-          x
-          1
-          (Self <> AssetExists (AssetControlledBy You <> AssetExhausted) <> Negate
-            (SelfHasModifier ControlledAssetsCannotReady)
-          )
-          (FastAbility $ HandDiscardCost 1 AnyCard)
-        & abilityLimitL
-        .~ PlayerLimit PerRound 1
+    [ limitedAbility (PlayerLimit PerRound 1) $ restrictedAbility
+        x
+        1
+        (Self <> AssetExists (AssetControlledBy You <> AssetExhausted) <> Negate
+          (SelfHasModifier ControlledAssetsCannotReady)
+        )
+        (FastAbility $ HandDiscardCost 1 AnyCard)
     ]
 
 instance HasTokenValue AshcanPete where
@@ -54,9 +52,15 @@ instance HasTokenValue AshcanPete where
 
 instance RunMessage AshcanPete where
   runMessage msg i@(AshcanPete attrs) = case msg of
-    ResolveToken _drawnToken ElderSign iid | iid == toId attrs ->
-      i <$ push (Ready $ CardCodeTarget "02014")
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      targets <- selectListMap AssetTarget (AssetControlledBy You <> AssetExhausted)
-      i <$ push (chooseOne (toId attrs) [ Ready target | target <- targets ])
+    ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do
+      push $ Ready $ CardCodeTarget "02014"
+      pure i
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      targets <- selectListMap
+        AssetTarget
+        (AssetControlledBy You <> AssetExhausted)
+      push $ chooseOne
+        iid
+        [ TargetLabel target [Ready target] | target <- targets ]
+      pure i
     _ -> AshcanPete <$> runMessage msg attrs

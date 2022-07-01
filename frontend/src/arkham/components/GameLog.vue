@@ -1,3 +1,47 @@
+<script lang="ts" setup>
+import { watch, ref, computed, nextTick, onMounted } from 'vue';
+import { undoChoice } from '@/arkham/api'
+import { Game } from '@/arkham/types/Game';
+import GameMessage from '@/arkham/components/GameMessage.vue';
+
+export interface Props {
+  game: Game
+  gameLog: string[]
+}
+
+const props = defineProps<Props>()
+const messages = ref<Element | null>(null)
+const truncatedGameLog = computed(() => props.gameLog.slice(-10))
+
+onMounted(async () => {
+  const el = messages.value
+  if (el) {
+    const child = el.lastElementChild
+    if (child) {
+      await nextTick()
+      child.scrollIntoView(false);
+      el.scrollTop = el.scrollTop + 100;
+    }
+  }
+})
+
+watch(truncatedGameLog, async () => {
+  const el = messages.value
+  if (el) {
+    const child = el.lastElementChild
+    if (child) {
+      await nextTick()
+      child.scrollIntoView(false);
+      el.scrollTop = el.scrollTop + 100;
+    }
+  }
+}, { deep: true })
+
+async function undo() {
+  undoChoice(props.game.id);
+}
+</script>
+
 <template>
   <div class="game-log">
     <ul ref="messages">
@@ -9,55 +53,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, watch, ref, computed, nextTick, onMounted } from 'vue';
-import { undoChoice } from '@/arkham/api'
-import { Game } from '@/arkham/types/Game';
-import GameMessage from '@/arkham/components/GameMessage.vue';
-
-export default defineComponent({
-  components: { GameMessage },
-  props: {
-    game: { type: Object as () => Game, required: true },
-    gameLog: { type: Array as () => string[], required: true },
-  },
-  setup(props) {
-    const messages = ref<Element | null>(null)
-    const truncatedGameLog = computed(() => props.gameLog.slice(-10))
-
-    onMounted(async () => {
-      const el = messages.value
-      if (el) {
-        const child = el.lastElementChild
-        if (child) {
-          await nextTick()
-          child.scrollIntoView(false);
-          el.scrollTop = el.scrollTop + 100;
-        }
-      }
-    })
-
-    watch(truncatedGameLog, async () => {
-      const el = messages.value
-      if (el) {
-        const child = el.lastElementChild
-        if (child) {
-          await nextTick()
-          child.scrollIntoView(false);
-          el.scrollTop = el.scrollTop + 100;
-        }
-      }
-    }, { deep: true })
-
-    async function undo() {
-      undoChoice(props.game.id);
-    }
-
-    return { truncatedGameLog, messages, undo }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 .game-log {

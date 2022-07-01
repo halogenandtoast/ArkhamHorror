@@ -1,3 +1,19 @@
+<script lang="ts" setup>
+import type { Game } from '@/arkham/types/Game';
+import type { EncounterCardContents } from '@/arkham/types/Card';
+
+export interface Props {
+  game: Game
+  cards: EncounterCardContents[]
+}
+
+const props = defineProps<Props>()
+const image = (card: EncounterCardContents) => {
+  const { cardCode } = card;
+  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+  return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+}
+</script>
 
 <template>
   <div class="discards">
@@ -9,28 +25,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import { EncounterCardContents } from '@/arkham/types/Card';
-
-export default defineComponent({
-  props: {
-    game: { type: Object as () => Game, required: true },
-    cards: { type: Array as () => EncounterCardContents[], required: true }
-  },
-  setup() {
-    const image = (card: EncounterCardContents) => {
-      const { cardCode } = card;
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
-    }
-
-    return { image }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 .discards {

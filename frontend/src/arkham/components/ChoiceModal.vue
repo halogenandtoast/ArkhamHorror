@@ -1,3 +1,132 @@
+<script lang="ts" setup>
+import { computed, inject, ref, watch, onMounted } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
+import { MessageType } from '@/arkham/types/Message';
+import Card from '@/arkham/components/Card.vue';
+
+export interface Props {
+  game: Game
+  investigatorId: string
+}
+
+const props = defineProps<Props>()
+
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const focusedCards = computed(() => {
+  const playerCards = Object.values(props.game.investigators[props.investigatorId].contents.foundCards).flat()
+  if (playerCards.length > 0) {
+    return playerCards
+  }
+
+  const encounterCards = Object.values(props.game.foundCards).flat()
+  if (encounterCards.length > 0) {
+    return encounterCards
+  }
+
+  return props.game.focusedCards
+})
+const choosePaymentAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('choosePaymentAmounts')
+const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('chooseAmounts')
+
+const paymentAmountsLabel = computed(() => {
+  const question = props.game.question[props.investigatorId]
+  if (question?.tag == 'ChoosePaymentAmounts') {
+    return question.contents[0]
+  } else if (question?.tag == 'ChooseDynamicCardAmounts') {
+    return "Pay Dynamic Cost"
+  }
+
+  return null
+})
+
+const amountsLabel = computed(() => {
+  const question = props.game.question[props.investigatorId]
+  if (question?.tag == 'ChooseAmounts') {
+    return question.contents[0]
+  }
+
+  return null
+})
+
+const question = computed(() => props.game.question[props.investigatorId])
+
+const investigatorName = (iid: string) => props.game.investigators[iid].contents.name.title
+
+const amountsChoices = computed(() => {
+  if (question.value?.tag == 'ChoosePaymentAmounts') {
+    return question.value.contents[2]
+  } else if (question.value?.tag == 'ChooseAmounts') {
+    return question.value.contents[2]
+  } else if (question.value?.tag == 'ChooseDynamicCardAmounts') {
+    return [[question.value.contents[0], question.value.contents[2]]]
+  }
+
+  return null
+})
+
+const amountSelections = ref<Record<string, number>>({})
+
+const setInitialAmounts = () => {
+    const labels = question.value?.tag == 'ChooseAmounts'
+      ? question.value.contents[2].map(([label]) => label)
+      : Object.keys(props.game.investigators)
+    amountSelections.value = labels.reduce<Record<string, number>>((previousValue, currentValue) => {
+      previousValue[currentValue] = 0
+      return previousValue
+    }, {})
+  }
+
+onMounted(setInitialAmounts)
+
+watch(
+  () => props.game.question[props.investigatorId],
+  setInitialAmounts)
+
+const unmetAmountRequirements = computed(() => {
+  if (question.value?.tag == 'ChoosePaymentAmounts') {
+    const requiredTotal = question.value.contents[1]
+    if (requiredTotal) {
+      const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+      return total !== requiredTotal
+    }
+
+    return false
+  } else if (question.value?.tag == 'ChooseAmounts') {
+    const maxBound = question.value.contents[1]
+    if (maxBound) {
+      const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
+      return total > maxBound
+    }
+
+    return false
+  } else if (question.value?.tag == 'ChooseDynamicCardAmounts') {
+    return false
+  }
+
+  return true
+})
+
+const submitPaymentAmounts = async () => {
+  if (choosePaymentAmounts) {
+    choosePaymentAmounts(amountSelections.value)
+  }
+}
+
+const submitAmounts = async () => {
+  if (chooseAmounts) {
+    chooseAmounts(amountSelections.value)
+  }
+}
+
+const resolutions = computed(() => {
+  return choices
+    .value
+    .map((choice, idx) => ({ choice, idx }))
+    .filter(({ choice }) => choice.tag === MessageType.RESOLUTION);
+})
+</script>
+
 <template>
   <div v-if="focusedCards.length > 0 && choices.length > 0" class="modal">
     <div class="modal-contents focused-cards">
@@ -49,141 +178,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed, inject, ref, watch, onMounted } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import * as ArkhamGame from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
-import Card from '@/arkham/components/Card.vue';
-
-export default defineComponent({
-  components: {
-    Card,
-  },
-  props: {
-    game: { type: Object as () => Game, required: true },
-    investigatorId: { type: String, required: true }
-  },
-  setup(props) {
-    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-    const focusedCards = computed(() => {
-      const playerCards = Object.values(props.game.investigators[props.investigatorId].contents.foundCards).flat()
-      if (playerCards.length > 0) {
-        return playerCards
-      }
-
-      const encounterCards = Object.values(props.game.foundCards).flat()
-      if (encounterCards.length > 0) {
-        return encounterCards
-      }
-
-      return props.game.focusedCards
-    })
-    const choosePaymentAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('choosePaymentAmounts')
-    const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('chooseAmounts')
-
-    const paymentAmountsLabel = computed(() => {
-      const question = props.game.question[props.investigatorId]
-      if (question?.tag == 'ChoosePaymentAmounts') {
-        return question.contents[0]
-      } else if (question?.tag == 'ChooseDynamicCardAmounts') {
-        return "Pay Dynamic Cost"
-      }
-
-      return null
-    })
-
-    const amountsLabel = computed(() => {
-      const question = props.game.question[props.investigatorId]
-      if (question?.tag == 'ChooseAmounts') {
-        return question.contents[0]
-      }
-
-      return null
-    })
-
-    const question = computed(() => props.game.question[props.investigatorId])
-
-    const investigatorName = (iid: string) => props.game.investigators[iid].contents.name.title
-
-    const amountsChoices = computed(() => {
-      if (question.value?.tag == 'ChoosePaymentAmounts') {
-        return question.value.contents[2]
-      } else if (question.value?.tag == 'ChooseAmounts') {
-        return question.value.contents[2]
-      } else if (question.value?.tag == 'ChooseDynamicCardAmounts') {
-        return [[question.value.contents[0], question.value.contents[2]]]
-      }
-
-      return null
-    })
-
-    const amountSelections = ref<Record<string, number>>({})
-
-    const setInitialAmounts = () => {
-        const labels = question.value?.tag == 'ChooseAmounts'
-          ? question.value.contents[2].map(([label]) => label)
-          : Object.keys(props.game.investigators)
-        amountSelections.value = labels.reduce<Record<string, number>>((previousValue, currentValue) => {
-          previousValue[currentValue] = 0
-          return previousValue
-        }, {})
-      }
-
-    onMounted(setInitialAmounts)
-
-    watch(
-      () => props.game.question[props.investigatorId],
-      setInitialAmounts)
-
-    const unmetAmountRequirements = computed(() => {
-      if (question.value?.tag == 'ChoosePaymentAmounts') {
-        const requiredTotal = question.value.contents[1]
-        if (requiredTotal) {
-          const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-          return total !== requiredTotal
-        }
-
-        return false
-      } else if (question.value?.tag == 'ChooseAmounts') {
-        const maxBound = question.value.contents[1]
-        if (maxBound) {
-          const total = Object.values(amountSelections.value).reduce((a, b) => a + b, 0)
-          return total > maxBound
-        }
-
-        return false
-      } else if (question.value?.tag == 'ChooseDynamicCardAmounts') {
-        return false
-      }
-
-      return true
-    })
-
-    const submitPaymentAmounts = async () => {
-      if (choosePaymentAmounts) {
-        choosePaymentAmounts(amountSelections.value)
-      }
-    }
-
-    const submitAmounts = async () => {
-      if (chooseAmounts) {
-        chooseAmounts(amountSelections.value)
-      }
-    }
-
-    const resolutions = computed(() => {
-      return choices
-        .value
-        .map((choice, idx) => ({ choice, idx }))
-        .filter(({ choice }) => choice.tag === MessageType.RESOLUTION);
-    })
-
-    return { choices, focusedCards, resolutions, paymentAmountsLabel, amountsLabel, amountsChoices, amountSelections, investigatorName, submitAmounts, submitPaymentAmounts, unmetAmountRequirements }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 .modal-contents {

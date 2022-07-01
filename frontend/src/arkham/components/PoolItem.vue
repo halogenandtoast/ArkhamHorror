@@ -1,27 +1,24 @@
+<script lang="ts" setup>
+import { computed } from 'vue'
+
+export interface Props {
+  type: string
+  amount: number
+}
+const props = defineProps<Props>()
+
+const image = computed(() => {
+  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+  return `${baseUrl}/img/arkham/${props.type}.png`
+})
+</script>
+
 <template>
   <div class="poolItem" :class="`poolItem-${type}`" @click="$emit('choose')">
     <img :src="image" />
     <span>{{amount}}</span>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed } from 'vue'
-
-export default defineComponent({
-  props: {
-    type: { type: String, required: true },
-    amount: { type: Number, required: true },
-  },
-  setup(props) {
-    const image = computed(() => {
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/${props.type}.png`
-    })
-    return { image }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 

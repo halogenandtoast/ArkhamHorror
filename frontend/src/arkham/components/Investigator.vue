@@ -1,3 +1,169 @@
+<script lang="ts" setup>
+import { computed, inject } from 'vue'
+import * as Arkham from '@/arkham/types/Investigator'
+import { Game } from '@/arkham/types/Game'
+import * as ArkhamGame from '@/arkham/types/Game'
+import { Message, MessageType } from '@/arkham/types/Message'
+import PoolItem from '@/arkham/components/PoolItem.vue'
+
+export interface Props {
+  game: Game
+  player: Arkham.Investigator
+  investigatorId: string
+  portrait?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), { portrait: false })
+const emit = defineEmits(['showCards'])
+
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+const id = computed(() => props.player.contents.id)
+const debug = inject('debug')
+const debugChoose = inject('debugChoose')
+
+const searchTopOfDeckAction = computed(() => {
+  return choices
+    .value
+    .findIndex((c) => c.tag === MessageType.SEARCH
+      && c.contents[2].contents === id.value);
+})
+
+const runSkillTestAction = computed(() => {
+  if (choices.value.filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST
+    && c.contents[0] === id.value).length === 1) {
+    return choices
+      .value
+      .findIndex((c) => c.tag === MessageType.BEGIN_SKILL_TEST && c.contents[0] === id.value)
+  }
+
+  return -1
+})
+
+function canActivateAbility(c: Message): boolean {
+  switch (c.tag) {
+    case MessageType.ACTIVATE_ABILITY:
+      return c.contents[1].source.contents === id.value;
+    case MessageType.RUN:
+      return c.contents.some((c1: Message) => canActivateAbility(c1));
+    default:
+      return false;
+  }
+}
+const activateAbilityAction = computed(() => choices.value.findIndex(canActivateAbility))
+
+const enemyEngageInvestigatorAction = computed(() => {
+  return choices
+    .value
+    .findIndex((c) => c.tag === MessageType.ENEMY_ENGAGE_INVESTIGATOR
+      && c.contents[1] === id.value)
+})
+
+const takeDamageAction = computed(() => {
+  const isRunDamage = choices.value.findIndex((c) => c.tag === MessageType.RUN
+    && c.contents[0]
+    && c.contents[0].tag === MessageType.INVESTIGATOR_ASSIGN_DAMAGE
+    && c.contents[0].contents[0] === id.value);
+  return isRunDamage
+    || choices.value.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
+})
+
+const labelAction = computed(() => {
+  return choices
+    .value
+    .findIndex((c) => c.tag === MessageType.TARGET_LABEL
+      && c.contents[0].tag === "InvestigatorTarget" && c.contents[0].contents === id.value)
+})
+
+const investigatorAction = computed(() => {
+  if (labelAction.value !== -1) {
+    return labelAction.value
+  }
+
+  if (searchTopOfDeckAction.value !== -1) {
+    return searchTopOfDeckAction.value
+  }
+
+  if (runSkillTestAction.value !== -1) {
+    return runSkillTestAction.value
+  }
+
+  if (enemyEngageInvestigatorAction.value !== -1) {
+    return enemyEngageInvestigatorAction.value
+  }
+
+  if (activateAbilityAction.value !== -1) {
+    return activateAbilityAction.value
+  }
+
+  return takeDamageAction.value
+})
+
+function canAdjustHealth(c: Message): boolean {
+  switch (c.tag) {
+    case MessageType.INVESTIGATOR_DAMAGE:
+      return c.contents[0] === id.value && c.contents[2] > 0;
+    case MessageType.HEAL_DAMAGE:
+      return c.contents[0].contents === id.value;
+    case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
+      return c.contents[0] === id.value && c.contents[2] > 0;
+    case MessageType.RUN:
+      return c.contents.some((c1: Message) => canAdjustHealth(c1));
+    default:
+      return false;
+  }
+}
+
+function canAdjustSanity(c: Message): boolean {
+  switch (c.tag) {
+    case MessageType.INVESTIGATOR_DAMAGE:
+      return c.contents[0] === id.value && c.contents[3] > 0;
+    case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
+      return c.contents[0] === id.value && c.contents[3] > 0;
+    case MessageType.HEAL_HORROR:
+      return c.contents[0].contents === id.value;
+    case MessageType.RUN:
+      return c.contents.some((c1: Message) => canAdjustSanity(c1));
+    default:
+      return false;
+  }
+}
+
+const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
+const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
+
+const takeResourceAction = computed(() => {
+  return choices
+    .value
+    .findIndex((c) => c.tag === MessageType.TAKE_RESOURCES && c.contents[0] === id.value);
+})
+
+const spendCluesAction = computed(() => {
+  return choices
+    .value
+    .findIndex((c) => (c.tag === MessageType.INVESTIGATOR_SPEND_CLUES || c.tag === MessageType.INVESTIGATOR_PLACE_CLUES_ON_LOCATION)
+      && c.contents[0] === id.value);
+})
+
+const endTurnAction = computed(() => {
+  return choices
+    .value
+    .findIndex((c) => c.tag === MessageType.END_TURN && c.contents === id.value);
+})
+
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const image = computed(() => {
+  return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}.jpg`;
+})
+
+const portraitImage = computed(() => `${baseUrl}/img/arkham/portraits/${id.value.replace('c', '')}.jpg`)
+
+
+const cardsUnderneath = computed(() => props.player.contents.cardsUnderneath)
+const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
+
+const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
+</script>
+
 <template>
   <img v-if="portrait"
     :src="portraitImage"
@@ -71,190 +237,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed, inject } from 'vue'
-import * as Arkham from '@/arkham/types/Investigator'
-import { Game } from '@/arkham/types/Game'
-import * as ArkhamGame from '@/arkham/types/Game'
-import { Message, MessageType } from '@/arkham/types/Message'
-import PoolItem from '@/arkham/components/PoolItem.vue'
-
-export default defineComponent({
-  components: { PoolItem },
-  props: {
-    game: { type: Object as () => Game, required: true },
-    player: { type: Object as () => Arkham.Investigator, required: true },
-    investigatorId: { type: String, required: true },
-    portrait: { type: Boolean, default: false }
-  },
-  setup(props, context) {
-    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-    const id = computed(() => props.player.contents.id)
-    const debug = inject('debug')
-    const debugChoose = inject('debugChoose')
-
-    const searchTopOfDeckAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.SEARCH
-          && c.contents[2].contents === id.value);
-    })
-
-    const runSkillTestAction = computed(() => {
-      if (choices.value.filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST
-        && c.contents[0] === id.value).length === 1) {
-        return choices
-          .value
-          .findIndex((c) => c.tag === MessageType.BEGIN_SKILL_TEST && c.contents[0] === id.value)
-      }
-
-      return -1
-    })
-
-    function canActivateAbility(c: Message): boolean {
-      switch (c.tag) {
-        case MessageType.ACTIVATE_ABILITY:
-          return c.contents[1].source.contents === id.value;
-        case MessageType.RUN:
-          return c.contents.some((c1: Message) => canActivateAbility(c1));
-        default:
-          return false;
-      }
-    }
-    const activateAbilityAction = computed(() => choices.value.findIndex(canActivateAbility))
-
-    const enemyEngageInvestigatorAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.ENEMY_ENGAGE_INVESTIGATOR
-          && c.contents[1] === id.value)
-    })
-
-    const takeDamageAction = computed(() => {
-      const isRunDamage = choices.value.findIndex((c) => c.tag === MessageType.RUN
-        && c.contents[0]
-        && c.contents[0].tag === MessageType.INVESTIGATOR_ASSIGN_DAMAGE
-        && c.contents[0].contents[0] === id.value);
-      return isRunDamage
-        || choices.value.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
-    })
-
-    const labelAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.TARGET_LABEL
-          && c.contents[0].tag === "InvestigatorTarget" && c.contents[0].contents === id.value)
-    })
-
-    const investigatorAction = computed(() => {
-      if (labelAction.value !== -1) {
-        return labelAction.value
-      }
-
-      if (searchTopOfDeckAction.value !== -1) {
-        return searchTopOfDeckAction.value
-      }
-
-      if (runSkillTestAction.value !== -1) {
-        return runSkillTestAction.value
-      }
-
-      if (enemyEngageInvestigatorAction.value !== -1) {
-        return enemyEngageInvestigatorAction.value
-      }
-
-      if (activateAbilityAction.value !== -1) {
-        return activateAbilityAction.value
-      }
-
-      return takeDamageAction.value
-    })
-
-    function canAdjustHealth(c: Message): boolean {
-      switch (c.tag) {
-        case MessageType.INVESTIGATOR_DAMAGE:
-          return c.contents[0] === id.value && c.contents[2] > 0;
-        case MessageType.HEAL_DAMAGE:
-          return c.contents[0].contents === id.value;
-        case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
-          return c.contents[0] === id.value && c.contents[2] > 0;
-        case MessageType.RUN:
-          return c.contents.some((c1: Message) => canAdjustHealth(c1));
-        default:
-          return false;
-      }
-    }
-
-    function canAdjustSanity(c: Message): boolean {
-      switch (c.tag) {
-        case MessageType.INVESTIGATOR_DAMAGE:
-          return c.contents[0] === id.value && c.contents[3] > 0;
-        case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
-          return c.contents[0] === id.value && c.contents[3] > 0;
-        case MessageType.HEAL_HORROR:
-          return c.contents[0].contents === id.value;
-        case MessageType.RUN:
-          return c.contents.some((c1: Message) => canAdjustSanity(c1));
-        default:
-          return false;
-      }
-    }
-
-    const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
-    const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
-
-    const takeResourceAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.TAKE_RESOURCES && c.contents[0] === id.value);
-    })
-
-    const spendCluesAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => (c.tag === MessageType.INVESTIGATOR_SPEND_CLUES || c.tag === MessageType.INVESTIGATOR_PLACE_CLUES_ON_LOCATION)
-          && c.contents[0] === id.value);
-    })
-
-    const endTurnAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.END_TURN && c.contents === id.value);
-    })
-
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-    const image = computed(() => {
-      return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}.jpg`;
-    })
-
-    const portraitImage = computed(() => `${baseUrl}/img/arkham/portraits/${id.value.replace('c', '')}.jpg`)
-
-
-    const cardsUnderneath = computed(() => props.player.contents.cardsUnderneath)
-    const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
-
-    const showCardsUnderneath = (e: Event) => context.emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
-
-    return {
-      id,
-      showCardsUnderneath,
-      portraitImage,
-      cardsUnderneath,
-      cardsUnderneathLabel,
-      debug,
-      debugChoose,
-      image,
-      endTurnAction,
-      spendCluesAction,
-      takeResourceAction,
-      healthAction,
-      sanityAction,
-      investigatorAction
-    }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 i.action {

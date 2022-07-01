@@ -1,3 +1,84 @@
+<script lang="ts" setup>
+import { computed, ref, inject, ComputedRef, reactive } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamCard from '@/arkham/types/Card';
+import * as ArkhamGame from '@/arkham/types/Game';
+import { MessageType } from '@/arkham/types/Message';
+import Enemy from '@/arkham/components/Enemy.vue';
+import Treachery from '@/arkham/components/Treachery.vue';
+import Asset from '@/arkham/components/Asset.vue';
+import HandCard from '@/arkham/components/HandCard.vue';
+import Card from '@/arkham/components/Card.vue';
+import CardRow from '@/arkham/components/CardRow.vue';
+import Investigator from '@/arkham/components/Investigator.vue';
+import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
+import * as Arkham from '@/arkham/types/Investigator';
+
+interface RefWrapper<T> {
+  ref: ComputedRef<T>
+}
+
+export interface Props {
+  game: Game
+  player: Arkham.Investigator
+  investigatorId: string
+}
+
+const props = defineProps<Props>()
+
+const discards = computed<ArkhamCard.Card[]>(() => props.player.contents.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+
+const topOfDiscard = computed(() => discards.value[0])
+
+const topOfDeckRevealed = computed(() => props.player.modifiers?.some((m) => m.type.tag === "TopCardOfDeckIsRevealed"))
+
+const topOfDeck = computed(() => {
+  const topCard = props.player.contents.deck[0]
+  if  (topOfDeckRevealed.value && topCard) {
+    return `${baseUrl}/img/arkham/cards/${topCard.cardCode.replace(/^c/, '')}.jpg`
+  }
+  return `${baseUrl}/img/arkham/player_back.jpg`
+})
+
+const playTopOfDeckAction = computed(() => {
+  return choices.value.findIndex((c) => {
+    return c.tag === MessageType.PLAY_CARD && c.contents[1] === props.player.contents.deck[0].id
+  })
+})
+
+const viewingDiscard = ref(false)
+const viewDiscardLabel = computed(() => viewingDiscard.value ? "Close" : `${discards.value.length} Cards`)
+
+const id = computed(() => props.player.contents.id)
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+const drawCardsAction = computed(() => {
+  return choices
+    .value
+    .findIndex((c) => c.tag === MessageType.DRAW_CARDS && c.contents[0] === id.value);
+})
+
+const noCards = computed<ArkhamCard.Card[]>(() => [])
+
+// eslint-disable-next-line
+const showCards = reactive<RefWrapper<any>>({ ref: noCards })
+const cardRowTitle = ref("")
+
+
+const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title: string, isDiscards: boolean) => {
+  cardRowTitle.value = title
+  showCards.ref = cards
+  viewingDiscard.value = isDiscards
+}
+
+const showDiscards = (e: Event) => doShowCards(e, discards, 'Discards', true)
+const hideCards = () => showCards.ref = noCards
+
+const debug = inject('debug')
+const debugChoose = inject('debugChoose')
+</script>
+
 <template>
   <div class="player-cards">
     <section class="in-play">
@@ -99,101 +180,6 @@
     />
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed, ref, inject, ComputedRef, reactive } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import * as ArkhamCard from '@/arkham/types/Card';
-import * as ArkhamGame from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
-import Enemy from '@/arkham/components/Enemy.vue';
-import Treachery from '@/arkham/components/Treachery.vue';
-import Asset from '@/arkham/components/Asset.vue';
-import HandCard from '@/arkham/components/HandCard.vue';
-import Card from '@/arkham/components/Card.vue';
-import CardRow from '@/arkham/components/CardRow.vue';
-import Investigator from '@/arkham/components/Investigator.vue';
-import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
-import * as Arkham from '@/arkham/types/Investigator';
-
-interface RefWrapper<T> {
-  ref: ComputedRef<T>
-}
-
-export default defineComponent({
-  components: {
-    Enemy,
-    Treachery,
-    Asset,
-    HandCard,
-    Investigator,
-    ChoiceModal,
-    CardRow,
-    Card,
-  },
-  props: {
-    game: { type: Object as () => Game, required: true },
-    player: { type: Object as () => Arkham.Investigator, required: true },
-    investigatorId: { type: String, required: true }
-  },
-  setup(props) {
-
-    const discards = computed<ArkhamCard.Card[]>(() => props.player.contents.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-
-    const topOfDiscard = computed(() => discards.value[0])
-
-    const topOfDeckRevealed = computed(() => props.player.modifiers?.some((m) => m.type.tag === "TopCardOfDeckIsRevealed"))
-
-    const topOfDeck = computed(() => {
-      const topCard = props.player.contents.deck[0]
-      if  (topOfDeckRevealed.value && topCard) {
-        return `${baseUrl}/img/arkham/cards/${topCard.cardCode.replace(/^c/, '')}.jpg`
-      }
-      return `${baseUrl}/img/arkham/player_back.jpg`
-    })
-
-    const playTopOfDeckAction = computed(() => {
-      return choices.value.findIndex((c) => {
-        return c.tag === MessageType.PLAY_CARD && c.contents[1] === props.player.contents.deck[0].id
-      })
-    })
-
-    const viewingDiscard = ref(false)
-    const viewDiscardLabel = computed(() => viewingDiscard.value ? "Close" : `${discards.value.length} Cards`)
-
-    const id = computed(() => props.player.contents.id)
-    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-
-    const drawCardsAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.DRAW_CARDS && c.contents[0] === id.value);
-    })
-
-    const noCards = computed<ArkhamCard.Card[]>(() => [])
-
-    // eslint-disable-next-line
-    const showCards = reactive<RefWrapper<any>>({ ref: noCards })
-    const cardRowTitle = ref("")
-
-
-    const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title: string, isDiscards: boolean) => {
-      cardRowTitle.value = title
-      showCards.ref = cards
-      viewingDiscard.value = isDiscards
-    }
-
-    const showDiscards = (e: Event) => doShowCards(e, discards, 'Discards', true)
-    const hideCards = () => showCards.ref = noCards
-
-    const debug = inject('debug')
-    const debugChoose = inject('debugChoose')
-
-    return { id, cardRowTitle, debug, debugChoose, doShowCards, showCards, baseUrl, discards, topOfDiscard, topOfDeck, topOfDeckRevealed, playTopOfDeckAction, drawCardsAction, hideCards, showDiscards, viewingDiscard, viewDiscardLabel }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 .player {

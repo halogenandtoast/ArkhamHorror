@@ -1,3 +1,47 @@
+<script lang="ts" setup>
+import { computed } from 'vue';
+import type { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
+import type { Message } from '@/arkham/types/Message';
+import { MessageType } from '@/arkham/types/Message';
+
+export interface Props {
+  game: Game
+  investigatorId: string
+}
+
+const props = defineProps<Props>()
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+const applyResultsAction = computed(() => {
+  return choices.value.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
+})
+
+const skillTestResults = computed(() => props.game.skillTestResults)
+
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const cardLabelImage = (cardCode: string) => {
+  return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+}
+
+const cardLabels = computed(() =>
+  choices.value.
+    flatMap<[Message, number][]>((choice, index) =>
+      choice.tag === MessageType.CARD_LABEL ? [[choice, index]] : []))
+
+const tokenOperator = computed(() => (skillTestResults.value?.skillTestResultsTokensValue || 0) < 0 ? '-' : '+')
+
+const testResult = computed(() => {
+  const result = skillTestResults.value
+  if (result !== null) {
+    const {skillTestResultsSkillValue, skillTestResultsIconValue, skillTestResultsTokensValue, skillTestResultsDifficulty} = result
+    return skillTestResultsSkillValue + skillTestResultsIconValue + skillTestResultsTokensValue - skillTestResultsDifficulty
+  } else {
+    return null
+  }
+})
+</script>
+
 <template>
   <section class="status-bar">
     <div v-if="skillTestResults" class="skill-test-results">
@@ -92,82 +136,6 @@
     </div>
   </section>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import * as ArkhamGame from '@/arkham/types/Game';
-import { Message, MessageType } from '@/arkham/types/Message';
-
-export default defineComponent({
-  props: {
-    game: { type: Object as () => Game, required: true },
-    investigatorId: { type: String, required: true }
-  },
-  setup(props) {
-    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-
-    const includeBeginSkillTest = computed(() => {
-      return choices
-        .value
-        .filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST).length > 1
-        ? [MessageType.BEGIN_SKILL_TEST]
-        : [];
-    })
-
-    function isStatusBarMessage(c: Message): boolean {
-      const validMessageTags = [
-        MessageType.CONTINUE,
-        MessageType.AFTER_DISCOVER_CLUES,
-        MessageType.BEGIN_SKILL_TEST_AFTER_FAST,
-        MessageType.LABEL,
-      ];
-
-      switch (c.tag) {
-        case MessageType.RUN:
-          return c.contents[0] && isStatusBarMessage(c.contents[0]);
-        default:
-          return [...validMessageTags, ...includeBeginSkillTest.value].includes(c.tag);
-      }
-    }
-
-    const shouldShow = computed(() => choices.value.some(isStatusBarMessage))
-
-
-    const applyResultsAction = computed(() => {
-      return choices.value.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
-    })
-
-    const arkhamify = (text: string) => text.replace('{skull}', "\u004E").replace('{cultist}', "\u0042").replace('{tablet}', "\u0056").replace('{elderThing}', "\u0043").replace('{autoFail}', "\u005A").replace('{elderSign}', "\u0058")
-
-    const skillTestResults = computed(() => props.game.skillTestResults)
-
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-    const cardLabelImage = (cardCode: string) => {
-      return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
-    }
-
-    const cardLabels = computed(() =>
-      choices.value.
-        flatMap<[Message, number][]>((choice, index) =>
-          choice.tag === MessageType.CARD_LABEL ? [[choice, index]] : []))
-
-    const tokenOperator = computed(() => (skillTestResults.value?.skillTestResultsTokensValue || 0) < 0 ? '-' : '+')
-
-    const testResult = computed(() => {
-      const result = skillTestResults.value
-      if (result !== null) {
-        const {skillTestResultsSkillValue, skillTestResultsIconValue, skillTestResultsTokensValue, skillTestResultsDifficulty} = result
-        return skillTestResultsSkillValue + skillTestResultsIconValue + skillTestResultsTokensValue - skillTestResultsDifficulty
-      } else {
-        return null
-      }
-    })
-
-    return { testResult, tokenOperator, cardLabels, cardLabelImage, skillTestResults, arkhamify, choices, applyResultsAction, shouldShow, MessageType }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 i {

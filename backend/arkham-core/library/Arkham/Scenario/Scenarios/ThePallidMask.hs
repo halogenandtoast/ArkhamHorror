@@ -83,7 +83,10 @@ instance HasModifiersFor ThePallidMask where
   getModifiersFor _ _ _ = pure []
 
 standaloneCampaignLog :: CampaignLog
-standaloneCampaignLog = mkCampaignLog { campaignLogRecorded = setFromList [YouFoundNigelsHome, YouEnteredTheCatacombsOnYourOwn] }
+standaloneCampaignLog = mkCampaignLog
+  { campaignLogRecorded = setFromList
+    [YouFoundNigelsHome, YouEnteredTheCatacombsOnYourOwn]
+  }
 
 instance HasTokenValue ThePallidMask where
   getTokenValue iid tokenFace (ThePallidMask attrs) = case tokenFace of
@@ -132,8 +135,14 @@ instance RunMessage ThePallidMask where
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      push $ AddCampaignCardToDeck leadInvestigatorId Enemies.theManInThePallidMask
-      pure . ThePallidMask $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
+      push $ AddCampaignCardToDeck
+        leadInvestigatorId
+        Enemies.theManInThePallidMask
+      pure
+        . ThePallidMask
+        $ attrs
+        & standaloneCampaignLogL
+        .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- getInvestigatorIds
       didNotEscapeGazeOfThePhantom <- getHasRecord
@@ -298,18 +307,18 @@ instance RunMessage ThePallidMask where
           [ RecordSetInsert VIPsSlain [toCardCode haruko]
           | haruko <- maybeToList harukoSlain
           ]
-        token = case res of
-          NoResolution -> ElderThing
-          Resolution 1 -> Cultist
-          Resolution 2 -> Tablet
+        (token, story') = case res of
+          NoResolution -> (ElderThing, noResolution)
+          Resolution 1 -> (Cultist, resolution1)
+          Resolution 2 -> (Tablet, resolution2)
           _ -> error "Invalid resolution"
       pushAll
-        $ [Record YouKnowTheSiteOfTheGate]
+        $ [story investigatorIds story', Record YouKnowTheSiteOfTheGate]
         <> [ chooseSome
                leadInvestigatorId
                "Done having investigators read Act II"
-               [ TargetLabel
-                   (InvestigatorTarget iid)
+               [ targetLabel
+                   iid
                    [ RecordSet ReadActII [unInvestigatorId iid]
                    , SearchCollectionForRandom
                      iid

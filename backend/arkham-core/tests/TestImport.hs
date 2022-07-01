@@ -9,6 +9,7 @@ module TestImport
 
 import Arkham.Prelude as X hiding (assert)
 
+import Data.Maybe as X (fromJust)
 import Arkham.Projection
 import Arkham.Agenda as X
 import Arkham.Agenda.Attrs
@@ -443,7 +444,7 @@ newGame investigator = do
 
 isInDiscardOf :: (IsCard (EntityAttrs a), Entity a) => Investigator -> a -> TestAppT Bool
 isInDiscardOf i a = do
-  let Just pc = preview _PlayerCard (toCard $ toAttrs a)
+  let pc = fromJust $ preview _PlayerCard (toCard $ toAttrs a)
   fieldP InvestigatorDiscard (elem pc) (toId i)
 
 getRemainingActions :: Investigator -> TestAppT Int

@@ -206,6 +206,9 @@ instance RunMessage TheUnspeakableOath where
 
       pushAllEnd
         $ [story investigatorIds intro1Or2, story investigatorIds intro3]
+        <> [ story investigatorIds constancesInformation
+           | constanceInterviewed
+           ]
         <> courageMessages
         <> [ SetEncounterDeck encounterDeck
            , SetAgendaDeck

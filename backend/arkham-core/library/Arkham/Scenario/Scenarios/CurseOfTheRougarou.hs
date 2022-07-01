@@ -79,8 +79,9 @@ instance RunMessage CurseOfTheRougarou where
         [Assets.ladyEsprit, Assets.bearTrap, Assets.fishingNet]
 
       let
-        (_, (_, bayou) : _) =
-          break (elem Bayou . toTraits . snd) startingLocationsWithLabel
+        bayou = case break (elem Bayou . toTraits . snd) startingLocationsWithLabel of
+          (_, (_, x) : _) -> x
+          _ -> error "handled"
         bayouId = LocationId $ toCardId bayou
       pushAllEnd
         $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]

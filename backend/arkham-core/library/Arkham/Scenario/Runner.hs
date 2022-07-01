@@ -330,10 +330,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       (_ : xs) -> pure $ a & setAsideCardsL .~ (before <> xs)
   ReadStory iid story' -> do
     push
-      (chooseOne
-        iid
-        [CardLabel (cdCardCode story') [ResolveStory iid story']]
-      )
+      (chooseOne iid [CardLabel (cdCardCode story') [ResolveStory iid story']])
     pure $ a & cardsUnderScenarioReferenceL %~ filter ((/= story') . toCardDef)
   SetActDeck -> do
     case a ^. actStackL . at 1 of
@@ -369,15 +366,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     case card of
       PlayerCard _ -> pure a
       EncounterCard ec -> pure $ a & discardL %~ (ec :)
-  InvestigatorDoDrawEncounterCard iid -> if null (unDeck scenarioEncounterDeck)
-    then a <$ when
-      (notNull scenarioDiscard)
-      (pushAll
+  InvestigatorDoDrawEncounterCard iid -> case (unDeck scenarioEncounterDeck) of
+    [] -> do
+      when (notNull scenarioDiscard) $ pushAll
         [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
-      )
+      pure a
       -- This case should not happen but this safeguards against it
-    else do
-      let (card : encounterDeck) = unDeck scenarioEncounterDeck
+    (card : encounterDeck) -> do
       when (null encounterDeck) (push ShuffleEncounterDiscardBackIn)
       pushAll [UnsetActiveCard, InvestigatorDrewEncounterCard iid card]
       pure $ a & (encounterDeckL .~ Deck encounterDeck)
@@ -567,18 +562,25 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       Nothing -> pure ()
       Just target -> push (DiscardedTopOfEncounterDeck iid cards target)
   DiscardTopOfEncounterDeckWithDiscardedCards iid n mtarget discardedCards ->
-    do
-      let (card : cards) = unDeck scenarioEncounterDeck
-      pushAll
-        $ Discarded (InvestigatorTarget iid) (EncounterCard card)
-        : [ ShuffleEncounterDiscardBackIn | null cards ]
-        <> [ DiscardTopOfEncounterDeckWithDiscardedCards
-               iid
-               (n - 1)
-               mtarget
-               (card : discardedCards)
-           ]
-      pure $ a & discardL %~ (card :) & encounterDeckL .~ Deck cards
+    case unDeck scenarioEncounterDeck of
+      [] -> do
+        push $ DiscardTopOfEncounterDeckWithDiscardedCards
+          iid
+          0
+          mtarget
+          discardedCards
+        pure a
+      (card : cards) -> do
+        pushAll
+          $ Discarded (InvestigatorTarget iid) (EncounterCard card)
+          : [ ShuffleEncounterDiscardBackIn | null cards ]
+          <> [ DiscardTopOfEncounterDeckWithDiscardedCards
+                 iid
+                 (n - 1)
+                 mtarget
+                 (card : discardedCards)
+             ]
+        pure $ a & discardL %~ (card :) & encounterDeckL .~ Deck cards
   CreatedEnemyAt enemyId _ _ -> do
     card <- field EnemyCard enemyId
     pure $ a & (victoryDisplayL %~ delete card)
@@ -588,6 +590,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   Record key -> do
     isStandalone <- getIsStandalone
     if isStandalone
-       then pure $ a & standaloneCampaignLogL . recorded %~ insertSet key
-       else pure a
+      then pure $ a & standaloneCampaignLogL . recorded %~ insertSet key
+      else pure a
   _ -> pure a

@@ -781,8 +781,9 @@ getRemainingActsMatching matcher = do
     currentActId = case activeActIds of
       [aid] -> aid
       _ -> error "Cannot handle multiple acts"
-    (_, _ : remainingActs) =
-      break ((== currentActId) . ActId . toCardCode) acts
+    remainingActs = case break ((== currentActId) . ActId . toCardCode) acts of
+      (_, _ : a) -> a
+      _ -> error "unhandled"
   filterM (matcherFilter $ unRemainingActMatcher matcher) remainingActs
  where
   matcherFilter = \case
@@ -2743,7 +2744,10 @@ runGameMessage msg g = case msg of
         push
           (SkillTestAsk
             (AskMap $ insertWith
-              (\(ChooseOne m) (ChooseOne n) -> ChooseOne $ m <> n)
+              (\x y -> case (x, y) of
+                (ChooseOne m, ChooseOne n) -> ChooseOne $ m <> n
+                _ -> error "unhandled"
+              )
               iid2
               (ChooseOne c2)
               askMap
@@ -2770,7 +2774,10 @@ runGameMessage msg g = case msg of
         push
           (AskPlayer
             (AskMap $ insertWith
-              (\(ChooseOne m) (ChooseOne n) -> ChooseOne $ m <> n)
+              (\x y -> case (x, y) of
+                (ChooseOne m, ChooseOne n) -> ChooseOne $ m <> n
+                _ -> error "unhandled"
+              )
               iid2
               (ChooseOne c2)
               askMap

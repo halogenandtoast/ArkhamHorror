@@ -32,8 +32,8 @@ instance RunMessage FirstWatch where
   runMessage msg e@(FirstWatch (attrs@EventAttrs {..} `With` metadata@FirstWatchMetadata {..}))
     = case msg of
       InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
-        withQueue_ $ \(dropped : rest) -> case dropped of
-          AllDrawEncounterCard -> rest
+        withQueue_ $ \case
+          (AllDrawEncounterCard : rest) -> rest
           _ -> error "AllDrawEncounterCard expected"
         playerCount <- getPlayerCount
         e <$ pushAll

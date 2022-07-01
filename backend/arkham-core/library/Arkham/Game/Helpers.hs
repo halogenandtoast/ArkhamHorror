@@ -41,10 +41,8 @@ import {-# SOURCE #-} Arkham.Game
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
-import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs (..) )
-import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Attrs hiding ( location )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message hiding ( InvestigatorDamage )
@@ -88,21 +86,6 @@ cancelToken token = withQueue $ \queue ->
       RequestedTokens _ _ [token'] | token == token' -> False
       RequestedTokens{} -> error "not setup for multiple tokens"
       _ -> True
-    )
-    queue
-  , ()
-  )
-
-replaceToken :: Token -> GameT ()
-replaceToken token = withQueue $ \queue ->
-  ( map
-    (\case
-      When (RevealToken s i _) -> When (RevealToken s i token)
-      RevealToken s i _ -> RevealToken s i token
-      After (RevealToken s i _) -> After (RevealToken s i token)
-      RequestedTokens source' miid [_] -> RequestedTokens source' miid [token]
-      RequestedTokens{} -> error "not setup for multiple tokens"
-      m -> m
     )
     queue
   , ()
@@ -523,109 +506,6 @@ getSpendableClueCount investigatorIds = getSum <$> selectAgg
   (Matcher.InvestigatorWithoutModifier CannotSpendClues
   <> Matcher.AnyInvestigator (map Matcher.InvestigatorWithId investigatorIds)
   )
-
--- TODO: canFight _ a@Attrs {..} = canDo Action.Fight a
-getCanFight :: (Monad m, HasGame m) => EnemyId -> InvestigatorId -> m Bool
-getCanFight eid iid = do
-  mLocationId <- field InvestigatorLocation iid
-  enemyModifiers <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
-  sameLocation <- (isJust mLocationId &&) . (== mLocationId) <$> selectOne
-    (Matcher.locationWithEnemy eid)
-  modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
-  takenActions <- fieldMap InvestigatorActionsTaken setFromList iid
-  keywords <- field EnemyKeywords eid
-  canAffordActions <- getCanAffordCost
-    iid
-    (EnemySource eid)
-    (Just Action.Fight)
-    []
-    (foldl' (applyFightCostModifiers takenActions) (ActionCost 1) modifiers')
-  engagedInvestigators <- field EnemyEngagedInvestigators eid
-  pure
-    $ canAffordActions
-    && (Keyword.Aloof `notMember` keywords || iid `member` engagedInvestigators)
-    && (sameLocation || CanBeFoughtAsIfAtYourLocation `elem` enemyModifiers)
- where
-  applyFightCostModifiers
-    :: HashSet Action.Action -> Cost -> ModifierType -> Cost
-  applyFightCostModifiers takenActions costToFight (ActionCostOf actionTarget n)
-    = case actionTarget of
-      FirstOneOf as
-        | Action.Fight `elem` as && null
-          (takenActions `intersect` setFromList as)
-        -> increaseActionCost costToFight n
-      IsAction Action.Fight -> increaseActionCost costToFight n
-      _ -> costToFight
-  applyFightCostModifiers _ costToFight _ = costToFight
-
-getCanEngage :: (Monad m, HasGame m) => EnemyId -> InvestigatorId -> m Bool
-getCanEngage eid iid = do
-  mLocationId <- field InvestigatorLocation iid
-  sameLocation <- (isJust mLocationId &&) . (== mLocationId) <$> selectOne
-    (Matcher.locationWithEnemy eid)
-  notEngaged <- notElem iid <$> field EnemyEngagedInvestigators eid
-  canAffordActions <- getCanAffordCost
-    iid
-    (EnemySource eid)
-    (Just Action.Engage)
-    []
-    (ActionCost 1)
-  pure $ notEngaged && canAffordActions && sameLocation
-
-getCanEvade :: (Monad m, HasGame m) => EnemyId -> InvestigatorId -> m Bool
-getCanEvade eid iid = do
-  engaged <- elem iid <$> field EnemyEngagedInvestigators eid
-  enemyModifiers <- getModifiers (InvestigatorSource iid) (EnemyTarget eid)
-  modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
-  takenActions <- fieldMap InvestigatorActionsTaken setFromList iid
-  canAffordActions <- getCanAffordCost
-    iid
-    (EnemySource eid)
-    (Just Action.Evade)
-    []
-    (foldl' (applyEvadeCostModifiers takenActions) (ActionCost 1) modifiers')
-  pure $ engaged && canAffordActions && CannotBeEvaded `notElem` enemyModifiers
- where
-  applyEvadeCostModifiers
-    :: HashSet Action.Action -> Cost -> ModifierType -> Cost
-  applyEvadeCostModifiers takenActions costToFight (ActionCostOf actionTarget n)
-    = case actionTarget of
-      FirstOneOf as
-        | Action.Evade `elem` as && null
-          (takenActions `intersect` setFromList as)
-        -> increaseActionCost costToFight n
-      IsAction Action.Evade -> increaseActionCost costToFight n
-      _ -> costToFight
-  applyEvadeCostModifiers _ costToFight _ = costToFight
-
-getCanMoveTo :: (Monad m, HasGame m) => LocationId -> InvestigatorId -> m Bool
-getCanMoveTo lid iid = do
-  history <- getHistory TurnHistory iid
-  mLocationId <- field InvestigatorLocation iid
-  case mLocationId of
-    Nothing -> pure False
-    Just locationId -> do
-      modifiers' <- getModifiers (LocationSource lid) (InvestigatorTarget iid)
-      locationModifiers' <- getModifiers
-        (InvestigatorSource iid)
-        (LocationTarget lid)
-      accessibleLocations <-
-        selectList $ Matcher.AccessibleFrom $ Matcher.LocationWithId locationId
-      canAffordActions <- getCanAffordCost
-        iid
-        (LocationSource lid)
-        (Just Action.Move)
-        []
-        (ActionCost 1)
-      pure
-        $ (lid `elem` accessibleLocations)
-        && canAffordActions
-        && (lid /= locationId)
-        && (CannotMove `notElem` modifiers')
-        && (CannotMoveMoreThanOnceEachTurn `notElem` modifiers' || not
-             (historyMoved history)
-           )
-        && (Blocked `notElem` locationModifiers')
 
 targetToSource :: Target -> Source
 targetToSource = \case

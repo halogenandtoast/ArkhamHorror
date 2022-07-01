@@ -43,10 +43,9 @@ dropUntilDraw = dropWhile (notElem DrawEncounterCardMessage . messageType)
 instance RunMessage DrWilliamTMaleson where
   runMessage msg a@(DrWilliamTMaleson attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      card <- withQueue $ \queue ->
-        let
-          InvestigatorDrewEncounterCard _ card' : queue' = dropUntilDraw queue
-        in (queue', card')
+      card <- withQueue $ \queue -> case dropUntilDraw queue of
+        InvestigatorDrewEncounterCard _ card' : queue' -> (queue', card')
+        _ -> error "unhandled"
       a <$ pushAll
         [ShuffleIntoEncounterDeck [card], InvestigatorDrawEncounterCard iid]
     _ -> DrWilliamTMaleson <$> runMessage msg attrs

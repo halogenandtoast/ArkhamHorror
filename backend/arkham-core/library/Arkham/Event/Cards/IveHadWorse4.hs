@@ -28,15 +28,15 @@ instance RunMessage IveHadWorse4 where
     UseCardAbility _ source _ 5 _ | isSource attrs source ->
       e <$ push (Discard $ toTarget attrs)
     UseCardAbility iid source windows n pay | isSource attrs source -> do
-      (damage, horror) <- fromQueue $ \queue ->
-        let dmsg : _ = dropUntilDamage queue
-        in
+      (damage, horror) <- fromQueue $ \queue -> case dropUntilDamage queue of
+        dmsg : _ ->
           case dmsg of
             InvestigatorDamage iid' _ damage' horror' ->
               if iid' == iid then (damage', horror') else error "mismatch"
             InvestigatorDoAssignDamage iid' _ _ damage' horror' _ _ ->
               if iid' == iid then (damage', horror') else error "mismatch"
             _ -> error "mismatch"
+        _ -> error "unhandled"
       let
         reuse = UseCardAbility iid source windows (n + 1) pay
         damageMsg = Label

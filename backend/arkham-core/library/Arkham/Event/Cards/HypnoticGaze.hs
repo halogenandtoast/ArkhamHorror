@@ -30,9 +30,9 @@ dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 instance RunMessage HypnoticGaze where
   runMessage msg e@(HypnoticGaze (attrs `With` mEnemyId)) = case msg of
     InvestigatorPlayEvent iid eventId _ _ _ | eventId == toId attrs -> do
-      enemyId <- withQueue $ \queue ->
-        let PerformEnemyAttack _ eid _ _ : queue' = dropUntilAttack queue
-        in (queue', eid)
+      enemyId <- withQueue $ \queue -> case dropUntilAttack queue of
+        PerformEnemyAttack _ eid _ _ : queue' -> (queue', eid)
+        _ -> error "unhandled"
       push (RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside)
       pure $ HypnoticGaze (attrs `with` Just enemyId)
     RequestedTokens source (Just iid) faces | isSource attrs source -> do

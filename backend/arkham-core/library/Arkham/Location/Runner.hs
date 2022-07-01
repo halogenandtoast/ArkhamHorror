@@ -25,6 +25,7 @@ import Arkham.Investigator.Attrs ( Field(..) )
 import Arkham.Location.Helpers
 import Arkham.Matcher
   ( LocationMatcher (..)
+  , InvestigatorMatcher (..)
   , locationWithEnemy
   )
 import Arkham.Message
@@ -377,7 +378,9 @@ instance HasAbilities LocationAttrs where
     , restrictedAbility
         l
         102
-        (OnLocation $ AccessibleTo $ LocationWithId $ toId l)
+        (OnLocation (AccessibleTo $ LocationWithId $ toId l)
+        <> InvestigatorExists (You <> InvestigatorWithoutModifier CannotMove)
+        )
       $ ActionAbility (Just Action.Move) moveCost
     ]
    where

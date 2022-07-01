@@ -1,3 +1,31 @@
+<script lang="ts" setup>
+import { computed } from 'vue';
+import type { Game } from '@/arkham/types/Game';
+import type { Card } from '@/arkham/types/Card';
+
+export interface Props {
+  game: Game
+  victoryDisplay: Card[]
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits(['show'])
+
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const topOfVictoryDisplay = computed(() => {
+  if (props.victoryDisplay[0]) {
+    const { cardCode } = props.victoryDisplay[0].contents;
+    return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+  }
+
+  return null;
+})
+
+const viewVictoryDisplayLabel = computed(() => `${props.victoryDisplay.length} Cards`)
+
+const showVictoryDisplay = (e: Event) => emit('show', e, props.victoryDisplay, 'Victory Display', true)
+</script>
+
 <template>
   <div v-if="topOfVictoryDisplay" class="victory-display">
     <img
@@ -8,36 +36,6 @@
     <button @click="showVictoryDisplay">{{viewVictoryDisplayLabel}}</button>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import { Card } from '@/arkham/types/Card';
-
-export default defineComponent({
-  props: {
-    game: { type: Object as () => Game, required: true },
-    victoryDisplay: { type: Array as () => Card[], required: true }
-  },
-  setup(props, context) {
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-    const topOfVictoryDisplay = computed(() => {
-      if (props.victoryDisplay[0]) {
-        const { cardCode } = props.victoryDisplay[0].contents;
-        return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
-      }
-
-      return null;
-    })
-
-    const viewVictoryDisplayLabel = computed(() => `${props.victoryDisplay.length} Cards`)
-
-    const showVictoryDisplay = (e: Event) => context.emit('show', e, props.victoryDisplay, 'Victory Display', true)
-
-    return { topOfVictoryDisplay, viewVictoryDisplayLabel, showVictoryDisplay }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 .card {

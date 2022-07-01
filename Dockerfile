@@ -4,7 +4,7 @@ FROM node:lts as frontend
 
 ENV LC_ALL=en_US.UTF-8
 
-RUN npm install -g @vue/cli
+RUN npm install --location=global @vue/cli
 
 RUN mkdir -p /opt/arkham/src/frontend
 

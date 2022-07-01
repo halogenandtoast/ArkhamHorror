@@ -13,7 +13,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+
   if (to.matched.some((record) => record.meta && record.meta.requiresAuth)) {
+    document.title = `${to.meta.title}`
     if (localStorage.getItem('token') === null) {
       next({ path: '/sign-in', query: { nextUrl: to.fullPath } });
     } else {

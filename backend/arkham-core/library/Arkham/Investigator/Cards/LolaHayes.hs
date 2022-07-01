@@ -6,7 +6,6 @@ import Arkham.Ability
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
@@ -45,18 +44,17 @@ instance HasAbilities LolaHayes where
     [ restrictedAbility attrs 1 Self $ ForcedAbility $ DrawingStartingHand
       Timing.After
       You
-    , restrictedAbility attrs 2 Self (FastAbility Free)
-      & (abilityLimitL .~ PlayerLimit PerRound 1)
+    , limitedAbility (PlayerLimit PerRound 1)
+      $ restrictedAbility attrs 2 Self (FastAbility Free)
     ]
 
-switchRole :: InvestigatorAttrs -> GameT ()
-switchRole attrs = push
-  (chooseOne
-    (toId attrs)
-    [ Label (tshow role) [SetRole (toId attrs) role]
-    | role <- [minBound .. maxBound]
-    ]
-  )
+switchRole
+  :: (MonadIO m, MonadReader env m, HasQueue env) => InvestigatorAttrs -> m ()
+switchRole attrs = push $ chooseOne
+  (toId attrs)
+  [ Label (tshow role) [SetRole (toId attrs) role]
+  | role <- filter (/= Mythos) [minBound .. maxBound]
+  ]
 
 instance RunMessage LolaHayes where
   runMessage msg i@(LolaHayes attrs) = case msg of

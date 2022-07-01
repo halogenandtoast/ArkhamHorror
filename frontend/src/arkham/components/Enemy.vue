@@ -1,3 +1,138 @@
+<script lang="ts" setup>
+import { withDefaults, computed, inject } from 'vue'
+import { Game } from '@/arkham/types/Game'
+import * as ArkhamGame from '@/arkham/types/Game'
+import { Message, MessageType } from '@/arkham/types/Message'
+import PoolItem from '@/arkham/components/PoolItem.vue'
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import Treachery from '@/arkham/components/Treachery.vue';
+import Asset from '@/arkham/components/Asset.vue';
+import * as Arkham from '@/arkham/types/Enemy'
+
+export interface Props {
+  game: Game
+  enemy: Arkham.Enemy
+  investigatorId: string
+  atLocation?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), { atLocation: false })
+
+const image = computed(() => {
+  const { cardCode } = props.enemy.contents;
+  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+  return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
+})
+
+const id = computed(() => props.enemy.contents.id)
+
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+const attackAction = computed(() => {
+  return choices
+    .value
+    .findIndex((c) => c.tag === MessageType.ENEMY_ATTACK && c.contents[1] === id.value)
+})
+
+const labelAction = computed(() => {
+  return choices
+    .value
+    .findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.contents[0].contents === id.value)
+})
+
+const moveAction = computed(() => {
+  return choices
+    .value
+    .findIndex((c) => c.tag === MessageType.ENEMY_MOVE && c.contents[0] === id.value)
+})
+
+const placeDoomAction = computed(() => {
+  return choices
+    .value
+    .findIndex((c) => c.tag === MessageType.PLACE_DOOM && c.contents[0].contents === id.value)
+})
+
+const damageAction = computed(() => {
+  const isRunDamage = choices.value.findIndex((c) => c.tag === MessageType.RUN
+    && c.contents[0]
+    && c.contents[0].tag === MessageType.ENEMY_DAMAGE
+    && c.contents[0].contents[0] === id.value);
+
+  if (isRunDamage !== -1) {
+    return isRunDamage;
+  }
+
+  return choices
+    .value
+    .findIndex((c) => c.tag === MessageType.ENEMY_DAMAGE && c.contents[0] === id.value);
+})
+
+const cardAction = computed(() => {
+  if (labelAction.value !== -1) {
+    return labelAction.value;
+  }
+
+  if (attackAction.value !== -1) {
+    return attackAction.value;
+  }
+
+  if (moveAction.value !== -1) {
+    return moveAction.value;
+  }
+
+  if (placeDoomAction.value !== -1) {
+    return placeDoomAction.value;
+  }
+
+  return damageAction.value;
+});
+
+function isActivate(v: Message) {
+  if (v.tag === 'EvadeLabel' && v.contents[0] === id.value) {
+    return true
+  }
+
+  if (v.tag === 'FightEnemy' && v.contents[1] === id.value) {
+    return true
+  }
+
+  if (v.tag !== 'UseAbility') {
+    return false
+  }
+
+  const { tag, contents } = v.contents[1].source;
+
+  if (tag === 'EnemySource' && contents === id.value) {
+    return true
+  }
+
+  if (tag === 'ProxySource' && contents[0].tag === 'EnemySource' && contents[0].contents === id.value) {
+    return true
+  }
+
+  return false
+}
+
+const abilities = computed(() => {
+  return choices
+    .value
+    .reduce<number[]>((acc, v, i) => {
+      if (v.tag === 'Run' && isActivate(v.contents[0])) {
+        return [...acc, i];
+      } else if (isActivate(v)) {
+        return [...acc, i];
+      }
+
+      return acc;
+    }, []);
+})
+
+const isExhausted = computed(() => props.enemy.contents.exhausted)
+
+const debug = inject('debug')
+const debugChoose = inject('debugChoose')
+</script>
+
 <template>
   <div class="enemy">
     <img :src="image"
@@ -40,169 +175,6 @@
     </template>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed, inject } from 'vue'
-import { Game } from '@/arkham/types/Game'
-import * as ArkhamGame from '@/arkham/types/Game'
-import { Message, MessageType } from '@/arkham/types/Message'
-import PoolItem from '@/arkham/components/PoolItem.vue'
-import AbilityButton from '@/arkham/components/AbilityButton.vue'
-import Treachery from '@/arkham/components/Treachery.vue';
-import Asset from '@/arkham/components/Asset.vue';
-import * as Arkham from '@/arkham/types/Enemy'
-
-export default defineComponent({
-  components: { PoolItem, Treachery, AbilityButton, Asset },
-  props: {
-    game: { type: Object as () => Game, required: true },
-    enemy: { type: Object as () => Arkham.Enemy, required: true },
-    investigatorId: { type: String, required: true },
-    atLocation: { type: Boolean, default: false },
-  },
-  setup(props) {
-    const image = computed(() => {
-      const { cardCode } = props.enemy.contents;
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
-    })
-
-    const id = computed(() => props.enemy.contents.id)
-
-    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-
-    const attackAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.ENEMY_ATTACK && c.contents[1] === id.value)
-    })
-
-    const labelAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.contents[0].contents === id.value)
-    })
-
-    const moveAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.ENEMY_MOVE && c.contents[0] === id.value)
-    })
-
-    const placeDoomAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.PLACE_DOOM && c.contents[0].contents === id.value)
-    })
-
-    const damageAction = computed(() => {
-      const isRunDamage = choices.value.findIndex((c) => c.tag === MessageType.RUN
-        && c.contents[0]
-        && c.contents[0].tag === MessageType.ENEMY_DAMAGE
-        && c.contents[0].contents[0] === id.value);
-
-      if (isRunDamage !== -1) {
-        return isRunDamage;
-      }
-
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.ENEMY_DAMAGE && c.contents[0] === id.value);
-    })
-
-    const cardAction = computed(() => {
-      if (labelAction.value !== -1) {
-        return labelAction.value;
-      }
-
-      if (attackAction.value !== -1) {
-        return attackAction.value;
-      }
-
-      if (moveAction.value !== -1) {
-        return moveAction.value;
-      }
-
-      if (placeDoomAction.value !== -1) {
-        return placeDoomAction.value;
-      }
-
-      return damageAction.value;
-    });
-
-
-    const fightAction = computed(() => {
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.FIGHT_ENEMY && c.contents[1] === id.value);
-    })
-
-    const engageAction = computed(() => {
-      // This is for the rougarou, we look at the 2nd [1] item in the array because
-      // the first is spending clues, there may be a different approach to take here
-      const isRunEngage = choices.value.findIndex((c) => c.tag === MessageType.RUN
-        && c.contents[1]
-        && c.contents[1].tag === MessageType.ENGAGE_ENEMY
-        && c.contents[1].contents[1] === id.value);
-
-      if (isRunEngage !== -1) {
-        return isRunEngage;
-      }
-
-      return choices
-        .value
-        .findIndex((c) => c.tag === MessageType.ENGAGE_ENEMY && c.contents[1] === id.value);
-    })
-
-    function isActivate(v: Message) {
-      if (v.tag === 'EvadeLabel' && v.contents[0] === id.value) {
-        return true
-      }
-
-      if (v.tag === 'FightEnemy' && v.contents[1] === id.value) {
-        return true
-      }
-
-      if (v.tag !== 'UseAbility') {
-        return false
-      }
-
-      const { tag, contents } = v.contents[1].source;
-
-      if (tag === 'EnemySource' && contents === id.value) {
-        return true
-      }
-
-      if (tag === 'ProxySource' && contents[0].tag === 'EnemySource' && contents[0].contents === id.value) {
-        return true
-      }
-
-      return false
-    }
-
-    const abilities = computed(() => {
-      return choices
-        .value
-        .reduce<number[]>((acc, v, i) => {
-          if (v.tag === 'Run' && isActivate(v.contents[0])) {
-            return [...acc, i];
-          } else if (isActivate(v)) {
-            return [...acc, i];
-          }
-
-          return acc;
-        }, []);
-    })
-
-    const isExhausted = computed(() => props.enemy.contents.exhausted)
-
-    const debug = inject('debug')
-    const debugChoose = inject('debugChoose')
-
-    return { id, debug, debugChoose, abilities, choices, engageAction, fightAction, cardAction, image, isExhausted }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 .small-treachery :deep(.card) {

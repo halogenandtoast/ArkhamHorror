@@ -1,3 +1,17 @@
+<script lang="ts" setup>
+import type { Game } from '@/arkham/types/Game';
+import type { PlayerCard } from '@/arkham/types/Card';
+import Card from '@/arkham/components/Card.vue';
+
+export instance Props {
+  game: Game
+  investigatorId: string
+  cards: PlayerCard[]
+}
+
+const props = defineProps<Props>()
+</script>
+
 <template>
   <div class="discards">
     <div v-for="card in cards" :key="card.id" class="discard">
@@ -5,24 +19,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import { PlayerCard } from '@/arkham/types/Card';
-import Card from '@/arkham/components/Card.vue';
-
-export default defineComponent({
-  components: {
-    Card,
-  },
-  props: {
-    game: { type: Object as () => Game, required: true },
-    investigatorId: { type: String, required: true },
-    cards: { type: Array as () => PlayerCard[], required: true }
-  },
-})
-</script>
 
 <style scoped lang="scss">
 .discards {

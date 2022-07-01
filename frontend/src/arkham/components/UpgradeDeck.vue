@@ -1,3 +1,61 @@
+<script lang="ts" setup>
+import { ref, computed } from 'vue';
+import { upgradeDeck } from '@/arkham/api';
+import { Game } from '@/arkham/types/Game';
+import Prompt from '@/components/Prompt.vue';
+
+export interface Props {
+  game: Game
+  investigatorId: string
+}
+
+const props = defineProps<Props>()
+const waiting = ref(false)
+const deck = ref<string | null>(null)
+const deckUrl = ref<string | null>(null)
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const investigator = computed(() => props.game.investigators[props.investigatorId])
+const xp = computed(() => investigator.value.contents.xp)
+const skipping = ref(false)
+
+function loadDeck() {
+  if (!deck.value) {
+    return;
+  }
+
+  const matches = deck.value.match(/\/(deck(list)?)(\/view)?\/([^/]+)/);
+
+  if (matches) {
+    deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
+    fetch(deckUrl.value)
+      .then((response) => response.json(), () => {
+        deckUrl.value = null;
+      })
+  } else {
+    deckUrl.value = null;
+  }
+}
+
+function pasteDeck(evt: ClipboardEvent) {
+  if (evt.clipboardData) {
+    deck.value = evt.clipboardData.getData('text');
+    loadDeck();
+  }
+}
+
+async function upgrade() {
+  if (deckUrl.value) {
+    upgradeDeck(props.game.id, deckUrl.value).then(() => waiting.value = true);
+    deckUrl.value = null;
+    deck.value = null;
+  }
+}
+
+async function skip() {
+  upgradeDeck(props.game.id).then(() => waiting.value = true);
+}
+</script>
+
 <template>
   <div id="upgrade-deck">
     <div>
@@ -29,66 +87,3 @@
     :no="() => skipping = false"
   />
 </template>
-
-<script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
-import { upgradeDeck } from '@/arkham/api';
-import { Game } from '@/arkham/types/Game';
-import Prompt from '@/components/Prompt.vue';
-
-export default defineComponent({
-  components: { Prompt },
-  props: {
-    game: { type: Object as () => Game, required: true },
-    investigatorId: { type: String, required: true }
-  },
-  setup(props) {
-    const waiting = ref(false)
-    const deck = ref<string | null>(null)
-    const deckUrl = ref<string | null>(null)
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-    const investigator = computed(() => props.game.investigators[props.investigatorId])
-    const xp = computed(() => investigator.value.contents.xp)
-    const skipping = ref(false)
-
-    function loadDeck() {
-      if (!deck.value) {
-        return;
-      }
-
-      const matches = deck.value.match(/\/(deck(list)?)(\/view)?\/([^/]+)/);
-
-      if (matches) {
-        deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
-        fetch(deckUrl.value)
-          .then((response) => response.json(), () => {
-            deckUrl.value = null;
-          })
-      } else {
-        deckUrl.value = null;
-      }
-    }
-
-    function pasteDeck(evt: ClipboardEvent) {
-      if (evt.clipboardData) {
-        deck.value = evt.clipboardData.getData('text');
-        loadDeck();
-      }
-    }
-
-    async function upgrade() {
-      if (deckUrl.value) {
-        upgradeDeck(props.game.id, deckUrl.value).then(() => waiting.value = true);
-        deckUrl.value = null;
-        deck.value = null;
-      }
-    }
-
-    async function skip() {
-      upgradeDeck(props.game.id).then(() => waiting.value = true);
-    }
-
-    return { baseUrl, pasteDeck, upgrade, deck, loadDeck, investigator, xp, skip, skipping, waiting }
-  }
-})
-</script>

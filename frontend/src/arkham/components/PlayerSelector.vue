@@ -1,3 +1,41 @@
+<script lang="ts" setup>
+import { computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
+import { Message, MessageType } from '@/arkham/types/Message';
+
+export interface Props {
+  game: Game
+  investigatorId: string
+}
+
+const props = defineProps<Props>()
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+const playerChoices = computed(() => {
+  return choices
+    .value
+    .map((choice, idx) => ({ choice, idx }))
+    .filter(({ choice }) => choice.tag === MessageType.CHOOSE_PLAYER);
+})
+
+const playerChoicesMessage = computed(() => {
+  const messageType = playerChoices.value[0]?.choice?.contents[1]
+  switch (messageType) {
+    case 'SetTurnPlayer': return "Choose player to take turn"
+    case 'SetLeadInvestigator': return "Choose lead investigator"
+    default: return null
+  }
+})
+
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+
+const investigatorPortrait = (choice: Message) => {
+  const iid = choice.contents[0];
+  return `${baseUrl}/img/arkham/portraits/${iid.replace('c', '')}.jpg`;
+}
+</script>
+
 <template>
   <div v-if="playerChoices.length > 0" class="player-selector">
     <p>{{playerChoicesMessage}}</p>
@@ -17,48 +55,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import * as ArkhamGame from '@/arkham/types/Game';
-import { Message, MessageType } from '@/arkham/types/Message';
-
-export default defineComponent({
-  props: {
-    game: { type: Object as () => Game, required: true },
-    investigatorId: { type: String, required: true }
-  },
-  setup(props) {
-    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-
-    const playerChoices = computed(() => {
-      return choices
-        .value
-        .map((choice, idx) => ({ choice, idx }))
-        .filter(({ choice }) => choice.tag === MessageType.CHOOSE_PLAYER);
-    })
-
-    const playerChoicesMessage = computed(() => {
-      const messageType = playerChoices.value[0]?.choice?.contents[1]
-      switch (messageType) {
-        case 'SetTurnPlayer': return "Choose player to take turn"
-        case 'SetLeadInvestigator': return "Choose lead investigator"
-        default: return null
-      }
-    })
-
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-
-    const investigatorPortrait = (choice: Message) => {
-      const iid = choice.contents[0];
-      return `${baseUrl}/img/arkham/portraits/${iid.replace('c', '')}.jpg`;
-    }
-
-    return { playerChoices, playerChoicesMessage, investigatorPortrait }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 .portrait {

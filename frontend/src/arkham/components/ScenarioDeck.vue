@@ -1,3 +1,40 @@
+<script lang="ts" setup>
+import { computed } from 'vue';
+import type { Card } from '@/arkham/types/Card';
+
+export interface Props {
+  deck: [string, Card[]]
+}
+
+const props = defineProps<Props>()
+
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+
+const deckImage = computed(() => {
+  switch(props.deck[0]) {
+    case 'ExhibitDeck':
+      return `${baseUrl}/img/arkham/cards/02132b.jpg`;
+    case 'CatacombsDeck':
+      return `${baseUrl}/img/arkham/cards/03247b.jpg`;
+    default:
+      return `${baseUrl}/img/arkham/back.png`;
+  }
+})
+
+const deckLabel = computed(() => {
+  switch(props.deck[0]) {
+    case 'CultistDeck':
+      return "Cultists"
+    case 'LunaticsDeck':
+      return "Lunatics"
+    case 'MonstersDeck':
+      return "Monsters"
+    default:
+      return null
+  }
+})
+</script>
+
 <template>
   <div class="deck">
     <img
@@ -8,46 +45,6 @@
     <span class="deck-size">{{deck[1].length}}</span>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { Card } from '@/arkham/types/Card';
-
-export default defineComponent({
-  props: {
-    deck: { type: Object as () => [string, Card[]], required: true }
-  },
-  setup(props) {
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-
-    const deckImage = computed(() => {
-      switch(props.deck[0]) {
-        case 'ExhibitDeck':
-          return `${baseUrl}/img/arkham/cards/02132b.jpg`;
-        case 'CatacombsDeck':
-          return `${baseUrl}/img/arkham/cards/03247b.jpg`;
-        default:
-          return `${baseUrl}/img/arkham/back.png`;
-      }
-    })
-
-    const deckLabel = computed(() => {
-      switch(props.deck[0]) {
-        case 'CultistDeck':
-          return "Cultists"
-        case 'LunaticsDeck':
-          return "Lunatics"
-        case 'MonstersDeck':
-          return "Monsters"
-        default:
-          return null
-      }
-    })
-
-    return { deckImage, deckLabel }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 .card {

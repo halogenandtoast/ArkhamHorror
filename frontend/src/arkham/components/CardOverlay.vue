@@ -1,40 +1,34 @@
+<script lang="ts" setup>
+import { ref } from 'vue';
+
+const card = ref<string | null>(null);
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+
+document.addEventListener('mousemove', (event) => {
+  if (event.target instanceof HTMLImageElement) {
+    if (event.target.classList.contains('card')) {
+      card.value = event.target.src
+    }
+  } else if (event.target instanceof HTMLDivElement) {
+    if (event.target.classList.contains('card')) {
+      card.value = event.target.style.backgroundImage.slice(4, -1).replace(/"/g, "")
+    }
+  } else if (event.target instanceof HTMLElement) {
+    if(event.target.dataset.imageId) {
+      card.value = `${baseUrl}/img/arkham/cards/${event.target.dataset.imageId}.jpg`
+    }
+    if(event.target.dataset.image) {
+      card.value = event.target.dataset.image
+    }
+  }
+})
+</script>
+
 <template>
   <div class="card-overlay">
     <img v-if="card" :src="card" />
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
-
-export default defineComponent({
-  setup() {
-    const card = ref<string | null>(null);
-    const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-
-    document.addEventListener('mousemove', (event) => {
-      if (event.target instanceof HTMLImageElement) {
-        if (event.target.classList.contains('card')) {
-          card.value = event.target.src
-        }
-      } else if (event.target instanceof HTMLDivElement) {
-        if (event.target.classList.contains('card')) {
-          card.value = event.target.style.backgroundImage.slice(4, -1).replace(/"/g, "")
-        }
-      } else if (event.target instanceof HTMLElement) {
-        if(event.target.dataset.imageId) {
-          card.value = `${baseUrl}/img/arkham/cards/${event.target.dataset.imageId}.jpg`
-        }
-        if(event.target.dataset.image) {
-          card.value = event.target.dataset.image
-        }
-      }
-    })
-
-    return { card }
-  }
-})
-</script>
 
 <style lang="scss">
 .card-overlay {

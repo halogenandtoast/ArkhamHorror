@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Nav/>
+    <NavBar/>
     <router-view/>
   </div>
 </template>
@@ -8,10 +8,10 @@
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import Nav from '@/components/Nav.vue'
+import NavBar from '@/components/NavBar.vue'
 
 export default defineComponent({
-  components: { Nav },
+  components: { NavBar },
   setup() {
     const store = useStore()
     onMounted(async () => await store.dispatch('loadUserFromStorage'))
@@ -22,12 +22,12 @@ export default defineComponent({
 <style lang="scss">
 @font-face {
   font-family: "Arkham";
-  src: url("/fonts/arkham.ttf");
+  src: url("../public/fonts/arkham.ttf");
 }
 
 @font-face {
   font-family: "Teutonic";
-  src: url("/fonts/teutonic.ttf");
+  src: url("../public/fonts/teutonic.ttf");
 }
 
 body {

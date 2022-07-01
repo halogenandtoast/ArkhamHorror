@@ -1,3 +1,90 @@
+<script lang="ts" setup>
+import { computed, ref, inject } from 'vue'
+import type { Game } from '@/arkham/types/Game'
+import type { Card } from '@/arkham/types/Card'
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import PoolItem from '@/arkham/components/PoolItem.vue';
+import Treachery from '@/arkham/components/Treachery.vue';
+import * as ArkhamGame from '@/arkham/types/Game'
+import type { Message } from '@/arkham/types/Message'
+import { MessageType } from '@/arkham/types/Message'
+import * as Arkham from '@/arkham/types/Act'
+
+export interface Props {
+  act: Arkham.Act
+  game: Game
+  cardsUnder: Card[]
+  cardsNextTo: Card[]
+  investigatorId: string
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits(['show'])
+
+const id = computed(() => props.act.contents.id)
+const image = computed(() => {
+  const side = props.act.contents.sequence.side.toLowerCase().replace('a', '')
+  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+  return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}${side}.jpg`
+})
+
+const imageForCard = (card: Card) => {
+  const side = card.contents.isFlipped ? 'b' : ''
+  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+  return `${baseUrl}/img/arkham/cards/${card.contents.cardCode.replace('c', '')}${side}.jpg`
+}
+
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+const viewingUnder = ref(false)
+const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
+
+function canInteract(c: Message): boolean {
+  switch (c.tag) {
+    case MessageType.ADVANCE_ACT:
+      return true;
+    case MessageType.NEXT_ACT:
+      return true;
+    case MessageType.ATTACH_TREACHERY:
+      return c.contents[1].contents == id.value;
+    case MessageType.ACTIVATE_ABILITY:
+      return c.contents[1].source.contents === id.value
+        && (c.contents[1].type.tag === 'ReactionAbility')
+    case MessageType.TARGET_LABEL:
+      return c.contents[0].tag === "ActTarget" && c.contents[0].contents === id.value
+    case MessageType.RUN:
+      return c.contents.some((c1: Message) => canInteract(c1));
+    default:
+      return false;
+  }
+}
+
+const interactAction = computed(() => choices.value.findIndex(canInteract));
+
+function isAbility(v: Message) {
+ return (v.tag === 'UseAbility' && v.contents[1].source.tag === 'ActSource' && v.contents[1].source.contents === id.value)
+}
+
+const abilities = computed(() => {
+  return choices.value
+    .reduce<number[]>((acc, v, i) => {
+      if (v.tag === 'Run' && isAbility(v.contents[0])) {
+        return [...acc, i];
+      } else if (isAbility(v)) {
+        return [...acc, i];
+      }
+
+      return acc;
+    }, [])
+})
+
+const cardsUnder = computed(() => props.cardsUnder)
+const showCardsUnderAct = (e: Event) => emit('show', e, cardsUnder, 'Cards Under Act', false)
+
+const debug = inject('debug')
+const debugChoose = inject('debugChoose')
+</script>
+
 <template>
   <div class="act-container">
     <img
@@ -44,101 +131,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed, ref, inject } from 'vue'
-import { Game } from '@/arkham/types/Game'
-import { Card } from '@/arkham/types/Card'
-import AbilityButton from '@/arkham/components/AbilityButton.vue'
-import PoolItem from '@/arkham/components/PoolItem.vue';
-import Treachery from '@/arkham/components/Treachery.vue';
-import * as ArkhamGame from '@/arkham/types/Game'
-import { Message, MessageType } from '@/arkham/types/Message'
-import * as Arkham from '@/arkham/types/Act'
-
-export default defineComponent({
-  components: { Treachery, AbilityButton, PoolItem },
-  props: {
-    act: { type: Object as () => Arkham.Act, required: true },
-    game: { type: Object as () => Game, required: true },
-    cardsUnder: { type: Array as () => Card[], required: true },
-    cardsNextTo: { type: Array as () => Card[], required: true },
-    investigatorId: { type: String, required: true }
-  },
-
-  setup(props, context) {
-    const id = computed(() => props.act.contents.id)
-    const image = computed(() => {
-      const side = props.act.contents.sequence.side.toLowerCase().replace('a', '')
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}${side}.jpg`
-    })
-
-    const imageForCard = (card: Card) => {
-      const side = card.contents.isFlipped ? 'b' : ''
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/cards/${card.contents.cardCode.replace('c', '')}${side}.jpg`
-    }
-
-    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-
-    const viewingUnder = ref(false)
-    const toggleUnder = function() { viewingUnder.value = !viewingUnder.value }
-    const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
-
-    function canInteract(c: Message): boolean {
-      switch (c.tag) {
-        case MessageType.ADVANCE_ACT:
-          return true;
-        case MessageType.NEXT_ACT:
-          return true;
-        case MessageType.ATTACH_TREACHERY:
-          return c.contents[1].contents == id.value;
-        case MessageType.ACTIVATE_ABILITY:
-          return c.contents[1].source.contents === id.value
-            && (c.contents[1].type.tag === 'ReactionAbility')
-        case MessageType.TARGET_LABEL:
-          return c.contents[0].tag === "ActTarget" && c.contents[0].contents === id.value
-        case MessageType.RUN:
-          return c.contents.some((c1: Message) => canInteract(c1));
-        default:
-          return false;
-      }
-    }
-
-    const interactAction = computed(() => choices.value.findIndex(canInteract));
-
-    function abilityLabel(idx: number) {
-      return choices.value[idx].label
-    }
-
-    function isAbility(v: Message) {
-     return (v.tag === 'UseAbility' && v.contents[1].source.tag === 'ActSource' && v.contents[1].source.contents === id.value)
-    }
-
-    const abilities = computed(() => {
-      return choices.value
-        .reduce<number[]>((acc, v, i) => {
-          if (v.tag === 'Run' && isAbility(v.contents[0])) {
-            return [...acc, i];
-          } else if (isAbility(v)) {
-            return [...acc, i];
-          }
-
-          return acc;
-        }, [])
-    })
-
-    const cardsUnder = computed(() => props.cardsUnder)
-    const showCardsUnderAct = (e: Event) => context.emit('show', e, cardsUnder, 'Cards Under Act', false)
-
-    const debug = inject('debug')
-    const debugChoose = inject('debugChoose')
-
-    return { imageForCard, showCardsUnderAct, debug, debugChoose, viewUnderLabel, toggleUnder, abilities, abilityLabel, interactAction, choices, image, id }
-  }
-})
-</script>
 
 <style scoped lang="scss">
 .card {

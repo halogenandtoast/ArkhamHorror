@@ -1,3 +1,138 @@
+<script lang="ts" setup>
+import { computed, inject } from 'vue';
+import type { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
+import type { Message } from '@/arkham/types/Message';
+import { MessageType } from '@/arkham/types/Message';
+import PoolItem from '@/arkham/components/PoolItem.vue';
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import * as Arkham from '@/arkham/types/Asset';
+
+export interface Props {
+  game: Game
+  asset: Arkham.Asset
+  investigatorId: string
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits(['showCards'])
+
+const id = computed(() => props.asset.contents.id)
+const hasPool = computed(() => {
+  const {
+    sanity,
+    health,
+    horror,
+    uses,
+doom,
+clues,
+  } = props.asset.contents;
+  return sanity || health || horror || uses || doom > 0 || clues > 0;
+})
+
+const exhausted = computed(() => props.asset.contents.exhausted)
+const cardCode = computed(() => props.asset.contents.cardCode)
+const image = computed(() => {
+  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+  return `${baseUrl}/img/arkham/cards/${cardCode.value.replace('c', '')}.jpg`
+})
+const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+function canInteract(c: Message): boolean {
+  switch (c.tag) {
+    case MessageType.DISCARD:
+      return c.contents.contents === id.value
+    case MessageType.READY:
+      return c.contents.contents === id.value
+    case MessageType.FLIP:
+      return c.contents[1].contents === id.value
+    case MessageType.REMOVE_DOOM:
+      return c.contents[0].contents === id.value
+    case MessageType.LOOK_AT_REVEALED:
+      return c.contents[1].contents === id.value
+    case MessageType.ADD_USES:
+      return c.contents[0].contents === id.value
+    case MessageType.USE_CARD_ABILITY:
+      return c.contents[1].contents === id.value
+    // case MessageType.ACTIVATE_ABILITY:
+    //   return c.contents[1].source.contents === id.value
+    //     && (c.contents[1].type.tag === 'ReactionAbility')
+    case MessageType.RUN:
+      return c.contents.some((c1: Message) => canInteract(c1))
+    case MessageType.TARGET_LABEL:
+      return c.contents[0].tag === "AssetTarget" && c.contents[0].contents === id.value
+    default:
+      return false;
+  }
+}
+
+function canAdjustHealth(c: Message): boolean {
+  switch (c.tag) {
+    case MessageType.ASSET_DAMAGE:
+      return c.contents[0] === id.value && c.contents[2] > 0;
+    case MessageType.RUN:
+      return c.contents.some((c1: Message) => canAdjustHealth(c1));
+    default:
+      return false;
+  }
+}
+
+function canAdjustSanity(c: Message): boolean {
+  switch (c.tag) {
+    case MessageType.ASSET_DAMAGE:
+      return c.contents[0] === id.value && c.contents[3] > 0;
+    case MessageType.RUN:
+      return c.contents.some((c1: Message) => canAdjustSanity(c1));
+    default:
+      return false;
+  }
+}
+
+const cardAction = computed(() => choices.value.findIndex(canInteract))
+const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
+const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
+
+function isActivate(v: Message) {
+  if (v.tag !== 'UseAbility') {
+    return false
+  }
+
+  const { tag, contents } = v.contents[1].source;
+
+  if (tag === 'AssetSource' && contents === id.value) {
+    return true
+  }
+
+  if (tag === 'ProxySource' && contents[0].tag === 'AssetSource' && contents[0].contents === id.value) {
+    return true
+  }
+
+  return false
+}
+
+const abilities = computed(() => {
+  return choices
+    .value
+    .reduce<number[]>((acc, v, i) => {
+      if (v.tag === 'Run' && isActivate(v.contents[0])) {
+        return [...acc, i];
+      } else if (isActivate(v)) {
+        return [...acc, i];
+      }
+
+      return acc;
+    }, []);
+})
+
+const cardsUnderneath = computed(() => props.asset.contents.cardsUnderneath)
+const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
+
+const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
+
+const debug = inject('debug')
+const debugChoose = inject('debugChoose')
+</script>
+
 <template>
   <div class="asset">
     <img
@@ -43,158 +178,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed, inject } from 'vue';
-import { Game } from '@/arkham/types/Game';
-import * as ArkhamGame from '@/arkham/types/Game';
-import { Message, MessageType } from '@/arkham/types/Message';
-import PoolItem from '@/arkham/components/PoolItem.vue';
-import AbilityButton from '@/arkham/components/AbilityButton.vue'
-import * as Arkham from '@/arkham/types/Asset';
-
-export default defineComponent({
-  components: { PoolItem, AbilityButton },
-  props: {
-    game: { type: Object as () => Game, required: true },
-    asset: { type: Object as () => Arkham.Asset, required: true },
-    investigatorId: { type: String, required: true },
-  },
-  setup(props, context) {
-    const id = computed(() => props.asset.contents.id)
-    const hasPool = computed(() => {
-      const {
-        sanity,
-        health,
-        horror,
-        uses,
-	doom,
-	clues,
-      } = props.asset.contents;
-      return sanity || health || horror || uses || doom > 0 || clues > 0;
-    })
-
-    const exhausted = computed(() => props.asset.contents.exhausted)
-    const cardCode = computed(() => props.asset.contents.cardCode)
-    const image = computed(() => {
-      const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-      return `${baseUrl}/img/arkham/cards/${cardCode.value.replace('c', '')}.jpg`
-    })
-    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-
-    function canInteract(c: Message): boolean {
-      switch (c.tag) {
-        case MessageType.DISCARD:
-          return c.contents.contents === id.value
-        case MessageType.READY:
-          return c.contents.contents === id.value
-        case MessageType.FLIP:
-          return c.contents[1].contents === id.value
-        case MessageType.REMOVE_DOOM:
-          return c.contents[0].contents === id.value
-        case MessageType.LOOK_AT_REVEALED:
-          return c.contents[1].contents === id.value
-        case MessageType.ADD_USES:
-          return c.contents[0].contents === id.value
-        case MessageType.USE_CARD_ABILITY:
-          return c.contents[1].contents === id.value
-        // case MessageType.ACTIVATE_ABILITY:
-        //   return c.contents[1].source.contents === id.value
-        //     && (c.contents[1].type.tag === 'ReactionAbility')
-        case MessageType.RUN:
-          return c.contents.some((c1: Message) => canInteract(c1))
-        case MessageType.TARGET_LABEL:
-          return c.contents[0].tag === "AssetTarget" && c.contents[0].contents === id.value
-        default:
-          return false;
-      }
-    }
-
-    function canAdjustHealth(c: Message): boolean {
-      switch (c.tag) {
-        case MessageType.ASSET_DAMAGE:
-          return c.contents[0] === id.value && c.contents[2] > 0;
-        case MessageType.RUN:
-          return c.contents.some((c1: Message) => canAdjustHealth(c1));
-        default:
-          return false;
-      }
-    }
-
-    function canAdjustSanity(c: Message): boolean {
-      switch (c.tag) {
-        case MessageType.ASSET_DAMAGE:
-          return c.contents[0] === id.value && c.contents[3] > 0;
-        case MessageType.RUN:
-          return c.contents.some((c1: Message) => canAdjustSanity(c1));
-        default:
-          return false;
-      }
-    }
-
-    const cardAction = computed(() => choices.value.findIndex(canInteract))
-    const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
-    const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
-
-    function isActivate(v: Message) {
-      if (v.tag !== 'UseAbility') {
-        return false
-      }
-
-      const { tag, contents } = v.contents[1].source;
-
-      if (tag === 'AssetSource' && contents === id.value) {
-        return true
-      }
-
-      if (tag === 'ProxySource' && contents[0].tag === 'AssetSource' && contents[0].contents === id.value) {
-        return true
-      }
-
-      return false
-    }
-
-    const abilities = computed(() => {
-      return choices
-        .value
-        .reduce<number[]>((acc, v, i) => {
-          if (v.tag === 'Run' && isActivate(v.contents[0])) {
-            return [...acc, i];
-          } else if (isActivate(v)) {
-            return [...acc, i];
-          }
-
-          return acc;
-        }, []);
-    })
-
-    const cardsUnderneath = computed(() => props.asset.contents.cardsUnderneath)
-    const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
-
-    const showCardsUnderneath = (e: Event) => context.emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
-
-    const debug = inject('debug')
-    const debugChoose = inject('debugChoose')
-
-    return {
-      debug,
-      debugChoose,
-      id,
-      hasPool,
-      exhausted,
-      image,
-      abilities,
-      sanityAction,
-      healthAction,
-      cardAction,
-      choices,
-      cardsUnderneath,
-      cardsUnderneathLabel,
-      showCardsUnderneath
-    }
-  }
-})
-</script>
 
 <style lang="scss" scoped>
 .card {

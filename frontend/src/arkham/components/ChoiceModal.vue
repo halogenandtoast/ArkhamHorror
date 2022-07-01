@@ -26,7 +26,7 @@
     <div class="modal-contents amount-contents">
       <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
         <legend>{{paymentAmountsLabel}}</legend>
-        <template v-for="[investigator, bounds] in amountsChoices" :key="investigator" class="selection">
+        <template v-for="[investigator, bounds] in amountsChoices" :key="investigator">
           <div v-if="bounds[1] !== 0">
             {{investigatorName(investigator)}} <input type="number" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[investigator]" onclick="this.select()" />
           </div>
@@ -39,7 +39,7 @@
     <div class="modal-contents amount-contents">
       <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
         <legend>{{paymentAmountsLabel}}</legend>
-        <template v-for="[label, bounds] in amountsChoices" :key="label" class="selection">
+        <template v-for="[label, bounds] in amountsChoices" :key="label">
           <div v-if="bounds[1] !== 0">
             {{label}} <input type="number" :min="bounds[0]" :max="bounds[1]" v-model.number="amountSelections[label]" onclick="this.select()" />
           </div>

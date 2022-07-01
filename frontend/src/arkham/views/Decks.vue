@@ -157,9 +157,9 @@ export default defineComponent({
           fetch("https://arkhamdb.com/api/public/cards/")
             .then((response) => response.json()).then((data) => {
               errors.value = error.response.data.map((error: UnimplementedCardError) => {
-                let match = data.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))
+                const match = data.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))
                 if (match) {
-                  let { name, xp } = match
+                  const { name, xp } = match
                   return xp ? `${name} (${xp})` : name
                 }
                 return "Unknown card"

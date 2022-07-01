@@ -149,7 +149,7 @@ async function start() {
 
         <p>Difficulty</p>
         <div class="options">
-          <template v-for="difficulty in difficulties" :key="difficulty" class="options">
+          <template v-for="difficulty in difficulties" :key="difficulty">
             <input
               type="radio"
               v-model="selectedDifficulty"

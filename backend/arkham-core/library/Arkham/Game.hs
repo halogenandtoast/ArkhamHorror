@@ -1528,7 +1528,8 @@ instance Projection LocationAttrs where
           addedTraits = flip mapMaybe modifiers $ \case
             AddTrait t -> Just t
             _ -> Nothing
-        pure . (setFromList addedTraits <>) . cdCardTraits $ toCardDef attrs
+          traitFunc = if locationRevealed then cdRevealedCardTraits else cdCardTraits
+        pure . (setFromList addedTraits <>) . traitFunc $ toCardDef attrs
       LocationKeywords -> pure . cdKeywords $ toCardDef attrs
       LocationUnrevealedName -> pure $ toName (Unrevealed l)
       LocationName -> pure $ toName l

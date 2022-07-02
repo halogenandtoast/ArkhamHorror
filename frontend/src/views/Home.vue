@@ -50,10 +50,10 @@ const submitDebugUpload = async (e: Event) => {
     </div>
 
     <h2>Active Games</h2>
-    <GameRow v-for="game in activeGames" :key="game.id" :game="game" />
+    <GameRow v-for="game in activeGames" :key="game.id" :game="game" @delete="deleteId = game.id" />
 
     <h2>Finished Games</h2>
-    <GameRow v-for="game in finishedGames" :key="game.id" :game="game" />
+    <GameRow v-for="game in finishedGames" :key="game.id" :game="game" @delete="deleteId = game.id" />
 
     <Prompt
       v-if="deleteId"

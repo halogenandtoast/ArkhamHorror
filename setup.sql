@@ -90,7 +90,9 @@ CREATE TABLE public.arkham_games (
     current_data jsonb NOT NULL,
     choices jsonb NOT NULL,
     log jsonb NOT NULL,
-    multiplayer_variant text NOT NULL
+    multiplayer_variant text NOT NULL,
+    created_at timestamp DEFAULT now() NOT NULL,
+    updated_at timestamp DEFAULT now() NOT NULL
 );
 
 

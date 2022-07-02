@@ -41,7 +41,7 @@ const difficulty = computed<Difficulty>(() => {
         </div>
 
         <div class="game-delete">
-          <a href="#delete" @click.prevent="deleteId = game.id"><font-awesome-icon icon="trash" /></a>
+          <a href="#delete" @click.prevent="$emit('delete')"><font-awesome-icon icon="trash" /></a>
         </div>
       </div>
       <div class="investigators">

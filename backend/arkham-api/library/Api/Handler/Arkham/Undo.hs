@@ -10,6 +10,7 @@ import Arkham.Game
 import Arkham.Id
 import Control.Lens (view)
 import Data.Text qualified as T
+import Data.Time.Clock
 import Json
 import Safe (fromJustNote)
 
@@ -18,6 +19,7 @@ putApiV1ArkhamGameUndoR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
   Entity pid arkhamPlayer <- runDB $ getBy404 (UniquePlayer userId gameId)
+  now <- liftIO getCurrentTime
 
   case arkhamGameChoices of
     [] -> pure ()
@@ -45,6 +47,8 @@ putApiV1ArkhamGameUndoR gameId = do
                 remaining
                 arkhamGameLog
                 arkhamGameMultiplayerVariant
+                arkhamGameCreatedAt
+                now
               )
 
             replace pid $ arkhamPlayer

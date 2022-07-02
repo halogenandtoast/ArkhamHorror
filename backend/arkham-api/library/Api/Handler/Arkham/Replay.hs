@@ -47,5 +47,7 @@ getApiV1ArkhamGameReplayR gameId step = do
                 (arkhamGameChoices ge)
                 []
                 (arkhamGameMultiplayerVariant ge)
+                (arkhamGameCreatedAt ge)
+                (arkhamGameUpdatedAt ge)
             )
       )

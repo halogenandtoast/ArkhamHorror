@@ -118,6 +118,7 @@ library
     , string-conversions
     , template-haskell
     , text
+    , time
     , unix
     , unliftio
     , unordered-containers

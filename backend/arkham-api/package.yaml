@@ -49,6 +49,7 @@ library:
         - -O2
   dependencies:
     - arkham-core
+    - time
     - MonadRandom
     - aeson
     - aeson-casing

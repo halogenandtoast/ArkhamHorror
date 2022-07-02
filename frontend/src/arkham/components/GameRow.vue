@@ -1,0 +1,188 @@
+<script lang="ts" setup>
+import { computed } from 'vue';
+import type { Game } from '@/arkham/types/Game';
+import type { Difficulty } from '@/arkham/types/Difficulty';
+import type { Campaign } from '@/arkham/types/Campaign';
+import type { Scenario } from '@/arkham/types/Scenario';
+
+export interface Props {
+  game: Game
+}
+
+const props = defineProps<Props>()
+const campaign = computed<Campaign | null>(() => props.game.campaign)
+const scenario = computed<Scenario | null>(() => props.game.scenario)
+
+const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+
+const difficulty = computed<Difficulty>(() => scenario.value.contents.difficulty)
+</script>
+
+<template>
+  <div class="game" :class="{ 'finished-game': game.gameState == 'IsOver' }">
+    <div class="game-details">
+      <div class="game-title">
+        <div class="campaign-icon-container" v-if="campaign">
+          <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${campaign.contents.id}.png`" />
+        </div>
+        <div class="campaign-icon-container" v-else-if="scenario">
+          <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${scenario.contents.id.replace('c', '').slice(0,2)}.png`" />
+        </div>
+        <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
+
+        <div class="game-delete">
+          <a href="#delete" @click.prevent="deleteId = game.id"><font-awesome-icon icon="trash" /></a>
+        </div>
+      </div>
+      <div v-if="game.scenario" class="scenario-details">
+        <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${scenario.contents.id.replace('c', '')}.png`" />
+        <span>{{scenario.contents.name.title}}</span>
+      </div>
+      <div class="investigators">
+        <div
+          v-for="investigator in game.investigators"
+          :key="investigator.contents.id"
+          class="investigator"
+        >
+          <div class="investigator-portrait-container">
+            <img :src="`${baseUrl}/img/arkham/cards/${investigator.contents.id.replace('c', '')}.jpg`" class="investigator-portrait"/>
+          </div>
+        </div>
+        <div class="game-difficulty">{{difficulty}}</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+h2 {
+  color: #6E8644;
+  font-size: 2em;
+  text-transform: uppercase;
+}
+.game {
+  display: flex;
+  background-color: #15192C;
+  border-left: 10px solid #6e8640;
+  color: #f0f0f0;
+  padding: 10px;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  a {
+    color: lighten(#365488, 10%);
+    font-weight: bolder;
+    &:hover {
+      color: lighten(#365488, 20%);
+    }
+  }
+}
+
+.campaign-icon-container {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.campaign-icon {
+  filter: invert(28%) sepia(100%) hue-rotate(-180deg) saturate(3);
+  width: 50px;
+}
+
+.scenario-icon {
+  width: 18px;
+  margin: 0 20px 0 10px;
+  filter: invert(100%);
+}
+
+.game-details {
+  flex: 1;
+}
+
+.game-delete {
+  margin-left: auto;
+  align-self: flex-start;
+  a {
+    font-size: 1.2em;
+    color: #660000;
+    &:hover {
+      color: #990000;
+    }
+  }
+}
+
+.scenario-details {
+  display: flex;
+  background-color: #333;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  align-items: center;
+  span {
+    line-height: 25px;
+  }
+}
+
+.title {
+  font-family: teutonic, sans-serif;
+  font-size: 1.6em;
+  a {
+    text-decoration: none;
+  }
+}
+
+.investigator {
+  display: inline;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.investigator-portrait-container {
+  width: 50px;
+  height:50px;
+  overflow: hidden;
+  border-radius: 5px;
+  border: 1px solid white;
+  margin-right: 10px;
+}
+
+.investigator-portrait {
+  width: 150px;
+  margin: -18px;
+}
+
+.investigators {
+  margin-top: 10px;
+  display: flex;
+}
+
+.game-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.finished-game {
+  border-left: 10px solid #999;
+  background: #222;
+  color: #999;
+
+  a {
+    color: #494949;
+  }
+
+  .campaign-icon {
+    filter: invert(28%) sepia(0%) hue-rotate(-180deg) saturate(3);
+    width: 50px;
+  }
+}
+
+.game-difficulty {
+  margin-left: auto;
+  align-self: flex-end;
+  justify-self: flex-end;
+  padding: 5px 15px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+</style>

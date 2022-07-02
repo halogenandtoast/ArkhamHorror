@@ -22,8 +22,7 @@
     "ts.data.json": "^2.1.1",
     "v-jsoneditor": "^1.4.5",
     "vue": "^3.2.37",
-    "vue-router": "^4.0.16",
-    "vuex": "^4.0.2"
+    "vue-router": "^4.0.16"
   },
   "devDependencies": {
     "@types/md5": "^2.3.2",

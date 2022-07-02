@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { useStore } from 'vuex'
+import { useUserStore } from '@/stores/user'
 import { useRoute, useRouter } from 'vue-router'
 import { reactive } from 'vue'
 import { Credentials } from '../types'
 
-const store = useStore()
+const store = useUserStore()
 const route = useRoute()
 const router = useRouter()
 const credentials = reactive<Credentials>({
@@ -13,7 +13,7 @@ const credentials = reactive<Credentials>({
 })
 
 async function authenticate() {
-  await store.dispatch('authenticate', credentials)
+  await store.authenticate(credentials)
   const { nextUrl } = route.query
   if (nextUrl) {
     router.push({ path: nextUrl as string })

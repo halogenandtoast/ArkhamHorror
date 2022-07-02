@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { reactive } from 'vue'
-import { useStore } from 'vuex'
+import { useUserStore } from '@/stores/user'
 import { useRoute, useRouter } from 'vue-router'
 import type { Registration } from '@/types'
 
 const route = useRoute()
 const router = useRouter()
-const store = useStore()
+const store = useUserStore()
 const registration = reactive<Registration>({
   username: '',
   email: '',
@@ -14,7 +14,7 @@ const registration = reactive<Registration>({
 })
 
 async function register() {
-  await store.dispatch('register', registration)
+  await store.register(registration)
   const { nextUrl } = route.query
   if (nextUrl) {
     router.push({ path: nextUrl as string })

@@ -65,14 +65,16 @@ const submitDebugUpload = async (e: Event) => {
           <span>{{game.scenario.contents.name.title}}</span>
         </div>
         <div>
-          <span>Investigators: </span>
-          <span
+          <div
             v-for="investigator in game.investigators"
             :key="investigator.contents.id"
-            class="investigator-name"
+            class="investigator"
           >
-            {{investigator.contents.name.title}}
-          </span>
+            <div class="investigator-portrait-container">
+              <img :src="`${baseUrl}/img/arkham/cards/${investigator.contents.id.replace('c', '')}.jpg`" class="investigator-portrait"/>
+            </div>
+            <span>{{investigator.contents.name.title}}</span>
+          </div>
         </div>
       </div>
       <div class="game-delete">
@@ -235,8 +237,14 @@ h2 {
   margin: 0 auto;
 }
 
-.investigator-name {
-  margin-right: 10px;
+.investigator {
+  display: flex;
+  flex-direction: row;
+}
+
+.investigator-portrait {
+  width: 150px;
+  clip-path: inset(16% 60% 40% 10%);
 }
 
 </style>

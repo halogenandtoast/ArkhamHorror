@@ -24,8 +24,16 @@ higherEducation3 = asset HigherEducation3 Cards.higherEducation3
 
 instance HasAbilities HigherEducation3 where
   getAbilities (HigherEducation3 x) =
-    [ restrictedAbility x idx restriction $ FastAbility $ ResourceCost 1
-    | idx <- [1, 2]
+    [ withTooltip
+        "{fast} Spend 1 resource: You get +2 {willpower} for this skill test."
+      $ restrictedAbility x 1 restriction
+      $ FastAbility
+      $ ResourceCost 1
+    , withTooltip
+        "{fast} Spend 1 resource: You get +2 {intellect} for this skill test."
+      $ restrictedAbility x 2 restriction
+      $ FastAbility
+      $ ResourceCost 1
     ]
    where
     restriction =

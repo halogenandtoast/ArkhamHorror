@@ -6,15 +6,15 @@ module Arkham.Location.Cards.HistoricalSocietyReadingRoom
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Location.Runner
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Source
@@ -40,13 +40,14 @@ instance HasAbilities HistoricalSocietyReadingRoom where
   getAbilities (HistoricalSocietyReadingRoom attrs) =
     withBaseAbilities attrs $ if locationRevealed attrs
       then
-        [ restrictedAbility
-            attrs
-            1
-            Here
-            (ActionAbility (Just Action.Investigate) (ActionCost 1))
-          & abilityLimitL
-          .~ GroupLimit PerRound 1
+        [ withTooltip
+            "{action}: _Investigate_. If you succeed, instead of discovering clues, choose an enemy with doom on it. Take 1 of that enemy's doom, flip it to its clue side, and place it on your investigator. (Group limit once per round)."
+          $ limitedAbility (GroupLimit PerRound 1)
+          $ restrictedAbility
+              attrs
+              1
+              Here
+              (ActionAbility (Just Action.Investigate) (ActionCost 1))
         ]
       else
         [ mkAbility attrs 1 $ ForcedAbility $ EnemySpawns

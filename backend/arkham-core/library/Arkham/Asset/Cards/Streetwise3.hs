@@ -23,12 +23,20 @@ streetwise3 = asset Streetwise3 Cards.streetwise3
 
 instance HasAbilities Streetwise3 where
   getAbilities (Streetwise3 a) =
-    [ restrictedAbility
-        a
-        idx
-        (OwnsThis <> DuringSkillTest AnySkillTest)
-        (FastAbility $ ResourceCost 2)
-    | idx <- [1, 2]
+    [ withTooltip
+        "{fast} Spend 2 resources: You get +3 {intellect} for this skill test."
+      $ restrictedAbility
+          a
+          1
+          (OwnsThis <> DuringSkillTest AnySkillTest)
+          (FastAbility $ ResourceCost 2)
+    , withTooltip
+        "{fast} Spend 2 resources: You get +3 {agility} for this skill test."
+      $ restrictedAbility
+          a
+          2
+          (OwnsThis <> DuringSkillTest AnySkillTest)
+          (FastAbility $ ResourceCost 2)
     ]
 
 instance RunMessage Streetwise3 where

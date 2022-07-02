@@ -26,14 +26,21 @@ livreDeibon = asset LivreDeibon Cards.livreDeibon
 
 instance HasAbilities LivreDeibon where
   getAbilities (LivreDeibon a) =
-    [ restrictedAbility a 1 OwnsThis $ FastAbility $ ExhaustCost $ toTarget a
-    , restrictedAbility
-        a
-        2
-        (OwnsThis
-        <> DuringSkillTest SkillTestAtYourLocation
-        <> ExtendedCardExists (TopOfDeckOf You <> EligibleForCurrentSkillTest)
-        )
+    [ withTooltip
+        "{fast} Exhaust Livre d'Eibon: Swap the top card of your deck with a card in your hand."
+      $ restrictedAbility a 1 OwnsThis
+      $ FastAbility
+      $ ExhaustCost
+      $ toTarget a
+    , withTooltip
+        "{fast} Exhaust Livre d'Eibon: Commit the top card of your deck to an eligible skill test performed by an investigator at your location."
+      $ restrictedAbility
+          a
+          2
+          (OwnsThis
+          <> DuringSkillTest SkillTestAtYourLocation
+          <> ExtendedCardExists (TopOfDeckOf You <> EligibleForCurrentSkillTest)
+          )
       $ FastAbility
       $ ExhaustCost
       $ toTarget a

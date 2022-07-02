@@ -23,10 +23,16 @@ digDeep2 = asset DigDeep2 Cards.digDeep2
 
 instance HasAbilities DigDeep2 where
   getAbilities (DigDeep2 a) =
-    [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
+    [ withTooltip
+        "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
+      $ restrictedAbility a 1 (OwnsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1
-    | idx <- [1, 2]
+    , withTooltip
+        "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
+      $ restrictedAbility a 2 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
     ]
 
 instance RunMessage DigDeep2 where

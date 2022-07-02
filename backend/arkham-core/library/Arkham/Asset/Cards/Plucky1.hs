@@ -23,10 +23,16 @@ plucky1 = assetWith Plucky1 Cards.plucky1 (sanityL ?~ 1)
 
 instance HasAbilities Plucky1 where
   getAbilities (Plucky1 x) =
-    [ restrictedAbility x idx (OwnsThis <> DuringSkillTest AnySkillTest)
-        $ FastAbility
-        $ ResourceCost 1
-    | idx <- [1, 2]
+    [ withTooltip
+        "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
+      $ restrictedAbility x 1 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
+    , withTooltip
+        "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
+      $ restrictedAbility x 2 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
     ]
 
 instance HasModifiersFor Plucky1 where

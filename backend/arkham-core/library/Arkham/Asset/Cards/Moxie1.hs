@@ -23,10 +23,16 @@ moxie1 = assetWith Moxie1 Cards.moxie1 (sanityL ?~ 1)
 
 instance HasAbilities Moxie1 where
   getAbilities (Moxie1 x) =
-    [ restrictedAbility x idx (OwnsThis <> DuringSkillTest AnySkillTest)
-        $ FastAbility
-        $ ResourceCost 1
-    | idx <- [1, 2]
+    [ withTooltip
+        "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
+      $ restrictedAbility x 1 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
+    , withTooltip
+        "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
+      $ restrictedAbility x 2 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
     ]
 
 instance HasModifiersFor Moxie1 where

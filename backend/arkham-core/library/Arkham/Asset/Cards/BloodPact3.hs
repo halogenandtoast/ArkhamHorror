@@ -22,10 +22,14 @@ bloodPact3 = asset BloodPact3 Cards.bloodPact3
 
 instance HasAbilities BloodPact3 where
   getAbilities (BloodPact3 x) =
-    [ restrictedAbility x idx OwnsThis (FastAbility $ ResourceCost 2)
-      & abilityLimitL
-      .~ PlayerLimit PerTestOrAbility 1
-    | idx <- [1 .. 2]
+    [ withTooltip
+        "{fast} Add 1 doom to Blood Pact: You get +3 {willpower} for this skill test. (Limit once per test.)"
+      $ limitedAbility (PlayerLimit PerTestOrAbility 1)
+      $ restrictedAbility x 1 OwnsThis (FastAbility $ ResourceCost 2)
+    , withTooltip
+        "{fast} Add 1 doom to Blood Pact: You get +3 {combat} for this skill test. (Limit once per test.)"
+      $ limitedAbility (PlayerLimit PerTestOrAbility 1)
+      $ restrictedAbility x 2 OwnsThis (FastAbility $ ResourceCost 2)
     ]
 
 instance RunMessage BloodPact3 where

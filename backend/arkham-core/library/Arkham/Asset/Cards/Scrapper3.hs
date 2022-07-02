@@ -25,10 +25,16 @@ scrapper3 = asset Scrapper3 Cards.scrapper3
 
 instance HasAbilities Scrapper3 where
   getAbilities (Scrapper3 a) =
-    [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
+    [ withTooltip
+        "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
+      $ restrictedAbility a 1 (OwnsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1
-    | idx <- [1, 2]
+    , withTooltip
+        "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
+      $ restrictedAbility a 2 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
     ]
 
 instance RunMessage Scrapper3 where

@@ -22,8 +22,12 @@ keenEye3 = asset KeenEye3 Cards.keenEye3
 
 instance HasAbilities KeenEye3 where
   getAbilities (KeenEye3 a) =
-    [ restrictedAbility a idx OwnsThis (FastAbility $ ResourceCost 2)
-    | idx <- [1, 2]
+    [ withTooltip
+        "{fast} Spend 2 resources: You get +1 {intellect} until the end of the phase."
+      $ restrictedAbility a 1 OwnsThis (FastAbility $ ResourceCost 2)
+    , withTooltip
+        "{fast} Spend 2 resources: You get +1 {combat} until the end of the phase."
+      $ restrictedAbility a 2 OwnsThis (FastAbility $ ResourceCost 2)
     ]
 
 instance RunMessage KeenEye3 where

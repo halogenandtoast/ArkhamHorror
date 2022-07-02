@@ -6,14 +6,14 @@ module Arkham.Location.Cards.GreenRoom
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
@@ -28,7 +28,9 @@ greenRoom = location GreenRoom Cards.greenRoom 5 (PerPlayer 1) Plus [Triangle]
 instance HasAbilities GreenRoom where
   getAbilities (GreenRoom attrs) = withBaseAbilities
     attrs
-    [ restrictedAbility attrs 1 Here
+    [ withTooltip
+        "{action} _Investigate_. You get +3 {intellect} for this investigation. After this skill test ends, discard each card in your hand."
+      $ restrictedAbility attrs 1 Here
       $ ActionAbility (Just Action.Investigate)
       $ ActionCost 1
     | locationRevealed attrs

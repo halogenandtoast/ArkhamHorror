@@ -24,10 +24,16 @@ scientificTheory1 =
 
 instance HasAbilities ScientificTheory1 where
   getAbilities (ScientificTheory1 x) =
-    [ restrictedAbility x idx (OwnsThis <> DuringSkillTest AnySkillTest)
-        $ FastAbility
-        $ ResourceCost 1
-    | idx <- [1, 2]
+    [ withTooltip
+        "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
+      $ restrictedAbility x 1 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
+    , withTooltip
+        "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
+      $ restrictedAbility x 2 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
     ]
 
 instance HasModifiersFor ScientificTheory1 where

@@ -23,10 +23,16 @@ physicalTraining2 = asset PhysicalTraining2 Cards.physicalTraining2
 
 instance HasAbilities PhysicalTraining2 where
   getAbilities (PhysicalTraining2 a) =
-    [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
+    [ withTooltip
+        "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
+      $ restrictedAbility a 1 (OwnsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1
-    | idx <- [1, 2]
+    , withTooltip
+        "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
+      $ restrictedAbility a 2 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
     ]
 
 instance RunMessage PhysicalTraining2 where

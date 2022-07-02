@@ -23,10 +23,16 @@ arcaneStudies2 = asset ArcaneStudies2 Cards.arcaneStudies2
 
 instance HasAbilities ArcaneStudies2 where
   getAbilities (ArcaneStudies2 a) =
-    [ restrictedAbility a idx (OwnsThis <> DuringSkillTest AnySkillTest)
+    [ withTooltip
+        "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
+      $ restrictedAbility a 1 (OwnsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1
-    | idx <- [1, 2]
+    , withTooltip
+        "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
+      $ restrictedAbility a 2 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
     ]
 
 instance RunMessage ArcaneStudies2 where

@@ -24,10 +24,16 @@ combatTraining1 =
 
 instance HasAbilities CombatTraining1 where
   getAbilities (CombatTraining1 x) =
-    [ restrictedAbility x idx (OwnsThis <> DuringSkillTest AnySkillTest)
-        $ FastAbility
-        $ ResourceCost 1
-    | idx <- [1, 2]
+    [ withTooltip
+        "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
+      $ restrictedAbility x 1 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
+    , withTooltip
+        "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
+      $ restrictedAbility x 2 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ FastAbility
+      $ ResourceCost 1
     ]
 
 instance HasModifiersFor CombatTraining1 where

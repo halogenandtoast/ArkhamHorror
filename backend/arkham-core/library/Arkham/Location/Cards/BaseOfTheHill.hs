@@ -6,13 +6,13 @@ module Arkham.Location.Cards.BaseOfTheHill
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Query
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -36,12 +36,14 @@ baseOfTheHill = locationWith
 instance HasAbilities BaseOfTheHill where
   getAbilities (BaseOfTheHill attrs) = withResignAction
     attrs
-    [ restrictedAbility
+    [ withTooltip
+        "{action}: _Investigate_. If you succeed, instead of discovering clues, put a random set-aside Diverging Path into play. (Limit once per round.)"
+      $ limitedAbility (PlayerLimit PerRound 1)
+      $ restrictedAbility
           attrs
           1
           Here
           (ActionAbility (Just Action.Investigate) (ActionCost 1))
-        & (abilityLimitL .~ PlayerLimit PerRound 1)
     | locationRevealed attrs
     ]
 

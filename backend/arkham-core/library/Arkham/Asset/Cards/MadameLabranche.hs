@@ -22,21 +22,25 @@ madameLabranche = ally MadameLabranche Cards.madameLabranche (2, 2)
 
 instance HasAbilities MadameLabranche where
   getAbilities (MadameLabranche attrs) =
-    [ restrictedAbility
-        attrs
-        1
-        (OwnsThis <> InvestigatorExists
-          (You <> HandWith (LengthIs $ EqualTo $ Static 0))
-        )
+    [ withTooltip
+        "{fast} If you have no cards in your hand, exhaust Madame Labranche: Draw 1 card."
+      $ restrictedAbility
+          attrs
+          1
+          (OwnsThis <> InvestigatorExists
+            (You <> HandWith (LengthIs $ EqualTo $ Static 0))
+          )
       $ FastAbility
       $ ExhaustCost
       $ toTarget attrs
-    , restrictedAbility
-        attrs
-        2
-        (OwnsThis <> InvestigatorExists
-          (You <> InvestigatorWithResources (EqualTo $ Static 0))
-        )
+    , withTooltip
+        "{fast} If you have no resources, exhaust Madame Labranche: Gain 1 resource."
+      $ restrictedAbility
+          attrs
+          2
+          (OwnsThis <> InvestigatorExists
+            (You <> InvestigatorWithResources (EqualTo $ Static 0))
+          )
       $ FastAbility
       $ ExhaustCost
       $ toTarget attrs

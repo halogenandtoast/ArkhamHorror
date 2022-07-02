@@ -6,16 +6,16 @@ module Arkham.Location.Cards.DestroyedPath
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (destroyedPath)
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( destroyedPath )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Timing qualified as Timing
@@ -45,7 +45,9 @@ instance HasAbilities DestroyedPath where
         $ RevealLocation Timing.After You
         $ LocationWithId
         $ toId attrs
-        , restrictedAbility attrs 2 Here
+        , withTooltip
+          "{action}: _Investigate_. If you succeed, instead of discovering clues, remove 1 doom from Destroyed Path."
+        $ restrictedAbility attrs 2 Here
         $ ActionAbility (Just Action.Investigate)
         $ ActionCost 1
         ]

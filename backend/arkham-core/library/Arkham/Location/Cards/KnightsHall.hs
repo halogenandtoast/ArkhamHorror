@@ -35,8 +35,10 @@ knightsHall = location
 instance HasAbilities KnightsHall where
   getAbilities (KnightsHall a) = withBaseAbilities
     a
-    [ restrictedAbility a 1 (Here <> NoCluesOnThis)
-        $ ActionAbility (Just Action.Investigate) Free
+    [ withTooltip
+        "{action} If there are no clues on Knight's Hall: _Investigate_. Investigate using {agility} instead of {intellect}. If you succeed, instead of discovering clues, remember that you have \"found the tower key.\""
+      $ restrictedAbility a 1 (Here <> NoCluesOnThis)
+      $ ActionAbility (Just Action.Investigate) Free
     ]
 
 instance RunMessage KnightsHall where

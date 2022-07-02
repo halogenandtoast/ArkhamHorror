@@ -3,7 +3,7 @@ module Arkham.Prelude
   , module Arkham.Prelude
   ) where
 
-import ClassyPrelude as X hiding (on, (\\))
+import ClassyPrelude as X hiding (on, (\\), foldlM)
 
 import Data.Semigroup as X (Max(..), Min(..), Sum(..))
 import Data.Kind as X (Type)
@@ -53,6 +53,8 @@ import GHC.Stack as X
 import Language.Haskell.TH hiding (location)
 import Safe as X (fromJustNote)
 import System.Random.Shuffle as X
+
+import Data.Foldable (foldlM)
 
 suffixedNamer :: FieldNamer
 suffixedNamer _ _ n = case dropWhile C.isLower (nameBase n) of
@@ -200,3 +202,14 @@ findKey p = fmap fst . find (p . snd) . mapToList
 -- so we clamp it to 0
 getMax0 :: (Ord a, Num a) => Max a -> a
 getMax0 current = getMax $ Max 0 <> current
+
+foldMapM
+  :: (Monad m, Monoid w, Foldable t)
+  => (a -> m w)
+  -> t a
+  -> m w
+foldMapM f = foldlM
+  (\acc a -> do
+    w <- f a
+    return $! mappend acc w)
+  mempty

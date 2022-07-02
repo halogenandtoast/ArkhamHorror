@@ -727,6 +727,7 @@ instance RunMessage EnemyAttrs where
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
     RemoveAllDoom _ -> pure $ a & doomL .~ 0
     PlaceDoom target amount | isTarget a target -> pure $ a & doomL +~ amount
+    RemoveDoom target amount | isTarget a target -> pure $ a & doomL %~ max 0 . subtract amount
     PlaceClues target n | isTarget a target -> do
       windows' <- windows [Window.PlacedClues (toTarget a) n]
       pushAll windows'

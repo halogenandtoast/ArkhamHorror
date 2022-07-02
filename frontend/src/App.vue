@@ -1,7 +1,12 @@
 <template>
   <div id="app">
     <NavBar/>
-    <router-view/>
+    <Suspense>
+      <router-view/>
+      <template #fallback>
+        Loading...
+      </template>
+    </Suspense>
   </div>
 </template>
 

@@ -64,7 +64,7 @@ const submitDebugUpload = async (e: Event) => {
           <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${game.scenario.contents.id.replace('c', '')}.png`" />
           <span>{{game.scenario.contents.name.title}}</span>
         </div>
-        <div>
+        <div class="investigators">
           <div
             v-for="investigator in game.investigators"
             :key="investigator.contents.id"
@@ -73,7 +73,6 @@ const submitDebugUpload = async (e: Event) => {
             <div class="investigator-portrait-container">
               <img :src="`${baseUrl}/img/arkham/cards/${investigator.contents.id.replace('c', '')}.jpg`" class="investigator-portrait"/>
             </div>
-            <span>{{investigator.contents.name.title}}</span>
           </div>
         </div>
       </div>
@@ -202,7 +201,14 @@ h2 {
 
 .scenario-details {
   display: flex;
+  background-color: #333;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
   align-items: center;
+  img {
+    margin: 0 10px 0 5px;
+  }
   span {
     line-height: 25px;
   }
@@ -228,7 +234,11 @@ h2 {
 }
 
 .title {
-  font-size: 1.2em;
+  font-family: teutonic, sans-serif;
+  font-size: 1.6em;
+  a {
+    text-decoration: none;
+  }
 }
 
 .home {
@@ -238,13 +248,28 @@ h2 {
 }
 
 .investigator {
-  display: flex;
-  flex-direction: row;
+  display: inline;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.investigator-portrait-container {
+  width: 50px;
+  height:50px;
+  overflow: hidden;
+  border-radius: 5px;
+  border: 1px solid white;
+  margin-right: 10px;
 }
 
 .investigator-portrait {
   width: 150px;
-  clip-path: inset(16% 60% 40% 10%);
+  margin: -18px;
+}
+
+.investigators {
+  margin-top: 10px;
+  display: flex;
 }
 
 </style>

@@ -1,3 +1,4 @@
+import CampaignLog from '@/arkham/views/CampaignLog.vue';
 import Game from '@/arkham/views/Game.vue';
 import Decks from '@/arkham/views/Decks.vue';
 import Investigators from '@/arkham/views/Investigators.vue';
@@ -47,6 +48,13 @@ export default [
     name: 'Spectate',
     component: Game,
     meta: { requiresAuth: true, title: "Arkham Horror: Spectate" },
+    props: true,
+  },
+  {
+    path: '/games/:gameId/log',
+    name: 'CampaignLog',
+    component: CampaignLog,
+    meta: { requiresAuth: true, title: "Arkham Horror: Campaign Log" },
     props: true,
   },
   {

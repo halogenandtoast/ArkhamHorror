@@ -1,13 +1,12 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue'
 import * as Arkham from '@/arkham/types/Investigator'
-import { Game } from '@/arkham/types/Game'
-import * as ArkhamGame from '@/arkham/types/Game'
-import { Message, MessageType } from '@/arkham/types/Message'
+import type { Message } from '@/arkham/types/Message'
+import { MessageType } from '@/arkham/types/Message'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 
 export interface Props {
-  game: Game
+  choices: Message[]
   player: Arkham.Investigator
   investigatorId: string
   portrait?: boolean
@@ -16,23 +15,20 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), { portrait: false })
 const emit = defineEmits(['showCards', 'choose'])
 
-const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 const id = computed(() => props.player.contents.id)
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 
 const searchTopOfDeckAction = computed(() => {
-  return choices
-    .value
+  return props.choices
     .findIndex((c) => c.tag === MessageType.SEARCH
       && c.contents[2].contents === id.value);
 })
 
 const runSkillTestAction = computed(() => {
-  if (choices.value.filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST
+  if (props.choices.filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST
     && c.contents[0] === id.value).length === 1) {
-    return choices
-      .value
+    return props.choices
       .findIndex((c) => c.tag === MessageType.BEGIN_SKILL_TEST && c.contents[0] === id.value)
   }
 
@@ -49,27 +45,25 @@ function canActivateAbility(c: Message): boolean {
       return false;
   }
 }
-const activateAbilityAction = computed(() => choices.value.findIndex(canActivateAbility))
+const activateAbilityAction = computed(() => props.choices.findIndex(canActivateAbility))
 
 const enemyEngageInvestigatorAction = computed(() => {
-  return choices
-    .value
+  return props.choices
     .findIndex((c) => c.tag === MessageType.ENEMY_ENGAGE_INVESTIGATOR
       && c.contents[1] === id.value)
 })
 
 const takeDamageAction = computed(() => {
-  const isRunDamage = choices.value.findIndex((c) => c.tag === MessageType.RUN
+  const isRunDamage = props.choices.findIndex((c) => c.tag === MessageType.RUN
     && c.contents[0]
     && c.contents[0].tag === MessageType.INVESTIGATOR_ASSIGN_DAMAGE
     && c.contents[0].contents[0] === id.value);
   return isRunDamage
-    || choices.value.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
+    || props.choices.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
 })
 
 const labelAction = computed(() => {
-  return choices
-    .value
+  return props.choices
     .findIndex((c) => c.tag === MessageType.TARGET_LABEL
       && c.contents[0].tag === "InvestigatorTarget" && c.contents[0].contents === id.value)
 })
@@ -128,25 +122,22 @@ function canAdjustSanity(c: Message): boolean {
   }
 }
 
-const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
-const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
+const healthAction = computed(() => props.choices.findIndex(canAdjustHealth))
+const sanityAction = computed(() => props.choices.findIndex(canAdjustSanity))
 
 const takeResourceAction = computed(() => {
-  return choices
-    .value
+  return props.choices
     .findIndex((c) => c.tag === MessageType.TAKE_RESOURCES && c.contents[0] === id.value);
 })
 
 const spendCluesAction = computed(() => {
-  return choices
-    .value
+  return props.choices
     .findIndex((c) => (c.tag === MessageType.INVESTIGATOR_SPEND_CLUES || c.tag === MessageType.INVESTIGATOR_PLACE_CLUES_ON_LOCATION)
       && c.contents[0] === id.value);
 })
 
 const endTurnAction = computed(() => {
-  return choices
-    .value
+  return props.choices
     .findIndex((c) => c.tag === MessageType.END_TURN && c.contents === id.value);
 })
 

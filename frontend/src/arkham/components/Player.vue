@@ -120,7 +120,7 @@ const debugChoose = inject('debugChoose')
     <div class="player">
       <Investigator
         :player="player"
-        :game="game"
+        :choices="choices"
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
         @showCards="doShowCards"

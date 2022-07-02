@@ -193,7 +193,7 @@ const debugChoose = inject('debugChoose')
         :key="cardCode"
       >
         <Investigator
-          :game="game"
+          :choices="choices"
           :investigatorId="investigatorId"
           :portrait="true"
           :player="game.investigators[cardCode]"

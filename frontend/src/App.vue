@@ -10,18 +10,14 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted } from 'vue'
-import { useStore } from 'vuex'
+<script lang="ts" setup>
+import { onMounted } from 'vue'
+import { useUserStore } from '@/stores/user'
 import NavBar from '@/components/NavBar.vue'
 
-export default defineComponent({
-  components: { NavBar },
-  setup() {
-    const store = useStore()
-    onMounted(async () => await store.dispatch('loadUserFromStorage'))
-  }
-})
+const store = useUserStore()
+onMounted(async () => await store.loadUserFromStorage())
+
 </script>
 
 <style lang="scss">

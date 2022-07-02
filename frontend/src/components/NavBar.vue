@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { useStore } from 'vuex';
+import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
 import type { User } from '@/types';
 import md5 from 'md5';
 
 const router = useRouter()
-const store = useStore()
-const currentUser = computed<User | null>(() => store.getters.currentUser)
+const store = useUserStore()
+const currentUser = computed<User | null>(() => store.getCurrentUser)
 const gravatar = computed(() => {
   const user = currentUser.value
   if (user) {
@@ -19,7 +19,7 @@ const gravatar = computed(() => {
 })
 
 async function logout() {
-  await store.dispatch('logout')
+  await store.logout()
   router.push({ path: '/' })
 }
 </script>

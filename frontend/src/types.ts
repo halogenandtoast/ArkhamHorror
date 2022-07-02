@@ -17,11 +17,3 @@ export interface Registration {
   email: string;
   password: string;
 }
-
-export interface LoginState {
-  currentUser?: User;
-}
-
-export interface RootState {
-  version: string;
-}

@@ -22,6 +22,8 @@ const difficulty = computed<Difficulty>(() => {
 
   return scenario.value.contents.difficulty
 })
+
+const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring(1)
 </script>
 
 <template>
@@ -50,7 +52,7 @@ const difficulty = computed<Difficulty>(() => {
           :key="investigator.contents.id"
           class="investigator"
         >
-          <div class="investigator-portrait-container">
+          <div :class="`investigator-portrait-container ${toCssName(investigator.contents.class)}`">
             <img :src="`${baseUrl}/img/arkham/cards/${investigator.contents.id.replace('c', '')}.jpg`" class="investigator-portrait"/>
           </div>
         </div>
@@ -148,8 +150,31 @@ h2 {
   height:50px;
   overflow: hidden;
   border-radius: 5px;
-  border: 1px solid white;
   margin-right: 10px;
+
+  &.survivor {
+    border: 3px solid $survivor;
+  }
+
+  &.guardian {
+    border: 3px solid $guardian;
+  }
+
+  &.mystic {
+    border: 3px solid $mystic;
+  }
+
+  &.seeker {
+    border: 3px solid $seeker;
+  }
+
+  &.rogue {
+    border: 3px solid $rogue;
+  }
+
+  &.neutral {
+    border: 3px solid $neutral;
+  }
 }
 
 .investigator-portrait {

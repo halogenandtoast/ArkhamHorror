@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed, Ref } from 'vue';
-import { useStore } from 'vuex';
+import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
 import { debugGame, deleteGame, fetchGames } from '@/arkham/api';
 import Prompt from '@/components/Prompt.vue'
@@ -9,8 +9,8 @@ import type { User } from '@/types';
 import GameRow from '@/arkham/components/GameRow';
 
 const router = useRouter()
-const store = useStore()
-const currentUser = computed<User | null>(() => store.getters.currentUser)
+const store = useUserStore()
+const currentUser = computed<User | null>(() => store.getCurrentUser)
 const deleteId = ref<string | null>(null)
 const games: Ref<Game[]> = ref([])
 

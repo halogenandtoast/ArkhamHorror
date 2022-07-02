@@ -26,6 +26,11 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+const emit = defineEmits(['choose'])
+
+async function choose(idx: number) {
+  emit('choose', idx)
+}
 
 function handleConnections(investigatorId: string, game: Game) {
   const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
@@ -203,19 +208,19 @@ const phase = computed(() => props.game.phase)
 <template>
   <div v-if="!game.gameOver" id="scenario" class="scenario">
     <div class="scenario-body">
-      <StatusBar :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
-      <PlayerOrder :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
+      <StatusBar :game="game" :investigatorId="investigatorId" @choose="choose" />
+      <PlayerOrder :game="game" :investigatorId="investigatorId" @choose="choose" />
       <PlayerSelector
         :game="game"
         :investigatorId="investigatorId"
-        @choose="$emit('choose', $event)"
+        @choose="choose"
       />
       <CommittedSkills
         v-if="(game.skillTest?.committedCards?.length || 0) > 0"
         :game="game"
         :cards="game.skillTest.committedCards"
         :investigatorId="investigatorId"
-        @choose="$emit('choose', $event)"
+        @choose="choose"
       />
       <CardRow
         v-if="showCards.ref.length > 0"
@@ -224,7 +229,7 @@ const phase = computed(() => props.game.phase)
         :isDiscards="viewingDiscard"
         :title="cardRowTitle"
         :investigatorId="investigatorId"
-        @choose="$emit('choose', $event)"
+        @choose="choose"
         @close="hideCards"
       />
       <div class="scenario-cards">
@@ -233,7 +238,7 @@ const phase = computed(() => props.game.phase)
             :enemy="topEnemyInVoid"
             :game="game"
             :investigatorId="investigatorId"
-            @choose="$emit('choose', $event)"
+            @choose="choose"
           />
         </div>
         <ScenarioDeck
@@ -254,7 +259,7 @@ const phase = computed(() => props.game.phase)
         <EncounterDeck
           :game="game"
           :investigatorId="investigatorId"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
         />
 
         <Agenda
@@ -264,7 +269,7 @@ const phase = computed(() => props.game.phase)
           :cardsUnder="cardsUnderAgenda"
           :game="game"
           :investigatorId="investigatorId"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
           @show="doShowCards"
         />
 
@@ -277,7 +282,7 @@ const phase = computed(() => props.game.phase)
           :cardsNextTo="cardsNextToAct"
           :game="game"
           :investigatorId="investigatorId"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
           @show="doShowCards"
         />
         <img
@@ -289,7 +294,7 @@ const phase = computed(() => props.game.phase)
           :chaosBag="scenario.contents.chaosBag"
           :skillTest="game.skillTest"
           :investigatorId="investigatorId"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
         />
         <img
           v-if="activeCard"
@@ -315,7 +320,7 @@ const phase = computed(() => props.game.phase)
           :investigatorId="investigatorId"
           :location="location"
           :style="{ 'grid-area': location.contents.label, 'justify-self': 'center' }"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
         />
         <Enemy
           v-for="enemy in enemiesAsLocations"
@@ -324,7 +329,7 @@ const phase = computed(() => props.game.phase)
           :game="game"
           :investigatorId="investigatorId"
           :style="{ 'grid-area': enemy.contents.asSelfLocation, 'justify-self': 'center' }"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
         />
       </div>
 
@@ -334,7 +339,7 @@ const phase = computed(() => props.game.phase)
         :players="players"
         :playerOrder="playerOrder"
         :activePlayerId="activePlayerId"
-        @choose="$emit('choose', $event)"
+        @choose="choose"
       />
     </div>
     <div class="phases">

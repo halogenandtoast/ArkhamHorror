@@ -14,7 +14,7 @@ const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-const choose = (idx: number) => emit.choose(idx)
+const choose = (idx: number) => emit('choose', idx)
 
 const applyResultsAction = computed(() => {
   return choices.value.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);

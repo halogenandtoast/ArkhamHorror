@@ -20,6 +20,10 @@ async function update(game: Game) {
   emit('update', game);
 }
 
+async function choose(idx: number) {
+  emit('choose', idx)
+}
+
 const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.contents.step?.tag === 'UpgradeDeckStep')
 </script>
 
@@ -38,7 +42,7 @@ const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.co
     />
     <template v-else>
       <CardOverlay />
-      <StatusBar :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
+      <StatusBar :game="game" :investigatorId="investigatorId" @choose="choose" />
       <PlayerOrder
         :game="game"
         :investigatorId="investigatorId"

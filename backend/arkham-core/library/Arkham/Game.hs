@@ -43,6 +43,7 @@ import Arkham.Game.Helpers hiding
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location qualified as Helpers
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator
@@ -479,21 +480,7 @@ data PublicGame gid = PublicGame gid Text [Text] Game
   deriving stock Show
 
 getConnectedMatcher :: (HasGame m, Monad m) => Location -> m LocationMatcher
-getConnectedMatcher l = do
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
-  LocationMatchAny <$> foldM applyModifier base modifiers
- where
-  applyModifier current (ConnectedToWhen whenMatcher matcher) = do
-    matches' <- member (toId l) <$> select whenMatcher
-    pure $ current <> [ matcher | matches' ]
-  applyModifier current _ = pure current
-  attrs = toAttrs l
-  self = LocationWithId $ toId attrs
-  base = if isRevealed l
-    then locationRevealedConnectedMatchers attrs <> directionalMatchers
-    else locationConnectedMatchers attrs <> directionalMatchers
-  directionalMatchers =
-    map (`LocationInDirection` self) (setToList $ locationConnectsTo attrs)
+getConnectedMatcher = Helpers.getConnectedMatcher . toId
 
 instance ToJSON gid => ToJSON (PublicGame gid) where
   toJSON (PublicGame gid name glog g@Game {..}) = object
@@ -925,15 +912,6 @@ getLocationMatching
   -> m (Maybe Location)
 getLocationMatching = (listToMaybe <$>) . getLocationsMatching
 
-getConnectionMatcher :: Location -> LocationMatcher
-getConnectionMatcher l = getAnyLocationMatcher $ foldMap AnyLocationMatcher (connections <> directionMatchers)
-  where
-    LocationAttrs {..} = toAttrs l
-    connections = if locationRevealed
-      then locationRevealedConnectedMatchers
-      else locationConnectedMatchers
-    directionMatchers = map (flip LocationInDirection (LocationWithId $ toId l)) (setToList locationConnectsTo)
-
 getLocationsMatching :: (Monad m, HasGame m) => LocationMatcher -> m [Location]
 getLocationsMatching lmatcher = do
   ls <- toList . view (entitiesL . locationsL) <$> getGame
@@ -1101,12 +1079,12 @@ getLocationsMatching lmatcher = do
       -- so we filter each location by generating it's connections
       -- querying those locations and seeing if they match the matcher
       flip filterM ls $ \l -> do
-        let matchAny = getConnectionMatcher l
+        matchAny <- getConnectedMatcher l
         selectAny $ matcher <> matchAny
     ConnectedFrom matcher -> do
       startIds <- select matcher
       let starts = filter ((`elem` startIds) . toId) ls
-          matcherSupreme = foldMap (AnyLocationMatcher . getConnectionMatcher) starts
+      matcherSupreme <- foldMapM (fmap AnyLocationMatcher . getConnectedMatcher) starts
       getLocationsMatching $ getAnyLocationMatcher matcherSupreme
     AccessibleFrom matcher ->
       getLocationsMatching (Unblocked <> ConnectedFrom matcher)
@@ -1544,7 +1522,13 @@ instance Projection LocationAttrs where
       LocationHorror -> pure locationHorror
       LocationDoom -> pure locationDoom
       LocationShroud -> pure locationShroud
-      LocationTraits -> pure . cdCardTraits $ toCardDef attrs
+      LocationTraits -> do
+        modifiers <- withDepthGuard 3 [] $ getModifiers (toSource attrs) (toTarget attrs)
+        let
+          addedTraits = flip mapMaybe modifiers $ \case
+            AddTrait t -> Just t
+            _ -> Nothing
+        pure . (setFromList addedTraits <>) . cdCardTraits $ toCardDef attrs
       LocationKeywords -> pure . cdKeywords $ toCardDef attrs
       LocationUnrevealedName -> pure $ toName (Unrevealed l)
       LocationName -> pure $ toName l

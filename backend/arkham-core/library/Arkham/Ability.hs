@@ -30,6 +30,7 @@ data Ability = Ability
   , abilityMetadata :: Maybe AbilityMetadata
   , abilityCriteria :: Maybe Criterion
   , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
+  , abilityTooltip :: Maybe Text
   }
   deriving stock (Show, Generic)
   deriving anyclass (Hashable, ToJSONKey, FromJSONKey)
@@ -65,8 +66,14 @@ abilityLimitL = lens abilityLimit $ \m x -> m {abilityLimit = x}
 limitedAbility :: AbilityLimit -> Ability -> Ability
 limitedAbility l a = a & abilityLimitL .~ l
 
+withTooltip :: Text -> Ability -> Ability
+withTooltip t a = a & abilityTooltipL ?~ t
+
 abilityMetadataL :: Lens' Ability (Maybe AbilityMetadata)
 abilityMetadataL = lens abilityMetadata $ \m x -> m {abilityMetadata = x}
+
+abilityTooltipL :: Lens' Ability (Maybe Text)
+abilityTooltipL = lens abilityTooltip $ \m x -> m {abilityTooltip = x}
 
 abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability Bool
 abilityDoesNotProvokeAttacksOfOpportunityL =
@@ -126,6 +133,7 @@ mkAbility entity idx type' =
     , abilityMetadata = Nothing
     , abilityCriteria = Nothing
     , abilityDoesNotProvokeAttacksOfOpportunity = False
+    , abilityTooltip = Nothing
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability

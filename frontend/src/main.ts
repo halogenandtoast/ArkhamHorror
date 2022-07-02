@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import FloatingVue from 'floating-vue'
 import App from './App.vue'
 import router from './router'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -11,4 +12,4 @@ library.add(faAngleDown, faExpeditedssl, faTrash, faEye, faCopy)
 
 const pinia = createPinia()
 
-createApp(App).use(router).use(pinia).component("font-awesome-icon", FontAwesomeIcon).mount('#app')
+createApp(App).use(router).use(pinia).use(FloatingVue).component("font-awesome-icon", FontAwesomeIcon).mount('#app')

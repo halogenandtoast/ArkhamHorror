@@ -48,6 +48,28 @@ const isSingleActionAbility = computed(() => {
     return contents === 1
   }
 })
+
+const tooltip = computed(() => {
+  if (ability.value.tag !== "UseAbility") {
+    return null
+  }
+
+  const body = ability.value.contents[1].tooltip
+  if (body) {
+    const content = body.
+      replace('{action}', '<span class="action-icon"></span>').
+      replace('{fast}', '<span class="fast-icon"></span>').
+      replace('{willpower}', '<span class="willpower-icon"></span>').
+      replace('{intellect}', '<span class="intellect-icon"></span>').
+      replace('{combat}', '<span class="combat-icon"></span>').
+      replace('{agility}', '<span class="agility-icon"></span>').
+      replace(/_([^_]*)_/g, '<b>$1</b>')
+    return { content, html: true }
+  }
+
+  return null
+})
+
 const isDoubleActionAbility = computed(() => {
   if (ability.value.tag !== "UseAbility") {
     return false
@@ -122,6 +144,7 @@ const abilityLabel = computed(() => {
 })
 
 
+
 const classObject = computed(() => {
   return {
     'ability-button': isSingleActionAbility.value && isNeutralAbility.value,
@@ -145,6 +168,7 @@ const classObject = computed(() => {
       class="button"
       :class="classObject"
       @click="$emit('choose', ability)"
+      v-tooltip="tooltip"
       >{{abilityLabel}}</button>
 </template>
 
@@ -246,4 +270,5 @@ const classObject = computed(() => {
     margin-right: 5px;
   }
 }
+
 </style>

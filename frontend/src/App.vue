@@ -14,6 +14,7 @@
 import { onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import NavBar from '@/components/NavBar.vue'
+import 'floating-vue/dist/style.css'
 
 const store = useUserStore()
 onMounted(async () => await store.loadUserFromStorage())
@@ -46,5 +47,49 @@ body {
 
 body {
   background: #26283D;
+}
+
+.action-icon {
+  &:before {
+    font-family: "arkham";
+    content: "\0049";
+    margin-right: 5px;
+  }
+}
+
+.willpower-icon {
+  &:before {
+    font-family: "Arkham";
+    content: "\0041";
+  }
+}
+
+.intellect-icon {
+  &:before {
+    font-family: "Arkham";
+    content: "\0046";
+  }
+}
+
+.combat-icon {
+  &:before {
+    font-family: "Arkham";
+    content: "\0044";
+  }
+}
+
+.agility-icon {
+  &:before {
+    font-family: "Arkham";
+    content: "\0053";
+  }
+}
+
+.fast-icon {
+  &:before {
+    font-family: "arkham";
+    content: "\0075";
+    margin-right: 5px;
+  }
 }
 </style>

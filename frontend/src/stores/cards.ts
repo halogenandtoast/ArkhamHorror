@@ -4,11 +4,13 @@ import type { CardDef } from '@/arkham/types/CardDef'
 
 export interface CardsState {
   cards: CardDef[]
+  loaded: boolean
 }
 
 export const useCardStore = defineStore("cards", {
   state: () => ({
-    cards: []
+    cards: [],
+    loaded: false
   } as CardsState),
   getters: {
     getCards(state) {
@@ -17,11 +19,14 @@ export const useCardStore = defineStore("cards", {
   },
   actions: {
     async fetchCards() {
-      try {
-        const data = await Api.fetchCards(true)
-        this.cards = data
-      } catch (error) {
-        console.log(error)
+      if (!this.loaded) {
+        try {
+          const data = await Api.fetchCards(true)
+          this.cards = data
+          this.loaded = true
+        } catch (error) {
+          console.log(error)
+        }
       }
     }
   }

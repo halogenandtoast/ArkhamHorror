@@ -105,6 +105,7 @@ input[type=checkbox]:checked ~ .user-links {
   position: relative;
   padding-right: 10px;
   border-radius: 5px;
+  z-index: 100000;
 
   &:hover {
     background-color: $medium-blue;

@@ -187,6 +187,10 @@ const copyInviteLink = () => {
       <div class="sidebar" v-if="game.gameState !== 'IsPending'">
         <CardOverlay />
         <GameLog :game="game" :gameLog="gameLog" />
+        <router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}"
+>
+          <button :href="href" @click="navigate">View Log</button>
+        </router-link>
         <button @click="toggleDebug">Toggle Debug</button>
         <button @click="debugExport">Debug Export</button>
       </div>
@@ -340,6 +344,16 @@ header {
         }
       }
     }
+  }
+}
+
+.button-link {
+  display: block;
+  width: 100%;
+  text-decoration: none;
+  button {
+    display: block;
+    width: 100%;
   }
 }
 </style>

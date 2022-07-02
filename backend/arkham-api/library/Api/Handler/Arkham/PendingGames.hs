@@ -12,6 +12,7 @@ import Arkham.Investigator
 import Control.Monad.Random (mkStdGen)
 import Data.Aeson
 import Data.HashMap.Strict qualified as HashMap
+import Data.Time.Clock
 import Safe (fromJustNote)
 
 newtype JoinGameJson = JoinGameJson { deckId :: ArkhamDeckId }
@@ -57,12 +58,16 @@ putApiV1ArkhamPendingGameR gameId = do
     $ GameUpdate
     $ PublicGame gameId arkhamGameName updatedMessages updatedGame
 
+  now <- liftIO getCurrentTime
+
   runDB $ replace gameId $ ArkhamGame
     arkhamGameName
     updatedGame
     (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
     updatedMessages
     arkhamGameMultiplayerVariant
+    arkhamGameCreatedAt
+    now
 
   pure $ toPublicGame $ Entity gameId $ ArkhamGame
     arkhamGameName
@@ -70,3 +75,5 @@ putApiV1ArkhamPendingGameR gameId = do
     (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
     updatedMessages
     arkhamGameMultiplayerVariant
+    arkhamGameCreatedAt
+    now

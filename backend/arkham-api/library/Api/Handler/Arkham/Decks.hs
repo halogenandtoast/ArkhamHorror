@@ -17,6 +17,7 @@ import Arkham.PlayerCard
 import Control.Monad.Random (mkStdGen)
 import Data.HashMap.Strict qualified as HashMap
 import Data.Text qualified as T
+import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (isNothing)
 import Json hiding (Success)
 import Network.HTTP.Conduit (simpleHttp)
@@ -111,6 +112,7 @@ putApiV1ArkhamGameDecksR gameId = do
   liftIO $ atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedMessages ge)
+  now <- liftIO getCurrentTime
   runDB $ replace
     gameId
     (ArkhamGame
@@ -119,6 +121,8 @@ putApiV1ArkhamGameDecksR gameId = do
       (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
       updatedMessages
       arkhamGameMultiplayerVariant
+      arkhamGameCreatedAt
+      now
     )
 
 fromPostData

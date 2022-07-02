@@ -32,6 +32,7 @@ import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
 import Data.HashMap.Strict qualified as HashMap
 import Data.Map.Strict qualified as Map
+import Data.Time.Clock
 import Data.Traversable ( for )
 import Database.Esqueleto.Experimental hiding ( update )
 import Entity.Arkham.Player
@@ -130,6 +131,7 @@ getApiV1ArkhamGamesR = do
                players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField
              )
       where_ (players ^. ArkhamPlayerUserId ==. val userId)
+      orderBy [desc $ games ^. ArkhamGameUpdatedAt]
       pure games
     )
   pure $ map toPublicGame games
@@ -170,6 +172,7 @@ postApiV1ArkhamGamesImportR = do
     . headMay
     . snd
     =<< runRequestBody
+  now <- liftIO getCurrentTime
 
   case eExportData of
     Left err -> error $ T.pack err
@@ -183,6 +186,8 @@ postApiV1ArkhamGamesImportR = do
           agedChoices
           agedLog
           Solo
+          now
+          now
         traverse_ (insert_ . ArkhamPlayer userId gameId) investigatorIds
         pure gameId
       pure $ toPublicGame $ Entity
@@ -193,6 +198,8 @@ postApiV1ArkhamGamesImportR = do
           agedChoices
           agedLog
           Solo
+          now
+          now
         )
 
 postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
@@ -210,6 +217,7 @@ postApiV1ArkhamGamesR = do
         investigators
   newGameSeed <- liftIO getRandom
   genRef <- newIORef (mkStdGen newGameSeed)
+  now <- liftIO getCurrentTime
   case campaignId of
     Just cid -> do
       (queueRef, game) <- liftIO
@@ -230,6 +238,8 @@ postApiV1ArkhamGamesR = do
           [Choice diffUp diffDown updatedQueue]
           []
           multiplayerVariant
+          now
+          now
         insert_ $ ArkhamPlayer userId gameId investigatorId
         pure gameId
       pure $ toPublicGame $ Entity
@@ -240,6 +250,8 @@ postApiV1ArkhamGamesR = do
           [Choice diffUp diffDown updatedQueue]
           []
           multiplayerVariant
+          now
+          now
         )
     Nothing -> case scenarioId of
       Just sid -> do
@@ -261,6 +273,8 @@ postApiV1ArkhamGamesR = do
             [Choice diffUp diffDown updatedQueue]
             []
             multiplayerVariant
+            now
+            now
           insert_ $ ArkhamPlayer userId gameId investigatorId
           pure gameId
         pure $ toPublicGame $ Entity
@@ -271,6 +285,8 @@ postApiV1ArkhamGamesR = do
             [Choice diffUp diffDown updatedQueue]
             []
             multiplayerVariant
+            now
+            now
           )
       Nothing -> error "missing either campaign id or scenario id"
 
@@ -339,6 +355,7 @@ putApiV1ArkhamGameR gameId = do
 
   updatedQueue <- readIORef queueRef
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
+  now <- liftIO getCurrentTime
   void $ runDB $ do
     replace gameId $ ArkhamGame
       arkhamGameName
@@ -346,6 +363,8 @@ putApiV1ArkhamGameR gameId = do
       (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
       updatedLog
       arkhamGameMultiplayerVariant
+      arkhamGameCreatedAt
+      now
     case arkhamGameMultiplayerVariant of
       Solo -> replace pid $ arkhamPlayer
         { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
@@ -394,6 +413,7 @@ putApiV1ArkhamGameRawR gameId = do
   liftIO $ atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
+  now <- liftIO getCurrentTime
   void $ runDB
     (replace
       gameId
@@ -403,6 +423,8 @@ putApiV1ArkhamGameRawR gameId = do
         (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
         updatedLog
         arkhamGameMultiplayerVariant
+        arkhamGameCreatedAt
+        now
       )
     )
 

@@ -43,7 +43,7 @@ const actions: ActionTree<LoginState, RootState> = {
       (whoami) => {
         commit('signIn', whoami.data);
       }).catch((reason: AxiosError) => {
-        if (reason.response && reason.response.status == 401) {
+        if (reason.response && (reason.response.status == 401 || reason.response.status == 404)) {
           dispatch('logout');
         }
       });

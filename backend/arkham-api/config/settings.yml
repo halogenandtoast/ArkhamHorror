@@ -1,6 +1,6 @@
 static-dir: "_env:STATIC_DIR:../../frontend/dist"
 host: "_env:HOST:*4"
-port: "_env:PORT:3000"
+port: "_env:PORT:3002"
 ip-from-header: "_env:IP_FROM_HEADER:false"
 jwt-secret: "_env:JWT_SECRET:arkham"
 database-url: "_env:DATABASE_URL:postgres://localhost:5432/arkham-horror-backend"

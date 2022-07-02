@@ -7,7 +7,7 @@ http {
   }
 
   server {
-    listen $PORT;
+    listen 3000;
     server_name .arkhamhorror.app;
 
     location / {

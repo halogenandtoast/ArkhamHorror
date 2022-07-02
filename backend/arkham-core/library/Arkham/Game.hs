@@ -1674,7 +1674,12 @@ instance Projection InvestigatorAttrs where
       InvestigatorUsedAbilities -> pure investigatorUsedAbilities
       InvestigatorTraits -> pure investigatorTraits
       InvestigatorAbilities -> pure $ getAbilities i
-      InvestigatorCommittedCards -> pure [] -- TODO: Guess we need this
+      InvestigatorCommittedCards -> do
+        mskillTest <- getSkillTest
+        pure $ case mskillTest of
+          Nothing -> []
+          Just skillTest ->
+            map snd . filter ((== toId i) . fst) . HashMap.elems $ skillTestCommittedCards skillTest
       InvestigatorDefeated -> pure investigatorDefeated
       InvestigatorResigned -> pure investigatorResigned
       -- NOTE: For Abilities do not for get inhand, indiscard, insearch

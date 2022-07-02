@@ -35,14 +35,14 @@ const difficulty = computed<Difficulty>(() => {
           <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${scenario.contents.id.replace('c', '').slice(0,2)}.png`" />
         </div>
         <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
+        <div v-if="game.scenario" class="scenario-details">
+          <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${scenario.contents.id.replace('c', '')}.png`" />
+          <span>{{scenario.contents.name.title}}</span>
+        </div>
 
         <div class="game-delete">
           <a href="#delete" @click.prevent="deleteId = game.id"><font-awesome-icon icon="trash" /></a>
         </div>
-      </div>
-      <div v-if="game.scenario" class="scenario-details">
-        <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${scenario.contents.id.replace('c', '')}.png`" />
-        <span>{{scenario.contents.name.title}}</span>
       </div>
       <div class="investigators">
         <div
@@ -71,7 +71,6 @@ h2 {
   background-color: #15192C;
   border-left: 10px solid #6e8640;
   color: #f0f0f0;
-  padding: 10px;
   border-radius: 3px;
   margin-bottom: 10px;
   a {
@@ -119,10 +118,12 @@ h2 {
 .scenario-details {
   display: flex;
   background-color: #333;
-  padding: 10px;
-  margin-top: 10px;
+  padding: 5px 10px;
+  margin-left: 10px;
+  margin-right: 10px;
   border-radius: 10px;
   align-items: center;
+  flex: 1;
   span {
     line-height: 25px;
   }
@@ -159,12 +160,15 @@ h2 {
 .investigators {
   margin-top: 10px;
   display: flex;
+  background: rgba(255,255,255,0.02);
+  padding: 10px;
 }
 
 .game-title {
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding: 10px;
 }
 
 .finished-game {

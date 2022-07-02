@@ -14,7 +14,7 @@ export interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), { portrait: false })
-const emit = defineEmits(['showCards'])
+const emit = defineEmits(['showCards', 'choose'])
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 const id = computed(() => props.player.contents.id)

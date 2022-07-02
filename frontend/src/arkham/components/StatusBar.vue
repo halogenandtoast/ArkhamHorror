@@ -11,7 +11,10 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+const emit = defineEmits(['choose'])
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+const choose = (idx: number) => emit.choose(idx)
 
 const applyResultsAction = computed(() => {
   return choices.value.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
@@ -69,7 +72,7 @@ const testResult = computed(() => {
 
     <div v-if="cardLabels.length > 0">
       <template v-for="[choice, index] in cardLabels" :key="index">
-        <a href='#' @click.prevent="$emit('choose', index)">
+        <a href='#' @click.prevent="choose(index)">
           <img class="card" :src="cardLabelImage(choice.contents[0])"/>
         </a>
       </template>
@@ -79,15 +82,15 @@ const testResult = computed(() => {
     <div class="choices">
       <template v-for="(choice, index) in choices" :key="index">
         <div v-if="choice.tag === MessageType.AFTER_DISCOVER_CLUES">
-          <span>You got some clues</span> <button @click="$emit('choose', index)">Continue</button>
+          <span>You got some clues</span> <button @click="choose(index)">Continue</button>
         </div>
 
         <div v-if="choice.tag === MessageType.CONTINUE">
-          <button @click="$emit('choose', index)">{{choice.contents}}</button>
+          <button @click="choose(index)">{{choice.contents}}</button>
         </div>
 
         <div v-if="choice.tag === MessageType.DONE">
-          <button @click="$emit('choose', index)">{{choice.contents}}</button>
+          <button @click="choose(index)">{{choice.contents}}</button>
         </div>
 
         <div
@@ -101,36 +104,36 @@ const testResult = computed(() => {
               :key="index"
             >{{paragraph}}</p>
           </div>
-          <button @click="$emit('choose', index)">{{choice.contents[0].contents}}</button>
+          <button @click="choose(index)">{{choice.contents[0].contents}}</button>
         </div>
 
         <div v-if="choice.tag === MessageType.LABEL">
-          <button v-if="choice.contents[0] == 'Choose {skull}'" @click="$emit('choose', index)">
+          <button v-if="choice.contents[0] == 'Choose {skull}'" @click="choose(index)">
             Choose <i class="iconSkull"></i>
           </button>
-          <button v-else-if="choice.contents[0] == 'Choose {cultist}'" @click="$emit('choose', index)">
+          <button v-else-if="choice.contents[0] == 'Choose {cultist}'" @click="choose(index)">
             Choose <i class="iconCultist"></i>
           </button>
-          <button v-else-if="choice.contents[0] == 'Choose {tablet}'" @click="$emit('choose', index)">
+          <button v-else-if="choice.contents[0] == 'Choose {tablet}'" @click="choose(index)">
             Choose <i class="iconTablet"></i>
           </button>
-          <button v-else-if="choice.contents[0] == 'Choose {elderThing}'" @click="$emit('choose', index)">
+          <button v-else-if="choice.contents[0] == 'Choose {elderThing}'" @click="choose(index)">
             Choose <i class="iconElderThing"></i>
           </button>
-          <button v-else @click="$emit('choose', index)">{{choice.contents[0]}}</button>
+          <button v-else @click="choose(index)">{{choice.contents[0]}}</button>
         </div>
 
         <a
           v-if="choice.tag === MessageType.SKILL_LABEL"
           class="button"
-          @click="$emit('choose', index)"
+          @click="choose(index)"
         >
           Use <i :class="`icon${choice.contents[0]}`"></i>
         </a>
 
         <button
           v-if="applyResultsAction !== -1"
-          @click="$emit('choose', applyResultsAction)"
+          @click="choose(applyResultsAction)"
         >Apply Results</button>
       </template>
     </div>

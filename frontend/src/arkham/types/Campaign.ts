@@ -83,6 +83,7 @@ export interface CampaignContents {
   id: string;
   log: LogContents;
   step: CampaignStep | null;
+  difficulty: string;
 }
 
 export const logContentsDecoder = JsonDecoder.object<LogContents>({
@@ -93,6 +94,7 @@ export const logContentsDecoder = JsonDecoder.object<LogContents>({
 export const campaignContentsDecoder = JsonDecoder.object<CampaignContents>({
   name: JsonDecoder.string,
   id: JsonDecoder.string,
+  difficulty: JsonDecoder.string,
   log: logContentsDecoder,
   step: JsonDecoder.nullable(campaignStepDecoder)
 }, 'CampaignContents');

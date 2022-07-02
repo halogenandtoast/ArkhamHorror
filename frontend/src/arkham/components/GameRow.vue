@@ -15,7 +15,13 @@ const scenario = computed<Scenario | null>(() => props.game.scenario)
 
 const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
-const difficulty = computed<Difficulty>(() => scenario.value.contents.difficulty)
+const difficulty = computed<Difficulty>(() => {
+  if (campaign.value) {
+    return campaign.value.contents.difficulty
+  }
+
+  return scenario.value.contents.difficulty
+})
 </script>
 
 <template>

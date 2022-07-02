@@ -43,9 +43,12 @@ export const fetchDecks = (): Promise<Deck[]> => api
   .get('arkham/decks')
   .then((resp) => JsonDecoder.array(deckDecoder, 'ArkhamDeck[]').decodeToPromise(resp.data));
 
-export const fetchCards = (): Promise<CardDef[]> => api
-  .get('arkham/cards')
+export const fetchCards = (includeEncounter = false): Promise<CardDef[]> => {
+  const query = includeEncounter ? "?includeEncounter" : ""
+  return api
+  .get(`arkham/cards${query}`)
   .then((resp) => JsonDecoder.array(cardDefDecoder, 'ArkhamCardDef[]').decodeToPromise(resp.data));
+}
 
 export const fetchInvestigators = (): Promise<Investigator[]> => api
   .get('arkham/investigators')

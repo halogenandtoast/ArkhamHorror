@@ -403,7 +403,11 @@ getCampaign = modeCampaign . view modeL <$> getGame
 -- Todo: this is rough because it won't currently work, we need to calc modifiers outside of GameT
 withModifiers :: (Monad m, HasGame m, TargetEntity a) => a -> m (With a ModifierData)
 withModifiers a = do
-  source <- InvestigatorSource <$> selectJust TurnInvestigator
+  mTurnInvestigator <- selectOne TurnInvestigator
+  mLeadInvestigator <- selectOne LeadInvestigator
+  someone <- selectJust Anyone
+
+  let source = InvestigatorSource $ fromMaybe someone (mTurnInvestigator <|> mLeadInvestigator)
   modifiers' <- getModifiersFor source (toTarget a) ()
   pure $ a `with` ModifierData modifiers'
 

@@ -28,6 +28,7 @@ instance HasAbilities Venturer where
           (OwnsThis <> AssetExists
             (AssetControlledBy (InvestigatorAt YourLocation)
             <> AssetOneOf [AssetWithUseType Supply, AssetWithUseType Ammo]
+            <> NotAsset (AssetWithId $ toId a)
             )
           )
         $ FastAbility
@@ -38,8 +39,11 @@ instance HasAbilities Venturer where
 instance RunMessage Venturer where
   runMessage msg a@(Venturer attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      supplyAssets <- selectList $ AssetWithUseType Supply <> AssetControlledBy
-        (colocatedWith iid)
+      supplyAssets <-
+        selectList
+        $ AssetWithUseType Supply
+        <> AssetControlledBy (colocatedWith iid)
+        <> NotAsset (AssetWithId $ toId attrs)
       ammoAssets <- selectList $ AssetWithUseType Ammo <> AssetControlledBy
         (colocatedWith iid)
       push

@@ -1160,6 +1160,9 @@ getAssetsMatching matcher = do
     , not . cdPermanent . toCardDef . toAttrs
     ]
   filterMatcher as = \case
+    NotAsset matcher' -> do
+      matches' <- getAssetsMatching matcher'
+      pure $ filter (`notElem` matches') as
     AnyAsset -> pure as
     AssetWithTitle title ->
       pure $ filter ((== title) . nameTitle . toName . toAttrs) as

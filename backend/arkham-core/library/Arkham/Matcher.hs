@@ -184,6 +184,7 @@ data AssetMatcher
   | AssetIs CardCode
   | AssetCardMatch CardMatcher
   | AnyAsset
+  | NotAsset AssetMatcher
   | EnemyAsset EnemyId
   | AssetAt LocationMatcher
   | DiscardableAsset

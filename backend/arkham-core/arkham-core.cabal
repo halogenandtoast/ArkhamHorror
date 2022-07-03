@@ -267,6 +267,7 @@ library
       Arkham.Asset.Cards.InnocentReveler
       Arkham.Asset.Cards.InTheKnow1
       Arkham.Asset.Cards.IshimaruHaruko
+      Arkham.Asset.Cards.JakeWilliams
       Arkham.Asset.Cards.JazzMulligan
       Arkham.Asset.Cards.JennysTwin45s
       Arkham.Asset.Cards.JewelOfAureolus3
@@ -825,6 +826,7 @@ library
       Arkham.Investigator.Cards.SefinaRousseau
       Arkham.Investigator.Cards.SkidsOToole
       Arkham.Investigator.Cards.StellaClark
+      Arkham.Investigator.Cards.UrsulaDowns
       Arkham.Investigator.Cards.WendyAdams
       Arkham.Investigator.Cards.WilliamYorick
       Arkham.Investigator.Cards.ZoeySamaras

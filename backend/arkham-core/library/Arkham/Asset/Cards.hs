@@ -217,6 +217,7 @@ allPlayerAssetCards = mapFromList $ map
   , maskedCarnevaleGoer_21
   , meatCleaver
   , medicalTexts
+  , mitchBrown
   , monstrousTransformation
   , moxie1
   , newspaper
@@ -288,6 +289,7 @@ allPlayerAssetCards = mapFromList $ map
   , trenchKnife
   , trueGrit
   , tryAndTryAgain3
+  , venturer
   , wendysAmulet
   , whittonGreene
   , zebulonWhateley
@@ -1810,6 +1812,24 @@ thePallidMask :: CardDef
 thePallidMask = (asset "03321b" ("The Pallid Mask" <:> "Chasing Tails") 0 Neutral)
   { cdCardTraits = setFromList [Item, Relic]
   , cdRevelation = True
+  }
+
+mitchBrown :: CardDef
+mitchBrown = (asset "04006" ("Mitch Brown" <:> "Sole Surviror") 3 Neutral
+               )
+  { cdSkills = [SkillWild, SkillWild]
+  , cdCardTraits = setFromList [Ally, Wayfarer]
+  , cdSlots = [AllySlot]
+  , cdUnique = True
+  }
+
+venturer :: CardDef
+venturer = (asset "04018" "Venturer" 4 Guardian
+               )
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Ally, Wayfarer]
+  , cdSlots = [AllySlot]
+  , cdUses = Uses Supply 3
   }
 
 toothOfEztli :: CardDef

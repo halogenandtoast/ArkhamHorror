@@ -1234,13 +1234,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
   InvestigatorPlayAsset iid aid | iid == investigatorId -> do
     slotTypes <- field AssetSlots aid
-    traits <- fieldMap AssetTraits setToList aid
-    a <$ if fitsAvailableSlots slotTypes traits a
+    assetCard <- field AssetCard aid
+    a <$ if fitsAvailableSlots slotTypes assetCard a
       then push (InvestigatorPlayedAsset iid aid)
       else do
         let
           missingSlotTypes = slotTypes \\ concatMap
-            (\slotType -> availableSlotTypesFor slotType traits a)
+            (\slotType -> availableSlotTypesFor slotType assetCard a)
             (nub slotTypes)
         assetsThatCanProvideSlots <-
           selectList
@@ -1259,10 +1259,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorPlayedAsset iid aid | iid == investigatorId -> do
     let assetsUpdate = assetsL %~ insertSet aid
     slotTypes <- field AssetSlots aid
-    traits <- fieldMap AssetTraits setToList aid
+    assetCard <- field AssetCard aid
     pure $ foldl'
       (\a' slotType ->
-        a' & slotsL . ix slotType %~ placeInAvailableSlot aid traits
+        a' & slotsL . ix slotType %~ placeInAvailableSlot aid assetCard
       )
       (a & assetsUpdate)
       slotTypes
@@ -1391,17 +1391,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       slots = handleSlotModifiers modifiers'
         $ findWithDefault [] slotType investigatorSlots
       emptiedSlots = sort $ map emptySlot slots
-    assetsWithTraits <- for assetIds $ \assetId -> do
-      traits <- fieldMap AssetTraits setToList assetId
-      pure (assetId, traits)
+    assetsWithCards <- for assetIds $ \assetId -> do
+      assetCard <- field AssetCard assetId
+      pure (assetId, assetCard)
     let
       updatedSlots = foldl'
-        (\s (aid, ts) -> if any (canPutIntoSlot ts) s
-          then placeInAvailableSlot aid ts s
+        (\s (aid, card) -> if any (canPutIntoSlot card) s
+          then placeInAvailableSlot aid card s
           else s
         )
         emptiedSlots
-        assetsWithTraits
+        assetsWithCards
     if length (mapMaybe slotItem updatedSlots) == length assetIds
       then pure $ a & slotsL %~ insertMap slotType updatedSlots
       else do

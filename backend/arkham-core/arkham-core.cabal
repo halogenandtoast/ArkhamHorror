@@ -306,6 +306,7 @@ library
       Arkham.Asset.Cards.MaskedCarnevaleGoer_21
       Arkham.Asset.Cards.MeatCleaver
       Arkham.Asset.Cards.MedicalTexts
+      Arkham.Asset.Cards.MitchBrown
       Arkham.Asset.Cards.MonstrousTransformation
       Arkham.Asset.Cards.Moxie1
       Arkham.Asset.Cards.MrPeabody
@@ -381,6 +382,7 @@ library
       Arkham.Asset.Cards.TrenchKnife
       Arkham.Asset.Cards.TrueGrit
       Arkham.Asset.Cards.TryAndTryAgain3
+      Arkham.Asset.Cards.Venturer
       Arkham.Asset.Cards.WendysAmulet
       Arkham.Asset.Cards.WhittonGreene
       Arkham.Asset.Cards.ZebulonWhateley
@@ -797,6 +799,7 @@ library
       Arkham.Helpers.Query
       Arkham.Helpers.Scenario
       Arkham.Helpers.SkillTest
+      Arkham.Helpers.Slot
       Arkham.Helpers.Window
       Arkham.Helpers.Xp
       Arkham.History
@@ -811,6 +814,7 @@ library
       Arkham.Investigator.Cards.DaisyWalkerParallel
       Arkham.Investigator.Cards.JennyBarnes
       Arkham.Investigator.Cards.JimCulver
+      Arkham.Investigator.Cards.LeoAnderson
       Arkham.Investigator.Cards.LolaHayes
       Arkham.Investigator.Cards.MarkHarrigan
       Arkham.Investigator.Cards.MinhThiPhan
@@ -1230,6 +1234,7 @@ library
       Arkham.Treachery.Cards.BeastOfTheBayou
       Arkham.Treachery.Cards.BeyondTheVeil
       Arkham.Treachery.Cards.BlackStarsRise
+      Arkham.Treachery.Cards.BoughtInBlood
       Arkham.Treachery.Cards.BrokenRails
       Arkham.Treachery.Cards.CalledByTheMists
       Arkham.Treachery.Cards.ChaosInTheWater

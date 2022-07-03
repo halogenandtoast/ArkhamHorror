@@ -4,54 +4,27 @@ import Arkham.Prelude
 
 import Arkham.AssetId
 import Arkham.SlotType as X
+import Arkham.Matcher
 import Arkham.Source
-import Arkham.Trait
+import Arkham.Trait (Trait)
 
-data Slot = Slot Source (Maybe AssetId) | TraitRestrictedSlot Source Trait (Maybe AssetId)
+pattern TraitRestrictedSlot :: Source -> Trait -> Maybe AssetId -> Slot
+pattern TraitRestrictedSlot source trait massetId <- RestrictedSlot source (CardWithTrait trait) massetId where
+  TraitRestrictedSlot source trait massetId = RestrictedSlot source (CardWithTrait trait) massetId
+
+data Slot = Slot Source (Maybe AssetId) | RestrictedSlot Source CardMatcher (Maybe AssetId)
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 instance Eq Slot where
-  TraitRestrictedSlot{} == TraitRestrictedSlot{} = True
+  RestrictedSlot{} == RestrictedSlot{} = True
   Slot{} == Slot{} = True
   _ == _ = False
 
 -- We want slots sorted by most restrictive, so assets take up the best match
 instance Ord Slot where
-  TraitRestrictedSlot{} <= _ = True
+  RestrictedSlot{} <= _ = True
   Slot{} <= Slot{} = True
   Slot{} <= _ = False
 
 newtype PotentialSlot = PotentialSlot { unPotentialSlot :: SlotType }
-
-
-isEmptySlot :: Slot -> Bool
-isEmptySlot = isNothing . slotItem
-
-canPutIntoSlot :: [Trait] -> Slot -> Bool
-canPutIntoSlot traits = \case
-  slot@Slot{} -> isEmptySlot slot
-  tslot@(TraitRestrictedSlot _ t _) -> isEmptySlot tslot && t `elem` traits
-
-putIntoSlot :: AssetId -> Slot -> Slot
-putIntoSlot aid = \case
-  Slot source _ -> Slot source (Just aid)
-  TraitRestrictedSlot source t _ -> TraitRestrictedSlot source t (Just aid)
-
-emptySlot :: Slot -> Slot
-emptySlot = \case
-  Slot source _ -> Slot source Nothing
-  TraitRestrictedSlot source t _ -> TraitRestrictedSlot source t Nothing
-
-slotItem :: Slot -> Maybe AssetId
-slotItem = \case
-  Slot _ masset -> masset
-  TraitRestrictedSlot _ _ masset -> masset
-
-removeIfMatches :: AssetId -> Slot -> Slot
-removeIfMatches aid = \case
-  Slot source masset ->
-    if masset == Just aid then Slot source Nothing else Slot source masset
-  TraitRestrictedSlot source trait masset -> if masset == Just aid
-    then TraitRestrictedSlot source trait Nothing
-    else TraitRestrictedSlot source trait masset

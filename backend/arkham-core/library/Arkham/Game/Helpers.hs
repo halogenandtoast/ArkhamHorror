@@ -10,6 +10,7 @@ import Arkham.Helpers.Ability as X
 import Arkham.Helpers.Modifiers as X
 import Arkham.Helpers.Query as X
 import Arkham.Helpers.Scenario as X
+import Arkham.Helpers.Slot as X
 import Arkham.Helpers.Window as X
 import Arkham.Helpers.Xp as X
 
@@ -55,7 +56,6 @@ import Arkham.Skill.Attrs ( Field (..) )
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
 import Arkham.SkillType
-import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -702,7 +702,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     passesSlots <- if null (cdSlots pcDef)
       then pure True
       else do
-        possibleSlots <- getPotentialSlots (cdCardTraits pcDef) iid
+        possibleSlots <- getPotentialSlots c iid
         pure $ null $ cdSlots pcDef \\ possibleSlots
 
     pure
@@ -864,6 +864,11 @@ passesCriteria iid source windows' = \case
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
   Criteria.ExtendedCardExists cardMatcher -> selectAny cardMatcher
   Criteria.PlayableCardExistsWithCostReduction n cardMatcher -> do
+    mTurnInvestigator <- selectOne Matcher.TurnInvestigator
+    let
+      updatedWindows = case mTurnInvestigator of
+        Nothing -> windows'
+        Just tIid -> nub $ Window Timing.When (Window.DuringTurn tIid) : windows'
     availableResources <- field InvestigatorResources iid
     results <- selectList cardMatcher
     anyM
@@ -872,12 +877,17 @@ passesCriteria iid source windows' = \case
         source
         (availableResources + n)
         UnpaidCost
-        windows'
+        updatedWindows
       )
       results
   Criteria.PlayableCardExists cardMatcher -> do
+    mTurnInvestigator <- selectOne Matcher.TurnInvestigator
+    let
+      updatedWindows = case mTurnInvestigator of
+        Nothing -> windows'
+        Just tIid -> nub $ Window Timing.When (Window.DuringTurn tIid) : windows'
     results <- selectList cardMatcher
-    anyM (getIsPlayable iid source UnpaidCost windows') results
+    anyM (getIsPlayable iid source UnpaidCost updatedWindows) results
   Criteria.PlayableCardInDiscard discardSignifier cardMatcher -> do
     let
       investigatorMatcher = case discardSignifier of
@@ -2122,15 +2132,15 @@ getDoomCount = getSum . fold <$> sequence
   ]
 
 getPotentialSlots
-  :: (Monad m, HasGame m) => HashSet Trait -> InvestigatorId -> m [SlotType]
-getPotentialSlots traits iid = do
+  :: (Monad m, HasGame m, IsCard a) => a -> InvestigatorId -> m [SlotType]
+getPotentialSlots card iid = do
   slots <- field InvestigatorSlots iid
   let
     slotTypesAndSlots :: [(SlotType, Slot)] =
       concatMap (\(slotType, slots') -> map (slotType, ) slots')
         $ mapToList slots
     passesRestriction = \case
-      TraitRestrictedSlot _ t _ -> t `member` traits
+      RestrictedSlot _ matcher _ -> cardMatch card matcher
       Slot{} -> True
   map fst
     <$> filterM

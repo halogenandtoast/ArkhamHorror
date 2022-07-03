@@ -83,6 +83,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , amnesia
   , angeredSpirits
   , atychiphobia
+  , boughtInBlood
   , calledByTheMists
   , chronophobia
   , coverUp
@@ -827,6 +828,11 @@ possessionMurderous = (treachery "03342" "Possession (Murderous)" DimCarcosa 1)
   { cdCardTraits = setFromList [Hex, Terror]
   , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
   , cdCardInHandEffects = True
+  }
+
+boughtInBlood :: CardDef
+boughtInBlood = (weakness "04007" "Bought in Blood")
+  { cdCardTraits = singleton Flaw
   }
 
 theHarbinger :: CardDef

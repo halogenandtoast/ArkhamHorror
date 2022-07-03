@@ -426,7 +426,10 @@ getCanAffordCost iid source mAction windows' = \case
     pure $ length (filter (`cardMatch` cardMatcher) cards) >= n
 
 getActions :: (Monad m, HasGame m) => InvestigatorId -> Window -> m [Ability]
-getActions iid window = do
+getActions iid window = getActionsWith iid window id
+
+getActionsWith :: (Monad m, HasGame m) => InvestigatorId -> Window -> (Ability -> Ability) -> m [Ability]
+getActionsWith iid window f = do
   modifiersForFilter <- getModifiers
     (InvestigatorSource iid)
     (InvestigatorTarget iid)
@@ -437,7 +440,7 @@ getActions iid window = do
         _ -> Nothing
       )
       modifiersForFilter
-  unfilteredActions <- nub <$> getAllAbilities
+  unfilteredActions <- map f . nub <$> getAllAbilities
   actions' <- if null abilityFilters
     then pure unfilteredActions
     else do

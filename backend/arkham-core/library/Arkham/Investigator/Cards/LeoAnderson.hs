@@ -89,7 +89,7 @@ instance RunMessage LeoAnderson where
       pure i
     UseCardAbilityChoiceTarget iid source _ 1 _ (CardIdTarget cid)
       | isSource attrs source -> do
-        pushAll [PayCardCost iid cid, PlayCard iid cid Nothing False]
+        pushAll [PayCardCost iid cid, PlayCard iid cid Nothing False, ResetMetadata (toTarget attrs)]
         pure . LeoAnderson $ attrs `with` Metadata (Just cid)
     ResetMetadata (isTarget attrs -> True) ->
       pure . LeoAnderson $ attrs `with` Metadata Nothing

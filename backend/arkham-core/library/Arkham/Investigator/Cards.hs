@@ -75,6 +75,7 @@ allInvestigatorCards =
       , williamYorick
       , lolaHayes
       , leoAnderson
+      , ursulaDowns
       , normanWithers
       , nathanielCho
       , stellaClark
@@ -131,6 +132,9 @@ lolaHayes = investigator "03006" ("Lola Hayes" <:> "The Actress") Neutral [Perfo
 
 leoAnderson :: CardDef
 leoAnderson = investigator "04001" ("Leo Anderson" <:> "The Expedition Leader") Guardian [Veteran, Wayfarer]
+
+ursulaDowns :: CardDef
+ursulaDowns = investigator "04002" ("Ursula Downs" <:> "The Explorer") Seeker [Wayfarer]
 
 normanWithers :: CardDef
 normanWithers = investigator "08004" ("Norman Withers" <:> "The Astronomer") Seeker [Miskatonic]

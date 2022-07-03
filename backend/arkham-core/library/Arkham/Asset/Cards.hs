@@ -181,6 +181,7 @@ allPlayerAssetCards = mapFromList $ map
   , hyperawareness2
   , innocentReveler
   , inTheKnow1
+  , jakeWilliams
   , jennysTwin45s
   , jewelOfAureolus3
   , jimsTrumpet
@@ -1818,6 +1819,15 @@ mitchBrown :: CardDef
 mitchBrown = (asset "04006" ("Mitch Brown" <:> "Sole Surviror") 3 Neutral
                )
   { cdSkills = [SkillWild, SkillWild]
+  , cdCardTraits = setFromList [Ally, Wayfarer]
+  , cdSlots = [AllySlot]
+  , cdUnique = True
+  }
+
+jakeWilliams :: CardDef
+jakeWilliams = (asset "04008" ("Jake Williams" <:> "Loyal Companion") 3 Neutral
+               )
+  { cdSkills = [SkillIntellect, SkillWild]
   , cdCardTraits = setFromList [Ally, Wayfarer]
   , cdSlots = [AllySlot]
   , cdUnique = True

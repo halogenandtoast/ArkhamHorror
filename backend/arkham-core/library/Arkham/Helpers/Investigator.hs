@@ -11,6 +11,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
+import Arkham.Helpers.Slot
 import Arkham.Id
 import Arkham.SkillTest.Base
 import Arkham.Investigator.Attrs
@@ -18,11 +19,9 @@ import Arkham.Treachery.Attrs ( Field (..) )
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Slot
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
-import Arkham.Trait
 import Control.Monad.Extra (orM)
 import Data.Foldable (foldrM)
 
@@ -136,24 +135,24 @@ removeFromSlots
   :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
-fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool
-fitsAvailableSlots slotTypes traits a = null
+fitsAvailableSlots :: IsCard a => [SlotType] -> a -> InvestigatorAttrs -> Bool
+fitsAvailableSlots slotTypes cardDef a = null
   (slotTypes \\ concatMap
-    (\slotType -> availableSlotTypesFor slotType traits a)
+    (\slotType -> availableSlotTypesFor slotType cardDef a)
     (nub slotTypes)
   )
 
-availableSlotTypesFor :: SlotType -> [Trait] -> InvestigatorAttrs -> [SlotType]
-availableSlotTypesFor slotType traits a = case lookup slotType (a ^. slotsL) of
+availableSlotTypesFor :: IsCard a => SlotType -> a -> InvestigatorAttrs -> [SlotType]
+availableSlotTypesFor slotType a attrs = case lookup slotType (attrs ^. slotsL) of
   Nothing -> []
   Just slots ->
-    replicate (length (filter (canPutIntoSlot traits) slots)) slotType
+    replicate (length (filter (canPutIntoSlot a) slots)) slotType
 
-placeInAvailableSlot :: AssetId -> [Trait] -> [Slot] -> [Slot]
+placeInAvailableSlot :: IsCard a => AssetId -> a -> [Slot] -> [Slot]
 placeInAvailableSlot _ _ [] = []
-placeInAvailableSlot aid traits (x : xs) = if canPutIntoSlot traits x
+placeInAvailableSlot aid card (x : xs) = if canPutIntoSlot card x
   then putIntoSlot aid x : xs
-  else x : placeInAvailableSlot aid traits xs
+  else x : placeInAvailableSlot aid card xs
 
 discardableCards :: InvestigatorAttrs -> [Card]
 discardableCards InvestigatorAttrs {..} =

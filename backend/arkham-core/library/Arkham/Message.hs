@@ -580,6 +580,8 @@ data Message
   | UnsetActiveCard
   | UseCardAbility InvestigatorId Source [Window] Int Payment
   | UseCardAbilityChoice InvestigatorId Source [Window] Int Payment AbilityMetadata
+  | UseCardAbilityChoiceTarget InvestigatorId Source [Window] Int Payment Target
+  | ResetMetadata Target
   | When Message
   | WhenWillEnterLocation InvestigatorId LocationId
   | EnterLocation InvestigatorId LocationId

@@ -81,20 +81,20 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
     ForcedAbility _ -> pure ()
     SilentForcedAbility _ -> pure ()
     ForcedAbilityWithCost _ cost ->
-      push (PayAbilityCost abilitySource iid Nothing False cost)
+      push (PayCost abilitySource iid Nothing False cost)
     AbilityEffect cost ->
-      push (PayAbilityCost abilitySource iid Nothing False cost)
+      push (PayCost abilitySource iid Nothing False cost)
     FastAbility cost ->
-      push (PayAbilityCost abilitySource iid Nothing False cost)
+      push (PayCost abilitySource iid Nothing False cost)
     ReactionAbility _ cost ->
-      push (PayAbilityCost abilitySource iid Nothing False cost)
+      push (PayCost abilitySource iid Nothing False cost)
     ActionAbilityWithBefore mAction _ cost -> do
       -- we do not know which ability will be chosen
       -- for now we assume this will trigger attacks of opportunity
       -- we also skip additional cost checks and abilities of this type
       -- will need to trigger the appropriate check
       pushAll
-        (PayAbilityCost abilitySource iid mAction True cost
+        (PayCost abilitySource iid mAction True cost
         : [ TakenAction iid action | action <- maybeToList mAction ]
         <> [ CheckAttackOfOpportunity iid False
            | not abilityDoesNotProvokeAttacksOfOpportunity
@@ -108,14 +108,14 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
                     , Just Action.Parley
                     ]
         then pushAll
-          (PayAbilityCost abilitySource iid mAction False cost
+          (PayCost abilitySource iid mAction False cost
           : [ TakenAction iid action | action <- maybeToList mAction ]
           <> [ CheckAttackOfOpportunity iid False
              | not abilityDoesNotProvokeAttacksOfOpportunity
              ]
           )
         else pushAll
-          (PayAbilityCost abilitySource iid mAction False cost
+          (PayCost abilitySource iid mAction False cost
           : [ TakenAction iid action | action <- maybeToList mAction ]
           )
     ActionAbility mAction cost -> do
@@ -128,7 +128,7 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
         pushAll
           ([ BeginAction
            , beforeWindowMsg
-           , PayAbilityCost abilitySource iid mAction False cost
+           , PayCost abilitySource iid mAction False cost
            , TakenAction iid action
            ]
           <> [ CheckAttackOfOpportunity iid False
@@ -139,7 +139,7 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
         pushAll
           $ [ BeginAction
             , beforeWindowMsg
-            , PayAbilityCost abilitySource iid mAction False cost
+            , PayCost abilitySource iid mAction False cost
             , TakenAction iid action
             ]
 
@@ -189,8 +189,8 @@ instance RunMessage ActiveCost where
             --   iid
             --   [ Label
             --     "Pay dynamic cost"
-            --     [ PayAbilityCost source iid mAction skipAdditionalCosts cost'
-            --     , PayAbilityCost
+            --     [ PayCost source iid mAction skipAdditionalCosts cost'
+            --     , PayCost
             --       source
             --       iid
             --       mAction

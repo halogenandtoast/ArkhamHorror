@@ -6,9 +6,8 @@ module Arkham.Enemy.Cards.DiscipleOfTheDevourer
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.AgendaId
 import Arkham.Agenda.Attrs (Field(..))
-import Arkham.Agenda.Sequence (agendaStep)
+import Arkham.Agenda.Sequence (agendaStep, AgendaStep(..))
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner

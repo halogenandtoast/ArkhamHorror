@@ -12,7 +12,6 @@ import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Agenda.Attrs ( Field (..) )
 import Arkham.Agenda.Sequence qualified as AS
-import Arkham.AgendaId
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
@@ -71,7 +70,7 @@ instance RunMessage RicesWhereabouts where
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       agendaId <- selectJust AnyAgenda
-      step <- fieldMap AgendaSequence (unAgendaStep . AS.agendaStep) agendaId
+      step <- fieldMap AgendaSequence (AS.unAgendaStep . AS.agendaStep) agendaId
       alchemyLabsInPlay <- isJust
         <$> selectOne (LocationWithTitle "Alchemy Labs")
       completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios

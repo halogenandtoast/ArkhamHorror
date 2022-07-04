@@ -2,7 +2,7 @@ module Arkham.Slot (module X, module Arkham.Slot) where
 
 import Arkham.Prelude
 
-import Arkham.AssetId
+import Arkham.Id
 import Arkham.SlotType as X
 import Arkham.Matcher
 import Arkham.Source

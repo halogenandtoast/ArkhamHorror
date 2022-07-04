@@ -6,7 +6,6 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Card.Id
-import Arkham.EffectId
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Phase

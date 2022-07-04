@@ -7,7 +7,7 @@ import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Effect.Window
-import Arkham.EffectId
+import Arkham.Id
 import Arkham.EffectMetadata
 import Arkham.Json
 import Arkham.Message

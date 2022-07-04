@@ -75,12 +75,7 @@ instance RunMessage PassengerCar_169 where
               [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2]
             , Label
               "Discard cards with at least 2 {willpower} icons"
-              [ CreatePayAbilityCostEffect
-                  (abilityEffect attrs cost)
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-                  []
-              ]
+              [ PayForAbility (abilityEffect attrs cost) [] ]
             ]
           )
         else push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2)

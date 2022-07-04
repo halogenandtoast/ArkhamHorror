@@ -241,7 +241,7 @@ instance RunMessage LostInTimeAndSpace where
           ]
     ScenarioResolution NoResolution -> do
       actId <- selectJust AnyAct
-      step <- fieldMap ActSequence (unActStep . AS.actStep) actId
+      step <- fieldMap ActSequence (AS.unActStep . AS.actStep) actId
       push (ScenarioResolution . Resolution $ if step == 4 then 2 else 4)
       pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution 1) -> do

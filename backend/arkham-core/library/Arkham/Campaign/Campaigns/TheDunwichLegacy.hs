@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Runner
-import Arkham.CampaignId
+import Arkham.Id
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.CampaignStep
@@ -14,7 +14,6 @@ import Arkham.Difficulty
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
-import Arkham.InvestigatorId
 import Arkham.Message
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs

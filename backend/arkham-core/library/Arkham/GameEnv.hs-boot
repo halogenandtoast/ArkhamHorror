@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes.HasQueue
 import Arkham.Distance
-import Arkham.LocationId
+import Arkham.Id
 import Arkham.Phase
 import Arkham.SkillTest.Base
 

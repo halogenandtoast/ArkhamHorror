@@ -19,7 +19,6 @@ import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
 import Arkham.Campaign.Attrs
-import Arkham.CampaignId
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.Id
@@ -177,7 +176,7 @@ data Game = Game
   , gameActionDiff :: [Diff.Patch]
   , gameInAction :: Bool
   , -- handling costs
-    gameActiveCost :: Maybe ActiveCost
+    gameActiveCost :: HashMap ActiveCostId ActiveCost
   }
   deriving stock (Eq, Show)
 
@@ -280,7 +279,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameActionCanBeUndone = False
       , gameActionDiff = []
       , gameInAction = False
-      , gameActiveCost = Nothing
+      , gameActiveCost = mempty
       }
     )
  where
@@ -2280,17 +2279,22 @@ runGameMessage msg g = case msg of
         target
       )
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
-  CreatePayAbilityCostEffect ability source _target windows' -> do
+  PayForAbility ability windows' -> do
+    acId <- getRandom
+    iid <- toId <$> getActiveInvestigator
     let
       activeCost = ActiveCost
-        { activeCostCosts = abilityCost ability
+        { activeCostId = acId
+        , activeCostCosts = abilityCost ability
         , activeCostPayments = Cost.NoPayment
         , activeCostTarget = ForAbility ability
         , activeCostWindows = windows'
+        , activeCostInvestigator = iid
         }
-    iid <- toId <$> getActiveInvestigator
-    push $ CreatedCost iid source
-    pure $ g & activeCostL ?~ activeCost
+    push $ CreatedCost acId
+    pure $ g & activeCostL %~ insertMap acId activeCost
+  PayCostFinished acId ->
+    pure $ g & activeCostL %~ deleteMap acId
   CreateWindowModifierEffect effectWindow effectMetadata source target -> do
     (effectId, effect) <- createWindowModifierEffect
       effectWindow
@@ -2483,7 +2487,7 @@ runGameMessage msg g = case msg of
           push (InvestigatorCommittedSkill iid skillId)
           for_ (skillAdditionalCost $ toAttrs skill) $ \cost -> do
             let ability = abilityEffect skill cost
-            push $ CreatePayAbilityCostEffect ability (toSource skill) (InvestigatorTarget iid) []
+            push $ PayForAbility ability []
           pure $ g & entitiesL . skillsL %~ insertMap skillId skill
         _ -> pure g
       _ -> pure g

@@ -7,7 +7,7 @@ import Arkham.Projection
 import Arkham.Matcher
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Classes.Query
-import Arkham.InvestigatorId
+import Arkham.Id
 import Arkham.Helpers.Scenario
 import Arkham.Campaign.Attrs ( Field (..) )
 import Arkham.Scenario.Attrs ( Field (..) )

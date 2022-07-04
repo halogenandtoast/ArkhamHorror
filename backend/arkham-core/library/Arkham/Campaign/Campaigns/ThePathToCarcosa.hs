@@ -6,7 +6,6 @@ module Arkham.Campaign.Campaigns.ThePathToCarcosa
 import Arkham.Prelude
 
 import Arkham.Campaign.Runner
-import Arkham.CampaignId
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.CampaignStep

@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Campaigns.NightOfTheZealot.Import
 import Arkham.Campaign.Runner
-import Arkham.CampaignId
+import Arkham.Id
 import Arkham.CampaignStep
 import Arkham.Classes
 import Arkham.Difficulty

@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Cost as X
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Id
 import Arkham.Matcher hiding ( FastPlayerWindow )
 import Arkham.Message
 import Arkham.Source

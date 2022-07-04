@@ -27,7 +27,6 @@ import Arkham.DamageEffect
 import Arkham.Deck
 import Arkham.Direction
 import Arkham.Effect.Window
-import Arkham.EffectId
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Exception
@@ -228,12 +227,12 @@ data Message
   | CreatedEnemyAt EnemyId LocationId Target
   | CreateEnemyAtLocationMatching Card LocationMatcher
   | CreateEnemyEngagedWithPrey Card
-  | CreatePayAbilityCostEffect Ability Source Target [Window]
   -- new payment bs
-  | CreatedCost InvestigatorId Source
-  | PayCost Source InvestigatorId (Maybe Action) Bool Cost
-  | PayCostFinished Source InvestigatorId
-  | PaidCost InvestigatorId (Maybe Action) Payment
+  | PayForAbility Ability [Window]
+  | CreatedCost ActiveCostId
+  | PayCost ActiveCostId Source InvestigatorId (Maybe Action) Bool Cost
+  | PayCostFinished ActiveCostId
+  | PaidCost ActiveCostId InvestigatorId (Maybe Action) Payment
   -- end  new payment bs
   | CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
   | CreateTokenEffect (EffectMetadata Window Message) Source Token

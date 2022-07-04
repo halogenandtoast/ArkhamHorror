@@ -8,7 +8,6 @@ import Arkham.Action (Action)
 import Arkham.Card.CardCode
 import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Card.PlayerCard
-import Arkham.EffectId
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.SkillType

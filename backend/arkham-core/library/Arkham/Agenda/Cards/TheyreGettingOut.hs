@@ -11,7 +11,6 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
@@ -38,7 +37,7 @@ instance RunMessage TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs) = case msg of
     AdvanceAgenda aid
       | aid == toId attrs && onSide B attrs -> do
-        actSequence <- fieldMap ActSequence (unActStep . AS.actStep) =<< selectJust AnyAct
+        actSequence <- fieldMap ActSequence (AS.unActStep . AS.actStep) =<< selectJust AnyAct
         let
           resolution = if actSequence `elem` [1, 2]
             then Resolution 3

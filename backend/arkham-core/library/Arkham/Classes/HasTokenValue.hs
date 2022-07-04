@@ -2,7 +2,7 @@ module Arkham.Classes.HasTokenValue where
 
 import Arkham.Prelude
 
-import Arkham.InvestigatorId
+import Arkham.Id
 import Arkham.Token
 import {-# SOURCE #-} Arkham.GameEnv
 

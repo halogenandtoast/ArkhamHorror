@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Agenda.Attrs ( Field (AgendaSequence) )
 import Arkham.Agenda.Sequence qualified as AS
-import Arkham.AgendaId
+import Arkham.Id
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
@@ -30,7 +30,7 @@ getStep Nothing = pure 3 -- if no agenda than act is 3
 getStep (Just agenda) = do
   side <- fieldMap AgendaSequence AS.agendaStep agenda
   case side of
-    AgendaStep step -> pure step
+    AS.AgendaStep step -> pure step
 
 instance RunMessage CrashingFloods where
   runMessage msg t@(CrashingFloods attrs) = case msg of

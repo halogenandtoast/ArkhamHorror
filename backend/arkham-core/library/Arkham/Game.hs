@@ -2280,20 +2280,17 @@ runGameMessage msg g = case msg of
         target
       )
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
-  CreatePayAbilityCostEffect ability source target windows' -> do
-    (effectId, effect) <- createPayForAbilityEffect
-      ability
-      source
-      target
-      windows'
-    push
-      (CreatedEffect
-        effectId
-        (Just $ EffectAbility (ability, windows'))
-        source
-        target
-      )
-    pure $ g & entitiesL . effectsL %~ insertMap effectId effect
+  CreatePayAbilityCostEffect ability source _target windows' -> do
+    let
+      activeCost = ActiveCost
+        { activeCostCosts = abilityCost ability
+        , activeCostPayments = Cost.NoPayment
+        , activeCostTarget = ForAbility ability
+        , activeCostWindows = windows'
+        }
+    iid <- toId <$> getActiveInvestigator
+    push $ CreatedCost iid source
+    pure $ g & activeCostL ?~ activeCost
   CreateWindowModifierEffect effectWindow effectMetadata source target -> do
     (effectId, effect) <- createWindowModifierEffect
       effectWindow

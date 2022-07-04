@@ -5,7 +5,6 @@ module Arkham.Effect (
 
 import Arkham.Prelude
 
-import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Classes.Entity.TH
@@ -66,17 +65,6 @@ createTokenEffect ::
 createTokenEffect effectMetadata source token = do
   eid <- getRandom
   pure (eid, buildTokenEffect eid effectMetadata source token)
-
-createPayForAbilityEffect ::
-  MonadRandom m =>
-  Ability ->
-  Source ->
-  Target ->
-  [Window] ->
-  m (EffectId, Effect)
-createPayForAbilityEffect ability source target windows' = do
-  eid <- getRandom
-  pure (eid, buildPayForAbilityEffect eid ability source target windows')
 
 instance HasModifiersFor Effect where
   getModifiersFor = $(entityF2 "Effect" 'getModifiersFor)
@@ -214,8 +202,3 @@ buildTokenEffect ::
   EffectId -> EffectMetadata Window Message -> Source -> Token -> Effect
 buildTokenEffect eid metadata source token =
   TokenEffect' $ tokenEffect eid metadata source token
-
-buildPayForAbilityEffect ::
-  EffectId -> Ability -> Source -> Target -> [Window] -> Effect
-buildPayForAbilityEffect eid ability source target windows' =
-  PayForAbilityEffect' $ payForAbilityEffect eid ability source target windows'

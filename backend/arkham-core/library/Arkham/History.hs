@@ -13,6 +13,7 @@ data History = History
   { historyTreacheriesDrawn :: [CardCode]
   , historyDealtDamageTo :: [Target]
   , historyMoved :: Bool
+  , historyLocationsSuccessfullyInvestigated :: HashSet LocationId
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
@@ -23,10 +24,11 @@ instance Semigroup History where
       <> historyTreacheriesDrawn g
     , historyDealtDamageTo = historyDealtDamageTo h <> historyDealtDamageTo g
     , historyMoved = historyMoved h || historyMoved g
+    , historyLocationsSuccessfullyInvestigated = historyLocationsSuccessfullyInvestigated h <> historyLocationsSuccessfullyInvestigated g
     }
 
 instance Monoid History where
-  mempty = History [] [] False
+  mempty = History [] [] False mempty
 
 insertHistory
   :: InvestigatorId

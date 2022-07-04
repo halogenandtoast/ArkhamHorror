@@ -577,6 +577,7 @@ data Message
   | UnfocusCards
   | UnfocusTargets
   | UnfocusTokens
+  | SealToken Token
   | UnsetActiveCard
   | UseCardAbility InvestigatorId Source [Window] Int Payment
   | UseCardAbilityChoice InvestigatorId Source [Window] Int Payment AbilityMetadata

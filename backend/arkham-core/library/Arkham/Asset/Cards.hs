@@ -2,20 +2,21 @@ module Arkham.Asset.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Uses hiding (Key)
+import Arkham.Asset.Uses hiding ( Key )
 import Arkham.Asset.Uses qualified as Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
-import Arkham.EncounterSet hiding (Dunwich)
+import Arkham.EncounterSet hiding ( Dunwich )
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.SkillType
 import Arkham.Slot
-import Arkham.Trait hiding (Supply)
+import Arkham.Token qualified as Token
+import Arkham.Trait hiding ( Supply )
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =
@@ -276,6 +277,7 @@ allPlayerAssetCards = mapFromList $ map
   , suggestion4
   , switchblade
   , switchblade2
+  , theChthonianStone
   , theGoldPocketWatch4
   , theKingInYellow
   , theNecronomicon
@@ -1731,7 +1733,7 @@ scrying3 = (asset "03236" "Scrying" 1 Mystic)
 stickToThePlan :: CardDef
 stickToThePlan = permanent $ (asset "03264" "Stick to the Plan" 0 Guardian)
   { cdCardTraits = singleton Talent
-  , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional ]
+  , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional]
   , cdLevel = 3
   }
 
@@ -1754,11 +1756,12 @@ suggestion4 = (asset "03268" "Suggestion" 3 Rogue)
   }
 
 stHubertsKey :: CardDef
-stHubertsKey = (asset "03269" ("St. Hubert's Key" <:> "Cleansing Fire") 4 Mystic)
-  { cdCardTraits = setFromList [Item, Charm]
-  , cdSkills = [SkillWillpower]
-  , cdSlots = [AccessorySlot]
-  }
+stHubertsKey =
+  (asset "03269" ("St. Hubert's Key" <:> "Cleansing Fire") 4 Mystic)
+    { cdCardTraits = setFromList [Item, Charm]
+    , cdSkills = [SkillWillpower]
+    , cdSlots = [AccessorySlot]
+    }
 
 arcaneInitiate3 :: CardDef
 arcaneInitiate3 = (asset "03271" "Arcane Initiate" 0 Mystic)
@@ -1777,11 +1780,12 @@ armorOfArdennes5 = (asset "03305" "Armor of Ardennes" 4 Guardian)
   }
 
 charonsObol1 :: CardDef
-charonsObol1 = permanent $ (asset "03308" ("Charon's Obol" <:> "The Ferryman's Pay") 0 Rogue)
-  { cdCardTraits = setFromList [Item, Relic]
-  , cdLevel = 1
-  , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional ]
-  }
+charonsObol1 =
+  permanent $ (asset "03308" ("Charon's Obol" <:> "The Ferryman's Pay") 0 Rogue)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdLevel = 1
+    , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional]
+    }
 
 lupara3 :: CardDef
 lupara3 = (asset "03309" "Lupara" 3 Rogue)
@@ -1810,14 +1814,14 @@ keyOfYs = (asset "03315" ("Key of Ys" <:> "Let the Storm Rage") 3 Neutral)
   }
 
 thePallidMask :: CardDef
-thePallidMask = (asset "03321b" ("The Pallid Mask" <:> "Chasing Tails") 0 Neutral)
-  { cdCardTraits = setFromList [Item, Relic]
-  , cdRevelation = True
-  }
+thePallidMask =
+  (asset "03321b" ("The Pallid Mask" <:> "Chasing Tails") 0 Neutral)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdRevelation = True
+    }
 
 mitchBrown :: CardDef
-mitchBrown = (asset "04006" ("Mitch Brown" <:> "Sole Surviror") 3 Neutral
-               )
+mitchBrown = (asset "04006" ("Mitch Brown" <:> "Sole Surviror") 3 Neutral)
   { cdSkills = [SkillWild, SkillWild]
   , cdCardTraits = setFromList [Ally, Wayfarer]
   , cdSlots = [AllySlot]
@@ -1834,8 +1838,7 @@ jakeWilliams = (asset "04008" ("Jake Williams" <:> "Loyal Companion") 3 Neutral
   }
 
 venturer :: CardDef
-venturer = (asset "04018" "Venturer" 4 Guardian
-               )
+venturer = (asset "04018" "Venturer" 4 Guardian)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Ally, Wayfarer]
   , cdSlots = [AllySlot]
@@ -1849,6 +1852,20 @@ toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
   , cdCardTraits = setFromList [Item, Relic]
   , cdSlots = [AccessorySlot]
   }
+
+theChthonianStone :: CardDef
+theChthonianStone =
+  (asset "04030" ("The Chthonian Stone" <:> "Stygian Waymark") 3 Mystic)
+    { cdSkills = [SkillIntellect]
+    , cdCardTraits = setFromList [Item, Relic, Cursed]
+    , cdSlots = [HandSlot]
+    , cdUnique = True
+    , cdKeywords = singleton
+      (Keyword.Seal $ TokenMatchesAny $ map
+        TokenFaceIs
+        [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
+      )
+    }
 
 trackShoes :: CardDef
 trackShoes = (asset "05036" "Track Shoes" 3 Survivor)

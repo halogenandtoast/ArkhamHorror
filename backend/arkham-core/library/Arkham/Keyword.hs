@@ -2,6 +2,8 @@ module Arkham.Keyword where
 
 import Arkham.Prelude
 
+import {-# SOURCE #-} Arkham.Matcher
+
 data Keyword
   = Alert
   | Aloof
@@ -15,6 +17,7 @@ data Keyword
   | Uses Int
   | Exceptional
   | Permanent
+  | Seal TokenMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

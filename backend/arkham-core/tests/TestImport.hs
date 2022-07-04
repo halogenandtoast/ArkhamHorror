@@ -26,7 +26,7 @@ import Arkham.Card.EncounterCard as X
 import Arkham.Card.PlayerCard as X
 import Arkham.ChaosBag as X
 import Arkham.Classes as X hiding ( getTokenValue )
-import Arkham.Cost as X
+import Arkham.Cost as X hiding (PaidCost)
 import Arkham.Difficulty
 import Arkham.Enemy as X
 import Arkham.Enemy.Attrs

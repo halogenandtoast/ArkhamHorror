@@ -26,7 +26,7 @@ import Arkham.Card.Id
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Classes.HasDistance
-import Arkham.Cost
+import Arkham.Cost qualified as Cost
 import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
 import Arkham.Difficulty
@@ -2631,7 +2631,7 @@ runGameMessage msg g = case msg of
     investigator' <- getInvestigator iid
     playableCards <- getPlayableCards
       (toAttrs investigator')
-      PaidCost
+      Cost.PaidCost
       [ Window Timing.When (Window.DuringTurn iid)
       , Window Timing.When Window.NonFast
       , Window Timing.When Window.FastPlayerWindow
@@ -2641,7 +2641,7 @@ runGameMessage msg g = case msg of
       Just card -> runGameMessage (PutCardIntoPlay iid card mtarget) g
   PlayFastEvent iid cardId mtarget windows' -> do
     investigator' <- getInvestigator iid
-    playableCards <- getPlayableCards (toAttrs investigator') PaidCost windows'
+    playableCards <- getPlayableCards (toAttrs investigator') Cost.PaidCost windows'
     case find ((== cardId) . toCardId) (playableCards <> investigatorHand (toAttrs investigator')) of
       Nothing -> pure g -- card was discarded before playing
       Just card -> do

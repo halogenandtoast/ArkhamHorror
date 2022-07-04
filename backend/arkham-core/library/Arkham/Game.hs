@@ -3495,6 +3495,7 @@ instance RunMessage Game where
       >>= itraverseOf (inDiscardEntitiesL . itraversed) (\i e -> runMessage (InDiscard i msg) e)
       >>= traverseOf inSearchEntitiesL (runMessage (InSearch msg))
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
+      >>= traverseOf (activeCostL . traverse) (runMessage msg)
       >>= runGameMessage msg
       >>= handleActionDiff g
       >>= (pure . set enemyMovingL Nothing)

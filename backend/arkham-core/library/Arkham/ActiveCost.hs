@@ -10,11 +10,9 @@ import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.Cost hiding (PaidCost)
-import Arkham.Effect.Runner
-import Arkham.EffectId
-import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
+import Arkham.Game.Helpers
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher hiding ( AssetCard )
 import Arkham.Message
@@ -149,7 +147,7 @@ instance RunMessage ActiveCost where
   runMessage msg c = case msg of
     CreatedCost iid source -> do
       case activeCostTarget c of
-        ForAbility a -> do
+        ForAbility a@Ability {..} -> do
           modifiers' <- getModifiers
             (InvestigatorSource iid)
             (InvestigatorTarget iid)
@@ -167,6 +165,7 @@ instance RunMessage ActiveCost where
             (abilityDoesNotProvokeAttacksOfOpportunity
             || modifiersPreventAttackOfOpportunity
             )
+        _ -> error "unhandled"
     PayCost source iid mAction skipAdditionalCosts cost -> do
       let withPayment payment = pure $ c & costPaymentsL <>~ payment
       case cost of
@@ -253,7 +252,7 @@ instance RunMessage ActiveCost where
           let
             getDrawnCard [] = error "can not find drawn card in windows"
             getDrawnCard (x : xs) = case x of
-              Window _ (Window.DrawCard _ c _) -> c
+              Window _ (Window.DrawCard _ card' _) -> card'
               _ -> getDrawnCard xs
             card = getDrawnCard (activeCostWindows c)
           push (DiscardCard iid (toCardId card))
@@ -492,7 +491,7 @@ instance RunMessage ActiveCost where
             [Window Timing.After (Window.PerformAction iid action)]
           pushAll
             ([ whenActivateAbilityWindow
-             , UseCardAbility iid source (activeCostWindows c) abilityIndex (activeCostPayments c)
+             , UseCardAbility iid source (activeCostWindows c) (abilityIndex ability) (activeCostPayments c)
              , ClearDiscardCosts
              ]
             <> [afterWindowMsgs, FinishAction]

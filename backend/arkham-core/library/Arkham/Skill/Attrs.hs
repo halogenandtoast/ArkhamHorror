@@ -7,10 +7,9 @@ import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Cost
-import Arkham.InvestigatorId
 import Arkham.Name
 import Arkham.Projection
-import Arkham.SkillId
+import Arkham.Id
 import Arkham.Strategy
 import Arkham.Source
 import Arkham.Target

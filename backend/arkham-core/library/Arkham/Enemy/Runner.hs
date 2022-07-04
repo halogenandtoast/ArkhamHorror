@@ -15,7 +15,6 @@ import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
-import Arkham.EnemyId
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Id

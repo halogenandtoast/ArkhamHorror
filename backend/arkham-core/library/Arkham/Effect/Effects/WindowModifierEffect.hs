@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.EffectId
+import Arkham.Id
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target

@@ -8,7 +8,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.ScenarioId
+import Arkham.Id
 import Arkham.CampaignStep
 
 getCompletedScenarios :: (Monad m, HasGame m) => m (HashSet ScenarioId)

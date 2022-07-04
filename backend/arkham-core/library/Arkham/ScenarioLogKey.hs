@@ -2,7 +2,7 @@ module Arkham.ScenarioLogKey where
 
 import Arkham.Prelude
 
-import Arkham.InvestigatorId
+import Arkham.Id
 
 data ScenarioLogKey
   = HadADrink InvestigatorId

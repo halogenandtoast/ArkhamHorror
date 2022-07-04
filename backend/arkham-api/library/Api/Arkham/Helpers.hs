@@ -8,7 +8,7 @@ import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes hiding (Entity(..))
 import Arkham.Game
-import Arkham.InvestigatorId
+import Arkham.Id
 import Arkham.Message
 import Control.Lens
 import Control.Monad.Random (MonadRandom(..), StdGen, mkStdGen)

@@ -282,6 +282,7 @@ const debugChoose = inject('debugChoose')
 }
 
 .deck-size {
+  pointer-events: none;
   position: absolute;
   font-weight: bold;
   font-size: 1.2em;

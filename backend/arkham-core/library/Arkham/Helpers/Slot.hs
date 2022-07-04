@@ -6,7 +6,7 @@ module Arkham.Helpers.Slot
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.AssetId
+import Arkham.Id
 import Arkham.Slot as X
 
 isEmptySlot :: Slot -> Bool

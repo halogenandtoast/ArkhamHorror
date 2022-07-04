@@ -2,7 +2,7 @@ module Arkham.CampaignStep where
 
 import Arkham.Prelude
 
-import Arkham.ScenarioId
+import Arkham.Id
 
 data CampaignStep
   = PrologueStep

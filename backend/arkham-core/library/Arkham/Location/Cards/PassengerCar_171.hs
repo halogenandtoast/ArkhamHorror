@@ -75,12 +75,7 @@ instance RunMessage PassengerCar_171 where
               [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1]
             , Label
               "Discard cards with at least 1 {wild} icons"
-              [ CreatePayAbilityCostEffect
-                  (abilityEffect attrs cost)
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-                  []
-              ]
+              [ PayForAbility (abilityEffect attrs cost) [] ]
             ]
           )
         else push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1)

@@ -6,14 +6,14 @@ module Arkham.Location.Cards.PassengerCar_170
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (passengerCar_170)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( passengerCar_170 )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -75,12 +75,7 @@ instance RunMessage PassengerCar_170 where
               [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2]
             , Label
               "Discard cards with at least 2 {intellect} icons"
-              [ CreatePayAbilityCostEffect
-                  (abilityEffect attrs cost)
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-                  []
-              ]
+              [PayForAbility (abilityEffect attrs cost) []]
             ]
           )
         else push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2)

@@ -2,7 +2,8 @@ module Arkham.Agenda.Sequence where
 
 import Arkham.Prelude
 
-import Arkham.AgendaId
+newtype AgendaStep = AgendaStep { unAgendaStep :: Int }
+  deriving newtype Eq
 
 agendaStep :: AgendaSequence -> AgendaStep
 agendaStep (Agenda num _) = AgendaStep num

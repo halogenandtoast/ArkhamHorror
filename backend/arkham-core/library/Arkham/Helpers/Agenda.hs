@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Agenda.Attrs (Field(..))
 import Arkham.Agenda.Sequence qualified as AS
-import Arkham.AgendaId
+import Arkham.Id
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Game ()
@@ -15,4 +15,4 @@ getCurrentAgendaStep :: (Monad m, HasGame m) => m Int
 getCurrentAgendaStep = selectJust AnyAgenda >>= getAgendaStep
 
 getAgendaStep :: (Monad m, HasGame m) => AgendaId -> m Int
-getAgendaStep = fieldMap AgendaSequence (unAgendaStep . AS.agendaStep)
+getAgendaStep = fieldMap AgendaSequence (AS.unAgendaStep . AS.agendaStep)

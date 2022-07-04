@@ -88,7 +88,6 @@ library
       Arkham.Act.Helpers
       Arkham.Act.Runner
       Arkham.Act.Sequence
-      Arkham.ActId
       Arkham.Action
       Arkham.ActiveCost
       Arkham.Agenda
@@ -166,7 +165,6 @@ library
       Arkham.Agenda.Helpers
       Arkham.Agenda.Runner
       Arkham.Agenda.Sequence
-      Arkham.AgendaId
       Arkham.Asset
       Arkham.Asset.Assets
       Arkham.Asset.Attrs
@@ -393,7 +391,6 @@ library
       Arkham.Asset.Helpers
       Arkham.Asset.Runner
       Arkham.Asset.Uses
-      Arkham.AssetId
       Arkham.Attack
       Arkham.Campaign
       Arkham.Campaign.Attrs
@@ -403,7 +400,6 @@ library
       Arkham.Campaign.Campaigns.TheDunwichLegacy
       Arkham.Campaign.Campaigns.ThePathToCarcosa
       Arkham.Campaign.Runner
-      Arkham.CampaignId
       Arkham.CampaignLog
       Arkham.CampaignLogKey
       Arkham.Campaigns.NightOfTheZealot.CampaignSteps
@@ -530,7 +526,6 @@ library
       Arkham.Effect.Helpers
       Arkham.Effect.Runner
       Arkham.Effect.Window
-      Arkham.EffectId
       Arkham.EffectMetadata
       Arkham.EncounterCard
       Arkham.EncounterCard.Source
@@ -651,7 +646,6 @@ library
       Arkham.Enemy.Enemies
       Arkham.Enemy.Helpers
       Arkham.Enemy.Runner
-      Arkham.EnemyId
       Arkham.Entities
       Arkham.Event
       Arkham.Event.Attrs
@@ -833,7 +827,6 @@ library
       Arkham.Investigator.Cards.ZoeySamaras
       Arkham.Investigator.Investigators
       Arkham.Investigator.Runner
-      Arkham.InvestigatorId
       Arkham.Json
       Arkham.Keyword
       Arkham.Label
@@ -1087,9 +1080,9 @@ library
       Arkham.Location.Cards.Yard
       Arkham.Location.Cards.YourHouse
       Arkham.Location.Helpers
+      Arkham.Location.Label
       Arkham.Location.Locations
       Arkham.Location.Runner
-      Arkham.LocationId
       Arkham.LocationSymbol
       Arkham.Matcher
       Arkham.Message
@@ -1134,7 +1127,6 @@ library
       Arkham.Scenario.Scenarios.TheUnspeakableOath
       Arkham.Scenario.Scenarios.UndimensionedAndUnseen
       Arkham.Scenario.Scenarios.WhereDoomAwaits
-      Arkham.ScenarioId
       Arkham.ScenarioLogKey
       Arkham.Scenarios.APhantomOfTruth.Helpers
       Arkham.Scenarios.APhantomOfTruth.Story
@@ -1200,7 +1192,6 @@ library
       Arkham.Skill.Cards.WatchThis
       Arkham.Skill.Runner
       Arkham.Skill.Skills
-      Arkham.SkillId
       Arkham.SkillTest
       Arkham.SkillTest.Base
       Arkham.SkillTest.Runner
@@ -1215,7 +1206,6 @@ library
       Arkham.Target
       Arkham.Timing
       Arkham.Token
-      Arkham.TokenId
       Arkham.TokenResponse
       Arkham.TokenStrategy
       Arkham.Trait
@@ -1366,7 +1356,6 @@ library
       Arkham.Treachery.Helpers
       Arkham.Treachery.Runner
       Arkham.Treachery.Treacheries
-      Arkham.TreacheryId
       Arkham.Window
       Arkham.Zone
   other-modules:

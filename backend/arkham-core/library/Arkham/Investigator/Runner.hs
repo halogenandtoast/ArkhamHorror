@@ -154,17 +154,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             Nothing
             [Window Timing.When Window.NonFast]
             (mconcat additionalCosts)
-          when
-            canPay
-            (pushAll
-            $ [ CreatePayAbilityCostEffect
-                  (abilityEffect a $ mconcat additionalCosts)
-                  (toSource a)
-                  (toTarget a)
-                  []
-              ]
+          when canPay
+            $ pushAll
+            $ [PayForAbility (abilityEffect a $ mconcat additionalCosts) []]
             <> msgs
-            )
   TakeStartingResources iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toSource a) (toTarget a)
     let
@@ -711,7 +704,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         (concatMap (\t -> map (Window t) windows) [Timing.When, Timing.After])
       pure a
   InvestigatorDoAssignDamage iid source damageStrategy 0 0 damageTargets horrorTargets
-    | iid == investigatorId -> do
+    | iid == investigatorId
+    -> do
       push
         $ CheckWindow [iid]
         $ [ Window
@@ -723,8 +717,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
            | target <- nub horrorTargets
            ]
         <> [Window Timing.When (Window.AssignedHorror source iid horrorTargets)]
-      when (damageStrategy == DamageFromHastur && toTarget a `elem` horrorTargets && investigatorSanityDamage > investigatorSanity) $
-        push $ InvestigatorDirectDamage iid source 1 0
+      when
+          (damageStrategy
+          == DamageFromHastur
+          && toTarget a
+          `elem` horrorTargets
+          && investigatorSanityDamage
+          > investigatorSanity
+          )
+        $ push
+        $ InvestigatorDirectDamage iid source 1 0
       pure a
   InvestigatorDoAssignDamage iid source DamageEvenly health 0 damageTargets _
     | iid == investigatorId -> do
@@ -989,8 +991,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then do
         checkWindowMsg <- checkWindows
           [Window Timing.When (Window.DiscoverClues iid lid n)]
-        a <$ pushAll
-          [checkWindowMsg, Do msg]
+        a <$ pushAll [checkWindowMsg, Do msg]
       else pure a
   Do (InvestigatorDiscoverClues iid lid n maction) | iid == investigatorId -> do
     canDiscoverClues <- getCanDiscoverClues a
@@ -1558,9 +1559,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorCommittedCard iid card | iid == investigatorId -> do
     commitedCardWindows <- Helpers.windows [Window.CommittedCard iid card]
     pushAll $ FocusCards [card] : commitedCardWindows <> [UnfocusCards]
-    inHandTreacheries' <- flip filterM (setToList investigatorInHandTreacheries) $ \tid -> do
-      treacheryCard <- field TreacheryCard tid
-      pure $ treacheryCard /= card
+    inHandTreacheries' <-
+      flip filterM (setToList investigatorInHandTreacheries) $ \tid -> do
+        treacheryCard <- field TreacheryCard tid
+        pure $ treacheryCard /= card
     pure
       $ a
       & (handL %~ filter (/= card))
@@ -1612,7 +1614,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     committableCards <- if cannotCommitCards
       then pure []
       else do
-        committableTreacheries <- filterM (field TreacheryCanBeCommitted) (setToList investigatorInHandTreacheries)
+        committableTreacheries <- filterM
+          (field TreacheryCanBeCommitted)
+          (setToList investigatorInHandTreacheries)
         treacheryCards <- traverse (field TreacheryCard) committableTreacheries
         flip filterM (investigatorHand <> treacheryCards) $ \case
           PlayerCard card -> do
@@ -1624,7 +1628,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 OnlyYourTest -> pure True
                 OnlyIfYourLocationHasClues -> pure $ clueCount > 0
                 ScenarioAbility -> pure isScenarioAbility
-                SelfCanCommitWhen matcher -> notNull <$> select (You <> matcher)
+                SelfCanCommitWhen matcher ->
+                  notNull <$> select (You <> matcher)
                 MinSkillTestValueDifference n -> do
                   baseValue <- baseSkillValueFor skillType Nothing [] (toId a)
                   pure $ (skillDifficulty - baseValue) >= n
@@ -1654,7 +1659,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  )
               && passesCommitRestrictions
               && not prevented
-          EncounterCard card -> pure $ CommittableTreachery `elem` (cdCommitRestrictions $ toCardDef card)
+          EncounterCard card ->
+            pure
+              $ CommittableTreachery
+              `elem` (cdCommitRestrictions $ toCardDef card)
     if notNull committableCards || notNull committedCards || notNull actions
       then push
         (SkillTestAsk $ chooseOne
@@ -1698,8 +1706,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       committableCards <- if notNull committedCards
         then pure []
         else do
-          committableTreacheries <- filterM (field TreacheryCanBeCommitted) (setToList investigatorInHandTreacheries)
-          treacheryCards <- traverse (field TreacheryCard) committableTreacheries
+          committableTreacheries <- filterM
+            (field TreacheryCanBeCommitted)
+            (setToList investigatorInHandTreacheries)
+          treacheryCards <- traverse
+            (field TreacheryCard)
+            committableTreacheries
           flip
             filterM
             (investigatorHand <> treacheryCards)
@@ -1716,7 +1728,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                     SelfCanCommitWhen matcher ->
                       notNull <$> select (You <> matcher)
                     MinSkillTestValueDifference n -> do
-                      baseValue <- baseSkillValueFor skillType Nothing [] (toId a)
+                      baseValue <- baseSkillValueFor
+                        skillType
+                        Nothing
+                        []
+                        (toId a)
                       pure $ (skillDifficulty - baseValue) >= n
                   prevented = flip
                     any
@@ -1739,7 +1755,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                      )
                   && passesCriterias
                   && not prevented
-              EncounterCard card -> pure $ CommittableTreachery `elem` (cdCommitRestrictions $ toCardDef card)
+              EncounterCard card ->
+                pure
+                  $ CommittableTreachery
+                  `elem` (cdCommitRestrictions $ toCardDef card)
       when (notNull committableCards || notNull committedCards) $ push
         (SkillTestAsk $ chooseOne
           investigatorId
@@ -1816,15 +1835,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & remainingActionsL .~ n
   GainActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL +~ n
-  TakeAction iid mAction cost | iid == investigatorId -> a <$ pushAll
-    ([ CreatePayAbilityCostEffect
-         (abilityEffect a cost)
-         (toSource a)
-         (toTarget a)
-         []
-     ]
-    <> [ TakenAction iid action | action <- maybeToList mAction ]
-    )
+  TakeAction iid mAction cost | iid == investigatorId -> do
+    pushAll
+      $ [PayForAbility (abilityEffect a cost) []]
+      <> [ TakenAction iid action | action <- maybeToList mAction ]
+    pure a
   TakenAction iid action | iid == investigatorId ->
     pure $ a & actionsTakenL %~ (<> [action])
   PutOnTopOfDeck iid card | iid == investigatorId ->
@@ -2108,16 +2123,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ]
     actions <- nub <$> concatMapM (getActions iid) windows
     if any isForcedAbility actions
-        then do
+      then do
           -- Silent forced abilities should trigger automatically
-          let
-            (silent, normal) = partition isSilentForcedAbility actions
-            toUseAbilities = map (($ windows) . UseAbility iid)
-          a <$ pushAll
-            (toUseAbilities silent
-            <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
-            <> [PlayerWindow iid additionalActions isAdditional]
-            )
+        let
+          (silent, normal) = partition isSilentForcedAbility actions
+          toUseAbilities = map (($ windows) . UseAbility iid)
+        a <$ pushAll
+          (toUseAbilities silent
+          <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
+          <> [PlayerWindow iid additionalActions isAdditional]
+          )
       else do
         modifiers <- getModifiers
           (InvestigatorSource iid)
@@ -2240,11 +2255,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       abilityLimitType (abilityLimit usedAbility) /= Just PerTurn
     )
   UseAbility iid ability windows | iid == investigatorId -> do
-    push $ CreatePayAbilityCostEffect
-      ability
-      (abilitySource ability)
-      (toTarget a)
-      windows
+    push $ PayForAbility ability windows
     case find ((== ability) . usedAbility) investigatorUsedAbilities of
       Nothing -> do
         depth <- getWindowDepth
@@ -2292,7 +2303,10 @@ getFacingDefeat a@InvestigatorAttrs {..} = do
   pure
     $ investigatorHealthDamage
     >= modifiedHealth
-    || (investigatorSanityDamage >= modifiedSanity && not canOnlyBeDefeatedByDamage)
+    || (investigatorSanityDamage
+       >= modifiedSanity
+       && not canOnlyBeDefeatedByDamage
+       )
 
 getModifiedHealth :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getModifiedHealth attrs@InvestigatorAttrs {..} = do

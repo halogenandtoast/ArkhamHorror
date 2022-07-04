@@ -9,7 +9,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.Class
 import Arkham.Card.Cost
 import Arkham.Card.Id
-import Arkham.InvestigatorId
+import Arkham.Id
 
 newtype DiscardedPlayerCard = DiscardedPlayerCard { unDiscardedPlayerCard :: PlayerCard }
 

@@ -20,10 +20,9 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
-import Arkham.InvestigatorId
+import Arkham.Id
 import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
-import Arkham.LocationId
 import Arkham.Matcher hiding ( PlaceUnderneath, RevealLocation )
 import Arkham.Message
 import Arkham.Name

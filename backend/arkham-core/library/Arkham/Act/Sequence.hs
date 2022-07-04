@@ -2,7 +2,8 @@ module Arkham.Act.Sequence where
 
 import Arkham.Prelude
 
-import Arkham.ActId
+newtype ActStep = ActStep { unActStep :: Int }
+  deriving newtype Eq
 
 actStep :: ActSequence -> ActStep
 actStep (Act num _) = ActStep num

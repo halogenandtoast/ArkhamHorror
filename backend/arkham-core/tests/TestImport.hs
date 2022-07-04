@@ -15,7 +15,6 @@ import Arkham.Agenda as X
 import Arkham.Agenda.Attrs
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Cards.WhatsGoingOn
-import Arkham.AgendaId
 import Arkham.Asset as X ( Asset (Adaptable1'), createAsset, lookupAsset )
 import Arkham.Asset.Attrs
 import Arkham.Asset.Cards qualified as Cards
@@ -38,17 +37,16 @@ import Arkham.Game qualified as Game
 import Arkham.Game.Helpers as X hiding ( getCanAffordCost )
 import Arkham.GameValue as X
 import Arkham.Helpers as X
+import Arkham.Id as X
 import Arkham.Investigator as X
 import Arkham.Investigator.Attrs hiding (assetsL)
 import Arkham.Helpers.Investigator qualified as Investigator
 import Arkham.Investigator.Cards.JennyBarnes
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.InvestigatorId
 import Arkham.Location as X
 import Arkham.Location.Attrs
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards.Study
-import Arkham.LocationId as X
 import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
 import Arkham.Message as X
 import Arkham.Phase

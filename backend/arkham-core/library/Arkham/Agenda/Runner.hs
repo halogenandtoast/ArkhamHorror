@@ -10,7 +10,6 @@ import Arkham.Agenda.Attrs as X
 import Arkham.Agenda.Sequence as X
 import Arkham.Classes
 import Arkham.Game.Helpers
-import Arkham.Id
 import Arkham.Matcher hiding ( PlaceUnderneath )
 import Arkham.Message
 import Arkham.Target

@@ -9,7 +9,6 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Attrs ( Field (..) )
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Sequence qualified as AS
-import Arkham.AgendaId
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
@@ -137,7 +136,7 @@ instance HasTokenValue WhereDoomAwaits where
     Cultist -> pure $ TokenValue Cultist NoModifier
     Tablet -> do
       agendaId <- selectJust AnyAgenda
-      agendaStep <- fieldMap AgendaSequence (unAgendaStep . AS.agendaStep) agendaId
+      agendaStep <- fieldMap AgendaSequence (AS.unAgendaStep . AS.agendaStep) agendaId
       pure $ TokenValue
         Tablet
         (if isEasyStandard attrs

@@ -18,8 +18,7 @@ import Arkham.Card.PlayerCard as X
   (DiscardedPlayerCard(..), PlayerCard(..))
 import Arkham.Classes.GameLogger
 import Arkham.EncounterCard
-import Arkham.InvestigatorId
-import Arkham.LocationId
+import Arkham.Id
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.PlayerCard

@@ -965,7 +965,7 @@ passesCriteria iid source windows' = \case
   Criteria.SetAsideCardExists matcher -> selectAny matcher
   Criteria.OnAct step -> do
     actId <- selectJust Matcher.AnyAct
-    (== ActStep step) . AS.actStep <$> field ActSequence actId
+    (== AS.ActStep step) . AS.actStep <$> field ActSequence actId
   Criteria.AgendaExists matcher -> selectAny matcher
   Criteria.AssetExists matcher -> selectAny matcher
   Criteria.TreacheryExists matcher -> selectAny matcher

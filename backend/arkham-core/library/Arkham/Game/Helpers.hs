@@ -48,7 +48,7 @@ import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs (..) )
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Attrs hiding ( location )
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message hiding ( InvestigatorDamage )
+import Arkham.Message hiding ( InvestigatorDamage, PaidCost )
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Projection

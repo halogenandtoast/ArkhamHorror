@@ -15,16 +15,6 @@ import Arkham.Target
 import Arkham.Token (Token)
 import Data.Text qualified as T
 
-data ActiveCost = ActiveCost
-  { activeCostCosts :: Cost
-  , activeCostPayments :: Payment
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-activeCostPaid :: ActiveCost -> Bool
-activeCostPaid = (== Free) . activeCostCosts
-
 data CostStatus = UnpaidCost | PaidCost
   deriving stock Eq
 

@@ -90,6 +90,7 @@ library
       Arkham.Act.Sequence
       Arkham.ActId
       Arkham.Action
+      Arkham.ActiveCost
       Arkham.Agenda
       Arkham.Agenda.AdvancementReason
       Arkham.Agenda.Agendas

@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Act
 import Arkham.Act.Attrs ( ActAttrs (..), Field (..) )
 import Arkham.Action qualified as Action
+import Arkham.ActiveCost
 import Arkham.Agenda
 import Arkham.Agenda.Attrs ( AgendaAttrs (..), Field (..) )
 import Arkham.Agenda.Sequence qualified as AS

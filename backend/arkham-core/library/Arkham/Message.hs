@@ -229,6 +229,12 @@ data Message
   | CreateEnemyAtLocationMatching Card LocationMatcher
   | CreateEnemyEngagedWithPrey Card
   | CreatePayAbilityCostEffect Ability Source Target [Window]
+  -- new payment bs
+  | CreatedCost InvestigatorId Source
+  | PayCost Source InvestigatorId (Maybe Action) Bool Cost
+  | PayCostFinished Source InvestigatorId
+  | PaidCost InvestigatorId (Maybe Action) Payment
+  -- end  new payment bs
   | CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
   | CreateTokenEffect (EffectMetadata Window Message) Source Token
   | CreateStoryAssetAt Card LocationId

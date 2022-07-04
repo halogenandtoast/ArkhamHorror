@@ -17,6 +17,7 @@ import Arkham.Projection
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token (Token)
 import Arkham.Trait (Trait)
 
 class IsAsset a
@@ -50,6 +51,7 @@ data instance Field AssetAttrs :: Type -> Type where
   AssetLocation :: Field AssetAttrs (Maybe LocationId)
   AssetCardCode :: Field AssetAttrs CardCode
   AssetSlots :: Field AssetAttrs [SlotType]
+  AssetSealedTokens :: Field AssetAttrs [Token]
   -- virtual
   AssetClasses :: Field AssetAttrs (HashSet ClassSymbol)
   AssetTraits :: Field AssetAttrs (HashSet Trait)
@@ -78,6 +80,7 @@ data AssetAttrs = AssetAttrs
   , assetDiscardWhenNoUses :: Bool
   , assetIsStory :: Bool
   , assetCardsUnderneath :: [Card]
+  , assetSealedTokens :: [Token]
   }
   deriving stock (Show, Eq)
 
@@ -209,6 +212,7 @@ assetWith f cardDef g =
             , assetDiscardWhenNoUses = False
             , assetIsStory = False
             , assetCardsUnderneath = []
+            , assetSealedTokens = []
             }
     }
 

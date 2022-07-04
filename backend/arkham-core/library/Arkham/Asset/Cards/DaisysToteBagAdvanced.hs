@@ -13,7 +13,6 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Slot
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait

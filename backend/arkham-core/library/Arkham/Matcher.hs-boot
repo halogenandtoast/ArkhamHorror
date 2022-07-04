@@ -49,3 +49,11 @@ instance FromJSON EnemyMatcher
 instance Hashable EnemyMatcher
 instance Show EnemyMatcher
 instance Eq EnemyMatcher
+
+data TokenMatcher
+
+instance ToJSON TokenMatcher
+instance FromJSON TokenMatcher
+instance Hashable TokenMatcher
+instance Show TokenMatcher
+instance Eq TokenMatcher

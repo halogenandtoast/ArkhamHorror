@@ -369,6 +369,7 @@ library
       Arkham.Asset.Cards.Suggestion4
       Arkham.Asset.Cards.Switchblade
       Arkham.Asset.Cards.Switchblade2
+      Arkham.Asset.Cards.TheChthonianStone
       Arkham.Asset.Cards.TheGoldPocketWatch4
       Arkham.Asset.Cards.TheKingInYellow
       Arkham.Asset.Cards.TheNecronomicon
@@ -1239,6 +1240,7 @@ library
       Arkham.Treachery.Cards.BoughtInBlood
       Arkham.Treachery.Cards.BrokenRails
       Arkham.Treachery.Cards.CalledByTheMists
+      Arkham.Treachery.Cards.CallOfTheUnknown
       Arkham.Treachery.Cards.ChaosInTheWater
       Arkham.Treachery.Cards.ChillFromBelow
       Arkham.Treachery.Cards.Chronophobia

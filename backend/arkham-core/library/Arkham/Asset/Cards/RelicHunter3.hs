@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Slot
 
 newtype RelicHunter3 = RelicHunter3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)

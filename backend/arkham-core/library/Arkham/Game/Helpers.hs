@@ -26,6 +26,7 @@ import Arkham.Attack
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
+import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.ClassSymbol
 import Arkham.Cost
@@ -44,6 +45,7 @@ import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs (..) )
+import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Attrs hiding ( location )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message hiding ( InvestigatorDamage )
@@ -424,6 +426,10 @@ getCanAffordCost iid source mAction windows' = \case
   HandDiscardCost n cardMatcher -> do
     cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
     pure $ length (filter (`cardMatch` cardMatcher) cards) >= n
+  SealCost tokenMatcher -> do
+    tokens <- scenarioFieldMap ScenarioChaosBag chaosBagTokens
+    anyM (\token -> matchToken iid token tokenMatcher) tokens
+  SealTokenCost _ -> pure True
 
 getActions :: (Monad m, HasGame m) => InvestigatorId -> Window -> m [Ability]
 getActions iid window = getActionsWith iid window id
@@ -697,10 +703,13 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       additionalCosts = flip mapMaybe cardModifiers $ \case
         AdditionalCost x -> Just x
         _ -> Nothing
+      sealedTokenCost = flip mapMaybe (setToList $ cdKeywords pcDef) $ \case
+        Keyword.Seal matcher -> Just $ SealCost matcher
+        _ -> Nothing
 
     canAffordAdditionalCosts <- allM
       (getCanAffordCost iid (CardIdSource $ toCardId c) Nothing windows')
-      additionalCosts
+      (additionalCosts <> sealedTokenCost)
 
     passesSlots <- if null (cdSlots pcDef)
       then pure True

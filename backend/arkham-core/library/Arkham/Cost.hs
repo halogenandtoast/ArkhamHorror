@@ -12,7 +12,18 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
+import Arkham.Token (Token)
 import Data.Text qualified as T
+
+data ActiveCost = ActiveCost
+  { activeCostCosts :: Cost
+  , activeCostPayments :: Payment
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+activeCostPaid :: ActiveCost -> Bool
+activeCostPaid = (== Free) . activeCostCosts
 
 data CostStatus = UnpaidCost | PaidCost
   deriving stock Eq
@@ -66,6 +77,7 @@ data Payment
   | InvestigatorDamagePayment Int
   | SkillIconPayment [SkillType]
   | Payments [Payment]
+  | SealTokenPayment Token
   | NoPayment
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -96,6 +108,8 @@ data Cost
   | ResourceCost Int
   | UseCost AssetMatcher UseType Int
   | UpTo Int Cost
+  | SealCost TokenMatcher
+  | SealTokenCost Token -- internal to track sealed token
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -149,6 +163,8 @@ displayCostType = \case
     Resource -> pluralize n "Resource"
     Key -> pluralize n "Key"
   UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
+  SealCost _ -> "Seal token"
+  SealTokenCost _ -> "Seal token"
  where
   pluralize n a = if n == 1 then "1 " <> a else tshow n <> " " <> a <> "s"
 

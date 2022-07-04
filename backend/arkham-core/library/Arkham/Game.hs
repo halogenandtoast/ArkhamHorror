@@ -175,6 +175,8 @@ data Game = Game
     gameActionCanBeUndone :: Bool
   , gameActionDiff :: [Diff.Patch]
   , gameInAction :: Bool
+  , -- handling costs
+    gameActiveCost :: Maybe ActiveCost
   }
   deriving stock (Eq, Show)
 
@@ -277,6 +279,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameActionCanBeUndone = False
       , gameActionDiff = []
       , gameInAction = False
+      , gameActiveCost = Nothing
       }
     )
  where
@@ -1580,6 +1583,7 @@ instance Projection AssetAttrs where
       AssetLocation -> pure assetLocation
       AssetCardCode -> pure assetCardCode
       AssetSlots -> pure assetSlots
+      AssetSealedTokens -> pure assetSealedTokens
       -- virtual
       AssetClasses -> pure . cdClassSymbols $ toCardDef attrs
       AssetTraits -> pure . cdCardTraits $ toCardDef attrs
@@ -2331,6 +2335,13 @@ runGameMessage msg g = case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
+  Successful (Action.Investigate, LocationTarget lid) iid _ _ _ -> do
+    let
+      historyItem = mempty { historyLocationsSuccessfullyInvestigated = singleton lid }
+      turn = isJust $ view turnPlayerInvestigatorIdL g
+      setTurnHistory =
+        if turn then turnHistoryL %~ insertHistory iid historyItem else id
+    pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   FoundCards cards ->
     pure $ g & foundCardsL .~ cards
   AddFocusedToTopOfDeck _ EncounterDeckTarget cardId ->
@@ -2590,10 +2601,6 @@ runGameMessage msg g = case msg of
         PlayerTreacheryType -> error "unhandled"
         AssetType -> do
           let aid = AssetId cardId
-            -- asset = fromJustNote
-            --   "could not find asset"
-            --   (lookup (toCardCode pc) allAssets)
-            --   aid
           asset <- runMessage
             (SetOriginalCardCode $ pcOriginalCardCode pc)
             (createAsset pc)

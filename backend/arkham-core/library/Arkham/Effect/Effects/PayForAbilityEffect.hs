@@ -6,26 +6,28 @@ module Arkham.Effect.Effects.PayForAbilityEffect
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action hiding (Ability, TakenAction)
+import Arkham.Action hiding ( Ability, TakenAction )
 import Arkham.Action qualified as Action
-import Arkham.Asset.Attrs (Field(AssetCard))
+import Arkham.Asset.Attrs ( Field (AssetCard) )
 import Arkham.Card
+import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Effect.Runner
 import Arkham.EffectId
-import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
-import Arkham.Matcher hiding (AssetCard)
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher hiding ( AssetCard )
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype PayForAbilityEffect = PayForAbilityEffect (EffectAttrs `With` Payment)
@@ -59,9 +61,7 @@ matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
 getActionCostModifier
-  :: (Monad m, HasGame m) => InvestigatorId
-  -> Maybe Action
-  -> m Int
+  :: (Monad m, HasGame m) => InvestigatorId -> Maybe Action -> m Int
 getActionCostModifier _ Nothing = pure 0
 getActionCostModifier iid (Just a) = do
   takenActions <- field InvestigatorActionsTaken iid
@@ -79,12 +79,7 @@ countAdditionalActionPayments (Payments ps) =
 countAdditionalActionPayments _ = 0
 
 startPayment
-  :: InvestigatorId
-  -> Window
-  -> AbilityType
-  -> Source
-  -> Bool
-  -> GameT ()
+  :: InvestigatorId -> Window -> AbilityType -> Source -> Bool -> GameT ()
 startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOfOpportunity
   = case abilityType of
     Objective aType -> startPayment
@@ -138,33 +133,48 @@ startPayment iid window abilityType abilitySource abilityDoesNotProvokeAttacksOf
       beforeWindowMsg <- checkWindows
         [Window Timing.When (Window.PerformAction iid action)]
       if action
-          `notElem` [ Action.Fight
-                    , Action.Evade
-                    , Action.Resign
-                    , Action.Parley
-                    ]
-        then pushAll
-          ([BeginAction, beforeWindowMsg, PayAbilityCost abilitySource iid mAction False cost, TakenAction iid action ]
+        `notElem` [Action.Fight, Action.Evade, Action.Resign, Action.Parley]
+      then
+        pushAll
+          ([ BeginAction
+           , beforeWindowMsg
+           , PayAbilityCost abilitySource iid mAction False cost
+           , TakenAction iid action
+           ]
           <> [ CheckAttackOfOpportunity iid False
              | not abilityDoesNotProvokeAttacksOfOpportunity
              ]
           )
-        else pushAll
-          $ [BeginAction, beforeWindowMsg, PayAbilityCost abilitySource iid mAction False cost, TakenAction iid action ]
+      else
+        pushAll
+          $ [ BeginAction
+            , beforeWindowMsg
+            , PayAbilityCost abilitySource iid mAction False cost
+            , TakenAction iid action
+            ]
 
 instance RunMessage PayForAbilityEffect where
   runMessage msg e@(PayForAbilityEffect (attrs `With` payments)) = case msg of
-    CreatedEffect eid (Just (EffectAbility (Ability {..}, _))) source (InvestigatorTarget iid)
+    CreatedEffect eid (Just (EffectAbility (a@Ability {..}, _))) source (InvestigatorTarget iid)
       | eid == toId attrs
       -> do
+        modifiers' <- getModifiers
+          (InvestigatorSource iid)
+          (InvestigatorTarget iid)
+        let
+          modifiersPreventAttackOfOpportunity = maybe
+            False
+            ((`elem` modifiers') . ActionDoesNotCauseAttacksOfOpportunity)
+            (abilityAction a)
         push (PayAbilityCostFinished (toId attrs) source iid)
-        e
-          <$ startPayment
-               iid
-               (Window Timing.When Window.NonFast) -- TODO: a thing
-               abilityType
-               abilitySource
-               abilityDoesNotProvokeAttacksOfOpportunity
+        e <$ startPayment
+          iid
+          (Window Timing.When Window.NonFast) -- TODO: a thing
+          abilityType
+          abilitySource
+          (abilityDoesNotProvokeAttacksOfOpportunity
+          || modifiersPreventAttackOfOpportunity
+          )
     PayAbilityCost source iid mAction skipAdditionalCosts cost -> do
       let
         withPayment payment =
@@ -224,6 +234,28 @@ instance RunMessage PayForAbilityEffect where
               | target <- targets
               ]
             )
+        SealCost matcher -> do
+          targets <-
+            filterM (\t -> matchToken iid t matcher)
+              =<< scenarioFieldMap ScenarioChaosBag chaosBagTokens
+          e <$ push
+            (chooseOne
+              iid
+              [ TargetLabel
+                  (TokenTarget target)
+                  [ PayAbilityCost
+                      source
+                      iid
+                      mAction
+                      skipAdditionalCosts
+                      (SealTokenCost target)
+                  ]
+              | target <- targets
+              ]
+            )
+        SealTokenCost token -> do
+          push $ SealToken token
+          withPayment $ SealTokenPayment token
         DiscardCost target -> do
           pushAll [DiscardedCost target, Discard target]
           withPayment $ DiscardPayment [target]
@@ -249,7 +281,7 @@ instance RunMessage PayForAbilityEffect where
           withPayment $ RemovePayment [target]
         DoomCost _ (AgendaMatcherTarget matcher) x -> do
           agendas <- selectListMap AgendaTarget matcher
-          pushAll [PlaceDoom target x | target <- agendas]
+          pushAll [ PlaceDoom target x | target <- agendas ]
           withPayment $ DoomPayment (x * length agendas)
         DoomCost _ target x -> do
           push (PlaceDoom target x)
@@ -285,7 +317,13 @@ instance RunMessage PayForAbilityEffect where
             _ -> error "exactly one investigator expected for direct damage"
         InvestigatorDamageCost _ investigatorMatcher damageStrategy x -> do
           investigators <- selectList investigatorMatcher
-          push $ chooseOne iid [targetLabel iid' [InvestigatorAssignDamage iid' source damageStrategy x 0] | iid' <- investigators]
+          push $ chooseOne
+            iid
+            [ targetLabel
+                iid'
+                [InvestigatorAssignDamage iid' source damageStrategy x 0]
+            | iid' <- investigators
+            ]
           withPayment $ InvestigatorDamagePayment x
         ResourceCost x -> do
           push (SpendResources iid x)
@@ -326,8 +364,11 @@ instance RunMessage PayForAbilityEffect where
           withPayment $ ActionPayment x
         UseCost assetMatcher uType n -> do
           assets <- selectList assetMatcher
-          push $ chooseOrRunOne iid
-            [ TargetLabel (AssetTarget aid) [SpendUses (AssetTarget aid) uType n]
+          push $ chooseOrRunOne
+            iid
+            [ TargetLabel
+                (AssetTarget aid)
+                [SpendUses (AssetTarget aid) uType n]
             | aid <- assets
             ]
           withPayment $ UsesPayment n
@@ -345,9 +386,7 @@ instance RunMessage PayForAbilityEffect where
             <> InvestigatorWithAnyClues
           iidsWithClues <-
             filter ((> 0) . snd)
-              <$> traverse
-                    (traverseToSnd (getSpendableClueCount . pure))
-                    iids
+              <$> traverse (traverseToSnd (getSpendableClueCount . pure)) iids
           case iidsWithClues of
             [(iid', _)] ->
               e
@@ -379,7 +418,10 @@ instance RunMessage PayForAbilityEffect where
           -- push (SpendClues totalClues iids)
           -- withPayment $ CluePayment totalClues
         HandDiscardCost x cardMatcher -> do
-          handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
+          handCards <- fieldMap
+            InvestigatorHand
+            (mapMaybe (preview _PlayerCard))
+            iid
           let cards = filter (`cardMatch` cardMatcher) handCards
           e <$ push
             (chooseN
@@ -424,7 +466,10 @@ instance RunMessage PayForAbilityEffect where
               ]
             )
         SkillIconCost x skillTypes -> do
-          handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
+          handCards <- fieldMap
+            InvestigatorHand
+            (mapMaybe (preview _PlayerCard))
+            iid
           let
             cards = filter ((> 0) . fst) $ map
               (toFst
@@ -466,10 +511,10 @@ instance RunMessage PayForAbilityEffect where
       case effectMetadata attrs of
         Just (EffectAbility (ability@Ability {..}, windows')) -> do
           let action = fromMaybe Action.Ability (abilityAction ability)
-          whenActivateAbilityWindow <- checkWindows [Window Timing.When (Window.ActivateAbility iid ability)]
-          afterWindowMsgs <- 
-              checkWindows
-                [Window Timing.After (Window.PerformAction iid action)]
+          whenActivateAbilityWindow <- checkWindows
+            [Window Timing.When (Window.ActivateAbility iid ability)]
+          afterWindowMsgs <- checkWindows
+            [Window Timing.After (Window.PerformAction iid action)]
           e <$ pushAll
             ([ DisableEffect $ toId attrs
              , whenActivateAbilityWindow

@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
+import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import {
   Card,
   cardDecoder,
@@ -25,6 +26,7 @@ export interface AssetContents {
   horror: number;
   doom: number;
   cardsUnderneath: Card[];
+  sealedTokens: ChaosToken[];
 }
 
 export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
@@ -40,6 +42,7 @@ export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
   horror: JsonDecoder.number,
   doom: JsonDecoder.number,
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
+  sealedTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]')
 }, 'AssetContents');
 
 export interface Asset {

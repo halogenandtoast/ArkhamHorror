@@ -2282,7 +2282,8 @@ runGameMessage msg g = case msg of
       )
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   PayCardCost iid card -> do
-    cost <- Cost.ResourceCost <$> getModifiedCardCost iid card
+    error "This is broken because it also plays the card, rethink cards that call this"
+    cost <- Cost.ResourceCost . traceShowId <$> getModifiedCardCost iid card
     acId <- getRandom
     let
       activeCost = ActiveCost
@@ -2682,7 +2683,9 @@ runGameMessage msg g = case msg of
   PlayCard iid card _mtarget True -> do
     acId <- getRandom
     modifiers' <- getModifiers (InvestigatorSource iid) (CardIdTarget $ toCardId card)
+    resources <- getModifiedCardCost iid card
     let
+      resourceCost = if resources == 0 then Cost.Free else Cost.ResourceCost resources
       additionalCosts = flip mapMaybe modifiers' $ \case
         AdditionalCost c -> Just c
         _ -> Nothing
@@ -2699,12 +2702,9 @@ runGameMessage msg g = case msg of
     actionCost <- if isFast then pure Cost.Free else Cost.ActionCost <$> getActionCost (toAttrs investigator') action
 
     let
-      cardCostToCost = \case
-        StaticCost n -> Cost.ResourceCost n
-        DynamicCost -> Cost.UpTo maxBound (Cost.ResourceCost 1)
       cost =
         mconcat $
-          [ maybe Cost.Free cardCostToCost (cdCost $ toCardDef card)
+          [ resourceCost
           , actionCost
           ] <> additionalCosts <> sealTokenCosts
       activeCost = ActiveCost

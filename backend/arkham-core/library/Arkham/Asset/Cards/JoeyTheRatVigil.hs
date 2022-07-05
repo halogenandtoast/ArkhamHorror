@@ -57,7 +57,7 @@ instance RunMessage JoeyTheRatVigil where
         (chooseOne
           iid
           [ Run
-              [ PayCardCost iid (toCardId item)
+              [ PayCardCost iid item
               , InitiatePlayCard iid (toCardId item) Nothing False
               ]
           | item <- playableItems

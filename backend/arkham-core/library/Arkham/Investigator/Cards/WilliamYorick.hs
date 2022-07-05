@@ -64,7 +64,7 @@ instance RunMessage WilliamYorick where
           else if isFastCard c
             then [InitiatePlayCard iid (toCardId c) Nothing False]
             else
-              [ PayCardCost iid (toCardId c)
+              [ PayCardCost iid c
               , InitiatePlayCard iid (toCardId c) Nothing False
               ]
       playableTargets <- filterM

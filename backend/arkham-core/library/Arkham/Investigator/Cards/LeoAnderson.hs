@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Card.Id
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
@@ -21,7 +20,7 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone
 
-newtype Metadata = Metadata { responseCard :: Maybe CardId }
+newtype Metadata = Metadata { responseCard :: Maybe Card }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -44,7 +43,7 @@ leoAnderson = investigator
 
 instance HasModifiersFor LeoAnderson where
   getModifiersFor _ (CardIdTarget cid) (LeoAnderson (attrs `With` metadata))
-    | Just cid == responseCard metadata
+    | Just cid == fmap toCardId (responseCard metadata)
     = pure $ toModifiers attrs [ReduceCostOf (CardWithId cid) 1]
   getModifiersFor _ _ _ = pure []
 
@@ -81,16 +80,15 @@ instance RunMessage LeoAnderson where
       push $ chooseOne
         iid
         [ TargetLabel
-            target
-            [UseCardAbilityChoiceTarget iid source windows' 1 payment target]
+            (CardIdTarget $ toCardId c)
+            [UseCardAbilityChoiceTarget iid source windows' 1 payment (CardTarget c)]
         | c <- cards
-        , let target = CardIdTarget (toCardId c)
         ]
       pure i
-    UseCardAbilityChoiceTarget iid source _ 1 _ (CardIdTarget cid)
+    UseCardAbilityChoiceTarget iid source _ 1 _ (CardTarget card)
       | isSource attrs source -> do
-        pushAll [PayCardCost iid cid, PlayCard iid cid Nothing False, ResetMetadata (toTarget attrs)]
-        pure . LeoAnderson $ attrs `with` Metadata (Just cid)
+        pushAll [PayCardCost iid card, PlayCard iid card Nothing False, ResetMetadata (toTarget attrs)]
+        pure . LeoAnderson $ attrs `with` Metadata (Just card)
     ResetMetadata (isTarget attrs -> True) ->
       pure . LeoAnderson $ attrs `with` Metadata Nothing
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do

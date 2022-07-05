@@ -34,7 +34,7 @@ instance RunMessage ThePallidMask where
       hasturTheTatteredKing <- getSetAsideCard Enemies.hasturTheTatteredKing
       palaceOfTheKing <- getJustLocationIdByName "Palace of the King"
       pushAll
-        [ PlayCard iid (toCardId attrs) Nothing False
+        [ PlayCard iid (toCard attrs) Nothing False
         , RemoveEnemy theManInThePallidMask
         , CreateEnemyAt hasturTheTatteredKing palaceOfTheKing Nothing
         ]

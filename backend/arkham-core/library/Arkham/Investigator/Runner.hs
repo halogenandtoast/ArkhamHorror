@@ -1018,40 +1018,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAllCluesTo target | not (isTarget a target) -> do
     when (investigatorClues > 0) (push $ PlaceClues target investigatorClues)
     pure $ a & cluesL .~ 0
-  PayCardCost iid cardId | iid == investigatorId -> do
-    let card = findCard cardId a
-    cost <- getModifiedCardCost iid card
-    iids <- filter (/= iid) <$> getInvestigatorIds
-    iidsWithModifiers <- for iids $ \iid' -> do
-      modifiers <- getModifiers
-        (InvestigatorSource iid')
-        (InvestigatorTarget iid')
-      pure (iid', modifiers)
-    canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) -> do
-      flip anyM modifiers $ \case
-        CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher -> liftA2
-          (&&)
-          (member iid <$> select iMatcher)
-          (pure $ cardMatch card cMatcher)
-        _ -> pure False
-    if null canHelpPay
-      then push (SpendResources iid cost)
-      else do
-        iidsWithResources <- traverse
-          (traverseToSnd (field InvestigatorResources))
-          (iid : map fst canHelpPay)
-        push
-          (Ask iid
-          $ ChoosePaymentAmounts
-              ("Pay " <> tshow cost <> " resources")
-              (Just cost)
-          $ map
-              (\(iid', resources) ->
-                (iid', (0, resources), SpendResources iid' 1)
-              )
-              iidsWithResources
-          )
-    pure a
   PayDynamicCardCost iid cardId _n beforePlayMessages | iid == investigatorId ->
     a <$ push
       (Ask iid $ ChooseDynamicCardAmounts
@@ -1156,74 +1122,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             cardId
             mtarget
             [Window Timing.When Window.FastPlayerWindow]
-          else PlayCard iid cardId mtarget asAction
+          else PlayCard iid card mtarget asAction
         ]
     pure a
-  PlayCard iid cardId mtarget True | iid == investigatorId -> do
-    modifiers' <- getModifiers (InvestigatorSource iid) (CardIdTarget cardId)
-    let
-      card = findCard cardId a
-      additionalCosts = flip mapMaybe modifiers' $ \case
-        AdditionalCost c -> Just c
-        _ -> Nothing
-      isFast = case card of
-        PlayerCard pc ->
-          isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` modifiers'
-        _ -> False
-      action = case card of
-        PlayerCard pc -> fromMaybe Action.Play $ cdAction (toCardDef pc)
-        _ -> Action.Play
-
-      actionProvokesAttackOfOpportunities =
-        action
-          `notElem` [Action.Evade, Action.Parley, Action.Resign, Action.Fight]
-      provokesAttackOfOpportunities = case card of
-        PlayerCard pc ->
-          actionProvokesAttackOfOpportunities
-            && DoesNotProvokeAttacksOfOpportunity
-            `notElem` cdAttackOfOpportunityModifiers (toCardDef pc)
-        _ -> actionProvokesAttackOfOpportunities
-      aooMessage =
-        [ CheckAttackOfOpportunity iid isFast | provokesAttackOfOpportunities ]
-    actionCost <- if isFast then pure 0 else getActionCost a action
-
-    beforeWindowMsg <- checkWindows
-      [Window Timing.When (Window.PerformAction iid action)]
-    afterWindowMsg <- checkWindows
-      [Window Timing.After (Window.PerformAction iid action)]
-
-    iids <- filter (/= iid) <$> getInvestigatorIds
-    iidsWithModifiers <- for iids $ \iid' -> do
-      modifiers <- getModifiers
-        (InvestigatorSource iid')
-        (InvestigatorTarget iid')
-      pure (iid', modifiers)
-    canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) -> do
-      flip anyM modifiers $ \case
-        CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher -> liftA2
-          (&&)
-          (member iid <$> select iMatcher)
-          (pure $ cardMatch card cMatcher)
-        _ -> pure False
-    additionalResources <-
-      sum <$> traverse ((field InvestigatorResources) . fst) canHelpPay
-
-    if investigatorRemainingActions
-        >= actionCost
-        && (investigatorResources + additionalResources >= getCost card)
-      then a <$ pushAll
-        ([ BeginAction
-         , beforeWindowMsg
-         , TakeAction
-           iid
-           (Just Action.Play)
-           (mconcat $ ActionCost actionCost : additionalCosts)
-         , PayCardCost iid cardId
-         ]
-        <> aooMessage
-        <> [PlayCard iid cardId mtarget False, afterWindowMsg, FinishAction]
-        )
-      else pure a
   PlayedCard iid card | iid == investigatorId -> do
     send $ format a <> " played " <> format card
     push =<< checkWindows [Window Timing.After (Window.PlayCard iid card)]
@@ -1811,8 +1712,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       , RunWindow iid windows
                       ]
                     else
-                      [ PayCardCost iid (toCardId c)
-                        , PlayCard iid (toCardId c) Nothing False
+                      [ PayCardCost iid c
+                        , PlayCard iid c Nothing False
                         ]
                         <> [RunWindow iid windows]
               | c <- playableCards
@@ -1999,8 +1900,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               [ TargetLabel
                   (CardIdTarget $ toCardId card)
                   [ AddToHand who card
-                  , PayCardCost iid (toCardId card)
-                  , PlayCard iid (toCardId card) Nothing False
+                  , PayCardCost iid card
+                  , PlayCard iid card Nothing False
                   ]
               | card <- playableCards
               ]

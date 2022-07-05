@@ -57,7 +57,7 @@ instance RunMessage EverVigilant1 where
             1
             "Do not play asset"
             [ Run
-                [ PayCardCost iid (toCardId c)
+                [ PayCardCost iid c
                 , InitiatePlayCard iid (toCardId c) mtarget False
                 ]
             | c <- playableCards

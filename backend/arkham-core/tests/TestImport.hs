@@ -59,7 +59,7 @@ import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
 import Arkham.Timing qualified as Timing
-import Arkham.Token as X
+import Arkham.Token as X hiding (TokenId)
 import Arkham.Window as X
   ( Window (..), WindowType (DuringTurn, FastPlayerWindow, NonFast) )
 import Control.Lens as X ( set, (^?!) )
@@ -435,7 +435,7 @@ newGame investigator = do
     , gameActionCanBeUndone = False
     , gameActionDiff = []
     , gameInAction = False
-    , gameActiveCost = Nothing
+    , gameActiveCost = mempty
     }
   where investigatorId = toId investigator
 

@@ -172,6 +172,7 @@ allPlayerEventCards = mapFromList $ map
   , timeWarp2
   , trueSurvivor3
   , uncageTheSoul
+  , unearthTheAncients
   , wardOfProtection
   , wardOfProtection2
   , wardOfProtection5
@@ -1100,6 +1101,16 @@ infighting3 = (event "03314" "Infighting" 1 Survivor)
   , cdCardTraits = singleton Trick
   , cdLevel = 3
   , cdFastWindow = Just $ PhaseBegins Timing.After (PhaseIs EnemyPhase)
+  }
+
+unearthTheAncients :: CardDef
+unearthTheAncients = (event "04024" "Unearth the Ancients" 1 Seeker)
+  { cdSkills = [SkillIntellect, SkillIntellect]
+  , cdCardTraits = singleton Insight
+  , cdAction = Just Action.Investigate
+  , cdCriteria =
+    Just $ Criteria.ExtendedCardExists $ InHandOf You <> BasicCardMatch
+      (CardWithClass Seeker <> CardWithType AssetType)
   }
 
 secondWind :: CardDef

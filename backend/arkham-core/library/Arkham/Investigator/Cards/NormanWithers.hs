@@ -86,9 +86,9 @@ instance RunMessage NormanWithers where
             ]
           )
     BeginRound -> NormanWithers . (`with` Metadata False) <$> runMessage msg a
-    PlayCard iid cardId _ False | iid == toId a ->
+    PlayCard iid card _ False | iid == toId a ->
       case unDeck (investigatorDeck a) of
-        c : _ | toCardId c == cardId ->
+        c : _ | toCardId c == toCardId card ->
           NormanWithers . (`with` Metadata True) <$> runMessage msg a
         _ -> NormanWithers . (`with` metadata) <$> runMessage msg a
     _ -> NormanWithers . (`with` metadata) <$> runMessage msg a

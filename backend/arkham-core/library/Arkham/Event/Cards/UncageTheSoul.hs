@@ -8,19 +8,19 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
-import qualified Arkham.Event.Cards as Cards
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
-import Arkham.Investigator.Attrs (Field(..))
-import Arkham.Matcher hiding (PlayCard)
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher hiding ( PlayCard )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window (Window(..))
-import qualified Arkham.Window as Window
+import Arkham.Window ( Window (..) )
+import Arkham.Window qualified as Window
 
 newtype UncageTheSoul = UncageTheSoul EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -60,8 +60,8 @@ instance RunMessage UncageTheSoul where
                 Nothing
                 (toSource attrs)
                 (CardIdTarget $ toCardId c)
-              , PayCardCost iid (toCardId c)
-              , PlayCard iid (toCardId c) Nothing False
+              , PayCardCost iid c
+              , PlayCard iid c Nothing False
               ]
           | c <- cards
           ]

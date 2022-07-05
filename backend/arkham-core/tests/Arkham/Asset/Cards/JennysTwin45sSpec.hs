@@ -6,7 +6,6 @@ import TestImport.Lifted hiding (EnemyDamage)
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Uses (useCount)
-import Arkham.AssetId
 import Arkham.Enemy.Attrs qualified as Enemy
 import Arkham.Enemy.Attrs (Field(..))
 import Arkham.Asset.Attrs (Field(..))

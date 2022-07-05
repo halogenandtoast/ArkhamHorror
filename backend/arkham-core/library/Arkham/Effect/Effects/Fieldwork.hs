@@ -26,4 +26,5 @@ instance HasModifiersFor Fieldwork where
 instance RunMessage Fieldwork where
   runMessage msg e@(Fieldwork attrs) = case msg of
     EndPhase -> e <$ push (DisableEffect $ effectId attrs)
+    SkillTestEnds _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> Fieldwork <$> runMessage msg attrs

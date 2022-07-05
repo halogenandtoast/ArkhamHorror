@@ -4,9 +4,8 @@ import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { SkillTest } from '@/arkham/types/SkillTest';
 import { MessageType } from '@/arkham/types/Message';
-import { ChaosToken } from '@/arkham/types/ChaosToken';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
-
+import Token from '@/arkham/components/Token';
 
 export interface Props {
   game: Game
@@ -16,6 +15,8 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+
+const emit = defineEmits(['choose'])
 
 const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
@@ -72,10 +73,6 @@ const revealedTokens = computed(() => {
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-function revealedTokenAction(token: ChaosToken) {
-  return choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.contents[0].contents == token.tokenFace)
-}
-
 const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.START_SKILL_TEST))
 
 const investigatorPortrait = computed(() => {
@@ -91,8 +88,6 @@ const investigatorPortrait = computed(() => {
   return null;
 })
 
-const isIgnored = (token: ChaosToken) => token.modifiers?.some(modifier => modifier.type.tag == 'IgnoreToken') || false
-
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 
@@ -104,6 +99,8 @@ const tokenGroups = computed(() => {
     filter(([, el]) => el.tag == "ChooseTokenGroups").
     map(([idx, el]) => [idx, el.contents[2].contents[2]])
 })
+
+const choose = (idx: number) => emit('choose', idx)
 </script>
 
 <template>
@@ -113,25 +110,12 @@ const tokenGroups = computed(() => {
       class="portrait"
       :src="investigatorPortrait"
     />
-    <template v-for="(revealedToken, index) in revealedTokens" :key="index">
-      <img
-        v-if="revealedTokenAction(revealedToken) !== -1"
-        class="token active-token"
-        :src="imageFor(revealedToken.tokenFace)"
-        @click="$emit('choose', revealedTokenAction(revealedToken))"
-      />
-      <div v-else class="token-container" :class="{ ignored: isIgnored(revealedToken) }">
-        <img
-          class="token"
-          :src="imageFor(revealedToken.tokenFace)"
-        />
-      </div>
-    </template>
+    <Token v-for="(revealedToken, index) in revealedTokens" :key="index" :token="revealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
     <img
       v-if="tokenAction !== -1"
       class="token token--can-draw"
       :src="`${baseUrl}/img/arkham/ct_blank.png`"
-      @click="$emit('choose', tokenAction)"
+      @click="choose(tokenAction)"
     />
     <template v-if="debug && tokenAction !== -1">
       <div class="token-debug" v-for="tokenFace in tokenFaces" :key="tokenFace" @click="debugChoose({tag: 'ForceTokenDraw', contents: tokenFace})">
@@ -142,7 +126,7 @@ const tokenGroups = computed(() => {
         </div>
     </template>
     <div v-for="tokenGroup in tokenGroups" :key="tokenGroup[0]">
-      <div v-for="(group, idx) in tokenGroup[1]" :key="idx" @click="$emit('choose', parseInt(tokenGroup[0]))">
+      <div v-for="(group, idx) in tokenGroup[1]" :key="idx" @click="choose(parseInt(tokenGroup[0]))">
         <img
           v-for="(token, idx) in group"
           :key="idx"

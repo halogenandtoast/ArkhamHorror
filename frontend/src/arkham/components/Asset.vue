@@ -6,6 +6,7 @@ import type { Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import Token from '@/arkham/components/Token';
 import * as Arkham from '@/arkham/types/Asset';
 
 export interface Props {
@@ -15,7 +16,7 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-const emit = defineEmits(['showCards'])
+const emit = defineEmits(['showCards', 'choose'])
 
 const id = computed(() => props.asset.contents.id)
 const hasPool = computed(() => {
@@ -24,10 +25,11 @@ const hasPool = computed(() => {
     health,
     horror,
     uses,
-doom,
-clues,
+    doom,
+    clues,
+    sealedTokens,
   } = props.asset.contents;
-  return sanity || health || horror || uses || doom > 0 || clues > 0;
+  return sanity || health || horror || uses || doom > 0 || clues > 0 || sealedTokens.length > 0;
 })
 
 const exhausted = computed(() => props.asset.contents.exhausted)
@@ -131,6 +133,8 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
 
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
+
+const choose = (idx: number) => emit('choose', idx)
 </script>
 
 <template>
@@ -139,7 +143,7 @@ const debugChoose = inject('debugChoose')
       :src="image"
       :class="{ 'asset--can-interact': cardAction !== -1, exhausted}"
       class="card"
-      @click="$emit('choose', cardAction)"
+      @click="choose(cardAction)"
     />
     <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
     <AbilityButton
@@ -147,7 +151,7 @@ const debugChoose = inject('debugChoose')
       :key="ability"
       :ability="choices[ability]"
       :data-image="image"
-      @click="$emit('choose', ability)"
+      @click="choose(ability)"
       />
     <template v-if="debug">
       <button v-if="!asset.contents.investigator" @click="debugChoose({tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
@@ -164,17 +168,18 @@ const debugChoose = inject('debugChoose')
         type="health"
         :amount="asset.contents.damage"
         :class="{ 'health--can-interact': healthAction !== -1 }"
-        @choose="$emit('choose', healthAction)"
+        @choose="choose(healthAction)"
       />
       <PoolItem
         v-if="asset.contents.sanity !== null"
         type="sanity"
         :amount="asset.contents.horror"
         :class="{ 'sanity--can-interact': sanityAction !== -1 }"
-        @choose="$emit('choose', sanityAction)"
+        @choose="choose(sanityAction)"
       />
       <PoolItem v-if="asset.contents.doom > 0" type="doom" :amount="asset.contents.doom" />
       <PoolItem v-if="asset.contents.clues > 0" type="clue" :amount="asset.contents.clues" />
+      <Token v-for="(sealedToken, index) in asset.contents.sealedTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
     </div>
   </div>
 </template>
@@ -214,5 +219,9 @@ const debugChoose = inject('debugChoose')
   color: #fff;
   border-radius: 4px;
   border: 1px solid #ff00ff;
+}
+
+:deep(.token) {
+  width: 20px;
 }
 </style>

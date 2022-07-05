@@ -12,7 +12,6 @@ import Arkham.Classes
 import Arkham.Cost hiding ( PaidCost )
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.ChaosBag
 import Arkham.Id
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher hiding ( AssetCard, PlayCard )

@@ -1580,7 +1580,9 @@ instance Projection AssetAttrs where
       AssetUses -> pure assetUses
       AssetStartingUses -> pure . cdUses $ toCardDef attrs
       AssetController -> pure assetController
-      AssetLocation -> pure assetLocation
+      AssetLocation -> do
+        mloc <- maybe (pure Nothing) (field InvestigatorLocation) assetController
+        pure $ getFirst $ foldMap First [assetLocation, mloc]
       AssetCardCode -> pure assetCardCode
       AssetSlots -> pure assetSlots
       AssetSealedTokens -> pure assetSealedTokens

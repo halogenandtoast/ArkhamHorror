@@ -44,7 +44,7 @@ instance HasAbilities TheNecronomicon where
 instance RunMessage TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      a <$ push (PlayCard iid (toCardId attrs) Nothing False)
+      a <$ push (PlayCard iid (toCard attrs) Nothing False)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push $ InvestigatorDamage iid source 0 1
       if assetHorror attrs <= 1

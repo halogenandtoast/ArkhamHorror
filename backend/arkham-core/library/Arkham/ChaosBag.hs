@@ -327,4 +327,6 @@ instance RunMessage ChaosBag where
       pure $ c & tokensL %~ (token :)
     SealToken token -> do
       pure $ c & tokensL %~ filter (/= token)
+    UnsealToken token -> do
+      pure $ c & tokensL %~ (token :)
     _ -> pure c

@@ -22,6 +22,9 @@ import Arkham.Window qualified as Window
 instance RunMessage AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
+    SealedToken token card | toCardId card == toCardId a ->
+      pure $ a & sealedTokensL %~ (token :)
+    UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
     ReadyExhausted -> case assetController of
       Just iid -> do
         modifiers <- getModifiers (toSource a) (InvestigatorTarget iid)
@@ -87,20 +90,24 @@ instance RunMessage AssetAttrs where
           . (enemyL ?~ eid)
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | a `isTarget` target ->
-      a <$ push (RemovedFromPlay $ toSource a)
+      a <$ push (RemoveFromPlay $ toSource a)
     Discard target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       a <$ pushAll
         (windows'
-        <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
+        <> [RemoveFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
         )
     Exile target | a `isTarget` target ->
-      a <$ pushAll [RemovedFromPlay $ toSource a, Exiled target (toCard a)]
-    RemovedFromPlay source | isSource a source -> do
-      push =<< checkWindows
+      a <$ pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
+    RemoveFromPlay source | isSource a source -> do
+      windowMsg <- checkWindows
         ((`Window` Window.LeavePlay (toTarget a))
         <$> [Timing.When, Timing.After]
         )
+      pushAll
+        $ windowMsg
+        : [ UnsealToken token | token <- assetSealedTokens ]
+        <> [RemovedFromPlay source]
       pure a
     InvestigatorPlayedAsset iid aid | aid == assetId -> do
       -- we specifically use the investigator source here because the
@@ -117,7 +124,9 @@ instance RunMessage AssetAttrs where
       afterEnterMsg <- checkWindows
         [Window Timing.After (Window.EnterPlay $ toTarget a)]
 
-      pushAll $ [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans] <> [whenEnterMsg, afterEnterMsg]
+      pushAll
+        $ [ ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans ]
+        <> [whenEnterMsg, afterEnterMsg]
       pure
         $ a
         & (controllerL ?~ iid)

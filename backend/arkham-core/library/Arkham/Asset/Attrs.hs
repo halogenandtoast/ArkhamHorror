@@ -92,6 +92,9 @@ canLeavePlayByNormalMeansL :: Lens' AssetAttrs Bool
 canLeavePlayByNormalMeansL = lens assetCanLeavePlayByNormalMeans $
   \m x -> m {assetCanLeavePlayByNormalMeans = x}
 
+sealedTokensL :: Lens' AssetAttrs [Token]
+sealedTokensL = lens assetSealedTokens $ \m x -> m {assetSealedTokens = x}
+
 horrorL :: Lens' AssetAttrs Int
 horrorL = lens assetHorror $ \m x -> m {assetHorror = x}
 

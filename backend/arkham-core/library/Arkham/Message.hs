@@ -230,7 +230,7 @@ data Message
   -- new payment bs
   | PayForAbility Ability [Window]
   | CreatedCost ActiveCostId
-  | PayCost ActiveCostId Source InvestigatorId (Maybe Action) Bool Cost
+  | PayCost ActiveCostId InvestigatorId Bool Cost
   | PayCostFinished ActiveCostId
   | PaidCost ActiveCostId InvestigatorId (Maybe Action) Payment
   -- end  new payment bs
@@ -426,7 +426,7 @@ data Message
     PayAbilityCost Source InvestigatorId (Maybe Action) Bool Cost
   | PayAbilityCostFinished EffectId Source InvestigatorId
   | PaidAbilityCost InvestigatorId (Maybe Action) Payment
-  | PayCardCost InvestigatorId CardId
+  | PayCardCost InvestigatorId Card
   | PayDynamicCardCost InvestigatorId CardId Int [Message]
   | PayForCardAbility InvestigatorId Source [Window] Int Payment
   | PayedForDynamicCard InvestigatorId CardId Int Bool
@@ -446,7 +446,7 @@ data Message
   | PlaceNextTo Target [Card]
   | PlacedLocation Name CardCode LocationId
   | PlacedLocationDirection LocationId Direction LocationId
-  | PlayCard InvestigatorId CardId (Maybe Target) Bool
+  | PlayCard InvestigatorId Card (Maybe Target) Bool
   | PlayFastEvent InvestigatorId CardId (Maybe Target) [Window]
   | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
   | PlayedCard InvestigatorId Card
@@ -484,6 +484,7 @@ data Message
   | RemoveLocation LocationId
   | RemovedLocation LocationId
   | RemoveTraits Target [Trait]
+  | RemoveFromPlay Source
   | RemovedFromPlay Source
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
   | RequestSetAsideCard Source CardCode
@@ -583,6 +584,8 @@ data Message
   | UnfocusTargets
   | UnfocusTokens
   | SealToken Token
+  | SealedToken Token Card
+  | UnsealToken Token
   | UnsetActiveCard
   | UseCardAbility InvestigatorId Source [Window] Int Payment
   | UseCardAbilityChoice InvestigatorId Source [Window] Int Payment AbilityMetadata

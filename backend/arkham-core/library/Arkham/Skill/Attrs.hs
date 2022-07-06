@@ -6,6 +6,9 @@ import Arkham.Json
 import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.RunMessage.Internal
 import Arkham.Cost
 import Arkham.Name
 import Arkham.Projection
@@ -15,7 +18,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
 
-class IsSkill a
+class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ SkillId, EntityAttrs a ~ SkillAttrs) => IsSkill a
 
 type SkillCard a = CardBuilder (InvestigatorId, SkillId) a
 

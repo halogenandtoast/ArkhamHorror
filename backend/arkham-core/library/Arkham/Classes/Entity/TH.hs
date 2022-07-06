@@ -43,6 +43,19 @@ buildEntityLookupList nm = do
   toFunName [] = TH.mkName ""
   toFunName (x : xs) = TH.mkName $ C.toLower x : xs
 
+buildEntityLookupList2 :: TH.Name -> Q Exp
+buildEntityLookupList2 nm = do
+  instances <- reifyInstances (TH.mkName $ "Is" ++ nameBase nm) [VarT (mkName "a")]
+  let conz = mapMaybe extractCon instances
+  pure $ ListE conz
+ where
+  extractCon (InstanceD _ _ (AppT _ (ConT name)) _) = Just $ AppE
+    (AppE (VarE 'fmap) (ConE nm))
+    (VarE $ toFunName $ nameBase name)
+  extractCon _ = Nothing
+  toFunName [] = TH.mkName ""
+  toFunName (x : xs) = TH.mkName $ C.toLower x : xs
+
 entityRunMessage :: String -> Q Exp
 entityRunMessage nm = do
   instances <- reifyInstances (TH.mkName $ "Is" ++ nm) [VarT (mkName "a")]

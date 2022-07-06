@@ -834,6 +834,7 @@ library
       Arkham.Label
       Arkham.Location
       Arkham.Location.Attrs
+      Arkham.Location.Base
       Arkham.Location.Cards
       Arkham.Location.Cards.AbbeyChurch
       Arkham.Location.Cards.AbbeyTowerSpiresForbidden

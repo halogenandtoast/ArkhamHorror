@@ -1,14 +1,17 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Arkham.Location.Attrs where
+{-# OPTIONS_GHC -Wno-orphans #-}
+module Arkham.Location.Attrs (module Arkham.Location.Attrs, module X, Field(..)) where
 
 import Arkham.Prelude
 
+import Arkham.Location.Base as X
 import Arkham.Ability
-import Arkham.Json
-import Data.Aeson.TH
 import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.HasAbilities
+import Arkham.Classes.RunMessage.Internal
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
@@ -24,7 +27,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (Trait)
 
-class IsLocation a
+class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ LocationId, EntityAttrs a ~ LocationAttrs) => IsLocation a
 
 type LocationCard a = CardBuilder LocationId a
 
@@ -53,34 +56,6 @@ data instance Field LocationAttrs :: Type -> Type where
   LocationCardDef :: Field LocationAttrs CardDef
   LocationCard :: Field LocationAttrs Card
   LocationAbilities :: Field LocationAttrs [Ability]
-
-data LocationAttrs = LocationAttrs
-  { locationId :: LocationId
-  , locationCardCode :: CardCode
-  , locationLabel :: Text
-  , locationRevealClues :: GameValue Int
-  , locationClues :: Int
-  , locationDoom :: Int
-  , locationHorror :: Int
-  , locationResources :: Int
-  , locationShroud :: Int
-  , locationRevealed :: Bool
-  , locationInvestigators :: HashSet InvestigatorId
-  , locationEnemies :: HashSet EnemyId
-  , locationSymbol :: LocationSymbol
-  , locationRevealedSymbol :: LocationSymbol
-  , locationConnectedMatchers :: [LocationMatcher]
-  , locationRevealedConnectedMatchers :: [LocationMatcher]
-  , locationTreacheries :: HashSet TreacheryId
-  , locationEvents :: HashSet EventId
-  , locationAssets :: HashSet AssetId
-  , locationDirections :: HashMap Direction LocationId
-  , locationConnectsTo :: HashSet Direction
-  , locationCardsUnderneath :: [Card]
-  , locationCostToEnterUnrevealed :: Cost
-  , locationCanBeFlipped :: Bool
-  }
-  deriving stock (Show, Eq)
 
 symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
@@ -179,8 +154,6 @@ instance HasCardDef LocationAttrs where
     Just def -> def
     Nothing ->
       error $ "missing card def for location " <> show (locationCardCode a)
-
-$(deriveJSON (aesonOptions $ Just "Locaiton") ''LocationAttrs)
 
 unrevealed :: LocationAttrs -> Bool
 unrevealed = not . locationRevealed

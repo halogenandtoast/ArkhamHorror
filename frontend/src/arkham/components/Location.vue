@@ -22,13 +22,13 @@ const props = defineProps<Props>()
 const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
 const image = computed(() => {
-  const { cardCode, revealed } = props.location.contents
+  const { cardCode, revealed } = props.location
   const suffix = revealed ? '' : 'b'
 
   return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}${suffix}.jpg`
 })
 
-const id = computed(() => props.location.contents.id)
+const id = computed(() => props.location.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 const targetAction = computed(() => {
@@ -174,7 +174,7 @@ const abilities = computed(() => {
 })
 
 const enemies = computed(() => {
-  const enemyIds = props.location.contents.enemies;
+  const enemyIds = props.location.enemies;
   return enemyIds
     .filter((e) => props.game.enemies[e].contents.engagedInvestigators.length === 0);
 })
@@ -189,7 +189,7 @@ const debugChoose = inject('debugChoose')
   <div class="location-container">
     <div class="location-investigator-column">
       <div
-        v-for="cardCode in location.contents.investigators"
+        v-for="cardCode in location.investigators"
         :key="cardCode"
       >
         <Investigator
@@ -226,10 +226,10 @@ const debugChoose = inject('debugChoose')
         @click="$emit('choose', ability)"
         />
       <template v-if="debug">
-        <button v-if="!location.contents.revealed" @click="debugChoose({tag: 'RevealLocation', contents: [null, id]})">Reveal</button>
+        <button v-if="!location.revealed" @click="debugChoose({tag: 'RevealLocation', contents: [null, id]})">Reveal</button>
       </template>
       <Treachery
-        v-for="treacheryId in location.contents.treacheries"
+        v-for="treacheryId in location.treacheries"
         :key="treacheryId"
         :treachery="game.treacheries[treacheryId]"
         :game="game"
@@ -238,7 +238,7 @@ const debugChoose = inject('debugChoose')
         @choose="$emit('choose', $event)"
       />
       <Event
-        v-for="eventId in location.contents.events"
+        v-for="eventId in location.events"
         :event="game.events[eventId]"
         :game="game"
         :investigatorId="investigatorId"
@@ -246,26 +246,26 @@ const debugChoose = inject('debugChoose')
         @choose="$emit('choose', $event)"
       />
       <div class="pool">
-        <div v-if="location.contents.clues > 0" class="pool">
-          <PoolItem type="clue" :amount="location.contents.clues" />
+        <div v-if="location.clues > 0" class="pool">
+          <PoolItem type="clue" :amount="location.clues" />
         </div>
-        <div v-if="location.contents.doom > 0" class="pool">
-          <PoolItem type="doom" :amount="location.contents.doom" />
+        <div v-if="location.doom > 0" class="pool">
+          <PoolItem type="doom" :amount="location.doom" />
         </div>
-        <div v-if="location.contents.horror > 0" class="pool">
-          <PoolItem type="horror" :amount="location.contents.horror" />
+        <div v-if="location.horror > 0" class="pool">
+          <PoolItem type="horror" :amount="location.horror" />
         </div>
-        <div v-if="location.contents.cardsUnderneath.length > 0" class="pool">
-          <PoolItem type="card" :amount="location.contents.cardsUnderneath.length" />
+        <div v-if="location.cardsUnderneath.length > 0" class="pool">
+          <PoolItem type="card" :amount="location.cardsUnderneath.length" />
         </div>
-        <div v-if="location.contents.resources > 0" class="pool">
-          <PoolItem type="resource" :amount="location.contents.resources" />
+        <div v-if="location.resources > 0" class="pool">
+          <PoolItem type="resource" :amount="location.resources" />
         </div>
       </div>
     </div>
     <div class="location-asset-column">
       <Asset
-        v-for="assetId in location.contents.assets"
+        v-for="assetId in location.assets"
         :asset="game.assets[assetId]"
         :game="game"
         :investigatorId="investigatorId"

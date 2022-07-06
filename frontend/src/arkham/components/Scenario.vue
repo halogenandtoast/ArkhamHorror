@@ -319,7 +319,7 @@ const phase = computed(() => props.game.phase)
           :game="game"
           :investigatorId="investigatorId"
           :location="location"
-          :style="{ 'grid-area': location.contents.label, 'justify-self': 'center' }"
+          :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
           @choose="choose"
         />
         <Enemy

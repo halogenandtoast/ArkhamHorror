@@ -32,7 +32,7 @@ import Arkham.EncounterCard.Source
 import Arkham.Exception
 import Arkham.Helpers
 import Arkham.Id
-import Arkham.Location.Attrs (LocationAttrs)
+import Arkham.Location.Base
 import Arkham.Matcher hiding ( EnemyDefeated, InvestigatorDefeated )
 import Arkham.Name
 import Arkham.Phase

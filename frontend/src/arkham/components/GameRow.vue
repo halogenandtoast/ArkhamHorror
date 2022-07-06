@@ -34,12 +34,12 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
           <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${campaign.contents.id}.png`" />
         </div>
         <div class="campaign-icon-container" v-else-if="scenario">
-          <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${scenario.contents.id.replace('c', '').slice(0,2)}.png`" />
+          <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${scenario.id.replace('c', '').slice(0,2)}.png`" />
         </div>
         <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
         <div v-if="game.scenario" class="scenario-details">
-          <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${scenario.contents.id.replace('c', '')}.png`" />
-          <span>{{scenario.contents.name.title}}</span>
+          <img class="scenario-icon" :src="`${baseUrl}/img/arkham/sets/${scenario.id.replace('c', '')}.png`" />
+          <span>{{scenario.name.title}}</span>
         </div>
 
         <div class="game-delete">

@@ -3,13 +3,6 @@ import { Card, cardDecoder } from '@/arkham/types/Card';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 
 export interface Location {
-  tag: string;
-  contents: LocationContents;
-  modifiers: Modifier[];
-  connectedLocations: string[];
-}
-
-export interface LocationContents {
   cardCode: string;
   label: string;
   id: string;
@@ -25,9 +18,11 @@ export interface LocationContents {
   assets: string[];
   events: string[];
   cardsUnderneath: Card[];
+  modifiers: Modifier[];
+  connectedLocations: string[];
 }
 
-export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
+export const locationDecoder = JsonDecoder.object<Location>(
   {
     cardCode: JsonDecoder.string,
     label: JsonDecoder.string,
@@ -44,13 +39,8 @@ export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
     assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
     events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
     cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'UnderneathCard[]'),
+    modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
+    connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
   },
-  'Attrs',
+  'Location',
 );
-
-export const locationDecoder = JsonDecoder.object<Location>({
-  tag: JsonDecoder.string,
-  contents: locationContentsDecoder,
-  modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
-  connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
-}, 'Location');

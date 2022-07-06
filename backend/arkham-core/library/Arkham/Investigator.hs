@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Investigator
   ( module Arkham.Investigator
   ) where
@@ -12,30 +11,35 @@ import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner
 import Arkham.Message
-import Data.Aeson.TH
+import Data.Typeable
 
-$(buildEntity "Investigator")
-$(deriveJSON defaultOptions ''Investigator)
+data Investigator = forall a. IsInvestigator a => Investigator a
+
+instance Eq Investigator where
+  (Investigator (a :: a)) == (Investigator (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Investigator where
+  show (Investigator a) = show a
+
+instance ToJSON Investigator where
+  toJSON (Investigator a) = toJSON a
 
 instance HasModifiersFor Investigator where
-  getModifiersFor = $(entityF2 "Investigator" 'getModifiersFor)
+  getModifiersFor source target (Investigator a) = getModifiersFor source target a
 
 instance HasTokenValue Investigator where
-  getTokenValue = $(entityF2 "Investigator" 'getTokenValue)
+  getTokenValue iid tokenFace (Investigator a) = getTokenValue iid tokenFace a
 
 instance HasAbilities Investigator where
-  getAbilities = $(entityF "Investigator" 'getAbilities)
+  getAbilities (Investigator a) = getAbilities a
 
 instance RunMessage Investigator where
-  runMessage msg i = do
+  runMessage msg i@(Investigator a) = do
     modifiers' <- getModifiers (toSource i) (toTarget i)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
-    $(entityRunMessage "Investigator") msg' i
-
-allInvestigators :: HashMap InvestigatorId Investigator
-allInvestigators = mapFromList $ map
-  (InvestigatorId . cbCardCode &&& ($ ()) . cbCardBuilder)
-  $(buildEntityLookupList "Investigator")
+    Investigator <$> runMessage msg' a
 
 lookupInvestigator :: InvestigatorId -> Investigator
 lookupInvestigator iid =
@@ -59,7 +63,7 @@ instance Entity Investigator where
   type EntityId Investigator = InvestigatorId
   type EntityAttrs Investigator = InvestigatorAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Investigator" 'toAttrs)
+  toAttrs (Investigator a) = toAttrs a
 
 instance TargetEntity Investigator where
   toTarget = toTarget . toAttrs
@@ -71,3 +75,58 @@ instance SourceEntity Investigator where
 
 instance ToGameLoggerFormat Investigator where
   format = format . toAttrs
+
+instance FromJSON Investigator where
+  parseJSON v = flip (withObject "Location") v $ \o -> do
+    cCode :: CardCode <- o .: "cardCode"
+    case cCode of
+      "01001" -> Investigator . RolandBanks <$> parseJSON v
+      "01002" -> Investigator . DaisyWalker <$> parseJSON v
+      "01003" -> Investigator . SkidsOToole <$> parseJSON v
+      "01004" -> Investigator . AgnesBaker <$> parseJSON v
+      "01005" -> Investigator . WendyAdams <$> parseJSON v
+      "02001" -> Investigator . ZoeySamaras <$> parseJSON v
+      "02002" -> Investigator . RexMurphy <$> parseJSON v
+      "02003" -> Investigator . JennyBarnes <$> parseJSON v
+      "02004" -> Investigator . JimCulver <$> parseJSON v
+      "02005" -> Investigator . AshcanPete <$> parseJSON v
+      "03001" -> Investigator . MarkHarrigan <$> parseJSON v
+      "03002" -> Investigator . MinhThiPhan <$> parseJSON v
+      "03003" -> Investigator . SefinaRousseau <$> parseJSON v
+      "03004" -> Investigator . AkachiOnyele <$> parseJSON v
+      "03005" -> Investigator . WilliamYorick <$> parseJSON v
+      "03006" -> Investigator . LolaHayes <$> parseJSON v
+      "04001" -> Investigator . LeoAnderson <$> parseJSON v
+      "04002" -> Investigator . UrsulaDowns <$> parseJSON v
+      "08004" -> Investigator . NormanWithers <$> parseJSON v
+      "60101" -> Investigator . NathanielCho <$> parseJSON v
+      "60501" -> Investigator . StellaClark <$> parseJSON v
+      "90001" -> Investigator . DaisyWalkerParallel <$> parseJSON v
+      _ -> error "invalid investigator"
+
+allInvestigators :: HashMap InvestigatorId Investigator
+allInvestigators = mapFromList $ map
+  (InvestigatorId . cbCardCode &&& ($ ()) . cbCardBuilder)
+  [ Investigator <$> rolandBanks
+  , Investigator <$> daisyWalker
+  , Investigator <$> skidsOToole
+  , Investigator <$> agnesBaker
+  , Investigator <$> wendyAdams
+  , Investigator <$> zoeySamaras
+  , Investigator <$> rexMurphy
+  , Investigator <$> jennyBarnes
+  , Investigator <$> jimCulver
+  , Investigator <$> ashcanPete
+  , Investigator <$> markHarrigan
+  , Investigator <$> minhThiPhan
+  , Investigator <$> sefinaRousseau
+  , Investigator <$> akachiOnyele
+  , Investigator <$> williamYorick
+  , Investigator <$> lolaHayes
+  , Investigator <$> leoAnderson
+  , Investigator <$> ursulaDowns
+  , Investigator <$> normanWithers
+  , Investigator <$> nathanielCho
+  , Investigator <$> stellaClark
+  , Investigator <$> daisyWalkerParallel
+  ]

@@ -1049,7 +1049,7 @@ getModifiedCardCost iid c@(PlayerCard _) = do
   cardModifiers <- getModifiers
     (InvestigatorSource iid)
     (CardIdTarget $ toCardId c)
-  foldM applyModifier startingCost (traceShowId $ modifiers <> cardModifiers)
+  foldM applyModifier startingCost (modifiers <> cardModifiers)
  where
   pcDef = toCardDef c
   startingCost = case cdCost pcDef of

@@ -442,6 +442,7 @@ library
       Arkham.Classes.HasTokenValue
       Arkham.Classes.Query
       Arkham.Classes.RunMessage
+      Arkham.Classes.RunMessage.Internal
       Arkham.ClassSymbol
       Arkham.CommitRestriction
       Arkham.Cost

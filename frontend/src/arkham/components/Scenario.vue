@@ -112,7 +112,7 @@ onUpdated(async () => {
 })
 
 const scenarioGuide = computed(() => {
-  const { id, difficulty } = props.scenario.contents;
+  const { id, difficulty } = props.scenario;
   const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
     ? 'b'
     : '';
@@ -121,16 +121,16 @@ const scenarioGuide = computed(() => {
 })
 
 const scenarioDecks = computed(() => {
-  if (!props.scenario.contents.decks) {
+  if (!props.scenario.decks) {
     return null;
   }
 
-  return Object.entries(props.scenario.contents.decks);
+  return Object.entries(props.scenario.decks);
 
 })
 
 const locationStyles = computed(() => {
-  const { locationLayout } = props.scenario.contents;
+  const { locationLayout } = props.scenario;
   if (locationLayout) {
     return {
       display: 'grid',
@@ -152,8 +152,8 @@ const activeCard = computed(() => {
 
 const players = computed(() => props.game.investigators)
 const playerOrder = computed(() => props.game.playerOrder)
-const discards = computed<Card[]>(() => props.scenario.contents.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
-const outOfPlay = computed(() => (props.scenario.contents?.setAsideCards || []))
+const discards = computed<Card[]>(() => props.scenario.discard.map(c => { return { tag: 'EncounterCard', contents: c }}))
+const outOfPlay = computed(() => (props.scenario?.setAsideCards || []))
 const removedFromPlay = computed(() => props.game.removedFromPlay)
 const noCards = computed<Card[]>(() => [])
 
@@ -176,8 +176,8 @@ const hideCards = () => showCards.ref = noCards
 
 const viewDiscardLabel = computed(() => `${discards.value.length} Cards`)
 const topOfEncounterDiscard = computed(() => {
-  if (props.scenario.contents.discard[0]) {
-    const { cardCode } = props.scenario.contents.discard[0];
+  if (props.scenario.discard[0]) {
+    const { cardCode } = props.scenario.discard[0];
 
     return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
   }
@@ -191,15 +191,15 @@ const activePlayerId = computed(() => props.game.activeInvestigatorId)
 const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.contents.asSelfLocation !== null))
 
 const cardsUnderAgenda = computed(() => {
-  return props.scenario.contents.cardsUnderAgendaDeck
+  return props.scenario.cardsUnderAgendaDeck
 })
 
 const cardsUnderAct = computed(() => {
-  return props.scenario.contents.cardsUnderActDeck
+  return props.scenario.cardsUnderActDeck
 })
 
 const cardsNextToAct = computed(() => {
-  return props.scenario.contents.cardsNextToActDeck
+  return props.scenario.cardsNextToActDeck
 })
 
 const phase = computed(() => props.game.phase)
@@ -246,7 +246,7 @@ const phase = computed(() => props.game.phase)
           :key="scenarioDeck[0]"
           v-for="[,scenarioDeck] in scenarioDecks"
         />
-        <VictoryDisplay :game="game" :victoryDisplay="scenario.contents.victoryDisplay" @show="doShowCards" />
+        <VictoryDisplay :game="game" :victoryDisplay="scenario.victoryDisplay" @show="doShowCards" />
         <div v-if="topOfEncounterDiscard" class="discard">
           <img
             :src="topOfEncounterDiscard"
@@ -291,7 +291,7 @@ const phase = computed(() => props.game.phase)
         />
         <ChaosBag
           :game="game"
-          :chaosBag="scenario.contents.chaosBag"
+          :chaosBag="scenario.chaosBag"
           :skillTest="game.skillTest"
           :investigatorId="investigatorId"
           @choose="choose"

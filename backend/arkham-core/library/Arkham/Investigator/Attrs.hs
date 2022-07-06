@@ -6,6 +6,10 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Ability
 import Arkham.ClassSymbol
+import Arkham.Classes.RunMessage.Internal
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasTokenValue
 import Arkham.Name
 import Arkham.Action
 import Arkham.Card
@@ -22,7 +26,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Data.Text qualified as T
 
-class IsInvestigator a
+class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, HasTokenValue a, RunMessage a, Entity a, EntityId a ~ InvestigatorId, EntityAttrs a ~ InvestigatorAttrs) => IsInvestigator a
 
 type InvestigatorCard a = CardBuilder () a
 

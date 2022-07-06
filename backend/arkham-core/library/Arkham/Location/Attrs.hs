@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Location.Attrs (module Arkham.Location.Attrs, module X, Field(..)) where
 

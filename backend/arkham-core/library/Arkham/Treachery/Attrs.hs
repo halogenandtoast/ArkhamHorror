@@ -5,6 +5,9 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.RunMessage.Internal
 import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword
@@ -15,7 +18,7 @@ import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Cards
 
-class IsTreachery a
+class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ TreacheryId, EntityAttrs a ~ TreacheryAttrs) => IsTreachery a
 
 type TreacheryCard a = CardBuilder (InvestigatorId, TreacheryId) a
 

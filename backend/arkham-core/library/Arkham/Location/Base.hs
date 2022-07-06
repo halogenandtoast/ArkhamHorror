@@ -1,10 +1,8 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Location.Base where
 
 import Arkham.Prelude
 
 import Arkham.Json
-import Data.Aeson.TH
 import Arkham.Direction
 import Arkham.Id
 import Arkham.Cost
@@ -39,7 +37,10 @@ data LocationAttrs = LocationAttrs
   , locationCostToEnterUnrevealed :: Cost
   , locationCanBeFlipped :: Bool
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
 
-$(deriveJSON (aesonOptions $ Just "Location") ''LocationAttrs)
+instance ToJSON LocationAttrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "location"
 
+instance FromJSON LocationAttrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "location"

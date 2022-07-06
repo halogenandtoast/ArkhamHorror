@@ -666,27 +666,16 @@ twistedToHisWill = (treachery "03092" "Twisted to His Will" EvilPortents 2)
   { cdCardTraits = singleton Pact
   }
 
+spiritsTorment :: CardDef
+spiritsTorment = (treachery "03094" "Spirit's Torment" Hauntings 2)
+  { cdCardTraits = setFromList [Curse, Geist]
+  }
+
 danceOfTheYellowKing :: CardDef
 danceOfTheYellowKing =
   (treachery "03097" "Dance of the Yellow King" HastursGift 2)
     { cdCardTraits = singleton Pact
     }
-
-ledAstray :: CardDef
-ledAstray = (treachery "03145" "Led Astray" EchoesOfThePast 3)
-  { cdCardTraits = singleton Scheme
-  , cdKeywords = singleton Keyword.Peril
-  }
-
-theCultsSearch :: CardDef
-theCultsSearch = (treachery "03146" "The Cult's Search" EchoesOfThePast 2)
-  { cdCardTraits = singleton Scheme
-  }
-
-spiritsTorment :: CardDef
-spiritsTorment = (treachery "03094" "Spirit's Torment" Hauntings 2)
-  { cdCardTraits = setFromList [Curse, Geist]
-  }
 
 theKingsEdict :: CardDef
 theKingsEdict = (treachery "03100" "The King's Edict" CultOfTheYellowSign 2)
@@ -712,6 +701,17 @@ markedByTheSign = (treachery "03104" "Marked by the Sign" TheStranger 2)
 thePaleMaskBeckons :: CardDef
 thePaleMaskBeckons = (treachery "03105" "The Pale Mask Beckons" TheStranger 1)
   { cdCardTraits = setFromList [Omen, Pact]
+  }
+
+ledAstray :: CardDef
+ledAstray = (treachery "03145" "Led Astray" EchoesOfThePast 3)
+  { cdCardTraits = singleton Scheme
+  , cdKeywords = singleton Keyword.Peril
+  }
+
+theCultsSearch :: CardDef
+theCultsSearch = (treachery "03146" "The Cult's Search" EchoesOfThePast 2)
+  { cdCardTraits = singleton Scheme
   }
 
 straitjacket :: CardDef

@@ -174,6 +174,88 @@ instance FromJSON Location where
       "02175" -> Location . EngineCar_175 <$> parseJSON v
       "02176" -> Location . EngineCar_176 <$> parseJSON v
       "02177" -> Location . EngineCar_177 <$> parseJSON v
+      -- Blood on the Altar
+      "02201" -> Location . VillageCommons <$> parseJSON v
+      "02202" -> Location . BishopsBrook_202 <$> parseJSON v
+      "02203" -> Location . BishopsBrook_203 <$> parseJSON v
+      "02204" -> Location . BurnedRuins_204 <$> parseJSON v
+      "02205" -> Location . BurnedRuins_205 <$> parseJSON v
+      "02206" -> Location . OsbornsGeneralStore_206 <$> parseJSON v
+      "02207" -> Location . OsbornsGeneralStore_207 <$> parseJSON v
+      "02208" -> Location . CongregationalChurch_208 <$> parseJSON v
+      "02209" -> Location . CongregationalChurch_209 <$> parseJSON v
+      "02210" -> Location . HouseInTheReeds_210 <$> parseJSON v
+      "02211" -> Location . HouseInTheReeds_211 <$> parseJSON v
+      "02212" -> Location . Schoolhouse_212 <$> parseJSON v
+      "02213" -> Location . Schoolhouse_213 <$> parseJSON v
+      "02214" -> Location . TheHiddenChamber <$> parseJSON v
+      -- Undimensioned and Unseen
+      "02242" -> Location . DunwichVillage_242 <$> parseJSON v
+      "02243" -> Location . DunwichVillage_243 <$> parseJSON v
+      "02244" -> Location . ColdSpringGlen_244 <$> parseJSON v
+      "02245" -> Location . ColdSpringGlen_245 <$> parseJSON v
+      "02246" -> Location . TenAcreMeadow_246 <$> parseJSON v
+      "02247" -> Location . TenAcreMeadow_247 <$> parseJSON v
+      "02248" -> Location . BlastedHeath_248 <$> parseJSON v
+      "02249" -> Location . BlastedHeath_249 <$> parseJSON v
+      "02250" -> Location . WhateleyRuins_250 <$> parseJSON v
+      "02251" -> Location . WhateleyRuins_251 <$> parseJSON v
+      "02252" -> Location . DevilsHopYard_252 <$> parseJSON v
+      "02253" -> Location . DevilsHopYard_253 <$> parseJSON v
+      -- Where Doom Awaits
+      "02282" -> Location . BaseOfTheHill <$> parseJSON v
+      "02283" -> Location . AscendingPath <$> parseJSON v
+      "02284" -> Location . SentinelPeak <$> parseJSON v
+      "02285" -> Location . SlaughteredWoods <$> parseJSON v
+      "02286" -> Location . EerieGlade <$> parseJSON v
+      "02287" -> Location . DestroyedPath <$> parseJSON v
+      "02288" -> Location . FrozenSpring <$> parseJSON v
+      "02289" -> Location . DimensionalGap <$> parseJSON v
+      "02290" -> Location . ATearInThePath <$> parseJSON v
+      "02291" -> Location . UprootedWoods <$> parseJSON v
+      "02292" -> Location . LostMemories <$> parseJSON v
+      -- Lost in Time and Space
+      "02310" -> Location . AnotherDimension <$> parseJSON v
+      "02311" -> Location . TheEdgeOfTheUniverse <$> parseJSON v
+      "02312" -> Location . TearThroughTime <$> parseJSON v
+      "02313" -> Location . TearThroughSpace <$> parseJSON v
+      "02314" -> Location . PrismaticCascade <$> parseJSON v
+      "02315" -> Location . EndlessBridge <$> parseJSON v
+      "02316" -> Location . StepsOfYhagharl <$> parseJSON v
+      "02317" -> Location . DimensionalDoorway <$> parseJSON v
+      -- The Path To Carcosa
+      -- Curtain Call
+      "03049" -> Location . Theatre <$> parseJSON v
+      "03050" -> Location . Lobby <$> parseJSON v
+      "03051" -> Location . Balcony <$> parseJSON v
+      "03052" -> Location . Backstage <$> parseJSON v
+      "03053" -> Location . LightingBox <$> parseJSON v
+      "03054" -> Location . BoxOffice <$> parseJSON v
+      "03055" -> Location . GreenRoom <$> parseJSON v
+      "03056" -> Location . DressingRoom <$> parseJSON v
+      "03057" -> Location . RehearsalRoom <$> parseJSON v
+      "03058" -> Location . TrapRoom <$> parseJSON v
+      -- The Last King
+      "03070" -> Location . Foyer <$> parseJSON v
+      "03071" -> Location . Ballroom <$> parseJSON v
+      "03072" -> Location . LivingRoom <$> parseJSON v
+      "03073" -> Location . Gallery <$> parseJSON v
+      "03074" -> Location . Courtyard <$> parseJSON v
+      "03075" -> Location . DiningRoom <$> parseJSON v
+      -- Echoes of the Past
+      "03127" -> Location . EntryHall <$> parseJSON v
+      "03128" -> Location . HistoricalSocietyMeetingRoom <$> parseJSON v
+      "03129" -> Location . HistoricalSocietyRecordOffice_129 <$> parseJSON v
+      "03130" -> Location . HistoricalSocietyHistoricalMuseum_130 <$> parseJSON v
+      "03131" -> Location . QuietHalls_131 <$> parseJSON v
+      "03132" -> Location . HistoricalSocietyHistoricalMuseum_132 <$> parseJSON v
+      "03133" -> Location . HistoricalSocietyHistoricalLibrary_133 <$> parseJSON v
+      "03134" -> Location . HistoricalSocietyReadingRoom <$> parseJSON v
+      "03135" -> Location . QuietHalls_135 <$> parseJSON v
+      "03136" -> Location . HistoricalSocietyHistoricalLibrary_136 <$> parseJSON v
+      "03137" -> Location . HistoricalSocietyPeabodysOffice <$> parseJSON v
+      "03138" -> Location . HistoricalSocietyRecordOffice_138 <$> parseJSON v
+      "03139" -> Location . HiddenLibrary <$> parseJSON v
       _ -> error "unhandled"
 
 allLocations :: HashMap CardCode (LocationId -> Location)
@@ -253,4 +335,86 @@ allLocations = mapFromList $ map
   , Location <$> engineCar_175
   , Location <$> engineCar_176
   , Location <$> engineCar_177
+  -- Blood on the Altar
+  , Location <$> villageCommons
+  , Location <$> bishopsBrook_202
+  , Location <$> bishopsBrook_203
+  , Location <$> burnedRuins_204
+  , Location <$> burnedRuins_205
+  , Location <$> osbornsGeneralStore_206
+  , Location <$> osbornsGeneralStore_207
+  , Location <$> congregationalChurch_208
+  , Location <$> congregationalChurch_209
+  , Location <$> houseInTheReeds_210
+  , Location <$> houseInTheReeds_211
+  , Location <$> schoolhouse_212
+  , Location <$> schoolhouse_213
+  , Location <$> theHiddenChamber
+  -- Undimensioned and Unseen
+  , Location <$> dunwichVillage_242
+  , Location <$> dunwichVillage_243
+  , Location <$> coldSpringGlen_244
+  , Location <$> coldSpringGlen_245
+  , Location <$> tenAcreMeadow_246
+  , Location <$> tenAcreMeadow_247
+  , Location <$> blastedHeath_248
+  , Location <$> blastedHeath_249
+  , Location <$> whateleyRuins_250
+  , Location <$> whateleyRuins_251
+  , Location <$> devilsHopYard_252
+  , Location <$> devilsHopYard_253
+  -- Where Doom Awaits
+  , Location <$> baseOfTheHill
+  , Location <$> ascendingPath
+  , Location <$> sentinelPeak
+  , Location <$> slaughteredWoods
+  , Location <$> eerieGlade
+  , Location <$> destroyedPath
+  , Location <$> frozenSpring
+  , Location <$> dimensionalGap
+  , Location <$> aTearInThePath
+  , Location <$> uprootedWoods
+  , Location <$> lostMemories
+  -- Lost in Time and Space
+  , Location <$> anotherDimension
+  , Location <$> theEdgeOfTheUniverse
+  , Location <$> tearThroughTime
+  , Location <$> tearThroughSpace
+  , Location <$> prismaticCascade
+  , Location <$> endlessBridge
+  , Location <$> stepsOfYhagharl
+  , Location <$> dimensionalDoorway
+  -- The Path to Carcosa
+  -- Curtain Call
+  , Location <$> theatre
+  , Location <$> lobby
+  , Location <$> balcony
+  , Location <$> backstage
+  , Location <$> lightingBox
+  , Location <$> boxOffice
+  , Location <$> greenRoom
+  , Location <$> dressingRoom
+  , Location <$> rehearsalRoom
+  , Location <$> trapRoom
+  -- The Last King
+  , Location <$> foyer
+  , Location <$> ballroom
+  , Location <$> livingRoom
+  , Location <$> gallery
+  , Location <$> courtyard
+  , Location <$> diningRoom
+  -- Echoes of the Past
+  , Location <$> entryHall
+  , Location <$> historicalSocietyMeetingRoom
+  , Location <$> historicalSocietyRecordOffice_129
+  , Location <$> historicalSocietyHistoricalMuseum_130
+  , Location <$> quietHalls_131
+  , Location <$> historicalSocietyHistoricalMuseum_132
+  , Location <$> historicalSocietyHistoricalLibrary_133
+  , Location <$> historicalSocietyReadingRoom
+  , Location <$> quietHalls_135
+  , Location <$> historicalSocietyHistoricalLibrary_136
+  , Location <$> historicalSocietyPeabodysOffice
+  , Location <$> historicalSocietyRecordOffice_138
+  , Location <$> hiddenLibrary
   ]

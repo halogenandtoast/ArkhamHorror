@@ -20,17 +20,12 @@ export const scenarioNameDecoder = JsonDecoder.object<ScenarioName>(
   'ScenarioName'
 );
 
-export interface Scenario {
-  tag: string;
-  contents: ScenarioContents;
-}
-
 export interface ScenarioDeck {
   tag: string;
   deckSize: number;
 }
 
-export interface ScenarioContents {
+export interface Scenario {
   name: ScenarioName;
   id: string;
   difficulty: string;
@@ -50,7 +45,7 @@ export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
   deckSize: JsonDecoder.array<Card>(cardDecoder, 'Card[]').map(cards => cards.length),
 }, 'ScenarioDeck', { deckSize: 'contents' });
 
-export const scenarioContentsDecoder = JsonDecoder.object<ScenarioContents>({
+export const scenarioDecoder = JsonDecoder.object<Scenario>({
   name: scenarioNameDecoder,
   id: JsonDecoder.string,
   difficulty: JsonDecoder.string,
@@ -63,9 +58,4 @@ export const scenarioContentsDecoder = JsonDecoder.object<ScenarioContents>({
   chaosBag: chaosBagDecoder,
   discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
   victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
-}, 'ScenarioContents');
-
-export const scenarioDecoder = JsonDecoder.object<Scenario>({
-  tag: JsonDecoder.string,
-  contents: scenarioContentsDecoder,
 }, 'Scenario');

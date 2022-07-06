@@ -7,10 +7,12 @@ module Arkham.Scenario.Attrs
 
 import Arkham.Prelude
 
-import Data.Aeson.TH
-import Arkham.Card
 import Arkham.CampaignLog
+import Arkham.Card
 import Arkham.ChaosBag.Base
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.HasTokenValue
+import Arkham.Classes.RunMessage.Internal
 import Arkham.Classes.Entity
 import Arkham.Difficulty
 import Arkham.Helpers
@@ -22,8 +24,9 @@ import Arkham.Scenario.Deck as X
 import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Target
+import Data.Aeson.TH
 
-class IsScenario a
+class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasModifiersFor a, RunMessage a, HasTokenValue a, Entity a, EntityId a ~ ScenarioId, EntityAttrs a ~ ScenarioAttrs) => IsScenario a
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON, Eq)

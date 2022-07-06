@@ -1,8 +1,4 @@
-module Arkham.Classes.RunMessage where
+module Arkham.Classes.RunMessage (module X) where
 
-import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Game ()
-import Arkham.Message
-
-class RunMessage a where
-  runMessage :: Message -> a -> GameT a
+import Arkham.Classes.RunMessage.Internal as X

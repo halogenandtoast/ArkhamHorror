@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export interface EnemyContents {
+export interface Enemy {
   id: string;
   cardCode: string;
   damage: number;
@@ -13,7 +13,7 @@ export interface EnemyContents {
   asSelfLocation: string | null;
 }
 
-export const enemyContentsDecoder = JsonDecoder.object<EnemyContents>({
+export const enemyDecoder = JsonDecoder.object<Enemy>({
   id: JsonDecoder.string,
   cardCode: JsonDecoder.string,
   damage: JsonDecoder.number,
@@ -24,14 +24,4 @@ export const enemyContentsDecoder = JsonDecoder.object<EnemyContents>({
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
   assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
   asSelfLocation: JsonDecoder.nullable(JsonDecoder.string),
-}, 'EnemyContents');
-
-export interface Enemy {
-  tag: string;
-  contents: EnemyContents;
-}
-
-export const enemyDecoder = JsonDecoder.object<Enemy>({
-  tag: JsonDecoder.string,
-  contents: enemyContentsDecoder,
 }, 'Enemy');

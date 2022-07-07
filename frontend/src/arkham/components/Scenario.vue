@@ -188,7 +188,7 @@ const topOfEncounterDiscard = computed(() => {
 const topEnemyInVoid = computed(() => Object.values(props.game.enemiesInVoid)[0])
 const activePlayerId = computed(() => props.game.activeInvestigatorId)
 
-const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.contents.asSelfLocation !== null))
+const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.asSelfLocation !== null))
 
 const cardsUnderAgenda = computed(() => {
   return props.scenario.cardsUnderAgendaDeck
@@ -324,11 +324,11 @@ const phase = computed(() => props.game.phase)
         />
         <Enemy
           v-for="enemy in enemiesAsLocations"
-          :key="enemy.contents.id"
+          :key="enemy.id"
           :enemy="enemy"
           :game="game"
           :investigatorId="investigatorId"
-          :style="{ 'grid-area': enemy.contents.asSelfLocation, 'justify-self': 'center' }"
+          :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center' }"
           @choose="choose"
         />
       </div>

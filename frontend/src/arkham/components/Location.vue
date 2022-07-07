@@ -176,7 +176,7 @@ const abilities = computed(() => {
 const enemies = computed(() => {
   const enemyIds = props.location.enemies;
   return enemyIds
-    .filter((e) => props.game.enemies[e].contents.engagedInvestigators.length === 0);
+    .filter((e) => props.game.enemies[e].engagedInvestigators.length === 0);
 })
 
 const blocked = computed(() => props.location.modifiers.some(modifier => modifier.type.tag == "Blocked"))

@@ -19,9 +19,9 @@ const props = withDefaults(defineProps<Props>(), { attached: false })
 
 const image = computed(() => {
   const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-  return `${baseUrl}/img/arkham/cards/${props.treachery.contents.cardCode.replace('c', '')}.jpg`
+  return `${baseUrl}/img/arkham/cards/${props.treachery.cardCode.replace('c', '')}.jpg`
 })
-const id = computed(() => props.treachery.contents.id)
+const id = computed(() => props.treachery.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
@@ -90,14 +90,14 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
       />
     <div class="pool">
       <PoolItem
-        v-if="treachery.contents.clues && treachery.contents.clues > 0"
+        v-if="treachery.clues && treachery.clues > 0"
         type="clue"
-        :amount="treachery.contents.clues"
+        :amount="treachery.clues"
       />
       <PoolItem
-        v-if="treachery.contents.resources && treachery.contents.resources > 0"
+        v-if="treachery.resources && treachery.resources > 0"
         type="resource"
-        :amount="treachery.contents.resources"
+        :amount="treachery.resources"
       />
     </div>
   </div>

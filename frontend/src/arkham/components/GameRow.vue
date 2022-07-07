@@ -17,10 +17,10 @@ const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhor
 
 const difficulty = computed<Difficulty>(() => {
   if (campaign.value) {
-    return campaign.value.contents.difficulty
+    return campaign.value.difficulty
   }
 
-  return scenario.value.contents.difficulty
+  return scenario.value.difficulty
 })
 
 const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring(1)
@@ -31,7 +31,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
     <div class="game-details">
       <div class="game-title">
         <div class="campaign-icon-container" v-if="campaign">
-          <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${campaign.contents.id}.png`" />
+          <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${campaign.id}.png`" />
         </div>
         <div class="campaign-icon-container" v-else-if="scenario">
           <img class="campaign-icon" :src="`${baseUrl}/img/arkham/sets/${scenario.id.replace('c', '').slice(0,2)}.png`" />
@@ -49,11 +49,11 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
       <div class="investigators">
         <div
           v-for="investigator in game.investigators"
-          :key="investigator.contents.id"
+          :key="investigator.id"
           class="investigator"
         >
-          <div :class="`investigator-portrait-container ${toCssName(investigator.contents.class)}`">
-            <img :src="`${baseUrl}/img/arkham/cards/${investigator.contents.id.replace('c', '')}.jpg`" class="investigator-portrait"/>
+          <div :class="`investigator-portrait-container ${toCssName(investigator.class)}`">
+            <img :src="`${baseUrl}/img/arkham/cards/${investigator.id.replace('c', '')}.jpg`" class="investigator-portrait"/>
           </div>
         </div>
         <div class="game-difficulty">{{difficulty}}</div>

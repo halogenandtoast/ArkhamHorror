@@ -20,11 +20,11 @@ export interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits(['show'])
 
-const id = computed(() => props.agenda.contents.id)
+const id = computed(() => props.agenda.id)
 const image = computed(() => {
   const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
 
-  if (props.agenda.contents.flipped) {
+  if (props.agenda.flipped) {
     return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}b.jpg`;
   }
 
@@ -93,7 +93,7 @@ const debugChoose = inject('debugChoose')
       @click="$emit('choose', ability)"
       />
     <Treachery
-      v-for="treacheryId in agenda.contents.treacheries"
+      v-for="treacheryId in agenda.treacheries"
       :key="treacheryId"
       :treachery="game.treacheries[treacheryId]"
       :game="game"
@@ -103,7 +103,7 @@ const debugChoose = inject('debugChoose')
     <div class="pool">
       <PoolItem
         type="doom"
-        :amount="agenda.contents.doom"
+        :amount="agenda.doom"
       />
 
       <template v-if="debug">

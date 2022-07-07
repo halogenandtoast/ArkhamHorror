@@ -18,7 +18,7 @@ export interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits(['showCards', 'choose'])
 
-const id = computed(() => props.asset.contents.id)
+const id = computed(() => props.asset.id)
 const hasPool = computed(() => {
   const {
     sanity,
@@ -28,12 +28,12 @@ const hasPool = computed(() => {
     doom,
     clues,
     sealedTokens,
-  } = props.asset.contents;
+  } = props.asset;
   return sanity || health || horror || uses || doom > 0 || clues > 0 || sealedTokens.length > 0;
 })
 
-const exhausted = computed(() => props.asset.contents.exhausted)
-const cardCode = computed(() => props.asset.contents.cardCode)
+const exhausted = computed(() => props.asset.exhausted)
+const cardCode = computed(() => props.asset.cardCode)
 const image = computed(() => {
   const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
   return `${baseUrl}/img/arkham/cards/${cardCode.value.replace('c', '')}.jpg`
@@ -126,7 +126,7 @@ const abilities = computed(() => {
     }, []);
 })
 
-const cardsUnderneath = computed(() => props.asset.contents.cardsUnderneath)
+const cardsUnderneath = computed(() => props.asset.cardsUnderneath)
 const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
 
 const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
@@ -154,32 +154,32 @@ const choose = (idx: number) => emit('choose', idx)
       @click="choose(ability)"
       />
     <template v-if="debug">
-      <button v-if="!asset.contents.investigator" @click="debugChoose({tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
-      <button v-if="asset.contents.investigator" @click="debugChoose({tag: 'Discard', contents: { tag: 'AssetTarget', contents: id}})">Discard</button>
+      <button v-if="!asset.investigator" @click="debugChoose({tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
+      <button v-if="asset.investigator" @click="debugChoose({tag: 'Discard', contents: { tag: 'AssetTarget', contents: id}})">Discard</button>
     </template>
     <div v-if="hasPool" class="pool">
       <PoolItem
-        v-if="asset.contents.uses && asset.contents.uses.amount > 0"
+        v-if="asset.uses && asset.uses.amount > 0"
         type="resource"
-        :amount="asset.contents.uses.amount"
+        :amount="asset.uses.amount"
       />
       <PoolItem
-        v-if="asset.contents.health !== null"
+        v-if="asset.health !== null"
         type="health"
-        :amount="asset.contents.damage"
+        :amount="asset.damage"
         :class="{ 'health--can-interact': healthAction !== -1 }"
         @choose="choose(healthAction)"
       />
       <PoolItem
-        v-if="asset.contents.sanity !== null"
+        v-if="asset.sanity !== null"
         type="sanity"
-        :amount="asset.contents.horror"
+        :amount="asset.horror"
         :class="{ 'sanity--can-interact': sanityAction !== -1 }"
         @choose="choose(sanityAction)"
       />
-      <PoolItem v-if="asset.contents.doom > 0" type="doom" :amount="asset.contents.doom" />
-      <PoolItem v-if="asset.contents.clues > 0" type="clue" :amount="asset.contents.clues" />
-      <Token v-for="(sealedToken, index) in asset.contents.sealedTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
+      <PoolItem v-if="asset.doom > 0" type="doom" :amount="asset.doom" />
+      <PoolItem v-if="asset.clues > 0" type="clue" :amount="asset.clues" />
+      <Token v-for="(sealedToken, index) in asset.sealedTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
     </div>
   </div>
 </template>

@@ -15,7 +15,7 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), { portrait: false })
 const emit = defineEmits(['showCards', 'choose'])
 
-const id = computed(() => props.player.contents.id)
+const id = computed(() => props.player.id)
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 
@@ -149,7 +149,7 @@ const image = computed(() => {
 const portraitImage = computed(() => `${baseUrl}/img/arkham/portraits/${id.value.replace('c', '')}.jpg`)
 
 
-const cardsUnderneath = computed(() => props.player.contents.cardsUnderneath)
+const cardsUnderneath = computed(() => props.player.cardsUnderneath)
 const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
 
 const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
@@ -177,7 +177,7 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
     <div class="resources">
       <PoolItem
         type="resource"
-        :amount="player.contents.resources"
+        :amount="player.resources"
         :class="{ 'resource--can-take': takeResourceAction !== -1 }"
         @choose="$emit('choose', takeResourceAction)"
       />
@@ -187,7 +187,7 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
       </template>
       <PoolItem
         type="clue"
-        :amount="player.contents.clues"
+        :amount="player.clues"
         :class="{ 'resource--can-spend': spendCluesAction !== -1 }"
         @choose="$emit('choose', spendCluesAction)"
       />
@@ -196,7 +196,7 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
       </template>
       <PoolItem
         type="health"
-        :amount="player.contents.healthDamage"
+        :amount="player.healthDamage"
         :class="{ 'health--can-interact': healthAction !== -1 }"
         @choose="$emit('choose', healthAction)"
       />
@@ -206,7 +206,7 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
       </template>
       <PoolItem
         type="sanity"
-        :amount="player.contents.sanityDamage"
+        :amount="player.sanityDamage"
         :class="{ 'sanity--can-interact': sanityAction !== -1 }"
         @choose="$emit('choose', sanityAction)"
       />
@@ -214,9 +214,9 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
         <button @click="debugChoose({tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})">+</button>
         <button @click="debugChoose({tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, 1]})">-</button>
       </template>
-      <span><i class="action" v-for="n in player.contents.remainingActions" :key="n"></i></span>
-      <span v-if="player.contents.tomeActions && player.contents.tomeActions > 0">
-        <i class="action tomeAction" v-for="n in player.contents.tomeActions" :key="n"></i>
+      <span><i class="action" v-for="n in player.remainingActions" :key="n"></i></span>
+      <span v-if="player.tomeActions && player.tomeActions > 0">
+        <i class="action tomeAction" v-for="n in player.tomeActions" :key="n"></i>
       </span>
       <template v-if="debug">
         <button @click="debugChoose({tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})">+</button>

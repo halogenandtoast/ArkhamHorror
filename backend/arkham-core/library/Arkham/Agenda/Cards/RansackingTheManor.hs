@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.RansackingTheManor
-  ( RansackingTheManor
+  ( RansackingTheManor(..)
   , ransackingTheManor
   ) where
 

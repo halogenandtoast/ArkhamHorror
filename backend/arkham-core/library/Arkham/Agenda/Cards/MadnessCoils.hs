@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.MadnessCoils
-  ( MadnessCoils
+  ( MadnessCoils(..)
   , madnessCoils
   ) where
 

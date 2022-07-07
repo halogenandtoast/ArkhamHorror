@@ -1,4 +1,7 @@
-module Arkham.Agenda.Cards.QuietHalls where
+module Arkham.Agenda.Cards.QuietHalls
+  ( QuietHalls(..)
+  , quietHalls
+  ) where
 
 import Arkham.Prelude
 

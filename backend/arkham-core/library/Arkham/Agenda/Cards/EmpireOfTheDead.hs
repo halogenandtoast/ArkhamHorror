@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.EmpireOfTheDead
-  ( EmpireOfTheDead
+  ( EmpireOfTheDead(..)
   , empireOfTheDead
   ) where
 

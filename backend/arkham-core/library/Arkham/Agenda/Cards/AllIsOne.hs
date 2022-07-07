@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.AllIsOne
-  ( AllIsOne
+  ( AllIsOne(..)
   , allIsOne
   ) where
 

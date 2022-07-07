@@ -1,9 +1,12 @@
-module Arkham.Agenda.Cards.WhatsGoingOn where
+module Arkham.Agenda.Cards.WhatsGoingOn
+  ( WhatsGoingOn(..)
+  , whatsGoingOn
+  ) where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Game.Helpers
@@ -20,23 +23,23 @@ whatsGoingOn = agenda (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 3)
 
 instance RunMessage WhatsGoingOn where
   runMessage msg a@(WhatsGoingOn attrs) = case msg of
-    AdvanceAgenda aid
-      | aid == toId attrs && onSide B attrs -> do
-        iid <- getLeadInvestigatorId
-        -- The lead investigator can choose the first option even if one of the
-        -- investigators has no cards in hand (but at least one does).
-        canChooseDiscardOption <- selectAny (HandWith $ LengthIs $ GreaterThan $ Static 0)
-        pushAll
-          [ chooseOne iid
-          $ Label
-              "The lead investigator takes 2 horror"
-              [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2]
-          : [ Label
-                "Each investigator discards 1 card at random from his or her hand"
-                [AllRandomDiscard]
-            | canChooseDiscardOption
-            ]
-          , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+      iid <- getLeadInvestigatorId
+      -- The lead investigator can choose the first option even if one of the
+      -- investigators has no cards in hand (but at least one does).
+      canChooseDiscardOption <- selectAny
+        (HandWith $ LengthIs $ GreaterThan $ Static 0)
+      pushAll
+        [ chooseOne iid
+        $ Label
+            "The lead investigator takes 2 horror"
+            [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2]
+        : [ Label
+              "Each investigator discards 1 card at random from his or her hand"
+              [AllRandomDiscard]
+          | canChooseDiscardOption
           ]
-        pure a
+        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+        ]
+      pure a
     _ -> WhatsGoingOn <$> runMessage msg attrs

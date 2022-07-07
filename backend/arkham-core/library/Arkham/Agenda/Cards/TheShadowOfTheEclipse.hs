@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.TheShadowOfTheEclipse
-  ( TheShadowOfTheEclipse
+  ( TheShadowOfTheEclipse(..)
   , theShadowOfTheEclipse
   ) where
 

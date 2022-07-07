@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.TheRitualBeginsBlackStarsRise
-  ( TheRitualBeginsBlackStarsRise
+  ( TheRitualBeginsBlackStarsRise(..)
   , theRitualBeginsBlackStarsRise
   ) where
 

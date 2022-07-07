@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.TheThirdAct
-  ( TheThirdAct
+  ( TheThirdAct(..)
   , theThirdAct
   ) where
 

@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.BeckoningForPower
-  ( BeckoningForPower
+  ( BeckoningForPower(..)
   , beckoningForPower
   ) where
 

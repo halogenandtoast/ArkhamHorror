@@ -11,7 +11,7 @@
       "import Arkham.Prelude",
       "",
       "import Arkham.Classes",
-      "import Arkham.Effect.Attrs",
+      "import Arkham.Effect.Runner",
       "",
       "newtype {dot} = {dot} EffectAttrs",
       "  deriving anyclass HasAbilities",
@@ -136,7 +136,7 @@
     "alternate": "arkham-core/tests/Arkham/Agenda/Cards/{}Spec.hs",
     "template": [
       "module Arkham.Agenda.Cards.{dot}",
-      "  ( {dot}",
+      "  ( {dot}(..)",
       "  , {dot|snakecase|camelcase}",
       "  ) where",
       "",

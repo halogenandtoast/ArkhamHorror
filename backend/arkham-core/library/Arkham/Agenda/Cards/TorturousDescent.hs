@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.TorturousDescent
-  ( TorturousDescent
+  ( TorturousDescent(..)
   , torturousDescent
   ) where
 

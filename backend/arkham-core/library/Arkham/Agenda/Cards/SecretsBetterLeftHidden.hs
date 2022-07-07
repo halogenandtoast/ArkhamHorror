@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.SecretsBetterLeftHidden
-  ( SecretsBetterLeftHidden
+  ( SecretsBetterLeftHidden(..)
   , secretsBetterLeftHidden
   ) where
 

@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.PastPresentAndFuture
-  ( PastPresentAndFuture
+  ( PastPresentAndFuture(..)
   , pastPresentAndFuture
   ) where
 

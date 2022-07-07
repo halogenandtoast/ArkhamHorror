@@ -1,20 +1,23 @@
-module Arkham.Agenda.Cards.VengeanceAwaits where
+module Arkham.Agenda.Cards.VengeanceAwaits
+  ( VengeanceAwaits(..)
+  , vengeanceAwaits
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Id
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Resolution
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -58,7 +61,8 @@ instance RunMessage VengeanceAwaits where
             ]
         else do
           ritualSiteId <- getJustLocationIdByName "Ritual Site"
-          enemies <- selectListMap EnemyTarget $ EnemyAt $ LocationWithId ritualSiteId
+          enemies <- selectListMap EnemyTarget $ EnemyAt $ LocationWithId
+            ritualSiteId
           pushAll
             $ [ Discard enemy | enemy <- enemies ]
             <> [CreateEnemyAt umordhoth ritualSiteId Nothing]

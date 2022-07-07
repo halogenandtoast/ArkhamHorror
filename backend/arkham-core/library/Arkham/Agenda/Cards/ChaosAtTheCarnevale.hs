@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.ChaosAtTheCarnevale
-  ( ChaosAtTheCarnevale
+  ( ChaosAtTheCarnevale(..)
   , chaosAtTheCarnevale
   ) where
 

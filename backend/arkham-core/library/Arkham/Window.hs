@@ -78,7 +78,7 @@ data WindowType
   | GainsClues InvestigatorId Int
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window
-  | InitiatedSkillTest InvestigatorId (Maybe Action) Int
+  | InitiatedSkillTest InvestigatorId (Maybe Action) SkillType Int
   | InvestigatorDefeated Source DefeatedBy InvestigatorId
   | InvestigatorWouldBeDefeated Source DefeatedBy InvestigatorId
   | InvestigatorEliminated InvestigatorId

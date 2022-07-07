@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.BreakingThrough
-  ( BreakingThrough
+  ( BreakingThrough(..)
   , breakingThrough
   ) where
 

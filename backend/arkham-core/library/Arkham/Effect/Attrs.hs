@@ -6,6 +6,8 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.RunMessage.Internal
 import Arkham.Effect.Window
 import Arkham.Id
 import Arkham.EffectMetadata
@@ -17,7 +19,7 @@ import Arkham.Target
 import Arkham.Trait
 import Arkham.Window ( Window )
 
-class IsEffect a
+class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EffectId, EntityAttrs a ~ EffectAttrs) => IsEffect a
 
 data instance Field EffectAttrs :: Type -> Type where
   EffectAbilities :: Field EffectAttrs [Ability]

@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.TheTruthIsHidden
-  ( TheTruthIsHidden
+  ( TheTruthIsHidden(..)
   , theTruthIsHidden
   ) where
 

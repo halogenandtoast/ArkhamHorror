@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.TheFestivitiesBegin
-  ( TheFestivitiesBegin
+  ( TheFestivitiesBegin(..)
   , theFestivitiesBegin
   ) where
 

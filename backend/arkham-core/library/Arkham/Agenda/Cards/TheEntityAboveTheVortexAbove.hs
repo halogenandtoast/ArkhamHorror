@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.TheEntityAboveTheVortexAbove
-  ( TheEntityAboveTheVortexAbove
+  ( TheEntityAboveTheVortexAbove(..)
   , theEntityAboveTheVortexAbove
   ) where
 

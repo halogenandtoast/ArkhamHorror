@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.Encore
-  ( Encore
+  ( Encore(..)
   , encore
   ) where
 

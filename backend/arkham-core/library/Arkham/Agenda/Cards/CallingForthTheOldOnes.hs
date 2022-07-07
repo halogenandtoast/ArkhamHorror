@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.CallingForthTheOldOnes
-  ( CallingForthTheOldOnes
+  ( CallingForthTheOldOnes(..)
   , callingForthTheOldOnes
   ) where
 

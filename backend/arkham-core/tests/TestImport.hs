@@ -15,7 +15,7 @@ import Arkham.Agenda as X
 import Arkham.Agenda.Attrs
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Cards.WhatsGoingOn
-import Arkham.Asset as X ( Asset (Adaptable1'), createAsset, lookupAsset )
+import Arkham.Asset as X ( Asset(..), createAsset, lookupAsset )
 import Arkham.Asset.Attrs
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Cards.Adaptable1
@@ -75,7 +75,7 @@ import Test.Hspec as X
 
 import Arkham.GameEnv
 import Arkham.LocationSymbol
-import Arkham.Agenda.Sequence
+import Arkham.Agenda.Sequence hiding (Agenda)
 import Arkham.Name
 import Data.IntMap.Strict qualified as IntMap
 import Arkham.Entities as X
@@ -144,7 +144,7 @@ testScenario
 testScenario cardCode f = do
   a1 <- testAgenda "01105" id
   let name = mkName $ unCardCode cardCode
-  pure $ TheGathering' $ TheGathering $ f $ (Scenario.baseAttrs
+  pure $ Scenario $ TheGathering $ f $ (Scenario.baseAttrs
     cardCode
     name
     Easy) { scenarioAgendaStack = IntMap.fromList [(1, [toCardDef (toAttrs a1), toCardDef (toAttrs a1)])] }
@@ -178,7 +178,7 @@ testEnemyWithDef
   -> m Enemy
 testEnemyWithDef defF attrsF =
   cbCardBuilder
-      (SwarmOfRats'
+      (Enemy
       <$> enemyWith
             SwarmOfRats
             (defF Cards.swarmOfRats)
@@ -198,12 +198,12 @@ testAssetWithDef
   -> m Asset
 testAssetWithDef defF attrsF =
   cbCardBuilder
-      (Adaptable1' <$> assetWith Adaptable1 (defF Cards.adaptable1) attrsF)
+      (Asset <$> assetWith Adaptable1 (defF Cards.adaptable1) attrsF)
     <$> getRandom
 
 testAgenda :: MonadIO m => CardCode -> (AgendaAttrs -> AgendaAttrs) -> m Agenda
 testAgenda cardCode f = pure $ cbCardBuilder
-  (WhatsGoingOn'
+  (Agenda
   <$> agendaWith (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 100) f
   )
   (1, AgendaId cardCode)
@@ -218,7 +218,7 @@ testLocationWithDef
   -> m Location
 testLocationWithDef defF attrsF = do
   cbCardBuilder
-      (Study'
+      (Location
       <$> locationWith Study (defF Cards.study) 0 (Static 0) Square [] attrsF
       )
     <$> getRandom
@@ -230,7 +230,7 @@ testInvestigator
   :: MonadIO m
   => (InvestigatorAttrs -> InvestigatorAttrs)
   -> m Investigator
-testInvestigator f = pure $ JennyBarnes' . ($ ()) . cbCardBuilder $ Investigator.investigator (JennyBarnes . f) Cards.jennyBarnes stats
+testInvestigator f = pure $ Investigator . ($ ()) . cbCardBuilder $ Investigator.investigator (JennyBarnes . f) Cards.jennyBarnes stats
  where
   stats = Stats 5 5 5 5 5 5
 

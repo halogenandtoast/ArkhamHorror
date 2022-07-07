@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.FashionablyLate
-  ( FashionablyLate
+  ( FashionablyLate(..)
   , fashionablyLate
   ) where
 

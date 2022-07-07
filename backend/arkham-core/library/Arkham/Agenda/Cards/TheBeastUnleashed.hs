@@ -1,4 +1,7 @@
-module Arkham.Agenda.Cards.TheBeastUnleashed where
+module Arkham.Agenda.Cards.TheBeastUnleashed
+  ( TheBeastUnleashed(..)
+  , theBeastUnleashed
+  ) where
 
 import Arkham.Prelude
 
@@ -9,10 +12,10 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Id
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message

@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.HisDomain
-  ( HisDomain
+  ( HisDomain(..)
   , hisDomain
   ) where
 

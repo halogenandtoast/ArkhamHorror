@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.TheTideRises
-  ( TheTideRises
+  ( TheTideRises(..)
   , theTideRises
   ) where
 

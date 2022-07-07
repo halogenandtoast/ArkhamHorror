@@ -9,11 +9,11 @@ const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhor
 
 fetchInvestigators().then((response) => {
   cards.value = response.sort((a, b) => {
-    if (a.contents.id < b.contents.id) {
+    if (a.id < b.id) {
       return -1
     }
 
-    if (a.contents.id > b.contents.id) {
+    if (a.id > b.id) {
       return 1
     }
 
@@ -22,7 +22,7 @@ fetchInvestigators().then((response) => {
   ready.value = true
 })
 
-const image = (card: Arkham.Investigator) => `${baseUrl}/img/arkham/cards/${card.contents.id.replace('c', '')}.jpg`
+const image = (card: Arkham.Investigator) => `${baseUrl}/img/arkham/cards/${card.id.replace('c', '')}.jpg`
 </script>
 
 <template>

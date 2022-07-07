@@ -14,7 +14,7 @@ const props = defineProps<Props>()
 
 const { game: newGame } = await fetchGame(props.gameId, false)
 const game = ref<Arkham.Game>(newGame)
-const campaignLog = game.value.campaign?.contents?.log || { recorded: [], recodedSets: [] }
+const campaignLog = game.value.campaign?.log || { recorded: [], recodedSets: [] }
 const { recorded, recordedSets } = campaignLog
 
 function toCapitalizedWords(name) {

@@ -57,11 +57,11 @@ watch(step, currentStep => {
       <div v-if="game.gameOver">
         <p>Game over</p>
 
-        <div v-for="entry in game.campaign.contents.log.recorded" :key="entry">
+        <div v-for="entry in game.campaign.log.recorded" :key="entry">
           {{entry}}
         </div>
 
-        <div v-for="(entry, idx) in game.campaign.contents.log.recordedSets" :key="idx">
+        <div v-for="(entry, idx) in game.campaign.log.recordedSets" :key="idx">
           {{entry[0]}}: {{entry[1].join(", ")}}
         </div>
       </div>

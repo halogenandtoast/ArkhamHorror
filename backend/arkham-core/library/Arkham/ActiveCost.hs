@@ -366,7 +366,39 @@ instance RunMessage ActiveCost where
             ]
           withPayment $ InvestigatorDamagePayment x
         ResourceCost x -> do
-          push (SpendResources iid x)
+          case activeCostTarget c of
+            ForAbility{} -> push $ SpendResources iid x
+            ForCard card -> do
+              iids <- filter (/= iid) <$> getInvestigatorIds
+              iidsWithModifiers <- for iids $ \iid' -> do
+                modifiers <- getModifiers
+                  (InvestigatorSource iid')
+                  (InvestigatorTarget iid')
+                pure (iid', modifiers)
+              canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) -> do
+                flip anyM modifiers $ \case
+                  CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher -> liftA2
+                    (&&)
+                    (member iid <$> select iMatcher)
+                    (pure $ cardMatch card cMatcher)
+                  _ -> pure False
+              if null canHelpPay
+                then push (SpendResources iid x)
+                else do
+                  iidsWithResources <- traverse
+                    (traverseToSnd (field InvestigatorResources))
+                    (iid : map fst canHelpPay)
+                  push
+                    (Ask iid
+                    $ ChoosePaymentAmounts
+                        ("Pay " <> tshow x <> " resources")
+                        (Just x)
+                    $ map
+                        (\(iid', resources) ->
+                          (iid', (0, resources), SpendResources iid' 1)
+                        )
+                        iidsWithResources
+                    )
           withPayment $ ResourcePayment x
         AdditionalActionsCost -> do
           actionRemainingCount <- field InvestigatorRemainingActions iid

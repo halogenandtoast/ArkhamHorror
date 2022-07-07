@@ -463,6 +463,7 @@ handleAnswer Game {..} investigatorId = \case
                 replicate n (HashMap.findWithDefault Noop iid costMap)
               )
             $ HashMap.toList (parAmounts response)
+      _ -> error "Wrong question type"
   Answer response -> case HashMap.lookup investigatorId gameQuestion of
     Just (ChooseOne qs) -> case qs !!? qrChoice response of
       Nothing -> [Ask investigatorId $ ChooseOne qs]

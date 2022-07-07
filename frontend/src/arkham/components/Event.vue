@@ -15,13 +15,13 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const id = computed(() => props.event.contents.id)
+const id = computed(() => props.event.id)
 const hasPool = computed(() => {
-  const { doom } = props.event.contents
+  const { doom } = props.event
   return doom > 0
 })
 
-const cardCode = computed(() => props.event.contents.cardCode)
+const cardCode = computed(() => props.event.cardCode)
 const image = computed(() => {
   const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
   return `${baseUrl}/img/arkham/cards/${cardCode.value.replace('c', '')}.jpg`
@@ -98,7 +98,7 @@ const abilities = computed(() => {
       @click="$emit('choose', ability)"
       />
     <div v-if="hasPool" class="pool">
-      <PoolItem v-if="event.contents.doom > 0" type="doom" :amount="event.contents.doom" />
+      <PoolItem v-if="event.doom > 0" type="doom" :amount="event.doom" />
     </div>
   </div>
 </template>

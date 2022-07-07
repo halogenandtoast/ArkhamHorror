@@ -1,10 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export interface Campaign {
-  tag: string;
-  contents: CampaignContents;
-}
-
 export type CampaignStep = PrologueStep | ScenarioStep | InterludeStep | UpgradeDeckStep | EpilogueStep
 
 export interface PrologueStep {
@@ -78,7 +73,7 @@ export interface LogContents {
   recordedSets: any[]; // eslint-disable-line
 }
 
-export interface CampaignContents {
+export interface Campaign {
   name: string;
   id: string;
   log: LogContents;
@@ -91,16 +86,10 @@ export const logContentsDecoder = JsonDecoder.object<LogContents>({
   recordedSets: JsonDecoder.array<any>(JsonDecoder.succeed, 'recordedSets[]'), // eslint-disable-line
 }, 'LogContents');
 
-export const campaignContentsDecoder = JsonDecoder.object<CampaignContents>({
+export const campaignDecoder = JsonDecoder.object<Campaign>({
   name: JsonDecoder.string,
   id: JsonDecoder.string,
   difficulty: JsonDecoder.string,
   log: logContentsDecoder,
   step: JsonDecoder.nullable(campaignStepDecoder)
-}, 'CampaignContents');
-
-export const campaignDecoder = JsonDecoder.object<Campaign>({
-  tag: JsonDecoder.string,
-  contents: campaignContentsDecoder,
 }, 'Campaign');
-

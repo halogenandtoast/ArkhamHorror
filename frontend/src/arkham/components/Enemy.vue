@@ -19,12 +19,12 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), { atLocation: false })
 
 const image = computed(() => {
-  const { cardCode } = props.enemy.contents;
+  const { cardCode } = props.enemy
   const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
   return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
 })
 
-const id = computed(() => props.enemy.contents.id)
+const id = computed(() => props.enemy.id)
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
@@ -127,7 +127,7 @@ const abilities = computed(() => {
     }, []);
 })
 
-const isExhausted = computed(() => props.enemy.contents.exhausted)
+const isExhausted = computed(() => props.enemy.exhausted)
 
 const debug = inject('debug')
 const debugChoose = inject('debugChoose')
@@ -148,12 +148,12 @@ const debugChoose = inject('debugChoose')
       @click="$emit('choose', ability)"
       />
     <div class="pool">
-      <PoolItem type="health" :amount="enemy.contents.damage" />
-      <PoolItem v-if="enemy.contents.doom > 0" type="doom" :amount="enemy.contents.doom" />
-      <PoolItem v-if="enemy.contents.clues > 0" type="clue" :amount="enemy.contents.clues" />
+      <PoolItem type="health" :amount="enemy.damage" />
+      <PoolItem v-if="enemy.doom > 0" type="doom" :amount="enemy.doom" />
+      <PoolItem v-if="enemy.clues > 0" type="clue" :amount="enemy.clues" />
     </div>
     <Treachery
-      v-for="treacheryId in enemy.contents.treacheries"
+      v-for="treacheryId in enemy.treacheries"
       :key="treacheryId"
       :treachery="game.treacheries[treacheryId]"
       :game="game"
@@ -163,7 +163,7 @@ const debugChoose = inject('debugChoose')
       @choose="$emit('choose', $event)"
     />
     <Asset
-      v-for="assetId in enemy.contents.assets"
+      v-for="assetId in enemy.assets"
       :key="assetId"
       :asset="game.assets[assetId]"
       :game="game"

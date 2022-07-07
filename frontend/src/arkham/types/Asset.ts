@@ -13,7 +13,7 @@ export const usesDecoder = JsonDecoder.object<Uses>({
   amount: JsonDecoder.number,
 }, 'Uses');
 
-export interface AssetContents {
+export interface Asset {
   id: string;
   cardCode: string;
   owner: string | null;
@@ -29,7 +29,7 @@ export interface AssetContents {
   sealedTokens: ChaosToken[];
 }
 
-export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
+export const assetDecoder = JsonDecoder.object<Asset>({
   id: JsonDecoder.string,
   cardCode: JsonDecoder.string,
   owner: JsonDecoder.nullable(JsonDecoder.string),
@@ -43,14 +43,4 @@ export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
   doom: JsonDecoder.number,
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   sealedTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]')
-}, 'AssetContents');
-
-export interface Asset {
-  tag: string;
-  contents: AssetContents;
-}
-
-export const assetDecoder = JsonDecoder.object<Asset>({
-  tag: JsonDecoder.string,
-  contents: assetContentsDecoder,
 }, 'Asset');

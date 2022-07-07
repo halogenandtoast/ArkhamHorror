@@ -24,7 +24,7 @@ async function choose(idx: number) {
   emit('choose', idx)
 }
 
-const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.contents.step?.tag === 'UpgradeDeckStep')
+const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.step?.tag === 'UpgradeDeckStep')
 </script>
 
 <template>

@@ -1,16 +1,11 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export interface Act {
-  tag: string;
-  contents: ActContents;
-}
-
 export interface ActSequence {
   number: number;
   side: string;
 }
 
-export interface ActContents {
+export interface Act {
   id: string;
   clues: number | null;
   sequence: ActSequence;
@@ -21,14 +16,9 @@ export const actSequenceDecoder = JsonDecoder.
   tuple([JsonDecoder.number, JsonDecoder.string], '[number, string]').
   map(([number, side]) => { return { number, side } })
 
-export const actContentsDecoder = JsonDecoder.object<ActContents>({
+export const actDecoder = JsonDecoder.object<Act>({
   id: JsonDecoder.string,
   clues: JsonDecoder.nullable(JsonDecoder.number),
   sequence: actSequenceDecoder,
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
-}, 'ActContents');
-
-export const actDecoder = JsonDecoder.object<Act>({
-  tag: JsonDecoder.string,
-  contents: actContentsDecoder,
 }, 'Act');

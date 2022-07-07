@@ -21,9 +21,9 @@ export interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits(['show'])
 
-const id = computed(() => props.act.contents.id)
+const id = computed(() => props.act.id)
 const image = computed(() => {
-  const side = props.act.contents.sequence.side.toLowerCase().replace('a', '')
+  const side = props.act.sequence.side.toLowerCase().replace('a', '')
   const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
   return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}${side}.jpg`
 })
@@ -100,7 +100,7 @@ const debugChoose = inject('debugChoose')
       :src="imageForCard(card)"
     />
     <Treachery
-      v-for="treacheryId in act.contents.treacheries"
+      v-for="treacheryId in act.treacheries"
       :key="treacheryId"
       :treachery="game.treacheries[treacheryId]"
       :game="game"
@@ -124,9 +124,9 @@ const debugChoose = inject('debugChoose')
 
     <div class="pool">
       <PoolItem
-        v-if="act.contents.clues && act.contents.clues > 0"
+        v-if="act.clues && act.clues > 0"
         type="clue"
-        :amount="act.contents.clues"
+        :amount="act.clues"
       />
     </div>
   </div>

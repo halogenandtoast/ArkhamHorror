@@ -25,14 +25,14 @@ const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
 const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
 
 function tabClass(index: string) {
-  const pid = props.players[index].contents.id
+  const pid = props.players[index].id
   return [
     {
       'tab--selected': index === selectedTab.value,
       'tab--active-player': pid == props.activePlayerId,
-      'tab--has-actions': pid !== props.investigatorId && hasChoices(props.players[index].contents.id),
+      'tab--has-actions': pid !== props.investigatorId && hasChoices(props.players[index].id),
     },
-    `tab--${props.players[index].contents.class}`,
+    `tab--${props.players[index].class}`,
   ]
 }
 
@@ -55,12 +55,12 @@ watchEffect(() => selectedTab.value = props.investigatorId)
   <div class="player-info">
     <ul class='tabs__header'>
       <li v-for='iid in playerOrder'
-        :key='players[iid].contents.name.title'
+        :key='players[iid].name.title'
         @click.exact='selectTab(iid)'
         @click.shift='selectTabExtended(iid)'
         :class='tabClass(iid)'
       >
-        {{ players[iid].contents.name.title }}
+        {{ players[iid].name.title }}
       </li>
     </ul>
     <Tab
@@ -68,10 +68,10 @@ watchEffect(() => selectedTab.value = props.investigatorId)
       :key="index"
       :index="index"
       :selectedTab="selectedTab"
-      :playerClass="player.contents.class"
-      :title="player.contents.name.title"
+      :playerClass="player.class"
+      :title="player.name.title"
       :investigatorId="index"
-      :activePlayer="player.contents.id == activePlayerId"
+      :activePlayer="player.id == activePlayerId"
     >
       <Player
         :game="game"

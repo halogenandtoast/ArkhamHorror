@@ -14,7 +14,7 @@ const props = defineProps<Props>()
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 const focusedCards = computed(() => {
-  const playerCards = Object.values(props.game.investigators[props.investigatorId].contents.foundCards).flat()
+  const playerCards = Object.values(props.game.investigators[props.investigatorId].foundCards).flat()
   if (playerCards.length > 0) {
     return playerCards
   }
@@ -51,7 +51,7 @@ const amountsLabel = computed(() => {
 
 const question = computed(() => props.game.question[props.investigatorId])
 
-const investigatorName = (iid: string) => props.game.investigators[iid].contents.name.title
+const investigatorName = (iid: string) => props.game.investigators[iid].name.title
 
 const amountsChoices = computed(() => {
   if (question.value?.tag == 'ChoosePaymentAmounts') {

@@ -61,7 +61,6 @@ instance RunMessage UncageTheSoul where
                 (toSource attrs)
                 (CardIdTarget $ toCardId c)
               , PayCardCost iid c
-              , PlayCard iid c Nothing False
               ]
           | c <- cards
           ]

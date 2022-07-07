@@ -63,10 +63,7 @@ instance RunMessage WilliamYorick where
           then [InitiatePlayDynamicCard iid (toCardId c) 0 Nothing False]
           else if isFastCard c
             then [InitiatePlayCard iid (toCardId c) Nothing False]
-            else
-              [ PayCardCost iid c
-              , InitiatePlayCard iid (toCardId c) Nothing False
-              ]
+            else [ PayCardCost iid c ]
       playableTargets <- filterM
         (getIsPlayable
             iid

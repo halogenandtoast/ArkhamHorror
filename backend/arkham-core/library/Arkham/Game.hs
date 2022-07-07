@@ -2192,6 +2192,37 @@ getActiveInvestigator = getGame >>= getInvestigator . gameActiveInvestigatorId
 getTurnInvestigator :: (Monad m, HasGame m) => m (Maybe Investigator)
 getTurnInvestigator = getGame >>= maybe (pure Nothing) (fmap Just . getInvestigator) . gameTurnPlayerInvestigatorId
 
+createActiveCostForCard :: (MonadRandom m, HasGame m) => InvestigatorId -> Card -> m ActiveCost
+createActiveCostForCard iid card = do
+  acId <- getRandom
+  modifiers' <- getModifiers (InvestigatorSource iid) (CardIdTarget $ toCardId card)
+  modifiers'' <- getModifiers (InvestigatorSource iid) (CardTarget card)
+  let allModifiers = modifiers' <> modifiers''
+  resources <- getModifiedCardCost iid card
+  let
+    resourceCost = if resources == 0 then Cost.Free else Cost.ResourceCost resources
+    additionalCosts = flip mapMaybe allModifiers $ \case
+      AdditionalCost c -> Just c
+      _ -> Nothing
+    sealTokenCosts = flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
+      Keyword.Seal matcher -> Just $ Cost.SealCost matcher
+      _ -> Nothing
+
+  let
+    cost =
+      mconcat $
+        [ resourceCost
+        ] <> additionalCosts <> sealTokenCosts
+  pure ActiveCost
+    { activeCostId = acId
+    , activeCostCosts = cost
+    , activeCostPayments = Cost.NoPayment
+    , activeCostTarget = ForCard card
+    , activeCostWindows = []
+    , activeCostInvestigator = iid
+    , activeCostSealedTokens = []
+    }
+
 runGameMessage
   :: Message
   -> Game
@@ -2282,21 +2313,10 @@ runGameMessage msg g = case msg of
       )
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   PayCardCost iid card -> do
+    activeCost <- createActiveCostForCard iid card
     -- _ <- error "This is broken because it also plays the card, rethink cards that call this"
-    cost <- Cost.ResourceCost <$> getModifiedCardCost iid card
-    acId <- getRandom
-    let
-      activeCost = ActiveCost
-        { activeCostId = acId
-        , activeCostCosts = cost
-        , activeCostPayments = Cost.NoPayment
-        , activeCostTarget = ForCard card
-        , activeCostWindows = []
-        , activeCostInvestigator = iid
-        , activeCostSealedTokens = []
-        }
-    push $ CreatedCost acId
-    pure $ g & activeCostL %~ insertMap acId activeCost
+    push $ CreatedCost (activeCostId activeCost)
+    pure $ g & activeCostL %~ insertMap (activeCostId activeCost) activeCost
     -- iids <- filter (/= iid) <$> getInvestigatorIds
     -- iidsWithModifiers <- for iids $ \iid' -> do
     --   modifiers <- getModifiers
@@ -2681,45 +2701,24 @@ runGameMessage msg g = case msg of
         _ -> pure g
       EncounterCard _ -> pure g
   PlayCard iid card _mtarget True -> do
-    acId <- getRandom
     modifiers' <- getModifiers (InvestigatorSource iid) (CardIdTarget $ toCardId card)
     modifiers'' <- getModifiers (InvestigatorSource iid) (CardTarget card)
+    investigator' <- getInvestigator iid
     let allModifiers = modifiers' <> modifiers''
-    resources <- getModifiedCardCost iid card
+    activeCost <- createActiveCostForCard iid card
     let
-      resourceCost = if resources == 0 then Cost.Free else Cost.ResourceCost resources
-      additionalCosts = flip mapMaybe allModifiers $ \case
-        AdditionalCost c -> Just c
-        _ -> Nothing
-      sealTokenCosts = flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
-        Keyword.Seal matcher -> Just $ Cost.SealCost matcher
-        _ -> Nothing
       isFast = case card of
         PlayerCard pc ->
           isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` allModifiers
         _ -> False
       action = fromMaybe Action.Play (cdAction $ toCardDef card)
 
-    investigator' <- getInvestigator iid
     actionCost <- if isFast then pure Cost.Free else Cost.ActionCost <$> getActionCost (toAttrs investigator') action
 
-    let
-      cost =
-        mconcat $
-          [ resourceCost
-          , actionCost
-          ] <> additionalCosts <> sealTokenCosts
-      activeCost = ActiveCost
-        { activeCostId = acId
-        , activeCostCosts = cost
-        , activeCostPayments = Cost.NoPayment
-        , activeCostTarget = ForCard card
-        , activeCostWindows = []
-        , activeCostInvestigator = iid
-        , activeCostSealedTokens = []
-        }
-    push $ CreatedCost acId
-    pure $ g & activeCostL %~ insertMap acId activeCost
+    let activeCost' = addActiveCostCost actionCost activeCost
+
+    push $ CreatedCost $ activeCostId activeCost'
+    pure $ g & activeCostL %~ insertMap (activeCostId activeCost') activeCost'
   PlayCard iid card mtarget False -> do
     investigator' <- getInvestigator iid
     playableCards <- getPlayableCards

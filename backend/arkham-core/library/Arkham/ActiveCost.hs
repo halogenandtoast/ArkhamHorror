@@ -47,10 +47,16 @@ activeCostAction ac = case activeCostTarget ac of
   ForAbility a -> Just $ fromMaybe Action.Ability (abilityAction a)
   ForCard c -> Just $ fromMaybe Action.Play (cdAction $ toCardDef c)
 
+addActiveCostCost :: Cost -> ActiveCost -> ActiveCost
+addActiveCostCost cost ac = ac & costsL <>~ cost
+
 activeCostSource :: ActiveCost -> Source
 activeCostSource ac = case activeCostTarget ac of
   ForAbility a -> abilitySource a
   ForCard c -> CardIdSource $ toCardId c
+
+costsL :: Lens' ActiveCost Cost
+costsL = lens activeCostCosts $ \m x -> m { activeCostCosts = x }
 
 costPaymentsL :: Lens' ActiveCost Payment
 costPaymentsL = lens activeCostPayments $ \m x -> m { activeCostPayments = x }

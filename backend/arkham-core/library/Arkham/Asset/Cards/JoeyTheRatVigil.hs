@@ -14,6 +14,7 @@ import Arkham.Criteria hiding ( DuringTurn )
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
 import Arkham.Projection
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window
@@ -53,14 +54,10 @@ instance RunMessage JoeyTheRatVigil where
           ]
         )
         items
-      a <$ push
-        (chooseOne
-          iid
-          [ Run
-              [ PayCardCost iid item
-              , InitiatePlayCard iid (toCardId item) Nothing False
-              ]
-          | item <- playableItems
-          ]
-        )
+      push $ chooseOne
+        iid
+        [ TargetLabel (CardIdTarget $ toCardId item) [PayCardCost iid item]
+        | item <- playableItems
+        ]
+      pure a
     _ -> JoeyTheRatVigil <$> runMessage msg attrs

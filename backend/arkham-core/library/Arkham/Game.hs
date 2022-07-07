@@ -2282,7 +2282,7 @@ runGameMessage msg g = case msg of
       )
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   PayCardCost iid card -> do
-    _ <- error "This is broken because it also plays the card, rethink cards that call this"
+    -- _ <- error "This is broken because it also plays the card, rethink cards that call this"
     cost <- Cost.ResourceCost <$> getModifiedCardCost iid card
     acId <- getRandom
     let

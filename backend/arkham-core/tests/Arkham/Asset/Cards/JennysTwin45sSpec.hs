@@ -4,6 +4,7 @@ module Arkham.Asset.Cards.JennysTwin45sSpec
 
 import TestImport.Lifted hiding (EnemyDamage)
 
+import Arkham.ActiveCost
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Uses (useCount)
 import Arkham.Enemy.Attrs qualified as Enemy
@@ -23,14 +24,13 @@ spec = describe "Jenny's Twin .45s" $ do
       }
     gameTest
         investigator
-        [playDynamicCard investigator (PlayerCard jennysTwin45s) 5]
+        [playCard investigator (PlayerCard jennysTwin45s)]
         id
       $ do
           runMessages
+          activeCost <- getActiveCost
           pushAll
-            [ PayedForDynamicCard (toId investigator) (toCardId jennysTwin45s) 5 True
-            , PlayDynamicCard (toId investigator) (toCardId jennysTwin45s) 5 Nothing False
-            ]
+            $ replicate 5 (PayCost (activeCostId activeCost) (toId investigator) False (ResourceCost 1))
           runMessages
           assetId <- selectJust $ assetIs Cards.jennysTwin45s
           assert $ fieldP AssetUses ((== 5) . useCount) assetId
@@ -47,17 +47,19 @@ spec = describe "Jenny's Twin .45s" $ do
     gameTest
         investigator
         [ SetTokens [Zero]
-        , playDynamicCard investigator (PlayerCard jennysTwin45s) 1
+        , playCard investigator (PlayerCard jennysTwin45s)
         ]
         ((entitiesL . enemiesL %~ insertEntity enemy)
         . (entitiesL . locationsL %~ insertEntity location)
         )
       $ do
           runMessages
+          activeCost <- getActiveCost
+          push $
+            PayCost (activeCostId activeCost) (toId investigator) False (ResourceCost 1)
+          runMessages
           pushAll
-            [ PayedForDynamicCard (toId investigator) (toCardId jennysTwin45s) 1 True
-            , PlayDynamicCard (toId investigator) (toCardId jennysTwin45s) 1 Nothing False
-            , enemySpawn location enemy
+            [ enemySpawn location enemy
             , moveTo investigator location
             , UseCardAbility
               (toId investigator)

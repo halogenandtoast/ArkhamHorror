@@ -62,7 +62,6 @@ filterOutEnemyMessages eid (Ask iid q) = case q of
   ChooseUpgradeDeck -> Just (Ask iid ChooseUpgradeDeck)
   choose@ChoosePaymentAmounts{} -> Just (Ask iid choose)
   choose@ChooseAmounts{} -> Just (Ask iid choose)
-  choose@ChooseDynamicCardAmounts{} -> Just (Ask iid choose)
 filterOutEnemyMessages eid msg = case msg of
   InitiateEnemyAttack _ eid' _ | eid == eid' -> Nothing
   EnemyAttack _ eid' _ _ | eid == eid' -> Nothing

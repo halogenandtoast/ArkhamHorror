@@ -10,6 +10,7 @@ module TestImport
 import Arkham.Prelude as X hiding (assert)
 
 import Data.Maybe as X (fromJust)
+import Arkham.ActiveCost
 import Arkham.Projection
 import Arkham.Agenda as X
 import Arkham.Agenda.Attrs
@@ -369,9 +370,6 @@ chooseOptionMatching _reason f = do
       ChooseN _ msgs -> case find f msgs of
         Just msg -> push msg <* runMessages
         Nothing -> error "could not find a matching message"
-      ChooseDynamicCardAmounts _ _ _ _ msgs -> case find f msgs of
-        Just msg -> push msg <* runMessages
-        Nothing -> error "could not find a matching message"
       _ -> error $ "unsupported questions type: " <> show question
     _ -> error "There must be only one question to use this function"
 
@@ -397,10 +395,10 @@ gameTestWithLogger logger investigator queue f body = do
 
 newGame :: MonadIO m => Investigator -> m Game
 newGame investigator = do
-  scenario' <- testScenario "00000" id
+  scenario' <- testScenario "01104" id
   seed <- liftIO getRandom
   pure $ Game
-    { gameParams = GameParams (Left "00000") 1 mempty Easy -- Not used in tests
+    { gameParams = GameParams (Left "01104") 1 mempty Easy -- Not used in tests
     , gameWindowDepth = 0
     , gameDepthLock = 0
     , gamePhaseHistory = mempty
@@ -448,6 +446,9 @@ isInDiscardOf i a = do
 
 getRemainingActions :: Investigator -> TestAppT Int
 getRemainingActions = field InvestigatorRemainingActions . toId
+
+getActiveCost :: TestAppT ActiveCost
+getActiveCost = snd . fromJustNote "no active cost for test" . headMay . mapToList . gameActiveCost <$> getGame
 
 evadedBy :: Investigator -> Enemy -> TestAppT Bool
 evadedBy _investigator = fieldP EnemyEngagedInvestigators null . toId

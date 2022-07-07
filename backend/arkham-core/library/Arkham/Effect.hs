@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Effect (
   module Arkham.Effect,
 ) where
@@ -7,7 +6,6 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Classes.Entity.TH
 import Arkham.Effect.Attrs
 import Arkham.Effect.Effects
 import Arkham.Effect.Window
@@ -19,11 +17,20 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Window (Window)
-import Data.Aeson.TH
+import Data.Typeable
 
-$(buildEntity "Effect")
+data Effect = forall a. IsEffect a => Effect a
 
-$(deriveJSON defaultOptions ''Effect)
+instance Eq Effect where
+  (Effect (a :: a)) == (Effect (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Effect where
+  show (Effect a) = show a
+
+instance ToJSON Effect where
+  toJSON (Effect a) = toJSON a
 
 createEffect ::
   MonadRandom m =>
@@ -67,19 +74,19 @@ createTokenEffect effectMetadata source token = do
   pure (eid, buildTokenEffect eid effectMetadata source token)
 
 instance HasModifiersFor Effect where
-  getModifiersFor = $(entityF2 "Effect" 'getModifiersFor)
+  getModifiersFor source target (Effect a) = getModifiersFor source target a
 
 instance HasAbilities Effect where
-  getAbilities = $(entityF "Effect" 'getAbilities)
+  getAbilities (Effect a) = getAbilities a
 
 instance RunMessage Effect where
-  runMessage = $(entityRunMessage "Effect")
+  runMessage msg (Effect a) = Effect <$> runMessage msg a
 
 instance Entity Effect where
   type EntityId Effect = EffectId
   type EntityAttrs Effect = EffectAttrs
   toId = toId . toAttrs
-  toAttrs = $(entityF "Effect" 'toAttrs)
+  toAttrs (Effect a) = toAttrs a
 
 instance TargetEntity Effect where
   toTarget = toTarget . toAttrs
@@ -109,74 +116,72 @@ lookupEffect cardCode eid mmetadata source target =
 allEffects :: HashMap CardCode (EffectArgs -> Effect)
 allEffects =
   mapFromList
-    [ ("01010", OnTheLam' . onTheLam)
-    , ("01036", MindOverMatter' . mindOverMatter)
-    , ("01060", Shrivelling' . shrivelling)
-    , ("01066", BlindingLight' . blindingLight)
-    , ("01068", MindWipe1' . mindWipe1)
-    , ("01069", BlindingLight2' . blindingLight2)
-    , ("01074", BaseballBat' . baseballBat)
-    , ("01080", Lucky' . lucky)
-    , ("01084", Lucky2' . lucky2)
-    , ("01085", WillToSurvive3' . willToSurvive3)
-    , ("01088", SureGamble3' . sureGamble3)
-    , ("01151", ArkhamWoodsTwistingPaths' . arkhamWoodsTwistingPaths)
-    , ("02028", RiteOfSeeking' . riteOfSeeking)
-    , ("02031", BindMonster2' . bindMonster2)
-    , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)
-    , ("02102", ArcaneBarrier' . arcaneBarrier)
-    , ("02112", SongOfTheDead2' . songOfTheDead2)
-    , ("02114", FireExtinguisher1' . fireExtinguisher1)
-    , ("02150", Deduction2' . deduction2)
-    , ("02228", ExposeWeakness1' . exposeWeakness1)
-    , ("02229", QuickThinking' . quickThinking)
-    , ("02230", LuckyDice2' . luckyDice2)
-    , ("02233", RiteOfSeeking4' . riteOfSeeking4)
-    ,
-      ( "02236"
-      , UndimensionedAndUnseenTabletToken' . undimensionedAndUnseenTabletToken
-      )
-    , ("02246", TenAcreMeadow_246' . tenAcreMeadow_246)
-    , ("02270", AChanceEncounter' . aChanceEncounter)
-    , ("02323", YogSothoth' . yogSothoth)
-    , ("03002", MinhThiPhan' . minhThiPhan)
-    , ("03005", WilliamYorick' . williamYorick)
-    , ("03012", ThePaintedWorld' . thePaintedWorld)
-    , ("03018", Improvisation' . improvisation)
-    , ("03022", LetMeHandleThis' . letMeHandleThis)
-    , ("03024", Fieldwork' . fieldwork)
-    , ("03029", SleightOfHand' . sleightOfHand)
-    , ("03031", Lockpicks1' . lockpicks1)
-    , ("03032", AlchemicalTransmutation' . alchemicalTransmutation)
-    , ("03033", UncageTheSoul' . uncageTheSoul)
-    , ("03040", Overzealous' . overzealous)
-    , ("03047a", TheStrangerACityAflame' . theStrangerACityAflame)
-    , ("03047b", TheStrangerThePathIsMine' . theStrangerThePathIsMine)
-    , ("03047c", TheStrangerTheShoresOfHali' . theStrangerTheShoresOfHali)
-    , ("03100", TheKingsEdict' . theKingsEdict)
-    , ("03141", MrPeabody' . mrPeabody)
-    , ("03149", CharlesRossEsq' . charlesRossEsq)
-    , ("03153", StormOfSpirits' . stormOfSpirits)
-    , ("03155", FightOrFlight' . fightOrFlight)
-    , ("03158", CallingInFavors' . callingInFavors)
-    , ("03209", Montmartre209' . montmartre209)
-    , ("03215", PereLachaiseCemetery' . pereLachaiseCemetery)
-    , ("03218", LeMarais218' . leMarais218)
-    , ("03221a", TheOrganistHopelessIDefiedHim' . theOrganistHopelessIDefiedHim)
-    , ("03254", NarrowShaft' . narrowShaft)
-    , ("03306", EideticMemory3' . eideticMemory3)
-    , ("05114", MeatCleaver' . meatCleaver)
-    , ("50008", MindWipe3' . mindWipe3)
-    , ("50033", ArkhamWoodsGreatWillow' . arkhamWoodsGreatWillow)
-    , ("50044", JeremiahPierce' . jeremiahPierce)
-    , ("60101", NathanielCho' . nathanielCho)
-    , ("60103", TommyMalloy' . tommyMalloy)
-    , ("60305", Lockpicks' . lockpicks)
-    , ("60505", EighteenDerringer' . eighteenDerringer)
-    , ("81001", CurseOfTheRougarouTabletToken' . curseOfTheRougarouTabletToken)
-    , ("81007", CursedShores' . cursedShores)
-    , ("82035", Mesmerize' . mesmerize)
-    , ("90002", DaisysToteBagAdvanced' . daisysToteBagAdvanced)
+    [ ("01010", Effect . onTheLam)
+    , ("01036", Effect . mindOverMatter)
+    , ("01060", Effect . shrivelling)
+    , ("01066", Effect . blindingLight)
+    , ("01068", Effect . mindWipe1)
+    , ("01069", Effect . blindingLight2)
+    , ("01074", Effect . baseballBat)
+    , ("01080", Effect . lucky)
+    , ("01084", Effect . lucky2)
+    , ("01085", Effect . willToSurvive3)
+    , ("01088", Effect . sureGamble3)
+    , ("01151", Effect . arkhamWoodsTwistingPaths)
+    , ("02028", Effect . riteOfSeeking)
+    , ("02031", Effect . bindMonster2)
+    , ("02100", Effect . pushedIntoTheBeyond)
+    , ("02102", Effect . arcaneBarrier)
+    , ("02112", Effect . songOfTheDead2)
+    , ("02114", Effect . fireExtinguisher1)
+    , ("02150", Effect . deduction2)
+    , ("02228", Effect . exposeWeakness1)
+    , ("02229", Effect . quickThinking)
+    , ("02230", Effect . luckyDice2)
+    , ("02233", Effect . riteOfSeeking4)
+    , ("02236", Effect . undimensionedAndUnseenTabletToken)
+    , ("02246", Effect . tenAcreMeadow_246)
+    , ("02270", Effect . aChanceEncounter)
+    , ("02323", Effect . yogSothoth)
+    , ("03002", Effect . minhThiPhan)
+    , ("03005", Effect . williamYorick)
+    , ("03012", Effect . thePaintedWorld)
+    , ("03018", Effect . improvisation)
+    , ("03022", Effect . letMeHandleThis)
+    , ("03024", Effect . fieldwork)
+    , ("03029", Effect . sleightOfHand)
+    , ("03031", Effect . lockpicks1)
+    , ("03032", Effect . alchemicalTransmutation)
+    , ("03033", Effect . uncageTheSoul)
+    , ("03040", Effect . overzealous)
+    , ("03047a", Effect . theStrangerACityAflame)
+    , ("03047b", Effect . theStrangerThePathIsMine)
+    , ("03047c", Effect . theStrangerTheShoresOfHali)
+    , ("03100", Effect . theKingsEdict)
+    , ("03141", Effect . mrPeabody)
+    , ("03149", Effect . charlesRossEsq)
+    , ("03153", Effect . stormOfSpirits)
+    , ("03155", Effect . fightOrFlight)
+    , ("03158", Effect . callingInFavors)
+    , ("03209", Effect . montmartre209)
+    , ("03215", Effect . pereLachaiseCemetery)
+    , ("03218", Effect . leMarais218)
+    , ("03221a", Effect . theOrganistHopelessIDefiedHim)
+    , ("03254", Effect . narrowShaft)
+    , ("03306", Effect . eideticMemory3)
+    , ("05114", Effect . meatCleaver)
+    , ("50008", Effect . mindWipe3)
+    , ("50033", Effect . arkhamWoodsGreatWillow)
+    , ("50044", Effect . jeremiahPierce)
+    , ("60101", Effect . nathanielCho)
+    , ("60103", Effect . tommyMalloy)
+    , ("60305", Effect . lockpicks)
+    , ("60505", Effect . eighteenDerringer)
+    , ("81001", Effect . curseOfTheRougarouTabletToken)
+    , ("81007", Effect . cursedShores)
+    , ("82026", Effect . gildedVolto)
+    , ("82035", Effect . mesmerize)
+    , ("90002", Effect . daisysToteBagAdvanced)
     ]
 
 buildTokenValueEffect :: EffectId -> Int -> Source -> Target -> Effect
@@ -195,10 +200,81 @@ buildWindowModifierEffect ::
   Target ->
   Effect
 buildWindowModifierEffect eid metadata effectWindow source target =
-  WindowModifierEffect' $
-    windowModifierEffect eid metadata effectWindow source target
+  Effect $ windowModifierEffect eid metadata effectWindow source target
 
 buildTokenEffect ::
   EffectId -> EffectMetadata Window Message -> Source -> Token -> Effect
 buildTokenEffect eid metadata source token =
-  TokenEffect' $ tokenEffect eid metadata source token
+  Effect $ tokenEffect eid metadata source token
+
+instance FromJSON Effect where
+  parseJSON v = flip (withObject "Effect") v $ \o -> do
+    cCode :: CardCode <- o .: "cardCode"
+    case cCode of
+      "01010" -> Effect . OnTheLam <$> parseJSON v
+      "01036" -> Effect . MindOverMatter <$> parseJSON v
+      "01060" -> Effect . Shrivelling <$> parseJSON v
+      "01066" -> Effect . BlindingLight <$> parseJSON v
+      "01068" -> Effect . MindWipe1 <$> parseJSON v
+      "01069" -> Effect . BlindingLight2 <$> parseJSON v
+      "01074" -> Effect . BaseballBat <$> parseJSON v
+      "01080" -> Effect . Lucky <$> parseJSON v
+      "01084" -> Effect . Lucky2 <$> parseJSON v
+      "01085" -> Effect . WillToSurvive3 <$> parseJSON v
+      "01088" -> Effect . SureGamble3 <$> parseJSON v
+      "01151" -> Effect . ArkhamWoodsTwistingPaths <$> parseJSON v
+      "02028" -> Effect . RiteOfSeeking <$> parseJSON v
+      "02031" -> Effect . BindMonster2 <$> parseJSON v
+      "02100" -> Effect . PushedIntoTheBeyond <$> parseJSON v
+      "02102" -> Effect . ArcaneBarrier <$> parseJSON v
+      "02112" -> Effect . SongOfTheDead2 <$> parseJSON v
+      "02114" -> Effect . FireExtinguisher1 <$> parseJSON v
+      "02150" -> Effect . Deduction2 <$> parseJSON v
+      "02228" -> Effect . ExposeWeakness1 <$> parseJSON v
+      "02229" -> Effect . QuickThinking <$> parseJSON v
+      "02230" -> Effect . LuckyDice2 <$> parseJSON v
+      "02233" -> Effect . RiteOfSeeking4 <$> parseJSON v
+      "02236" -> Effect . UndimensionedAndUnseenTabletToken <$> parseJSON v
+      "02246" -> Effect . TenAcreMeadow_246 <$> parseJSON v
+      "02270" -> Effect . AChanceEncounter <$> parseJSON v
+      "02323" -> Effect . YogSothoth <$> parseJSON v
+      "03002" -> Effect . MinhThiPhan <$> parseJSON v
+      "03005" -> Effect . WilliamYorick <$> parseJSON v
+      "03012" -> Effect . ThePaintedWorld <$> parseJSON v
+      "03018" -> Effect . Improvisation <$> parseJSON v
+      "03022" -> Effect . LetMeHandleThis <$> parseJSON v
+      "03024" -> Effect . Fieldwork <$> parseJSON v
+      "03029" -> Effect . SleightOfHand <$> parseJSON v
+      "03031" -> Effect . Lockpicks1 <$> parseJSON v
+      "03032" -> Effect . AlchemicalTransmutation <$> parseJSON v
+      "03033" -> Effect . UncageTheSoul <$> parseJSON v
+      "03040" -> Effect . Overzealous <$> parseJSON v
+      "03047a" -> Effect . TheStrangerACityAflame <$> parseJSON v
+      "03047b" -> Effect . TheStrangerThePathIsMine <$> parseJSON v
+      "03047c" -> Effect . TheStrangerTheShoresOfHali <$> parseJSON v
+      "03100" -> Effect . TheKingsEdict <$> parseJSON v
+      "03141" -> Effect . MrPeabody <$> parseJSON v
+      "03149" -> Effect . CharlesRossEsq <$> parseJSON v
+      "03153" -> Effect . StormOfSpirits <$> parseJSON v
+      "03155" -> Effect . FightOrFlight <$> parseJSON v
+      "03158" -> Effect . CallingInFavors <$> parseJSON v
+      "03209" -> Effect . Montmartre209 <$> parseJSON v
+      "03215" -> Effect . PereLachaiseCemetery <$> parseJSON v
+      "03218" -> Effect . LeMarais218 <$> parseJSON v
+      "03221a" -> Effect . TheOrganistHopelessIDefiedHim <$> parseJSON v
+      "03254" -> Effect . NarrowShaft <$> parseJSON v
+      "03306" -> Effect . EideticMemory3 <$> parseJSON v
+      "05114" -> Effect . MeatCleaver <$> parseJSON v
+      "50008" -> Effect . MindWipe3 <$> parseJSON v
+      "50033" -> Effect . ArkhamWoodsGreatWillow <$> parseJSON v
+      "50044" -> Effect . JeremiahPierce <$> parseJSON v
+      "60101" -> Effect . NathanielCho <$> parseJSON v
+      "60103" -> Effect . TommyMalloy <$> parseJSON v
+      "60305" -> Effect . Lockpicks <$> parseJSON v
+      "60505" -> Effect . EighteenDerringer <$> parseJSON v
+      "81001" -> Effect . CurseOfTheRougarouTabletToken <$> parseJSON v
+      "81007" -> Effect . CursedShores <$> parseJSON v
+      "82026" -> Effect . GildedVolto <$> parseJSON v
+      "82035" -> Effect . Mesmerize <$> parseJSON v
+      "90002" -> Effect . DaisysToteBagAdvanced <$> parseJSON v
+      _ -> error "invalid effect"

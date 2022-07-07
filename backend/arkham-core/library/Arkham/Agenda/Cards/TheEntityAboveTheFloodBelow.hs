@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.TheEntityAboveTheFloodBelow
-  ( TheEntityAboveTheFloodBelow
+  ( TheEntityAboveTheFloodBelow(..)
   , theEntityAboveTheFloodBelow
   ) where
 

@@ -647,7 +647,7 @@ data WindowMatcher
   | Discarded Timing Who CardMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher
   | EnemyWouldBeDiscarded Timing EnemyMatcher
-  | InitiatedSkillTest Timing Who SkillTestMatcher ValueMatcher
+  | InitiatedSkillTest Timing Who SkillTypeMatcher ValueMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | SkillTestEnded Timing Who SkillTestMatcher
   | PlacedCounter Timing Who CounterMatcher ValueMatcher
@@ -709,6 +709,7 @@ data SkillTestMatcher
   | UsingThis
   | SkillTestSourceMatches SourceMatcher
   | SkillTestMatches [SkillTestMatcher]
+  | NotSkillTest SkillTestMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -904,5 +905,9 @@ data CampaignMatcher = TheCampaign
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data EffectMatcher = AnyEffect
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data SkillTypeMatcher = AnySkillType | NotSkillType SkillType | IsSkillType SkillType
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

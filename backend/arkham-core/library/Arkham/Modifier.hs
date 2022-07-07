@@ -62,7 +62,7 @@ data ModifierType
   | Blocked
   | CanBeAssignedDamage
   | CanBeFoughtAsIfAtYourLocation
-  | CanBecomeFast (Maybe CardType, [Trait])
+  | CanBecomeFast CardMatcher
   | CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation Int
   | CanOnlyBeAttackedByAbilityOn (HashSet CardCode)
   | CanOnlyUseCardsInRole ClassSymbol

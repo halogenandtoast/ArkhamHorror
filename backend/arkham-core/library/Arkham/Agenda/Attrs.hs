@@ -8,6 +8,9 @@ import Arkham.Agenda.Sequence
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.HasAbilities
+import Arkham.Classes.RunMessage.Internal
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
@@ -16,7 +19,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 
-class IsAgenda a
+class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ AgendaId, EntityAttrs a ~ AgendaAttrs) => IsAgenda a
 
 type AgendaCard a = CardBuilder (Int, AgendaId) a
 

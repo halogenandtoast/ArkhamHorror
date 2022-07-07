@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.TheThirdNight
-  ( TheThirdNight
+  ( TheThirdNight(..)
   , theThirdNight
   ) where
 

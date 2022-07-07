@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Scenario.Attrs
   ( module Arkham.Scenario.Attrs
   , module X
@@ -10,10 +9,10 @@ import Arkham.Prelude
 import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.ChaosBag.Base
+import Arkham.Classes.Entity
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasTokenValue
 import Arkham.Classes.RunMessage.Internal
-import Arkham.Classes.Entity
 import Arkham.Difficulty
 import Arkham.Helpers
 import Arkham.Id
@@ -24,7 +23,6 @@ import Arkham.Scenario.Deck as X
 import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Target
-import Data.Aeson.TH
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasModifiersFor a, RunMessage a, HasTokenValue a, Entity a, EntityId a ~ ScenarioId, EntityAttrs a ~ ScenarioAttrs) => IsScenario a
 
@@ -74,10 +72,13 @@ data ScenarioAttrs = ScenarioAttrs
   -- for standalone
   , scenarioStoryCards :: HashMap InvestigatorId [PlayerCard]
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
 
-$(deriveJSON (aesonOptions $ Just "Scenario") ''ScenarioAttrs)
-makeLensesWith suffixedFields ''ScenarioAttrs
+instance ToJSON ScenarioAttrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "scenario"
+
+instance FromJSON ScenarioAttrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "scenario"
 
 baseAttrs :: CardCode -> Name -> Difficulty -> ScenarioAttrs
 baseAttrs cardCode name difficulty = ScenarioAttrs
@@ -127,3 +128,86 @@ instance SourceEntity ScenarioAttrs where
   isSource ScenarioAttrs { scenarioId } (ScenarioSource sid) =
     scenarioId == sid
   isSource _ _ = False
+
+nameL :: Lens' ScenarioAttrs Name
+nameL = lens scenarioName $ \m x -> m { scenarioName = x }
+
+idL :: Lens' ScenarioAttrs ScenarioId
+idL = lens scenarioId $ \m x -> m { scenarioId = x }
+
+difficultyL :: Lens' ScenarioAttrs Difficulty
+difficultyL = lens scenarioDifficulty $ \m x -> m { scenarioDifficulty = x }
+
+cardsUnderScenarioReferenceL :: Lens' ScenarioAttrs [Card]
+cardsUnderScenarioReferenceL = lens scenarioCardsUnderScenarioReference
+  $ \m x -> m { scenarioCardsUnderScenarioReference = x }
+
+cardsUnderAgendaDeckL :: Lens' ScenarioAttrs [Card]
+cardsUnderAgendaDeckL = lens scenarioCardsUnderAgendaDeck
+  $ \m x -> m { scenarioCardsUnderAgendaDeck = x }
+
+cardsUnderActDeckL :: Lens' ScenarioAttrs [Card]
+cardsUnderActDeckL =
+  lens scenarioCardsUnderActDeck $ \m x -> m { scenarioCardsUnderActDeck = x }
+
+cardsNextToActDeckL :: Lens' ScenarioAttrs [Card]
+cardsNextToActDeckL =
+  lens scenarioCardsNextToActDeck $ \m x -> m { scenarioCardsNextToActDeck = x }
+
+actStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
+actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
+
+agendaStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
+agendaStackL = lens scenarioAgendaStack $ \m x -> m { scenarioAgendaStack = x }
+
+completedAgendaStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
+completedAgendaStackL = lens scenarioCompletedAgendaStack
+  $ \m x -> m { scenarioCompletedAgendaStack = x }
+
+locationLayoutL :: Lens' ScenarioAttrs (Maybe [GridTemplateRow])
+locationLayoutL =
+  lens scenarioLocationLayout $ \m x -> m { scenarioLocationLayout = x }
+
+decksL :: Lens' ScenarioAttrs (HashMap ScenarioDeckKey [Card])
+decksL = lens scenarioDecks $ \m x -> m { scenarioDecks = x }
+
+logL :: Lens' ScenarioAttrs (HashSet ScenarioLogKey)
+logL = lens scenarioLog $ \m x -> m { scenarioLog = x }
+
+standaloneCampaignLogL :: Lens' ScenarioAttrs CampaignLog
+standaloneCampaignLogL = lens scenarioStandaloneCampaignLog
+  $ \m x -> m { scenarioStandaloneCampaignLog = x }
+
+setAsideCardsL :: Lens' ScenarioAttrs [Card]
+setAsideCardsL =
+  lens scenarioSetAsideCards $ \m x -> m { scenarioSetAsideCards = x }
+
+inResolutionL :: Lens' ScenarioAttrs Bool
+inResolutionL =
+  lens scenarioInResolution $ \m x -> m { scenarioInResolution = x }
+
+noRemainingInvestigatorsHandlerL :: Lens' ScenarioAttrs Target
+noRemainingInvestigatorsHandlerL = lens scenarioNoRemainingInvestigatorsHandler
+  $ \m x -> m { scenarioNoRemainingInvestigatorsHandler = x }
+
+victoryDisplayL :: Lens' ScenarioAttrs [Card]
+victoryDisplayL =
+  lens scenarioVictoryDisplay $ \m x -> m { scenarioVictoryDisplay = x }
+
+chaosBagL :: Lens' ScenarioAttrs ChaosBag
+chaosBagL = lens scenarioChaosBag $ \m x -> m { scenarioChaosBag = x }
+
+encounterDeckL :: Lens' ScenarioAttrs (Deck EncounterCard)
+encounterDeckL =
+  lens scenarioEncounterDeck $ \m x -> m { scenarioEncounterDeck = x }
+
+discardL :: Lens' ScenarioAttrs [EncounterCard]
+discardL = lens scenarioDiscard $ \m x -> m { scenarioDiscard = x }
+
+resignedCardCodesL :: Lens' ScenarioAttrs [CardCode]
+resignedCardCodesL =
+  lens scenarioResignedCardCodes $ \m x -> m { scenarioResignedCardCodes = x }
+
+storyCardsL :: Lens' ScenarioAttrs (HashMap InvestigatorId [PlayerCard])
+storyCardsL = lens scenarioStoryCards $ \m x -> m { scenarioStoryCards = x }
+

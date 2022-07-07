@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.MadnessDrowns
-  ( MadnessDrowns
+  ( MadnessDrowns(..)
   , madnessDrowns
   ) where
 

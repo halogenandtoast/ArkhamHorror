@@ -1,9 +1,12 @@
-module Arkham.Agenda.Cards.TheRitualBegins where
+module Arkham.Agenda.Cards.TheRitualBegins
+  ( TheRitualBegins(..)
+  , theRitualBegins
+  ) where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card

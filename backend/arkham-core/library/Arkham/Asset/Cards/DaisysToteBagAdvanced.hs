@@ -41,7 +41,7 @@ instance HasAbilities DaisysToteBagAdvanced where
 instance HasModifiersFor DaisysToteBagAdvanced where
   getModifiersFor _ (InvestigatorTarget iid) (DaisysToteBagAdvanced a)
     | controlledBy a iid = pure
-      [toModifier a $ CanBecomeFast (Just AssetType, [Tome])]
+      [toModifier a $ CanBecomeFast $ CardWithType AssetType <> CardWithTrait Tome]
   getModifiersFor _ _ _ = pure []
 
 slot :: AssetAttrs -> Slot

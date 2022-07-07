@@ -27,7 +27,7 @@ instance HasAbilities DrawingThin where
   getAbilities (DrawingThin a) =
     [ restrictedAbility a 1 OwnsThis
         $ ReactionAbility
-            (InitiatedSkillTest Timing.When You AnySkillTest AnyValue)
+            (InitiatedSkillTest Timing.When You AnySkillType AnyValue)
         $ ExhaustCost (toTarget a)
     ]
 

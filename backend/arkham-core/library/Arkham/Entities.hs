@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Entities where
 
 import Arkham.Prelude
@@ -12,10 +11,10 @@ import Arkham.Effect
 import Arkham.Enemy
 import Arkham.Event
 import Arkham.Investigator
+import Arkham.Json
 import Arkham.Location
 import Arkham.Skill
 import Arkham.Treachery
-import Data.Aeson.TH
 
 type EntityMap a = HashMap (EntityId a) a
 
@@ -31,11 +30,43 @@ data Entities = Entities
   , entitiesEffects :: EntityMap Effect
   , entitiesSkills :: EntityMap Skill
   }
-  deriving stock (Eq, Show)
+  deriving stock (Eq, Show, Generic)
 
-$(deriveJSON defaultOptions ''Entities)
+instance ToJSON Entities where
+  toJSON = genericToJSON $ aesonOptions $ Just "entities"
 
-makeLensesWith suffixedFields ''Entities
+instance FromJSON Entities where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "entities"
+
+locationsL :: Lens' Entities (EntityMap Location)
+locationsL = lens entitiesLocations $ \m x -> m { entitiesLocations = x }
+
+investigatorsL :: Lens' Entities (EntityMap Investigator)
+investigatorsL = lens entitiesInvestigators $ \m x -> m { entitiesInvestigators = x }
+
+enemiesL :: Lens' Entities (EntityMap Enemy)
+enemiesL = lens entitiesEnemies $ \m x -> m { entitiesEnemies = x }
+
+assetsL :: Lens' Entities (EntityMap Asset)
+assetsL = lens entitiesAssets $ \m x -> m { entitiesAssets = x }
+
+actsL :: Lens' Entities (EntityMap Act)
+actsL = lens entitiesActs $ \m x -> m { entitiesActs = x }
+
+agendasL :: Lens' Entities (EntityMap Agenda)
+agendasL = lens entitiesAgendas $ \m x -> m { entitiesAgendas = x }
+
+treacheriesL :: Lens' Entities (EntityMap Treachery)
+treacheriesL = lens entitiesTreacheries $ \m x -> m { entitiesTreacheries = x }
+
+eventsL :: Lens' Entities (EntityMap Event)
+eventsL = lens entitiesEvents $ \m x -> m { entitiesEvents = x }
+
+effectsL :: Lens' Entities (EntityMap Effect)
+effectsL = lens entitiesEffects $ \m x -> m { entitiesEffects = x }
+
+skillsL :: Lens' Entities (EntityMap Skill)
+skillsL = lens entitiesSkills $ \m x -> m { entitiesSkills = x }
 
 defaultEntities :: Entities
 defaultEntities = Entities

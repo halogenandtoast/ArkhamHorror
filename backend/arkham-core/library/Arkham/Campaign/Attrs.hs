@@ -1,14 +1,13 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Campaign.Attrs where
 
 import Arkham.Prelude
 
-import Data.Aeson.TH
 import Arkham.PlayerCard
 import Arkham.CampaignLog
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.Classes.RunMessage.Internal
 import Arkham.Difficulty
 import Arkham.Helpers
 import Arkham.Id
@@ -19,7 +18,7 @@ import Arkham.Json
 import Control.Monad.Writer hiding (filterM)
 import Data.List.NonEmpty qualified as NE
 
-class IsCampaign a
+class (Typeable a, Show a, Eq a, ToJSON a, FromJSON a, RunMessage a, Entity a, EntityId a ~ CampaignId, EntityAttrs a ~ CampaignAttrs) => IsCampaign a
 
 data instance Field CampaignAttrs :: Type -> Type where
   CampaignCompletedSteps :: Field CampaignAttrs [CampaignStep]
@@ -38,7 +37,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignCompletedSteps :: [CampaignStep]
   , campaignResolutions :: HashMap ScenarioId Resolution
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
 
 completedStepsL :: Lens' CampaignAttrs [CampaignStep]
 completedStepsL =
@@ -72,7 +71,11 @@ instance Entity CampaignAttrs where
   toId = campaignId
   toAttrs = id
 
-$(deriveJSON (aesonOptions $ Just "Campaign") ''CampaignAttrs)
+instance ToJSON CampaignAttrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "campaign"
+
+instance FromJSON CampaignAttrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "campaign"
 
 addRandomBasicWeaknessIfNeeded
   :: MonadRandom m => Deck PlayerCard -> m (Deck PlayerCard, [CardDef])

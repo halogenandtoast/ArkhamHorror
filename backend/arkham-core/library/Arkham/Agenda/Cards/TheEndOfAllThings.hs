@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.TheEndOfAllThings
-  ( TheEndOfAllThings
+  ( TheEndOfAllThings(..)
   , theEndOfAllThings
   ) where
 

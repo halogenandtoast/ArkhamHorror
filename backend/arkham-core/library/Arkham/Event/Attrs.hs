@@ -5,6 +5,9 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Event.Cards
 import Arkham.Classes.Entity
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.HasAbilities
+import Arkham.Classes.RunMessage.Internal
 import Arkham.Json
 import Arkham.Card
 import Arkham.Id
@@ -15,7 +18,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
 
-class IsEvent a
+class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EventId, EntityAttrs a ~ EventAttrs) => IsEvent a
 
 type EventCard a = CardBuilder (InvestigatorId, EventId) a
 

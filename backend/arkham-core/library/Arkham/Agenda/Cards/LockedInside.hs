@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.LockedInside
-  ( LockedInside
+  ( LockedInside(..)
   , lockedInside
   ) where
 

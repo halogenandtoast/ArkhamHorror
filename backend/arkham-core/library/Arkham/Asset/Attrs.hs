@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Asset.Attrs where
 
 import Arkham.Prelude
@@ -8,10 +7,12 @@ import Arkham.Asset.Cards
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.HasAbilities
+import Arkham.Classes.RunMessage.Internal
 import Arkham.ClassSymbol
 import Arkham.Id
 import Arkham.Json
-import Data.Aeson.TH
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Slot
@@ -20,7 +21,7 @@ import Arkham.Target
 import Arkham.Token (Token)
 import Arkham.Trait (Trait)
 
-class IsAsset a
+class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ AssetId, EntityAttrs a ~ AssetAttrs) => IsAsset a
 
 type AssetCard a = CardBuilder AssetId a
 
@@ -82,7 +83,7 @@ data AssetAttrs = AssetAttrs
   , assetCardsUnderneath :: [Card]
   , assetSealedTokens :: [Token]
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
 
 discardWhenNoUsesL :: Lens' AssetAttrs Bool
 discardWhenNoUsesL =
@@ -156,7 +157,11 @@ instance HasCardDef AssetAttrs where
     Just def -> def
     Nothing -> error $ "missing card def for asset " <> show (assetCardCode a)
 
-$(deriveJSON (aesonOptions $ Just "Asset") ''AssetAttrs)
+instance ToJSON AssetAttrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "asset"
+
+instance FromJSON AssetAttrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
 
 instance IsCard AssetAttrs where
   toCardId = unAssetId . assetId

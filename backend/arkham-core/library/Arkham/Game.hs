@@ -2282,7 +2282,7 @@ runGameMessage msg g = case msg of
       )
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   PayCardCost iid card -> do
-    error "This is broken because it also plays the card, rethink cards that call this"
+    _ <- error "This is broken because it also plays the card, rethink cards that call this"
     cost <- Cost.ResourceCost <$> getModifiedCardCost iid card
     acId <- getRandom
     let
@@ -2683,10 +2683,12 @@ runGameMessage msg g = case msg of
   PlayCard iid card _mtarget True -> do
     acId <- getRandom
     modifiers' <- getModifiers (InvestigatorSource iid) (CardIdTarget $ toCardId card)
+    modifiers'' <- getModifiers (InvestigatorSource iid) (CardTarget card)
+    let allModifiers = modifiers' <> modifiers''
     resources <- getModifiedCardCost iid card
     let
       resourceCost = if resources == 0 then Cost.Free else Cost.ResourceCost resources
-      additionalCosts = flip mapMaybe modifiers' $ \case
+      additionalCosts = flip mapMaybe allModifiers $ \case
         AdditionalCost c -> Just c
         _ -> Nothing
       sealTokenCosts = flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
@@ -2694,7 +2696,7 @@ runGameMessage msg g = case msg of
         _ -> Nothing
       isFast = case card of
         PlayerCard pc ->
-          isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` modifiers'
+          isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` allModifiers
         _ -> False
       action = fromMaybe Action.Play (cdAction $ toCardDef card)
 
@@ -3164,7 +3166,7 @@ runGameMessage msg g = case msg of
     pure $ g & (phaseHistoryL .~ mempty)
   BeginSkillTest iid source target maction skillType difficulty -> do
     availableSkills <- getAvailableSkillsFor skillType iid
-    windows' <- windows [Window.InitiatedSkillTest iid maction difficulty]
+    windows' <- windows [Window.InitiatedSkillTest iid maction skillType difficulty]
     case availableSkills of
       [] -> g <$ pushAll
         (windows'

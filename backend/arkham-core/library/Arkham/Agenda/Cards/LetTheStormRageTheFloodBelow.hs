@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow
-  ( LetTheStormRageTheFloodBelow
+  ( LetTheStormRageTheFloodBelow(..)
   , letTheStormRageTheFloodBelow
   ) where
 

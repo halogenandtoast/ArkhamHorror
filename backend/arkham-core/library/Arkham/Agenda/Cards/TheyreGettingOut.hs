@@ -1,12 +1,15 @@
-module Arkham.Agenda.Cards.TheyreGettingOut where
+module Arkham.Agenda.Cards.TheyreGettingOut
+  ( TheyreGettingOut(..)
+  , theyreGettingOut
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Attrs (Field(..))
+import Arkham.Act.Attrs ( Field (..) )
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Agenda.Attrs
-import qualified Arkham.Agenda.Cards as Cards
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Game.Helpers
@@ -16,7 +19,7 @@ import Arkham.Message
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs
@@ -35,14 +38,13 @@ instance HasAbilities TheyreGettingOut where
 
 instance RunMessage TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs) = case msg of
-    AdvanceAgenda aid
-      | aid == toId attrs && onSide B attrs -> do
-        actSequence <- fieldMap ActSequence (AS.unActStep . AS.actStep) =<< selectJust AnyAct
-        let
-          resolution = if actSequence `elem` [1, 2]
-            then Resolution 3
-            else NoResolution
-        a <$ push (ScenarioResolution resolution)
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+      actSequence <- fieldMap ActSequence (AS.unActStep . AS.actStep)
+        =<< selectJust AnyAct
+      let
+        resolution =
+          if actSequence `elem` [1, 2] then Resolution 3 else NoResolution
+      a <$ push (ScenarioResolution resolution)
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId
       enemiesToMove <- selectList
@@ -57,7 +59,8 @@ instance RunMessage TheyreGettingOut where
           case mLocationId of
             Nothing -> pure Nothing
             Just loc -> do
-              closestLocationIds <- selectList $ ClosestPathLocation loc parlorId
+              closestLocationIds <- selectList
+                $ ClosestPathLocation loc parlorId
               case closestLocationIds of
                 [] -> pure Nothing
                 [x] -> pure $ Just $ EnemyMove eid x

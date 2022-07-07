@@ -679,10 +679,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
       canBecomeFast = CannotPlay Matcher.FastCard `notElem` modifiers && foldr applyModifier False modifiers
       canBecomeFastWindow =
         if canBecomeFast then Just (Matcher.DuringTurn Matcher.You) else Nothing
-      applyModifier (CanBecomeFast (mcardType, traits)) _
-        | maybe True (== cdCardType pcDef) mcardType
-          && notNull (setFromList traits `intersect` toTraits pcDef)
-        = True
+      applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c cardMatcher
       applyModifier _ val = val
     modifiedCardCost <- getModifiedCardCost iid c
     passesCriterias <- maybe
@@ -1342,13 +1339,14 @@ windowMatches iid source window' = \case
         Window Timing.When (Window.WouldPassSkillTest who) ->
           matchWho iid who whoMatcher
         _ -> pure False
-  Matcher.InitiatedSkillTest whenMatcher whoMatcher _ valueMatcher ->
+  Matcher.InitiatedSkillTest whenMatcher whoMatcher skillTypeMatcher valueMatcher ->
     case window' of
-      Window t (Window.InitiatedSkillTest who _ difficulty)
-        | t == whenMatcher -> liftA2
-          (&&)
-          (matchWho iid who whoMatcher)
-          (gameValueMatches difficulty valueMatcher)
+      Window t (Window.InitiatedSkillTest who _ skillType difficulty)
+        | t == whenMatcher -> andM
+          [ matchWho iid who whoMatcher
+          , gameValueMatches difficulty valueMatcher
+          , pure $ skillTypeMatches skillType skillTypeMatcher
+          ]
       _ -> pure False
   Matcher.SkillTestEnded whenMatcher whoMatcher skillTestMatcher ->
     case window' of
@@ -1963,6 +1961,7 @@ skillTestMatches
   -> Matcher.SkillTestMatcher
   -> m Bool
 skillTestMatches iid source st = \case
+  Matcher.NotSkillTest matcher -> not <$> skillTestMatches iid source st matcher
   Matcher.AnySkillTest -> pure True
   Matcher.SkillTestWasFailed -> pure $ case skillTestResult st of
     FailedBy _ _ -> True
@@ -2087,6 +2086,12 @@ agendaMatches !agendaId !mtchr = member agendaId <$> select mtchr
 actionMatches :: Monad m => Action -> Matcher.ActionMatcher -> m Bool
 actionMatches _ Matcher.AnyAction = pure True
 actionMatches a (Matcher.ActionIs a') = pure $ a == a'
+
+skillTypeMatches :: SkillType -> Matcher.SkillTypeMatcher -> Bool
+skillTypeMatches st = \case
+  Matcher.AnySkillType -> True
+  Matcher.NotSkillType st' -> st /= st'
+  Matcher.IsSkillType st' -> st == st'
 
 enemyAttackMatches :: EnemyAttackType -> Matcher.EnemyAttackMatcher -> Bool
 enemyAttackMatches atkType = \case

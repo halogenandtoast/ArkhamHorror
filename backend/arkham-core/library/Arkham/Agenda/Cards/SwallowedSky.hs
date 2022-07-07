@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.SwallowedSky
-  ( SwallowedSky
+  ( SwallowedSky(..)
   , swallowedSky
   ) where
 

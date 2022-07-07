@@ -1,15 +1,18 @@
-module Arkham.Agenda.Cards.DeadOfNight where
+module Arkham.Agenda.Cards.DeadOfNight
+  ( DeadOfNight(..)
+  , deadOfNight
+  ) where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message

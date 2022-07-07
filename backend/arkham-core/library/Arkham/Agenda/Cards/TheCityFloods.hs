@@ -1,5 +1,5 @@
 module Arkham.Agenda.Cards.TheCityFloods
-  ( TheCityFloods
+  ( TheCityFloods(..)
   , theCityFloods
   ) where
 

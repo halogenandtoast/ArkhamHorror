@@ -8,6 +8,8 @@ import Arkham.Act.Sequence qualified as AS
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.RunMessage.Internal
 import Arkham.Cost
 import Arkham.Id
 import Arkham.Json
@@ -16,7 +18,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 
-class IsAct a
+class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ ActId, EntityAttrs a ~ ActAttrs) => IsAct a
 
 type ActCard a = CardBuilder (Int, ActId) a
 

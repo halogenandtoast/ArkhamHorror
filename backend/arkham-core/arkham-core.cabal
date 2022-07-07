@@ -192,6 +192,7 @@ library
       Arkham.Asset.Cards.AshleighClarke
       Arkham.Asset.Cards.Bandolier
       Arkham.Asset.Cards.BaseballBat
+      Arkham.Asset.Cards.Bauta
       Arkham.Asset.Cards.BearTrap
       Arkham.Asset.Cards.BeatCop
       Arkham.Asset.Cards.BeatCop2
@@ -248,6 +249,7 @@ library
       Arkham.Asset.Cards.FortyFiveAutomatic2
       Arkham.Asset.Cards.FortyOneDerringer
       Arkham.Asset.Cards.FortyOneDerringer2
+      Arkham.Asset.Cards.GildedVolto
       Arkham.Asset.Cards.GravediggersShovel
       Arkham.Asset.Cards.GrotesqueStatue4
       Arkham.Asset.Cards.Grounded1
@@ -306,6 +308,7 @@ library
       Arkham.Asset.Cards.MaskedCarnevaleGoer_21
       Arkham.Asset.Cards.MeatCleaver
       Arkham.Asset.Cards.MedicalTexts
+      Arkham.Asset.Cards.MedicoDellaPeste
       Arkham.Asset.Cards.MitchBrown
       Arkham.Asset.Cards.MonstrousTransformation
       Arkham.Asset.Cards.Moxie1
@@ -316,6 +319,7 @@ library
       Arkham.Asset.Cards.OldBookOfLore
       Arkham.Asset.Cards.OldKeyring
       Arkham.Asset.Cards.Painkillers
+      Arkham.Asset.Cards.Pantalone
       Arkham.Asset.Cards.Pathfinder1
       Arkham.Asset.Cards.PeterClover
       Arkham.Asset.Cards.PeterSylvestre
@@ -478,6 +482,7 @@ library
       Arkham.Effect.Effects.Fieldwork
       Arkham.Effect.Effects.FightOrFlight
       Arkham.Effect.Effects.FireExtinguisher1
+      Arkham.Effect.Effects.GildedVolto
       Arkham.Effect.Effects.Improvisation
       Arkham.Effect.Effects.JeremiahPierce
       Arkham.Effect.Effects.LeMarais218

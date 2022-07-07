@@ -7,6 +7,8 @@ import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasModifiersFor
+import Arkham.Classes.RunMessage.Internal
 import Arkham.Cost
 import Arkham.GameValue
 import Arkham.Id
@@ -23,7 +25,7 @@ import Arkham.Strategy
 import Arkham.Target
 import Arkham.Trait
 
-class IsEnemy a
+class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EnemyId, EntityAttrs a ~ EnemyAttrs) => IsEnemy a
 
 type EnemyCard a = CardBuilder EnemyId a
 

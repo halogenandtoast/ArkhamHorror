@@ -28,6 +28,11 @@ totalResourceCost (ResourceCost n) = n
 totalResourceCost (Costs xs) = sum $ map totalResourceCost xs
 totalResourceCost _ = 0
 
+totalResourcePayment :: Payment -> Int
+totalResourcePayment (ResourcePayment n) = n
+totalResourcePayment (Payments xs) = sum $ map totalResourcePayment xs
+totalResourcePayment _ = 0
+
 totalClueCost :: Cost -> Int
 totalClueCost (ClueCost n) = n
 totalClueCost (Costs xs) = sum $ map totalClueCost xs

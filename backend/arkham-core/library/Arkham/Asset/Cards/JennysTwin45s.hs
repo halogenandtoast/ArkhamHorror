@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
+import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
@@ -31,7 +32,8 @@ instance HasAbilities JennysTwin45s where
 
 instance RunMessage JennysTwin45s where
   runMessage msg a@(JennysTwin45s attrs) = case msg of
-    InvestigatorPlayDynamicAsset _ aid n | aid == assetId attrs ->
+    PaidForCardCost _ card payment | toCardId card == toCardId attrs -> do
+      let n = totalResourcePayment payment
       JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Ammo n)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ pushAll
       [ skillTestModifiers

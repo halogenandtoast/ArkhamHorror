@@ -358,7 +358,6 @@ data Message
   | InitiatePlayCardAs InvestigatorId CardId Card [Message] ChosenCardStrategy Bool
   | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
   | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
-  | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
   | CheckAdditionalActionCosts InvestigatorId Target Source Action [Message]
   | -- Maybe Target is handler for success
     Investigate InvestigatorId LocationId Source (Maybe Target) SkillType Bool
@@ -391,8 +390,6 @@ data Message
   | InvestigatorPlaceCluesOnLocation InvestigatorId Int
   | InvestigatorPlayAsset InvestigatorId AssetId
   | InvestigatorPlayedAsset InvestigatorId AssetId
-  | InvestigatorPlayDynamicAsset InvestigatorId AssetId Int
-  | InvestigatorPlayDynamicEvent InvestigatorId EventId Int
   | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target) [Window] Zone
   | InvestigatorResigned InvestigatorId
   | InvestigatorSpendClues InvestigatorId Int
@@ -427,9 +424,8 @@ data Message
   | PayAbilityCostFinished EffectId Source InvestigatorId
   | PaidAbilityCost InvestigatorId (Maybe Action) Payment
   | PayCardCost InvestigatorId Card
-  | PayDynamicCardCost InvestigatorId CardId Int [Message]
+  | PaidForCardCost InvestigatorId Card Payment
   | PayForCardAbility InvestigatorId Source [Window] Int Payment
-  | PayedForDynamicCard InvestigatorId CardId Int Bool
   | PerformEnemyAttack InvestigatorId EnemyId DamageStrategy EnemyAttackType
   | PlaceClues Target Int
   | PlaceCluesUpToClueValue LocationId Int
@@ -448,7 +444,6 @@ data Message
   | PlacedLocationDirection LocationId Direction LocationId
   | PlayCard InvestigatorId Card (Maybe Target) Bool
   | PlayFastEvent InvestigatorId CardId (Maybe Target) [Window]
-  | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
   | PlayedCard InvestigatorId Card
   | ResolvedCard InvestigatorId Card
   | PlayerWindow InvestigatorId [Message] Bool

@@ -134,8 +134,6 @@ instance RunMessage AssetAttrs where
             then foldl' applyModifier startingUses modifiers
             else assetUses
           )
-    InvestigatorPlayDynamicAsset iid aid _ | aid == assetId -> do
-      a <$ push (InvestigatorPlayAsset iid aid)
     TakeControlOfAsset iid aid | aid == assetId -> do
       push =<< checkWindows
         ((`Window` Window.TookControlOfAsset iid aid)

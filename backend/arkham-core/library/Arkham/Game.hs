@@ -2199,8 +2199,13 @@ createActiveCostForCard iid card = do
   modifiers'' <- getModifiers (InvestigatorSource iid) (CardTarget card)
   let allModifiers = modifiers' <> modifiers''
   resources <- getModifiedCardCost iid card
+  investigator' <- getInvestigator iid
   let
-    resourceCost = if resources == 0 then Cost.Free else Cost.ResourceCost resources
+    resourceCost = if resources == 0
+      then if isDynamic card
+              then Cost.UpTo (investigatorResources $ toAttrs investigator') (Cost.ResourceCost 1)
+              else Cost.Free
+      else Cost.ResourceCost resources
     additionalCosts = flip mapMaybe allModifiers $ \case
       AdditionalCost c -> Just c
       _ -> Nothing
@@ -2665,41 +2670,6 @@ runGameMessage msg g = case msg of
       PlayerCard pc -> push (ShuffleCardsIntoDeck iid [pc])
       EncounterCard _ -> error "Unhandled"
     pure $ g & entitiesL . enemiesL %~ deleteMap enemyId
-  PlayDynamicCard iid cardId n _mtarget False -> do
-    investigator' <- getInvestigator iid
-    let
-      card = fromJustNote "could not find card in hand"
-        $ find ((== cardId) . toCardId) (investigatorHand $ toAttrs investigator')
-    case card of
-      PlayerCard pc -> case toCardType pc of
-        PlayerTreacheryType -> error "unhandled"
-        AssetType -> do
-          let aid = AssetId cardId
-          asset <- runMessage
-            (SetOriginalCardCode $ pcOriginalCardCode pc)
-            (createAsset pc)
-          pushAll
-            [ PlayedCard iid card
-            , InvestigatorPlayDynamicAsset
-              iid
-              aid
-              n
-            , ResolvedCard iid card
-            ]
-          pure $ g & entitiesL . assetsL %~ insertMap aid asset
-        EventType -> do
-          event' <- runMessage
-            (SetOriginalCardCode $ pcOriginalCardCode pc)
-            (createEvent pc iid)
-          let eid = toId event'
-          pushAll
-            [ PlayedCard iid card
-            , InvestigatorPlayDynamicEvent iid eid n
-            , ResolvedCard iid card
-            ]
-          pure $ g & entitiesL . eventsL %~ insertMap eid event'
-        _ -> pure g
-      EncounterCard _ -> pure g
   PlayCard iid card _mtarget True -> do
     modifiers' <- getModifiers (InvestigatorSource iid) (CardIdTarget $ toCardId card)
     modifiers'' <- getModifiers (InvestigatorSource iid) (CardTarget card)

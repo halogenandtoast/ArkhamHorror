@@ -77,7 +77,7 @@ instance ToGameLoggerFormat Investigator where
   format = format . toAttrs
 
 instance FromJSON Investigator where
-  parseJSON v = flip (withObject "Location") v $ \o -> do
+  parseJSON v = flip (withObject "Investigator") v $ \o -> do
     cCode :: CardCode <- o .: "cardCode"
     case cCode of
       "01001" -> Investigator . RolandBanks <$> parseJSON v

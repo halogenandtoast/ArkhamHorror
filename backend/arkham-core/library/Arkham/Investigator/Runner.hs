@@ -1018,56 +1018,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAllCluesTo target | not (isTarget a target) -> do
     when (investigatorClues > 0) (push $ PlaceClues target investigatorClues)
     pure $ a & cluesL .~ 0
-  PayDynamicCardCost iid cardId _n beforePlayMessages | iid == investigatorId ->
-    a <$ push
-      (Ask iid $ ChooseDynamicCardAmounts
-        iid
-        cardId
-        (0, investigatorResources)
-        False
-        beforePlayMessages
-      )
-  PayedForDynamicCard iid cardId n False | iid == investigatorId -> do
-    push (PlayDynamicCard iid cardId n Nothing False)
-    pure $ a & resourcesL -~ n
-  InitiatePlayDynamicCard iid cardId n mtarget asAction
-    | iid == investigatorId -> do
-      let card = findCard cardId a
-      a <$ pushAll
-        [ CheckWindow [iid] [Window Timing.When (Window.PlayCard iid card)]
-        , PlayDynamicCard iid cardId n mtarget asAction
-        ]
-  PlayDynamicCard iid cardId _n _mtarget True | iid == investigatorId -> do
-    let
-      card = findCard cardId a
-      isFast = case card of
-        PlayerCard pc -> isJust (cdFastWindow $ toCardDef pc)
-        _ -> False
-      maction = case card of
-        PlayerCard pc -> cdAction (toCardDef pc)
-        _ -> Nothing
-      actionProvokesAttackOfOpportunities =
-        maction
-          `notElem` [ Just Action.Evade
-                    , Just Action.Parley
-                    , Just Action.Resign
-                    , Just Action.Fight
-                    ]
-      provokesAttackOfOpportunities = case card of
-        PlayerCard pc ->
-          actionProvokesAttackOfOpportunities
-            && DoesNotProvokeAttacksOfOpportunity
-            `notElem` cdAttackOfOpportunityModifiers (toCardDef pc)
-        _ -> actionProvokesAttackOfOpportunities
-      aooMessage =
-        [ CheckAttackOfOpportunity iid isFast | provokesAttackOfOpportunities ]
-    actionCost <- if isFast
-      then pure 0
-      else maybe (pure 1) (getActionCost a) maction
-    a <$ pushAll
-      [ TakeAction iid (Just Action.Play) (ActionCost actionCost)
-      , PayDynamicCardCost iid cardId 0 aooMessage
-      ]
   InitiatePlayCardAsChoose iid cardId choices msgs chosenCardStrategy asAction
     | iid == investigatorId -> do
       a <$ push
@@ -2064,12 +2014,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             <> [ InitiatePlayCard iid (toCardId c) Nothing usesAction
                | c <- playableCards
                , canAffordPlayCard || isFastCard c
-               , not (isDynamic c)
-               ]
-            <> [ InitiatePlayDynamicCard iid (toCardId c) 0 Nothing usesAction
-               | c <- playableCards
-               , canAffordPlayCard || isFastCard c
-               , isDynamic c
                ]
             <> [ChooseEndTurn iid]
             <> map (($ windows) . UseAbility iid) actions
@@ -2096,16 +2040,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                      Nothing
                      usesAction
                  | c <- playableCards
-                 , not (isDynamic c)
-                 ]
-              <> [ InitiatePlayDynamicCard
-                     investigatorId
-                     (toCardId c)
-                     0
-                     Nothing
-                     usesAction
-                 | c <- playableCards
-                 , isDynamic c
                  ]
               <> map (($ windows) . UseAbility investigatorId) actions
         a <$ unless

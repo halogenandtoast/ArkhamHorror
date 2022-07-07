@@ -21,8 +21,8 @@ import Arkham.Scenario.Attrs ( Field (..) )
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
@@ -62,7 +62,8 @@ costPaymentsL :: Lens' ActiveCost Payment
 costPaymentsL = lens activeCostPayments $ \m x -> m { activeCostPayments = x }
 
 costSealedTokensL :: Lens' ActiveCost [Token]
-costSealedTokensL = lens activeCostSealedTokens $ \m x -> m { activeCostSealedTokens = x }
+costSealedTokensL =
+  lens activeCostSealedTokens $ \m x -> m { activeCostSealedTokens = x }
 
 activeCostPaid :: ActiveCost -> Bool
 activeCostPaid = (== Free) . activeCostCosts
@@ -291,7 +292,12 @@ instance RunMessage ActiveCost where
           pure c
         SealTokenCost token -> do
           push $ SealToken token
-          pure $ c & costPaymentsL <>~ SealTokenPayment token & costSealedTokensL %~ (token :)
+          pure
+            $ c
+            & costPaymentsL
+            <>~ SealTokenPayment token
+            & costSealedTokensL
+            %~ (token :)
         DiscardCost target -> do
           pushAll [DiscardedCost target, Discard target]
           withPayment $ DiscardPayment [target]
@@ -546,6 +552,11 @@ instance RunMessage ActiveCost where
             <> [afterWindowMsgs, FinishAction]
         ForCard card -> do
           let iid = activeCostInvestigator c
-          pushAll $ [PlayCard iid card Nothing False] <> [SealedToken token card | token <- activeCostSealedTokens c] <> [FinishAction]
+          pushAll
+            $ [ PlayCard iid card Nothing False
+              , PaidForCardCost iid card (activeCostPayments c)
+              ]
+            <> [ SealedToken token card | token <- activeCostSealedTokens c ]
+            <> [FinishAction]
       pure c
     _ -> pure c

@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Classes
+import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
@@ -27,7 +28,8 @@ aChanceEncounter2 = event AChanceEncounter2 Cards.aChanceEncounter2
 
 instance RunMessage AChanceEncounter2 where
   runMessage msg e@(AChanceEncounter2 attrs) = case msg of
-    InvestigatorPlayDynamicEvent iid eid payment | eid == toId attrs -> do
+    PaidForCardCost iid card payment | toCardId card == toCardId attrs -> do
+      let resources = totalResourcePayment payment
       investigatorIds <-
         filterM
             (fmap (notElem CardsCannotLeaveYourDiscardPile)
@@ -44,7 +46,7 @@ instance RunMessage AChanceEncounter2 where
         filteredDiscards = filter
           (and . sequence
             [ elem Ally . toTraits
-            , (== payment) . maybe 0 toPrintedCost . cdCost . toCardDef
+            , (== resources) . maybe 0 toPrintedCost . cdCost . toCardDef
             ]
           )
           discards
@@ -59,11 +61,11 @@ instance RunMessage AChanceEncounter2 where
         , chooseOne
           iid
           [ TargetLabel
-              (CardIdTarget $ toCardId card)
+              (CardIdTarget $ toCardId card')
               [ PutCardIntoPlay iid card Nothing
-              , RemoveFromDiscard iid (toCardId card)
+              , RemoveFromDiscard iid (toCardId card')
               ]
-          | card <- filteredDiscards
+          | card' <- filteredDiscards
           ]
         , UnfocusCards
         , Discard (toTarget attrs)

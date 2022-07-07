@@ -2,7 +2,6 @@ module Arkham.Question where
 
 import Arkham.Prelude
 
-import Arkham.Card.Id
 import Arkham.Id
 import Arkham.Target
 
@@ -20,7 +19,6 @@ data Question msg
       -- the specific investigator
       ChoosePaymentAmounts Text (Maybe Int) [(InvestigatorId, (Int, Int), msg)]
     | ChooseAmounts Text Int [(Text, (Int, Int))] Target
-    | ChooseDynamicCardAmounts InvestigatorId CardId (Int, Int) Bool [msg] -- (Int, Int) is (min, max)
     | ChooseUpgradeDeck
     deriving stock (Show, Eq, Generic)
     deriving anyclass (FromJSON, ToJSON)

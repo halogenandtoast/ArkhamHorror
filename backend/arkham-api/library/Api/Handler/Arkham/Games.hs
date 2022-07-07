@@ -463,10 +463,6 @@ handleAnswer Game {..} investigatorId = \case
                 replicate n (HashMap.findWithDefault Noop iid costMap)
               )
             $ HashMap.toList (parAmounts response)
-      Just (ChooseDynamicCardAmounts iid cardId _ isFast beforePlayMessages) ->
-        let amount = HashMap.findWithDefault 0 iid (parAmounts response)
-        in beforePlayMessages <> [PayedForDynamicCard iid cardId amount isFast]
-      _ -> error "Wrong question type"
   Answer response -> case HashMap.lookup investigatorId gameQuestion of
     Just (ChooseOne qs) -> case qs !!? qrChoice response of
       Nothing -> [Ask investigatorId $ ChooseOne qs]

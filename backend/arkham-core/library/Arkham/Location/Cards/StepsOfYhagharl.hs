@@ -8,15 +8,15 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards ( stepsOfYhagharl )
+import qualified Arkham.Location.Cards as Cards (stepsOfYhagharl)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.Scenario.Attrs (Field(..))
 import Arkham.SkillType
 import Arkham.Target
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 import Arkham.Trait
 
 newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
@@ -58,15 +58,14 @@ instance RunMessage StepsOfYhagharl where
       pushAll revelationMsgs
       StepsOfYhagharl <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      l <$ push
-        (BeginSkillTest
-          iid
-          source
-          (InvestigatorTarget iid)
-          Nothing
-          SkillWillpower
-          2
-        )
+      push $ BeginSkillTest
+        iid
+        source
+        (InvestigatorTarget iid)
+        Nothing
+        SkillWillpower
+        2
+      pure l
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         replaceMessageMatching

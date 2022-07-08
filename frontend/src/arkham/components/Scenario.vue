@@ -36,7 +36,8 @@ function handleConnections(investigatorId: string, game: Game) {
   const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
     const { id: div1Id } = div1.dataset
     const { id: div2Id } = div2.dataset
-    const { connectedLocations, contents: investigator } = game.investigators[investigatorId]
+    const investigator = game.investigators[investigatorId]
+    const { connectedLocations } = investigator
     if(div1Id && div2Id) {
       const [left, right] = [div1Id, div2Id].sort()
       const activeLine = (div1Id == investigator.location && connectedLocations.includes(div2Id)) || (div2Id == investigator.location && connectedLocations.includes(div1Id))

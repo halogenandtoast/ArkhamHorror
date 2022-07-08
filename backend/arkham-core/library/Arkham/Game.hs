@@ -184,15 +184,6 @@ $(deriveJSON defaultOptions ''Game)
 
 makeLensesWith suffixedFields ''Game
 
-
--- the issue is the following we want GameT
--- which has GameEnv as the environment
--- GameEnv contains Game
--- Game references entities like Investigator
--- Which references every Investigator
--- which references InvestigatorAttrs
--- All of which now need to know about GameT
-
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
 
@@ -2081,97 +2072,92 @@ runMessages
   => Maybe (Message -> IO ())
   -> m ()
 runMessages mLogger = do
+  queueRef <- view messageQueue
   gameRef <- view gameRefL
   g <- liftIO $ readIORef gameRef
-
-  queueRef <- view messageQueue
 
   liftIO $ whenM
     ((== Just "2") <$> lookupEnv "DEBUG")
     (readIORef queueRef >>= pPrint >> putStrLn "\n")
 
-  if g ^. gameStateL /= IsActive
-    then toGameEnv >>= flip
-      runGameEnvT
-      (toExternalGame g mempty >>= atomicWriteIORef gameRef)
-    else do
-      mmsg <- popMessage
-      case mmsg of
-        Nothing -> case gamePhase g of
-          CampaignPhase -> pure ()
-          ResolutionPhase -> pure ()
-          MythosPhase -> pure ()
-          EnemyPhase -> pure ()
-          UpkeepPhase -> pure ()
-          InvestigationPhase -> do
-            gameEnv <- toGameEnv
-            mTurnInvestigator <- runGameEnvT gameEnv $ maybe (pure Nothing) (fmap Just . getInvestigator) =<< selectOne TurnInvestigator
-            if maybe
-                True
-                (or . sequence [investigatorEndedTurn, investigatorResigned, investigatorDefeated] . toAttrs)
-                mTurnInvestigator
-              then do
-                playingInvestigators <- runGameEnvT gameEnv $
-                  filterM
-                  (fmap
-                      (not
-                      . (or . sequence [investigatorEndedTurn, investigatorResigned, investigatorDefeated] . toAttrs
-                        )
+  unless (g ^. gameStateL /= IsActive) $ do
+    mmsg <- popMessage
+    case mmsg of
+      Nothing -> case gamePhase g of
+        CampaignPhase -> pure ()
+        ResolutionPhase -> pure ()
+        MythosPhase -> pure ()
+        EnemyPhase -> pure ()
+        UpkeepPhase -> pure ()
+        InvestigationPhase -> do
+          gameEnv <- toGameEnv
+          mTurnInvestigator <- runGameEnvT gameEnv $ maybe (pure Nothing) (fmap Just . getInvestigator) =<< selectOne TurnInvestigator
+          if maybe
+              True
+              (or . sequence [investigatorEndedTurn, investigatorResigned, investigatorDefeated] . toAttrs)
+              mTurnInvestigator
+            then do
+              playingInvestigators <- runGameEnvT gameEnv $
+                filterM
+                (fmap
+                    (not
+                    . (or . sequence [investigatorEndedTurn, investigatorResigned, investigatorDefeated] . toAttrs
                       )
-                  . getInvestigator
-                  )
-                  (gamePlayerOrder g)
-                case playingInvestigators of
-                  [] -> do
-                    pushEnd EndInvestigation
-                    runMessages mLogger
-                  [x] -> do
-                    push (ChoosePlayer x SetTurnPlayer)
-                    runMessages mLogger
-                  xs -> do
-                    push
-                      (chooseOne
-                        (g ^. leadInvestigatorIdL)
-                        [ ChoosePlayer iid SetTurnPlayer | iid <- xs ]
-                      )
-                    runMessages mLogger
-              else do
-                let
-                  turnPlayer = fromJustNote "verified above" mTurnInvestigator
-                pushAllEnd [PlayerWindow (toId turnPlayer) [] False]
-                  >> runMessages mLogger
-        Just msg -> do
-          liftIO $ whenM
-            ((== Just "1") <$> lookupEnv "DEBUG")
-            (pPrint msg >> putStrLn "\n")
-
-          liftIO $ maybe (pure ()) ($ msg) mLogger
-          case msg of
-            Ask iid q -> do
-              toGameEnv >>= flip
-                runGameEnvT
-                (toExternalGame
-                    (g & activeInvestigatorIdL .~ iid)
-                    (singletonMap iid q)
-                >>= atomicWriteIORef gameRef
+                    )
+                . getInvestigator
                 )
-            AskMap askMap -> do
-              toGameEnv >>= flip
-                runGameEnvT
-                (toExternalGame g askMap >>= atomicWriteIORef gameRef)
-            _ -> do
-              -- Hidden Library handling
-              -- > While an enemy is moving, Hidden Library gains the Passageway trait.
-              -- Therefor we must track the "while" aspect
+                (gamePlayerOrder g)
+              case playingInvestigators of
+                [] -> do
+                  pushEnd EndInvestigation
+                  runMessages mLogger
+                [x] -> do
+                  push (ChoosePlayer x SetTurnPlayer)
+                  runMessages mLogger
+                xs -> do
+                  push
+                    (chooseOne
+                      (g ^. leadInvestigatorIdL)
+                      [ ChoosePlayer iid SetTurnPlayer | iid <- xs ]
+                    )
+                  runMessages mLogger
+            else do
               let
-                g' = case msg of
-                  HunterMove eid -> g & enemyMovingL ?~ eid
-                  WillMoveEnemy eid _ -> g & enemyMovingL ?~ eid
-                  _ -> g
-              atomicWriteIORef gameRef g'
-              g'' <- toGameEnv >>= flip runGameEnvT (runMessage msg g')
-              atomicWriteIORef gameRef g''
-              runMessages mLogger
+                turnPlayer = fromJustNote "verified above" mTurnInvestigator
+              pushAllEnd [PlayerWindow (toId turnPlayer) [] False]
+                >> runMessages mLogger
+      Just msg -> do
+        liftIO $ whenM
+          ((== Just "1") <$> lookupEnv "DEBUG")
+          (pPrint msg >> putStrLn "\n")
+
+        liftIO $ maybe (pure ()) ($ msg) mLogger
+        case msg of
+          Ask iid q -> do
+            toGameEnv >>= flip
+              runGameEnvT
+              (toExternalGame
+                  (g & activeInvestigatorIdL .~ iid)
+                  (singletonMap iid q)
+              >>= atomicWriteIORef gameRef
+              )
+          AskMap askMap -> do
+            toGameEnv >>= flip
+              runGameEnvT
+              (toExternalGame g askMap >>= atomicWriteIORef gameRef)
+          _ -> do
+            -- Hidden Library handling
+            -- > While an enemy is moving, Hidden Library gains the Passageway trait.
+            -- Therefor we must track the "while" aspect
+            let
+              g' = case msg of
+                HunterMove eid -> g & enemyMovingL ?~ eid
+                WillMoveEnemy eid _ -> g & enemyMovingL ?~ eid
+                _ -> g
+            atomicWriteIORef gameRef g'
+            g'' <- toGameEnv >>= flip runGameEnvT (runMessage msg g')
+            atomicWriteIORef gameRef g''
+            runMessages mLogger
 
 runPreGameMessage
   :: Message -> Game -> GameT Game

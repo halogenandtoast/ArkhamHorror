@@ -1099,6 +1099,7 @@ library
       Arkham.ModifierData
       Arkham.Name
       Arkham.Phase
+      Arkham.Placement
       Arkham.PlayerCard
       Arkham.Prelude
       Arkham.Projection

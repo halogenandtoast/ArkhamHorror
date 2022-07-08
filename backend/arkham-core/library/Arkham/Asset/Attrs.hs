@@ -14,6 +14,7 @@ import Arkham.ClassSymbol
 import Arkham.Id
 import Arkham.Json
 import Arkham.Name
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Slot
 import Arkham.Source
@@ -53,6 +54,7 @@ data instance Field AssetAttrs :: Type -> Type where
   AssetCardCode :: Field AssetAttrs CardCode
   AssetSlots :: Field AssetAttrs [SlotType]
   AssetSealedTokens :: Field AssetAttrs [Token]
+  AssetPlacement :: Field AssetAttrs Placement
   -- virtual
   AssetClasses :: Field AssetAttrs (HashSet ClassSymbol)
   AssetTraits :: Field AssetAttrs (HashSet Trait)
@@ -64,10 +66,8 @@ data AssetAttrs = AssetAttrs
   { assetId :: AssetId
   , assetCardCode :: CardCode
   , assetOriginalCardCode :: CardCode
+  , assetPlacement :: Placement
   , assetOwner :: Maybe InvestigatorId
-  , assetController :: Maybe InvestigatorId
-  , assetLocation :: Maybe LocationId
-  , assetEnemy :: Maybe EnemyId
   , assetSlots :: [SlotType]
   , assetHealth :: Maybe Int
   , assetSanity :: Maybe Int
@@ -126,17 +126,8 @@ usesL = lens assetUses $ \m x -> m {assetUses = x}
 damageL :: Lens' AssetAttrs Int
 damageL = lens assetDamage $ \m x -> m {assetDamage = x}
 
-locationL :: Lens' AssetAttrs (Maybe LocationId)
-locationL = lens assetLocation $ \m x -> m {assetLocation = x}
-
-enemyL :: Lens' AssetAttrs (Maybe EnemyId)
-enemyL = lens assetEnemy $ \m x -> m {assetEnemy = x}
-
 ownerL :: Lens' AssetAttrs (Maybe InvestigatorId)
 ownerL = lens assetOwner $ \m x -> m {assetOwner = x}
-
-controllerL :: Lens' AssetAttrs (Maybe InvestigatorId)
-controllerL = lens assetController $ \m x -> m {assetController = x}
 
 exhaustedL :: Lens' AssetAttrs Bool
 exhaustedL = lens assetExhausted $ \m x -> m {assetExhausted = x}
@@ -204,9 +195,7 @@ assetWith f cardDef g =
             , assetCardCode = toCardCode cardDef
             , assetOriginalCardCode = toCardCode cardDef
             , assetOwner = Nothing
-            , assetController = Nothing
-            , assetLocation = Nothing
-            , assetEnemy = Nothing
+            , assetPlacement = Unplaced
             , assetSlots = cdSlots cardDef
             , assetHealth = Nothing
             , assetSanity = Nothing
@@ -248,7 +237,9 @@ instance SourceEntity AssetAttrs where
   isSource _ _ = False
 
 controlledBy :: AssetAttrs -> InvestigatorId -> Bool
-controlledBy AssetAttrs {..} = (== assetController) . Just
+controlledBy AssetAttrs {..} iid = case assetPlacement of
+  InPlayArea iid' -> iid == iid'
+  _ -> False
 
 whenControlledBy ::
   Applicative m => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
@@ -258,7 +249,9 @@ getOwner :: HasCallStack => AssetAttrs -> InvestigatorId
 getOwner = fromJustNote "asset must be owned" . view ownerL
 
 getController :: HasCallStack => AssetAttrs -> InvestigatorId
-getController = fromJustNote "asset must be owned" . view controllerL
+getController attrs = case assetPlacement attrs of
+  InPlayArea iid -> iid
+  _ -> error "asset must be controlled"
 
 defeated :: AssetAttrs -> Bool
 defeated AssetAttrs {..} =

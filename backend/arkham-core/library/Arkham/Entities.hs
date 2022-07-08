@@ -5,8 +5,10 @@ import Arkham.Prelude
 import Arkham.Act
 import Arkham.Agenda
 import Arkham.Asset
+import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.RunMessage
+import Arkham.Classes.HasAbilities
 import Arkham.Effect
 import Arkham.Enemy
 import Arkham.Event
@@ -15,6 +17,24 @@ import Arkham.Json
 import Arkham.Location
 import Arkham.Skill
 import Arkham.Treachery
+
+-- Entity id generation should be random, so even though this is pure now
+-- this is using a Monad
+addEntity :: Monad m => Investigator -> Entities -> Card -> m Entities
+addEntity i e card = case card of
+  PlayerCard pc -> case toCardType pc of
+    EventType -> do
+      let event' = createEvent card (toId i)
+      pure $ e & eventsL %~ insertEntity event'
+    AssetType -> do
+      let asset = createAsset card
+      pure $ e & assetsL %~ insertMap (toId asset) asset
+    _ -> error "Unhandled"
+  EncounterCard ec -> case toCardType ec of
+    TreacheryType -> do
+      let treachery = createTreachery card (toId i)
+      pure $ e & treacheriesL %~ insertMap (toId treachery) treachery
+    _ -> error "Unhandled"
 
 type EntityMap a = HashMap (EntityId a) a
 
@@ -111,3 +131,16 @@ instance Semigroup Entities where
     , entitiesEffects = entitiesEffects a <> entitiesEffects b
     , entitiesSkills = entitiesSkills a <> entitiesSkills b
     }
+
+instance HasAbilities Entities where
+  getAbilities Entities {..} =
+    concatMap getAbilities (toList entitiesLocations)
+    <> concatMap getAbilities (toList entitiesInvestigators)
+    <> concatMap getAbilities (toList entitiesEnemies)
+    <> concatMap getAbilities (toList entitiesAssets)
+    <> concatMap getAbilities (toList entitiesActs)
+    <> concatMap getAbilities (toList entitiesAgendas)
+    <> concatMap getAbilities (toList entitiesTreacheries)
+    <> concatMap getAbilities (toList entitiesEvents)
+    <> concatMap getAbilities (toList entitiesEffects)
+    <> concatMap getAbilities (toList entitiesSkills)

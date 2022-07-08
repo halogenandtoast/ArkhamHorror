@@ -3465,24 +3465,6 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . treacheriesL %~ deleteMap tid
   _ -> pure g
 
--- Entity id generation should be random, so even though this is pure now
--- this is using a Monad
-addEntity :: Monad m => Investigator -> Entities -> Card -> m Entities
-addEntity i e card = case card of
-  PlayerCard pc -> case toCardType pc of
-    EventType -> do
-      let event' = createEvent card (toId i)
-      pure $ e & eventsL %~ insertEntity event'
-    AssetType -> do
-      let asset = createAsset card
-      pure $ e & assetsL %~ insertMap (toId asset) asset
-    _ -> error "Unhandled"
-  EncounterCard ec -> case toCardType ec of
-    TreacheryType -> do
-      let treachery = createTreachery card (toId i)
-      pure $ e & treacheriesL %~ insertMap (toId treachery) treachery
-    _ -> error "Unhandled"
-
 -- TODO: Clean this up, the found of stuff is a bit messy
 preloadEntities :: Game -> GameT Game
 preloadEntities g = do
@@ -3536,16 +3518,3 @@ instance HasAbilities Game where
     <> getAbilities (gameInSearchEntities g)
     <> concatMap getAbilities (toList $ gameInHandEntities g)
     <> concatMap getAbilities (toList $ gameInDiscardEntities g)
-
-instance HasAbilities Entities where
-  getAbilities Entities {..} =
-    concatMap getAbilities (toList entitiesLocations)
-    <> concatMap getAbilities (toList entitiesInvestigators)
-    <> concatMap getAbilities (toList entitiesEnemies)
-    <> concatMap getAbilities (toList entitiesAssets)
-    <> concatMap getAbilities (toList entitiesActs)
-    <> concatMap getAbilities (toList entitiesAgendas)
-    <> concatMap getAbilities (toList entitiesTreacheries)
-    <> concatMap getAbilities (toList entitiesEvents)
-    <> concatMap getAbilities (toList entitiesEffects)
-    <> concatMap getAbilities (toList entitiesSkills)

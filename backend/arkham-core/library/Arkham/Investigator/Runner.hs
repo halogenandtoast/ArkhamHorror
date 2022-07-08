@@ -1653,7 +1653,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                     windows
           a <$ push
             (chooseOne iid
-            $ [ Run
+            $ [ TargetLabel (CardIdTarget $ toCardId c)
                   $ if isJust (cdFastWindow $ toCardDef c)
                       && toCardType c
                       == EventType

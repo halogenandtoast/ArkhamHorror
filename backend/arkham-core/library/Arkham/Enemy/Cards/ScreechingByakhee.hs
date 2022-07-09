@@ -11,7 +11,6 @@ import Arkham.Enemy.Runner hiding ( EnemyEvade )
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
-import Arkham.Projection
 
 newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
   deriving anyclass IsEnemy
@@ -28,10 +27,8 @@ screechingByakhee = enemyWith
 instance HasModifiersFor ScreechingByakhee where
   getModifiersFor _ target (ScreechingByakhee attrs) | isTarget attrs target =
     do
-      sanities <- traverse
-        (field InvestigatorRemainingSanity)
-        (setToList $ enemyEngagedInvestigators attrs)
-      pure $ toModifiers attrs $ if any (<= 4) sanities
+      minSanity <- selectAgg Min InvestigatorRemainingSanity $ investigatorEngagedWith (toId attrs)
+      pure $ toModifiers attrs $ if minSanity <= 4
         then [Modifier.EnemyFight 1, Modifier.EnemyEvade 1]
         else []
   getModifiersFor _ _ _ = pure []

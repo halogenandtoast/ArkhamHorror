@@ -28,8 +28,9 @@ carnevaleSentinel =
 instance HasModifiersFor CarnevaleSentinel where
   getModifiersFor _ (AssetTarget aid) (CarnevaleSentinel attrs) = do
     mlid <- field AssetLocation aid
+    enemyLocation <- field EnemyLocation (toId attrs)
     case mlid of
-      Just lid | Just lid == enemyLocation attrs -> do
+      Just lid | Just lid == enemyLocation -> do
         name <- field AssetName aid
         pure $ toModifiers
           attrs

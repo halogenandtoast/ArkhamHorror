@@ -32,22 +32,18 @@ creatureOutOfDemhe = enemyWith
 instance HasAbilities CreatureOutOfDemhe where
   getAbilities (CreatureOutOfDemhe a) =
     withBaseAbilities a
-      $ let
-          matcher = case enemyLocation a of
-            Nothing -> Nowhere
-            Just lid -> LocationMatchAny
-              [LocationWithId lid, ConnectedFrom (LocationWithId lid)]
-        in
-          [ mkAbility a 1 $ ForcedAbility $ Matcher.FlipLocation
-              Timing.When
-              Anyone
-              matcher
-          ]
+      $ [ mkAbility a 1 $ ForcedAbility $ Matcher.FlipLocation
+            Timing.When
+            Anyone
+            (LocationMatchAny [LocationOfThis, ConnectedFrom LocationOfThis])
+        ]
 
 instance RunMessage CreatureOutOfDemhe where
   runMessage msg e@(CreatureOutOfDemhe attrs) = case msg of
-    UseCardAbility _ source [Window _ (Window.FlipLocation _ lid)] 1 _ | isSource attrs source -> do
-      iids <- selectList $ InvestigatorAt $ LocationWithId lid
-      pushAll [InitiateEnemyAttack iid (toId attrs) RegularAttack | iid <- iids]
-      pure e
+    UseCardAbility _ source [Window _ (Window.FlipLocation _ lid)] 1 _
+      | isSource attrs source -> do
+        iids <- selectList $ InvestigatorAt $ LocationWithId lid
+        pushAll
+          [ InitiateEnemyAttack iid (toId attrs) RegularAttack | iid <- iids ]
+        pure e
     _ -> CreatureOutOfDemhe <$> runMessage msg attrs

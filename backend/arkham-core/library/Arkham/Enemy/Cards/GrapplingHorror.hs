@@ -5,9 +5,10 @@ module Arkham.Enemy.Cards.GrapplingHorror
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Matcher
 import Arkham.Target
 
 newtype GrapplingHorror = GrapplingHorror EnemyAttrs
@@ -20,9 +21,9 @@ grapplingHorror =
 
 instance HasModifiersFor GrapplingHorror where
   getModifiersFor _ (InvestigatorTarget iid) (GrapplingHorror a@EnemyAttrs {..})
-    = if iid `elem` enemyEngagedInvestigators
-      then pure $ toModifiers a [CannotMove]
-      else pure []
+    = do
+      cannotMove <- iid <=~> investigatorEngagedWith enemyId
+      pure $ toModifiers a [ CannotMove | cannotMove ]
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage GrapplingHorror where

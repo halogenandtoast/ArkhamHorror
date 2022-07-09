@@ -41,11 +41,11 @@ instance HasAbilities InterstellarTraveler where
 
 instance RunMessage InterstellarTraveler where
   runMessage msg e@(InterstellarTraveler attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      case enemyLocation attrs of
-        Nothing -> pure e
-        Just loc -> do
-          clueCount <- field LocationClues loc
-          push (PlaceDoom (toTarget attrs) 1)
-          e <$ when (clueCount > 0) (push $ RemoveClues (LocationTarget loc) 1)
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      enemyLocation <- field EnemyLocation (toId attrs)
+      for_ enemyLocation $ \loc -> do
+        clueCount <- field LocationClues loc
+        push (PlaceDoom (toTarget attrs) 1)
+        when (clueCount > 0) (push $ RemoveClues (LocationTarget loc) 1)
+      pure e
     _ -> InterstellarTraveler <$> runMessage msg attrs

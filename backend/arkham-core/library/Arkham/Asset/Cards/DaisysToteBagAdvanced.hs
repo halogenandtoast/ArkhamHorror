@@ -28,7 +28,7 @@ daisysToteBagAdvanced = asset DaisysToteBagAdvanced Cards.daisysToteBagAdvanced
 
 instance HasAbilities DaisysToteBagAdvanced where
   getAbilities (DaisysToteBagAdvanced a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
             (Matcher.PlayCard
               Timing.When

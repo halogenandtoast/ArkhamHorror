@@ -23,7 +23,7 @@ scrying = asset Scrying Cards.scrying
 
 instance HasAbilities Scrying where
   getAbilities (Scrying a) =
-    [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
+    [ restrictedAbility a 1 ControlsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1, ExhaustCost $ toTarget a]
     ]
 

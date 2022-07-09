@@ -28,7 +28,7 @@ instance HasAbilities PowderOfIbnGhazi where
     [ restrictedAbility
         x
         1
-        (OwnsThis <> CluesOnThis (GreaterThan $ Static 0) <> EnemyCriteria
+        (ControlsThis <> CluesOnThis (GreaterThan $ Static 0) <> EnemyCriteria
           (EnemyExists
           $ ExhaustedEnemy
           <> EnemyAt YourLocation

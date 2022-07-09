@@ -33,7 +33,7 @@ instance HasAbilities JoeyTheRatVigil where
     [ restrictedAbility
         x
         1
-        (OwnsThis <> PlayableCardExists
+        (ControlsThis <> PlayableCardExists
           (InHandOf You <> BasicCardMatch (CardWithTrait Item))
         )
         (FastAbility $ ResourceCost 1)

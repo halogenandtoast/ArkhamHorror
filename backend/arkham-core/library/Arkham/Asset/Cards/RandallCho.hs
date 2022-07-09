@@ -28,7 +28,7 @@ randallCho = ally RandallCho Cards.randallCho (1, 3)
 
 instance HasAbilities RandallCho where
   getAbilities (RandallCho x) =
-    [ restrictedAbility x 1 OwnsThis
+    [ restrictedAbility x 1 ControlsThis
         $ ReactionAbility
             (AssetEntersPlay Timing.After $ AssetWithId $ toId x)
             Free

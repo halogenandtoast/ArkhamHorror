@@ -28,7 +28,7 @@ instance HasModifiersFor LaboratoryAssistant where
 
 instance HasAbilities LaboratoryAssistant where
   getAbilities (LaboratoryAssistant x) =
-    [ restrictedAbility x 1 OwnsThis
+    [ restrictedAbility x 1 ControlsThis
         $ ReactionAbility
             (AssetEntersPlay Timing.When (AssetWithId $ toId x))
             Free

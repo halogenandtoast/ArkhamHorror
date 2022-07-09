@@ -19,6 +19,7 @@ import Arkham.Json
 import Arkham.Enemy.Cards
 import Arkham.Modifier (Modifier)
 import Arkham.Name
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Strategy
@@ -45,20 +46,18 @@ data instance Field EnemyAttrs :: Type -> Type where
   EnemyCard :: Field EnemyAttrs Card
   EnemyCardCode :: Field EnemyAttrs CardCode
   EnemyLocation :: Field EnemyAttrs (Maybe LocationId)
+  EnemyPlacement :: Field EnemyAttrs Placement
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
   , enemyCardCode :: CardCode
-  , enemyEngagedInvestigators :: HashSet InvestigatorId
-  , enemyLocation :: Maybe LocationId
+  , enemyPlacement :: Placement
   , enemyFight :: Int
   , enemyHealth :: GameValue Int
   , enemyEvade :: Int
   , enemyDamage :: Int
   , enemyHealthDamage :: Int
   , enemySanityDamage :: Int
-  , enemyTreacheries :: HashSet TreacheryId
-  , enemyAssets :: HashSet AssetId
   , enemyPrey :: PreyMatcher
   , enemyModifiers :: HashMap Source [Modifier]
   , enemyExhausted :: Bool
@@ -91,6 +90,9 @@ surgeIfUnableToSpawnL :: Lens' EnemyAttrs Bool
 surgeIfUnableToSpawnL =
   lens enemySurgeIfUnabledToSpawn $ \m x -> m { enemySurgeIfUnabledToSpawn = x }
 
+placementL :: Lens' EnemyAttrs Placement
+placementL = lens enemyPlacement $ \m x -> m { enemyPlacement = x }
+
 healthDamageL :: Lens' EnemyAttrs Int
 healthDamageL = lens enemyHealthDamage $ \m x -> m { enemyHealthDamage = x }
 
@@ -106,9 +108,6 @@ fightL = lens enemyFight $ \m x -> m { enemyFight = x }
 evadeL :: Lens' EnemyAttrs Int
 evadeL = lens enemyEvade $ \m x -> m { enemyEvade = x }
 
-locationL :: Lens' EnemyAttrs (Maybe LocationId)
-locationL = lens enemyLocation $ \m x -> m { enemyLocation = x }
-
 asSelfLocationL :: Lens' EnemyAttrs (Maybe Text)
 asSelfLocationL =
   lens enemyAsSelfLocation $ \m x -> m { enemyAsSelfLocation = x }
@@ -116,18 +115,8 @@ asSelfLocationL =
 preyL :: Lens' EnemyAttrs PreyMatcher
 preyL = lens enemyPrey $ \m x -> m { enemyPrey = x }
 
-treacheriesL :: Lens' EnemyAttrs (HashSet TreacheryId)
-treacheriesL = lens enemyTreacheries $ \m x -> m { enemyTreacheries = x }
-
-assetsL :: Lens' EnemyAttrs (HashSet AssetId)
-assetsL = lens enemyAssets $ \m x -> m { enemyAssets = x }
-
 damageL :: Lens' EnemyAttrs Int
 damageL = lens enemyDamage $ \m x -> m { enemyDamage = x }
-
-engagedInvestigatorsL :: Lens' EnemyAttrs (HashSet InvestigatorId)
-engagedInvestigatorsL =
-  lens enemyEngagedInvestigators $ \m x -> m { enemyEngagedInvestigators = x }
 
 exhaustedL :: Lens' EnemyAttrs Bool
 exhaustedL = lens enemyExhausted $ \m x -> m { enemyExhausted = x }
@@ -181,16 +170,13 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
     , cbCardBuilder = \eid -> f . g $ EnemyAttrs
       { enemyId = eid
       , enemyCardCode = toCardCode cardDef
-      , enemyEngagedInvestigators = mempty
-      , enemyLocation = Nothing
+      , enemyPlacement = Unplaced
       , enemyFight = fight
       , enemyHealth = health
       , enemyEvade = evade
       , enemyDamage = 0
       , enemyHealthDamage = healthDamage
       , enemySanityDamage = sanityDamage
-      , enemyTreacheries = mempty
-      , enemyAssets = mempty
       , enemyPrey = Prey Anyone
       , enemyModifiers = mempty
       , enemyExhausted = False

@@ -28,12 +28,12 @@ instance HasAbilities SpiritAthame1 where
     [ restrictedAbility
         x
         1
-        (OwnsThis
+        (ControlsThis
         <> DuringSkillTest (SkillTestSourceMatches $ SourceWithTrait Spell)
         )
       $ FastAbility
       $ ExhaustCost (toTarget x)
-    , restrictedAbility x 2 OwnsThis $ ActionAbility
+    , restrictedAbility x 2 ControlsThis $ ActionAbility
       (Just Action.Fight)
       (Costs [ActionCost 1, ExhaustCost (toTarget x)])
     ]

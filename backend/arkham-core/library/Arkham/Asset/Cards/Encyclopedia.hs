@@ -25,7 +25,7 @@ encyclopedia = asset Encyclopedia Cards.encyclopedia
 
 instance HasAbilities Encyclopedia where
   getAbilities (Encyclopedia a) =
-    [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
+    [ restrictedAbility a 1 ControlsThis $ ActionAbility Nothing $ Costs
         [ ActionCost 1
         , ExhaustCost (toTarget a)
         , UseCost (AssetWithId $ toId a) Secret 1

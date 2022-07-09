@@ -22,7 +22,7 @@ firstAid = assetWith FirstAid Cards.firstAid (discardWhenNoUsesL .~ True)
 
 instance HasAbilities FirstAid where
   getAbilities (FirstAid x) =
-    [ restrictedAbility x 1 OwnsThis $ ActionAbility Nothing $ Costs
+    [ restrictedAbility x 1 ControlsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
 

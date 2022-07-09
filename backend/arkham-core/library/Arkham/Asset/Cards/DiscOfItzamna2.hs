@@ -21,7 +21,7 @@ discOfItzamna2 = asset DiscOfItzamna2 Cards.discOfItzamna2
 
 instance HasAbilities DiscOfItzamna2 where
   getAbilities (DiscOfItzamna2 a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
             (EnemySpawns Timing.When YourLocation NonEliteEnemy)
             Free

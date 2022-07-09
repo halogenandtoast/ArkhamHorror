@@ -32,7 +32,7 @@ instance HasAbilities BeatCop where
     [ restrictedAbility
           x
           1
-          (OwnsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
+          (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
         $ FastAbility (DiscardCost $ toTarget x)
     ]
 

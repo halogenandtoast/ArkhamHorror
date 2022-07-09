@@ -23,7 +23,7 @@ alyssaGraham = ally AlyssaGraham Cards.alyssaGraham (1, 3)
 
 instance HasAbilities AlyssaGraham where
   getAbilities (AlyssaGraham a) =
-    [ restrictedAbility a 1 OwnsThis $ FastAbility $ Costs
+    [ restrictedAbility a 1 ControlsThis $ FastAbility $ Costs
         [ExhaustCost (toTarget a)]
     ]
 

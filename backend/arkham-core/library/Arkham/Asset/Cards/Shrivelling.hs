@@ -24,7 +24,7 @@ shrivelling = asset Shrivelling Cards.shrivelling
 
 instance HasAbilities Shrivelling where
   getAbilities (Shrivelling a) =
-    [ restrictedAbility a 1 OwnsThis $ ActionAbilityWithSkill
+    [ restrictedAbility a 1 ControlsThis $ ActionAbilityWithSkill
         (Just Action.Fight)
         SkillWillpower
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])

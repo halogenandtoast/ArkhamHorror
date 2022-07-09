@@ -26,7 +26,7 @@ instance HasAbilities JewelOfAureolus3 where
     [ restrictedAbility
         x
         1
-        OwnsThis
+        ControlsThis
         (ReactionAbility
             (RevealChaosToken Timing.When (InvestigatorAt YourLocation)
             $ TokenMatchesAny

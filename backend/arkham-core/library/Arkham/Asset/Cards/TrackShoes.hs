@@ -30,7 +30,7 @@ instance HasModifiersFor TrackShoes where
 
 instance HasAbilities TrackShoes where
   getAbilities (TrackShoes attrs) =
-    [ restrictedAbility attrs 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility attrs 1 ControlsThis $ ReactionAbility
         (MovedButBeforeEnemyEngagement Timing.After You Anywhere)
         (ExhaustCost $ toTarget attrs)
     ]

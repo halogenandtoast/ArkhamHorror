@@ -27,7 +27,7 @@ instance HasAbilities MadameLabranche where
       $ restrictedAbility
           attrs
           1
-          (OwnsThis <> InvestigatorExists
+          (ControlsThis <> InvestigatorExists
             (You <> HandWith (LengthIs $ EqualTo $ Static 0))
           )
       $ FastAbility
@@ -38,7 +38,7 @@ instance HasAbilities MadameLabranche where
       $ restrictedAbility
           attrs
           2
-          (OwnsThis <> InvestigatorExists
+          (ControlsThis <> InvestigatorExists
             (You <> InvestigatorWithResources (EqualTo $ Static 0))
           )
       $ FastAbility

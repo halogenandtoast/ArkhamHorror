@@ -26,7 +26,7 @@ instance HasAbilities SpiritSpeaker where
     [ restrictedAbility
         attrs
         1
-        (OwnsThis <> AssetExists (AssetControlledBy You <> AssetWithUseType Charge))
+        (ControlsThis <> AssetExists (AssetControlledBy You <> AssetWithUseType Charge))
         (FastAbility $ ExhaustCost $ toTarget attrs)
     ]
 

@@ -26,7 +26,7 @@ instance HasModifiersFor DrMilanChristopher where
 
 instance HasAbilities DrMilanChristopher where
   getAbilities (DrMilanChristopher x) =
-    [ restrictedAbility x 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility x 1 ControlsThis $ ReactionAbility
         (SkillTestResult Timing.After You (WhileInvestigating Anywhere)
         $ SuccessResult AnyValue
         )

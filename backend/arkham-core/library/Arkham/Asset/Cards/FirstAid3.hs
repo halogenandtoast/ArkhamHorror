@@ -24,7 +24,7 @@ firstAid3 =
 
 instance HasAbilities FirstAid3 where
   getAbilities (FirstAid3 x) =
-    [ restrictedAbility x 1 OwnsThis $ ActionAbility Nothing $ Costs
+    [ restrictedAbility x 1 ControlsThis $ ActionAbility Nothing $ Costs
         [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
 

@@ -25,12 +25,12 @@ instance HasAbilities Moxie1 where
   getAbilities (Moxie1 x) =
     [ withTooltip
         "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
-      $ restrictedAbility x 1 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ restrictedAbility x 1 (ControlsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1
     , withTooltip
         "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
-      $ restrictedAbility x 2 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ restrictedAbility x 2 (ControlsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1
     ]

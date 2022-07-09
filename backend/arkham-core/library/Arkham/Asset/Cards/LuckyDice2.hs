@@ -26,7 +26,7 @@ luckyDice2 = asset LuckyDice2 Cards.luckyDice2
 
 instance HasAbilities LuckyDice2 where
   getAbilities (LuckyDice2 a) =
-    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
         (RevealChaosToken Timing.After You (TokenFaceIsNot AutoFail))
         (ResourceCost 2)
     ]

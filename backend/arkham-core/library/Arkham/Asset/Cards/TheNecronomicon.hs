@@ -36,7 +36,7 @@ instance HasModifiersFor TheNecronomicon where
 
 instance HasAbilities TheNecronomicon where
   getAbilities (TheNecronomicon a) =
-    [ restrictedAbility a 1 (OwnsThis <> AnyHorrorOnThis)
+    [ restrictedAbility a 1 (ControlsThis <> AnyHorrorOnThis)
         $ ActionAbility Nothing
         $ ActionCost 1
     ]

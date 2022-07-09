@@ -30,7 +30,7 @@ instance HasModifiersFor BaseballBat where
 
 instance HasAbilities BaseballBat where
   getAbilities (BaseballBat a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Fight) (ActionCost 1)
     ]
 

@@ -17,6 +17,7 @@ import Arkham.Card
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -29,6 +30,7 @@ import Arkham.Matcher
   )
 import Arkham.Message
 import Arkham.Message qualified as Msg
+import Arkham.Placement
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -714,13 +716,21 @@ instance RunMessage EnemyAttrs where
               ]
         [lid] -> pushAll (resolve $ EnemySpawn miid lid eid)
         xs -> spawnAtOneOf (fromMaybe leadInvestigatorId miid) eid xs
-    InvestigatorEliminated iid ->
-      pure $ a & engagedInvestigatorsL %~ deleteSet iid
-    DisengageEnemy iid eid | eid == enemyId ->
-      pure $ a & engagedInvestigatorsL %~ deleteSet iid
-    DisengageEnemyFromAll eid | eid == enemyId -> do
-      pushAll [DisengageEnemy iid eid | iid <- toList enemyEngagedInvestigators]
-      pure a
+    InvestigatorEliminated iid -> case enemyPlacement of
+      InThreatArea iid' | iid == iid' -> do
+        lid <- field InvestigatorLocation iid
+        pure $ a & placementL .~ AtLocation lid
+      _ -> pure a
+    DisengageEnemy iid eid | eid == enemyId -> case enemyPlacement of
+      InThreatArea iid' | iid == iid' -> do
+        lid <- field InvestigatorLocation iid
+        pure $ a & placementL .~ AtLocation lid
+      _ -> pure a
+    DisengageEnemyFromAll eid | eid == enemyId -> case enemyPlacement of
+      InThreatArea iid -> do
+        lid <- field InvestigatorLocation iid
+        pure $ a & placementL .~ AtLocation lid
+      _ -> pure a
     AdvanceAgenda{} -> pure $ a & doomL .~ 0
     RemoveAllClues target | isTarget a target -> pure $ a & cluesL .~ 0
     RemoveAllDoom _ -> pure $ a & doomL .~ 0
@@ -735,17 +745,12 @@ instance RunMessage EnemyAttrs where
     FlipClues target n | isTarget a target -> do
       let flipCount = min n enemyClues
       pure $ a & cluesL %~ max 0 . subtract n & doomL +~ flipCount
-    AttachTreachery tid target | isTarget a target ->
-      pure $ a & treacheriesL %~ insertSet tid
-    AttachAsset aid (EnemyTarget eid) | eid == enemyId ->
-      pure $ a & assetsL %~ insertSet aid
-    AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
     PlaceEnemyInVoid eid | eid == enemyId -> do
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
       pure
         $ a
         & (damageL .~ 0)
-        & (engagedInvestigatorsL %~ mempty)
+        & (placementL .~ TheVoid)
         & (exhaustedL .~ False)
         & (doomL .~ 0)
         & (cluesL .~ 0)

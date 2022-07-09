@@ -26,11 +26,11 @@ suggestion4 = asset Suggestion4 Cards.suggestion4
 
 instance HasAbilities Suggestion4 where
   getAbilities (Suggestion4 a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
       $ ActionAbility (Just Action.Evade)
       $ ActionCost 1
       <> ExhaustCost (toTarget a)
-    , restrictedAbility a 2 OwnsThis
+    , restrictedAbility a 2 ControlsThis
       $ ReactionAbility (EnemyWouldAttack Timing.When You AnyEnemyAttack AnyEnemy)
       $ UseCost (AssetWithId $ toId a) Charge 1
     ]

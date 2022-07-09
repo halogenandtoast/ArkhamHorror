@@ -8,11 +8,12 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype LitaChantler = LitaChantler AssetAttrs
@@ -26,13 +27,14 @@ litaChantler =
 instance HasModifiersFor LitaChantler where
   getModifiersFor _ (InvestigatorTarget iid) (LitaChantler a@AssetAttrs {..}) =
     do
-      case assetController of
-        Nothing -> pure []
-        Just controllerId -> do
-          sameLocation <- selectAny $
-            LocationWithInvestigator (InvestigatorWithId iid)
+      case assetPlacement of
+        InPlayArea controllerId -> do
+          sameLocation <-
+            selectAny
+            $ LocationWithInvestigator (InvestigatorWithId iid)
             <> LocationWithInvestigator (InvestigatorWithId controllerId)
           pure [ toModifier a (SkillModifier SkillCombat 1) | sameLocation ]
+        _ -> pure []
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities LitaChantler where
@@ -40,7 +42,7 @@ instance HasAbilities LitaChantler where
     [ restrictedAbility
         a
         1
-        OwnsThis
+        ControlsThis
         (ReactionAbility
           (SkillTestResult
             Timing.When

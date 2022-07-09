@@ -35,12 +35,12 @@ instance HasModifiersFor FireAxe where
 
 instance HasAbilities FireAxe where
   getAbilities (FireAxe a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
       $ ActionAbility (Just Action.Fight) (ActionCost 1)
     , restrictedAbility
         a
         2
-        (OwnsThis <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)
+        (ControlsThis <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)
         )
         (FastAbility (ResourceCost 1))
       & abilityLimitL

@@ -29,7 +29,7 @@ instance HasModifiersFor DavidRenfield where
 
 instance HasAbilities DavidRenfield where
   getAbilities (DavidRenfield a) =
-    [restrictedAbility a 1 OwnsThis $ FastAbility $ ExhaustCost $ toTarget a]
+    [restrictedAbility a 1 ControlsThis $ FastAbility $ ExhaustCost $ toTarget a]
 
 instance RunMessage DavidRenfield where
   runMessage msg a@(DavidRenfield attrs) = case msg of

@@ -30,11 +30,11 @@ theRedGlovedMan5 =
 
 instance HasAbilities TheRedGlovedMan5 where
   getAbilities (TheRedGlovedMan5 (x `With` _)) =
-    [ restrictedAbility x 1 OwnsThis
+    [ restrictedAbility x 1 ControlsThis
       $ ReactionAbility
           (AssetEntersPlay Timing.When (AssetWithId $ toId x))
           Free
-    , restrictedAbility x 2 OwnsThis
+    , restrictedAbility x 2 ControlsThis
       $ ForcedAbility (PhaseEnds Timing.When $ PhaseIs MythosPhase)
     ]
 

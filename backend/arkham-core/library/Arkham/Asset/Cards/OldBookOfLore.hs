@@ -25,7 +25,7 @@ instance HasAbilities OldBookOfLore where
     [ restrictedAbility
           a
           1
-          (OwnsThis <> InvestigatorExists
+          (ControlsThis <> InvestigatorExists
             (InvestigatorAt YourLocation
             <> InvestigatorWithoutModifier CannotManipulateDeck
             )

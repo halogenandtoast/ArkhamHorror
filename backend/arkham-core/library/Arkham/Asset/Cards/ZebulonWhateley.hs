@@ -25,7 +25,7 @@ zebulonWhateley =
 
 instance HasAbilities ZebulonWhateley where
   getAbilities (ZebulonWhateley x) =
-    [ restrictedAbility x 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility x 1 ControlsThis $ ReactionAbility
         (SkillTestResult
           Timing.After
           You

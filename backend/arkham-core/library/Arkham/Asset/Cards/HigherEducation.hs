@@ -37,7 +37,7 @@ instance HasAbilities HigherEducation where
     ]
    where
     restriction =
-      OwnsThis <> DuringSkillTest AnySkillTest <> InvestigatorExists
+      ControlsThis <> DuringSkillTest AnySkillTest <> InvestigatorExists
         (You <> HandWith (LengthIs $ AtLeast $ Static 5))
 
 instance RunMessage HigherEducation where

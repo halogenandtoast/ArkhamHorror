@@ -24,7 +24,7 @@ inTheKnow1 = asset InTheKnow1 Cards.inTheKnow1
 
 instance HasAbilities InTheKnow1 where
   getAbilities (InTheKnow1 attrs) =
-    [ restrictedAbility attrs 1 OwnsThis
+    [ restrictedAbility attrs 1 ControlsThis
         $ ActionAbility (Just Action.Investigate)
         $ ActionCost 1
         <> UseCost (AssetWithId $ toId attrs) Secret 1

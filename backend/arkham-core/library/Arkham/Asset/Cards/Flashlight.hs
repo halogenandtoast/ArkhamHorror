@@ -26,7 +26,7 @@ flashlight = asset Flashlight Cards.flashlight
 
 instance HasAbilities Flashlight where
   getAbilities (Flashlight x) =
-    [ restrictedAbility x 1 OwnsThis $ ActionAbility
+    [ restrictedAbility x 1 ControlsThis $ ActionAbility
         (Just Action.Investigate)
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1])
     ]

@@ -23,7 +23,7 @@ blackjack = asset Blackjack Cards.blackjack
 
 instance HasAbilities Blackjack where
   getAbilities (Blackjack a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Fight) (ActionCost 1)
     ]
 

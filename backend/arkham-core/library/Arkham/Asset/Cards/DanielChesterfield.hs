@@ -26,9 +26,9 @@ instance HasAbilities DanielChesterfield where
     [ restrictedAbility
         a
         1
-        (OwnsThis <> InvestigatorExists (NotYou <> InvestigatorAt YourLocation))
+        (ControlsThis <> InvestigatorExists (NotYou <> InvestigatorAt YourLocation))
       $ FastAbility Free
-    , restrictedAbility a 1 OwnsThis $ ForcedAbility $ AssignedHorror
+    , restrictedAbility a 1 ControlsThis $ ForcedAbility $ AssignedHorror
       Timing.After
       You
       (ExcludesTarget $ TargetIs $ toTarget a)

@@ -31,7 +31,7 @@ instance HasAbilities MagnifyingGlass1 where
     [ restrictedAbility
           a
           1
-          (OwnsThis <> LocationExists (YourLocation <> LocationWithoutClues))
+          (ControlsThis <> LocationExists (YourLocation <> LocationWithoutClues))
         $ FastAbility Free
     ]
 

@@ -28,7 +28,7 @@ instance HasAbilities LivreDeibon where
   getAbilities (LivreDeibon a) =
     [ withTooltip
         "{fast} Exhaust Livre d'Eibon: Swap the top card of your deck with a card in your hand."
-      $ restrictedAbility a 1 OwnsThis
+      $ restrictedAbility a 1 ControlsThis
       $ FastAbility
       $ ExhaustCost
       $ toTarget a
@@ -37,7 +37,7 @@ instance HasAbilities LivreDeibon where
       $ restrictedAbility
           a
           2
-          (OwnsThis
+          (ControlsThis
           <> DuringSkillTest SkillTestAtYourLocation
           <> ExtendedCardExists (TopOfDeckOf You <> EligibleForCurrentSkillTest)
           )

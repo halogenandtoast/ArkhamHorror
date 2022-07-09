@@ -23,12 +23,12 @@ medicalTexts = asset MedicalTexts Cards.medicalTexts
 
 instance HasAbilities MedicalTexts where
   getAbilities (MedicalTexts a) =
-    [restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ ActionCost 1]
+    [restrictedAbility a 1 ControlsThis $ ActionAbility Nothing $ ActionCost 1]
 
 instance RunMessage MedicalTexts where
   runMessage msg a@(MedicalTexts attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      let controllerId = fromJustNote "must be controlled" (assetController attrs)
+      let controllerId = getController attrs
       locationInvestigatorIds <- selectList $ colocatedWith controllerId
       push
         (chooseOne

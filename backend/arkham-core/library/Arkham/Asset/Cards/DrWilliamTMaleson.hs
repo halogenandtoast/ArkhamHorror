@@ -25,7 +25,7 @@ instance HasAbilities DrWilliamTMaleson where
     [ restrictedAbility
         attrs
         1
-        OwnsThis
+        ControlsThis
         (ReactionAbility
             (DrawCard
               Timing.When

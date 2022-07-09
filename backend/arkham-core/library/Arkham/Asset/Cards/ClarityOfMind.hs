@@ -25,7 +25,7 @@ instance HasAbilities ClarityOfMind where
     [ restrictedAbility
           a
           1
-          (OwnsThis <> InvestigatorExists
+          (ControlsThis <> InvestigatorExists
             (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
           )
         $ ActionAbility Nothing

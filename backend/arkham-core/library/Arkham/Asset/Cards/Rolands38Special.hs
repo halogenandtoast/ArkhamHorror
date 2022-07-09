@@ -24,7 +24,7 @@ rolands38Special = asset Rolands38Special Cards.rolands38Special
 
 instance HasAbilities Rolands38Special where
   getAbilities (Rolands38Special x) =
-    [ restrictedAbility x 1 OwnsThis $ ActionAbility
+    [ restrictedAbility x 1 ControlsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Ammo 1])
     ]

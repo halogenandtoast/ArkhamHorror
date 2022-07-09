@@ -26,13 +26,13 @@ lantern = asset Lantern Cards.lantern
 
 instance HasAbilities Lantern where
   getAbilities (Lantern x) =
-    [ restrictedAbility x 1 OwnsThis
+    [ restrictedAbility x 1 ControlsThis
       $ ActionAbility (Just Action.Investigate)
       $ ActionCost 1
     , restrictedAbility
         x
         2
-        (OwnsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
+        (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
       $ ActionAbility Nothing
       $ DiscardCost
       $ toTarget x

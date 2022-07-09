@@ -25,7 +25,7 @@ instance HasAbilities ResearchLibrarian where
     [ restrictedAbility
         x
         1
-        (OwnsThis <> CanSearchDeck <> CanShuffleDeck)
+        (ControlsThis <> CanSearchDeck <> CanShuffleDeck)
         (ReactionAbility
           (AssetEntersPlay Timing.When $ AssetWithId (toId x))
           Free

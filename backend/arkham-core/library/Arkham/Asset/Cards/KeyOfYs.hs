@@ -30,10 +30,10 @@ instance HasModifiersFor KeyOfYs where
 
 instance HasAbilities KeyOfYs where
   getAbilities (KeyOfYs x) =
-    [ restrictedAbility x 1 OwnsThis
+    [ restrictedAbility x 1 ControlsThis
         $ ForcedAbility
         $ PlacedCounter Timing.When You HorrorCounter (AtLeast $ Static 1)
-    , restrictedAbility x 2 OwnsThis
+    , restrictedAbility x 2 ControlsThis
         $ ForcedAbility
         $ AssetLeavesPlay Timing.When
         $ AssetWithId

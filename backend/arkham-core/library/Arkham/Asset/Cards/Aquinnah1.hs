@@ -33,7 +33,7 @@ instance HasAbilities Aquinnah1 where
     [ restrictedAbility
           a
           1
-          (OwnsThis <> EnemyCriteria
+          (ControlsThis <> EnemyCriteria
             (NotAttackingEnemy <> EnemyExists (EnemyAt YourLocation))
           )
         $ ReactionAbility

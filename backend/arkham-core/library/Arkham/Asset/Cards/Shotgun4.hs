@@ -26,7 +26,7 @@ shotgun4 = asset Shotgun4 Cards.shotgun4
 
 instance HasAbilities Shotgun4 where
   getAbilities (Shotgun4 a) =
-    [ restrictedAbility a 1 OwnsThis $ ActionAbility (Just Action.Fight) $ Costs
+    [ restrictedAbility a 1 ControlsThis $ ActionAbility (Just Action.Fight) $ Costs
         [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1]
     ]
 

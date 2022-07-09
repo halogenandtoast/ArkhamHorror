@@ -35,7 +35,7 @@ instance HasAbilities PeterClover where
     , restrictedAbility
       x
       2
-      (OwnsThis <> EnemyCriteria
+      (ControlsThis <> EnemyCriteria
         (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Criminal)
       )
       (FastAbility $ ExhaustCost $ toTarget x)

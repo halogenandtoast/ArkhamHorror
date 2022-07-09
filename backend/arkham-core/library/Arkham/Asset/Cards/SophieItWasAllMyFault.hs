@@ -30,7 +30,7 @@ instance HasAbilities SophieItWasAllMyFault where
     [ restrictedAbility
           x
           1
-          (OwnsThis <> InvestigatorExists
+          (ControlsThis <> InvestigatorExists
             (You <> InvestigatorWithDamage (AtMost $ Static 4))
           )
         $ ForcedAbility AnyWindow
@@ -49,6 +49,6 @@ instance RunMessage SophieItWasAllMyFault where
       let
         sophieInLovingMemory = PlayerCard
           $ lookupPlayerCard Cards.sophieInLovingMemory (toCardId attrs)
-        markId = fromJustNote "invalid" (assetController attrs)
+        markId = getController attrs
       a <$ pushAll [ReplaceInvestigatorAsset markId sophieInLovingMemory]
     _ -> SophieItWasAllMyFault <$> runMessage msg attrs

@@ -27,7 +27,7 @@ instance HasAbilities RitualCandles where
     [ restrictedAbility
         x
         1
-        OwnsThis
+        ControlsThis
         (ReactionAbility
           (RevealChaosToken
             Timing.When

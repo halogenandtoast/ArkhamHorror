@@ -38,7 +38,7 @@ instance HasModifiersFor CharlesRossEsq where
 
 instance HasAbilities CharlesRossEsq where
   getAbilities (CharlesRossEsq attrs) =
-    [ restrictedAbility attrs 1 OwnsThis $ FastAbility $ ExhaustCost $ toTarget
+    [ restrictedAbility attrs 1 ControlsThis $ FastAbility $ ExhaustCost $ toTarget
         attrs
     ]
 

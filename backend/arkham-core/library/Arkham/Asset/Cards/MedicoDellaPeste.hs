@@ -29,7 +29,7 @@ instance HasAbilities MedicoDellaPeste where
     [ restrictedAbility
         a
         1
-        (OwnsThis <> InvestigatorExists
+        (ControlsThis <> InvestigatorExists
           (You <> AnyInvestigator
             [InvestigatorWithAnyDamage, InvestigatorWithAnyHorror]
           )
@@ -37,7 +37,7 @@ instance HasAbilities MedicoDellaPeste where
       $ ReactionAbility
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
-    , restrictedAbility a 2 OwnsThis $ ReactionAbility
+    , restrictedAbility a 2 ControlsThis $ ReactionAbility
       (InitiatedSkillTest Timing.When You (NotSkillType SkillWillpower) AnyValue
       )
       (DiscardCost $ toTarget a)

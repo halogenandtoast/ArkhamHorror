@@ -26,7 +26,7 @@ instance HasAbilities Pathfinder1 where
     [ restrictedAbility
         attrs
         1
-        (OwnsThis <> InvestigatorExists (You <> UnengagedInvestigator))
+        (ControlsThis <> InvestigatorExists (You <> UnengagedInvestigator))
         (FastAbility $ ExhaustCost (toTarget attrs))
     ]
 

@@ -24,9 +24,9 @@ knife = asset Knife Cards.knife
 instance HasAbilities Knife where
   getAbilities (Knife a) =
     [ withTooltip "{action}: _Fight_. You get +1 {combat} for this attack."
-      $ restrictedAbility a 1 OwnsThis $ ActionAbility (Just Fight) (ActionCost 1)
+      $ restrictedAbility a 1 ControlsThis $ ActionAbility (Just Fight) (ActionCost 1)
     , withTooltip "{action}: Discard Knife: _Fight_. You get +2 {combat} for this attack. This attack deals +1 damage."
-      $ restrictedAbility a 2 OwnsThis
+      $ restrictedAbility a 2 ControlsThis
       $ ActionAbility
           (Just Fight)
           (Costs [ActionCost 1, DiscardCost (toTarget a)])

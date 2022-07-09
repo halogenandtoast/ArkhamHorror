@@ -15,5 +15,6 @@ data Placement
   | AttachedToAgenda ActId
   | AttachedToInvestigator InvestigatorId
   | Unplaced
+  | TheVoid
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

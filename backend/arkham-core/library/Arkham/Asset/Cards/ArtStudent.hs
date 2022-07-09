@@ -25,7 +25,7 @@ instance HasAbilities ArtStudent where
     [ restrictedAbility
         x
         1
-        OwnsThis
+        ControlsThis
         (ReactionAbility
           (AssetEntersPlay Timing.When $ AssetWithId (toId x))
           Free

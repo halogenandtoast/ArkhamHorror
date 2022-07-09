@@ -25,7 +25,7 @@ instance HasAbilities ScrollOfProphecies where
     [ restrictedAbility
         x
         1
-        OwnsThis
+        ControlsThis
         (ActionAbility Nothing $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Secret 1]
         )
     ]

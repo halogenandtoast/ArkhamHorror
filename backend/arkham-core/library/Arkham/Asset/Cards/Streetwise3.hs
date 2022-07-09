@@ -28,14 +28,14 @@ instance HasAbilities Streetwise3 where
       $ restrictedAbility
           a
           1
-          (OwnsThis <> DuringSkillTest AnySkillTest)
+          (ControlsThis <> DuringSkillTest AnySkillTest)
           (FastAbility $ ResourceCost 2)
     , withTooltip
         "{fast} Spend 2 resources: You get +3 {agility} for this skill test."
       $ restrictedAbility
           a
           2
-          (OwnsThis <> DuringSkillTest AnySkillTest)
+          (ControlsThis <> DuringSkillTest AnySkillTest)
           (FastAbility $ ResourceCost 2)
     ]
 

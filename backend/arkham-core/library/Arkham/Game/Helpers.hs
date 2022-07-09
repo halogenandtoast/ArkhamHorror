@@ -808,7 +808,7 @@ passesCriteria iid source windows' = \case
     ProxySource (LocationSource lid) _ ->
       fieldP InvestigatorLocation (== Just lid) iid
     _ -> pure False
-  Criteria.OwnsThis -> case source of
+  Criteria.ControlsThis -> case source of
     AssetSource aid -> member aid
       <$> select (Matcher.AssetControlledBy $ Matcher.InvestigatorWithId iid)
     EventSource eid -> member eid
@@ -847,7 +847,7 @@ passesCriteria iid source windows' = \case
   Criteria.Unowned -> case source of
     AssetSource aid -> fieldP AssetController isNothing aid
     ProxySource (AssetSource aid) _ -> fieldP AssetController isNothing aid
-    _ -> error $ "missing OwnsThis check for source: " <> show source
+    _ -> error $ "missing ControlsThis check for source: " <> show source
   Criteria.OnSameLocation -> case source of
     AssetSource aid ->
       liftA2 (==) (field AssetLocation aid) (field InvestigatorLocation iid)
@@ -1925,10 +1925,8 @@ locationMatches investigatorId source window locationId matcher =
       _ -> error "invalid window for LocationLeavingPlay"
     Matcher.SameLocation -> do
       mlid' <- case source of
-        EnemySource eid ->
-          selectOne $ Matcher.LocationWithEnemy $ Matcher.EnemyWithId eid
-        AssetSource aid ->
-          selectOne $ Matcher.LocationWithAsset $ Matcher.AssetWithId aid
+        EnemySource eid -> field EnemyLocation eid
+        AssetSource aid -> field AssetLocation aid
         _ -> error $ "can't detect same location for source " <> show source
       pure $ Just locationId == mlid'
     Matcher.YourLocation -> do

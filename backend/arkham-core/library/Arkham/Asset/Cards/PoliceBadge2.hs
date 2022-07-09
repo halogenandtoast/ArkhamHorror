@@ -30,7 +30,7 @@ instance HasAbilities PoliceBadge2 where
   getAbilities (PoliceBadge2 a) =
     [restrictedAbility a 1 criteria $ FastAbility $ DiscardCost (toTarget a)]
    where
-    criteria = OwnsThis
+    criteria = ControlsThis
       <> InvestigatorExists (TurnInvestigator <> InvestigatorAt YourLocation)
 
 instance RunMessage PoliceBadge2 where

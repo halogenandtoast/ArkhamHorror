@@ -3,7 +3,7 @@ module Arkham.Asset where
 import Arkham.Prelude
 
 import Arkham.Asset.Assets
-import Arkham.Asset.Runner hiding (assetEnemy, assetLocation)
+import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Id
 import Arkham.Matcher

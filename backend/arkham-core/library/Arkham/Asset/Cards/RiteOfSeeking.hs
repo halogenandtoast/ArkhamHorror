@@ -26,7 +26,7 @@ riteOfSeeking = asset RiteOfSeeking Cards.riteOfSeeking
 
 instance HasAbilities RiteOfSeeking where
   getAbilities (RiteOfSeeking a) =
-    [ restrictedAbility a 1 OwnsThis $ ActionAbility
+    [ restrictedAbility a 1 ControlsThis $ ActionAbility
         (Just Action.Investigate)
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
     ]

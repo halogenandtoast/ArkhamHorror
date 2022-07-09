@@ -28,7 +28,7 @@ instance HasAbilities StrangeSolutionRestorativeConcoction4 where
     [ restrictedAbility
           x
           1
-          (OwnsThis <> InvestigatorExists
+          (ControlsThis <> InvestigatorExists
             (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
           )
         $ ActionAbility Nothing

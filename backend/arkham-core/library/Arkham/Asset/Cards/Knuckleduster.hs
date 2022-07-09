@@ -26,7 +26,7 @@ knuckleduster = asset Knuckleduster Cards.knuckleduster
 
 instance HasAbilities Knuckleduster where
   getAbilities (Knuckleduster a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Fight)
         $ ActionCost 1
     ]

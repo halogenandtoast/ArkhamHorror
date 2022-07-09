@@ -25,12 +25,12 @@ instance HasAbilities DigDeep where
   getAbilities (DigDeep a) =
     [ withTooltip
         "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
-      $ restrictedAbility a 1 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1
     , withTooltip
         "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
-      $ restrictedAbility a 2 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ restrictedAbility a 2 (ControlsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1
     ]

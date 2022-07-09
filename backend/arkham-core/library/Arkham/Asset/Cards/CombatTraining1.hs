@@ -26,12 +26,12 @@ instance HasAbilities CombatTraining1 where
   getAbilities (CombatTraining1 x) =
     [ withTooltip
         "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
-      $ restrictedAbility x 1 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ restrictedAbility x 1 (ControlsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1
     , withTooltip
         "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
-      $ restrictedAbility x 2 (OwnsThis <> DuringSkillTest AnySkillTest)
+      $ restrictedAbility x 2 (ControlsThis <> DuringSkillTest AnySkillTest)
       $ FastAbility
       $ ResourceCost 1
     ]

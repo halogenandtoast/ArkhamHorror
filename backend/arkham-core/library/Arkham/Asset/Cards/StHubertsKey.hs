@@ -26,7 +26,7 @@ stHubertsKey = asset StHubertsKey Cards.stHubertsKey
 
 instance HasModifiersFor StHubertsKey where
   getModifiersFor _ (InvestigatorTarget iid) (StHubertsKey a)
-    | Just iid == assetController a = pure $ toModifiers
+    | controlledBy a iid = pure $ toModifiers
       a
       [ SkillModifier SkillWillpower 1
       , SkillModifier SkillIntellect 1
@@ -36,7 +36,7 @@ instance HasModifiersFor StHubertsKey where
 
 instance HasAbilities StHubertsKey where
   getAbilities (StHubertsKey a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
             (InvestigatorDefeated Timing.When AnySource ByHorror You)
         $ DiscardCost

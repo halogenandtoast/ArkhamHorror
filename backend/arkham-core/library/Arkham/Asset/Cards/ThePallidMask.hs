@@ -9,7 +9,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Matcher hiding (PlayCard)
+import Arkham.Matcher hiding ( PlayCard )
 import Arkham.Target
 
 newtype ThePallidMask = ThePallidMask AssetAttrs
@@ -24,13 +24,14 @@ thePallidMask = assetWith
 
 instance HasModifiersFor ThePallidMask where
   getModifiersFor _ (InvestigatorTarget iid) (ThePallidMask a)
-    | Just iid == assetController a = pure $ toModifiers a [SanityModifier (-2)]
+    | controlledBy a iid = pure $ toModifiers a [SanityModifier (-2)]
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage ThePallidMask where
   runMessage msg a@(ThePallidMask attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      theManInThePallidMask <- selectJust (enemyIs Enemies.theManInThePallidMask)
+      theManInThePallidMask <- selectJust
+        (enemyIs Enemies.theManInThePallidMask)
       hasturTheTatteredKing <- getSetAsideCard Enemies.hasturTheTatteredKing
       palaceOfTheKing <- getJustLocationIdByName "Palace of the King"
       pushAll

@@ -39,7 +39,8 @@ instance HasAbilities SeekerOfCarcosa where
 instance RunMessage SeekerOfCarcosa where
   runMessage msg e@(SeekerOfCarcosa attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      for_ (enemyLocation attrs) $ \loc -> do
+      enemyLocation <- field EnemyLocation (toId attrs)
+      for_ enemyLocation $ \loc -> do
         clueCount <- field LocationClues loc
         pushAll $ if clueCount > 0
           then

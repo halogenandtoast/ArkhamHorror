@@ -28,15 +28,13 @@ narogath = enemyWith
   (preyL .~ Prey (NearestToEnemy (EnemyWithTrait Trait.Cultist <> NotEnemy (enemyIs Cards.narogath))))
 
 instance HasModifiersFor Narogath where
-  getModifiersFor _ (InvestigatorTarget iid) (Narogath a@EnemyAttrs {..}) = case enemyLocation of
-    Nothing -> pure []
-    Just loc -> do
-      iids <- select $ InvestigatorAt $ AccessibleFrom $ LocationWithId loc
-      pure $ toModifiers
-        a
-        [ CannotTakeAction (EnemyAction Parley [Cultist])
-        | not enemyExhausted && iid `elem` iids
-        ]
+  getModifiersFor _ (InvestigatorTarget iid) (Narogath a@EnemyAttrs {..}) = do
+    iids <- select $ InvestigatorAt $ AccessibleFrom $ locationWithEnemy enemyId
+    pure $ toModifiers
+      a
+      [ CannotTakeAction (EnemyAction Parley [Cultist])
+      | not enemyExhausted && iid `elem` iids
+      ]
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage Narogath where

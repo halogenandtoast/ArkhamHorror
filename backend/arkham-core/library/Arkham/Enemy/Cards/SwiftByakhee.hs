@@ -16,6 +16,7 @@ import Arkham.Enemy.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype SwiftByakhee = SwiftByakhee EnemyAttrs
@@ -55,7 +56,8 @@ choosePrey attrs (iid, pathId, distance) =
 instance RunMessage SwiftByakhee where
   runMessage msg e@(SwiftByakhee attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      for_ (enemyLocation attrs) $ \loc -> do
+      enemyLocation <- field EnemyLocation (toId attrs)
+      for_ enemyLocation $ \loc -> do
         prey <- selectList (enemyPrey attrs)
         preyWithLocationsAndDistances <- fmap catMaybes $ for prey $ \preyId -> do
           mlid <- selectOne $ locationWithInvestigator preyId

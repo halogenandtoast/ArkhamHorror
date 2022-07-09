@@ -11,6 +11,7 @@ import Arkham.Enemy.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Phase
+import Arkham.Projection
 import Arkham.Target
 
 newtype AshleighClarke = AshleighClarke EnemyAttrs
@@ -24,11 +25,12 @@ ashleighClarke =
 instance HasModifiersFor AshleighClarke where
   getModifiersFor _ (InvestigatorTarget iid) (AshleighClarke attrs) = do
     lid <- getJustLocation iid
+    enemyLocation <- field EnemyLocation (toId attrs)
     phase <- getPhase
     pure $ toModifiers
       attrs
       [ CannotDrawCards
-      | phase == UpkeepPhase && Just lid == enemyLocation attrs
+      | phase == UpkeepPhase && Just lid == enemyLocation
       ]
   getModifiersFor _ _ _ = pure []
 

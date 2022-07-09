@@ -11,6 +11,7 @@ import Arkham.Classes
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -43,12 +44,13 @@ instance HasAbilities Fanatic where
 
 instance RunMessage Fanatic where
   runMessage msg e@(Fanatic attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> case enemyLocation attrs of
-      Nothing -> pure e
-      Just loc -> e <$ pushAll
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      enemyLocation <- field EnemyLocation (toId attrs)
+      for_ enemyLocation $ \loc -> pushAll
         [ RemoveClues (LocationTarget loc) 1
         , PlaceClues (toTarget attrs) 1
         ]
+      pure e
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       e <$ pushAll
         [ RemoveClues (toTarget attrs) (enemyClues attrs)

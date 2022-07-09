@@ -7,12 +7,13 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
-import qualified Arkham.Timing as Timing
+import Arkham.Projection
+import Arkham.Timing qualified as Timing
 
 newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -35,25 +36,20 @@ instance HasAbilities DevoteeOfTheKey where
 
 instance RunMessage DevoteeOfTheKey where
   runMessage msg e@(DevoteeOfTheKey attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source ->
-      case enemyLocation of
-        Nothing -> pure e
-        Just loc -> do
-          leadInvestigatorId <- getLeadInvestigatorId
-          sentinelPeak <- selectJust (LocationWithTitle "Sentinel Peak")
-          if loc == sentinelPeak
-            then
-              e <$ pushAll
-                [Discard (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
-            else do
-              choices <- selectList $ ClosestPathLocation loc sentinelPeak
-              case choices of
-                [] -> error "should not happen"
-                [x] -> e <$ push (EnemyMove enemyId x)
-                xs ->
-                  e
-                    <$ push
-                         (chooseOne leadInvestigatorId
-                         $ map (EnemyMove enemyId) xs
-                         )
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
+      enemyLocation <- field EnemyLocation enemyId
+      for_ enemyLocation $ \loc -> do
+        leadInvestigatorId <- getLeadInvestigatorId
+        sentinelPeak <- selectJust (LocationWithTitle "Sentinel Peak")
+        if loc == sentinelPeak
+          then pushAll
+            [Discard (toTarget attrs), PlaceDoomOnAgenda, PlaceDoomOnAgenda]
+          else do
+            choices <- selectList $ ClosestPathLocation loc sentinelPeak
+            case choices of
+              [] -> error "should not happen"
+              [x] -> push (EnemyMove enemyId x)
+              xs ->
+                push (chooseOne leadInvestigatorId $ map (EnemyMove enemyId) xs)
+      pure e
     _ -> DevoteeOfTheKey <$> runMessage msg attrs

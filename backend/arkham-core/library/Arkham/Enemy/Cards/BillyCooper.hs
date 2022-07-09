@@ -32,9 +32,8 @@ instance HasAbilities BillyCooper where
     [ mkAbility attrs 1
       $ ForcedAbility
       $ EnemyDefeated Timing.After Anyone
-      $ EnemyAt (LocationWithId loc)
+      $ EnemyAt LocationOfThis
       <> EnemyWithTrait Monster
-    | loc <- maybeToList (enemyLocation attrs)
     ]
 
 instance RunMessage BillyCooper where

@@ -7,14 +7,13 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
 import Arkham.Target
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype DianneDevine = DianneDevine EnemyAttrs
@@ -26,8 +25,8 @@ dianneDevine = enemy DianneDevine Cards.dianneDevine (2, Static 3, 2) (0, 0)
 
 instance HasModifiersFor DianneDevine where
   getModifiersFor _ (InvestigatorTarget iid) (DianneDevine a) = do
-    lid <- getJustLocation iid
-    pure $ toModifiers a $ if Just lid == enemyLocation a
+    affected <- iid <=~> InvestigatorAt (locationWithEnemy $ toId a)
+    pure $ toModifiers a $ if affected
       then [CannotDiscoverClues, CannotTakeControlOfClues]
       else []
   getModifiersFor _ _ _ = pure []

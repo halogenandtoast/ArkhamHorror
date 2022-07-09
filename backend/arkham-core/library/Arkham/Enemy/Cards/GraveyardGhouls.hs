@@ -5,8 +5,8 @@ module Arkham.Enemy.Cards.GraveyardGhouls
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Target
@@ -24,9 +24,9 @@ graveyardGhouls = enemyWith
   (\a -> a & preyL .~ BearerOf (toId a))
 
 instance HasModifiersFor GraveyardGhouls where
-  getModifiersFor _ (InvestigatorTarget iid) (GraveyardGhouls attrs)
-    | iid `elem` enemyEngagedInvestigators attrs = pure
-    $ toModifiers attrs [CardsCannotLeaveYourDiscardPile]
+  getModifiersFor _ (InvestigatorTarget iid) (GraveyardGhouls attrs) = do
+    affected <- iid <=~> investigatorEngagedWith (toId attrs)
+    pure $ toModifiers attrs [ CardsCannotLeaveYourDiscardPile | affected ]
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage GraveyardGhouls where

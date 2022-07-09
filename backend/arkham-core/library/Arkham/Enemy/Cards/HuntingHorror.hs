@@ -13,6 +13,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
+import Arkham.Placement
 import Arkham.RequestedTokenStrategy
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -56,6 +57,5 @@ instance RunMessage HuntingHorror where
         & (damageL .~ 0)
         & (doomL .~ 0)
         & (cluesL .~ 0)
-        & (engagedInvestigatorsL .~ mempty)
-        & (locationL .~ Nothing)
+        & (placementL .~ TheVoid)
     _ -> HuntingHorror <$> runMessage msg attrs

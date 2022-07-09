@@ -5,10 +5,10 @@ module Arkham.Enemy.Cards.Whippoorwill
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Helpers.Investigator
+import Arkham.Matcher
 import Arkham.Target
 
 newtype Whippoorwill = Whippoorwill EnemyAttrs
@@ -20,10 +20,8 @@ whippoorwill = enemy Whippoorwill Cards.whippoorwill (2, Static 1, 4) (0, 1)
 
 instance HasModifiersFor Whippoorwill where
   getModifiersFor _ (InvestigatorTarget iid) (Whippoorwill attrs) = do
-    locationId <- getJustLocation iid
-    pure $ toModifiers
-      attrs
-      [ AnySkillValue (-1) | Just locationId == enemyLocation attrs ]
+    affected <- iid <=~> InvestigatorAt (locationWithEnemy $ toId attrs)
+    pure $ toModifiers attrs [ AnySkillValue (-1) | affected ]
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage Whippoorwill where

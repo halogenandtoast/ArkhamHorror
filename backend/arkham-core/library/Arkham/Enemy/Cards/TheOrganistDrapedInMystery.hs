@@ -42,8 +42,10 @@ theOrganistDrapedInMystery = enemy
 instance RunMessage TheOrganistDrapedInMystery where
   runMessage msg e@(TheOrganistDrapedInMystery attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      if null (enemyEngagedInvestigators attrs)
+      iids <- selectList $ investigatorEngagedWith (toId attrs)
+      if null iids
         then push =<< moveOrganistAwayFromNearestInvestigator
-        else pushAll [ DisengageEnemy iid $ toId attrs | iid <- setToList (enemyEngagedInvestigators attrs) ]
+        else do
+          pushAll [ DisengageEnemy iid $ toId attrs | iid <- iids ]
       pure e
     _ -> TheOrganistDrapedInMystery <$> runMessage msg attrs

@@ -5,10 +5,9 @@ module Arkham.Enemy.Cards.StubbornDetective
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Target
 
@@ -26,10 +25,9 @@ stubbornDetective = enemyWith
 
 instance HasModifiersFor StubbornDetective where
   getModifiersFor _ (InvestigatorTarget iid) (StubbornDetective a@EnemyAttrs {..})
-    | spawned a
     = do
-      locationId <- getJustLocation iid
-      pure $ toModifiers a [ Blank | Just locationId == enemyLocation ]
+      sameLocation <- iid <=~> InvestigatorAt (locationWithEnemy enemyId)
+      pure $ toModifiers a [ Blank | sameLocation ]
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage StubbornDetective where

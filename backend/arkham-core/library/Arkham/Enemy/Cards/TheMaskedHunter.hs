@@ -28,9 +28,11 @@ instance HasModifiersFor TheMaskedHunter where
     healthModifier <- getPlayerCountValue (PerPlayer 2)
     pure $ toModifiers a [HealthModifier healthModifier]
   getModifiersFor _ (InvestigatorTarget iid) (TheMaskedHunter a@EnemyAttrs {..})
-    = if iid `elem` enemyEngagedInvestigators
-      then pure $ toModifiers a [CannotDiscoverClues, CannotSpendClues]
-      else pure []
+    = do
+      affected <- iid <=~> investigatorEngagedWith enemyId
+      pure $ toModifiers a $ if affected
+        then [CannotDiscoverClues, CannotSpendClues]
+        else []
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage TheMaskedHunter where

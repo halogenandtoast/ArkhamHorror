@@ -6,9 +6,9 @@ module Arkham.Enemy.Cards.RoyalEmissary
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -29,12 +29,10 @@ royalEmissary = enemyWith
   (preyL .~ Prey (InvestigatorWithLowestSkill SkillWillpower))
 
 investigatorMatcher :: EnemyAttrs -> InvestigatorMatcher
-investigatorMatcher a = case enemyLocation a of
-  Nothing -> NoOne
-  Just loc -> AnyInvestigator
-    [ InvestigatorAt $ LocationWithId loc
-    , InvestigatorAt $ AccessibleFrom $ LocationWithId loc
-    ]
+investigatorMatcher a = AnyInvestigator
+  [ InvestigatorAt $ locationWithEnemy (toId a)
+  , InvestigatorAt $ AccessibleFrom $ locationWithEnemy (toId a)
+  ]
 
 instance HasAbilities RoyalEmissary where
   getAbilities (RoyalEmissary a) = withBaseAbilities

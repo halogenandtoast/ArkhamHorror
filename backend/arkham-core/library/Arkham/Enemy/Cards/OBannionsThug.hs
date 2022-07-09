@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Runner
+import Arkham.Matcher
 import Arkham.Target
 
 newtype OBannionsThug = OBannionsThug EnemyAttrs
@@ -18,9 +19,9 @@ oBannionsThug :: EnemyCard OBannionsThug
 oBannionsThug = enemy OBannionsThug Cards.oBannionsThug (4, Static 2, 2) (2, 0)
 
 instance HasModifiersFor OBannionsThug where
-  getModifiersFor _ (InvestigatorTarget iid) (OBannionsThug a@EnemyAttrs {..})
-    | iid `elem` enemyEngagedInvestigators = pure
-    $ toModifiers a [CannotGainResources]
+  getModifiersFor _ (InvestigatorTarget iid) (OBannionsThug a@EnemyAttrs {..}) = do
+    affected <- iid <=~> investigatorEngagedWith enemyId
+    pure $ toModifiers a [CannotGainResources | affected]
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage OBannionsThug where

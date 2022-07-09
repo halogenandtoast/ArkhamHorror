@@ -16,6 +16,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target
 
@@ -55,10 +56,11 @@ instance RunMessage TheManInThePallidMask where
         ]
     Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target ->
       do
-      -- Tomb of Shadows will prevent the man in the pallid mask from being
-      -- defeated, but because we have no good way of cancelling an aspect of
-      -- an ability, we handle it here
-        canBeDefeated <- case enemyLocation attrs of
+        enemyLocation <- field EnemyLocation (toId attrs)
+        -- Tomb of Shadows will prevent the man in the pallid mask from being
+        -- defeated, but because we have no good way of cancelling an aspect of
+        -- an ability, we handle it here
+        canBeDefeated <- case enemyLocation of
           Just lid ->
             notMember lid <$> select (locationIs Locations.tombOfShadows)
           _ -> pure True

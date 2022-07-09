@@ -10,8 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Id
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Attrs
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Projection
@@ -26,26 +24,18 @@ abbessAllegriaDiBiase =
   ally AbbessAllegriaDiBiase Cards.abbessAllegriaDiBiase (2, 2)
 
 instance HasAbilities AbbessAllegriaDiBiase where
-  getAbilities (AbbessAllegriaDiBiase attrs) = case assetLocation attrs of
-    Just abbessLocation ->
+  getAbilities (AbbessAllegriaDiBiase attrs) =
       [ restrictedAbility
           attrs
           1
           (AnyCriterion
-            [ LocationExists $ AccessibleFrom (YourLocation <> LocationWithId abbessLocation)
-            , OnLocation $ AccessibleTo $ LocationWithId abbessLocation
+            [ LocationExists
+              $ AccessibleFrom (YourLocation <> LocationOfThis)
+            , OnLocation $ AccessibleTo LocationOfThis
             ]
           )
           (FastAbility $ ExhaustCost (toTarget attrs))
       ]
-    Nothing -> []
-
-getAssetLocation :: AssetAttrs -> GameT LocationId
-getAssetLocation AssetAttrs {..} = case assetLocation of
-  Just location -> pure location
-  Nothing -> case assetController of
-    Just iid -> fromJustNote "expected" <$> field InvestigatorLocation iid
-    Nothing -> error "Invalid location for Abbess"
 
 instance RunMessage AbbessAllegriaDiBiase where
   runMessage msg a@(AbbessAllegriaDiBiase attrs) = case msg of
@@ -54,7 +44,8 @@ instance RunMessage AbbessAllegriaDiBiase where
       case mLocationId of
         Nothing -> error "impossible"
         Just locationId -> do
-          abbessLocationId <- getAssetLocation attrs
+          abbessLocationId <-
+            fromJustNote "locationIsRequired" <$> field AssetLocation (toId attrs)
           a <$ if locationId == abbessLocationId
             then do
               connectedLocationIds <-

@@ -25,7 +25,7 @@ instance HasAbilities LoneWolf where
     [ restrictedAbility
         x
         1
-        (OwnsThis <> InvestigatorIsAlone)
+        (ControlsThis <> InvestigatorIsAlone)
         (ReactionAbility (TurnBegins Timing.When You) Free)
     ]
 

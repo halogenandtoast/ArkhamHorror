@@ -25,7 +25,7 @@ instance HasAbilities Painkillers where
     [ restrictedAbility
         a
         1
-        (OwnsThis <> InvestigatorExists (You <> InvestigatorWithAnyDamage))
+        (ControlsThis <> InvestigatorExists (You <> InvestigatorWithAnyDamage))
         (FastAbility
           (Costs
             [ UseCost (AssetWithId $ toId a) Supply 1

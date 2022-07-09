@@ -32,7 +32,7 @@ instance HasAbilities PeterSylvestre where
     [ restrictedAbility
         x
         1
-        (OwnsThis <> AssetExists (AssetWithId (toId x) <> AssetWithHorror))
+        (ControlsThis <> AssetExists (AssetWithId (toId x) <> AssetWithHorror))
         (ReactionAbility (TurnEnds Timing.After You) Free)
     ]
 

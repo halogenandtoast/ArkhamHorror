@@ -41,7 +41,7 @@ instance HasAbilities Duke where
     [ restrictedAbility
       a
       1
-      OwnsThis
+      ControlsThis
       (ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, ExhaustCost $ toTarget a])
@@ -49,7 +49,7 @@ instance HasAbilities Duke where
     , restrictedAbility
       a
       2
-      OwnsThis
+      ControlsThis
       (ActionAbilityWithBefore
         (Just Action.Investigate)
         (Just Action.Move)

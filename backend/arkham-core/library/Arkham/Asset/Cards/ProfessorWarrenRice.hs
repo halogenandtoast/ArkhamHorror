@@ -30,7 +30,7 @@ instance HasModifiersFor ProfessorWarrenRice where
 
 instance HasAbilities ProfessorWarrenRice where
   getAbilities (ProfessorWarrenRice a) =
-    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
         (DiscoveringLastClue Timing.After You YourLocation)
         (ExhaustCost $ toTarget a)
     ]

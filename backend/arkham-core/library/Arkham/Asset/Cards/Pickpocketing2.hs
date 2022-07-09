@@ -26,7 +26,7 @@ pickpocketing2 = asset Pickpocketing2 Cards.pickpocketing2
 
 instance HasAbilities Pickpocketing2 where
   getAbilities (Pickpocketing2 a) =
-    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
         (Matcher.EnemyEvaded Timing.After You AnyEnemy)
         (ExhaustCost $ toTarget a)
     ]

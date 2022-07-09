@@ -37,7 +37,7 @@ instance HasAbilities DarioElAmin where
     [ restrictedAbility
           attrs
           1
-          (OwnsThis <> LocationExists (YourLocation <> LocationWithoutEnemies))
+          (ControlsThis <> LocationExists (YourLocation <> LocationWithoutEnemies))
         $ ActionAbility Nothing
         $ ExhaustCost
         $ toTarget attrs

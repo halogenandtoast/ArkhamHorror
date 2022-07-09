@@ -12,6 +12,7 @@ import Arkham.CampaignLogKey
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.SkillType
+import Arkham.Placement
 
 newtype ArchaicGlyphs = ArchaicGlyphs AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,7 +23,7 @@ archaicGlyphs = asset ArchaicGlyphs Cards.archaicGlyphs
 
 instance HasAbilities ArchaicGlyphs where
   getAbilities (ArchaicGlyphs attrs) =
-    [ restrictedAbility attrs 1 OwnsThis
+    [ restrictedAbility attrs 1 ControlsThis
         $ ActionAbility Nothing
         $ SkillIconCost 1
         $ singleton SkillIntellect
@@ -33,14 +34,16 @@ instance RunMessage ArchaicGlyphs where
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AddUses (toTarget attrs) Secret 1)
     AddUses target Secret _ | isTarget attrs target -> do
-      let controllerId = fromJustNote "must be controller" $ assetController attrs
-      attrs' <- runMessage msg attrs
-      ArchaicGlyphs attrs' <$ when
-        (useCount (assetUses attrs') >= 3)
-        (pushAll
-          [ Discard (toTarget attrs)
-          , TakeResources controllerId 5 False
-          , Record YouHaveTranslatedTheGlyphs
-          ]
-        )
+      case assetPlacement attrs of
+        InPlayArea controllerId -> do
+          attrs' <- runMessage msg attrs
+          ArchaicGlyphs attrs' <$ when
+            (useCount (assetUses attrs') >= 3)
+            (pushAll
+              [ Discard (toTarget attrs)
+              , TakeResources controllerId 5 False
+              , Record YouHaveTranslatedTheGlyphs
+              ]
+            )
+        _ -> error "must be controlled"
     _ -> ArchaicGlyphs <$> runMessage msg attrs

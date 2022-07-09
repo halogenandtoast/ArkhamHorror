@@ -28,7 +28,7 @@ instance HasAbilities Fieldwork where
     [ restrictedAbility
         attrs
         1
-        OwnsThis
+        ControlsThis
         (ReactionAbility
             (Enters Timing.After You
             $ LocationWithClues (GreaterThan $ Static 0)

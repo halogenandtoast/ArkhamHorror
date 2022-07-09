@@ -23,7 +23,7 @@ armorOfArdennes5 =
 
 instance HasAbilities ArmorOfArdennes5 where
   getAbilities (ArmorOfArdennes5 a) =
-    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
         (AssetDealtDamage Timing.When $ AssetWithId $ toId a)
         (ExhaustCost $ toTarget a)
     ]

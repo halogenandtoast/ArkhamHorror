@@ -26,7 +26,7 @@ instance HasAbilities BookOfShadows1 where
     [ restrictedAbility
           a
           1
-          (OwnsThis <> AssetExists (AssetControlledBy You <> AssetWithTrait Spell))
+          (ControlsThis <> AssetExists (AssetControlledBy You <> AssetWithTrait Spell))
         $ ActionAbility Nothing
         $ Costs [ActionCost 1, ResourceCost 1, ExhaustCost (toTarget a)]
     ]

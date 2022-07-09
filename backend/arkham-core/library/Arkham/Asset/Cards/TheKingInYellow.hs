@@ -14,6 +14,7 @@ import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Matcher hiding (PlayCard)
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -30,7 +31,7 @@ theKingInYellow = assetWith
 
 instance HasAbilities TheKingInYellow where
   getAbilities (TheKingInYellow x) =
-    [ restrictedAbility x 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility x 1 ControlsThis $ ReactionAbility
         (SkillTestResult
             Timing.After
             (You <> ContributedMatchingIcons (AtLeast $ Static 6))
@@ -42,13 +43,15 @@ instance HasAbilities TheKingInYellow where
 
 instance HasModifiersFor TheKingInYellow where
   getModifiersFor _ SkillTestTarget (TheKingInYellow attrs) = do
-    let minhId = fromJustNote "not owned" $ assetController attrs
-    commitedCardsCount <- fieldMap InvestigatorCommittedCards length minhId
-    pure $ toModifiers
-      attrs
-      [ CannotPerformSkillTest
-      | commitedCardsCount == 1 || commitedCardsCount == 2
-      ]
+    case assetPlacement attrs of
+      InPlayArea minhId -> do
+        commitedCardsCount <- fieldMap InvestigatorCommittedCards length minhId
+        pure $ toModifiers
+          attrs
+          [ CannotPerformSkillTest
+          | commitedCardsCount == 1 || commitedCardsCount == 2
+          ]
+      _ -> error "not owned"
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage TheKingInYellow where

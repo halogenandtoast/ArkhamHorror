@@ -24,7 +24,7 @@ hiredMuscle1 = ally HiredMuscle1 Cards.hiredMuscle1 (3, 1)
 
 instance HasAbilities HiredMuscle1 where
   getAbilities (HiredMuscle1 x) =
-    [ restrictedAbility x 1 OwnsThis
+    [ restrictedAbility x 1 ControlsThis
       $ ForcedAbility
       $ PhaseEnds Timing.When
       $ PhaseIs UpkeepPhase

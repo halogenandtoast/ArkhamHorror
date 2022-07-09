@@ -14,6 +14,7 @@ import Arkham.DamageEffect
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Matcher qualified as Matcher
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
@@ -31,21 +32,21 @@ instance HasModifiersFor BrotherXavier1 where
   getModifiersFor _ (InvestigatorTarget iid) (BrotherXavier1 a)
     | controlledBy a iid = pure $ toModifiers a [SkillModifier SkillWillpower 1]
   getModifiersFor (InvestigatorSource iid) target (BrotherXavier1 a)
-    | isTarget a target = do
-      locationId <- field InvestigatorLocation iid
-      assetLocationId <- field InvestigatorLocation
-        $ fromJustNote "uncontroller" (assetController a)
-      pure
-        [ toModifier a CanBeAssignedDamage
-        | (locationId == assetLocationId)
-          && (Just iid /= assetController a)
-          && isJust locationId
-        ]
+    | isTarget a target = case assetPlacement a of
+      InPlayArea iid' | iid' /= iid -> do
+        locationId <- field InvestigatorLocation iid
+        assetLocationId <- field AssetLocation (toId a)
+        pure
+          [ toModifier a CanBeAssignedDamage
+          | (locationId == assetLocationId)
+            && isJust locationId
+          ]
+      _ -> pure []
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities BrotherXavier1 where
   getAbilities (BrotherXavier1 a) =
-    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
         (Matcher.AssetDefeated Timing.When $ AssetWithId $ toId a)
         Free
     ]

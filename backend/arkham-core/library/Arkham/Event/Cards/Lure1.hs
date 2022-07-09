@@ -27,7 +27,7 @@ lure1 = event Lure1 Cards.lure1
 
 instance HasAbilities Lure1 where
   getAbilities (Lure1 attrs) =
-    [restrictedAbility attrs 1 OwnsThis $ ForcedAbility $ RoundEnds Timing.When]
+    [restrictedAbility attrs 1 ControlsThis $ ForcedAbility $ RoundEnds Timing.When]
 
 instance HasModifiersFor Lure1 where
   getModifiersFor _ (EnemyTarget _) (Lure1 attrs) =

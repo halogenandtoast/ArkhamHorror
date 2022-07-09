@@ -26,7 +26,7 @@ strangeSolutionAcidicIchor4 =
 
 instance HasAbilities StrangeSolutionAcidicIchor4 where
   getAbilities (StrangeSolutionAcidicIchor4 attrs) =
-    [ restrictedAbility attrs 1 OwnsThis
+    [ restrictedAbility attrs 1 ControlsThis
       $ ActionAbility (Just Action.Fight)
       $ Costs [ActionCost 1, UseCost (AssetWithId $ toId attrs) Supply 1]
     ]

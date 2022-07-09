@@ -22,7 +22,7 @@ theChthonianStone = asset TheChthonianStone Cards.theChthonianStone
 
 instance HasAbilities TheChthonianStone where
   getAbilities (TheChthonianStone a) =
-    [ restrictedAbility a 1 (OwnsThis <> DuringSkillTest AnySkillTest)
+    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
         $ ForcedAbility
         $ RevealChaosToken Timing.When You
         $ TokenFaceIs AutoFail

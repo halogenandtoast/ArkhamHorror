@@ -29,7 +29,7 @@ instance HasAbilities GrotesqueStatue4 where
     [ restrictedAbility
         x
         1
-        OwnsThis
+        ControlsThis
         (ReactionAbility (WouldRevealChaosToken Timing.When You)
         $ UseCost (AssetWithId $ toId x) Charge 1
         )

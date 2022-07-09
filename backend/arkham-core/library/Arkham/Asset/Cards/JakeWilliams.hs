@@ -36,7 +36,7 @@ instance HasModifiersFor JakeWilliams where
 
 instance HasAbilities JakeWilliams where
   getAbilities (JakeWilliams a) =
-    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
         (OrWindowMatcher
           [ RevealLocation Timing.After You Anywhere
           , PutLocationIntoPlay Timing.After You Anywhere

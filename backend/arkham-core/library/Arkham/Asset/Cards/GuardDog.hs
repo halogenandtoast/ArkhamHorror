@@ -29,7 +29,7 @@ instance HasAbilities GuardDog where
     [ restrictedAbility
         x
         1
-        OwnsThis
+        ControlsThis
         (ReactionAbility
           (AssetDealtDamage Timing.When (AssetWithId (toId x)))
           Free

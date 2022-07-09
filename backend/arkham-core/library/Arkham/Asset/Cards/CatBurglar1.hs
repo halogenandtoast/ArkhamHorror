@@ -34,7 +34,7 @@ instance HasAbilities CatBurglar1 where
     [ (restrictedAbility
         a
         1
-        (OwnsThis <> AnyCriterion
+        (ControlsThis <> AnyCriterion
           [ EnemyCriteria $ EnemyExists EnemyEngagedWithYou
           , LocationExists AccessibleLocation
           ]

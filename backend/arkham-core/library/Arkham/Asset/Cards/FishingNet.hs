@@ -7,10 +7,10 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Target
@@ -25,21 +25,23 @@ fishingNet = assetWith FishingNet Cards.fishingNet (isStoryL .~ True)
 instance HasModifiersFor FishingNet where
   getModifiersFor _ (EnemyTarget eid) (FishingNet attrs) = pure $ toModifiers
     attrs
-    [ RemoveKeyword Retaliate | assetEnemy attrs == Just eid ]
+    [ RemoveKeyword Retaliate | attachedToEnemy attrs eid ]
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities FishingNet where
   getAbilities (FishingNet x) =
-    [restrictedAbility x 1 restriction $ FastAbility Free]
-   where
-    restriction = case assetEnemy x of
-      Just _ -> Never
-      Nothing -> OwnsThis <> EnemyCriteria
-        (EnemyExists
-        $ ExhaustedEnemy
-        <> EnemyAt YourLocation
-        <> enemyIs Cards.theRougarou
-        )
+    [ restrictedAbility
+          x
+          1
+          (ControlsThis <> EnemyCriteria
+            (EnemyExists
+            $ ExhaustedEnemy
+            <> EnemyAt YourLocation
+            <> enemyIs Cards.theRougarou
+            )
+          )
+        $ FastAbility Free
+    ]
 
 instance RunMessage FishingNet where
   runMessage msg a@(FishingNet attrs@AssetAttrs {..}) = case msg of

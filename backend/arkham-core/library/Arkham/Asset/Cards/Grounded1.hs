@@ -26,7 +26,7 @@ instance HasAbilities Grounded1 where
     [ restrictedAbility
           x
           1
-          (OwnsThis <> DuringSkillTest
+          (ControlsThis <> DuringSkillTest
             (SkillTestSourceMatches $ SourceWithTrait Spell)
           )
         $ FastAbility

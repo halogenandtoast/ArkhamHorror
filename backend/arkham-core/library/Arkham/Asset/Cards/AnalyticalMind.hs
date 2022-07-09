@@ -24,7 +24,7 @@ analyticalMind = asset AnalyticalMind Cards.analyticalMind
 
 instance HasAbilities AnalyticalMind where
   getAbilities (AnalyticalMind attrs) =
-    [ restrictedAbility attrs 1 OwnsThis
+    [ restrictedAbility attrs 1 ControlsThis
         $ ReactionAbility
             (CommittedCards Timing.After You $ LengthIs $ EqualTo $ Static 1)
         $ ExhaustCost (toTarget attrs)

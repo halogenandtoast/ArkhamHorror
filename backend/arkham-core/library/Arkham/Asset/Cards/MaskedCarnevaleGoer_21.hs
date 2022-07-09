@@ -12,6 +12,7 @@ import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Placement
 import Arkham.Source
 
 newtype MaskedCarnevaleGoer_21 = MaskedCarnevaleGoer_21 AssetAttrs
@@ -36,8 +37,8 @@ instance RunMessage MaskedCarnevaleGoer_21 where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push (Flip iid (InvestigatorSource iid) (toTarget attrs))
     Flip _ _ target | isTarget attrs target -> do
-      case assetLocation attrs of
-        Just lid -> do
+      case assetPlacement attrs of
+        AtLocation lid -> do
           let
             innocentReveler = PlayerCard
               $ lookupPlayerCard Cards.innocentReveler (toCardId attrs)
@@ -45,7 +46,7 @@ instance RunMessage MaskedCarnevaleGoer_21 where
             [ CreateStoryAssetAt innocentReveler lid
             , Flipped (toSource attrs) innocentReveler
             ]
-        Nothing -> error "not possible"
+        _ -> error "not possible"
     LookAtRevealed _ _ target | isTarget a target -> do
       let
         innocentReveler =

@@ -25,7 +25,7 @@ drFrancisMorgan = ally DrFrancisMorgan Cards.drFrancisMorgan (4, 1)
 
 instance HasAbilities DrFrancisMorgan where
   getAbilities (DrFrancisMorgan x) =
-    [ restrictedAbility x 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility x 1 ControlsThis $ ReactionAbility
         (Matcher.EnemyDefeated Timing.After You AnyEnemy)
         (ExhaustCost $ toTarget x)
     ]

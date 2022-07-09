@@ -24,7 +24,7 @@ instance HasAbilities StrayCat where
     [ restrictedAbility
           a
           1
-          (OwnsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
+          (ControlsThis <> EnemyCriteria (EnemyExists $ EnemyAt YourLocation))
         $ FastAbility
         $ DiscardCost
         $ toTarget a

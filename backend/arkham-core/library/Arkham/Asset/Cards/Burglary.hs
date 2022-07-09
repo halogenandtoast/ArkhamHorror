@@ -24,7 +24,7 @@ burglary = asset Burglary Cards.burglary
 
 instance HasAbilities Burglary where
   getAbilities (Burglary a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Investigate)
         $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
     ]

@@ -24,7 +24,7 @@ alchemicalTransmutation =
 
 instance HasAbilities AlchemicalTransmutation where
   getAbilities (AlchemicalTransmutation a) =
-    [ restrictedAbility a 1 OwnsThis $ ActionAbility Nothing $ Costs
+    [ restrictedAbility a 1 ControlsThis $ ActionAbility Nothing $ Costs
         [ExhaustCost (toTarget a), UseCost (AssetWithId $ toId a) Charge 1]
     ]
 

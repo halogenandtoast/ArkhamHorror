@@ -24,10 +24,10 @@ instance HasAbilities KeenEye3 where
   getAbilities (KeenEye3 a) =
     [ withTooltip
         "{fast} Spend 2 resources: You get +1 {intellect} until the end of the phase."
-      $ restrictedAbility a 1 OwnsThis (FastAbility $ ResourceCost 2)
+      $ restrictedAbility a 1 ControlsThis (FastAbility $ ResourceCost 2)
     , withTooltip
         "{fast} Spend 2 resources: You get +1 {combat} until the end of the phase."
-      $ restrictedAbility a 2 OwnsThis (FastAbility $ ResourceCost 2)
+      $ restrictedAbility a 2 ControlsThis (FastAbility $ ResourceCost 2)
     ]
 
 instance RunMessage KeenEye3 where

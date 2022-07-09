@@ -35,7 +35,7 @@ instance HasAbilities Ambush1 where
           1
           (LocationExists $ LocationWithId lid <> LocationWithoutInvestigators)
         $ SilentForcedAbility AnyWindow
-      , restrictedAbility attrs 2 OwnsThis $ ForcedAbility $ EnemySpawns
+      , restrictedAbility attrs 2 ControlsThis $ ForcedAbility $ EnemySpawns
         Timing.After
         (LocationWithId lid)
         AnyEnemy

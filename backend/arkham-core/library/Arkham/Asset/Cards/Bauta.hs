@@ -23,11 +23,11 @@ bauta = asset Bauta Cards.bauta
 
 instance HasAbilities Bauta where
   getAbilities (Bauta a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
       $ ReactionAbility
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
-    , restrictedAbility a 2 OwnsThis $ ReactionAbility
+    , restrictedAbility a 2 ControlsThis $ ReactionAbility
       (InitiatedSkillTest Timing.When You (NotSkillType SkillCombat) AnyValue)
       (DiscardCost $ toTarget a)
     ]

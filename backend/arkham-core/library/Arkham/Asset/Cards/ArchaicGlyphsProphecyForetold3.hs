@@ -23,7 +23,7 @@ newtype ArchaicGlyphsProphecyForetold3 = ArchaicGlyphsProphecyForetold3 AssetAtt
 
 instance HasAbilities ArchaicGlyphsProphecyForetold3 where
   getAbilities (ArchaicGlyphsProphecyForetold3 a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Investigate)
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
     ]

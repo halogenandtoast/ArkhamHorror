@@ -39,7 +39,7 @@ instance HasModifiersFor Machete where
 
 instance HasAbilities Machete where
   getAbilities (Machete a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Fight)
         $ ActionCost 1
     ]

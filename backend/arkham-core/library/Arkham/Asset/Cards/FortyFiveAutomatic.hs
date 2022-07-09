@@ -24,7 +24,7 @@ fortyFiveAutomatic = asset FortyFiveAutomatic Cards.fortyFiveAutomatic
 
 instance HasAbilities FortyFiveAutomatic where
   getAbilities (FortyFiveAutomatic a) =
-    [ restrictedAbility a 1 OwnsThis $ ActionAbility
+    [ restrictedAbility a 1 ControlsThis $ ActionAbility
         (Just Action.Fight)
         (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Ammo 1])
     ]

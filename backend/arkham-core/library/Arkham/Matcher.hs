@@ -356,6 +356,10 @@ pattern Unblocked <-
   LocationWithoutModifier Blocked where
   Unblocked = LocationWithoutModifier Blocked
 
+pattern LocationOfThis :: LocationMatcher
+pattern LocationOfThis <- SameLocation where
+  LocationOfThis = SameLocation
+
 locationIs :: HasCardCode a => a -> LocationMatcher
 locationIs = LocationIs . toCardCode
 {-# INLINE locationIs #-}

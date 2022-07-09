@@ -25,11 +25,11 @@ instance HasAbilities BloodPact3 where
     [ withTooltip
         "{fast} Add 1 doom to Blood Pact: You get +3 {willpower} for this skill test. (Limit once per test.)"
       $ limitedAbility (PlayerLimit PerTestOrAbility 1)
-      $ restrictedAbility x 1 OwnsThis (FastAbility $ ResourceCost 2)
+      $ restrictedAbility x 1 ControlsThis (FastAbility $ ResourceCost 2)
     , withTooltip
         "{fast} Add 1 doom to Blood Pact: You get +3 {combat} for this skill test. (Limit once per test.)"
       $ limitedAbility (PlayerLimit PerTestOrAbility 1)
-      $ restrictedAbility x 2 OwnsThis (FastAbility $ ResourceCost 2)
+      $ restrictedAbility x 2 ControlsThis (FastAbility $ ResourceCost 2)
     ]
 
 instance RunMessage BloodPact3 where

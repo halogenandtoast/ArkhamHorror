@@ -13,6 +13,7 @@ import Arkham.Message as X hiding ( AssetDamage )
 
 import Arkham.Card
 import Arkham.Message qualified as Msg
+import Arkham.Placement
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -25,13 +26,13 @@ instance RunMessage AssetAttrs where
     SealedToken token card | toCardId card == toCardId a ->
       pure $ a & sealedTokensL %~ (token :)
     UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
-    ReadyExhausted -> case assetController of
-      Just iid -> do
+    ReadyExhausted -> case assetPlacement of
+      InPlayArea iid -> do
         modifiers <- getModifiers (toSource a) (InvestigatorTarget iid)
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else a <$ push (Ready $ toTarget a)
-      Nothing -> a <$ push (Ready $ toTarget a)
+      _ -> a <$ push (Ready $ toTarget a)
     RemoveAllDoom _ -> pure $ a & doomL .~ 0
     PlaceClues target n | isTarget a target -> pure $ a & cluesL +~ n
     PlaceDoom target n | isTarget a target -> pure $ a & doomL +~ n
@@ -59,10 +60,26 @@ instance RunMessage AssetAttrs where
       pure $ a & damageL %~ max 0 . subtract n
     HealHorror (isTarget a -> True) n ->
       pure $ a & horrorL %~ max 0 . subtract n
-    When (InvestigatorResigned iid) | assetController == Just iid ->
-      a <$ push (ResignWith (AssetTarget assetId))
-    InvestigatorEliminated iid | assetController == Just iid ->
-      a <$ push (Discard (AssetTarget assetId))
+    When (InvestigatorResigned iid) -> do
+      let
+        shouldResignWith = case assetPlacement of
+          InPlayArea iid' -> iid == iid'
+          InThreatArea iid' -> iid == iid'
+          AttachedToInvestigator iid' -> iid == iid'
+          _ -> False
+      when shouldResignWith $
+        push $ ResignWith (AssetTarget assetId)
+      pure a
+    InvestigatorEliminated iid -> do
+      let
+        shouldDiscard = case assetPlacement of
+          InPlayArea iid' -> iid == iid'
+          InThreatArea iid' -> iid == iid'
+          AttachedToInvestigator iid' -> iid == iid'
+          _ -> False
+      when shouldDiscard $
+        push $ Discard (AssetTarget assetId)
+      pure a
     AddUses target useType' n | a `isTarget` target -> case assetUses of
       Uses useType'' m | useType' == useType'' ->
         pure $ a & usesL .~ Uses useType' (n + m)
@@ -79,15 +96,11 @@ instance RunMessage AssetAttrs where
       LocationTarget lid ->
         pure
           $ a
-          & (controllerL .~ Nothing)
-          . (enemyL .~ Nothing)
-          . (locationL ?~ lid)
+          & (placementL .~ AttachedToLocation lid)
       EnemyTarget eid ->
         pure
           $ a
-          & (controllerL .~ Nothing)
-          . (locationL .~ Nothing)
-          . (enemyL ?~ eid)
+          & (placementL .~ AttachedToEnemy eid)
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | a `isTarget` target ->
       a <$ push (RemoveFromPlay $ toSource a)
@@ -129,7 +142,7 @@ instance RunMessage AssetAttrs where
         <> [whenEnterMsg, afterEnterMsg]
       pure
         $ a
-        & (controllerL ?~ iid)
+        & (placementL .~ InPlayArea iid)
         & (usesL .~ if assetUses == NoUses
             then foldl' applyModifier startingUses modifiers
             else assetUses
@@ -139,21 +152,21 @@ instance RunMessage AssetAttrs where
         ((`Window` Window.TookControlOfAsset iid aid)
         <$> [Timing.When, Timing.After]
         )
-      pure $ a & controllerL ?~ iid
+      pure $ a & placementL .~ InPlayArea iid
     ReplacedInvestigatorAsset iid aid | aid == assetId ->
-      pure $ a & controllerL ?~ iid
+      pure $ a & placementL .~ InPlayArea iid
     AddToScenarioDeck key target | isTarget a target -> do
       pushAll
         [AddCardToScenarioDeck key (toCard a), RemoveFromGame (toTarget a)]
-      pure $ a & controllerL .~ Nothing
+      pure $ a & placementL .~ Unplaced
     Exhaust target | a `isTarget` target -> pure $ a & exhaustedL .~ True
-    Ready target | a `isTarget` target -> case assetController of
-      Just iid -> do
+    Ready target | a `isTarget` target -> case assetPlacement of
+      InPlayArea iid -> do
         modifiers <- getModifiers (toSource a) (InvestigatorTarget iid)
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhaustedL .~ False
-      Nothing -> pure $ a & exhaustedL .~ False
+      _ -> pure $ a & exhaustedL .~ False
     PlaceUnderneath (isTarget a -> True) cards -> do
       pure $ a & cardsUnderneathL <>~ cards
     Blanked msg' -> runMessage msg' a

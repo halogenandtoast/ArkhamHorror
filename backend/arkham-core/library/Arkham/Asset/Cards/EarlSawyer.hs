@@ -25,7 +25,7 @@ earlSawyer = ally EarlSawyer Cards.earlSawyer (3, 2)
 
 instance HasAbilities EarlSawyer where
   getAbilities (EarlSawyer attrs) =
-    [ restrictedAbility attrs 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility attrs 1 ControlsThis $ ReactionAbility
         (Matcher.EnemyEvaded Timing.After You AnyEnemy)
         (ExhaustCost $ toTarget attrs)
     ]

@@ -28,7 +28,7 @@ arcaneInsight4 = asset ArcaneInsight4 Cards.arcaneInsight4
 instance HasAbilities ArcaneInsight4 where
   getAbilities (ArcaneInsight4 a) =
     [ limitedAbility (PlayerLimit PerTurn 1)
-        $ restrictedAbility a 1 (OwnsThis <> DuringTurn Anyone)
+        $ restrictedAbility a 1 (ControlsThis <> DuringTurn Anyone)
         $ FastAbility
         $ UseCost (AssetWithId $ toId a) Charge 1
     ]

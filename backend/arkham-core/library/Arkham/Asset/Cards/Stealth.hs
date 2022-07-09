@@ -26,7 +26,7 @@ stealth = asset Stealth Cards.stealth
 
 instance HasAbilities Stealth where
   getAbilities (Stealth attrs) =
-    [ restrictedAbility attrs 1 OwnsThis
+    [ restrictedAbility attrs 1 ControlsThis
         $ ActionAbility (Just Action.Evade)
         $ ActionCost 1
     ]
@@ -45,8 +45,9 @@ instance RunMessage Stealth where
     ChosenEvadeEnemy source eid | isSource attrs source ->
       a <$ push (skillTestModifier source (EnemyTarget eid) (EnemyEvade (-2)))
     AfterSkillTestEnds source target@(EnemyTarget eid) n
-      | isSource attrs source && n >= 0 -> case assetController attrs of
-        Just iid -> a <$ pushAll
+      | isSource attrs source && n >= 0 -> do
+        let iid = getController attrs
+        a <$ pushAll
           [ CreateWindowModifierEffect
             EffectTurnWindow
             (EffectModifiers $ toModifiers attrs [EnemyCannotEngage iid])
@@ -54,5 +55,4 @@ instance RunMessage Stealth where
             target
           , DisengageEnemy iid eid
           ]
-        Nothing -> error "must be owned"
     _ -> Stealth <$> runMessage msg attrs

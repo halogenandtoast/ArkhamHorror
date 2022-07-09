@@ -29,7 +29,7 @@ instance HasAbilities Scavenging where
     [ restrictedAbility
           a
           1
-          (OwnsThis <> InvestigatorExists
+          (ControlsThis <> InvestigatorExists
             (You
             <> DiscardWith (HasCard $ CardWithTrait Item)
             <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile

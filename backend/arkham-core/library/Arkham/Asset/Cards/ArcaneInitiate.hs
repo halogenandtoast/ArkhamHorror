@@ -24,12 +24,12 @@ arcaneInitiate = ally ArcaneInitiate Cards.arcaneInitiate (1, 2)
 
 instance HasAbilities ArcaneInitiate where
   getAbilities (ArcaneInitiate a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
       $ ForcedAbility
       $ AssetEntersPlay Timing.When
       $ AssetWithId
       $ toId a
-    , restrictedAbility a 2 OwnsThis $ FastAbility $ ExhaustCost $ toTarget a
+    , restrictedAbility a 2 ControlsThis $ FastAbility $ ExhaustCost $ toTarget a
     ]
 
 instance RunMessage ArcaneInitiate where

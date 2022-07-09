@@ -26,7 +26,7 @@ instance RunMessage OccultLexicon where
         : [ ShuffleCardsIntoDeck iid deckBloodRites | canShuffleDeck ]
       OccultLexicon <$> runMessage msg attrs
     RemovedFromPlay source | isSource attrs source -> do
-      for_ (assetController attrs)
-        $ \iid -> push (RemoveAllCopiesOfCardFromGame iid "05317")
+      let iid = getOwner attrs
+      push (RemoveAllCopiesOfCardFromGame iid "05317")
       OccultLexicon <$> runMessage msg attrs
     _ -> OccultLexicon <$> runMessage msg attrs

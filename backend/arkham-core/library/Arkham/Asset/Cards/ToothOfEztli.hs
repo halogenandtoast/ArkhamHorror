@@ -36,7 +36,7 @@ instance HasAbilities ToothOfEztli where
     [ restrictedAbility
         x
         1
-        OwnsThis
+        ControlsThis
         (ReactionAbility
           (SkillTestResult
             Timing.After

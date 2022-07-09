@@ -14,7 +14,7 @@ import Arkham.Agenda
 import Arkham.Agenda.Attrs ( AgendaAttrs (..), Field (..) )
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset
-import Arkham.Asset.Attrs ( AssetAttrs (..), DiscardedAttrs (..), Field (..) )
+import Arkham.Asset.Attrs ( assetController, AssetAttrs (..), DiscardedAttrs (..), Field (..) )
 import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
@@ -79,6 +79,7 @@ import Arkham.Message qualified as Msg
 import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
+import Arkham.Placement
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario
@@ -1182,11 +1183,10 @@ getAssetsMatching matcher = do
     AssetCardMatch cardMatcher ->
       pure $ filter ((`cardMatch` cardMatcher) . toCard . toAttrs) as
     DiscardableAsset -> pure $ filter canBeDiscarded as
-    EnemyAsset eid -> pure $ filter ((== Just eid) . assetEnemy . toAttrs) as
+    EnemyAsset eid -> filterM (fieldP AssetPlacement (== AttachedToEnemy eid) . toId) as
     AssetAt locationMatcher -> do
       locations <- map toId <$> getLocationsMatching locationMatcher
-      pure
-        $ filter (maybe False (`elem` locations) . assetLocation . toAttrs) as
+      filterM (fieldP AssetLocation (maybe False (`elem` locations)) . toId) as
     AssetReady -> pure $ filter (not . assetExhausted . toAttrs) as
     M.AssetExhausted -> pure $ filter (assetExhausted . toAttrs) as
     AssetWithoutModifier modifierType -> flip filterM as $ \a -> do
@@ -1244,7 +1244,8 @@ getAssetsMatching matcher = do
       aids <- selectList assetMatcher
       if toId asset `elem` aids
         then do
-          case assetLocation (toAttrs asset) of
+          mlid <- field AssetLocation (toId asset)
+          case mlid of
             Nothing -> pure False
             Just alid -> do
               mdistance <- getDistance start alid
@@ -1568,12 +1569,24 @@ instance Projection AssetAttrs where
         Just n -> Just $ max 0 (n - assetHorror)
       AssetDoom -> pure assetDoom
       AssetExhausted -> pure assetExhausted
+      AssetPlacement -> pure assetPlacement
       AssetUses -> pure assetUses
       AssetStartingUses -> pure . cdUses $ toCardDef attrs
-      AssetController -> pure assetController
-      AssetLocation -> do
-        mloc <- maybe (pure Nothing) (field InvestigatorLocation) assetController
-        pure $ getFirst $ foldMap First [assetLocation, mloc]
+      AssetController -> case assetPlacement of
+        InPlayArea iid -> pure $ Just iid
+        InThreatArea iid -> pure $ Just iid
+        _ -> pure Nothing
+      AssetLocation -> case assetPlacement of
+        AtLocation lid -> pure $ Just lid
+        AttachedToLocation lid -> pure $ Just lid
+        InPlayArea iid -> field InvestigatorLocation iid
+        InThreatArea iid -> field InvestigatorLocation iid
+        AttachedToInvestigator iid -> field InvestigatorLocation iid
+        AttachedToEnemy eid -> field EnemyLocation eid
+        AttachedToAsset aid' -> field AssetLocation aid'
+        AttachedToAct _ -> pure Nothing
+        AttachedToAgenda _ -> pure Nothing
+        Unplaced -> pure Nothing
       AssetCardCode -> pure assetCardCode
       AssetSlots -> pure assetSlots
       AssetSealedTokens -> pure assetSealedTokens
@@ -3424,8 +3437,8 @@ runGameMessage msg g = case msg of
   DiscardedCost (AssetTarget aid) -> do
     -- When discarded as a cost, the entity may still need to be in the environment to handle ability resolution
     asset <- getAsset aid
-    case assetController (toAttrs asset) of
-      Nothing -> error "Unhandled: Asset was discarded for cost but was uncontrolled"
+    case assetOwner (toAttrs asset) of
+      Nothing -> error "Unhandled: Asset was discarded for cost but was unowned"
       Just iid -> do
         let dEntities = fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
         pure $ g & inDiscardEntitiesL . at iid ?~ (dEntities & assetsL . at aid ?~ asset)

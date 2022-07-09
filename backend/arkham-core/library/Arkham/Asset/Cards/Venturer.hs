@@ -25,7 +25,7 @@ instance HasAbilities Venturer where
     [ restrictedAbility
           a
           1
-          (OwnsThis <> AssetExists
+          (ControlsThis <> AssetExists
             (AssetControlledBy (InvestigatorAt YourLocation)
             <> AssetOneOf [AssetWithUseType Supply, AssetWithUseType Ammo]
             <> NotAsset (AssetWithId $ toId a)

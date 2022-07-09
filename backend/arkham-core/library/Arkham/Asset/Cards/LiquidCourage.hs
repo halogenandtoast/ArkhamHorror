@@ -26,7 +26,7 @@ instance HasAbilities LiquidCourage where
     [ restrictedAbility
           x
           1
-          (OwnsThis <> InvestigatorExists
+          (ControlsThis <> InvestigatorExists
             (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
           )
         $ ActionAbility Nothing

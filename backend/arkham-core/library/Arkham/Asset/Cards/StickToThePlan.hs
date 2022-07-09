@@ -39,7 +39,7 @@ instance HasModifiersFor StickToThePlan where
 
 instance HasAbilities StickToThePlan where
   getAbilities (StickToThePlan attrs) =
-    [ restrictedAbility attrs 1 OwnsThis
+    [ restrictedAbility attrs 1 ControlsThis
         $ ReactionAbility (DrawingStartingHand Timing.When You) Free
     ]
 

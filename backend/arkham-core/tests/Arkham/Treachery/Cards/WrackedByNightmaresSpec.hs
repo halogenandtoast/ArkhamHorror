@@ -10,6 +10,7 @@ import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Treachery.Attrs ( Field (..) )
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Matcher hiding (AssetExhausted)
+import Arkham.Placement
 import Arkham.Projection
 
 spec :: Spec
@@ -18,7 +19,7 @@ spec = describe "Wracked by Nightmares" $ do
     investigator <- testInvestigator id
     wrackedByNightmares <- genPlayerCard Cards.wrackedByNightmares
     asset <- testAsset
-      ((Asset.exhaustedL .~ True) . (Asset.controllerL ?~ toId investigator))
+      ((Asset.exhaustedL .~ True) . (Asset.placementL .~ InPlayArea (toId investigator)))
     gameTest
         investigator
         [ loadDeck investigator [wrackedByNightmares]

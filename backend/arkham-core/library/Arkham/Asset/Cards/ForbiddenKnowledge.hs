@@ -25,7 +25,7 @@ instance HasAbilities ForbiddenKnowledge where
     [ restrictedAbility
         (toSource a)
         1
-        OwnsThis
+        ControlsThis
         (FastAbility $ Costs
           [ UseCost (AssetWithId $ toId a) Secret 1
           , HorrorCost (toSource a) YouTarget 1

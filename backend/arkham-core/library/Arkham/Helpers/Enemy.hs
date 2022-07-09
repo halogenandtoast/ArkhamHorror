@@ -21,6 +21,7 @@ import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Message ( Message (EnemySpawnAtLocationMatching), resolve )
 import Arkham.Modifier qualified as Modifier
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
@@ -28,7 +29,7 @@ import Arkham.Trait
 import Arkham.Window qualified as Window
 
 spawned :: EnemyAttrs -> Bool
-spawned EnemyAttrs { enemyLocation } = enemyLocation /= Nothing
+spawned EnemyAttrs { enemyPlacement } = enemyPlacement /= Unplaced
 
 getModifiedHealth :: (Monad m, HasGame m) => EnemyAttrs -> m Int
 getModifiedHealth EnemyAttrs {..} = do

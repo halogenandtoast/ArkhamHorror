@@ -24,11 +24,11 @@ gildedVolto = asset GildedVolto Cards.gildedVolto
 
 instance HasAbilities GildedVolto where
   getAbilities (GildedVolto a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
       $ ReactionAbility
           (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
           Free
-    , restrictedAbility a 2 OwnsThis $ ReactionAbility
+    , restrictedAbility a 2 ControlsThis $ ReactionAbility
       (InitiatedSkillTest Timing.When You (NotSkillType SkillAgility) AnyValue)
       (DiscardCost $ toTarget a)
     ]

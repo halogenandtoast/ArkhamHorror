@@ -25,7 +25,7 @@ rabbitsFoot3 = asset RabbitsFoot3 Cards.rabbitsFoot3
 
 instance HasAbilities RabbitsFoot3 where
   getAbilities (RabbitsFoot3 a) =
-    [ restrictedAbility a 1 OwnsThis $ ReactionAbility
+    [ restrictedAbility a 1 ControlsThis $ ReactionAbility
         (SkillTestResult Timing.After You AnySkillTest (FailureResult AnyValue))
         (ExhaustCost $ toTarget a)
     ]

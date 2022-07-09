@@ -22,7 +22,7 @@ drHenryArmitage = ally DrHenryArmitage Cards.drHenryArmitage (2, 2)
 
 instance HasAbilities DrHenryArmitage where
   getAbilities (DrHenryArmitage a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
       $ ReactionAbility
           (DrawCard Timing.After You (BasicCardMatch AnyCard) (DeckOf You))
       $ Costs [DiscardDrawnCardCost, ExhaustCost (toTarget a)]

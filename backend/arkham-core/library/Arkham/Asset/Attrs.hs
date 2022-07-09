@@ -102,6 +102,9 @@ horrorL = lens assetHorror $ \m x -> m {assetHorror = x}
 isStoryL :: Lens' AssetAttrs Bool
 isStoryL = lens assetIsStory $ \m x -> m {assetIsStory = x}
 
+placementL :: Lens' AssetAttrs Placement
+placementL = lens assetPlacement $ \m x -> m {assetPlacement = x}
+
 cardsUnderneathL :: Lens' AssetAttrs [Card]
 cardsUnderneathL = lens assetCardsUnderneath $ \m x -> m {assetCardsUnderneath = x}
 
@@ -241,6 +244,11 @@ controlledBy AssetAttrs {..} iid = case assetPlacement of
   InPlayArea iid' -> iid == iid'
   _ -> False
 
+attachedToEnemy :: AssetAttrs -> EnemyId -> Bool
+attachedToEnemy AssetAttrs {..} eid = case assetPlacement of
+  AttachedToEnemy eid' -> eid == eid'
+  _ -> False
+
 whenControlledBy ::
   Applicative m => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
 whenControlledBy a iid f = if controlledBy a iid then f else pure []
@@ -252,6 +260,11 @@ getController :: HasCallStack => AssetAttrs -> InvestigatorId
 getController attrs = case assetPlacement attrs of
   InPlayArea iid -> iid
   _ -> error "asset must be controlled"
+
+assetController :: AssetAttrs -> Maybe InvestigatorId
+assetController attrs = case assetPlacement attrs of
+  InPlayArea iid -> Just iid
+  _ -> Nothing
 
 defeated :: AssetAttrs -> Bool
 defeated AssetAttrs {..} =

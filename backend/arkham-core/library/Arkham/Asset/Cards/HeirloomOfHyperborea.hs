@@ -21,7 +21,7 @@ heirloomOfHyperborea = asset HeirloomOfHyperborea Cards.heirloomOfHyperborea
 
 instance HasAbilities HeirloomOfHyperborea where
   getAbilities (HeirloomOfHyperborea x) =
-    [ restrictedAbility x 1 (OwnsThis <> CanDrawCards) $ ReactionAbility
+    [ restrictedAbility x 1 (ControlsThis <> CanDrawCards) $ ReactionAbility
         (Matcher.PlayCard
           Timing.After
           You

@@ -27,7 +27,7 @@ instance HasAbilities KeyToTheChamber where
     [ restrictedAbility
         attrs
         1
-        (OwnsThis <> LocationExists
+        (ControlsThis <> LocationExists
           (ConnectedLocation <> LocationWithTitle "The Hidden Chamber")
         )
         (FastAbility Free)

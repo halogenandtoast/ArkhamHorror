@@ -24,7 +24,7 @@ newtype ArchaicGlyphsGuidingStones3 = ArchaicGlyphsGuidingStones3 AssetAttrs
 
 instance HasAbilities ArchaicGlyphsGuidingStones3 where
   getAbilities (ArchaicGlyphsGuidingStones3 a) =
-    [ restrictedAbility a 1 OwnsThis
+    [ restrictedAbility a 1 ControlsThis
         $ ActionAbility (Just Action.Investigate)
         $ Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1]
     ]

@@ -16,6 +16,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Source
 
 newtype MaskedCarnevaleGoer_18 = MaskedCarnevaleGoer_18 AssetAttrs
@@ -36,9 +37,9 @@ instance HasAbilities MaskedCarnevaleGoer_18 where
     ]
 
 locationOf :: AssetAttrs -> LocationId
-locationOf AssetAttrs { assetLocation } = case assetLocation of
-  Just lid -> lid
-  Nothing -> error "impossible"
+locationOf AssetAttrs { assetPlacement } = case assetPlacement of
+  AtLocation lid -> lid
+  _ -> error "impossible"
 
 instance RunMessage MaskedCarnevaleGoer_18 where
   runMessage msg a@(MaskedCarnevaleGoer_18 attrs) = case msg of

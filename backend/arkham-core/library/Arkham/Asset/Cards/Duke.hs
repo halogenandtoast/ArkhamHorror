@@ -88,7 +88,7 @@ instance RunMessage Duke where
           . (`applyAbilityModifiers` [ActionCostModifier (-1)])
           )
           investigateAbilities
-      accessibleLocationIds <- selectList $ AccessibleTo $ LocationWithId lid
+      accessibleLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
       a <$ if null accessibleLocationIds
         then pushAll investigateActions
         else push

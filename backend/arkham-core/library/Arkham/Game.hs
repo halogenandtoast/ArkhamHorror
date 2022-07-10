@@ -64,7 +64,6 @@ import Arkham.Matcher hiding
   , FastPlayerWindow
   , InvestigatorDefeated
   , InvestigatorEliminated
-  , PlaceAsset
   , PlayCard
   , RevealLocation
   )

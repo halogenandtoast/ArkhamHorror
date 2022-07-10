@@ -36,6 +36,7 @@ import Arkham.Location.Base
 import Arkham.Matcher hiding ( EnemyDefeated, InvestigatorDefeated )
 import Arkham.Name
 import Arkham.Phase
+import Arkham.Placement
 import Arkham.RequestedTokenStrategy
 import Arkham.Resolution
 import Arkham.Scenario.Deck
@@ -237,6 +238,7 @@ data Message
   | CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
   | CreateTokenEffect (EffectMetadata Window Message) Source Token
   | CreateStoryAssetAt Card LocationId
+  | PlaceAsset AssetId Placement
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
   | CreateTokenValueEffect Int Source Target
   | CreateWeaknessInThreatArea Card InvestigatorId

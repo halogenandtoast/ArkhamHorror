@@ -64,6 +64,7 @@ import Arkham.Matcher hiding
   , FastPlayerWindow
   , InvestigatorDefeated
   , InvestigatorEliminated
+  , PlaceAsset
   , PlayCard
   , RevealLocation
   )
@@ -3203,7 +3204,7 @@ runGameMessage msg g = case msg of
     let
       asset = createAsset card
       assetId = toId asset
-    push $ AttachAsset assetId (LocationTarget lid)
+    push $ PlaceAsset assetId (AtLocation lid)
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
   CreateWeaknessInThreatArea card iid -> do
     let

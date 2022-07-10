@@ -18,6 +18,7 @@ import Arkham.Label
 import Arkham.LocationSymbol
 import Arkham.Modifier
 import Arkham.Phase
+import Arkham.Placement
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.SlotType
@@ -621,6 +622,7 @@ data WindowMatcher
   | MovedFromHunter Timing EnemyMatcher
   | ChosenRandomLocation Timing LocationMatcher
   | PlaceUnderneath Timing TargetMatcher CardMatcher
+  | PlaceAsset AssetId Placement
   | EnemyWouldBeDefeated Timing EnemyMatcher
   | EnemyWouldReady Timing EnemyMatcher
   | EnemyEnters Timing Where EnemyMatcher

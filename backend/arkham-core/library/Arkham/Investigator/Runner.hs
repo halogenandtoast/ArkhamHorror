@@ -1818,8 +1818,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         deck = filter
           ((`notElem` findWithDefault [] Zone.FromDeck foundCards) . PlayerCard)
           (unDeck investigatorDeck)
-        allFoundCards = concat $ toList foundCards
-        targetCards = filter (`cardMatch` cardMatcher) allFoundCards
+        targetCards = HashMap.map (filter (`cardMatch` cardMatcher)) foundCards
       push $ EndSearch iid source target cardSources
       case foundStrategy of
         DrawFound who n -> do
@@ -1828,9 +1827,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               [ AddFocusedToHand
                   iid
                   (InvestigatorTarget who)
-                  Zone.FromDeck
+                  zone
                   (toCardId card)
-              | card <- targetCards
+              | (zone, cards) <- mapToList targetCards, card <- cards
               ]
           push
             (chooseN iid n
@@ -1842,9 +1841,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               [ Window Timing.When Window.NonFast
               , Window Timing.When (Window.DuringTurn iid)
               ]
-          playableCards <- filterM
-            (getIsPlayable who source UnpaidCost windows')
-            targetCards
+          playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
+            cards' <- filterM
+              (getIsPlayable who source UnpaidCost windows')
+              cards
+            pure (zone, cards')
           let
             choices =
               [ TargetLabel
@@ -1853,7 +1854,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   , PayCardCost iid card
                   , PlayCard iid card Nothing False
                   ]
-              | card <- playableCards
+              | (_, cards) <- playableCards, card <- cards
               ]
           push
             (chooseN iid n
@@ -1868,7 +1869,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               iid
               searchTarget
               (Deck.InvestigatorDeck iid)
-              targetCards
+              (concat $ toList targetCards)
         ReturnCards -> pure ()
 
       push $ CheckWindow

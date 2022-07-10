@@ -407,13 +407,31 @@ withModifiers a = do
   modifiers' <- getModifiersFor source (toTarget a) ()
   pure $ a `with` ModifierData modifiers'
 
+withEnemyMetadata :: (Monad m, HasGame m) => Enemy -> m (With Enemy EnemyMetadata)
+withEnemyMetadata a = do
+  mTurnInvestigator <- selectOne TurnInvestigator
+  mLeadInvestigator <- selectOne LeadInvestigator
+  someone <- selectJust Anyone
+
+  let source = InvestigatorSource $ fromMaybe someone (mTurnInvestigator <|> mLeadInvestigator)
+  emModifiers <- getModifiersFor source (toTarget a) ()
+  emEngagedInvestigators <- select $ investigatorEngagedWith (toId a)
+  emTreacheries <- select $ TreacheryOnEnemy $ EnemyWithId (toId a)
+  emAssets <- select $ EnemyAsset (toId a)
+  pure $ a `with` EnemyMetadata {..}
+
 withLocationConnectionData
   :: (Monad m, HasGame m) => With Location ModifierData
-  -> m (With (With Location ModifierData) ConnectionData)
+  -> m (With (With Location ModifierData) LocationMetadata)
 withLocationConnectionData inner@(With target _) = do
   matcher <- getConnectedMatcher target
-  connectedLocationIds <- selectList matcher
-  pure $ inner `with` ConnectionData connectedLocationIds
+  lmConnectedLocations <- selectList matcher
+  lmInvestigators <- select (InvestigatorAt $ LocationWithId $ toId target)
+  lmEnemies <- select (EnemyAt $ LocationWithId $ toId target)
+  lmAssets <- select (AssetAtLocation $ toId target)
+  lmEvents <- select (EventAt $ LocationWithId $ toId target)
+  lmTreacheries <- select (TreacheryAt $ LocationWithId $ toId target)
+  pure $ inner `with` LocationMetadata {..}
 
 withInvestigatorConnectionData
   :: (Monad m, HasGame m) => With WithDeckSize ModifierData
@@ -498,7 +516,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         )
         g
       )
-    , "enemies" .= toJSON (runReader (traverse withModifiers (gameEnemies g)) g)
+    , "enemies" .= toJSON (runReader (traverse withEnemyMetadata (gameEnemies g)) g)
     , "enemiesInVoid"
       .= toJSON (runReader (traverse withModifiers gameEnemiesInVoid) g)
     , "assets" .= toJSON (runReader (traverse withModifiers (gameAssets g)) g)
@@ -1175,8 +1193,9 @@ getAssetsMatching matcher = do
     AssetControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
       pure $ filter (maybe False (`elem` iids) . assetController . toAttrs) as
-    AssetAtLocation lid ->
-      filterM (fmap (== Just lid) . field AssetLocation . toId) as
+    AssetAtLocation lid -> pure $ flip filter as $ \a -> case assetPlacement (toAttrs a) of
+      AtLocation lid' -> lid == lid'
+      _ -> False
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AssetNonStory -> pure $ filter (not . assetIsStory . toAttrs) as
     AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode . toAttrs) as
@@ -1330,7 +1349,8 @@ enemyMatcherFilter = \case
     if toId enemy `elem` eids
       then do
         milid <- field InvestigatorLocation iid
-        case (milid, enemyLocation (toAttrs enemy)) of
+        enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
+        case (milid, enemyLocation) of
           (Just ilid, Just elid) -> do
             mdistance <- getDistance ilid elid
             distances :: [Distance] <- catMaybes <$> for eids \eid -> do
@@ -1347,7 +1367,8 @@ enemyMatcherFilter = \case
     if toId enemy `elem` eids
       then do
         milid <- field InvestigatorLocation iid
-        case (milid, enemyLocation (toAttrs enemy)) of
+        enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
+        case (milid, enemyLocation) of
           (Just ilid, Just elid) -> do
             mdistance <- getDistance ilid elid
             distances :: [Distance] <- catMaybes <$> for eids \eid -> do
@@ -1387,14 +1408,13 @@ enemyMatcherFilter = \case
   EnemyIsEngagedWith investigatorMatcher -> \enemy -> do
     iids <-
       setFromList . map toId <$> getInvestigatorsMatching investigatorMatcher
-    pure . notNull . intersection iids . enemyEngagedInvestigators $ toAttrs
-      enemy
+    notNull . intersection iids <$> select (investigatorEngagedWith $ toId $ toAttrs enemy)
   EnemyEngagedWithYou -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
-    pure . member iid . enemyEngagedInvestigators $ toAttrs enemy
+    member iid <$> select (investigatorEngagedWith $ toId $ toAttrs enemy)
   EnemyNotEngagedWithYou -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
-    pure . notMember iid . enemyEngagedInvestigators $ toAttrs enemy
+    notMember iid <$> select (investigatorEngagedWith $ toId $ toAttrs enemy)
   EnemyWithMostRemainingHealth enemyMatcher -> \enemy -> do
     matches' <- getEnemiesMatching enemyMatcher
     elem enemy
@@ -1407,9 +1427,11 @@ enemyMatcherFilter = \case
   UniqueEnemy -> pure . cdUnique . toCardDef . toAttrs
   MovingEnemy ->
     \enemy -> (== Just (toId enemy)) . view enemyMovingL <$> getGame
-  M.EnemyAt locationMatcher -> \enemy -> case enemyLocation (toAttrs enemy) of
-    Nothing -> pure False
-    Just loc -> member loc <$> select locationMatcher
+  M.EnemyAt locationMatcher -> \enemy -> do
+    enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
+    case enemyLocation of
+      Nothing -> pure False
+      Just loc -> member loc <$> select locationMatcher
   CanFightEnemy -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (toSource enemy) (InvestigatorTarget iid)
@@ -1479,7 +1501,9 @@ enemyMatcherFilter = \case
         mempty
     if null matches'
       then pure $ toId enemy `elem` matchingEnemyIds
-      else pure $ maybe False (`elem` matches') (enemyLocation $ toAttrs enemy)
+      else do
+        mloc <- field EnemyLocation (toId $ toAttrs enemy)
+        pure $ maybe False (`elem` matches') mloc
 
 getAct :: (Monad m, HasGame m) => ActId -> m Act
 getAct aid = fromJustNote missingAct . preview (entitiesL . actsL . ix aid) <$> getGame
@@ -1587,6 +1611,7 @@ instance Projection AssetAttrs where
         AttachedToAct _ -> pure Nothing
         AttachedToAgenda _ -> pure Nothing
         Unplaced -> pure Nothing
+        TheVoid -> pure Nothing
       AssetCardCode -> pure assetCardCode
       AssetSlots -> pure assetSlots
       AssetSealedTokens -> pure assetSealedTokens
@@ -1619,7 +1644,14 @@ instance Projection EnemyAttrs where
     e <- getEnemy eid
     let attrs@EnemyAttrs {..} = toAttrs e
     case f of
-      EnemyEngagedInvestigators -> pure enemyEngagedInvestigators
+      EnemyEngagedInvestigators -> case enemyPlacement of
+        InThreatArea iid -> pure $ singleton iid
+        _ -> do
+          isMassive <- fieldP EnemyKeywords (member Keyword.Massive) enemyId
+          if isMassive
+             then select (InvestigatorAt $ locationWithEnemy enemyId)
+             else pure mempty
+      EnemyPlacement -> pure enemyPlacement
       EnemyDoom -> pure enemyDoom
       EnemyEvade -> pure enemyEvade
       EnemyFight -> pure enemyFight
@@ -1635,7 +1667,10 @@ instance Projection EnemyAttrs where
       EnemyAbilities -> pure $ getAbilities e
       EnemyCard -> pure $ lookupCard enemyCardCode (unEnemyId eid)
       EnemyCardCode -> pure enemyCardCode
-      EnemyLocation -> pure enemyLocation
+      EnemyLocation -> case enemyPlacement of
+        AtLocation lid -> pure $ Just lid
+        InThreatArea iid -> field InvestigatorLocation iid
+        _ -> pure Nothing
 
 instance Projection InvestigatorAttrs where
   field f iid = do

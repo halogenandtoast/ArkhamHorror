@@ -359,7 +359,7 @@ data Message
   | InitiatePlayCardAsChoose InvestigatorId CardId [Card] [Message] ChosenCardStrategy Bool
   | InitiatePlayCardAs InvestigatorId CardId Card [Message] ChosenCardStrategy Bool
   | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
-  | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
+  -- | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
   | CheckAdditionalActionCosts InvestigatorId Target Source Action [Message]
   | -- Maybe Target is handler for success
     Investigate InvestigatorId LocationId Source (Maybe Target) SkillType Bool
@@ -445,7 +445,7 @@ data Message
   | PlacedLocation Name CardCode LocationId
   | PlacedLocationDirection LocationId Direction LocationId
   | PlayCard InvestigatorId Card (Maybe Target) [Window] Bool
-  | PlayFastEvent InvestigatorId CardId (Maybe Target) [Window]
+  -- | PlayFastEvent InvestigatorId CardId (Maybe Target) [Window]
   | PlayedCard InvestigatorId Card
   | ResolvedCard InvestigatorId Card
   | PlayerWindow InvestigatorId [Message] Bool

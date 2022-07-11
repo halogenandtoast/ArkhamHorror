@@ -2701,19 +2701,6 @@ runGameMessage msg g = case msg of
     case find (== card) playableCards of
       Nothing -> pure g
       Just _ -> runGameMessage (PutCardIntoPlay iid card mtarget windows') g
-  PlayFastEvent iid cardId _mtarget windows' -> do
-    investigator' <- getInvestigator iid
-    playableCards <- getPlayableCards (toAttrs investigator') Cost.PaidCost windows'
-    case find ((== cardId) . toCardId) (playableCards <> investigatorHand (toAttrs investigator')) of
-      Nothing -> pure g -- card was discarded before playing
-      Just card -> do
-        event' <- runMessage
-          (SetOriginalCardCode $ toOriginalCardCode card)
-          (createEvent card iid)
-        let
-          eid = toId event'
-        push $ PayCardCost iid card windows'
-        pure $ g & entitiesL . eventsL %~ insertMap eid event'
   PutCardIntoPlay iid card mtarget windows' -> do
     let cardId = toCardId card
     case card of

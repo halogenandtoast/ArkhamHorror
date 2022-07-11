@@ -31,6 +31,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
+import Arkham.SkillTest
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -48,6 +49,20 @@ pattern UseResign iid source <- UseCardAbility iid source _ 99 _
 
 pattern UseDrawCardUnderneath :: InvestigatorId -> Source -> Message
 pattern UseDrawCardUnderneath iid source <- UseCardAbility iid source _ 100 _
+
+cluesToDiscover :: (Monad m, HasGame m) => InvestigatorId -> Int -> m Int
+cluesToDiscover investigatorId startValue = do
+  msource <- getSkillTestSource
+  case msource of
+    Just source -> do
+      modifiers <- getModifiers
+        source
+        (InvestigatorTarget investigatorId)
+      pure $ foldr applyModifier startValue modifiers
+    Nothing -> pure startValue
+ where
+  applyModifier (DiscoveredClues m) n = n + m
+  applyModifier _ n = n
 
 instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
@@ -89,6 +104,7 @@ instance RunMessage LocationAttrs where
     Successful (Action.Investigate, _) iid _ target _ | isTarget a target -> do
       let lid = toId a
       modifiers' <- getModifiers (InvestigatorSource iid) (LocationTarget lid)
+      clueAmount <- cluesToDiscover iid 1
       whenWindowMsg <- checkWindows
         [Window Timing.When (Window.SuccessfulInvestigation iid lid)]
       afterWindowMsg <- checkWindows
@@ -97,7 +113,7 @@ instance RunMessage LocationAttrs where
         (AlternateSuccessfullInvestigation `elem` modifiers')
         (pushAll
           [ whenWindowMsg
-          , InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate)
+          , InvestigatorDiscoverClues iid lid clueAmount (Just Action.Investigate)
           , afterWindowMsg
           ]
         )

@@ -19,7 +19,7 @@ spec = describe "Oops!" $ do
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
     oops <- genPlayerCard Cards.oops
-    rolands38Special <- buildAsset "01006" -- does 2 damage
+    rolands38Special <- buildAsset "01006" (Just investigator) -- does 2 damage
     enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 2)
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
     location <- testLocation id
@@ -59,7 +59,7 @@ spec = describe "Oops!" $ do
           chooseOptionMatching
             "play oops!"
             (\case
-              Run{} -> True
+              TargetLabel{} -> True
               _ -> False
             )
           fieldAssert EnemyDamage (== 0) enemy
@@ -71,7 +71,7 @@ spec = describe "Oops!" $ do
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
     oops <- genPlayerCard Cards.oops
-    fortyOneDerringer <- buildAsset "01047"
+    fortyOneDerringer <- buildAsset "01047" (Just investigator)
     enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 4)
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
     location <- testLocation id
@@ -111,7 +111,7 @@ spec = describe "Oops!" $ do
           chooseOptionMatching
             "play oops!"
             (\case
-              Run{} -> True
+              TargetLabel{} -> True
               _ -> False
             )
           fieldAssert EnemyDamage (== 0) enemy
@@ -123,7 +123,7 @@ spec = describe "Oops!" $ do
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
     oops <- genPlayerCard Cards.oops
-    shotgun4 <- buildAsset "01029"
+    shotgun4 <- buildAsset "01029" (Just investigator)
     enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 5)
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
     location <- testLocation id
@@ -163,7 +163,7 @@ spec = describe "Oops!" $ do
           chooseOptionMatching
             "play oops!"
             (\case
-              Run{} -> True
+              TargetLabel{} -> True
               _ -> False
             )
           fieldAssert EnemyDamage (== 0)  enemy

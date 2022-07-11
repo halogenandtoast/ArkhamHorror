@@ -23,7 +23,7 @@ instance ToJSON Asset where
   toJSON (Asset a) = toJSON a
 
 createAsset :: IsCard a => a -> Asset
-createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a)
+createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a, toCardOwner a)
 
 instance HasAbilities Asset where
   getAbilities (Asset a) = getAbilities a
@@ -54,7 +54,7 @@ instance SourceEntity Asset where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-lookupAsset :: CardCode -> (AssetId -> Asset)
+lookupAsset :: CardCode -> ((AssetId, Maybe InvestigatorId) -> Asset)
 lookupAsset cardCode =
   fromJustNote ("Unknown asset: " <> show cardCode) $ lookup cardCode allAssets
 
@@ -287,7 +287,7 @@ instance FromJSON Asset where
       "xcourage" -> Asset . Courage <$> parseJSON v
       _ -> error "invalid asset"
 
-allAssets :: HashMap CardCode (AssetId -> Asset)
+allAssets :: HashMap CardCode ((AssetId, Maybe InvestigatorId) -> Asset)
 allAssets = mapFromList $ map
   (cbCardCode &&& cbCardBuilder)
   [ Asset <$> rolands38Special

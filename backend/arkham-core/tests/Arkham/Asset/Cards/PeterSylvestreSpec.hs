@@ -11,7 +11,7 @@ spec :: Spec
 spec = describe "Peter Sylvestre" $ do
   it "gives you +1 agility" $ do
     investigator <- testInvestigator id
-    peterSylvestre <- buildAsset "02033"
+    peterSylvestre <- buildAsset "02033" (Just investigator)
     gameTest
         investigator
         [playAsset investigator peterSylvestre]
@@ -23,7 +23,7 @@ spec = describe "Peter Sylvestre" $ do
 
   it "removes one horror at the end of your turn" $ do
     investigator <- testInvestigator id
-    peterSylvestre <- buildAsset "02033"
+    peterSylvestre <- buildAsset "02033" (Just investigator)
     gameTest
         investigator
         [ playAsset investigator peterSylvestre

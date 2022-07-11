@@ -37,7 +37,7 @@ spec = do
             chooseOptionMatching
               "Play Dodge"
               (\case
-                Run{} -> True
+                TargetLabel{} -> True
                 _ -> False
               )
             didRunMessage `refShouldBe` False

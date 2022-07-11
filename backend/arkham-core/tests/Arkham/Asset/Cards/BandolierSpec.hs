@@ -12,7 +12,7 @@ spec :: Spec
 spec = describe "Bandolier" $ do
   it "adds a weapon hand slot" $ do
     investigator <- testInvestigator id
-    bandolier <- buildAsset "02147"
+    bandolier <- buildAsset "02147" (Just investigator)
     gameTest
         investigator
         [playAsset investigator bandolier]

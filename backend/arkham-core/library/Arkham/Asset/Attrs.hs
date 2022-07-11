@@ -24,7 +24,7 @@ import Arkham.Trait (Trait)
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ AssetId, EntityAttrs a ~ AssetAttrs) => IsAsset a
 
-type AssetCard a = CardBuilder AssetId a
+type AssetCard a = CardBuilder (AssetId, Maybe InvestigatorId) a
 
 newtype DiscardedAttrs a = DiscardedAttrs a
 
@@ -162,10 +162,10 @@ instance IsCard AssetAttrs where
   toCard a = lookupCard (assetOriginalCardCode a) (toCardId a)
   toCardOwner = assetOwner
 
-asset :: (AssetAttrs -> a) -> CardDef -> CardBuilder AssetId a
+asset :: (AssetAttrs -> a) -> CardDef -> CardBuilder (AssetId, Maybe InvestigatorId) a
 asset f cardDef = assetWith f cardDef id
 
-ally :: (AssetAttrs -> a) -> CardDef -> (Int, Int) -> CardBuilder AssetId a
+ally :: (AssetAttrs -> a) -> CardDef -> (Int, Int) -> CardBuilder (AssetId, Maybe InvestigatorId) a
 ally f cardDef stats = allyWith f cardDef stats id
 
 allyWith ::
@@ -173,7 +173,7 @@ allyWith ::
   CardDef ->
   (Int, Int) ->
   (AssetAttrs -> AssetAttrs) ->
-  CardBuilder AssetId a
+  CardBuilder (AssetId, Maybe InvestigatorId) a
 allyWith f cardDef (health, sanity) g =
   assetWith
     f
@@ -187,17 +187,17 @@ assetWith ::
   (AssetAttrs -> a) ->
   CardDef ->
   (AssetAttrs -> AssetAttrs) ->
-  CardBuilder AssetId a
+  CardBuilder (AssetId, Maybe InvestigatorId) a
 assetWith f cardDef g =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
-    , cbCardBuilder = \aid ->
+    , cbCardBuilder = \(aid, mOwner) ->
         f . g $
           AssetAttrs
             { assetId = aid
             , assetCardCode = toCardCode cardDef
             , assetOriginalCardCode = toCardCode cardDef
-            , assetOwner = Nothing
+            , assetOwner = mOwner
             , assetPlacement = Unplaced
             , assetSlots = cdSlots cardDef
             , assetHealth = Nothing

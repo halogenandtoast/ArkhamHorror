@@ -15,7 +15,7 @@ spec = describe "Roland's .39 Special" $ do
   it "gives +1 combat and +1 damage" $ do
     investigator <- testInvestigator
       $ \attrs -> attrs { investigatorCombat = 1 }
-    rolands38Special <- buildAsset "01006"
+    rolands38Special <- buildAsset "01006" (Just investigator)
     enemy <- testEnemy
       $ \attrs -> attrs { enemyFight = 2, enemyHealth = Static 3 }
     location <- testLocation id
@@ -47,7 +47,7 @@ spec = describe "Roland's .39 Special" $ do
     $ do
         investigator <- testInvestigator
           $ \attrs -> attrs { investigatorCombat = 1 }
-        rolands38Special <- buildAsset "01006"
+        rolands38Special <- buildAsset "01006" (Just investigator)
         enemy <- testEnemy
           $ \attrs -> attrs { enemyFight = 4, enemyHealth = Static 3 }
         location <- testLocation $ \attrs -> attrs { locationClues = 1 }

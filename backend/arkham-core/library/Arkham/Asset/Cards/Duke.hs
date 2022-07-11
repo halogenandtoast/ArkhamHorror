@@ -6,15 +6,15 @@ module Arkham.Asset.Cards.Duke
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Helpers.Investigator
 import Arkham.Id
-import Arkham.Investigator.Attrs ( Field(..) )
-import Arkham.Location.Attrs ( Field(..) )
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
@@ -66,8 +66,9 @@ instance RunMessage Duke where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ push (ChooseFightEnemy iid source Nothing SkillCombat mempty False)
     UseCardAbility iid source windows' 2 _ | isSource attrs source -> do
-      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
-      investigateAbilities :: [Ability] <-
+      lid <- getJustLocation iid
+      accessibleLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
+      investigateAbilities <-
         filterM
             (andM . sequence
               [ pure . (`abilityIs` Action.Investigate)
@@ -77,7 +78,7 @@ instance RunMessage Duke where
             )
           =<< field LocationAbilities lid
       let
-        investigateActions :: [Message] = map
+        investigateActions = map
           (($ windows')
           . UseAbility iid
           . (\a' -> a'
@@ -88,13 +89,14 @@ instance RunMessage Duke where
           . (`applyAbilityModifiers` [ActionCostModifier (-1)])
           )
           investigateAbilities
-      accessibleLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
-      a <$ if null accessibleLocationIds
+      if null accessibleLocationIds
         then pushAll investigateActions
-        else push
-          (chooseOne iid
+        else
+          push
+          $ chooseOne iid
           $ investigateActions
-          <> [ Run
+          <> [ targetLabel
+                 lid'
                  [ MoveAction iid lid' Free False
                  , CheckAdditionalActionCosts
                    iid
@@ -105,5 +107,5 @@ instance RunMessage Duke where
                  ]
              | lid' <- accessibleLocationIds
              ]
-          )
+      pure a
     _ -> Duke <$> runMessage msg attrs

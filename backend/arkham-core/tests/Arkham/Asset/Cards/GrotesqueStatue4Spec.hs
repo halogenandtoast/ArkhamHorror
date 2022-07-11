@@ -13,7 +13,7 @@ spec = describe "Grotesque Statue (4)" $ do
   context "when would reveal a token" $ do
     it "reveals 2 tokens and let's you choose one" $ do
       investigator <- testInvestigator id
-      grotestqueStatue <- buildAsset "01071"
+      grotestqueStatue <- buildAsset "01071" (Just investigator)
 
       (didRunMessage, logger) <- didPassSkillTestBy
         investigator

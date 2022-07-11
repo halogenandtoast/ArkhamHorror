@@ -16,7 +16,7 @@ spec = do
         investigator <- testInvestigator (Investigator.resourcesL .~ 1)
         enemy <- testEnemy (Enemy.healthL .~ Static 2)
         location <- testLocation id
-        zoeysCross <- buildAsset "02006"
+        zoeysCross <- buildAsset "02006" (Just investigator)
         gameTest
             investigator
             [ playAsset investigator zoeysCross

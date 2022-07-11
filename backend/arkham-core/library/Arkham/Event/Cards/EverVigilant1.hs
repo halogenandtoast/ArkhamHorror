@@ -5,14 +5,14 @@ module Arkham.Event.Cards.EverVigilant1
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
-import Arkham.Investigator.Attrs (Field(..))
-import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Matcher hiding ( DuringTurn )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Target
@@ -34,31 +34,30 @@ instance HasModifiersFor EverVigilant1 where
 
 instance RunMessage EverVigilant1 where
   runMessage msg e@(EverVigilant1 attrs) = case msg of
-    InvestigatorPlayEvent iid eid mtarget _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid mtarget windows' _ | eid == toId attrs -> do
       e <$ pushAll
-        (replicate 3 (ResolveEvent iid eid mtarget)
+        (replicate 3 (ResolveEvent iid eid mtarget windows')
         <> [Discard (toTarget attrs)]
         )
-    ResolveEvent iid eid _mtarget | eid == toId attrs -> do
-      cards <- fieldMap InvestigatorHand (filter (`cardMatch` CardWithType AssetType)) iid
+    ResolveEvent iid eid _mtarget windows' | eid == toId attrs -> do
+      let
+        windows'' =
+          nub
+            $ windows'
+            <> [Window Timing.When (DuringTurn iid), Window Timing.When NonFast]
+      cards <- fieldMap
+        InvestigatorHand
+        (filter (`cardMatch` CardWithType AssetType))
+        iid
       playableCards <- filterM
-        (getIsPlayable
-          iid
-          (toSource attrs)
-          UnpaidCost
-          [Window Timing.When (DuringTurn iid), Window Timing.When NonFast]
-        )
+        (getIsPlayable iid (toSource attrs) UnpaidCost windows'')
         cards
-      e <$ when
-        (notNull playableCards)
-        (push
-          (chooseUpToN
-            iid
-            1
-            "Do not play asset"
-            [ TargetLabel (CardIdTarget $ toCardId c) [PayCardCost iid c]
-            | c <- playableCards
-            ]
-          )
-        )
+      when (notNull playableCards) $ push $ chooseUpToN
+        iid
+        1
+        "Do not play asset"
+        [ TargetLabel (CardIdTarget $ toCardId c) [PayCardCost iid c windows'']
+        | c <- playableCards
+        ]
+      pure e
     _ -> EverVigilant1 <$> runMessage msg attrs

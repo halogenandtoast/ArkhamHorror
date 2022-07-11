@@ -35,6 +35,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding ( Cultist )
+import Arkham.Window (defaultWindows)
 
 newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -278,7 +279,7 @@ instance RunMessage UndimensionedAndUnseen where
                iid
                [ Label
                  "Play Powder of Ibn-Ghazi"
-                 [PutCardIntoPlay iid (PlayerCard card) Nothing]
+                 [PutCardIntoPlay iid (PlayerCard card) Nothing (defaultWindows iid)]
                , Label "Do no play Powder of Ibn-Ghazi" []
                ]
            | (iid, card) <- investigatorsWithPowderOfIbnGhazi

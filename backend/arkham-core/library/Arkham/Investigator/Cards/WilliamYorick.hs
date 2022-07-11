@@ -3,19 +3,19 @@ module Arkham.Investigator.Cards.WilliamYorick where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.Id
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype WilliamYorick = WilliamYorick InvestigatorAttrs
@@ -57,22 +57,17 @@ instance RunMessage WilliamYorick where
   runMessage msg i@(WilliamYorick attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let
+        windows' =
+          [ Window Timing.When Window.NonFast
+          , Window Timing.When (Window.DuringTurn iid)
+          ]
         targets =
           filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
-        playCardMsgs c = [AddToHand iid c] <>
-          if isFastCard c
-            then [InitiatePlayCard iid (toCardId c) Nothing False]
-            else [ PayCardCost iid c ]
+        playCardMsgs c = [AddToHand iid c] <> if isFastCard c
+          then [InitiatePlayCard iid (toCardId c) Nothing False]
+          else [PayCardCost iid c windows']
       playableTargets <- filterM
-        (getIsPlayable
-            iid
-            source
-            UnpaidCost
-            [ Window Timing.When Window.NonFast
-            , Window Timing.When (Window.DuringTurn iid)
-            ]
-        . PlayerCard
-        )
+        (getIsPlayable iid source UnpaidCost windows' . PlayerCard)
         targets
       i <$ push
         (chooseOne iid

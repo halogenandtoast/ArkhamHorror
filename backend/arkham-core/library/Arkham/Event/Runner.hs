@@ -32,7 +32,7 @@ runEventMessage msg a@EventAttrs{..} = case msg of
       pure $ a & attachedTargetL ?~ target
     Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
     Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
-    PayCardCost _ card | toCardId a == toCardId card ->
+    PayCardCost _ card _ | toCardId a == toCardId card ->
       pure $ a & beingPaidForL .~ True
     PlayedCard _ card | toCardId a == toCardId card ->
       pure $ a & beingPaidForL .~ False

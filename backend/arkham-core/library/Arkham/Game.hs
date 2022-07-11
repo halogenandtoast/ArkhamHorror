@@ -2226,8 +2226,8 @@ getActiveInvestigator = getGame >>= getInvestigator . gameActiveInvestigatorId
 getTurnInvestigator :: (Monad m, HasGame m) => m (Maybe Investigator)
 getTurnInvestigator = getGame >>= maybe (pure Nothing) (fmap Just . getInvestigator) . gameTurnPlayerInvestigatorId
 
-createActiveCostForCard :: (MonadRandom m, HasGame m) => InvestigatorId -> Card -> m ActiveCost
-createActiveCostForCard iid card = do
+createActiveCostForCard :: (MonadRandom m, HasGame m) => InvestigatorId -> Card -> [Window] -> m ActiveCost
+createActiveCostForCard iid card windows' = do
   acId <- getRandom
   modifiers' <- getModifiers (InvestigatorSource iid) (CardIdTarget $ toCardId card)
   modifiers'' <- getModifiers (InvestigatorSource iid) (CardTarget card)
@@ -2257,7 +2257,7 @@ createActiveCostForCard iid card = do
     , activeCostCosts = cost
     , activeCostPayments = Cost.NoPayment
     , activeCostTarget = ForCard card
-    , activeCostWindows = []
+    , activeCostWindows = windows'
     , activeCostInvestigator = iid
     , activeCostSealedTokens = []
     }
@@ -2351,8 +2351,8 @@ runGameMessage msg g = case msg of
         target
       )
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
-  PayCardCost iid card -> do
-    activeCost <- createActiveCostForCard iid card
+  PayCardCost iid card windows' -> do
+    activeCost <- createActiveCostForCard iid card windows'
     -- _ <- error "This is broken because it also plays the card, rethink cards that call this"
     push $ CreatedCost (activeCostId activeCost)
     pure $ g & activeCostL %~ insertMap (activeCostId activeCost) activeCost
@@ -2673,12 +2673,12 @@ runGameMessage msg g = case msg of
       PlayerCard pc -> push (ShuffleCardsIntoDeck iid [pc])
       EncounterCard _ -> error "Unhandled"
     pure $ g & entitiesL . enemiesL %~ deleteMap enemyId
-  PlayCard iid card _mtarget True -> do
+  PlayCard iid card _mtarget windows' True -> do
     modifiers' <- getModifiers (InvestigatorSource iid) (CardIdTarget $ toCardId card)
     modifiers'' <- getModifiers (InvestigatorSource iid) (CardTarget card)
     investigator' <- getInvestigator iid
     let allModifiers = modifiers' <> modifiers''
-    activeCost <- createActiveCostForCard iid card
+    activeCost <- createActiveCostForCard iid card windows'
     let
       isFast = case card of
         PlayerCard pc ->
@@ -2692,18 +2692,15 @@ runGameMessage msg g = case msg of
 
     push $ CreatedCost $ activeCostId activeCost'
     pure $ g & activeCostL %~ insertMap (activeCostId activeCost') activeCost'
-  PlayCard iid card mtarget False -> do
+  PlayCard iid card mtarget windows' False -> do
     investigator' <- getInvestigator iid
     playableCards <- getPlayableCards
       (toAttrs investigator')
       Cost.PaidCost
-      [ Window Timing.When (Window.DuringTurn iid)
-      , Window Timing.When Window.NonFast
-      , Window Timing.When Window.FastPlayerWindow
-      ]
+      windows'
     case find (== card) playableCards of
-      Nothing -> pure g -- card become unplayable during paying the cost
-      Just _ -> runGameMessage (PutCardIntoPlay iid card mtarget) g
+      Nothing -> pure g
+      Just _ -> runGameMessage (PutCardIntoPlay iid card mtarget windows') g
   PlayFastEvent iid cardId _mtarget windows' -> do
     investigator' <- getInvestigator iid
     playableCards <- getPlayableCards (toAttrs investigator') Cost.PaidCost windows'
@@ -2715,9 +2712,9 @@ runGameMessage msg g = case msg of
           (createEvent card iid)
         let
           eid = toId event'
-        push $ PayCardCost iid card
+        push $ PayCardCost iid card windows'
         pure $ g & entitiesL . eventsL %~ insertMap eid event'
-  PutCardIntoPlay iid card mtarget -> do
+  PutCardIntoPlay iid card mtarget windows' -> do
     let cardId = toCardId card
     case card of
       PlayerCard pc -> case toCardType pc of
@@ -2755,7 +2752,7 @@ runGameMessage msg g = case msg of
               else Zone.FromDiscard
           pushAll
             [ PlayedCard iid card
-            , InvestigatorPlayEvent iid eid mtarget [] zone
+            , InvestigatorPlayEvent iid eid mtarget windows' zone
             , ResolvedCard iid card
             ]
           pure $ g & entitiesL . eventsL %~ insertMap eid event'

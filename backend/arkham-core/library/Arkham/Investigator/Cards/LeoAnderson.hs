@@ -87,7 +87,8 @@ instance RunMessage LeoAnderson where
       pure i
     UseCardAbilityChoiceTarget iid source _ 1 _ (CardTarget card)
       | isSource attrs source -> do
-        pushAll [PayCardCost iid card, ResetMetadata (toTarget attrs)]
+        let windows' = [Window Timing.When (Window.DuringTurn iid)]
+        pushAll [PayCardCost iid card windows', ResetMetadata (toTarget attrs)]
         pure . LeoAnderson $ attrs `with` Metadata (Just card)
     ResetMetadata (isTarget attrs -> True) ->
       pure . LeoAnderson $ attrs `with` Metadata Nothing

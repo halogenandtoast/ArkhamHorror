@@ -18,6 +18,7 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Window (defaultWindows)
 
 newtype TheKingInYellow = TheKingInYellow AssetAttrs
   deriving anyclass IsAsset
@@ -57,7 +58,7 @@ instance HasModifiersFor TheKingInYellow where
 instance RunMessage TheKingInYellow where
   runMessage msg a@(TheKingInYellow attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      a <$ push (PutCardIntoPlay iid (toCard attrs) Nothing)
+      a <$ push (PutCardIntoPlay iid (toCard attrs) Nothing $ defaultWindows iid)
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (Discard $ toTarget attrs)
     _ -> TheKingInYellow <$> runMessage msg attrs

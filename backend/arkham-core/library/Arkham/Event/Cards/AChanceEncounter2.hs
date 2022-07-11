@@ -18,6 +18,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
+import Arkham.Window (defaultWindows)
 
 newtype AChanceEncounter2 = AChanceEncounter2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -62,7 +63,7 @@ instance RunMessage AChanceEncounter2 where
           iid
           [ TargetLabel
               (CardIdTarget $ toCardId card')
-              [ PutCardIntoPlay iid card Nothing
+              [ PutCardIntoPlay iid card Nothing (defaultWindows iid)
               , RemoveFromDiscard iid (toCardId card')
               ]
           | card' <- filteredDiscards

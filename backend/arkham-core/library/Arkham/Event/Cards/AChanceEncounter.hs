@@ -26,7 +26,7 @@ aChanceEncounter = event AChanceEncounter Cards.aChanceEncounter
 
 instance RunMessage AChanceEncounter where
   runMessage msg e@(AChanceEncounter attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       investigatorIds <-
         filterM
             (fmap (notElem CardsCannotLeaveYourDiscardPile)
@@ -44,7 +44,7 @@ instance RunMessage AChanceEncounter where
           iid
           [ TargetLabel
               (CardIdTarget $ toCardId card)
-              [ PutCardIntoPlay iid card Nothing
+              [ PutCardIntoPlay iid card Nothing windows'
               , RemoveFromDiscard iid (toCardId card)
               , CreateEffect
                 "02270"

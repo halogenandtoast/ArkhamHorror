@@ -24,7 +24,7 @@ sleightOfHand = event SleightOfHand Cards.sleightOfHand
 
 instance RunMessage SleightOfHand where
   runMessage msg e@(SleightOfHand attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       cards <- selectList
         (InHandOf (InvestigatorWithId iid)
         <> BasicCardMatch (CardWithTrait Item)
@@ -34,7 +34,7 @@ instance RunMessage SleightOfHand where
           iid
           [ TargetLabel
               (CardIdTarget $ toCardId card)
-              [ PutCardIntoPlay iid card (Just $ toTarget attrs)
+              [ PutCardIntoPlay iid card (Just $ toTarget attrs) windows'
               , CreateEffect
                 (toCardCode attrs)
                 Nothing

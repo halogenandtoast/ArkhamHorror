@@ -17,6 +17,7 @@ import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait
+import Arkham.Window (defaultWindows)
 
 newtype Metadata = Metadata { chosenCard :: Maybe Card }
   deriving stock (Show, Eq, Generic)
@@ -33,18 +34,18 @@ unearthTheAncients = event
 
 instance RunMessage UnearthTheAncients where
   runMessage msg e@(UnearthTheAncients (attrs `With` metadata)) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       assets <- selectList $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch
         (CardWithClass Seeker <> CardWithType AssetType)
       push $ chooseOne
         iid
         [ TargetLabel
             (CardIdTarget $ toCardId asset)
-            [ResolveEvent iid eid (Just $ CardTarget asset)]
+            [ResolveEvent iid eid (Just $ CardTarget asset) windows']
         | asset <- assets
         ]
       pure e
-    ResolveEvent iid eid (Just (CardTarget card)) | eid == toId attrs -> do
+    ResolveEvent iid eid (Just (CardTarget card)) _ | eid == toId attrs -> do
       lid <- getJustLocation iid
       pushAll
         [ Investigate
@@ -62,7 +63,7 @@ instance RunMessage UnearthTheAncients where
         case chosenCard metadata of
           Just card ->
             pushAll
-              $ PutCardIntoPlay iid card Nothing
+              $ PutCardIntoPlay iid card Nothing (defaultWindows iid)
               : [ DrawCards iid 1 False
                  | Relic `member` cdCardTraits (toCardDef card)
                  ]

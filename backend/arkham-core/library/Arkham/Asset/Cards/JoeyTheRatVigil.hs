@@ -41,22 +41,24 @@ instance HasAbilities JoeyTheRatVigil where
 
 instance RunMessage JoeyTheRatVigil where
   runMessage msg a@(JoeyTheRatVigil attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility iid source windows' 1 _ | isSource attrs source -> do
       handCards <- field InvestigatorHand iid
       let items = filter (member Item . toTraits) handCards
+          windows'' = nub $ windows' <>
+            [ Window Timing.When (DuringTurn iid)
+            , Window Timing.When FastPlayerWindow
+            ]
       playableItems <- filterM
         (getIsPlayable
           iid
           source
           UnpaidCost
-          [ Window Timing.When (DuringTurn iid)
-          , Window Timing.When FastPlayerWindow
-          ]
+          windows''
         )
         items
       push $ chooseOne
         iid
-        [ TargetLabel (CardIdTarget $ toCardId item) [PayCardCost iid item]
+        [ TargetLabel (CardIdTarget $ toCardId item) [PayCardCost iid item windows'']
         | item <- playableItems
         ]
       pure a

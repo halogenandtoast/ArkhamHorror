@@ -12,6 +12,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
+import Arkham.Window (defaultWindows)
 
 newtype Flare1 = Flare1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -57,6 +58,6 @@ instance RunMessage Flare1 where
           , Label "Search for Ally" $ findAllyMessages iid investigatorIds e
           ]
     SearchFound iid target _ [card] | isTarget e target ->
-      e <$ pushAll [PutCardIntoPlay iid card Nothing, Exile target]
+      e <$ pushAll [PutCardIntoPlay iid card Nothing (defaultWindows iid), Exile target]
     SearchNoneFound _ target | isTarget e target -> e <$ push (Discard target)
     _ -> Flare1 <$> runMessage msg attrs

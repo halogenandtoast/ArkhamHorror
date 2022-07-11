@@ -17,6 +17,7 @@ import Arkham.Name
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Arkham.Window (defaultWindows)
 import Arkham.Zone
 
 playEvent :: Investigator -> Event -> Message
@@ -63,7 +64,7 @@ placedLocation :: Location -> Message
 placedLocation l = PlacedLocation (toName l) (toCardCode l) (toId l)
 
 playCard :: Investigator -> Card -> Message
-playCard i c = PlayCard (toId i) c Nothing True
+playCard i c = PlayCard (toId i) c Nothing (defaultWindows $ toId i) True
 
 drawCards :: Investigator -> Int -> Message
 drawCards i n = DrawCards (toId i) n False

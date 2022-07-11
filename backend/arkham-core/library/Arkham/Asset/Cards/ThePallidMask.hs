@@ -11,6 +11,7 @@ import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding ( PlayCard )
 import Arkham.Target
+import Arkham.Window (defaultWindows)
 
 newtype ThePallidMask = ThePallidMask AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
@@ -35,7 +36,7 @@ instance RunMessage ThePallidMask where
       hasturTheTatteredKing <- getSetAsideCard Enemies.hasturTheTatteredKing
       palaceOfTheKing <- getJustLocationIdByName "Palace of the King"
       pushAll
-        [ PlayCard iid (toCard attrs) Nothing False
+        [ PlayCard iid (toCard attrs) Nothing (defaultWindows iid) False
         , RemoveEnemy theManInThePallidMask
         , CreateEnemyAt hasturTheTatteredKing palaceOfTheKing Nothing
         ]

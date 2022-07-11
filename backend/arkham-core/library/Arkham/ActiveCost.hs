@@ -585,7 +585,7 @@ instance RunMessage ActiveCost where
         ForCard card -> do
           let iid = activeCostInvestigator c
           pushAll
-            $ [ PlayCard iid card Nothing False
+            $ [ PlayCard iid card Nothing (activeCostWindows c) False
               , PaidForCardCost iid card (activeCostPayments c)
               ]
             <> [ SealedToken token card | token <- activeCostSealedTokens c ]

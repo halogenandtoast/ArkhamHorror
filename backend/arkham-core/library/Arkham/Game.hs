@@ -2704,7 +2704,7 @@ runGameMessage msg g = case msg of
     case find (== card) playableCards of
       Nothing -> pure g -- card become unplayable during paying the cost
       Just _ -> runGameMessage (PutCardIntoPlay iid card mtarget) g
-  PlayFastEvent iid cardId mtarget windows' -> do
+  PlayFastEvent iid cardId _mtarget windows' -> do
     investigator' <- getInvestigator iid
     playableCards <- getPlayableCards (toAttrs investigator') Cost.PaidCost windows'
     case find ((== cardId) . toCardId) (playableCards <> investigatorHand (toAttrs investigator')) of
@@ -2715,15 +2715,7 @@ runGameMessage msg g = case msg of
           (createEvent card iid)
         let
           eid = toId event'
-          zone = if card `elem` investigatorHand (toAttrs investigator')
-            then Zone.FromHand
-            else Zone.FromDiscard
-        pushAll
-          [ PayCardCost iid card
-          , PlayedCard iid card
-          , InvestigatorPlayEvent iid eid mtarget windows' zone
-          , ResolvedCard iid card
-          ]
+        push $ PayCardCost iid card
         pure $ g & entitiesL . eventsL %~ insertMap eid event'
   PutCardIntoPlay iid card mtarget -> do
     let cardId = toCardId card

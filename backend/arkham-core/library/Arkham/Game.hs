@@ -2093,7 +2093,7 @@ instance Projection TreacheryAttrs where
       TreacheryAttachedTarget -> pure treacheryAttachedTarget
       TreacheryTraits -> pure $ cdCardTraits cdef
       TreacheryKeywords -> do
-        modifiers' <- getModifiers (toSource t) (toTarget t)
+        modifiers' <- foldMapM (getModifiers (toSource t)) [toTarget t, CardIdTarget $ toCardId t]
         let additionalKeywords = foldl' applyModifier [] modifiers'
             applyModifier ks = \case
               AddKeyword k -> k : ks

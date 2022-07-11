@@ -39,8 +39,8 @@ instance RunMessage SpiritSpeaker where
       assetIdsWithChargeCounts <- traverse
         (traverseToSnd (fmap useCount . field AssetUses))
         assetIds
-      a <$ push
-        (chooseOne
+      push $
+        chooseOne
           iid
           [ TargetLabel
               target
@@ -60,5 +60,5 @@ instance RunMessage SpiritSpeaker where
           | (aid, n) <- assetIdsWithChargeCounts
           , let target = AssetTarget aid
           ]
-        )
+      pure a
     _ -> SpiritSpeaker <$> runMessage msg attrs

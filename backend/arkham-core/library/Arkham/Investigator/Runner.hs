@@ -1065,13 +1065,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       let card = findCard cardId a
       pushAll
         [ CheckWindow [iid] [Window Timing.When (Window.PlayCard iid card)]
-        , if isFastCard card && toCardType card == EventType
-          then PlayFastEvent
-            iid
-            cardId
-            mtarget
-            [Window Timing.When Window.FastPlayerWindow]
-          else PlayCard iid card mtarget (Window.defaultWindows iid) asAction
+        , PlayCard iid card mtarget (Window.defaultWindows iid) asAction
         ]
     pure a
   PlayedCard iid card | iid == investigatorId -> do
@@ -1653,14 +1647,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           a <$ push
             (chooseOne iid
             $ [ TargetLabel (CardIdTarget $ toCardId c)
-                  $ if isJust (cdFastWindow $ toCardDef c)
-                      && toCardType c
-                      == EventType
-                    then
-                      [ PlayFastEvent iid (toCardId c) Nothing windows
-                      , RunWindow iid windows
-                      ]
-                    else [ PayCardCost iid c windows, RunWindow iid windows]
+                [ PayCardCost iid c windows, RunWindow iid windows]
               | c <- playableCards
               ]
             <> map

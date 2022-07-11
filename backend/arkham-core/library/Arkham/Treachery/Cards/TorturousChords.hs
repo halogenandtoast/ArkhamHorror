@@ -44,7 +44,7 @@ instance RunMessage TorturousChords where
         (treacheryResources attrs <= 1)
         (push $ Discard $ toTarget attrs)
       pure $ TorturousChords $ attrs & resourcesL %~ (max 0 . subtract 1)
-    PlayCard iid _ _ False | treacheryOnInvestigator iid attrs -> do
+    PlayCard iid _ _ _ False | treacheryOnInvestigator iid attrs -> do
       when
         (treacheryResources attrs <= 1)
         (push $ Discard $ toTarget attrs)

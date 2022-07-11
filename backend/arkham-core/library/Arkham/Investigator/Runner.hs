@@ -91,7 +91,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           in
             case after of
               (card : rest) ->
-                ( PutCardIntoPlay investigatorId (PlayerCard card) Nothing
+                ( PutCardIntoPlay investigatorId (PlayerCard card) Nothing (Window.defaultWindows investigatorId)
                   : msgs
                 , Deck (before <> rest)
                 )
@@ -109,7 +109,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [Window Timing.When (Window.DrawingStartingHand investigatorId)]
     pushAll
       $ startsWithMsgs
-      <> [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing
+      <> [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing (Window.defaultWindows investigatorId)
          | card <- permanentCards
          ]
       <> [ beforeDrawingStartingHand
@@ -1071,7 +1071,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             cardId
             mtarget
             [Window Timing.When Window.FastPlayerWindow]
-          else PlayCard iid card mtarget asAction
+          else PlayCard iid card mtarget (Window.defaultWindows iid) asAction
         ]
     pure a
   PlayedCard iid card | iid == investigatorId -> do
@@ -1660,11 +1660,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       [ PlayFastEvent iid (toCardId c) Nothing windows
                       , RunWindow iid windows
                       ]
-                    else
-                      [ PayCardCost iid c
-                        , PlayCard iid c Nothing False
-                        ]
-                        <> [RunWindow iid windows]
+                    else [ PayCardCost iid c windows, RunWindow iid windows]
               | c <- playableCards
               ]
             <> map
@@ -1850,8 +1846,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               [ TargetLabel
                   (CardIdTarget $ toCardId card)
                   [ AddToHand who card
-                  , PayCardCost iid card
-                  , PlayCard iid card Nothing False
+                  , PayCardCost iid card windows'
                   ]
               | (_, cards) <- playableCards, card <- cards
               ]

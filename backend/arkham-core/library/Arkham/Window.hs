@@ -18,6 +18,7 @@ import Arkham.Phase (Phase)
 import Arkham.Source (Source)
 import Arkham.Target (Target)
 import Arkham.Timing (Timing)
+import Arkham.Timing qualified as Timing
 import Arkham.Token (Token)
 
 data Window = Window
@@ -26,6 +27,13 @@ data Window = Window
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+defaultWindows :: InvestigatorId -> [Window]
+defaultWindows iid =
+  [ Window Timing.When (DuringTurn iid)
+  , Window Timing.When NonFast
+  , Window Timing.When FastPlayerWindow
+  ]
 
 data WindowType
   = ActAdvance ActId

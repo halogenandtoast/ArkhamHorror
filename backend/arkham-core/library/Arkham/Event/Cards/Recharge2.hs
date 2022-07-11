@@ -5,10 +5,10 @@ module Arkham.Event.Cards.Recharge2
 
 import Arkham.Prelude
 
-import Arkham.ChaosBag.RevealStrategy
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Asset.Uses
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Matcher
@@ -16,7 +16,7 @@ import Arkham.Message
 import Arkham.RequestedTokenStrategy
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding ( Cultist )
 
 newtype Meta = Meta { chosenAsset :: Maybe AssetId }
   deriving stock (Show, Eq, Generic)
@@ -31,19 +31,19 @@ recharge2 = event (Recharge2 . (`With` Meta Nothing)) Cards.recharge2
 
 instance RunMessage Recharge2 where
   runMessage msg e@(Recharge2 (attrs `With` meta)) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       assets <-
         selectListMap AssetTarget
-        $ AssetControlledBy (InvestigatorAt $ LocationWithInvestigator $ InvestigatorWithId iid)
+        $ AssetControlledBy
+            (InvestigatorAt $ LocationWithInvestigator $ InvestigatorWithId iid)
         <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Relic]
-      e <$ push
-        (chooseOne
-          iid
-          [ TargetLabel target [ResolveEvent iid eid (Just target)]
-          | target <- assets
-          ]
-        )
-    ResolveEvent iid eid (Just (AssetTarget aid)) | eid == toId attrs -> do
+      push $ chooseOne
+        iid
+        [ TargetLabel target [ResolveEvent iid eid (Just target) windows']
+        | target <- assets
+        ]
+      pure e
+    ResolveEvent iid eid (Just (AssetTarget aid)) _ | eid == toId attrs -> do
       pushAll
         [ RequestTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
         , Discard (toTarget attrs)

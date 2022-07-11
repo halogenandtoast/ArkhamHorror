@@ -14,6 +14,7 @@ import Arkham.Criteria
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token qualified as Token
+import Arkham.Window (defaultWindows)
 
 newtype TheNecronomicon = TheNecronomicon AssetAttrs
   deriving anyclass IsAsset
@@ -44,7 +45,7 @@ instance HasAbilities TheNecronomicon where
 instance RunMessage TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs) = case msg of
     Revelation iid source | isSource attrs source ->
-      a <$ push (PlayCard iid (toCard attrs) Nothing False)
+      a <$ push (PlayCard iid (toCard attrs) Nothing (defaultWindows iid) False)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push $ InvestigatorDamage iid source 0 1
       if assetHorror attrs <= 1

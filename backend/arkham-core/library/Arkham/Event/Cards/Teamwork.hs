@@ -30,9 +30,9 @@ teamwork = event Teamwork Cards.teamwork
 
 instance RunMessage Teamwork where
   runMessage msg e@(Teamwork attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid mtarget _ _ | eid == eventId ->
-      e <$ push (ResolveEvent iid eid mtarget)
-    ResolveEvent iid eid mtarget | eid == eventId -> do
+    InvestigatorPlayEvent iid eid mtarget windows' _ | eid == eventId ->
+      e <$ push (ResolveEvent iid eid mtarget windows')
+    ResolveEvent iid eid mtarget windows' | eid == eventId -> do
       investigatorIds <- selectList $ colocatedWith iid
       assetsWithInvestigatorIds <- concat <$> for
         investigatorIds
@@ -51,14 +51,14 @@ instance RunMessage Teamwork where
                   iid'
                   (AssetTarget aid)
                   (investigatorIds \\ [iid'])
-                , ResolveEvent iid eid mtarget
+                , ResolveEvent iid eid mtarget windows'
                 ]
             | (iid', aid) <- assetsWithInvestigatorIds
             ]
           <> [ TargetLabel
                  (InvestigatorTarget iid')
                  [ BeginTrade iid' ResourceTarget (investigatorIds \\ [iid'])
-                 , ResolveEvent iid eid mtarget
+                 , ResolveEvent iid eid mtarget windows'
                  ]
              | iid' <- investigatorIds
              ]

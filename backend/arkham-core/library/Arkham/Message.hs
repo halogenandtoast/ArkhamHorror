@@ -425,7 +425,7 @@ data Message
     PayAbilityCost Source InvestigatorId (Maybe Action) Bool Cost
   | PayAbilityCostFinished EffectId Source InvestigatorId
   | PaidAbilityCost InvestigatorId (Maybe Action) Payment
-  | PayCardCost InvestigatorId Card
+  | PayCardCost InvestigatorId Card [Window]
   | PaidForCardCost InvestigatorId Card Payment
   | PayForCardAbility InvestigatorId Source [Window] Int Payment
   | PerformEnemyAttack InvestigatorId EnemyId DamageStrategy EnemyAttackType
@@ -444,12 +444,12 @@ data Message
   | PlaceNextTo Target [Card]
   | PlacedLocation Name CardCode LocationId
   | PlacedLocationDirection LocationId Direction LocationId
-  | PlayCard InvestigatorId Card (Maybe Target) Bool
+  | PlayCard InvestigatorId Card (Maybe Target) [Window] Bool
   | PlayFastEvent InvestigatorId CardId (Maybe Target) [Window]
   | PlayedCard InvestigatorId Card
   | ResolvedCard InvestigatorId Card
   | PlayerWindow InvestigatorId [Message] Bool
-  | PutCardIntoPlay InvestigatorId Card (Maybe Target)
+  | PutCardIntoPlay InvestigatorId Card (Maybe Target) [Window]
   | PutOnTopOfDeck InvestigatorId PlayerCard
   | PutOnTopOfEncounterDeck InvestigatorId EncounterCard
   | RandomDiscard InvestigatorId
@@ -497,7 +497,7 @@ data Message
   | Resign InvestigatorId
   | ResignWith Target
   | ResolveAmounts InvestigatorId [(Text, Int)] Target
-  | ResolveEvent InvestigatorId EventId (Maybe Target)
+  | ResolveEvent InvestigatorId EventId (Maybe Target) [Window]
   | ResolveToken Token TokenFace InvestigatorId -- since tokens can have their face changed we use this to represent that; TODO: use a real modifier
   | ReturnSkillTestRevealedTokens
   | ReturnTokens [Token]

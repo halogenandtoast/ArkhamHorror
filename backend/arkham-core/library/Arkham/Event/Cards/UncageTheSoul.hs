@@ -31,9 +31,9 @@ uncageTheSoul = event UncageTheSoul Cards.uncageTheSoul
 
 instance RunMessage UncageTheSoul where
   runMessage msg e@(UncageTheSoul attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       let
-        windows' = map
+        windows'' = nub $ windows' <> map
           (Window Timing.When)
           [Window.DuringTurn iid, Window.NonFast, Window.FastPlayerWindow]
       availableResources <- field InvestigatorResources iid
@@ -47,7 +47,7 @@ instance RunMessage UncageTheSoul where
           (InvestigatorSource iid)
           (availableResources + 3)
           UnpaidCost
-          windows'
+          windows''
         )
         results
       pushAll
@@ -60,7 +60,7 @@ instance RunMessage UncageTheSoul where
                 Nothing
                 (toSource attrs)
                 (CardIdTarget $ toCardId c)
-              , PayCardCost iid c
+              , PayCardCost iid c windows''
               ]
           | c <- cards
           ]

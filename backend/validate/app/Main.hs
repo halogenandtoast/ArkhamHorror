@@ -1,3 +1,4 @@
+{-# LANGUAGE TupleSections #-}
 module Main where
 
 import ClassyPrelude
@@ -446,7 +447,7 @@ runValidations cards = do
 
   -- validate assets
   for_ (filterTestEntities $ mapToList allAssets) $ \(ccode, builder) -> do
-    attrs <- toAttrs . builder <$> getRandom
+    attrs <- toAttrs . builder <$> ((, Just "01001") <$> getRandom)
     case lookup ccode cards of
       Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
       Just CardJson {..} -> do

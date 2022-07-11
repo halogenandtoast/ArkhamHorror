@@ -33,7 +33,7 @@ spec = describe "Close Call (2)" $ do
           chooseOptionMatching
             "Play card"
             (\case
-              Run{} -> True
+              TargetLabel{} -> True
               _ -> False
             )
           game <- getGame
@@ -42,30 +42,41 @@ spec = describe "Close Call (2)" $ do
           length (game ^. entitiesL . enemiesL) `shouldBe` 0
 
   it "does not work on Elite enemies" $ do
+    location <- testLocation id
     investigator <- testInvestigator id
     closeCall2 <- genPlayerCard Cards.closeCall2
     enemy <- createEnemy <$> genEncounterCard Cards.ghoulPriest
     gameTest
         investigator
-        [ addToHand investigator (PlayerCard closeCall2)
+        [ moveTo investigator location
+        , enemySpawn location enemy
+        , addToHand investigator (PlayerCard closeCall2)
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
-        (entitiesL . enemiesL %~ insertEntity enemy)
+        ( (entitiesL . locationsL %~ insertEntity location)
+        . (entitiesL . enemiesL %~ insertEntity enemy)
+        )
       $ do
           runMessages
           queueRef <- view messageQueue
           queueRef `refShouldBe` []
 
   it "does not work on weakness enemies" $ do
+    location <- testLocation id
     investigator <- testInvestigator id
     closeCall2 <- genPlayerCard Cards.closeCall2
     enemy <- createEnemy <$> genPlayerCard Cards.mobEnforcer
     gameTest
         investigator
-        [ addToHand investigator (PlayerCard closeCall2)
+        [ SetBearer (toTarget enemy) (toId investigator)
+        , moveTo investigator location
+        , enemySpawn location enemy
+        , addToHand investigator (PlayerCard closeCall2)
         , EnemyEvaded (toId investigator) (toId enemy)
         ]
-        (entitiesL . enemiesL %~ insertEntity enemy)
+        ( (entitiesL . locationsL %~ insertEntity location)
+        . (entitiesL . enemiesL %~ insertEntity enemy)
+        )
       $ do
           runMessages
           queueRef <- view messageQueue

@@ -30,7 +30,7 @@ spec = describe "Lucky!" $ do
           chooseOptionMatching
             "play lucky!"
             (\case
-              Run{} -> True
+              TargetLabel{} -> True
               _ -> False
             )
           chooseOnlyOption "apply results"
@@ -57,7 +57,7 @@ spec = describe "Lucky!" $ do
           chooseOptionMatching
             "play lucky!"
             (\case
-              Run{} -> True
+              TargetLabel{} -> True
               _ -> False
             )
           chooseOnlyOption "apply results"

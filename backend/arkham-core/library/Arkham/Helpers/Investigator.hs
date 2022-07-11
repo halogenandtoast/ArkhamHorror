@@ -316,7 +316,7 @@ findCard cardId a =
     <> map PlayerCard (unDeck $ a ^. deckL)
   where findMatch = find ((== cardId) . toCardId)
 
-getJustLocation :: (Monad m, HasGame m) => InvestigatorId -> m LocationId
+getJustLocation :: (HasCallStack, Monad m, HasGame m) => InvestigatorId -> m LocationId
 getJustLocation =
   fieldMap InvestigatorLocation (fromJustNote "must be at a location")
 

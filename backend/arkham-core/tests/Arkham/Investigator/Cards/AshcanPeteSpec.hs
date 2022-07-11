@@ -27,7 +27,7 @@ spec = describe "\"Ashcan\" Pete" $ do
   context "Ability" $ do
     it "allows to discard to ready an asset" $ do
       let ashcanPete = lookupInvestigator "02005"
-      asset <- testAsset id
+      asset <- testAsset id ashcanPete
       card <- testPlayerCard id
       gameTest
           ashcanPete
@@ -53,7 +53,7 @@ spec = describe "\"Ashcan\" Pete" $ do
   context "Elder Sign" $ do
     it "gives +2 and readies duke" $ do
       let ashcanPete = lookupInvestigator "02005"
-      duke <- buildAsset "02014"
+      duke <- buildAsset "02014" (Just ashcanPete)
 
       (didPassTest, logger) <- didPassSkillTestBy ashcanPete SkillIntellect 2
 

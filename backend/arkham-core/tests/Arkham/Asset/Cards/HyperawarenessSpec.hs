@@ -10,9 +10,9 @@ import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 spec :: Spec
 spec = describe "Hyperawareness" $ do
   it "Adds 1 to intellect check for each resource spent" $ do
-    hyperawareness <- buildAsset "01034"
     investigator <- testInvestigator $ \attrs ->
       attrs {investigatorIntellect = 1, investigatorResources = 2}
+    hyperawareness <- buildAsset "01034" (Just investigator)
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
 
@@ -52,9 +52,9 @@ spec = describe "Hyperawareness" $ do
         didPassTest `refShouldBe` True
 
   it "Adds 1 to agility check for each resource spent" $ do
-    hyperawareness <- buildAsset "01034"
     investigator <- testInvestigator $
       \attrs -> attrs {investigatorAgility = 1, investigatorResources = 2}
+    hyperawareness <- buildAsset "01034" (Just investigator)
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillAgility 0
 

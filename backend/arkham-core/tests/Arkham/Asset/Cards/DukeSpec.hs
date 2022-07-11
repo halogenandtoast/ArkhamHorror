@@ -16,10 +16,10 @@ spec :: Spec
 spec = describe "Duke" $ do
   context "fight action" $ do
     it "uses a base combat skill of 4 and does +1 damage" $ do
-      duke <- buildAsset "02014"
       enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 4))
       investigator <- testInvestigator
         $ \attrs -> attrs { investigatorCombat = 1 }
+      duke <- buildAsset "02014" (Just investigator)
       location <- testLocation id
       gameTest
           investigator
@@ -43,9 +43,9 @@ spec = describe "Duke" $ do
             fieldAssert EnemyDamage (== 2) enemy
   context "investigate action" $ do
     it "uses a base intellect skill of 4" $ do
-      duke <- buildAsset "02014"
       investigator <- testInvestigator
         $ \attrs -> attrs { investigatorIntellect = 1 }
+      duke <- buildAsset "02014" (Just investigator)
       location <- testLocation
         (\attrs -> attrs { locationShroud = 4, locationClues = 1 })
       gameTest
@@ -67,9 +67,9 @@ spec = describe "Duke" $ do
             fieldAssert InvestigatorClues (== 1) investigator
     it "you may move to a connecting location immediately before investigating"
       $ do
-          duke <- buildAsset "02014"
           investigator <- testInvestigator
             $ \attrs -> attrs { investigatorIntellect = 1 }
+          duke <- buildAsset "02014" (Just investigator)
           (location1, location2) <- testConnectedLocations id
             $ \attrs -> attrs { locationShroud = 4, locationClues = 1 }
           gameTest
@@ -95,7 +95,7 @@ spec = describe "Duke" $ do
                 chooseOptionMatching
                   "move first"
                   (\case
-                    Run{} -> True
+                    TargetLabel{} -> True
                     _ -> False
                   )
                 chooseOnlyOption "Start skill test"

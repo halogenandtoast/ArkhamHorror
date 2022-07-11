@@ -7,11 +7,11 @@ import TestImport.Lifted
 import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Asset.Attrs qualified as Asset
 import Arkham.Investigator.Attrs ( Field (..) )
-import Arkham.Treachery.Attrs ( Field (..) )
-import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Matcher hiding (AssetExhausted)
+import Arkham.Matcher hiding ( AssetExhausted )
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Treachery.Attrs ( Field (..) )
+import Arkham.Treachery.Cards qualified as Cards
 
 spec :: Spec
 spec = describe "Wracked by Nightmares" $ do
@@ -19,7 +19,10 @@ spec = describe "Wracked by Nightmares" $ do
     investigator <- testInvestigator id
     wrackedByNightmares <- genPlayerCard Cards.wrackedByNightmares
     asset <- testAsset
-      ((Asset.exhaustedL .~ True) . (Asset.placementL .~ InPlayArea (toId investigator)))
+      ((Asset.exhaustedL .~ True)
+      . (Asset.placementL .~ InPlayArea (toId investigator))
+      )
+      investigator
     gameTest
         investigator
         [ loadDeck investigator [wrackedByNightmares]
@@ -41,6 +44,7 @@ spec = describe "Wracked by Nightmares" $ do
     wrackedByNightmares <- genPlayerCard Cards.wrackedByNightmares
     asset <- testAsset
       ((Asset.exhaustedL .~ True) . (Asset.ownerL ?~ toId investigator))
+      investigator
     gameTest
         investigator
         [loadDeck investigator [wrackedByNightmares], drawCards investigator 1]

@@ -157,8 +157,8 @@ buildEvent cardCode investigator =
 buildEnemy :: MonadRandom m => CardCode -> m Enemy
 buildEnemy cardCode = lookupEnemy cardCode <$> getRandom
 
-buildAsset :: MonadRandom m => CardCode -> m Asset
-buildAsset cardCode = lookupAsset cardCode <$> getRandom
+buildAsset :: MonadRandom m => CardCode -> Maybe Investigator -> m Asset
+buildAsset cardCode mOwner = lookupAsset cardCode . (, toId <$> mOwner) <$> getRandom
 
 testPlayerCards :: MonadRandom m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' (testPlayerCard id)
@@ -189,17 +189,18 @@ testEnemyWithDef defF attrsF =
       )
     <$> getRandom
 
-testAsset :: MonadRandom m => (AssetAttrs -> AssetAttrs) -> m Asset
-testAsset = testAssetWithDef id
+testAsset :: MonadRandom m => (AssetAttrs -> AssetAttrs) -> Investigator -> m Asset
+testAsset f i = testAssetWithDef id f i
 
 testAssetWithDef
   :: MonadRandom m
   => (CardDef -> CardDef)
   -> (AssetAttrs -> AssetAttrs)
+  -> Investigator
   -> m Asset
-testAssetWithDef defF attrsF =
+testAssetWithDef defF attrsF owner =
   cbCardBuilder
-      (Asset <$> assetWith Adaptable1 (defF Cards.adaptable1) attrsF)
+      (Asset <$> assetWith Adaptable1 (defF Cards.adaptable1) attrsF) . (, Just $ toId owner)
     <$> getRandom
 
 testAgenda :: MonadIO m => CardCode -> (AgendaAttrs -> AgendaAttrs) -> m Agenda

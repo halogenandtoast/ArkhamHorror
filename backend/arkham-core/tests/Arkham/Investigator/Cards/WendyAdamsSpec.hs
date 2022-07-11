@@ -53,7 +53,7 @@ spec = describe "Wendy Adams" $ do
 
     it "automatically succeeds if Wendy's Amulet is in play" $ do
       let wendyAdams = lookupInvestigator "01005"
-      wendysAmulet <- buildAsset "01014"
+      wendysAmulet <- buildAsset "01014" (Just wendyAdams)
 
       (didPassTest, logger) <- didPassSkillTestBy wendyAdams SkillWillpower 4
 

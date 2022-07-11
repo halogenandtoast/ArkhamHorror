@@ -10,9 +10,9 @@ import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 spec :: Spec
 spec = describe "Dig Deep" $ do
   it "Adds 1 to willpower check for each resource spent" $ do
-    digDeep <- buildAsset "01077"
     investigator <- testInvestigator $ \attrs ->
       attrs {investigatorWillpower = 1, investigatorResources = 2}
+    digDeep <- buildAsset "01077" (Just investigator)
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillWillpower 0
 
@@ -52,9 +52,9 @@ spec = describe "Dig Deep" $ do
         didPassTest `refShouldBe` True
 
   it "Adds 1 to agility check for each resource spent" $ do
-    digDeep <- buildAsset "01077"
     investigator <- testInvestigator $
       \attrs -> attrs {investigatorAgility = 1, investigatorResources = 2}
+    digDeep <- buildAsset "01077" (Just investigator)
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillAgility 0
 

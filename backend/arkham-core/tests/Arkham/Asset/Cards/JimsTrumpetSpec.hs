@@ -14,7 +14,7 @@ spec = describe "Jim's Trumpet" $ do
   context "allows you to heal one horror when skull is revealed" $ do
     it "on yourself" $ do
       investigator <- testInvestigator (Investigator.sanityDamageL .~ 1)
-      jimsTrumpet <- buildAsset "02012"
+      jimsTrumpet <- buildAsset "02012" (Just investigator)
       location <- testLocation id
       gameTest
           investigator
@@ -71,7 +71,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator <- testInvestigator id
       investigator2 <- testInvestigator
         (Investigator.sanityDamageL .~ 1)
-      jimsTrumpet <- buildAsset "02012"
+      jimsTrumpet <- buildAsset "02012" (Just investigator)
       location <- testLocation id
       gameTest
           investigator
@@ -100,7 +100,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator <- testInvestigator id
       investigator2 <- testInvestigator
         (Investigator.sanityDamageL .~ 1)
-      jimsTrumpet <- buildAsset "02012"
+      jimsTrumpet <- buildAsset "02012" (Just investigator)
       rivertown <- createLocation <$> genEncounterCard Cards.rivertown
       southside <- createLocation
         <$> genEncounterCard Cards.southsideHistoricalSociety
@@ -135,7 +135,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator <- testInvestigator id
       investigator2 <- testInvestigator
         ((Investigator.sanityDamageL .~ 1) . (Investigator.idL .~ "01001"))
-      jimsTrumpet <- buildAsset "02012"
+      jimsTrumpet <- buildAsset "02012" (Just investigator)
       rivertown <- createLocation <$> genEncounterCard Cards.rivertown
       downtown <- createLocation <$> genEncounterCard Cards.downtownArkhamAsylum
       gameTest

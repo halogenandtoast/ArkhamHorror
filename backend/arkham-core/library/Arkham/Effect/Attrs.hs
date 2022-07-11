@@ -26,7 +26,7 @@ data instance Field EffectAttrs :: Type -> Type where
 
 data EffectAttrs = EffectAttrs
   { effectId :: EffectId
-  , effectCardCode :: Maybe CardCode
+  , effectCardCode :: CardCode
   , effectTarget :: Target
   , effectSource :: Source
   , effectTraits :: HashSet Trait
@@ -49,7 +49,7 @@ baseAttrs cardCode eid meffectMetadata source target = EffectAttrs
   { effectId = eid
   , effectSource = source
   , effectTarget = target
-  , effectCardCode = Just cardCode
+  , effectCardCode = cardCode
   , effectMetadata = meffectMetadata
   , effectTraits = mempty
   , effectWindow = Nothing

@@ -277,4 +277,6 @@ instance FromJSON Effect where
       "82026" -> Effect . GildedVolto <$> parseJSON v
       "82035" -> Effect . Mesmerize <$> parseJSON v
       "90002" -> Effect . DaisysToteBagAdvanced <$> parseJSON v
+      "wmode" -> Effect . WindowModifierEffect <$> parseJSON v
+      "tokef" -> Effect . TokenEffect <$> parseJSON v
       _ -> error "invalid effect"

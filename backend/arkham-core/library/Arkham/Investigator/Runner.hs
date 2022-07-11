@@ -997,9 +997,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     canDiscoverClues <- getCanDiscoverClues a
     if canDiscoverClues
       then do
-        modifiedCluesToDiscover <- cluesToDiscover a n
         a <$ push
-          (DiscoverCluesAtLocation iid lid modifiedCluesToDiscover maction)
+          (DiscoverCluesAtLocation iid lid n maction)
       else pure a
   GainClues iid n | iid == investigatorId -> do
     window <- checkWindows

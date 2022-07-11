@@ -263,20 +263,6 @@ getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a
   pure $ if canSpendClues then investigatorClues a else 0
 
-cluesToDiscover :: (Monad m, HasGame m) => InvestigatorAttrs -> Int -> m Int
-cluesToDiscover attrs startValue = do
-  msource <- getSkillTestSource
-  case msource of
-    Just source -> do
-      modifiers <- getModifiers
-        source
-        (InvestigatorTarget $ investigatorId attrs)
-      pure $ foldr applyModifier startValue modifiers
-    Nothing -> pure startValue
- where
-  applyModifier (DiscoveredClues m) n = n + m
-  applyModifier _ n = n
-
 getCanAfford :: (Monad m, HasGame m) => InvestigatorAttrs -> Action -> m Bool
 getCanAfford a@InvestigatorAttrs {..} actionType = do
   actionCost <- getActionCost a actionType

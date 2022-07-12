@@ -4,6 +4,7 @@ module Arkham.Event.Cards.OopsSpec
 
 import TestImport hiding (EnemyDamage)
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Enemy.Attrs qualified as Enemy
 import Arkham.Asset.Attrs (Field (..))
@@ -19,7 +20,7 @@ spec = describe "Oops!" $ do
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
     oops <- genPlayerCard Cards.oops
-    rolands38Special <- buildAsset "01006" (Just investigator) -- does 2 damage
+    rolands38Special <- buildAsset Assets.rolands38Special (Just investigator) -- does 2 damage
     enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 2)
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
     location <- testLocation id
@@ -71,7 +72,7 @@ spec = describe "Oops!" $ do
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
     oops <- genPlayerCard Cards.oops
-    fortyOneDerringer <- buildAsset "01047" (Just investigator)
+    fortyOneDerringer <- buildAsset Assets.fortyOneDerringer (Just investigator)
     enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 4)
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
     location <- testLocation id
@@ -123,7 +124,7 @@ spec = describe "Oops!" $ do
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
     oops <- genPlayerCard Cards.oops
-    shotgun4 <- buildAsset "01029" (Just investigator)
+    shotgun4 <- buildAsset Assets.shotgun4 (Just investigator)
     enemy <- testEnemy $ (Enemy.healthL .~ Static 1) . (Enemy.fightL .~ 5)
     enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
     location <- testLocation id

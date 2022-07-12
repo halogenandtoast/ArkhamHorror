@@ -4,6 +4,7 @@ module Arkham.Asset.Cards.Aquinnah1Spec
 
 import TestImport hiding (EnemyDamage)
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Message qualified as Msg
 import Arkham.Enemy.Attrs qualified as Enemy
 import Arkham.Investigator.Attrs (Field (..))
@@ -13,7 +14,7 @@ spec :: Spec
 spec = describe "Aquinnah (1)" $ do
   it "can redirect damage to another enemy at your location" $ do
     investigator <- testInvestigator id
-    aquinnah <- buildAsset "01082" (Just investigator)
+    aquinnah <- buildAsset Assets.aquinnah1 (Just investigator)
     enemy1 <- testEnemy
       (\attrs ->
         attrs { Enemy.enemyHealthDamage = 2, Enemy.enemySanityDamage = 1 }

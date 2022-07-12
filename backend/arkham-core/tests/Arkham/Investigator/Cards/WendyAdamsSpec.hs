@@ -4,6 +4,8 @@ module Arkham.Investigator.Cards.WendyAdamsSpec
 
 import TestImport.Lifted
 
+import Arkham.Asset.Cards qualified as Assets
+
 spec :: Spec
 spec = describe "Wendy Adams" $ do
   context "ability" $ do
@@ -53,7 +55,7 @@ spec = describe "Wendy Adams" $ do
 
     it "automatically succeeds if Wendy's Amulet is in play" $ do
       let wendyAdams = lookupInvestigator "01005"
-      wendysAmulet <- buildAsset "01014" (Just wendyAdams)
+      wendysAmulet <- buildAsset Assets.wendysAmulet (Just wendyAdams)
 
       (didPassTest, logger) <- didPassSkillTestBy wendyAdams SkillWillpower 4
 

@@ -4,6 +4,7 @@
 --
 module TestImport.Lifted
   ( module X
+  , module TestImport.Lifted
   ) where
 
 import TestImport as X hiding
@@ -19,6 +20,7 @@ import TestImport as X hiding
   , shouldReturn
   , shouldSatisfy
   , shouldStartWith
+  , pending
   )
 
 import Test.Hspec.Expectations.Lifted as X
@@ -35,3 +37,8 @@ import Test.Hspec.Expectations.Lifted as X
   , shouldSatisfy
   , shouldStartWith
   )
+
+import TestImport qualified as TI
+
+pending :: MonadIO m => m ()
+pending = liftIO TI.pending

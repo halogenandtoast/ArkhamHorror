@@ -4,7 +4,7 @@ module Arkham.Asset.Cards.ArcaneInitiateSpec
 
 import TestImport.Lifted
 
-import Arkham.Asset.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Attrs
 import Arkham.Investigator.Attrs hiding (assetsL)
 import Arkham.Projection
@@ -13,7 +13,7 @@ spec :: Spec
 spec = describe "Arcane Initiate" $ do
   it "enters play with 1 doom" $ do
     investigator <- testInvestigator id
-    arcaneInitiate <- buildAsset "01063" (Just investigator)
+    arcaneInitiate <- buildAsset Assets.arcaneInitiate (Just investigator)
     gameTest
         investigator
         [playAsset investigator arcaneInitiate]
@@ -26,8 +26,8 @@ spec = describe "Arcane Initiate" $ do
   it "can be exhausted to search the top 3 cards of your deck for a Spell card"
     $ do
         investigator <- testInvestigator id
-        arcaneInitiate <- buildAsset "01063" (Just investigator)
-        card <- genPlayerCard Cards.shrivelling
+        arcaneInitiate <- buildAsset Assets.arcaneInitiate (Just investigator)
+        card <- genPlayerCard Assets.shrivelling
         otherCards <- testPlayerCards 2
         gameTest
             investigator
@@ -47,7 +47,7 @@ spec = describe "Arcane Initiate" $ do
 
   it "should continue if no Spell card is found" $ do
     investigator <- testInvestigator id
-    arcaneInitiate <- buildAsset "01063" (Just investigator)
+    arcaneInitiate <- buildAsset Assets.arcaneInitiate (Just investigator)
     cards <- testPlayerCards 3
     gameTest
         investigator

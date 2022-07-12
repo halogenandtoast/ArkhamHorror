@@ -53,7 +53,7 @@ spec = describe "\"Ashcan\" Pete" $ do
   context "Elder Sign" $ do
     it "gives +2 and readies duke" $ do
       let ashcanPete = lookupInvestigator "02005"
-      duke <- buildAsset "02014" (Just ashcanPete)
+      duke <- buildAsset Assets.duke (Just ashcanPete)
 
       (didPassTest, logger) <- didPassSkillTestBy ashcanPete SkillIntellect 2
 

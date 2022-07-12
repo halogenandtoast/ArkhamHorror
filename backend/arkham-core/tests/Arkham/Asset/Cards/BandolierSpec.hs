@@ -4,6 +4,7 @@ module Arkham.Asset.Cards.BandolierSpec
 
 import TestImport.Lifted
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Trait
 import Arkham.Projection
@@ -12,7 +13,7 @@ spec :: Spec
 spec = describe "Bandolier" $ do
   it "adds a weapon hand slot" $ do
     investigator <- testInvestigator id
-    bandolier <- buildAsset "02147" (Just investigator)
+    bandolier <- buildAsset Assets.bandolier (Just investigator)
     gameTest
         investigator
         [playAsset investigator bandolier]

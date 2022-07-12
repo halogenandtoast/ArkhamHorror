@@ -5,6 +5,7 @@ module Arkham.Asset.Cards.PhysicalTraining2Spec (
 import TestImport
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
@@ -12,7 +13,7 @@ spec = describe "Physical Training (2)" $ do
   it "Adds 1 to willpower check for each resource spent" $ do
     investigator <- testInvestigator $ \attrs ->
       attrs {investigatorWillpower = 1, investigatorResources = 2}
-    physicalTraining2 <- buildAsset "50001" (Just investigator)
+    physicalTraining2 <- buildAsset Assets.physicalTraining2 (Just investigator)
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillWillpower 0
 
@@ -54,7 +55,7 @@ spec = describe "Physical Training (2)" $ do
   it "Adds 1 to combat check for each resource spent" $ do
     investigator <- testInvestigator $
       \attrs -> attrs {investigatorCombat = 1, investigatorResources = 2}
-    physicalTraining2 <- buildAsset "50001" (Just investigator)
+    physicalTraining2 <- buildAsset Assets.physicalTraining2 (Just investigator)
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillCombat 0
 

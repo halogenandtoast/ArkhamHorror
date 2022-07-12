@@ -157,8 +157,8 @@ buildEvent cardCode investigator =
 buildEnemy :: MonadRandom m => CardCode -> m Enemy
 buildEnemy cardCode = lookupEnemy cardCode <$> getRandom
 
-buildAsset :: MonadRandom m => CardCode -> Maybe Investigator -> m Asset
-buildAsset cardCode mOwner = lookupAsset cardCode . (, toId <$> mOwner) <$> getRandom
+buildAsset :: MonadRandom m => CardDef -> Maybe Investigator -> m Asset
+buildAsset cardDef mOwner = lookupAsset (toCardCode cardDef) . (, toId <$> mOwner) <$> getRandom
 
 testPlayerCards :: MonadRandom m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' (testPlayerCard id)

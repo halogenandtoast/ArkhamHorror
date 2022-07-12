@@ -99,7 +99,9 @@ spec = describe "Machete" $ do
           [doFight] <- field AssetAbilities (toId machete)
           push $ UseAbility (toId investigator) doFight []
           runMessages
-          chooseFirstOption "choose enemy"
+          chooseOptionMatching "choose enemy1" $ \case
+            FightEnemy _ eid _ _ _ _ -> eid == toId enemy1
+            _ -> False
           chooseOnlyOption "start skill test"
           chooseOnlyOption "apply results"
 

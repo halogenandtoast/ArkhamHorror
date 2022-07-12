@@ -3484,7 +3484,7 @@ runGameMessage msg g = case msg of
       PlayerCard pc -> do
         let
           ownerId = fromJustNote "owner was not set" $ treacheryOwner $ toAttrs treachery
-        push (AddToDiscard ownerId pc { pcBearer = Just ownerId })
+        push (AddToDiscard ownerId pc { pcOwner = Just ownerId })
       EncounterCard _ -> pure ()
     pure $ g & entitiesL . treacheriesL %~ deleteMap tid
   _ -> pure g

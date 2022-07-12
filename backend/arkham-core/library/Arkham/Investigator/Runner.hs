@@ -1396,9 +1396,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else pure $ a & resourcesL +~ 1
   LoadDeck iid deck | iid == investigatorId -> do
     shuffled <- shuffleM $ flip map (unDeck deck) $ \card ->
-      if isJust (cdCardSubType $ toCardDef card)
-        then card { pcBearer = Just iid }
-        else card
+        card { pcOwner = Just iid }
     pure $ a & deckL .~ Deck shuffled
   InvestigatorCommittedCard iid card | iid == investigatorId -> do
     commitedCardWindows <- Helpers.windows [Window.CommittedCard iid card]
@@ -1870,7 +1868,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
     pure $ a & cluesL .~ 0
   RemoveFromBearersDeckOrDiscard card -> do
-    if pcBearer card == Just investigatorId
+    if pcOwner card == Just investigatorId
       then
         pure
         $ a

@@ -15,7 +15,7 @@ newtype DiscardedPlayerCard = DiscardedPlayerCard { unDiscardedPlayerCard :: Pla
 
 data PlayerCard = MkPlayerCard
   { pcId :: CardId
-  , pcBearer :: Maybe InvestigatorId
+  , pcOwner :: Maybe InvestigatorId
   , pcCardCode :: CardCode
   , pcOriginalCardCode :: CardCode
   }
@@ -58,7 +58,7 @@ lookupPlayerCard cardDef cardId = MkPlayerCard
   { pcId = cardId
   , pcCardCode = toCardCode cardDef
   , pcOriginalCardCode = toCardCode cardDef
-  , pcBearer = Nothing
+  , pcOwner = Nothing
   }
 
 genPlayerCard :: MonadRandom m => CardDef -> m PlayerCard

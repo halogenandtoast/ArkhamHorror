@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Asset.Cards.Machete
   ( Machete(..)
   , machete

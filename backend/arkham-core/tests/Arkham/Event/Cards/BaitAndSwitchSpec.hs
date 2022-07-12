@@ -13,7 +13,7 @@ import Arkham.Projection
 spec :: Spec
 spec = describe "Bait and Switch" $ do
   it "will move the enemy to a connected location if you succeed" $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorAgility = 3 }
     enemy <- testEnemy (EnemyAttrs.evadeL .~ 3)
     baitAndSwitch <- buildEvent "02034" investigator

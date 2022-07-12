@@ -46,6 +46,7 @@ instance Entity Treachery where
   type EntityAttrs Treachery = TreacheryAttrs
   toId = toId . toAttrs
   toAttrs (Treachery a) = toAttrs a
+  overAttrs f (Treachery a) = Treachery $ overAttrs f a
 
 instance TargetEntity Treachery where
   toTarget = toTarget . toAttrs

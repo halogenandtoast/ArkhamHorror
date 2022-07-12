@@ -13,7 +13,7 @@ import Arkham.Projection
 spec :: Spec
 spec = describe "Machete" $ do
   it "gives +1 combat and +1 damage if the attacked enemy is the only enemy engaged with you" $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorCombat = 1 }
     machete <- buildAsset Assets.machete (Just investigator)
     enemy <- testEnemy
@@ -43,7 +43,7 @@ spec = describe "Machete" $ do
           fieldAssert EnemyDamage (== 2) enemy
 
   it "does not give additional damage if the attacked enemy is not engaged with you" $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorCombat = 1 }
     machete <- buildAsset Assets.machete (Just investigator)
     enemy <- testEnemy
@@ -73,7 +73,7 @@ spec = describe "Machete" $ do
           fieldAssert EnemyDamage (== 1) enemy
 
   it "does not give additional damage if the attacked enemy is not the only enemy engaged with you" $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorCombat = 1 }
     machete <- buildAsset Assets.machete (Just investigator)
     enemy1 <- testEnemy

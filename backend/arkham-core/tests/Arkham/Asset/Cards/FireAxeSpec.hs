@@ -13,7 +13,7 @@ import Arkham.Projection
 spec :: Spec
 spec = describe "Fire Axe" $ do
   it "gives +1 damage if you have no resources" $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorResources = 0, investigatorCombat = 3 }
     fireAxe <- buildAsset Assets.fireAxe (Just investigator)
     enemy <- testEnemy
@@ -41,7 +41,7 @@ spec = describe "Fire Axe" $ do
           fieldAssert EnemyDamage (== 2) enemy
 
   it "allows you to spend 1 resource to get +2 combat" $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorResources = 2, investigatorCombat = 1 }
     fireAxe <- buildAsset Assets.fireAxe (Just investigator)
     enemy <- testEnemy
@@ -92,7 +92,7 @@ spec = describe "Fire Axe" $ do
           fieldAssert EnemyDamage (== 1) enemy
 
   it "if you spend your resources before tokens, you stil get +1 damage" $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorResources = 1, investigatorCombat = 1 }
     fireAxe <- buildAsset Assets.fireAxe (Just investigator)
     enemy <- testEnemy
@@ -131,7 +131,7 @@ spec = describe "Fire Axe" $ do
           fieldAssert EnemyDamage (== 2) enemy
 
   it "limit of 3 resources can be spent" $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorResources = 4, investigatorCombat = 1 }
     fireAxe <- buildAsset Assets.fireAxe (Just investigator)
     enemy <- testEnemy

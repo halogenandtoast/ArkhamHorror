@@ -11,7 +11,7 @@ import Arkham.Projection
 spec :: Spec
 spec = describe "Search for the Truth" $ do
   it "allows you to draw cards equal to the number of clues" $ do
-    investigator <- testInvestigator (Investigator.cluesL .~ 3)
+    investigator <- testJenny (Investigator.cluesL .~ 3)
     playerCards <- testPlayerCards 3
     searchForTheTruth <- buildEvent "02008" investigator
     gameTest
@@ -26,7 +26,7 @@ spec = describe "Search for the Truth" $ do
             `shouldMatchListM` map PlayerCard playerCards
 
   it "has a maximum of 5 cards" $ do
-    investigator <- testInvestigator (Investigator.cluesL .~ 6)
+    investigator <- testJenny (Investigator.cluesL .~ 6)
     playerCards <- testPlayerCards 6
     searchForTheTruth <- buildEvent "02008" investigator
     gameTest

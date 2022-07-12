@@ -130,6 +130,7 @@ instance Entity InvestigatorAttrs where
   type EntityAttrs InvestigatorAttrs = InvestigatorAttrs
   toId = investigatorId
   toAttrs = id
+  overAttrs f = f
 
 instance HasCardDef InvestigatorAttrs where
   toCardDef e = case lookup (investigatorCardCode e) allInvestigatorCards of

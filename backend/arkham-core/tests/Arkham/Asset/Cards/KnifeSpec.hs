@@ -14,7 +14,7 @@ import Arkham.Projection
 spec :: Spec
 spec = describe "Knife" $ do
   it "Fight. You get +1 for this attack." $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorCombat = 2 }
     knife <- buildAsset Assets.knife (Just investigator)
     enemy <- testEnemy
@@ -45,7 +45,7 @@ spec = describe "Knife" $ do
   it
       "Discard Knife: Fight. You get +2 for this attack. This attack deals +1 damage."
     $ do
-        investigator <- testInvestigator
+        investigator <- testJenny
           $ \attrs -> attrs { investigatorCombat = 1 }
         knife <- buildAsset Assets.knife (Just investigator)
         let Just knifeCard = preview _PlayerCard (toCard $ toAttrs knife)

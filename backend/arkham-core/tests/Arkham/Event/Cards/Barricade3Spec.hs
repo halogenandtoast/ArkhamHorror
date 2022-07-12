@@ -6,6 +6,7 @@ module Arkham.Event.Cards.Barricade3Spec
 import TestImport.Lifted
 
 import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Attrs (Field(..))
 import Arkham.Projection
 
@@ -16,7 +17,7 @@ spec = do
         "should make the current location unenterable by non elites and non elites cannot spawn there"
       $ do
           location <- testLocation id
-          investigator <- testInvestigator id
+          investigator <- testJenny id
           barricade3 <- buildEvent "50004" investigator
           gameTest
               investigator
@@ -34,8 +35,8 @@ spec = do
 
     it "should be discarded if an investigator leaves the location" $ do
       location <- testLocation id
-      investigator <- testInvestigator id
-      investigator2 <- testInvestigator id
+      investigator <- testJenny id
+      investigator2 <- testInvestigator Investigators.rolandBanks id
       barricade3 <- buildEvent "50004" investigator
       let Just barricade3Card = preview _PlayerCard (toCard $ toAttrs barricade3)
       gameTest

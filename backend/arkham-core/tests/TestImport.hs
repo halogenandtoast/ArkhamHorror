@@ -41,9 +41,7 @@ import Arkham.Helpers as X
 import Arkham.Id as X
 import Arkham.Investigator as X
 import Arkham.Investigator.Attrs hiding (assetsL)
-import Arkham.Helpers.Investigator qualified as Investigator
-import Arkham.Investigator.Cards.JennyBarnes
-import Arkham.Investigator.Cards qualified as Cards
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location as X
 import Arkham.Location.Attrs
 import Arkham.Location.Cards qualified as Cards
@@ -230,11 +228,15 @@ testLocationWithDef defF attrsF = do
 -- or abilities
 testInvestigator
   :: MonadIO m
+  => CardDef
+  -> (InvestigatorAttrs -> InvestigatorAttrs)
+  -> m Investigator
+testInvestigator cardDef f = pure $ overAttrs f $ lookupInvestigator (InvestigatorId $ toCardCode cardDef)
+
+testJenny :: MonadIO m
   => (InvestigatorAttrs -> InvestigatorAttrs)
   -> m Investigator
-testInvestigator f = pure $ Investigator . ($ ()) . cbCardBuilder $ Investigator.investigator (JennyBarnes . f) Cards.jennyBarnes stats
- where
-  stats = Stats 5 5 5 5 5 5
+testJenny = testInvestigator Investigators.jennyBarnes
 
 testConnectedLocations
   :: MonadRandom m

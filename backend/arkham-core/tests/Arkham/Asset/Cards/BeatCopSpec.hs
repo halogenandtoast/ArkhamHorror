@@ -14,7 +14,7 @@ import Arkham.Projection
 spec :: Spec
 spec = describe "Beat Cop" $ do
   it "gives you +1 combat" $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorCombat = 1 }
     beatCop <- buildAsset Assets.beatCop (Just investigator)
     gameTest
@@ -30,7 +30,7 @@ spec = describe "Beat Cop" $ do
           combat stats `shouldBe` 2
 
   it "can be discarded to do 1 damage to an enemy at your location" $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorCombat = 1 }
     beatCop <- buildAsset Assets.beatCop (Just investigator)
     enemy <- testEnemy

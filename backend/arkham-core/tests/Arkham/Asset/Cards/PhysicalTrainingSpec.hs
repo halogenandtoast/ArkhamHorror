@@ -11,7 +11,7 @@ import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 spec :: Spec
 spec = describe "Physical Training" $ do
   it "Adds 1 to willpower check for each resource spent" $ do
-    investigator <- testInvestigator $ \attrs ->
+    investigator <- testJenny $ \attrs ->
       attrs {investigatorWillpower = 1, investigatorResources = 2}
 
     physicalTraining <- buildAsset Assets.physicalTraining (Just investigator)
@@ -53,7 +53,7 @@ spec = describe "Physical Training" $ do
         didPassTest `refShouldBe` True
 
   it "Adds 1 to combat check for each resource spent" $ do
-    investigator <- testInvestigator $
+    investigator <- testJenny $
       \attrs -> attrs {investigatorCombat = 1, investigatorResources = 2}
     physicalTraining <- buildAsset Assets.physicalTraining (Just investigator)
 

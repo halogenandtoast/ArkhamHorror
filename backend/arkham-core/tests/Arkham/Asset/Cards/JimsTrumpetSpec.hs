@@ -6,6 +6,7 @@ import TestImport
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Attrs qualified as Investigator
 import Arkham.Investigator.Attrs (Field(..))
 
@@ -13,7 +14,7 @@ spec :: Spec
 spec = describe "Jim's Trumpet" $ do
   context "allows you to heal one horror when skull is revealed" $ do
     it "on yourself" $ do
-      investigator <- testInvestigator (Investigator.sanityDamageL .~ 1)
+      investigator <- testJenny (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset Assets.jimsTrumpet (Just investigator)
       location <- testLocation id
       gameTest
@@ -39,8 +40,8 @@ spec = describe "Jim's Trumpet" $ do
             fieldAssert InvestigatorHorror (== 0) investigator
 
     it "on an investigator at your location" $ do
-      investigator <- testInvestigator id
-      investigator2 <- testInvestigator
+      investigator <- testJenny id
+      investigator2 <- testInvestigator Investigators.rolandBanks
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- createAsset <$> genPlayerCard Assets.jimsTrumpet
       location <- testLocation id
@@ -68,8 +69,8 @@ spec = describe "Jim's Trumpet" $ do
             fieldAssert InvestigatorHorror (== 0) investigator2
 
     it "even when another player draws token" $ do
-      investigator <- testInvestigator id
-      investigator2 <- testInvestigator
+      investigator <- testJenny id
+      investigator2 <- testInvestigator Investigators.rolandBanks
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset Assets.jimsTrumpet (Just investigator)
       location <- testLocation id
@@ -97,8 +98,8 @@ spec = describe "Jim's Trumpet" $ do
             fieldAssert InvestigatorHorror (== 0) investigator2
 
     it "on an investigator at a connected location" $ do
-      investigator <- testInvestigator id
-      investigator2 <- testInvestigator
+      investigator <- testJenny id
+      investigator2 <- testInvestigator Investigators.rolandBanks
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset Assets.jimsTrumpet (Just investigator)
       rivertown <- createLocation <$> genEncounterCard Locations.rivertown
@@ -132,8 +133,8 @@ spec = describe "Jim's Trumpet" $ do
             fieldAssert InvestigatorHorror (== 0) investigator2
 
     it "cannot target an investigator at an unconnected location" $ do
-      investigator <- testInvestigator id
-      investigator2 <- testInvestigator
+      investigator <- testJenny id
+      investigator2 <- testInvestigator Investigators.rolandBanks
         ((Investigator.sanityDamageL .~ 1) . (Investigator.idL .~ "01001"))
       jimsTrumpet <- buildAsset Assets.jimsTrumpet (Just investigator)
       rivertown <- createLocation <$> genEncounterCard Locations.rivertown

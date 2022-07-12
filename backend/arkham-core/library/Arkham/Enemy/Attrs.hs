@@ -221,6 +221,7 @@ instance Entity EnemyAttrs where
   type EntityAttrs EnemyAttrs = EnemyAttrs
   toId = enemyId
   toAttrs = id
+  overAttrs f = f
 
 instance Named EnemyAttrs where
   toName = toName . toCardDef

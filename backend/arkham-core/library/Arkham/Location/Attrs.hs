@@ -128,6 +128,7 @@ instance Entity LocationAttrs where
   type EntityAttrs LocationAttrs = LocationAttrs
   toId = locationId
   toAttrs = id
+  overAttrs f = f
 
 instance TargetEntity LocationAttrs where
   toTarget = LocationTarget . toId

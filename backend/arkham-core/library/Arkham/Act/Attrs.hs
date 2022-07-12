@@ -90,6 +90,7 @@ instance Entity ActAttrs where
   type EntityAttrs ActAttrs = ActAttrs
   toId = actId
   toAttrs = id
+  overAttrs f = f
 
 instance Named ActAttrs where
   toName = toName . toCardDef

@@ -9,7 +9,7 @@ spec = describe "The Masked Hunter" $ do
   context "modifiers" $ do
     it "prevents engaged investigators from discovering or spending clues" $ do
       theMaskedHunter <- buildEnemy "01121b"
-      investigator <- testInvestigator id
+      investigator <- testJenny id
       gameTest
           investigator
           [engageEnemy investigator theMaskedHunter]
@@ -23,7 +23,7 @@ spec = describe "The Masked Hunter" $ do
         "does not prevent unengaged investigators from discovering or spending clues"
       $ do
           theMaskedHunter <- buildEnemy "01121b"
-          investigator <- testInvestigator id
+          investigator <- testJenny id
           gameTest
               investigator
               [ engageEnemy investigator theMaskedHunter

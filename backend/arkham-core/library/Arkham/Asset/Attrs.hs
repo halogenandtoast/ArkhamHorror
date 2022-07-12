@@ -33,6 +33,7 @@ instance Entity a => Entity (DiscardedAttrs a) where
   type EntityAttrs (DiscardedAttrs a) = EntityAttrs a
   toId (DiscardedAttrs a) = toId a
   toAttrs (DiscardedAttrs a) = toAttrs a
+  overAttrs f (DiscardedAttrs a) = DiscardedAttrs $ overAttrs f a
 
 data instance Field (DiscardedAttrs AssetAttrs) :: Type -> Type where
   DiscardedAssetTraits :: Field (DiscardedAttrs AssetAttrs) (HashSet Trait)
@@ -221,6 +222,7 @@ instance Entity AssetAttrs where
   type EntityAttrs AssetAttrs = AssetAttrs
   toId = assetId
   toAttrs = id
+  overAttrs f = f
 
 instance Named AssetAttrs where
   toName = toName . toCardDef

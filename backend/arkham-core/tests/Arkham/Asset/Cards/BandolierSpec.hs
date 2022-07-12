@@ -12,7 +12,7 @@ import Arkham.Projection
 spec :: Spec
 spec = describe "Bandolier" $ do
   it "adds a weapon hand slot" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     bandolier <- buildAsset Assets.bandolier (Just investigator)
     gameTest
         investigator

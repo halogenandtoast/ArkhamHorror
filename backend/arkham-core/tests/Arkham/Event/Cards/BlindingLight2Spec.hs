@@ -14,7 +14,7 @@ spec :: Spec
 spec = do
   describe "Blinding Light 2" $ do
     it "Uses willpower to evade an enemy" $ do
-      investigator <- testInvestigator $ \attrs ->
+      investigator <- testJenny $ \attrs ->
         attrs { investigatorWillpower = 5, investigatorAgility = 3 }
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
@@ -41,7 +41,7 @@ spec = do
             assert $ fieldP EnemyEngagedInvestigators null (toId enemy)
 
     it "deals 2 damage to the evaded enemy" $ do
-      investigator <- testInvestigator id
+      investigator <- testJenny id
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
       blindingLight2 <- buildEvent "01069" investigator
@@ -70,7 +70,7 @@ spec = do
         "On Skull, Cultist, Tablet, ElderThing, or AutoFail the investigator loses an action and takes 1 horror"
       $ for_ [Skull, Cultist, Tablet, ElderThing, AutoFail]
       $ \token -> do
-          investigator <- testInvestigator id
+          investigator <- testJenny id
           enemy <- testEnemy
             ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 3))
           blindingLight2 <- buildEvent "01069" investigator

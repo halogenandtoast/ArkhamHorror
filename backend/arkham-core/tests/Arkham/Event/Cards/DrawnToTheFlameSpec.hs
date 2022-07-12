@@ -15,7 +15,7 @@ spec = describe "Drawn to the flame" $ do
     -- We use "On Wings of Darkness" here to check that the Revelation effect
     -- resolves and that the clues discovered are at your location after the
     -- effect per the FAQ
-        investigator <- testInvestigator
+        investigator <- testJenny
           $ \attrs -> attrs { investigatorAgility = 3 }
         rivertown <- createLocation <$> genEncounterCard Cards.rivertown
         southside <- createLocation

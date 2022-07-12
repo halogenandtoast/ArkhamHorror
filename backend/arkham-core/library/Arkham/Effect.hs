@@ -87,6 +87,7 @@ instance Entity Effect where
   type EntityAttrs Effect = EffectAttrs
   toId = toId . toAttrs
   toAttrs (Effect a) = toAttrs a
+  overAttrs f (Effect a) = Effect $ overAttrs f a
 
 instance TargetEntity Effect where
   toTarget = toTarget . toAttrs

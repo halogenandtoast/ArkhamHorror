@@ -11,7 +11,7 @@ spec :: Spec
 spec = describe "Lucky! (2)" $ do
   it "adds 2 to a skill test when you would fail and draws 1 card" $ do
     cardToDraw <- testPlayerCard id
-    investigator <- testInvestigator $ \attrs -> attrs
+    investigator <- testJenny $ \attrs -> attrs
       { investigatorIntellect = 1
       , investigatorResources = 1
       , investigatorDeck = Deck [cardToDraw]
@@ -43,7 +43,7 @@ spec = describe "Lucky! (2)" $ do
 
   it "does not cause an autofail to pass" $ do
     cardToDraw <- testPlayerCard id
-    investigator <- testInvestigator $ \attrs -> attrs
+    investigator <- testJenny $ \attrs -> attrs
       { investigatorIntellect = 1
       , investigatorResources = 1
       , investigatorDeck = Deck [cardToDraw]

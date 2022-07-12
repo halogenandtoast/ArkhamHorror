@@ -13,7 +13,7 @@ import Arkham.GameEnv
 spec :: Spec
 spec = describe "Close Call (2)" $ do
   it "shuffles the enemy just evaded back into the encounter deck" $ do
-    investigator <- testInvestigator (Investigator.resourcesL .~ 2)
+    investigator <- testJenny (Investigator.resourcesL .~ 2)
     closeCall2 <- genPlayerCard Cards.closeCall2
     enemy <- testEnemy id
     location <- testLocation id
@@ -43,7 +43,7 @@ spec = describe "Close Call (2)" $ do
 
   it "does not work on Elite enemies" $ do
     location <- testLocation id
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     closeCall2 <- genPlayerCard Cards.closeCall2
     enemy <- createEnemy <$> genEncounterCard Cards.ghoulPriest
     gameTest
@@ -63,7 +63,7 @@ spec = describe "Close Call (2)" $ do
 
   it "does not work on weakness enemies" $ do
     location <- testLocation id
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     closeCall2 <- genPlayerCard Cards.closeCall2
     enemy <- createEnemy <$> genPlayerCard Cards.mobEnforcer
     gameTest

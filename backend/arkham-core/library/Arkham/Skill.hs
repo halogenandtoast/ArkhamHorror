@@ -46,6 +46,7 @@ instance Entity Skill where
   type EntityAttrs Skill = SkillAttrs
   toId = toId . toAttrs
   toAttrs (Skill a) = toAttrs a
+  overAttrs f (Skill a) = Skill $ overAttrs f a
 
 instance Named Skill where
   toName = toName . toAttrs

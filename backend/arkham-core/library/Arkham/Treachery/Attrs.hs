@@ -84,6 +84,7 @@ instance Entity TreacheryAttrs where
   type EntityAttrs TreacheryAttrs = TreacheryAttrs
   toId = treacheryId
   toAttrs = id
+  overAttrs f = f
 
 instance Named TreacheryAttrs where
   toName = toName . toCardDef

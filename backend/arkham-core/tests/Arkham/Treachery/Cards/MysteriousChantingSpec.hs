@@ -11,7 +11,7 @@ import Arkham.Enemy.Attrs (Field(..))
 spec :: Spec
 spec = describe "Mysterious Chanting" $ do
   it "will place a token on the nearest cultist" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     cultist <- createEnemy <$> genEncounterCard Cards.acolyte
     mysteriousChanting <- genEncounterCard Cards.mysteriousChanting
     (location1, location2) <- testConnectedLocations id id

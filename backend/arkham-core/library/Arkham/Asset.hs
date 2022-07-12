@@ -45,6 +45,7 @@ instance Entity Asset where
   type EntityAttrs Asset = AssetAttrs
   toId = toId . toAttrs
   toAttrs (Asset a) = toAttrs a
+  overAttrs f (Asset a) = Asset $ overAttrs f a
 
 instance TargetEntity Asset where
   toTarget = toTarget . toAttrs

@@ -11,7 +11,7 @@ import Arkham.Treachery.Cards qualified as Cards
 spec :: Spec
 spec = describe "Rex's Curse" $ do
   it "is put into play into your threat area" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     rexsCurse <- genPlayerCard Cards.rexsCurse
     gameTest
         investigator
@@ -26,7 +26,7 @@ spec = describe "Rex's Curse" $ do
             `shouldReturn` True
 
   it "causes you to reveal another token" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     rexsCurse <- genPlayerCard Cards.rexsCurse
 
     (didRunMessage, logger) <- didPassSkillTestBy investigator SkillIntellect 2
@@ -60,7 +60,7 @@ spec = describe "Rex's Curse" $ do
           didRunMessage `refShouldBe` True
 
   it "is shuffled back into your deck if you fail the test" $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorIntellect = 5 }
     rexsCurse <- genPlayerCard Cards.rexsCurse
     gameTest

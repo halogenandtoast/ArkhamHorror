@@ -14,7 +14,7 @@ spec = do
   describe "Zoey's Cross" $ do
     context "after engaging an enemy" $ do
       it "spend 1 resource and exhaust to deal one damage to that enemy" $ do
-        investigator <- testInvestigator (Investigator.resourcesL .~ 1)
+        investigator <- testJenny (Investigator.resourcesL .~ 1)
         enemy <- testEnemy (Enemy.healthL .~ Static 2)
         location <- testLocation id
         zoeysCross <- buildAsset Assets.zoeysCross (Just investigator)

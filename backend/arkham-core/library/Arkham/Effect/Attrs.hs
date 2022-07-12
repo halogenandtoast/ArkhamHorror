@@ -77,6 +77,7 @@ instance Entity EffectAttrs where
   type EntityAttrs EffectAttrs = EffectAttrs
   toId = effectId
   toAttrs = id
+  overAttrs f = f
 
 instance TargetEntity EffectAttrs where
   toTarget = EffectTarget . toId

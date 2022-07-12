@@ -70,6 +70,7 @@ instance Entity CampaignAttrs where
   type EntityAttrs CampaignAttrs = CampaignAttrs
   toId = campaignId
   toAttrs = id
+  overAttrs f = f
 
 instance ToJSON CampaignAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "campaign"

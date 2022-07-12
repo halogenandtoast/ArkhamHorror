@@ -353,7 +353,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         pure $ a & storyCardsL %~ insertWith
           (<>)
           iid
-          [card { pcBearer = Just iid }]
+          [card { pcOwner = Just iid }]
       else pure a
   LookAtTopOfDeck _ EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck scenarioEncounterDeck

@@ -35,7 +35,7 @@ instance RunMessage CampaignAttrs where
       pure $ a & storyCardsL %~ insertWith
         (<>)
         iid
-        [card { pcBearer = Just iid }]
+        [card { pcOwner = Just iid }]
     RemoveCampaignCardFromDeck iid cardCode ->
       pure
         $ a

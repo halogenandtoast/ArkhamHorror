@@ -100,7 +100,7 @@ cardMatch a = \case
 
 instance IsCard PlayerCard where
   toCardId = pcId
-  toCardOwner = pcBearer
+  toCardOwner = pcOwner
 
 instance IsCard EncounterCard where
   toCardId = ecId

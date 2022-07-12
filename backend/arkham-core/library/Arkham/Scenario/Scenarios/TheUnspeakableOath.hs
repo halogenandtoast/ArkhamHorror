@@ -332,7 +332,7 @@ instance RunMessage TheUnspeakableOath where
               onyxClasp <- getCampaignStoryCard Assets.claspOfBlackOnyx
               pure
                 [ RemoveCampaignCardFromDeck
-                  (fromJustNote "must have bearer" $ pcBearer onyxClasp)
+                  (fromJustNote "must have owner" $ pcOwner onyxClasp)
                   (toCardCode onyxClasp)
                 , chooseOne
                   leadInvestigatorId

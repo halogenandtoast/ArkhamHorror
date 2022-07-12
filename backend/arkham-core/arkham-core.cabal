@@ -1447,6 +1447,7 @@ test-suite spec
       Arkham.Asset.Cards.JennysTwin45sSpec
       Arkham.Asset.Cards.JimsTrumpetSpec
       Arkham.Asset.Cards.KnifeSpec
+      Arkham.Asset.Cards.MacheteSpec
       Arkham.Asset.Cards.PeterSylvestreSpec
       Arkham.Asset.Cards.PhysicalTraining2Spec
       Arkham.Asset.Cards.PhysicalTrainingSpec

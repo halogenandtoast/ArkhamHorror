@@ -5,13 +5,14 @@ module Arkham.Event.Cards.CrypticResearch4Spec
 import TestImport.Lifted
 
 import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Projection
 
 spec :: Spec
 spec = do
   describe "Cryptic Research 4" $ do
     it "causes the selected investigator to draw 3 cards" $ do
-      investigator <- testInvestigator id
+      investigator <- testJenny id
       cards <- testPlayerCards 3
       location <- testLocation id
       crypticResearch4 <- buildEvent "01043" investigator
@@ -33,8 +34,8 @@ spec = do
               `shouldMatchListM` map PlayerCard cards
 
     it "can select any investigator at the same location" $ do
-      investigator <- testInvestigator id
-      investigator2 <- testInvestigator id
+      investigator <- testJenny id
+      investigator2 <- testInvestigator Investigators.rolandBanks id
       cards <- testPlayerCards 3
       location <- testLocation id
       crypticResearch4 <- buildEvent "01043" investigator

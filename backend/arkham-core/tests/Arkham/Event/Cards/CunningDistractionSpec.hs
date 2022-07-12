@@ -5,13 +5,14 @@ module Arkham.Event.Cards.CunningDistractionSpec
 import TestImport.Lifted
 
 import Arkham.Card.CardDef qualified as CardDef
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Keyword
 
 spec :: Spec
 spec = do
   describe "Cunning Distraction" $ do
     it "Evades enemies engaged with you" $ do
-      investigator <- testInvestigator id
+      investigator <- testJenny id
       location <- testLocation id
       enemy <- testEnemy id
       cunningDistraction <- buildEvent "01078" investigator
@@ -31,8 +32,8 @@ spec = do
             evadedBy investigator enemy `shouldReturn` True
 
     it "Evades enemies engaged with other investigators at your location" $ do
-      investigator <- testInvestigator id
-      investigator2 <- testInvestigator id
+      investigator <- testJenny id
+      investigator2 <- testInvestigator Investigators.rolandBanks id
       location <- testLocation id
       enemy <- testEnemy id
       cunningDistraction <- buildEvent "01078" investigator
@@ -53,7 +54,7 @@ spec = do
             evadedBy investigator2 enemy `shouldReturn` True
 
     it "Evades aloof enemies at your location" $ do
-      investigator <- testInvestigator id
+      investigator <- testJenny id
       location <- testLocation id
       enemy <- testEnemyWithDef (CardDef.keywordsL .~ setFromList [Aloof]) id
       cunningDistraction <- buildEvent "01078" investigator

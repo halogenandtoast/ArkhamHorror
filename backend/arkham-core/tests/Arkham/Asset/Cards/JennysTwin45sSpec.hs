@@ -18,7 +18,7 @@ spec :: Spec
 spec = describe "Jenny's Twin .45s" $ do
   it "enters play with X uses" $ do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
-    investigator <- testInvestigator $ \attrs -> attrs
+    investigator <- testJenny $ \attrs -> attrs
       { investigatorResources = 5
       , investigatorHand = [PlayerCard jennysTwin45s]
       }
@@ -37,7 +37,7 @@ spec = describe "Jenny's Twin .45s" $ do
 
   it "gives +2 combat and does +1 damage" $ do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
-    investigator <- testInvestigator $ \attrs -> attrs
+    investigator <- testJenny $ \attrs -> attrs
       { investigatorResources = 1
       , investigatorHand = [PlayerCard jennysTwin45s]
       , investigatorCombat = 3

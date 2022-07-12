@@ -16,7 +16,7 @@ import Arkham.Treachery.Cards qualified as Cards
 spec :: Spec
 spec = describe "Wracked by Nightmares" $ do
   it "prevents controlled assets from readying" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     wrackedByNightmares <- genPlayerCard Cards.wrackedByNightmares
     asset <- testAsset
       ((Asset.exhaustedL .~ True)
@@ -40,7 +40,7 @@ spec = describe "Wracked by Nightmares" $ do
           fieldAssert AssetExhausted (== True) asset
 
   it "trigger actions removes restriction and takes two actions" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     wrackedByNightmares <- genPlayerCard Cards.wrackedByNightmares
     asset <- testAsset
       ((Asset.exhaustedL .~ True) . (Asset.ownerL ?~ toId investigator))

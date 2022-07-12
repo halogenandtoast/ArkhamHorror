@@ -10,7 +10,7 @@ import Arkham.Investigator.Attrs (Field(..))
 spec :: Spec
 spec = describe "Final Rhapsody" $ do
   it "does 1 damage per skull and autofail revealed" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     finalRhapsody <- genPlayerCard Cards.finalRhapsody
     gameTest
         investigator

@@ -39,6 +39,7 @@ instance Entity Act where
   type EntityAttrs Act = ActAttrs
   toId = toId . toAttrs
   toAttrs (Act a) = toAttrs a
+  overAttrs f (Act a) = Act $ overAttrs f a
 
 instance TargetEntity Act where
   toTarget = toTarget . toAttrs

@@ -75,6 +75,15 @@ pattern InvestigatorCanMove :: InvestigatorMatcher
 pattern InvestigatorCanMove <- InvestigatorWithoutModifier CannotMove where
   InvestigatorCanMove = InvestigatorWithoutModifier CannotMove
 
+pattern InvestigatorCanHealHorror :: InvestigatorMatcher
+pattern InvestigatorCanHealHorror <- InvestigatorWithoutModifier CannotHealHorror where
+  InvestigatorCanHealHorror = InvestigatorWithoutModifier CannotHealHorror
+
+-- Placeholder
+pattern InvestigatorCanHealDamage :: InvestigatorMatcher
+pattern InvestigatorCanHealDamage <- InvestigatorWithoutModifier CannotHealHorror where
+  InvestigatorCanHealDamage = Anyone
+
 colocatedWith :: InvestigatorId -> InvestigatorMatcher
 colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId
 

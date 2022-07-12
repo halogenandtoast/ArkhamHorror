@@ -13,7 +13,7 @@ import Arkham.Treachery.Cards qualified as Cards
 spec :: Spec
 spec = describe "Searching for Izzie" $ do
   it "attaches to the location farthest away from you" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     (location1, location2) <- testConnectedLocations id id
     gameTest
@@ -36,7 +36,7 @@ spec = describe "Searching for Izzie" $ do
             `shouldReturn` True
 
   it "takes 2 actions and is discarded on a successful investigation" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     location <- testLocation id
     gameTest
@@ -69,7 +69,7 @@ spec = describe "Searching for Izzie" $ do
           fieldAssert InvestigatorMentalTrauma (== 0) investigator
 
   it "causes 1 mental trauma if not discarded" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     location <- testLocation id
     gameTest

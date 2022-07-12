@@ -13,7 +13,7 @@ import Arkham.Projection
 spec :: Spec
 spec = describe ".45 Automatic" $ do
   it "gives +1 combat and +1 damage" $ do
-    investigator <- testInvestigator
+    investigator <- testJenny
       $ \attrs -> attrs { investigatorCombat = 1 }
     fortyFiveAutomatic <- buildAsset Assets.fortyFiveAutomatic (Just investigator)
     enemy <- testEnemy

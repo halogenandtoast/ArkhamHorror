@@ -72,6 +72,7 @@ instance Entity AgendaAttrs where
   type EntityAttrs AgendaAttrs = AgendaAttrs
   toId = agendaId
   toAttrs = id
+  overAttrs f = f
 
 instance Named AgendaAttrs where
   toName = toName . toCardDef

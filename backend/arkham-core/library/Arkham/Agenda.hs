@@ -43,6 +43,7 @@ instance Entity Agenda where
   type EntityAttrs Agenda = AgendaAttrs
   toId = toId . toAttrs
   toAttrs (Agenda a) = toAttrs a
+  overAttrs f (Agenda a) = Agenda $ overAttrs f a
 
 instance TargetEntity Agenda where
   toTarget = toTarget . toAttrs

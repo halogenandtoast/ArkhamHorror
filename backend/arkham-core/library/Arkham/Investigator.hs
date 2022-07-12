@@ -64,6 +64,7 @@ instance Entity Investigator where
   type EntityAttrs Investigator = InvestigatorAttrs
   toId = toId . toAttrs
   toAttrs (Investigator a) = toAttrs a
+  overAttrs f (Investigator a) = Investigator $ overAttrs f a
 
 instance TargetEntity Investigator where
   toTarget = toTarget . toAttrs

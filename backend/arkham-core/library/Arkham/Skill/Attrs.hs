@@ -69,6 +69,7 @@ instance Entity SkillAttrs where
   type EntityAttrs SkillAttrs = SkillAttrs
   toId = skillId
   toAttrs = id
+  overAttrs f = f
 
 instance Named SkillAttrs where
   toName = toName . toCardDef

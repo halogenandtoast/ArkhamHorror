@@ -113,6 +113,7 @@ instance Entity ScenarioAttrs where
   type EntityAttrs ScenarioAttrs = ScenarioAttrs
   toId = scenarioId
   toAttrs = id
+  overAttrs f = f
 
 instance Named ScenarioAttrs where
   toName = scenarioName

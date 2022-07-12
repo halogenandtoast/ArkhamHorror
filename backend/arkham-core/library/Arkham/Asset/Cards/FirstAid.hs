@@ -20,23 +20,54 @@ newtype FirstAid = FirstAid AssetAttrs
 firstAid :: AssetCard FirstAid
 firstAid = assetWith FirstAid Cards.firstAid (discardWhenNoUsesL .~ True)
 
+
+-- validity here is a little complex, you have to be able to heal horror and an investigator exists at your location that has any horror, or the same for damage
+
 instance HasAbilities FirstAid where
   getAbilities (FirstAid x) =
-    [ restrictedAbility x 1 ControlsThis $ ActionAbility Nothing $ Costs
-        [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
+    [ restrictedAbility
+          x
+          1
+          (ControlsThis <> AnyCriterion
+            [ InvestigatorExists (You <> InvestigatorCanHealHorror)
+              <> InvestigatorExists
+                   (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
+            , InvestigatorExists (You <> InvestigatorCanHealDamage)
+              <> InvestigatorExists
+                   (InvestigatorAt YourLocation <> InvestigatorWithAnyDamage)
+            ]
+          )
+        $ ActionAbility Nothing
+        $ Costs [ActionCost 1, UseCost (AssetWithId $ toId x) Supply 1]
     ]
 
 instance RunMessage FirstAid where
   runMessage msg a@(FirstAid attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      targets <- selectListMap InvestigatorTarget $ InvestigatorAt YourLocation
-      a <$ push
-        (chooseOne
-          iid
-          [ TargetLabel
-              target
-              [chooseOne iid [HealDamage target 1, HealHorror target 1]]
-          | target <- targets
-          ]
-        )
+      canHealHorror <- iid <=~> InvestigatorCanHealHorror
+      canHealDamage <- iid <=~> InvestigatorCanHealDamage
+      horrorTargets <- if canHealHorror
+        then
+          selectListMap InvestigatorTarget
+          $ colocatedWith iid
+          <> InvestigatorWithAnyHorror
+        else pure []
+      damageTargets <- if canHealDamage
+        then
+          selectListMap InvestigatorTarget
+          $ colocatedWith iid
+          <> InvestigatorWithAnyDamage
+        else pure []
+      let targets = nub $ horrorTargets <> damageTargets
+      push $ chooseOne
+        iid
+        [ TargetLabel
+            target
+            [ chooseOne iid
+              $ [ HealDamage target 1 | target `elem` damageTargets ]
+              <> [ HealHorror target 1 | target `elem` horrorTargets ]
+            ]
+        | target <- targets
+        ]
+      pure a
     _ -> FirstAid <$> runMessage msg attrs

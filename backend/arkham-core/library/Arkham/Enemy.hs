@@ -59,6 +59,7 @@ instance Entity Enemy where
   type EntityAttrs Enemy = EnemyAttrs
   toId = toId . toAttrs
   toAttrs (Enemy a) = toAttrs a
+  overAttrs f (Enemy a) = Enemy $ overAttrs f a
 
 instance TargetEntity Enemy where
   toTarget = toTarget . toAttrs

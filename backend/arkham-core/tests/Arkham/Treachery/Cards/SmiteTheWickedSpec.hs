@@ -15,7 +15,7 @@ import TestImport.Lifted qualified as Msg
 spec :: Spec
 spec = describe "Smite the Wicked" $ do
   it "draws an enemy, attaches to it, and spawns farthest away from you" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     treachery <- genEncounterCard Cards.ancientEvils
@@ -41,7 +41,7 @@ spec = describe "Smite the Wicked" $ do
           selectAny (TreacheryOnEnemy (EnemyWithId enemyId)) `shouldReturn` True
 
   it "causes 1 mental trauma if enemy not defeated" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocation id
@@ -61,7 +61,7 @@ spec = describe "Smite the Wicked" $ do
           fieldAssert InvestigatorMentalTrauma (== 1) investigator
 
   it "won't cause trauma if enemy is defeated" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocation id
@@ -92,7 +92,7 @@ spec = describe "Smite the Wicked" $ do
           fieldAssert InvestigatorDiscard (elem smiteTheWicked) investigator
 
   it "will cause trauma if player is eliminated" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocation id

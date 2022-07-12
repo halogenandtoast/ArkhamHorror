@@ -11,7 +11,7 @@ import Arkham.Asset.Cards qualified as Assets
 spec :: Spec
 spec = describe "Peter Sylvestre" $ do
   it "gives you +1 agility" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     peterSylvestre <- buildAsset Assets.peterSylvestre (Just investigator)
     gameTest
         investigator
@@ -23,7 +23,7 @@ spec = describe "Peter Sylvestre" $ do
             `shouldReturn` [SkillModifier SkillAgility 1]
 
   it "removes one horror at the end of your turn" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     peterSylvestre <- buildAsset Assets.peterSylvestre (Just investigator)
     gameTest
         investigator

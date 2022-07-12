@@ -59,6 +59,7 @@ instance Entity Location where
   type EntityAttrs Location = LocationAttrs
   toId = toId . toAttrs
   toAttrs (Location l) = toAttrs l
+  overAttrs f (Location a) = Location $ overAttrs f a
 
 instance Named Location where
   toName = toName . toAttrs

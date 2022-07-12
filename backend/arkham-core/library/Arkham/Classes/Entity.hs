@@ -14,6 +14,10 @@ class Entity a where
   type EntityAttrs a
   toId :: a -> EntityId a
   toAttrs :: a -> EntityAttrs a
+  overAttrs :: (EntityAttrs a -> EntityAttrs a) -> a -> a
+
+patchEntity :: Entity a => a -> EntityAttrs a -> a
+patchEntity a attrs = overAttrs (const attrs) a
 
 class TargetEntity a where
   toTarget :: a -> Target
@@ -29,6 +33,7 @@ instance Entity a => Entity (a `With` b) where
   type EntityAttrs (a `With` b) = EntityAttrs a
   toId (a `With` _) = toId a
   toAttrs (a `With` _) = toAttrs a
+  overAttrs f (a `With` b) = With (overAttrs f a) b
 
 instance TargetEntity a => TargetEntity (a `With` b) where
   toTarget (a `With` _) = toTarget a

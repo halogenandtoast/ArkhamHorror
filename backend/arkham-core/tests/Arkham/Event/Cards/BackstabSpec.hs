@@ -15,7 +15,7 @@ spec = do
   describe "Backstab" $ do
     it "should use agility and do +2 damage" $ do
       location <- testLocation id
-      investigator <- testInvestigator
+      investigator <- testJenny
         $ \attrs -> attrs { investigatorCombat = 1, investigatorAgility = 4 }
       backstab <- buildEvent "01051" investigator
       let Just backstabCard = preview _PlayerCard (toCard $ toAttrs backstab)

@@ -12,7 +12,7 @@ spec :: Spec
 spec = do
   describe "Dark Memory" $ do
     it "places 1 doom and can advance current agenda" $ do
-      investigator <- testInvestigator id
+      investigator <- testJenny id
       agenda <- testAgenda "01105" (Agenda.doomThresholdL .~ Static 1)
       darkMemory <- buildEvent "01013" investigator
 
@@ -40,7 +40,7 @@ spec = do
             didAdvanceAgenda `refShouldBe` True
 
     it "is revealed and deals 2 horror if in hand at end of turn" $ do
-      investigator <- testInvestigator id
+      investigator <- testJenny id
       darkMemory <- genPlayerCard Cards.darkMemory
 
       (didReveal, logger) <- createMessageMatcher

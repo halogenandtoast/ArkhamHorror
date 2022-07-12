@@ -15,7 +15,7 @@ import Arkham.Matcher
 spec :: Spec
 spec = describe "Cover Up" $ do
   it "starts with 3 clues on it" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     coverUp <- genPlayerCard Cards.coverUp
     gameTest
         investigator
@@ -27,7 +27,7 @@ spec = describe "Cover Up" $ do
           field TreacheryClues coverUpId `shouldReturn` 3
 
   it "allows you to remove a clue instead of discovering clues" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     coverUp <- genPlayerCard Cards.coverUp
     location <- testLocation $ Location.cluesL .~ 1
     gameTest
@@ -52,7 +52,7 @@ spec = describe "Cover Up" $ do
 
   it "causes one mental trauma when the game ends if there are any clues on it"
     $ do
-        investigator <- testInvestigator id
+        investigator <- testJenny id
         coverUp <- genPlayerCard Cards.coverUp
         gameTest
             investigator
@@ -67,7 +67,7 @@ spec = describe "Cover Up" $ do
               fieldAssert InvestigatorMentalTrauma (== 1) investigator
 
   it "does not cause trauma when the game ends if there are no clues on it" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     coverUp <- genPlayerCard Cards.coverUp
     location <- testLocation $ Location.cluesL .~ 3
     gameTest

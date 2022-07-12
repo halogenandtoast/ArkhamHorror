@@ -31,6 +31,7 @@ instance Entity Campaign where
   type EntityAttrs Campaign = CampaignAttrs
   toId = toId . toAttrs
   toAttrs (Campaign a) = toAttrs a
+  overAttrs f (Campaign a) = Campaign $ overAttrs f a
 
 lookupCampaign :: CampaignId -> (Difficulty -> Campaign)
 lookupCampaign cid =

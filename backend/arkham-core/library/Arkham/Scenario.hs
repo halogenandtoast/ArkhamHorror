@@ -102,6 +102,7 @@ instance Entity Scenario where
   type EntityAttrs Scenario = ScenarioAttrs
   toId = toId . toAttrs
   toAttrs (Scenario a) = toAttrs a
+  overAttrs f (Scenario a) = Scenario $ overAttrs f a
 
 lookupScenario :: ScenarioId -> Difficulty -> Scenario
 lookupScenario = fromJustNote "Unknown scenario" . flip lookup allScenarios

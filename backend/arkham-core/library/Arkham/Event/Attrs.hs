@@ -110,6 +110,7 @@ instance Entity EventAttrs where
   type EntityAttrs EventAttrs = EventAttrs
   toId = eventId
   toAttrs = id
+  overAttrs f = f
 
 instance Named EventAttrs where
   toName = toName . toCardDef

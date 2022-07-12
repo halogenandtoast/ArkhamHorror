@@ -12,7 +12,7 @@ import Arkham.Projection
 spec :: Spec
 spec = describe "Arcane Initiate" $ do
   it "enters play with 1 doom" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     arcaneInitiate <- buildAsset Assets.arcaneInitiate (Just investigator)
     gameTest
         investigator
@@ -25,7 +25,7 @@ spec = describe "Arcane Initiate" $ do
 
   it "can be exhausted to search the top 3 cards of your deck for a Spell card"
     $ do
-        investigator <- testInvestigator id
+        investigator <- testJenny id
         arcaneInitiate <- buildAsset Assets.arcaneInitiate (Just investigator)
         card <- genPlayerCard Assets.shrivelling
         otherCards <- testPlayerCards 2
@@ -46,7 +46,7 @@ spec = describe "Arcane Initiate" $ do
               assert $ fieldP InvestigatorHand (== [PlayerCard card]) (toId investigator)
 
   it "should continue if no Spell card is found" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     arcaneInitiate <- buildAsset Assets.arcaneInitiate (Just investigator)
     cards <- testPlayerCards 3
     gameTest

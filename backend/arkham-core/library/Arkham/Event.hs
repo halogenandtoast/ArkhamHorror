@@ -45,6 +45,7 @@ instance Entity Event where
   type EntityAttrs Event = EventAttrs
   toId = toId . toAttrs
   toAttrs (Event a) = toAttrs a
+  overAttrs f (Event a) = Event $ overAttrs f a
 
 instance TargetEntity Event where
   toTarget = toTarget . toAttrs

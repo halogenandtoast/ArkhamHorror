@@ -12,7 +12,7 @@ spec :: Spec
 spec = do
   describe "Dodge" $ do
     it "cancels the attack" $ do
-      investigator <- testInvestigator
+      investigator <- testJenny
         $ \attrs -> attrs { investigatorResources = 1 }
       enemy <- testEnemy id
       location <- testLocation id

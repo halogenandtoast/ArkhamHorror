@@ -16,7 +16,7 @@ spec :: Spec
 spec = describe "Oops!" $ do
   it "deals damage that attack would have done" $ do
     investigator <-
-      testInvestigator
+      testJenny
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
     oops <- genPlayerCard Cards.oops
@@ -68,7 +68,7 @@ spec = describe "Oops!" $ do
 
   it "[FAQ] does not deal on success damage" $ do
     investigator <-
-      testInvestigator
+      testJenny
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
     oops <- genPlayerCard Cards.oops
@@ -120,7 +120,7 @@ spec = describe "Oops!" $ do
 
   it "[FAQ] shotgun only deals 1 damage" $ do
     investigator <-
-      testInvestigator
+      testJenny
       $ (Investigator.combatL .~ 1)
       . (Investigator.resourcesL .~ 2)
     oops <- genPlayerCard Cards.oops

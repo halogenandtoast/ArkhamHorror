@@ -11,7 +11,7 @@ import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 spec :: Spec
 spec = describe "Hard Knocks (2)" $ do
   it "Adds 1 to combat check for each resource spent" $ do
-    investigator <- testInvestigator $
+    investigator <- testJenny $
       \attrs -> attrs {investigatorCombat = 1, investigatorResources = 2}
     hardKnocks2 <- buildAsset Assets.hardKnocks2 (Just investigator)
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillCombat 0
@@ -51,7 +51,7 @@ spec = describe "Hard Knocks (2)" $ do
         didPassTest `refShouldBe` True
 
   it "Adds 1 to agility check for each resource spent" $ do
-    investigator <- testInvestigator $
+    investigator <- testJenny $
       \attrs -> attrs {investigatorAgility = 1, investigatorResources = 2}
     hardKnocks2 <- buildAsset Assets.hardKnocks2 (Just investigator)
 

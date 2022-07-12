@@ -13,7 +13,7 @@ import Arkham.Enemy.Attrs (Field (..))
 spec :: Spec
 spec = describe "Aquinnah (1)" $ do
   it "can redirect damage to another enemy at your location" $ do
-    investigator <- testInvestigator id
+    investigator <- testJenny id
     aquinnah <- buildAsset Assets.aquinnah1 (Just investigator)
     enemy1 <- testEnemy
       (\attrs ->

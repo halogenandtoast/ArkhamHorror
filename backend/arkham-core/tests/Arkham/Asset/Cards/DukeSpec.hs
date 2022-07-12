@@ -18,7 +18,7 @@ spec = describe "Duke" $ do
   context "fight action" $ do
     it "uses a base combat skill of 4 and does +1 damage" $ do
       enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 4))
-      investigator <- testInvestigator
+      investigator <- testJenny
         $ \attrs -> attrs { investigatorCombat = 1 }
       duke <- buildAsset Assets.duke (Just investigator)
       location <- testLocation id
@@ -44,7 +44,7 @@ spec = describe "Duke" $ do
             fieldAssert EnemyDamage (== 2) enemy
   context "investigate action" $ do
     it "uses a base intellect skill of 4" $ do
-      investigator <- testInvestigator
+      investigator <- testJenny
         $ \attrs -> attrs { investigatorIntellect = 1 }
       duke <- buildAsset Assets.duke (Just investigator)
       location <- testLocation
@@ -68,7 +68,7 @@ spec = describe "Duke" $ do
             fieldAssert InvestigatorClues (== 1) investigator
     it "you may move to a connecting location immediately before investigating"
       $ do
-          investigator <- testInvestigator
+          investigator <- testJenny
             $ \attrs -> attrs { investigatorIntellect = 1 }
           duke <- buildAsset Assets.duke (Just investigator)
           (location1, location2) <- testConnectedLocations id

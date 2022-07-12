@@ -4,6 +4,7 @@ module Arkham.Asset.Cards.ZoeysCrossSpec
 
 import TestImport hiding (EnemyDamage)
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Attrs ( Field (..) )
 import Arkham.Enemy.Attrs qualified as Enemy
 import Arkham.Investigator.Attrs qualified as Investigator
@@ -16,7 +17,7 @@ spec = do
         investigator <- testInvestigator (Investigator.resourcesL .~ 1)
         enemy <- testEnemy (Enemy.healthL .~ Static 2)
         location <- testLocation id
-        zoeysCross <- buildAsset "02006" (Just investigator)
+        zoeysCross <- buildAsset Assets.zoeysCross (Just investigator)
         gameTest
             investigator
             [ playAsset investigator zoeysCross

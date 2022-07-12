@@ -5,6 +5,7 @@ module Arkham.Asset.Cards.DigDeepSpec (
 import TestImport
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
@@ -12,7 +13,7 @@ spec = describe "Dig Deep" $ do
   it "Adds 1 to willpower check for each resource spent" $ do
     investigator <- testInvestigator $ \attrs ->
       attrs {investigatorWillpower = 1, investigatorResources = 2}
-    digDeep <- buildAsset "01077" (Just investigator)
+    digDeep <- buildAsset Assets.digDeep (Just investigator)
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillWillpower 0
 
@@ -54,7 +55,7 @@ spec = describe "Dig Deep" $ do
   it "Adds 1 to agility check for each resource spent" $ do
     investigator <- testInvestigator $
       \attrs -> attrs {investigatorAgility = 1, investigatorResources = 2}
-    digDeep <- buildAsset "01077" (Just investigator)
+    digDeep <- buildAsset Assets.digDeep (Just investigator)
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillAgility 0
 

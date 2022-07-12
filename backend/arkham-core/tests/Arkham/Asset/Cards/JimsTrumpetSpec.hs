@@ -4,8 +4,8 @@ module Arkham.Asset.Cards.JimsTrumpetSpec
 
 import TestImport
 
-import Arkham.Asset.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Investigator.Attrs qualified as Investigator
 import Arkham.Investigator.Attrs (Field(..))
 
@@ -14,7 +14,7 @@ spec = describe "Jim's Trumpet" $ do
   context "allows you to heal one horror when skull is revealed" $ do
     it "on yourself" $ do
       investigator <- testInvestigator (Investigator.sanityDamageL .~ 1)
-      jimsTrumpet <- buildAsset "02012" (Just investigator)
+      jimsTrumpet <- buildAsset Assets.jimsTrumpet (Just investigator)
       location <- testLocation id
       gameTest
           investigator
@@ -42,7 +42,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator <- testInvestigator id
       investigator2 <- testInvestigator
         (Investigator.sanityDamageL .~ 1)
-      jimsTrumpet <- createAsset <$> genPlayerCard Cards.jimsTrumpet
+      jimsTrumpet <- createAsset <$> genPlayerCard Assets.jimsTrumpet
       location <- testLocation id
       gameTest
           investigator
@@ -71,7 +71,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator <- testInvestigator id
       investigator2 <- testInvestigator
         (Investigator.sanityDamageL .~ 1)
-      jimsTrumpet <- buildAsset "02012" (Just investigator)
+      jimsTrumpet <- buildAsset Assets.jimsTrumpet (Just investigator)
       location <- testLocation id
       gameTest
           investigator
@@ -100,10 +100,10 @@ spec = describe "Jim's Trumpet" $ do
       investigator <- testInvestigator id
       investigator2 <- testInvestigator
         (Investigator.sanityDamageL .~ 1)
-      jimsTrumpet <- buildAsset "02012" (Just investigator)
-      rivertown <- createLocation <$> genEncounterCard Cards.rivertown
+      jimsTrumpet <- buildAsset Assets.jimsTrumpet (Just investigator)
+      rivertown <- createLocation <$> genEncounterCard Locations.rivertown
       southside <- createLocation
-        <$> genEncounterCard Cards.southsideHistoricalSociety
+        <$> genEncounterCard Locations.southsideHistoricalSociety
       gameTest
           investigator
           [ SetTokens [Skull]
@@ -135,9 +135,9 @@ spec = describe "Jim's Trumpet" $ do
       investigator <- testInvestigator id
       investigator2 <- testInvestigator
         ((Investigator.sanityDamageL .~ 1) . (Investigator.idL .~ "01001"))
-      jimsTrumpet <- buildAsset "02012" (Just investigator)
-      rivertown <- createLocation <$> genEncounterCard Cards.rivertown
-      downtown <- createLocation <$> genEncounterCard Cards.downtownArkhamAsylum
+      jimsTrumpet <- buildAsset Assets.jimsTrumpet (Just investigator)
+      rivertown <- createLocation <$> genEncounterCard Locations.rivertown
+      downtown <- createLocation <$> genEncounterCard Locations.downtownArkhamAsylum
       gameTest
           investigator
           [ SetTokens [Skull]

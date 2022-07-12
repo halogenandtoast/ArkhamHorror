@@ -7,6 +7,7 @@ import TestImport hiding (EnemyDamage)
 import Arkham.Enemy.Attrs qualified as Enemy
 import Arkham.Investigator.Attrs (Field (..), InvestigatorAttrs(..))
 import Arkham.Asset.Attrs (Field (..) )
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Attrs (Field (..) )
 import Arkham.Location.Attrs (LocationAttrs(..))
 import Arkham.Projection
@@ -19,7 +20,7 @@ spec = describe "Duke" $ do
       enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 4))
       investigator <- testInvestigator
         $ \attrs -> attrs { investigatorCombat = 1 }
-      duke <- buildAsset "02014" (Just investigator)
+      duke <- buildAsset Assets.duke (Just investigator)
       location <- testLocation id
       gameTest
           investigator
@@ -45,7 +46,7 @@ spec = describe "Duke" $ do
     it "uses a base intellect skill of 4" $ do
       investigator <- testInvestigator
         $ \attrs -> attrs { investigatorIntellect = 1 }
-      duke <- buildAsset "02014" (Just investigator)
+      duke <- buildAsset Assets.duke (Just investigator)
       location <- testLocation
         (\attrs -> attrs { locationShroud = 4, locationClues = 1 })
       gameTest
@@ -69,7 +70,7 @@ spec = describe "Duke" $ do
       $ do
           investigator <- testInvestigator
             $ \attrs -> attrs { investigatorIntellect = 1 }
-          duke <- buildAsset "02014" (Just investigator)
+          duke <- buildAsset Assets.duke (Just investigator)
           (location1, location2) <- testConnectedLocations id
             $ \attrs -> attrs { locationShroud = 4, locationClues = 1 }
           gameTest

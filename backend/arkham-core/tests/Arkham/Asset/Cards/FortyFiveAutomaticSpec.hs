@@ -5,6 +5,7 @@ module Arkham.Asset.Cards.FortyFiveAutomaticSpec
 import TestImport hiding (EnemyDamage)
 
 import Arkham.Asset.Attrs (Field(..))
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Attrs (Field(..), EnemyAttrs(..))
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Projection
@@ -14,7 +15,7 @@ spec = describe ".45 Automatic" $ do
   it "gives +1 combat and +1 damage" $ do
     investigator <- testInvestigator
       $ \attrs -> attrs { investigatorCombat = 1 }
-    fortyFiveAutomatic <- buildAsset "01016" (Just investigator)
+    fortyFiveAutomatic <- buildAsset Assets.fortyFiveAutomatic (Just investigator)
     enemy <- testEnemy
       $ \attrs -> attrs { enemyFight = 2, enemyHealth = Static 3 }
     location <- testLocation id

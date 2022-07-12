@@ -5,6 +5,7 @@ module Arkham.Asset.Cards.Rolands38SpecialSpec
 import TestImport hiding (EnemyDamage)
 
 import Arkham.Asset.Attrs (Field(..))
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Attrs (Field(..), EnemyAttrs(..))
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Location.Attrs (LocationAttrs(..))
@@ -15,7 +16,7 @@ spec = describe "Roland's .39 Special" $ do
   it "gives +1 combat and +1 damage" $ do
     investigator <- testInvestigator
       $ \attrs -> attrs { investigatorCombat = 1 }
-    rolands38Special <- buildAsset "01006" (Just investigator)
+    rolands38Special <- buildAsset Assets.rolands38Special (Just investigator)
     enemy <- testEnemy
       $ \attrs -> attrs { enemyFight = 2, enemyHealth = Static 3 }
     location <- testLocation id
@@ -47,7 +48,7 @@ spec = describe "Roland's .39 Special" $ do
     $ do
         investigator <- testInvestigator
           $ \attrs -> attrs { investigatorCombat = 1 }
-        rolands38Special <- buildAsset "01006" (Just investigator)
+        rolands38Special <- buildAsset Assets.rolands38Special (Just investigator)
         enemy <- testEnemy
           $ \attrs -> attrs { enemyFight = 4, enemyHealth = Static 3 }
         location <- testLocation $ \attrs -> attrs { locationClues = 1 }

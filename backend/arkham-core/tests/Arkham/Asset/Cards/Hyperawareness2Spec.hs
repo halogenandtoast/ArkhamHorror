@@ -5,6 +5,7 @@ module Arkham.Asset.Cards.Hyperawareness2Spec (
 import TestImport
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
@@ -12,7 +13,7 @@ spec = describe "Hyperawareness (2)" $ do
   it "Adds 1 to intellect check for each resource spent" $ do
     investigator <- testInvestigator $ \attrs ->
       attrs {investigatorIntellect = 1, investigatorResources = 2}
-    hyperawareness2 <- buildAsset "50003" (Just investigator)
+    hyperawareness2 <- buildAsset Assets.hyperawareness2 (Just investigator)
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
 
@@ -54,7 +55,7 @@ spec = describe "Hyperawareness (2)" $ do
   it "Adds 1 to agility check for each resource spent" $ do
     investigator <- testInvestigator $
       \attrs -> attrs {investigatorAgility = 1, investigatorResources = 2}
-    hyperawareness2 <- buildAsset "50003" (Just investigator)
+    hyperawareness2 <- buildAsset Assets.hyperawareness2 (Just investigator)
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillAgility 0
 

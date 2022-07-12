@@ -5,6 +5,7 @@ module Arkham.Asset.Cards.HardKnocksSpec (
 import TestImport
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
@@ -12,7 +13,7 @@ spec = describe "Hard Knocks" $ do
   it "Adds 1 to combat check for each resource spent" $ do
     investigator <- testInvestigator $
       \attrs -> attrs {investigatorCombat = 1, investigatorResources = 2}
-    hardKnocks <- buildAsset "01049" (Just investigator)
+    hardKnocks <- buildAsset Assets.hardKnocks (Just investigator)
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillCombat 0
 
@@ -54,7 +55,7 @@ spec = describe "Hard Knocks" $ do
   it "Adds 1 to agility check for each resource spent" $ do
     investigator <- testInvestigator $
       \attrs -> attrs {investigatorAgility = 1, investigatorResources = 2}
-    hardKnocks <- buildAsset "01049" (Just investigator)
+    hardKnocks <- buildAsset Assets.hardKnocks (Just investigator)
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillAgility 0
 

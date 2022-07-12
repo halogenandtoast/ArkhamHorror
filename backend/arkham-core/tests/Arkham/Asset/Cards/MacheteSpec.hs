@@ -5,6 +5,7 @@ module Arkham.Asset.Cards.MacheteSpec
 import TestImport hiding (EnemyDamage)
 
 import Arkham.Asset.Attrs (Field(..))
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Attrs (Field(..), EnemyAttrs(..))
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Projection
@@ -14,7 +15,7 @@ spec = describe "Machete" $ do
   it "gives +1 combat and +1 damage if the attacked enemy is the only enemy engaged with you" $ do
     investigator <- testInvestigator
       $ \attrs -> attrs { investigatorCombat = 1 }
-    machete <- buildAsset "01020" (Just investigator)
+    machete <- buildAsset Assets.machete (Just investigator)
     enemy <- testEnemy
       $ \attrs -> attrs { enemyFight = 2, enemyHealth = Static 3 }
     location <- testLocation id
@@ -44,7 +45,7 @@ spec = describe "Machete" $ do
   it "does not give additional damage if the attacked enemy is not engaged with you" $ do
     investigator <- testInvestigator
       $ \attrs -> attrs { investigatorCombat = 1 }
-    machete <- buildAsset "01020" (Just investigator)
+    machete <- buildAsset Assets.machete (Just investigator)
     enemy <- testEnemy
       $ \attrs -> attrs { enemyFight = 2, enemyHealth = Static 3, enemyExhausted = True }
     location <- testLocation id
@@ -74,7 +75,7 @@ spec = describe "Machete" $ do
   it "does not give additional damage if the attacked enemy is not the only enemy engaged with you" $ do
     investigator <- testInvestigator
       $ \attrs -> attrs { investigatorCombat = 1 }
-    machete <- buildAsset "01020" (Just investigator)
+    machete <- buildAsset Assets.machete (Just investigator)
     enemy1 <- testEnemy
       $ \attrs -> attrs { enemyFight = 2, enemyHealth = Static 3 }
     enemy2 <- testEnemy

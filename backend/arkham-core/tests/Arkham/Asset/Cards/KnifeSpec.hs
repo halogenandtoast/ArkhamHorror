@@ -6,6 +6,7 @@ module Arkham.Asset.Cards.KnifeSpec
 import TestImport.Lifted hiding (EnemyDamage)
 
 import Arkham.Asset.Attrs ( Field(..) )
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Attrs ( Field(..), EnemyAttrs (..) )
 import Arkham.Investigator.Attrs ( Field(..), InvestigatorAttrs (..) )
 import Arkham.Projection
@@ -15,7 +16,7 @@ spec = describe "Knife" $ do
   it "Fight. You get +1 for this attack." $ do
     investigator <- testInvestigator
       $ \attrs -> attrs { investigatorCombat = 2 }
-    knife <- buildAsset "01086" (Just investigator)
+    knife <- buildAsset Assets.knife (Just investigator)
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
     location <- testLocation id
@@ -46,7 +47,7 @@ spec = describe "Knife" $ do
     $ do
         investigator <- testInvestigator
           $ \attrs -> attrs { investigatorCombat = 1 }
-        knife <- buildAsset "01086" (Just investigator)
+        knife <- buildAsset Assets.knife (Just investigator)
         let Just knifeCard = preview _PlayerCard (toCard $ toAttrs knife)
         enemy <- testEnemy
           $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }

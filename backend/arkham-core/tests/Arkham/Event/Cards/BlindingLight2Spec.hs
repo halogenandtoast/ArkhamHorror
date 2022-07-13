@@ -6,7 +6,7 @@ module Arkham.Event.Cards.BlindingLight2Spec
 import TestImport.Lifted hiding (EnemyDamage)
 
 import Arkham.Enemy.Attrs qualified as EnemyAttrs
-import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..))
+import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..), willpowerL)
 import Arkham.Enemy.Attrs (Field(..))
 import Arkham.Projection
 
@@ -41,7 +41,7 @@ spec = do
             assert $ fieldP EnemyEngagedInvestigators null (toId enemy)
 
     it "deals 2 damage to the evaded enemy" $ do
-      investigator <- testJenny id
+      investigator <- testJenny (willpowerL .~ 5)
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
       blindingLight2 <- buildEvent "01069" investigator
@@ -70,7 +70,7 @@ spec = do
         "On Skull, Cultist, Tablet, ElderThing, or AutoFail the investigator loses an action and takes 1 horror"
       $ for_ [Skull, Cultist, Tablet, ElderThing, AutoFail]
       $ \token -> do
-          investigator <- testJenny id
+          investigator <- testJenny (willpowerL .~ 5)
           enemy <- testEnemy
             ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 3))
           blindingLight2 <- buildEvent "01069" investigator

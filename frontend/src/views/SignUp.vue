@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useRoute, useRouter } from 'vue-router'
 import type { Registration } from '@/types'
@@ -12,16 +12,21 @@ const registration = reactive<Registration>({
   email: '',
   password: '',
 })
+const signUpError = ref<string|null>(null)
 
 async function register() {
-  await store.register(registration)
-  const { nextUrl } = route.query
-  if (nextUrl) {
-    router.push({ path: nextUrl as string })
-  } else {
-    router.push({ path: '/' })
+  signUpError.value = null
+  try {
+    await store.register(registration)
+    const { nextUrl } = route.query
+    if (nextUrl) {
+      router.push({ path: nextUrl as string })
+    } else {
+      router.push({ path: '/' })
+    }
+  } catch {
+    signUpError.value = "Username or Email already taken"
   }
-
 }
 </script>
 

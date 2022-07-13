@@ -2275,7 +2275,7 @@ runGameMessage msg g = case msg of
   CardLabel _ msgs -> g <$ pushAll msgs
   Continue _ -> pure g
   BeginAction -> pure $ g & inActionL .~ True & actionCanBeUndoneL .~ True & actionDiffL .~ []
-  FinishAction -> pure $ g & inActionL .~ False & actionCanBeUndoneL .~ False & actionDiffL .~ []
+  FinishAction -> pure $ g & inActionL .~ False & actionCanBeUndoneL .~ False & actionDiffL .~ [] & inDiscardEntitiesL .~ mempty
   ActionCannotBeUndone -> pure $ g & actionCanBeUndoneL .~ False
   UndoAction -> do
     -- gameActionDiff contains a list of diffs, in order, to revert the game
@@ -2301,6 +2301,7 @@ runGameMessage msg g = case msg of
       & (entitiesL . eventsL .~ mempty)
       & (entitiesL . effectsL .~ mempty)
       & (entitiesL . skillsL .~ mempty)
+      & (inDiscardEntitiesL .~ mempty)
       & (gameStateL .~ IsActive)
       & (turnPlayerInvestigatorIdL .~ Nothing)
       & (focusedCardsL .~ mempty)
@@ -2647,8 +2648,16 @@ runGameMessage msg g = case msg of
       else do
         pushAll [RemoveFromPlay (AssetSource assetId), AddToHand iid card]
     pure g
-  RemovedFromPlay (AssetSource assetId) ->
-    pure $ g & entitiesL . assetsL %~ deleteMap assetId
+  RemovedFromPlay (AssetSource assetId) -> do
+    asset <- getAsset assetId
+    let
+      discardLens = case assetOwner (toAttrs asset) of
+        Nothing -> id
+        Just iid ->
+          let dEntities = fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
+          in inDiscardEntitiesL . at iid ?~ (dEntities & assetsL . at assetId ?~ asset)
+    pure $ g & entitiesL . assetsL %~ deleteMap assetId & discardLens
+    -- pure $ g & entitiesL . assetsL %~ deleteMap assetId
   ReturnToHand iid (EventTarget eventId) -> do
     card <- field EventCard eventId
     push $ AddToHand iid card

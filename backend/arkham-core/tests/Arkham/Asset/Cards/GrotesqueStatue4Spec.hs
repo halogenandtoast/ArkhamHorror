@@ -7,13 +7,14 @@ import TestImport
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.ChaosBagStepState
 import Arkham.ChaosBag.Base
+import Arkham.Investigator.Attrs (intellectL)
 import Arkham.Scenario.Attrs (Field(..))
 
 spec :: Spec
 spec = describe "Grotesque Statue (4)" $ do
   context "when would reveal a token" $ do
     it "reveals 2 tokens and let's you choose one" $ do
-      investigator <- testJenny id
+      investigator <- testJenny (intellectL .~ 5)
       grotestqueStatue <- buildAsset Assets.grotesqueStatue4 (Just investigator)
 
       (didRunMessage, logger) <- didPassSkillTestBy

@@ -11,10 +11,10 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
-import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Source
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype GuardDog = GuardDog AssetAttrs
@@ -26,14 +26,10 @@ guardDog = ally GuardDog Cards.guardDog (3, 1)
 
 instance HasAbilities GuardDog where
   getAbilities (GuardDog x) =
-    [ restrictedAbility
-        x
-        1
-        ControlsThis
-        (ReactionAbility
-          (AssetDealtDamage Timing.When (AssetWithId (toId x)))
-          Free
-        )
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility
+            (AssetDealtDamage Timing.When (AssetWithId (toId x)))
+            Free
     ]
 
 instance RunMessage GuardDog where

@@ -1442,6 +1442,7 @@ test-suite spec
       Arkham.Asset.Cards.FirstAidSpec
       Arkham.Asset.Cards.FortyFiveAutomaticSpec
       Arkham.Asset.Cards.GrotesqueStatue4Spec
+      Arkham.Asset.Cards.GuardDogSpec
       Arkham.Asset.Cards.HardKnocks2Spec
       Arkham.Asset.Cards.HardKnocksSpec
       Arkham.Asset.Cards.Hyperawareness2Spec

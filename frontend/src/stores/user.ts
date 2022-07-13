@@ -46,8 +46,12 @@ export const useUserStore = defineStore("user", {
       if (this.token) {
         localStorage.setItem('token', this.token);
         api.defaults.headers.common.Authorization = `Token ${this.token}`;
-        const whoami = await api.get<User>('whoami')
-        this.currentUser = whoami.data
+        try {
+          const whoami = await api.get<User>('whoami')
+          this.currentUser = whoami.data
+        } catch (err) {
+          this.logout()
+        }
       }
     },
 
@@ -57,7 +61,7 @@ export const useUserStore = defineStore("user", {
         this.token = token
         return this.setCurrentUser()
       }
-      return Promise.reject()
+      return Promise.resolve()
     },
 
     async signOut() {

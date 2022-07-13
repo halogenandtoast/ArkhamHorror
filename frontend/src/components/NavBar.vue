@@ -114,6 +114,10 @@ input[type=checkbox]:checked ~ .user-links {
   label {
     user-select: none;
   }
+
+  a {
+    margin-left: 10px;
+  }
 }
 
 .user-links--dropdown {

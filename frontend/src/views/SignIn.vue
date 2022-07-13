@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/stores/user'
 import { useRoute, useRouter } from 'vue-router'
-import { reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import { Credentials } from '../types'
 
 const store = useUserStore()
@@ -11,14 +11,20 @@ const credentials = reactive<Credentials>({
   email: '',
   password: '',
 })
+const signInError = ref<string|null>(null)
 
 async function authenticate() {
-  await store.authenticate(credentials)
-  const { nextUrl } = route.query
-  if (nextUrl) {
-    router.push({ path: nextUrl as string })
-  } else {
-    router.push({ path: '/' })
+  signInError.value = null
+  try {
+    await store.authenticate(credentials)
+    const { nextUrl } = route.query
+    if (nextUrl) {
+      router.push({ path: nextUrl as string })
+    } else {
+      router.push({ path: '/' })
+    }
+  } catch {
+    signInError.value = "Invalid email or password"
   }
 }
 </script>
@@ -26,6 +32,7 @@ async function authenticate() {
 <template>
   <form @submit.prevent="authenticate">
     <header><i class="secret"></i></header>
+    <div class="error" v-if="signInError">{{signInError}}</div>
     <section>
       <div>
         <input
@@ -106,5 +113,13 @@ i.secret {
     font-family: "Arkham";
     content: "\0048";
   }
+}
+
+.error {
+  background:#E3CCCD;
+  color: #900000;
+  border-radius: 5px;
+  margin: 10px 5px;
+  padding: 5px 10px;
 }
 </style>

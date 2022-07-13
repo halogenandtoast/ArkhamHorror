@@ -2,24 +2,24 @@ module Arkham.Asset.Cards.FirstAidSpec
   ( spec
   ) where
 
-import TestImport.Lifted
+import TestImport.Lifted hiding (InvestigatorDamage)
 
-import qualified Arkham.Asset.Cards as Assets
-import qualified Arkham.Investigator.Cards as Investigators
-import qualified Arkham.Investigator.Attrs as Investigator
+import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Investigator.Attrs ( Field (..), healthDamageL, sanityDamageL )
+import Arkham.Investigator.Cards ( daisyWalker, jennyBarnes, rolandBanks )
 import Arkham.Projection
-import Arkham.Asset.Attrs (Field(..))
 
 spec :: Spec
 spec = describe "First Aid" $ do
   it
       "uses a supply and heals 1 damage or horror from an investigator at your location"
     $ do
-        investigator <- testInvestigator Investigators.jennyBarnes (Investigator.healthDamageL .~ 1)
-        investigator2 <- testInvestigator Investigators.rolandBanks (Investigator.sanityDamageL .~ 1)
-        investigator3 <- testInvestigator Investigators.daisyWalker (Investigator.sanityDamageL .~ 1)
-        (location1, location2) <- testConnectedLocations id id
+        investigator <- testInvestigator jennyBarnes (healthDamageL .~ 1)
+        investigator2 <- testInvestigator rolandBanks (sanityDamageL .~ 1)
+        investigator3 <- testInvestigator daisyWalker (sanityDamageL .~ 1)
         firstAid <- buildAsset Assets.firstAid (Just investigator)
+        (location1, location2) <- testConnectedLocations id id
         gameTest
             investigator
             [ playAsset investigator firstAid
@@ -27,7 +27,7 @@ spec = describe "First Aid" $ do
             , moveTo investigator2 location1
             , moveTo investigator3 location2
             ]
-            ( (entitiesL . investigatorsL %~ insertEntity investigator2)
+            ((entitiesL . investigatorsL %~ insertEntity investigator2)
             . (entitiesL . investigatorsL %~ insertEntity investigator3)
             . (entitiesL . locationsL %~ insertEntity location1)
             . (entitiesL . locationsL %~ insertEntity location2)
@@ -37,5 +37,14 @@ spec = describe "First Aid" $ do
               runMessages
               [useFirstAid] <- field AssetAbilities (toId firstAid)
               pushAndRun $ UseAbility (toId investigator) useFirstAid []
-              pending
-
+              chooseOptionMatching "choose self" $ \case
+                TargetLabel (InvestigatorTarget iid) _ ->
+                  iid == toId investigator
+                _ -> False
+              chooseOnlyOption "heal self"
+              pushAndRun $ UseAbility (toId investigator) useFirstAid []
+              chooseOnlyOption "choose investigator at same location"
+              chooseOnlyOption "heal other investigator"
+              fieldAssert InvestigatorDamage (== 0) investigator
+              fieldAssert InvestigatorHorror (== 0) investigator2
+              fieldAssert InvestigatorHorror (== 1) investigator3

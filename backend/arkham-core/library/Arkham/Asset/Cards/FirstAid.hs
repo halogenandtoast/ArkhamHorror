@@ -43,6 +43,8 @@ instance HasAbilities FirstAid where
 
 instance RunMessage FirstAid where
   runMessage msg a@(FirstAid attrs) = case msg of
+    InDiscard _ msg'@(UseCardAbility _ source _ 1 _) | isSource attrs source ->
+      runMessage msg' a
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       canHealHorror <- iid <=~> InvestigatorCanHealHorror
       canHealDamage <- iid <=~> InvestigatorCanHealDamage

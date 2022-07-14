@@ -7,6 +7,7 @@ import TestImport.Lifted hiding (EnemyDamage)
 
 import Arkham.Enemy.Attrs qualified as EnemyAttrs
 import Arkham.Enemy.Attrs (Field(..))
+import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..))
 import Arkham.Projection
 
@@ -17,7 +18,7 @@ spec = do
       location <- testLocation id
       investigator <- testJenny
         $ \attrs -> attrs { investigatorCombat = 1, investigatorAgility = 4 }
-      backstab <- buildEvent "01051" investigator
+      backstab <- buildEvent Events.backstab investigator
       let Just backstabCard = preview _PlayerCard (toCard $ toAttrs backstab)
       enemy <- testEnemy
         ((EnemyAttrs.fightL .~ 3) . (EnemyAttrs.healthL .~ Static 4))

@@ -5,6 +5,7 @@ module Arkham.Event.Cards.BarricadeSpec
 
 import TestImport.Lifted
 
+import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Attrs (Field(..))
@@ -16,7 +17,7 @@ spec = do
     it "should make the current location unenterable by non elites" $ do
       location <- testLocation id
       investigator <- testJenny id
-      barricade <- buildEvent "01038" investigator
+      barricade <- buildEvent Events.barricade investigator
       gameTest
           investigator
           [moveTo investigator location, playEvent investigator barricade]
@@ -34,7 +35,7 @@ spec = do
       (location1, location2) <- testConnectedLocations id id
       investigator <- testJenny id
       investigator2 <- testInvestigator Investigators.rolandBanks id
-      barricade <- buildEvent "01038" investigator
+      barricade <- buildEvent Events.barricade investigator
       let Just barricadeCard = preview _PlayerCard (toCard $ toAttrs barricade)
       gameTest
           investigator

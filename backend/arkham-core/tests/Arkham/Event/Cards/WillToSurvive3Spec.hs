@@ -4,6 +4,7 @@ module Arkham.Event.Cards.WillToSurvive3Spec
 
 import TestImport
 
+import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 
 spec :: Spec
@@ -11,7 +12,7 @@ spec = describe "Will to Survive (3)" $ do
   it "cancels all tokens for the turn" $ do
     investigator <- testJenny
       $ \attrs -> attrs { investigatorIntellect = 3 }
-    willToSurvive3 <- buildEvent "01085" investigator
+    willToSurvive3 <- buildEvent Events.willToSurvive3 investigator
 
     (didPassTest, logger) <- didPassSkillTestBy investigator SkillIntellect 0
 
@@ -32,7 +33,7 @@ spec = describe "Will to Survive (3)" $ do
   it "it is cancelled at the end of the turn" $ do
     investigator <- testJenny
       $ \attrs -> attrs { investigatorIntellect = 3 }
-    willToSurvive3 <- buildEvent "01085" investigator
+    willToSurvive3 <- buildEvent Events.willToSurvive3 investigator
 
     (didFailTest, logger) <- didFailSkillTestBy investigator SkillIntellect 3
 

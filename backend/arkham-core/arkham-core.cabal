@@ -1469,6 +1469,7 @@ test-suite spec
       Arkham.Event.Cards.DarkMemorySpec
       Arkham.Event.Cards.DodgeSpec
       Arkham.Event.Cards.DrawnToTheFlameSpec
+      Arkham.Event.Cards.DynamiteBlastSpec
       Arkham.Event.Cards.EmergencyCacheSpec
       Arkham.Event.Cards.EvidenceSpec
       Arkham.Event.Cards.Lucky2Spec

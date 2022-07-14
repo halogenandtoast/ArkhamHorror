@@ -4,6 +4,7 @@ module Arkham.Event.Cards.CrypticResearch4Spec
 
 import TestImport.Lifted
 
+import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Projection
@@ -15,7 +16,7 @@ spec = do
       investigator <- testJenny id
       cards <- testPlayerCards 3
       location <- testLocation id
-      crypticResearch4 <- buildEvent "01043" investigator
+      crypticResearch4 <- buildEvent Events.crypticResearch4 investigator
       gameTest
           investigator
           [ loadDeck investigator cards
@@ -38,7 +39,7 @@ spec = do
       investigator2 <- testInvestigator Investigators.rolandBanks id
       cards <- testPlayerCards 3
       location <- testLocation id
-      crypticResearch4 <- buildEvent "01043" investigator
+      crypticResearch4 <- buildEvent Events.crypticResearch4 investigator
       gameTest
           investigator
           [ loadDeck investigator2 cards

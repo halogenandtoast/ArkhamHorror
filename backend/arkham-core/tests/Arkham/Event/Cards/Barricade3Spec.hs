@@ -5,6 +5,7 @@ module Arkham.Event.Cards.Barricade3Spec
 
 import TestImport.Lifted
 
+import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Attrs (Field(..))
@@ -18,7 +19,7 @@ spec = do
       $ do
           location <- testLocation id
           investigator <- testJenny id
-          barricade3 <- buildEvent "50004" investigator
+          barricade3 <- buildEvent Events.barricade3 investigator
           gameTest
               investigator
               [moveTo investigator location, playEvent investigator barricade3]
@@ -37,7 +38,7 @@ spec = do
       location <- testLocation id
       investigator <- testJenny id
       investigator2 <- testInvestigator Investigators.rolandBanks id
-      barricade3 <- buildEvent "50004" investigator
+      barricade3 <- buildEvent Events.barricade3 investigator
       let Just barricade3Card = preview _PlayerCard (toCard $ toAttrs barricade3)
       gameTest
           investigator

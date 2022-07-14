@@ -6,6 +6,7 @@ module Arkham.Event.Cards.BlindingLight2Spec
 import TestImport.Lifted hiding (EnemyDamage)
 
 import Arkham.Enemy.Attrs qualified as EnemyAttrs
+import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..), willpowerL)
 import Arkham.Enemy.Attrs (Field(..))
 import Arkham.Projection
@@ -18,7 +19,7 @@ spec = do
         attrs { investigatorWillpower = 5, investigatorAgility = 3 }
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
-      blindingLight2 <- buildEvent "01069" investigator
+      blindingLight2 <- buildEvent Events.blindingLight2 investigator
       let Just blindingLight2Card = preview _PlayerCard (toCard $ toAttrs blindingLight2)
       location <- testLocation id
       gameTest
@@ -44,7 +45,7 @@ spec = do
       investigator <- testJenny (willpowerL .~ 5)
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
-      blindingLight2 <- buildEvent "01069" investigator
+      blindingLight2 <- buildEvent Events.blindingLight2 investigator
       let Just blindingLight2Card = preview _PlayerCard (toCard $ toAttrs blindingLight2)
       location <- testLocation id
       gameTest
@@ -73,7 +74,7 @@ spec = do
           investigator <- testJenny (willpowerL .~ 5)
           enemy <- testEnemy
             ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 3))
-          blindingLight2 <- buildEvent "01069" investigator
+          blindingLight2 <- buildEvent Events.blindingLight2 investigator
           let Just blindingLight2Card = preview _PlayerCard (toCard $ toAttrs blindingLight2)
           location <- testLocation id
           gameTest

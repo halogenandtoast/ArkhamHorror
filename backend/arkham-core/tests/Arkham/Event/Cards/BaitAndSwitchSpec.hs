@@ -6,6 +6,7 @@ module Arkham.Event.Cards.BaitAndSwitchSpec
 import TestImport.Lifted
 
 import Arkham.Enemy.Attrs qualified as EnemyAttrs
+import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..))
 import Arkham.Enemy.Attrs (Field(..))
 import Arkham.Projection
@@ -16,7 +17,7 @@ spec = describe "Bait and Switch" $ do
     investigator <- testJenny
       $ \attrs -> attrs { investigatorAgility = 3 }
     enemy <- testEnemy (EnemyAttrs.evadeL .~ 3)
-    baitAndSwitch <- buildEvent "02034" investigator
+    baitAndSwitch <- buildEvent Events.baitAndSwitch investigator
     let Just baitAndSwitchCard = preview _PlayerCard (toCard $ toAttrs baitAndSwitch)
     (location1, location2) <- testConnectedLocations id id
     gameTest

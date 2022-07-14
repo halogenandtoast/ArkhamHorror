@@ -6,6 +6,7 @@ module Arkham.Event.Cards.BlindingLightSpec
 import TestImport.Lifted hiding (EnemyDamage)
 
 import Arkham.Enemy.Attrs qualified as EnemyAttrs
+import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..), willpowerL)
 import Arkham.Enemy.Attrs (Field(..))
 
@@ -17,7 +18,7 @@ spec = do
         attrs { investigatorWillpower = 5, investigatorAgility = 3 }
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 2))
-      blindingLight <- buildEvent "01066" investigator
+      blindingLight <- buildEvent Events.blindingLight investigator
       location <- testLocation id
       gameTest
           investigator
@@ -43,7 +44,7 @@ spec = do
       investigator <- testJenny (willpowerL .~ 5)
       enemy <- testEnemy
         ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 2))
-      blindingLight <- buildEvent "01066" investigator
+      blindingLight <- buildEvent Events.blindingLight investigator
       location <- testLocation id
       gameTest
           investigator
@@ -72,7 +73,7 @@ spec = do
           investigator <- testJenny (willpowerL .~ 5)
           enemy <- testEnemy
             ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 2))
-          blindingLight <- buildEvent "01066" investigator
+          blindingLight <- buildEvent Events.blindingLight investigator
           location <- testLocation id
           gameTest
               investigator

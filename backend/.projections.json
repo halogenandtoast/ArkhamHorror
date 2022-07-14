@@ -295,7 +295,7 @@
   },
   "arkham-core/library/Arkham/Event/Cards/*.hs": {
     "type": "event",
-    "alternate": "arkham-core/tests/Arkham/Events/Cards/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Event/Cards/{}Spec.hs",
     "template": [
       "module Arkham.Event.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",

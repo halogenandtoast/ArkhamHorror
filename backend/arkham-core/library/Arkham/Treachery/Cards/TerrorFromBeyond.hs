@@ -31,8 +31,7 @@ instance RunMessage TerrorFromBeyond where
       phaseHistory <- mconcat <$> traverse (getHistory PhaseHistory) iids
       let
         secondCopy =
-          count (== toCardCode attrs) (historyTreacheriesDrawn phaseHistory)
-            > 1
+          count (== toCardCode attrs) (historyTreacheriesDrawn phaseHistory) > 1
       iidsWithAssets <- traverse
         (traverseToSnd
           (fieldMap
@@ -57,25 +56,27 @@ instance RunMessage TerrorFromBeyond where
           )
         )
         iids
-      t <$ push
-        (chooseN
-          iid
-          (if secondCopy then 2 else 1)
-          [ Label
-            "Assets"
-            [ Run [ DiscardCard iid' aid | aid <- assets ]
-            | (iid', assets) <- iidsWithAssets
-            ]
-          , Label
-            "Events"
-            [ Run [ DiscardCard iid' eid | eid <- events ]
-            | (iid', events) <- iidsWithEvents
-            ]
-          , Label
-            "Skills"
-            [ Run [ DiscardCard iid' sid | sid <- skills ]
-            | (iid', skills) <- iidsWithSkills
-            ]
+      push $ chooseN
+        iid
+        (if secondCopy then 2 else 1)
+        [ Label
+          "Assets"
+          [ DiscardCard iid' aid
+          | (iid', assets) <- iidsWithAssets
+          , aid <- assets
           ]
-        )
+        , Label
+          "Events"
+          [ DiscardCard iid' eid
+          | (iid', events) <- iidsWithEvents
+          , eid <- events
+          ]
+        , Label
+          "Skills"
+          [ DiscardCard iid' sid
+          | (iid', skills) <- iidsWithSkills
+          , sid <- skills
+          ]
+        ]
+      pure t
     _ -> TerrorFromBeyond <$> runMessage msg attrs

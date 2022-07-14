@@ -1470,6 +1470,7 @@ test-suite spec
       Arkham.Event.Cards.DodgeSpec
       Arkham.Event.Cards.DrawnToTheFlameSpec
       Arkham.Event.Cards.EmergencyCacheSpec
+      Arkham.Event.Cards.EvidenceSpec
       Arkham.Event.Cards.Lucky2Spec
       Arkham.Event.Cards.LuckySpec
       Arkham.Event.Cards.OopsSpec

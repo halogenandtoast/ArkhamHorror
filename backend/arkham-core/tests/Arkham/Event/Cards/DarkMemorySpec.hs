@@ -4,7 +4,7 @@ module Arkham.Event.Cards.DarkMemorySpec
 
 import TestImport.Lifted
 
-import Arkham.Event.Cards qualified as Cards
+import Arkham.Event.Cards qualified as Events
 import Arkham.Agenda.Attrs qualified as Agenda
 import Arkham.Investigator.Attrs (Field(..))
 
@@ -14,7 +14,7 @@ spec = do
     it "places 1 doom and can advance current agenda" $ do
       investigator <- testJenny id
       agenda <- testAgenda "01105" (Agenda.doomThresholdL .~ Static 1)
-      darkMemory <- buildEvent "01013" investigator
+      darkMemory <- buildEvent Events.darkMemory investigator
 
       (didAdvanceAgenda, logger) <- createMessageMatcher (AdvanceAgenda "01105")
 
@@ -41,7 +41,7 @@ spec = do
 
     it "is revealed and deals 2 horror if in hand at end of turn" $ do
       investigator <- testJenny id
-      darkMemory <- genPlayerCard Cards.darkMemory
+      darkMemory <- genPlayerCard Events.darkMemory
 
       (didReveal, logger) <- createMessageMatcher
         (RevealInHand $ toCardId darkMemory)

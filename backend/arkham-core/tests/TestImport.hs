@@ -148,9 +148,9 @@ testScenario cardCode f = do
     name
     Easy) { scenarioAgendaStack = IntMap.fromList [(1, [toCardDef (toAttrs a1), toCardDef (toAttrs a1)])] }
 
-buildEvent :: MonadRandom m => CardCode -> Investigator -> m Event
-buildEvent cardCode investigator =
-  lookupEvent cardCode (toId investigator) <$> getRandom
+buildEvent :: MonadRandom m => CardDef -> Investigator -> m Event
+buildEvent cardDef investigator =
+  lookupEvent (toCardCode cardDef) (toId investigator) <$> getRandom
 
 buildEnemy :: MonadRandom m => CardCode -> m Enemy
 buildEnemy cardCode = lookupEnemy cardCode <$> getRandom

@@ -5,6 +5,7 @@ module Arkham.Event.Cards.CunningDistractionSpec
 import TestImport.Lifted
 
 import Arkham.Card.CardDef qualified as CardDef
+import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Keyword
 
@@ -15,7 +16,7 @@ spec = do
       investigator <- testJenny id
       location <- testLocation id
       enemy <- testEnemy id
-      cunningDistraction <- buildEvent "01078" investigator
+      cunningDistraction <- buildEvent Events.cunningDistraction investigator
       gameTest
           investigator
           [ enemySpawn location enemy
@@ -36,7 +37,7 @@ spec = do
       investigator2 <- testInvestigator Investigators.rolandBanks id
       location <- testLocation id
       enemy <- testEnemy id
-      cunningDistraction <- buildEvent "01078" investigator
+      cunningDistraction <- buildEvent Events.cunningDistraction investigator
       gameTest
           investigator
           [ enemySpawn location enemy
@@ -57,7 +58,7 @@ spec = do
       investigator <- testJenny id
       location <- testLocation id
       enemy <- testEnemyWithDef (CardDef.keywordsL .~ setFromList [Aloof]) id
-      cunningDistraction <- buildEvent "01078" investigator
+      cunningDistraction <- buildEvent Events.cunningDistraction investigator
       gameTest
           investigator
           [ enemySpawn location enemy

@@ -4,6 +4,7 @@ module Arkham.Event.Cards.DrawnToTheFlameSpec
 
 import TestImport.Lifted
 
+import Arkham.Event.Cards qualified as Events
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..))
@@ -20,7 +21,7 @@ spec = describe "Drawn to the flame" $ do
         rivertown <- createLocation <$> genEncounterCard Cards.rivertown
         southside <- createLocation
           <$> genEncounterCard Cards.southsideHistoricalSociety
-        drawnToTheFlame <- buildEvent "01064" investigator
+        drawnToTheFlame <- buildEvent Events.drawnToTheFlame investigator
         onWingsOfDarkness <- genEncounterCard Cards.onWingsOfDarkness
         gameTest
             investigator

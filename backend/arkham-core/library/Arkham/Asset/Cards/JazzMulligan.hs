@@ -13,6 +13,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
@@ -52,7 +53,7 @@ instance RunMessage JazzMulligan where
         InvestigatorLocation
         (fromJustNote "must be at a location")
         iid
-      a <$ push (AttachAsset assetId (LocationTarget lid))
+      a <$ push (PlaceAsset assetId $ AtLocation lid)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       push $ BeginSkillTest
         iid

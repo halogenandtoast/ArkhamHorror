@@ -1195,6 +1195,7 @@ getAssetsMatching matcher = do
       pure $ filter (maybe False (`elem` iids) . assetController . toAttrs) as
     AssetAtLocation lid -> pure $ flip filter as $ \a -> case assetPlacement (toAttrs a) of
       AtLocation lid' -> lid == lid'
+      AttachedToLocation lid' -> lid == lid'
       _ -> False
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AssetNonStory -> pure $ filter (not . assetIsStory . toAttrs) as

@@ -31,7 +31,8 @@ instance RunMessage TerrorFromBeyond where
       phaseHistory <- mconcat <$> traverse (getHistory PhaseHistory) iids
       let
         secondCopy =
-          toCardCode attrs `elem` historyTreacheriesDrawn phaseHistory
+          count (== toCardCode attrs) (historyTreacheriesDrawn phaseHistory)
+            > 1
       iidsWithAssets <- traverse
         (traverseToSnd
           (fieldMap

@@ -1489,6 +1489,7 @@ test-suite spec
       Arkham.Investigator.Cards.WendyAdamsSpec
       Arkham.Investigator.Cards.ZoeySamarasSpec
       Arkham.Skill.Cards.DeductionSpec
+      Arkham.Skill.Cards.ViciousBlowSpec
       Arkham.Treachery.Cards.CoverUpSpec
       Arkham.Treachery.Cards.FinalRhapsodySpec
       Arkham.Treachery.Cards.MysteriousChantingSpec

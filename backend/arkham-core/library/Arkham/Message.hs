@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Message.Type as X
 import Arkham.Question as X
 import Arkham.Strategy as X
+import Arkham.UIMessage as X
 
 import Arkham.Ability
 import Arkham.Act.Sequence
@@ -74,12 +75,6 @@ isBlanked _ = False
 resolve :: Message -> [Message]
 resolve msg = [When msg, msg, After msg]
 
-story :: [InvestigatorId] -> Message -> Message
-story iids msg = AskMap
-  (mapFromList
-    [ (iid, ChooseOne [Run [Continue "Continue", msg]]) | iid <- iids ]
-  )
-
 -- TODO: Better handle in play and out of play
 -- Out of play refers to player's hand, in any deck,
 -- in any discard pile, the victory display, and
@@ -101,7 +96,7 @@ doNotMask UseCardAbility{} = True
 doNotMask _ = False
 
 data Message
-  = UseAbility InvestigatorId Ability [Window]
+  = UsedAbility InvestigatorId Ability [Window]
   | -- Story Card Messages
     ReadStory InvestigatorId CardDef
   | ResolveStory InvestigatorId CardDef
@@ -168,8 +163,8 @@ data Message
     AddUses Target UseType Int
   | -- Asks
     AskPlayer Message
-  | Ask InvestigatorId (Question Message)
-  | AskMap (HashMap InvestigatorId (Question Message))
+  | Ask InvestigatorId (Question (UIMessage Message))
+  | AskMap (HashMap InvestigatorId (Question (UIMessage Message)))
   | After Message -- TODO: REMOVE
   | AfterEvadeEnemy InvestigatorId EnemyId
   | AfterRevelation InvestigatorId TreacheryId
@@ -219,9 +214,8 @@ data Message
   | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
   | ChooseRandomLocation Target (HashSet LocationId)
   | ChosenRandomLocation Target LocationId
-  | ChooseTokenGroups Source InvestigatorId ChaosBagStep
+  | ChosenTokenGroups Source InvestigatorId ChaosBagStep
   | CommitCard InvestigatorId CardId
-  | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
   | CreateEnemy Card
   | CreateEnemyAt Card LocationId (Maybe Target)
@@ -261,7 +255,6 @@ data Message
   | DiscoverCluesAtLocation InvestigatorId LocationId Int (Maybe Action)
   | DisengageEnemy InvestigatorId EnemyId
   | DisengageEnemyFromAll EnemyId
-  | Done Text
   | DrawAnotherToken InvestigatorId
   | DrawCards InvestigatorId Int Bool
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
@@ -398,8 +391,6 @@ data Message
   | InvestigatorTakeDamage InvestigatorId Source Int Int
   | InvestigatorWhenDefeated Source InvestigatorId
   | InvestigatorWhenEliminated Source InvestigatorId
-  | Label Text [Message]
-  | CardLabel CardCode [Message]
   | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator
   | LookAtRevealed InvestigatorId Source Target
   | LookAtTopOfDeck InvestigatorId Target Int
@@ -571,9 +562,6 @@ data Message
   | DrawStartingHand InvestigatorId
   | TakeStartingResources InvestigatorId
   | TakenAction InvestigatorId Action
-  | TargetLabel Target [Message]
-  | SkillLabel SkillType [Message]
-  | EvadeLabel EnemyId [Message]
   | ChosenEvadeEnemy Source EnemyId
   | TriggerSkillTest InvestigatorId
   | TryEvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
@@ -609,31 +597,31 @@ data Message
 
 $(deriveJSON defaultOptions ''Message)
 
-targetLabel :: IdToTarget entityId => entityId -> [Message] -> Message
+targetLabel :: IdToTarget entityId => entityId -> [Message] -> UIMessage Message
 targetLabel entityId = TargetLabel (idToTarget entityId)
 
-chooseOrRunOne :: InvestigatorId -> [Message] -> Message
-chooseOrRunOne _ [x] = x
+chooseOrRunOne :: InvestigatorId -> [UIMessage Message] -> Message
+chooseOrRunOne _ [x] = Run $ uiMessageToMessages x
 chooseOrRunOne iid msgs = chooseOne iid msgs
 
-chooseOne :: InvestigatorId -> [Message] -> Message
+chooseOne :: InvestigatorId -> [UIMessage Message] -> Message
 chooseOne _ [] = throw $ InvalidState "No messages for chooseOne"
 chooseOne iid msgs = Ask iid (ChooseOne msgs)
 
-chooseOneAtATime :: InvestigatorId -> [Message] -> Message
+chooseOneAtATime :: InvestigatorId -> [UIMessage Message] -> Message
 chooseOneAtATime _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
 chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
 
-chooseSome :: InvestigatorId -> Text -> [Message] -> Message
+chooseSome :: InvestigatorId -> Text -> [UIMessage Message] -> Message
 chooseSome _ _ [] = throw $ InvalidState "No messages for chooseSome"
-chooseSome iid doneText msgs = Ask iid (ChooseSome $ Done doneText : msgs)
+chooseSome iid doneText msgs = Ask iid (ChooseSome $ Label doneText [] : msgs)
 
-chooseUpToN :: InvestigatorId -> Int -> Text -> [Message] -> Message
+chooseUpToN :: InvestigatorId -> Int -> Text -> [UIMessage Message] -> Message
 chooseUpToN _ _ _ [] = throw $ InvalidState "No messages for chooseSome"
 chooseUpToN iid n doneText msgs =
-  Ask iid (ChooseUpToN n $ Done doneText : msgs)
+  Ask iid (ChooseUpToN n $ Label doneText [] : msgs)
 
-chooseN :: InvestigatorId -> Int -> [Message] -> Message
+chooseN :: InvestigatorId -> Int -> [UIMessage Message] -> Message
 chooseN _ _ [] = throw $ InvalidState "No messages for chooseN"
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
 
@@ -644,3 +632,21 @@ chooseAmounts iid label total choiceMap target =
 
 chooseUpgradeDeck :: InvestigatorId -> Message
 chooseUpgradeDeck iid = Ask iid ChooseUpgradeDeck
+
+story :: [InvestigatorId] -> Message -> Message
+story iids msg = AskMap
+  (mapFromList
+    [ (iid, ChooseOne [Label "Continue" [msg]]) | iid <- iids ]
+  )
+
+uiMessageToMessages :: UIMessage Message -> [Message]
+uiMessageToMessages = \case
+  Unlabeled xs -> xs
+  Label _ xs -> xs
+  CardLabel _ xs -> xs
+  TargetLabel _ xs -> xs
+  SkillLabel _ xs -> xs
+  EvadeLabel _ xs -> xs
+  ComponentLabel _ xs -> xs
+  ChooseTokenGroups s iid step -> [ChosenTokenGroups s iid step] -- TODO: remove this maybe?
+  UseAbility iid ability windows' -> [Arkham.Message.UsedAbility iid ability windows']

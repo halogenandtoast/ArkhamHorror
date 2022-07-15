@@ -29,7 +29,8 @@ instance HasAbilities ArcaneInitiate where
       $ AssetEntersPlay Timing.When
       $ AssetWithId
       $ toId a
-    , restrictedAbility a 2 ControlsThis $ FastAbility $ ExhaustCost $ toTarget a
+    , restrictedAbility a 2 ControlsThis $ FastAbility $ ExhaustCost $ toTarget
+      a
     ]
 
 instance RunMessage ArcaneInitiate where
@@ -39,13 +40,16 @@ instance RunMessage ArcaneInitiate where
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
       push $ chooseOne
         iid
-        [ Search
-              iid
-              source
-              (InvestigatorTarget iid)
-              [fromTopOfDeck 3]
-              (CardWithTrait Spell)
-            $ DrawFound iid 1
+        [ TargetLabel
+            (InvestigatorTarget iid)
+            [ Search
+                  iid
+                  source
+                  (InvestigatorTarget iid)
+                  [fromTopOfDeck 3]
+                  (CardWithTrait Spell)
+                $ DrawFound iid 1
+            ]
         ]
       pure a
     _ -> ArcaneInitiate <$> runMessage msg attrs

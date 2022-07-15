@@ -64,7 +64,11 @@ instance RunMessage TheCarnevaleConspiracy where
         xs -> a <$ pushAll
           [ chooseOne
               iid
-              [ LookAtRevealed iid (toSource attrs) (AssetTarget x) | x <- xs ]
+              [ TargetLabel
+                  (AssetTarget x)
+                  [LookAtRevealed iid (toSource attrs) (AssetTarget x)]
+              | x <- xs
+              ]
           ]
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
@@ -79,7 +83,11 @@ instance RunMessage TheCarnevaleConspiracy where
           xs ->
             [ chooseOne
                 leadInvestigatorId
-                [ Flip leadInvestigatorId (toSource attrs) (AssetTarget x) | x <- xs ]
+                [ TargetLabel
+                    (AssetTarget x)
+                    [Flip leadInvestigatorId (toSource attrs) (AssetTarget x)]
+                | x <- xs
+                ]
             ]
       a <$ pushAll
         ([CreateEnemy cnidathqua, AdvanceActDeck actDeckId (toSource attrs)]

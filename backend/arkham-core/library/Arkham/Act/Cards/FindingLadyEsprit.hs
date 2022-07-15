@@ -21,6 +21,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
+import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.HashSet qualified as HashSet
@@ -79,7 +80,7 @@ instance RunMessage FindingLadyEsprit where
       a <$ pushAll
         ([ chooseOne
              leadInvestigatorId
-             [ CreateEnemyAt theRougarou lid Nothing
+             [ TargetLabel (LocationTarget lid) [CreateEnemyAt theRougarou lid Nothing]
              | lid <- rougarouSpawnLocations
              ]
          ]

@@ -32,7 +32,7 @@ instance RunMessage WilliamYorick where
             when (notNull discards)
               $ push
               $ chooseOne iid
-              $ Done "Do not return card to hand"
+              $ done "Do not return card to hand"
               : [ TargetLabel
                     (CardIdTarget $ toCardId card)
                     [AddToHand iid $ PlayerCard card]

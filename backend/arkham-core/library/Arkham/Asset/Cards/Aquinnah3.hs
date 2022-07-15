@@ -16,6 +16,7 @@ import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Projection
 import Arkham.Source
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype Aquinnah3 = Aquinnah3 AssetAttrs
@@ -56,7 +57,7 @@ instance RunMessage Aquinnah3 where
       a <$ push
         (chooseOne
           iid
-          [ Run
+          [ TargetLabel (EnemyTarget eid)
               [ EnemyDamage eid iid source NonAttackDamageEffect healthDamage'
               , InvestigatorAssignDamage
                 iid

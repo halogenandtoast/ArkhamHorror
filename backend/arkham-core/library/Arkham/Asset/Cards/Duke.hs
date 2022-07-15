@@ -90,7 +90,7 @@ instance RunMessage Duke where
           )
           investigateAbilities
       if null accessibleLocationIds
-        then pushAll investigateActions
+        then pushAll $ concatMap uiMessageToMessages investigateActions
         else
           push
           $ chooseOne iid

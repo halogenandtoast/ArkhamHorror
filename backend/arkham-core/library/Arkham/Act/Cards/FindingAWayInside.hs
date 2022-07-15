@@ -15,7 +15,7 @@ import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target
@@ -33,11 +33,15 @@ findingAWayInside = act
 
 instance RunMessage FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid source@(LocationSource _) advanceMode | aid == actId && onSide A attrs ->
-      do
+    AdvanceAct aid source@(LocationSource _) advanceMode
+      | aid == actId && onSide A attrs -> do
       -- When advanced from Museum Halls we don't spend clues
         leadInvestigatorId <- getLeadInvestigatorId
-        push (chooseOne leadInvestigatorId [AdvanceAct aid source advanceMode])
+        push
+          (chooseOne
+            leadInvestigatorId
+            [TargetLabel (ActTarget aid) [AdvanceAct aid source advanceMode]]
+          )
         pure $ FindingAWayInside $ attrs & sequenceL .~ Act 1 B
     AdvanceAct aid _ _ | aid == actId && onSide A attrs ->
       -- otherwise we do the default

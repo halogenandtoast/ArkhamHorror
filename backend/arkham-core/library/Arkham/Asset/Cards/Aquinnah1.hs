@@ -8,14 +8,15 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Enemy.Attrs ( Field (EnemyHealthDamage, EnemySanityDamage) )
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
+import Arkham.Enemy.Attrs ( Field (EnemyHealthDamage, EnemySanityDamage) )
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Projection
 import Arkham.Source
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype Aquinnah1 = Aquinnah1 AssetAttrs
@@ -60,7 +61,8 @@ instance RunMessage Aquinnah1 where
       a <$ push
         (chooseOne
           iid
-          [ Run
+          [ TargetLabel
+              (EnemyTarget eid)
               [ EnemyDamage eid iid source NonAttackDamageEffect healthDamage'
               , InvestigatorAssignDamage
                 iid

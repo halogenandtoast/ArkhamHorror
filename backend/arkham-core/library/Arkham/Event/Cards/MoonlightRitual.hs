@@ -5,11 +5,11 @@ module Arkham.Event.Cards.MoonlightRitual
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Classes
-import Arkham.Asset.Attrs ( Field(..) )
-import Arkham.Investigator.Attrs ( Field(..) )
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -34,10 +34,14 @@ instance RunMessage MoonlightRitual where
       e <$ pushAll
         [ chooseOne
           iid
-          ([ RemoveDoom (InvestigatorTarget iid) investigatorDoomCount
+          ([ ComponentLabel
+               (InvestigatorComponent iid DoomToken)
+               [RemoveDoom (InvestigatorTarget iid) investigatorDoomCount]
            | investigatorDoomCount > 0
            ]
-          <> [ RemoveDoom (AssetTarget aid) assetDoomCount
+          <> [ ComponentLabel
+                 (AssetComponent aid DoomToken)
+                 [RemoveDoom (AssetTarget aid) assetDoomCount]
              | (aid, assetDoomCount) <- assetsWithDoomCount
              ]
           )

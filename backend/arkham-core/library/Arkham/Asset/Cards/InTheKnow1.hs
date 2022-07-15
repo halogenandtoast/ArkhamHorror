@@ -5,7 +5,7 @@ module Arkham.Asset.Cards.InTheKnow1
 
 import Arkham.Prelude
 
-import Arkham.Ability
+import Arkham.Ability hiding (UsedAbility)
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
@@ -51,7 +51,7 @@ instance RunMessage InTheKnow1 where
         [ targetLabel
             location
             [ SetLocationAsIf iid location
-            , UseAbility iid investigate windows'
+            , UsedAbility iid investigate windows'
             , SetLocationAsIf iid investigatorLocation
             ]
         | (location, investigate) <- locationsWithInvestigate

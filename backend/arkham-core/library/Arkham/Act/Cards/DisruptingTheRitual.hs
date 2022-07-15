@@ -20,11 +20,8 @@ newtype DisruptingTheRitual = DisruptingTheRitual ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 disruptingTheRitual :: ActCard DisruptingTheRitual
-disruptingTheRitual = act
-  (3, A)
-  DisruptingTheRitual
-  Cards.disruptingTheRitual
-  Nothing
+disruptingTheRitual =
+  act (3, A) DisruptingTheRitual Cards.disruptingTheRitual Nothing
 
 instance HasAbilities DisruptingTheRitual where
   getAbilities (DisruptingTheRitual a) | onSide A a =
@@ -40,8 +37,12 @@ instance RunMessage DisruptingTheRitual where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
       (chooseOne
         iid
-        [ BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 3
-        , BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3
+        [ TargetLabel
+          SkillTestTarget
+          [BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 3]
+        , TargetLabel
+          SkillTestTarget
+          [BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3]
         ]
       )
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do

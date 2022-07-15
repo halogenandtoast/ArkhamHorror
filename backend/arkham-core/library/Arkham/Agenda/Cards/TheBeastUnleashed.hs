@@ -61,11 +61,15 @@ instance RunMessage TheBeastUnleashed where
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       a <$ push (AdvanceAgenda $ toId attrs)
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+      leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       a <$ pushAll
         ([ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
          | iid <- investigatorIds
          ]
-        <> [Label "Resolution 4" [ScenarioResolution $ Resolution 4]]
+        <> [ chooseOne
+               leadInvestigatorId
+               [Label "Resolution 4" [ScenarioResolution $ Resolution 4]]
+           ]
         )
     _ -> TheBeastUnleashed <$> runMessage msg attrs

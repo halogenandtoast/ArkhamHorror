@@ -56,7 +56,7 @@ instance RunMessage GetToTheBoats where
         (AssetWithTitle "Masked Carnevale-Goer")
       case maskedCarnevaleGoers of
         [] -> pure a
-        xs -> a <$ pushAll [chooseOne iid [ Flip iid source x | x <- xs ]]
+        xs -> a <$ pushAll [chooseOne iid [ TargetLabel x [Flip iid source x] | x <- xs ]]
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     _ -> GetToTheBoats <$> runMessage msg attrs

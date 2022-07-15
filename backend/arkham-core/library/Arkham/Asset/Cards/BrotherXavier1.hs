@@ -58,7 +58,7 @@ instance RunMessage BrotherXavier1 where
       a <$ pushAll
         [ chooseOrRunOne
             iid
-            [ EnemyDamage eid iid source NonAttackDamageEffect 2
+            [ targetLabel eid [EnemyDamage eid iid source NonAttackDamageEffect 2]
             | eid <- enemies
             ]
         ]

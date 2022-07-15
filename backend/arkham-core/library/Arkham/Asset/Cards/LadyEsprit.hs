@@ -39,6 +39,12 @@ instance RunMessage LadyEsprit where
       a <$ push
         (chooseOne
           iid
-          [HealDamage (InvestigatorTarget iid) 2, TakeResources iid 2 False]
+          [ ComponentLabel
+            (InvestigatorComponent iid DamageToken)
+            [HealDamage (InvestigatorTarget iid) 2]
+          , ComponentLabel
+            (InvestigatorComponent iid ResourceToken)
+            [TakeResources iid 2 False]
+          ]
         )
     _ -> LadyEsprit <$> runMessage msg attrs

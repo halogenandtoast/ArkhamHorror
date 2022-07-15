@@ -244,22 +244,8 @@ instance RunMessage ActiveCost where
             (push $ Ask iid $ ChoosePaymentAmounts
               ("Pay " <> displayCostType cost)
               Nothing
-              [(iid, (0, n), PayCost acId iid skipAdditionalCosts cost')]
+              [(iid, (0, n), Unlabeled [PayCost acId iid skipAdditionalCosts cost'])]
             )
-            --   iid
-            --   [ Label
-            --     "Pay dynamic cost"
-            --     [ PayCost source iid mAction skipAdditionalCosts cost'
-            --     , PayCost
-            --       source
-            --       iid
-            --       mAction
-            --       skipAdditionalCosts
-            --       (UpTo (n - 1) cost')
-            --     ]
-            --   , Label "Done with dynamic cost" []
-            --   ]
-            -- )
         ExhaustCost target -> do
           push (Exhaust target)
           withPayment $ ExhaustPayment [target]
@@ -375,13 +361,15 @@ instance RunMessage ActiveCost where
                   (InvestigatorSource iid')
                   (InvestigatorTarget iid')
                 pure (iid', modifiers)
-              canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) -> do
-                flip anyM modifiers $ \case
-                  CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher -> liftA2
-                    (&&)
-                    (member iid <$> select iMatcher)
-                    (pure $ cardMatch card cMatcher)
-                  _ -> pure False
+              canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) ->
+                do
+                  flip anyM modifiers $ \case
+                    CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher
+                      -> liftA2
+                        (&&)
+                        (member iid <$> select iMatcher)
+                        (pure $ cardMatch card cMatcher)
+                    _ -> pure False
               if null canHelpPay
                 then push (SpendResources iid x)
                 else do
@@ -395,7 +383,12 @@ instance RunMessage ActiveCost where
                         (Just x)
                     $ map
                         (\(iid', resources) ->
-                          (iid', (0, resources), SpendResources iid' 1)
+                          ( iid'
+                          , (0, resources)
+                          , ComponentLabel
+                            (InvestigatorComponent iid' ResourceToken)
+                            [SpendResources iid' 1]
+                          )
                         )
                         iidsWithResources
                     )
@@ -463,7 +456,12 @@ instance RunMessage ActiveCost where
               let
                 paymentOptions = map
                   (\(iid', clues) ->
-                    (iid', (0, clues), PayCost acId iid' True (ClueCost 1))
+                    ( iid'
+                    , (0, clues)
+                    , ComponentLabel
+                      (InvestigatorComponent iid' ClueToken)
+                      [PayCost acId iid' True (ClueCost 1)]
+                    )
                   )
                   iidsWithClues
               leadInvestigatorId <- getLeadInvestigatorId
@@ -536,14 +534,16 @@ instance RunMessage ActiveCost where
               handCards
             cardMsgs = map
               (\(n, card) -> if n >= x
-                then Run
+                then TargetLabel
+                  (CardIdTarget $ toCardId card)
                   [ DiscardCard iid (toCardId card)
                   , PaidAbilityCost
                     iid
                     Nothing
                     (SkillIconPayment $ cdSkills $ toCardDef card)
                   ]
-                else Run
+                else TargetLabel
+                  (CardIdTarget $ toCardId card)
                   [ DiscardCard iid (toCardId card)
                   , PaidAbilityCost
                     iid

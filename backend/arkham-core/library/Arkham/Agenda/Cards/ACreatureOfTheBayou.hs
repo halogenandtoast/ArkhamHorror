@@ -5,16 +5,16 @@ module Arkham.Agenda.Cards.ACreatureOfTheBayou
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Agenda.Attrs
-import Arkham.Agenda.Helpers hiding (matches)
+import Arkham.Agenda.Cards qualified as Cards
+import Arkham.Agenda.Helpers hiding ( matches )
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Location.Attrs (Field(..))
 import Arkham.GameValue
+import Arkham.Location.Attrs ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Target
 
 newtype ACreatureOfTheBayou = ACreatureOfTheBayou AgendaAttrs
@@ -53,7 +53,11 @@ instance RunMessage ACreatureOfTheBayou where
                     [(x, _)] -> MoveUntil x (EnemyTarget eid)
                     xs -> chooseOne
                       leadInvestigatorId
-                      [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
+                      [ TargetLabel
+                          (EnemyTarget eid)
+                          [MoveUntil x (EnemyTarget eid)]
+                      | (x, _) <- xs
+                      ]
           a <$ pushAll
             [ ShuffleEncounterDiscardBackIn
             , moveMessage

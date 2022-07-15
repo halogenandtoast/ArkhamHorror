@@ -15,8 +15,8 @@ import Arkham.Criteria
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Timing qualified as Timing
 import Arkham.Resolution
+import Arkham.Timing qualified as Timing
 
 newtype TheWayOut = TheWayOut ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -48,9 +48,8 @@ instance RunMessage TheWayOut where
     UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
       leadInvestigatorId <- getLeadInvestigatorId
       theGateToHell <- selectJust $ locationIs $ Locations.theGateToHell
-      locations <- selectList $ FarthestLocationFromLocation
-        theGateToHell
-        Anywhere
+      locations <- selectList
+        $ FarthestLocationFromLocation theGateToHell Anywhere
       locationsWithInvestigatorsAndEnemiesAndConnectedLocations <-
         for locations $ \location -> do
           investigators <- selectList $ InvestigatorAt $ LocationWithId location
@@ -62,19 +61,16 @@ instance RunMessage TheWayOut where
         leadInvestigatorId
         [ targetLabel
             location
-            [ chooseOrRunOne
-                leadInvestigatorId
-                [ chooseOneAtATime leadInvestigatorId
-                  $ [ targetLabel
-                        investigator
-                        [MoveTo (toSource attrs) investigator connected]
-                    | investigator <- investigators
-                    ]
-                  <> [ targetLabel enemy [EnemyMove enemy connected]
-                     | enemy <- enemies
-                     ]
-                | connected <- connectedLocations
+            [ chooseOneAtATime leadInvestigatorId
+              $ [ targetLabel
+                    investigator
+                    [MoveTo (toSource attrs) investigator connected]
+                | investigator <- investigators
                 ]
+              <> [ targetLabel enemy [EnemyMove enemy connected]
+                 | enemy <- enemies
+                 ]
+            | connected <- connectedLocations
             ]
         | (location, investigators, enemies, connectedLocations) <-
           locationsWithInvestigatorsAndEnemiesAndConnectedLocations

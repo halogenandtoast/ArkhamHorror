@@ -1365,6 +1365,7 @@ library
       Arkham.Treachery.Helpers
       Arkham.Treachery.Runner
       Arkham.Treachery.Treacheries
+      Arkham.UIMessage
       Arkham.Window
       Arkham.Zone
   other-modules:
@@ -1454,6 +1455,7 @@ test-suite spec
       Arkham.Asset.Cards.PeterSylvestreSpec
       Arkham.Asset.Cards.PhysicalTraining2Spec
       Arkham.Asset.Cards.PhysicalTrainingSpec
+      Arkham.Asset.Cards.PoliceBadge2Spec
       Arkham.Asset.Cards.Rolands38SpecialSpec
       Arkham.Asset.Cards.ZoeysCrossSpec
       Arkham.Enemy.Cards.TheMaskedHunterSpec

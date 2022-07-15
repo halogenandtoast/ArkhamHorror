@@ -12,7 +12,7 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
-import Arkham.Investigator.Attrs (Field (..))
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Target
@@ -42,13 +42,14 @@ instance RunMessage TryAndTryAgain3 where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       committedSkills <-
         filter ((== SkillType) . toCardType)
-        <$> field InvestigatorCommittedCards iid
+          <$> field InvestigatorCommittedCards iid
       a <$ pushAll
         [ FocusCards committedSkills
         , chooseOne
           iid
-          [ ReturnToHand iid (SkillTarget $ SkillId $ toCardId skill)
+          [ TargetLabel target [ReturnToHand iid target]
           | skill <- committedSkills
+          , let target = SkillTarget $ SkillId $ toCardId skill
           ]
         , UnfocusCards
         ]

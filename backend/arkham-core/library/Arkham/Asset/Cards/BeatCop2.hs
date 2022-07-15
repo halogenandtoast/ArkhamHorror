@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
-import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.SkillType
 import Arkham.Target
 
@@ -45,7 +45,9 @@ instance RunMessage BeatCop2 where
       a <$ push
         (chooseOrRunOne
           iid
-          [ EnemyDamage eid iid (toSource attrs) NonAttackDamageEffect 1
+          [ TargetLabel
+              (EnemyTarget eid)
+              [EnemyDamage eid iid (toSource attrs) NonAttackDamageEffect 1]
           | eid <- enemies
           ]
         )

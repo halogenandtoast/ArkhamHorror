@@ -310,7 +310,7 @@ instance RunMessage ChaosBag where
           push (RunDrawFromBag source miid strategy)
           pushAll msgs
           pure $ c' & choiceL ?~ choice''
-    ChooseTokenGroups source iid groupChoice -> case chaosBagChoice of
+    ChosenTokenGroups source iid groupChoice -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do
         let

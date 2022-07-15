@@ -297,9 +297,8 @@ instance RunMessage BloodOnTheAltar where
         s <$ pushAll
           ([ chooseOne
                leadInvestigatorId
-               [ Run
-                 $ [ Continue "Continue"
-                   , noResolution
+               [ Label "Continue"
+                 $ [ noResolution
                    , Record TheRitualWasCompleted
                    , PlaceUnderneath (AgendaTarget agendaId) potentialSacrifices
                    ]
@@ -320,9 +319,8 @@ instance RunMessage BloodOnTheAltar where
         s <$ pushAll
           ([ chooseOne
                leadInvestigatorId
-               [ Run
-                 $ [ Continue "Continue"
-                   , resolution1
+               [ Label "Continue"
+                 $ [ resolution1
                    , Record TheInvestigatorsPutSilasBishopOutOfHisMisery
                    ]
                  <> removeSacrificedMessages
@@ -341,9 +339,8 @@ instance RunMessage BloodOnTheAltar where
         s <$ pushAll
           ([ chooseOne
                leadInvestigatorId
-               [ Run
-                 $ [ Continue "Continue"
-                   , resolution2
+               [ Label "Continue"
+                 $ [ resolution2
                    , Record TheInvestigatorsRestoredSilasBishop
                    ]
                  <> removeSacrificedMessages
@@ -362,9 +359,8 @@ instance RunMessage BloodOnTheAltar where
         s <$ pushAll
           ([ chooseOne
                leadInvestigatorId
-               [ Run
-                 $ [ Continue "Continue"
-                   , resolution3
+               [ Label "Continue"
+                 $ [ resolution3
                    , Record TheInvestigatorsBanishedSilasBishop
                    ]
                  <> removeSacrificedMessages

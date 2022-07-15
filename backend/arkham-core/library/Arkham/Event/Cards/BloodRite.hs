@@ -17,6 +17,7 @@ import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
+import Arkham.Target
 
 newtype BloodRite = BloodRite EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -46,7 +47,7 @@ instance RunMessage BloodRite where
             cards <- fieldMap InvestigatorHand (filter isDiscardable) iid
             push
               $ (chooseOne iid
-                $ [ Run
+                $ [ TargetLabel (CardIdTarget $ toCardId card)
                       [ DiscardCard iid (toCardId card)
                       , PayForCardAbility
                         iid
@@ -80,7 +81,15 @@ instance RunMessage BloodRite where
                  [ SpendResources iid 1
                  , chooseOne
                    iid
-                   [ EnemyDamage enemyId iid source NonAttackDamageEffect 1
+                   [ TargetLabel
+                       (EnemyTarget enemyId)
+                       [ EnemyDamage
+                           enemyId
+                           iid
+                           source
+                           NonAttackDamageEffect
+                           1
+                       ]
                    | enemyId <- enemyIds
                    ]
                  ]

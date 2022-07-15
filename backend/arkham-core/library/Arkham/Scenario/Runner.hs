@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Scenario.Attrs as X
 
 import Arkham.Act.Sequence
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Attrs (Field(..))
 import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.Card.PlayerCard
@@ -18,31 +18,31 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.HasTokenValue
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
-import Arkham.Deck qualified as Deck
+import qualified Arkham.Deck as Deck
 import Arkham.EncounterCard.Source
-import Arkham.Enemy.Attrs ( Field (..) )
-import Arkham.Event.Attrs ( Field (..) )
+import Arkham.Enemy.Attrs (Field(..))
+import Arkham.Event.Attrs (Field(..))
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Window
 import Arkham.Id
-import Arkham.Location.Attrs ( Field (..) )
-import Arkham.Matcher qualified as Matcher
+import Arkham.Location.Attrs (Field(..))
+import qualified Arkham.Matcher as Matcher
 import Arkham.Message
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Target
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 import Arkham.Token
-import Arkham.Treachery.Attrs ( Field (..) )
-import Arkham.Window ( Window (..) )
-import Arkham.Window qualified as Window
-import Arkham.Zone ( Zone )
-import Arkham.Zone qualified as Zone
-import Data.IntMap.Strict qualified as IntMap
+import Arkham.Treachery.Attrs (Field(..))
+import Arkham.Window (Window(..))
+import qualified Arkham.Window as Window
+import Arkham.Zone (Zone)
+import qualified Arkham.Zone as Zone
+import qualified Data.IntMap.Strict as IntMap
 
 instance HasTokenValue ScenarioAttrs where
   getTokenValue iid tokenFace _ = case tokenFace of
@@ -355,9 +355,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           iid
           [card { pcOwner = Just iid }]
       else pure a
-  LookAtTopOfDeck _ EncounterDeckTarget n -> do
+  LookAtTopOfDeck iid EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck scenarioEncounterDeck
-    a <$ pushAll [FocusCards cards, Label "Continue" [UnfocusCards]]
+    a <$ pushAll [FocusCards cards, chooseOne iid [Label "Continue" [UnfocusCards]]]
   MoveTopOfDeckToBottom _ Deck.EncounterDeck n -> do
     let (cards, deck) = splitAt n (unDeck scenarioEncounterDeck)
     pure $ a & encounterDeckL .~ Deck (deck <> cards)
@@ -409,7 +409,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       DrawFound who n -> do
         let
           choices =
-            [ InvestigatorDrewEncounterCard who card
+            [ TargetLabel
+                (CardIdTarget $ toCardId card)
+                [InvestigatorDrewEncounterCard who card]
             | card <- mapMaybe (preview _EncounterCard) targetCards
             ]
         push
@@ -516,11 +518,23 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       )
       (push
         (chooseOne iid
-        $ map (FoundEncounterCardFrom iid target FromDiscard) matchingDiscards
+        $ map
+            (\c -> TargetLabel
+              (CardIdTarget $ toCardId c)
+              [FoundEncounterCardFrom iid target FromDiscard c]
+            )
+            matchingDiscards
         <> map
-             (FoundEncounterCardFrom iid target FromEncounterDeck)
+             (\c -> TargetLabel
+               (CardIdTarget $ toCardId c)
+               [FoundEncounterCardFrom iid target FromEncounterDeck c]
+             )
              matchingDeckCards
-        <> map (FoundEnemyInVoid iid target) matchingVoidEnemies
+        <> map
+             (\e ->
+               TargetLabel (EnemyTarget e) [FoundEnemyInVoid iid target e]
+             )
+             matchingVoidEnemies
         )
       )
 
@@ -540,9 +554,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
 
     push
       (chooseOne iid
-      $ map (FoundAndDrewEncounterCard iid FromDiscard) matchingDiscards
+      $ map
+          (\c -> TargetLabel
+            (CardIdTarget $ toCardId c)
+            [FoundAndDrewEncounterCard iid FromDiscard c]
+          )
+          matchingDiscards
       <> map
-           (FoundAndDrewEncounterCard iid FromEncounterDeck)
+           (\c -> TargetLabel
+             (CardIdTarget $ toCardId c)
+             [FoundAndDrewEncounterCard iid FromEncounterDeck c]
+           )
            matchingDeckCards
       )
     -- TODO: show where focused cards are from

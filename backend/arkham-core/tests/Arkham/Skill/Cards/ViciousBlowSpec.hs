@@ -29,7 +29,7 @@ spec = describe "Vicious Blow" $ do
       $ do
           runMessages
           (fight:_) <- field EnemyAbilities (toId enemy)
-          pushAndRun $ UseAbility (toId investigator) fight []
+          pushAndRun $ UsedAbility (toId investigator) fight []
           chooseOptionMatching "commit vicious blow" $ \case
             TargetLabel (CardIdTarget _) _ -> True
             _ -> False

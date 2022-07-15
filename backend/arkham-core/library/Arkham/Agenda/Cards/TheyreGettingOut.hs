@@ -19,6 +19,7 @@ import Arkham.Message
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
@@ -51,7 +52,7 @@ instance RunMessage TheyreGettingOut where
         (UnengagedEnemy <> EnemyWithTrait Ghoul <> NotEnemy
           (EnemyAt $ LocationWithTitle "Parlor")
         )
-      messages <- catMaybes <$> for
+      messages <- concat . catMaybes <$> for
         enemiesToMove
         \eid -> do
           mLocationId <- selectOne $ LocationWithEnemy $ EnemyWithId eid
@@ -63,10 +64,7 @@ instance RunMessage TheyreGettingOut where
                 $ ClosestPathLocation loc parlorId
               case closestLocationIds of
                 [] -> pure Nothing
-                [x] -> pure $ Just $ EnemyMove eid x
-                xs -> pure $ Just $ chooseOne leadInvestigatorId $ map
-                  (EnemyMove eid)
-                  xs
+                xs -> pure $ Just $ map (TargetLabel (EnemyTarget eid) . pure . EnemyMove eid) xs
       a <$ unless
         (null messages)
         (push $ chooseOneAtATime leadInvestigatorId messages)

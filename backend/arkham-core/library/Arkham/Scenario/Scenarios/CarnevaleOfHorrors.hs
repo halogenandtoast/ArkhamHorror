@@ -77,9 +77,8 @@ sacrificesMade
 sacrificesMade leadInvestigatorId investigatorIds s =
   chooseOne
       leadInvestigatorId
-      [ Run
-          [ Continue "Continue"
-          , FlavorText
+      [ Label "Continue"
+          [ FlavorText
             Nothing
             [ "Too many lives were lost during the eclipse to stop the machinations\
                 \ of Cindathqua's servants. The beast has been fed, its minions empowered.\
@@ -101,9 +100,8 @@ abbessSatisfied :: InvestigatorId -> [InvestigatorId] -> [Message]
 abbessSatisfied leadInvestigatorId investigatorIds =
   chooseOne
       leadInvestigatorId
-      [ Run
-          [ Continue "Continue"
-          , FlavorText
+      [ Label "Continue"
+          [ FlavorText
             Nothing
             [ "\"Grazie mille - thank you for all your help,\" Allegria says as you return\
             \ to the basilica. \"Thanks to you, there were few casualties. I shudder to think\
@@ -218,9 +216,8 @@ instance RunMessage CarnevaleOfHorrors where
            . mapFromList
            $ [ ( iid
                , ChooseOne
-                 [ Run
-                     [ Continue "Continue"
-                     , FlavorText
+                 [ Label "Continue"
+                     [ FlavorText
                        (Just "The Carnevale is Coming...")
                        [ "\"Look,\" Sheriff Engel insists, \"I know it sounds crazy, but that's\
                        \ all there is to it.\" He sighs and sits back down, pouring a cup of joe\

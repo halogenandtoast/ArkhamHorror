@@ -5,8 +5,8 @@ module Arkham.Agenda.Cards.TheShadowOfTheEclipse
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Attrs
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
@@ -35,7 +35,13 @@ instance RunMessage TheShadowOfTheEclipse where
         xs -> a <$ pushAll
           [ chooseOne
             leadInvestigatorId
-            [ Flip leadInvestigatorId (InvestigatorSource leadInvestigatorId) (AssetTarget x)
+            [ TargetLabel
+                (AssetTarget x)
+                [ Flip
+                    leadInvestigatorId
+                    (InvestigatorSource leadInvestigatorId)
+                    (AssetTarget x)
+                ]
             | x <- xs
             ]
           , RevertAgenda aid

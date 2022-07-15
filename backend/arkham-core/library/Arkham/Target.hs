@@ -53,6 +53,17 @@ data Target
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 
+data Component
+  = InvestigatorComponent InvestigatorId GameTokenType
+  | AssetComponent AssetId GameTokenType
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+data GameTokenType = ResourceToken | ClueToken | DamageToken | HorrorToken | DoomToken
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+
 class IdToTarget a where
   idToTarget :: a -> Target
 

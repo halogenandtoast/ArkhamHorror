@@ -10,8 +10,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
-import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Target
@@ -47,17 +47,26 @@ instance RunMessage JimsTrumpet where
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       case assetPlacement of
         InPlayArea controllerId -> do
-          locationId <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") controllerId
-          connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId locationId
-          investigatorIds <-
-            concat <$> for (locationId : connectedLocationIds) (selectList . InvestigatorAt . LocationWithId)
+          locationId <- fieldMap
+            InvestigatorLocation
+            (fromJustNote "must be at a location")
+            controllerId
+          connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId
+            locationId
+          investigatorIds <- concat <$> for
+            (locationId : connectedLocationIds)
+            (selectList . InvestigatorAt . LocationWithId)
           pairings <- for investigatorIds
             $ \targetId -> (targetId, ) <$> field InvestigatorHorror targetId
           let choices = map fst $ filter ((> 0) . snd) pairings
           a <$ push
             (chooseOne
               controllerId
-              [ HealHorror (InvestigatorTarget iid) 1 | iid <- choices ]
+              [ ComponentLabel
+                  (InvestigatorComponent iid HorrorToken)
+                  [HealHorror (InvestigatorTarget iid) 1]
+              | iid <- choices
+              ]
             )
         _ -> error "Invalid call"
     _ -> JimsTrumpet <$> runMessage msg attrs

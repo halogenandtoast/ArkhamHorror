@@ -49,27 +49,29 @@ instance RunMessage FirstAid where
       canHealHorror <- iid <=~> InvestigatorCanHealHorror
       canHealDamage <- iid <=~> InvestigatorCanHealDamage
       horrorTargets <- if canHealHorror
-        then
-          selectListMap InvestigatorTarget
-          $ colocatedWith iid
-          <> InvestigatorWithAnyHorror
+        then selectList $ colocatedWith iid <> InvestigatorWithAnyHorror
         else pure []
       damageTargets <- if canHealDamage
-        then
-          selectListMap InvestigatorTarget
-          $ colocatedWith iid
-          <> InvestigatorWithAnyDamage
+        then selectList $ colocatedWith iid <> InvestigatorWithAnyDamage
         else pure []
-      let targets = nub $ horrorTargets <> damageTargets
+      let iids = nub $ horrorTargets <> damageTargets
       push $ chooseOne
         iid
         [ TargetLabel
-            target
+            (InvestigatorTarget iid')
             [ chooseOne iid
-              $ [ HealDamage target 1 | target `elem` damageTargets ]
-              <> [ HealHorror target 1 | target `elem` horrorTargets ]
+              $ [ ComponentLabel
+                    (InvestigatorComponent iid' DamageToken)
+                    [HealDamage (InvestigatorTarget iid') 1]
+                | iid' `elem` damageTargets
+                ]
+              <> [ ComponentLabel
+                     (InvestigatorComponent iid' HorrorToken)
+                     [HealHorror (InvestigatorTarget iid') 1]
+                 | iid' `elem` horrorTargets
+                 ]
             ]
-        | target <- targets
+        | iid' <- iids
         ]
       pure a
     _ -> FirstAid <$> runMessage msg attrs

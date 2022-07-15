@@ -5,8 +5,8 @@ module Arkham.Asset.Cards.FineClothes
 
 import Arkham.Prelude
 
-import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Source
 import Arkham.Target
@@ -20,8 +20,8 @@ fineClothes =
   assetWith FineClothes Cards.fineClothes $ (healthL ?~ 1) . (sanityL ?~ 1)
 
 instance HasModifiersFor FineClothes where
-  getModifiersFor (SkillTestSource iid _ _ (Just Action.Parley)) (InvestigatorTarget iid') (FineClothes a)
-    | controlledBy a iid && iid == iid'
+  getModifiersFor (SkillTestSource iid _ _ (Just Action.Parley)) SkillTestTarget (FineClothes a)
+    | controlledBy a iid
     = pure $ toModifiers a [Difficulty (-2)]
   getModifiersFor _ _ _ = pure []
 

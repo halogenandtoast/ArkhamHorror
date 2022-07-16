@@ -3,14 +3,14 @@ module Arkham.Location.Cards.ScienceBuilding where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (scienceBuilding)
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( scienceBuilding )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -31,7 +31,10 @@ instance HasAbilities ScienceBuilding where
   getAbilities (ScienceBuilding x) =
     withBaseAbilities x $ if locationRevealed x
       then
-        [ restrictedAbility x 1 Here
+        [ restrictedAbility
+          x
+          1
+          (Here <> Negate (LocationExists $ LocationWithTitle "Alchemy Labs"))
         $ ForcedAbility
         $ RevealLocation Timing.After You
         $ LocationWithId

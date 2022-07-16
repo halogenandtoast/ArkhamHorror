@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards (museumHalls)
+import Arkham.Location.Cards qualified as Cards ( museumHalls )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -44,14 +44,16 @@ instance HasModifiersFor MuseumHalls where
 instance HasAbilities MuseumHalls where
   getAbilities (MuseumHalls attrs) | unrevealed attrs = withBaseAbilities
     attrs
-    [ restrictedAbility
-        (ProxySource
-          (LocationMatcherSource $ LocationWithTitle "Museum Entrance")
-          (toSource attrs)
-        )
-        1
-        (OnLocation $ LocationWithTitle "Museum Entrance")
-        (ActionAbility Nothing $ ActionCost 1)
+    [ withTooltip
+          "{action}: Test {combat} (5) to attempt to break down the door to the museum. If you are successful, immediately advance to Act 1b"
+        $ restrictedAbility
+            (ProxySource
+              (LocationMatcherSource $ LocationWithTitle "Museum Entrance")
+              (toSource attrs)
+            )
+            1
+            (OnLocation $ LocationWithTitle "Museum Entrance")
+            (ActionAbility Nothing $ ActionCost 1)
     ]
   getAbilities (MuseumHalls attrs) = withBaseAbilities
     attrs

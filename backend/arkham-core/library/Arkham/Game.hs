@@ -1234,7 +1234,9 @@ getAssetsMatching matcher = do
         (AssetControlledBy $ InvestigatorWithId iid)
       let
         otherAssets = filter (`notElem` investigatorAssets) as
-        isHealthDamageable = isJust . assetHealth . toAttrs
+        isHealthDamageable a = case assetHealth (toAttrs a) of
+                                 Nothing -> False
+                                 Just n -> n - assetDamage (toAttrs a) > 0
       otherDamageableAssets <-
         map fst
         . filter (elem CanBeAssignedDamage . snd)
@@ -1250,7 +1252,9 @@ getAssetsMatching matcher = do
         (AssetControlledBy $ InvestigatorWithId iid)
       let
         otherAssets = filter (`notElem` investigatorAssets) as
-        isSanityDamageable = isJust . assetSanity . toAttrs
+        isSanityDamageable a = case assetSanity (toAttrs a) of
+                                 Nothing -> False
+                                 Just n -> n - assetHorror (toAttrs a) > 0
       otherDamageableAssets <-
         map fst
         . filter (elem CanBeAssignedDamage . snd)

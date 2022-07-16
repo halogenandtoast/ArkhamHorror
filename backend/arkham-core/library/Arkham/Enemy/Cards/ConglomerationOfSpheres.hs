@@ -6,15 +6,15 @@ module Arkham.Enemy.Cards.ConglomerationOfSpheres
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs

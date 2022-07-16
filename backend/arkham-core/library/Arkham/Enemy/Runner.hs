@@ -404,8 +404,10 @@ instance RunMessage EnemyAttrs where
       -> do
         whenWindow <- checkWindows
           [Window Timing.When (Window.SuccessfulAttackEnemy iid enemyId n)]
-        afterWindow <- checkWindows
+        afterSuccessfulWindow <- checkWindows
           [Window Timing.After (Window.SuccessfulAttackEnemy iid enemyId n)]
+        afterWindow <- checkWindows
+          [Window Timing.After (Window.EnemyAttacked iid source enemyId)]
         a <$ pushAll
           [ whenWindow
           , Successful
@@ -414,11 +416,12 @@ instance RunMessage EnemyAttrs where
             source
             (toActionTarget target)
             n
+          , afterSuccessfulWindow
           , afterWindow
           ]
     Successful (Action.Fight, _) iid source target _ | isTarget a target -> do
       a <$ push (InvestigatorDamageEnemy iid enemyId source)
-    FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ n
+    FailedSkillTest iid (Just Action.Fight) source (SkillTestInitiatorTarget target) _ n
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a
@@ -430,6 +433,9 @@ instance RunMessage EnemyAttrs where
            , CheckWindow
              [iid]
              [Window Timing.After (Window.FailAttackEnemy iid enemyId n)]
+           , CheckWindow
+             [iid]
+             [Window Timing.After (Window.EnemyAttacked iid source enemyId)]
            ]
           <> [ EnemyAttack iid enemyId enemyDamageStrategy RegularAttack
              | Keyword.Retaliate

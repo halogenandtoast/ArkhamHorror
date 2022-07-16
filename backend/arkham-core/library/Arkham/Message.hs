@@ -108,7 +108,6 @@ data Message
   | Do Message
   | -- Handle discard costs
     DiscardedCost Target
-  | ClearDiscardCosts
   | -- Act Deck Messages
     SetActDeck
   | AddAct CardDef

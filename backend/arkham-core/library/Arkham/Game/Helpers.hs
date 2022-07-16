@@ -1709,7 +1709,7 @@ targetTraits = \case
   InvestigationTarget _ _ -> pure mempty
   AgendaMatcherTarget _ -> pure mempty
 
-sourceTraits :: (Monad m, HasGame m) => Source -> m (HashSet Trait)
+sourceTraits :: (HasCallStack, Monad m, HasGame m) => Source -> m (HashSet Trait)
 sourceTraits = \case
   AbilitySource s _ -> sourceTraits s
   ActDeckSource -> pure mempty
@@ -1753,10 +1753,10 @@ sourceTraits = \case
   LocationMatcherSource _ -> pure mempty
 
 sourceMatches
-  :: (Monad m, HasGame m) => Source -> Matcher.SourceMatcher -> m Bool
+  :: (HasCallStack, Monad m, HasGame m) => Source -> Matcher.SourceMatcher -> m Bool
 sourceMatches s = \case
   Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms
-  Matcher.SourceWithTrait t -> elem t <$> sourceTraits s
+  Matcher.SourceWithTrait t -> elem t . traceShowId <$> sourceTraits s
   Matcher.SourceIsEnemyAttack em -> case s of
     EnemyAttackSource eid -> member eid <$> select em
     _ -> pure False

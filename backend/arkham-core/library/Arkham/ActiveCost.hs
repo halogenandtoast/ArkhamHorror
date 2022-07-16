@@ -375,13 +375,15 @@ instance RunMessage ActiveCost where
                   (InvestigatorSource iid')
                   (InvestigatorTarget iid')
                 pure (iid', modifiers)
-              canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) -> do
-                flip anyM modifiers $ \case
-                  CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher -> liftA2
-                    (&&)
-                    (member iid <$> select iMatcher)
-                    (pure $ cardMatch card cMatcher)
-                  _ -> pure False
+              canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) ->
+                do
+                  flip anyM modifiers $ \case
+                    CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher
+                      -> liftA2
+                        (&&)
+                        (member iid <$> select iMatcher)
+                        (pure $ cardMatch card cMatcher)
+                    _ -> pure False
               if null canHelpPay
                 then push (SpendResources iid x)
                 else do
@@ -565,12 +567,17 @@ instance RunMessage ActiveCost where
       case activeCostTarget c of
         ForAbility ability -> do
           let
+            isAction = isActionAbility ability
             action = fromMaybe Action.Ability (abilityAction ability)
             iid = activeCostInvestigator c
           whenActivateAbilityWindow <- checkWindows
             [Window Timing.When (Window.ActivateAbility iid ability)]
-          afterWindowMsgs <- checkWindows
-            [Window Timing.After (Window.PerformAction iid action)]
+          afterMsgs <- if isAction
+            then do
+              afterWindowMsgs <- checkWindows
+                [Window Timing.After (Window.PerformAction iid action)]
+              pure [afterWindowMsgs, FinishAction]
+            else pure []
           pushAll
             $ [ whenActivateAbilityWindow
               , UseCardAbility
@@ -579,9 +586,8 @@ instance RunMessage ActiveCost where
                 (activeCostWindows c)
                 (abilityIndex ability)
                 (activeCostPayments c)
-              , ClearDiscardCosts
               ]
-            <> [afterWindowMsgs, FinishAction]
+            <> afterMsgs
         ForCard card -> do
           let iid = activeCostInvestigator c
           pushAll

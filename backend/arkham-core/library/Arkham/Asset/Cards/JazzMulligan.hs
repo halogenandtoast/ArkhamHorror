@@ -13,10 +13,10 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
 
@@ -39,11 +39,13 @@ instance HasAbilities JazzMulligan where
     ]
 
 instance HasModifiersFor JazzMulligan where
-  getModifiersFor (InvestigatorSource iid) (LocationTarget lid) (JazzMulligan attrs)
-    | controlledBy attrs iid
-    = do
-      traits <- field LocationTraits lid
-      pure [ toModifier attrs Blank | Miskatonic `member` traits ]
+  getModifiersFor _ (LocationTarget lid) (JazzMulligan attrs) = do
+      miid <- selectOne You
+      case miid of
+        Just iid | controlledBy attrs iid -> do
+          traits <- field LocationTraits lid
+          pure [ toModifier attrs Blank | Miskatonic `member` traits ]
+        _ -> pure []
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage JazzMulligan where

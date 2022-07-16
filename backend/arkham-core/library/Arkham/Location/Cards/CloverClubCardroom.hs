@@ -39,7 +39,6 @@ instance HasAbilities CloverClubCardroom where
           1
           (OnAct 1 <> Here)
           (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
-        & (abilityLimitL .~ GroupLimit PerRound 1)
     | locationRevealed attrs
     ]
 

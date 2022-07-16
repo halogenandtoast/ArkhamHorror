@@ -1522,7 +1522,7 @@ getAsset aid = do
     $ fromJustNote missingAsset
     $ preview (entitiesL . assetsL . ix aid) g
     <|> asum
-          (map (preview (assetsL . ix aid)) (toList . traceShowId $ view inDiscardEntitiesL g)
+          (map (preview (assetsL . ix aid)) (toList $ view inDiscardEntitiesL g)
           )
   where missingAsset = "Unknown asset: " <> show aid
 

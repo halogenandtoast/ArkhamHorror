@@ -1756,7 +1756,7 @@ sourceMatches
   :: (HasCallStack, Monad m, HasGame m) => Source -> Matcher.SourceMatcher -> m Bool
 sourceMatches s = \case
   Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms
-  Matcher.SourceWithTrait t -> elem t . traceShowId <$> sourceTraits s
+  Matcher.SourceWithTrait t -> elem t <$> sourceTraits s
   Matcher.SourceIsEnemyAttack em -> case s of
     EnemyAttackSource eid -> member eid <$> select em
     _ -> pure False

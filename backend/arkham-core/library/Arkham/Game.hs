@@ -1516,8 +1516,14 @@ getAgenda aid =
   where missingAgenda = "Unknown agenda: " <> show aid
 
 getAsset :: (HasCallStack, Monad m, HasGame m) => AssetId -> m Asset
-getAsset aid =
-  fromJustNote missingAsset . preview (entitiesL . assetsL . ix aid) <$> getGame
+getAsset aid = do
+  g <- getGame
+  pure
+    $ fromJustNote missingAsset
+    $ preview (entitiesL . assetsL . ix aid) g
+    <|> asum
+          (map (preview (assetsL . ix aid)) (toList . traceShowId $ view inDiscardEntitiesL g)
+          )
   where missingAsset = "Unknown asset: " <> show aid
 
 getTreachery :: (Monad m, HasGame m) => TreacheryId -> m Treachery
@@ -3451,7 +3457,17 @@ runGameMessage msg g = case msg of
   AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
   Discarded (AssetTarget aid) (EncounterCard _) ->
     pure $ g & entitiesL . assetsL %~ deleteMap aid
-  Discarded (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid
+  Discarded (AssetTarget aid) _ -> do
+    asset <- getAsset aid
+    let
+      discardLens =
+        if gameInAction g
+          then
+            case assetOwner (toAttrs asset) of
+              Nothing -> id
+              Just iid -> let dEntities = fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g in inDiscardEntitiesL . at iid ?~ (dEntities & assetsL . at aid ?~ asset)
+          else id
+    pure $ g & entitiesL . assetsL %~ deleteMap aid & discardLens
   DiscardedCost (AssetTarget aid) -> do
     -- When discarded as a cost, the entity may still need to be in the environment to handle ability resolution
     asset <- getAsset aid
@@ -3467,7 +3483,6 @@ runGameMessage msg g = case msg of
       event' = lookupEvent "06023" iid (EventId cid)
       dEntities = fromMaybe defaultEntities $ view (inDiscardEntitiesL . at iid) g
     pure $ g & inDiscardEntitiesL . at iid ?~ (dEntities & eventsL . at (toId event') ?~ event')
-  ClearDiscardCosts -> pure $ g & inDiscardEntitiesL .~ mempty
   Discarded (TreacheryTarget aid) _ -> pure $ g & entitiesL . treacheriesL %~ deleteMap aid
   Exiled (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do

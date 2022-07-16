@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Card
 import Arkham.Trait
 
 newtype Bandolier = Bandolier AssetAttrs
@@ -21,7 +22,8 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing
 
 instance RunMessage Bandolier where
   runMessage msg (Bandolier attrs) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
+    -- Slots need to be added before the asset is played so we hook into played card
+    PlayedCard iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid HandSlot (slot attrs)
       Bandolier <$> runMessage msg attrs
     _ -> Bandolier <$> runMessage msg attrs

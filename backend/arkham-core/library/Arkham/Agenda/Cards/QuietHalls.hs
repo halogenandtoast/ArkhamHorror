@@ -26,7 +26,6 @@ quietHalls = agenda (1, A) QuietHalls Cards.quietHalls (Static 7)
 instance RunMessage QuietHalls where
   runMessage msg a@(QuietHalls attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
-      leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
       messages <- flip mapMaybeM investigatorIds $ \iid -> do
@@ -42,8 +41,6 @@ instance RunMessage QuietHalls where
             )
           else pure Nothing
 
-      pushAll messages
-
       let
         continueMessages = if completedTheHouseAlwaysWins
           then
@@ -52,6 +49,6 @@ instance RunMessage QuietHalls where
             ]
           else [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
 
-      a <$ push
-        (chooseOne leadInvestigatorId [Label "Continue" continueMessages])
+      pushAll $ messages <> continueMessages
+      pure a
     _ -> QuietHalls <$> runMessage msg attrs

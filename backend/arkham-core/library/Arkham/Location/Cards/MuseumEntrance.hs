@@ -5,11 +5,12 @@ module Arkham.Location.Cards.MuseumEntrance
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (museumEntrance)
+import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( museumEntrance )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Target
 
 newtype MuseumEntrance = MuseumEntrance LocationAttrs
@@ -26,7 +27,13 @@ instance HasModifiersFor MuseumEntrance where
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities MuseumEntrance where
-  getAbilities (MuseumEntrance a) = withResignAction a []
+  getAbilities (MuseumEntrance a) = withBaseAbilities
+    a
+    [ withTooltip
+        "\"Eh, How important can a book really be, anyway?\""
+        (locationResignAction a)
+    | locationRevealed a
+    ]
 
 instance RunMessage MuseumEntrance where
   runMessage msg (MuseumEntrance attrs) =

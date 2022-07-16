@@ -7,12 +7,12 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.ChaosBag.RevealStrategy
-import Arkham.Location.Cards qualified as Cards (cloverClubCardroom)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( cloverClubCardroom )
 import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.RequestedTokenStrategy
@@ -35,10 +35,10 @@ instance HasAbilities CloverClubCardroom where
   getAbilities (CloverClubCardroom attrs) = withBaseAbilities
     attrs
     [ restrictedAbility
-          attrs
-          1
-          (OnAct 1 <> Here)
-          (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
+        attrs
+        1
+        (OnAct 1 <> Here)
+        (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
     | locationRevealed attrs
     ]
 

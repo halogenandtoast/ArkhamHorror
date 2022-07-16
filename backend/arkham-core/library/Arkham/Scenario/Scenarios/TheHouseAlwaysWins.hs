@@ -151,7 +151,7 @@ instance RunMessage TheHouseAlwaysWins where
           , Label "Do not spend resources" []
           ]
         else pure ()
-      s <$ push (SpendResources iid 3)
+      pure s
     PassedSkillTest iid _ _ (TokenTarget token) _ _ ->
       s <$ case tokenFace token of
         Cultist | isEasyStandard attrs -> push $ TakeResources iid 3 False

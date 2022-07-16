@@ -1324,8 +1324,12 @@ getSkillsMatching matcher = do
       pure $ filter ((== iid) . skillOwner . toAttrs) as
 
 getSkill :: (HasCallStack, Monad m, HasGame m) => SkillId -> m Skill
-getSkill sid =
-  fromJustNote missingSkill . preview (entitiesL . skillsL . ix sid) <$> getGame
+getSkill sid = do
+  g <- getGame
+  pure
+    $ fromJustNote missingSkill
+    $ preview (entitiesL . skillsL . ix sid) g
+    <|> getInDiscardEntity skillsL sid g
   where missingSkill = "Unknown skill: " <> show sid
 
 getEnemy :: (Monad m, HasGame m) => EnemyId -> m Enemy
@@ -1521,9 +1525,7 @@ getAsset aid = do
   pure
     $ fromJustNote missingAsset
     $ preview (entitiesL . assetsL . ix aid) g
-    <|> asum
-          (map (preview (assetsL . ix aid)) (toList $ view inDiscardEntitiesL g)
-          )
+    <|> getInDiscardEntity assetsL aid g
   where missingAsset = "Unknown asset: " <> show aid
 
 getTreachery :: (Monad m, HasGame m) => TreacheryId -> m Treachery
@@ -1531,9 +1533,23 @@ getTreachery tid =
   fromJustNote missingTreachery . preview (entitiesL . treacheriesL . ix tid) <$> getGame
   where missingTreachery = "Unknown treachery: " <> show tid
 
+getInDiscardEntity
+  :: (id ~ EntityId entity, Hashable id)
+  => Lens' Entities (EntityMap entity)
+  -> id
+  -> Game
+  -> Maybe entity
+getInDiscardEntity lensFunc entityId game = asum $ map
+  (preview (lensFunc . ix entityId))
+  (toList $ view inDiscardEntitiesL game)
+
 getEvent :: (Monad m, HasGame m) => EventId -> m Event
-getEvent eid =
-  fromJustNote missingEvent . preview (entitiesL . eventsL . ix eid) <$> getGame
+getEvent eid = do
+  g <- getGame
+  pure
+    $ fromJustNote missingEvent
+    $ preview (entitiesL . eventsL . ix eid) g
+    <|> getInDiscardEntity eventsL eid g
   where missingEvent = "Unknown event: " <> show eid
 
 getEffect :: (Monad m, HasGame m) => EffectId -> m Effect

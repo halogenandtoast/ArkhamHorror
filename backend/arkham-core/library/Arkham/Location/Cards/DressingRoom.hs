@@ -6,13 +6,14 @@ module Arkham.Location.Cards.DressingRoom
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 
@@ -27,7 +28,12 @@ dressingRoom =
 instance HasAbilities DressingRoom where
   getAbilities (DressingRoom attrs) = withBaseAbilities
     attrs
-    [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 3
+    [ restrictedAbility
+        attrs
+        1
+        (Here <> InvestigatorExists (You <> InvestigatorWithAnyHorror))
+      $ ActionAbility Nothing
+      $ ActionCost 3
     | locationRevealed attrs
     ]
 

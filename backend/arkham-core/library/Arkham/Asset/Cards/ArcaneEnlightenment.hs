@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Card
 import Arkham.Target
 import Arkham.Trait
 
@@ -27,7 +28,8 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
 
 instance RunMessage ArcaneEnlightenment where
   runMessage msg (ArcaneEnlightenment attrs) = case msg of
-    InvestigatorPlayedAsset iid aid | aid == assetId attrs -> do
+    -- Slots need to be added before the asset is played so we hook into played card
+    PlayedCard iid card | toCardId card == toCardId attrs -> do
       push (AddSlot iid HandSlot (slot attrs))
       ArcaneEnlightenment <$> runMessage msg attrs
     _ -> ArcaneEnlightenment <$> runMessage msg attrs

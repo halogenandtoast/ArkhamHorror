@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Card
 
 newtype RelicHunter3 = RelicHunter3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
@@ -20,7 +21,8 @@ slot attrs = Slot (toSource attrs) Nothing
 
 instance RunMessage RelicHunter3 where
   runMessage msg (RelicHunter3 attrs) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
+    -- Slots need to be added before the asset is played so we hook into played card
+    PlayedCard iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid AccessorySlot (slot attrs)
       RelicHunter3 <$> runMessage msg attrs
     _ -> RelicHunter3 <$> runMessage msg attrs

@@ -238,7 +238,7 @@ investigator f cardDef Stats {..} =
         , investigatorCardsUnderneath = []
         , investigatorFoundCards = mempty
         , investigatorUsedAbilities = mempty
-        , investigatorTomeActions = Nothing
+        , investigatorAdditionalActions = []
         , investigatorHorrorHealed = 0
         }
       }

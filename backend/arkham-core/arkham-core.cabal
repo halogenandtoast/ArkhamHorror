@@ -89,6 +89,7 @@ library
       Arkham.Act.Runner
       Arkham.Act.Sequence
       Arkham.Action
+      Arkham.Action.Additional
       Arkham.ActiveCost
       Arkham.Agenda
       Arkham.Agenda.AdvancementReason
@@ -789,6 +790,7 @@ library
       Arkham.GameValue
       Arkham.Helpers
       Arkham.Helpers.Ability
+      Arkham.Helpers.Action
       Arkham.Helpers.Agenda
       Arkham.Helpers.Campaign
       Arkham.Helpers.Card

@@ -30,7 +30,7 @@ instance HasModifiersFor Dormitories where
 instance HasAbilities Dormitories where
   getAbilities (Dormitories attrs) =
     withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $ FastAbility $ GroupClueCost
+      [ restrictedAbility attrs 1 Here $ Objective $ FastAbility $ GroupClueCost
           (PerPlayer 3)
           (LocationWithTitle "Dormitories")
       ]

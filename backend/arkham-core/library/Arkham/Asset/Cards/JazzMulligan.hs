@@ -38,11 +38,15 @@ instance HasAbilities JazzMulligan where
     ]
 
 instance HasModifiersFor JazzMulligan where
-  getModifiersFor _ (LocationTarget _) (JazzMulligan attrs) = do
+  getModifiersFor _ (LocationTarget lid) (JazzMulligan attrs) = do
     miid <- selectOne You
     case miid of
-      Just iid | controlledBy attrs iid ->
-        pure [ toModifier attrs (TraitRestrictedModifier Miskatonic Blank)]
+      Just iid | controlledBy attrs iid -> do
+        isUnrevealed <- lid <=~> UnrevealedLocation
+        pure
+          [ toModifier attrs (TraitRestrictedModifier Miskatonic Blank)
+          | isUnrevealed
+          ]
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 

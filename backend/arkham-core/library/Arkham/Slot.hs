@@ -26,5 +26,3 @@ instance Ord Slot where
   RestrictedSlot{} <= _ = True
   Slot{} <= Slot{} = True
   Slot{} <= _ = False
-
-newtype PotentialSlot = PotentialSlot { unPotentialSlot :: SlotType }

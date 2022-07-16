@@ -57,7 +57,6 @@ instance RunMessage AlchemyLabs where
     Successful (Action.Investigate, _) iid (AbilitySource source 1) _ _
       | isSource attrs source -> do
         maid <- selectOne (assetIs Cards.alchemicalConcoction)
-        l <$ case maid of
-          Just aid -> push (TakeControlOfAsset iid aid)
-          Nothing -> pure ()
+        for_ maid (push . TakeControlOfAsset iid)
+        pure l
     _ -> AlchemyLabs <$> runMessage msg attrs

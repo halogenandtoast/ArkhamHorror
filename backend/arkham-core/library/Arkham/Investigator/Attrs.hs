@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Projection
 import Arkham.Ability
+import Arkham.Action.Additional
 import Arkham.ClassSymbol
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Classes.HasModifiersFor
@@ -32,7 +33,7 @@ type InvestigatorCard a = CardBuilder () a
 data instance Field InvestigatorAttrs :: Type -> Type where
   InvestigatorName :: Field InvestigatorAttrs Name
   InvestigatorRemainingActions :: Field InvestigatorAttrs Int
-  InvestigatorTomeActions :: Field InvestigatorAttrs (Maybe Int)
+  InvestigatorAdditionalActions :: Field InvestigatorAttrs [AdditionalAction]
   InvestigatorSanity :: Field InvestigatorAttrs Int
   InvestigatorRemainingSanity :: Field InvestigatorAttrs Int
   InvestigatorRemainingHealth :: Field InvestigatorAttrs Int
@@ -101,7 +102,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorFoundCards :: HashMap Zone [Card]
   , investigatorUsedAbilities :: [UsedAbility]
   -- investigator-specific fields
-  , investigatorTomeActions :: Maybe Int
+  , investigatorAdditionalActions :: [AdditionalAction]
   -- handling liquid courage
   , investigatorHorrorHealed :: Int
   }
@@ -256,5 +257,5 @@ horrorHealedL = lens investigatorHorrorHealed $ \m x -> m { investigatorHorrorHe
 startsWithL :: Lens' InvestigatorAttrs [CardDef]
 startsWithL = lens investigatorStartsWith $ \m x -> m { investigatorStartsWith = x }
 
-tomeActionsL :: Lens' InvestigatorAttrs (Maybe Int)
-tomeActionsL = lens investigatorTomeActions $ \m x -> m { investigatorTomeActions = x }
+additionalActionsL :: Lens' InvestigatorAttrs [AdditionalAction]
+additionalActionsL = lens investigatorAdditionalActions $ \m x -> m { investigatorAdditionalActions = x }

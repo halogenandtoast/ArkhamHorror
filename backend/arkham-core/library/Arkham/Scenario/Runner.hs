@@ -189,6 +189,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       ]
   Remember logKey -> pure $ a & logL %~ insertSet logKey
   ResolveToken _drawnToken token _iid | token == AutoFail ->
+    -- TODO: This should not need to resolve, we should instead handle the modifier
     a <$ push FailSkillTest
   EndOfScenario mNextCampaignStep -> do
     clearQueue

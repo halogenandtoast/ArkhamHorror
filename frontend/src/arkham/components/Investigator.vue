@@ -215,8 +215,8 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
         <button @click="debugChoose({tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, 1]})">-</button>
       </template>
       <span><i class="action" v-for="n in player.remainingActions" :key="n"></i></span>
-      <span v-if="player.tomeActions && player.tomeActions > 0">
-        <i class="action tomeAction" v-for="n in player.tomeActions" :key="n"></i>
+      <span v-if="player.additionalActions.length > 0">
+        <i class="action" :class="`${player.class.toLowerCase()}Action`" v-for="n in player.additionalActions" :key="n"></i>
       </span>
       <template v-if="debug">
         <button @click="debugChoose({tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})">+</button>
@@ -276,7 +276,7 @@ i.action {
   height: $card-width;
 }
 
-.tomeAction {
+.seekerAction {
   color: $seeker !important;
 }
 

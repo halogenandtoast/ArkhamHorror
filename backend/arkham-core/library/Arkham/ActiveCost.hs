@@ -431,7 +431,10 @@ instance RunMessage ActiveCost where
             then pure 0
             else getActionCostModifier c
           let modifiedActionCost = max 0 (x + costModifier)
-          push (SpendActions iid source modifiedActionCost)
+              mAction = case activeCostTarget c of
+                          ForAbility a -> abilityAction a
+                          _ -> Nothing
+          push (SpendActions iid source mAction modifiedActionCost)
           withPayment $ ActionPayment x
         UseCost assetMatcher uType n -> do
           assets <- selectList assetMatcher

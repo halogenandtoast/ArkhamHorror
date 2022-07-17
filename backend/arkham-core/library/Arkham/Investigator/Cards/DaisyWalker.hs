@@ -5,13 +5,11 @@ module Arkham.Investigator.Cards.DaisyWalker
 
 import Arkham.Prelude
 
-import Arkham.Asset.Attrs ( Field (..) )
-import Arkham.Investigator.Cards qualified as Cards
+import Arkham.Action.Additional
+import qualified Arkham.Investigator.Cards as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Projection
-import Arkham.Source
 import Arkham.Target
 
 newtype DaisyWalker = DaisyWalker InvestigatorAttrs
@@ -19,7 +17,7 @@ newtype DaisyWalker = DaisyWalker InvestigatorAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 daisyWalker :: InvestigatorCard DaisyWalker
-daisyWalker = investigatorWith
+daisyWalker = investigator
   DaisyWalker
   Cards.daisyWalker
   Stats
@@ -30,7 +28,6 @@ daisyWalker = investigatorWith
     , combat = 2
     , agility = 2
     }
-  (tomeActionsL ?~ 1)
 
 instance HasTokenValue DaisyWalker where
   getTokenValue iid ElderSign (DaisyWalker attrs) | iid == toId attrs =
@@ -40,20 +37,6 @@ instance HasTokenValue DaisyWalker where
 -- Passing a skill test effect
 instance RunMessage DaisyWalker where
   runMessage msg i@(DaisyWalker attrs@InvestigatorAttrs {..}) = case msg of
-    ResetGame -> do
-      attrs' <- runMessage msg attrs
-      pure $ DaisyWalker $ attrs' & tomeActionsL ?~ 1
-    SpendActions iid (AssetSource aid) actionCost
-      | iid == toId attrs && actionCost > 0 -> do
-        isTome <- fieldP AssetTraits (member Tome) aid
-        DaisyWalker
-          <$> if isTome
-                  && fromJustNote "Must be set" investigatorTomeActions
-                  > 0
-                then runMessage
-                  (SpendActions iid (AssetSource aid) (actionCost - 1))
-                  (attrs & tomeActionsL %~ fmap (max 0 . subtract 1))
-                else runMessage msg attrs
     PassedSkillTest iid _ _ (TokenTarget token) _ _ | iid == investigatorId ->
       do
         when (tokenFace token == ElderSign) $ do
@@ -63,5 +46,10 @@ instance RunMessage DaisyWalker where
             <> AssetWithTrait Tome
           when (tomeCount > 0) (push $ DrawCards iid tomeCount False)
         pure i
-    BeginRound -> DaisyWalker <$> runMessage msg (attrs & tomeActionsL ?~ 1)
+    Setup -> DaisyWalker <$> runMessage
+      msg
+      (attrs & additionalActionsL %~ (TraitRestrictedAdditionalAction Tome :))
+    BeginRound -> DaisyWalker <$> runMessage
+      msg
+      (attrs & additionalActionsL %~ (TraitRestrictedAdditionalAction Tome :))
     _ -> DaisyWalker <$> runMessage msg attrs

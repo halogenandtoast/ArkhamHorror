@@ -19,6 +19,7 @@ import Arkham.Act.Attrs ( Field (..) )
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Action ( Action )
 import Arkham.Action qualified as Action
+import Arkham.Action.Additional
 import Arkham.Agenda.Attrs ( Field (..) )
 import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Asset.Uses ( useCount )
@@ -62,7 +63,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
-import Arkham.Trait ( Trait (Tome), toTraits )
+import Arkham.Trait ( Trait, toTraits )
 import Arkham.Treachery.Attrs ( Field (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
@@ -364,21 +365,10 @@ getCanAffordCost iid source mAction windows' = \case
         let
           modifiedActionCost =
             foldr (applyActionCostModifier takenActions mAction) n modifiers
-        traits <- case source of
-          AssetSource aid -> do
-            -- an asset could be in two places, in play, or discarded
-            inPlay <- selectAny $ Matcher.AssetWithId aid
-            if inPlay
-              then fieldMap AssetTraits HashSet.toList aid
-              else fieldMap DiscardedAssetTraits HashSet.toList aid
-          TestSource traits -> pure $ HashSet.toList traits
-          _ -> pure []
-
-        tomeActions <- if Tome `elem` traits
-          then fieldMap InvestigatorTomeActions (fromMaybe 0) iid
-          else pure 0
+        additionalActions <- field InvestigatorAdditionalActions iid
+        additionalActionCount <- length <$> filterM (additionalActionCovers source mAction)  additionalActions
         actionCount <- field InvestigatorRemainingActions iid
-        pure $ (actionCount + tomeActions) >= modifiedActionCost
+        pure $ (actionCount + additionalActionCount) >= modifiedActionCost
   ClueCost n -> do
     spendableClues <- getSpendableClueCount [iid]
     pure $ spendableClues >= n
@@ -2180,3 +2170,13 @@ defeatedByMatches defeatedBy = \case
       || (defeatedBy == DefeatedByDamageAndHorror)
   Matcher.ByOther -> pure $ defeatedBy == DefeatedByOther
   Matcher.ByAny -> pure True
+
+additionalActionCovers
+  :: (Monad m, HasGame m)
+  => Source
+  -> Maybe Action
+  -> AdditionalAction
+  -> m Bool
+additionalActionCovers source maction = \case
+  TraitRestrictedAdditionalAction t -> member t <$> sourceTraits source
+  ActionRestrictedAdditionalAction a -> pure $ maction == Just a

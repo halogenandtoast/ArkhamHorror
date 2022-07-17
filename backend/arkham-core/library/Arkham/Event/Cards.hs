@@ -94,6 +94,7 @@ allPlayerEventCards = mapFromList $ map
   , dynamiteBlast
   , dynamiteBlast2
   , eatLead2
+  , eavesdrop
   , eideticMemory3
   , elusive
   , emergencyAid
@@ -181,6 +182,7 @@ allPlayerEventCards = mapFromList $ map
   , willToSurvive3
   , wingingIt
   , workingAHunch
+  , youHandleThisOne
   ]
 
 onTheLam :: CardDef
@@ -1125,6 +1127,25 @@ unearthTheAncients = (event "04024" "Unearth the Ancients" 1 Seeker)
   , cdCriteria =
     Just $ Criteria.ExtendedCardExists $ InHandOf You <> BasicCardMatch
       (CardWithClass Seeker <> CardWithType AssetType)
+  }
+
+eavesdrop :: CardDef
+eavesdrop = (event "04027" "Eavesdrop" 1 Rogue)
+  { cdSkills = [SkillIntellect, SkillAgility]
+  , cdCardTraits = setFromList [Insight, Trick]
+  , cdCriteria = Just $ Criteria.EnemyCriteria $ Criteria.EnemyExists $ UnengagedEnemy <> EnemyAt YourLocation
+  }
+
+youHandleThisOne :: CardDef
+youHandleThisOne = (event "04028" "\"Your handle this one!\"" 0 Rogue)
+  { cdSkills = [SkillIntellect, SkillAgility]
+  , cdCardTraits = singleton Trick
+  , cdCriteria = Just (Criteria.InvestigatorExists NotYou)
+  , cdFastWindow = Just $ DrawCard
+    Timing.After
+    You
+    (BasicCardMatch $ NonPeril <> IsEncounterCard)
+    EncounterDeck
   }
 
 secondWind :: CardDef

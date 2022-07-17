@@ -695,6 +695,7 @@ library
       Arkham.Event.Cards.DynamiteBlast
       Arkham.Event.Cards.DynamiteBlast2
       Arkham.Event.Cards.EatLead2
+      Arkham.Event.Cards.Eavesdrop
       Arkham.Event.Cards.EideticMemory3
       Arkham.Event.Cards.Elusive
       Arkham.Event.Cards.EmergencyAid
@@ -782,6 +783,7 @@ library
       Arkham.Event.Cards.WillToSurvive3
       Arkham.Event.Cards.WingingIt
       Arkham.Event.Cards.WorkingAHunch
+      Arkham.Event.Cards.YouHandleThisOne
       Arkham.Event.Events
       Arkham.Event.Helpers
       Arkham.Event.Runner

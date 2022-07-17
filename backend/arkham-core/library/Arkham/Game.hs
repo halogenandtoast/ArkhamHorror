@@ -704,6 +704,7 @@ getInvestigatorsMatching matcher = do
       (`gameValueMatches` gameValueMatcher) . investigatorSanityDamage . toAttrs
     InvestigatorWithRemainingSanity gameValueMatcher ->
       field InvestigatorRemainingSanity . toId  >=> (`gameValueMatches` gameValueMatcher)
+    NotInvestigator x -> fmap not  . go x
     InvestigatorMatches xs -> \i -> allM (`go` i) xs
     AnyInvestigator xs -> \i -> anyM (`go` i) xs
     HandWith cardListMatcher -> (`cardListMatches` cardListMatcher) . investigatorHand . toAttrs

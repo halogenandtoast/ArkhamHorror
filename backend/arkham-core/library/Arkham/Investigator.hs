@@ -99,6 +99,7 @@ instance FromJSON Investigator where
       "03006" -> Investigator . LolaHayes <$> parseJSON v
       "04001" -> Investigator . LeoAnderson <$> parseJSON v
       "04002" -> Investigator . UrsulaDowns <$> parseJSON v
+      "04003" -> Investigator . FinnEdwards <$> parseJSON v
       "08004" -> Investigator . NormanWithers <$> parseJSON v
       "60101" -> Investigator . NathanielCho <$> parseJSON v
       "60501" -> Investigator . StellaClark <$> parseJSON v
@@ -126,6 +127,7 @@ allInvestigators = mapFromList $ map
   , Investigator <$> lolaHayes
   , Investigator <$> leoAnderson
   , Investigator <$> ursulaDowns
+  , Investigator <$> finnEdwards
   , Investigator <$> normanWithers
   , Investigator <$> nathanielCho
   , Investigator <$> stellaClark

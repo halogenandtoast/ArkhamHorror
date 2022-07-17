@@ -176,7 +176,10 @@ instance FromJSON Event where
       "03310" -> Event . CheatDeath5 <$> parseJSON v
       "03311" -> Event . TimeWarp2 <$> parseJSON v
       "03314" -> Event . Infighting3 <$> parseJSON v
+      "04010" -> Event . SmuggledGoods <$> parseJSON v
       "04024" -> Event . UnearthTheAncients <$> parseJSON v
+      "04027" -> Event . Eavesdrop <$> parseJSON v
+      "04028" -> Event . YouHandleThisOne <$> parseJSON v
       "04149" -> Event . SecondWind <$> parseJSON v
       "04200" -> Event . LiveAndLearn <$> parseJSON v
       "04272" -> Event . WingingIt <$> parseJSON v
@@ -302,7 +305,10 @@ allEvents = mapFromList $ map
   , Event <$> cheatDeath5
   , Event <$> timeWarp2
   , Event <$> infighting3
+  , Event <$> smuggledGoods
   , Event <$> unearthTheAncients
+  , Event <$> eavesdrop
+  , Event <$> youHandleThisOne
   , Event <$> secondWind
   , Event <$> liveAndLearn
   , Event <$> wingingIt

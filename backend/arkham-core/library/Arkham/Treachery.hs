@@ -239,6 +239,7 @@ instance FromJSON Treachery where
       -- signature
       "04007" -> Treachery . BoughtInBlood <$> parseJSON v
       "04009" -> Treachery . CallOfTheUnknown <$> parseJSON v
+      "04012" -> Treachery . CaughtRedHanded <$> parseJSON v
       -- Edge of the Earth
       -- signature
       "08006" -> Treachery . TheHarbinger <$> parseJSON v
@@ -449,6 +450,7 @@ allTreacheries = mapFromList $ map
   -- signature
   , Treachery <$> boughtInBlood
   , Treachery <$> callOfTheUnknown
+  , Treachery <$> caughtRedHanded
   -- Edge of the Earth
   -- signature
   , Treachery <$> theHarbinger

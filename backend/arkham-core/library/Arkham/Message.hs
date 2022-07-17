@@ -586,6 +586,7 @@ data Message
   | UseCardAbility InvestigatorId Source [Window] Int Payment
   | UseCardAbilityChoice InvestigatorId Source [Window] Int Payment AbilityMetadata
   | UseCardAbilityChoiceTarget InvestigatorId Source [Window] Int Payment Target
+  | HandleTargetChoice InvestigatorId Source Target
   | ResetMetadata Target
   | When Message
   | WhenWillEnterLocation InvestigatorId LocationId

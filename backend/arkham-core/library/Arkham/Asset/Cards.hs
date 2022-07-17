@@ -140,6 +140,7 @@ allPlayerAssetCards = mapFromList $ map
   , darioElAmin
   , darkHorse
   , davidRenfield
+  , decoratedSkull
   , digDeep
   , digDeep2
   , discOfItzamna2
@@ -157,6 +158,7 @@ allPlayerAssetCards = mapFromList $ map
   , esotericFormula
   , fieldwork
   , fineClothes
+  , finnsTrustyThirtyEight
   , fireAxe
   , fireExtinguisher1
   , firstAid
@@ -1837,6 +1839,14 @@ jakeWilliams = (asset "04008" ("Jake Williams" <:> "Loyal Companion") 3 Neutral
   , cdUnique = True
   }
 
+finnsTrustyThirtyEight :: CardDef
+finnsTrustyThirtyEight = fast $ (asset "04011" ("Finn's Trusty .38" <:> "Never Leave Home Without It") 2 Neutral)
+  { cdSkills = [SkillAgility, SkillWild]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdSlots = [HandSlot]
+  , cdUses = Uses Ammo 3
+  }
+
 venturer :: CardDef
 venturer = (asset "04018" "Venturer" 4 Guardian)
   { cdSkills = [SkillIntellect]
@@ -1852,6 +1862,15 @@ toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
   , cdCardTraits = setFromList [Item, Relic]
   , cdSlots = [AccessorySlot]
   }
+
+decoratedSkull :: CardDef
+decoratedSkull = (asset "04026" ("Decorated Skull" <:> "Doom Begets Doom") 0 Rogue)
+  { cdSkills = [SkillAgility]
+  , cdCardTraits = setFromList [Item, Relic, Cursed]
+  , cdSlots = [AccessorySlot]
+  , cdUses = Uses Charge 0
+  }
+
 
 theChthonianStone :: CardDef
 theChthonianStone =

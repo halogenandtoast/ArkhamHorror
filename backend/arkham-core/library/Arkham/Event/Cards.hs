@@ -157,6 +157,7 @@ allPlayerEventCards = mapFromList $ map
   , shortcut
   , shortcut2
   , sleightOfHand
+  , smuggledGoods
   , snareTrap2
   , sneakAttack
   , sneakAttack2
@@ -1101,6 +1102,19 @@ infighting3 = (event "03314" "Infighting" 1 Survivor)
   , cdCardTraits = singleton Trick
   , cdLevel = 3
   , cdFastWindow = Just $ PhaseBegins Timing.After (PhaseIs EnemyPhase)
+  }
+
+smuggledGoods :: CardDef
+smuggledGoods = (event "04010" "Smuggled Goods" 0 Neutral)
+  { cdSkills = [SkillWild]
+  , cdCardTraits = setFromList [Supply, Illicit]
+  , cdCriteria =
+    Just
+    $ Criteria.Negate
+    $ Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ EnemyAt YourLocation
+    <> ReadyEnemy
   }
 
 unearthTheAncients :: CardDef

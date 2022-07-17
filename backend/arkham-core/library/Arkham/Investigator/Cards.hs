@@ -76,6 +76,7 @@ allInvestigatorCards =
       , lolaHayes
       , leoAnderson
       , ursulaDowns
+      , finnEdwards
       , normanWithers
       , nathanielCho
       , stellaClark
@@ -135,6 +136,9 @@ leoAnderson = investigator "04001" ("Leo Anderson" <:> "The Expedition Leader") 
 
 ursulaDowns :: CardDef
 ursulaDowns = investigator "04002" ("Ursula Downs" <:> "The Explorer") Seeker [Wayfarer]
+
+finnEdwards :: CardDef
+finnEdwards = investigator "04003" ("Finn Edwards" <:> "The Bootlegger") Rogue [Criminal]
 
 normanWithers :: CardDef
 normanWithers = investigator "08004" ("Norman Withers" <:> "The Astronomer") Seeker [Miskatonic]

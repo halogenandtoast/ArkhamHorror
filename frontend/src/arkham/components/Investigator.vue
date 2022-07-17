@@ -280,6 +280,10 @@ i.action {
   color: $seeker !important;
 }
 
+.rogueAction {
+  color: $rogue !important;
+}
+
 .player-card {
   display: flex;
   flex-direction: column;

@@ -405,7 +405,7 @@ data Message
   | LoseActions InvestigatorId Source Int
   | LoseResources InvestigatorId Int
   | LoseAllResources InvestigatorId
-  | SpendActions InvestigatorId Source Int
+  | SpendActions InvestigatorId Source (Maybe Action) Int
   | Move Source InvestigatorId LocationId LocationId
   | MoveAction InvestigatorId LocationId Cost Bool
   | MoveAllCluesTo Target

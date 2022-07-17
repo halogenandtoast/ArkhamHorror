@@ -1706,7 +1706,7 @@ instance Projection InvestigatorAttrs where
     case f of
       InvestigatorName -> pure investigatorName
       InvestigatorRemainingActions -> pure investigatorRemainingActions
-      InvestigatorTomeActions -> pure investigatorTomeActions
+      InvestigatorAdditionalActions -> pure investigatorAdditionalActions
       InvestigatorSanity -> pure investigatorSanity
       InvestigatorRemainingSanity -> pure (investigatorSanity - investigatorSanityDamage)
       InvestigatorRemainingHealth -> pure (investigatorHealth - investigatorHealthDamage)

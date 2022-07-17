@@ -54,6 +54,7 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
 import Arkham.Zone qualified as Zone
+import Control.Monad.Extra (findM)
 import Data.HashMap.Strict qualified as HashMap
 import Data.Monoid
 
@@ -1658,8 +1659,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             <> [Continue "Skip playing fast cards or using reactions"]
             )
       else pure a
-  SpendActions iid _ n | iid == investigatorId ->
-    pure $ a & remainingActionsL %~ max 0 . subtract n
+  SpendActions iid source mAction n | iid == investigatorId -> do
+    mAdditionalAction <- findM (additionalActionCovers source mAction) investigatorAdditionalActions
+    case mAdditionalAction of
+      Nothing -> pure $ a & remainingActionsL %~ max 0 . subtract n
+      Just aa -> pure $ a & additionalActionsL %~ deleteFirst aa
   LoseActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL %~ max 0 . subtract n
   SetActions iid _ n | iid == investigatorId ->
@@ -2065,6 +2069,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             abilityLimitType (abilityLimit usedAbility) /= Just PerRound
           )
         )
+      & additionalActionsL .~ mempty
   EndTurn iid | iid == investigatorId -> pure $ a & usedAbilitiesL %~ filter
     (\UsedAbility {..} ->
       abilityLimitType (abilityLimit usedAbility) /= Just PerTurn

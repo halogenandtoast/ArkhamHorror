@@ -32,6 +32,13 @@ export const classSymbolDecoder = JsonDecoder.oneOf<ClassSymbol>([
   JsonDecoder.isExactly('Neutral'),
 ], 'ClassSymbol');
 
+interface AdditionalAction {
+  tag: string
+}
+
+export const additionalActionDecoder = JsonDecoder.object<AdditionalAction>(
+  { tag: JsonDecoder.string}, 'AdditionalAction')
+
 export interface Investigator {
   deckSize?: number;
   connectedLocations: string[];
@@ -61,7 +68,7 @@ export interface Investigator {
   inHandTreacheries: string[];
   defeated: boolean;
   resigned: boolean;
-  tomeActions?: number;
+  additionalActions: AdditionalAction[];
   cardsUnderneath: Card[];
   foundCards: Record<string, Card[]>;
   xp: number;
@@ -95,7 +102,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   inHandTreacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
   defeated: JsonDecoder.boolean,
   resigned: JsonDecoder.boolean,
-  tomeActions: JsonDecoder.optional(JsonDecoder.number),
+  additionalActions: JsonDecoder.array<AdditionalAction>(additionalActionDecoder, 'AdditionalAction'),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   foundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
   xp: JsonDecoder.number,

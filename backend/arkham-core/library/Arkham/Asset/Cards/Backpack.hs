@@ -1,0 +1,65 @@
+module Arkham.Asset.Cards.Backpack
+  ( backpack
+  , Backpack(..)
+  ) where
+
+import Arkham.Prelude
+
+import Arkham.Ability
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Asset.Runner hiding (Supply)
+import Arkham.Card
+import Arkham.Cost
+import Arkham.Criteria
+import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Target
+import Arkham.Timing qualified as Timing
+import Arkham.Trait
+import Arkham.Zone
+
+newtype Backpack = Backpack AssetAttrs
+  deriving anyclass IsAsset
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+backpack :: AssetCard Backpack
+backpack = asset Backpack Cards.backpack
+
+instance HasModifiersFor Backpack where
+  getModifiersFor _ (InvestigatorTarget iid) (Backpack attrs)
+    | controlledBy attrs iid = pure
+    $ toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
+  getModifiersFor _ _ _ = pure []
+
+instance HasAbilities Backpack where
+  getAbilities (Backpack a) =
+    [ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility
+            (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
+            Free
+    ]
+
+instance RunMessage Backpack where
+  runMessage msg a@(Backpack attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ Search
+        iid
+        source
+        (toTarget attrs)
+        [(FromTopOfDeck 6, ShuffleBackIn)]
+        (NonWeakness <> CardWithOneOf [CardWithTrait Item, CardWithTrait Supply])
+        (DeferSearchedToTarget $ toTarget attrs)
+      pure a
+    SearchFound iid (isTarget attrs -> True) _ cards -> do
+      pushAll
+        [ chooseUpToN
+          iid
+          3
+          "Done choosing cards"
+          [ TargetLabel
+              (CardIdTarget $ toCardId c)
+              [PlaceUnderneath (toTarget attrs) [c]]
+          | c <- cards
+          ]
+        ]
+      pure a
+    _ -> Backpack <$> runMessage msg attrs

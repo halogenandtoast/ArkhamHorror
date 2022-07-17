@@ -114,6 +114,7 @@ allPlayerAssetCards = mapFromList $ map
   , archaicGlyphsProphecyForetold3
   , armorOfArdennes5
   , artStudent
+  , backpack
   , bandolier
   , baseballBat
   , beatCop
@@ -1871,7 +1872,6 @@ decoratedSkull = (asset "04026" ("Decorated Skull" <:> "Doom Begets Doom") 0 Rog
   , cdUses = Uses Charge 0
   }
 
-
 theChthonianStone :: CardDef
 theChthonianStone =
   (asset "04030" ("The Chthonian Stone" <:> "Stygian Waymark") 3 Mystic)
@@ -1885,6 +1885,13 @@ theChthonianStone =
         [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
       )
     }
+
+backpack :: CardDef
+backpack = (asset "04037" "Backpack" 2 Neutral)
+  { cdSkills = [SkillAgility]
+  , cdCardTraits = singleton Item
+  , cdSlots = [BodySlot]
+  }
 
 trackShoes :: CardDef
 trackShoes = (asset "05036" "Track Shoes" 3 Survivor)

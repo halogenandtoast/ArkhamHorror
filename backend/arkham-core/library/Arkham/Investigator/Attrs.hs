@@ -101,7 +101,6 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorCardsUnderneath :: [Card]
   , investigatorFoundCards :: HashMap Zone [Card]
   , investigatorUsedAbilities :: [UsedAbility]
-  -- investigator-specific fields
   , investigatorAdditionalActions :: [AdditionalAction]
   -- handling liquid courage
   , investigatorHorrorHealed :: Int

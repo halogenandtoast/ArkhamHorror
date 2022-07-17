@@ -248,6 +248,7 @@ instance FromJSON Asset where
       "04023" -> Asset . ToothOfEztli <$> parseJSON v
       "04026" -> Asset . DecoratedSkull <$> parseJSON v
       "04030" -> Asset . TheChthonianStone <$> parseJSON v
+      "04037" -> Asset . Backpack <$> parseJSON v
       "05036" -> Asset . TrackShoes <$> parseJSON v
       "05114" -> Asset . MeatCleaver <$> parseJSON v
       "05159" -> Asset . DrawingThin <$> parseJSON v

@@ -222,6 +222,7 @@ library
       Arkham.Asset.Cards.DarioElAmin
       Arkham.Asset.Cards.DarkHorse
       Arkham.Asset.Cards.DavidRenfield
+      Arkham.Asset.Cards.DecoratedSkull
       Arkham.Asset.Cards.DigDeep
       Arkham.Asset.Cards.DigDeep2
       Arkham.Asset.Cards.DiscOfItzamna2
@@ -239,6 +240,7 @@ library
       Arkham.Asset.Cards.EsotericFormula
       Arkham.Asset.Cards.Fieldwork
       Arkham.Asset.Cards.FineClothes
+      Arkham.Asset.Cards.FinnsTrustyThirtyEight
       Arkham.Asset.Cards.FireAxe
       Arkham.Asset.Cards.FireExtinguisher1
       Arkham.Asset.Cards.FirstAid
@@ -755,6 +757,7 @@ library
       Arkham.Event.Cards.Shortcut
       Arkham.Event.Cards.Shortcut2
       Arkham.Event.Cards.SleightOfHand
+      Arkham.Event.Cards.SmuggledGoods
       Arkham.Event.Cards.SnareTrap2
       Arkham.Event.Cards.SneakAttack
       Arkham.Event.Cards.SneakAttack2
@@ -1242,6 +1245,7 @@ library
       Arkham.Treachery.Cards.BrokenRails
       Arkham.Treachery.Cards.CalledByTheMists
       Arkham.Treachery.Cards.CallOfTheUnknown
+      Arkham.Treachery.Cards.CaughtRedHanded
       Arkham.Treachery.Cards.ChaosInTheWater
       Arkham.Treachery.Cards.ChillFromBelow
       Arkham.Treachery.Cards.Chronophobia

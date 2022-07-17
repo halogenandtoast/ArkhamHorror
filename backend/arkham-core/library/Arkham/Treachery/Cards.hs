@@ -86,6 +86,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , boughtInBlood
   , callOfTheUnknown
   , calledByTheMists
+  , caughtRedHanded
   , chronophobia
   , coverUp
   , crisisOfIdentity
@@ -839,6 +840,11 @@ boughtInBlood = (weakness "04007" "Bought in Blood")
 callOfTheUnknown :: CardDef
 callOfTheUnknown = (weakness "04009" "Call of the Unknown")
   { cdCardTraits = singleton Task
+  }
+
+caughtRedHanded :: CardDef
+caughtRedHanded = (weakness "04012" "Caught Red-Handed")
+  { cdCardTraits = singleton Blunder
   }
 
 theHarbinger :: CardDef

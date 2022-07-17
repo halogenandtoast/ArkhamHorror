@@ -24,6 +24,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
+import Arkham.Token
 import Arkham.Trait
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EnemyId, EntityAttrs a ~ EnemyAttrs) => IsEnemy a
@@ -47,6 +48,7 @@ data instance Field EnemyAttrs :: Type -> Type where
   EnemyCardCode :: Field EnemyAttrs CardCode
   EnemyLocation :: Field EnemyAttrs (Maybe LocationId)
   EnemyPlacement :: Field EnemyAttrs Placement
+  EnemySealedTokens :: Field EnemyAttrs [Token]
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
@@ -69,8 +71,12 @@ data EnemyAttrs = EnemyAttrs
   , enemyMovedFromHunterKeyword :: Bool
   , enemyDamageStrategy :: DamageStrategy
   , enemyBearer :: Maybe InvestigatorId
+  , enemySealedTokens :: [Token]
   }
   deriving stock (Show, Eq, Generic)
+
+sealedTokensL :: Lens' EnemyAttrs [Token]
+sealedTokensL = lens enemySealedTokens $ \m x -> m {enemySealedTokens = x}
 
 damageStrategyL :: Lens' EnemyAttrs DamageStrategy
 damageStrategyL =
@@ -188,6 +194,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
       , enemyMovedFromHunterKeyword = False
       , enemyDamageStrategy = DamageAny
       , enemyBearer = Nothing
+      , enemySealedTokens = []
       }
     }
 

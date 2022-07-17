@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
+import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 
 export interface Enemy {
   id: string;
@@ -11,6 +12,7 @@ export interface Enemy {
   treacheries: string[];
   assets: string[];
   asSelfLocation: string | null;
+  sealedTokens: ChaosToken[];
 }
 
 export const enemyDecoder = JsonDecoder.object<Enemy>({
@@ -24,4 +26,5 @@ export const enemyDecoder = JsonDecoder.object<Enemy>({
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
   assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
   asSelfLocation: JsonDecoder.nullable(JsonDecoder.string),
+  sealedTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]')
 }, 'Enemy');

@@ -2,21 +2,21 @@ module Arkham.Asset.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Uses hiding ( Key )
-import Arkham.Asset.Uses qualified as Uses
+import Arkham.Asset.Uses hiding (Key)
+import qualified Arkham.Asset.Uses as Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
-import Arkham.EncounterSet hiding ( Dunwich )
-import Arkham.Keyword qualified as Keyword
+import Arkham.EncounterSet hiding (Dunwich)
+import qualified Arkham.Keyword as Keyword
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.SkillType
 import Arkham.Slot
-import Arkham.Token qualified as Token
-import Arkham.Trait hiding ( Supply )
+import qualified Arkham.Token as Token
+import Arkham.Trait hiding (Supply)
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =
@@ -222,6 +222,7 @@ allPlayerAssetCards = mapFromList $ map
   , maskedCarnevaleGoer_21
   , meatCleaver
   , medicalTexts
+  , mistsOfRlyeh
   , mitchBrown
   , monstrousTransformation
   , moxie1
@@ -281,6 +282,7 @@ allPlayerAssetCards = mapFromList $ map
   , switchblade
   , switchblade2
   , theChthonianStone
+  , theCodexOfAges
   , theGoldPocketWatch4
   , theKingInYellow
   , theNecronomicon
@@ -1841,12 +1843,28 @@ jakeWilliams = (asset "04008" ("Jake Williams" <:> "Loyal Companion") 3 Neutral
   }
 
 finnsTrustyThirtyEight :: CardDef
-finnsTrustyThirtyEight = fast $ (asset "04011" ("Finn's Trusty .38" <:> "Never Leave Home Without It") 2 Neutral)
+finnsTrustyThirtyEight = fast $ (asset
+                                  "04011"
+                                  ("Finn's Trusty .38"
+                                  <:> "Never Leave Home Without It"
+                                  )
+                                  2
+                                  Neutral
+                                )
   { cdSkills = [SkillAgility, SkillWild]
   , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
   , cdSlots = [HandSlot]
   , cdUses = Uses Ammo 3
   }
+
+theCodexOfAges :: CardDef
+theCodexOfAges =
+  (asset "04013" ("The Codex of Ages" <:> "finis omnium nunc est") 2 Neutral)
+    { cdSkills = [SkillWillpower, SkillWild]
+    , cdCardTraits = setFromList [Item, Relic, Tome, Blessed]
+    , cdSlots = [HandSlot]
+    , cdKeywords = singleton (Keyword.Seal $ TokenFaceIs Token.ElderSign)
+    }
 
 venturer :: CardDef
 venturer = (asset "04018" "Venturer" 4 Guardian)
@@ -1865,12 +1883,22 @@ toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
   }
 
 decoratedSkull :: CardDef
-decoratedSkull = (asset "04026" ("Decorated Skull" <:> "Doom Begets Doom") 0 Rogue)
-  { cdSkills = [SkillAgility]
-  , cdCardTraits = setFromList [Item, Relic, Cursed]
-  , cdSlots = [AccessorySlot]
-  , cdUses = Uses Charge 0
-  }
+decoratedSkull =
+  (asset "04026" ("Decorated Skull" <:> "Doom Begets Doom") 0 Rogue)
+    { cdSkills = [SkillAgility]
+    , cdCardTraits = setFromList [Item, Relic, Cursed]
+    , cdSlots = [AccessorySlot]
+    , cdUses = Uses Charge 0
+    }
+
+mistsOfRlyeh :: CardDef
+mistsOfRlyeh =
+  (asset "04029" "Mists of R'lyeh" 2 Mystic)
+    { cdSkills = [SkillAgility]
+    , cdCardTraits = singleton Spell
+    , cdSlots = [ArcaneSlot]
+    , cdUses = Uses Charge 4
+    }
 
 theChthonianStone :: CardDef
 theChthonianStone =

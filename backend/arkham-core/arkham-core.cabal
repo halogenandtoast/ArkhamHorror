@@ -313,6 +313,7 @@ library
       Arkham.Asset.Cards.MeatCleaver
       Arkham.Asset.Cards.MedicalTexts
       Arkham.Asset.Cards.MedicoDellaPeste
+      Arkham.Asset.Cards.MistsOfRlyeh
       Arkham.Asset.Cards.MitchBrown
       Arkham.Asset.Cards.MonstrousTransformation
       Arkham.Asset.Cards.Moxie1
@@ -377,6 +378,7 @@ library
       Arkham.Asset.Cards.Switchblade
       Arkham.Asset.Cards.Switchblade2
       Arkham.Asset.Cards.TheChthonianStone
+      Arkham.Asset.Cards.TheCodexOfAges
       Arkham.Asset.Cards.TheGoldPocketWatch4
       Arkham.Asset.Cards.TheKingInYellow
       Arkham.Asset.Cards.TheNecronomicon
@@ -617,6 +619,7 @@ library
       Arkham.Enemy.Cards.ScreechingByakhee
       Arkham.Enemy.Cards.SebastienMoreau
       Arkham.Enemy.Cards.SeekerOfCarcosa
+      Arkham.Enemy.Cards.SerpentsOfYig
       Arkham.Enemy.Cards.ServantOfManyMouths
       Arkham.Enemy.Cards.ServantOfTheLurker
       Arkham.Enemy.Cards.SethBishop
@@ -687,6 +690,7 @@ library
       Arkham.Event.Cards.CunningDistraction
       Arkham.Event.Cards.DaringManeuver
       Arkham.Event.Cards.DarkMemory
+      Arkham.Event.Cards.DarkProphecy
       Arkham.Event.Cards.DecipheredReality5
       Arkham.Event.Cards.DelveTooDeep
       Arkham.Event.Cards.DevilsLuck

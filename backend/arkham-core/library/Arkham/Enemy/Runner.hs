@@ -83,6 +83,9 @@ getInvestigatorsAtSameLocation attrs = do
 instance RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
     EndPhase -> pure $ a & movedFromHunterKeywordL .~ False
+    SealedToken token card | toCardId card == toCardId a ->
+      pure $ a & sealedTokensL %~ (token :)
+    UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       preyIds <- selectList enemyPrey
       preyIdsWithLocation <- for preyIds
@@ -688,10 +691,11 @@ instance RunMessage EnemyAttrs where
         <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
         )
     RemovedFromPlay source | isSource a source -> do
-      push =<< checkWindows
+      windowMsg <- checkWindows
         ((`Window` Window.LeavePlay (toTarget a))
         <$> [Timing.When, Timing.After]
         )
+      pushAll $ windowMsg : [ UnsealToken token | token <- enemySealedTokens ]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       lid <- getJustLocation iid

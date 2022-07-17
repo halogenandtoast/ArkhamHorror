@@ -2780,14 +2780,13 @@ runGameMessage msg g = case msg of
         _ -> pure g
       EncounterCard _ -> pure g
   DrewPlayerEnemy iid card -> do
-    lid <- getJustLocation iid
     let
       enemy = createEnemy card
       eid = toId enemy
     pushAll
       [ SetBearer (toTarget enemy) iid
       , RemoveCardFromHand iid (toCardId card)
-      , InvestigatorDrawEnemy iid lid eid
+      , InvestigatorDrawEnemy iid eid
       ]
     pure $ g & entitiesL . enemiesL %~ insertMap eid enemy
   CancelNext msgType -> do
@@ -3383,8 +3382,12 @@ runGameMessage msg g = case msg of
     case toCardType card of
       EnemyType -> do
         let enemy = createEnemy card
-        lid <- getJustLocation iid
-        pushAll [InvestigatorDrawEnemy iid lid $ toId enemy, UnsetActiveCard]
+        checkWindowMessage <- checkWindows
+          [ Window
+              Timing.When
+              (Window.DrawCard iid (EncounterCard card) Deck.EncounterDeck)
+          ]
+        pushAll [checkWindowMessage, InvestigatorDrawEnemy iid $ toId enemy, UnsetActiveCard]
         pure
           $ g'
           & (entitiesL . enemiesL . at (toId enemy) ?~ enemy)

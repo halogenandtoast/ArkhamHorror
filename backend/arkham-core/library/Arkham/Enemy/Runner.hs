@@ -718,7 +718,8 @@ instance RunMessage EnemyAttrs where
           $ push
           $ EnemyWillAttack iid enemyId enemyDamageStrategy AttackOfOpportunity
       pure a
-    InvestigatorDrawEnemy iid lid eid | eid == enemyId -> do
+    InvestigatorDrawEnemy iid eid | eid == enemyId -> do
+      lid <- getJustLocation iid
       modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
       let
         getModifiedSpawnAt [] = enemySpawnAt

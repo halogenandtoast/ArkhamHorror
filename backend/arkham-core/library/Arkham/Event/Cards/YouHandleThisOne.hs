@@ -40,10 +40,12 @@ instance RunMessage YouHandleThisOne where
         replaceMessageMatching
           (\case
             Revelation me _ -> me == iid
+            InvestigatorDrawEnemy me _ -> me == iid
             _ -> False
           )
           (\case
             Revelation _ source' -> [Revelation iid' source']
+            InvestigatorDrawEnemy _ eid -> [InvestigatorDrawEnemy iid' eid]
             _ -> error "wrong message found"
           )
         pure e

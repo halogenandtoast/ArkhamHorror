@@ -5,15 +5,16 @@ module Arkham.Enemy.Cards.CarnevaleSentinel
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
+import Arkham.Asset.Attrs ( Field (..) )
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Asset.Attrs (Field(..))
+import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
+import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Target
 
 newtype CarnevaleSentinel = CarnevaleSentinel EnemyAttrs
@@ -40,7 +41,8 @@ instance HasModifiersFor CarnevaleSentinel where
 
 instance RunMessage CarnevaleSentinel where
   runMessage msg (CarnevaleSentinel attrs) = case msg of
-    InvestigatorDrawEnemy _ lid eid | eid == toId attrs -> do
+    InvestigatorDrawEnemy iid eid | eid == toId attrs -> do
+      lid <- getJustLocation iid
       acrossLocationId <- getAcrossLocation lid
       CarnevaleSentinel <$> runMessage
         msg

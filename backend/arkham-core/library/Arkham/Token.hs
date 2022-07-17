@@ -5,7 +5,14 @@ import Arkham.Prelude
 newtype TokenId = TokenId { getTokenId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, Hashable, Random)
 
-data TokenModifier = PositiveModifier Int | NegativeModifier Int | ZeroModifier | DoubleNegativeModifier Int | AutoFailModifier | NoModifier
+data TokenModifier
+  = PositiveModifier Int
+  | NegativeModifier Int
+  | ZeroModifier
+  | DoubleNegativeModifier Int
+  | AutoFailModifier
+  | AutoSuccessModifier
+  | NoModifier
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -14,8 +21,14 @@ instance Monoid TokenModifier where
 
 -- TODO: this is a huge bandaid and might not work later
 instance Semigroup TokenModifier where
+  -- If a skill test both automatically succeeds and automatically fails, [for
+  -- instance by drawing {Autofail} and {ElderSign} with Olive McBride while
+  -- playing as Father Mateo], the automatic failure takes precedence, and the
+  -- test automatically fails.
   AutoFailModifier <> _ = AutoFailModifier
   _ <> AutoFailModifier = AutoFailModifier
+  AutoSuccessModifier <> _ = AutoSuccessModifier
+  _ <> AutoSuccessModifier = AutoSuccessModifier
   NoModifier <> a = a
   a <> NoModifier = a
   a <> b =
@@ -40,6 +53,7 @@ tokenModifierToInt = \case
   PositiveModifier n -> Just n
   NegativeModifier n -> Just (-n)
   DoubleNegativeModifier n -> Just (-(n * 2))
+  AutoSuccessModifier -> Nothing
   AutoFailModifier -> Nothing
   NoModifier -> Just 0
   ZeroModifier -> Just 0

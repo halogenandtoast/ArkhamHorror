@@ -2,21 +2,21 @@ module Arkham.Event.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Action qualified as Action
-import Arkham.Asset.Uses qualified as Uses
+import qualified Arkham.Action as Action
+import qualified Arkham.Asset.Uses as Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
-import Arkham.Criteria qualified as Criteria
+import qualified Arkham.Criteria as Criteria
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Modifier ( ModifierType (..) )
+import Arkham.Modifier (ModifierType(..))
 import Arkham.Name
 import Arkham.Phase
 import Arkham.SkillType
-import Arkham.Timing qualified as Timing
+import qualified Arkham.Timing as Timing
 import Arkham.Trait
 
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
@@ -86,6 +86,7 @@ allPlayerEventCards = mapFromList $ map
   , cunningDistraction
   , daringManeuver
   , darkMemory
+  , darkProphecy
   , decipheredReality5
   , delveTooDeep
   , devilsLuck
@@ -1133,7 +1134,12 @@ eavesdrop :: CardDef
 eavesdrop = (event "04027" "Eavesdrop" 1 Rogue)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Insight, Trick]
-  , cdCriteria = Just $ Criteria.EnemyCriteria $ Criteria.EnemyExists $ UnengagedEnemy <> EnemyAt YourLocation
+  , cdCriteria =
+    Just
+    $ Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ UnengagedEnemy
+    <> EnemyAt YourLocation
   }
 
 youHandleThisOne :: CardDef
@@ -1146,6 +1152,13 @@ youHandleThisOne = (event "04028" "\"Your handle this one!\"" 0 Rogue)
     You
     (BasicCardMatch $ NonPeril <> IsEncounterCard)
     EncounterDeck
+  }
+
+darkProphecy :: CardDef
+darkProphecy = (event "04032" "Dark Prophecy" 1 Mystic)
+  { cdSkills = [SkillWillpower, SkillAgility]
+  , cdCardTraits = singleton Augury
+  , cdFastWindow = Just $ WouldRevealChaosToken Timing.When You
   }
 
 secondWind :: CardDef

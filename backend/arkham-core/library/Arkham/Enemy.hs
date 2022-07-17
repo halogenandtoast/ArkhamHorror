@@ -218,6 +218,9 @@ instance FromJSON Enemy where
       "03334" -> Enemy . HasturTheTatteredKing <$> parseJSON v
       "03335" -> Enemy . CreatureOutOfDemhe <$> parseJSON v
       "03336" -> Enemy . WingedOne <$> parseJSON v
+      -- The Forgotten Age
+      -- signature
+      "04014" -> Enemy . SerpentsOfYig <$> parseJSON v
       -- Return to Night of the Zealot
       -- Return to the Gathering
       "50022" -> Enemy . CorpseHungryGhoul <$> parseJSON v
@@ -386,6 +389,9 @@ allEnemies = mapFromList $ map
   , Enemy <$> hasturTheTatteredKing
   , Enemy <$> creatureOutOfDemhe
   , Enemy <$> wingedOne
+  -- The Forgotten Age
+  -- signature
+  , Enemy <$> serpentsOfYig
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , Enemy <$> corpseHungryGhoul

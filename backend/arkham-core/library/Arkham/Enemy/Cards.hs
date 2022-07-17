@@ -75,6 +75,7 @@ allPlayerEnemyCards = mapFromList $ map
   , graveyardGhouls
   , theThingThatFollows
   , theManInThePallidMask
+  , serpentsOfYig
   , tommyMalloy
   ]
 
@@ -799,6 +800,13 @@ wingedOne :: CardDef
 wingedOne = (enemy "03336" "Winged One" DimCarcosa 1)
   { cdCardTraits = setFromList [Monster, Byakhee]
   , cdKeywords = singleton Keyword.Retaliate
+  }
+
+serpentsOfYig :: CardDef
+serpentsOfYig = (weakness "04014" "Serpents of Yig")
+  { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
+  , cdKeywords = singleton Keyword.Hunter
+  , cdRevelation = True
   }
 
 corpseHungryGhoul :: CardDef

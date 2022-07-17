@@ -7,6 +7,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
+import Token from '@/arkham/components/Token';
 import * as Arkham from '@/arkham/types/Enemy'
 
 export interface Props {
@@ -151,6 +152,7 @@ const debugChoose = inject('debugChoose')
       <PoolItem type="health" :amount="enemy.damage" />
       <PoolItem v-if="enemy.doom > 0" type="doom" :amount="enemy.doom" />
       <PoolItem v-if="enemy.clues > 0" type="clue" :amount="enemy.clues" />
+      <Token v-for="(sealedToken, index) in enemy.sealedTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
     </div>
     <Treachery
       v-for="treacheryId in enemy.treacheries"
@@ -226,5 +228,9 @@ const debugChoose = inject('debugChoose')
   margin-bottom: -10px;
   height: 80px;
   width: auto;
+}
+
+:deep(.token) {
+  width: 30px;
 }
 </style>

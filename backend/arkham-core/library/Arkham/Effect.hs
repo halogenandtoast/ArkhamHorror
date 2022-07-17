@@ -19,6 +19,9 @@ import Arkham.Token
 import Arkham.Window (Window)
 import Data.Typeable
 
+-- start importing directly
+import Arkham.Investigator.Investigators (FatherMateoElderSignEffect(..), fatherMateoElderSignEffect)
+
 data Effect = forall a. IsEffect a => Effect a
 
 instance Eq Effect where
@@ -170,6 +173,7 @@ allEffects =
     , ("03221a", Effect . theOrganistHopelessIDefiedHim)
     , ("03254", Effect . narrowShaft)
     , ("03306", Effect . eideticMemory3)
+    , ("04004", Effect . fatherMateoElderSignEffect)
     , ("05114", Effect . meatCleaver)
     , ("50008", Effect . mindWipe3)
     , ("50033", Effect . arkhamWoodsGreatWillow)
@@ -265,6 +269,7 @@ instance FromJSON Effect where
       "03221a" -> Effect . TheOrganistHopelessIDefiedHim <$> parseJSON v
       "03254" -> Effect . NarrowShaft <$> parseJSON v
       "03306" -> Effect . EideticMemory3 <$> parseJSON v
+      "04004" -> Effect . FatherMateoElderSignEffect <$> parseJSON v
       "05114" -> Effect . MeatCleaver <$> parseJSON v
       "50008" -> Effect . MindWipe3 <$> parseJSON v
       "50033" -> Effect . ArkhamWoodsGreatWillow <$> parseJSON v

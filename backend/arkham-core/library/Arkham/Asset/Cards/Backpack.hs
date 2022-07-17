@@ -15,7 +15,6 @@ import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
-import Arkham.Zone
 
 newtype Backpack = Backpack AssetAttrs
   deriving anyclass IsAsset
@@ -44,8 +43,8 @@ instance RunMessage Backpack where
       push $ Search
         iid
         source
-        (toTarget attrs)
-        [(FromTopOfDeck 6, ShuffleBackIn)]
+        (InvestigatorTarget iid)
+        [fromTopOfDeck 6]
         (NonWeakness <> CardWithOneOf [CardWithTrait Item, CardWithTrait Supply])
         (DeferSearchedToTarget $ toTarget attrs)
       pure a
@@ -62,4 +61,20 @@ instance RunMessage Backpack where
           ]
         ]
       pure a
+    SearchNoneFound _ target | isTarget attrs target -> do
+      push $ Label "No Cards Found" []
+      pure a
+    InitiatePlayCard iid cardId _ _
+      | controlledBy attrs iid && cardId `elem` map
+        toCardId
+        (assetCardsUnderneath attrs)
+      -> do
+        let
+          card =
+            fromJustNote "card missing" $ find matcher $ assetCardsUnderneath
+              attrs
+          remaining = deleteFirstMatch matcher $ assetCardsUnderneath attrs
+          matcher = (== cardId) . toCardId
+        pushAll $ [Discard (toTarget attrs) | null remaining] <> [AddToHand iid card, msg]
+        pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
     _ -> Backpack <$> runMessage msg attrs

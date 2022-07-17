@@ -12,6 +12,7 @@ import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Target
 import Arkham.Trait
 import Arkham.Zone
 
@@ -37,8 +38,8 @@ instance RunMessage SmuggledGoods where
               [ Search
                   iid
                   (toSource attrs)
-                  (toTarget attrs)
-                  [(FromTopOfDeck 9, ShuffleBackIn)]
+                  (InvestigatorTarget iid)
+                  [fromTopOfDeck 9]
                   (CardWithTrait Illicit)
                   (DrawFound iid 1)
               ]

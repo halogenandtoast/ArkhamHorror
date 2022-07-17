@@ -379,7 +379,7 @@ data Message
     InvestigatorDoAssignDamage InvestigatorId Source DamageStrategy Int Int [Target] [Target]
   | InvestigatorDrawEncounterCard InvestigatorId
   | InvestigatorDoDrawEncounterCard InvestigatorId
-  | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
+  | InvestigatorDrawEnemy InvestigatorId EnemyId
   | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
   | InvestigatorDrewPlayerCard InvestigatorId PlayerCard
   | InvestigatorEliminated InvestigatorId

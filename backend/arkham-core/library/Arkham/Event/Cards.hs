@@ -1142,7 +1142,7 @@ youHandleThisOne = (event "04028" "\"Your handle this one!\"" 0 Rogue)
   , cdCardTraits = singleton Trick
   , cdCriteria = Just (Criteria.InvestigatorExists NotYou)
   , cdFastWindow = Just $ DrawCard
-    Timing.After
+    Timing.When
     You
     (BasicCardMatch $ NonPeril <> IsEncounterCard)
     EncounterDeck

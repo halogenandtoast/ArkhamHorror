@@ -250,6 +250,7 @@ instance FromJSON Asset where
       "04026" -> Asset . DecoratedSkull <$> parseJSON v
       "04029" -> Asset . MistsOfRlyeh <$> parseJSON v
       "04030" -> Asset . TheChthonianStone <$> parseJSON v
+      "04031" -> Asset . ProtectiveIncantation1 <$> parseJSON v
       "04037" -> Asset . Backpack <$> parseJSON v
       "05036" -> Asset . TrackShoes <$> parseJSON v
       "05114" -> Asset . MeatCleaver <$> parseJSON v
@@ -483,6 +484,7 @@ allAssets = mapFromList $ map
   , Asset <$> decoratedSkull
   , Asset <$> mistsOfRlyeh
   , Asset <$> theChthonianStone
+  , Asset <$> protectiveIncantation1
   , Asset <$> backpack
   , Asset <$> trackShoes
   , Asset <$> meatCleaver

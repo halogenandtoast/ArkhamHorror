@@ -243,6 +243,7 @@ allPlayerAssetCards = mapFromList $ map
   , policeBadge2
   , powderOfIbnGhazi
   , professorWarrenRice
+  , protectiveIncantation1
   , rabbitsFoot
   , rabbitsFoot3
   , randallCho
@@ -1912,6 +1913,16 @@ theChthonianStone =
         TokenFaceIs
         [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
       )
+    }
+
+protectiveIncantation1 :: CardDef
+protectiveIncantation1 =
+  (asset "04031" "Protective Incantation" 1 Mystic)
+    { cdSkills = [SkillWillpower]
+    , cdCardTraits = setFromList [Ritual, Blessed]
+    , cdSlots = [ArcaneSlot]
+    , cdKeywords = singleton
+      (Keyword.Seal $ TokenFaceIsNot Token.AutoFail)
     }
 
 backpack :: CardDef

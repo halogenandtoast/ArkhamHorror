@@ -3692,6 +3692,7 @@ instance RunMessage Game where
       >>= traverseOf entitiesL (runMessage msg)
       >>= itraverseOf (inHandEntitiesL . itraversed) (\i e -> runMessage (InHand i msg) e)
       >>= itraverseOf (inDiscardEntitiesL . itraversed) (\i e -> runMessage (InDiscard i msg) e)
+      >>= traverseOf (inDiscardEntitiesL . itraversed) (runMessage msg)
       >>= traverseOf inSearchEntitiesL (runMessage (InSearch msg))
       >>= traverseOf (skillTestL . traverse) (runMessage msg)
       >>= traverseOf (activeCostL . traverse) (runMessage msg)

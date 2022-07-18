@@ -18,8 +18,6 @@ const tokenChoices = computed(() => {
   }
 })
 
-console.log(tokenChoices.value)
-
 function imageFor(tokenFace: string) {
   switch (tokenFace) {
     case 'PlusOne':

@@ -156,6 +156,9 @@ resolveFirstUnresolved source iid strategy = \case
         then if length steps == n
           then pure (Resolved $ concatMap toTokens steps, [])
           else do
+            let groups = toGroups steps tokens'
+            matchedGroups <- filterM (\(_, chosen) -> anyM (anyM (\t -> lift $ matchToken iid t matcher)) chosen) groups
+            let groups' = if null matchedGroups then groups else matchedGroups
             pure
               ( Decided (ChooseMatch n steps tokens' matcher)
               , [ chooseOne
@@ -164,7 +167,7 @@ resolveFirstUnresolved source iid strategy = \case
                         source
                         iid
                         (ChooseMatch n remaining chosen matcher)
-                    | (remaining, chosen) <- toGroups steps tokens'
+                    | (remaining, chosen) <- groups'
                     ]
                 ]
               )
@@ -303,6 +306,8 @@ instance RunMessage ChaosBag where
         %~ (<> chaosBagSetAsideTokens)
         & setAsideTokensL
         .~ mempty
+        & choiceL
+        .~ Nothing
     RequestTokens source miid revealStrategy strategy -> do
       push (RunBag source miid strategy)
       case revealStrategy of
@@ -392,7 +397,7 @@ instance RunMessage ChaosBag where
       -- TODO: we may need a map of source to tokens here
       pure $ c & revealedTokensL %~ (token :)
     ReturnTokens tokens' ->
-      pure $ c & tokensL %~ (<> tokens') & setAsideTokensL %~ (\\ tokens')
+      pure $ c & tokensL %~ (<> tokens') & setAsideTokensL %~ (\\ tokens') & choiceL .~ Nothing
     AddToken tokenFace -> do
       token <- createToken tokenFace
       pure $ c & tokensL %~ (token :)

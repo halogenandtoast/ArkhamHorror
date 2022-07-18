@@ -8,7 +8,11 @@ import Arkham.Prelude
 import Arkham.Token
 import Arkham.Matcher
 
-data ChaosBagStepState = Resolved [Token] | Decided ChaosBagStep | Undecided ChaosBagStep | Deciding ChaosBagStep
+data ChaosBagStepState
+  = Resolved [Token]
+  | Decided ChaosBagStep
+  | Undecided ChaosBagStep
+  | Deciding ChaosBagStep
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

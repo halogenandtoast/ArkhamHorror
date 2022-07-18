@@ -5,7 +5,12 @@ type ChaosBagStep
   = { "tag": "Draw" }
   | { "tag": "ChooseMatch", "contents": [number, ChaosBagChoice[], ] }
   | { "tag": "Choose", "contents": [number, ChaosBagChoice[], ] }
-type ChaosBagChoice = { "tag": "Decided", "contents": ChaosBagStep } | { "tag": "Undecided", "contents": ChaosBagStep } | { "tag": "Resolved" }
+
+type ChaosBagChoice
+  = { "tag": "Decided", "contents": ChaosBagStep }
+  | { "tag": "Undecided", "contents": ChaosBagStep }
+  | { "tag": "Resolved", "contents": ChaosToken[] }
+  | { "tag": "Deciding", "contents": ChaosBagStep }
 
 export interface ChaosBag {
   tokens: ChaosToken[]
@@ -36,7 +41,12 @@ export const chaosBagChoiceDecoder = JsonDecoder.oneOf([
     contents: chaosBagStepDecoder
   }, 'ChaosBagChoice'),
   JsonDecoder.object<ChaosBagChoice>({
+    tag: JsonDecoder.isExactly("Deciding"),
+    contents: chaosBagStepDecoder
+  }, 'ChaosBagChoice'),
+  JsonDecoder.object<ChaosBagChoice>({
     tag: JsonDecoder.isExactly("Resolved"),
+    contents: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]')
   }, 'ChaosBagChoice')
 ], 'ChaosBagChoice')
 

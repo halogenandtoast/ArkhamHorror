@@ -6,6 +6,7 @@ import { SkillTest } from '@/arkham/types/SkillTest';
 import { MessageType } from '@/arkham/types/Message';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import Token from '@/arkham/components/Token';
+import ChaosBagChoice from '@/arkham/components/ChaosBagChoice';
 
 export interface Props {
   game: Game
@@ -100,18 +101,6 @@ const tokenGroups = computed(() => {
     map(([idx, el]) => [idx, el.contents[2].contents[2]])
 })
 
-const tokenChoices = computed(() => {
-  if (props.chaosBag.choice == null) {
-    return []
-  }
-
-  switch (props.chaosBag.choice.contents?.tag) {
-    case 'ChooseMatch': return props.chaosBag.choice.contents.contents[1]
-    case 'Choose': return props.chaosBag.choice.contents.contents[1]
-    default: return [props.chaosBag.choice]
-  }
-})
-
 const choose = (idx: number) => emit('choose', idx)
 </script>
 
@@ -137,19 +126,7 @@ const choose = (idx: number) => emit('choose', idx)
         />
         </div>
     </template>
-    <div v-if="chaosBag.choice" class="token-choices">
-      <div v-for="(tokenChoice, idx) in tokenChoices" :key="idx">
-        <img :src="`${baseUrl}/img/arkham/ct_blank.png`" class="token" v-if="tokenChoice.tag == 'Decided'" />
-        <img :src="`${baseUrl}/img/arkham/ct_blank.png`" class="token" v-if="tokenChoice.tag == 'Deciding'" />
-        <img :src="`${baseUrl}/img/arkham/ct_choose.png`" class="token" v-if="tokenChoice.tag == 'Undecided'" />
-        <template v-if="tokenChoice.tag == 'Resolved'">
-          <img v-for="(token, idx) in tokenChoice.contents" :key="idx"
-            class="token"
-            :src="imageFor(token.tokenFace)"
-          />
-        </template>
-      </div>
-    </div>
+    <ChaosBagChoice v-if="chaosBag.choice" :choice="chaosBag.choice" />
     <div v-for="tokenGroup in tokenGroups" :key="tokenGroup[0]">
       <div v-for="(group, idx) in tokenGroup[1]" :key="idx" @click="choose(parseInt(tokenGroup[0]))">
         <img
@@ -201,13 +178,6 @@ const choose = (idx: number) => emit('choose', idx)
     border: 3px solid #ff00ff;
     border-radius: 25px;
     width: 50px;
-  }
-}
-
-.token-choices {
-  display: flex;
-  .token {
-    width: 150px;
   }
 }
 </style>

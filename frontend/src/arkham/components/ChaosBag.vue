@@ -125,6 +125,10 @@ const choose = (idx: number) => emit('choose', idx)
         />
         </div>
     </template>
+    <div v-if="chaosBag.choice">
+      <img :src="`${baseUrl}/img/arkham/ct_blank.png`" v-if="chaosBag.choice.tag == 'Decided'" />
+      <img :src="`${baseUrl}/img/arkham/ct_choose.png`" v-if="chaosBag.choice.tag == 'Undecided'" />
+    </div>
     <div v-for="tokenGroup in tokenGroups" :key="tokenGroup[0]">
       <div v-for="(group, idx) in tokenGroup[1]" :key="idx" @click="choose(parseInt(tokenGroup[0]))">
         <img

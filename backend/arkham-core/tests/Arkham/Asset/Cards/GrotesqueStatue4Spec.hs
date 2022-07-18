@@ -40,6 +40,18 @@ spec = describe "Grotesque Statue (4)" $ do
                 _ -> False
               )
             chooseOptionMatching
+              "skip use ability"
+              (\case
+                Continue{} -> True
+                _ -> False
+              )
+            chooseOptionMatching
+              "skip use ability"
+              (\case
+                Continue{} -> True
+                _ -> False
+              )
+            chooseOptionMatching
               "choose zero token"
               (\case
                 ChooseTokenGroups _ _ (Choose 1 _ [[Token _ Zero]]) -> True

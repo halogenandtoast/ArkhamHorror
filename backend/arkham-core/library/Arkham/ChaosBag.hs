@@ -59,6 +59,7 @@ replaceFirstChoice
   -> ChaosBagStepState
 replaceFirstChoice source iid strategy replacement = \case
   Undecided _ -> error "should not be ran with undecided"
+  Deciding _ -> error "should not be ran with deciding"
   Resolved tokens' -> Resolved tokens'
   Decided step -> case step of
     Draw -> Decided Draw
@@ -86,6 +87,7 @@ replaceFirstChooseChoice
 replaceFirstChooseChoice source iid strategy replacement = \case
   [] -> []
   (Undecided _ : _) -> error "should not be ran with undecided"
+  (Deciding _ : _) -> error "should not be ran with deciding"
   (Resolved tokens' : rest) ->
     Resolved tokens'
       : replaceFirstChooseChoice source iid strategy replacement rest
@@ -100,6 +102,7 @@ resolveFirstUnresolved
   -> StateT ChaosBag GameT (ChaosBagStepState, [Message])
 resolveFirstUnresolved source iid strategy = \case
   Undecided _ -> error "should not be ran with undecided"
+  Deciding _ -> error "should not be ran with undecided"
   Resolved tokens' -> pure (Resolved tokens', [])
   Decided step -> case step of
     Draw -> do
@@ -188,6 +191,7 @@ resolveFirstChooseUnresolved
 resolveFirstChooseUnresolved source iid strategy = \case
   [] -> pure ([], [])
   (Undecided _ : _) -> error "should not be called with undecided"
+  (Deciding _ : _) -> error "should not be called with deciding"
   (Resolved tokens' : rest) -> do
     (rest', msgs) <- resolveFirstChooseUnresolved source iid strategy rest
     pure (Resolved tokens' : rest', msgs)
@@ -279,6 +283,7 @@ replaceDeciding current replacement = case current of
       $ ChooseMatch n (replaceDecidingList steps replacement) tokens' matcher
     Choose n steps tokens' ->
       Deciding $ Choose n (replaceDecidingList steps replacement) tokens'
+  _ -> error "should be impossible"
 
 replaceDecidingList
   :: [ChaosBagStepState] -> ChaosBagStepState -> [ChaosBagStepState]

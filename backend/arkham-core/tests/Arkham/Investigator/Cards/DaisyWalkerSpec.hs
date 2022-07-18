@@ -18,7 +18,7 @@ spec = describe "Daisy Walker" $ do
       let daisyWalker = lookupInvestigator "01002"
       gameTest
           daisyWalker
-          [LoseActions (toId daisyWalker) (TestSource mempty) 3]
+          [Setup, LoseActions (toId daisyWalker) (TestSource mempty) 3]
           id
         $ do
             runMessages

@@ -263,6 +263,13 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
   AbilityEffect _ -> pure True
   Objective{} -> pure True
 
+filterDepthSpecificAbilities :: (Monad m, HasGame m) => [UsedAbility] -> m [UsedAbility]
+filterDepthSpecificAbilities usedAbilities = do
+  depth <- getWindowDepth
+  pure $ filter (valid depth) usedAbilities
+ where
+   valid depth ability = abilityLimitType (abilityLimit $ usedAbility ability) /= Just PerWindow || depth <= usedDepth ability
+
 -- TODO: The limits that are correct are the one that check usedTimes Group
 -- limits for instance won't work if we have a group limit higher than one, for
 -- that we need to sum uses across all investigators. So we should fix this
@@ -270,7 +277,7 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
 getCanAffordUse
   :: (Monad m, HasGame m) => InvestigatorId -> Ability -> Window -> m Bool
 getCanAffordUse iid ability window = do
-  usedAbilities <- field InvestigatorUsedAbilities iid
+  usedAbilities <- filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
   case abilityLimit ability of
     NoLimit -> case abilityType ability of
       ReactionAbility _ _ ->
@@ -287,25 +294,22 @@ getCanAffordUse iid ability window = do
       AbilityEffect _ -> pure True
       Objective{} -> pure True
     PlayerLimit (PerSearch (Just _)) n ->
-      (< n)
+      pure . (< n)
         . maybe 0 usedTimes
-        . find ((== ability) . usedAbility)
-        <$> field InvestigatorUsedAbilities iid
+        $ find ((== ability) . usedAbility) usedAbilities
     PlayerLimit _ n ->
-      (< n)
+      pure . (< n)
         . maybe 0 usedTimes
-        . find ((== ability) . usedAbility)
-        <$> field InvestigatorUsedAbilities iid
+        $ find ((== ability) . usedAbility) usedAbilities
     PerInvestigatorLimit _ n -> do
       -- This is difficult and based on the window, so we need to match out the
       -- relevant investigator ids from the window. If this becomes more prevalent
       -- we may want a method from `Window -> Maybe InvestigatorId`
-      usedAbilities' <- field InvestigatorUsedAbilities iid
       case window of
         Window _ (Window.CommittedCards iid' _) -> do
           let
             matchingPerInvestigatorCount =
-              flip count usedAbilities' $ \usedAbility ->
+              flip count usedAbilities $ \usedAbility ->
                 flip any (usedAbilityWindows usedAbility) $ \case
                   Window _ (Window.CommittedCard iid'' _) -> iid' == iid''
                   _ -> False
@@ -313,7 +317,7 @@ getCanAffordUse iid ability window = do
         _ -> error "Unhandled per investigator limit"
     GroupLimit _ n -> do
       usedAbilities' <-
-        concatMapM (fieldMap InvestigatorUsedAbilities (map usedAbility))
+        fmap (map usedAbility) . filterDepthSpecificAbilities =<< concatMapM (field InvestigatorUsedAbilities)
           =<< getInvestigatorIds
       let total = count (== ability) usedAbilities'
       pure $ total < n

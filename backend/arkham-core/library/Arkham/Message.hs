@@ -416,7 +416,7 @@ data Message
   | MoveTopOfDeckToBottom Source DeckSignifier Int
   | MoveUntil LocationId Target
   | NextCampaignStep (Maybe CampaignStep)
-  | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy Bool
+  | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
   | Noop
   | PassSkillTest
   | PassedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int

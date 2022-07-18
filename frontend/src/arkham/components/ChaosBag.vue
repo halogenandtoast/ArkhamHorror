@@ -140,7 +140,14 @@ const choose = (idx: number) => emit('choose', idx)
     <div v-if="chaosBag.choice" class="token-choices">
       <div v-for="(tokenChoice, idx) in tokenChoices" :key="idx">
         <img :src="`${baseUrl}/img/arkham/ct_blank.png`" class="token" v-if="tokenChoice.tag == 'Decided'" />
+        <img :src="`${baseUrl}/img/arkham/ct_blank.png`" class="token" v-if="tokenChoice.tag == 'Deciding'" />
         <img :src="`${baseUrl}/img/arkham/ct_choose.png`" class="token" v-if="tokenChoice.tag == 'Undecided'" />
+        <template v-if="tokenChoice.tag == 'Resolved'">
+          <img v-for="(token, idx) in tokenChoice.contents" :key="idx"
+            class="token"
+            :src="imageFor(token.tokenFace)"
+          />
+        </template>
       </div>
     </div>
     <div v-for="tokenGroup in tokenGroups" :key="tokenGroup[0]">

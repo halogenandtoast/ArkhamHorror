@@ -78,6 +78,7 @@ allInvestigatorCards =
       , ursulaDowns
       , finnEdwards
       , fatherMateo
+      , calvinWright
       , normanWithers
       , nathanielCho
       , stellaClark
@@ -143,6 +144,9 @@ finnEdwards = investigator "04003" ("Finn Edwards" <:> "The Bootlegger") Rogue [
 
 fatherMateo :: CardDef
 fatherMateo = investigator "04004" ("Father Mateo" <:> "The Priest") Mystic [Believer, Warden]
+
+calvinWright :: CardDef
+calvinWright = investigator "04005" ("Calvin Wright" <:> "The Haunted") Survivor [Cursed, Drifter]
 
 normanWithers :: CardDef
 normanWithers = investigator "08004" ("Norman Withers" <:> "The Astronomer") Seeker [Miskatonic]

@@ -683,8 +683,8 @@ data WindowMatcher
   | MoveAction Timing Who Where Where
   --                      ^ from ^ to
   | OrWindowMatcher [WindowMatcher]
-  | DealtDamage Timing Who
-  | DealtHorror Timing Who
+  | DealtDamage Timing SourceMatcher Who
+  | DealtHorror Timing SourceMatcher Who
   | AssignedHorror Timing Who TargetListMatcher
   | DealtDamageOrHorror Timing Who
   | WouldDrawEncounterCard Timing Who PhaseMatcher

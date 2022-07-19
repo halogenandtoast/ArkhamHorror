@@ -534,7 +534,7 @@ instance RunMessage EnemyAttrs where
       pushAll
         $ [ InvestigatorAssignDamage
               iid
-              (EnemySource enemyId)
+              (EnemyAttackSource enemyId)
               damageStrategy
               enemyHealthDamage
               enemySanityDamage

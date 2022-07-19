@@ -654,14 +654,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              ]
           <> [After (InvestigatorTakeDamage iid source damage horror)]
           )
-  After (InvestigatorTakeDamage iid _ damage horror)
+  After (InvestigatorTakeDamage iid source damage horror)
     | iid == investigatorId && (damage > 0 || horror > 0) -> do
       let
-        windows =
+        damageEffect =
+          case source of
+            EnemyAttackSource _ -> AttackDamageEffect
+            _ -> NonAttackDamageEffect
+        placedWindows =
           [ Window.PlacedDamage iid damage | damage > 0 ]
           <> [ Window.PlacedHorror iid horror | horror > 0 ]
-      push =<< checkWindows
-        (concatMap (\t -> map (Window t) windows) [Timing.When, Timing.After])
+        dealtWindows =
+          [ Window.DealtDamage source damageEffect (InvestigatorTarget iid) | damage > 0 ]
+          <> [ Window.DealtHorror source (InvestigatorTarget iid) | horror > 0 ]
+      placedWindowMsg <- checkWindows
+        $ (concatMap (\t -> map (Window t) placedWindows) [Timing.When, Timing.After])
+      dealtWindowMsgs <- checkWindows
+        $ map (Window Timing.After) dealtWindows
+      pushAll [placedWindowMsg, dealtWindowMsgs]
       pure a
   InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets
     | iid == investigatorId

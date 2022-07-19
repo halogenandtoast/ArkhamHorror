@@ -763,6 +763,9 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid source windows' = \case
+  Criteria.DuringPhase phaseMatcher -> do
+    p <- getPhase
+    matchPhase p phaseMatcher
   Criteria.ActionCanBeUndone -> getActionCanBeUndone
   Criteria.DoomCountIs valueMatcher -> do
     doomCount <- getDoomCount
@@ -1568,13 +1571,19 @@ windowMatches iid source window' = \case
         | t == whenMatcher -> pure $ iid == iid'
       _ -> pure False
     _ -> pure False
-  Matcher.DealtDamage whenMatcher whoMatcher -> case window' of
-    Window t (Window.DealtDamage _ _ (InvestigatorTarget iid'))
-      | t == whenMatcher -> matchWho iid iid' whoMatcher
+  Matcher.DealtDamage whenMatcher sourceMatcher whoMatcher -> case window' of
+    Window t (Window.DealtDamage source' _ (InvestigatorTarget iid'))
+      | t == whenMatcher -> andM
+        [ matchWho iid iid' whoMatcher
+        , sourceMatches source' sourceMatcher
+        ]
     _ -> pure False
-  Matcher.DealtHorror whenMatcher whoMatcher -> case window' of
-    Window t (Window.DealtHorror _ (InvestigatorTarget iid'))
-      | t == whenMatcher -> matchWho iid iid' whoMatcher
+  Matcher.DealtHorror whenMatcher sourceMatcher whoMatcher -> case window' of
+    Window t (Window.DealtHorror source' (InvestigatorTarget iid'))
+      | t == whenMatcher -> andM
+        [ matchWho iid iid' whoMatcher
+        , sourceMatches source' sourceMatcher
+        ]
     _ -> pure False
   Matcher.AssignedHorror whenMatcher whoMatcher targetListMatcher ->
     case window' of

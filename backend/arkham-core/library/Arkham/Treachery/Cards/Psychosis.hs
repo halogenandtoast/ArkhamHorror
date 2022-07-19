@@ -27,6 +27,7 @@ instance HasAbilities Psychosis where
   getAbilities (Psychosis a) =
     [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ DealtHorror
       Timing.After
+      AnySource
       You
     , restrictedAbility a 2 OnSameLocation $ ActionAbility Nothing $ ActionCost
       2

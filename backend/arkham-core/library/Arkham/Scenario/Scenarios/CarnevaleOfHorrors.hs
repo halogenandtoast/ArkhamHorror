@@ -22,6 +22,7 @@ import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -208,10 +209,10 @@ instance RunMessage CarnevaleOfHorrors where
                RightOf
                (LocationId . toCardId $ NE.head locations)
            ]
-        <> [ CreateStoryAssetAt asset locationId
+        <> [ CreateAssetAt asset (AtLocation locationId)
            | (locationId, asset) <- locationIdsWithMaskedCarnevaleGoers
            ]
-        <> [ CreateStoryAssetAt abbess sanMarcoBasilicaId
+        <> [ CreateAssetAt abbess (AtLocation sanMarcoBasilicaId)
            , RevealLocation Nothing sanMarcoBasilicaId
            , MoveAllTo (toSource attrs) sanMarcoBasilicaId
            , AskMap

@@ -55,6 +55,7 @@ data ModifierType
   | AlternativeReady Source
   | AnySkillValue Int
   | AsIfInHand Card
+  | AsIfUnderControlOf InvestigatorId
   | AttacksCannotBeCancelled
   | BaseSkillOf SkillType Int
   | BecomesFast

@@ -13,6 +13,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Source
 import Arkham.Timing qualified as Timing
 
@@ -42,7 +43,7 @@ instance RunMessage TheBarrier where
       litaChantler <- getSetAsideCard Assets.litaChantler
       a <$ pushAll
         [ RevealLocation Nothing parlorId
-        , CreateStoryAssetAt litaChantler parlorId
+        , CreateAssetAt litaChantler (AtLocation parlorId)
         , CreateEnemyAt ghoulPriest hallwayId Nothing
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]

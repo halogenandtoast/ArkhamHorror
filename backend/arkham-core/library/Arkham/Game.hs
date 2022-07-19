@@ -14,7 +14,7 @@ import Arkham.Agenda
 import Arkham.Agenda.Attrs ( AgendaAttrs (..), Field (..) )
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset
-import Arkham.Asset.Attrs ( assetController, AssetAttrs (..), DiscardedAttrs (..), Field (..) )
+import Arkham.Asset.Attrs ( AssetAttrs (..), DiscardedAttrs (..), Field (..) )
 import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
@@ -446,6 +446,7 @@ withAssetMetadata a = do
   let source = InvestigatorSource $ fromMaybe someone (mTurnInvestigator <|> mLeadInvestigator)
   amModifiers <- getModifiersFor source (toTarget a) ()
   amEvents <- select (EventAttachedToAsset $ AssetWithId $ toId a)
+  amAssets <- select (AssetAttachedToAsset $ AssetWithId $ toId a)
   pure $ a `with` AssetMetadata {..}
 
 withInvestigatorConnectionData
@@ -1208,7 +1209,10 @@ getAssetsMatching matcher = do
     AssetCanLeavePlayByNormalMeans -> pure $ filter canBeDiscarded as
     AssetControlledBy investigatorMatcher -> do
       iids <- selectList investigatorMatcher
-      pure $ filter (maybe False (`elem` iids) . assetController . toAttrs) as
+      filterM (fieldP AssetController (maybe False (`elem` iids)) . toId) as
+    AssetAttachedToAsset assetMatcher -> do
+      placements <- selectListMap AttachedToAsset assetMatcher
+      pure $ filter ((`elem` placements) . assetPlacement . toAttrs) as
     AssetAtLocation lid -> pure $ flip filter as $ \a -> case assetPlacement (toAttrs a) of
       AtLocation lid' -> lid == lid'
       AttachedToLocation lid' -> lid == lid'
@@ -1653,7 +1657,11 @@ instance Projection AssetAttrs where
       AssetController -> case assetPlacement of
         InPlayArea iid -> pure $ Just iid
         InThreatArea iid -> pure $ Just iid
-        _ -> pure Nothing
+        _ -> do
+          modifiers' <- getModifiers (AssetSource aid) (AssetTarget aid)
+          pure $ asum $ flip map modifiers' $ \case
+            AsIfUnderControlOf iid -> Just iid
+            _ -> Nothing
       AssetLocation -> case assetPlacement of
         AtLocation lid -> pure $ Just lid
         AttachedToLocation lid -> pure $ Just lid
@@ -3327,12 +3335,18 @@ runGameMessage msg g = case msg of
         )
   CreateStoryAssetAtLocationMatching cardCode locationMatcher -> do
     lid <- selectJust locationMatcher
-    g <$ push (CreateStoryAssetAt cardCode lid)
-  CreateStoryAssetAt card lid -> do
+    g <$ push (CreateAssetAt cardCode $ AtLocation lid)
+  CreateAssetAt card placement -> do
     let
       asset = createAsset card
       assetId = toId asset
-    push $ PlaceAsset assetId (AtLocation lid)
+
+      sealTokenCosts =
+        flip mapMaybe (setToList $ cdKeywords $ toCardDef c) $ \case
+          Keyword.Seal matcher -> Just $ matcher
+          _ -> Nothing
+
+    push $ PlaceAsset assetId placement
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
   CreateWeaknessInThreatArea card iid -> do
     let

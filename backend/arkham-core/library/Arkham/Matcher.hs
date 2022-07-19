@@ -177,6 +177,7 @@ data AssetMatcher
   | AssetWithId AssetId
   | AssetWithClass ClassSymbol
   | AssetWithTrait Trait
+  | AssetAttachedToAsset AssetMatcher
   | AssetControlledBy InvestigatorMatcher
   | AssetMatches [AssetMatcher]
   | AssetOneOf [AssetMatcher]

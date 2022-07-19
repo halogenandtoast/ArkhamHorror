@@ -29,6 +29,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Name
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
@@ -157,7 +158,7 @@ instance RunMessage TheLastKing where
          , PlaceLocation gallery
          , MoveAllTo (toSource attrs) (toLocationId foyer)
          ]
-        <> zipWith CreateStoryAssetAt bystanders destinations
+        <> zipWith CreateAssetAt bystanders (map AtLocation destinations)
         <> map
              ((`PlaceClues` totalClues) . AssetTarget . AssetId . toCardId)
              bystanders

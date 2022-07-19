@@ -310,6 +310,7 @@ data EventMatcher
   | EventWithClass ClassSymbol
   | EventControlledBy InvestigatorMatcher
   | EventAt LocationMatcher
+  | EventAttachedToAsset AssetMatcher
   | EventReady
   | EventMatches [EventMatcher]
   | AnyEvent

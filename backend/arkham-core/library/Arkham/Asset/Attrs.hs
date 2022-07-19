@@ -267,8 +267,3 @@ assetController :: AssetAttrs -> Maybe InvestigatorId
 assetController attrs = case assetPlacement attrs of
   InPlayArea iid -> Just iid
   _ -> Nothing
-
-defeated :: AssetAttrs -> Bool
-defeated AssetAttrs {..} =
-  maybe False (assetDamage >=) assetHealth
-    || maybe False (assetHorror >=) assetSanity

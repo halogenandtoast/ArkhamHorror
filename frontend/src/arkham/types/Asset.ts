@@ -25,6 +25,7 @@ export interface Asset {
   exhausted: boolean;
   horror: number;
   doom: number;
+  events: string[];
   cardsUnderneath: Card[];
   sealedTokens: ChaosToken[];
 }
@@ -41,6 +42,7 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   exhausted: JsonDecoder.boolean,
   horror: JsonDecoder.number,
   doom: JsonDecoder.number,
+  events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   sealedTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]')
 }, 'Asset');

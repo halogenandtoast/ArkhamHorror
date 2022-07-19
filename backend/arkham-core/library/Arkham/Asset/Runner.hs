@@ -12,13 +12,22 @@ import Arkham.Classes as X
 import Arkham.Message as X hiding ( AssetDamage )
 
 import Arkham.Card
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Message qualified as Msg
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
+
+defeated :: (Monad m, HasGame m) => AssetAttrs -> m Bool
+defeated AssetAttrs {assetId} = do
+  remainingHealth <- field AssetRemainingHealth assetId
+  remainingSanity <- field AssetRemainingSanity assetId
+  pure $ maybe False (<= 0) remainingHealth
+    || maybe False (<= 0) remainingSanity
 
 instance RunMessage AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
@@ -43,7 +52,7 @@ instance RunMessage AssetAttrs where
         [Window.LastClueRemovedFromAsset (toId a)]
       pure $ a & cluesL %~ max 0 . subtract n
     CheckDefeated _ -> do
-      when (defeated a) $ do
+      whenM (defeated a) $ do
         whenWindow <- checkWindows
           [Window Timing.When (Window.AssetDefeated $ toId a)]
         afterWindow <- checkWindows

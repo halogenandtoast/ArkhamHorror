@@ -174,6 +174,7 @@ allPlayerEventCards = mapFromList $ map
   , thinkOnYourFeet
   , timeWarp2
   , trueSurvivor3
+  , trusted
   , uncageTheSoul
   , unearthTheAncients
   , wardOfProtection
@@ -1118,6 +1119,15 @@ smuggledGoods = (event "04010" "Smuggled Goods" 0 Neutral)
     $ Criteria.EnemyExists
     $ EnemyAt YourLocation
     <> ReadyEnemy
+  }
+
+trusted :: CardDef
+trusted = (event "04019" "Trusted" 1 Guardian)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = singleton Upgrade
+  , cdFastWindow = Just $ DuringTurn You
+  , cdCriteria =
+    Just $ Criteria.AssetExists $ AssetControlledBy You <> AllyAsset
   }
 
 unearthTheAncients :: CardDef

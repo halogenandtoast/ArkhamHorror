@@ -30,6 +30,8 @@ runEventMessage msg a@EventAttrs{..} = case msg of
       <$ push (Discard (EventTarget eventId))
     AttachEvent eid target | eid == eventId ->
       pure $ a & attachedTargetL ?~ target
+    Discard target | eventAttachedTarget == Just target ->
+      a <$ push (Discard $ toTarget a)
     Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
     Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
     PayCardCost _ card _ | toCardId a == toCardId card ->

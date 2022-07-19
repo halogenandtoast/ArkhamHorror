@@ -4,6 +4,7 @@ import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
+import Event from '@/arkham/components/Event.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token';
@@ -145,6 +146,14 @@ const choose = (idx: number) => emit('choose', idx)
       class="card"
       @click="choose(cardAction)"
     />
+    <Event
+      v-for="eventId in asset.events"
+      :event="game.events[eventId]"
+      :game="game"
+      :investigatorId="investigatorId"
+      :key="eventId"
+      @choose="$emit('choose', $event)"
+    />
     <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
     <AbilityButton
       v-for="ability in abilities"
@@ -223,5 +232,12 @@ const choose = (idx: number) => emit('choose', idx)
 
 :deep(.token) {
   width: 20px;
+}
+
+:deep(.event) {
+  object-fit: cover;
+  object-position: 0 -72px;
+  height: 68px;
+  margin-top: 2px;
 }
 </style>

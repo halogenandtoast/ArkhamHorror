@@ -433,6 +433,19 @@ withLocationConnectionData inner@(With target _) = do
   lmTreacheries <- select (TreacheryAt $ LocationWithId $ toId target)
   pure $ inner `with` LocationMetadata {..}
 
+withAssetMetadata
+  :: (Monad m, HasGame m) => Asset
+  -> m (With Asset AssetMetadata)
+withAssetMetadata a = do
+  mTurnInvestigator <- selectOne TurnInvestigator
+  mLeadInvestigator <- selectOne LeadInvestigator
+  someone <- selectJust Anyone
+
+  let source = InvestigatorSource $ fromMaybe someone (mTurnInvestigator <|> mLeadInvestigator)
+  amModifiers <- getModifiersFor source (toTarget a) ()
+  amEvents <- select (EventAttachedToAsset $ AssetWithId $ toId a)
+  pure $ a `with` AssetMetadata {..}
+
 withInvestigatorConnectionData
   :: (Monad m, HasGame m) => With WithDeckSize ModifierData
   -> m (With (With WithDeckSize ModifierData) ConnectionData)
@@ -519,7 +532,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "enemies" .= toJSON (runReader (traverse withEnemyMetadata (gameEnemies g)) g)
     , "enemiesInVoid"
       .= toJSON (runReader (traverse withModifiers gameEnemiesInVoid) g)
-    , "assets" .= toJSON (runReader (traverse withModifiers (gameAssets g)) g)
+    , "assets" .= toJSON (runReader (traverse withAssetMetadata (gameAssets g)) g)
     , "acts" .= toJSON (runReader (traverse withModifiers (gameActs g)) g)
     , "agendas" .= toJSON (runReader (traverse withModifiers (gameAgendas g)) g)
     , "treacheries"
@@ -1235,16 +1248,14 @@ getAssetsMatching matcher = do
         (AssetControlledBy $ InvestigatorWithId iid)
       let
         otherAssets = filter (`notElem` investigatorAssets) as
-        isHealthDamageable a = case assetHealth (toAttrs a) of
-                                 Nothing -> False
-                                 Just n -> n - assetDamage (toAttrs a) > 0
+        isHealthDamageable a = fieldP AssetRemainingHealth (maybe False (> 0)) (toId a)
       otherDamageableAssets <-
         map fst
         . filter (elem CanBeAssignedDamage . snd)
         <$> traverse
               (traverseToSnd $ getModifiers (InvestigatorSource iid) . toTarget)
               otherAssets
-      pure $ filter
+      filterM
         isHealthDamageable
         (investigatorAssets <> otherDamageableAssets)
     AssetCanBeAssignedHorrorBy iid -> do
@@ -1253,16 +1264,14 @@ getAssetsMatching matcher = do
         (AssetControlledBy $ InvestigatorWithId iid)
       let
         otherAssets = filter (`notElem` investigatorAssets) as
-        isSanityDamageable a = case assetSanity (toAttrs a) of
-                                 Nothing -> False
-                                 Just n -> n - assetHorror (toAttrs a) > 0
+        isSanityDamageable a = fieldP AssetRemainingSanity (maybe False (> 0)) (toId a)
       otherDamageableAssets <-
         map fst
         . filter (elem CanBeAssignedDamage . snd)
         <$> traverse
               (traverseToSnd $ getModifiers (InvestigatorSource iid) . toTarget)
               otherAssets
-      pure $ filter
+      filterM
         isSanityDamageable
         (investigatorAssets <> otherDamageableAssets)
     ClosestAsset start assetMatcher -> flip filterM as $ \asset -> do
@@ -1306,6 +1315,9 @@ getEventsMatching matcher = do
     EventAt locationMatcher -> do
       eids <- selectAgg id LocationEvents locationMatcher
       pure $ filter ((`member` eids) . toId) as
+    EventAttachedToAsset assetMatcher -> do
+      assets <- selectListMap AssetTarget assetMatcher
+      pure $ filter (maybe False (`elem` assets) . eventAttachedTarget . toAttrs) as
 
 getSkillsMatching :: (Monad m, HasGame m) => SkillMatcher -> m [Skill]
 getSkillsMatching matcher = do
@@ -1613,12 +1625,24 @@ instance Projection AssetAttrs where
       AssetClues -> pure assetClues
       AssetHorror -> pure assetHorror
       AssetDamage -> pure assetDamage
-      AssetRemainingHealth -> pure $ case assetHealth of
-        Nothing -> Nothing
-        Just n -> Just $ max 0 (n - assetDamage)
-      AssetRemainingSanity -> pure $ case assetSanity of
-        Nothing -> Nothing
-        Just n -> Just $ max 0 (n - assetHorror)
+      AssetRemainingHealth -> case assetHealth of
+          Nothing -> pure Nothing
+          Just n -> do
+            modifiers' <- getModifiers (AssetSource aid) (AssetTarget aid)
+            let
+              modifiedHealth = foldl' applyHealthModifiers n modifiers'
+              applyHealthModifiers h (HealthModifier m) = max 0 (h + m)
+              applyHealthModifiers h _ = h
+            pure $ Just $ max 0 (modifiedHealth - assetDamage)
+      AssetRemainingSanity -> case assetSanity of
+        Nothing -> pure Nothing
+        Just n -> do
+          modifiers' <- getModifiers (AssetSource aid) (AssetTarget aid)
+          let
+            modifiedSanity = foldl' applySanityModifiers n modifiers'
+            applySanityModifiers s (SanityModifier m) = max 0 (s + m)
+            applySanityModifiers s _ = s
+          pure $ Just $ max 0 (modifiedSanity - assetHorror)
       AssetDoom -> pure assetDoom
       AssetExhausted -> pure assetExhausted
       AssetPlacement -> pure assetPlacement

@@ -47,3 +47,13 @@ data EnemyMetadata = EnemyMetadata
 instance ToJSON EnemyMetadata where
   toJSON = genericToJSON $ aesonOptions $ Just "em"
   toEncoding = genericToEncoding $ aesonOptions $ Just "em"
+
+data AssetMetadata = AssetMetadata
+  { amEvents :: HashSet EventId
+  , amModifiers :: [Modifier]
+  }
+  deriving stock (Show, Eq, Generic)
+
+instance ToJSON AssetMetadata where
+  toJSON = genericToJSON $ aesonOptions $ Just "am"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "am"

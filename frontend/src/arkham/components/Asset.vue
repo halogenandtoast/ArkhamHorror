@@ -190,6 +190,14 @@ const choose = (idx: number) => emit('choose', idx)
       <PoolItem v-if="asset.clues > 0" type="clue" :amount="asset.clues" />
       <Token v-for="(sealedToken, index) in asset.sealedTokens" :key="index" :token="sealedToken" :investigatorId="investigatorId" :game="game" @choose="choose" />
     </div>
+    <Asset
+      v-for="assetId in asset.assets"
+      :asset="game.assets[assetId]"
+      :game="game"
+      :investigatorId="investigatorId"
+      :key="assetId"
+      @choose="$emit('choose', $event)"
+    />
   </div>
 </template>
 

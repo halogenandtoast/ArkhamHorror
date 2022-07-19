@@ -2049,7 +2049,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       abilityLimitType (abilityLimit usedAbility) /= Just PerTurn
     )
   UseAbility iid ability windows | iid == investigatorId -> do
-    push $ PayForAbility ability windows
+    pushAll [PayForAbility ability windows, ResolvedAbility ability]
     case find ((== ability) . usedAbility) investigatorUsedAbilities of
       Nothing -> do
         depth <- getWindowDepth

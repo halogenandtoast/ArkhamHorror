@@ -102,6 +102,7 @@ doNotMask _ = False
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | ResolvedAbility Ability
   | -- Story Card Messages
     ReadStory InvestigatorId CardDef
   | ResolveStory InvestigatorId CardDef

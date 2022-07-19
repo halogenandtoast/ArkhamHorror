@@ -152,6 +152,7 @@ allPlayerEventCards = mapFromList $ map
   , preposterousSketches2
   , quantumFlux
   , recharge2
+  , reliable1
   , scroungeForSupplies
   , searchForTheTruth
   , secondWind
@@ -1128,6 +1129,16 @@ trusted = (event "04019" "Trusted" 1 Guardian)
   , cdFastWindow = Just $ DuringTurn You
   , cdCriteria =
     Just $ Criteria.AssetExists $ AssetControlledBy You <> AllyAsset
+  }
+
+reliable1 :: CardDef
+reliable1 = (event "04020" "Reliable" 1 Guardian)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = singleton Upgrade
+  , cdFastWindow = Just $ DuringTurn You
+  , cdCriteria =
+    Just $ Criteria.AssetExists $ AssetControlledBy You <> AssetWithTrait Item
+  , cdLevel = 1
   }
 
 unearthTheAncients :: CardDef

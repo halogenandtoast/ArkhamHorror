@@ -22,6 +22,7 @@ instance MonadReader GameEnv GameT
 
 instance HasQueue GameEnv
 
+getActiveAbilities :: (Monad m, HasGame m) => m [Ability]
 getPhase :: (Monad m, HasGame m) => m Phase
 getWindowDepth :: (Monad m, HasGame m) => m Int
 getDepthLock :: (Monad m, HasGame m) => m Int

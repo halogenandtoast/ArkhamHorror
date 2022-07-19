@@ -109,5 +109,8 @@ getDepthLock = gameDepthLock <$> getGame
 getAllAbilities :: (Monad m, HasGame m) => m [Ability]
 getAllAbilities = getAbilities <$> getGame
 
+getActiveAbilities :: (Monad m, HasGame m) => m [Ability]
+getActiveAbilities = gameActiveAbilities <$> getGame
+
 getActionCanBeUndone :: (Monad m, HasGame m) => m Bool
 getActionCanBeUndone = gameActionCanBeUndone <$> getGame

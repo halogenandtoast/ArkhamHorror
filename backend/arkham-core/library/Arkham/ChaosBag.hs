@@ -307,12 +307,9 @@ instance RunMessage ChaosBag where
     ResetTokens _source ->
       pure
         $ c
-        & tokensL
-        %~ (<> chaosBagSetAsideTokens)
-        & setAsideTokensL
-        .~ mempty
-        & choiceL
-        .~ Nothing
+        & (tokensL <>~ chaosBagSetAsideTokens)
+        & (setAsideTokensL .~ mempty)
+        & (choiceL .~ Nothing)
     RequestTokens source miid revealStrategy strategy -> do
       push (RunBag source miid strategy)
       case revealStrategy of

@@ -394,6 +394,7 @@ library
       Arkham.Asset.Cards.TrenchKnife
       Arkham.Asset.Cards.TrueGrit
       Arkham.Asset.Cards.TryAndTryAgain3
+      Arkham.Asset.Cards.UntilTheEndOfTime
       Arkham.Asset.Cards.Venturer
       Arkham.Asset.Cards.WendysAmulet
       Arkham.Asset.Cards.WhittonGreene
@@ -1368,6 +1369,7 @@ library
       Arkham.Treachery.Cards.VastExpanse
       Arkham.Treachery.Cards.VaultOfEarthlyDemise
       Arkham.Treachery.Cards.VisionsOfFuturesPast
+      Arkham.Treachery.Cards.VoiceOfTheMessenger
       Arkham.Treachery.Cards.VortexOfTime
       Arkham.Treachery.Cards.WallsClosingIn
       Arkham.Treachery.Cards.WatchersGaze

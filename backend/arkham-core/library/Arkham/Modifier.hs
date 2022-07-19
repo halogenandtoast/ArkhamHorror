@@ -61,6 +61,7 @@ data ModifierType
   | Blank
   | Blocked
   | CanBeAssignedDamage
+  | CanBeAssignedDirectDamage
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast CardMatcher
   | CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation Int

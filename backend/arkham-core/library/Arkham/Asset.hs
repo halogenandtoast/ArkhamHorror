@@ -245,6 +245,7 @@ instance FromJSON Asset where
       "04008" -> Asset . JakeWilliams <$> parseJSON v
       "04011" -> Asset . FinnsTrustyThirtyEight <$> parseJSON v
       "04013" -> Asset . TheCodexOfAges <$> parseJSON v
+      "04015" -> Asset . UntilTheEndOfTime <$> parseJSON v
       "04018" -> Asset . Venturer <$> parseJSON v
       "04023" -> Asset . ToothOfEztli <$> parseJSON v
       "04026" -> Asset . DecoratedSkull <$> parseJSON v
@@ -479,6 +480,7 @@ allAssets = mapFromList $ map
   , Asset <$> jakeWilliams
   , Asset <$> finnsTrustyThirtyEight
   , Asset <$> theCodexOfAges
+  , Asset <$> untilTheEndOfTime
   , Asset <$> venturer
   , Asset <$> toothOfEztli
   , Asset <$> decoratedSkull

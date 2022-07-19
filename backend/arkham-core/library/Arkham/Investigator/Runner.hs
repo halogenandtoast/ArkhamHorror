@@ -590,8 +590,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       \case
         Msg.InvestigatorDamage iid' s damage' horror' ->
           Msg.InvestigatorDamage iid' s (max 0 (damage' - n)) horror'
-        InvestigatorDoAssignDamage iid' s t damage' horror' aa b ->
-          InvestigatorDoAssignDamage iid' s t (max 0 (damage' - n)) horror' aa b
+        InvestigatorDoAssignDamage iid' s t matcher' damage' horror' aa b ->
+          InvestigatorDoAssignDamage iid' s t matcher' (max 0 (damage' - n)) horror' aa b
         other -> other
   CancelHorror iid n | iid == investigatorId -> do
     a <$ withQueue_ \queue -> flip
@@ -600,55 +600,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       \case
         Msg.InvestigatorDamage iid' s damage' horror' ->
           Msg.InvestigatorDamage iid' s damage' (max 0 (horror' - n))
-        InvestigatorDoAssignDamage iid' s t damage' horror' aa b ->
-          InvestigatorDoAssignDamage iid' s t damage' (max 0 (horror' - n)) aa b
+        InvestigatorDoAssignDamage iid' s t matcher' damage' horror' aa b ->
+          InvestigatorDoAssignDamage iid' s t matcher' damage' (max 0 (horror' - n)) aa b
         other -> other
   InvestigatorDirectDamage iid source damage horror
     | iid == investigatorId && not
       (investigatorDefeated || investigatorResigned)
-    -> a <$ pushAll
-      ([ CheckWindow
-           [iid]
-           [Window Timing.When (Window.WouldTakeDamage source (toTarget a))]
-       | damage > 0
-       ]
-      <> [ CheckWindow
-             [iid]
-             [Window Timing.When (Window.WouldTakeHorror source (toTarget a))]
-         | horror > 0
-         ]
-      <> [ CheckWindow
-             [iid]
-             [ Window
-                 Timing.When
-                 (Window.WouldTakeDamageOrHorror
-                   source
-                   (toTarget a)
-                   damage
-                   horror
-                 )
-             ]
-         | horror > 0 || damage > 0
-         ]
-      <> [ Msg.InvestigatorDamage iid source damage horror
-         , CheckDefeated source
-         ]
-      <> [After (InvestigatorTakeDamage iid source damage horror)]
-      <> [ CheckWindow
-             [iid]
-             [Window Timing.When (Window.DealtHorror source (toTarget a))]
-         | horror > 0
-         ]
-      <> [ CheckWindow
-             [iid]
-             [ Window
-                 Timing.When
-                 (Window.DealtDamage source NonAttackDamageEffect (toTarget a)
-                 )
-             ]
-         | damage > 0
-         ]
-      )
+    -> a <$ push (InvestigatorDoAssignDamage iid source DamageAny (AssetWithModifier CanBeAssignedDirectDamage) damage horror [] [])
   InvestigatorAssignDamage iid source strategy damage horror
     | iid == investigatorId && not
       (investigatorDefeated || investigatorResigned)
@@ -687,6 +645,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                iid
                source
                strategy
+               AnyAsset
                damage
                horror
                []
@@ -704,7 +663,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       push =<< checkWindows
         (concatMap (\t -> map (Window t) windows) [Timing.When, Timing.After])
       pure a
-  InvestigatorDoAssignDamage iid source damageStrategy 0 0 damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets
     | iid == investigatorId
     -> do
       push
@@ -729,10 +688,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ push
         $ InvestigatorDirectDamage iid source 1 0
       pure a
-  InvestigatorDoAssignDamage iid source DamageEvenly health 0 damageTargets _
+  InvestigatorDoAssignDamage iid source DamageEvenly matcher health 0 damageTargets _
     | iid == investigatorId -> do
       healthDamageableAssets <- if health > 0
-        then selectList (AssetCanBeAssignedDamageBy iid)
+        then selectList (matcher <> AssetCanBeAssignedDamageBy iid)
         else pure mempty
       let
         getDamageTargets xs = if length xs > length healthDamageableAssets + 1
@@ -746,6 +705,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           investigatorId
           source
           DamageEvenly
+          matcher
           (health - 1)
           0
         -- N.B. we have to add to the end of targets to handle the drop logic
@@ -766,10 +726,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> map damageAsset healthDamageableAssets'
       push $ chooseOne iid healthDamageMessages
       pure a
-  InvestigatorDoAssignDamage iid source DamageEvenly 0 sanity _ horrorTargets
+  InvestigatorDoAssignDamage iid source DamageEvenly matcher 0 sanity _ horrorTargets
     | iid == investigatorId -> do
       sanityDamageableAssets <- if sanity > 0
-        then selectList (AssetCanBeAssignedHorrorBy iid)
+        then selectList (matcher <> AssetCanBeAssignedHorrorBy iid)
         else pure mempty
       -- TODO: handle this
       -- mustBeDamagedFirstBeforeInvestigator <- selectList
@@ -788,6 +748,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           investigatorId
           source
           DamageEvenly
+          matcher
           0
           (sanity - 1)
         -- N.B. we have to add to the end of targets to handle the drop logic
@@ -808,18 +769,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> map damageAsset sanityDamageableAssets'
       push $ chooseOne iid sanityDamageMessages
       pure a
-  InvestigatorDoAssignDamage iid _ DamageEvenly _ _ _ _
+  InvestigatorDoAssignDamage iid _ DamageEvenly _ _ _ _ _
     | iid == investigatorId
     -> error
       "DamageEvenly only works with just horror or just damage, but not both"
-  InvestigatorDoAssignDamage iid source SingleTarget health sanity damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid source SingleTarget matcher health sanity damageTargets horrorTargets
     | iid == investigatorId
     -> do
       healthDamageableAssets <- if health > 0
-        then select (AssetCanBeAssignedDamageBy iid)
+        then select (matcher <> AssetCanBeAssignedDamageBy iid)
         else pure mempty
       sanityDamageableAssets <- if sanity > 0
-        then select (AssetCanBeAssignedHorrorBy iid)
+        then select (matcher <> AssetCanBeAssignedHorrorBy iid)
         else pure mempty
       let
         damageableAssets =
@@ -828,6 +789,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           iid
           source
           SingleTarget
+          matcher
           (max 0 $ health - h)
           (max 0 $ sanity - s)
           (damageTargets <> [ t | h > 0 ])
@@ -851,17 +813,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             ]
         : map toAssetMessage assetsWithCounts
       pure a
-  InvestigatorDoAssignDamage iid source strategy health sanity damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid source strategy matcher health sanity damageTargets horrorTargets
     | iid == investigatorId
     -> do
       healthDamageMessages <- if health > 0
         then do
-          healthDamageableAssets <- selectList (AssetCanBeAssignedDamageBy iid)
+          healthDamageableAssets <- selectList (matcher <> AssetCanBeAssignedDamageBy iid)
           let
             assignRestOfHealthDamage = InvestigatorDoAssignDamage
               investigatorId
               source
               strategy
+              matcher
               (health - 1)
               sanity
             damageAsset aid = Run
@@ -889,7 +852,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               validAssets <-
                 setToList
                 . intersection (setFromList healthDamageableAssets)
-                <$> select (AssetControlledBy You <> assetIs def)
+                <$> select (matcher <> AssetControlledBy You <> assetIs def)
               pure $ if null validAssets
                 then damageInvestigator : map damageAsset healthDamageableAssets
                 else map damageAsset validAssets
@@ -898,12 +861,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         else pure []
       sanityDamageMessages <- if sanity > 0
         then do
-          sanityDamageableAssets <- selectList (AssetCanBeAssignedHorrorBy iid)
+          sanityDamageableAssets <- selectList (matcher <> AssetCanBeAssignedHorrorBy iid)
           let
             assignRestOfSanityDamage = InvestigatorDoAssignDamage
               investigatorId
               source
               strategy
+              matcher
               health
               (sanity - 1)
             damageInvestigator = Run
@@ -947,7 +911,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               validAssets <-
                 setToList
                 . intersection (setFromList sanityDamageableAssets)
-                <$> select (AssetControlledBy You <> assetIs def)
+                <$> select (matcher <> AssetControlledBy You <> assetIs def)
               pure $ if null validAssets
                 then damageInvestigator : map damageAsset sanityDamageableAssets
                 else map damageAsset validAssets

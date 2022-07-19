@@ -376,7 +376,7 @@ data Message
   | InvestigatorDiscoverClues InvestigatorId LocationId Int (Maybe Action)
   | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int (Maybe Action)
   | -- | meant to be used internally by investigators                  ^ damage ^ horror
-    InvestigatorDoAssignDamage InvestigatorId Source DamageStrategy Int Int [Target] [Target]
+    InvestigatorDoAssignDamage InvestigatorId Source DamageStrategy AssetMatcher Int Int [Target] [Target]
   | InvestigatorDrawEncounterCard InvestigatorId
   | InvestigatorDoDrawEncounterCard InvestigatorId
   | InvestigatorDrawEnemy InvestigatorId EnemyId

@@ -39,7 +39,7 @@ instance RunMessage PsychopompsSong where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       mMsg <- findFromQueue $ \case
         InvestigatorDamage iid' _ n _ | iid' == iid -> n > 0
-        InvestigatorDoAssignDamage iid' _ _ n _ [] [] | iid' == iid -> n > 0
+        InvestigatorDoAssignDamage iid' _ _ _ n _ [] [] | iid' == iid -> n > 0
         _ -> False
       case mMsg of
         Just damageMsg -> do
@@ -47,11 +47,12 @@ instance RunMessage PsychopompsSong where
             newMsg = case damageMsg of
               InvestigatorDamage _ source' n horror ->
                 InvestigatorDamage iid source' (n + 2) horror
-              InvestigatorDoAssignDamage _ source' strategy n horror [] [] ->
+              InvestigatorDoAssignDamage _ source' strategy matcher n horror [] [] ->
                 InvestigatorDoAssignDamage
                   iid
                   source'
                   strategy
+                  matcher
                   (n + 2)
                   horror
                   []

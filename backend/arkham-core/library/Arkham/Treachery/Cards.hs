@@ -108,6 +108,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , smiteTheWicked
   , starsOfHyades
   , theHarbinger
+  , voiceOfTheMessenger
   , wrackedByNightmares
   ]
 
@@ -845,6 +846,11 @@ callOfTheUnknown = (weakness "04009" "Call of the Unknown")
 caughtRedHanded :: CardDef
 caughtRedHanded = (weakness "04012" "Caught Red-Handed")
   { cdCardTraits = singleton Blunder
+  }
+
+voiceOfTheMessenger :: CardDef
+voiceOfTheMessenger = (weakness "04016" "Voice of the Messenger")
+  { cdCardTraits = setFromList [Curse, Pact]
   }
 
 theHarbinger :: CardDef

@@ -33,7 +33,7 @@ instance RunMessage IveHadWorse4 where
           case dmsg of
             InvestigatorDamage iid' _ damage' horror' ->
               if iid' == iid then (damage', horror') else error "mismatch"
-            InvestigatorDoAssignDamage iid' _ _ damage' horror' _ _ ->
+            InvestigatorDoAssignDamage iid' _ _ _ damage' horror' _ _ ->
               if iid' == iid then (damage', horror') else error "mismatch"
             _ -> error "mismatch"
         _ -> error "unhandled"

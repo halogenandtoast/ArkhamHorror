@@ -298,6 +298,7 @@ allPlayerAssetCards = mapFromList $ map
   , trenchKnife
   , trueGrit
   , tryAndTryAgain3
+  , untilTheEndOfTime
   , venturer
   , wendysAmulet
   , whittonGreene
@@ -1866,6 +1867,12 @@ theCodexOfAges =
     , cdSlots = [HandSlot]
     , cdKeywords = singleton (Keyword.Seal $ TokenFaceIs Token.ElderSign)
     }
+
+untilTheEndOfTime :: CardDef
+untilTheEndOfTime = (asset "04015" "Until the End of Time" 1 Neutral)
+  { cdSkills = [SkillCombat, SkillWild]
+  , cdCardTraits = singleton Talent
+  }
 
 venturer :: CardDef
 venturer = (asset "04018" "Venturer" 4 Guardian)

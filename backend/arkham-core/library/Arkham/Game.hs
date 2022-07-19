@@ -166,6 +166,7 @@ data Game = Game
   , gameFocusedTargets :: [Target]
   , gameFocusedTokens :: [Token]
   , gameActiveCard :: Maybe Card
+  , gameActiveAbilities :: [Ability]
   , gameRemovedFromPlay :: [Card]
   , gameGameState :: GameState
   , gameSkillTestResults :: Maybe SkillTestResultsData
@@ -263,6 +264,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameFocusedTargets = mempty
       , gameFocusedTokens = mempty
       , gameActiveCard = Nothing
+      , gameActiveAbilities = mempty
       , gamePlayerOrder = toList playersMap
       , gameRemovedFromPlay = mempty
       , gameQuestion = mempty
@@ -2374,6 +2376,7 @@ runGameMessage msg g = case msg of
       & (turnPlayerInvestigatorIdL .~ Nothing)
       & (focusedCardsL .~ mempty)
       & (activeCardL .~ Nothing)
+      & (activeAbilitiesL .~ mempty)
       & (playerOrderL .~ (g ^. entitiesL . investigatorsL . to keys))
   StartScenario sid -> do
     let
@@ -3611,6 +3614,8 @@ runGameMessage msg g = case msg of
       & setTurnHistory
   UnsetActiveCard -> pure $ g & activeCardL .~ Nothing
   AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
+  UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
+  ResolvedAbility _ -> pure $ g & activeAbilitiesL %~ drop 1
   Discarded (AssetTarget aid) (EncounterCard _) ->
     pure $ g & entitiesL . assetsL %~ deleteMap aid
   Discarded (AssetTarget aid) _ -> do

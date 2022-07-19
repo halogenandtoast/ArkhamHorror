@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Game where
 
+import Arkham.Ability
 import Arkham.Act.Attrs
 import Arkham.Agenda.Attrs
 import Arkham.Asset.Attrs
@@ -72,6 +73,7 @@ instance Projection TreacheryAttrs
 instance HasTokenValue InvestigatorId
 instance HasTokenValue ()
 
+gameActiveAbilities :: Game -> [Ability]
 gamePhase :: Game -> Phase
 gameSkillTest :: Game -> Maybe SkillTest
 gameWindowDepth :: Game -> Int

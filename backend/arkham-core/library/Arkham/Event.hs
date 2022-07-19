@@ -178,6 +178,7 @@ instance FromJSON Event where
       "03314" -> Event . Infighting3 <$> parseJSON v
       "04010" -> Event . SmuggledGoods <$> parseJSON v
       "04019" -> Event . Trusted <$> parseJSON v
+      "04020" -> Event . Reliable1 <$> parseJSON v
       "04024" -> Event . UnearthTheAncients <$> parseJSON v
       "04027" -> Event . Eavesdrop <$> parseJSON v
       "04028" -> Event . YouHandleThisOne <$> parseJSON v
@@ -309,6 +310,7 @@ allEvents = mapFromList $ map
   , Event <$> infighting3
   , Event <$> smuggledGoods
   , Event <$> trusted
+  , Event <$> reliable1
   , Event <$> unearthTheAncients
   , Event <$> eavesdrop
   , Event <$> youHandleThisOne

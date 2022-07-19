@@ -280,6 +280,7 @@ allPlayerAssetCards = mapFromList $ map
   , strangeSolutionRestorativeConcoction4
   , strayCat
   , suggestion4
+  , survivalKnife
   , switchblade
   , switchblade2
   , theChthonianStone
@@ -1872,6 +1873,13 @@ untilTheEndOfTime :: CardDef
 untilTheEndOfTime = (asset "04015" "Until the End of Time" 1 Neutral)
   { cdSkills = [SkillCombat, SkillWild]
   , cdCardTraits = singleton Talent
+  }
+
+survivalKnife :: CardDef
+survivalKnife = (asset "04017" "Survival Knife" 2 Guardian)
+  { cdSkills = [SkillCombat]
+  , cdCardTraits = setFromList [Item, Weapon, Melee]
+  , cdSlots = [HandSlot]
   }
 
 venturer :: CardDef

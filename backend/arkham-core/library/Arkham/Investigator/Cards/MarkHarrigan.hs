@@ -41,7 +41,7 @@ instance HasAbilities MarkHarrigan where
           Self
           (ReactionAbility
             (OrWindowMatcher
-              [ DealtDamage Timing.When You
+              [ DealtDamage Timing.When AnySource You
               , AssetDealtDamage Timing.When (AssetControlledBy You)
               ]
             )

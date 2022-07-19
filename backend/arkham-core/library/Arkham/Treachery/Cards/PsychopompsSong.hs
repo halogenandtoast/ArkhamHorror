@@ -27,7 +27,7 @@ instance HasAbilities PsychopompsSong where
     Just (InvestigatorTarget iid) ->
       [ mkAbility attrs 1
           $ ForcedAbility
-          $ DealtDamage Timing.When
+          $ DealtDamage Timing.When AnySource
           $ InvestigatorWithId iid
       ]
     _ -> []

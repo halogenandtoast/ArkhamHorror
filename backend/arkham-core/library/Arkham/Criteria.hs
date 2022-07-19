@@ -99,6 +99,7 @@ data Criterion
   | UnderneathCardCount ValueMatcher UnderZone CardMatcher
   | Remembered ScenarioLogKeyListMatcher [ScenarioLogKey]
   | ActionCanBeUndone
+  | DuringPhase PhaseMatcher
   -- Special Criterion
   | Criteria [Criterion]
   | AnyCriterion [Criterion]

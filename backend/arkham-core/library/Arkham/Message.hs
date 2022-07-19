@@ -237,7 +237,7 @@ data Message
   -- end  new payment bs
   | CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
   | CreateTokenEffect (EffectMetadata Window Message) Source Token
-  | CreateStoryAssetAt Card LocationId
+  | CreateAssetAt Card Placement
   | PlaceAsset AssetId Placement
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
   | CreateTokenValueEffect Int Source Target

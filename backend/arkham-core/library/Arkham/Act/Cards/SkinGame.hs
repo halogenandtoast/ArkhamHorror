@@ -19,6 +19,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Campaign
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Trait
 
 newtype SkinGame = SkinGame ActAttrs
@@ -43,7 +44,7 @@ instance RunMessage SkinGame where
       vipAreaId <- getJustLocationIdByName "VIP Area"
       a <$ if completedExtracurricularActivity
         then pushAll
-          [ CreateStoryAssetAt peterClover cloverClubBarId
+          [ CreateAssetAt peterClover (AtLocation cloverClubBarId)
           , FindEncounterCard
             leadInvestigatorId
             (toTarget attrs)
@@ -51,7 +52,7 @@ instance RunMessage SkinGame where
           , AdvanceToAct (actDeckId attrs) Acts.fold A (toSource attrs)
           ]
         else pushAll
-          [ CreateStoryAssetAt drFrancisMorgan vipAreaId
+          [ CreateAssetAt drFrancisMorgan (AtLocation vipAreaId)
           , AdvanceToAct (actDeckId attrs) Acts.allIn A (toSource attrs)
           ]
     FoundEncounterCard _ target ec | isTarget attrs target -> do

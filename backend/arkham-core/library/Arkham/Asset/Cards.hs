@@ -145,6 +145,7 @@ allPlayerAssetCards = mapFromList $ map
   , digDeep
   , digDeep2
   , discOfItzamna2
+  , drElliHorowitz
   , drFrancisMorgan
   , drHenryArmitage
   , drMilanChristopher
@@ -1888,6 +1889,13 @@ venturer = (asset "04018" "Venturer" 4 Guardian)
   , cdCardTraits = setFromList [Ally, Wayfarer]
   , cdSlots = [AllySlot]
   , cdUses = Uses Supply 3
+  }
+
+drElliHorowitz :: CardDef
+drElliHorowitz = (asset "04021" ("Dr. Elli Horowitz" <:> "Assistant Curator") 3 Seeker)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = setFromList [Ally, Assistant]
+  , cdSlots = [AllySlot]
   }
 
 toothOfEztli :: CardDef

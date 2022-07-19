@@ -283,7 +283,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     case card of
       PlayerCard _ -> pure a
       EncounterCard ec -> pure $ a & discardL %~ (ec :)
-  CreateStoryAssetAt card _ -> do
+  CreateAssetAt card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
   AttachStoryTreacheryTo card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)

@@ -50,6 +50,7 @@ instance ToJSON EnemyMetadata where
 
 data AssetMetadata = AssetMetadata
   { amEvents :: HashSet EventId
+  , amAssets :: HashSet AssetId
   , amModifiers :: [Modifier]
   }
   deriving stock (Show, Eq, Generic)

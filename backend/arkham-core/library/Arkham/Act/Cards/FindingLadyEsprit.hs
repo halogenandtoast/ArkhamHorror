@@ -20,6 +20,7 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -59,7 +60,7 @@ instance RunMessage FindingLadyEsprit where
           <$> traverse (\t -> locationsWithLabels t (locationsFor t)) traits
 
       a <$ pushAll
-        ([CreateStoryAssetAt ladyEsprit ladyEspritSpawnLocation]
+        ([CreateAssetAt ladyEsprit (AtLocation ladyEspritSpawnLocation)]
         <> concat
              [ [ PlaceLocation card
                , SetLocationLabel (LocationId $ toCardId card) label

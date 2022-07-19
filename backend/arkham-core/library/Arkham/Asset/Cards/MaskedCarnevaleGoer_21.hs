@@ -43,7 +43,7 @@ instance RunMessage MaskedCarnevaleGoer_21 where
             innocentReveler = PlayerCard
               $ lookupPlayerCard Cards.innocentReveler (toCardId attrs)
           a <$ pushAll
-            [ CreateStoryAssetAt innocentReveler lid
+            [ CreateAssetAt innocentReveler (AtLocation lid)
             , Flipped (toSource attrs) innocentReveler
             ]
         _ -> error "not possible"

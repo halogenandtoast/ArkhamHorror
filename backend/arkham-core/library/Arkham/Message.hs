@@ -95,6 +95,8 @@ doNotMask :: Message -> Bool
 doNotMask UseCardAbility{} = True
 doNotMask _ = False
 
+data FlavorText = FlavorText (Maybe Text) [Text]
+
 data Message
   = UsedAbility InvestigatorId Ability [Window]
   | -- Story Card Messages
@@ -319,7 +321,6 @@ data Message
   | FindAndDrawEncounterCard InvestigatorId CardMatcher
   | FindEncounterCard InvestigatorId Target CardMatcher
   | FinishedWithMulligan InvestigatorId
-  | FlavorText (Maybe Text) [Text]
   | FocusCards [Card]
   | FocusTargets [Target]
   | FocusTokens [Token]

@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-prologue :: Message
+prologue :: FlavorText
 prologue = FlavorText
   (Just "The Ghouls Hunger...")
   [ "Friday, September 18, 1925. Arkham, Massachusetts. It is\

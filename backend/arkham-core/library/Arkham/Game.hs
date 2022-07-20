@@ -145,6 +145,7 @@ data Game = Game
   , gameDepthLock :: Int
   , -- Active Scenario/Campaign
     gameMode :: GameMode
+  , gameFlavorText :: Maybe FlavorText
   , -- Entities
     gameEntities :: Entities
   , gameEncounterDiscardEntities :: Entities

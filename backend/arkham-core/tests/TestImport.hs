@@ -437,6 +437,7 @@ newGame investigator = do
     , gameActionDiff = []
     , gameInAction = False
     , gameActiveCost = mempty
+    , gameActiveAbilities = mempty
     }
   where investigatorId = toId investigator
 

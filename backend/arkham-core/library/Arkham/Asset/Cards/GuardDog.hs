@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
+import Arkham.Id
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Source
 import Arkham.Timing qualified as Timing
@@ -32,9 +33,17 @@ instance HasAbilities GuardDog where
             Free
     ]
 
+toEnemyId :: [Window] -> EnemyId
+toEnemyId [] = error "invalid"
+toEnemyId (Window _ (Window.DealtDamage source  _ _) : ws) = case source of
+  EnemySource eid -> eid
+  EnemyAttackSource eid -> eid
+  _ -> toEnemyId ws
+toEnemyId (_ : ws) = toEnemyId ws
+
 instance RunMessage GuardDog where
   runMessage msg a@(GuardDog attrs) = case msg of
-    UseCardAbility iid source [Window Timing.When (Window.DealtDamage (EnemySource eid) _ _)] 1 _
-      | isSource attrs source
-      -> a <$ push (EnemyDamage eid iid source NonAttackDamageEffect 1)
+    UseCardAbility iid source windows' 1 _ | isSource attrs source -> do
+      let eid = toEnemyId windows'
+      a <$ push (EnemyDamage eid iid source NonAttackDamageEffect 1)
     _ -> GuardDog <$> runMessage msg attrs

@@ -606,7 +606,39 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   InvestigatorDirectDamage iid source damage horror
     | iid == investigatorId && not
       (investigatorDefeated || investigatorResigned)
-    -> a <$ push (InvestigatorDoAssignDamage iid source DamageAny (AssetWithModifier CanBeAssignedDirectDamage) damage horror [] [])
+    -> do
+      pushAll
+        ([ CheckWindow
+             [iid]
+             [Window Timing.When (Window.WouldTakeDamage source (toTarget a))]
+         | damage > 0
+         ]
+        <> [ CheckWindow
+               [iid]
+               [ Window
+                   Timing.When
+                   (Window.WouldTakeHorror source (toTarget a))
+               ]
+           | horror > 0
+           ]
+        <> [ CheckWindow
+               [iid]
+               [ Window
+                   Timing.When
+                   (Window.WouldTakeDamageOrHorror
+                     source
+                     (toTarget a)
+                     damage
+                     horror
+                   )
+               ]
+           | horror > 0 || damage > 0
+           ]
+        <> [ InvestigatorDoAssignDamage iid source DamageAny (AssetWithModifier CanBeAssignedDirectDamage) damage horror [] []
+           , CheckDefeated source
+           , After (InvestigatorTakeDamage iid source damage horror)
+           ])
+      pure a
   InvestigatorAssignDamage iid source strategy damage horror
     | iid == investigatorId && not
       (investigatorDefeated || investigatorResigned)

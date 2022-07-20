@@ -86,6 +86,6 @@ instance RunMessage DrElliHorowitz where
             ]
       pure a
     SearchNoneFound iid target | isTarget attrs target -> do
-      push $ choosOne iid [Label "No Cards Found" []]
+      push $ chooseOne iid [Label "No Cards Found" []]
       pure a
     _ -> DrElliHorowitz <$> runMessage msg attrs

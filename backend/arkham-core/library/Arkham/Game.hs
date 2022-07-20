@@ -2351,7 +2351,7 @@ createActiveCostForAdditionalCardCosts iid card = do
       { activeCostId = acId
       , activeCostCosts = cost
       , activeCostPayments = Cost.NoPayment
-      , activeCostTarget = ForCost (CardIdSource $ toCardId card)
+      , activeCostTarget = ForCost card
       , activeCostWindows = []
       , activeCostInvestigator = iid
       , activeCostSealedTokens = []
@@ -3376,9 +3376,15 @@ runGameMessage msg g = case msg of
     iid <- getActiveInvestigatorId
     mCost <- createActiveCostForAdditionalCardCosts iid card
     case mCost of
-      Nothing -> push $ PlaceAsset assetId placement
-      Just cost -> pushAll [CreatedCost (activeCostId cost), PlaceAsset assetId placement]
-    pure $ g & entitiesL . assetsL . at assetId ?~ asset
+      Nothing -> do
+        push $ PlaceAsset assetId placement
+        pure $ g & entitiesL . assetsL . at assetId ?~ asset
+      Just cost -> do
+        pushAll [CreatedCost (activeCostId cost), PlaceAsset assetId placement]
+        pure $ g
+          & (entitiesL . assetsL . at assetId ?~ asset)
+          & (activeCostL %~ insertMap (activeCostId cost) cost)
+
   CreateWeaknessInThreatArea card iid -> do
     let
       treachery = createTreachery card iid

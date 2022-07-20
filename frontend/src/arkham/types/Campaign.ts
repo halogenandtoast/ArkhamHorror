@@ -71,6 +71,7 @@ export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
 export interface LogContents {
   recorded: string[];
   recordedSets: any[]; // eslint-disable-line
+  recordedCounts: [string, number][]; // eslint-disable-line
 }
 
 export interface Campaign {
@@ -84,6 +85,7 @@ export interface Campaign {
 export const logContentsDecoder = JsonDecoder.object<LogContents>({
   recorded: JsonDecoder.array<string>(JsonDecoder.string, 'recorded[]'),
   recordedSets: JsonDecoder.array<any>(JsonDecoder.succeed, 'recordedSets[]'), // eslint-disable-line
+  recordedCounts: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'), '[string, number][]'),
 }, 'LogContents');
 
 export const campaignDecoder = JsonDecoder.object<Campaign>({

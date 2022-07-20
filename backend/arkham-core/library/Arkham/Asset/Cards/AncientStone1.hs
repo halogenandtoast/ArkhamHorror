@@ -6,18 +6,18 @@ module Arkham.Asset.Cards.AncientStone1
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
-import Arkham.Asset.Cards qualified as Cards
+import qualified Arkham.Action as Action
+import qualified Arkham.Asset.Cards as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import Arkham.Cost
 import Arkham.Criteria
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Investigator.Attrs ( Field (..) )
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Location.Attrs (Field(..))
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.SkillTest.Base
+import Arkham.SkillType
 import Arkham.Target
 
 newtype AncientStone1 = AncientStone1 AssetAttrs
@@ -57,10 +57,11 @@ instance RunMessage AncientStone1 where
         let amount = min clueCount 2
         difficulty <-
           skillTestDifficulty . fromJustNote "no skill test" <$> getSkillTest
+        shouldRecord <- not <$> getHasRecord YouHaveIdentifiedTheStone
         pushAll
-          [ InvestigatorDiscoverClues iid lid amount (Just Action.Investigate)
-          , Discard (toTarget attrs)
-          , RecordCount YouHaveIdentifiedTheStone difficulty
-          ]
+          $ [ InvestigatorDiscoverClues iid lid amount (Just Action.Investigate)
+            , Discard (toTarget attrs)
+            ]
+          <> [ RecordCount YouHaveIdentifiedTheStone difficulty | shouldRecord ]
         pure a
     _ -> AncientStone1 <$> runMessage msg attrs

@@ -38,7 +38,10 @@ data ActiveCost = ActiveCost
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data ActiveCostTarget = ForCard Card | ForAbility Ability
+data ActiveCostTarget
+  = ForCard Card
+  | ForAbility Ability
+  | ForCost Source -- used when the active cost will not determine an effect
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -46,6 +49,7 @@ activeCostAction :: ActiveCost -> Maybe Action
 activeCostAction ac = case activeCostTarget ac of
   ForAbility a -> Just $ fromMaybe Action.Ability (abilityAction a)
   ForCard c -> Just $ fromMaybe Action.Play (cdAction $ toCardDef c)
+  ForCost _ -> Nothing
 
 addActiveCostCost :: Cost -> ActiveCost -> ActiveCost
 addActiveCostCost cost ac = ac & costsL <>~ cost
@@ -54,6 +58,7 @@ activeCostSource :: ActiveCost -> Source
 activeCostSource ac = case activeCostTarget ac of
   ForAbility a -> abilitySource a
   ForCard c -> CardIdSource $ toCardId c
+  ForCost source -> source
 
 costsL :: Lens' ActiveCost Cost
 costsL = lens activeCostCosts $ \m x -> m { activeCostCosts = x }
@@ -179,6 +184,9 @@ instance RunMessage ActiveCost where
     CreatedCost acId | acId == activeCostId c -> do
       let iid = activeCostInvestigator c
       case activeCostTarget c of
+        ForCost _ -> do
+          pushAll [PayCost acId iid False (activeCostCosts c), PayCostFinished acId]
+          pure c
         ForCard card -> do
           modifiers' <- getModifiers
             (InvestigatorSource iid)
@@ -368,6 +376,7 @@ instance RunMessage ActiveCost where
         ResourceCost x -> do
           case activeCostTarget c of
             ForAbility{} -> push $ SpendResources iid x
+            ForCost{} -> push $ SpendResources iid x
             ForCard card -> do
               iids <- filter (/= iid) <$> getInvestigatorIds
               iidsWithModifiers <- for iids $ \iid' -> do
@@ -599,5 +608,6 @@ instance RunMessage ActiveCost where
               ]
             <> [ SealedToken token card | token <- activeCostSealedTokens c ]
             <> [FinishAction]
+        ForCost _ -> pure ()
       pure c
     _ -> pure c

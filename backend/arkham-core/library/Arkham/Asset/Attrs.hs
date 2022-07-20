@@ -244,6 +244,7 @@ instance SourceEntity AssetAttrs where
 controlledBy :: AssetAttrs -> InvestigatorId -> Bool
 controlledBy AssetAttrs {..} iid = case assetPlacement of
   InPlayArea iid' -> iid == iid'
+  AttachedToAsset _ (Just (InPlayArea iid')) -> iid == iid'
   _ -> False
 
 attachedToEnemy :: AssetAttrs -> EnemyId -> Bool

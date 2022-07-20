@@ -10,7 +10,7 @@ data Placement
   | InPlayArea InvestigatorId
   | InThreatArea InvestigatorId
   | AttachedToEnemy EnemyId
-  | AttachedToAsset AssetId
+  | AttachedToAsset AssetId (Maybe Placement)
   | AttachedToAct ActId
   | AttachedToAgenda ActId
   | AttachedToInvestigator InvestigatorId

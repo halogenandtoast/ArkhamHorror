@@ -101,6 +101,7 @@ allPlayerAssetCards = mapFromList $ map
   , alchemicalTransmutation
   , alyssaGraham
   , analyticalMind
+  , ancientStone1
   , aquinnah1
   , aquinnah3
   , arcaneEnlightenment
@@ -1896,6 +1897,13 @@ drElliHorowitz = (asset "04021" ("Dr. Elli Horowitz" <:> "Assistant Curator") 3 
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Ally, Assistant]
   , cdSlots = [AllySlot]
+  }
+
+ancientStone1 :: CardDef
+ancientStone1 = (asset "04022" ("Ancient Stone" <:> "Unidentified") 1 Seeker)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Item, Relic]
+  , cdSlots = [HandSlot]
   }
 
 toothOfEztli :: CardDef

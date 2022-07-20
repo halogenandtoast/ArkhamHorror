@@ -298,6 +298,7 @@ allPlayerAssetCards = mapFromList $ map
   , thirtyTwoColt
   , toothOfEztli
   , trackShoes
+  , treasureHunter1
   , trenchKnife
   , trueGrit
   , tryAndTryAgain3
@@ -1913,6 +1914,15 @@ toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
   , cdCardTraits = setFromList [Item, Relic]
   , cdSlots = [AccessorySlot]
   }
+
+treasureHunter1 :: CardDef
+treasureHunter1 =
+  (asset "04025" "Treasure Hunter" 1 Rogue)
+    { cdSkills = [SkillIntellect]
+    , cdCardTraits = setFromList [Ally, Wayfarer]
+    , cdSlots = [AllySlot]
+    , cdLevel = 1
+    }
 
 decoratedSkull :: CardDef
 decoratedSkull =

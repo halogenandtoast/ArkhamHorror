@@ -15,7 +15,7 @@ const props = defineProps<Props>()
 const { game: newGame } = await fetchGame(props.gameId, false)
 const game = ref<Arkham.Game>(newGame)
 const campaignLog = game.value.campaign?.log || { recorded: [], recodedSets: [] }
-const { recorded, recordedSets } = campaignLog
+const { recorded, recordedSets, recordedCounts } = campaignLog
 
 function toCapitalizedWords(name) {
   const words = name.match(/[A-Za-z][a-z]*/g) || [];
@@ -71,6 +71,9 @@ const fullName = (name: Name): string => {
           <li v-for="setValue in setValues" :key="setValue">{{cardCodeToTitle(setValue.contents)}}</li>
         </ul>
       </li>
+    </ul>
+    <ul>
+      <li v-for="[key, value] in recordedCounts" :key="key">{{toCapitalizedWords(key)}}: {{value}}.</li>
     </ul>
   </div>
 </template>

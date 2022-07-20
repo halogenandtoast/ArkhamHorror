@@ -106,6 +106,7 @@ data CampaignLogKey
   -- ^ Carnevale of Horrors
   | YouHaveIdentifiedTheSolution
   | YouHaveTranslatedTheGlyphs
+  | YouHaveIdentifiedTheStone
   -- ^ Player Cards
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

@@ -35,9 +35,9 @@ instance HasModifiersFor DrElliHorowitz where
       Nothing -> pure []
       Just iid -> do
         placement <- field AssetPlacement aid
-        if placement == AttachedToAsset (toId a)
-           then pure $ toModifiers a [AsIfUnderControlOf iid]
-           else pure []
+        pure case placement of
+          AttachedToAsset aid' _ | aid' == toId a -> toModifiers a [AsIfUnderControlOf iid]
+          _ -> []
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities DrElliHorowitz where
@@ -73,17 +73,19 @@ instance RunMessage DrElliHorowitz where
                 _ -> Nothing
           allM (\matcher -> anyM (\t -> matchToken iid t matcher) tokens) sealTokenMatchers
       validCardsAfterSeal <- filterM validAfterSeal validCards
-      pushAll
-        [ chooseOne
-            iid
-            [ TargetLabel
-                (CardIdTarget $ toCardId c)
-                [CreateAssetAt c $ AttachedToAsset $ toId attrs]
-            | c <- validCardsAfterSeal
+      if null validCardsAfterSeal
+        then push $ chooseOne iid [Label "No Cards Found" []]
+        else pushAll
+            [ chooseOne
+                iid
+                [ TargetLabel
+                    (CardIdTarget $ toCardId c)
+                    [CreateAssetAt c $ AttachedToAsset (toId attrs) (Just $ InPlayArea iid)]
+                | c <- validCardsAfterSeal
+                ]
             ]
-        ]
       pure a
-    SearchNoneFound _ target | isTarget attrs target -> do
-      push $ Label "No Cards Found" []
+    SearchNoneFound iid target | isTarget attrs target -> do
+      push $ choosOne iid [Label "No Cards Found" []]
       pure a
     _ -> DrElliHorowitz <$> runMessage msg attrs

@@ -1211,8 +1211,13 @@ getAssetsMatching matcher = do
       iids <- selectList investigatorMatcher
       filterM (fieldP AssetController (maybe False (`elem` iids)) . toId) as
     AssetAttachedToAsset assetMatcher -> do
-      placements <- selectListMap AttachedToAsset assetMatcher
-      pure $ filter ((`elem` placements) . assetPlacement . toAttrs) as
+      placements <- selectList assetMatcher
+      let
+        isValid a =
+          case assetPlacement (toAttrs a) of
+            AttachedToAsset placementId _ -> placementId `elem` placements
+            _ -> False
+      pure $ filter isValid as
     AssetAtLocation lid -> pure $ flip filter as $ \a -> case assetPlacement (toAttrs a) of
       AtLocation lid' -> lid == lid'
       AttachedToLocation lid' -> lid == lid'
@@ -1669,7 +1674,7 @@ instance Projection AssetAttrs where
         InThreatArea iid -> field InvestigatorLocation iid
         AttachedToInvestigator iid -> field InvestigatorLocation iid
         AttachedToEnemy eid -> field EnemyLocation eid
-        AttachedToAsset aid' -> field AssetLocation aid'
+        AttachedToAsset aid' _ -> field AssetLocation aid'
         AttachedToAct _ -> pure Nothing
         AttachedToAgenda _ -> pure Nothing
         Unplaced -> pure Nothing
@@ -2324,6 +2329,34 @@ createActiveCostForCard iid card windows' = do
     , activeCostInvestigator = iid
     , activeCostSealedTokens = []
     }
+
+createActiveCostForAdditionalCardCosts :: (MonadRandom m, HasGame m) => InvestigatorId -> Card -> m (Maybe ActiveCost)
+createActiveCostForAdditionalCardCosts iid card = do
+  acId <- getRandom
+  modifiers' <- getModifiers (InvestigatorSource iid) (CardIdTarget $ toCardId card)
+  modifiers'' <- getModifiers (InvestigatorSource iid) (CardTarget card)
+  let allModifiers = modifiers' <> modifiers''
+  let
+    additionalCosts = flip mapMaybe allModifiers $ \case
+      AdditionalCost c -> Just c
+      _ -> Nothing
+    sealTokenCosts = flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
+      Keyword.Seal matcher -> Just $ Cost.SealCost matcher
+      _ -> Nothing
+    cost = mconcat $ additionalCosts <> sealTokenCosts
+
+  pure $ if cost == Cost.Free
+     then Nothing
+     else Just $ ActiveCost
+      { activeCostId = acId
+      , activeCostCosts = cost
+      , activeCostPayments = Cost.NoPayment
+      , activeCostTarget = ForCost (CardIdSource $ toCardId card)
+      , activeCostWindows = []
+      , activeCostInvestigator = iid
+      , activeCostSealedTokens = []
+      }
+
 
 runGameMessage :: Message -> Game -> GameT Game
 runGameMessage msg g = case msg of
@@ -3340,13 +3373,11 @@ runGameMessage msg g = case msg of
     let
       asset = createAsset card
       assetId = toId asset
-
-      sealTokenCosts =
-        flip mapMaybe (setToList $ cdKeywords $ toCardDef c) $ \case
-          Keyword.Seal matcher -> Just $ matcher
-          _ -> Nothing
-
-    push $ PlaceAsset assetId placement
+    iid <- getActiveInvestigatorId
+    mCost <- createActiveCostForAdditionalCardCosts iid card
+    case mCost of
+      Nothing -> push $ PlaceAsset assetId placement
+      Just cost -> pushAll [CreatedCost (activeCostId cost), PlaceAsset assetId placement]
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
   CreateWeaknessInThreatArea card iid -> do
     let

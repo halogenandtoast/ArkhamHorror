@@ -25,6 +25,7 @@ spec = describe "Agnes Baker" $ do
           )
         $ do
             runMessages
+            chooseOnlyOption "apply damage"
             chooseOptionMatching
               "use ability"
               (\case
@@ -53,6 +54,8 @@ spec = describe "Agnes Baker" $ do
           (entitiesL . locationsL %~ insertEntity location)
         $ do
             runMessages
+            chooseOnlyOption "apply damage"
+            chooseOnlyOption "apply damage"
             chooseOnlyOption "start skill test"
             chooseOnlyOption "apply results"
 

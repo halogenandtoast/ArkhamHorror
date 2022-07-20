@@ -41,7 +41,7 @@ data ActiveCost = ActiveCost
 data ActiveCostTarget
   = ForCard Card
   | ForAbility Ability
-  | ForCost Source -- used when the active cost will not determine an effect
+  | ForCost Card -- used when the active cost will not determine an effect
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -58,7 +58,7 @@ activeCostSource :: ActiveCost -> Source
 activeCostSource ac = case activeCostTarget ac of
   ForAbility a -> abilitySource a
   ForCard c -> CardIdSource $ toCardId c
-  ForCost source -> source
+  ForCost c -> CardIdSource $ toCardId c
 
 costsL :: Lens' ActiveCost Cost
 costsL = lens activeCostCosts $ \m x -> m { activeCostCosts = x }
@@ -608,6 +608,7 @@ instance RunMessage ActiveCost where
               ]
             <> [ SealedToken token card | token <- activeCostSealedTokens c ]
             <> [FinishAction]
-        ForCost _ -> pure ()
+        ForCost card ->
+          pushAll [ SealedToken token card | token <- activeCostSealedTokens c ]
       pure c
     _ -> pure c

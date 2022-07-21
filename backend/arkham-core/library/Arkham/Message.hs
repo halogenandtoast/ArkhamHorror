@@ -634,12 +634,6 @@ chooseAmounts iid label total choiceMap target =
 chooseUpgradeDeck :: InvestigatorId -> Message
 chooseUpgradeDeck iid = Ask iid ChooseUpgradeDeck
 
-story :: [InvestigatorId] -> Message -> Message
-story iids msg = AskMap
-  (mapFromList
-    [ (iid, ChooseOne [Label "Continue" [msg]]) | iid <- iids ]
-  )
-
 uiMessageToMessages :: UIMessage Message -> [Message]
 uiMessageToMessages = \case
   Unlabeled xs -> xs

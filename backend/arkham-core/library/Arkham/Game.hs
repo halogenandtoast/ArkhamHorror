@@ -3544,6 +3544,14 @@ handleActionDiff old new = if gameInAction new
 delve :: Game -> Game
 delve g = g { gameDepthLock = gameDepthLock g + 1 }
 
+story :: (Monad m, HasGame m) => [InvestigatorId] -> FlavorText -> m Message
+story iids flavorText = do
+  pure $ AskMap
+    $ mapFromList
+      [ (iid, ChooseOne [Label "Continue" [ClearFlavorText]]) | iid <- iids ]
+
+
+
 instance HasAbilities Game where
   getAbilities g =
     getAbilities (gameEntities g)

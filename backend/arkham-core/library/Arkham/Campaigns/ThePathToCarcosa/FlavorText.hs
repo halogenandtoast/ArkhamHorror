@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-lolaPrologue :: Message
+lolaPrologue :: FlavorText
 lolaPrologue = FlavorText
   (Just "Lola Prologue")
   [ "Act I came and went without a hitch, as it often did in\
@@ -28,7 +28,7 @@ lolaPrologue = FlavorText
     \ his gaze is inescapable. Everything goes black."
   ]
 
-prologue :: Message
+prologue :: FlavorText
 prologue = FlavorText
   (Just "Prologue")
   [ "You turn over the folded program in your hand, reading it for what seems\
@@ -68,7 +68,7 @@ prologue = FlavorText
     \ however, you find yourself drifting…drifting…to sleep."
   ]
 
-lunacysReward1 :: Message
+lunacysReward1 :: FlavorText
 lunacysReward1 = FlavorText
   (Just "Lunacy's Reward 1")
   [ "The change in the atmosphere has you curious.\
@@ -89,7 +89,7 @@ lunacysReward1 = FlavorText
     \ steering wheel."
   ]
 
-lunacysReward2 :: Message
+lunacysReward2 :: FlavorText
 lunacysReward2 = FlavorText
   (Just "Lunacy's Reward 2")
   [ "You can’t trust your senses. This is all a trick, an\
@@ -101,7 +101,7 @@ lunacysReward2 = FlavorText
     \ vehicle and drive toward Southside, where you hope to find answers."
   ]
 
-lunacysReward3 :: Message
+lunacysReward3 :: FlavorText
 lunacysReward3 = FlavorText
   (Just "Lunacy's Reward 3")
   [ "You dare not risk stepping back inside that\
@@ -118,7 +118,7 @@ lunacysReward3 = FlavorText
     \ determination."
   ]
 
-danielSurvived :: Message
+danielSurvived :: FlavorText
 danielSurvived = FlavorText
   (Just "Daniel Survived")
   [ "You decide to lay low for some time in Ma’s\
@@ -150,7 +150,7 @@ danielSurvived = FlavorText
     \ he has been choked to death."
   ]
 
-danielDidNotSurvive :: Message
+danielDidNotSurvive :: FlavorText
 danielDidNotSurvive = FlavorText
   (Just "Daniel Did Not Survive")
   [ "You decide to lay low for some time in Ma’s\
@@ -166,7 +166,7 @@ danielDidNotSurvive = FlavorText
     \ His final moments play out in your mind over and over again."
   ]
 
-danielWasPossessed :: Message
+danielWasPossessed :: FlavorText
 danielWasPossessed = FlavorText
   (Just "Daniel Was Possessed")
   [ "You decide to lay low for some time in Ma’s\
@@ -201,7 +201,7 @@ danielWasPossessed = FlavorText
     \ and over again."
   ]
 
-ignoreTheWarning :: Message
+ignoreTheWarning :: FlavorText
 ignoreTheWarning = FlavorText
   (Just "Ignore the Warning")
   [ "For hours, you struggle with this insight into\
@@ -209,7 +209,7 @@ ignoreTheWarning = FlavorText
     \ through this madness."
   ]
 
-headTheWarning :: Message
+headTheWarning :: FlavorText
 headTheWarning = FlavorText
   (Just "Head the Warning")
   [ "For hours, you struggle with this insight into\
@@ -217,7 +217,7 @@ headTheWarning = FlavorText
     \ through this madness."
   ]
 
-epilogue :: Message
+epilogue :: FlavorText
 epilogue = FlavorText
   (Just "Epilogue")
     [ "It has taken months of preparation, but you are finally ready to unveil your\

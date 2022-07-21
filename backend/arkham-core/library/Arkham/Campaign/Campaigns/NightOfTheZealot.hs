@@ -26,8 +26,9 @@ instance RunMessage NightOfTheZealot where
   runMessage msg c@(NightOfTheZealot attrs@CampaignAttrs {..}) = case msg of
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- getInvestigatorIds
+      clearStory <- story investigatorIds prologue
       c <$ pushAll
-        [ story investigatorIds prologue
+        [ clearStory
         , NextCampaignStep Nothing
         ]
     NextCampaignStep _ -> do

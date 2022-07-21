@@ -136,6 +136,8 @@ data Message
   | CheckForRemainingInvestigators
   | AddDirectConnection LocationId LocationId
   | AddCampaignCardToDeck InvestigatorId CardDef
+  | RemoveCardFromDeckForCampaign InvestigatorId PlayerCard
+  | AddCardToDeckForCampaign InvestigatorId PlayerCard
   | -- Adding Cards to Hand
     AddFocusedToHand InvestigatorId Target Zone CardId
   | AddToHand InvestigatorId Card

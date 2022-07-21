@@ -86,6 +86,7 @@ allPlayerEventCards = mapFromList $ map
   , cunningDistraction
   , daringManeuver
   , darkMemory
+  , darkPact
   , darkProphecy
   , decipheredReality5
   , delveTooDeep
@@ -1201,6 +1202,13 @@ dumbLuck = (event "04034" "Dumb Luck" 2 Survivor)
     $ FailureResult
     $ LessThan
     $ Static 3
+  }
+
+darkPact :: CardDef
+darkPact = (event "04038" "Dark Pact" 2 Neutral)
+  { cdCardTraits = singleton Pact
+  , cdCardSubType = Just BasicWeakness
+  , cdCardInHandEffects = True
   }
 
 secondWind :: CardDef

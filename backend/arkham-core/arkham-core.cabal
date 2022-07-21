@@ -697,6 +697,7 @@ library
       Arkham.Event.Cards.CunningDistraction
       Arkham.Event.Cards.DaringManeuver
       Arkham.Event.Cards.DarkMemory
+      Arkham.Event.Cards.DarkPact
       Arkham.Event.Cards.DarkProphecy
       Arkham.Event.Cards.DecipheredReality5
       Arkham.Event.Cards.DelveTooDeep

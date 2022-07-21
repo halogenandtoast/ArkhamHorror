@@ -753,6 +753,7 @@ getInvestigatorsMatching matcher = do
                 pure $ foldr applyAfterSkillModifiers (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers') modifiers'
               iconsForCard _ = pure []
               applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
+              applySkillModifiers (RemoveSkillIcons xs) ys = ys \\ xs
               applySkillModifiers _ ys = ys
               applyAfterSkillModifiers DoubleSkillIcons ys = ys <> ys
               applyAfterSkillModifiers _ ys = ys

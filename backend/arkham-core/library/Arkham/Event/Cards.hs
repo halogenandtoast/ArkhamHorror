@@ -92,6 +92,7 @@ allPlayerEventCards = mapFromList $ map
   , devilsLuck
   , dodge
   , drawnToTheFlame
+  , dumbLuck
   , dynamiteBlast
   , dynamiteBlast2
   , eatLead2
@@ -1188,6 +1189,18 @@ improvisedWeapon = (event "04033" "Improvised Weapon" 1 Survivor)
   { cdCardTraits = setFromList [Tactic, Improvised]
   , cdAction = Just Action.Fight
   , cdPlayableFromDiscard = True
+  }
+
+dumbLuck :: CardDef
+dumbLuck = (event "04034" "Dumb Luck" 2 Survivor)
+  { cdSkills = [SkillAgility, SkillAgility]
+  , cdCardTraits = singleton Fortune
+  , cdFastWindow =
+    Just
+    $ SkillTestResult Timing.After You (WhileEvadingAnEnemy NonEliteEnemy)
+    $ FailureResult
+    $ LessThan
+    $ Static 3
   }
 
 secondWind :: CardDef

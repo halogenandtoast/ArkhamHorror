@@ -255,6 +255,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         msgs <- windows [Window.ChosenRandomLocation randomLocationId]
         a <$ pushAll (msgs <> [ChosenRandomLocation target randomLocationId])
   PlaceLocation card -> pure $ a & setAsideCardsL %~ delete card
+  PutCardOnTopOfEncounterDeck _ card -> do
+    let encounterDeck = card : unDeck scenarioEncounterDeck
+    pure
+      $ a
+      & (setAsideCardsL %~ deleteFirstMatch (== EncounterCard card))
+      & (encounterDeckL .~ Deck encounterDeck)
   AddToEncounterDeck card -> do
     encounterDeck <- shuffleM $ card : unDeck scenarioEncounterDeck
     pure

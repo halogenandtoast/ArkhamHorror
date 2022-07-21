@@ -121,6 +121,7 @@ allPlayerEventCards = mapFromList $ map
   , illSeeYouInHell
   , imOuttaHere
   , improvisation
+  , improvisedWeapon
   , infighting3
   , iveGotAPlan
   , iveGotAPlan2
@@ -1180,6 +1181,13 @@ darkProphecy = (event "04032" "Dark Prophecy" 1 Mystic)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = singleton Augury
   , cdFastWindow = Just $ WouldRevealChaosToken Timing.When You
+  }
+
+improvisedWeapon :: CardDef
+improvisedWeapon = (event "04033" "Improvised Weapon" 1 Survivor)
+  { cdCardTraits = setFromList [Tactic, Improvised]
+  , cdAction = Just Action.Fight
+  , cdPlayableFromDiscard = True
   }
 
 secondWind :: CardDef

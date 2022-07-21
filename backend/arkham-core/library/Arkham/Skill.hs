@@ -105,6 +105,7 @@ instance FromJSON Skill where
       "03235" -> Skill . TorrentOfPower <$> parseJSON v
       "03272" -> Skill . NotWithoutAFight <$> parseJSON v
       "03312" -> Skill . SealOfTheElderSign5 <$> parseJSON v
+      "04036" -> Skill . LastChance <$> parseJSON v
       "04153" -> Skill . TrueUnderstanding <$> parseJSON v
       "04201" -> Skill . TakeHeart <$> parseJSON v
       "60502" -> Skill . NeitherRainNorSnow <$> parseJSON v
@@ -147,6 +148,7 @@ allSkills = mapFromList $ map (cbCardCode &&& (curry . cbCardBuilder))
   , Skill <$> torrentOfPower
   , Skill <$> notWithoutAFight
   , Skill <$> sealOfTheElderSign5
+  , Skill <$> lastChance
   , Skill <$> trueUnderstanding
   , Skill <$> takeHeart
   , Skill <$> neitherRainNorSnow

@@ -48,6 +48,7 @@ skillIconCount st@SkillTest {..} = do
   matches SkillWild = True
   matches s = s == skillTestSkillType
   applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
+  applySkillModifiers (RemoveSkillIcons xs) ys = ys \\ xs
   applySkillModifiers _ ys = ys
   applyAfterSkillModifiers DoubleSkillIcons ys = ys <> ys
   applyAfterSkillModifiers _ ys = ys

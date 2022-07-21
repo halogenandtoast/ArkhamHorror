@@ -3,10 +3,8 @@ module Arkham.Prelude
   , module Arkham.Prelude
   ) where
 
-import ClassyPrelude as X hiding (on, (\\), foldlM)
+import ClassyPrelude as X hiding ( foldlM, on, (\\) )
 
-import Data.Semigroup as X (Max(..), Min(..), Sum(..))
-import Data.Kind as X (Type)
 import Control.Lens as X
   ( Lens'
   , Traversal'
@@ -32,29 +30,32 @@ import Control.Lens as X
   )
 import Control.Lens.TH as X
 import Control.Monad.Extra as X
-  (allM, andM, anyM, concatMapM, fromMaybeM, mapMaybeM, mconcatMapM)
-import Control.Monad.Random as X (MonadRandom)
-import Control.Monad.Random.Class as X (getRandom, getRandomR, getRandoms)
-import Control.Monad.Random.Strict as X (Random)
+  ( allM, andM, anyM, concatMapM, fromMaybeM, mapMaybeM, mconcatMapM )
+import Control.Monad.Random as X ( MonadRandom )
+import Control.Monad.Random.Class as X ( getRandom, getRandomR, getRandoms )
+import Control.Monad.Random.Strict as X ( Random )
 import Data.Aeson as X
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Text
 import Data.Char qualified as C
-import Data.Coerce as X (coerce)
-import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Coerce as X ( coerce )
+import Data.HashMap.Strict qualified as HashMap
 import Data.HashSet qualified as HashSet
-import Data.List as X (nub, (\\))
+import Data.Kind as X ( Type )
+import Data.List as X ( nub, (\\) )
 import Data.List qualified as L
-import Data.List.NonEmpty as X (NonEmpty(..), nonEmpty)
+import Data.List.NonEmpty as X ( NonEmpty (..), nonEmpty )
 import Data.List.NonEmpty qualified as NE
+import Data.Semigroup as X ( Max (..), Min (..), Sum (..) )
 import Data.Text.Lazy qualified as TL
 import Data.Text.Lazy.Builder
-import Data.UUID as X (UUID)
+import Data.UUID as X ( UUID )
 import GHC.Stack as X
-import Language.Haskell.TH hiding (location)
-import Safe as X (fromJustNote)
+import Language.Haskell.TH hiding ( location )
+import Safe as X ( fromJustNote )
 import System.Random.Shuffle as X
 
-import Data.Foldable (foldlM)
+import Data.Foldable ( foldlM )
 
 suffixedNamer :: FieldNamer
 suffixedNamer _ _ n = case dropWhile C.isLower (nameBase n) of
@@ -203,13 +204,15 @@ findKey p = fmap fst . find (p . snd) . mapToList
 getMax0 :: (Ord a, Num a) => Max a -> a
 getMax0 current = getMax $ Max 0 <> current
 
-foldMapM
-  :: (Monad m, Monoid w, Foldable t)
-  => (a -> m w)
-  -> t a
-  -> m w
+foldMapM :: (Monad m, Monoid w, Foldable t) => (a -> m w) -> t a -> m w
 foldMapM f = foldlM
   (\acc a -> do
     w <- f a
-    return $! mappend acc w)
+    return $! mappend acc w
+  )
   mempty
+
+frequencies :: Hashable a => [a] -> HashMap a Int
+frequencies as = HashMap.map getSum $ foldr (unionWith (<>)) mempty $ map
+  (`HashMap.singleton` (Sum 1))
+  as

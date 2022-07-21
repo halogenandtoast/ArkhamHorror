@@ -21,7 +21,7 @@ import Data.Typeable
 
 -- start importing directly
 import Arkham.Investigator.Investigators (FatherMateoElderSignEffect(..), fatherMateoElderSignEffect)
-import Arkham.Asset.Assets (MistsOfRlyehEffect(..), mistsOfRlyehEffect)
+import Arkham.Asset.Assets (MistsOfRlyehEffect(..), mistsOfRlyehEffect, Yaotl1Effect(..), yaotl1Effect)
 
 data Effect = forall a. IsEffect a => Effect a
 
@@ -176,6 +176,7 @@ allEffects =
     , ("03306", Effect . eideticMemory3)
     , ("04004", Effect . fatherMateoElderSignEffect)
     , ("04029", Effect . mistsOfRlyehEffect)
+    , ("04035", Effect . yaotl1Effect)
     , ("05114", Effect . meatCleaver)
     , ("50008", Effect . mindWipe3)
     , ("50033", Effect . arkhamWoodsGreatWillow)
@@ -273,6 +274,7 @@ instance FromJSON Effect where
       "03306" -> Effect . EideticMemory3 <$> parseJSON v
       "04004" -> Effect . FatherMateoElderSignEffect <$> parseJSON v
       "04029" -> Effect . MistsOfRlyehEffect <$> parseJSON v
+      "04035" -> Effect . Yaotl1Effect <$> parseJSON v
       "05114" -> Effect . MeatCleaver <$> parseJSON v
       "50008" -> Effect . MindWipe3 <$> parseJSON v
       "50033" -> Effect . ArkhamWoodsGreatWillow <$> parseJSON v

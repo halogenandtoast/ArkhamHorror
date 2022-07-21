@@ -65,6 +65,7 @@ allPlayerSkillCards = mapFromList $ map
   , guts
   , inquiringMind
   , inspiringPresence
+  , lastChance
   , leadership
   , manualDexterity
   , neitherRainNorSnow
@@ -344,6 +345,12 @@ sealOfTheElderSign5 :: CardDef
 sealOfTheElderSign5 = (skill "03312" "Seal of the Elder Sign" [SkillWild] Mystic)
   { cdCardTraits = setFromList [Spell, Expert]
   , cdLevel = 5
+  }
+
+lastChance :: CardDef
+lastChance = (skill "04036" "Last Chance" [SkillWild, SkillWild, SkillWild, SkillWild, SkillWild] Survivor)
+  { cdCardTraits = singleton Gambit
+  , cdCommitRestrictions = [OnlyCardCommittedToTest]
   }
 
 trueUnderstanding :: CardDef

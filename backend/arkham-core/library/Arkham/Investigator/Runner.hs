@@ -1441,7 +1441,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     modifiers' <- getModifiers (toSource a) (toTarget a)
     skillTest <- fromJustNote "missing skill test" <$> getSkillTest
     committedCards <- field InvestigatorCommittedCards iid
+    allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
     let
+      onlyCardComittedToTestCommitted = any (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef) allCommittedCards
       committedCardCodes =
         map (toCardCode . snd) . HashMap.elems $ skillTestCommittedCards
           skillTest
@@ -1460,7 +1462,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         | CannotPerformSkillTest `notElem` skillTestModifiers'
         ]
       beginMessage = BeforeSkillTest iid skillType skillDifficulty
-    committableCards <- if cannotCommitCards
+    committableCards <- if cannotCommitCards || onlyCardComittedToTestCommitted
       then pure []
       else do
         committableTreacheries <- filterM
@@ -1472,6 +1474,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             let
               passesCommitRestriction = \case
                 CommittableTreachery -> error "unhandled"
+                OnlyCardCommittedToTest -> pure $ null committedCardCodes
                 MaxOnePerTest ->
                   pure $ toCardCode card `notElem` committedCardCodes
                 OnlyYourTest -> pure True
@@ -1546,13 +1549,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     skillTest <- fromJustNote "missing skill test" <$> getSkillTest
     when (locationId == investigatorLocation || canCommit) $ do
       committedCards <- field InvestigatorCommittedCards iid
+      allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
       let
+        onlyCardComittedToTestCommitted = any (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef) allCommittedCards
         committedCardCodes =
           map (toCardCode . snd) . HashMap.elems $ skillTestCommittedCards
             skillTest
       modifiers' <- getModifiers (toSource a) (toTarget a)
       let beginMessage = BeforeSkillTest iid skillType skillDifficulty
-      committableCards <- if notNull committedCards
+      committableCards <- if notNull committedCards || onlyCardComittedToTestCommitted
         then pure []
         else do
           committableTreacheries <- filterM
@@ -1571,6 +1576,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                     CommittableTreachery -> error "unhandled"
                     MaxOnePerTest ->
                       pure $ toCardCode card `notElem` committedCardCodes
+                    OnlyCardCommittedToTest -> pure $ null committedCardCodes
                     OnlyYourTest -> pure False
                     OnlyIfYourLocationHasClues -> pure $ clueCount > 0
                     ScenarioAbility -> pure isScenarioAbility

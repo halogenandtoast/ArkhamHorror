@@ -12,5 +12,6 @@ data CommitRestriction
   | MinSkillTestValueDifference Int
   | SelfCanCommitWhen InvestigatorMatcher
   | CommittableTreachery
+  | OnlyCardCommittedToTest
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

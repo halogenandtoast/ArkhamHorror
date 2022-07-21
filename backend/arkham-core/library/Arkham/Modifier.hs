@@ -44,6 +44,7 @@ data ModifierType
   | AddKeyword Keyword
   | AddTrait Trait
   | AddSkillIcons [SkillType]
+  | RemoveSkillIcons [SkillType]
   | AdditionalActions Int
   | AdditionalStartingUses Int
   | AdditionalCost Cost

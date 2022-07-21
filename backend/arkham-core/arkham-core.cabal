@@ -731,6 +731,7 @@ library
       Arkham.Event.Cards.IllSeeYouInHell
       Arkham.Event.Cards.ImOuttaHere
       Arkham.Event.Cards.Improvisation
+      Arkham.Event.Cards.ImprovisedWeapon
       Arkham.Event.Cards.Infighting3
       Arkham.Event.Cards.IveGotAPlan
       Arkham.Event.Cards.IveGotAPlan2
@@ -1194,6 +1195,7 @@ library
       Arkham.Skill.Cards.Guts
       Arkham.Skill.Cards.InquiringMind
       Arkham.Skill.Cards.InspiringPresence
+      Arkham.Skill.Cards.LastChance
       Arkham.Skill.Cards.Leadership
       Arkham.Skill.Cards.ManualDexterity
       Arkham.Skill.Cards.NeitherRainNorSnow

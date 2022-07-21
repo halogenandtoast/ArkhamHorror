@@ -5,23 +5,30 @@ module Arkham.Event.Cards.DarkPact
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Card
+import Arkham.Card.PlayerCard
 import Arkham.Classes
+import Arkham.Criteria
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Message
+import Arkham.Matcher
+import Arkham.Message hiding (InvestigatorEliminated)
+import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype DarkPact = DarkPact EventAttrs
-  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsEvent, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkPact :: EventCard DarkPact
 darkPact = event DarkPact Cards.darkPact
 
-instance HasAbilities DarkMemory where
-  getAbilities (DarkMemory x) =
+instance HasAbilities DarkPact where
+  getAbilities (DarkPact x) =
     [ restrictedAbility x 1 InYourHand $ ForcedAbility $ OrWindowMatcher
         [ GameEnds Timing.When
-        , InvestigatorEliminated Timing.When (InvestigatorWithId iid)
+        , InvestigatorEliminated Timing.When You
         ]
     ]
 
@@ -46,7 +53,7 @@ instance RunMessage DarkPact where
           PlayerCard pc -> do
             thePriceOfFailure <- genPlayerCard Treacheries.thePriceOfFailure
             pushAll
-              [ RemoveCardFromDeckForCampaign iid $ toCard attrs
+              [ RemoveCardFromDeckForCampaign iid pc
               , AddCardToDeckForCampaign iid thePriceOfFailure
               ]
             pure e

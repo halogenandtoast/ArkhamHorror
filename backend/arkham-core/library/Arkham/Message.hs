@@ -477,6 +477,7 @@ data Message
   | RemoveDiscardFromGame InvestigatorId
   | RemoveDoom Target Int
   | RemoveEnemy EnemyId
+  | RemoveTreachery TreacheryId
   | RemoveFromDiscard InvestigatorId CardId
   | RemoveFromEncounterDiscard EncounterCard
   | RemoveFromGame Target

@@ -108,5 +108,11 @@ instance RunMessage CampaignAttrs where
       (<>)
       DrivenInsaneInvestigators
       (singleton $ Recorded $ unInvestigatorId iid)
+    AddCardToDeckForCampaign iid pc -> do
+      pure $ a & decksL %~ adjustMap (withDeck (pc { pcOwner = Just iid } :)) iid
+    RemoveCardFromDeckForCampaign iid pc ->
+      pure
+        $ a
+        & decksL
+        %~ adjustMap (withDeck (filter (/= pc))) iid
     _ -> pure a
-

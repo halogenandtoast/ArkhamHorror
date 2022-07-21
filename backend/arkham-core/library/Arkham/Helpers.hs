@@ -32,6 +32,9 @@ drawCard (x : xs) = (Just x, xs)
 newtype Deck a = Deck { unDeck :: [a] }
   deriving newtype (Semigroup, Monoid, ToJSON, FromJSON, Eq)
 
+withDeck :: ([a] -> [a]) -> Deck a -> Deck a
+withDeck f (Deck xs) = Deck (f xs)
+
 instance Show (Deck a) where
   show _ = "<Deck>"
 

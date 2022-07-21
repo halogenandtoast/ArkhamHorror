@@ -1326,11 +1326,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               $ push (DrewTreachery iid $ PlayerCard card)
             when (toCardType card == PlayerEnemyType)
               $ push (DrewPlayerEnemy iid $ PlayerCard card)
-            when
-                (toCardType card
-                `notElem` [PlayerTreacheryType, PlayerEnemyType]
-                && isJust (cdCardSubType $ toCardDef card)
-                )
+            when (cdRevelation $ toCardDef card)
               $ push (Revelation iid $ PlayerCardSource card)
           Nothing -> pure ()
 

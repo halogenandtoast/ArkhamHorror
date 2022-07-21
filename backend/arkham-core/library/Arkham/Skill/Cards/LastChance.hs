@@ -1,29 +1,29 @@
 module Arkham.Skill.Cards.LastChance
   ( lastChance
   , LastChance(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Skill.Cards as Cards
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Projection
-import Arkham.SkillType
+import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
+import Arkham.SkillType
+import Arkham.Target
 
 newtype LastChance = LastChance SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lastChance :: SkillCard LastChance
-lastChance =
-  skill LastChance Cards.lastChance
+lastChance = skill LastChance Cards.lastChance
 
 instance HasModifiersFor LastChance where
-  getModifiersFor _ target (LastChance a) | isTarget a target = do
+  getModifiersFor _ (CardIdTarget cid) (LastChance a) | toCardId a == cid = do
     n <- fieldMap InvestigatorHand length (skillOwner a)
     pure $ toModifiers a [RemoveSkillIcons $ replicate n SkillWild]
   getModifiersFor _ _ _ = pure []

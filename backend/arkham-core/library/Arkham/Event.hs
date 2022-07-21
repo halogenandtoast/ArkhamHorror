@@ -184,6 +184,7 @@ instance FromJSON Event where
       "04028" -> Event . YouHandleThisOne <$> parseJSON v
       "04032" -> Event . DarkProphecy <$> parseJSON v
       "04033" -> Event . ImprovisedWeapon <$> parseJSON v
+      "04034" -> Event . DumbLuck <$> parseJSON v
       "04149" -> Event . SecondWind <$> parseJSON v
       "04200" -> Event . LiveAndLearn <$> parseJSON v
       "04272" -> Event . WingingIt <$> parseJSON v
@@ -317,6 +318,7 @@ allEvents = mapFromList $ map
   , Event <$> youHandleThisOne
   , Event <$> darkProphecy
   , Event <$> improvisedWeapon
+  , Event <$> dumbLuck
   , Event <$> secondWind
   , Event <$> liveAndLearn
   , Event <$> wingingIt

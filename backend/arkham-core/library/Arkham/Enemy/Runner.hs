@@ -690,6 +690,16 @@ instance RunMessage EnemyAttrs where
         (windows'
         <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
         )
+    PutOnTopOfEncounterDeck iid target | a `isTarget` target -> do
+      case toCard a of
+        EncounterCard ec -> do
+          pushAll
+            [ RemoveEnemy $ toId a
+            , PutCardOnTopOfEncounterDeck iid ec
+            ]
+        PlayerCard _ ->
+          error "Can not place player card on top of encounter deck"
+      pure a
     RemovedFromPlay source | isSource a source -> do
       windowMsg <- checkWindows
         ((`Window` Window.LeavePlay (toTarget a))

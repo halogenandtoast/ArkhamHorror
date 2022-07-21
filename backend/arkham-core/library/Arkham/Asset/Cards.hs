@@ -306,6 +306,7 @@ allPlayerAssetCards = mapFromList $ map
   , venturer
   , wendysAmulet
   , whittonGreene
+  , yaotl1
   , zebulonWhateley
   , zoeysCross
   ]
@@ -1964,6 +1965,14 @@ protectiveIncantation1 =
     , cdSlots = [ArcaneSlot]
     , cdKeywords = singleton
       (Keyword.Seal $ TokenFaceIsNot Token.AutoFail)
+    }
+
+yaotl1 :: CardDef
+yaotl1 =
+  (asset "04035" ("Yaotl" <:> "Lost Son of Eztli") 3 Survivor)
+    { cdSkills = [SkillWillpower]
+    , cdCardTraits = setFromList [Ally, Wayfarer]
+    , cdSlots = [AllySlot]
     }
 
 backpack :: CardDef

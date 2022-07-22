@@ -106,6 +106,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , psychosis
   , rexsCurse
   , searchingForIzzie
+  , selfDestructive
   , shellShock
   , smiteTheWicked
   , starsOfHyades
@@ -912,6 +913,11 @@ chillFromBelow = (treachery "50040" "Chill from Below" GhoulsOfUmordhoth 3)
 maskOfUmordhoth :: CardDef
 maskOfUmordhoth = (treachery "50043" "Mask of Umôrdhoth" TheDevourersCult 2)
   { cdCardTraits = setFromList [Item, Mask]
+  }
+
+selfDestructive :: CardDef
+selfDestructive = (weakness "60104" "Self-Destructive")
+  { cdCardTraits = singleton Flaw
   }
 
 calledByTheMists :: CardDef

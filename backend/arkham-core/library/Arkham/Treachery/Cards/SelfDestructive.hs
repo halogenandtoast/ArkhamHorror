@@ -1,6 +1,6 @@
-module Arkham.Treachery.Cards.Psychosis
-  ( Psychosis(..)
-  , psychosis
+module Arkham.Treachery.Cards.SelfDestructive
+  ( selfDestructive
+  , SelfDestructive(..)
   ) where
 
 import Arkham.Prelude
@@ -16,29 +16,30 @@ import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
-newtype Psychosis = Psychosis TreacheryAttrs
+newtype SelfDestructive = SelfDestructive TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-psychosis :: TreacheryCard Psychosis
-psychosis = treachery Psychosis Cards.psychosis
+selfDestructive :: TreacheryCard SelfDestructive
+selfDestructive = treachery SelfDestructive Cards.selfDestructive
 
-instance HasAbilities Psychosis where
-  getAbilities (Psychosis a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ DealtHorror
-      Timing.After
-      AnySource
-      You
+instance HasAbilities SelfDestructive where
+  getAbilities (SelfDestructive a) =
+    [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ EnemyDealtDamage
+      Timing.When
+      AnyDamageEffect
+      AnyEnemy
+      $ SourceOwnedBy You
     , restrictedAbility a 2 OnSameLocation $ ActionAbility Nothing $ ActionCost
       2
     ]
 
-instance RunMessage Psychosis where
-  runMessage msg t@(Psychosis attrs) = case msg of
+instance RunMessage SelfDestructive where
+  runMessage msg t@(SelfDestructive attrs) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      t <$ push (InvestigatorDirectDamage iid source 1 0)
+      t <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       t <$ push (Discard $ toTarget attrs)
-    _ -> Psychosis <$> runMessage msg attrs
+    _ -> SelfDestructive <$> runMessage msg attrs

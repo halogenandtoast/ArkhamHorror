@@ -261,6 +261,8 @@ instance FromJSON Treachery where
       "50040" -> Treachery . ChillFromBelow <$> parseJSON v
       -- The Devourer's Cult
       "50043" -> Treachery . ChillFromBelow <$> parseJSON v
+      -- Nathaniel Cho
+      "60104" -> Treachery . SelfDestructive <$> parseJSON v
       -- Stella Clark
       "60503" -> Treachery . CalledByTheMists <$> parseJSON v
       "60504" -> Treachery . Atychiphobia <$> parseJSON v
@@ -478,6 +480,8 @@ allTreacheries = mapFromList $ map
   , Treachery <$> chillFromBelow
   -- The Devourer's Cult
   , Treachery <$> chillFromBelow
+  -- Nathaniel Cho
+  , Treachery <$> selfDestructive
   -- Stella Clark
   , Treachery <$> calledByTheMists
   , Treachery <$> atychiphobia

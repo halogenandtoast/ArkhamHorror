@@ -453,6 +453,7 @@ data Message
   | PlayerWindow InvestigatorId [Message] Bool
   | PutCardIntoPlay InvestigatorId Card (Maybe Target) [Window]
   | PutOnTopOfDeck InvestigatorId PlayerCard
+  | PutOnBottomOfDeck InvestigatorId PlayerCard
   | PutOnTopOfEncounterDeck InvestigatorId Target
   | PutCardOnTopOfEncounterDeck InvestigatorId EncounterCard
   | RandomDiscard InvestigatorId

@@ -80,6 +80,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , callingInFavors
   , cheapShot
   , cheatDeath5
+  , cleanThemOut
   , closeCall2
   , contraband
   , contraband2
@@ -1335,6 +1336,13 @@ contraband2 = (event "51005" "Contraband" 3 Rogue)
     (AssetControlledBy (InvestigatorAt YourLocation)
     <> AssetOneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
     )
+  }
+
+cleanThemOut :: CardDef
+cleanThemOut = (event "60111" "Clean Them Out" 0 Guardian)
+  { cdCardTraits = setFromList [Spirit, Tactic]
+  , cdAction = Just $ Action.Fight
+  , cdSkills = [SkillWillpower, SkillCombat]
   }
 
 monsterSlayer :: CardDef

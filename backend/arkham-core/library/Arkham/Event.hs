@@ -199,6 +199,7 @@ instance FromJSON Event where
       "50008" -> Event . MindWipe3 <$> parseJSON v
       "51003" -> Event . PreposterousSketches2 <$> parseJSON v
       "51005" -> Event . Contraband2 <$> parseJSON v
+      "60111" -> Event . CleanThemOut <$> parseJSON v
       "60116" -> Event . MonsterSlayer <$> parseJSON v
       "60130" -> Event . Taunt3 <$> parseJSON v
       "60225" -> Event . IveGotAPlan2 <$> parseJSON v
@@ -334,6 +335,7 @@ allEvents = mapFromList $ map
   , Event <$> mindWipe3
   , Event <$> preposterousSketches2
   , Event <$> contraband2
+  , Event <$> cleanThemOut
   , Event <$> monsterSlayer
   , Event <$> taunt3
   , Event <$> iveGotAPlan2

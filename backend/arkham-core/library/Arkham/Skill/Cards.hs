@@ -49,11 +49,12 @@ skill cardCode name skills classSymbol = CardDef
   , cdCardInHandEffects = False
   , cdCardInDiscardEffects = False
   , cdCardInSearchEffects = False
+  , cdAlternateCardCodes = []
   }
 
 allPlayerSkillCards :: HashMap CardCode CardDef
-allPlayerSkillCards = mapFromList $ map
-  (toCardCode &&& id)
+allPlayerSkillCards = mapFromList $ concatMap
+  toCardCodePairs
   [ deduction
   , deduction2
   , defiance
@@ -98,33 +99,39 @@ allPlayerSkillCards = mapFromList $ map
 viciousBlow :: CardDef
 viciousBlow = (skill "01025" "Vicious Blow" [SkillCombat] Guardian)
   { cdCardTraits = setFromList [Practiced]
+  , cdAlternateCardCodes = ["01525", "60119"]
   }
 
 deduction :: CardDef
 deduction = (skill "01039" "Deduction" [SkillIntellect] Seeker)
   { cdCardTraits = setFromList [Practiced]
+  , cdAlternateCardCodes = ["01539"]
   }
 
 opportunist :: CardDef
 opportunist = (skill "01053" "Opportunist" [SkillWild] Rogue)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [OnlyYourTest]
+  , cdAlternateCardCodes = ["01553"]
   }
 
 fearless :: CardDef
 fearless = (skill "01067" "Fearless" [SkillWillpower] Mystic)
   { cdCardTraits = setFromList [Innate]
+  , cdAlternateCardCodes = ["01567"]
   }
 
 survivalInstinct :: CardDef
 survivalInstinct = (skill "01081" "Survival Instinct" [SkillAgility] Survivor)
   { cdCardTraits = setFromList [Innate]
+  , cdAlternateCardCodes = ["01581"]
   }
 
 guts :: CardDef
 guts = (skill "01089" "Guts" [SkillWillpower, SkillWillpower] Neutral)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [MaxOnePerTest]
+  , cdAlternateCardCodes = ["01589"]
   }
 
 perception :: CardDef
@@ -132,12 +139,14 @@ perception =
   (skill "01090" "Perception" [SkillIntellect, SkillIntellect] Neutral)
     { cdCardTraits = setFromList [Practiced]
     , cdCommitRestrictions = [MaxOnePerTest]
+  , cdAlternateCardCodes = ["01590"]
     }
 
 overpower :: CardDef
 overpower = (skill "01091" "Overpower" [SkillCombat, SkillCombat] Neutral)
   { cdCardTraits = setFromList [Practiced]
   , cdCommitRestrictions = [MaxOnePerTest]
+  , cdAlternateCardCodes = ["01591"]
   }
 
 manualDexterity :: CardDef
@@ -145,6 +154,7 @@ manualDexterity =
   (skill "01092" "Manual Dexterity" [SkillAgility, SkillAgility] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
+  , cdAlternateCardCodes = ["01592"]
     }
 
 unexpectedCourage :: CardDef
@@ -152,6 +162,7 @@ unexpectedCourage =
   (skill "01093" "Unexpected Courage" [SkillWild, SkillWild] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
+    , cdAlternateCardCodes = ["01593"]
     }
 
 doubleOrNothing :: CardDef

@@ -91,11 +91,12 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdCardInHandEffects = False
   , cdCardInDiscardEffects = False
   , cdCardInSearchEffects = False
+  , cdAlternateCardCodes = []
   }
 
 allPlayerAssetCards :: HashMap CardCode CardDef
-allPlayerAssetCards = mapFromList $ map
-  (toCardCode &&& id)
+allPlayerAssetCards = mapFromList $ concatMap
+  toCardCodePairs
   [ abbessAllegriaDiBiase
   , adaptable1
   , alchemicalTransmutation
@@ -390,12 +391,14 @@ fortyFiveAutomatic = (asset "01016" ".45 Automatic" 4 Guardian)
   , cdCardTraits = setFromList [Item, Weapon, Firearm]
   , cdUses = Uses Ammo 4
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01516"]
   }
 
 physicalTraining :: CardDef
 physicalTraining = (asset "01017" "Physical Training" 2 Guardian)
   { cdSkills = [SkillWillpower, SkillCombat]
   , cdCardTraits = setFromList [Talent]
+  , cdAlternateCardCodes = ["01517", "60108"]
   }
 
 beatCop :: CardDef
@@ -403,6 +406,7 @@ beatCop = (asset "01018" "Beat Cop" 4 Guardian)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Ally, Police]
   , cdSlots = [AllySlot]
+  , cdAlternateCardCodes = ["01518"]
   }
 
 firstAid :: CardDef
@@ -410,6 +414,7 @@ firstAid = (asset "01019" "First Aid" 2 Guardian)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Talent, Science]
   , cdUses = Uses Supply 3
+  , cdAlternateCardCodes = ["01519"]
   }
 
 machete :: CardDef
@@ -417,6 +422,7 @@ machete = (asset "01020" "Machete" 3 Guardian)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item, Weapon, Melee]
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01520"]
   }
 
 guardDog :: CardDef
@@ -424,6 +430,7 @@ guardDog = (asset "01021" "Guard Dog" 3 Guardian)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Ally, Creature]
   , cdSlots = [AllySlot]
+  , cdAlternateCardCodes = ["01521"]
   }
 
 policeBadge2 :: CardDef
@@ -432,6 +439,7 @@ policeBadge2 = (asset "01027" "Police Badge" 3 Guardian)
   , cdCardTraits = setFromList [Item]
   , cdLevel = 2
   , cdSlots = [AccessorySlot]
+  , cdAlternateCardCodes = ["01527"]
   }
 
 beatCop2 :: CardDef
@@ -440,6 +448,7 @@ beatCop2 = (asset "01028" "Beat Cop" 4 Guardian)
   , cdCardTraits = setFromList [Ally, Police]
   , cdLevel = 2
   , cdSlots = [AllySlot]
+  , cdAlternateCardCodes = ["01528"]
   }
 
 shotgun4 :: CardDef
@@ -449,6 +458,7 @@ shotgun4 = (asset "01029" "Shotgun" 5 Guardian)
   , cdLevel = 4
   , cdUses = Uses Ammo 2
   , cdSlots = [HandSlot, HandSlot]
+  , cdAlternateCardCodes = ["01529"]
   }
 
 magnifyingGlass :: CardDef
@@ -456,6 +466,7 @@ magnifyingGlass = fast $ (asset "01030" "Magnifying Glass" 1 Seeker)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tool]
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01530"]
   }
 
 oldBookOfLore :: CardDef
@@ -463,6 +474,7 @@ oldBookOfLore = (asset "01031" "Old Book of Lore" 3 Seeker)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Item, Tome]
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01531"]
   }
 
 researchLibrarian :: CardDef
@@ -470,6 +482,7 @@ researchLibrarian = (asset "01032" "Research Librarian" 2 Seeker)
   { cdSkills = [SkillAgility]
   , cdCardTraits = setFromList [Ally, Miskatonic]
   , cdSlots = [AllySlot]
+  , cdAlternateCardCodes = ["01532"]
   }
 
 drMilanChristopher :: CardDef
@@ -484,12 +497,14 @@ drMilanChristopher =
     , cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
     , cdSlots = [AllySlot]
+    , cdAlternateCardCodes = ["01533"]
     }
 
 hyperawareness :: CardDef
 hyperawareness = (asset "01034" "Hyperawareness" 2 Seeker)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Talent]
+  , cdAlternateCardCodes = ["01534"]
   }
 
 medicalTexts :: CardDef
@@ -497,6 +512,7 @@ medicalTexts = (asset "01035" "Medical Texts" 2 Seeker)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item, Tome]
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01535"]
   }
 
 magnifyingGlass1 :: CardDef
@@ -505,6 +521,7 @@ magnifyingGlass1 = fast $ (asset "01040" "Magnifying Glass" 0 Seeker)
   , cdCardTraits = setFromList [Item, Tool]
   , cdLevel = 1
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01540"]
   }
 
 discOfItzamna2 :: CardDef
@@ -515,6 +532,7 @@ discOfItzamna2 =
     , cdLevel = 2
     , cdUnique = True
     , cdSlots = [AccessorySlot]
+    , cdAlternateCardCodes = ["01541"]
     }
 
 encyclopedia2 :: CardDef
@@ -523,6 +541,7 @@ encyclopedia2 = (asset "01042" "Encyclopedia" 2 Seeker)
   , cdCardTraits = setFromList [Item, Tome]
   , cdLevel = 2
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01542"]
   }
 
 switchblade :: CardDef
@@ -530,18 +549,21 @@ switchblade = fast $ (asset "01044" "Switchblade" 1 Rogue)
   { cdSkills = [SkillAgility]
   , cdCardTraits = setFromList [Item, Weapon, Melee, Illicit]
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01544"]
   }
 
 burglary :: CardDef
 burglary = (asset "01045" "Burglary" 1 Rogue)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Talent, Illicit]
+  , cdAlternateCardCodes = ["01545"]
   }
 
 pickpocketing :: CardDef
 pickpocketing = (asset "01046" "Pickpocketing" 2 Rogue)
   { cdSkills = [SkillAgility]
   , cdCardTraits = setFromList [Talent, Illicit]
+  , cdAlternateCardCodes = ["01546"]
   }
 
 fortyOneDerringer :: CardDef
@@ -550,6 +572,7 @@ fortyOneDerringer = (asset "01047" ".41 Derringer" 3 Rogue)
   , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
   , cdUses = Uses Ammo 3
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01547"]
   }
 
 leoDeLuca :: CardDef
@@ -558,12 +581,14 @@ leoDeLuca = (asset "01048" ("Leo De Luca" <:> "The Louisiana Lion") 6 Rogue)
   , cdCardTraits = setFromList [Ally, Criminal]
   , cdUnique = True
   , cdSlots = [AllySlot]
+  , cdAlternateCardCodes = ["01548"]
   }
 
 hardKnocks :: CardDef
 hardKnocks = (asset "01049" "Hard Knocks" 2 Rogue)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Talent]
+  , cdAlternateCardCodes = ["01549"]
   }
 
 leoDeLuca1 :: CardDef
@@ -573,6 +598,7 @@ leoDeLuca1 = (asset "01054" ("Leo De Luca" <:> "The Louisiana Lion") 5 Rogue)
   , cdLevel = 1
   , cdUnique = True
   , cdSlots = [AllySlot]
+  , cdAlternateCardCodes = ["01554"]
   }
 
 catBurglar1 :: CardDef
@@ -581,6 +607,7 @@ catBurglar1 = (asset "01055" "Cat Burglar" 4 Rogue)
   , cdCardTraits = setFromList [Ally, Criminal]
   , cdLevel = 1
   , cdSlots = [AllySlot]
+  , cdAlternateCardCodes = ["01555"]
   }
 
 forbiddenKnowledge :: CardDef
@@ -588,6 +615,7 @@ forbiddenKnowledge = (asset "01058" "Forbidden Knowledge" 0 Mystic)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Talent]
   , cdUses = Uses Secret 4
+  , cdAlternateCardCodes = ["01558"]
   }
 
 holyRosary :: CardDef
@@ -595,6 +623,7 @@ holyRosary = (asset "01059" "Holy Rosary" 2 Mystic)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Item, Charm]
   , cdSlots = [AccessorySlot]
+  , cdAlternateCardCodes = ["01559"]
   }
 
 shrivelling :: CardDef
@@ -603,6 +632,7 @@ shrivelling = (asset "01060" "Shrivelling" 3 Mystic)
   , cdCardTraits = setFromList [Spell]
   , cdUses = Uses Charge 4
   , cdSlots = [ArcaneSlot]
+  , cdAlternateCardCodes = ["01560"]
   }
 
 scrying :: CardDef
@@ -611,12 +641,14 @@ scrying = (asset "01061" "Scrying" 1 Mystic)
   , cdCardTraits = setFromList [Spell]
   , cdUses = Uses Charge 3
   , cdSlots = [ArcaneSlot]
+  , cdAlternateCardCodes = ["01561"]
   }
 
 arcaneStudies :: CardDef
 arcaneStudies = (asset "01062" "Arcane Studies" 2 Mystic)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = setFromList [Talent]
+  , cdAlternateCardCodes = ["01562"]
   }
 
 arcaneInitiate :: CardDef
@@ -624,6 +656,7 @@ arcaneInitiate = (asset "01063" "Arcane Initiate" 1 Mystic)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Ally, Sorcerer]
   , cdSlots = [AllySlot]
+  , cdAlternateCardCodes = ["01563"]
   }
 
 bookOfShadows3 :: CardDef
@@ -632,6 +665,7 @@ bookOfShadows3 = (asset "01070" "Book of Shadows" 4 Mystic)
   , cdCardTraits = setFromList [Item, Tome]
   , cdLevel = 3
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01570"]
   }
 
 grotesqueStatue4 :: CardDef
@@ -641,6 +675,7 @@ grotesqueStatue4 = (asset "01071" "Grotesque Statue" 2 Mystic)
   , cdLevel = 4
   , cdUses = Uses Charge 4
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01571"]
   }
 
 leatherCoat :: CardDef
@@ -648,12 +683,14 @@ leatherCoat = (asset "01072" "Leather Coat" 0 Survivor)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item, Armor]
   , cdSlots = [BodySlot]
+  , cdAlternateCardCodes = ["01572"]
   }
 
 scavenging :: CardDef
 scavenging = (asset "01073" "Scavenging" 1 Survivor)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Talent]
+  , cdAlternateCardCodes = ["01573"]
   }
 
 baseballBat :: CardDef
@@ -661,6 +698,7 @@ baseballBat = (asset "01074" "Baseball Bat" 2 Survivor)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item, Weapon, Melee]
   , cdSlots = [HandSlot, HandSlot]
+  , cdAlternateCardCodes = ["01574"]
   }
 
 rabbitsFoot :: CardDef
@@ -668,6 +706,7 @@ rabbitsFoot = (asset "01075" "Rabbit's Foot" 1 Survivor)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Item, Charm]
   , cdSlots = [AccessorySlot]
+  , cdAlternateCardCodes = ["01575"]
   }
 
 strayCat :: CardDef
@@ -675,12 +714,14 @@ strayCat = (asset "01076" "Stray Cat" 1 Survivor)
   { cdSkills = [SkillAgility]
   , cdCardTraits = setFromList [Ally, Creature]
   , cdSlots = [AllySlot]
+  , cdAlternateCardCodes = ["01576"]
   }
 
 digDeep :: CardDef
 digDeep = (asset "01077" "Dig Deep" 2 Survivor)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Talent]
+  , cdAlternateCardCodes = ["01577"]
   }
 
 aquinnah1 :: CardDef
@@ -691,6 +732,7 @@ aquinnah1 = (asset "01082" ("Aquinnah" <:> "The Forgotten Daughter") 5 Survivor
   , cdLevel = 1
   , cdUnique = True
   , cdSlots = [AllySlot]
+  , cdAlternateCardCodes = ["01582"]
   }
 
 knife :: CardDef
@@ -698,6 +740,7 @@ knife = (asset "01086" "Knife" 1 Neutral)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item, Weapon, Melee]
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01586"]
   }
 
 flashlight :: CardDef
@@ -706,6 +749,7 @@ flashlight = (asset "01087" "Flashlight" 2 Neutral)
   , cdCardTraits = setFromList [Item, Tool]
   , cdUses = Uses Supply 3
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01587"]
   }
 
 bulletproofVest3 :: CardDef
@@ -714,6 +758,7 @@ bulletproofVest3 = (asset "01094" "Bulletproof Vest" 2 Neutral)
   , cdCardTraits = setFromList [Item, Armor]
   , cdLevel = 3
   , cdSlots = [BodySlot]
+  , cdAlternateCardCodes = ["01594"]
   }
 
 elderSignAmulet3 :: CardDef
@@ -722,6 +767,7 @@ elderSignAmulet3 = (asset "01095" "Elder Sign Amulet" 2 Neutral)
   , cdCardTraits = setFromList [Item, Relic]
   , cdLevel = 3
   , cdSlots = [AccessorySlot]
+  , cdAlternateCardCodes = ["01595"]
   }
 
 litaChantler :: CardDef
@@ -1055,12 +1101,14 @@ relicHunter3 :: CardDef
 relicHunter3 = permanent $ (asset "02157" "Relic Hunter" 0 Neutral)
   { cdCardTraits = singleton Talent
   , cdLevel = 3
+  , cdAlternateCardCodes = ["01695"]
   }
 
 charisma3 :: CardDef
 charisma3 = permanent $ (asset "02158" "Charisma" 0 Neutral)
   { cdCardTraits = singleton Talent
   , cdLevel = 3
+  , cdAlternateCardCodes = ["01694"]
   }
 
 helplessPassenger :: CardDef
@@ -1314,6 +1362,7 @@ aquinnah3 = (asset "02308" ("Aquinnah" <:> "The Forgotten Daughter") 4 Survivor
   , cdLevel = 3
   , cdUnique = True
   , cdSlots = [AllySlot]
+  , cdAlternateCardCodes = ["01691"]
   }
 
 tryAndTryAgain3 :: CardDef
@@ -1419,6 +1468,7 @@ lockpicks1 = (asset "03031" "Lockpicks" 3 Rogue)
   , cdUses = Uses Supply 3
   , cdLevel = 1
   , cdSlots = [HandSlot]
+  , cdAlternateCardCodes = ["01687"]
   }
 
 alchemicalTransmutation :: CardDef
@@ -1724,6 +1774,7 @@ firstAid3 = (asset "03230" "First Aid" 2 Guardian)
   , cdCardTraits = setFromList [Talent, Science]
   , cdUses = Uses Supply 4
   , cdLevel = 3
+  , cdAlternateCardCodes = ["01683"]
   }
 
 fortyOneDerringer2 :: CardDef
@@ -1733,6 +1784,7 @@ fortyOneDerringer2 = (asset "03234" ".41 Derringer" 3 Rogue)
   , cdUses = Uses Ammo 3
   , cdSlots = [HandSlot]
   , cdLevel = 2
+  , cdAlternateCardCodes = ["01688"]
   }
 
 scrying3 :: CardDef
@@ -1742,6 +1794,7 @@ scrying3 = (asset "03236" "Scrying" 1 Mystic)
   , cdUses = Uses Charge 3
   , cdSlots = [ArcaneSlot]
   , cdLevel = 3
+  , cdAlternateCardCodes = ["01690"]
   }
 
 stickToThePlan :: CardDef

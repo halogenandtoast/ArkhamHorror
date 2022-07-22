@@ -2,21 +2,21 @@ module Arkham.Event.Cards where
 
 import Arkham.Prelude
 
-import qualified Arkham.Action as Action
-import qualified Arkham.Asset.Uses as Uses
+import Arkham.Action qualified as Action
+import Arkham.Asset.Uses qualified as Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
-import qualified Arkham.Criteria as Criteria
+import Arkham.Criteria qualified as Criteria
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Modifier (ModifierType(..))
+import Arkham.Modifier ( ModifierType (..) )
 import Arkham.Name
 import Arkham.Phase
 import Arkham.SkillType
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
@@ -1343,6 +1343,15 @@ cleanThemOut = (event "60111" "Clean Them Out" 0 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
   , cdAction = Just $ Action.Fight
   , cdSkills = [SkillWillpower, SkillCombat]
+  }
+
+counterpunch :: CardDef
+counterpunch = (event "60112" "Counterpunch" 0 Guardian)
+  { cdCardTraits = setFromList [Spirit, Tactic]
+  , cdAction = Just $ Action.Fight
+  , cdSkills = [SkillWillpower, SkillCombat]
+  , cdFastWindow = Just
+    $ EnemyAttacksEvenIfCancelled Timing.After You AnyEnemyAttack AnyEnemy
   }
 
 monsterSlayer :: CardDef

@@ -67,6 +67,7 @@ data WindowType
   | EndTurn InvestigatorId
   | EnemyAttacked InvestigatorId Source EnemyId
   | EnemyAttacks InvestigatorId EnemyId EnemyAttackType
+  | EnemyAttacksEvenIfCancelled InvestigatorId EnemyId EnemyAttackType
   | EnemyAttemptsToSpawnAt EnemyId LocationMatcher
   | EnemyDefeated InvestigatorId EnemyId
   | EnemyEngaged InvestigatorId EnemyId

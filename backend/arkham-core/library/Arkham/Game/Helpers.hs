@@ -1485,6 +1485,15 @@ windowMatches iid source window' = \case
           , pure $ enemyAttackMatches enemyAttackType enemyAttackMatcher
           ]
       _ -> pure False
+  Matcher.EnemyAttacksEvenIfCancelled timingMatcher whoMatcher enemyAttackMatcher enemyMatcher
+    -> case window' of
+      Window t (Window.EnemyAttacksEvenIfCancelled who enemyId enemyAttackType)
+        | timingMatcher == t -> andM
+          [ matchWho iid who whoMatcher
+          , enemyMatches enemyId enemyMatcher
+          , pure $ enemyAttackMatches enemyAttackType enemyAttackMatcher
+          ]
+      _ -> pure False
   Matcher.EnemyAttacked timingMatcher whoMatcher sourceMatcher enemyMatcher ->
     case window' of
       Window t (Window.EnemyAttacked who attackSource enemyId)

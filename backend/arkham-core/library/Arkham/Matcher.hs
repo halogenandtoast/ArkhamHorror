@@ -658,6 +658,7 @@ data WindowMatcher
   | GainsClues Timing Who ValueMatcher
   | EnemyWouldAttack Timing Who EnemyAttackMatcher EnemyMatcher
   | EnemyAttacks Timing Who EnemyAttackMatcher EnemyMatcher
+  | EnemyAttacksEvenIfCancelled Timing Who EnemyAttackMatcher EnemyMatcher
   | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
   | RevealChaosToken Timing Who TokenMatcher
   | WouldRevealChaosToken Timing Who

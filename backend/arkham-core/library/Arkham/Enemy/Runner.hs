@@ -516,6 +516,8 @@ instance RunMessage EnemyAttrs where
     EnemyAttack iid eid damageStrategy attackType | eid == enemyId -> do
       whenAttacksWindow <- checkWindows
         [Window Timing.When (Window.EnemyAttacks iid eid attackType)]
+      afterAttacksEventIfCancelledWindow <- checkWindows
+        [Window Timing.When (Window.EnemyAttacksEvenIfCancelled iid eid attackType)]
       whenWouldAttackWindow <- checkWindows
         [Window Timing.When (Window.EnemyWouldAttack iid eid attackType)]
       a <$ pushAll
@@ -523,6 +525,7 @@ instance RunMessage EnemyAttrs where
         , whenAttacksWindow
         , PerformEnemyAttack iid eid damageStrategy attackType
         , After (PerformEnemyAttack iid eid damageStrategy attackType)
+        , afterAttacksEventIfCancelledWindow
         ]
     PerformEnemyAttack iid eid damageStrategy attackType | eid == enemyId -> do
       modifiers <- getModifiers (EnemySource enemyId) (InvestigatorTarget iid)

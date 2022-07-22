@@ -124,6 +124,7 @@ allPlayerAssetCards = mapFromList $ map
   , bloodPact3
   , bookOfShadows1
   , bookOfShadows3
+  , boxingGloves
   , brotherXavier1
   , bulletproofVest3
   , burglary
@@ -2081,6 +2082,13 @@ randallCho = (asset "60102" ("Randall Cho" <:> "Concerned Brother") 2 Guardian)
   , cdCardTraits = setFromList [Ally, Medic]
   , cdUnique = True
   , cdSlots = [AllySlot]
+  }
+
+boxingGloves :: CardDef
+boxingGloves = (asset "60105" "Boxing Gloves" 3 Guardian)
+  { cdSkills = [SkillCombat]
+  , cdCardTraits = setFromList [Item, Weapon]
+  , cdSlots = [HandSlot, HandSlot]
   }
 
 arcaneEnlightenment :: CardDef

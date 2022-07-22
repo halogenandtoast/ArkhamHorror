@@ -1606,6 +1606,15 @@ windowMatches iid source window' = \case
           , sourceMatches source' sourceMatcher
           ]
       _ -> pure False
+  Matcher.EnemyDealtExcessDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher
+    -> case window' of
+      Window t (Window.DealtExcessDamage source' damageEffect (EnemyTarget eid) _)
+        | t == timingMatcher -> andM
+          [ damageEffectMatches damageEffect damageEffectMatcher
+          , member eid <$> select enemyMatcher
+          , sourceMatches source' sourceMatcher
+          ]
+      _ -> pure False
   Matcher.EnemyTakeDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher
     -> case window' of
       Window t (Window.TakeDamage source' damageEffect (EnemyTarget eid))

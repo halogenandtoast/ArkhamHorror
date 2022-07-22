@@ -63,8 +63,15 @@ instance RunMessage AssetAttrs where
           <> [afterWindow]
       pure a
     AssetDefeated aid | aid == assetId -> a <$ push (Discard $ toTarget a)
-    Msg.AssetDamage aid _ health sanity | aid == assetId ->
-      pure $ a & damageL +~ health & horrorL +~ sanity
+    Msg.AssetDamage aid _ damage horror | aid == assetId -> do
+      pushAll $
+        [PlaceDamage (toTarget a) damage | damage > 0]
+        <> [PlaceHorror (toTarget a) horror | horror > 0]
+      pure a
+    PlaceDamage target n | isTarget a target ->
+      pure $ a & damageL +~ n
+    PlaceHorror target n | isTarget a target ->
+      pure $ a & horrorL +~ n
     HealDamage (isTarget a -> True) n ->
       pure $ a & damageL %~ max 0 . subtract n
     HealHorror (isTarget a -> True) n ->

@@ -45,11 +45,13 @@ data ActiveCostTarget
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-activeCostAction :: ActiveCost -> Maybe Action
-activeCostAction ac = case activeCostTarget ac of
-  ForAbility a -> Just $ fromMaybe Action.Ability (abilityAction a)
-  ForCard c -> Just $ fromMaybe Action.Play (cdAction $ toCardDef c)
-  ForCost _ -> Nothing
+activeCostActions :: ActiveCost -> [Action]
+activeCostActions ac = case activeCostTarget ac of
+  ForAbility a -> [fromMaybe Action.Ability (abilityAction a)]
+  ForCard c -> if null (cdActions $ toCardDef c)
+                  then [Action.Play]
+                  else cdActions $ toCardDef c
+  ForCost _ -> []
 
 addActiveCostCost :: Cost -> ActiveCost -> ActiveCost
 addActiveCostCost cost ac = ac & costsL <>~ cost
@@ -86,9 +88,11 @@ getActionCostModifier ac = do
   modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
   pure $ foldr (applyModifier takenActions) 0 modifiers
  where
-  action = fromJustNote "expected action" $ activeCostAction ac
+  actions = case activeCostActions ac of
+              [] -> error "expected action"
+              as -> as
   applyModifier takenActions (ActionCostOf match m) n =
-    if matchTarget takenActions match action then n + m else n
+    if any (matchTarget takenActions match) actions then n + m else n
   applyModifier _ _ n = n
 
 countAdditionalActionPayments :: Payment -> Int
@@ -196,23 +200,24 @@ instance RunMessage ActiveCost where
             modifiersPreventAttackOfOpportunity =
               ActionDoesNotCauseAttacksOfOpportunity Action.Play
                 `elem` modifiers'
-            action = fromMaybe Action.Play (cdAction cardDef)
-
+            actions = case cdActions cardDef of
+                       [] -> [Action.Play]
+                       as -> as
           beforeWindowMsg <- checkWindows
-            [Window Timing.When (Window.PerformAction iid action)]
+            $ map (Window Timing.When . Window.PerformAction iid) actions
           pushAll
             $ [ BeginAction
               , beforeWindowMsg
               , PayCost acId iid False (activeCostCosts c)
-              , TakenAction iid action
               ]
+            <> map (TakenAction iid) actions
             <> [ CheckAttackOfOpportunity iid False
                | not modifiersPreventAttackOfOpportunity
                  && (DoesNotProvokeAttacksOfOpportunity
                     `notElem` (cdAttackOfOpportunityModifiers cardDef)
                     )
                  && (isNothing $ cdFastWindow cardDef)
-                 && (action `notElem` nonAttackOfOpportunityActions)
+                 && (any (`notElem` nonAttackOfOpportunityActions) actions)
                ]
             <> [PayCostFinished acId]
           pure c
@@ -240,13 +245,15 @@ instance RunMessage ActiveCost where
       let
         withPayment payment = pure $ c & costPaymentsL <>~ payment
         source = activeCostSource c
-        action = fromJustNote "expected action" $ activeCostAction c
+        actions = case activeCostActions c of
+                    [] -> error "action expected"
+                    as -> as
       case cost of
         Costs xs ->
           c <$ pushAll [ PayCost acId iid skipAdditionalCosts x | x <- xs ]
         UpTo 0 _ -> pure c
         UpTo n cost' -> do
-          canAfford <- getCanAffordCost iid source (Just action) [] cost'
+          canAfford <- andM $ map (\a -> getCanAffordCost iid source (Just a) [] cost') actions
           c <$ when
             canAfford
             (push $ Ask iid $ ChoosePaymentAmounts

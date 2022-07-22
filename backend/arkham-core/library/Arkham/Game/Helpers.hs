@@ -728,8 +728,8 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
          )
       && none prevents modifiers
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
-      && (cdAction pcDef /= Just Action.Evade || canEvade)
-      && (cdAction pcDef /= Just Action.Fight || canFight)
+      && (Action.Evade `elem` cdActions pcDef || canEvade)
+      && (Action.Fight `elem` cdActions pcDef || canFight)
       && passesCriterias
       && passesLimits
       && passesUnique

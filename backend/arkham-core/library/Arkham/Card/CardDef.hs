@@ -50,7 +50,7 @@ data CardDef = CardDef
   , cdRevealedCardTraits :: HashSet Trait
   , cdKeywords :: HashSet Keyword
   , cdFastWindow :: Maybe WindowMatcher
-  , cdAction :: Maybe Action
+  , cdActions :: [Action]
   , cdRevelation :: Bool
   , cdVictoryPoints :: Maybe Int
   , cdCriteria :: Maybe Criterion
@@ -143,7 +143,7 @@ testCardDef cardType cardCode =
     , cdRevealedCardTraits = mempty
     , cdKeywords = mempty
     , cdFastWindow = Nothing
-    , cdAction = Nothing
+    , cdActions = []
     , cdRevelation = False
     , cdVictoryPoints = Nothing
     , cdCriteria = Nothing

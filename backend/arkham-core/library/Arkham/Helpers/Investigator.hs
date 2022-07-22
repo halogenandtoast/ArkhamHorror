@@ -249,13 +249,13 @@ matchTarget attrs (FirstOneOf as) action =
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
-getActionCost :: (Monad m, HasGame m) => InvestigatorAttrs -> Action -> m Int
-getActionCost attrs a = do
+getActionCost :: (Monad m, HasGame m) => InvestigatorAttrs -> [Action] -> m Int
+getActionCost attrs as = do
   modifiers <- getModifiers (toSource attrs) (toTarget attrs)
   pure $ foldr applyModifier 1 modifiers
  where
   applyModifier (ActionCostOf match m) n =
-    if matchTarget attrs match a then n + m else n
+    if any (matchTarget attrs match) as then n + m else n
   applyModifier _ n = n
 
 getSpendableClueCount :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
@@ -263,9 +263,9 @@ getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a
   pure $ if canSpendClues then investigatorClues a else 0
 
-getCanAfford :: (Monad m, HasGame m) => InvestigatorAttrs -> Action -> m Bool
-getCanAfford a@InvestigatorAttrs {..} actionType = do
-  actionCost <- getActionCost a actionType
+getCanAfford :: (Monad m, HasGame m) => InvestigatorAttrs -> [Action] -> m Bool
+getCanAfford a@InvestigatorAttrs {..} as = do
+  actionCost <- getActionCost a as
   pure $ actionCost <= investigatorRemainingActions
 
 drawOpeningHand

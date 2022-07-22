@@ -176,6 +176,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , fortyOneDerringer
   , fortyOneDerringer2
   , gravediggersShovel
+  , greteWagner
   , grotesqueStatue4
   , grounded1
   , guardDog
@@ -252,12 +253,14 @@ allPlayerAssetCards = mapFromList $ concatMap
   , rabbitsFoot
   , rabbitsFoot3
   , randallCho
+  , relentless
   , relicHunter3
   , researchLibrarian
   , riteOfSeeking
   , riteOfSeeking4
   , ritualCandles
   , rolands38Special
+  , safeguard
   , scavenging
   , scrapper3
   , scrollOfProphecies
@@ -2151,6 +2154,25 @@ fleshWard = (asset "60106" "Flesh Ward" 3 Guardian)
   , cdCardTraits = singleton Ritual
   , cdSlots = [ArcaneSlot]
   , cdUses = Uses Charge 4
+  }
+
+greteWagner :: CardDef
+greteWagner = (asset "60107" ("Grete Wagner" <:> "The Purifier") 5 Guardian)
+  { cdSkills = [SkillIntellect, SkillCombat]
+  , cdCardTraits = setFromList [Ally, Hunter]
+  , cdSlots = [AllySlot]
+  }
+
+relentless :: CardDef
+relentless = (asset "60109" "Relentless" 0 Guardian)
+  { cdSkills = [SkillCombat, SkillAgility]
+  , cdCardTraits = singleton Talent
+  }
+
+safeguard :: CardDef
+safeguard = (asset "60110" "Safeguard" 2 Guardian)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = singleton Talent
   }
 
 arcaneEnlightenment :: CardDef

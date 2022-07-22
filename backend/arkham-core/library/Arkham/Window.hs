@@ -52,6 +52,7 @@ data WindowType
   | CommittedCard InvestigatorId Card
   | CommittedCards InvestigatorId [Card]
   | DealtDamage Source DamageEffect Target
+  | DealtExcessDamage Source DamageEffect Target Int
   | DealtHorror Source Target
   | DeckHasNoCards InvestigatorId
   | Defeated Source

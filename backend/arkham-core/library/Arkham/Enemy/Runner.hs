@@ -610,7 +610,7 @@ instance RunMessage EnemyAttrs where
             , EnemyDamaged eid iid source damageEffect amount True
             , takeDamageAfterMsg
             ]
-    EnemyDamaged eid iid source _ amount direct | eid == enemyId -> do
+    EnemyDamaged eid iid source damageEffect amount direct | eid == enemyId -> do
       amount' <- getModifiedDamageAmount a direct amount
       canBeDefeated <- withoutModifier a CannotBeDefeated
       modifiers' <- getModifiers (toSource a) (toTarget a)
@@ -625,12 +625,19 @@ instance RunMessage EnemyAttrs where
       when validDefeat $ do
         modifiedHealth <- getModifiedHealth a
         when (a ^. damageL + amount' >= modifiedHealth) $ do
+          let excess = (a ^. damageL + amount') - modifiedHealth
           whenMsg <- checkWindows
             [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
           afterMsg <- checkWindows
             [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
+          whenExcessMsg <- checkWindows
+            [Window Timing.When (Window.DealtExcessDamage source damageEffect (EnemyTarget eid) excess) | excess > 0]
+          afterExcessMsg <- checkWindows
+            [Window Timing.After (Window.DealtExcessDamage source damageEffect (EnemyTarget eid) excess) | excess > 0]
           pushAll
-            [ whenMsg
+            [ whenExcessMsg
+            , afterExcessMsg
+            , whenMsg
             , afterMsg
             , EnemyDefeated
               eid

@@ -435,6 +435,7 @@ data Message
   | PlaceCluesUpToClueValue LocationId Int
   | FlipClues Target Int
   | PlaceDoom Target Int
+  | PlaceDamage Target Int
   | PlaceHorror Target Int
   | PlaceDoomOnAgenda
   | PlaceEnemyInVoid EnemyId

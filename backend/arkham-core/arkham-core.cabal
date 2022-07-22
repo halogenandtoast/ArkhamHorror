@@ -1250,6 +1250,7 @@ library
       Arkham.Treachery.Cards
       Arkham.Treachery.Cards.AbandonedAndAlone
       Arkham.Treachery.Cards.Abduction
+      Arkham.Treachery.Cards.AccursedFate
       Arkham.Treachery.Cards.AcridMiasma
       Arkham.Treachery.Cards.AcrossSpaceAndTime
       Arkham.Treachery.Cards.AlteredBeast
@@ -1286,6 +1287,7 @@ library
       Arkham.Treachery.Cards.DescentIntoMadness
       Arkham.Treachery.Cards.DismalCurse
       Arkham.Treachery.Cards.DissonantVoices
+      Arkham.Treachery.Cards.Doomed
       Arkham.Treachery.Cards.DraggedUnder
       Arkham.Treachery.Cards.DrawingTheSign
       Arkham.Treachery.Cards.DreamsOfRlyeh
@@ -1358,6 +1360,7 @@ library
       Arkham.Treachery.Cards.Straitjacket
       Arkham.Treachery.Cards.StrangeSigns
       Arkham.Treachery.Cards.TerrorFromBeyond
+      Arkham.Treachery.Cards.TheBellTolls
       Arkham.Treachery.Cards.TheCreaturesTracks
       Arkham.Treachery.Cards.TheCultsSearch
       Arkham.Treachery.Cards.TheFinalAct

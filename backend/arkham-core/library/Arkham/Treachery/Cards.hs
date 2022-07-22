@@ -79,6 +79,7 @@ allPlayerTreacheryCards :: HashMap CardCode CardDef
 allPlayerTreacheryCards = mapFromList $ map
   (toCardCode &&& id)
   [ abandonedAndAlone
+  , accursedFate
   , acrossSpaceAndTime
   , amnesia
   , angeredSpirits
@@ -91,6 +92,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , coverUp
   , crisisOfIdentity
   , curseOfTheRougarou
+  , doomed
   , drawingTheSign
   , finalRhapsody
   , haunted
@@ -107,6 +109,7 @@ allPlayerTreacheryCards = mapFromList $ map
   , shellShock
   , smiteTheWicked
   , starsOfHyades
+  , theBellTolls
   , theHarbinger
   , thePriceOfFailure
   , voiceOfTheMessenger
@@ -857,6 +860,21 @@ voiceOfTheMessenger = (weakness "04016" "Voice of the Messenger")
 thePriceOfFailure :: CardDef
 thePriceOfFailure = (weakness "04039" "The Price of Failure")
   { cdCardTraits = singleton Pact
+  }
+
+doomed :: CardDef
+doomed = (basicWeakness "04040" "Doomed")
+  { cdCardTraits = singleton Curse
+  }
+
+accursedFate :: CardDef
+accursedFate = (weakness "04041" "Accursed Fate")
+  { cdCardTraits = singleton Curse
+  }
+
+theBellTolls :: CardDef
+theBellTolls = (weakness "04042" "The Bell Tolls")
+  { cdCardTraits = singleton Curse
   }
 
 theHarbinger :: CardDef

@@ -243,6 +243,9 @@ instance FromJSON Treachery where
       "04016" -> Treachery . VoiceOfTheMessenger <$> parseJSON v
       -- weaknesses
       "04039" -> Treachery . ThePriceOfFailure <$> parseJSON v
+      "04040" -> Treachery . Doomed <$> parseJSON v
+      "04041" -> Treachery . AccursedFate <$> parseJSON v
+      "04042" -> Treachery . TheBellTolls <$> parseJSON v
       -- Edge of the Earth
       -- signature
       "08006" -> Treachery . TheHarbinger <$> parseJSON v
@@ -457,6 +460,9 @@ allTreacheries = mapFromList $ map
   , Treachery <$> voiceOfTheMessenger
   -- weaknesses
   , Treachery <$> thePriceOfFailure
+  , Treachery <$> doomed
+  , Treachery <$> accursedFate
+  , Treachery <$> theBellTolls
   -- Edge of the Earth
   -- signature
   , Treachery <$> theHarbinger

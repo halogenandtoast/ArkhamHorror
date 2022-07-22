@@ -54,11 +54,12 @@ event cardCode name cost classSymbol = CardDef
   , cdCardInHandEffects = False
   , cdCardInDiscardEffects = False
   , cdCardInSearchEffects = False
+  , cdAlternateCardCodes = []
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef
-allPlayerEventCards = mapFromList $ map
-  (toCardCode &&& id)
+allPlayerEventCards = mapFromList $ concatMap
+  toCardCodePairs
   [ aChanceEncounter
   , aChanceEncounter2
   , aTestOfWill1
@@ -212,6 +213,7 @@ evidence = (event "01022" "Evidence!" 1 Guardian)
   , cdFastWindow = Just (EnemyDefeated Timing.After You AnyEnemy)
   , cdCriteria = Just
     (Criteria.LocationExists $ YourLocation <> LocationWithAnyClues)
+  , cdAlternateCardCodes = ["01522"]
   }
 
 dodge :: CardDef
@@ -222,12 +224,14 @@ dodge = (event "01023" "Dodge" 1 Guardian)
     (EnemyAttacks Timing.When (InvestigatorAt YourLocation) AnyEnemyAttack
     $ EnemyWithoutModifier AttacksCannotBeCancelled
     )
+  , cdAlternateCardCodes = ["01523", "60113"]
   }
 
 dynamiteBlast :: CardDef
 dynamiteBlast = (event "01024" "Dynamite Blast" 5 Guardian)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = setFromList [Tactic]
+  , cdAlternateCardCodes = ["01524"]
   }
 
 extraAmmunition1 :: CardDef
@@ -240,6 +244,7 @@ extraAmmunition1 = (event "01026" "Extra Ammunition" 2 Guardian)
     $ AssetControlledBy (InvestigatorAt YourLocation)
     <> AssetWithTrait Firearm
     )
+  , cdAlternateCardCodes = ["01526"]
   }
 
 mindOverMatter :: CardDef
@@ -247,6 +252,7 @@ mindOverMatter = (event "01036" "Mind over Matter" 1 Seeker)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Insight]
   , cdFastWindow = Just (DuringTurn You)
+  , cdAlternateCardCodes = ["01536"]
   }
 
 workingAHunch :: CardDef
@@ -256,12 +262,14 @@ workingAHunch = (event "01037" "Working a Hunch" 2 Seeker)
   , cdFastWindow = Just (DuringTurn You)
   , cdCriteria = Just
     (Criteria.LocationExists $ YourLocation <> LocationWithAnyClues)
+  , cdAlternateCardCodes = ["01537"]
   }
 
 barricade :: CardDef
 barricade = (event "01038" "Barricade" 0 Seeker)
   { cdSkills = [SkillWillpower, SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Insight, Tactic]
+  , cdAlternateCardCodes = ["01538"]
   }
 
 crypticResearch4 :: CardDef
@@ -269,6 +277,7 @@ crypticResearch4 = (event "01043" "Cryptic Research" 0 Seeker)
   { cdCardTraits = setFromList [Insight]
   , cdLevel = 4
   , cdFastWindow = Just (DuringTurn You)
+  , cdAlternateCardCodes = ["01543"]
   }
 
 elusive :: CardDef
@@ -283,6 +292,7 @@ elusive = (event "01050" "Elusive" 2 Rogue)
     <> LocationWithoutEnemies
     <> NotYourLocation
     ]
+  , cdAlternateCardCodes = ["01550"]
   }
 
 backstab :: CardDef
@@ -290,6 +300,7 @@ backstab = (event "01051" "Backstab" 3 Rogue)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Tactic]
   , cdAction = Just Action.Fight
+  , cdAlternateCardCodes = ["01551"]
   }
 
 sneakAttack :: CardDef
@@ -302,6 +313,7 @@ sneakAttack = (event "01052" "Sneak Attack" 2 Rogue)
     $ EnemyAt YourLocation
     <> ExhaustedEnemy
     )
+  , cdAlternateCardCodes = ["01552"]
   }
 
 sureGamble3 :: CardDef
@@ -309,6 +321,7 @@ sureGamble3 = (event "01056" "Sure Gamble" 2 Rogue)
   { cdCardTraits = setFromList [Fortune, Insight]
   , cdFastWindow = Just (RevealChaosToken Timing.When You WithNegativeModifier)
   , cdLevel = 3
+  , cdAlternateCardCodes = ["01556"]
   }
 
 hotStreak4 :: CardDef
@@ -316,12 +329,14 @@ hotStreak4 = (event "01057" "Hot Streak" 3 Rogue)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Fortune]
   , cdLevel = 4
+  , cdAlternateCardCodes = ["01557"]
   }
 
 drawnToTheFlame :: CardDef
 drawnToTheFlame = (event "01064" "Drawn to the Flame" 0 Mystic)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = setFromList [Insight]
+  , cdAlternateCardCodes = ["01564"]
   }
 
 wardOfProtection :: CardDef
@@ -333,6 +348,7 @@ wardOfProtection = (event "01065" "Ward of Protection" 1 Mystic)
     You
     (BasicCardMatch NonWeaknessTreachery)
     EncounterDeck
+  , cdAlternateCardCodes = ["01565"]
   }
 
 blindingLight :: CardDef
@@ -340,6 +356,7 @@ blindingLight = (event "01066" "Blinding Light" 2 Mystic)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Spell]
   , cdAction = Just Action.Evade
+  , cdAlternateCardCodes = ["01566"]
   }
 
 mindWipe1 :: CardDef
@@ -354,6 +371,7 @@ mindWipe1 = (event "01068" "Mind Wipe" 1 Mystic)
     $ EnemyAt YourLocation
     <> NonEliteEnemy
     )
+  , cdAlternateCardCodes = ["01568"]
   }
 
 blindingLight2 :: CardDef
@@ -362,6 +380,7 @@ blindingLight2 = (event "01069" "Blinding Light" 1 Mystic)
   , cdCardTraits = setFromList [Spell]
   , cdAction = Just Action.Evade
   , cdLevel = 2
+  , cdAlternateCardCodes = ["01569"]
   }
 
 cunningDistraction :: CardDef
@@ -369,6 +388,7 @@ cunningDistraction = (event "01078" "Cunning Distraction" 5 Survivor)
   { cdSkills = [SkillWillpower, SkillWild]
   , cdCardTraits = setFromList [Tactic]
   , cdAction = Just Action.Evade
+  , cdAlternateCardCodes = ["01578"]
   }
 
 lookWhatIFound :: CardDef
@@ -381,6 +401,7 @@ lookWhatIFound = (event "01079" "\"Look what I found!\"" 2 Survivor)
     $ FailureResult
     $ LessThan
     $ Static 3
+  , cdAlternateCardCodes = ["01579"]
   }
 
 lucky :: CardDef
@@ -390,6 +411,7 @@ lucky = (event "01080" "Lucky!" 1 Survivor)
     (WouldHaveSkillTestResult Timing.When You AnySkillTest
     $ FailureResult AnyValue
     )
+  , cdAlternateCardCodes = ["01580"]
   }
 
 closeCall2 :: CardDef
@@ -399,6 +421,7 @@ closeCall2 = (event "01083" "Close Call" 2 Survivor)
   , cdFastWindow = Just
     (EnemyEvaded Timing.After Anyone (EnemyAt YourLocation <> NonWeaknessEnemy))
   , cdLevel = 2
+  , cdAlternateCardCodes = ["01583"]
   }
 
 lucky2 :: CardDef
@@ -409,6 +432,7 @@ lucky2 = (event "01084" "Lucky!" 1 Survivor)
     $ FailureResult AnyValue
     )
   , cdLevel = 2
+  , cdAlternateCardCodes = ["01584"]
   }
 
 willToSurvive3 :: CardDef
@@ -417,11 +441,13 @@ willToSurvive3 = (event "01085" "Will to Survive" 4 Survivor)
   , cdCardTraits = setFromList [Spirit]
   , cdFastWindow = Just (DuringTurn You)
   , cdLevel = 3
+  , cdAlternateCardCodes = ["01585"]
   }
 
 emergencyCache :: CardDef
 emergencyCache = (event "01088" "Emergency Cache" 0 Neutral)
   { cdCardTraits = setFromList [Supply]
+  , cdAlternateCardCodes = ["01588"]
   }
 
 searchForTheTruth :: CardDef
@@ -602,6 +628,7 @@ emergencyCache2 :: CardDef
 emergencyCache2 = (event "02194" "Emergency Cache" 0 Neutral)
   { cdCardTraits = setFromList [Supply]
   , cdLevel = 2
+  , cdAlternateCardCodes = ["01693"]
   }
 
 ifItBleeds :: CardDef
@@ -627,6 +654,7 @@ iveHadWorse4 = (event "02261" "\"I've had worse…\"" 0 Guardian)
   , cdCardTraits = singleton Spirit
   , cdFastWindow = Just (DealtDamageOrHorror Timing.When You)
   , cdLevel = 4
+  , cdAlternateCardCodes = ["01684"]
   }
 
 aceInTheHole3 :: CardDef

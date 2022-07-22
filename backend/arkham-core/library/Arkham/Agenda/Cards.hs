@@ -44,6 +44,7 @@ agenda cardCode name stage encounterSet = CardDef
   , cdCardInHandEffects = False
   , cdCardInDiscardEffects = False
   , cdCardInSearchEffects = False
+  , cdAlternateCardCodes = []
   }
 
 allAgendaCards :: HashMap CardCode CardDef

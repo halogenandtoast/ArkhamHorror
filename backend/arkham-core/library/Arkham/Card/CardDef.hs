@@ -33,6 +33,9 @@ data EventChoice = EventChooseN Int EventChoicesRepeatable
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+toCardCodePairs :: CardDef -> [(CardCode, CardDef)]
+toCardCodePairs c = (toCardCode c, c) : map (,c) (cdAlternateCardCodes c)
+
 data CardDef = CardDef
   { cdCardCode :: CardCode
   , cdName :: Name
@@ -67,6 +70,7 @@ data CardDef = CardDef
   , cdCardInHandEffects :: Bool
   , cdCardInDiscardEffects :: Bool
   , cdCardInSearchEffects :: Bool
+  , cdAlternateCardCodes :: [CardCode]
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (Hashable)
@@ -159,4 +163,5 @@ testCardDef cardType cardCode =
     , cdCardInHandEffects = False
     , cdCardInDiscardEffects = False
     , cdCardInSearchEffects = False
+    , cdAlternateCardCodes = []
     }

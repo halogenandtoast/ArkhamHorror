@@ -12,6 +12,8 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
+import Arkham.Window (Window(..))
+import Arkham.Window qualified as Window
 
 newtype FleshWard = FleshWard AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -31,5 +33,26 @@ instance HasAbilities FleshWard where
         (ExhaustCost (toTarget a) <> UseCost (AssetWithId $ toId a) Charge 1)
     ]
 
+dealtDamage :: [Window] -> Bool
+dealtDamage [] = False
+dealtDamage (Window _ (Window.DealtDamage{}) : _) = True
+dealtDamage (_ : xs) = dealtDamage xs
+
+dealtHorror :: [Window] -> Bool
+dealtHorror [] = False
+dealtHorror (Window _ (Window.DealtHorror{}) : _) = True
+dealtHorror (_ : xs) = dealtDamage xs
+
 instance RunMessage FleshWard where
-  runMessage msg (FleshWard attrs) = FleshWard <$> runMessage msg attrs
+  runMessage msg a@(FleshWard attrs) = case msg of
+    UseCardAbility iid source windows' 1 _ | isSource attrs source -> do
+      push
+        $ chooseOrRunOne iid
+        $ [ Label "Cancel 1 damage" [CancelDamage iid 1]
+          | dealtDamage windows'
+          ]
+        <> [ Label "Cancel 1 horror" [CancelHorror iid 1]
+           | dealtHorror windows'
+           ]
+      pure a
+    _ -> FleshWard <$> runMessage msg attrs

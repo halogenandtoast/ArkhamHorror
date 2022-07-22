@@ -56,6 +56,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdCardInHandEffects = False
   , cdCardInDiscardEffects = False
   , cdCardInSearchEffects = False
+  , cdAlternateCardCodes = []
   }
 
 weakness :: CardCode -> Name -> CardDef
@@ -76,8 +77,8 @@ allTreacheryCards :: HashMap CardCode CardDef
 allTreacheryCards = allPlayerTreacheryCards <> allEncounterTreacheryCards
 
 allPlayerTreacheryCards :: HashMap CardCode CardDef
-allPlayerTreacheryCards = mapFromList $ map
-  (toCardCode &&& id)
+allPlayerTreacheryCards = mapFromList $ concatMap
+  toCardCodePairs
   [ abandonedAndAlone
   , accursedFate
   , acrossSpaceAndTime
@@ -245,24 +246,33 @@ abandonedAndAlone = (weakness "01015" "Abandoned and Alone")
   }
 
 amnesia :: CardDef
-amnesia =
-  (basicWeakness "01096" "Amnesia") { cdCardTraits = setFromList [Madness] }
+amnesia = (basicWeakness "01096" "Amnesia")
+  { cdCardTraits = setFromList [Madness]
+  , cdAlternateCardCodes = ["01596"]
+  }
 
 paranoia :: CardDef
-paranoia =
-  (basicWeakness "01097" "Paranoia") { cdCardTraits = setFromList [Madness] }
+paranoia = (basicWeakness "01097" "Paranoia")
+  { cdCardTraits = setFromList [Madness]
+  , cdAlternateCardCodes = ["01597"]
+  }
 
 haunted :: CardDef
-haunted =
-  (basicWeakness "01098" "Haunted") { cdCardTraits = setFromList [Curse] }
+haunted = (basicWeakness "01098" "Haunted")
+  { cdCardTraits = setFromList [Curse]
+  , cdAlternateCardCodes = ["01598"]
+  }
 
 psychosis :: CardDef
-psychosis =
-  (basicWeakness "01099" "Psychosis") { cdCardTraits = setFromList [Madness] }
+psychosis = (basicWeakness "01099" "Psychosis")
+  { cdCardTraits = setFromList [Madness]
+  , cdAlternateCardCodes = ["01599"]
+  }
 
 hypochondria :: CardDef
 hypochondria = (basicWeakness "01100" "Hypochondria")
   { cdCardTraits = setFromList [Madness]
+  , cdAlternateCardCodes = ["01600"]
   }
 
 huntingShadow :: CardDef

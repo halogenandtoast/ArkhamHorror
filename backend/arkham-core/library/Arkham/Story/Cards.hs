@@ -44,6 +44,7 @@ story cardCode name encounterSet = CardDef
   , cdCardInHandEffects = False
   , cdCardInDiscardEffects = False
   , cdCardInSearchEffects = False
+  , cdAlternateCardCodes = []
   }
 
 allStoryCards :: HashMap CardCode CardDef

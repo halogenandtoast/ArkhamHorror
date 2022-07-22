@@ -53,6 +53,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdCardInHandEffects = False
   , cdCardInDiscardEffects = False
   , cdCardInSearchEffects = False
+  , cdAlternateCardCodes = []
   }
 
 weakness :: CardCode -> Name -> CardDef
@@ -67,8 +68,8 @@ enemy cardCode name encounterSet encounterSetQuantity =
   baseEnemy cardCode name (Just (encounterSet, encounterSetQuantity)) Nothing
 
 allPlayerEnemyCards :: HashMap CardCode CardDef
-allPlayerEnemyCards = mapFromList $ map
-  (toCardCode &&& id)
+allPlayerEnemyCards = mapFromList $ concatMap
+  toCardCodePairs
   [ mobEnforcer
   , silverTwilightAcolyte
   , stubbornDetective
@@ -80,8 +81,8 @@ allPlayerEnemyCards = mapFromList $ map
   ]
 
 allEncounterEnemyCards :: HashMap CardCode CardDef
-allEncounterEnemyCards = mapFromList $ map
-  (toCardCode &&& id)
+allEncounterEnemyCards = mapFromList $ concatMap
+  toCardCodePairs
   [ acolyte
   , acolyteOfUmordhoth
   , agentOfTheKing
@@ -191,18 +192,21 @@ mobEnforcer :: CardDef
 mobEnforcer = (basicWeakness "01101" "Mob Enforcer")
   { cdCardTraits = setFromList [Humanoid, Criminal]
   , cdKeywords = setFromList [Keyword.Hunter]
+  , cdAlternateCardCodes = ["01601"]
   }
 
 silverTwilightAcolyte :: CardDef
 silverTwilightAcolyte = (basicWeakness "01102" "Silver Twilight Acolyte")
   { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
   , cdKeywords = setFromList [Keyword.Hunter]
+  , cdAlternateCardCodes = ["01602"]
   }
 
 stubbornDetective :: CardDef
 stubbornDetective = (basicWeakness "01103" "Stubborn Detective")
   { cdCardTraits = setFromList [Humanoid, Detective]
   , cdKeywords = setFromList [Keyword.Hunter]
+  , cdAlternateCardCodes = ["01603"]
   }
 
 ghoulPriest :: CardDef

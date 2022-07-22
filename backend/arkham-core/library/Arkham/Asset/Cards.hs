@@ -168,6 +168,7 @@ allPlayerAssetCards = mapFromList $ map
   , firstAid
   , firstAid3
   , flashlight
+  , fleshWard
   , forbiddenKnowledge
   , fortyFiveAutomatic
   , fortyFiveAutomatic2
@@ -2089,6 +2090,14 @@ boxingGloves = (asset "60105" "Boxing Gloves" 3 Guardian)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item, Weapon]
   , cdSlots = [HandSlot, HandSlot]
+  }
+
+fleshWard :: CardDef
+fleshWard = (asset "60106" "Flesh Ward" 3 Guardian)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = singleton Ritual
+  , cdSlots = [ArcaneSlot]
+  , cdUses = Uses Charge 4
   }
 
 arcaneEnlightenment :: CardDef

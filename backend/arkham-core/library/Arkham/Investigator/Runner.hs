@@ -2035,9 +2035,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         modifiers <- getModifiers
           (InvestigatorSource iid)
           (InvestigatorTarget iid)
-        canAffordTakeResources <- getCanAfford a Action.Resource
-        canAffordDrawCards <- getCanAfford a Action.Draw
-        canAffordPlayCard <- getCanAfford a Action.Play
+        canAffordTakeResources <- getCanAfford a [Action.Resource]
+        canAffordDrawCards <- getCanAfford a [Action.Draw]
+        canAffordPlayCard <- getCanAfford a [Action.Play]
         playableCards <- getPlayableCards a UnpaidCost windows
         let usesAction = not isAdditional
         a <$ push

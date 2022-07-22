@@ -2844,11 +2844,13 @@ runGameMessage msg g = case msg of
             || BecomesFast
             `elem` allModifiers
         _ -> False
-      action = fromMaybe Action.Play (cdAction $ toCardDef card)
+      actions = case cdActions (toCardDef card) of
+                  [] -> [Action.Play]
+                  as -> as
 
     actionCost <- if isFast
       then pure Cost.Free
-      else Cost.ActionCost <$> getActionCost (toAttrs investigator') action
+      else Cost.ActionCost <$> getActionCost (toAttrs investigator') actions
 
     let activeCost' = addActiveCostCost actionCost activeCost
 

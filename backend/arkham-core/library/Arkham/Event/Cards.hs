@@ -34,7 +34,7 @@ event cardCode name cost classSymbol = CardDef
   , cdRevealedCardTraits = mempty
   , cdKeywords = mempty
   , cdFastWindow = Nothing
-  , cdAction = Nothing
+  , cdActions = []
   , cdRevelation = False
   , cdVictoryPoints = Nothing
   , cdCriteria = Nothing
@@ -84,6 +84,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , closeCall2
   , contraband
   , contraband2
+  , counterpunch
   , crypticResearch4
   , cunningDistraction
   , daringManeuver
@@ -114,6 +115,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , firstWatch
   , flare1
   , forewarned1
+  , getOverHere
   , gritYourTeeth
   , guidance
   , heroicRescue
@@ -300,7 +302,7 @@ backstab :: CardDef
 backstab = (event "01051" "Backstab" 3 Rogue)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Tactic]
-  , cdAction = Just Action.Fight
+  , cdActions = [Action.Fight]
   , cdAlternateCardCodes = ["01551"]
   }
 
@@ -356,7 +358,7 @@ blindingLight :: CardDef
 blindingLight = (event "01066" "Blinding Light" 2 Mystic)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Spell]
-  , cdAction = Just Action.Evade
+  , cdActions = [Action.Evade]
   , cdAlternateCardCodes = ["01566"]
   }
 
@@ -379,7 +381,7 @@ blindingLight2 :: CardDef
 blindingLight2 = (event "01069" "Blinding Light" 1 Mystic)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Spell]
-  , cdAction = Just Action.Evade
+  , cdActions = [ Action.Evade]
   , cdLevel = 2
   , cdAlternateCardCodes = ["01569"]
   }
@@ -388,7 +390,7 @@ cunningDistraction :: CardDef
 cunningDistraction = (event "01078" "Cunning Distraction" 5 Survivor)
   { cdSkills = [SkillWillpower, SkillWild]
   , cdCardTraits = setFromList [Tactic]
-  , cdAction = Just Action.Evade
+  , cdActions = [Action.Evade]
   , cdAlternateCardCodes = ["01578"]
   }
 
@@ -510,7 +512,7 @@ bindMonster2 :: CardDef
 bindMonster2 = (event "02031" "Bind Monster" 3 Mystic)
   { cdSkills = [SkillWillpower, SkillIntellect]
   , cdCardTraits = singleton Spell
-  , cdAction = Just Action.Evade
+  , cdActions = [Action.Evade]
   , cdLevel = 2
   }
 
@@ -518,7 +520,7 @@ baitAndSwitch :: CardDef
 baitAndSwitch = (event "02034" "Bait and Switch" 1 Survivor)
   { cdSkills = [SkillIntellect, SkillAgility]
   , cdCardTraits = setFromList [Trick]
-  , cdAction = Just Action.Evade
+  , cdActions = [Action.Evade]
   }
 
 emergencyAid :: CardDef
@@ -540,7 +542,7 @@ iveGotAPlan :: CardDef
 iveGotAPlan = (event "02107" "\"I've got a plan!\"" 3 Seeker)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Insight, Tactic]
-  , cdAction = Just Action.Fight
+  , cdActions = [Action.Fight]
   }
 
 contraband :: CardDef
@@ -698,7 +700,7 @@ monsterSlayer5 :: CardDef
 monsterSlayer5 = (event "02300" "Monster Slayer" 1 Guardian)
   { cdSkills = [SkillCombat, SkillWild]
   , cdCardTraits = singleton Spirit
-  , cdAction = Just Action.Fight
+  , cdActions = [Action.Fight]
   , cdLevel = 5
   }
 
@@ -706,7 +708,7 @@ decipheredReality5 :: CardDef
 decipheredReality5 = (event "02303" "Deciphered Reality" 4 Seeker)
   { cdSkills = [SkillIntellect, SkillIntellect, SkillWillpower]
   , cdCardTraits = singleton Insight
-  , cdAction = Just Action.Investigate
+  , cdActions = [Action.Investigate]
   , cdLevel = 5
   }
 
@@ -816,7 +818,7 @@ astralTravel :: CardDef
 astralTravel = (event "03034" "Astral Travel" 3 Mystic)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = singleton Spell
-  , cdAction = Just Action.Move
+  , cdActions = [Action.Move]
   , cdCriteria = Just
     (Criteria.LocationExists $ RevealedLocation <> Unblocked <> NotYourLocation)
   }
@@ -890,7 +892,7 @@ stormOfSpirits :: CardDef
 stormOfSpirits = (event "03153" "Storm of Spirits" 3 Mystic)
   { cdSkills = [SkillWillpower, SkillCombat]
   , cdCardTraits = singleton Spell
-  , cdAction = Just Action.Fight
+  , cdActions = [Action.Fight]
   }
 
 fightOrFlight :: CardDef
@@ -954,7 +956,7 @@ cheapShot :: CardDef
 cheapShot = (event "03194" "Cheap Shot" 2 Rogue)
   { cdSkills = [SkillCombat, SkillAgility]
   , cdCardTraits = setFromList [Trick]
-  , cdAction = Just Action.Fight
+  , cdActions = [Action.Fight]
   }
 
 quantumFlux :: CardDef
@@ -1177,7 +1179,7 @@ unearthTheAncients :: CardDef
 unearthTheAncients = (event "04024" "Unearth the Ancients" 1 Seeker)
   { cdSkills = [SkillIntellect, SkillIntellect]
   , cdCardTraits = singleton Insight
-  , cdAction = Just Action.Investigate
+  , cdActions = [Action.Investigate]
   , cdCriteria =
     Just $ Criteria.ExtendedCardExists $ InHandOf You <> BasicCardMatch
       (CardWithClass Seeker <> CardWithType AssetType)
@@ -1217,7 +1219,7 @@ darkProphecy = (event "04032" "Dark Prophecy" 1 Mystic)
 improvisedWeapon :: CardDef
 improvisedWeapon = (event "04033" "Improvised Weapon" 1 Survivor)
   { cdCardTraits = setFromList [Tactic, Improvised]
-  , cdAction = Just Action.Fight
+  , cdActions = [Action.Fight]
   , cdPlayableFromDiscard = True
   }
 
@@ -1257,7 +1259,7 @@ liveAndLearn = (event "04200" "Live and Learn" 0 Survivor)
 wingingIt :: CardDef
 wingingIt = (event "04272" "Winging It" 1 Survivor)
   { cdCardTraits = setFromList [Tactic, Improvised]
-  , cdAction = Just Action.Investigate
+  , cdActions = [Action.Investigate]
   , cdPlayableFromDiscard = True
   }
 
@@ -1341,23 +1343,30 @@ contraband2 = (event "51005" "Contraband" 3 Rogue)
 cleanThemOut :: CardDef
 cleanThemOut = (event "60111" "Clean Them Out" 0 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
-  , cdAction = Just $ Action.Fight
+  , cdActions = [Action.Fight]
   , cdSkills = [SkillWillpower, SkillCombat]
   }
 
 counterpunch :: CardDef
 counterpunch = (event "60112" "Counterpunch" 0 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
-  , cdAction = Just $ Action.Fight
+  , cdActions = [Action.Fight]
   , cdSkills = [SkillWillpower, SkillCombat]
   , cdFastWindow = Just
     $ EnemyAttacksEvenIfCancelled Timing.After You AnyEnemyAttack AnyEnemy
   }
 
+getOverHere :: CardDef
+getOverHere = (event "60114" "\"Get over here!\"" 2 Guardian)
+  { cdCardTraits = setFromList [Spirit, Tactic]
+  , cdActions = [Action.Engage, Action.Fight]
+  , cdSkills = [SkillWillpower, SkillCombat]
+  }
+
 monsterSlayer :: CardDef
 monsterSlayer = (event "60116" "Monster Slayer" 0 Guardian)
   { cdCardTraits = singleton Spirit
-  , cdAction = Just $ Action.Fight
+  , cdActions = [Action.Fight]
   , cdSkills = [SkillWild]
   }
 
@@ -1374,7 +1383,7 @@ iveGotAPlan2 = (event "60225" "\"I've got a plan!\"" 2 Seeker)
   { cdSkills = [SkillIntellect, SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Insight, Tactic]
   , cdLevel = 2
-  , cdAction = Just Action.Fight
+  , cdActions = [Action.Fight]
   }
 
 gritYourTeeth :: CardDef

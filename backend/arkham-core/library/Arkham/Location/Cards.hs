@@ -38,6 +38,7 @@ location cardCode name traits encounterSet = CardDef
   , cdRevelation = False
   , cdVictoryPoints = Nothing
   , cdCriteria = mempty
+  , cdOverrideActionPlayableIfCriteriaMet = False
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False

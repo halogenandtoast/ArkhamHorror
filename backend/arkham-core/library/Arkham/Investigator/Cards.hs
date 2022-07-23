@@ -35,6 +35,7 @@ investigator cardCode name classSymbol traits =
     , cdRevelation = False
     , cdVictoryPoints = Nothing
     , cdCriteria = mempty
+    , cdOverrideActionPlayableIfCriteriaMet = False
     , cdCommitRestrictions = mempty
     , cdAttackOfOpportunityModifiers = mempty
     , cdPermanent = False

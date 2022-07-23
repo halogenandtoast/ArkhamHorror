@@ -19,7 +19,7 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-const emit = defineEmits(['show'])
+const emit = defineEmits(['show', 'choose'])
 
 const id = computed(() => props.act.id)
 const image = computed(() => {

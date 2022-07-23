@@ -33,6 +33,7 @@ skill cardCode name skills classSymbol = CardDef
   , cdRevelation = False
   , cdVictoryPoints = Nothing
   , cdCriteria = mempty
+  , cdOverrideActionPlayableIfCriteriaMet = False
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False

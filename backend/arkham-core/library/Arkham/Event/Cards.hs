@@ -38,6 +38,7 @@ event cardCode name cost classSymbol = CardDef
   , cdRevelation = False
   , cdVictoryPoints = Nothing
   , cdCriteria = Nothing
+  , cdOverrideActionPlayableIfCriteriaMet = False
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False
@@ -1359,6 +1360,9 @@ counterpunch = (event "60112" "Counterpunch" 0 Guardian)
     $ EnemyAttacksEvenIfCancelled Timing.After You AnyEnemyAttack AnyEnemy
   }
 
+-- We need to override the action check for this card because of multiple actions,
+-- but even if we can not fight or engage the enemy, if we can move it this should
+-- still be playable
 getOverHere :: CardDef
 getOverHere = (event "60114" "\"Get over here!\"" 2 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
@@ -1368,9 +1372,12 @@ getOverHere = (event "60114" "\"Get over here!\"" 2 Guardian)
     Just
     $ Criteria.EnemyCriteria
     $ Criteria.EnemyExists
-    $ EnemyAt
-    $ YourLocation
-    <> ConnectedLocation
+    $ NonEliteEnemy
+    <> EnemyOneOf
+         [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy, CanFightEnemy]
+         , EnemyAt $ ConnectedFrom YourLocation
+         ]
+  , cdOverrideActionPlayableIfCriteriaMet = True
   }
 
 glory :: CardDef

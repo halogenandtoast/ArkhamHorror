@@ -146,6 +146,9 @@ isSilentForcedAbility Ability {abilityType} = isSilentForcedAbilityType abilityT
 isForcedAbility :: Ability -> Bool
 isForcedAbility Ability {abilityType} = isForcedAbilityType abilityType
 
+isReactionAbility :: Ability -> Bool
+isReactionAbility Ability {abilityType} = isReactionAbilityType abilityType
+
 isFastAbility :: Ability -> Bool
 isFastAbility Ability {abilityType} = isFastAbilityType abilityType
 

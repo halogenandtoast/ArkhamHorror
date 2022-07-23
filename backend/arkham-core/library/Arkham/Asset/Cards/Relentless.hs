@@ -6,13 +6,13 @@ module Arkham.Asset.Cards.Relentless
 import Arkham.Prelude
 
 import Arkham.Ability
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype Relentless = Relentless AssetAttrs
@@ -30,8 +30,10 @@ instance HasAbilities Relentless where
           )
       $ ExhaustCost
       $ toTarget a
-    , restrictedAbility a 2 ControlsThis $ FastAbility $ DiscardCost $ toTarget
-      a
+    , restrictedAbility a 2 (ControlsThis <> AnyDamageOnThis)
+      $ FastAbility
+      $ DiscardCost
+      $ toTarget a
     ]
 
 toExcessDamage :: [Window] -> Int

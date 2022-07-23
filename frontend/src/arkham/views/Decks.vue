@@ -91,6 +91,15 @@ function pasteDeck(evt: ClipboardEvent) {
   }
 }
 
+const deckUrlToPage = (url: string): string => {
+  // converts https://arkhamdb.com/api/public/decklist/25027
+  // to https://arkhamdb.com/decklist/view/25027
+  // OR
+  // converts https://arkhamdb.com/api/public/deck/25027
+  // to https://arkhamdb.com/deck/view/25027
+  return url.replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
+}
+
 async function createDeck() {
   errors.value = []
   if (deckId.value && deckName.value && deckUrl.value) {
@@ -153,6 +162,9 @@ async function createDeck() {
     <h2>Existing Decks</h2>
     <div v-for="deck in decks" :key="deck.id" class="deck">
       <span>{{deck.name}}</span>
+      <div class="open-deck">
+        <a :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon icon="external-link" /></a>
+      </div>
       <div class="deck-delete">
         <a href="#delete" @click.prevent="deleteId = deck.id"><font-awesome-icon icon="trash" /></a>
       </div>
@@ -257,6 +269,12 @@ h2 {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+}
+
+.open-deck {
+  justify-self: flex-end;
+  align-self: flex-start;
+  margin-right: 10px;
 }
 
 .deck-delete {

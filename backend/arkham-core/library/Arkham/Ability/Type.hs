@@ -123,6 +123,19 @@ isForcedAbilityType = \case
   ActionAbilityWithBefore {} -> False
   AbilityEffect {} -> False
 
+isReactionAbilityType :: AbilityType -> Bool
+isReactionAbilityType = \case
+  SilentForcedAbility {} -> False
+  ForcedAbility {} -> False
+  ForcedAbilityWithCost {} -> False
+  Objective aType -> isReactionAbilityType aType
+  FastAbility {} -> False
+  ReactionAbility {} -> True
+  ActionAbility {} -> False
+  ActionAbilityWithSkill {} -> False
+  ActionAbilityWithBefore {} -> False
+  AbilityEffect {} -> False
+
 isSilentForcedAbilityType :: AbilityType -> Bool
 isSilentForcedAbilityType = \case
   SilentForcedAbility {} -> True

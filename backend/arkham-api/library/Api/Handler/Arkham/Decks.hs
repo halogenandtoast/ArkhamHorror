@@ -133,6 +133,7 @@ fromPostData userId CreateDeckPost {..} = do
     decklist <- edecklist
     pure $ ArkhamDeck
       { arkhamDeckUserId = userId
+      , arkhamDeckUrl = deckUrl
       , arkhamDeckInvestigatorName = tshow $ investigator_name decklist
       , arkhamDeckName = deckName
       , arkhamDeckList = decklist

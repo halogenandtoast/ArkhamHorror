@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Modifier
   ( Modifier(..)
   , ModifierType(..)
@@ -25,7 +24,6 @@ import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Token
 import Arkham.Trait
-import Data.Aeson.TH
 
 data Modifier = Modifier
   { modifierSource :: Source
@@ -178,7 +176,11 @@ data ActionTarget
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON, Hashable)
 
-$(deriveJSON defaultOptions ''ModifierType)
+instance ToJSON ModifierType where
+  toJSON = genericToJSON defaultOptions
+
+instance FromJSON ModifierType where
+  parseJSON = genericParseJSON defaultOptions
 
 instance ToJSON Modifier where
   toJSON = genericToJSON $ aesonOptions $ Just "modifier"

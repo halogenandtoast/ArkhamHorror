@@ -56,6 +56,7 @@ CREATE TABLE public.arkham_decks (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id bigint NOT NULL,
     name text NOT NULL,
+    url text NOT NULL,
     investigator_name text NOT NULL,
     list jsonb NOT NULL
 );

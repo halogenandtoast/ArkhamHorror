@@ -12,6 +12,7 @@ import Arkham.Strategy as X
 import Arkham.Ability
 import Arkham.Act.Sequence
 import Arkham.Action
+import Arkham.Action.Additional
 import Arkham.Asset.Uses
 import Arkham.Attack
 import Arkham.CampaignLogKey
@@ -335,6 +336,7 @@ data Message
   | FoundEncounterCardFrom InvestigatorId Target EncounterCardSource EncounterCard
   | FoundEnemyInVoid InvestigatorId Target EnemyId
   | GainActions InvestigatorId Source Int
+  | GainAdditionalAction InvestigatorId Source AdditionalAction
   | GainClues InvestigatorId Int
   | GainXP InvestigatorId Int
   | GameOver

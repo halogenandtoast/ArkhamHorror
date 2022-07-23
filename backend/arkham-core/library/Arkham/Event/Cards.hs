@@ -118,6 +118,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , firstWatch
   , flare1
   , forewarned1
+  , galvanize1
   , getOverHere
   , glory
   , gritYourTeeth
@@ -1414,10 +1415,18 @@ standTogether = (event "60118" "Stand Together" 0 Guardian)
 evidence1 :: CardDef
 evidence1 = (event "60120" "Evidence!" 1 Guardian)
   { cdSkills = [SkillIntellect, SkillIntellect]
-  , cdCardTraits = setFromList [Insight]
+  , cdCardTraits = singleton Insight
   , cdFastWindow = Just (EnemyDefeated Timing.After You AnyEnemy)
   , cdCriteria = Just
     (Criteria.LocationExists $ YourLocation <> LocationWithAnyClues)
+  , cdLevel = 1
+  }
+
+galvanize1 :: CardDef
+galvanize1 = (event "60121" "Galvanize" 2 Guardian)
+  { cdSkills = [SkillWillpower, SkillWillpower]
+  , cdCardTraits = singleton Spirit
+  , cdFastWindow = Just $ DuringTurn You
   , cdLevel = 1
   }
 

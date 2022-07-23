@@ -152,6 +152,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , narrowEscape
   , noStoneUnturned
   , noStoneUnturned5
+  , oneTwoPunch
   , onTheHunt
   , onTheLam
   , oops
@@ -172,6 +173,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , snareTrap2
   , sneakAttack
   , sneakAttack2
+  , standTogether
   , standTogether3
   , stormOfSpirits
   , sureGamble3
@@ -382,7 +384,7 @@ blindingLight2 :: CardDef
 blindingLight2 = (event "01069" "Blinding Light" 1 Mystic)
   { cdSkills = [SkillWillpower, SkillAgility]
   , cdCardTraits = setFromList [Spell]
-  , cdActions = [ Action.Evade]
+  , cdActions = [Action.Evade]
   , cdLevel = 2
   , cdAlternateCardCodes = ["01569"]
   }
@@ -587,7 +589,7 @@ standTogether3 = (event "02148" "Stand Together" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillWillpower]
   , cdCardTraits = singleton Spirit
   , cdCriteria = Just
-    $ Criteria.InvestigatorExists (InvestigatorAt YourLocation)
+    $ Criteria.InvestigatorExists (InvestigatorAt YourLocation <> NotYou)
   , cdLevel = 3
   }
 
@@ -1362,6 +1364,13 @@ getOverHere = (event "60114" "\"Get over here!\"" 2 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
   , cdActions = [Action.Engage, Action.Fight]
   , cdSkills = [SkillWillpower, SkillCombat]
+  , cdCriteria =
+    Just
+    $ Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ EnemyAt
+    $ YourLocation
+    <> ConnectedLocation
   }
 
 glory :: CardDef
@@ -1383,6 +1392,14 @@ oneTwoPunch = (event "60117" "One-Two Punch" 2 Guardian)
   { cdCardTraits = setFromList [Spirit, Tactic]
   , cdActions = [Action.Fight]
   , cdSkills = [SkillCombat]
+  }
+
+standTogether :: CardDef
+standTogether = (event "60118" "Stand Together" 0 Guardian)
+  { cdCardTraits = singleton Spirit
+  , cdSkills = [SkillWillpower]
+  , cdCriteria = Just
+    (Criteria.InvestigatorExists $ NotYou <> InvestigatorAt YourLocation)
   }
 
 taunt3 :: CardDef

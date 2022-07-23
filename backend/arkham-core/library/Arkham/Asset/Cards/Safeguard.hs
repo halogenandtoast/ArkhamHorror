@@ -28,7 +28,7 @@ instance HasAbilities Safeguard where
   getAbilities (Safeguard a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-            (Moves Timing.After NotYou YourLocation ConnectedLocation)
+            (Moves Timing.After NotYou YourLocation (ConnectedFrom YourLocation))
         $ ExhaustCost
         $ toTarget a
     ]

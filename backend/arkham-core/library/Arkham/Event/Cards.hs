@@ -658,7 +658,7 @@ iveHadWorse4 :: CardDef
 iveHadWorse4 = (event "02261" "\"I've had worse…\"" 0 Guardian)
   { cdSkills = [SkillWillpower, SkillWillpower, SkillAgility]
   , cdCardTraits = singleton Spirit
-  , cdFastWindow = Just (DealtDamageOrHorror Timing.When You)
+  , cdFastWindow = Just (DealtDamageOrHorror Timing.When AnySource You)
   , cdLevel = 4
   , cdAlternateCardCodes = ["01684"]
   }
@@ -920,7 +920,7 @@ devilsLuck :: CardDef
 devilsLuck = (event "03157" "Devil's Luck" 1 Survivor)
   { cdSkills = [SkillAgility]
   , cdCardTraits = singleton Fortune
-  , cdFastWindow = Just (DealtDamageOrHorror Timing.When You)
+  , cdFastWindow = Just (DealtDamageOrHorror Timing.When AnySource You)
   , cdLevel = 1
   }
 

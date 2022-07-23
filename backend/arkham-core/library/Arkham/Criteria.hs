@@ -17,6 +17,10 @@ pattern AnyHorrorOnThis :: Criterion
 pattern AnyHorrorOnThis <- HorrorOnThis (GreaterThan (Static 0)) where
   AnyHorrorOnThis = HorrorOnThis (GreaterThan (Static 0))
 
+pattern AnyDamageOnThis :: Criterion
+pattern AnyDamageOnThis <- DamageOnThis (GreaterThan (Static 0)) where
+  AnyDamageOnThis = DamageOnThis (GreaterThan (Static 0))
+
 pattern NoCluesOnThis :: Criterion
 pattern NoCluesOnThis <- CluesOnThis (EqualTo (Static 0)) where
   NoCluesOnThis = CluesOnThis (EqualTo (Static 0))
@@ -70,6 +74,7 @@ data Criterion
   | FirstAction
   | Here
   | HorrorOnThis ValueMatcher
+  | DamageOnThis ValueMatcher
   | InThreatAreaOf InvestigatorMatcher
   | InVictoryDisplay CardMatcher ValueMatcher
   | InvestigatorExists InvestigatorMatcher

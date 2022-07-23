@@ -690,7 +690,7 @@ data WindowMatcher
   | DealtDamage Timing SourceMatcher Who
   | DealtHorror Timing SourceMatcher Who
   | AssignedHorror Timing Who TargetListMatcher
-  | DealtDamageOrHorror Timing Who
+  | DealtDamageOrHorror Timing SourceMatcher Who
   | WouldDrawEncounterCard Timing Who PhaseMatcher
   | DrawCard Timing Who ExtendedCardMatcher DeckMatcher
   | PlayCard Timing Who ExtendedCardMatcher
@@ -929,3 +929,63 @@ data EffectMatcher = AnyEffect
 data SkillTypeMatcher = AnySkillType | NotSkillType SkillType | IsSkillType SkillType
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+replaceYourLocation
+  :: InvestigatorId -> (Maybe LocationId) -> LocationMatcher -> LocationMatcher
+replaceYourLocation _ Nothing matcher = matcher
+replaceYourLocation iid (Just lid) matcher = go matcher
+ where
+  go = \case
+    LocationWithTitle{} -> matcher
+    LocationWithFullTitle{} -> matcher
+    LocationWithUnrevealedTitle{} -> matcher
+    LocationWithId{} -> matcher
+    LocationWithLabel{} -> matcher
+    LocationWithSymbol{} -> matcher
+    LocationLeavingPlay -> matcher
+    LocationWithDoom{} -> matcher
+    YourLocation -> LocationWithId lid
+    SameLocation -> LocationWithId lid
+    NotYourLocation -> NotLocation (LocationWithId lid)
+    LocationIs{} -> matcher
+    Anywhere -> matcher
+    Nowhere -> matcher
+    EmptyLocation -> matcher
+    AccessibleLocation -> AccessibleFrom (LocationWithId lid)
+    ConnectedFrom m -> ConnectedFrom (go m)
+    ConnectedTo m -> ConnectedTo (go m)
+    AccessibleFrom m -> AccessibleFrom (go m)
+    AccessibleTo m -> AccessibleTo (go m)
+    ConnectedLocation -> ConnectedFrom (LocationWithId lid)
+    LocationWithDistanceFrom int m -> LocationWithDistanceFrom int (go m)
+    LocationWithResources{} -> matcher
+    LocationWithClues{} -> matcher
+    LocationWithHorror{} -> matcher
+    LocationWithMostClues m -> LocationWithMostClues (go m)
+    LocationWithEnemy{} -> matcher
+    LocationWithAsset{} -> matcher
+    LocationWithInvestigator m ->
+      LocationWithInvestigator (replaceYouMatcher iid m)
+    RevealedLocation -> matcher
+    UnrevealedLocation -> matcher
+    InvestigatableLocation -> matcher
+    LocationNotInPlay -> matcher
+    FarthestLocationFromLocation lid' m ->
+      FarthestLocationFromLocation lid' (go m)
+    FarthestLocationFromYou m -> FarthestLocationFromLocation lid (go m)
+    FarthestLocationFromAll m -> FarthestLocationFromAll (go m)
+    NearestLocationToYou m -> NearestLocationToYou (go m) -- TODO: FIX to FromLocation
+    LocationWithTrait{} -> matcher
+    LocationWithoutTrait{} -> matcher
+    LocationInDirection dir m -> LocationInDirection dir (go m)
+    LocationWithTreachery{} -> matcher
+    LocationWithoutTreachery{} -> matcher
+    LocationWithoutModifier{} -> matcher
+    LocationMatchAll ms -> LocationMatchAll $ map go ms
+    LocationMatchAny ms -> LocationMatchAny $ map go ms
+    FirstLocation ms -> FirstLocation $ map go ms
+    NotLocation m -> NotLocation (go m)
+    LocationCanBeFlipped -> matcher
+    ClosestPathLocation{} -> matcher
+    BlockedLocation -> matcher
+    ThisLocation -> matcher

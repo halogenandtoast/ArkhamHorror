@@ -24,13 +24,14 @@ const hasPool = computed(() => {
   const {
     sanity,
     health,
+    damage,
     horror,
     uses,
     doom,
     clues,
     sealedTokens,
   } = props.asset;
-  return sanity || health || horror || uses || doom > 0 || clues > 0 || sealedTokens.length > 0;
+  return sanity || health || damage || horror || uses || doom > 0 || clues > 0 || sealedTokens.length > 0;
 })
 
 const exhausted = computed(() => props.asset.exhausted)
@@ -173,14 +174,14 @@ const choose = (idx: number) => emit('choose', idx)
         :amount="asset.uses.amount"
       />
       <PoolItem
-        v-if="asset.health !== null"
+        v-if="asset.health !== null || asset.damage > 0"
         type="health"
         :amount="asset.damage"
         :class="{ 'health--can-interact': healthAction !== -1 }"
         @choose="choose(healthAction)"
       />
       <PoolItem
-        v-if="asset.sanity !== null"
+        v-if="asset.sanity !== null || asset.horror > 0"
         type="sanity"
         :amount="asset.horror"
         :class="{ 'sanity--can-interact': sanityAction !== -1 }"

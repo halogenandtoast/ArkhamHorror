@@ -49,7 +49,7 @@ import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs (..) )
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Attrs hiding ( location )
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message hiding ( InvestigatorDamage, PaidCost )
+import Arkham.Message hiding ( InvestigatorDamage, AssetDamage, PaidCost )
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Projection
@@ -493,7 +493,7 @@ getActionsWith iid window f = do
         -- If the window is fast we only permit fast abilities, but forced
         -- abilities need to be everpresent so we include them
         needsToBeFast = windowType window == Window.FastPlayerWindow && not
-          (isFastAbility ability || isForcedAbility ability)
+          (isFastAbility ability || isForcedAbility ability || isReactionAbility ability)
       if any prevents investigatorModifiers || needsToBeFast
         then pure Nothing
         else pure $ Just $ applyAbilityModifiers ability modifiers'
@@ -853,6 +853,10 @@ passesCriteria iid source windows' = \case
     AssetSource aid ->
       (`gameValueMatches` valueMatcher) =<< field AssetHorror aid
     _ -> error $ "missing HorrorOnThis check for " <> show source
+  Criteria.DamageOnThis valueMatcher -> case source of
+    AssetSource aid ->
+      (`gameValueMatches` valueMatcher) =<< field AssetDamage aid
+    _ -> error $ "missing DamageOnThis check for " <> show source
   Criteria.ScenarioDeckWithCard key -> notNull <$> getScenarioDeck key
   Criteria.Unowned -> case source of
     AssetSource aid -> fieldP AssetController isNothing aid
@@ -1574,10 +1578,13 @@ windowMatches iid source window' = \case
   Matcher.FastPlayerWindow -> case window' of
     Window Timing.When Window.FastPlayerWindow -> pure True
     _ -> pure False
-  Matcher.DealtDamageOrHorror whenMatcher whoMatcher -> case whoMatcher of
+  Matcher.DealtDamageOrHorror whenMatcher sourceMatcher whoMatcher -> case whoMatcher of
     Matcher.You -> case window' of
-      Window t (Window.WouldTakeDamageOrHorror _ (InvestigatorTarget iid') _ _)
-        | t == whenMatcher -> pure $ iid == iid'
+      Window t (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _)
+        | t == whenMatcher -> andM
+          [ matchWho iid iid' whoMatcher
+          , sourceMatches source' sourceMatcher
+          ]
       _ -> pure False
     _ -> pure False
   Matcher.DealtDamage whenMatcher sourceMatcher whoMatcher -> case window' of
@@ -1831,6 +1838,7 @@ sourceMatches s = \case
       mControllerId <- fromJustNote "must have a controller"
         <$> selectSkillController sid
       member mControllerId <$> select whoMatcher
+    InvestigatorSource iid -> member iid <$> select whoMatcher
     _ -> pure False
   Matcher.SourceIsType t -> pure $ case t of
     AssetType -> case s of
@@ -1906,7 +1914,9 @@ locationMatches
   -> LocationId
   -> Matcher.LocationMatcher
   -> m Bool
-locationMatches investigatorId source window locationId matcher =
+locationMatches investigatorId source window locationId matcher' = do
+  mlid <- field InvestigatorLocation investigatorId
+  let matcher = Matcher.replaceYourLocation investigatorId mlid matcher'
   case matcher of
     -- special cases
     Matcher.NotLocation m ->
@@ -1962,8 +1972,7 @@ locationMatches investigatorId source window locationId matcher =
     Matcher.LocationInDirection _ _ -> locationId <=~> matcher
     Matcher.ClosestPathLocation _ _ -> locationId <=~> matcher
 
-    Matcher.LocationWithDistanceFrom distance matcher' -> member locationId
-      <$> select (Matcher.LocationWithDistanceFrom distance matcher')
+    Matcher.LocationWithDistanceFrom _ _ -> locationId <=~> matcher
     Matcher.LocationWithClues valueMatcher ->
       (`gameValueMatches` valueMatcher) =<< field LocationClues locationId
     Matcher.LocationWithDoom valueMatcher ->

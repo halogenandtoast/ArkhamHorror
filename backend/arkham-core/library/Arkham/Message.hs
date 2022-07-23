@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Message
   ( module Arkham.Message
   , module X
@@ -50,7 +49,6 @@ import Arkham.Trait
 import Arkham.Window ( Window )
 import Arkham.Zone
 import Control.Exception
-import Data.Aeson.TH
 
 messageType :: Message -> Maybe MessageType
 messageType PerformEnemyAttack{} = Just AttackMessage
@@ -611,9 +609,13 @@ data Message
   | FinishCardPayment Card
   | -- Fields
     UpdateLocation LocationAttrs LocationId
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
 
-$(deriveJSON defaultOptions ''Message)
+instance ToJSON Message where
+  toJSON = genericToJSON defaultOptions
+
+instance FromJSON Message where
+  parseJSON = genericParseJSON defaultOptions
 
 targetLabel :: IdToTarget entityId => entityId -> [Message] -> Message
 targetLabel entityId = TargetLabel (idToTarget entityId)

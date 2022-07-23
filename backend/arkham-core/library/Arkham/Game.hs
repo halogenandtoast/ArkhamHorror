@@ -2528,6 +2528,14 @@ runGameMessage msg g = case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
+  EnemyDefeated eid iid _ _ _ -> do
+    attrs <- toAttrs <$> getEnemy eid
+    let
+      historyItem = mempty { historyEnemiesDefeated = [attrs] }
+      turn = isJust $ view turnPlayerInvestigatorIdL g
+      setTurnHistory =
+        if turn then turnHistoryL %~ insertHistory iid historyItem else id
+    pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   Successful (Action.Investigate, LocationTarget lid) iid _ _ _ -> do
     let
       historyItem =

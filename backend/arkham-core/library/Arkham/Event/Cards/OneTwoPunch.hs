@@ -10,6 +10,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
@@ -45,27 +46,32 @@ instance RunMessage OneTwoPunch where
           Nothing -> error "invalid call"
           Just skillTest -> do
             let iid = eventOwner attrs
-            case skillTestResult skillTest of
-              SucceededBy{} -> do
-                push $ chooseOne
-                  iid
-                  [ Label
-                    "Fight that enemy again"
-                    [ skillTestModifiers
-                      (toSource attrs)
-                      (InvestigatorTarget iid)
-                      [SkillModifier SkillCombat 2, DamageDealt 1]
-                    , ChooseFightEnemy
-                      iid
-                      (toSource attrs)
-                      Nothing
-                      SkillCombat
-                      mempty
-                      False
-                    , Discard (toTarget attrs)
+            case (skillTestResult skillTest, skillTestTarget skillTest) of
+              (SucceededBy{}, EnemyTarget eid) -> do
+                isStillAlive <- selectAny $ EnemyWithId eid
+                push
+                  $ chooseOrRunOne iid
+                  $ [ Label
+                        "Fight that enemy again"
+                        [ skillTestModifiers
+                          (toSource attrs)
+                          (InvestigatorTarget iid)
+                          [SkillModifier SkillCombat 2, DamageDealt 1]
+                        , ChooseFightEnemy
+                          iid
+                          (toSource attrs)
+                          Nothing
+                          SkillCombat
+                          mempty
+                          False
+                        , Discard (toTarget attrs)
+                        ]
+                    | isStillAlive
                     ]
-                  , Label "Do not fight that enemy again" [Discard (toTarget attrs)]
-                  ]
+                  <> [ Label
+                         "Do not fight that enemy again"
+                         [Discard (toTarget attrs)]
+                     ]
               _ -> pure ()
         pure . OneTwoPunch $ attrs `with` Metadata True
     _ -> OneTwoPunch . (`with` metadata) <$> runMessage msg attrs

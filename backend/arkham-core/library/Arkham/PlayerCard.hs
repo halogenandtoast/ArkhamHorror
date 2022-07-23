@@ -79,5 +79,6 @@ randomWeakness = CardDef
   , cdCardInDiscardEffects = False
   , cdCardInSearchEffects = False
   , cdAlternateCardCodes = []
+  , cdArt = "01000"
   }
 

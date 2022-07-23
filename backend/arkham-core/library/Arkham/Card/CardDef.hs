@@ -4,7 +4,7 @@ module Arkham.Card.CardDef where
 
 import Arkham.Prelude
 
-import Arkham.Action (Action)
+import Arkham.Action ( Action )
 import Arkham.Asset.Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
@@ -14,7 +14,7 @@ import Arkham.CommitRestriction
 import Arkham.Criteria
 import Arkham.EncounterSet
 import Arkham.Json
-import Arkham.Keyword (HasKeywords(..), Keyword)
+import Arkham.Keyword ( HasKeywords (..), Keyword )
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.SkillType
@@ -34,7 +34,9 @@ data EventChoice = EventChooseN Int EventChoicesRepeatable
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 toCardCodePairs :: CardDef -> [(CardCode, CardDef)]
-toCardCodePairs c = (toCardCode c, c) : map (,c) (cdAlternateCardCodes c)
+toCardCodePairs c = (toCardCode c, c) : map
+  (\cardCode -> (cardCode, c { cdArt = unCardCode cardCode }))
+  (cdAlternateCardCodes c)
 
 data CardDef = CardDef
   { cdCardCode :: CardCode
@@ -72,9 +74,10 @@ data CardDef = CardDef
   , cdCardInDiscardEffects :: Bool
   , cdCardInSearchEffects :: Bool
   , cdAlternateCardCodes :: [CardCode]
+  , cdArt :: Text
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (Hashable)
+  deriving anyclass Hashable
 
 data CardLimit = LimitPerInvestigator Int | LimitPerTrait Trait Int
   deriving stock (Show, Eq, Generic)
@@ -84,13 +87,13 @@ instance Named CardDef where
   toName = cdName
 
 subTypeL :: Lens' CardDef (Maybe CardSubType)
-subTypeL = lens cdCardSubType $ \m x -> m {cdCardSubType = x}
+subTypeL = lens cdCardSubType $ \m x -> m { cdCardSubType = x }
 
 keywordsL :: Lens' CardDef (HashSet Keyword)
-keywordsL = lens cdKeywords $ \m x -> m {cdKeywords = x}
+keywordsL = lens cdKeywords $ \m x -> m { cdKeywords = x }
 
 cardTraitsL :: Lens' CardDef (HashSet Trait)
-cardTraitsL = lens cdCardTraits $ \m x -> m {cdCardTraits = x}
+cardTraitsL = lens cdCardTraits $ \m x -> m { cdCardTraits = x }
 
 instance ToJSON CardDef where
   toJSON = genericToJSON $ aesonOptions $ Just "cd"
@@ -129,41 +132,41 @@ instance HasCardCode CardDef where
 newtype Unrevealed a = Unrevealed a
 
 testCardDef :: CardType -> CardCode -> CardDef
-testCardDef cardType cardCode =
-  CardDef
-    { cdCardCode = cardCode
-    , cdName = "Test"
-    , cdRevealedName = Nothing
-    , cdCost = Nothing
-    , cdLevel = 0
-    , cdCardType = cardType
-    , cdCardSubType = Nothing
-    , cdClassSymbols = mempty
-    , cdSkills = []
-    , cdCardTraits = mempty
-    , cdRevealedCardTraits = mempty
-    , cdKeywords = mempty
-    , cdFastWindow = Nothing
-    , cdActions = []
-    , cdRevelation = False
-    , cdVictoryPoints = Nothing
-    , cdCriteria = Nothing
-    , cdOverrideActionPlayableIfCriteriaMet = False
-    , cdCommitRestrictions = []
-    , cdAttackOfOpportunityModifiers = []
-    , cdPermanent = False
-    , cdEncounterSet = Nothing
-    , cdEncounterSetQuantity = Nothing
-    , cdUnique = False
-    , cdDoubleSided = False
-    , cdLimits = []
-    , cdExceptional = False
-    , cdUses = NoUses
-    , cdPlayableFromDiscard = False
-    , cdStage = Nothing
-    , cdSlots = []
-    , cdCardInHandEffects = False
-    , cdCardInDiscardEffects = False
-    , cdCardInSearchEffects = False
-    , cdAlternateCardCodes = []
-    }
+testCardDef cardType cardCode = CardDef
+  { cdCardCode = cardCode
+  , cdName = "Test"
+  , cdRevealedName = Nothing
+  , cdCost = Nothing
+  , cdLevel = 0
+  , cdCardType = cardType
+  , cdCardSubType = Nothing
+  , cdClassSymbols = mempty
+  , cdSkills = []
+  , cdCardTraits = mempty
+  , cdRevealedCardTraits = mempty
+  , cdKeywords = mempty
+  , cdFastWindow = Nothing
+  , cdActions = []
+  , cdRevelation = False
+  , cdVictoryPoints = Nothing
+  , cdCriteria = Nothing
+  , cdOverrideActionPlayableIfCriteriaMet = False
+  , cdCommitRestrictions = []
+  , cdAttackOfOpportunityModifiers = []
+  , cdPermanent = False
+  , cdEncounterSet = Nothing
+  , cdEncounterSetQuantity = Nothing
+  , cdUnique = False
+  , cdDoubleSided = False
+  , cdLimits = []
+  , cdExceptional = False
+  , cdUses = NoUses
+  , cdPlayableFromDiscard = False
+  , cdStage = Nothing
+  , cdSlots = []
+  , cdCardInHandEffects = False
+  , cdCardInDiscardEffects = False
+  , cdCardInSearchEffects = False
+  , cdAlternateCardCodes = []
+  , cdArt = unCardCode cardCode
+  }

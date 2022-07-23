@@ -56,6 +56,7 @@ event cardCode name cost classSymbol = CardDef
   , cdCardInDiscardEffects = False
   , cdCardInSearchEffects = False
   , cdAlternateCardCodes = []
+  , cdArt = unCardCode cardCode
   }
 
 allPlayerEventCards :: HashMap CardCode CardDef

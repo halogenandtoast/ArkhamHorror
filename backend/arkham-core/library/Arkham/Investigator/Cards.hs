@@ -53,6 +53,7 @@ investigator cardCode name classSymbol traits =
     , cdCardInDiscardEffects = False
     , cdCardInSearchEffects = False
     , cdAlternateCardCodes = []
+    , cdArt = unCardCode cardCode
     }
 
 allInvestigatorCards :: HashMap CardCode CardDef

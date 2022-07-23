@@ -51,6 +51,7 @@ skill cardCode name skills classSymbol = CardDef
   , cdCardInDiscardEffects = False
   , cdCardInSearchEffects = False
   , cdAlternateCardCodes = []
+  , cdArt = unCardCode cardCode
   }
 
 allPlayerSkillCards :: HashMap CardCode CardDef

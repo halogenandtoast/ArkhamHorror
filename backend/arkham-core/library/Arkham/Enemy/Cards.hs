@@ -55,6 +55,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdCardInDiscardEffects = False
   , cdCardInSearchEffects = False
   , cdAlternateCardCodes = []
+  , cdArt = unCardCode cardCode
   }
 
 weakness :: CardCode -> Name -> CardDef

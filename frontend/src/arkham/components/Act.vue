@@ -31,7 +31,7 @@ const image = computed(() => {
 const imageForCard = (card: Card) => {
   const side = card.contents.isFlipped ? 'b' : ''
   const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-  return `${baseUrl}/img/arkham/cards/${card.contents.cardCode.replace('c', '')}${side}.jpg`
+  return `${baseUrl}/img/arkham/cards/${card.contents.art}${side}.jpg`
 }
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))

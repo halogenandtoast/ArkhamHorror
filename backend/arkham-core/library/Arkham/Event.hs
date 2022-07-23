@@ -205,6 +205,7 @@ instance FromJSON Event where
       "60115" -> Event . Glory <$> parseJSON v
       "60116" -> Event . MonsterSlayer <$> parseJSON v
       "60117" -> Event . OneTwoPunch <$> parseJSON v
+      "60118" -> Event . StandTogether <$> parseJSON v
       "60130" -> Event . Taunt3 <$> parseJSON v
       "60225" -> Event . IveGotAPlan2 <$> parseJSON v
       "60515" -> Event . GritYourTeeth <$> parseJSON v
@@ -345,6 +346,7 @@ allEvents = mapFromList $ map
   , Event <$> glory
   , Event <$> monsterSlayer
   , Event <$> oneTwoPunch
+  , Event <$> standTogether
   , Event <$> taunt3
   , Event <$> iveGotAPlan2
   , Event <$> gritYourTeeth

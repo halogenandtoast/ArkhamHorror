@@ -788,6 +788,7 @@ library
       Arkham.Event.Cards.SnareTrap2
       Arkham.Event.Cards.SneakAttack
       Arkham.Event.Cards.SneakAttack2
+      Arkham.Event.Cards.StandTogether
       Arkham.Event.Cards.StandTogether3
       Arkham.Event.Cards.StormOfSpirits
       Arkham.Event.Cards.SureGamble3

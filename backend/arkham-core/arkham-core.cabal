@@ -731,6 +731,7 @@ library
       Arkham.Event.Cards.Flare1
       Arkham.Event.Cards.Forewarned1
       Arkham.Event.Cards.GetOverHere
+      Arkham.Event.Cards.Glory
       Arkham.Event.Cards.GritYourTeeth
       Arkham.Event.Cards.Guidance
       Arkham.Event.Cards.HeroicRescue
@@ -766,6 +767,7 @@ library
       Arkham.Event.Cards.NarrowEscape
       Arkham.Event.Cards.NoStoneUnturned
       Arkham.Event.Cards.NoStoneUnturned5
+      Arkham.Event.Cards.OneTwoPunch
       Arkham.Event.Cards.OnTheHunt
       Arkham.Event.Cards.OnTheLam
       Arkham.Event.Cards.Oops

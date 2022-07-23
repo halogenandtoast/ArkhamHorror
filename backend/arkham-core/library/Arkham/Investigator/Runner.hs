@@ -1730,6 +1730,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & remainingActionsL .~ n
   GainActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL +~ n
+  GainAdditionalAction iid _ n | iid == investigatorId ->
+    pure $ a & additionalActionsL %~ (n :)
   TakeAction iid mAction cost | iid == investigatorId -> do
     pushAll
       $ [PayForAbility (abilityEffect a cost) []]

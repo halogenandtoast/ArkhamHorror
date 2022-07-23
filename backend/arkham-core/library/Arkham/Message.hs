@@ -309,7 +309,6 @@ data Message
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | EnemyEvaded InvestigatorId EnemyId
   | EnemyMove EnemyId LocationId
-  | EngagedEnemyMove EnemyId LocationId
   | EnemyEntered EnemyId LocationId
   | SetBearer Target InvestigatorId
   | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId

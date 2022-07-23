@@ -728,8 +728,8 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
          )
       && none prevents modifiers
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
-      && (Action.Evade `notElem` cdActions pcDef || canEvade)
-      && (Action.Fight `notElem` cdActions pcDef || canFight)
+      && (Action.Evade `notElem` cdActions pcDef || canEvade || cdOverrideActionPlayableIfCriteriaMet pcDef)
+      && (Action.Fight `notElem` cdActions pcDef || canFight || cdOverrideActionPlayableIfCriteriaMet pcDef)
       && passesCriterias
       && passesLimits
       && passesUnique
@@ -974,7 +974,7 @@ passesCriteria iid source windows' = \case
     maybe (pure False) (fieldP LocationClues (> 0))
       =<< field InvestigatorLocation iid
   Criteria.EnemyCriteria enemyCriteria ->
-    passesEnemyCriteria iid source windows' enemyCriteria
+    traceShowId <$> passesEnemyCriteria iid source windows' enemyCriteria
   Criteria.SetAsideCardExists matcher -> selectAny matcher
   Criteria.OnAct step -> do
     actId <- selectJust Matcher.AnyAct

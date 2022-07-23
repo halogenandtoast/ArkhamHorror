@@ -54,6 +54,7 @@ data CardDef = CardDef
   , cdRevelation :: Bool
   , cdVictoryPoints :: Maybe Int
   , cdCriteria :: Maybe Criterion
+  , cdOverrideActionPlayableIfCriteriaMet :: Bool
   , cdCommitRestrictions :: [CommitRestriction]
   , cdAttackOfOpportunityModifiers :: [AttackOfOpportunityModifier]
   , cdPermanent :: Bool
@@ -147,6 +148,7 @@ testCardDef cardType cardCode =
     , cdRevelation = False
     , cdVictoryPoints = Nothing
     , cdCriteria = Nothing
+    , cdOverrideActionPlayableIfCriteriaMet = False
     , cdCommitRestrictions = []
     , cdAttackOfOpportunityModifiers = []
     , cdPermanent = False

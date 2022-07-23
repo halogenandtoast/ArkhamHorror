@@ -517,7 +517,7 @@ instance RunMessage EnemyAttrs where
       whenAttacksWindow <- checkWindows
         [Window Timing.When (Window.EnemyAttacks iid eid attackType)]
       afterAttacksEventIfCancelledWindow <- checkWindows
-        [Window Timing.When (Window.EnemyAttacksEvenIfCancelled iid eid attackType)]
+        [Window Timing.After (Window.EnemyAttacksEvenIfCancelled iid eid attackType)]
       whenWouldAttackWindow <- checkWindows
         [Window Timing.When (Window.EnemyWouldAttack iid eid attackType)]
       a <$ pushAll

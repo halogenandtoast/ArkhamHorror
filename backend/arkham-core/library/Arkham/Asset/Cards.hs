@@ -75,6 +75,7 @@ baseAsset mEncounterSet cardCode name cost classSymbol = CardDef
   , cdRevelation = False
   , cdVictoryPoints = Nothing
   , cdCriteria = mempty
+  , cdOverrideActionPlayableIfCriteriaMet = False
   , cdCommitRestrictions = mempty
   , cdAttackOfOpportunityModifiers = mempty
   , cdPermanent = False

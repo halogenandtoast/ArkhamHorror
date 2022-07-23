@@ -116,6 +116,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , flare1
   , forewarned1
   , getOverHere
+  , glory
   , gritYourTeeth
   , guidance
   , heroicRescue
@@ -1363,11 +1364,25 @@ getOverHere = (event "60114" "\"Get over here!\"" 2 Guardian)
   , cdSkills = [SkillWillpower, SkillCombat]
   }
 
+glory :: CardDef
+glory = (event "60115" "Glory" 1 Guardian)
+  { cdCardTraits = singleton Spirit
+  , cdSkills = [SkillIntellect, SkillIntellect]
+  , cdFastWindow = Just $ EnemyDefeated Timing.After You AnyEnemy
+  }
+
 monsterSlayer :: CardDef
 monsterSlayer = (event "60116" "Monster Slayer" 0 Guardian)
   { cdCardTraits = singleton Spirit
   , cdActions = [Action.Fight]
   , cdSkills = [SkillWild]
+  }
+
+oneTwoPunch :: CardDef
+oneTwoPunch = (event "60117" "One-Two Punch" 2 Guardian)
+  { cdCardTraits = setFromList [Spirit, Tactic]
+  , cdActions = [Action.Fight]
+  , cdSkills = [SkillCombat]
   }
 
 taunt3 :: CardDef

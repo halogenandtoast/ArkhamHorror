@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Id
 import Arkham.Card.CardCode
+import Arkham.Enemy.Attrs
 import Arkham.Target
 import Data.HashMap.Strict qualified as HashMap
 
@@ -12,6 +13,7 @@ data HistoryType = PhaseHistory | RoundHistory | TurnHistory
 data History = History
   { historyTreacheriesDrawn :: [CardCode]
   , historyDealtDamageTo :: [Target]
+  , historyEnemiesDefeated :: [EnemyAttrs]
   , historyMoved :: Bool
   , historyLocationsSuccessfullyInvestigated :: HashSet LocationId
   }
@@ -23,12 +25,13 @@ instance Semigroup History where
     { historyTreacheriesDrawn = historyTreacheriesDrawn h
       <> historyTreacheriesDrawn g
     , historyDealtDamageTo = historyDealtDamageTo h <> historyDealtDamageTo g
+    , historyEnemiesDefeated = historyEnemiesDefeated h <> historyEnemiesDefeated g
     , historyMoved = historyMoved h || historyMoved g
     , historyLocationsSuccessfullyInvestigated = historyLocationsSuccessfullyInvestigated h <> historyLocationsSuccessfullyInvestigated g
     }
 
 instance Monoid History where
-  mempty = History [] [] False mempty
+  mempty = History [] [] [] False mempty
 
 insertHistory
   :: InvestigatorId

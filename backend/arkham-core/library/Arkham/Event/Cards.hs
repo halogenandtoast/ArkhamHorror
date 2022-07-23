@@ -111,6 +111,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , emergencyCache3
   , everVigilant1
   , evidence
+  , evidence1
   , exposeWeakness1
   , extraAmmunition1
   , fightOrFlight
@@ -1408,6 +1409,16 @@ standTogether = (event "60118" "Stand Together" 0 Guardian)
   , cdSkills = [SkillWillpower]
   , cdCriteria = Just
     (Criteria.InvestigatorExists $ NotYou <> InvestigatorAt YourLocation)
+  }
+
+evidence1 :: CardDef
+evidence1 = (event "60120" "Evidence!" 1 Guardian)
+  { cdSkills = [SkillIntellect, SkillIntellect]
+  , cdCardTraits = setFromList [Insight]
+  , cdFastWindow = Just (EnemyDefeated Timing.After You AnyEnemy)
+  , cdCriteria = Just
+    (Criteria.LocationExists $ YourLocation <> LocationWithAnyClues)
+  , cdLevel = 1
   }
 
 taunt3 :: CardDef

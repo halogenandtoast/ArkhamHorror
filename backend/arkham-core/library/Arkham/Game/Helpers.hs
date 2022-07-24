@@ -976,7 +976,7 @@ passesCriteria iid source windows' = \case
     maybe (pure False) (fieldP LocationClues (> 0))
       =<< field InvestigatorLocation iid
   Criteria.EnemyCriteria enemyCriteria ->
-    traceShowId <$> passesEnemyCriteria iid source windows' enemyCriteria
+    passesEnemyCriteria iid source windows' enemyCriteria
   Criteria.SetAsideCardExists matcher -> selectAny matcher
   Criteria.OnAct step -> do
     actId <- selectJust Matcher.AnyAct

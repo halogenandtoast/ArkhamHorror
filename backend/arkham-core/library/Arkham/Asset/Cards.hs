@@ -2,21 +2,21 @@ module Arkham.Asset.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Uses hiding (Key)
-import qualified Arkham.Asset.Uses as Uses
+import Arkham.Asset.Uses hiding ( Key )
+import Arkham.Asset.Uses qualified as Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
-import Arkham.EncounterSet hiding (Dunwich)
-import qualified Arkham.Keyword as Keyword
+import Arkham.EncounterSet hiding ( Dunwich )
+import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.SkillType
 import Arkham.Slot
-import qualified Arkham.Token as Token
-import Arkham.Trait hiding (Supply)
+import Arkham.Token qualified as Token
+import Arkham.Trait hiding ( Supply )
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =
@@ -128,6 +128,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , bookOfShadows1
   , bookOfShadows3
   , boxingGloves
+  , boxingGloves3
   , brotherXavier1
   , bulletproofVest3
   , burglary
@@ -179,6 +180,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , fortyOneDerringer2
   , gravediggersShovel
   , greteWagner
+  , greteWagner3
   , grotesqueStatue4
   , grounded1
   , guardDog
@@ -245,6 +247,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , peterSylvestre2
   , physicalTraining
   , physicalTraining2
+  , physicalTraining4
   , pickpocketing
   , pickpocketing2
   , plucky1
@@ -1955,11 +1958,12 @@ venturer = (asset "04018" "Venturer" 4 Guardian)
   }
 
 drElliHorowitz :: CardDef
-drElliHorowitz = (asset "04021" ("Dr. Elli Horowitz" <:> "Assistant Curator") 3 Seeker)
-  { cdSkills = [SkillWillpower]
-  , cdCardTraits = setFromList [Ally, Assistant]
-  , cdSlots = [AllySlot]
-  }
+drElliHorowitz =
+  (asset "04021" ("Dr. Elli Horowitz" <:> "Assistant Curator") 3 Seeker)
+    { cdSkills = [SkillWillpower]
+    , cdCardTraits = setFromList [Ally, Assistant]
+    , cdSlots = [AllySlot]
+    }
 
 ancientStone1 :: CardDef
 ancientStone1 = (asset "04022" ("Ancient Stone" <:> "Unidentified") 1 Seeker)
@@ -1977,13 +1981,12 @@ toothOfEztli = (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
   }
 
 treasureHunter1 :: CardDef
-treasureHunter1 =
-  (asset "04025" "Treasure Hunter" 1 Rogue)
-    { cdSkills = [SkillIntellect]
-    , cdCardTraits = setFromList [Ally, Wayfarer]
-    , cdSlots = [AllySlot]
-    , cdLevel = 1
-    }
+treasureHunter1 = (asset "04025" "Treasure Hunter" 1 Rogue)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Ally, Wayfarer]
+  , cdSlots = [AllySlot]
+  , cdLevel = 1
+  }
 
 decoratedSkull :: CardDef
 decoratedSkull =
@@ -1995,13 +1998,12 @@ decoratedSkull =
     }
 
 mistsOfRlyeh :: CardDef
-mistsOfRlyeh =
-  (asset "04029" "Mists of R'lyeh" 2 Mystic)
-    { cdSkills = [SkillAgility]
-    , cdCardTraits = singleton Spell
-    , cdSlots = [ArcaneSlot]
-    , cdUses = Uses Charge 4
-    }
+mistsOfRlyeh = (asset "04029" "Mists of R'lyeh" 2 Mystic)
+  { cdSkills = [SkillAgility]
+  , cdCardTraits = singleton Spell
+  , cdSlots = [ArcaneSlot]
+  , cdUses = Uses Charge 4
+  }
 
 theChthonianStone :: CardDef
 theChthonianStone =
@@ -2018,22 +2020,19 @@ theChthonianStone =
     }
 
 protectiveIncantation1 :: CardDef
-protectiveIncantation1 =
-  (asset "04031" "Protective Incantation" 1 Mystic)
-    { cdSkills = [SkillWillpower]
-    , cdCardTraits = setFromList [Ritual, Blessed]
-    , cdSlots = [ArcaneSlot]
-    , cdKeywords = singleton
-      (Keyword.Seal $ TokenFaceIsNot Token.AutoFail)
-    }
+protectiveIncantation1 = (asset "04031" "Protective Incantation" 1 Mystic)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = setFromList [Ritual, Blessed]
+  , cdSlots = [ArcaneSlot]
+  , cdKeywords = singleton (Keyword.Seal $ TokenFaceIsNot Token.AutoFail)
+  }
 
 yaotl1 :: CardDef
-yaotl1 =
-  (asset "04035" ("Yaotl" <:> "Lost Son of Eztli") 3 Survivor)
-    { cdSkills = [SkillWillpower]
-    , cdCardTraits = setFromList [Ally, Wayfarer]
-    , cdSlots = [AllySlot]
-    }
+yaotl1 = (asset "04035" ("Yaotl" <:> "Lost Son of Eztli") 3 Survivor)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = setFromList [Ally, Wayfarer]
+  , cdSlots = [AllySlot]
+  }
 
 backpack :: CardDef
 backpack = (asset "04037" "Backpack" 2 Neutral)
@@ -2175,6 +2174,29 @@ safeguard :: CardDef
 safeguard = (asset "60110" "Safeguard" 2 Guardian)
   { cdSkills = [SkillWillpower]
   , cdCardTraits = singleton Talent
+  }
+
+boxingGloves3 :: CardDef
+boxingGloves3 = (asset "60127" "Boxing Gloves" 2 Guardian)
+  { cdSkills = [SkillCombat, SkillCombat]
+  , cdCardTraits = setFromList [Item, Weapon]
+  , cdSlots = [HandSlot, HandSlot]
+  }
+
+greteWagner3 :: CardDef
+greteWagner3 = (asset "60128" ("Grete Wagner" <:> "The Purifier") 5 Guardian)
+  { cdSkills = [SkillCombat, SkillIntellect, SkillWild]
+  , cdCardTraits = setFromList [Ally, Hunter]
+  , cdSlots = [AllySlot]
+  , cdLevel = 3
+  }
+
+physicalTraining4 :: CardDef
+physicalTraining4 = (asset "60131" "Physical Training" 2 Guardian)
+  { cdSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillCombat]
+  , cdCardTraits = setFromList [Talent]
+  , cdUses = Uses Resource 2
+  , cdLevel = 4
   }
 
 arcaneEnlightenment :: CardDef

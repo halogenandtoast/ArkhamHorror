@@ -76,6 +76,7 @@ allPlayerSkillCards = mapFromList $ concatMap
   , opportunist
   , opportunist2
   , overpower
+  , overpower2
   , perception
   , quickThinking
   , recklessAssault
@@ -375,6 +376,12 @@ trueUnderstanding = (skill "04153" "True Understanding" [SkillWild] Seeker)
 takeHeart :: CardDef
 takeHeart = (skill "04201" "Take Heart" [] Survivor)
   { cdCardTraits = setFromList [Innate]
+  , cdCommitRestrictions = [MaxOnePerTest]
+  }
+
+overpower2 :: CardDef
+overpower2 = (skill "60126" "Overpower" [SkillCombat, SkillCombat, SkillCombat] Guardian)
+  { cdCardTraits = setFromList [Practiced, Expert]
   , cdCommitRestrictions = [MaxOnePerTest]
   }
 

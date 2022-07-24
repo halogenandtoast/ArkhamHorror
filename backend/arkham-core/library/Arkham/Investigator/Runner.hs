@@ -1596,8 +1596,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         onlyCardComittedToTestCommitted = any
           (any (== OnlyCardCommittedToTest) . cdCommitRestrictions . toCardDef)
           allCommittedCards
-        committedCardCodes =
-          map (toCardCode . snd) . HashMap.elems $ skillTestCommittedCards
+        committedCardNames =
+          map (cdName . toCardDef . snd) . HashMap.elems $ skillTestCommittedCards
             skillTest
       modifiers' <- getModifiers (toSource a) (toTarget a)
       let beginMessage = BeforeSkillTest iid skillType skillDifficulty
@@ -1620,8 +1620,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                     passesCommitRestriction = \case
                       CommittableTreachery -> error "unhandled"
                       MaxOnePerTest ->
-                        pure $ toCardCode card `notElem` committedCardCodes
-                      OnlyCardCommittedToTest -> pure $ null committedCardCodes
+                        pure $ cdName (toCardDef card) `notElem` committedCardNames
+                      OnlyCardCommittedToTest -> pure $ null committedCardNames
                       OnlyYourTest -> pure False
                       OnlyIfYourLocationHasClues -> pure $ clueCount > 0
                       ScenarioAbility -> pure isScenarioAbility

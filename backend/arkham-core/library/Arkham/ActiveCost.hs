@@ -249,6 +249,9 @@ instance RunMessage ActiveCost where
                     [] -> error "action expected"
                     as -> as
       case cost of
+        OrCost xs -> do
+          push $ chooseOne iid $ map (\x -> Label (displayCostType x) [PayCost acId iid skipAdditionalCosts x]) xs
+          pure c
         Costs xs ->
           c <$ pushAll [ PayCost acId iid skipAdditionalCosts x | x <- xs ]
         UpTo 0 _ -> pure c

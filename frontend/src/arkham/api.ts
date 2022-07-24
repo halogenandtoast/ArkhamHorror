@@ -69,6 +69,9 @@ export const newDeck = (
 export const deleteDeck = (deckId: string): Promise<void> => api
   .delete(`arkham/decks/${deckId}`);
 
+export const syncDeck = (deckId: string): Promise<void> => api
+  .post(`arkham/decks/${deckId}/sync`);
+
 export const updateGame = (gameId: string, choice: number, investigatorId: string | null): Promise<void> => api
   .put(`arkham/games/${gameId}`,  {tag: 'Answer', contents: { choice, investigatorId }})
 

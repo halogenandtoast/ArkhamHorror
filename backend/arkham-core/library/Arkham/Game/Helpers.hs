@@ -346,6 +346,8 @@ getCanAffordCost iid source mAction windows' = \case
   AdditionalActionsCost{} -> pure True
   Costs xs ->
     and <$> traverse (getCanAffordCost iid source mAction windows') xs
+  OrCost xs ->
+    or <$> traverse (getCanAffordCost iid source mAction windows') xs
   ExhaustCost target -> case target of
     AssetTarget aid -> do
       readyAssetIds <- selectList Matcher.AssetReady

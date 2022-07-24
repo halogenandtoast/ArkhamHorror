@@ -273,8 +273,16 @@ instance RunMessage SkillTest where
            ]
         )
     SkillTestResults{} -> do
+      modifiers' <- getModifiers (toSource s) (toTarget s)
       push (chooseOne skillTestInvestigator [SkillTestApplyResults])
-      case skillTestResult of
+      let
+          modifiedSkillTestResult = foldl' modifySkillTestResult skillTestResult modifiers'
+          modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
+            Unrun -> Unrun
+            SucceededBy b m -> SucceededBy b (max 0 (m + n))
+            FailedBy b m -> FailedBy b (max 0 (m + n))
+          modifySkillTestResult r _ = r
+      case modifiedSkillTestResult of
         SucceededBy _ n -> pushAll
           ([ Will
                (PassedSkillTest
@@ -326,7 +334,15 @@ instance RunMessage SkillTest where
     SkillTestApplyResultsAfter -> do
       -- ST.7 -- apply results
       push $ SkillTestEnds skillTestSource -- -> ST.8 -- Skill test ends
-      case skillTestResult of
+      modifiers' <- getModifiers (toSource s) (toTarget s)
+      let
+          modifiedSkillTestResult = foldl' modifySkillTestResult skillTestResult modifiers'
+          modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
+            Unrun -> Unrun
+            SucceededBy b m -> SucceededBy b (max 0 (m + n))
+            FailedBy b m -> FailedBy b (max 0 (m + n))
+          modifySkillTestResult r _ = r
+      case modifiedSkillTestResult of
         SucceededBy _ n -> pushAll
           ([ After
                (PassedSkillTest
@@ -474,6 +490,28 @@ instance RunMessage SkillTest where
           (skillTestRevealedTokens <> skillTestResolvedTokens)
           (getModifiedTokenValue s)
         pure $ s & valueModifierL %~ subtract tokenValues
+    RecalculateSkillTestResults -> do
+      modifiers' <- getModifiers (toSource s) SkillTestTarget
+      stats <- modifiedStatsOf
+        (toSource s)
+        skillTestAction
+        skillTestInvestigator
+      modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
+      iconCount <- if CancelSkills `elem` modifiers'
+        then pure 0
+        else skillIconCount s
+      let
+        currentSkillValue = statsSkillValue stats skillTestSkillType
+        addResultModifier n (SkillTestResultValueModifier m) = n + m
+        addResultModifier n _ = n
+        resultValueModifiers = foldl' addResultModifier 0 modifiers'
+      push $ SkillTestResults $ SkillTestResultsData
+        currentSkillValue
+        iconCount
+        skillTestValueModifier
+        modifiedSkillTestDifficulty
+        (resultValueModifiers <$ guard (resultValueModifiers /= 0))
+      pure s
     RunSkillTest _ -> do
       modifiers' <- getModifiers (toSource s) SkillTestTarget
       tokenValues <- sum <$> for
@@ -492,11 +530,15 @@ instance RunMessage SkillTest where
         totaledTokenValues = tokenValues + skillTestValueModifier
         modifiedSkillValue' =
           max 0 (currentSkillValue + totaledTokenValues + iconCount)
-      push $ SkillTestResults
+        addResultModifier n (SkillTestResultValueModifier m) = n + m
+        addResultModifier n _ = n
+        resultValueModifiers = foldl' addResultModifier 0 modifiers'
+      push $ SkillTestResults $ SkillTestResultsData
         currentSkillValue
         iconCount
         totaledTokenValues
         modifiedSkillTestDifficulty
+        (resultValueModifiers <$ guard (resultValueModifiers /= 0))
       if modifiedSkillValue' >= modifiedSkillTestDifficulty
         then
           pure

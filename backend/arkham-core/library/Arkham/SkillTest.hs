@@ -18,15 +18,6 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 
-data SkillTestResultsData = SkillTestResultsData
-  { skillTestResultsSkillValue :: Int
-  , skillTestResultsIconValue :: Int
-  , skillTestResultsTokensValue :: Int
-  , skillTestResultsDifficulty :: Int
-  }
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
 subscribersL :: Lens' SkillTest [Target]
 subscribersL =
   lens skillTestSubscribers $ \m x -> m {skillTestSubscribers = x}

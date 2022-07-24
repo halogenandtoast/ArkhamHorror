@@ -47,16 +47,18 @@ instance RunMessage GrannyOrne where
         [ Label
           "Fail by 1 less"
           [ skillTestModifier
-              (toSource attrs)
-              SkillTestTarget
-              (SkillTestResultValueModifier (-1))
+            (toSource attrs)
+            SkillTestTarget
+            (SkillTestResultValueModifier (-1))
+          , RecalculateSkillTestResults
           ]
         , Label
           "Fail by 1 more"
           [ skillTestModifier
-              (toSource attrs)
-              SkillTestTarget
-              (SkillTestResultValueModifier 1)
+            (toSource attrs)
+            SkillTestTarget
+            (SkillTestResultValueModifier 1)
+          , RecalculateSkillTestResults
           ]
         ]
       pure a

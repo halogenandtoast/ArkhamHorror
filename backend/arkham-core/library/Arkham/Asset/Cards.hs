@@ -270,6 +270,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , rolands38Special
   , safeguard
   , scavenging
+  , scrapper
   , scrapper3
   , scrollOfProphecies
   , scrying
@@ -2287,6 +2288,11 @@ mysteriousRaven = (asset "60509" "Mysterious Raven" 1 Survivor)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Ally, Creature]
   , cdSlots = [AllySlot]
+  }
+
+scrapper :: CardDef
+scrapper = (asset "60511" "Scrapper" 2 Survivor)
+  { cdCardTraits = setFromList [Talent]
   }
 
 ladyEsprit :: CardDef

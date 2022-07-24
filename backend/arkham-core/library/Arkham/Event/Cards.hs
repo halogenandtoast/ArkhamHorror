@@ -202,6 +202,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , wardOfProtection2
   , wardOfProtection5
   , waylay
+  , willToSurvive
   , willToSurvive3
   , wingingIt
   , workingAHunch
@@ -1520,6 +1521,13 @@ iveGotAPlan2 = (event "60225" "\"I've got a plan!\"" 2 Seeker)
   , cdCardTraits = setFromList [Insight, Tactic]
   , cdLevel = 2
   , cdActions = [Action.Fight]
+  }
+
+willToSurvive :: CardDef
+willToSurvive = (event "60512" "Will to Survive" 4 Survivor)
+  { cdSkills = [SkillCombat, SkillWild]
+  , cdCardTraits = setFromList [Spirit]
+  , cdFastWindow = Just (DuringTurn You)
   }
 
 gritYourTeeth :: CardDef

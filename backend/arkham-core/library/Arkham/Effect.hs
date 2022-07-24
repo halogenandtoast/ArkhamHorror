@@ -198,6 +198,7 @@ allEffects = mapFromList
   , ("60132", Effect . oneTwoPunch5Effect)
   , ("60305", Effect . lockpicks)
   , ("60505", Effect . eighteenDerringer)
+  , ("60512", Effect . willToSurviveEffect)
   , ("81001", Effect . curseOfTheRougarouTabletToken)
   , ("81007", Effect . cursedShores)
   , ("82026", Effect . gildedVolto)
@@ -297,6 +298,7 @@ instance FromJSON Effect where
       "60132" -> Effect . OneTwoPunch5Effect <$> parseJSON v
       "60305" -> Effect . Lockpicks <$> parseJSON v
       "60505" -> Effect . EighteenDerringer <$> parseJSON v
+      "60512" -> Effect . WillToSurviveEffect <$> parseJSON v
       "81001" -> Effect . CurseOfTheRougarouTabletToken <$> parseJSON v
       "81007" -> Effect . CursedShores <$> parseJSON v
       "82026" -> Effect . GildedVolto <$> parseJSON v

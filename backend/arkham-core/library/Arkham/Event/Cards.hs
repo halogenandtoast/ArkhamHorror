@@ -64,6 +64,7 @@ allPlayerEventCards = mapFromList $ concatMap
   toCardCodePairs
   [ aChanceEncounter
   , aChanceEncounter2
+  , aTestOfWill
   , aTestOfWill1
   , aceInTheHole3
   , ambush1
@@ -1528,6 +1529,17 @@ willToSurvive = (event "60512" "Will to Survive" 4 Survivor)
   { cdSkills = [SkillCombat, SkillWild]
   , cdCardTraits = setFromList [Spirit]
   , cdFastWindow = Just (DuringTurn You)
+  }
+
+aTestOfWill :: CardDef
+aTestOfWill = (event "60513" "A Test of Will" 1 Survivor)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = singleton Spirit
+  , cdFastWindow = Just $ DrawCard
+    Timing.When
+    (InvestigatorAt YourLocation)
+    (BasicCardMatch NonWeaknessTreachery)
+    EncounterDeck
   }
 
 gritYourTeeth :: CardDef

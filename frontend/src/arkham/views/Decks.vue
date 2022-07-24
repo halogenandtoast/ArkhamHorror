@@ -4,6 +4,7 @@ import * as Arkham from '@/arkham/types/Deck'
 import Prompt from '@/components/Prompt.vue'
 import { fetchInvestigators, fetchDecks, newDeck, deleteDeck, syncDeck } from '@/arkham/api'
 import * as Investigator from '@/arkham/types/Investigator';
+import { useToast } from "vue-toastification";
 
 interface UnimplementedCardError {
   tag: string
@@ -29,6 +30,8 @@ const deckId = ref<string | null>(null)
 const deckName = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
 const deleteId = ref<string | null>(null)
+
+const toast = useToast()
 
 async function deleteDeckEvent() {
   const { value } = deleteId
@@ -101,7 +104,9 @@ const deckUrlToPage = (url: string): string => {
 }
 
 async function sync(deck: Arkham.Deck) {
-  syncDeck(deck.id)
+  syncDeck(deck.id).then(() => {
+    toast.success("Deck synced successfully", { timeout: 3000 })
+  })
 }
 
 async function createDeck() {

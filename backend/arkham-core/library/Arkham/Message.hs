@@ -41,6 +41,7 @@ import Arkham.RequestedTokenStrategy
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
+import Arkham.SkillTest.Base
 import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
@@ -518,6 +519,7 @@ data Message
   | RunBag Source (Maybe InvestigatorId) RequestedTokenStrategy
   | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy
   | RunSkillTest InvestigatorId
+  | RecalculateSkillTestResults
   | RemoveFromBearersDeckOrDiscard PlayerCard
   | SearchCollectionForRandom InvestigatorId Source CardMatcher
   | Search InvestigatorId Source Target [(Zone, ZoneReturnStrategy)] CardMatcher FoundCardsStrategy
@@ -552,7 +554,7 @@ data Message
   | SkillTestCommitCard InvestigatorId Card
   | SkillTestEnds Source
   | AfterSkillTestEnds Source Target Int
-  | SkillTestResults Int Int Int Int
+  | SkillTestResults SkillTestResultsData
   | SkillTestUncommitCard InvestigatorId Card
   | SpawnEnemyAt Card LocationId
   | SpawnEnemyAtEngagedWith Card LocationId InvestigatorId

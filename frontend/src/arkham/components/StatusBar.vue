@@ -63,7 +63,7 @@ const testResult = computed(() => {
           Succeed by {{testResult}}
         </dd>
         <dd v-else>
-          Fail by {{testResult}}
+          Fail by {{testResult - (skillTestResults.skillTestResultsResultModifiers || 0)}}
         </dd>
       </dl>
     </div>

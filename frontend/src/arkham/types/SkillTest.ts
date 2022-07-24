@@ -28,6 +28,7 @@ export interface SkillTestResults {
   skillTestResultsIconValue: number;
   skillTestResultsTokensValue: number;
   skillTestResultsDifficulty: number;
+  skillTestResultsResultModifiers: number | null;
 }
 
 export const skillTestDecoder = JsonDecoder.object<SkillTest>(
@@ -49,6 +50,7 @@ export const skillTestResultsDecoder = JsonDecoder.object<SkillTestResults>(
     skillTestResultsIconValue: JsonDecoder.number,
     skillTestResultsTokensValue: JsonDecoder.number,
     skillTestResultsDifficulty: JsonDecoder.number,
+    skillTestResultsResultModifiers: JsonDecoder.nullable(JsonDecoder.number),
   },
   'SkillTestResults',
 );

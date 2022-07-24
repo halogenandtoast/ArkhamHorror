@@ -2713,11 +2713,11 @@ runGameMessage msg g = case msg of
           pure $ g & entitiesL . skillsL %~ insertMap skillId skill
         _ -> pure g
       _ -> pure g
-  SkillTestResults skillValue iconValue tokenValue' skillDifficulty ->
+  SkillTestResults resultsData ->
     pure
       $ g
       & skillTestResultsL
-      ?~ SkillTestResultsData skillValue iconValue tokenValue' skillDifficulty
+      ?~ resultsData
   SkillTestEnds _ -> do
     skillPairs <-
       for (mapToList $ g ^. entitiesL . skillsL) $ \(skillId, skill) -> do

@@ -54,3 +54,13 @@ instance SourceEntity SkillTest where
   isSource _ SkillTestSource {} = True
   isSource _ _ = False
 
+data SkillTestResultsData = SkillTestResultsData
+  { skillTestResultsSkillValue :: Int
+  , skillTestResultsIconValue :: Int
+  , skillTestResultsTokensValue :: Int
+  , skillTestResultsDifficulty :: Int
+  , skillTestResultsResultModifiers :: Maybe Int
+  }
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+

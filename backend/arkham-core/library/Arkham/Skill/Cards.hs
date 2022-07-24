@@ -377,6 +377,7 @@ takeHeart :: CardDef
 takeHeart = (skill "04201" "Take Heart" [] Survivor)
   { cdCardTraits = setFromList [Innate]
   , cdCommitRestrictions = [MaxOnePerTest]
+  , cdAlternateCardCodes = ["60519"]
   }
 
 overpower2 :: CardDef

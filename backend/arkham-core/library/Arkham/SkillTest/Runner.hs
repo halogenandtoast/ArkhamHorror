@@ -380,7 +380,13 @@ instance RunMessage SkillTest where
       push SkillTestApplyResultsAfter
       modifiers' <- getModifiers (toSource s) (toTarget s)
       let successTimes = if DoubleSuccess `elem` modifiers' then 2 else 1
-      s <$ case skillTestResult of
+          modifiedSkillTestResult = foldl' modifySkillTestResult skillTestResult modifiers'
+          modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
+            Unrun -> Unrun
+            SucceededBy b m -> SucceededBy b (max 0 (m + n))
+            FailedBy b m -> FailedBy b (max 0 (m + n))
+          modifySkillTestResult r _ = r
+      s <$ case modifiedSkillTestResult of
         SucceededBy _ n -> pushAll $ cycleN
           successTimes
           ([ PassedSkillTest

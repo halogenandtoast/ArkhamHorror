@@ -417,7 +417,7 @@ lookWhatIFound = (event "01079" "\"Look what I found!\"" 2 Survivor)
     $ FailureResult
     $ LessThan
     $ Static 3
-  , cdAlternateCardCodes = ["01579"]
+  , cdAlternateCardCodes = ["01579", "60517"]
   }
 
 lucky :: CardDef
@@ -584,6 +584,7 @@ oops = (event "02113" "Oops!" 2 Survivor)
     $ FailureResult
     $ LessThan
     $ Static 3
+  , cdAlternateCardCodes = ["60518"]
   }
 
 flare1 :: CardDef
@@ -1246,6 +1247,7 @@ dumbLuck = (event "04034" "Dumb Luck" 2 Survivor)
     $ FailureResult
     $ LessThan
     $ Static 3
+  , cdAlternateCardCodes = ["60514"]
   }
 
 darkPact :: CardDef
@@ -1267,6 +1269,7 @@ liveAndLearn = (event "04200" "Live and Learn" 0 Survivor)
   { cdSkills = [SkillWild]
   , cdCardTraits = singleton Spirit
   , cdFastWindow = Just $ SkillTestEnded Timing.After You SkillTestWasFailed
+  , cdAlternateCardCodes = ["60516"]
   }
 
 wingingIt :: CardDef

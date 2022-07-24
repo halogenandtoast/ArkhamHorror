@@ -30,6 +30,8 @@ import Arkham.Event.Events
   , OneTwoPunchEffect (..)
   , oneTwoPunch5Effect
   , oneTwoPunchEffect
+  , WillToSurviveEffect(..)
+  , willToSurviveEffect
   )
 -- start importing directly
 import Arkham.Investigator.Investigators

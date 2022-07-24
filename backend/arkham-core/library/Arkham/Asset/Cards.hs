@@ -178,9 +178,11 @@ allPlayerAssetCards = mapFromList $ concatMap
   , fortyFiveAutomatic2
   , fortyOneDerringer
   , fortyOneDerringer2
+  , grannyOrne
   , gravediggersShovel
   , greteWagner
   , greteWagner3
+  , grimmsFairyTales
   , grotesqueStatue4
   , grounded1
   , guardDog
@@ -714,7 +716,7 @@ rabbitsFoot = (asset "01075" "Rabbit's Foot" 1 Survivor)
   { cdSkills = [SkillWild]
   , cdCardTraits = setFromList [Item, Charm]
   , cdSlots = [AccessorySlot]
-  , cdAlternateCardCodes = ["01575"]
+  , cdAlternateCardCodes = ["01575", "60510"]
   }
 
 strayCat :: CardDef
@@ -2162,6 +2164,7 @@ greteWagner = (asset "60107" ("Grete Wagner" <:> "The Purifier") 5 Guardian)
   { cdSkills = [SkillIntellect, SkillCombat]
   , cdCardTraits = setFromList [Ally, Hunter]
   , cdSlots = [AllySlot]
+  , cdUnique = True
   }
 
 relentless :: CardDef
@@ -2189,6 +2192,7 @@ greteWagner3 = (asset "60128" ("Grete Wagner" <:> "The Purifier") 5 Guardian)
   , cdCardTraits = setFromList [Ally, Hunter]
   , cdSlots = [AllySlot]
   , cdLevel = 3
+  , cdUnique = True
   }
 
 physicalTraining4 :: CardDef
@@ -2253,12 +2257,28 @@ eighteenDerringer = (asset "60505" ".18 Derringer" 3 Survivor)
   , cdSlots = [HandSlot]
   }
 
+grimmsFairyTales :: CardDef
+grimmsFairyTales = (asset "60506" "Grimm's Fairy Tales" 2 Survivor)
+  { cdSkills = [SkillWillpower]
+  , cdCardTraits = setFromList [Item, Tome]
+  , cdUses = Uses Secret 4
+  , cdSlots = [HandSlot]
+  }
+
 oldKeyring :: CardDef
 oldKeyring = (asset "60507" "Old Keyring" 1 Survivor)
   { cdSkills = [SkillIntellect]
   , cdCardTraits = setFromList [Item, Tool]
   , cdUses = Uses Uses.Key 2
   , cdSlots = [HandSlot]
+  }
+
+grannyOrne :: CardDef
+grannyOrne = (asset "60508" ("Granny Orne" <:> "Tough Old Bird") 4 Survivor)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = singleton Ally
+  , cdSlots = [AllySlot]
+  , cdUnique = True
   }
 
 ladyEsprit :: CardDef

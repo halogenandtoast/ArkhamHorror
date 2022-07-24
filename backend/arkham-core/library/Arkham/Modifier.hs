@@ -34,6 +34,7 @@ data Modifier = Modifier
 
 data ModifierType
   = ActionCostOf ActionTarget Int
+  | SkillTestResultValueModifier Int
   | TraitRestrictedModifier Trait ModifierType
   | ActionCostModifier Int
   | ActionCostSetToModifier Int

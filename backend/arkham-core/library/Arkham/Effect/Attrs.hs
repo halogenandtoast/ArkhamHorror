@@ -32,8 +32,14 @@ data EffectAttrs = EffectAttrs
   , effectTraits :: HashSet Trait
   , effectMetadata :: Maybe (EffectMetadata Window Message)
   , effectWindow :: Maybe EffectWindow
+  , effectFinished :: Bool
+  -- ^ Sometimes an effect may cause infinite recursion, this bool can be used
+  -- to track and escape recursion
   }
   deriving stock (Show, Eq, Generic)
+
+finishedL :: Lens' EffectAttrs Bool
+finishedL = lens effectFinished $ \m x -> m { effectFinished = x }
 
 type EffectArgs
   = (EffectId, Maybe (EffectMetadata Window Message), Source, Target)
@@ -53,6 +59,7 @@ baseAttrs cardCode eid meffectMetadata source target = EffectAttrs
   , effectMetadata = meffectMetadata
   , effectTraits = mempty
   , effectWindow = Nothing
+  , effectFinished = False
   }
 
 instance ToJSON EffectAttrs where

@@ -121,14 +121,16 @@ instance RunMessage SkillTest where
                     (Token t tokenFace)
                   )
               pure s
-        else do
-          let applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
-              applyRevealStategyModifier n _ = n
-              revealStrategy = foldl' applyRevealStategyModifier (Reveal 1) modifiers'
-          s <$ pushAll
-            [ RequestTokens (toSource s) (Just iid) revealStrategy SetAside
-            , RunSkillTest iid
-            ]
+        else if SkillTestAutomaticallySucceeds `elem` modifiers'
+          then s <$ push PassSkillTest
+          else do
+            let applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
+                applyRevealStategyModifier n _ = n
+                revealStrategy = foldl' applyRevealStategyModifier (Reveal 1) modifiers'
+            s <$ pushAll
+              [ RequestTokens (toSource s) (Just iid) revealStrategy SetAside
+              , RunSkillTest iid
+              ]
     DrawAnotherToken iid -> do
       withQueue_ $ filter $ \case
         Will FailedSkillTest{} -> False

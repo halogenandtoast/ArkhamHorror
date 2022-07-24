@@ -87,6 +87,7 @@ data Cost
   | ExhaustAssetCost AssetMatcher
   | RemoveCost Target
   | Costs [Cost]
+  | OrCost [Cost]
   | DamageCost Source Target Int
   | DirectDamageCost Source InvestigatorMatcher Int
   | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
@@ -133,6 +134,7 @@ displayCostType = \case
   ExhaustAssetCost _ -> "Exhaust matching asset"
   RemoveCost _ -> "Remove from play"
   Costs cs -> T.intercalate ", " $ map displayCostType cs
+  OrCost cs -> T.intercalate " or " $ map displayCostType cs
   DamageCost _ _ n -> tshow n <> " Damage"
   DirectDamageCost _ _ n -> tshow n <> " Direct Damage"
   InvestigatorDamageCost _ _ _ n -> tshow n <> " Damage"
@@ -155,7 +157,7 @@ displayCostType = \case
     Try -> if n == 1 then "1 Try" else tshow n <> " Tries"
     Bounty -> if n == 1 then "1 Bounty" else tshow n <> " Bounties"
     Whistle -> pluralize n "Whistle"
-    Resource -> pluralize n "Resource"
+    Resource -> pluralize n "Resource from the asset"
     Key -> pluralize n "Key"
   UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
   SealCost _ -> "Seal token"

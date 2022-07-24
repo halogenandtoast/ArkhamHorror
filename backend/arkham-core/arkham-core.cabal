@@ -204,6 +204,7 @@ library
       Arkham.Asset.Cards.BookOfShadows1
       Arkham.Asset.Cards.BookOfShadows3
       Arkham.Asset.Cards.BoxingGloves
+      Arkham.Asset.Cards.BoxingGloves3
       Arkham.Asset.Cards.BrotherXavier1
       Arkham.Asset.Cards.BulletproofVest3
       Arkham.Asset.Cards.Burglary
@@ -260,6 +261,7 @@ library
       Arkham.Asset.Cards.GildedVolto
       Arkham.Asset.Cards.GravediggersShovel
       Arkham.Asset.Cards.GreteWagner
+      Arkham.Asset.Cards.GreteWagner3
       Arkham.Asset.Cards.GrotesqueStatue4
       Arkham.Asset.Cards.Grounded1
       Arkham.Asset.Cards.GuardDog
@@ -336,6 +338,7 @@ library
       Arkham.Asset.Cards.PeterSylvestre2
       Arkham.Asset.Cards.PhysicalTraining
       Arkham.Asset.Cards.PhysicalTraining2
+      Arkham.Asset.Cards.PhysicalTraining4
       Arkham.Asset.Cards.Pickpocketing
       Arkham.Asset.Cards.Pickpocketing2
       Arkham.Asset.Cards.Plucky1
@@ -715,6 +718,7 @@ library
       Arkham.Event.Cards.DumbLuck
       Arkham.Event.Cards.DynamiteBlast
       Arkham.Event.Cards.DynamiteBlast2
+      Arkham.Event.Cards.DynamiteBlast3
       Arkham.Event.Cards.EatLead2
       Arkham.Event.Cards.Eavesdrop
       Arkham.Event.Cards.EideticMemory3
@@ -734,6 +738,7 @@ library
       Arkham.Event.Cards.Forewarned1
       Arkham.Event.Cards.Galvanize1
       Arkham.Event.Cards.GetOverHere
+      Arkham.Event.Cards.GetOverHere2
       Arkham.Event.Cards.Glory
       Arkham.Event.Cards.GritYourTeeth
       Arkham.Event.Cards.Guidance
@@ -751,6 +756,7 @@ library
       Arkham.Event.Cards.IveGotAPlan
       Arkham.Event.Cards.IveGotAPlan2
       Arkham.Event.Cards.IveHadWorse4
+      Arkham.Event.Cards.LessonLearned2
       Arkham.Event.Cards.LetMeHandleThis
       Arkham.Event.Cards.LiveAndLearn
       Arkham.Event.Cards.LogicalReasoning
@@ -760,6 +766,7 @@ library
       Arkham.Event.Cards.Lucky2
       Arkham.Event.Cards.Lure1
       Arkham.Event.Cards.ManoAMano1
+      Arkham.Event.Cards.ManoAMano2
       Arkham.Event.Cards.MindOverMatter
       Arkham.Event.Cards.MindWipe1
       Arkham.Event.Cards.MindWipe3
@@ -771,6 +778,7 @@ library
       Arkham.Event.Cards.NoStoneUnturned
       Arkham.Event.Cards.NoStoneUnturned5
       Arkham.Event.Cards.OneTwoPunch
+      Arkham.Event.Cards.OneTwoPunch5
       Arkham.Event.Cards.OnTheHunt
       Arkham.Event.Cards.OnTheLam
       Arkham.Event.Cards.Oops
@@ -1220,6 +1228,7 @@ library
       Arkham.Skill.Cards.Opportunist
       Arkham.Skill.Cards.Opportunist2
       Arkham.Skill.Cards.Overpower
+      Arkham.Skill.Cards.Overpower2
       Arkham.Skill.Cards.Perception
       Arkham.Skill.Cards.QuickThinking
       Arkham.Skill.Cards.RecklessAssault

@@ -108,6 +108,7 @@ instance FromJSON Skill where
       "04036" -> Skill . LastChance <$> parseJSON v
       "04153" -> Skill . TrueUnderstanding <$> parseJSON v
       "04201" -> Skill . TakeHeart <$> parseJSON v
+      "60126" -> Skill . Overpower2 <$> parseJSON v
       "60502" -> Skill . NeitherRainNorSnow <$> parseJSON v
       "60526" -> Skill . UnexpectedCourage2 <$> parseJSON v
       _ -> error "Unknown skill"
@@ -151,6 +152,7 @@ allSkills = mapFromList $ map (cbCardCode &&& (curry . cbCardBuilder))
   , Skill <$> lastChance
   , Skill <$> trueUnderstanding
   , Skill <$> takeHeart
+  , Skill <$> overpower2
   , Skill <$> neitherRainNorSnow
   , Skill <$> unexpectedCourage2
   ]

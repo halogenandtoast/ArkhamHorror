@@ -166,6 +166,7 @@ data ModifierType
   | TreatRevealedTokenAs TokenFace
   | UseSkillInPlaceOf SkillType SkillType
   | XPModifier Int
+  | SkillTestAutomaticallySucceeds
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 

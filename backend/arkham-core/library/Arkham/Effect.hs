@@ -1,6 +1,6 @@
-module Arkham.Effect (
-  module Arkham.Effect,
-) where
+module Arkham.Effect
+  ( module Arkham.Effect
+  ) where
 
 import Arkham.Prelude
 
@@ -16,14 +16,26 @@ import Arkham.Modifier
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Window (Window)
+import Arkham.Window ( Window )
 import Data.Typeable
 
+import Arkham.Asset.Assets
+  ( MistsOfRlyehEffect (..)
+  , Yaotl1Effect (..)
+  , mistsOfRlyehEffect
+  , yaotl1Effect
+  )
+import Arkham.Event.Events
+  ( OneTwoPunch5Effect (..)
+  , OneTwoPunchEffect (..)
+  , oneTwoPunch5Effect
+  , oneTwoPunchEffect
+  )
 -- start importing directly
-import Arkham.Investigator.Investigators (FatherMateoElderSignEffect(..), fatherMateoElderSignEffect)
-import Arkham.Asset.Assets (MistsOfRlyehEffect(..), mistsOfRlyehEffect, Yaotl1Effect(..), yaotl1Effect)
+import Arkham.Investigator.Investigators
+  ( FatherMateoElderSignEffect (..), fatherMateoElderSignEffect )
 
-data Effect = forall a. IsEffect a => Effect a
+data Effect = forall a . IsEffect a => Effect a
 
 instance Eq Effect where
   (Effect (a :: a)) == (Effect (b :: b)) = case eqT @a @b of
@@ -36,30 +48,30 @@ instance Show Effect where
 instance ToJSON Effect where
   toJSON (Effect a) = toJSON a
 
-createEffect ::
-  MonadRandom m =>
-  CardCode ->
-  Maybe (EffectMetadata Window Message) ->
-  Source ->
-  Target ->
-  m (EffectId, Effect)
+createEffect
+  :: MonadRandom m
+  => CardCode
+  -> Maybe (EffectMetadata Window Message)
+  -> Source
+  -> Target
+  -> m (EffectId, Effect)
 createEffect cardCode meffectMetadata source target = do
   eid <- getRandom
   pure (eid, lookupEffect cardCode eid meffectMetadata source target)
 
-createTokenValueEffect ::
-  MonadRandom m => Int -> Source -> Target -> m (EffectId, Effect)
+createTokenValueEffect
+  :: MonadRandom m => Int -> Source -> Target -> m (EffectId, Effect)
 createTokenValueEffect n source target = do
   eid <- getRandom
   pure (eid, buildTokenValueEffect eid n source target)
 
-createWindowModifierEffect ::
-  MonadRandom m =>
-  EffectWindow ->
-  EffectMetadata Window Message ->
-  Source ->
-  Target ->
-  m (EffectId, Effect)
+createWindowModifierEffect
+  :: MonadRandom m
+  => EffectWindow
+  -> EffectMetadata Window Message
+  -> Source
+  -> Target
+  -> m (EffectId, Effect)
 createWindowModifierEffect effectWindow effectMetadata source target = do
   eid <- getRandom
   pure
@@ -67,12 +79,12 @@ createWindowModifierEffect effectWindow effectMetadata source target = do
     , buildWindowModifierEffect eid effectMetadata effectWindow source target
     )
 
-createTokenEffect ::
-  MonadRandom m =>
-  EffectMetadata Window Message ->
-  Source ->
-  Token ->
-  m (EffectId, Effect)
+createTokenEffect
+  :: MonadRandom m
+  => EffectMetadata Window Message
+  -> Source
+  -> Token
+  -> m (EffectId, Effect)
 createTokenEffect effectMetadata source token = do
   eid <- getRandom
   pure (eid, buildTokenEffect eid effectMetadata source token)
@@ -101,117 +113,115 @@ instance SourceEntity Effect where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-lookupEffect ::
-  CardCode ->
-  EffectId ->
-  Maybe (EffectMetadata Window Message) ->
-  Source ->
-  Target ->
-  Effect
-lookupEffect cardCode eid mmetadata source target =
-  effect
-    (eid, mmetadata, source, target)
+lookupEffect
+  :: CardCode
+  -> EffectId
+  -> Maybe (EffectMetadata Window Message)
+  -> Source
+  -> Target
+  -> Effect
+lookupEffect cardCode eid mmetadata source target = effect
+  (eid, mmetadata, source, target)
  where
-  effect =
-    findWithDefault
-      (error $ "Unknown effect: " <> show cardCode)
-      cardCode
-      allEffects
+  effect = findWithDefault
+    (error $ "Unknown effect: " <> show cardCode)
+    cardCode
+    allEffects
 
 allEffects :: HashMap CardCode (EffectArgs -> Effect)
-allEffects =
-  mapFromList
-    [ ("01010", Effect . onTheLam)
-    , ("01036", Effect . mindOverMatter)
-    , ("01060", Effect . shrivelling)
-    , ("01066", Effect . blindingLight)
-    , ("01068", Effect . mindWipe1)
-    , ("01069", Effect . blindingLight2)
-    , ("01074", Effect . baseballBat)
-    , ("01080", Effect . lucky)
-    , ("01084", Effect . lucky2)
-    , ("01085", Effect . willToSurvive3)
-    , ("01088", Effect . sureGamble3)
-    , ("01151", Effect . arkhamWoodsTwistingPaths)
-    , ("02028", Effect . riteOfSeeking)
-    , ("02031", Effect . bindMonster2)
-    , ("02100", Effect . pushedIntoTheBeyond)
-    , ("02102", Effect . arcaneBarrier)
-    , ("02112", Effect . songOfTheDead2)
-    , ("02114", Effect . fireExtinguisher1)
-    , ("02150", Effect . deduction2)
-    , ("02228", Effect . exposeWeakness1)
-    , ("02229", Effect . quickThinking)
-    , ("02230", Effect . luckyDice2)
-    , ("02233", Effect . riteOfSeeking4)
-    , ("02236", Effect . undimensionedAndUnseenTabletToken)
-    , ("02246", Effect . tenAcreMeadow_246)
-    , ("02270", Effect . aChanceEncounter)
-    , ("02323", Effect . yogSothoth)
-    , ("03002", Effect . minhThiPhan)
-    , ("03005", Effect . williamYorick)
-    , ("03012", Effect . thePaintedWorld)
-    , ("03018", Effect . improvisation)
-    , ("03022", Effect . letMeHandleThis)
-    , ("03024", Effect . fieldwork)
-    , ("03029", Effect . sleightOfHand)
-    , ("03031", Effect . lockpicks1)
-    , ("03032", Effect . alchemicalTransmutation)
-    , ("03033", Effect . uncageTheSoul)
-    , ("03040", Effect . overzealous)
-    , ("03047a", Effect . theStrangerACityAflame)
-    , ("03047b", Effect . theStrangerThePathIsMine)
-    , ("03047c", Effect . theStrangerTheShoresOfHali)
-    , ("03100", Effect . theKingsEdict)
-    , ("03141", Effect . mrPeabody)
-    , ("03149", Effect . charlesRossEsq)
-    , ("03153", Effect . stormOfSpirits)
-    , ("03155", Effect . fightOrFlight)
-    , ("03158", Effect . callingInFavors)
-    , ("03209", Effect . montmartre209)
-    , ("03215", Effect . pereLachaiseCemetery)
-    , ("03218", Effect . leMarais218)
-    , ("03221a", Effect . theOrganistHopelessIDefiedHim)
-    , ("03254", Effect . narrowShaft)
-    , ("03306", Effect . eideticMemory3)
-    , ("04004", Effect . fatherMateoElderSignEffect)
-    , ("04029", Effect . mistsOfRlyehEffect)
-    , ("04035", Effect . yaotl1Effect)
-    , ("05114", Effect . meatCleaver)
-    , ("50008", Effect . mindWipe3)
-    , ("50033", Effect . arkhamWoodsGreatWillow)
-    , ("50044", Effect . jeremiahPierce)
-    , ("60101", Effect . nathanielCho)
-    , ("60103", Effect . tommyMalloy)
-    , ("60305", Effect . lockpicks)
-    , ("60505", Effect . eighteenDerringer)
-    , ("81001", Effect . curseOfTheRougarouTabletToken)
-    , ("81007", Effect . cursedShores)
-    , ("82026", Effect . gildedVolto)
-    , ("82035", Effect . mesmerize)
-    , ("90002", Effect . daisysToteBagAdvanced)
-    ]
+allEffects = mapFromList
+  [ ("01010", Effect . onTheLam)
+  , ("01036", Effect . mindOverMatter)
+  , ("01060", Effect . shrivelling)
+  , ("01066", Effect . blindingLight)
+  , ("01068", Effect . mindWipe1)
+  , ("01069", Effect . blindingLight2)
+  , ("01074", Effect . baseballBat)
+  , ("01080", Effect . lucky)
+  , ("01084", Effect . lucky2)
+  , ("01085", Effect . willToSurvive3)
+  , ("01088", Effect . sureGamble3)
+  , ("01151", Effect . arkhamWoodsTwistingPaths)
+  , ("02028", Effect . riteOfSeeking)
+  , ("02031", Effect . bindMonster2)
+  , ("02100", Effect . pushedIntoTheBeyond)
+  , ("02102", Effect . arcaneBarrier)
+  , ("02112", Effect . songOfTheDead2)
+  , ("02114", Effect . fireExtinguisher1)
+  , ("02150", Effect . deduction2)
+  , ("02228", Effect . exposeWeakness1)
+  , ("02229", Effect . quickThinking)
+  , ("02230", Effect . luckyDice2)
+  , ("02233", Effect . riteOfSeeking4)
+  , ("02236", Effect . undimensionedAndUnseenTabletToken)
+  , ("02246", Effect . tenAcreMeadow_246)
+  , ("02270", Effect . aChanceEncounter)
+  , ("02323", Effect . yogSothoth)
+  , ("03002", Effect . minhThiPhan)
+  , ("03005", Effect . williamYorick)
+  , ("03012", Effect . thePaintedWorld)
+  , ("03018", Effect . improvisation)
+  , ("03022", Effect . letMeHandleThis)
+  , ("03024", Effect . fieldwork)
+  , ("03029", Effect . sleightOfHand)
+  , ("03031", Effect . lockpicks1)
+  , ("03032", Effect . alchemicalTransmutation)
+  , ("03033", Effect . uncageTheSoul)
+  , ("03040", Effect . overzealous)
+  , ("03047a", Effect . theStrangerACityAflame)
+  , ("03047b", Effect . theStrangerThePathIsMine)
+  , ("03047c", Effect . theStrangerTheShoresOfHali)
+  , ("03100", Effect . theKingsEdict)
+  , ("03141", Effect . mrPeabody)
+  , ("03149", Effect . charlesRossEsq)
+  , ("03153", Effect . stormOfSpirits)
+  , ("03155", Effect . fightOrFlight)
+  , ("03158", Effect . callingInFavors)
+  , ("03209", Effect . montmartre209)
+  , ("03215", Effect . pereLachaiseCemetery)
+  , ("03218", Effect . leMarais218)
+  , ("03221a", Effect . theOrganistHopelessIDefiedHim)
+  , ("03254", Effect . narrowShaft)
+  , ("03306", Effect . eideticMemory3)
+  , ("04004", Effect . fatherMateoElderSignEffect)
+  , ("04029", Effect . mistsOfRlyehEffect)
+  , ("04035", Effect . yaotl1Effect)
+  , ("05114", Effect . meatCleaver)
+  , ("50008", Effect . mindWipe3)
+  , ("50033", Effect . arkhamWoodsGreatWillow)
+  , ("50044", Effect . jeremiahPierce)
+  , ("60101", Effect . nathanielCho)
+  , ("60103", Effect . tommyMalloy)
+  , ("60117", Effect . oneTwoPunchEffect)
+  , ("60132", Effect . oneTwoPunch5Effect)
+  , ("60305", Effect . lockpicks)
+  , ("60505", Effect . eighteenDerringer)
+  , ("81001", Effect . curseOfTheRougarouTabletToken)
+  , ("81007", Effect . cursedShores)
+  , ("82026", Effect . gildedVolto)
+  , ("82035", Effect . mesmerize)
+  , ("90002", Effect . daisysToteBagAdvanced)
+  ]
 
 buildTokenValueEffect :: EffectId -> Int -> Source -> Target -> Effect
-buildTokenValueEffect eid n source =
-  buildWindowModifierEffect
-    eid
-    (EffectModifiers [Modifier source $ TokenValueModifier n])
-    EffectSkillTestWindow
-    source
+buildTokenValueEffect eid n source = buildWindowModifierEffect
+  eid
+  (EffectModifiers [Modifier source $ TokenValueModifier n])
+  EffectSkillTestWindow
+  source
 
-buildWindowModifierEffect ::
-  EffectId ->
-  EffectMetadata Window Message ->
-  EffectWindow ->
-  Source ->
-  Target ->
-  Effect
+buildWindowModifierEffect
+  :: EffectId
+  -> EffectMetadata Window Message
+  -> EffectWindow
+  -> Source
+  -> Target
+  -> Effect
 buildWindowModifierEffect eid metadata effectWindow source target =
   Effect $ windowModifierEffect eid metadata effectWindow source target
 
-buildTokenEffect ::
-  EffectId -> EffectMetadata Window Message -> Source -> Token -> Effect
+buildTokenEffect
+  :: EffectId -> EffectMetadata Window Message -> Source -> Token -> Effect
 buildTokenEffect eid metadata source token =
   Effect $ tokenEffect eid metadata source token
 
@@ -281,6 +291,8 @@ instance FromJSON Effect where
       "50044" -> Effect . JeremiahPierce <$> parseJSON v
       "60101" -> Effect . NathanielCho <$> parseJSON v
       "60103" -> Effect . TommyMalloy <$> parseJSON v
+      "60117" -> Effect . OneTwoPunchEffect <$> parseJSON v
+      "60132" -> Effect . OneTwoPunch5Effect <$> parseJSON v
       "60305" -> Effect . Lockpicks <$> parseJSON v
       "60505" -> Effect . EighteenDerringer <$> parseJSON v
       "81001" -> Effect . CurseOfTheRougarouTabletToken <$> parseJSON v

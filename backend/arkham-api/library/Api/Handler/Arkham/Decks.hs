@@ -3,9 +3,10 @@ module Api.Handler.Arkham.Decks
   , postApiV1ArkhamDecksR
   , deleteApiV1ArkhamDeckR
   , putApiV1ArkhamGameDecksR
+  , postApiV1ArkhamSyncDeckR
   ) where
 
-import Import hiding (delete, on, (==.))
+import Import hiding ( delete, on, update, (=.), (==.) )
 
 import Api.Arkham.Helpers
 import Arkham.Card.CardCode
@@ -14,15 +15,16 @@ import Arkham.Helpers
 import Arkham.Id
 import Arkham.Message
 import Arkham.PlayerCard
-import Control.Monad.Random (mkStdGen)
+import Control.Monad.Random ( mkStdGen )
 import Data.HashMap.Strict qualified as HashMap
 import Data.Text qualified as T
 import Data.Time.Clock
-import Database.Esqueleto.Experimental hiding (isNothing)
-import Json hiding (Success)
-import Network.HTTP.Conduit (simpleHttp)
+import Database.Esqueleto.Experimental hiding ( isNothing )
+import Json hiding ( Success )
+import Network.HTTP.Conduit ( simpleHttp )
 import Network.HTTP.Types
-import Safe (fromJustNote)
+import Network.HTTP.Types.Status qualified as Status
+import Safe ( fromJustNote )
 
 getApiV1ArkhamDecksR :: Handler [Entity ArkhamDeck]
 getApiV1ArkhamDecksR = do
@@ -55,9 +57,10 @@ instance ToJSON DeckError where
   toJSON = genericToJSON $ defaultOptions { tagSingleConstructors = True }
 
 toDeckErrors :: ArkhamDeck -> [DeckError]
-toDeckErrors deck =
-  flip mapMaybe cardCodes $ \cardCode ->
-    maybe (Just $ UnimplementedCard cardCode) (const Nothing) (HashMap.lookup cardCode allPlayerCards)
+toDeckErrors deck = flip mapMaybe cardCodes $ \cardCode -> maybe
+  (Just $ UnimplementedCard cardCode)
+  (const Nothing)
+  (HashMap.lookup cardCode allPlayerCards)
  where
   decklist = arkhamDeckList deck
   cardCodes = HashMap.keys $ slots decklist
@@ -149,3 +152,23 @@ deleteApiV1ArkhamDeckR deckId = do
     decks <- from $ table @ArkhamDeck
     where_ $ decks ^. persistIdField ==. val deckId
     where_ $ decks ^. ArkhamDeckUserId ==. val userId
+
+newtype JSONError = JSONError { errorMsg :: Text }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+
+postApiV1ArkhamSyncDeckR :: ArkhamDeckId -> Handler ()
+postApiV1ArkhamSyncDeckR deckId = do
+  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  deck <- runDB $ get404 deckId
+  unless (arkhamDeckUserId deck == userId) $ sendStatusJSON
+    Status.status400
+    (JSONError "Deck does not belong to this user")
+  edecklist <- getDeckList (arkhamDeckUrl deck)
+  case edecklist of
+    Right decklist -> runDB $ update $ \d -> do
+      set d [ArkhamDeckList =. val decklist]
+      where_ $ d ^. ArkhamDeckId ==. val deckId
+    Left _ ->
+      sendStatusJSON Status.status400 (JSONError "Could not sync deck")

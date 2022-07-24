@@ -102,6 +102,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , dumbLuck
   , dynamiteBlast
   , dynamiteBlast2
+  , dynamiteBlast3
   , eatLead2
   , eavesdrop
   , eideticMemory3
@@ -121,6 +122,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , forewarned1
   , galvanize1
   , getOverHere
+  , getOverHere2
   , glory
   , gritYourTeeth
   , guidance
@@ -138,6 +140,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , iveGotAPlan
   , iveGotAPlan2
   , iveHadWorse4
+  , lessonLearned2
   , letMeHandleThis
   , liveAndLearn
   , logicalReasoning
@@ -147,6 +150,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , lucky2
   , lure1
   , manoAMano1
+  , manoAMano2
   , mindOverMatter
   , mindWipe1
   , mindWipe3
@@ -158,6 +162,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , noStoneUnturned
   , noStoneUnturned5
   , oneTwoPunch
+  , oneTwoPunch5
   , onTheHunt
   , onTheLam
   , oops
@@ -1439,12 +1444,71 @@ counterpunch2 = (event "60122" "Counterpunch" 0 Guardian)
   , cdLevel = 2
   }
 
+-- We need to override the action check for this card because of multiple actions,
+-- but even if we can not fight or engage the enemy, if we can move it this should
+-- still be playable
+getOverHere2 :: CardDef
+getOverHere2 = (event "60123" "\"Get over here!\"" 2 Guardian)
+  { cdCardTraits = setFromList [Spirit, Tactic]
+  , cdActions = [Action.Engage, Action.Fight]
+  , cdSkills = [SkillWillpower, SkillCombat]
+  , cdFastWindow = Just FastPlayerWindow
+  , cdCriteria =
+    Just
+    $ Criteria.EnemyCriteria
+    $ Criteria.EnemyExists
+    $ NonEliteEnemy
+    <> EnemyOneOf
+         [ EnemyAt YourLocation <> EnemyOneOf [CanEngageEnemy, CanFightEnemy]
+         , EnemyAt $ ConnectedFrom YourLocation
+         , EnemyAt $ LocationWithDistanceFrom 2 YourLocation
+         ]
+  , cdOverrideActionPlayableIfCriteriaMet = True
+  , cdLevel = 2
+  }
+
+lessonLearned2 :: CardDef
+lessonLearned2 = (event "60124" "Lesson Learned" 1 Guardian)
+  { cdCardTraits = setFromList [Insight, Spirit]
+  , cdSkills = [SkillWillpower, SkillIntellect, SkillIntellect]
+  , cdFastWindow = Just
+    $ DealtDamage Timing.After (SourceIsEnemyAttack AnyEnemy) You
+  , cdCriteria =
+    Just $ Criteria.LocationExists $ YourLocation <> LocationWithAnyClues
+  , cdLevel = 2
+  }
+
+manoAMano2 :: CardDef
+manoAMano2 = (event "60125" "Mano a Mano" 0 Guardian)
+  { cdSkills = [SkillWillpower, SkillCombat]
+  , cdCardTraits = setFromList [Spirit, Bold]
+  , cdCriteria = Just $ Criteria.FirstAction <> Criteria.EnemyCriteria
+    (Criteria.EnemyExists EnemyEngagedWithYou)
+  , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+  , cdLevel = 2
+  }
+
+dynamiteBlast3 :: CardDef
+dynamiteBlast3 = (event "60129" "Dynamite Blast" 4 Guardian)
+  { cdSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillCombat]
+  , cdCardTraits = setFromList [Tactic]
+  , cdLevel = 3
+  }
+
 taunt3 :: CardDef
 taunt3 = (event "60130" "Taunt" 1 Guardian)
   { cdCardTraits = setFromList [Tactic]
   , cdFastWindow = Just $ DuringTurn You
   , cdSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillAgility]
   , cdLevel = 3
+  }
+
+oneTwoPunch5 :: CardDef
+oneTwoPunch5 = (event "60132" "One-Two Punch" 2 Guardian)
+  { cdCardTraits = setFromList [Spirit, Tactic]
+  , cdActions = [Action.Fight]
+  , cdSkills = [SkillCombat, SkillCombat, SkillCombat, SkillCombat]
+  , cdLevel = 5
   }
 
 iveGotAPlan2 :: CardDef

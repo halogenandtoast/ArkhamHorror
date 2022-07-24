@@ -6,9 +6,9 @@ import router from './router'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExpeditedssl } from "@fortawesome/free-brands-svg-icons";
-import { faAngleDown, faTrash, faEye, faCopy, faExternalLink } from '@fortawesome/free-solid-svg-icons'
+import { faAngleDown, faTrash, faEye, faCopy, faExternalLink, faRefresh } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faAngleDown, faExpeditedssl, faTrash, faEye, faCopy, faExternalLink)
+library.add(faAngleDown, faExpeditedssl, faTrash, faEye, faCopy, faExternalLink, faRefresh)
 
 const pinia = createPinia()
 

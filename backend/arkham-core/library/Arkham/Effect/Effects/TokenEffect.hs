@@ -28,6 +28,7 @@ tokenEffect eid metadata source token = TokenEffect $ EffectAttrs
   , effectMetadata = Just metadata
   , effectTraits = mempty
   , effectWindow = Nothing
+  , effectFinished = False
   }
 
 instance HasModifiersFor TokenEffect where

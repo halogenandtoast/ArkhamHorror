@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import * as Arkham from '@/arkham/types/Deck'
 import Prompt from '@/components/Prompt.vue'
-import { fetchInvestigators, fetchDecks, newDeck, deleteDeck } from '@/arkham/api'
+import { fetchInvestigators, fetchDecks, newDeck, deleteDeck, syncDeck } from '@/arkham/api'
 import * as Investigator from '@/arkham/types/Investigator';
 
 interface UnimplementedCardError {
@@ -100,6 +100,10 @@ const deckUrlToPage = (url: string): string => {
   return url.replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
 }
 
+async function sync(deck: Arkham.Deck) {
+  syncDeck(deck.id)
+}
+
 async function createDeck() {
   errors.value = []
   if (deckId.value && deckName.value && deckUrl.value) {
@@ -164,6 +168,9 @@ async function createDeck() {
       <span>{{deck.name}}</span>
       <div class="open-deck">
         <a :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon icon="external-link" /></a>
+      </div>
+      <div class="sync-deck">
+        <a href="#" @click.prevent="sync(deck)"><font-awesome-icon icon="refresh" /></a>
       </div>
       <div class="deck-delete">
         <a href="#delete" @click.prevent="deleteId = deck.id"><font-awesome-icon icon="trash" /></a>
@@ -272,6 +279,12 @@ h2 {
 }
 
 .open-deck {
+  justify-self: flex-end;
+  align-self: flex-start;
+  margin-right: 10px;
+}
+
+.sync-deck {
   justify-self: flex-end;
   align-self: flex-start;
   margin-right: 10px;

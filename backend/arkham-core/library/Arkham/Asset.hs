@@ -277,6 +277,9 @@ instance FromJSON Asset where
       "60107" -> Asset . GreteWagner <$> parseJSON v
       "60109" -> Asset . Relentless <$> parseJSON v
       "60110" -> Asset . Safeguard <$> parseJSON v
+      "60127" -> Asset . BoxingGloves3 <$> parseJSON v
+      "60128" -> Asset . GreteWagner3 <$> parseJSON v
+      "60131" -> Asset . PhysicalTraining4 <$> parseJSON v
       "60205" -> Asset . ArcaneEnlightenment <$> parseJSON v
       "60206" -> Asset . CelaenoFragments <$> parseJSON v
       "60208" -> Asset . Encyclopedia <$> parseJSON v
@@ -522,6 +525,9 @@ allAssets = mapFromList $ map
   , Asset <$> greteWagner
   , Asset <$> relentless
   , Asset <$> safeguard
+  , Asset <$> boxingGloves3
+  , Asset <$> greteWagner3
+  , Asset <$> physicalTraining4
   , Asset <$> arcaneEnlightenment
   , Asset <$> celaenoFragments
   , Asset <$> encyclopedia

@@ -932,10 +932,10 @@ data SkillTypeMatcher = AnySkillType | NotSkillType SkillType | IsSkillType Skil
 
 replaceYourLocation
   :: InvestigatorId -> (Maybe LocationId) -> LocationMatcher -> LocationMatcher
-replaceYourLocation _ Nothing matcher = matcher
-replaceYourLocation iid (Just lid) matcher = go matcher
+replaceYourLocation _ Nothing = id
+replaceYourLocation iid (Just lid) = go
  where
-  go = \case
+  go matcher = case matcher of
     LocationWithTitle{} -> matcher
     LocationWithFullTitle{} -> matcher
     LocationWithUnrevealedTitle{} -> matcher

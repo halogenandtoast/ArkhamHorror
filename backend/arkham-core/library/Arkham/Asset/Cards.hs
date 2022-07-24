@@ -148,6 +148,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , darkHorse
   , davidRenfield
   , decoratedSkull
+  , dejaVu5
   , digDeep
   , digDeep2
   , discOfItzamna2
@@ -2293,6 +2294,12 @@ mysteriousRaven = (asset "60509" "Mysterious Raven" 1 Survivor)
 scrapper :: CardDef
 scrapper = (asset "60511" "Scrapper" 2 Survivor)
   { cdCardTraits = setFromList [Talent]
+  }
+
+dejaVu5 :: CardDef
+dejaVu5 = permanent $ (asset "60531" "Déjà Vu" 0 Survivor)
+  { cdCardTraits = setFromList [Talent, Cursed]
+  , cdLevel = 5
   }
 
 ladyEsprit :: CardDef

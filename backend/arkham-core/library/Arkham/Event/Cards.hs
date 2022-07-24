@@ -87,6 +87,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , contraband
   , contraband2
   , counterpunch
+  , counterpunch2
   , crypticResearch4
   , cunningDistraction
   , daringManeuver
@@ -1428,6 +1429,14 @@ galvanize1 = (event "60121" "Galvanize" 2 Guardian)
   , cdCardTraits = singleton Spirit
   , cdFastWindow = Just $ DuringTurn You
   , cdLevel = 1
+  }
+
+counterpunch2 :: CardDef
+counterpunch2 = (event "60122" "Counterpunch" 0 Guardian)
+  { cdSkills = [SkillCombat, SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Spirit, Tactic]
+  , cdFastWindow = Just $ EnemyAttacks Timing.When You AnyEnemyAttack AnyEnemy
+  , cdLevel = 2
   }
 
 taunt3 :: CardDef

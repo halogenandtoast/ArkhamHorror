@@ -238,6 +238,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , mitchBrown
   , monstrousTransformation
   , moxie1
+  , mysteriousRaven
   , newspaper
   , newspaper2
   , occultLexicon
@@ -2279,6 +2280,13 @@ grannyOrne = (asset "60508" ("Granny Orne" <:> "Tough Old Bird") 4 Survivor)
   , cdCardTraits = singleton Ally
   , cdSlots = [AllySlot]
   , cdUnique = True
+  }
+
+mysteriousRaven :: CardDef
+mysteriousRaven = (asset "60509" "Mysterious Raven" 1 Survivor)
+  { cdSkills = [SkillIntellect]
+  , cdCardTraits = setFromList [Ally, Creature]
+  , cdSlots = [AllySlot]
   }
 
 ladyEsprit :: CardDef

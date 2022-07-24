@@ -1,27 +1,31 @@
 module Arkham.Event.Cards.WillToSurvive
   ( willToSurvive
   , WillToSurvive(..)
-  )
-where
+  , willToSurviveEffect
+  , WillToSurviveEffect(..)
+  ) where
 
 import Arkham.Prelude
 
-import qualified Arkham.Event.Cards as Cards
 import Arkham.Classes
+import Arkham.Effect.Attrs
+import Arkham.Effect.Runner ()
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Message
+import Arkham.Target
 
 newtype WillToSurvive = WillToSurvive EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 willToSurvive :: EventCard WillToSurvive
-willToSurvive =
-  event WillToSurvive Cards.willToSurvive
+willToSurvive = event WillToSurvive Cards.willToSurvive
 
 instance RunMessage WillToSurvive where
   runMessage msg e@(WillToSurvive attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       e <$ pushAll
         [ CreateEffect "60512" Nothing (toSource attrs) (InvestigatorTarget iid)
         , Discard (EventTarget eid)

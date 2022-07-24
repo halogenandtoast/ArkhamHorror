@@ -217,6 +217,7 @@ instance FromJSON Event where
       "60132" -> Event . OneTwoPunch5 <$> parseJSON v
       "60225" -> Event . IveGotAPlan2 <$> parseJSON v
       "60512" -> Event . WillToSurvive <$> parseJSON v
+      "60513" -> Event . ATestOfWill <$> parseJSON v
       "60515" -> Event . GritYourTeeth <$> parseJSON v
       "60524" -> Event . LookWhatIFound2 <$> parseJSON v
       _ -> error "invalid event"
@@ -367,6 +368,7 @@ allEvents = mapFromList $ map
   , Event <$> oneTwoPunch5
   , Event <$> iveGotAPlan2
   , Event <$> willToSurvive
+  , Event <$> aTestOfWill
   , Event <$> gritYourTeeth
   , Event <$> lookWhatIFound2
   ]

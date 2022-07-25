@@ -241,6 +241,7 @@ library
       Arkham.Asset.Cards.Duke
       Arkham.Asset.Cards.EarlSawyer
       Arkham.Asset.Cards.EighteenDerringer
+      Arkham.Asset.Cards.EighteenDerringer2
       Arkham.Asset.Cards.ElderSignAmulet3
       Arkham.Asset.Cards.Encyclopedia
       Arkham.Asset.Cards.Encyclopedia2
@@ -505,7 +506,6 @@ library
       Arkham.Effect.Effects.DaisysToteBagAdvanced
       Arkham.Effect.Effects.Deduction2
       Arkham.Effect.Effects.EideticMemory3
-      Arkham.Effect.Effects.EighteenDerringer
       Arkham.Effect.Effects.ExposeWeakness1
       Arkham.Effect.Effects.Fieldwork
       Arkham.Effect.Effects.FightOrFlight

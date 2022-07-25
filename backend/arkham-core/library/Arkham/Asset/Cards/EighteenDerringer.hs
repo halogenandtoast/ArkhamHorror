@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Asset.Runner
-import Arkham.Card.CardCode
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
@@ -37,7 +36,10 @@ instance RunMessage EighteenDerringer where
         attrs
         (InvestigatorTarget iid)
         [DamageDealt 1, SkillModifier SkillCombat 2]
-      , CreateEffect (toCardCode attrs) Nothing source (toTarget attrs)
       , ChooseFightEnemy iid source Nothing SkillCombat mempty False
       ]
+    FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> do
+        pushAll [AddUses (toTarget attrs) Ammo 1]
+        pure a
     _ -> EighteenDerringer <$> runMessage msg attrs

@@ -162,6 +162,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , duke
   , earlSawyer
   , eighteenDerringer
+  , eighteenDerringer2
   , elderSignAmulet3
   , encyclopedia
   , encyclopedia2
@@ -2304,6 +2305,7 @@ cherishedKeepsake1 = (asset "60520" "Cherished Keepsake" 0 Survivor)
   { cdCardTraits = setFromList [Item, Charm]
   , cdSlots = [AccessorySlot]
   , cdSkills = [SkillWillpower]
+  , cdLevel = 1
   }
 
 leatherCoat1 :: CardDef
@@ -2311,6 +2313,16 @@ leatherCoat1 = (asset "60521" "Leather Coat" 0 Survivor)
   { cdSkills = [SkillCombat]
   , cdCardTraits = setFromList [Item, Armor]
   , cdSlots = [BodySlot]
+  , cdLevel = 1
+  }
+
+eighteenDerringer2 :: CardDef
+eighteenDerringer2 = (asset "60522" ".18 Derringer" 2 Survivor)
+  { cdSkills = [SkillCombat, SkillAgility]
+  , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+  , cdUses = Uses Ammo 3
+  , cdSlots = [HandSlot]
+  , cdLevel = 2
   }
 
 dejaVu5 :: CardDef

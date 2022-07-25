@@ -182,6 +182,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , fortyOneDerringer
   , fortyOneDerringer2
   , grannyOrne
+  , grannyOrne3
   , gravediggersShovel
   , greteWagner
   , greteWagner3
@@ -2323,6 +2324,15 @@ eighteenDerringer2 = (asset "60522" ".18 Derringer" 2 Survivor)
   , cdUses = Uses Ammo 3
   , cdSlots = [HandSlot]
   , cdLevel = 2
+  }
+
+grannyOrne3 :: CardDef
+grannyOrne3 = (asset "60527" ("Granny Orne" <:> "Tough Old Bird") 4 Survivor)
+  { cdSkills = [SkillWillpower, SkillIntellect]
+  , cdCardTraits = singleton Ally
+  , cdSlots = [AllySlot]
+  , cdUnique = True
+  , cdLevel = 3
   }
 
 dejaVu5 :: CardDef

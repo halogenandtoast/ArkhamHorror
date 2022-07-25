@@ -639,7 +639,7 @@ data WindowMatcher
   | EnemyLeaves Timing Where EnemyMatcher
   | AgendaAdvances Timing AgendaMatcher
   | AgendaWouldAdvance Timing AgendaAdvancementReason AgendaMatcher
-  | AssetDefeated Timing AssetMatcher
+  | AssetDefeated Timing DefeatedByMatcher AssetMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | EnemyEngaged Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher

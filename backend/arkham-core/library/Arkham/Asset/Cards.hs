@@ -138,6 +138,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , charlesRossEsq
   , charonsObol1
   , cherishedKeepsake
+  , cherishedKeepsake1
   , chicagoTypewriter4
   , clarityOfMind
   , claspOfBlackOnyx
@@ -213,6 +214,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , ladyEsprit
   , lantern
   , leatherCoat
+  , leatherCoat1
   , leoDeLuca
   , leoDeLuca1
   , lightningGun5
@@ -2294,6 +2296,21 @@ mysteriousRaven = (asset "60509" "Mysterious Raven" 1 Survivor)
 scrapper :: CardDef
 scrapper = (asset "60511" "Scrapper" 2 Survivor)
   { cdCardTraits = setFromList [Talent]
+  , cdSkills = [SkillCombat, SkillAgility]
+  }
+
+cherishedKeepsake1 :: CardDef
+cherishedKeepsake1 = (asset "60520" "Cherished Keepsake" 0 Survivor)
+  { cdCardTraits = setFromList [Item, Charm]
+  , cdSlots = [AccessorySlot]
+  , cdSkills = [SkillWillpower]
+  }
+
+leatherCoat1 :: CardDef
+leatherCoat1 = (asset "60521" "Leather Coat" 0 Survivor)
+  { cdSkills = [SkillCombat]
+  , cdCardTraits = setFromList [Item, Armor]
+  , cdSlots = [BodySlot]
   }
 
 dejaVu5 :: CardDef

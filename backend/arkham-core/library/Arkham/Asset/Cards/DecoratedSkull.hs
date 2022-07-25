@@ -27,7 +27,7 @@ instance HasAbilities DecoratedSkull where
       (OrWindowMatcher
         [ EnemyDefeated Timing.After Anyone AnyEnemy
         , InvestigatorDefeated Timing.After AnySource ByAny Anyone
-        , AssetDefeated Timing.After AllyAsset
+        , AssetDefeated Timing.After ByAny AllyAsset
         ]
       )
       Free

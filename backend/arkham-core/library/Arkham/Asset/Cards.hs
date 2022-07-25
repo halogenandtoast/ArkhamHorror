@@ -134,6 +134,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , burglary
   , catBurglar1
   , celaenoFragments
+  , chainsaw4
   , charisma3
   , charlesRossEsq
   , charonsObol1
@@ -2333,6 +2334,15 @@ grannyOrne3 = (asset "60527" ("Granny Orne" <:> "Tough Old Bird") 4 Survivor)
   , cdSlots = [AllySlot]
   , cdUnique = True
   , cdLevel = 3
+  }
+
+chainsaw4 :: CardDef
+chainsaw4 = (asset "60529" "Chainsaw" 4 Survivor)
+  { cdSkills = [SkillCombat, SkillCombat, SkillCombat]
+  , cdCardTraits = setFromList [Item, Tool, Weapon, Melee]
+  , cdUses = Uses Supply 3
+  , cdSlots = [HandSlot, HandSlot]
+  , cdLevel = 4
   }
 
 dejaVu5 :: CardDef

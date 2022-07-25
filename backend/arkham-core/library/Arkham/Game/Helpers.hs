@@ -1540,9 +1540,11 @@ windowMatches iid source window' = \case
     Window t (Window.AddedToVictory card) | timingMatcher == t ->
       pure $ cardMatch card cardMatcher
     _ -> pure False
-  Matcher.AssetDefeated timingMatcher assetMatcher -> case window' of
-    Window t (Window.AssetDefeated assetId) | timingMatcher == t ->
-      member assetId <$> select assetMatcher
+  Matcher.AssetDefeated timingMatcher defeatedByMatcher assetMatcher -> case window' of
+    Window t (Window.AssetDefeated assetId defeatedBy) | timingMatcher == t ->
+      andM [ member assetId <$> select assetMatcher
+           , defeatedByMatches defeatedBy defeatedByMatcher
+           ]
     _ -> pure False
   Matcher.EnemyDefeated timingMatcher whoMatcher enemyMatcher ->
     case window' of

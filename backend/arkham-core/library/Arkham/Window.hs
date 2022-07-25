@@ -45,7 +45,7 @@ data WindowType
   | AllUndefeatedInvestigatorsResigned
   | AmongSearchedCards InvestigatorId
   | AnyPhaseBegins
-  | AssetDefeated AssetId
+  | AssetDefeated AssetId DefeatedBy
   | AssignedHorror Source InvestigatorId [Target]
   | AtEndOfRound
   | ChosenRandomLocation LocationId

@@ -214,6 +214,7 @@ library
       Arkham.Asset.Cards.CharlesRossEsq
       Arkham.Asset.Cards.CharonsObol1
       Arkham.Asset.Cards.CherishedKeepsake
+      Arkham.Asset.Cards.CherishedKeepsake1
       Arkham.Asset.Cards.ChicagoTypewriter4
       Arkham.Asset.Cards.ClarityOfMind
       Arkham.Asset.Cards.ClaspOfBlackOnyx
@@ -300,6 +301,7 @@ library
       Arkham.Asset.Cards.LadyEsprit
       Arkham.Asset.Cards.Lantern
       Arkham.Asset.Cards.LeatherCoat
+      Arkham.Asset.Cards.LeatherCoat1
       Arkham.Asset.Cards.LeoDeLuca
       Arkham.Asset.Cards.LeoDeLuca1
       Arkham.Asset.Cards.LightningGun5

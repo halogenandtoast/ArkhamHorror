@@ -12,6 +12,7 @@ import Arkham.Classes as X
 import Arkham.Message as X hiding ( AssetDamage )
 
 import Arkham.Card
+import Arkham.DefeatedBy
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Message qualified as Msg
 import Arkham.Placement
@@ -22,12 +23,15 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
-defeated :: (Monad m, HasGame m) => AssetAttrs -> m Bool
+defeated :: (Monad m, HasGame m) => AssetAttrs -> m (Maybe DefeatedBy)
 defeated AssetAttrs {assetId} = do
   remainingHealth <- field AssetRemainingHealth assetId
   remainingSanity <- field AssetRemainingSanity assetId
-  pure $ maybe False (<= 0) remainingHealth
-    || maybe False (<= 0) remainingSanity
+  pure $ case (remainingHealth, remainingSanity) of
+    (Just a, Just b) | a <= 0 && b <= 0 -> Just DefeatedByDamageAndHorror
+    (Just a, _) | a <= 0 -> Just DefeatedByDamage
+    (_, Just b) | b <= 0 -> Just DefeatedByHorror
+    _ -> Nothing
 
 instance RunMessage AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
@@ -52,15 +56,16 @@ instance RunMessage AssetAttrs where
         [Window.LastClueRemovedFromAsset (toId a)]
       pure $ a & cluesL %~ max 0 . subtract n
     CheckDefeated _ -> do
-      whenM (defeated a) $ do
-        whenWindow <- checkWindows
-          [Window Timing.When (Window.AssetDefeated $ toId a)]
-        afterWindow <- checkWindows
-          [Window Timing.When (Window.AssetDefeated $ toId a)]
-        pushAll
-          $ [whenWindow]
-          <> resolve (AssetDefeated assetId)
-          <> [afterWindow]
+      mDefeated <- defeated a
+      for_ mDefeated $ \defeatedBy -> do
+          whenWindow <- checkWindows
+            [Window Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
+          afterWindow <- checkWindows
+            [Window Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
+          pushAll
+            $ [whenWindow]
+            <> resolve (AssetDefeated assetId)
+            <> [afterWindow]
       pure a
     AssetDefeated aid | aid == assetId -> a <$ push (Discard $ toTarget a)
     Msg.AssetDamage aid _ damage horror | aid == assetId -> do

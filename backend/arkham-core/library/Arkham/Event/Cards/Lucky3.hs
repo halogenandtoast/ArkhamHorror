@@ -1,38 +1,41 @@
-module Arkham.Event.Cards.Lucky where
+module Arkham.Event.Cards.Lucky3 where
 
 import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers
 import Arkham.Message
 import Arkham.SkillTest.Base
 import Arkham.Target
 
-newtype Lucky = Lucky EventAttrs
+newtype Lucky3 = Lucky3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-lucky :: EventCard Lucky
-lucky = event Lucky Cards.lucky
+lucky3 :: EventCard Lucky3
+lucky3 = event Lucky3 Cards.lucky3
 
-instance RunMessage Lucky where
-  runMessage msg e@(Lucky attrs) = case msg of
+instance RunMessage Lucky3 where
+  runMessage msg e@(Lucky3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId attrs -> do
       mSkillTest <- getSkillTest
       case mSkillTest of
         Nothing -> error "invalid call"
         Just skillTest -> do
-          let skillType = skillTestSkillType skillTest
+          let
+            iid' = skillTestInvestigator skillTest
+            skillType = skillTestSkillType skillTest
           pushAll
             [ Discard (toTarget attrs)
+            , DrawCards iid 1 False
             , skillTestModifier
               (toSource attrs)
-              (InvestigatorTarget iid)
-              (SkillModifier skillType 2)
+              (InvestigatorTarget iid')
+              (SkillModifier skillType 3)
             , RerunSkillTest
             ]
       pure e
-    _ -> Lucky <$> runMessage msg attrs
+    _ -> Lucky3 <$> runMessage msg attrs

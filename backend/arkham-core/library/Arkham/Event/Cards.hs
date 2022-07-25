@@ -151,6 +151,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , lookWhatIFound2
   , lucky
   , lucky2
+  , lucky3
   , lure1
   , manoAMano1
   , manoAMano2
@@ -1593,4 +1594,14 @@ dumbLuck2 = (event "60525" "Dumb Luck" 2 Survivor)
     $ FailureResult
     $ LessThan
     $ Static 4
+  }
+
+lucky3 :: CardDef
+lucky3 = (event "60528" "Lucky!" 0 Survivor)
+  { cdCardTraits = singleton Fortune
+  , cdFastWindow = Just
+    (WouldHaveSkillTestResult Timing.When (InvestigatorAt YourLocation) AnySkillTest
+    $ FailureResult AnyValue
+    )
+  , cdLevel = 3
   }

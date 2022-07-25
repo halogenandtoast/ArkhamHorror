@@ -221,6 +221,7 @@ instance FromJSON Event where
       "60515" -> Event . GritYourTeeth <$> parseJSON v
       "60523" -> Event . ATestOfWill2 <$> parseJSON v
       "60524" -> Event . LookWhatIFound2 <$> parseJSON v
+      "60525" -> Event . DumbLuck2 <$> parseJSON v
       _ -> error "invalid event"
 
 allEvents :: HashMap CardCode (InvestigatorId -> EventId -> Event)
@@ -373,4 +374,5 @@ allEvents = mapFromList $ map
   , Event <$> gritYourTeeth
   , Event <$> aTestOfWill2
   , Event <$> lookWhatIFound2
+  , Event <$> dumbLuck2
   ]

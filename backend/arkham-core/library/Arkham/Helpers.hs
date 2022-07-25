@@ -35,6 +35,9 @@ newtype Deck a = Deck { unDeck :: [a] }
 withDeck :: ([a] -> [a]) -> Deck a -> Deck a
 withDeck f (Deck xs) = Deck (f xs)
 
+withDeckM :: Functor f => ([a] -> f [a]) -> Deck a -> f (Deck a)
+withDeckM f (Deck xs) = Deck <$> f xs
+
 instance Show (Deck a) where
   show _ = "<Deck>"
 

@@ -102,6 +102,7 @@ allPlayerEventCards = mapFromList $ concatMap
   , dodge
   , drawnToTheFlame
   , dumbLuck
+  , dumbLuck2
   , dynamiteBlast
   , dynamiteBlast2
   , dynamiteBlast3
@@ -1577,6 +1578,18 @@ lookWhatIFound2 = (event "60524" "\"Look what I found!\"" 2 Survivor)
   , cdFastWindow =
     Just
     $ SkillTestResult Timing.After You (WhileInvestigating Anywhere)
+    $ FailureResult
+    $ LessThan
+    $ Static 4
+  }
+
+dumbLuck2 :: CardDef
+dumbLuck2 = (event "60525" "Dumb Luck" 2 Survivor)
+  { cdSkills = [SkillWillpower, SkillAgility, SkillAgility]
+  , cdCardTraits = singleton Fortune
+  , cdFastWindow =
+    Just
+    $ SkillTestResult Timing.After You (WhileEvadingAnEnemy NonEliteEnemy)
     $ FailureResult
     $ LessThan
     $ Static 4

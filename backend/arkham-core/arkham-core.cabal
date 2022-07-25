@@ -725,6 +725,7 @@ library
       Arkham.Event.Cards.Dodge
       Arkham.Event.Cards.DrawnToTheFlame
       Arkham.Event.Cards.DumbLuck
+      Arkham.Event.Cards.DumbLuck2
       Arkham.Event.Cards.DynamiteBlast
       Arkham.Event.Cards.DynamiteBlast2
       Arkham.Event.Cards.DynamiteBlast3

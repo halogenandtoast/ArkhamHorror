@@ -77,7 +77,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       do
         (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded deck
         weaknesses <- traverse genPlayerCard randomWeaknesses
-        push $ LoadDeck iid (Deck $ unDeck deck' <> weaknesses)
+        push $ LoadDeck iid (withDeck (<> weaknesses) deck')
   PlaceLocationMatching cardMatcher -> do
     let
       matches = filter
@@ -256,23 +256,29 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         a <$ pushAll (msgs <> [ChosenRandomLocation target randomLocationId])
   PlaceLocation card -> pure $ a & setAsideCardsL %~ delete card
   PutCardOnTopOfEncounterDeck _ card -> do
-    let encounterDeck = card : unDeck scenarioEncounterDeck
+    let encounterDeck = withDeck (card :) scenarioEncounterDeck
     pure
       $ a
       & (setAsideCardsL %~ deleteFirstMatch (== EncounterCard card))
-      & (encounterDeckL .~ Deck encounterDeck)
+      & (encounterDeckL .~ encounterDeck)
+  PutCardOnBottomOfEncounterDeck _ card -> do
+    let encounterDeck = withDeck (<> [card]) scenarioEncounterDeck
+    pure
+      $ a
+      & (setAsideCardsL %~ deleteFirstMatch (== EncounterCard card))
+      & (encounterDeckL .~ encounterDeck)
   AddToEncounterDeck card -> do
-    encounterDeck <- shuffleM $ card : unDeck scenarioEncounterDeck
+    encounterDeck <- withDeckM (shuffleM . (card :)) scenarioEncounterDeck
     pure
       $ a
       & (setAsideCardsL %~ deleteFirstMatch (== EncounterCard card))
-      & (encounterDeckL .~ Deck encounterDeck)
+      & (encounterDeckL .~ encounterDeck)
   AddToTopOfEncounterDeck card -> do
-    let encounterDeck = card : unDeck scenarioEncounterDeck
+    let encounterDeck = withDeck (card :) scenarioEncounterDeck
     pure
       $ a
       & (setAsideCardsL %~ deleteFirstMatch (== EncounterCard card))
-      & (encounterDeckL .~ Deck encounterDeck)
+      & (encounterDeckL .~ encounterDeck)
   AddToEncounterDiscard ec -> do
     pure $ a & discardL %~ (ec :)
   AddToVictory (EventTarget eid) -> do
@@ -310,7 +316,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     let
       cards = map EncounterCard encounterCards
       filterCards = filter (`notElem` cards)
-    deck' <- Deck <$> shuffleM (unDeck scenarioEncounterDeck <> encounterCards)
+    deck' <- withDeckM (shuffleM . (<> encounterCards)) scenarioEncounterDeck
     pure
       $ a
       & (cardsUnderAgendaDeckL %~ filterCards)
@@ -372,7 +378,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     case card of
       PlayerCard _ -> pure a
       EncounterCard ec -> pure $ a & discardL %~ (ec :)
-  InvestigatorDoDrawEncounterCard iid -> case (unDeck scenarioEncounterDeck) of
+  InvestigatorDoDrawEncounterCard iid -> case unDeck scenarioEncounterDeck of
     [] -> do
       when (notNull scenarioDiscard) $ pushAll
         [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
@@ -442,29 +448,29 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & resignedCardCodesL %~ (cardCode :)
   RemoveFromEncounterDiscard ec -> pure $ a & discardL %~ filter (/= ec)
   ShuffleEncounterDiscardBackIn -> do
-    encounterDeck <- shuffleM $ unDeck scenarioEncounterDeck <> scenarioDiscard
-    pure $ a & encounterDeckL .~ Deck encounterDeck & discardL .~ mempty
+    encounterDeck <- withDeckM (shuffleM . (<> scenarioDiscard)) scenarioEncounterDeck
+    pure $ a & encounterDeckL .~ encounterDeck & discardL .~ mempty
   ShuffleAllInEncounterDiscardBackIn cardCode -> do
     let
       (toShuffleBackIn, discard) =
         partition ((== cardCode) . toCardCode) scenarioDiscard
-    encounterDeck <- shuffleM $ unDeck scenarioEncounterDeck <> toShuffleBackIn
-    pure $ a & encounterDeckL .~ Deck encounterDeck & discardL .~ discard
+    encounterDeck <- withDeckM (shuffleM . (<> toShuffleBackIn)) scenarioEncounterDeck
+    pure $ a & encounterDeckL .~ encounterDeck & discardL .~ discard
   ShuffleBackIntoEncounterDeck (EnemyTarget eid) -> do
     card <- field EnemyCard eid
     case card of
       EncounterCard card' -> do
         push $ RemoveEnemy eid
-        encounterDeck <- shuffleM $ card' : unDeck scenarioEncounterDeck
-        pure $ a & encounterDeckL .~ Deck encounterDeck
+        encounterDeck <- withDeckM (shuffleM . (card' :)) scenarioEncounterDeck
+        pure $ a & encounterDeckL .~ encounterDeck
       _ -> error "must be encounter card"
   ShuffleBackIntoEncounterDeck (LocationTarget lid) -> do
     card <- field LocationCard lid
     case card of
       EncounterCard card' -> do
         pushAll $ resolve (RemoveLocation lid)
-        encounterDeck <- shuffleM $ card' : unDeck scenarioEncounterDeck
-        pure $ a & encounterDeckL .~ Deck encounterDeck
+        encounterDeck <- withDeckM (shuffleM . (card' :)) scenarioEncounterDeck
+        pure $ a & encounterDeckL .~ encounterDeck
       _ -> error "must be encounter card"
   DiscardEncounterUntilFirst source matcher -> do
     let

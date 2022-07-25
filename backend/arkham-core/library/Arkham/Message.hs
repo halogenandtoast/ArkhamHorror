@@ -458,7 +458,9 @@ data Message
   | PutOnTopOfDeck InvestigatorId PlayerCard
   | PutOnBottomOfDeck InvestigatorId PlayerCard
   | PutOnTopOfEncounterDeck InvestigatorId Target
+  | PutOnBottomOfEncounterDeck InvestigatorId Target
   | PutCardOnTopOfEncounterDeck InvestigatorId EncounterCard
+  | PutCardOnBottomOfEncounterDeck InvestigatorId EncounterCard
   | RandomDiscard InvestigatorId
   | Ready Target
   | ReadyAlternative Source Target

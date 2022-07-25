@@ -710,6 +710,16 @@ instance RunMessage EnemyAttrs where
         PlayerCard _ ->
           error "Can not place player card on top of encounter deck"
       pure a
+    PutOnBottomOfEncounterDeck iid target | a `isTarget` target -> do
+      case toCard a of
+        EncounterCard ec -> do
+          pushAll
+            [ RemoveEnemy $ toId a
+            , PutCardOnBottomOfEncounterDeck iid ec
+            ]
+        PlayerCard _ ->
+          error "Can not place player card on top of encounter deck"
+      pure a
     RemovedFromPlay source | isSource a source -> do
       windowMsg <- checkWindows
         ((`Window` Window.LeavePlay (toTarget a))

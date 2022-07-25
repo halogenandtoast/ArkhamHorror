@@ -518,8 +518,6 @@ library
       Arkham.Effect.Effects.LetMeHandleThis
       Arkham.Effect.Effects.Lockpicks
       Arkham.Effect.Effects.Lockpicks1
-      Arkham.Effect.Effects.Lucky
-      Arkham.Effect.Effects.Lucky2
       Arkham.Effect.Effects.LuckyDice2
       Arkham.Effect.Effects.MeatCleaver
       Arkham.Effect.Effects.Mesmerize
@@ -775,6 +773,7 @@ library
       Arkham.Event.Cards.LookWhatIFound2
       Arkham.Event.Cards.Lucky
       Arkham.Event.Cards.Lucky2
+      Arkham.Event.Cards.Lucky3
       Arkham.Event.Cards.Lure1
       Arkham.Event.Cards.ManoAMano1
       Arkham.Event.Cards.ManoAMano2

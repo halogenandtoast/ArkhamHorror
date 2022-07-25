@@ -139,8 +139,6 @@ allEffects = mapFromList
   , ("01068", Effect . mindWipe1)
   , ("01069", Effect . blindingLight2)
   , ("01074", Effect . baseballBat)
-  , ("01080", Effect . lucky)
-  , ("01084", Effect . lucky2)
   , ("01085", Effect . willToSurvive3)
   , ("01088", Effect . sureGamble3)
   , ("01151", Effect . arkhamWoodsTwistingPaths)
@@ -238,8 +236,6 @@ instance FromJSON Effect where
       "01068" -> Effect . MindWipe1 <$> parseJSON v
       "01069" -> Effect . BlindingLight2 <$> parseJSON v
       "01074" -> Effect . BaseballBat <$> parseJSON v
-      "01080" -> Effect . Lucky <$> parseJSON v
-      "01084" -> Effect . Lucky2 <$> parseJSON v
       "01085" -> Effect . WillToSurvive3 <$> parseJSON v
       "01088" -> Effect . SureGamble3 <$> parseJSON v
       "01151" -> Effect . ArkhamWoodsTwistingPaths <$> parseJSON v

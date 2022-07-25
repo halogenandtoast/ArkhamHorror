@@ -264,6 +264,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   , powderOfIbnGhazi
   , professorWarrenRice
   , protectiveIncantation1
+  , quickLearner4
   , rabbitsFoot
   , rabbitsFoot3
   , randallCho
@@ -2342,6 +2343,12 @@ chainsaw4 = (asset "60529" "Chainsaw" 4 Survivor)
   , cdCardTraits = setFromList [Item, Tool, Weapon, Melee]
   , cdUses = Uses Supply 3
   , cdSlots = [HandSlot, HandSlot]
+  , cdLevel = 4
+  }
+
+quickLearner4 :: CardDef
+quickLearner4 = permanent $ (asset "60530" "Quick Learner" 0 Survivor)
+  { cdCardTraits = singleton Condition
   , cdLevel = 4
   }
 

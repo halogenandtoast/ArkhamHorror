@@ -434,6 +434,7 @@ library
       Arkham.Campaign.Campaigns.NightOfTheZealot
       Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
       Arkham.Campaign.Campaigns.TheDunwichLegacy
+      Arkham.Campaign.Campaigns.TheForgottenAge
       Arkham.Campaign.Campaigns.ThePathToCarcosa
       Arkham.Campaign.Runner
       Arkham.CampaignLog
@@ -446,6 +447,10 @@ library
       Arkham.Campaigns.TheDunwichLegacy.ChaosBag
       Arkham.Campaigns.TheDunwichLegacy.FlavorText
       Arkham.Campaigns.TheDunwichLegacy.Import
+      Arkham.Campaigns.TheForgottenAge.CampaignSteps
+      Arkham.Campaigns.TheForgottenAge.ChaosBag
+      Arkham.Campaigns.TheForgottenAge.FlavorText
+      Arkham.Campaigns.TheForgottenAge.Import
       Arkham.Campaigns.ThePathToCarcosa.CampaignSteps
       Arkham.Campaigns.ThePathToCarcosa.ChaosBag
       Arkham.Campaigns.ThePathToCarcosa.FlavorText

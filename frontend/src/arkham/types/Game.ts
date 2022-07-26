@@ -60,27 +60,33 @@ export function choices(game: Game, investigatorId: string): Message[] {
     return [];
   }
 
-  const question = game.question[investigatorId];
+  const question: Question = game.question[investigatorId];
 
-  switch (question.tag) {
-    case 'ChooseOne':
-      return question.contents;
-    case 'ChooseN':
-      return question.contents;
-    case 'ChooseUpToN':
-      return question.contents;
-    case 'ChooseSome':
-      return question.contents;
-    case 'ChooseOneAtATime':
-      return question.contents;
-    case 'ChooseOneFromSource':
-    {
-      const { choices: sourceChoices } = question.contents;
-      return sourceChoices;
+  const toContents = (q: Question): Message[] => {
+    switch (q.tag) {
+      case 'ChooseOne':
+        return q.contents;
+      case 'ChooseN':
+        return q.contents;
+      case 'ChooseUpToN':
+        return q.contents;
+      case 'ChooseSome':
+        return q.contents;
+      case 'ChooseOneAtATime':
+        return q.contents;
+      case 'QuestionLabel':
+        return toContents(q.contents[1]);
+      case 'ChooseOneFromSource':
+      {
+        const { choices: sourceChoices } = q.contents;
+        return sourceChoices;
+      }
+      default:
+        return [];
     }
-    default:
-      return [];
   }
+
+  return toContents(question)
 }
 
 export function choicesSource(game: Game, investigatorId: string): Source | null {

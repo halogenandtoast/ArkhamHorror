@@ -2,11 +2,16 @@ import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseDynamicCardAmounts | ChooseAmounts;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseDynamicCardAmounts | ChooseAmounts | QuestionLabel;
 
 export interface ChooseOne {
   tag: 'ChooseOne';
   contents: Message[];
+}
+
+export interface QuestionLabel {
+  tag: 'QuestionLabel';
+  contents: [string, Question];
 }
 
 export interface ChooseN {
@@ -128,6 +133,14 @@ export const chooseUpgradeDeckDecoder = JsonDecoder.object<ChooseUpgradeDeck>(
   'ChooseUpgradeDeck',
 );
 
+export const questionLabelDecoder: JsonDecoder.Decoder<QuestionLabel> = JsonDecoder.object<QuestionLabel>(
+  {
+    tag: JsonDecoder.isExactly('QuestionLabel'),
+    contents: JsonDecoder.lazy(() => JsonDecoder.tuple([JsonDecoder.string, questionDecoder], '[label, question]')),
+  },
+  'QuestionLabel',
+);
+
 export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
   {
     tag: JsonDecoder.isExactly('ChooseOne'),
@@ -196,6 +209,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseAmountsDecoder,
     choosePaymentAmountsDecoder,
     chooseDynamicCardAmountsDecoder,
+    questionLabelDecoder,
   ],
   'Question',
 );

@@ -20,6 +20,7 @@ data Question msg
       ChoosePaymentAmounts Text (Maybe Int) [(InvestigatorId, (Int, Int), msg)]
     | ChooseAmounts Text Int [(Text, (Int, Int))] Target
     | ChooseUpgradeDeck
+    | QuestionLabel Text (Question msg)
     deriving stock (Show, Eq, Generic)
     deriving anyclass (FromJSON, ToJSON)
 

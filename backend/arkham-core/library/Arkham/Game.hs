@@ -18,7 +18,7 @@ import Arkham.Asset.Attrs ( AssetAttrs (..), DiscardedAttrs (..), Field (..) )
 import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
-import Arkham.Campaign.Attrs
+import Arkham.Campaign.Attrs hiding (campaign)
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.Id
@@ -2363,6 +2363,7 @@ runGameMessage :: Message -> Game -> GameT Game
 runGameMessage msg g = case msg of
   Run msgs -> g <$ pushAll msgs
   Label _ msgs -> g <$ pushAll msgs
+  TooltipLabel _ _ msgs -> g <$ pushAll msgs
   TargetLabel _ msgs -> g <$ pushAll msgs
   SkillLabel _ msgs -> g <$ pushAll msgs
   EvadeLabel _ msgs -> g <$ pushAll msgs

@@ -558,6 +558,7 @@ targetToSource = \case
   CardTarget{} -> error "can not convert"
   StoryTarget code -> StorySource code
   AgendaMatcherTarget _ -> error "can not convert"
+  CampaignTarget -> error "can not convert"
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -1770,6 +1771,7 @@ targetTraits = \case
   TokenFaceTarget _ -> pure mempty
   InvestigationTarget _ _ -> pure mempty
   AgendaMatcherTarget _ -> pure mempty
+  CampaignTarget -> pure mempty
 
 sourceTraits
   :: (HasCallStack, Monad m, HasGame m) => Source -> m (HashSet Trait)

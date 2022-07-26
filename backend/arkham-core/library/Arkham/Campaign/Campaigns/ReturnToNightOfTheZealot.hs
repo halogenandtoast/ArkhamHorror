@@ -2,12 +2,12 @@ module Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot where
 
 import Arkham.Prelude
 
-import Arkham.Campaigns.NightOfTheZealot.Import
 import Arkham.Campaign.Campaigns.NightOfTheZealot
 import Arkham.Campaign.Runner
-import Arkham.Id
+import Arkham.Campaigns.NightOfTheZealot.Import
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.Id
 import Arkham.Message
 
 newtype ReturnToNightOfTheZealot = ReturnToNightOfTheZealot NightOfTheZealot
@@ -15,12 +15,12 @@ newtype ReturnToNightOfTheZealot = ReturnToNightOfTheZealot NightOfTheZealot
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToNightOfTheZealot :: Difficulty -> ReturnToNightOfTheZealot
-returnToNightOfTheZealot difficulty =
-  ReturnToNightOfTheZealot . NightOfTheZealot $ baseAttrs
-    (CampaignId "50")
-    "Return to the Night of the Zealot"
-    difficulty
-    (chaosBagContents difficulty)
+returnToNightOfTheZealot difficulty = campaign
+  (ReturnToNightOfTheZealot . NightOfTheZealot)
+  (CampaignId "50")
+  "Return to the Night of the Zealot"
+  difficulty
+  (chaosBagContents difficulty)
 
 instance RunMessage ReturnToNightOfTheZealot where
   runMessage msg (ReturnToNightOfTheZealot nightOfTheZealot'@(NightOfTheZealot attrs@CampaignAttrs {..}))

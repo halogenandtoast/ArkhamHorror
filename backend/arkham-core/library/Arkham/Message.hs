@@ -20,6 +20,7 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Card.Id
+import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ClassSymbol
@@ -101,6 +102,9 @@ it to be accessible from both.
 doNotMask :: Message -> Bool
 doNotMask UseCardAbility{} = True
 doNotMask _ = False
+
+newtype Tooltip = Tooltip Text
+  deriving newtype (Show, Eq, ToJSON, FromJSON)
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
@@ -403,6 +407,8 @@ data Message
   | InvestigatorWhenDefeated Source InvestigatorId
   | InvestigatorWhenEliminated Source InvestigatorId
   | Label Text [Message]
+  | TooltipLabel Text Tooltip [Message]
+  | LabelGroup Text [Message]
   | CardLabel CardCode [Message]
   | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator
   | LookAtRevealed InvestigatorId Source Target
@@ -541,7 +547,7 @@ data Message
   | Setup
   | EndSetup
   | SetupInvestigators
-  | SetupStep Int
+  | SetupStep Target Int
   | ShuffleAllFocusedIntoDeck InvestigatorId Target
   | PutAllFocusedIntoDiscard InvestigatorId Target
   | ShuffleAllInEncounterDiscardBackIn CardCode
@@ -615,6 +621,9 @@ data Message
   | FinishAction
   | BeginCardPayment Card
   | FinishCardPayment Card
+  | -- The Forgotten Age
+    PickSupply InvestigatorId Supply
+  | UseSupply InvestigatorId Supply
   | -- Fields
     UpdateLocation LocationAttrs LocationId
   deriving stock (Show, Eq)

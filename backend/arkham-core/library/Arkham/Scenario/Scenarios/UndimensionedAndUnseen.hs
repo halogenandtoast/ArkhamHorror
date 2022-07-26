@@ -170,13 +170,13 @@ instance RunMessage UndimensionedAndUnseen where
           leadInvestigatorId
           [ Label
             "You try to calm down the townsfolk in order to learn more."
-            [SetupStep 1]
+            [SetupStep (toTarget attrs) 1]
           , Label
             "You try to warn the townsfolk and convince them to evacuate."
-            [SetupStep 2]
+            [SetupStep (toTarget attrs) 2]
           ]
         ]
-    SetupStep n -> do
+    SetupStep (isTarget attrs -> True) n -> do
       standalone <- getIsStandalone
       investigatorIds <- getInvestigatorIds
       encounterDeck <- buildEncounterDeckExcluding

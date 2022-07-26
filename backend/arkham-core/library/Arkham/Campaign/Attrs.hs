@@ -90,8 +90,8 @@ addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
         (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
       pure $ toCardDef card /= randomWeakness
 
-baseAttrs :: CampaignId -> Text -> Difficulty -> [TokenFace] -> CampaignAttrs
-baseAttrs campaignId' name difficulty chaosBagContents = CampaignAttrs
+campaign :: (CampaignAttrs -> a) -> CampaignId -> Text -> Difficulty -> [TokenFace] -> a
+campaign f campaignId' name difficulty chaosBagContents = f $ CampaignAttrs
   { campaignId = campaignId'
   , campaignName = name
   , campaignDecks = mempty

@@ -211,7 +211,7 @@ instance RunMessage ThePallidMask where
              (unLabel $ positionToLabel startPosition)
            , PlaceResources (LocationTarget $ toLocationId startingLocation) 1
            , MoveAllTo (toSource attrs) (toLocationId startingLocation)
-           , SetupStep 1
+           , SetupStep (toTarget attrs) 1
            , RemoveFromBearersDeckOrDiscard theManInThePallidMask
            ]
         )
@@ -233,7 +233,7 @@ instance RunMessage ThePallidMask where
           ?~ [Agendas.empireOfTheDead, Agendas.empireOfTheUndead]
           )
         )
-    SetupStep 1 -> do
+    SetupStep (isTarget attrs -> True) 1 -> do
       leadInvestigatorId <- getLeadInvestigatorId
       catacombs <- selectList UnrevealedLocation
       youOpenedASecretPassageway <- remembered YouOpenedASecretPassageway

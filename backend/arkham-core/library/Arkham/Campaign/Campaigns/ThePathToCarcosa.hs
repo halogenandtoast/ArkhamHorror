@@ -24,7 +24,8 @@ newtype ThePathToCarcosa = ThePathToCarcosa CampaignAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 thePathToCarcosa :: Difficulty -> ThePathToCarcosa
-thePathToCarcosa difficulty = ThePathToCarcosa $ baseAttrs
+thePathToCarcosa difficulty = campaign
+  ThePathToCarcosa
   (CampaignId "03")
   "The Path to Carcosa"
   difficulty

@@ -218,14 +218,14 @@ instance RunMessage APhantomOfTruth where
               leadInvestigatorId
               [ Label
                   "“How could any of this be beautiful to you?”"
-                  [SetupStep 11]
-              , Label "“What exactly am I looking at?”" [SetupStep 12]
+                  [SetupStep (toTarget attrs) 11]
+              , Label "“What exactly am I looking at?”" [SetupStep (toTarget attrs) 12]
               ]
              | chasingTheStranger > 3
              ]
-          <> [SetupStep 13 | chasingTheStranger <= 3]
+          <> [SetupStep (toTarget attrs) 13 | chasingTheStranger <= 3]
       APhantomOfTruth <$> runMessage msg attrs
-    SetupStep n -> do
+    SetupStep (isTarget attrs -> True) n -> do
       conviction <- getRecordCount Conviction
       doubt <- getRecordCount Doubt
 

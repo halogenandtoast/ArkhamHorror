@@ -50,6 +50,7 @@ instance FromJSON Campaign where
       "01" -> Campaign . NightOfTheZealot <$> parseJSON v
       "02" -> Campaign . TheDunwichLegacy <$> parseJSON v
       "03" -> Campaign . ThePathToCarcosa <$> parseJSON v
+      "04" -> Campaign . TheForgottenAge <$> parseJSON v
       "50" -> Campaign . ReturnToNightOfTheZealot <$> parseJSON v
       _ -> error "invalid campaign"
 
@@ -58,5 +59,6 @@ allCampaigns = mapFromList
   [ ("01", Campaign <$> nightOfTheZealot)
   , ("02", Campaign <$> theDunwichLegacy)
   , ("03", Campaign <$> thePathToCarcosa)
+  , ("04", Campaign <$> theForgottenAge)
   , ("50", Campaign <$> returnToNightOfTheZealot)
   ]

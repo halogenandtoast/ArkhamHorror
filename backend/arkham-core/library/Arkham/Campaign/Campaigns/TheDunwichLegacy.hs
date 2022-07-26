@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Runner
-import Arkham.Id
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.CampaignStep
@@ -14,19 +13,21 @@ import Arkham.Difficulty
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
+import Arkham.Id
 import Arkham.Message
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
   deriving anyclass IsCampaign
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
-findOwner ::(Monad m, HasGame m) =>  CardCode -> m (Maybe InvestigatorId)
+findOwner :: (Monad m, HasGame m) => CardCode -> m (Maybe InvestigatorId)
 findOwner cardCode = do
   campaignStoryCards <- getCampaignStoryCards
   pure $ findKey (any ((== cardCode) . toCardCode)) campaignStoryCards
 
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
-theDunwichLegacy difficulty = TheDunwichLegacy $ baseAttrs
+theDunwichLegacy difficulty = campaign
+  TheDunwichLegacy
   (CampaignId "02")
   "The Dunwich Legacy"
   difficulty

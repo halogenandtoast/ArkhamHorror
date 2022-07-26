@@ -50,6 +50,7 @@ data Target
   | ProxyTarget Target Target
   | StoryTarget CardCode
   | AgendaMatcherTarget AgendaMatcher
+  | CampaignTarget
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

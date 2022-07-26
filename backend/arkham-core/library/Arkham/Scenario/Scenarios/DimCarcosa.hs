@@ -131,17 +131,17 @@ instance RunMessage DimCarcosa where
       leadInvestigatorId <- getLeadInvestigatorId
 
       push $ if doubt + conviction <= 5
-        then SetupStep 1
+        then SetupStep (toTarget attrs) 1
         else case compare doubt conviction of
-          GT -> SetupStep 2
-          LT -> SetupStep 3
+          GT -> SetupStep (toTarget attrs) 2
+          LT -> SetupStep (toTarget attrs) 3
           EQ -> chooseOne
             leadInvestigatorId
-            [ Label "Use Search For the Stranger (v. II)" [SetupStep 2]
-            , Label "Use Search For the Stranger (v. III)" [SetupStep 3]
+            [ Label "Use Search For the Stranger (v. II)" [SetupStep (toTarget attrs) 2]
+            , Label "Use Search For the Stranger (v. III)" [SetupStep (toTarget attrs) 3]
             ]
       pure s
-    SetupStep n -> do
+    SetupStep (isTarget attrs -> True) n -> do
       let
         act2 = case n of
           1 -> Acts.searchForTheStrangerV1

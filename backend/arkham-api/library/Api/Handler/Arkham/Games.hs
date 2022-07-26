@@ -456,11 +456,14 @@ handleAnswer Game {..} investigatorId = \case
               )
             $ HashMap.toList (parAmounts response)
       _ -> error "Wrong question type"
-  Answer response -> case HashMap.lookup investigatorId gameQuestion of
-    Just (ChooseOne qs) -> case qs !!? qrChoice response of
+  Answer response -> let q = fromJustNote "Invalid question type" (HashMap.lookup investigatorId gameQuestion) in go q response
+ where
+  go q response = case q of
+    QuestionLabel _ q' -> go q' response
+    ChooseOne qs -> case qs !!? qrChoice response of
       Nothing -> [Ask investigatorId $ ChooseOne qs]
       Just msg -> [msg]
-    Just (ChooseN n qs) -> do
+    ChooseN n qs -> do
       let (mm, msgs') = extract (qrChoice response) qs
       case (mm, msgs') of
         (Just m', []) -> [m']
@@ -468,7 +471,7 @@ handleAnswer Game {..} investigatorId = \case
           then [m']
           else [m', Ask investigatorId $ ChooseN (n - 1) msgs'']
         (Nothing, msgs'') -> [Ask investigatorId $ ChooseN n msgs'']
-    Just (ChooseUpToN n qs) -> do
+    ChooseUpToN n qs -> do
       let (mm, msgs') = extract (qrChoice response) qs
       case (mm, msgs') of
         (Just m', []) -> [m']
@@ -477,13 +480,13 @@ handleAnswer Game {..} investigatorId = \case
           then [m']
           else [m', Ask investigatorId $ ChooseUpToN (n - 1) msgs'']
         (Nothing, msgs'') -> [Ask investigatorId $ ChooseUpToN n msgs'']
-    Just (ChooseOneAtATime msgs) -> do
+    ChooseOneAtATime msgs -> do
       let (mm, msgs') = extract (qrChoice response) msgs
       case (mm, msgs') of
         (Just m', []) -> [m']
         (Just m', msgs'') -> [m', Ask investigatorId $ ChooseOneAtATime msgs'']
         (Nothing, msgs'') -> [Ask investigatorId $ ChooseOneAtATime msgs'']
-    Just (ChooseSome msgs) -> do
+    ChooseSome msgs -> do
       let (mm, msgs') = extract (qrChoice response) msgs
       case (mm, msgs') of
         (Just (Done _), _) -> []

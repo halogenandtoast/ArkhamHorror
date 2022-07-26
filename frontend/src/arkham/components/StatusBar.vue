@@ -14,6 +14,8 @@ const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
+const question = computed(() => props.game.question[props.investigatorId])
+
 const choose = (idx: number) => emit('choose', idx)
 
 const applyResultsAction = computed(() => {
@@ -77,6 +79,18 @@ const testResult = computed(() => {
         </a>
       </template>
     </div>
+
+    <div class="question-label" v-if="question.tag === 'QuestionLabel'">
+      <p>{{question.contents[0]}}</p>
+      <div class="label-choices">
+        <template v-for="(choice, index) in question.contents[1].contents" :key="index">
+          <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
+            <button @click="choose(index)" v-tooltip="choice.contents[1]">{{choice.contents[0]}}</button>
+          </template>
+        </template>
+      </div>
+    </div>
+
 
 
     <div class="choices">
@@ -306,5 +320,24 @@ button {
 .card {
   width: $card-width;
   margin: 2px;
+}
+
+.question-label {
+  display: flex;
+  flex-direction: column;
+  width: 75vw;
+
+  p {
+    font-size: 2em;
+  }
+}
+
+.label-choices {
+  display: flex;
+  flex-direction: row;
+  align-self: center;
+  button {
+    margin-left: 10px;
+  }
 }
 </style>

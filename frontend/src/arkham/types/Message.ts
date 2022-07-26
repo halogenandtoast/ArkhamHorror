@@ -80,6 +80,7 @@ export enum MessageType {
   FOUND_ENCOUNTER_CARD_FROM = 'FoundEncounterCardFrom',
   FOUND_ENEMY_IN_VOID = 'FoundEnemyInVoid',
   LABEL = 'Label',
+  TOOLTIP_LABEL = 'TooltipLabel',
   CARD_LABEL = 'CardLabel',
   ADD_USES = 'AddUses',
 }
@@ -100,6 +101,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('ChooseTokenGroups').chain(() => JsonDecoder.constant(MessageType.CHOOSE_TOKEN_GROUPS)),
     JsonDecoder.isExactly('Run').chain(() => JsonDecoder.constant(MessageType.RUN)),
     JsonDecoder.isExactly('Label').chain(() => JsonDecoder.constant(MessageType.LABEL)),
+    JsonDecoder.isExactly('TooltipLabel').chain(() => JsonDecoder.constant(MessageType.TOOLTIP_LABEL)),
     JsonDecoder.isExactly('CardLabel').chain(() => JsonDecoder.constant(MessageType.CARD_LABEL)),
     JsonDecoder.isExactly('RemoveDoom').chain(() => JsonDecoder.constant(MessageType.REMOVE_DOOM)),
     JsonDecoder.isExactly('RemoveFromGame').chain(() => JsonDecoder.constant(MessageType.REMOVE_FROM_GAME)),

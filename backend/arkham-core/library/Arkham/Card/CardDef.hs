@@ -15,6 +15,7 @@ import Arkham.Criteria
 import Arkham.EncounterSet
 import Arkham.Json
 import Arkham.Keyword ( HasKeywords (..), Keyword )
+import Arkham.LocationSymbol
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.SkillType
@@ -75,6 +76,10 @@ data CardDef = CardDef
   , cdCardInSearchEffects :: Bool
   , cdAlternateCardCodes :: [CardCode]
   , cdArt :: Text
+  , cdLocationSymbol :: Maybe LocationSymbol
+  , cdLocationRevealedSymbol :: Maybe LocationSymbol
+  , cdLocationConnections :: [LocationSymbol]
+  , cdLocationRevealedConnections :: [LocationSymbol]
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
@@ -169,4 +174,8 @@ testCardDef cardType cardCode = CardDef
   , cdCardInSearchEffects = False
   , cdAlternateCardCodes = []
   , cdArt = unCardCode cardCode
+  , cdLocationSymbol = Nothing
+  , cdLocationRevealedSymbol = Nothing
+  , cdLocationConnections = []
+  , cdLocationRevealedConnections = []
   }

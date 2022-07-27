@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { withDefaults, computed } from 'vue';
+import { withDefaults, computed, inject } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
@@ -17,8 +17,9 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), { attached: false })
 
+const baseUrl = inject('baseUrl')
+
 const image = computed(() => {
-  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
   return `${baseUrl}/img/arkham/cards/${props.treachery.cardCode.replace('c', '')}.jpg`
 })
 const id = computed(() => props.treachery.id)

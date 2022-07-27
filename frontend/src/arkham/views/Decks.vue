@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import * as Arkham from '@/arkham/types/Deck'
 import Prompt from '@/components/Prompt.vue'
 import { fetchInvestigators, fetchDecks, newDeck, deleteDeck, syncDeck } from '@/arkham/api'
@@ -19,7 +19,7 @@ interface ArkhamDBCard {
 
 const ready = ref(false)
 const decks = ref<Arkham.Deck[]>([])
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : ''
+const baseUrl = inject('baseUrl')
 const errors = ref([])
 const investigatorError = ref<string | null>(null)
 

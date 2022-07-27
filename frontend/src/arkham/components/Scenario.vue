@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import throttle from 'lodash/throttle'
-import { computed, onMounted, onUnmounted, onUpdated, nextTick, ref, ComputedRef, reactive } from 'vue';
+import { computed, onMounted, onUnmounted, onUpdated, nextTick, ref, ComputedRef, reactive, inject } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Scenario } from '@/arkham/types/Scenario';
 import type { Card } from '@/arkham/types/Card';
@@ -90,7 +90,7 @@ interface RefWrapper<T> {
   ref: ComputedRef<T>
 }
 
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 const locationMap = ref<Element | null>(null)
 
 const drawHandler = throttle(() => handleConnections(props.investigatorId, props.game), 10)

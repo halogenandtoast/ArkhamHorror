@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
 import type { Card } from '@/arkham/types/Card';
 
 export interface Props {
@@ -8,7 +8,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 
 const deckImage = computed(() => {
   switch(props.deck[0]) {

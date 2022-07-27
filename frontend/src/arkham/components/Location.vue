@@ -19,7 +19,7 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 
 const image = computed(() => {
   const { cardCode, revealed } = props.location

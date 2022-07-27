@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ChaosToken } from '@/arkham/types/ChaosToken';
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
@@ -13,8 +13,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
-
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 
 const image = computed(() => {
   switch (props.token.tokenFace) {

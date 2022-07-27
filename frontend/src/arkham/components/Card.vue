@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { withDefaults, computed } from 'vue';
+import { withDefaults, computed, inject } from 'vue';
 import type { Card } from '@/arkham/types/Card';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -15,11 +15,11 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), { revealed: false })
 const emit = defineEmits(['choose'])
+const baseUrl = inject('baseUrl')
 
 const image = computed(() => {
   const { cardCode } = props.card.contents
   const suffix = !props.revealed && props.card.contents.isFlipped ? 'b' : ''
-  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : ''
   return `${baseUrl}/img/arkham/cards/${cardCode.replace(/^c/, '')}${suffix}.jpg`
 })
 

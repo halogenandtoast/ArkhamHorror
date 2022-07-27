@@ -21,9 +21,8 @@ const props = defineProps<Props>()
 const emit = defineEmits(['show'])
 
 const id = computed(() => props.agenda.id)
+const baseUrl = inject('baseUrl')
 const image = computed(() => {
-  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
-
   if (props.agenda.flipped) {
     return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}b.jpg`;
   }

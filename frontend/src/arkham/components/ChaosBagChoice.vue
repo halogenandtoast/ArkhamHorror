@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
 import { ChaosBagStep } from '@/arkham/types/ChaosBag';
 
 export interface Props {
   choice: ChaosBagStep
 }
 
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 
 const props = defineProps<Props>()
 

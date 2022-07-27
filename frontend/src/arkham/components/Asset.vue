@@ -36,8 +36,8 @@ const hasPool = computed(() => {
 
 const exhausted = computed(() => props.asset.exhausted)
 const cardCode = computed(() => props.asset.cardCode)
+const baseUrl = inject('baseUrl')
 const image = computed(() => {
-  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
   return `${baseUrl}/img/arkham/cards/${cardCode.value.replace('c', '')}.jpg`
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))

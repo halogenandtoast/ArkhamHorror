@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 
 export interface Props {
   type: string
   amount: number
 }
 const props = defineProps<Props>()
+const baseUrl = inject('baseUrl')
 
 const image = computed(() => {
-  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
   return `${baseUrl}/img/arkham/${props.type}.png`
 })
 </script>

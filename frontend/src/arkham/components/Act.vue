@@ -20,17 +20,16 @@ export interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['show', 'choose'])
+const baseUrl = inject('baseUrl')
 
 const id = computed(() => props.act.id)
 const image = computed(() => {
   const side = props.act.sequence.side.toLowerCase().replace('a', '')
-  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
   return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}${side}.jpg`
 })
 
 const imageForCard = (card: Card) => {
   const side = card.contents.isFlipped ? 'b' : ''
-  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
   return `${baseUrl}/img/arkham/cards/${card.contents.art}${side}.jpg`
 }
 

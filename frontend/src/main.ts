@@ -14,10 +14,14 @@ library.add(faAngleDown, faExpeditedssl, faTrash, faEye, faCopy, faExternalLink,
 
 const pinia = createPinia()
 
-createApp(App).
+const app = createApp(App).
   use(router).
   use(pinia).
   use(FloatingVue).
   use(Toast, {}).
-  component("font-awesome-icon", FontAwesomeIcon).
-  mount('#app')
+  component("font-awesome-icon", FontAwesomeIcon)
+
+app.provide('baseUrl', process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '')
+
+app.mount('#app')
+

@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import { fetchInvestigators } from '@/arkham/api';
 import * as Arkham from '@/arkham/types/Investigator';
 
 const cards = ref<Arkham.Investigator[]>([])
 const ready = ref(false)
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 
 fetchInvestigators().then((response) => {
   cards.value = response.sort((a, b) => {

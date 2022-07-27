@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Difficulty } from '@/arkham/types/Difficulty';
 import type { Campaign } from '@/arkham/types/Campaign';
@@ -13,7 +13,7 @@ const props = defineProps<Props>()
 const campaign = computed<Campaign | null>(() => props.game.campaign)
 const scenario = computed<Scenario | null>(() => props.game.scenario)
 
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 
 const difficulty = computed<Difficulty>(() => {
   if (campaign.value) {

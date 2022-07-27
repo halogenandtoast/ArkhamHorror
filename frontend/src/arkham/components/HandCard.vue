@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import type { Card } from '@/arkham/types/Card'
 import type { Game } from '@/arkham/types/Game'
 import type { Message } from '@/arkham/types/Message'
@@ -142,9 +142,10 @@ const classObject = computed(() => {
   }
 })
 
+const baseUrl = inject('baseUrl')
+
 const image = computed(() => {
   const { cardCode } = props.card.contents;
-  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
   return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
 })
 </script>

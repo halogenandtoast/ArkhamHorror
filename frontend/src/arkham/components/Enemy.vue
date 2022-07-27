@@ -18,10 +18,10 @@ export interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), { atLocation: false })
+const baseUrl = inject('baseUrl')
 
 const image = computed(() => {
   const { cardCode } = props.enemy
-  const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
   return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
 })
 

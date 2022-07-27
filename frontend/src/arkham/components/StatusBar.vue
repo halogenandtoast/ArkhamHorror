@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
@@ -24,7 +24,7 @@ const applyResultsAction = computed(() => {
 
 const skillTestResults = computed(() => props.game.skillTestResults)
 
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 const cardLabelImage = (cardCode: string) => {
   return `${baseUrl}/img/arkham/cards/${cardCode.replace('c', '')}.jpg`;
 }

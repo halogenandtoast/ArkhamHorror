@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchDecks, joinGame, fetchGame } from '@/arkham/api'
 import * as Decks from '@/arkham/types/Deck'
@@ -17,7 +17,7 @@ const game = ref<Arkham.Game | null>(null)
 const deckId = ref<string | null>(null)
 const ready = ref(false)
 
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 
 fetchDecks().then((result) => {
   decks.value = result

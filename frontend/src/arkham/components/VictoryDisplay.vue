@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Card } from '@/arkham/types/Card';
 
@@ -11,7 +11,7 @@ export interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits(['show'])
 
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 const topOfVictoryDisplay = computed(() => {
   if (props.victoryDisplay[0]) {
     const { cardCode } = props.victoryDisplay[0].contents;

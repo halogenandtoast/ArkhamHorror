@@ -27,7 +27,7 @@ export interface Props {
 const props = defineProps<Props>()
 
 const discards = computed<ArkhamCard.Card[]>(() => props.player.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 
 const topOfDiscard = computed(() => discards.value[0])
 

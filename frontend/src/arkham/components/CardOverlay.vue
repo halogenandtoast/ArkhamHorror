@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 
 const card = ref<string | null>(null);
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 
 document.addEventListener('mousemove', (event) => {
   if (event.target instanceof HTMLImageElement) {

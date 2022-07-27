@@ -141,7 +141,7 @@ const endTurnAction = computed(() => {
     .findIndex((c) => c.tag === MessageType.END_TURN && c.contents === id.value);
 })
 
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 const image = computed(() => {
   return `${baseUrl}/img/arkham/cards/${id.value.replace('c', '')}.jpg`;
 })

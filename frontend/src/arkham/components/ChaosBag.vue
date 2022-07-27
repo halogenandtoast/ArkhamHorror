@@ -19,7 +19,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits(['choose'])
 
-const baseUrl = process.env.NODE_ENV == 'production' ? "https://assets.arkhamhorror.app" : '';
+const baseUrl = inject('baseUrl')
 
 function imageFor(tokenFace: string) {
   switch (tokenFace) {

@@ -17,6 +17,8 @@ const game = ref<Arkham.Game>(newGame)
 const campaignLog = game.value.campaign?.log || { recorded: [], recodedSets: [] }
 const { recorded, recordedSets, recordedCounts } = campaignLog
 
+const hasSupplies = computed(() => Object.values(game.value.investigators).some((i) => i.supplies.length > 0))
+
 function toCapitalizedWords(name) {
   const words = name.match(/[A-Za-z][a-z]*/g) || [];
   return capitalize(words.map(lowercase).join(" "));
@@ -62,6 +64,15 @@ const fullName = (name: Name): string => {
   <div class="campaign-log">
     <router-link :to="`/games/${game.id}`">Back</router-link>
     <h1>Campaign Log: {{game.name}}</h1>
+    <div v-if="hasSupplies">
+      <h2>Supplies</h2>
+      <div v-for="i in game.investigators" :key="i.id">
+        <h3>{{i.name.title}}</h3>
+        <ul>
+          <li v-for="(supply, index) in i.supplies" :key="index">{{supply}}</li>
+        </ul>
+      </div>
+    </div>
     <ul>
       <li v-for="record in recorded" :key="record">{{toCapitalizedWords(record)}}.</li>
     </ul>

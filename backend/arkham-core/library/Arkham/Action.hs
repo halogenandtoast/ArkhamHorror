@@ -28,5 +28,6 @@ data Action
   | Play
   | Resign
   | Resource
+  | Explore
   deriving stock (Show, Eq, Ord, Enum, Bounded, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

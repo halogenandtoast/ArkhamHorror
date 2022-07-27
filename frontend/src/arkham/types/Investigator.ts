@@ -72,6 +72,7 @@ export interface Investigator {
   cardsUnderneath: Card[];
   foundCards: Record<string, Card[]>;
   xp: number;
+  supplies: string[];
 }
 
 export const investigatorDecoder = JsonDecoder.object<Investigator>({
@@ -106,6 +107,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   foundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
   xp: JsonDecoder.number,
+  supplies: JsonDecoder.array<string>(JsonDecoder.string, 'supplies'),
   deckSize: JsonDecoder.optional(JsonDecoder.number),
   connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),

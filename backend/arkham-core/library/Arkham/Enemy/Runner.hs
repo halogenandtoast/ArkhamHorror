@@ -48,6 +48,7 @@ import Data.Monoid ( First (..) )
 -- and if not more choices exist, remove the message entirely
 filterOutEnemyMessages :: EnemyId -> Message -> Maybe Message
 filterOutEnemyMessages eid (Ask iid q) = case q of
+  QuestionLabel{} -> error "currently unhandled"
   ChooseOne msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
     [] -> Nothing
     x -> Just (Ask iid $ ChooseOne x)

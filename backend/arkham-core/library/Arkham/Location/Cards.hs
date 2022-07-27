@@ -1576,32 +1576,26 @@ expeditionCamp =
   location "04050" "Expedition Camp" [Campsite, Jungle] TheUntamedWilds
 
 pathOfThorns :: CardDef
-pathOfThorns =
-  location "04069" "Path of Thorns" [Jungle] Rainforest
+pathOfThorns = location "04069" "Path of Thorns" [Jungle] Rainforest
 
 riverCanyon :: CardDef
-riverCanyon =
-  location "04070" "River Canyon" [Jungle] Rainforest
+riverCanyon = location "04070" "River Canyon" [Jungle] Rainforest
 
 ropeBridge :: CardDef
-ropeBridge =
-  location "04071" "Rope Bridge" [Jungle] Rainforest
+ropeBridge = location "04071" "Rope Bridge" [Jungle] Rainforest
 
 serpentsHaven :: CardDef
-serpentsHaven =
-  location "04072" "Serpent's Haven" [Jungle] Rainforest
+serpentsHaven = location "04072" "Serpent's Haven" [Jungle] Rainforest
 
 circuitousTrail :: CardDef
-circuitousTrail =
-  location "04073" "Circuitous Trail" [Jungle] Rainforest
+circuitousTrail = location "04073" "Circuitous Trail" [Jungle] Rainforest
 
 templeOfTheFang :: CardDef
 templeOfTheFang =
   location "04074" "Temple of the Fang" [Ancient, Ruins] Rainforest
 
 overgrownRuins :: CardDef
-overgrownRuins =
-  location "04075" "Overgrown Ruins" [Ancient, Ruins] Rainforest
+overgrownRuins = location "04075" "Overgrown Ruins" [Ancient, Ruins] Rainforest
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

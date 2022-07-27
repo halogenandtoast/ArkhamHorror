@@ -226,6 +226,12 @@ const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, 
         @click="$emit('choose', endTurnAction)"
       >End turn</button>
     </div>
+
+    <div v-if="player.supplies.length > 0">
+      <ul>
+        <li v-for="(supply, index) in player.supplies" :key="index">{{supply}}</li>
+      </ul>
+    </div>
   </div>
 </template>
 

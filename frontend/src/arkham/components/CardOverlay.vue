@@ -4,7 +4,7 @@ import { ref, inject } from 'vue';
 const card = ref<string | null>(null);
 const baseUrl = inject('baseUrl')
 
-document.addEventListener('mousemove', (event) => {
+document.addEventListener('mouseover', (event) => {
   if (event.target instanceof HTMLImageElement) {
     if (event.target.classList.contains('card')) {
       card.value = event.target.src

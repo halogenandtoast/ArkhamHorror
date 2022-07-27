@@ -1168,6 +1168,7 @@ library
       Arkham.Location.Cards.WhateleyRuins_251
       Arkham.Location.Cards.Yard
       Arkham.Location.Cards.YourHouse
+      Arkham.Location.Data
       Arkham.Location.Helpers
       Arkham.Location.Label
       Arkham.Location.Locations

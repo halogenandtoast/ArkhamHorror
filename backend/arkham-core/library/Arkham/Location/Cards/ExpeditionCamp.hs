@@ -46,5 +46,5 @@ instance HasAbilities ExpeditionCamp where
 
 instance RunMessage ExpeditionCamp where
   runMessage msg l@(ExpeditionCamp attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> pure l
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> pure l
     _ -> ExpeditionCamp <$> runMessage msg attrs

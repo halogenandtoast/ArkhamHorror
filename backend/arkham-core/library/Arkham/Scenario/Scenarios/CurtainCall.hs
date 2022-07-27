@@ -7,18 +7,17 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Scenarios.CurtainCall.Story
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
-import Arkham.Investigator.Attrs (Field(..))
-import Arkham.Location.Attrs (Field(..))
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -26,6 +25,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.CurtainCall.Story
 import Arkham.Target
 import Arkham.Token
 
@@ -34,14 +34,15 @@ newtype CurtainCall = CurtainCall ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curtainCall :: Difficulty -> CurtainCall
-curtainCall difficulty =
+curtainCall difficulty = scenario
   CurtainCall
-    $ baseAttrs "03043" "Curtain Call" difficulty
-    & locationLayoutL
-    ?~ [ "lobbyDoorway1 .     balcony .         backstageDoorway1"
-       , "lobbyDoorway3 lobby theatre backstage backstageDoorway3"
-       , "lobbyDoorway2 .     .       .         backstageDoorway2"
-       ]
+  "03043"
+  "Curtain Call"
+  difficulty
+  [ "lobbyDoorway1 .     balcony .         backstageDoorway1"
+  , "lobbyDoorway3 lobby theatre backstage backstageDoorway3"
+  , "lobbyDoorway2 .     .       .         backstageDoorway2"
+  ]
 
 instance HasTokenValue CurtainCall where
   getTokenValue iid tokenFace (CurtainCall attrs) = case tokenFace of

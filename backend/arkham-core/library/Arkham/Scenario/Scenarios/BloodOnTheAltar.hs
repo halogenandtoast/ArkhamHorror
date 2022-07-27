@@ -44,15 +44,15 @@ newtype BloodOnTheAltar = BloodOnTheAltar (ScenarioAttrs `With` BloodOnTheAltarM
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 bloodOnTheAltar :: Difficulty -> BloodOnTheAltar
-bloodOnTheAltar difficulty =
-  BloodOnTheAltar . (`with` BloodOnTheAltarMetadata []) $ base
-    { scenarioLocationLayout = Just
-      [ ". houseInTheReedsHiddenChamber houseInTheReedsHiddenChamber houseInTheReeds houseInTheReeds schoolhouse schoolhouse schoolhouseHiddenChamber schoolhouseHiddenChamber ."
-      , "congregationalChurchHiddenChamber congregationalChurchHiddenChamber congregationalChurch congregationalChurch villageCommons  villageCommons osbornsGeneralStore osbornsGeneralStore osbornsGeneralStoreHiddenChamber osbornsGeneralStoreHiddenChamber"
-      , ". burnedRuinsHiddenChamber burnedRuinsHiddenChamber burnedRuins burnedRuins bishopsBrook bishopsBrook bishopsBrookHiddenChamber bishopsBrookHiddenChamber ."
-      ]
-    }
-  where base = baseAttrs "02195" "Blood on the Altar" difficulty
+bloodOnTheAltar difficulty = scenario
+  (BloodOnTheAltar . (`with` BloodOnTheAltarMetadata []))
+  "02195"
+  "Blood on the Altar"
+  difficulty
+  [ ". houseInTheReedsHiddenChamber houseInTheReedsHiddenChamber houseInTheReeds houseInTheReeds schoolhouse schoolhouse schoolhouseHiddenChamber schoolhouseHiddenChamber ."
+  , "congregationalChurchHiddenChamber congregationalChurchHiddenChamber congregationalChurch congregationalChurch villageCommons  villageCommons osbornsGeneralStore osbornsGeneralStore osbornsGeneralStoreHiddenChamber osbornsGeneralStoreHiddenChamber"
+  , ". burnedRuinsHiddenChamber burnedRuinsHiddenChamber burnedRuins burnedRuins bishopsBrook bishopsBrook bishopsBrookHiddenChamber bishopsBrookHiddenChamber ."
+  ]
 
 instance HasTokenValue BloodOnTheAltar where
   getTokenValue iid tokenFace (BloodOnTheAltar (attrs `With` _)) =

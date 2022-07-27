@@ -47,14 +47,15 @@ newtype TheLastKing = TheLastKing ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theLastKing :: Difficulty -> TheLastKing
-theLastKing difficulty =
+theLastKing difficulty = scenario
   TheLastKing
-    $ baseAttrs "03061" "The Last King" difficulty
-    & locationLayoutL
-    ?~ [ "diningRoom .         gallery"
-       , "ballroom   courtyard livingRoom"
-       , ".          foyer     ."
-       ]
+  "03061"
+  "The Last King"
+  difficulty
+  [ "diningRoom .         gallery"
+  , "ballroom   courtyard livingRoom"
+  , ".          foyer     ."
+  ]
 
 instance HasTokenValue TheLastKing where
   getTokenValue iid tokenFace (TheLastKing attrs) = case tokenFace of

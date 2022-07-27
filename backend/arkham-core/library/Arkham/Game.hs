@@ -83,7 +83,7 @@ import Arkham.Placement
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario
-import Arkham.Scenario.Attrs
+import Arkham.Scenario.Attrs hiding (scenario)
 import Arkham.Skill
 import Arkham.Skill.Attrs ( Field (..), SkillAttrs (..) )
 import Arkham.SkillTest.Runner

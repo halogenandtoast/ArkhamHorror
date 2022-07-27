@@ -52,6 +52,7 @@ instance FromJSON Scenario where
       "03240" -> Scenario . ThePallidMask <$> parseJSON v
       "03274" -> Scenario . BlackStarsRise <$> parseJSON v
       "03316" -> Scenario . DimCarcosa <$> parseJSON v
+      "04043" -> Scenario . TheUntamedWilds <$> parseJSON v
       "50011" -> Scenario . ReturnToTheGathering <$> parseJSON v
       "50025" -> Scenario . ReturnToTheMidnightMasks <$> parseJSON v
       "50032" -> Scenario . ReturnToTheDevourerBelow <$> parseJSON v
@@ -136,6 +137,7 @@ allScenarios = mapFromList
   , ("03240", Scenario . thePallidMask)
   , ("03274", Scenario . blackStarsRise)
   , ("03316", Scenario . dimCarcosa)
+  , ("04043", Scenario . theUntamedWilds)
   , ("50011", Scenario . returnToTheGathering)
   , ("50025", Scenario . returnToTheMidnightMasks)
   , ("50032", Scenario . returnToTheDevourerBelow)

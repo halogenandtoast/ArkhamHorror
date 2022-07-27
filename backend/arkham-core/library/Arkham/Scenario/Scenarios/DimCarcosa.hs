@@ -42,16 +42,17 @@ newtype DimCarcosa = DimCarcosa ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimCarcosa :: Difficulty -> DimCarcosa
-dimCarcosa difficulty =
+dimCarcosa difficulty = scenario
   DimCarcosa
-    $ baseAttrs "03316" "Dim Carcosa" difficulty
-    & locationLayoutL
-    ?~ [ ".          darkSpires      ."
-       , ".          depthsOfDemhe   ."
-       , "dimStreets palaceOfTheKing ruinsOfCarcosa"
-       , ".          bleakPlains     ."
-       , ".          shoresOfHali    ."
-       ]
+  "03316"
+  "Dim Carcosa"
+  difficulty
+  [ ".          darkSpires      ."
+  , ".          depthsOfDemhe   ."
+  , "dimStreets palaceOfTheKing ruinsOfCarcosa"
+  , ".          bleakPlains     ."
+  , ".          shoresOfHali    ."
+  ]
 
 instance HasModifiersFor DimCarcosa where
   getModifiersFor _ (EnemyTarget eid) (DimCarcosa a) = do
@@ -59,7 +60,7 @@ instance HasModifiersFor DimCarcosa where
     knowTheSecret <- remembered KnowTheSecret
     pure $ toModifiers a [ CannotBeDefeated | isHastur && not knowTheSecret ]
   getModifiersFor _ (InvestigatorTarget _) (DimCarcosa a) = do
-    pure $ toModifiers a [ CanOnlyBeDefeatedByDamage ]
+    pure $ toModifiers a [CanOnlyBeDefeatedByDamage]
   getModifiersFor _ _ _ = pure []
 
 instance HasTokenValue DimCarcosa where
@@ -137,8 +138,12 @@ instance RunMessage DimCarcosa where
           LT -> SetupStep (toTarget attrs) 3
           EQ -> chooseOne
             leadInvestigatorId
-            [ Label "Use Search For the Stranger (v. II)" [SetupStep (toTarget attrs) 2]
-            , Label "Use Search For the Stranger (v. III)" [SetupStep (toTarget attrs) 3]
+            [ Label
+              "Use Search For the Stranger (v. II)"
+              [SetupStep (toTarget attrs) 2]
+            , Label
+              "Use Search For the Stranger (v. III)"
+              [SetupStep (toTarget attrs) 3]
             ]
       pure s
     SetupStep (isTarget attrs -> True) n -> do
@@ -282,34 +287,49 @@ instance RunMessage DimCarcosa where
       conviction <- getConviction
       doubt <- getDoubt
       gainXp <- map (uncurry GainXP) <$> getXpWithBonus 5
-      possessed <- selectList $ InvestigatorWithTreacheryInHand $ TreacheryOneOf $ map treacheryIs [Treacheries.possessionMurderous, Treacheries.possessionTraitorous, Treacheries.possessionTorturous]
-      let recordPossessed = RecordSet Possessed (map unInvestigatorId possessed)
+      possessed <-
+        selectList $ InvestigatorWithTreacheryInHand $ TreacheryOneOf $ map
+          treacheryIs
+          [ Treacheries.possessionMurderous
+          , Treacheries.possessionTraitorous
+          , Treacheries.possessionTorturous
+          ]
+      let
+        recordPossessed = RecordSet Possessed (map unInvestigatorId possessed)
       case res of
         NoResolution -> case compare conviction doubt of
           GT -> push $ ScenarioResolution $ Resolution 4
           EQ -> push $ ScenarioResolution $ Resolution 4
           LT -> push $ ScenarioResolution $ Resolution 5
         Resolution 1 -> do
-          pushAll $ [story investigatorIds resolution1]
-            <> [SufferTrauma iid 2 2 | iid <- investigatorIds]
+          pushAll
+            $ [story investigatorIds resolution1]
+            <> [ SufferTrauma iid 2 2 | iid <- investigatorIds ]
             <> gainXp
             <> [recordPossessed, EndOfGame Nothing]
         Resolution 2 -> do
-          pushAll $ [story investigatorIds resolution2]
-            <> [SufferTrauma iid 0 2 | iid <- investigatorIds]
+          pushAll
+            $ [story investigatorIds resolution2]
+            <> [ SufferTrauma iid 0 2 | iid <- investigatorIds ]
             <> gainXp
             <> [recordPossessed, EndOfGame Nothing]
         Resolution 3 -> do
-          pushAll $ [story investigatorIds resolution3]
-            <> [SufferTrauma iid 2 0 | iid <- investigatorIds]
+          pushAll
+            $ [story investigatorIds resolution3]
+            <> [ SufferTrauma iid 2 0 | iid <- investigatorIds ]
             <> gainXp
             <> [recordPossessed, EndOfGame Nothing]
         Resolution 4 -> do
-          pushAll $ [story investigatorIds resolution4, Record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth]
+          pushAll
+            $ [ story investigatorIds resolution4
+              , Record
+                TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
+              ]
             <> map DrivenInsane investigatorIds
             <> [GameOver]
         Resolution 5 -> do
-          pushAll $ [story investigatorIds resolution5, Record HasturHasYouInHisGrasp]
+          pushAll
+            $ [story investigatorIds resolution5, Record HasturHasYouInHisGrasp]
             <> map DrivenInsane investigatorIds
             <> [GameOver]
         _ -> error "Unhandled resolution"

@@ -27,8 +27,8 @@ import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Runner
 import Arkham.Scenario.Helpers
+import Arkham.Scenario.Runner
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
@@ -39,23 +39,24 @@ newtype LostInTimeAndSpace = LostInTimeAndSpace ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lostInTimeAndSpace :: Difficulty -> LostInTimeAndSpace
-lostInTimeAndSpace difficulty =
+lostInTimeAndSpace difficulty = scenario
   LostInTimeAndSpace
-    $ baseAttrs "02311" "Lost in Time and Space" difficulty
-    & locationLayoutL
-    ?~ [ ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
-       , ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
-       , ".              tearThroughSpace3  tearThroughSpace3  .                 .                    .                    .                  tearThroughSpace4 tearThroughSpace4 ."
-       , ".              tearThroughSpace3  tearThroughSpace3  .                 .                    .                    .                  tearThroughSpace4 tearThroughSpace4 ."
-       , "endlessBridge2 endlessBridge2     endlessBridge1     endlessBridge1    .                    .                    prismaticCascade1  prismaticCascade1 prismaticCascade2 prismaticCascade2"
-       , "endlessBridge2 endlessBridge2     endlessBridge1     endlessBridge1    .                    .                    prismaticCascade1  prismaticCascade1 prismaticCascade2 prismaticCascade2"
-       , ".              dimensionalDoorway dimensionalDoorway .                 anotherDimension     anotherDimension     .                  stepsOfYhagharl   stepsOfYhagharl   ."
-       , ".              dimensionalDoorway dimensionalDoorway .                 anotherDimension     anotherDimension     .                  stepsOfYhagharl   stepsOfYhagharl   ."
-       , ".              .                  .                  .                 tearThroughTime      tearThroughTime      .                  .                 .                 ."
-       , ".              .                  .                  .                 tearThroughTime      tearThroughTime      .                  .                 .                 ."
-       , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
-       , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
-       ]
+  "02311"
+  "Lost in Time and Space"
+  difficulty
+  [ ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
+  , ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
+  , ".              tearThroughSpace3  tearThroughSpace3  .                 .                    .                    .                  tearThroughSpace4 tearThroughSpace4 ."
+  , ".              tearThroughSpace3  tearThroughSpace3  .                 .                    .                    .                  tearThroughSpace4 tearThroughSpace4 ."
+  , "endlessBridge2 endlessBridge2     endlessBridge1     endlessBridge1    .                    .                    prismaticCascade1  prismaticCascade1 prismaticCascade2 prismaticCascade2"
+  , "endlessBridge2 endlessBridge2     endlessBridge1     endlessBridge1    .                    .                    prismaticCascade1  prismaticCascade1 prismaticCascade2 prismaticCascade2"
+  , ".              dimensionalDoorway dimensionalDoorway .                 anotherDimension     anotherDimension     .                  stepsOfYhagharl   stepsOfYhagharl   ."
+  , ".              dimensionalDoorway dimensionalDoorway .                 anotherDimension     anotherDimension     .                  stepsOfYhagharl   stepsOfYhagharl   ."
+  , ".              .                  .                  .                 tearThroughTime      tearThroughTime      .                  .                 .                 ."
+  , ".              .                  .                  .                 tearThroughTime      tearThroughTime      .                  .                 .                 ."
+  , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
+  , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
+  ]
 
 instance HasTokenValue LostInTimeAndSpace where
   getTokenValue iid tokenFace (LostInTimeAndSpace attrs) = case tokenFace of

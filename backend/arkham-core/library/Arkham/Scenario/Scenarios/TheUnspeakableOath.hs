@@ -42,18 +42,18 @@ newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theUnspeakableOath :: Difficulty -> TheUnspeakableOath
-theUnspeakableOath difficulty =
+theUnspeakableOath difficulty = scenarioWith
   TheUnspeakableOath
-    $ baseAttrs "03159" "The Unspeakable Oath" difficulty
-    & locationLayoutL
-    ?~ [ ".       .       .        .        garden                        garden                        .                             .                             .                   ."
-       , ".       .       .        .        yard                          yard                          .                             .                             .                   ."
-       , "kitchen kitchen messHall messHall asylumHallsWesternPatientWing asylumHallsWesternPatientWing asylumHallsEasternPatientWing asylumHallsEasternPatientWing infirmary           infirmary"
-       , ".       .       .        .        patientConfinement1           patientConfinement1           basementHall                  basementHall                  patientConfinement2 patientConfinement2"
-       , ".       .       .        .        .                             patientConfinement3           patientConfinement3           patientConfinement4           patientConfinement4 ."
-       ]
-    & decksL
-    .~ mapFromList [(LunaticsDeck, []), (MonstersDeck, [])]
+  "03159"
+  "The Unspeakable Oath"
+  difficulty
+  [ ".       .       .        .        garden                        garden                        .                             .                             .                   ."
+  , ".       .       .        .        yard                          yard                          .                             .                             .                   ."
+  , "kitchen kitchen messHall messHall asylumHallsWesternPatientWing asylumHallsWesternPatientWing asylumHallsEasternPatientWing asylumHallsEasternPatientWing infirmary           infirmary"
+  , ".       .       .        .        patientConfinement1           patientConfinement1           basementHall                  basementHall                  patientConfinement2 patientConfinement2"
+  , ".       .       .        .        .                             patientConfinement3           patientConfinement3           patientConfinement4           patientConfinement4 ."
+  ]
+  (decksL .~ mapFromList [(LunaticsDeck, []), (MonstersDeck, [])])
 
 instance HasTokenValue TheUnspeakableOath where
   getTokenValue iid tokenFace (TheUnspeakableOath attrs) = case tokenFace of

@@ -330,6 +330,9 @@ instance FromJSON Location where
       "03329d" -> Location . DepthsOfDemheStepsOfThePalace <$> parseJSON v
       "03330b" -> Location . DarkSpires <$> parseJSON v
       "03331b" -> Location . PalaceOfTheKing <$> parseJSON v
+      -- The Forgotten Age
+      -- The Untamed Wilds
+      "04050" -> Location . ExpeditionCamp <$> parseJSON v
       -- Return to Night of the Zealot
       -- Return to the Gathering
       "50013" -> Location . StudyAberrantGateway <$> parseJSON v
@@ -609,6 +612,9 @@ allLocations = mapFromList $ map
   ,  Location <$> depthsOfDemheStepsOfThePalace
   ,  Location <$> darkSpires
   ,  Location <$> palaceOfTheKing
+  -- The Forgotten Age
+  -- The Untamed Wilds
+  ,  Location <$> expeditionCamp
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , Location <$> studyAberrantGateway

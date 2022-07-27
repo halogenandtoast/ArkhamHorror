@@ -5,20 +5,20 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Scenarios.TheGathering.Story
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.TheGathering.Story
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
@@ -30,19 +30,20 @@ newtype TheGathering = TheGathering ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theGathering :: Difficulty -> TheGathering
-theGathering difficulty =
+theGathering difficulty = scenario
   TheGathering
-    $ baseAttrs "01104" "The Gathering" difficulty
-    & locationLayoutL
-    ?~ [ "   .   attic   .     "
-       , " study hallway parlor"
-       , "   .   cellar  .     "
-       ]
+  "01104"
+  "The Gathering"
+  difficulty
+  ["   .   attic   .     ", " study hallway parlor", "   .   cellar  .     "]
 
 instance HasTokenValue TheGathering where
   getTokenValue iid tokenFace (TheGathering attrs) = case tokenFace of
     Skull -> do
-      ghoulCount <- selectCount $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid) <> EnemyWithTrait Trait.Ghoul
+      ghoulCount <-
+        selectCount
+        $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
+        <> EnemyWithTrait Trait.Ghoul
       pure $ toTokenValue attrs Skull ghoulCount 2
     Cultist -> pure $ TokenValue
       Cultist
@@ -103,7 +104,10 @@ instance RunMessage TheGathering where
     ResolveToken _ Cultist iid ->
       s <$ when (isHardExpert attrs) (push $ DrawAnotherToken iid)
     ResolveToken _ Tablet iid -> do
-      ghoulCount <- selectCount $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid) <> EnemyWithTrait Trait.Ghoul
+      ghoulCount <-
+        selectCount
+        $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
+        <> EnemyWithTrait Trait.Ghoul
       s <$ when
         (ghoulCount > 0)
         (push $ InvestigatorAssignDamage

@@ -7,8 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.EncounterCard
@@ -18,14 +16,15 @@ import Arkham.Direction
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Agenda
 import Arkham.Helpers.Card
 import Arkham.Helpers.Scenario
 import Arkham.Id
-import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Modifier
-import Arkham.Helpers.Agenda
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -33,6 +32,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait qualified as Trait
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
   deriving stock Generic
@@ -40,11 +40,12 @@ newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theEssexCountyExpress :: Difficulty -> TheEssexCountyExpress
-theEssexCountyExpress difficulty =
+theEssexCountyExpress difficulty = scenario
   TheEssexCountyExpress
-    $ baseAttrs "02159" "The Essex County Express" difficulty
-    & locationLayoutL
-    ?~ ["trainCar6 trainCar5 trainCar4 trainCar3 trainCar2 trainCar1 engineCar"]
+  "02159"
+  "The Essex County Express"
+  difficulty
+  ["trainCar6 trainCar5 trainCar4 trainCar3 trainCar2 trainCar1 engineCar"]
 
 theEssexCountyExpressIntro :: Message
 theEssexCountyExpressIntro = FlavorText
@@ -124,9 +125,7 @@ investigatorDefeat = do
   let
     findOwner cardCode =
       (\iid -> iid <$ guard (iid `elem` defeatedInvestigatorIds))
-        =<< findKey
-              (any ((== cardCode) . toCardCode))
-              campaignStoryCards
+        =<< findKey (any ((== cardCode) . toCardCode)) campaignStoryCards
     mNecronomiconOwner = findOwner "02140"
     mDrHenryArmitageOwner = findOwner "02040"
     mProfessorWarrenRiceOwner = findOwner "02061"
@@ -282,7 +281,8 @@ instance RunMessage TheEssexCountyExpress where
             )
           )
       ResolveToken _ Tablet iid | isEasyStandard attrs -> do
-        closestCultists <- selectList $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
+        closestCultists <- selectList $ NearestEnemyTo iid $ EnemyWithTrait
+          Trait.Cultist
         s <$ case closestCultists of
           [] -> pure ()
           [x] -> push (PlaceDoom (EnemyTarget x) 1)

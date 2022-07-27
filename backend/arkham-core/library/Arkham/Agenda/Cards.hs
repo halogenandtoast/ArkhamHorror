@@ -66,10 +66,12 @@ allAgendaCards = mapFromList $ map
   , empireOfTheDead
   , empireOfTheUndead
   , encore
+  , expeditionIntoTheWild
   , fashionablyLate
   , feedTheBeast
   , hisDomain
   , horrorsUnleashed
+  , intruders
   , inEveryShadow
   , letTheStormRageTheFloodBelow
   , letTheStormRageTheVortexAbove
@@ -307,6 +309,12 @@ madnessDrowns = agenda "03318" "Madness Drowns" 2 DimCarcosa
 
 madnessDies :: CardDef
 madnessDies = agenda "03319" "Madness Dies" 3 DimCarcosa
+
+expeditionIntoTheWild :: CardDef
+expeditionIntoTheWild = agenda "04044" "Expedition into the Wild" 1 TheUntamedWilds
+
+intruders :: CardDef
+intruders = agenda "04045" "Intruders" 2 TheUntamedWilds
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

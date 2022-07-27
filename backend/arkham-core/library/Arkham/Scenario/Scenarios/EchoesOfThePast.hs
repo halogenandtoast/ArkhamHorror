@@ -3,15 +3,11 @@ module Arkham.Scenario.Scenarios.EchoesOfThePast
   , echoesOfThePast
   ) where
 
-import Arkham.Prelude hiding (replicate)
+import Arkham.Prelude hiding ( replicate )
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Scenarios.EchoesOfThePast.Story
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.EncounterCard
@@ -20,34 +16,39 @@ import Arkham.Difficulty
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Attrs ( Field (..) )
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Enemy.Attrs ( Field(..) )
-import Arkham.Scenario.Helpers hiding (matches)
+import Arkham.Scenario.Helpers hiding ( matches )
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.EchoesOfThePast.Story
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Trait (Trait(SecondFloor, ThirdFloor))
-import Data.List (replicate)
+import Arkham.Trait ( Trait (SecondFloor, ThirdFloor) )
+import Arkham.Treachery.Cards qualified as Cards
+import Data.List ( replicate )
 
 newtype EchoesOfThePast = EchoesOfThePast ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 echoesOfThePast :: Difficulty -> EchoesOfThePast
-echoesOfThePast difficulty =
+echoesOfThePast difficulty = scenario
   EchoesOfThePast
-    $ baseAttrs "03120" "Echoes of the Past" difficulty
-    & locationLayoutL
-    ?~ [ "thirdFloor1  quietHalls2 thirdFloor2  . ."
-       , "secondFloor1 quietHalls1 secondFloor2 . hiddenLibrary"
-       , "groundFloor1 entryHall   groundFloor2 . ."
-       ]
+  "03120"
+  "Echoes of the Past"
+  difficulty
+  [ "thirdFloor1  quietHalls2 thirdFloor2  . ."
+  , "secondFloor1 quietHalls1 secondFloor2 . hiddenLibrary"
+  , "groundFloor1 entryHall   groundFloor2 . ."
+  ]
 
 instance HasTokenValue EchoesOfThePast where
   getTokenValue iid tokenFace (EchoesOfThePast attrs) = case tokenFace of

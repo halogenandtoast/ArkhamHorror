@@ -25,8 +25,8 @@ import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Runner
 import Arkham.Scenario.Helpers
+import Arkham.Scenario.Runner
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
@@ -38,14 +38,15 @@ newtype WhereDoomAwaits = WhereDoomAwaits ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whereDoomAwaits :: Difficulty -> WhereDoomAwaits
-whereDoomAwaits difficulty =
+whereDoomAwaits difficulty = scenario
   WhereDoomAwaits
-    $ baseAttrs "02274" "Where Doom Awaits" difficulty
-    & locationLayoutL
-    ?~ [ "divergingPath1 divergingPath2 divergingPath3"
-       , "baseOfTheHill ascendingPath sentinelPeak"
-       , "alteredPath1 alteredPath2 alteredPath3"
-       ]
+  "02274"
+  "Where Doom Awaits"
+  difficulty
+  [ "divergingPath1 divergingPath2 divergingPath3"
+  , "baseOfTheHill ascendingPath sentinelPeak"
+  , "alteredPath1 alteredPath2 alteredPath3"
+  ]
 
 whereDoomAwaitsIntro :: Message
 whereDoomAwaitsIntro = FlavorText
@@ -136,7 +137,10 @@ instance HasTokenValue WhereDoomAwaits where
     Cultist -> pure $ TokenValue Cultist NoModifier
     Tablet -> do
       agendaId <- selectJust AnyAgenda
-      agendaStep <- fieldMap AgendaSequence (AS.unAgendaStep . AS.agendaStep) agendaId
+      agendaStep <- fieldMap
+        AgendaSequence
+        (AS.unAgendaStep . AS.agendaStep)
+        agendaId
       pure $ TokenValue
         Tablet
         (if isEasyStandard attrs
@@ -152,7 +156,11 @@ instance RunMessage WhereDoomAwaits where
       standalone <- getIsStandalone
       s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
     StandaloneSetup -> do
-      pure . WhereDoomAwaits $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
+      pure
+        . WhereDoomAwaits
+        $ attrs
+        & standaloneCampaignLogL
+        .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId

@@ -35,24 +35,25 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait hiding ( Cultist )
-import Arkham.Window (defaultWindows)
+import Arkham.Window ( defaultWindows )
 
 newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 undimensionedAndUnseen :: Difficulty -> UndimensionedAndUnseen
-undimensionedAndUnseen difficulty =
+undimensionedAndUnseen difficulty = scenario
   UndimensionedAndUnseen
-    $ baseAttrs "02236" "Undimensioned and Unseen" difficulty
-    & locationLayoutL
-    ?~ [ ". blastedHeath devilsHopYard"
-       , ". blastedHeath devilsHopYard"
-       , "dunwichVillage tenAcreMeadow ."
-       , "dunwichVillage tenAcreMeadow whateleyRuins"
-       , ". coldSpringGlen whateleyRuins"
-       , ". coldSpringGlen ."
-       ]
+  "02236"
+  "Undimensioned and Unseen"
+  difficulty
+  [ ". blastedHeath devilsHopYard"
+  , ". blastedHeath devilsHopYard"
+  , "dunwichVillage tenAcreMeadow ."
+  , "dunwichVillage tenAcreMeadow whateleyRuins"
+  , ". coldSpringGlen whateleyRuins"
+  , ". coldSpringGlen ."
+  ]
 
 undimensionedAndUnseenIntro :: Message
 undimensionedAndUnseenIntro = FlavorText
@@ -140,7 +141,8 @@ standaloneTokens =
 
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog = mkCampaignLog
-  { campaignLogRecordedSets = mapFromList [(SacrificedToYogSothoth, [Recorded "02040"])]
+  { campaignLogRecordedSets = mapFromList
+    [(SacrificedToYogSothoth, [Recorded "02040"])]
   }
 
 instance HasTokenValue UndimensionedAndUnseen where
@@ -160,7 +162,11 @@ instance RunMessage UndimensionedAndUnseen where
       standalone <- getIsStandalone
       s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
     StandaloneSetup ->
-      pure . UndimensionedAndUnseen $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
+      pure
+        . UndimensionedAndUnseen
+        $ attrs
+        & standaloneCampaignLogL
+        .~ standaloneCampaignLog
     Setup -> do
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
@@ -215,7 +221,8 @@ instance RunMessage UndimensionedAndUnseen where
         investigatorIds
         (\iid -> do
           powderOfIbnGhazi <-
-            find ((== "02219") . toCardCode) <$> fieldMap InvestigatorDeck unDeck iid
+            find ((== "02219") . toCardCode)
+              <$> fieldMap InvestigatorDeck unDeck iid
           pure $ (iid, ) <$> powderOfIbnGhazi
         )
 
@@ -279,7 +286,12 @@ instance RunMessage UndimensionedAndUnseen where
                iid
                [ Label
                  "Play Powder of Ibn-Ghazi"
-                 [PutCardIntoPlay iid (PlayerCard card) Nothing (defaultWindows iid)]
+                 [ PutCardIntoPlay
+                     iid
+                     (PlayerCard card)
+                     Nothing
+                     (defaultWindows iid)
+                 ]
                , Label "Do no play Powder of Ibn-Ghazi" []
                ]
            | (iid, card) <- investigatorsWithPowderOfIbnGhazi

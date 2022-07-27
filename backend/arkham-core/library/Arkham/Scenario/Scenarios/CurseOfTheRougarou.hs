@@ -35,20 +35,22 @@ newtype CurseOfTheRougarou = CurseOfTheRougarou ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 curseOfTheRougarou :: Difficulty -> CurseOfTheRougarou
-curseOfTheRougarou difficulty =
+curseOfTheRougarou difficulty = scenario
   CurseOfTheRougarou
-    $ baseAttrs "81001" "Curse of the Rougarou" difficulty
-    & locationLayoutL
-    ?~ [ "     .       unhallowed1      newOrleans1       ."
-       , "unhallowed2 unhallowedBayou newOrleansBayou newOrleans2"
-       , "riverside2 riversideBayou wildernessBayou wilderness2"
-       , "     .       riverside1      wilderness1       ."
-       ]
+  "81001"
+  "Curse of the Rougarou"
+  difficulty
+  [ "     .       unhallowed1      newOrleans1       ."
+  , "unhallowed2 unhallowedBayou newOrleansBayou newOrleans2"
+  , "riverside2 riversideBayou wildernessBayou wilderness2"
+  , "     .       riverside1      wilderness1       ."
+  ]
 
 instance HasTokenValue CurseOfTheRougarou where
   getTokenValue iid tokenFace (CurseOfTheRougarou attrs) = case tokenFace of
     Skull -> do
-      isBayou <- selectAny $ LocationWithTrait Bayou <> LocationWithInvestigator (InvestigatorWithId iid)
+      isBayou <- selectAny $ LocationWithTrait Bayou <> LocationWithInvestigator
+        (InvestigatorWithId iid)
       pure $ if isBayou
         then toTokenValue attrs Skull 4 6
         else toTokenValue attrs Skull 2 3
@@ -79,9 +81,10 @@ instance RunMessage CurseOfTheRougarou where
         [Assets.ladyEsprit, Assets.bearTrap, Assets.fishingNet]
 
       let
-        bayou = case break (elem Bayou . toTraits . snd) startingLocationsWithLabel of
-          (_, (_, x) : _) -> x
-          _ -> error "handled"
+        bayou =
+          case break (elem Bayou . toTraits . snd) startingLocationsWithLabel of
+            (_, (_, x) : _) -> x
+            _ -> error "handled"
         bayouId = LocationId $ toCardId bayou
       pushAllEnd
         $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]

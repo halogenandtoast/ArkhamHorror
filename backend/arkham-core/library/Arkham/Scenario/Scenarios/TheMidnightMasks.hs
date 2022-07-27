@@ -30,15 +30,16 @@ newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theMidnightMasks :: Difficulty -> TheMidnightMasks
-theMidnightMasks difficulty =
-  TheMidnightMasks $ (baseAttrs "01120" "The Midnight Masks" difficulty)
-    { scenarioLocationLayout = Just
-      [ "northside downtown easttown"
-      , "miskatonicUniversity rivertown graveyard"
-      , "stMarysHospital southside yourHouse"
-      ]
-    , scenarioDecks = mapFromList [(CultistDeck, [])]
-    }
+theMidnightMasks difficulty = scenarioWith
+  TheMidnightMasks
+  "01120"
+  "The Midnight Masks"
+  difficulty
+  [ "northside downtown easttown"
+  , "miskatonicUniversity rivertown graveyard"
+  , "stMarysHospital southside yourHouse"
+  ]
+  (decksL .~ mapFromList [(CultistDeck, [])])
 
 instance HasTokenValue TheMidnightMasks where
   getTokenValue iid tokenFace (TheMidnightMasks attrs) = case tokenFace of

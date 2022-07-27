@@ -1784,7 +1784,7 @@ instance Projection InvestigatorAttrs where
             map snd . filter ((== toId i) . fst) . HashMap.elems $ skillTestCommittedCards skillTest
       InvestigatorDefeated -> pure investigatorDefeated
       InvestigatorResigned -> pure investigatorResigned
-      -- NOTE: For Abilities do not for get inhand, indiscard, insearch
+      InvestigatorSupplies -> pure investigatorSupplies
 
 instance Query AssetMatcher where
   select = fmap (setFromList . map toId) . getAssetsMatching

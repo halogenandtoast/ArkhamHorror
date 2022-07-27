@@ -974,6 +974,7 @@ library
       Arkham.Location.Cards.ChapelOfStAubertWatersForbidden
       Arkham.Location.Cards.ChoeurGothique_292
       Arkham.Location.Cards.ChoeurGothique_293
+      Arkham.Location.Cards.CircuitousTrail
       Arkham.Location.Cards.Cloister
       Arkham.Location.Cards.CloverClubBar
       Arkham.Location.Cards.CloverClubCardroom
@@ -1091,6 +1092,7 @@ library
       Arkham.Location.Cards.OuterWall_285
       Arkham.Location.Cards.OuterWall_286
       Arkham.Location.Cards.OvergrownCairns
+      Arkham.Location.Cards.OvergrownRuins
       Arkham.Location.Cards.PalaceOfTheKing
       Arkham.Location.Cards.Parlor
       Arkham.Location.Cards.ParlorCar
@@ -1099,6 +1101,7 @@ library
       Arkham.Location.Cards.PassengerCar_169
       Arkham.Location.Cards.PassengerCar_170
       Arkham.Location.Cards.PassengerCar_171
+      Arkham.Location.Cards.PathOfThorns
       Arkham.Location.Cards.PatientConfinementDanielsCell
       Arkham.Location.Cards.PatientConfinementDrearyCell
       Arkham.Location.Cards.PatientConfinementFamiliarCell
@@ -1114,8 +1117,10 @@ library
       Arkham.Location.Cards.RialtoBridge
       Arkham.Location.Cards.RitualGrounds
       Arkham.Location.Cards.RitualSite
+      Arkham.Location.Cards.RiverCanyon
       Arkham.Location.Cards.Rivertown
       Arkham.Location.Cards.RivertownAbandonedWarehouse
+      Arkham.Location.Cards.RopeBridge
       Arkham.Location.Cards.RuinsOfCarcosaAMomentsRest
       Arkham.Location.Cards.RuinsOfCarcosaInhabitantOfCarcosa
       Arkham.Location.Cards.RuinsOfCarcosaTheCoffin
@@ -1126,6 +1131,7 @@ library
       Arkham.Location.Cards.SecurityOffice_128
       Arkham.Location.Cards.SecurityOffice_129
       Arkham.Location.Cards.SentinelPeak
+      Arkham.Location.Cards.SerpentsHaven
       Arkham.Location.Cards.ShiveringPools
       Arkham.Location.Cards.ShoresOfHali
       Arkham.Location.Cards.SlaughteredWoods
@@ -1141,6 +1147,7 @@ library
       Arkham.Location.Cards.StudyAberrantGateway
       Arkham.Location.Cards.TearThroughSpace
       Arkham.Location.Cards.TearThroughTime
+      Arkham.Location.Cards.TempleOfTheFang
       Arkham.Location.Cards.TenAcreMeadow_246
       Arkham.Location.Cards.TenAcreMeadow_247
       Arkham.Location.Cards.Theatre
@@ -1310,6 +1317,7 @@ library
       Arkham.Treachery.Cards.AngeredSpirits
       Arkham.Treachery.Cards.ArcaneBarrier
       Arkham.Treachery.Cards.ArousingSuspicions
+      Arkham.Treachery.Cards.ArrowsFromTheTrees
       Arkham.Treachery.Cards.AttractingAttention
       Arkham.Treachery.Cards.Atychiphobia
       Arkham.Treachery.Cards.BeastOfTheBayou
@@ -1366,8 +1374,10 @@ library
       Arkham.Treachery.Cards.LedAstray
       Arkham.Treachery.Cards.LightOfAforgomon
       Arkham.Treachery.Cards.LockedDoor
+      Arkham.Treachery.Cards.LostInTheWilds
       Arkham.Treachery.Cards.LostInVenice
       Arkham.Treachery.Cards.LostSoul
+      Arkham.Treachery.Cards.LowOnSupplies
       Arkham.Treachery.Cards.MarkedByTheSign
       Arkham.Treachery.Cards.MaskedHorrors
       Arkham.Treachery.Cards.MaskOfUmordhoth
@@ -1379,6 +1389,7 @@ library
       Arkham.Treachery.Cards.OnTheProwl
       Arkham.Treachery.Cards.OnWingsOfDarkness
       Arkham.Treachery.Cards.OozeAndFilth
+      Arkham.Treachery.Cards.Overgrowth
       Arkham.Treachery.Cards.Overzealous
       Arkham.Treachery.Cards.Paranoia
       Arkham.Treachery.Cards.PassageIntoTheVeil
@@ -1401,6 +1412,7 @@ library
       Arkham.Treachery.Cards.ShellShock
       Arkham.Treachery.Cards.SlitheringBehindYou
       Arkham.Treachery.Cards.SmiteTheWicked
+      Arkham.Treachery.Cards.SnakeBite
       Arkham.Treachery.Cards.SomethingInTheDrinks
       Arkham.Treachery.Cards.SordidAndSilent
       Arkham.Treachery.Cards.SpacesBetween

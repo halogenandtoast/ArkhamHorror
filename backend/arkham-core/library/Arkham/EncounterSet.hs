@@ -55,6 +55,18 @@ data EncounterSet
   | BlackStarsRise
   | DimCarcosa
   | TheUntamedWilds
+  | TheDoomOfEztli
+  | Rainforest
+  | Serpents
+  | Expedition
+  | AgentsOfYig
+  | GuardiansOfTime
+  | DeadlyTraps
+  | TemporalFlux
+  | ForgottenRuins
+  | PnakoticBrotherhood
+  | YigsVenom
+  | Poison
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

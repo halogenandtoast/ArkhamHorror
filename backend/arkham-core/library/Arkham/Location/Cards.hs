@@ -122,6 +122,7 @@ allLocationCards = mapFromList $ map
   , chapelOfStAubertWatersForbidden
   , choeurGothique_292
   , choeurGothique_293
+  , circuitousTrail
   , cloister
   , cloverClubBar
   , cloverClubCardroom
@@ -239,6 +240,7 @@ allLocationCards = mapFromList $ map
   , outerWall_285
   , outerWall_286
   , overgrownCairns
+  , overgrownRuins
   , palaceOfTheKing
   , parlor
   , parlorCar
@@ -247,6 +249,7 @@ allLocationCards = mapFromList $ map
   , passengerCar_169
   , passengerCar_170
   , passengerCar_171
+  , pathOfThorns
   , patientConfinementDanielsCell
   , patientConfinementOccupiedCell
   , patientConfinementDrearyCell
@@ -264,6 +267,8 @@ allLocationCards = mapFromList $ map
   , ritualSite
   , rivertown
   , rivertownAbandonedWarehouse
+  , riverCanyon
+  , ropeBridge
   , ruinsOfCarcosaAMomentsRest
   , ruinsOfCarcosaInhabitantOfCarcosa
   , ruinsOfCarcosaTheCoffin
@@ -274,6 +279,7 @@ allLocationCards = mapFromList $ map
   , securityOffice_128
   , securityOffice_129
   , sentinelPeak
+  , serpentsHaven
   , shiveringPools
   , shoresOfHali
   , slaughteredWoods
@@ -289,6 +295,7 @@ allLocationCards = mapFromList $ map
   , studyAberrantGateway
   , tearThroughSpace
   , tearThroughTime
+  , templeOfTheFang
   , tenAcreMeadow_246
   , tenAcreMeadow_247
   , theEdgeOfTheUniverse
@@ -1567,6 +1574,34 @@ palaceOfTheKing =
 expeditionCamp :: CardDef
 expeditionCamp =
   location "04050" "Expedition Camp" [Campsite, Jungle] TheUntamedWilds
+
+pathOfThorns :: CardDef
+pathOfThorns =
+  location "04069" "Path of Thorns" [Jungle] Rainforest
+
+riverCanyon :: CardDef
+riverCanyon =
+  location "04070" "River Canyon" [Jungle] Rainforest
+
+ropeBridge :: CardDef
+ropeBridge =
+  location "04071" "Rope Bridge" [Jungle] Rainforest
+
+serpentsHaven :: CardDef
+serpentsHaven =
+  location "04072" "Serpent's Haven" [Jungle] Rainforest
+
+circuitousTrail :: CardDef
+circuitousTrail =
+  location "04073" "Circuitous Trail" [Jungle] Rainforest
+
+templeOfTheFang :: CardDef
+templeOfTheFang =
+  location "04074" "Temple of the Fang" [Ancient, Ruins] Rainforest
+
+overgrownRuins :: CardDef
+overgrownRuins =
+  location "04075" "Overgrown Ruins" [Ancient, Ruins] Rainforest
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

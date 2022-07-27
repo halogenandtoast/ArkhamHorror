@@ -13,6 +13,7 @@ data Trait
   | Agency
   | Ally
   | Altered
+  | Ancient
   | AncientOne
   | Arkham
   | ArkhamAsylum
@@ -129,6 +130,7 @@ data Trait
   | Research
   | Ritual
   | Riverside
+  | Ruins
   | Scheme
   | Scholar
   | Science

@@ -9,5 +9,6 @@ data ScenarioDeckKey
   | LunaticsDeck -- The Unspeakable Oath
   | MonstersDeck -- The Unspeakable Oath
   | CatacombsDeck -- The Pallid Mask
+  | ExplorationDeck -- The Untamed Wilds
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable, ToJSONKey, FromJSONKey)

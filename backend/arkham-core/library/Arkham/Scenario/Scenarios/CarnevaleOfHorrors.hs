@@ -39,18 +39,19 @@ newtype CarnevaleOfHorrors = CarnevaleOfHorrors ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 carnevaleOfHorrors :: Difficulty -> CarnevaleOfHorrors
-carnevaleOfHorrors difficulty =
+carnevaleOfHorrors difficulty = scenario
   CarnevaleOfHorrors
-    $ baseAttrs "82001" "Carnevale of Horrors" difficulty
-    & locationLayoutL
-    ?~ [ ".         .         .         location1  .         .         ."
-       , ".         location8 location8 location1  location2 location2 ."
-       , ".         location8 location8 .          location2 location2 ."
-       , "location7 location7 .         cnidathqua gondola   location3 location3"
-       , ".         location6 location6 .          location4 location4 ."
-       , ".         location6 location6 location5  location4 location4 ."
-       , ".         .         .         location5  .         .         ."
-       ]
+  "82001"
+  "Carnevale of Horrors"
+  difficulty
+  [ ".         .         .         location1  .         .         ."
+  , ".         location8 location8 location1  location2 location2 ."
+  , ".         location8 location8 .          location2 location2 ."
+  , "location7 location7 .         cnidathqua gondola   location3 location3"
+  , ".         location6 location6 .          location4 location4 ."
+  , ".         location6 location6 location5  location4 location4 ."
+  , ".         .         .         location5  .         .         ."
+  ]
 
 instance HasTokenValue CarnevaleOfHorrors where
   getTokenValue iid tokenFace (CarnevaleOfHorrors attrs) = case tokenFace of
@@ -391,9 +392,7 @@ instance RunMessage CarnevaleOfHorrors where
       additionalRewardsMsg <- additionalRewards
         (attrs
         & (cardsUnderActDeckL %~ drop 1)
-        & (cardsUnderAgendaDeckL
-          <>~ take 1 (scenarioCardsUnderActDeck attrs)
-          )
+        & (cardsUnderAgendaDeckL <>~ take 1 (scenarioCardsUnderActDeck attrs))
         )
       s <$ pushAll
         ([ chooseOne

@@ -4,17 +4,17 @@ import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Scenarios.TheGathering.Story
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheGathering
+import Arkham.Scenarios.TheGathering.Story
 
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
   deriving stock Generic
@@ -22,17 +22,17 @@ newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToTheGathering :: Difficulty -> ReturnToTheGathering
-returnToTheGathering difficulty =
-  ReturnToTheGathering
-    . TheGathering
-    $ baseAttrs "50011" "Return To The Gathering" difficulty
-    & locationLayoutL
-    ?~ [ ".     .         farAboveYourHouse  ."
-       , ".     bedroom   attic              ."
-       , "study guestHall holeInTheWall      parlor"
-       , ".     bathroom  cellar             ."
-       , ".     .         deepBelowYourHouse ."
-       ]
+returnToTheGathering difficulty = scenario
+  (ReturnToTheGathering . TheGathering)
+  "50011"
+  "Return To The Gathering"
+  difficulty
+  [ ".     .         farAboveYourHouse  ."
+  , ".     bedroom   attic              ."
+  , "study guestHall holeInTheWall      parlor"
+  , ".     bathroom  cellar             ."
+  , ".     .         deepBelowYourHouse ."
+  ]
 
 instance HasTokenValue ReturnToTheGathering where
   getTokenValue iid tokenFace (ReturnToTheGathering theGathering') =

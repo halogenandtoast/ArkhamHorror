@@ -139,6 +139,10 @@ instance FromJSON Agenda where
       "03317" -> Agenda . MadnessCoils <$> parseJSON v
       "03318" -> Agenda . MadnessDrowns <$> parseJSON v
       "03319" -> Agenda . MadnessDies <$> parseJSON v
+      -- The Forgotten Age
+      -- The Untamed Wilds
+      "04044" -> Agenda . ExpeditionIntoTheWild <$> parseJSON v
+      "04045" -> Agenda . Intruders <$> parseJSON v
       -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       "50026" -> Agenda . ReturnToPredatorOrPrey <$> parseJSON v
@@ -237,6 +241,10 @@ allAgendas = mapFromList $ map
   , Agenda <$> madnessCoils
   , Agenda <$> madnessDrowns
   , Agenda <$> madnessDies
+  -- The Forgotten Age
+  -- The Untamed Wilds
+  , Agenda <$> expeditionIntoTheWild
+  , Agenda <$> intruders
   -- Return to the Night of the Zealot
   -- Return to the Midnight Masks
   , Agenda <$> returnToPredatorOrPrey

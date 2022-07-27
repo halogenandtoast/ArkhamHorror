@@ -2,25 +2,25 @@ module Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow where
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
-import Arkham.Scenarios.TheDevourerBelow.Story
-import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Id
-import Arkham.Location.Attrs (Field(..))
+import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheDevourerBelow
+import Arkham.Scenarios.TheDevourerBelow.Story
 import Arkham.Target
 import Arkham.Token
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
   deriving stock Generic
@@ -28,18 +28,17 @@ newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToTheDevourerBelow :: Difficulty -> ReturnToTheDevourerBelow
-returnToTheDevourerBelow difficulty =
-  ReturnToTheDevourerBelow
-    . TheDevourerBelow
-    $ (baseAttrs "01142" "The Devourer Below" difficulty)
-        { scenarioLocationLayout = Just
-          [ "woods1     .     woods2"
-          , "woods1 mainPath woods2"
-          , "woods3 mainPath woods4"
-          , "woods3 ritualSite woods4"
-          , "   .   ritualSite   .  "
-          ]
-        }
+returnToTheDevourerBelow difficulty = scenario
+  (ReturnToTheDevourerBelow . TheDevourerBelow)
+  "01142"
+  "The Devourer Below"
+  difficulty
+  [ "woods1     .     woods2"
+  , "woods1 mainPath woods2"
+  , "woods3 mainPath woods4"
+  , "woods3 ritualSite woods4"
+  , "   .   ritualSite   .  "
+  ]
 
 instance HasTokenValue ReturnToTheDevourerBelow where
   getTokenValue iid tokenFace (ReturnToTheDevourerBelow theDevourerBelow') =

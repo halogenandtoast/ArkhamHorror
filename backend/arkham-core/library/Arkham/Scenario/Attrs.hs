@@ -57,7 +57,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioActStack :: IntMap [CardDef]
   , scenarioAgendaStack :: IntMap [CardDef]
   , scenarioCompletedAgendaStack :: IntMap [CardDef]
-  , scenarioLocationLayout :: Maybe [GridTemplateRow]
+  , scenarioLocationLayout :: [GridTemplateRow]
   , scenarioDecks :: HashMap ScenarioDeckKey [Card]
   , scenarioLog :: HashSet ScenarioLogKey
   , scenarioStandaloneCampaignLog :: CampaignLog
@@ -80,8 +80,25 @@ instance ToJSON ScenarioAttrs where
 instance FromJSON ScenarioAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "scenario"
 
-baseAttrs :: CardCode -> Name -> Difficulty -> ScenarioAttrs
-baseAttrs cardCode name difficulty = ScenarioAttrs
+scenarioWith
+  :: (ScenarioAttrs -> a)
+  -> CardCode
+  -> Name
+  -> Difficulty
+  -> [GridTemplateRow]
+  -> (ScenarioAttrs -> ScenarioAttrs)
+  -> a
+scenarioWith f cardCode name difficulty layout g =
+  scenario (f . g) cardCode name difficulty layout
+
+scenario
+  :: (ScenarioAttrs -> a)
+  -> CardCode
+  -> Name
+  -> Difficulty
+  -> [GridTemplateRow]
+  -> a
+scenario f cardCode name difficulty layout = f $ ScenarioAttrs
   { scenarioId = ScenarioId cardCode
   , scenarioName = name
   , scenarioDifficulty = difficulty
@@ -91,7 +108,7 @@ baseAttrs cardCode name difficulty = ScenarioAttrs
   , scenarioCardsUnderAgendaDeck = mempty
   , scenarioCardsUnderActDeck = mempty
   , scenarioCardsNextToActDeck = mempty
-  , scenarioLocationLayout = Nothing
+  , scenarioLocationLayout = layout
   , scenarioDecks = mempty
   , scenarioLog = mempty
   , scenarioSetAsideCards = mempty
@@ -165,7 +182,7 @@ completedAgendaStackL :: Lens' ScenarioAttrs (IntMap [CardDef])
 completedAgendaStackL = lens scenarioCompletedAgendaStack
   $ \m x -> m { scenarioCompletedAgendaStack = x }
 
-locationLayoutL :: Lens' ScenarioAttrs (Maybe [GridTemplateRow])
+locationLayoutL :: Lens' ScenarioAttrs [GridTemplateRow]
 locationLayoutL =
   lens scenarioLocationLayout $ \m x -> m { scenarioLocationLayout = x }
 

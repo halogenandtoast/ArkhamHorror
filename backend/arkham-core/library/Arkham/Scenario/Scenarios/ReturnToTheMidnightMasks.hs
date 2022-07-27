@@ -2,7 +2,6 @@ module Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks where
 
 import Arkham.Prelude
 
-import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
@@ -17,6 +16,7 @@ import Arkham.Message
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheMidnightMasks
+import Arkham.Scenarios.TheMidnightMasks.Story
 
 newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
   deriving stock Generic
@@ -24,17 +24,16 @@ newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 returnToTheMidnightMasks :: Difficulty -> ReturnToTheMidnightMasks
-returnToTheMidnightMasks difficulty =
-  ReturnToTheMidnightMasks
-    . TheMidnightMasks
-    $ (baseAttrs "50025" "Return to the Midnight Masks" difficulty)
-        { scenarioLocationLayout = Just
-          [ "northside downtown easttown"
-          , "miskatonicUniversity rivertown graveyard"
-          , "stMarysHospital southside yourHouse"
-          ]
-        , scenarioDecks = mapFromList [(CultistDeck, [])]
-        }
+returnToTheMidnightMasks difficulty = scenarioWith
+  (ReturnToTheMidnightMasks . TheMidnightMasks)
+  "50025"
+  "Return to the Midnight Masks"
+  difficulty
+  [ "northside downtown easttown"
+  , "miskatonicUniversity rivertown graveyard"
+  , "stMarysHospital southside yourHouse"
+  ]
+  (decksL .~ mapFromList [(CultistDeck, [])])
 
 instance HasTokenValue ReturnToTheMidnightMasks where
   getTokenValue iid tokenFace (ReturnToTheMidnightMasks theMidnightMasks') =

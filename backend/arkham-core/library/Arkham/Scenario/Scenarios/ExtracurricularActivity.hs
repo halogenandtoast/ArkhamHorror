@@ -29,14 +29,15 @@ newtype ExtracurricularActivity = ExtracurricularActivity ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 extracurricularActivity :: Difficulty -> ExtracurricularActivity
-extracurricularActivity difficulty =
+extracurricularActivity difficulty = scenario
   ExtracurricularActivity
-    $ baseAttrs "02041" "Extracurricular Activity" difficulty
-    & locationLayoutL
-    ?~ [ "orneLibrary        miskatonicQuad scienceBuilding alchemyLabs"
-       , "humanitiesBuilding studentUnion   administrationBuilding ."
-       , ".                  dormitories    facultyOffices         ."
-       ]
+  "02041"
+  "Extracurricular Activity"
+  difficulty
+  [ "orneLibrary        miskatonicQuad scienceBuilding alchemyLabs"
+  , "humanitiesBuilding studentUnion   administrationBuilding ."
+  , ".                  dormitories    facultyOffices         ."
+  ]
 
 extracurricularActivityIntro :: Message
 extracurricularActivityIntro = FlavorText
@@ -66,8 +67,7 @@ instance RunMessage ExtracurricularActivity where
   runMessage msg s@(ExtracurricularActivity attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
-      completedTheHouseAlwaysWins <-
-        elem "02062" <$> getCompletedScenarios
+      completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
       encounterDeck <- buildEncounterDeckExcluding
         [ Enemies.theExperiment
         , Assets.jazzMulligan

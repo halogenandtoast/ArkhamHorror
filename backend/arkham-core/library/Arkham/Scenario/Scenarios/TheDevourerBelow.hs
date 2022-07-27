@@ -30,16 +30,17 @@ newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theDevourerBelow :: Difficulty -> TheDevourerBelow
-theDevourerBelow difficulty =
-  TheDevourerBelow $ (baseAttrs "01142" "The Devourer Below" difficulty)
-    { scenarioLocationLayout = Just
-      [ "woods1     .     woods2"
-      , "woods1 mainPath woods2"
-      , "woods3 mainPath woods4"
-      , "woods3 ritualSite woods4"
-      , "   .   ritualSite   .  "
-      ]
-    }
+theDevourerBelow difficulty = scenario
+  TheDevourerBelow
+  "01142"
+  "The Devourer Below"
+  difficulty
+  [ "woods1     .     woods2"
+  , "woods1 mainPath woods2"
+  , "woods3 mainPath woods4"
+  , "woods3 ritualSite woods4"
+  , "   .   ritualSite   .  "
+  ]
 
 instance HasTokenValue TheDevourerBelow where
   getTokenValue iid tokenFace (TheDevourerBelow attrs) = case tokenFace of

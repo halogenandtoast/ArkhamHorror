@@ -10,8 +10,8 @@ import Arkham.Action qualified as Action
 import Arkham.Agenda.Attrs ( Field (..) )
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes
@@ -38,19 +38,20 @@ newtype BlackStarsRise = BlackStarsRise ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blackStarsRise :: Difficulty -> BlackStarsRise
-blackStarsRise difficulty =
+blackStarsRise difficulty = scenario
   BlackStarsRise
-    $ baseAttrs "03274" "Black Stars Rise" difficulty
-    & locationLayoutL
-    ?~ [ ".                cloister      .           northTower      ."
-       , "knightsHall      cloister      .           northTower      ."
-       , "knightsHall      abbeyChurch    brokenSteps .               outerWall"
-       , "chapelOfStAubert abbeyChurch    brokenSteps .               outerWall"
-       , "chapelOfStAubert chœurGothique  .           grandRue        ."
-       , ".                chœurGothique  .           grandRue        ."
-       , ".                abbeyTower     .           porteDeLAvancée ."
-       , ".                abbeyTower     .           porteDeLAvancée ."
-       ]
+  "03274"
+  "Black Stars Rise"
+  difficulty
+  [ ".                cloister      .           northTower      ."
+  , "knightsHall      cloister      .           northTower      ."
+  , "knightsHall      abbeyChurch    brokenSteps .               outerWall"
+  , "chapelOfStAubert abbeyChurch    brokenSteps .               outerWall"
+  , "chapelOfStAubert chœurGothique  .           grandRue        ."
+  , ".                chœurGothique  .           grandRue        ."
+  , ".                abbeyTower     .           porteDeLAvancée ."
+  , ".                abbeyTower     .           porteDeLAvancée ."
+  ]
 
 instance HasTokenValue BlackStarsRise where
   getTokenValue iid tokenFace (BlackStarsRise attrs) = case tokenFace of

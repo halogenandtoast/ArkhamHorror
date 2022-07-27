@@ -31,6 +31,7 @@ data Trait
   | Bridge
   | Byakhee
   | Bystander
+  | Campsite
   | Carnevale
   | Cave
   | Central
@@ -93,6 +94,7 @@ data Trait
   | Instrument
   | Item
   | Job
+  | Jungle
   | Key
   | Lodge
   | Lunatic

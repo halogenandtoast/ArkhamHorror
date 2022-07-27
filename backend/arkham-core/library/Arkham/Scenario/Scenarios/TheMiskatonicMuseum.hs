@@ -31,17 +31,18 @@ newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theMiskatonicMuseum :: Difficulty -> TheMiskatonicMuseum
-theMiskatonicMuseum difficulty =
+theMiskatonicMuseum difficulty = scenario
   TheMiskatonicMuseum
-    $ baseAttrs "02118" "The Miskatonic Museum" difficulty
-    & locationLayoutL
-    ?~ [ ".     .     .                    .                    hall3 hall3          hall4          hall4 .                  .              .     ."
-       , ".     .     hall2                hall2                hall3 hall3          hall4          hall4 hall5              hall5          .     ."
-       , "hall1 hall1 hall2                hall2                .     museumHalls    museumHalls    .     hall5              hall5          hall6 hall6"
-       , "hall1 hall1 .                    .                    .     museumHalls    museumHalls    .     .                  .              hall6 hall6"
-       , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
-       , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
-       ]
+  "02118"
+  "The Miskatonic Museum"
+  difficulty
+  [ ".     .     .                    .                    hall3 hall3          hall4          hall4 .                  .              .     ."
+  , ".     .     hall2                hall2                hall3 hall3          hall4          hall4 hall5              hall5          .     ."
+  , "hall1 hall1 hall2                hall2                .     museumHalls    museumHalls    .     hall5              hall5          hall6 hall6"
+  , "hall1 hall1 .                    .                    .     museumHalls    museumHalls    .     .                  .              hall6 hall6"
+  , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
+  , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
+  ]
 
 theMiskatonicMuseumIntro1 :: Message
 theMiskatonicMuseumIntro1 = FlavorText

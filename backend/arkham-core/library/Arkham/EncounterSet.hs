@@ -54,6 +54,7 @@ data EncounterSet
   | ThePallidMask
   | BlackStarsRise
   | DimCarcosa
+  | TheUntamedWilds
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

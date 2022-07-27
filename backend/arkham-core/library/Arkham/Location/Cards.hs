@@ -168,6 +168,7 @@ allLocationCards = mapFromList $ map
   , exhibitHallMedusaExhibit
   , exhibitHallNatureExhibit
   , exhibitHallRestrictedHall
+  , expeditionCamp
   , facultyOfficesTheHourIsLate
   , facultyOfficesTheNightIsStillYoung
   , farAboveYourHouse
@@ -1562,6 +1563,10 @@ darkSpires = location "03330b" "Dark Spires" [Otherworld] DimCarcosa
 palaceOfTheKing :: CardDef
 palaceOfTheKing =
   location "03331b" "Palace of the King" [Otherworld] DimCarcosa
+
+expeditionCamp :: CardDef
+expeditionCamp =
+  location "04050" "Expedition Camp" [Campsite, Jungle] TheUntamedWilds
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

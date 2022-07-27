@@ -8,14 +8,14 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
@@ -32,17 +32,18 @@ newtype TheHouseAlwaysWins = TheHouseAlwaysWins ScenarioAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
 theHouseAlwaysWins :: Difficulty -> TheHouseAlwaysWins
-theHouseAlwaysWins difficulty =
+theHouseAlwaysWins difficulty = scenario
   TheHouseAlwaysWins
-    $ baseAttrs "02062" "The House Always Wins" difficulty
-    & locationLayoutL
-    ?~ [ ".           .                .                  backHallDoorway1 ."
-       , ".           .                cloverClubCardroom backHallDoorway1 ."
-       , "laBellaLuna cloverClubLounge cloverClubCardroom darkenedHall     backHallDoorway2"
-       , "laBellaLuna cloverClubLounge cloverClubBar      darkenedHall     backHallDoorway2"
-       , ".           .                cloverClubBar      backHallDoorway3 ."
-       , ".           .                .                  backHallDoorway3 ."
-       ]
+  "02062"
+  "The House Always Wins"
+  difficulty
+  [ ".           .                .                  backHallDoorway1 ."
+  , ".           .                cloverClubCardroom backHallDoorway1 ."
+  , "laBellaLuna cloverClubLounge cloverClubCardroom darkenedHall     backHallDoorway2"
+  , "laBellaLuna cloverClubLounge cloverClubBar      darkenedHall     backHallDoorway2"
+  , ".           .                cloverClubBar      backHallDoorway3 ."
+  , ".           .                .                  backHallDoorway3 ."
+  ]
 
 theHouseAlwaysWinsIntro :: Message
 theHouseAlwaysWinsIntro = FlavorText

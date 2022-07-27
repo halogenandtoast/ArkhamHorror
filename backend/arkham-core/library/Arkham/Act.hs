@@ -141,6 +141,12 @@ instance FromJSON Act where
       "03322" -> Act . SearchForTheStrangerV2 <$> parseJSON v
       "03323" -> Act . SearchForTheStrangerV3 <$> parseJSON v
       "03324" -> Act . TheKingInTatters <$> parseJSON v
+      -- The Forgotten Age
+      -- The Untamed Wilds
+      "04046" -> Act . ExploringTheRainforest <$> parseJSON v
+      "04047" -> Act . HuntressOfTheEztli <$> parseJSON v
+      "04048" -> Act . SearchForTheRuins <$> parseJSON v
+      "04049" -> Act . TheGuardedRuins <$> parseJSON v
       -- Return to Night of the Zealot
       -- Return to the Gathering
       "50012" -> Act . MysteriousGateway <$> parseJSON v
@@ -240,6 +246,12 @@ allActs = mapFromList $ map
   , Act <$> searchForTheStrangerV2
   , Act <$> searchForTheStrangerV3
   , Act <$> theKingInTatters
+  -- The Forgotten Age
+  -- The Untamed Wilds
+  , Act <$> exploringTheRainforest
+  , Act <$> huntressOfTheEztli
+  , Act <$> searchForTheRuins
+  , Act <$> theGuardedRuins
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , Act <$> mysteriousGateway

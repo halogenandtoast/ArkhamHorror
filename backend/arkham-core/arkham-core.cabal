@@ -31,6 +31,7 @@ library
       Arkham.Act.Cards.CurtainCall
       Arkham.Act.Cards.DiscoveringTheTruth
       Arkham.Act.Cards.DisruptingTheRitual
+      Arkham.Act.Cards.ExploringTheRainforest
       Arkham.Act.Cards.FindingANewWay
       Arkham.Act.Cards.FindingAWayInside
       Arkham.Act.Cards.FindingLadyEsprit
@@ -38,6 +39,7 @@ library
       Arkham.Act.Cards.GetTheEngineRunning
       Arkham.Act.Cards.GetToTheBoats
       Arkham.Act.Cards.HuntingTheRougarou
+      Arkham.Act.Cards.HuntressOfTheEztli
       Arkham.Act.Cards.InLostCarcosa
       Arkham.Act.Cards.IntoTheBeyond
       Arkham.Act.Cards.IntoTheDarkness
@@ -57,6 +59,7 @@ library
       Arkham.Act.Cards.Row
       Arkham.Act.Cards.Run
       Arkham.Act.Cards.SaracenicScript
+      Arkham.Act.Cards.SearchForTheRuins
       Arkham.Act.Cards.SearchForTheStrangerV1
       Arkham.Act.Cards.SearchForTheStrangerV2
       Arkham.Act.Cards.SearchForTheStrangerV3
@@ -68,6 +71,7 @@ library
       Arkham.Act.Cards.TheCarnevaleConspiracy
       Arkham.Act.Cards.TheChamberOfTheBeast
       Arkham.Act.Cards.TheGateOpens
+      Arkham.Act.Cards.TheGuardedRuins
       Arkham.Act.Cards.TheKingInTatters
       Arkham.Act.Cards.TheOath
       Arkham.Act.Cards.TheParisianConspiracyV1
@@ -110,11 +114,13 @@ library
       Arkham.Agenda.Cards.EmpireOfTheDead
       Arkham.Agenda.Cards.EmpireOfTheUndead
       Arkham.Agenda.Cards.Encore
+      Arkham.Agenda.Cards.ExpeditionIntoTheWild
       Arkham.Agenda.Cards.FashionablyLate
       Arkham.Agenda.Cards.FeedTheBeast
       Arkham.Agenda.Cards.HisDomain
       Arkham.Agenda.Cards.HorrorsUnleashed
       Arkham.Agenda.Cards.InEveryShadow
+      Arkham.Agenda.Cards.Intruders
       Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow
       Arkham.Agenda.Cards.LetTheStormRageTheVortexAbove
       Arkham.Agenda.Cards.LockedInside
@@ -1014,6 +1020,7 @@ library
       Arkham.Location.Cards.ExhibitHallMedusaExhibit
       Arkham.Location.Cards.ExhibitHallNatureExhibit
       Arkham.Location.Cards.ExhibitHallRestrictedHall
+      Arkham.Location.Cards.ExpeditionCamp
       Arkham.Location.Cards.FacultyOfficesTheHourIsLate
       Arkham.Location.Cards.FacultyOfficesTheNightIsStillYoung
       Arkham.Location.Cards.FarAboveYourHouse
@@ -1201,6 +1208,7 @@ library
       Arkham.Scenario.Scenarios.TheMiskatonicMuseum
       Arkham.Scenario.Scenarios.ThePallidMask
       Arkham.Scenario.Scenarios.TheUnspeakableOath
+      Arkham.Scenario.Scenarios.TheUntamedWilds
       Arkham.Scenario.Scenarios.UndimensionedAndUnseen
       Arkham.Scenario.Scenarios.WhereDoomAwaits
       Arkham.ScenarioLogKey
@@ -1224,6 +1232,7 @@ library
       Arkham.Scenarios.ThePallidMask.Helpers
       Arkham.Scenarios.ThePallidMask.Story
       Arkham.Scenarios.TheUnspeakableOath.Story
+      Arkham.Scenarios.TheUntamedWilds.Story
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Skill
       Arkham.Skill.Attrs

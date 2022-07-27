@@ -66,6 +66,7 @@ allActCards = mapFromList $ map
   , curtainCall
   , discoveringTheTruth
   , disruptingTheRitual
+  , exploringTheRainforest
   , findingANewWay
   , findingAWayInside
   , findingLadyEsprit
@@ -73,6 +74,7 @@ allActCards = mapFromList $ map
   , getTheEngineRunning
   , getToTheBoats
   , huntingTheRougarou
+  , huntressOfTheEztli
   , intoTheBeyond
   , intoTheDarkness
   , inLostCarcosa
@@ -92,6 +94,7 @@ allActCards = mapFromList $ map
   , row
   , run
   , saracenicScript
+  , searchForTheRuins
   , searchForTheStrangerV1
   , searchForTheStrangerV2
   , searchForTheStrangerV3
@@ -103,6 +106,8 @@ allActCards = mapFromList $ map
   , theCarnevaleConspiracy
   , theChamberOfTheBeast
   , theGateOpens
+  , theGuardedRuins
+  , theKingInTatters
   , theOath
   , theParisianConspiracyV1
   , theParisianConspiracyV2
@@ -316,6 +321,18 @@ searchForTheStrangerV3 = act "03323" "Search For The Stanger (v. III)" 2 DimCarc
 
 theKingInTatters :: CardDef
 theKingInTatters = act "03324" "The King in Tatters" 3 DimCarcosa
+
+exploringTheRainforest :: CardDef
+exploringTheRainforest = act "04046" "Exploring the Rainforest" 1 TheUntamedWilds
+
+huntressOfTheEztli :: CardDef
+huntressOfTheEztli = act "04047" "Huntress of the Eztli" 2 TheUntamedWilds
+
+searchForTheRuins :: CardDef
+searchForTheRuins = act "04048" "Search for the Ruins" 3 TheUntamedWilds
+
+theGuardedRuins :: CardDef
+theGuardedRuins = act "04049" "The Guarded Ruins" 3 TheUntamedWilds
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

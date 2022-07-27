@@ -59,6 +59,10 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdCardInSearchEffects = False
   , cdAlternateCardCodes = []
   , cdArt = unCardCode cardCode
+  , cdLocationSymbol = Nothing
+  , cdLocationRevealedSymbol = Nothing
+  , cdLocationConnections = []
+  , cdLocationRevealedConnections = []
   }
 
 weakness :: CardCode -> Name -> CardDef

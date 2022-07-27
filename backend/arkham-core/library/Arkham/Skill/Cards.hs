@@ -52,6 +52,10 @@ skill cardCode name skills classSymbol = CardDef
   , cdCardInSearchEffects = False
   , cdAlternateCardCodes = []
   , cdArt = unCardCode cardCode
+  , cdLocationSymbol = Nothing
+  , cdLocationRevealedSymbol = Nothing
+  , cdLocationConnections = []
+  , cdLocationRevealedConnections = []
   }
 
 allPlayerSkillCards :: HashMap CardCode CardDef

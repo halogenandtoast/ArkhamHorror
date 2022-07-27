@@ -47,6 +47,10 @@ act cardCode name stage encounterSet = CardDef
   , cdCardInSearchEffects = False
   , cdAlternateCardCodes = []
   , cdArt = unCardCode cardCode
+  , cdLocationSymbol = Nothing
+  , cdLocationRevealedSymbol = Nothing
+  , cdLocationConnections = []
+  , cdLocationRevealedConnections = []
   }
 
 allActCards :: HashMap CardCode CardDef

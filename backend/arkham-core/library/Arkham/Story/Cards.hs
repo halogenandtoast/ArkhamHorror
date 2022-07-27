@@ -47,6 +47,10 @@ story cardCode name encounterSet = CardDef
   , cdCardInSearchEffects = False
   , cdAlternateCardCodes = []
   , cdArt = unCardCode cardCode
+  , cdLocationSymbol = Nothing
+  , cdLocationRevealedSymbol = Nothing
+  , cdLocationConnections = []
+  , cdLocationRevealedConnections = []
   }
 
 allStoryCards :: HashMap CardCode CardDef

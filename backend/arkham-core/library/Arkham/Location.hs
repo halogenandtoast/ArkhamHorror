@@ -333,6 +333,14 @@ instance FromJSON Location where
       -- The Forgotten Age
       -- The Untamed Wilds
       "04050" -> Location . ExpeditionCamp <$> parseJSON v
+      -- Rainforest
+      "04069" -> Location . PathOfThorns <$> parseJSON v
+      "04070" -> Location . RiverCanyon <$> parseJSON v
+      "04071" -> Location . RopeBridge <$> parseJSON v
+      "04072" -> Location . SerpentsHaven <$> parseJSON v
+      "04073" -> Location . CircuitousTrail <$> parseJSON v
+      "04074" -> Location . TempleOfTheFang <$> parseJSON v
+      "04075" -> Location . OvergrownRuins <$> parseJSON v
       -- Return to Night of the Zealot
       -- Return to the Gathering
       "50013" -> Location . StudyAberrantGateway <$> parseJSON v

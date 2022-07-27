@@ -8,7 +8,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.CommitRestriction
-import Arkham.EncounterSet hiding (Byakhee, Dunwich)
+import Arkham.EncounterSet hiding (Byakhee, Dunwich, Poison)
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name
@@ -129,6 +129,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , ancientEvils
   , arcaneBarrier
   , arousingSuspicions
+  , arrowsFromTheTrees
   , attractingAttention
   , beastOfTheBayou
   , beyondTheVeil
@@ -167,7 +168,9 @@ allEncounterTreacheryCards = mapFromList $ map
   , ledAstray
   , lightOfAforgomon
   , lockedDoor
+  , lostInTheWilds
   , lostInVenice
+  , lowOnSupplies
   , markedByTheSign
   , maskOfUmordhoth
   , maskedHorrors
@@ -179,6 +182,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , onTheProwl
   , onWingsOfDarkness
   , oozeAndFilth
+  , overgrowth
   , passageIntoTheVeil
   , possessionMurderous
   , possessionTorturous
@@ -193,6 +197,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , ruinAndDestruction
   , shadowSpawned
   , slitheringBehindYou
+  , snakeBite
   , somethingInTheDrinks
   , sordidAndSilent
   , spacesBetween
@@ -888,6 +893,32 @@ accursedFate = (weakness "04041" "Accursed Fate")
 theBellTolls :: CardDef
 theBellTolls = (weakness "04042" "The Bell Tolls")
   { cdCardTraits = singleton Curse
+  }
+
+overgrowth :: CardDef
+overgrowth = (treachery "04076" "Overgrowth" Rainforest 2)
+  { cdCardTraits = singleton Obstacle
+  }
+
+snakeBite :: CardDef
+snakeBite = (treachery "04080" "Snake Bite" Serpents 3)
+  { cdCardTraits = setFromList [Hazard, Poison]
+  }
+
+lostInTheWilds :: CardDef
+lostInTheWilds = (treachery "04081" "Lost in the Wilds" Expedition 3)
+  { cdCardTraits = singleton Blunder
+  }
+
+lowOnSupplies :: CardDef
+lowOnSupplies = (treachery "04082" "Low on Supplies" Expedition 2)
+  { cdCardTraits = singleton Blunder
+  , cdKeywords = singleton Keyword.Peril
+  }
+
+arrowsFromTheTrees :: CardDef
+arrowsFromTheTrees = (treachery "04087" "Arrows from the Trees" GuardiansOfTime 2)
+  { cdCardTraits = singleton Scheme
   }
 
 theHarbinger :: CardDef

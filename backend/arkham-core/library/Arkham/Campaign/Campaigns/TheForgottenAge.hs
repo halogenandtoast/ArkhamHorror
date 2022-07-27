@@ -12,21 +12,19 @@ import Arkham.Classes
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
+import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Id
 import Arkham.Message
+import Arkham.Projection
 import Arkham.Target
 
-newtype Supplies = Supplies { supplies :: HashMap InvestigatorId [Supply] }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype TheForgottenAge = TheForgottenAge (CampaignAttrs `With` Supplies)
+newtype TheForgottenAge = TheForgottenAge CampaignAttrs
   deriving anyclass IsCampaign
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theForgottenAge :: Difficulty -> TheForgottenAge
 theForgottenAge difficulty = campaign
-  (TheForgottenAge . (`with` Supplies mempty))
+  TheForgottenAge
   (CampaignId "04")
   "The Forgotten Age"
   difficulty
@@ -73,7 +71,7 @@ supplyLabel s = case s of
    go label tooltip = TooltipLabel label (Tooltip tooltip)
 
 instance RunMessage TheForgottenAge where
-  runMessage msg c@(TheForgottenAge (attrs `With` supplyData)) = case msg of
+  runMessage msg c@(TheForgottenAge attrs) = case msg of
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- getInvestigatorIds
       let steps = [1 .. length investigatorIds]
@@ -88,8 +86,8 @@ instance RunMessage TheForgottenAge where
       let
         investigatorId =
           fromJustNote "invalid setup step" (investigatorIds !!? (n - 1))
-        investigatorSupplies =
-          findWithDefault [] investigatorId (supplies supplyData)
+      investigatorSupplies <- field InvestigatorSupplies investigatorId
+      let
         remaining = totalSupplyPoints
           - getSum (foldMap (Sum . supplyCost) investigatorSupplies)
 
@@ -106,7 +104,8 @@ instance RunMessage TheForgottenAge where
               <> " supply points remaining)"
               )
           $ ChooseOne
-          $ map
+          $ Label "Done" []
+          : map
               (\s -> supplyLabel
                 s
                 [PickSupply investigatorId s, SetupStep CampaignTarget n]
@@ -114,16 +113,12 @@ instance RunMessage TheForgottenAge where
               availableSupplies
 
       pure c
-    PickSupply iid s -> do
-      let supplies' = insertWith (<>) iid [s] (supplies supplyData)
-      pure $ TheForgottenAge (attrs `With` Supplies supplies')
     NextCampaignStep _ -> do
       let step = nextStep attrs
       push (CampaignStep step)
       pure
         . TheForgottenAge
-        . (`with` supplyData)
         $ attrs
         & (stepL .~ step)
         & (completedStepsL %~ completeStep (campaignStep attrs))
-    _ -> TheForgottenAge . (`with` supplyData) <$> runMessage msg attrs
+    _ -> TheForgottenAge <$> runMessage msg attrs

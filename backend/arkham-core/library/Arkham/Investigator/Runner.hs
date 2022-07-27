@@ -81,6 +81,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       , investigatorSanityDamage = investigatorMentalTrauma
       , investigatorHealthDamage = investigatorPhysicalTrauma
       , investigatorStartsWith = investigatorStartsWith
+      , investigatorSupplies = investigatorSupplies
       }
   SetupInvestigators -> do
     let
@@ -2178,6 +2179,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             /= Just PerTestOrAbility
           )
         )
+  PickSupply iid s | iid == investigatorId -> pure $ a & suppliesL %~ (s :)
   Blanked msg' -> runMessage msg' a
   _ -> pure a
 

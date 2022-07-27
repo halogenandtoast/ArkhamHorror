@@ -246,6 +246,15 @@ instance FromJSON Treachery where
       "04040" -> Treachery . Doomed <$> parseJSON v
       "04041" -> Treachery . AccursedFate <$> parseJSON v
       "04042" -> Treachery . TheBellTolls <$> parseJSON v
+      -- Rainforest
+      "04076" -> Treachery . Overgrowth <$> parseJSON v
+      -- Serpents
+      "04080" -> Treachery . SnakeBite <$> parseJSON v
+      -- Expedition
+      "04081" -> Treachery . LostInTheWilds <$> parseJSON v
+      "04082" -> Treachery . LowOnSupplies <$> parseJSON v
+      -- Guardians of Time
+      "04087" -> Treachery . ArrowsFromTheTrees <$> parseJSON v
       -- Edge of the Earth
       -- signature
       "08006" -> Treachery . TheHarbinger <$> parseJSON v
@@ -465,6 +474,15 @@ allTreacheries = mapFromList $ map
   , Treachery <$> doomed
   , Treachery <$> accursedFate
   , Treachery <$> theBellTolls
+  -- Rainforest
+  , Treachery <$> overgrowth
+  -- Serpents
+  , Treachery <$> snakeBite
+  -- Expedition
+  , Treachery <$> lostInTheWilds
+  , Treachery <$> lowOnSupplies
+  -- Guardians of Time
+  , Treachery <$> arrowsFromTheTrees
   -- Edge of the Earth
   -- signature
   , Treachery <$> theHarbinger

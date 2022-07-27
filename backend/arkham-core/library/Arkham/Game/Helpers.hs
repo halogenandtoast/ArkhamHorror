@@ -821,6 +821,7 @@ passesCriteria iid source windows' = \case
     ProxySource (LocationSource lid) _ ->
       fieldP InvestigatorLocation (== Just lid) iid
     _ -> pure False
+  Criteria.HasSupply s -> fieldP InvestigatorSupplies (elem s . traceShowId) iid
   Criteria.ControlsThis -> case source of
     AssetSource aid -> member aid
       <$> select (Matcher.AssetControlledBy $ Matcher.InvestigatorWithId iid)

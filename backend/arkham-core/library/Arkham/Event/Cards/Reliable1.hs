@@ -6,7 +6,7 @@ module Arkham.Event.Cards.Reliable1
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner

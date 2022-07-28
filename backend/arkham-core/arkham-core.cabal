@@ -174,7 +174,6 @@ library
       Arkham.Agenda.Sequence
       Arkham.Asset
       Arkham.Asset.Assets
-      Arkham.Asset.Attrs
       Arkham.Asset.Cards
       Arkham.Asset.Cards.AbbessAllegriaDiBiase
       Arkham.Asset.Cards.AdamLynch
@@ -432,6 +431,7 @@ library
       Arkham.Asset.Cards.ZoeysCross
       Arkham.Asset.Helpers
       Arkham.Asset.Runner
+      Arkham.Asset.Types
       Arkham.Asset.Uses
       Arkham.Attack
       Arkham.Campaign

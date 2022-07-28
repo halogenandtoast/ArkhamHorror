@@ -13,7 +13,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Target
-import Arkham.Asset.Attrs ( Field(..) )
+import Arkham.Asset.Types ( Field(..) )
 import Arkham.Treachery.Runner
 
 newtype PushedIntoTheBeyond = PushedIntoTheBeyond TreacheryAttrs

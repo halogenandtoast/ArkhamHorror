@@ -6,7 +6,7 @@ module Arkham.Event.Cards.CallingInFavors
 import Arkham.Prelude
 
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Asset.Attrs (Field(..))
+import Arkham.Asset.Types (Field(..))
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Classes

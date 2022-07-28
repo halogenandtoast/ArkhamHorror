@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Card.CardCode
 import Arkham.Classes
-import Arkham.Asset.Attrs (Field(..))
+import Arkham.Asset.Types (Field(..))
 import Arkham.Enemy.Runner
 import Arkham.Message qualified as Msg
 import Arkham.Name

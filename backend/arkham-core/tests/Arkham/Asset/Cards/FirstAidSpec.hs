@@ -4,7 +4,7 @@ module Arkham.Asset.Cards.FirstAidSpec
 
 import TestImport.Lifted hiding (InvestigatorDamage)
 
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Attrs ( Field (..), healthDamageL, sanityDamageL )
 import Arkham.Investigator.Cards ( daisyWalker, jennyBarnes, rolandBanks )

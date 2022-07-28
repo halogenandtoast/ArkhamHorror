@@ -14,8 +14,8 @@ import Arkham.Agenda
 import Arkham.Agenda.Attrs ( AgendaAttrs (..), Field (..) )
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset
-import Arkham.Asset.Attrs
-  ( Asset, AssetAttrs (..), DiscardedAttrs (..), Field (..) )
+import Arkham.Asset.Types
+  ( Asset, AssetAttrs (..), DiscardedEntity (..), Field (..) )
 import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
@@ -1744,7 +1744,7 @@ instance Projection LocationAttrs where
       LocationCard -> pure $ lookupCard locationCardCode (unLocationId lid)
       LocationAbilities -> pure $ getAbilities l
 
-instance Projection AssetAttrs where
+instance Projection Asset where
   field f aid = do
     a <- getAsset aid
     let attrs@AssetAttrs {..} = toAttrs a
@@ -1807,7 +1807,7 @@ instance Projection AssetAttrs where
       AssetCard -> pure $ lookupCard assetCardCode (unAssetId aid)
       AssetAbilities -> pure $ getAbilities a
 
-instance Projection (DiscardedAttrs AssetAttrs) where
+instance Projection (DiscardedEntity Asset) where
   field f aid = do
     let missingAsset = "Unknown asset: " <> show aid
     a <-

@@ -6,7 +6,7 @@ import TestImport.Lifted
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Event.Cards qualified as Events
-import Arkham.Asset.Attrs (Field(..))
+import Arkham.Asset.Types (Field(..))
 import Arkham.Matcher (assetIs)
 
 spec :: Spec

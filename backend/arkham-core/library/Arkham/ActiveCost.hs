@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action hiding ( Ability, TakenAction )
 import Arkham.Action qualified as Action
-import Arkham.Asset.Attrs ( Field (AssetCard) )
+import Arkham.Asset.Types ( Field (AssetCard) )
 import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.Classes

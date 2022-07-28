@@ -6,7 +6,7 @@ module Arkham.Investigator.Cards.DaisyWalkerParallel
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card.CardType
 import Arkham.Cost
 import Arkham.Criteria

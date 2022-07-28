@@ -11,7 +11,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Action
-import Arkham.Asset.Attrs ( Field(..) )
+import Arkham.Asset.Types ( Field(..) )
 import Arkham.Scenario.Attrs ( Field(..) )
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Classes

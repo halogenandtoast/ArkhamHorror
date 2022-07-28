@@ -6,7 +6,7 @@ module Arkham.Treachery.Cards.UnhallowedCountry
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria

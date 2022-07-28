@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Act.Attrs ( Field (..) )
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep

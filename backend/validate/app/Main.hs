@@ -4,7 +4,7 @@ module Main where
 import ClassyPrelude
 
 import Arkham.Asset
-import Arkham.Asset.Attrs (assetHealth, assetSanity)
+import Arkham.Asset.Types (assetHealth, assetSanity)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterCard
 import Arkham.Enemy

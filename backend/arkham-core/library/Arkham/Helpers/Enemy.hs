@@ -2,7 +2,7 @@ module Arkham.Helpers.Enemy where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card.CardDef
 import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue

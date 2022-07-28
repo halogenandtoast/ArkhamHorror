@@ -5,7 +5,7 @@ module Arkham.Enemy.Cards.CarnevaleSentinel
 
 import Arkham.Prelude
 
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner

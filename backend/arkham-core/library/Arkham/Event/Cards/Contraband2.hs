@@ -5,7 +5,7 @@ module Arkham.Event.Cards.Contraband2
 
 import Arkham.Prelude
 
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Asset.Uses
 import Arkham.Classes
 import Arkham.Event.Runner

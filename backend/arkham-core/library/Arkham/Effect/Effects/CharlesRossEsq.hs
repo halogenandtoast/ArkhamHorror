@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Asset.Attrs (Field(..))
+import Arkham.Asset.Types (Field(..))
 import Arkham.Investigator.Attrs (Field(..))
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers

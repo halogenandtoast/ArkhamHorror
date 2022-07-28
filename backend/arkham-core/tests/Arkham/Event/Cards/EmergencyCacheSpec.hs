@@ -3,7 +3,7 @@ module Arkham.Event.Cards.EmergencyCacheSpec where
 import TestImport.Lifted
 
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 
 spec :: Spec
 spec = do

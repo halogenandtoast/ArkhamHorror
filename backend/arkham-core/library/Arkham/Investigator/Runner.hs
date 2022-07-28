@@ -9,7 +9,7 @@ import Arkham.Prelude
 import Arkham.Classes as X
 import Arkham.ClassSymbol as X
 import Arkham.Helpers.Investigator as X
-import Arkham.Investigator.Attrs as X
+import Arkham.Investigator.Types as X
 import Arkham.Name as X
 import Arkham.Stats as X
 import Arkham.Token as X
@@ -26,13 +26,13 @@ import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
-import Arkham.Event.Attrs ( Field (..) )
+import Arkham.Event.Types ( Field (..) )
 import Arkham.Game.Helpers hiding ( windows )
 import Arkham.Game.Helpers qualified as Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Id
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
   ( AssetMatcher (..)
   , CardMatcher (..)
@@ -49,7 +49,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Attrs ( Field (..) )
+import Arkham.Treachery.Types ( Field (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )

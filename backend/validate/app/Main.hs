@@ -8,12 +8,12 @@ import Arkham.Asset.Types (assetHealth, assetSanity)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterCard
 import Arkham.Enemy
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Types
   (enemyEvade, enemyFight, enemyHealth, enemyHealthDamage, enemySanityDamage)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Event.Cards qualified as Events
 import Arkham.Location
-import Arkham.Location.Attrs (locationRevealClues, locationShroud)
+import Arkham.Location.Types (locationRevealClues, locationShroud)
 import Arkham.PlayerCard
 import Arkham.Skill
 import Arkham.Skill.Cards qualified as Skills

@@ -7,8 +7,8 @@ import TestImport
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Attrs qualified as Investigator
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types qualified as Investigator
+import Arkham.Investigator.Types (Field(..))
 
 spec :: Spec
 spec = describe "Jim's Trumpet" $ do

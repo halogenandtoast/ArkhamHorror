@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Effect
   ( module Arkham.Effect
   ) where
@@ -6,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Types
 import Arkham.Effect.Effects
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
@@ -17,38 +18,19 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Window ( Window )
-import Data.Typeable
 
 import Arkham.Asset.Assets
-  ( MistsOfRlyehEffect (..)
-  , Yaotl1Effect (..)
-  , mistsOfRlyehEffect
+  ( mistsOfRlyehEffect
   , yaotl1Effect
   )
 import Arkham.Event.Events
-  ( OneTwoPunch5Effect (..)
-  , OneTwoPunchEffect (..)
-  , oneTwoPunch5Effect
+  ( oneTwoPunch5Effect
   , oneTwoPunchEffect
-  , WillToSurviveEffect(..)
   , willToSurviveEffect
   )
 -- start importing directly
 import Arkham.Investigator.Investigators
-  ( FatherMateoElderSignEffect (..), fatherMateoElderSignEffect )
-
-data Effect = forall a . IsEffect a => Effect a
-
-instance Eq Effect where
-  (Effect (a :: a)) == (Effect (b :: b)) = case eqT @a @b of
-    Just Refl -> a == b
-    Nothing -> False
-
-instance Show Effect where
-  show (Effect a) = show a
-
-instance ToJSON Effect where
-  toJSON (Effect a) = toJSON a
+  ( fatherMateoElderSignEffect )
 
 createEffect
   :: MonadRandom m
@@ -91,29 +73,8 @@ createTokenEffect effectMetadata source token = do
   eid <- getRandom
   pure (eid, buildTokenEffect eid effectMetadata source token)
 
-instance HasModifiersFor Effect where
-  getModifiersFor source target (Effect a) = getModifiersFor source target a
-
-instance HasAbilities Effect where
-  getAbilities (Effect a) = getAbilities a
-
 instance RunMessage Effect where
   runMessage msg (Effect a) = Effect <$> runMessage msg a
-
-instance Entity Effect where
-  type EntityId Effect = EffectId
-  type EntityAttrs Effect = EffectAttrs
-  toId = toId . toAttrs
-  toAttrs (Effect a) = toAttrs a
-  overAttrs f (Effect a) = Effect $ overAttrs f a
-
-instance TargetEntity Effect where
-  toTarget = toTarget . toAttrs
-  isTarget = isTarget . toAttrs
-
-instance SourceEntity Effect where
-  toSource = toSource . toAttrs
-  isSource = isSource . toAttrs
 
 lookupEffect
   :: CardCode
@@ -122,14 +83,9 @@ lookupEffect
   -> Source
   -> Target
   -> Effect
-lookupEffect cardCode eid mmetadata source target = effect
-  (eid, mmetadata, source, target)
- where
-  effect = findWithDefault
-    (error $ "Unknown effect: " <> show cardCode)
-    cardCode
-    allEffects
-
+lookupEffect cardCode eid mmetadata source target = case lookup cardCode allEffects of
+  Nothing -> error $ "Unknown effect: " <> show cardCode
+  Just (SomeEffect f) -> Effect $ f (eid, mmetadata, source, target)
 
 buildTokenValueEffect :: EffectId -> Int -> Source -> Target -> Effect
 buildTokenValueEffect eid n source = buildWindowModifierEffect
@@ -156,81 +112,9 @@ buildTokenEffect eid metadata source token =
 instance FromJSON Effect where
   parseJSON v = flip (withObject "Effect") v $ \o -> do
     cCode :: CardCode <- o .: "cardCode"
-    case cCode of
-      "01010" -> Effect . OnTheLam <$> parseJSON v
-      "01036" -> Effect . MindOverMatter <$> parseJSON v
-      "01060" -> Effect . Shrivelling <$> parseJSON v
-      "01066" -> Effect . BlindingLight <$> parseJSON v
-      "01068" -> Effect . MindWipe1 <$> parseJSON v
-      "01069" -> Effect . BlindingLight2 <$> parseJSON v
-      "01074" -> Effect . BaseballBat <$> parseJSON v
-      "01085" -> Effect . WillToSurvive3 <$> parseJSON v
-      "01088" -> Effect . SureGamble3 <$> parseJSON v
-      "01151" -> Effect . ArkhamWoodsTwistingPaths <$> parseJSON v
-      "02028" -> Effect . RiteOfSeeking <$> parseJSON v
-      "02031" -> Effect . BindMonster2 <$> parseJSON v
-      "02100" -> Effect . PushedIntoTheBeyond <$> parseJSON v
-      "02102" -> Effect . ArcaneBarrier <$> parseJSON v
-      "02112" -> Effect . SongOfTheDead2 <$> parseJSON v
-      "02114" -> Effect . FireExtinguisher1 <$> parseJSON v
-      "02150" -> Effect . Deduction2 <$> parseJSON v
-      "02228" -> Effect . ExposeWeakness1 <$> parseJSON v
-      "02229" -> Effect . QuickThinking <$> parseJSON v
-      "02230" -> Effect . LuckyDice2 <$> parseJSON v
-      "02233" -> Effect . RiteOfSeeking4 <$> parseJSON v
-      "02236" -> Effect . UndimensionedAndUnseenTabletToken <$> parseJSON v
-      "02246" -> Effect . TenAcreMeadow_246 <$> parseJSON v
-      "02270" -> Effect . AChanceEncounter <$> parseJSON v
-      "02323" -> Effect . YogSothoth <$> parseJSON v
-      "03002" -> Effect . MinhThiPhan <$> parseJSON v
-      "03005" -> Effect . WilliamYorick <$> parseJSON v
-      "03012" -> Effect . ThePaintedWorld <$> parseJSON v
-      "03018" -> Effect . Improvisation <$> parseJSON v
-      "03022" -> Effect . LetMeHandleThis <$> parseJSON v
-      "03024" -> Effect . Fieldwork <$> parseJSON v
-      "03029" -> Effect . SleightOfHand <$> parseJSON v
-      "03031" -> Effect . Lockpicks1 <$> parseJSON v
-      "03032" -> Effect . AlchemicalTransmutation <$> parseJSON v
-      "03033" -> Effect . UncageTheSoul <$> parseJSON v
-      "03040" -> Effect . Overzealous <$> parseJSON v
-      "03047a" -> Effect . TheStrangerACityAflame <$> parseJSON v
-      "03047b" -> Effect . TheStrangerThePathIsMine <$> parseJSON v
-      "03047c" -> Effect . TheStrangerTheShoresOfHali <$> parseJSON v
-      "03100" -> Effect . TheKingsEdict <$> parseJSON v
-      "03141" -> Effect . MrPeabody <$> parseJSON v
-      "03149" -> Effect . CharlesRossEsq <$> parseJSON v
-      "03153" -> Effect . StormOfSpirits <$> parseJSON v
-      "03155" -> Effect . FightOrFlight <$> parseJSON v
-      "03158" -> Effect . CallingInFavors <$> parseJSON v
-      "03209" -> Effect . Montmartre209 <$> parseJSON v
-      "03215" -> Effect . PereLachaiseCemetery <$> parseJSON v
-      "03218" -> Effect . LeMarais218 <$> parseJSON v
-      "03221a" -> Effect . TheOrganistHopelessIDefiedHim <$> parseJSON v
-      "03254" -> Effect . NarrowShaft <$> parseJSON v
-      "03306" -> Effect . EideticMemory3 <$> parseJSON v
-      "04004" -> Effect . FatherMateoElderSignEffect <$> parseJSON v
-      "04029" -> Effect . MistsOfRlyehEffect <$> parseJSON v
-      "04035" -> Effect . Yaotl1Effect <$> parseJSON v
-      "05114" -> Effect . MeatCleaver <$> parseJSON v
-      "50008" -> Effect . MindWipe3 <$> parseJSON v
-      "50033" -> Effect . ArkhamWoodsGreatWillow <$> parseJSON v
-      "50044" -> Effect . JeremiahPierce <$> parseJSON v
-      "60101" -> Effect . NathanielCho <$> parseJSON v
-      "60103" -> Effect . TommyMalloy <$> parseJSON v
-      "60117" -> Effect . OneTwoPunchEffect <$> parseJSON v
-      "60132" -> Effect . OneTwoPunch5Effect <$> parseJSON v
-      "60305" -> Effect . Lockpicks <$> parseJSON v
-      "60512" -> Effect . WillToSurviveEffect <$> parseJSON v
-      "81001" -> Effect . CurseOfTheRougarouTabletToken <$> parseJSON v
-      "81007" -> Effect . CursedShores <$> parseJSON v
-      "82026" -> Effect . GildedVolto <$> parseJSON v
-      "82035" -> Effect . Mesmerize <$> parseJSON v
-      "90002" -> Effect . DaisysToteBagAdvanced <$> parseJSON v
-      "wmode" -> Effect . WindowModifierEffect <$> parseJSON v
-      "tokef" -> Effect . TokenEffect <$> parseJSON v
-      _ -> error "invalid effect"
-
-data SomeEffect = forall a. IsEffect a => SomeEffect (EffectArgs -> Effect)
+    case lookup cCode allEffects of
+      Nothing -> error $ "Invalid effect: " <> show cCode
+      Just (SomeEffect (_ :: EffectArgs ->a)) -> Effect <$> parseJSON @a v
 
 allEffects :: HashMap CardCode SomeEffect
 allEffects = mapFromList

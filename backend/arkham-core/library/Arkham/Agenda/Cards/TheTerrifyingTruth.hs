@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.AdvancementReason
-import Arkham.Agenda.Attrs
+import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
 import Arkham.Card.CardDef
 import Arkham.Card.CardType

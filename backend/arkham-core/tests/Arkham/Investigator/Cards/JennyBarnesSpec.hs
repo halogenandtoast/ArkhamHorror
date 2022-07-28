@@ -5,7 +5,7 @@ module Arkham.Investigator.Cards.JennyBarnesSpec
 import TestImport.Lifted
 import Arkham.Game ()
 import Arkham.Classes.HasTokenValue
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 
 spec :: Spec
 spec = describe "Jenny Barnes" $ do

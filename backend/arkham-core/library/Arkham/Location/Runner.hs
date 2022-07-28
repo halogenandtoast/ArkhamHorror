@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Card.CardDef as X
 import Arkham.Classes as X
-import Arkham.Location.Attrs as X
+import Arkham.Location.Types as X
 import Arkham.LocationSymbol as X
 
 import Arkham.Ability
@@ -17,11 +17,11 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
-import Arkham.Enemy.Attrs ( Field(..) )
+import Arkham.Enemy.Types ( Field(..) )
 import Arkham.Exception
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
-import Arkham.Investigator.Attrs ( Field(..) )
+import Arkham.Investigator.Types ( Field(..) )
 import Arkham.Location.Helpers
 import Arkham.Matcher
   ( LocationMatcher (..)

@@ -12,7 +12,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.PlayerCard
 import Arkham.Projection
-import Arkham.Scenario.Attrs
+import Arkham.Scenario.Types
 import Arkham.Token
 import Control.Monad.Writer hiding ( filterM )
 import Data.HashMap.Strict qualified as HashMap

@@ -10,8 +10,8 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Distance
 import Arkham.Game.Helpers
-import Arkham.Investigator.Attrs (Field (.. ))
-import Arkham.Enemy.Attrs (Field (.. ))
+import Arkham.Investigator.Types (Field (.. ))
+import Arkham.Enemy.Types (Field (.. ))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher hiding ( MoveAction )

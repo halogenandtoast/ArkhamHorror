@@ -6,11 +6,11 @@ module Arkham.Agenda.Cards.HorrorsUnleashed
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Attrs
+import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Enemy.Attrs ( Field (..) )
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher hiding ( ChosenRandomLocation )

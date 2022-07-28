@@ -13,7 +13,7 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Scenario.Attrs (Field(..))
+import Arkham.Scenario.Types (Field(..))
 import Arkham.SkillType
 import Arkham.Target
 import qualified Arkham.Timing as Timing

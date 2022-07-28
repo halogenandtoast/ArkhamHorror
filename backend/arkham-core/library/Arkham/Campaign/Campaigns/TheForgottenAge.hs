@@ -12,7 +12,7 @@ import Arkham.Classes
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Id
 import Arkham.Message
 import Arkham.Projection

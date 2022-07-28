@@ -6,9 +6,9 @@ import TestImport hiding (EnemyDamage)
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Message qualified as Msg
-import Arkham.Enemy.Attrs qualified as Enemy
-import Arkham.Investigator.Attrs (Field (..))
-import Arkham.Enemy.Attrs (Field (..))
+import Arkham.Enemy.Types qualified as Enemy
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Enemy.Types (Field (..))
 
 spec :: Spec
 spec = describe "Aquinnah (1)" $ do

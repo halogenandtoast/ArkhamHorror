@@ -12,7 +12,7 @@ import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Cost
-import Arkham.Enemy.Attrs ( Field (EnemyTraits) )
+import Arkham.Enemy.Types ( Field (EnemyTraits) )
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message

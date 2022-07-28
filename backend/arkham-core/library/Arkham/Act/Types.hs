@@ -1,4 +1,4 @@
-module Arkham.Act.Attrs where
+module Arkham.Act.Types where
 
 import Arkham.Prelude
 

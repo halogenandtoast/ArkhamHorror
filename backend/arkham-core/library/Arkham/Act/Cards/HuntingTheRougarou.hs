@@ -3,21 +3,21 @@ module Arkham.Act.Cards.HuntingTheRougarou where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
 import Arkham.Criteria
-import Arkham.Enemy.Attrs (Field (..))
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDefeated, EnemyDamage )
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Attrs (Field (..))
+import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Target

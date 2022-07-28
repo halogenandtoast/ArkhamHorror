@@ -7,32 +7,31 @@ module TestImport
   , module TestImport
   ) where
 
-import Arkham.Prelude as X hiding (assert)
+import Arkham.Prelude as X hiding ( assert )
 
-import Data.Maybe as X (fromJust)
 import Arkham.ActiveCost
-import Arkham.Projection
 import Arkham.Agenda as X
-import Arkham.Agenda.Attrs
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Cards.WhatsGoingOn
-import Arkham.Asset as X ( Asset(..), createAsset, lookupAsset )
-import Arkham.Asset.Types
+import Arkham.Agenda.Types
+import Arkham.Asset as X ( createAsset, lookupAsset )
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Cards.Adaptable1
+import Arkham.Asset.Types
 import Arkham.Card as X
 import Arkham.Card.CardDef qualified as CardDef
 import Arkham.Card.EncounterCard as X
 import Arkham.Card.PlayerCard as X
 import Arkham.ChaosBag as X
 import Arkham.Classes as X hiding ( getTokenValue )
-import Arkham.Cost as X hiding (PaidCost)
+import Arkham.Cost as X hiding ( PaidCost )
 import Arkham.Difficulty
 import Arkham.Enemy as X
-import Arkham.Enemy.Attrs
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Cards.SwarmOfRats
+import Arkham.Enemy.Types
 import Arkham.Event as X
+import Arkham.Event.Types
 import Arkham.Game as X hiding ( getAsset, newGame, runMessages )
 import Arkham.Game qualified as Game
 import Arkham.Game.Helpers as X hiding ( getCanAffordCost )
@@ -40,25 +39,25 @@ import Arkham.GameValue as X
 import Arkham.Helpers as X
 import Arkham.Id as X
 import Arkham.Investigator as X
-import Arkham.Investigator.Attrs hiding (assetsL)
 import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Investigator.Types hiding ( assetsL )
 import Arkham.Location as X
-import Arkham.Location.Attrs
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards.Study
+import Arkham.Location.Types
 import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
 import Arkham.Message as X
 import Arkham.Phase
+import Arkham.Projection
 import Arkham.Scenario as X
-import Arkham.Scenario.Attrs
-import Arkham.Scenario.Attrs qualified as Scenario
 import Arkham.Scenario.Scenarios.TheGathering ( TheGathering (..) )
+import Arkham.Scenario.Types
 import Arkham.SkillType as X
 import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
 import Arkham.Timing qualified as Timing
-import Arkham.Token as X hiding (TokenId)
+import Arkham.Token as X hiding ( TokenId )
 import Arkham.Window as X
   ( Window (..), WindowType (DuringTurn, FastPlayerWindow, NonFast) )
 import Control.Lens as X ( set, (^?!) )
@@ -66,18 +65,19 @@ import Control.Monad.Fail as X
 import Control.Monad.State as X ( get )
 import Control.Monad.State hiding ( replicateM )
 import Data.HashMap.Strict qualified as HashMap
+import Data.Maybe as X ( fromJust )
 import Data.These
 import Data.UUID.V4 as X
 import Helpers.Message as X
 import System.Random ( StdGen, mkStdGen )
 import Test.Hspec as X
 
+import Arkham.Agenda.Sequence
+import Arkham.Entities as X
 import Arkham.GameEnv
 import Arkham.LocationSymbol
-import Arkham.Agenda.Sequence hiding (Agenda)
 import Arkham.Name
 import Data.IntMap.Strict qualified as IntMap
-import Arkham.Entities as X
 
 runMessages :: TestAppT ()
 runMessages = asks testLogger >>= Game.runMessages
@@ -143,10 +143,10 @@ testScenario
 testScenario cardCode f = do
   a1 <- testAgenda "01105" id
   let name = mkName $ unCardCode cardCode
-  pure $ Scenario $ TheGathering $ f $ (Scenario.baseAttrs
-    cardCode
-    name
-    Easy) { scenarioAgendaStack = IntMap.fromList [(1, [toCardDef (toAttrs a1), toCardDef (toAttrs a1)])] }
+  pure . Scenario $ scenarioWith (TheGathering . f) cardCode name Easy [] $ \s -> s
+    { scenarioAgendaStack = IntMap.fromList
+      [(1, [toCardDef (toAttrs a1), toCardDef (toAttrs a1)])]
+    }
 
 buildEvent :: MonadRandom m => CardDef -> Investigator -> m Event
 buildEvent cardDef investigator =
@@ -156,7 +156,8 @@ buildEnemy :: MonadRandom m => CardCode -> m Enemy
 buildEnemy cardCode = lookupEnemy cardCode <$> getRandom
 
 buildAsset :: MonadRandom m => CardDef -> Maybe Investigator -> m Asset
-buildAsset cardDef mOwner = lookupAsset (toCardCode cardDef) . (, toId <$> mOwner) <$> getRandom
+buildAsset cardDef mOwner =
+  lookupAsset (toCardCode cardDef) . (, toId <$> mOwner) <$> getRandom
 
 testPlayerCards :: MonadRandom m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' (testPlayerCard id)
@@ -187,7 +188,8 @@ testEnemyWithDef defF attrsF =
       )
     <$> getRandom
 
-testAsset :: MonadRandom m => (AssetAttrs -> AssetAttrs) -> Investigator -> m Asset
+testAsset
+  :: MonadRandom m => (AssetAttrs -> AssetAttrs) -> Investigator -> m Asset
 testAsset f i = testAssetWithDef id f i
 
 testAssetWithDef
@@ -197,15 +199,13 @@ testAssetWithDef
   -> Investigator
   -> m Asset
 testAssetWithDef defF attrsF owner =
-  cbCardBuilder
-      (Asset <$> assetWith Adaptable1 (defF Cards.adaptable1) attrsF) . (, Just $ toId owner)
+  cbCardBuilder (Asset <$> assetWith Adaptable1 (defF Cards.adaptable1) attrsF)
+    . (, Just $ toId owner)
     <$> getRandom
 
 testAgenda :: MonadIO m => CardCode -> (AgendaAttrs -> AgendaAttrs) -> m Agenda
 testAgenda cardCode f = pure $ cbCardBuilder
-  (Agenda
-  <$> agendaWith (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 100) f
-  )
+  (Agenda <$> agendaWith (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 100) f)
   (1, AgendaId cardCode)
 
 testLocation :: MonadRandom m => (LocationAttrs -> LocationAttrs) -> m Location
@@ -231,11 +231,11 @@ testInvestigator
   => CardDef
   -> (InvestigatorAttrs -> InvestigatorAttrs)
   -> m Investigator
-testInvestigator cardDef f = pure $ overAttrs f $ lookupInvestigator (InvestigatorId $ toCardCode cardDef)
+testInvestigator cardDef f =
+  pure $ overAttrs f $ lookupInvestigator (InvestigatorId $ toCardCode cardDef)
 
-testJenny :: MonadIO m
-  => (InvestigatorAttrs -> InvestigatorAttrs)
-  -> m Investigator
+testJenny
+  :: MonadIO m => (InvestigatorAttrs -> InvestigatorAttrs) -> m Investigator
 testJenny = testInvestigator Investigators.jennyBarnes
 
 testConnectedLocations
@@ -328,15 +328,16 @@ withGame b = do
   g <- getGame
   runReaderT b g
 
-replaceScenario :: (MonadReader env m, HasGameRef env, MonadIO m) => (ScenarioAttrs -> ScenarioAttrs) -> m ()
+replaceScenario
+  :: (MonadReader env m, HasGameRef env, MonadIO m)
+  => (ScenarioAttrs -> ScenarioAttrs)
+  -> m ()
 replaceScenario f = do
   scenario' <- testScenario "00000" f
   ref <- view gameRefL
   atomicModifyIORef' ref (\g -> (g { gameMode = That scenario' }, ()))
 
-chooseOnlyOption
-  :: String
-  -> TestAppT ()
+chooseOnlyOption :: String -> TestAppT ()
 chooseOnlyOption _reason = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
@@ -347,9 +348,7 @@ chooseOnlyOption _reason = do
       _ -> error "spec expectation mismatch"
     _ -> error "There must be only one choice to use this function"
 
-chooseFirstOption
-  :: String
-  -> TestAppT ()
+chooseFirstOption :: String -> TestAppT ()
 chooseFirstOption _reason = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
@@ -359,10 +358,7 @@ chooseFirstOption _reason = do
       _ -> error "spec expectation mismatch"
     _ -> error "There must be at least one option"
 
-chooseOptionMatching
-  :: String
-  -> (Message -> Bool)
-  -> TestAppT ()
+chooseOptionMatching :: String -> (Message -> Bool) -> TestAppT ()
 chooseOptionMatching _reason f = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
@@ -376,8 +372,7 @@ chooseOptionMatching _reason f = do
       _ -> error $ "unsupported questions type: " <> show question
     _ -> error "There must be only one question to use this function"
 
-gameTest
-  :: Investigator -> [Message] -> (Game -> Game) -> TestAppT () -> IO ()
+gameTest :: Investigator -> [Message] -> (Game -> Game) -> TestAppT () -> IO ()
 gameTest = gameTestWithLogger (pure . const ())
 
 gameTestWithLogger
@@ -418,7 +413,9 @@ newGame investigator = do
     , gamePhase = CampaignPhase -- TODO: maybe this should be a TestPhase or something?
     , gameSkillTest = Nothing
     , gameSkillTestResults = Nothing
-    , gameEntities = defaultEntities { entitiesInvestigators = HashMap.singleton investigatorId investigator }
+    , gameEntities = defaultEntities
+      { entitiesInvestigators = HashMap.singleton investigatorId investigator
+      }
     , gameEncounterDiscardEntities = defaultEntities
     , gameInHandEntities = mempty
     , gameInDiscardEntities = mempty
@@ -443,7 +440,8 @@ newGame investigator = do
 
 -- Helpers
 
-isInDiscardOf :: (IsCard (EntityAttrs a), Entity a) => Investigator -> a -> TestAppT Bool
+isInDiscardOf
+  :: (IsCard (EntityAttrs a), Entity a) => Investigator -> a -> TestAppT Bool
 isInDiscardOf i a = do
   let pc = fromJust $ preview _PlayerCard (toCard $ toAttrs a)
   fieldP InvestigatorDiscard (elem pc) (toId i)
@@ -452,12 +450,23 @@ getRemainingActions :: Investigator -> TestAppT Int
 getRemainingActions = field InvestigatorRemainingActions . toId
 
 getActiveCost :: TestAppT ActiveCost
-getActiveCost = snd . fromJustNote "no active cost for test" . headMay . mapToList . gameActiveCost <$> getGame
+getActiveCost =
+  snd
+    . fromJustNote "no active cost for test"
+    . headMay
+    . mapToList
+    . gameActiveCost
+    <$> getGame
 
 evadedBy :: Investigator -> Enemy -> TestAppT Bool
 evadedBy _investigator = fieldP EnemyEngagedInvestigators null . toId
 
-fieldAssert :: (HasCallStack, Projection attrs, Entity a, EntityId a ~ EntityId attrs) => Field attrs typ -> (typ -> Bool) -> a -> TestAppT ()
+fieldAssert
+  :: (HasCallStack, Projection attrs, Entity a, EntityId a ~ EntityId attrs)
+  => Field attrs typ
+  -> (typ -> Bool)
+  -> a
+  -> TestAppT ()
 fieldAssert fld p a = do
   result <- fieldP fld p (toId a)
   liftIO $ result `shouldBe` True

@@ -12,7 +12,7 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Attrs ( Field (InvestigatorRemainingSanity) )
+import Arkham.Investigator.Types ( Field (InvestigatorRemainingSanity) )
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner

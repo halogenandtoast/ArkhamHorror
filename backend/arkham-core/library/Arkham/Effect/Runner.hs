@@ -3,7 +3,7 @@ module Arkham.Effect.Runner (module X) where
 
 import Arkham.Prelude
 
-import Arkham.Effect.Attrs as X
+import Arkham.Effect.Types as X
 import Arkham.Effect.Window as X
 import Arkham.EffectMetadata as X
 

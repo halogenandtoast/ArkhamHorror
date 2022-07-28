@@ -2,30 +2,30 @@
 module Arkham.Game where
 
 import Arkham.Ability
-import Arkham.Act.Attrs
-import Arkham.Agenda.Attrs
+import Arkham.Act.Types
+import Arkham.Agenda.Types
 import Arkham.Asset.Types
-import Arkham.Campaign.Attrs
+import Arkham.Campaign.Types
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasTokenValue
 import Arkham.Classes.HasDistance
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.Query
-import Arkham.Effect.Attrs
-import Arkham.Enemy.Attrs
-import Arkham.Event.Attrs
+import Arkham.Effect.Types
+import Arkham.Enemy.Types
+import Arkham.Event.Types
 import Arkham.History
 import Arkham.Id
-import Arkham.Investigator.Attrs
-import Arkham.Location.Attrs
+import Arkham.Investigator.Types
+import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Phase
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Scenario.Attrs
-import Arkham.Skill.Attrs
+import Arkham.Scenario.Types
+import Arkham.Skill.Types
 import Arkham.SkillTest.Base
-import Arkham.Treachery.Attrs
+import Arkham.Treachery.Types
 import Control.Monad.Random
 
 data Game
@@ -61,7 +61,7 @@ instance Projection Agenda
 instance Projection Asset
 instance Projection (DiscardedEntity Asset)
 instance Projection Campaign
-instance Projection EffectAttrs
+instance Projection Effect
 instance Projection Enemy
 instance Projection Event
 instance Projection Investigator

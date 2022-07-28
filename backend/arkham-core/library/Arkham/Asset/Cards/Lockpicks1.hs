@@ -14,7 +14,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.EffectMetadata
 import Arkham.Helpers.Investigator
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Target

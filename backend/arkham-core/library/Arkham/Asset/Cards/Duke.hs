@@ -13,7 +13,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Helpers.Investigator
 import Arkham.Id
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Projection
 import Arkham.SkillType

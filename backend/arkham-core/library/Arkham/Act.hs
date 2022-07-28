@@ -7,7 +7,7 @@ module Arkham.Act (
 import Arkham.Prelude hiding (fold)
 
 import Arkham.Act.Acts
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Card
 import Arkham.Id
 

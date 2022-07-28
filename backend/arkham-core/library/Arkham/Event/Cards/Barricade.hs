@@ -10,7 +10,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Runner
 import Arkham.Event.Helpers
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection

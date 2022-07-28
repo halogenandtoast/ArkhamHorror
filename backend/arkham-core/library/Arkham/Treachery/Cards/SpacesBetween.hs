@@ -6,7 +6,7 @@ module Arkham.Treachery.Cards.SpacesBetween
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection

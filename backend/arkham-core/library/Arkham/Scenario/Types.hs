@@ -1,5 +1,5 @@
-module Arkham.Scenario.Attrs
-  ( module Arkham.Scenario.Attrs
+module Arkham.Scenario.Types
+  ( module Arkham.Scenario.Types
   , module X
   , Field(..)
   ) where

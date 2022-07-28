@@ -6,7 +6,7 @@ module Arkham.Act.Cards.NoAsylum
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Action qualified as Action

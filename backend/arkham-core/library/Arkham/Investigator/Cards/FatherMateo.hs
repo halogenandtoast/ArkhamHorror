@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Effect.Attrs
+import Arkham.Effect.Types
 import Arkham.Effect.Runner ()
 import Arkham.EffectMetadata
 import Arkham.Game.Helpers

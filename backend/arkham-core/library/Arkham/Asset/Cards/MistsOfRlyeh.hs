@@ -15,7 +15,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Effect.Attrs
+import Arkham.Effect.Types
 import Arkham.Effect.Runner ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher hiding (MoveAction)

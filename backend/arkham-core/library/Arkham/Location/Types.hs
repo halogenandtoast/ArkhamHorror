@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Location.Attrs
-  ( module Arkham.Location.Attrs
+module Arkham.Location.Types
+  ( module Arkham.Location.Types
   , module X
   , Field(..)
   ) where

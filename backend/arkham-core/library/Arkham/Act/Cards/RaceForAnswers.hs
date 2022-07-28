@@ -5,7 +5,7 @@ module Arkham.Act.Cards.RaceForAnswers
 
 import Arkham.Prelude
 
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner

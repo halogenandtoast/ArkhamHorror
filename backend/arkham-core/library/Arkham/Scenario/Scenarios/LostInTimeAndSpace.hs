@@ -5,7 +5,7 @@ module Arkham.Scenario.Scenarios.LostInTimeAndSpace
 
 import Arkham.Prelude
 
-import Arkham.Act.Attrs ( Field (..) )
+import Arkham.Act.Types ( Field (..) )
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Agenda.Cards qualified as Agendas
@@ -20,8 +20,8 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
-import Arkham.Investigator.Attrs ( Field (..) )
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message

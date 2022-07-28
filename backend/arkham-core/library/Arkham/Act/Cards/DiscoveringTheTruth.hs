@@ -6,11 +6,11 @@ module Arkham.Act.Cards.DiscoveringTheTruth
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message hiding ( InvestigatorEliminated )
 import Arkham.Projection

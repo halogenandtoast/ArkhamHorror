@@ -4,26 +4,27 @@ import Arkham.Prelude
 
 import Arkham.Act
 import Arkham.Agenda ()
-import Arkham.Agenda.Attrs (Agenda)
+import Arkham.Agenda.Types (Agenda)
 import Arkham.Asset (createAsset)
 import Arkham.Asset.Types (Asset)
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.RunMessage
 import Arkham.Classes.HasAbilities
-import Arkham.Effect
+import Arkham.Effect ()
+import Arkham.Effect.Types (Effect)
 import Arkham.Enemy ()
-import Arkham.Enemy.Attrs (Enemy)
+import Arkham.Enemy.Types (Enemy)
 import Arkham.Event
-import Arkham.Event.Attrs (Event)
+import Arkham.Event.Types (Event)
 import Arkham.Investigator ()
-import Arkham.Investigator.Attrs (Investigator)
+import Arkham.Investigator.Types (Investigator)
 import Arkham.Json
 import Arkham.Location
 import Arkham.Skill ()
-import Arkham.Skill.Attrs (Skill)
+import Arkham.Skill.Types (Skill)
 import Arkham.Treachery
-import Arkham.Treachery.Attrs (Treachery)
+import Arkham.Treachery.Types (Treachery)
 
 -- Entity id generation should be random, so even though this is pure now
 -- this is using a Monad

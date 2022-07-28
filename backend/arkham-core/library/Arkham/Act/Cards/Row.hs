@@ -6,7 +6,7 @@ module Arkham.Act.Cards.Row
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
@@ -14,7 +14,7 @@ import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection

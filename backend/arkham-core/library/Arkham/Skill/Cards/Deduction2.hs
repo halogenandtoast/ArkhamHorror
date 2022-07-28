@@ -6,7 +6,7 @@ import Arkham.Action qualified as Action
 import Arkham.Card.CardCode
 import Arkham.Classes
 import Arkham.EffectMetadata
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Skill.Runner

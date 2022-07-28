@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Types
 import Arkham.Projection
 import Arkham.Message
 import Arkham.Source

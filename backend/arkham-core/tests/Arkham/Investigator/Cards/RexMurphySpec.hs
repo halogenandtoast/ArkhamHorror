@@ -5,8 +5,8 @@ module Arkham.Investigator.Cards.RexMurphySpec
 import TestImport.Lifted
 
 import Arkham.Action qualified as Action
-import Arkham.Investigator.Attrs ( Field (..) )
-import Arkham.Location.Attrs as Location
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types as Location
 import Arkham.Projection
 
 spec :: Spec

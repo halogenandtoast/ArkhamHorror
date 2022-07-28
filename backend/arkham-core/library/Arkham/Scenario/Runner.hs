@@ -5,7 +5,7 @@ module Arkham.Scenario.Runner
 
 import Arkham.Prelude
 
-import Arkham.Scenario.Attrs as X
+import Arkham.Scenario.Types as X
 
 import Arkham.Act.Sequence
 import Arkham.Asset.Types ( Field (..) )
@@ -20,15 +20,15 @@ import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterCard.Source
-import Arkham.Enemy.Attrs ( Field (..) )
-import Arkham.Event.Attrs ( Field (..) )
+import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Event.Types ( Field (..) )
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Window
 import Arkham.Id
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Phase
@@ -37,7 +37,7 @@ import Arkham.Resolution
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
-import Arkham.Treachery.Attrs ( Field (..) )
+import Arkham.Treachery.Types ( Field (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )

@@ -9,10 +9,10 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Source
 import Arkham.Target
 

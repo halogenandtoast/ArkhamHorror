@@ -5,8 +5,8 @@ module Arkham.Event.Cards.DarkMemorySpec
 import TestImport.Lifted
 
 import Arkham.Event.Cards qualified as Events
-import Arkham.Agenda.Attrs qualified as Agenda
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Agenda.Types qualified as Agenda
+import Arkham.Investigator.Types (Field(..))
 
 spec :: Spec
 spec = do

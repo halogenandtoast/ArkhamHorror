@@ -1,4 +1,4 @@
-module Arkham.Treachery.Attrs where
+module Arkham.Treachery.Types where
 
 import Arkham.Prelude
 

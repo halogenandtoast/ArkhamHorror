@@ -6,7 +6,7 @@ module Arkham.Treachery.Cards.OnTheProwl
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers

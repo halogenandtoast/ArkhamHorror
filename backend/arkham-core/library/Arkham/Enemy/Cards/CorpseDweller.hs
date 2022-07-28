@@ -6,7 +6,7 @@ module Arkham.Enemy.Cards.CorpseDweller
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Types
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher

@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType

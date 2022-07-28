@@ -6,7 +6,7 @@ module Arkham.Agenda.Cards.BidingItsTime
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Attrs
+import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Attack
@@ -16,7 +16,7 @@ import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( ChosenRandomLocation )
 import Arkham.Message
 import Arkham.Phase

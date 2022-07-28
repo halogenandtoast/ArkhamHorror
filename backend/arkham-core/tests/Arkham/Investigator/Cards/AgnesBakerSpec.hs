@@ -4,7 +4,7 @@ module Arkham.Investigator.Cards.AgnesBakerSpec
 
 import TestImport hiding (EnemyDamage)
 
-import Arkham.Enemy.Attrs (Field (..), EnemyAttrs(..))
+import Arkham.Enemy.Types (Field (..), EnemyAttrs(..))
 
 spec :: Spec
 spec = describe "Agnes Baker" $ do

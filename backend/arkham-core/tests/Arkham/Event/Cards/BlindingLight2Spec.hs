@@ -5,10 +5,10 @@ module Arkham.Event.Cards.BlindingLight2Spec
 
 import TestImport.Lifted hiding (EnemyDamage)
 
-import Arkham.Enemy.Attrs qualified as EnemyAttrs
+import Arkham.Enemy.Types qualified as EnemyAttrs
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..), willpowerL)
-import Arkham.Enemy.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..), InvestigatorAttrs(..), willpowerL)
+import Arkham.Enemy.Types (Field(..))
 import Arkham.Projection
 
 spec :: Spec

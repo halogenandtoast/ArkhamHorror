@@ -2,7 +2,7 @@ module Arkham.Campaigns.ThePathToCarcosa.CampaignSteps where
 
 import Arkham.Prelude
 
-import Arkham.Campaign.Attrs
+import Arkham.Campaign.Types
 import Arkham.CampaignStep
 
 nextStep :: CampaignAttrs -> Maybe CampaignStep

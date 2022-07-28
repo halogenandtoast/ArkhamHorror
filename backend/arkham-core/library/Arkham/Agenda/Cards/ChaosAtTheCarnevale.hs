@@ -10,7 +10,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Agenda.Attrs
+import Arkham.Agenda.Types
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes

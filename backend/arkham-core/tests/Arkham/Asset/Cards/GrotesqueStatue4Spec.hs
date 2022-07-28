@@ -7,8 +7,8 @@ import TestImport
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.ChaosBagStepState
 import Arkham.ChaosBag.Base
-import Arkham.Investigator.Attrs (intellectL)
-import Arkham.Scenario.Attrs (Field(..))
+import Arkham.Investigator.Types (intellectL)
+import Arkham.Scenario.Types (Field(..))
 
 spec :: Spec
 spec = describe "Grotesque Statue (4)" $ do

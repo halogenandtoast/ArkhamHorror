@@ -12,7 +12,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Projection
 import Arkham.SkillTest.Base
 import Arkham.Target
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 
 newtype QuickLearner4 = QuickLearner4 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Id
 import Arkham.Card.CardCode
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Types
 import Arkham.Target
 import Data.HashMap.Strict qualified as HashMap
 

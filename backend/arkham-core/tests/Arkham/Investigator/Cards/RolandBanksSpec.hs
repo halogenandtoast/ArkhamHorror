@@ -4,9 +4,9 @@ module Arkham.Investigator.Cards.RolandBanksSpec
 
 import TestImport.Lifted
 
-import Arkham.Investigator.Attrs (Field(..))
-import Arkham.Enemy.Attrs (EnemyAttrs(..))
-import Arkham.Location.Attrs (LocationAttrs(..))
+import Arkham.Investigator.Types (Field(..))
+import Arkham.Enemy.Types (EnemyAttrs(..))
+import Arkham.Location.Types (LocationAttrs(..))
 
 spec :: Spec
 spec = describe "Roland Banks" $ do

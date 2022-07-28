@@ -7,11 +7,11 @@ import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Agenda.Attrs
+import Arkham.Agenda.Types
 import Arkham.Agenda.Helpers hiding (matches)
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Location.Attrs (Field(..))
+import Arkham.Location.Types (Field(..))
 import Arkham.GameValue
 import Arkham.Message
 import Arkham.Projection

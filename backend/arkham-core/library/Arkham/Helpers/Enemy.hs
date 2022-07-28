@@ -7,7 +7,7 @@ import Arkham.Card.CardDef
 import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Types
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Investigator

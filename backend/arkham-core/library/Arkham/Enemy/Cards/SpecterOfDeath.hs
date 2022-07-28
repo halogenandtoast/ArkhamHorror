@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Attack
 import Arkham.Classes
-import Arkham.Enemy.Attrs
+import Arkham.Enemy.Types
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher

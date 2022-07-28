@@ -6,7 +6,7 @@ module Arkham.Act.Cards.Fold
 import Arkham.Prelude hiding ( fold )
 
 import Arkham.Ability
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
@@ -20,7 +20,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target

@@ -5,7 +5,7 @@ module Arkham.Act.Cards.ArkhamAsylum
 
 import Arkham.Prelude
 
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 -- import Arkham.CampaignLogKey

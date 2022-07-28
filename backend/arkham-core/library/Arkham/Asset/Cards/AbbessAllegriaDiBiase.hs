@@ -10,7 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Investigator.Attrs
+import Arkham.Investigator.Types
 import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Projection
 import Arkham.Target

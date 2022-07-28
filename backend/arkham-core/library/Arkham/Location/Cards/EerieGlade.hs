@@ -12,7 +12,7 @@ import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Matcher
 import Arkham.Message hiding (RevealLocation)
 import Arkham.Projection

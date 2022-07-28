@@ -13,7 +13,7 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
-import Arkham.Enemy.Attrs ( Field (EnemyTraits) )
+import Arkham.Enemy.Types ( Field (EnemyTraits) )
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher

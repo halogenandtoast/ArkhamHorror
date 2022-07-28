@@ -1,4 +1,4 @@
-module Arkham.Effect.Attrs where
+module Arkham.Effect.Types where
 
 import Arkham.Prelude
 
@@ -18,11 +18,12 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Window ( Window )
+import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EffectId, EntityAttrs a ~ EffectAttrs) => IsEffect a
 
-data instance Field EffectAttrs :: Type -> Type where
-  EffectAbilities :: Field EffectAttrs [Ability]
+data instance Field Effect :: Type -> Type where
+  EffectAbilities :: Field Effect [Ability]
 
 data EffectAttrs = EffectAttrs
   { effectId :: EffectId
@@ -95,3 +96,40 @@ instance SourceEntity EffectAttrs where
   toSource = EffectSource . toId
   isSource EffectAttrs { effectId } (EffectSource eid) = effectId == eid
   isSource _ _ = False
+
+data Effect = forall a . IsEffect a => Effect a
+
+instance Eq Effect where
+  (Effect (a :: a)) == (Effect (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Effect where
+  show (Effect a) = show a
+
+instance ToJSON Effect where
+  toJSON (Effect a) = toJSON a
+
+instance HasModifiersFor Effect where
+  getModifiersFor source target (Effect a) = getModifiersFor source target a
+
+instance HasAbilities Effect where
+  getAbilities (Effect a) = getAbilities a
+
+instance Entity Effect where
+  type EntityId Effect = EffectId
+  type EntityAttrs Effect = EffectAttrs
+  toId = toId . toAttrs
+  toAttrs (Effect a) = toAttrs a
+  overAttrs f (Effect a) = Effect $ overAttrs f a
+
+instance TargetEntity Effect where
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+
+instance SourceEntity Effect where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
+
+data SomeEffect = forall a. IsEffect a => SomeEffect (EffectArgs -> a)
+

@@ -6,8 +6,8 @@ import TestImport.Lifted
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Investigator.Attrs qualified as Investigator
-import Arkham.Scenario.Attrs (Field(..))
+import Arkham.Investigator.Types qualified as Investigator
+import Arkham.Scenario.Types (Field(..))
 import Arkham.GameEnv
 
 spec :: Spec

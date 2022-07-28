@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Enemy.Attrs ( Field (EnemyTraits) )
+import Arkham.Enemy.Types ( Field (EnemyTraits) )
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Message

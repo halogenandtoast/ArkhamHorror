@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.ChaosBag.Base
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Scenario
-import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Token
 
 getTokensInBag :: (Monad m, HasGame m) => m [Token]

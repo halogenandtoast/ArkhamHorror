@@ -2,7 +2,7 @@ module Arkham.Helpers.Campaign where
 
 import Arkham.Prelude
 
-import Arkham.Campaign.Attrs
+import Arkham.Campaign.Types
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Game ()

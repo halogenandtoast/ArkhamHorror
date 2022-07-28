@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Investigator.Attrs
+import Arkham.Investigator.Types
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Message

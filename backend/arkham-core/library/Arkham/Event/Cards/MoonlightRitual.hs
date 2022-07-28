@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Asset.Types ( Field(..) )
-import Arkham.Investigator.Attrs ( Field(..) )
+import Arkham.Investigator.Types ( Field(..) )
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message

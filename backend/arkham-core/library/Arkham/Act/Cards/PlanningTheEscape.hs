@@ -6,7 +6,7 @@ module Arkham.Act.Cards.PlanningTheEscape
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
@@ -16,7 +16,7 @@ import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.Target

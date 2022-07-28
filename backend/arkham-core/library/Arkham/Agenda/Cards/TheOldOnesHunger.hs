@@ -5,7 +5,7 @@ module Arkham.Agenda.Cards.TheOldOnesHunger
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Attrs
+import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes

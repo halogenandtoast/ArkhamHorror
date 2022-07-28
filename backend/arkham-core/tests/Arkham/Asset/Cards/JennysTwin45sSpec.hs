@@ -7,10 +7,10 @@ import TestImport.Lifted hiding (EnemyDamage)
 import Arkham.ActiveCost
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Uses (useCount)
-import Arkham.Enemy.Attrs qualified as Enemy
-import Arkham.Enemy.Attrs (Field(..))
+import Arkham.Enemy.Types qualified as Enemy
+import Arkham.Enemy.Types (Field(..))
 import Arkham.Asset.Types (Field(..))
-import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Types (InvestigatorAttrs(..))
 import Arkham.Projection
 import Arkham.Matcher (assetIs)
 

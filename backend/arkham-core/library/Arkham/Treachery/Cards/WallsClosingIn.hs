@@ -6,8 +6,8 @@ module Arkham.Treachery.Cards.WallsClosingIn
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Attrs ( Field (..) )
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Deck

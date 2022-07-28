@@ -6,7 +6,7 @@ module Arkham.Location.Cards.GrandRue
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Attrs ( Field (AgendaDoom) )
+import Arkham.Agenda.Types ( Field (AgendaDoom) )
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue

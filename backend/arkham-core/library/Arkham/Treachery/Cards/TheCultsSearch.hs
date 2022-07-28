@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Card.CardType
 import Arkham.Classes
-import Arkham.Enemy.Attrs ( Field (..) )
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection

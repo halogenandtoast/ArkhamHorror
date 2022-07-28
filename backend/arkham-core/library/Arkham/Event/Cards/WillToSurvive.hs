@@ -8,7 +8,7 @@ module Arkham.Event.Cards.WillToSurvive
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Effect.Attrs
+import Arkham.Effect.Types
 import Arkham.Effect.Runner ()
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner

@@ -13,11 +13,11 @@ import Arkham.Cost hiding ( PaidCost )
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( AssetCard, PlayCard )
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target

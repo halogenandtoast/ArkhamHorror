@@ -4,9 +4,9 @@ module Arkham.Event.Cards.DynamiteBlastSpec
 
 import TestImport hiding ( EnemyDamage, InvestigatorDamage )
 
-import Arkham.Enemy.Attrs ( Field (..), healthL )
+import Arkham.Enemy.Types ( Field (..), healthL )
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Investigator.Cards qualified as Investigators
 
 spec :: Spec

@@ -6,13 +6,13 @@ module Arkham.Act.Cards.AllIn
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Action
 import Arkham.Asset.Types ( Field(..) )
-import Arkham.Scenario.Attrs ( Field(..) )
+import Arkham.Scenario.Types ( Field(..) )
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Criteria

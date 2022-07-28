@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes
 import Arkham.EffectMetadata
-import Arkham.Investigator.Attrs
+import Arkham.Investigator.Types
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection

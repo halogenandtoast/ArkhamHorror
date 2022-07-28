@@ -5,10 +5,10 @@ module Arkham.Treachery.Cards.CoverUpSpec
 import TestImport.Lifted
 
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Location.Attrs qualified as Location
-import Arkham.Location.Attrs (Field(..))
-import Arkham.Investigator.Attrs (Field(..))
-import Arkham.Treachery.Attrs (Field(..))
+import Arkham.Location.Types qualified as Location
+import Arkham.Location.Types (Field(..))
+import Arkham.Investigator.Types (Field(..))
+import Arkham.Treachery.Types (Field(..))
 import Arkham.Projection
 import Arkham.Matcher
 

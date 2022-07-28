@@ -1,4 +1,4 @@
-module Arkham.Agenda.Attrs where
+module Arkham.Agenda.Types where
 
 import Arkham.Prelude
 

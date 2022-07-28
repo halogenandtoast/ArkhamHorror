@@ -6,7 +6,7 @@ module Arkham.Act.Cards.TheParisianConspiracyV1
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import qualified Arkham.Act.Cards as Cards
 import Arkham.Act.Runner
 import Arkham.Classes

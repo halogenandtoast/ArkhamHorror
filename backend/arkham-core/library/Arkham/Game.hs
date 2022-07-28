@@ -7,11 +7,11 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act
-import Arkham.Act.Attrs ( ActAttrs (..), Field (..) )
+import Arkham.Act.Types ( ActAttrs (..), Field (..) )
 import Arkham.Action qualified as Action
 import Arkham.ActiveCost
 import Arkham.Agenda
-import Arkham.Agenda.Attrs ( Agenda, AgendaAttrs (..), Field (..) )
+import Arkham.Agenda.Types ( Agenda, AgendaAttrs (..), Field (..) )
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset
 import Arkham.Asset.Types
@@ -19,7 +19,7 @@ import Arkham.Asset.Types
 import Arkham.Asset.Uses ( useCount, useType )
 import Arkham.Attack
 import Arkham.Campaign
-import Arkham.Campaign.Attrs hiding ( campaign )
+import Arkham.Campaign.Types hiding ( campaign )
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.Id
@@ -32,13 +32,13 @@ import Arkham.DefeatedBy
 import Arkham.Difficulty
 import Arkham.Distance
 import Arkham.Effect
-import Arkham.Effect.Attrs
+import Arkham.Effect.Types
 import Arkham.EffectMetadata
 import Arkham.Enemy
-import Arkham.Enemy.Attrs ( Enemy, EnemyAttrs (..), Field (..) )
+import Arkham.Enemy.Types ( Enemy, EnemyAttrs (..), Field (..) )
 import Arkham.Entities
 import Arkham.Event
-import Arkham.Event.Attrs
+import Arkham.Event.Types
 import Arkham.Game.Helpers hiding
   ( EnemyEvade, EnemyFight, getSpendableClueCount )
 import {-# SOURCE #-} Arkham.GameEnv
@@ -48,10 +48,10 @@ import Arkham.Helpers.Location qualified as Helpers
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator ()
-import Arkham.Investigator.Attrs ( Investigator, Field (..), InvestigatorAttrs (..) )
+import Arkham.Investigator.Types ( Investigator, Field (..), InvestigatorAttrs (..) )
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
-import Arkham.Location.Attrs
+import Arkham.Location.Types
   ( Field (..)
   , LocationAttrs (..)
   , isEmptyLocation
@@ -93,9 +93,9 @@ import Arkham.Placement
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario
-import Arkham.Scenario.Attrs hiding ( scenario )
+import Arkham.Scenario.Types hiding ( scenario )
 import Arkham.Skill
-import Arkham.Skill.Attrs ( Skill, Field (..), SkillAttrs (..) )
+import Arkham.Skill.Types ( Skill, Field (..), SkillAttrs (..) )
 import Arkham.SkillTest.Runner
 import Arkham.SkillType
 import Arkham.Source
@@ -104,7 +104,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery
-import Arkham.Treachery.Attrs ( Treachery, Field (..), TreacheryAttrs (..) )
+import Arkham.Treachery.Types ( Treachery, Field (..), TreacheryAttrs (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
@@ -2242,7 +2242,7 @@ instance Projection Campaign where
       CampaignStoryCards -> pure campaignStoryCards
       CampaignCampaignLog -> pure campaignLog
 
-instance Projection EffectAttrs where
+instance Projection Effect where
   field fld eid = do
     e <- getEffect eid
     case fld of

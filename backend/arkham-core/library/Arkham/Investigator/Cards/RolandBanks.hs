@@ -11,7 +11,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
-import Arkham.Location.Attrs
+import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Projection

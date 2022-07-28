@@ -5,7 +5,7 @@ module Arkham.Investigator.Cards.SkidsOTooleSpec
 import TestImport.Lifted
 
 import Arkham.Game.Helpers (getCanAffordCost)
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Projection
 
 spec :: Spec

@@ -64,95 +64,72 @@ instance IsCard Skill where
   toCardOwner = toCardOwner . toAttrs
 
 lookupSkill :: CardCode -> (InvestigatorId -> SkillId -> Skill)
-lookupSkill cardCode =
-  fromJustNote ("Unknown skill: " <> show cardCode) $ lookup cardCode allSkills
+lookupSkill cardCode = case lookup cardCode allSkills of
+  Nothing -> error $ "Unknown skill: " <> show cardCode
+  Just (SomeSkillCard a) -> \i s -> Skill $ cbCardBuilder a (i, s)
 
 instance FromJSON Skill where
   parseJSON v = flip (withObject "Skill") v $ \o -> do
     cCode :: CardCode <- o .: "cardCode"
-    case cCode of
-      "01025" -> Skill . ViciousBlow <$> parseJSON v
-      "01039" -> Skill . Deduction <$> parseJSON v
-      "01053" -> Skill . Opportunist <$> parseJSON v
-      "01067" -> Skill . Fearless <$> parseJSON v
-      "01081" -> Skill . SurvivalInstinct <$> parseJSON v
-      "01089" -> Skill . Guts <$> parseJSON v
-      "01090" -> Skill . Perception <$> parseJSON v
-      "01091" -> Skill . Overpower <$> parseJSON v
-      "01092" -> Skill . ManualDexterity <$> parseJSON v
-      "01093" -> Skill . UnexpectedCourage <$> parseJSON v
-      "02026" -> Skill . DoubleOrNothing <$> parseJSON v
-      "02150" -> Skill . Deduction2 <$> parseJSON v
-      "02190" -> Skill . Defiance <$> parseJSON v
-      "02192" -> Skill . RiseToTheOccasion <$> parseJSON v
-      "02227" -> Skill . InquiringMind <$> parseJSON v
-      "02229" -> Skill . QuickThinking <$> parseJSON v
-      "02231" -> Skill . Opportunist2 <$> parseJSON v
-      "02235" -> Skill . SurvivalInstinct2 <$> parseJSON v
-      "02260" -> Skill . Leadership <$> parseJSON v
-      "02268" -> Skill . Fearless2 <$> parseJSON v
-      "02271" -> Skill . StrokeOfLuck2 <$> parseJSON v
-      "02299" -> Skill . ViciousBlow2 <$> parseJSON v
-      "03007" -> Skill . TheHomeFront <$> parseJSON v
-      "03039" -> Skill . Resourceful <$> parseJSON v
-      "03116" -> Skill . SayYourPrayers <$> parseJSON v
-      "03117" -> Skill . DesperateSearch <$> parseJSON v
-      "03118" -> Skill . RecklessAssault <$> parseJSON v
-      "03119" -> Skill . RunForYourLife <$> parseJSON v
-      "03228" -> Skill . InspiringPresence <$> parseJSON v
-      "03231" -> Skill . Eureka <$> parseJSON v
-      "03233" -> Skill . WatchThis <$> parseJSON v
-      "03235" -> Skill . TorrentOfPower <$> parseJSON v
-      "03272" -> Skill . NotWithoutAFight <$> parseJSON v
-      "03312" -> Skill . SealOfTheElderSign5 <$> parseJSON v
-      "04036" -> Skill . LastChance <$> parseJSON v
-      "04153" -> Skill . TrueUnderstanding <$> parseJSON v
-      "04201" -> Skill . TakeHeart <$> parseJSON v
-      "60126" -> Skill . Overpower2 <$> parseJSON v
-      "60502" -> Skill . NeitherRainNorSnow <$> parseJSON v
-      "60526" -> Skill . UnexpectedCourage2 <$> parseJSON v
-      _ -> error "Unknown skill"
+    withSkillCardCode cCode $ \(_ :: SkillCard a) -> Skill <$> parseJSON @a v
 
-allSkills :: HashMap CardCode (InvestigatorId -> SkillId -> Skill)
-allSkills = mapFromList $ map (cbCardCode &&& (curry . cbCardBuilder))
-  [ Skill <$> viciousBlow
-  , Skill <$> deduction
-  , Skill <$> opportunist
-  , Skill <$> fearless
-  , Skill <$> survivalInstinct
-  , Skill <$> guts
-  , Skill <$> perception
-  , Skill <$> overpower
-  , Skill <$> manualDexterity
-  , Skill <$> unexpectedCourage
-  , Skill <$> doubleOrNothing
-  , Skill <$> deduction2
-  , Skill <$> defiance
-  , Skill <$> riseToTheOccasion
-  , Skill <$> inquiringMind
-  , Skill <$> quickThinking
-  , Skill <$> opportunist2
-  , Skill <$> survivalInstinct2
-  , Skill <$> leadership
-  , Skill <$> fearless2
-  , Skill <$> strokeOfLuck2
-  , Skill <$> viciousBlow2
-  , Skill <$> theHomeFront
-  , Skill <$> resourceful
-  , Skill <$> sayYourPrayers
-  , Skill <$> desperateSearch
-  , Skill <$> recklessAssault
-  , Skill <$> runForYourLife
-  , Skill <$> inspiringPresence
-  , Skill <$> eureka
-  , Skill <$> watchThis
-  , Skill <$> torrentOfPower
-  , Skill <$> notWithoutAFight
-  , Skill <$> sealOfTheElderSign5
-  , Skill <$> lastChance
-  , Skill <$> trueUnderstanding
-  , Skill <$> takeHeart
-  , Skill <$> overpower2
-  , Skill <$> neitherRainNorSnow
-  , Skill <$> unexpectedCourage2
+withSkillCardCode
+  :: CardCode
+  -> (forall a. IsSkill a => SkillCard a -> r)
+  -> r
+withSkillCardCode cCode f =
+  case lookup cCode allSkills of
+    Nothing -> error $ "Unknown skill: " <> show cCode
+    Just (SomeSkillCard a) -> f a
+
+data SomeSkillCard = forall a. IsSkill a => SomeSkillCard (SkillCard a)
+
+liftSomeSkillCard :: (forall a. SkillCard a -> b) -> SomeSkillCard -> b
+liftSomeSkillCard f (SomeSkillCard a) = f a
+
+someSkillCardCode :: SomeSkillCard -> CardCode
+someSkillCardCode = liftSomeSkillCard cbCardCode
+
+allSkills :: HashMap CardCode SomeSkillCard
+allSkills = mapFromList $ map (toFst someSkillCardCode)
+  [ SomeSkillCard viciousBlow
+  , SomeSkillCard deduction
+  , SomeSkillCard opportunist
+  , SomeSkillCard fearless
+  , SomeSkillCard survivalInstinct
+  , SomeSkillCard guts
+  , SomeSkillCard perception
+  , SomeSkillCard overpower
+  , SomeSkillCard manualDexterity
+  , SomeSkillCard unexpectedCourage
+  , SomeSkillCard doubleOrNothing
+  , SomeSkillCard deduction2
+  , SomeSkillCard defiance
+  , SomeSkillCard riseToTheOccasion
+  , SomeSkillCard inquiringMind
+  , SomeSkillCard quickThinking
+  , SomeSkillCard opportunist2
+  , SomeSkillCard survivalInstinct2
+  , SomeSkillCard leadership
+  , SomeSkillCard fearless2
+  , SomeSkillCard strokeOfLuck2
+  , SomeSkillCard viciousBlow2
+  , SomeSkillCard theHomeFront
+  , SomeSkillCard resourceful
+  , SomeSkillCard sayYourPrayers
+  , SomeSkillCard desperateSearch
+  , SomeSkillCard recklessAssault
+  , SomeSkillCard runForYourLife
+  , SomeSkillCard inspiringPresence
+  , SomeSkillCard eureka
+  , SomeSkillCard watchThis
+  , SomeSkillCard torrentOfPower
+  , SomeSkillCard notWithoutAFight
+  , SomeSkillCard sealOfTheElderSign5
+  , SomeSkillCard lastChance
+  , SomeSkillCard trueUnderstanding
+  , SomeSkillCard takeHeart
+  , SomeSkillCard overpower2
+  , SomeSkillCard neitherRainNorSnow
+  , SomeSkillCard unexpectedCourage2
   ]

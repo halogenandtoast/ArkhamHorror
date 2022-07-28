@@ -44,7 +44,7 @@ instance HasTokenValue TheUntamedWilds where
     otherFace -> getTokenValue iid otherFace attrs
 
 instance RunMessage TheUntamedWilds where
-  runMessage msg s@(TheUntamedWilds attrs) = case msg of
+  runMessage msg (TheUntamedWilds attrs) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
       expeditionCamp <- genCard Locations.expeditionCamp

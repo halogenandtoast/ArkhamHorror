@@ -28,7 +28,7 @@ instance HasAbilities ExpeditionIntoTheWild where
 
 instance RunMessage ExpeditionIntoTheWild where
   runMessage msg a@(ExpeditionIntoTheWild attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       -- explorationDeck <- scenarioFieldMap ScenarioDecks (findWithDefault (error "missing deck") ExplorationDeck)
       -- let
       --   (notMatched, matchedOnTop) = break (`cardMatch`

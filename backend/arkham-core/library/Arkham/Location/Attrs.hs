@@ -25,8 +25,23 @@ import Arkham.Field
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (Trait)
+import Data.Typeable
 
-class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ LocationId, EntityAttrs a ~ LocationAttrs) => IsLocation a
+class
+  ( Typeable a
+  , ToJSON a
+  , FromJSON a
+  , Eq a
+  , Show a
+  , HasAbilities a
+  , HasModifiersFor a
+  , RunMessage a
+  , Entity a
+  , EntityId a ~ LocationId
+  , EntityAttrs a ~ LocationAttrs
+  ) => IsLocation a where
+    toLocation :: a -> Location
+    toLocation = Location
 
 type LocationCard a = CardBuilder LocationId a
 
@@ -286,3 +301,16 @@ locationAbility ability = case abilitySource ability of
 on :: InvestigatorId -> LocationAttrs -> Bool
 on iid LocationAttrs { locationInvestigators } =
   iid `member` locationInvestigators
+
+data Location = forall a . IsLocation a => Location a
+
+instance Eq Location where
+  (Location (a :: a)) == (Location (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Location where
+  show (Location a) = show a
+
+instance ToJSON Location where
+  toJSON (Location a) = toJSON a

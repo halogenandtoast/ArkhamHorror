@@ -14,6 +14,7 @@ import Arkham.Message as X hiding ( AssetDamage )
 import Arkham.Card
 import Arkham.DefeatedBy
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Matcher (AssetMatcher(AnyAsset))
 import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Projection
@@ -32,6 +33,15 @@ defeated AssetAttrs {assetId} = do
     (Just a, _) | a <= 0 -> Just DefeatedByDamage
     (_, Just b) | b <= 0 -> Just DefeatedByHorror
     _ -> Nothing
+
+instance RunMessage Asset where
+  runMessage msg x@(Asset a) = do
+    inPlay <- member (toId x) <$> select AnyAsset
+    modifiers' <- if inPlay
+      then getModifiers (toSource x) (toTarget x)
+      else pure []
+    let msg' = if Blank `elem` modifiers' then Blanked msg else msg
+    Asset <$> runMessage msg' a
 
 instance RunMessage AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of

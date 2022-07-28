@@ -1,30 +1,35 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Arkham.Location.Attrs (module Arkham.Location.Attrs, module X, Field(..)) where
+module Arkham.Location.Attrs
+  ( module Arkham.Location.Attrs
+  , module X
+  , Field(..)
+  ) where
 
 import Arkham.Prelude
 
-import Arkham.Location.Base as X
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Card
 import Arkham.Classes.Entity
-import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
+import Arkham.Field
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Keyword
+import Arkham.Label qualified as L
+import Arkham.Location.Base as X
 import Arkham.Location.Cards
 import Arkham.LocationSymbol
-import Arkham.Matcher (LocationMatcher(..))
+import Arkham.Matcher ( LocationMatcher (..) )
 import Arkham.Name
-import Arkham.Field
 import Arkham.Source
 import Arkham.Target
-import Arkham.Trait (Trait)
+import Arkham.Trait ( Trait )
 import Data.Typeable
 
 class
@@ -75,8 +80,8 @@ symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
 
 canBeFlippedL :: Lens' LocationAttrs Bool
-canBeFlippedL = lens locationCanBeFlipped
-  $ \m x -> m { locationCanBeFlipped = x }
+canBeFlippedL =
+  lens locationCanBeFlipped $ \m x -> m { locationCanBeFlipped = x }
 
 costToEnterUnrevealedL :: Lens' LocationAttrs Cost
 costToEnterUnrevealedL = lens locationCostToEnterUnrevealed
@@ -278,7 +283,9 @@ locationWith f def shroud' revealClues symbol' connectedSymbols' g =
     }
 
 locationResignAction :: LocationAttrs -> Ability
-locationResignAction attrs = toLocationAbility attrs (mkAbility attrs 99 $ ActionAbility (Just Action.Resign) (ActionCost 1))
+locationResignAction attrs = toLocationAbility
+  attrs
+  (mkAbility attrs 99 $ ActionAbility (Just Action.Resign) (ActionCost 1))
 
 toLocationAbility :: LocationAttrs -> Ability -> Ability
 toLocationAbility attrs ability = ability
@@ -314,3 +321,73 @@ instance Show Location where
 
 instance ToJSON Location where
   toJSON (Location a) = toJSON a
+
+toLocationSymbol :: Location -> LocationSymbol
+toLocationSymbol = locationSymbol . toAttrs
+
+toLocationLabel :: Location -> L.Label
+toLocationLabel = L.Label . locationLabel . toAttrs
+
+instance HasCardCode Location where
+  toCardCode = toCardCode . toAttrs
+
+instance HasAbilities Location where
+  getAbilities (Location a) = getAbilities a
+
+instance HasModifiersFor Location where
+  getModifiersFor source target (Location a) = getModifiersFor source target a
+
+instance Entity Location where
+  type EntityId Location = LocationId
+  type EntityAttrs Location = LocationAttrs
+  toId = toId . toAttrs
+  toAttrs (Location l) = toAttrs l
+  overAttrs f (Location a) = Location $ overAttrs f a
+
+instance Named Location where
+  toName = toName . toAttrs
+
+instance Named (Unrevealed Location) where
+  toName (Unrevealed l) = toName . Unrevealed $ toAttrs l
+
+instance TargetEntity Location where
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+
+instance SourceEntity Location where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
+
+isEmptyLocation :: Location -> Bool
+isEmptyLocation =
+  and . sequence [noInvestigatorsAtLocation, noEnemiesAtLocation]
+
+noInvestigatorsAtLocation :: Location -> Bool
+noInvestigatorsAtLocation l = null investigators'
+  where investigators' = locationInvestigators $ toAttrs l
+
+noEnemiesAtLocation :: Location -> Bool
+noEnemiesAtLocation l = null enemies'
+  where enemies' = locationEnemies $ toAttrs l
+
+isRevealed :: Location -> Bool
+isRevealed = locationRevealed . toAttrs
+
+data SomeLocationCard = forall a . IsLocation a => SomeLocationCard
+  (LocationCard a)
+
+someLocationCardCode :: SomeLocationCard -> CardCode
+someLocationCardCode (SomeLocationCard a) = cbCardCode a
+
+instance Named LocationAttrs where
+  toName l = if locationRevealed l
+    then fromMaybe baseName (cdRevealedName $ toCardDef l)
+    else baseName
+    where baseName = toName (toCardDef l)
+
+instance Named (Unrevealed LocationAttrs) where
+  toName (Unrevealed l) = toName (toCardDef l)
+
+instance IsCard LocationAttrs where
+  toCardId = unLocationId . locationId
+  toCardOwner = const Nothing

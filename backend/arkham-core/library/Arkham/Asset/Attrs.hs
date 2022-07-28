@@ -7,8 +7,8 @@ import Arkham.Asset.Cards
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes.Entity
-import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.ClassSymbol
 import Arkham.Id
@@ -19,8 +19,53 @@ import Arkham.Projection
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token (Token)
-import Arkham.Trait (Trait)
+import Arkham.Token ( Token )
+import Arkham.Trait ( Trait )
+import Data.Typeable
+
+data Asset = forall a . IsAsset a => Asset a
+
+instance Eq Asset where
+  (Asset (a :: a)) == (Asset (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Asset where
+  show (Asset a) = show a
+
+instance ToJSON Asset where
+  toJSON (Asset a) = toJSON a
+
+instance HasAbilities Asset where
+  getAbilities (Asset a) = getAbilities a
+
+instance HasModifiersFor Asset where
+  getModifiersFor source target (Asset a) = getModifiersFor source target a
+
+instance Entity Asset where
+  type EntityId Asset = AssetId
+  type EntityAttrs Asset = AssetAttrs
+  toId = toId . toAttrs
+  toAttrs (Asset a) = toAttrs a
+  overAttrs f (Asset a) = Asset $ overAttrs f a
+
+data SomeAssetCard = forall a . IsAsset a => SomeAssetCard (AssetCard a)
+
+liftAssetCard :: (forall a . AssetCard a -> b) -> SomeAssetCard -> b
+liftAssetCard f (SomeAssetCard a) = f a
+
+someAssetCardCode :: SomeAssetCard -> CardCode
+someAssetCardCode = liftAssetCard cbCardCode
+
+
+instance TargetEntity Asset where
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+
+instance SourceEntity Asset where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
+
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ AssetId, EntityAttrs a ~ AssetAttrs) => IsAsset a
 
@@ -88,57 +133,58 @@ data AssetAttrs = AssetAttrs
 
 discardWhenNoUsesL :: Lens' AssetAttrs Bool
 discardWhenNoUsesL =
-  lens assetDiscardWhenNoUses $ \m x -> m {assetDiscardWhenNoUses = x}
+  lens assetDiscardWhenNoUses $ \m x -> m { assetDiscardWhenNoUses = x }
 
 canLeavePlayByNormalMeansL :: Lens' AssetAttrs Bool
-canLeavePlayByNormalMeansL = lens assetCanLeavePlayByNormalMeans $
-  \m x -> m {assetCanLeavePlayByNormalMeans = x}
+canLeavePlayByNormalMeansL = lens assetCanLeavePlayByNormalMeans
+  $ \m x -> m { assetCanLeavePlayByNormalMeans = x }
 
 sealedTokensL :: Lens' AssetAttrs [Token]
-sealedTokensL = lens assetSealedTokens $ \m x -> m {assetSealedTokens = x}
+sealedTokensL = lens assetSealedTokens $ \m x -> m { assetSealedTokens = x }
 
 horrorL :: Lens' AssetAttrs Int
-horrorL = lens assetHorror $ \m x -> m {assetHorror = x}
+horrorL = lens assetHorror $ \m x -> m { assetHorror = x }
 
 isStoryL :: Lens' AssetAttrs Bool
-isStoryL = lens assetIsStory $ \m x -> m {assetIsStory = x}
+isStoryL = lens assetIsStory $ \m x -> m { assetIsStory = x }
 
 placementL :: Lens' AssetAttrs Placement
-placementL = lens assetPlacement $ \m x -> m {assetPlacement = x}
+placementL = lens assetPlacement $ \m x -> m { assetPlacement = x }
 
 cardsUnderneathL :: Lens' AssetAttrs [Card]
-cardsUnderneathL = lens assetCardsUnderneath $ \m x -> m {assetCardsUnderneath = x}
+cardsUnderneathL =
+  lens assetCardsUnderneath $ \m x -> m { assetCardsUnderneath = x }
 
 healthL :: Lens' AssetAttrs (Maybe Int)
-healthL = lens assetHealth $ \m x -> m {assetHealth = x}
+healthL = lens assetHealth $ \m x -> m { assetHealth = x }
 
 sanityL :: Lens' AssetAttrs (Maybe Int)
-sanityL = lens assetSanity $ \m x -> m {assetSanity = x}
+sanityL = lens assetSanity $ \m x -> m { assetSanity = x }
 
 slotsL :: Lens' AssetAttrs [SlotType]
-slotsL = lens assetSlots $ \m x -> m {assetSlots = x}
+slotsL = lens assetSlots $ \m x -> m { assetSlots = x }
 
 doomL :: Lens' AssetAttrs Int
-doomL = lens assetDoom $ \m x -> m {assetDoom = x}
+doomL = lens assetDoom $ \m x -> m { assetDoom = x }
 
 cluesL :: Lens' AssetAttrs Int
-cluesL = lens assetClues $ \m x -> m {assetClues = x}
+cluesL = lens assetClues $ \m x -> m { assetClues = x }
 
 usesL :: Lens' AssetAttrs Uses
-usesL = lens assetUses $ \m x -> m {assetUses = x}
+usesL = lens assetUses $ \m x -> m { assetUses = x }
 
 damageL :: Lens' AssetAttrs Int
-damageL = lens assetDamage $ \m x -> m {assetDamage = x}
+damageL = lens assetDamage $ \m x -> m { assetDamage = x }
 
 ownerL :: Lens' AssetAttrs (Maybe InvestigatorId)
-ownerL = lens assetOwner $ \m x -> m {assetOwner = x}
+ownerL = lens assetOwner $ \m x -> m { assetOwner = x }
 
 exhaustedL :: Lens' AssetAttrs Bool
-exhaustedL = lens assetExhausted $ \m x -> m {assetExhausted = x}
+exhaustedL = lens assetExhausted $ \m x -> m { assetExhausted = x }
 
 originalCardCodeL :: Lens' AssetAttrs CardCode
 originalCardCodeL =
-  lens assetOriginalCardCode $ \m x -> m {assetOriginalCardCode = x}
+  lens assetOriginalCardCode $ \m x -> m { assetOriginalCardCode = x }
 
 allAssetCards :: HashMap CardCode CardDef
 allAssetCards =
@@ -163,59 +209,62 @@ instance IsCard AssetAttrs where
   toCard a = lookupCard (assetOriginalCardCode a) (toCardId a)
   toCardOwner = assetOwner
 
-asset :: (AssetAttrs -> a) -> CardDef -> CardBuilder (AssetId, Maybe InvestigatorId) a
+asset
+  :: (AssetAttrs -> a)
+  -> CardDef
+  -> CardBuilder (AssetId, Maybe InvestigatorId) a
 asset f cardDef = assetWith f cardDef id
 
-ally :: (AssetAttrs -> a) -> CardDef -> (Int, Int) -> CardBuilder (AssetId, Maybe InvestigatorId) a
+ally
+  :: (AssetAttrs -> a)
+  -> CardDef
+  -> (Int, Int)
+  -> CardBuilder (AssetId, Maybe InvestigatorId) a
 ally f cardDef stats = allyWith f cardDef stats id
 
-allyWith ::
-  (AssetAttrs -> a) ->
-  CardDef ->
-  (Int, Int) ->
-  (AssetAttrs -> AssetAttrs) ->
-  CardBuilder (AssetId, Maybe InvestigatorId) a
-allyWith f cardDef (health, sanity) g =
-  assetWith
-    f
-    cardDef
-    (g . setSanity . setHealth)
+allyWith
+  :: (AssetAttrs -> a)
+  -> CardDef
+  -> (Int, Int)
+  -> (AssetAttrs -> AssetAttrs)
+  -> CardBuilder (AssetId, Maybe InvestigatorId) a
+allyWith f cardDef (health, sanity) g = assetWith
+  f
+  cardDef
+  (g . setSanity . setHealth)
  where
   setHealth = healthL .~ (health <$ guard (health > 0))
   setSanity = sanityL .~ (sanity <$ guard (sanity > 0))
 
-assetWith ::
-  (AssetAttrs -> a) ->
-  CardDef ->
-  (AssetAttrs -> AssetAttrs) ->
-  CardBuilder (AssetId, Maybe InvestigatorId) a
-assetWith f cardDef g =
-  CardBuilder
-    { cbCardCode = cdCardCode cardDef
-    , cbCardBuilder = \(aid, mOwner) ->
-        f . g $
-          AssetAttrs
-            { assetId = aid
-            , assetCardCode = toCardCode cardDef
-            , assetOriginalCardCode = toCardCode cardDef
-            , assetOwner = mOwner
-            , assetPlacement = Unplaced
-            , assetSlots = cdSlots cardDef
-            , assetHealth = Nothing
-            , assetSanity = Nothing
-            , assetUses = NoUses
-            , assetExhausted = False
-            , assetDoom = 0
-            , assetClues = 0
-            , assetDamage = 0
-            , assetHorror = 0
-            , assetCanLeavePlayByNormalMeans = True
-            , assetDiscardWhenNoUses = False
-            , assetIsStory = False
-            , assetCardsUnderneath = []
-            , assetSealedTokens = []
-            }
+assetWith
+  :: (AssetAttrs -> a)
+  -> CardDef
+  -> (AssetAttrs -> AssetAttrs)
+  -> CardBuilder (AssetId, Maybe InvestigatorId) a
+assetWith f cardDef g = CardBuilder
+  { cbCardCode = cdCardCode cardDef
+  , cbCardBuilder = \(aid, mOwner) -> f . g $ AssetAttrs
+    { assetId = aid
+    , assetCardCode = toCardCode cardDef
+    , assetOriginalCardCode = toCardCode cardDef
+    , assetOwner = mOwner
+    , assetPlacement = Unplaced
+    , assetSlots = cdSlots cardDef
+    , assetHealth = Nothing
+    , assetSanity = Nothing
+    , assetUses = NoUses
+    , assetExhausted = False
+    , assetDoom = 0
+    , assetClues = 0
+    , assetDamage = 0
+    , assetHorror = 0
+    , assetCanLeavePlayByNormalMeans = True
+    , assetDiscardWhenNoUses = False
+    , assetIsStory = False
+    , assetCardsUnderneath = []
+    , assetSealedTokens = []
     }
+  }
 
 instance Entity AssetAttrs where
   type EntityId AssetAttrs = AssetId
@@ -238,7 +287,7 @@ instance TargetEntity AssetAttrs where
 
 instance SourceEntity AssetAttrs where
   toSource = AssetSource . toId
-  isSource AssetAttrs {assetId} (AssetSource aid) = assetId == aid
+  isSource AssetAttrs { assetId } (AssetSource aid) = assetId == aid
   isSource _ _ = False
 
 controlledBy :: AssetAttrs -> InvestigatorId -> Bool
@@ -252,8 +301,8 @@ attachedToEnemy AssetAttrs {..} eid = case assetPlacement of
   AttachedToEnemy eid' -> eid == eid'
   _ -> False
 
-whenControlledBy ::
-  Applicative m => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
+whenControlledBy
+  :: Applicative m => AssetAttrs -> InvestigatorId -> m [Ability] -> m [Ability]
 whenControlledBy a iid f = if controlledBy a iid then f else pure []
 
 getOwner :: HasCallStack => AssetAttrs -> InvestigatorId

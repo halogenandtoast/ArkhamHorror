@@ -13,7 +13,7 @@ import Arkham.Criteria
 import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message

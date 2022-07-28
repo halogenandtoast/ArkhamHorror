@@ -3,7 +3,7 @@ module Arkham.Event.Runner
   ( module X
   ) where
 
-import Arkham.Event.Attrs as X
+import Arkham.Event.Types as X
 
 import Arkham.Prelude
 

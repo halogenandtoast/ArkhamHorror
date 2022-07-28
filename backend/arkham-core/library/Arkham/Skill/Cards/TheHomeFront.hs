@@ -10,7 +10,7 @@ import Arkham.Action
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Game.Helpers
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Message hiding (InvestigatorDamage)
 import Arkham.Projection
 import Arkham.Skill.Runner

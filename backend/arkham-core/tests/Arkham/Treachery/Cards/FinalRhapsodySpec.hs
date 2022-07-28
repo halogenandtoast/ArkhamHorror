@@ -5,7 +5,7 @@ module Arkham.Treachery.Cards.FinalRhapsodySpec
 import TestImport.Lifted hiding (InvestigatorDamage)
 
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 
 spec :: Spec
 spec = describe "Final Rhapsody" $ do

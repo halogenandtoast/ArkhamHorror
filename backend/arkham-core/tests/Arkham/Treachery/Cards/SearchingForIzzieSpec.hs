@@ -4,8 +4,8 @@ module Arkham.Treachery.Cards.SearchingForIzzieSpec
 
 import TestImport.Lifted
 
-import Arkham.Investigator.Attrs ( Field (..) )
-import Arkham.Treachery.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Treachery.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards

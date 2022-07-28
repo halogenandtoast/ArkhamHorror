@@ -12,8 +12,8 @@ import Arkham.History
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
-import Arkham.Location.Attrs ( Field (..) )
-import Arkham.Enemy.Attrs
+import Arkham.Location.Types ( Field (..) )
+import Arkham.Enemy.Types
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Target

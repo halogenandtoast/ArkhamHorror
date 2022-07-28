@@ -13,7 +13,7 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Target
 import Arkham.Treachery.Runner
-import Arkham.Investigator.Attrs ( Field(..) )
+import Arkham.Investigator.Types ( Field(..) )
 
 newtype StarsOfHyades = StarsOfHyades TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

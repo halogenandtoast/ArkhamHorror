@@ -5,7 +5,7 @@ module Arkham.Location.Cards.OuterWall_286
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Attrs (Field(AgendaDoom))
+import Arkham.Agenda.Types (Field(AgendaDoom))
 import Arkham.Agenda.Sequence (AgendaSide(A, C))
 import Arkham.Classes
 import Arkham.GameValue

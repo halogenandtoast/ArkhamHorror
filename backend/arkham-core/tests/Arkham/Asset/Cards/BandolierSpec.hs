@@ -5,7 +5,7 @@ module Arkham.Asset.Cards.BandolierSpec
 import TestImport.Lifted
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Trait
 import Arkham.Projection
 

@@ -6,7 +6,7 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Attrs ( Field (AgendaSequence) )
+import Arkham.Agenda.Types ( Field (AgendaSequence) )
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Id
 import Arkham.Classes

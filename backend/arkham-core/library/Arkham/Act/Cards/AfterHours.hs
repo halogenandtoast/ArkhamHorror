@@ -2,7 +2,7 @@ module Arkham.Act.Cards.AfterHours where
 
 import Arkham.Prelude
 
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets

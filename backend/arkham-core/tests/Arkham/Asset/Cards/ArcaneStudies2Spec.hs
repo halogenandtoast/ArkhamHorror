@@ -6,7 +6,7 @@ import TestImport.Lifted
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Types (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Arcane Studies (2)" $ do

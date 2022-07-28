@@ -6,11 +6,11 @@ import TestImport.Lifted
 
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Asset.Types qualified as Asset
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( AssetExhausted )
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Treachery.Attrs ( Field (..) )
+import Arkham.Treachery.Types ( Field (..) )
 import Arkham.Treachery.Cards qualified as Cards
 
 spec :: Spec

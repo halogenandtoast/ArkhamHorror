@@ -12,7 +12,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Token
-import Arkham.Scenario.Attrs (Field(..))
+import Arkham.Scenario.Types (Field(..))
 import Arkham.ChaosBag.Base
 
 newtype SerpentsOfYig = SerpentsOfYig EnemyAttrs

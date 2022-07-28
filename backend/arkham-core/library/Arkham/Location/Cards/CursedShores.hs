@@ -12,7 +12,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Location.Runner
 import Arkham.Location.Helpers
 import Arkham.Matcher

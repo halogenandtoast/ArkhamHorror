@@ -16,7 +16,7 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Trait

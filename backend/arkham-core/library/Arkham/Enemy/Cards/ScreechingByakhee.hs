@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding ( EnemyEvade )
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
 

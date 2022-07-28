@@ -9,7 +9,7 @@ import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target

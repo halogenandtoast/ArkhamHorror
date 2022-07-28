@@ -4,9 +4,9 @@ module Arkham.Treachery.Cards.SmiteTheWickedSpec
 
 import TestImport.Lifted
 
-import Arkham.Enemy.Attrs ( Field (..) )
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards

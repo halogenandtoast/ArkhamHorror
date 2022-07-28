@@ -6,7 +6,7 @@ module Arkham.Agenda.Cards.BeckoningForPower
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Attrs
+import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue

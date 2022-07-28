@@ -6,7 +6,7 @@ module Arkham.Event.Cards.Waylay
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Enemy.Attrs ( Field (..) )
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher

@@ -5,14 +5,14 @@ module Arkham.Agenda.Cards.QuietHalls
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Attrs
+import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Helpers.Campaign
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
 

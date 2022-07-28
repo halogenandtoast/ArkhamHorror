@@ -13,8 +13,8 @@ import Arkham.CampaignLogKey
 import Arkham.Cost
 import Arkham.Criteria
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Investigator.Attrs (Field(..))
-import Arkham.Location.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
+import Arkham.Location.Types (Field(..))
 import Arkham.Projection
 import Arkham.SkillTest.Base
 import Arkham.SkillType

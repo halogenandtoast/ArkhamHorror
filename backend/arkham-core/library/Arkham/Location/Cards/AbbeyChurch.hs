@@ -6,7 +6,7 @@ module Arkham.Location.Cards.AbbeyChurch
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Attrs ( Field (AgendaSequence) )
+import Arkham.Agenda.Types ( Field (AgendaSequence) )
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Classes
 import Arkham.Cost

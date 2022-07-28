@@ -4,7 +4,7 @@ module Arkham.Treachery.Cards.RexsCurseSpec
 
 import TestImport.Lifted
 
-import Arkham.Investigator.Attrs
+import Arkham.Investigator.Types
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 

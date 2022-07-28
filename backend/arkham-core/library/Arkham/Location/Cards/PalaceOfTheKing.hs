@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.DamageEffect
-import Arkham.Enemy.Attrs ( Field (..) )
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards

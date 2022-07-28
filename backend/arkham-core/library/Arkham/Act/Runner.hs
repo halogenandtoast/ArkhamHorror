@@ -6,7 +6,7 @@ module Arkham.Act.Runner
 
 import Arkham.Prelude
 
-import Arkham.Act.Attrs as X
+import Arkham.Act.Types as X
 import Arkham.Act.Sequence as X
 import Arkham.Classes
 import Arkham.Cost as X

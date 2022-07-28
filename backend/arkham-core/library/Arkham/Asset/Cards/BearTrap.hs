@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection

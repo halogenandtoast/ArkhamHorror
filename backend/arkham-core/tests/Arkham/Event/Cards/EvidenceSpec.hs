@@ -5,9 +5,9 @@ module Arkham.Event.Cards.EvidenceSpec
 import TestImport.Lifted
 
 import Arkham.Event.Cards qualified as Events
-import Arkham.Enemy.Attrs (healthL, fightL, Field(..))
-import Arkham.Investigator.Attrs (combatL, resourcesL, Field(..))
-import Arkham.Location.Attrs (cluesL, Field(..))
+import Arkham.Enemy.Types (healthL, fightL, Field(..))
+import Arkham.Investigator.Types (combatL, resourcesL, Field(..))
+import Arkham.Location.Types (cluesL, Field(..))
 import Arkham.Projection
 
 spec :: Spec

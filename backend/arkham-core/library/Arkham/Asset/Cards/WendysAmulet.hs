@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Event.Attrs (Field(..))
+import Arkham.Event.Types (Field(..))
 import Arkham.Projection
 import Arkham.Target
 

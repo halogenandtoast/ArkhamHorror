@@ -15,8 +15,8 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
-import Arkham.Investigator.Attrs ( Field (..) )
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message

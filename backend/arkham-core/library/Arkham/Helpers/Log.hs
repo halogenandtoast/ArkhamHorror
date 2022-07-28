@@ -2,14 +2,14 @@ module Arkham.Helpers.Log where
 
 import Arkham.Prelude
 
-import Arkham.Campaign.Attrs ( Field (..) )
+import Arkham.Campaign.Types ( Field (..) )
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Scenario
 import Arkham.Projection
-import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.ScenarioLogKey
 
 getCampaignLog :: (Monad m, HasGame m) => m CampaignLog

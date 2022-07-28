@@ -11,8 +11,8 @@ import Arkham.Projection
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Runner
-import Arkham.Investigator.Attrs ( Field(..) )
-import Arkham.Location.Attrs ( Field(..) )
+import Arkham.Investigator.Types ( Field(..) )
+import Arkham.Location.Types ( Field(..) )
 import Arkham.Treachery.Cards qualified as Cards
 
 newtype CollapsingReality = CollapsingReality TreacheryAttrs

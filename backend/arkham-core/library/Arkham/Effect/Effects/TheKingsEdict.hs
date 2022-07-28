@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Enemy.Attrs (Field(EnemyClues, EnemyDoom))
+import Arkham.Enemy.Types (Field(EnemyClues, EnemyDoom))
 import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.Projection

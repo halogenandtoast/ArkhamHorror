@@ -10,7 +10,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Id
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
 import Arkham.Projection

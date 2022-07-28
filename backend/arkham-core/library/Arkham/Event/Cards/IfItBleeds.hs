@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Event.Runner
-import Arkham.Enemy.Attrs ( Field (..) )
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Id
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Message hiding (EnemyDefeated)

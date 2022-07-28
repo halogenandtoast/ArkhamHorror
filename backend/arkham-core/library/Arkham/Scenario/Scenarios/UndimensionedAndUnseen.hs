@@ -17,11 +17,11 @@ import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Attrs ( Field (..) )
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Helpers
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( ChosenRandomLocation, RevealLocation )
 import Arkham.Message

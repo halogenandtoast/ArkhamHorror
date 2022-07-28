@@ -5,7 +5,7 @@ module Arkham.Event.Cards.CrypticResearch4Spec
 import TestImport.Lifted
 
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Projection
 

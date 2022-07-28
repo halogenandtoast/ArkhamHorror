@@ -6,7 +6,7 @@ module Arkham.Treachery.Cards.LedAstray
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection

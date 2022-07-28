@@ -14,8 +14,8 @@ import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Slot
 import Arkham.Id
 import Arkham.SkillTest.Base
-import Arkham.Investigator.Attrs
-import Arkham.Treachery.Attrs ( Field (..) )
+import Arkham.Investigator.Types
+import Arkham.Treachery.Types ( Field (..) )
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Projection
 import Arkham.SkillType

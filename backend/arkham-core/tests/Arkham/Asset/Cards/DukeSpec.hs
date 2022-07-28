@@ -4,12 +4,12 @@ module Arkham.Asset.Cards.DukeSpec
 
 import TestImport hiding (EnemyDamage)
 
-import Arkham.Enemy.Attrs qualified as Enemy
-import Arkham.Investigator.Attrs (Field (..), InvestigatorAttrs(..))
+import Arkham.Enemy.Types qualified as Enemy
+import Arkham.Investigator.Types (Field (..), InvestigatorAttrs(..))
 import Arkham.Asset.Types (Field (..) )
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Attrs (Field (..) )
-import Arkham.Location.Attrs (LocationAttrs(..))
+import Arkham.Enemy.Types (Field (..) )
+import Arkham.Location.Types (LocationAttrs(..))
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 

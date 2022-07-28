@@ -11,7 +11,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Investigator.Attrs ( Field(..))
+import Arkham.Investigator.Types ( Field(..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner

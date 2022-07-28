@@ -7,7 +7,7 @@ import TestImport.Lifted
 import Arkham.Event.Cards qualified as Events
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Investigator.Attrs (Field(..), InvestigatorAttrs(..))
+import Arkham.Investigator.Types (Field(..), InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Drawn to the flame" $ do

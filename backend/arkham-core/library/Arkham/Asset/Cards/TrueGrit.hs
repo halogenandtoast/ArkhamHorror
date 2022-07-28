@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Asset.Cards as Cards
 import Arkham.Asset.Runner
-import Arkham.Investigator.Attrs (Field(..))
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source

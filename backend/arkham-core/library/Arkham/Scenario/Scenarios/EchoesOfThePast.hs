@@ -16,7 +16,7 @@ import Arkham.Difficulty
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Attrs ( Field (..) )
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers
 import Arkham.Location.Cards qualified as Locations

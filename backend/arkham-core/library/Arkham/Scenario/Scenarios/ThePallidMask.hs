@@ -24,7 +24,7 @@ import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Id
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Label ( unLabel )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( RevealLocation )

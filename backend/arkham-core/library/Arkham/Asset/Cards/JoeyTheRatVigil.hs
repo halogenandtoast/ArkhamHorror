@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria hiding ( DuringTurn )
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( DuringTurn, FastPlayerWindow )
 import Arkham.Projection
 import Arkham.Target

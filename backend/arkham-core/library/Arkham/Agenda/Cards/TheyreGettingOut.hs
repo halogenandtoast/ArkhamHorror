@@ -6,9 +6,9 @@ module Arkham.Agenda.Cards.TheyreGettingOut
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Attrs ( Field (..) )
+import Arkham.Act.Types ( Field (..) )
 import Arkham.Act.Sequence qualified as AS
-import Arkham.Agenda.Attrs
+import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes

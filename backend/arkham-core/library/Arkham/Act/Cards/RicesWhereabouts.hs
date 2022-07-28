@@ -6,11 +6,11 @@ module Arkham.Act.Cards.RicesWhereabouts
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
-import Arkham.Agenda.Attrs ( Field (..) )
+import Arkham.Agenda.Types ( Field (..) )
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card

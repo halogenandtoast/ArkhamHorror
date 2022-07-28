@@ -15,7 +15,6 @@ library
       Arkham.Ability.Type
       Arkham.Act
       Arkham.Act.Acts
-      Arkham.Act.Attrs
       Arkham.Act.Cards
       Arkham.Act.Cards.AfterHours
       Arkham.Act.Cards.AllIn
@@ -92,13 +91,13 @@ library
       Arkham.Act.Helpers
       Arkham.Act.Runner
       Arkham.Act.Sequence
+      Arkham.Act.Types
       Arkham.Action
       Arkham.Action.Additional
       Arkham.ActiveCost
       Arkham.Agenda
       Arkham.Agenda.AdvancementReason
       Arkham.Agenda.Agendas
-      Arkham.Agenda.Attrs
       Arkham.Agenda.Cards
       Arkham.Agenda.Cards.ACreatureOfTheBayou
       Arkham.Agenda.Cards.AllIsOne
@@ -172,6 +171,7 @@ library
       Arkham.Agenda.Helpers
       Arkham.Agenda.Runner
       Arkham.Agenda.Sequence
+      Arkham.Agenda.Types
       Arkham.Asset
       Arkham.Asset.Assets
       Arkham.Asset.Cards
@@ -435,7 +435,6 @@ library
       Arkham.Asset.Uses
       Arkham.Attack
       Arkham.Campaign
-      Arkham.Campaign.Attrs
       Arkham.Campaign.Campaigns
       Arkham.Campaign.Campaigns.NightOfTheZealot
       Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
@@ -443,6 +442,7 @@ library
       Arkham.Campaign.Campaigns.TheForgottenAge
       Arkham.Campaign.Campaigns.ThePathToCarcosa
       Arkham.Campaign.Runner
+      Arkham.Campaign.Types
       Arkham.CampaignLog
       Arkham.CampaignLogKey
       Arkham.Campaigns.NightOfTheZealot.CampaignSteps
@@ -503,7 +503,6 @@ library
       Arkham.Direction
       Arkham.Distance
       Arkham.Effect
-      Arkham.Effect.Attrs
       Arkham.Effect.Effects
       Arkham.Effect.Effects.AChanceEncounter
       Arkham.Effect.Effects.AlchemicalTransmutation
@@ -572,13 +571,13 @@ library
       Arkham.Effect.Effects.YogSothoth
       Arkham.Effect.Helpers
       Arkham.Effect.Runner
+      Arkham.Effect.Types
       Arkham.Effect.Window
       Arkham.EffectMetadata
       Arkham.EncounterCard
       Arkham.EncounterCard.Source
       Arkham.EncounterSet
       Arkham.Enemy
-      Arkham.Enemy.Attrs
       Arkham.Enemy.Cards
       Arkham.Enemy.Cards.Acolyte
       Arkham.Enemy.Cards.AcolyteOfUmordhoth
@@ -694,9 +693,9 @@ library
       Arkham.Enemy.Enemies
       Arkham.Enemy.Helpers
       Arkham.Enemy.Runner
+      Arkham.Enemy.Types
       Arkham.Entities
       Arkham.Event
-      Arkham.Event.Attrs
       Arkham.Event.Cards
       Arkham.Event.Cards.AceInTheHole3
       Arkham.Event.Cards.AChanceEncounter
@@ -850,6 +849,7 @@ library
       Arkham.Event.Events
       Arkham.Event.Helpers
       Arkham.Event.Runner
+      Arkham.Event.Types
       Arkham.EventId
       Arkham.Exception
       Arkham.Field
@@ -878,7 +878,6 @@ library
       Arkham.History
       Arkham.Id
       Arkham.Investigator
-      Arkham.Investigator.Attrs
       Arkham.Investigator.Cards
       Arkham.Investigator.Cards.AgnesBaker
       Arkham.Investigator.Cards.AkachiOnyele
@@ -907,11 +906,11 @@ library
       Arkham.Investigator.Cards.ZoeySamaras
       Arkham.Investigator.Investigators
       Arkham.Investigator.Runner
+      Arkham.Investigator.Types
       Arkham.Json
       Arkham.Keyword
       Arkham.Label
       Arkham.Location
-      Arkham.Location.Attrs
       Arkham.Location.Base
       Arkham.Location.Cards
       Arkham.Location.Cards.AbbeyChurch
@@ -1173,6 +1172,7 @@ library
       Arkham.Location.Label
       Arkham.Location.Locations
       Arkham.Location.Runner
+      Arkham.Location.Types
       Arkham.LocationSymbol
       Arkham.Matcher
       Arkham.Message
@@ -1189,7 +1189,6 @@ library
       Arkham.RequestedTokenStrategy
       Arkham.Resolution
       Arkham.Scenario
-      Arkham.Scenario.Attrs
       Arkham.Scenario.Deck
       Arkham.Scenario.Helpers
       Arkham.Scenario.Runner
@@ -1219,6 +1218,7 @@ library
       Arkham.Scenario.Scenarios.TheUntamedWilds
       Arkham.Scenario.Scenarios.UndimensionedAndUnseen
       Arkham.Scenario.Scenarios.WhereDoomAwaits
+      Arkham.Scenario.Types
       Arkham.ScenarioLogKey
       Arkham.Scenarios.APhantomOfTruth.Helpers
       Arkham.Scenarios.APhantomOfTruth.Story
@@ -1243,7 +1243,6 @@ library
       Arkham.Scenarios.TheUntamedWilds.Story
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Skill
-      Arkham.Skill.Attrs
       Arkham.Skill.Cards
       Arkham.Skill.Cards.Deduction
       Arkham.Skill.Cards.Deduction2
@@ -1287,6 +1286,7 @@ library
       Arkham.Skill.Cards.WatchThis
       Arkham.Skill.Runner
       Arkham.Skill.Skills
+      Arkham.Skill.Types
       Arkham.SkillTest
       Arkham.SkillTest.Base
       Arkham.SkillTest.Runner
@@ -1305,7 +1305,6 @@ library
       Arkham.TokenStrategy
       Arkham.Trait
       Arkham.Treachery
-      Arkham.Treachery.Attrs
       Arkham.Treachery.Cards
       Arkham.Treachery.Cards.AbandonedAndAlone
       Arkham.Treachery.Cards.Abduction
@@ -1463,6 +1462,7 @@ library
       Arkham.Treachery.Helpers
       Arkham.Treachery.Runner
       Arkham.Treachery.Treacheries
+      Arkham.Treachery.Types
       Arkham.Window
       Arkham.Zone
   other-modules:

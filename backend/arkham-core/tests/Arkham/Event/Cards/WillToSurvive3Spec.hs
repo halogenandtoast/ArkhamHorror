@@ -5,7 +5,7 @@ module Arkham.Event.Cards.WillToSurvive3Spec
 import TestImport
 
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Types (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Will to Survive (3)" $ do

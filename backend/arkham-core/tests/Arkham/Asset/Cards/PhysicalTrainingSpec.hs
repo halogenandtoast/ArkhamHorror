@@ -6,7 +6,7 @@ import TestImport
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Types (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = describe "Physical Training" $ do

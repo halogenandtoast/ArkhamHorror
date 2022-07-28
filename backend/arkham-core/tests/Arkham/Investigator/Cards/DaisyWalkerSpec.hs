@@ -8,7 +8,7 @@ import Arkham.Trait
 import Arkham.Game.Helpers
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Timing qualified as Timing
-import Arkham.Investigator.Attrs (Field (..))
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 
 spec :: Spec

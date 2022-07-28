@@ -9,8 +9,8 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Classes.Query
 import Arkham.Id
 import Arkham.Helpers.Scenario
-import Arkham.Campaign.Attrs ( Field (..) )
-import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.Campaign.Types ( Field (..) )
+import Arkham.Scenario.Types ( Field (..) )
 import Data.HashMap.Strict qualified as HashMap
 
 getCampaignStoryCards :: (Monad m, HasGame m) => m (HashMap InvestigatorId [PlayerCard])

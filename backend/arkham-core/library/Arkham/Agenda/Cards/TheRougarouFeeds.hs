@@ -11,7 +11,7 @@ import Arkham.Agenda.Helpers hiding (matches)
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Attrs (Field(..))
+import Arkham.Location.Types (Field(..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Target

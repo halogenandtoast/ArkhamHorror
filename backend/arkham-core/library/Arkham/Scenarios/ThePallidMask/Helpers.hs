@@ -10,7 +10,7 @@ import Arkham.Label
 import Arkham.Matcher
 import Arkham.Message hiding (Label)
 import Arkham.Direction
-import Arkham.Location.Attrs
+import Arkham.Location.Types
 
 posLabelToPosition :: Label -> (Int, Int)
 posLabelToPosition lbl = case drop 3 (unpack . unLabel $ lbl) of

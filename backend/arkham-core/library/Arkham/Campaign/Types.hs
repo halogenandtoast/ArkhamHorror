@@ -1,4 +1,4 @@
-module Arkham.Campaign.Attrs where
+module Arkham.Campaign.Types where
 
 import Arkham.Prelude
 

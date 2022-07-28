@@ -1,4 +1,4 @@
-module Arkham.Event.Attrs where
+module Arkham.Event.Types where
 
 import Arkham.Prelude
 

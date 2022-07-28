@@ -4,7 +4,7 @@ module Arkham.Campaign.Runner (module X) where
 import Arkham.Prelude
 
 import Arkham.Card.CardDef
-import Arkham.Campaign.Attrs as X
+import Arkham.Campaign.Types as X
 import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage
 import Arkham.Helpers

@@ -3,15 +3,15 @@ module Helpers.Message where
 import Arkham.Prelude
 
 import Arkham.Action (Action)
-import Arkham.Asset
+import Arkham.Asset.Types
 import Arkham.Attack
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Enemy
-import Arkham.Event
+import Arkham.Enemy.Types
+import Arkham.Event.Types
 import Arkham.Helpers
-import Arkham.Investigator
-import Arkham.Location
+import Arkham.Investigator.Types
+import Arkham.Location.Types
 import Arkham.Message
 import Arkham.Name
 import Arkham.SkillType

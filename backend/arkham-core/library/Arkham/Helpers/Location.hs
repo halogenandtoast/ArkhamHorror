@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Projection

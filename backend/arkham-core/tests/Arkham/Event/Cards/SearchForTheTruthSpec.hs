@@ -5,8 +5,8 @@ module Arkham.Event.Cards.SearchForTheTruthSpec
 import TestImport
 
 import Arkham.Event.Cards qualified as Events
-import Arkham.Investigator.Attrs ( Field (..) )
-import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Projection
 
 spec :: Spec

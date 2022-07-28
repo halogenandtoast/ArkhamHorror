@@ -1,4 +1,4 @@
-module Arkham.Skill.Attrs where
+module Arkham.Skill.Types where
 
 import Arkham.Prelude
 

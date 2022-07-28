@@ -6,7 +6,7 @@ import TestImport.Lifted
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Enemy.Attrs (Field(..))
+import Arkham.Enemy.Types (Field(..))
 
 spec :: Spec
 spec = describe "Mysterious Chanting" $ do

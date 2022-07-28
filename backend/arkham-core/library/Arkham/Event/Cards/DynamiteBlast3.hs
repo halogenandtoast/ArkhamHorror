@@ -6,7 +6,7 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message
 import Arkham.Projection

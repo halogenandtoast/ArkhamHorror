@@ -4,9 +4,9 @@ module Arkham.Investigator.Cards.ZoeySamarasSpec
 
 import TestImport.Lifted hiding (EnemyDamage)
 
-import Arkham.Enemy.Attrs qualified as Enemy
-import Arkham.Investigator.Attrs (Field (..))
-import Arkham.Enemy.Attrs (Field (..))
+import Arkham.Enemy.Types qualified as Enemy
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Game ()
 import Arkham.Classes.HasTokenValue
 

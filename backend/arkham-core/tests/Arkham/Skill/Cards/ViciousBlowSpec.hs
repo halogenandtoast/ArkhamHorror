@@ -4,8 +4,8 @@ module Arkham.Skill.Cards.ViciousBlowSpec
 
 import TestImport hiding (EnemyDamage)
 
-import Arkham.Enemy.Attrs (Field(..), fightL, healthL)
-import Arkham.Investigator.Attrs (combatL)
+import Arkham.Enemy.Types (Field(..), fightL, healthL)
+import Arkham.Investigator.Types (combatL)
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Skills
 

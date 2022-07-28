@@ -8,7 +8,7 @@ import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Projection
-import Arkham.Investigator.Attrs ( Field(..) )
+import Arkham.Investigator.Types ( Field(..) )
 import Arkham.Treachery.Runner
 
 newtype ChillFromBelow = ChillFromBelow TreacheryAttrs

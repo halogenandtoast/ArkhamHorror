@@ -5,7 +5,7 @@ module Arkham.Act.Cards.TheReallyBadOnesV1
 
 import Arkham.Prelude
 
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
@@ -16,7 +16,7 @@ import Arkham.Classes
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Target
 import Arkham.Trait
 

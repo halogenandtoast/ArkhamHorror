@@ -6,8 +6,8 @@ import TestImport.Lifted hiding ( EnemyDamage )
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Investigator ( modifiedStatsOf )
-import Arkham.Investigator.Attrs ( InvestigatorAttrs (..) )
-import Arkham.Enemy.Attrs ( Field(..), EnemyAttrs (..) )
+import Arkham.Investigator.Types ( InvestigatorAttrs (..) )
+import Arkham.Enemy.Types ( Field(..), EnemyAttrs (..) )
 import Arkham.Asset.Types ( Field(..) )
 import Arkham.Projection
 

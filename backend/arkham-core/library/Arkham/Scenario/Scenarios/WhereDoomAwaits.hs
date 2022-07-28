@@ -6,7 +6,7 @@ module Arkham.Scenario.Scenarios.WhereDoomAwaits
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Attrs ( Field (..) )
+import Arkham.Agenda.Types ( Field (..) )
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.CampaignLog

@@ -5,7 +5,7 @@ module Arkham.Act.Cards.SkinGame
 
 import Arkham.Prelude
 
-import Arkham.Act.Attrs
+import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers

@@ -11,7 +11,7 @@ import Arkham.Card.Id
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Id
-import Arkham.Location.Attrs as X ( Location )
+import Arkham.Location.Types as X ( Location )
 import Arkham.Location.Locations
 import Arkham.Location.Runner
 import Arkham.Message

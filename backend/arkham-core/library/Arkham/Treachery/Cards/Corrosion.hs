@@ -9,8 +9,8 @@ import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Classes
-import Arkham.Investigator.Attrs ( Field (..) )
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection

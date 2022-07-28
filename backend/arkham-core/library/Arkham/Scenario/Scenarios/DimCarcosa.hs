@@ -21,7 +21,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Id
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message

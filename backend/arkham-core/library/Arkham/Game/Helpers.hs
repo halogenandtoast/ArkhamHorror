@@ -15,12 +15,12 @@ import Arkham.Helpers.Window as X
 import Arkham.Helpers.Xp as X
 
 import Arkham.Ability
-import Arkham.Act.Attrs ( Field (..) )
+import Arkham.Act.Types ( Field (..) )
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Action ( Action )
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
-import Arkham.Agenda.Attrs ( Field (..) )
+import Arkham.Agenda.Types ( Field (..) )
 import Arkham.Asset.Types ( Field (..) )
 import Arkham.Asset.Uses ( useCount )
 import Arkham.Attack
@@ -38,24 +38,24 @@ import Arkham.Deck hiding ( InvestigatorDiscard )
 import Arkham.DefeatedBy
 import Arkham.EncounterCard
 import Arkham.EncounterSet
-import Arkham.Enemy.Attrs ( Field (..) )
-import Arkham.Event.Attrs ( Field (..) )
+import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Event.Types ( Field (..) )
 import {-# SOURCE #-} Arkham.Game
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Id
-import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs (..) )
+import Arkham.Investigator.Types ( Field (..), InvestigatorAttrs (..) )
 import Arkham.Keyword qualified as Keyword
-import Arkham.Location.Attrs hiding ( location )
+import Arkham.Location.Types hiding ( location )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message hiding ( InvestigatorDamage, AssetDamage, PaidCost )
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Projection
-import Arkham.Scenario.Attrs ( Field (..) )
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.ScenarioLogKey
-import Arkham.Skill.Attrs ( Field (..) )
+import Arkham.Skill.Types ( Field (..) )
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
 import Arkham.SkillType
@@ -64,7 +64,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait ( Trait, toTraits )
-import Arkham.Treachery.Attrs ( Field (..) )
+import Arkham.Treachery.Types ( Field (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Control.Monad.Reader ( local )

@@ -6,7 +6,7 @@ import TestImport
 
 import Arkham.Attack
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
+import Arkham.Investigator.Types (InvestigatorAttrs(..))
 
 spec :: Spec
 spec = do

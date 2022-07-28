@@ -11,7 +11,7 @@ import Arkham.Asset.Runner hiding ( InvestigatorDamage )
 import Arkham.Card.CardType
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Target

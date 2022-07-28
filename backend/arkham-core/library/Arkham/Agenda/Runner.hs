@@ -6,7 +6,7 @@ module Arkham.Agenda.Runner
 import Arkham.Prelude
 
 import Arkham.Agenda.AdvancementReason
-import Arkham.Agenda.Attrs as X
+import Arkham.Agenda.Types as X
 import Arkham.Agenda.Sequence as X
 import Arkham.Classes
 import Arkham.Game.Helpers

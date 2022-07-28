@@ -6,7 +6,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Investigator.Attrs
+import Arkham.Investigator.Types
 import Arkham.Treachery.Runner
 
 newtype Amnesia = Amnesia TreacheryAttrs

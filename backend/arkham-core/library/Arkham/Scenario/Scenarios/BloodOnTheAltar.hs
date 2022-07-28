@@ -21,7 +21,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
 import Arkham.Id
-import Arkham.Location.Attrs ( Field (..) )
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding ( PlaceUnderneath, RevealLocation )
 import Arkham.Message

@@ -6,7 +6,7 @@ module Arkham.Treachery.Cards.ShellShock
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Message hiding (InvestigatorDamage)
 import Arkham.Projection
 import Arkham.Treachery.Runner

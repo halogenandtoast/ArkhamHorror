@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Agenda.Attrs
+import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Card.EncounterCard

@@ -5,9 +5,9 @@ module Arkham.Asset.Cards.ZoeysCrossSpec
 import TestImport hiding (EnemyDamage)
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Attrs ( Field (..) )
-import Arkham.Enemy.Attrs qualified as Enemy
-import Arkham.Investigator.Attrs qualified as Investigator
+import Arkham.Enemy.Types ( Field (..) )
+import Arkham.Enemy.Types qualified as Enemy
+import Arkham.Investigator.Types qualified as Investigator
 
 spec :: Spec
 spec = do

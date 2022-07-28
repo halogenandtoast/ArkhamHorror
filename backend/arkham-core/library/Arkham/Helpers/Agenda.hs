@@ -2,7 +2,7 @@ module Arkham.Helpers.Agenda where
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Attrs (Field(..))
+import Arkham.Agenda.Types (Field(..))
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Id
 import Arkham.Classes.Query

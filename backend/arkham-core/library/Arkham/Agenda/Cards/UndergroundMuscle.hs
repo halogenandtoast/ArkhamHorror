@@ -5,7 +5,7 @@ module Arkham.Agenda.Cards.UndergroundMuscle
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Attrs
+import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
@@ -13,7 +13,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.EncounterSet
-import Arkham.Enemy.Attrs ( Field (..) )
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.GameValue
 import Arkham.Matcher hiding (MoveAction)
 import Arkham.Message

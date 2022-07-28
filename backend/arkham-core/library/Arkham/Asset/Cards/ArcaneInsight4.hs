@@ -13,7 +13,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
-import Arkham.Investigator.Attrs ( Field (..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher hiding ( DuringTurn )
 import Arkham.Projection
 import Arkham.Target

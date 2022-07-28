@@ -27,7 +27,7 @@ theArkhamWoods = agenda (1, A) TheArkhamWoods Cards.theArkhamWoods (Static 4)
 
 instance RunMessage TheArkhamWoods where
   runMessage msg a@(TheArkhamWoods attrs) = case msg of
-    AdvanceAgenda aid | aid == toId a && agendaSequence attrs == Agenda 1 B ->
+    AdvanceAgenda aid | aid == toId a && onSide B attrs ->
       a <$ push
         (Run
           [ ShuffleEncounterDiscardBackIn

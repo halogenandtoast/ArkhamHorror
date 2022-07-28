@@ -39,14 +39,14 @@ instance RunMessage AgendaAttrs
       push $ chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
       pure
         $ a
-        & (sequenceL .~ Agenda (unAgendaStep $ agendaStep agendaSequence) B)
+        & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) B)
         & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == C -> do
       leadInvestigatorId <- getLeadInvestigatorId
       push $ chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
       pure
         $ a
-        & (sequenceL .~ Agenda (unAgendaStep $ agendaStep agendaSequence) D)
+        & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) D)
         & (flippedL .~ True)
     AdvanceAgendaIfThresholdSatisfied -> do
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
@@ -94,5 +94,5 @@ instance RunMessage AgendaAttrs
     RevertAgenda aid | aid == agendaId && onSide B a ->
       pure
         $ a
-        & (sequenceL .~ Agenda (unAgendaStep $ agendaStep agendaSequence) A)
+        & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) A)
     _ -> pure a

@@ -22,7 +22,7 @@ feedTheBeast = agenda (3, A) FeedTheBeast Cards.feedTheBeast (Static 7)
 
 instance RunMessage FeedTheBeast where
   runMessage msg a@(FeedTheBeast attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       investigatorIds <- selectList UneliminatedInvestigator
       a <$ pushAll [ Resign iid | iid <- investigatorIds ]
     _ -> FeedTheBeast <$> runMessage msg attrs

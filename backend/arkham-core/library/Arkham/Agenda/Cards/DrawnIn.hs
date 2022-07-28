@@ -27,7 +27,7 @@ drawnIn = agenda (4, A) DrawnIn Cards.drawnIn (Static 3)
 
 instance RunMessage DrawnIn where
   runMessage msg a@(DrawnIn attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 4 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       locationId <- fieldMap

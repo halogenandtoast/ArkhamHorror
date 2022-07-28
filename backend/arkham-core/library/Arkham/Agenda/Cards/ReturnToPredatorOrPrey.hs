@@ -34,7 +34,7 @@ instance HasAbilities ReturnToPredatorOrPrey where
 instance RunMessage ReturnToPredatorOrPrey where
   runMessage msg a@(ReturnToPredatorOrPrey attrs@AgendaAttrs {..}) =
     case msg of
-      AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
+      AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
         narogath <- EncounterCard <$> genEncounterCard Enemies.narogath
         a <$ pushAll
           [ CreateEnemyEngagedWithPrey narogath

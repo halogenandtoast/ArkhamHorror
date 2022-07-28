@@ -27,7 +27,7 @@ aCreatureOfTheBayou =
 
 instance RunMessage ACreatureOfTheBayou where
   runMessage msg a@(ACreatureOfTheBayou attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       mrougarou <- getTheRougarou
       case mrougarou of
         Nothing -> a <$ pushAll

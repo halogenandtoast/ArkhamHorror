@@ -38,7 +38,7 @@ instance RunMessage FindingAWayInside where
       -- When advanced from Museum Halls we don't spend clues
         leadInvestigatorId <- getLeadInvestigatorId
         push (chooseOne leadInvestigatorId [AdvanceAct aid source advanceMode])
-        pure $ FindingAWayInside $ attrs & sequenceL .~ Act 1 B
+        pure $ FindingAWayInside $ attrs & sequenceL .~ Sequence 1 B
     AdvanceAct aid _ _ | aid == actId && onSide A attrs ->
       -- otherwise we do the default
       FindingAWayInside <$> runMessage msg attrs

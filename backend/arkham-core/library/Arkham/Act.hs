@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Act (
   Act (..),
   lookupAct,
@@ -8,46 +9,7 @@ import Arkham.Prelude hiding (fold)
 import Arkham.Act.Acts
 import Arkham.Act.Attrs
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Id
-import Data.Typeable
-
-data Act = forall a. IsAct a => Act a
-
-instance Eq Act where
-  (Act (a :: a)) == (Act (b :: b)) = case eqT @a @b of
-    Just Refl -> a == b
-    Nothing -> False
-
-instance Show Act where
-  show (Act a) = show a
-
-instance ToJSON Act where
-  toJSON (Act a) = toJSON a
-
-instance HasAbilities Act where
-  getAbilities (Act a) = getAbilities a
-
-instance RunMessage Act where
-  runMessage msg (Act a) = Act <$> runMessage msg a
-
-instance HasModifiersFor Act where
-  getModifiersFor source target (Act a) = getModifiersFor source target a
-
-instance Entity Act where
-  type EntityId Act = ActId
-  type EntityAttrs Act = ActAttrs
-  toId = toId . toAttrs
-  toAttrs (Act a) = toAttrs a
-  overAttrs f (Act a) = Act $ overAttrs f a
-
-instance TargetEntity Act where
-  toTarget = toTarget . toAttrs
-  isTarget = isTarget . toAttrs
-
-instance SourceEntity Act where
-  toSource = toSource . toAttrs
-  isSource = isSource . toAttrs
 
 lookupAct :: ActId -> (Int -> Act)
 lookupAct actId = case lookup (unActId actId) allActs of
@@ -67,14 +29,6 @@ withActCardCode cCode f =
   case lookup cCode allActs of
     Nothing -> error $ "Unknown act: " <> show cCode
     Just (SomeActCard a) -> f a
-
-data SomeActCard = forall a. IsAct a => SomeActCard (ActCard a)
-
-liftSomeActCard :: (forall a. ActCard a -> b) -> SomeActCard -> b
-liftSomeActCard f (SomeActCard a) = f a
-
-someActCardCode :: SomeActCard -> CardCode
-someActCardCode = liftSomeActCard cbCardCode
 
 allActs :: HashMap CardCode SomeActCard
 allActs = mapFromList $ map

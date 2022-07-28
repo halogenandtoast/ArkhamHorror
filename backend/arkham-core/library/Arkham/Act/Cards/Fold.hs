@@ -60,7 +60,7 @@ instance RunMessage Fold where
       let resolution = if resignedWithPeterClover then 3 else 1
       a <$ push (ScenarioResolution $ Resolution resolution)
     UseCardAbility iid (ProxySource _ source) _ 1 _
-      | isSource attrs source && actSequence == Act 3 A -> do
+      | isSource attrs source && actSequence == Sequence 3 A -> do
         maid <- selectOne (assetIs Cards.peterClover)
         case maid of
           Nothing -> error "this ability should not be able to be used"
@@ -74,7 +74,7 @@ instance RunMessage Fold where
               3
             )
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
-      | isSource attrs source && actSequence == Act 3 A -> do
+      | isSource attrs source && actSequence == Sequence 3 A -> do
         maid <- selectOne (assetIs Cards.peterClover)
         case maid of
           Nothing -> error "this ability should not be able to be used"

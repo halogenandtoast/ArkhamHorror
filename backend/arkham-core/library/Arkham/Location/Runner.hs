@@ -29,7 +29,6 @@ import Arkham.Matcher
   , locationWithEnemy
   )
 import Arkham.Message
-import Arkham.Name
 import Arkham.Projection
 import Arkham.SkillTest
 import Arkham.SkillType

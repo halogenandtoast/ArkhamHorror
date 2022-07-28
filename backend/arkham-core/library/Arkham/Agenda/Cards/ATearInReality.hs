@@ -25,7 +25,7 @@ aTearInReality = agenda (1, A) ATearInReality Cards.aTearInReality (Static 4)
 
 instance RunMessage ATearInReality where
   runMessage msg a@(ATearInReality attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       locationId <- fieldMap

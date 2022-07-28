@@ -26,7 +26,7 @@ theShadowOfTheEclipse =
 
 instance RunMessage TheShadowOfTheEclipse where
   runMessage msg a@(TheShadowOfTheEclipse attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       maskedCarnevaleGoers <- selectList
         (AssetWithTitle "Masked Carnevale-Goer")
       leadInvestigatorId <- getLeadInvestigatorId

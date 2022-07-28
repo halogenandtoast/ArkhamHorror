@@ -68,7 +68,7 @@ instance RunMessage VengeanceAwaits where
             <> [CreateEnemyAt umordhoth ritualSiteId Nothing]
     UseCardAbility _ source _ 2 _ | isSource attrs source ->
       a <$ push (ScenarioResolution $ Resolution 2)
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       actIds <- selectList AnyAct
       a <$ pushAll [ Discard (ActTarget actId) | actId <- actIds ]
     _ -> VengeanceAwaits <$> runMessage msg attrs

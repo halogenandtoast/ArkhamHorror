@@ -24,7 +24,7 @@ theThirdAct = agenda (1, A) TheThirdAct Cards.theThirdAct (Static 6)
 
 instance RunMessage TheThirdAct where
   runMessage msg a@(TheThirdAct attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       royalEmissary <- fromJustNote "missing royal emissary" <$> selectOne
         (ExtendedCardWithOneOf
           [ SetAsideCardMatch $ cardIs Cards.royalEmissary

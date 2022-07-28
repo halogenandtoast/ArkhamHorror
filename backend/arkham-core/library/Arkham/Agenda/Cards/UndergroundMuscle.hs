@@ -30,7 +30,7 @@ undergroundMuscle =
 
 instance RunMessage UndergroundMuscle where
   runMessage msg (UndergroundMuscle attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       laBellaLunaId <- getJustLocationIdByName "La Bella Luna"
       cloverClubLoungeId <- getJustLocationIdByName "Clover Club Lounge"
       leadInvestigatorId <- getLeadInvestigatorId
@@ -69,6 +69,6 @@ instance RunMessage UndergroundMuscle where
       pure
         $ UndergroundMuscle
         $ attrs
-        & (sequenceL .~ Agenda 1 B)
+        & (sequenceL .~ Sequence 1 B)
         & (flippedL .~ True)
     _ -> UndergroundMuscle <$> runMessage msg attrs

@@ -101,7 +101,7 @@ instance RunMessage HuntingTheRougarou where
             leadInvestigatorId
             [Label "Flip back to a side" [RevertAct $ toId attrs]]
           )
-      pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Act 2 B)
+      pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Sequence 2 B)
     RevertAct aid | aid == toId attrs && onSide B attrs ->
-      pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Act 2 A)
+      pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Sequence 2 A)
     _ -> HuntingTheRougarou <$> runMessage msg attrs

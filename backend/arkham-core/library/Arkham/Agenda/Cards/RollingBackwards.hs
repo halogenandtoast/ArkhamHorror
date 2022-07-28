@@ -28,7 +28,7 @@ rollingBackwards =
 
 instance RunMessage RollingBackwards where
   runMessage msg a@(RollingBackwards attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       locationId <- fieldMap

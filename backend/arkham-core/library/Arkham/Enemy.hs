@@ -1,11 +1,10 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Enemy
   ( module Arkham.Enemy
   ) where
 
 import Arkham.Prelude
 
-import Arkham.Ability
-import Arkham.Action
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Enemies
@@ -13,61 +12,9 @@ import Arkham.Enemy.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Trait (toTraits)
-import Data.Typeable
-
-data Enemy = forall a. IsEnemy a => Enemy a
-
-instance Eq Enemy where
-  (Enemy (a :: a)) == (Enemy (b :: b)) = case eqT @a @b of
-    Just Refl -> a == b
-    Nothing -> False
-
-instance Show Enemy where
-  show (Enemy a) = show a
-
-instance ToJSON Enemy where
-  toJSON (Enemy a) = toJSON a
 
 createEnemy :: (HasCallStack, IsCard a) => a -> Enemy
 createEnemy a = lookupEnemy (toCardCode a) (EnemyId $ toCardId a)
-
-actionFromMessage :: Ability -> Maybe Action
-actionFromMessage ability = case abilityType ability of
-  ActionAbility maction _ -> maction
-  _ -> Nothing
-
-preventedByModifier :: EnemyAttrs -> Ability -> ModifierType -> Bool
-preventedByModifier e msg (CannotTakeAction matcher) =
-  case actionFromMessage msg of
-    Just action -> case matcher of
-      IsAction a -> a == action
-      EnemyAction a traits -> a == action && notNull
-        (setFromList traits `intersect` toTraits (toCardDef e))
-      FirstOneOf _ -> False -- TODO: We can't tell here
-    Nothing -> False
-preventedByModifier _ _ _ = False
-
-instance HasAbilities Enemy where
-  getAbilities (Enemy a) = getAbilities a
-
-instance HasModifiersFor Enemy where
-  getModifiersFor source target (Enemy a) = getModifiersFor source target a
-
-instance Entity Enemy where
-  type EntityId Enemy = EnemyId
-  type EntityAttrs Enemy = EnemyAttrs
-  toId = toId . toAttrs
-  toAttrs (Enemy a) = toAttrs a
-  overAttrs f (Enemy a) = Enemy $ overAttrs f a
-
-instance TargetEntity Enemy where
-  toTarget = toTarget . toAttrs
-  isTarget = isTarget . toAttrs
-
-instance SourceEntity Enemy where
-  toSource = toSource . toAttrs
-  isSource = isSource . toAttrs
 
 instance RunMessage Enemy where
   runMessage msg e@(Enemy x) = do
@@ -99,14 +46,6 @@ withEnemyCardCode cCode f =
   case lookup cCode allEnemies of
     Nothing -> error $ "Unknown enemy: " <> show cCode
     Just (SomeEnemyCard a) -> f a
-
-data SomeEnemyCard = forall a. IsEnemy a => SomeEnemyCard (EnemyCard a)
-
-liftSomeEnemyCard :: (forall a. EnemyCard a -> b) -> SomeEnemyCard -> b
-liftSomeEnemyCard f (SomeEnemyCard a) = f a
-
-someEnemyCardCode :: SomeEnemyCard -> CardCode
-someEnemyCardCode = liftSomeEnemyCard cbCardCode
 
 allEnemies :: HashMap CardCode SomeEnemyCard
 allEnemies = mapFromList $ map

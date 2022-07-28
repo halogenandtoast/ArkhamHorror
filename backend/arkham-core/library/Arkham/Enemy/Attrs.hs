@@ -26,6 +26,7 @@ import Arkham.Strategy
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
+import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EnemyId, EntityAttrs a ~ EnemyAttrs) => IsEnemy a
 
@@ -246,3 +247,46 @@ instance SourceEntity EnemyAttrs where
   isSource EnemyAttrs { enemyId } (EnemySource eid) = enemyId == eid
   isSource attrs (CardCodeSource cardCode) = toCardCode attrs == cardCode
   isSource _ _ = False
+
+data Enemy = forall a. IsEnemy a => Enemy a
+
+instance Eq Enemy where
+  (Enemy (a :: a)) == (Enemy (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Enemy where
+  show (Enemy a) = show a
+
+instance ToJSON Enemy where
+  toJSON (Enemy a) = toJSON a
+
+instance HasAbilities Enemy where
+  getAbilities (Enemy a) = getAbilities a
+
+instance HasModifiersFor Enemy where
+  getModifiersFor source target (Enemy a) = getModifiersFor source target a
+
+instance Entity Enemy where
+  type EntityId Enemy = EnemyId
+  type EntityAttrs Enemy = EnemyAttrs
+  toId = toId . toAttrs
+  toAttrs (Enemy a) = toAttrs a
+  overAttrs f (Enemy a) = Enemy $ overAttrs f a
+
+instance TargetEntity Enemy where
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+
+instance SourceEntity Enemy where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
+
+data SomeEnemyCard = forall a. IsEnemy a => SomeEnemyCard (EnemyCard a)
+
+liftSomeEnemyCard :: (forall a. EnemyCard a -> b) -> SomeEnemyCard -> b
+liftSomeEnemyCard f (SomeEnemyCard a) = f a
+
+someEnemyCardCode :: SomeEnemyCard -> CardCode
+someEnemyCardCode = liftSomeEnemyCard cbCardCode
+

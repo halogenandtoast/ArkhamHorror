@@ -6,7 +6,7 @@ module Arkham.Asset.Cards.StHubertsKey
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Attrs
+import Arkham.Asset.Types
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding ( InvestigatorDefeated )
 import Arkham.Cost

@@ -4,7 +4,7 @@ module Arkham.Event.Cards.ExtraAmmunition1Spec
 
 import TestImport
 
-import Arkham.Asset.Attrs (Field(..))
+import Arkham.Asset.Types (Field(..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Uses
 import Arkham.Event.Cards qualified as Events

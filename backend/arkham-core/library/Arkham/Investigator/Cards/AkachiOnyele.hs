@@ -2,7 +2,7 @@ module Arkham.Investigator.Cards.AkachiOnyele where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Asset.Uses
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards

@@ -7,7 +7,7 @@ import TestImport hiding (EnemyDamage)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Enemy.Attrs qualified as Enemy
-import Arkham.Asset.Attrs (Field (..))
+import Arkham.Asset.Types (Field (..))
 import Arkham.Enemy.Attrs (Field (..))
 import Arkham.Investigator.Attrs qualified as Investigator
 import Arkham.Projection

@@ -4,7 +4,7 @@ module Arkham.Asset.Cards.FortyFiveAutomaticSpec
 
 import TestImport hiding (EnemyDamage)
 
-import Arkham.Asset.Attrs (Field(..))
+import Arkham.Asset.Types (Field(..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Attrs (Field(..), EnemyAttrs(..))
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))

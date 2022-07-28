@@ -1,4 +1,4 @@
-module Arkham.Asset.Attrs where
+module Arkham.Asset.Types where
 
 import Arkham.Prelude
 
@@ -70,42 +70,42 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type AssetCard a = CardBuilder (AssetId, Maybe InvestigatorId) a
 
-newtype DiscardedAttrs a = DiscardedAttrs a
+newtype DiscardedEntity a = DiscardedEntity a
 
-instance Entity a => Entity (DiscardedAttrs a) where
-  type EntityId (DiscardedAttrs a) = EntityId a
-  type EntityAttrs (DiscardedAttrs a) = EntityAttrs a
-  toId (DiscardedAttrs a) = toId a
-  toAttrs (DiscardedAttrs a) = toAttrs a
-  overAttrs f (DiscardedAttrs a) = DiscardedAttrs $ overAttrs f a
+instance Entity a => Entity (DiscardedEntity a) where
+  type EntityId (DiscardedEntity a) = EntityId a
+  type EntityAttrs (DiscardedEntity a) = EntityAttrs a
+  toId (DiscardedEntity a) = toId a
+  toAttrs (DiscardedEntity a) = toAttrs a
+  overAttrs f (DiscardedEntity a) = DiscardedEntity $ overAttrs f a
 
-data instance Field (DiscardedAttrs AssetAttrs) :: Type -> Type where
-  DiscardedAssetTraits :: Field (DiscardedAttrs AssetAttrs) (HashSet Trait)
+data instance Field (DiscardedEntity Asset) :: Type -> Type where
+  DiscardedAssetTraits :: Field (DiscardedEntity Asset) (HashSet Trait)
 
-data instance Field AssetAttrs :: Type -> Type where
-  AssetName :: Field AssetAttrs Name
-  AssetCost :: Field AssetAttrs Int
-  AssetClues :: Field AssetAttrs Int
-  AssetHorror :: Field AssetAttrs Int
-  AssetDamage :: Field AssetAttrs Int
-  AssetRemainingHealth :: Field AssetAttrs (Maybe Int)
-  AssetRemainingSanity :: Field AssetAttrs (Maybe Int)
-  AssetDoom :: Field AssetAttrs Int
-  AssetExhausted :: Field AssetAttrs Bool
-  AssetUses :: Field AssetAttrs Uses
-  AssetStartingUses :: Field AssetAttrs Uses
-  AssetController :: Field AssetAttrs (Maybe InvestigatorId)
-  AssetLocation :: Field AssetAttrs (Maybe LocationId)
-  AssetCardCode :: Field AssetAttrs CardCode
-  AssetSlots :: Field AssetAttrs [SlotType]
-  AssetSealedTokens :: Field AssetAttrs [Token]
-  AssetPlacement :: Field AssetAttrs Placement
+data instance Field Asset :: Type -> Type where
+  AssetName :: Field Asset Name
+  AssetCost :: Field Asset Int
+  AssetClues :: Field Asset Int
+  AssetHorror :: Field Asset Int
+  AssetDamage :: Field Asset Int
+  AssetRemainingHealth :: Field Asset (Maybe Int)
+  AssetRemainingSanity :: Field Asset (Maybe Int)
+  AssetDoom :: Field Asset Int
+  AssetExhausted :: Field Asset Bool
+  AssetUses :: Field Asset Uses
+  AssetStartingUses :: Field Asset Uses
+  AssetController :: Field Asset (Maybe InvestigatorId)
+  AssetLocation :: Field Asset (Maybe LocationId)
+  AssetCardCode :: Field Asset CardCode
+  AssetSlots :: Field Asset [SlotType]
+  AssetSealedTokens :: Field Asset [Token]
+  AssetPlacement :: Field Asset Placement
   -- virtual
-  AssetClasses :: Field AssetAttrs (HashSet ClassSymbol)
-  AssetTraits :: Field AssetAttrs (HashSet Trait)
-  AssetCardDef :: Field AssetAttrs CardDef
-  AssetCard :: Field AssetAttrs Card
-  AssetAbilities :: Field AssetAttrs [Ability]
+  AssetClasses :: Field Asset (HashSet ClassSymbol)
+  AssetTraits :: Field Asset (HashSet Trait)
+  AssetCardDef :: Field Asset CardDef
+  AssetCard :: Field Asset Card
+  AssetAbilities :: Field Asset [Ability]
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId

@@ -6,7 +6,7 @@ module Arkham.Event.Cards.EatLead2
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Attrs ( Field (AssetUses) )
+import Arkham.Asset.Types ( Field (AssetUses) )
 import Arkham.Asset.Uses
 import Arkham.Classes
 import Arkham.ChaosBag.RevealStrategy

@@ -9,7 +9,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Uses (useCount)
 import Arkham.Enemy.Attrs qualified as Enemy
 import Arkham.Enemy.Attrs (Field(..))
-import Arkham.Asset.Attrs (Field(..))
+import Arkham.Asset.Types (Field(..))
 import Arkham.Investigator.Attrs (InvestigatorAttrs(..))
 import Arkham.Projection
 import Arkham.Matcher (assetIs)

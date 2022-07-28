@@ -5,7 +5,7 @@ module Arkham.Asset.Runner
 
 import Arkham.Prelude
 
-import Arkham.Asset.Attrs as X
+import Arkham.Asset.Types as X
 import Arkham.Asset.Helpers as X
 import Arkham.Asset.Uses as X
 import Arkham.Classes as X

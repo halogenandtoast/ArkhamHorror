@@ -18,7 +18,7 @@ import Arkham.Trait as X hiding ( Cultist )
 import Arkham.Ability
 import Arkham.Action ( Action )
 import Arkham.Action qualified as Action
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.CommitRestriction

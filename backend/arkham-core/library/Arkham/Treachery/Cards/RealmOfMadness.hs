@@ -5,7 +5,7 @@ module Arkham.Treachery.Cards.RealmOfMadness
 
 import Arkham.Prelude
 
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Classes

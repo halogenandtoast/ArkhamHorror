@@ -8,7 +8,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Investigator ( modifiedStatsOf )
 import Arkham.Investigator.Attrs ( InvestigatorAttrs (..) )
 import Arkham.Enemy.Attrs ( Field(..), EnemyAttrs (..) )
-import Arkham.Asset.Attrs ( Field(..) )
+import Arkham.Asset.Types ( Field(..) )
 import Arkham.Projection
 
 spec :: Spec

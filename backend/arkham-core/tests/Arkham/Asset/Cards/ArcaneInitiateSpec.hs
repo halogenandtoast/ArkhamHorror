@@ -5,7 +5,7 @@ module Arkham.Asset.Cards.ArcaneInitiateSpec
 import TestImport.Lifted
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Attrs
+import Arkham.Asset.Types
 import Arkham.Investigator.Attrs hiding (assetsL)
 import Arkham.Projection
 

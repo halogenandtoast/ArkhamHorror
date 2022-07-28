@@ -4,8 +4,8 @@ module Arkham.Treachery.Cards.WrackedByNightmaresSpec
 
 import TestImport.Lifted
 
-import Arkham.Asset.Attrs ( Field (..) )
-import Arkham.Asset.Attrs qualified as Asset
+import Arkham.Asset.Types ( Field (..) )
+import Arkham.Asset.Types qualified as Asset
 import Arkham.Investigator.Attrs ( Field (..) )
 import Arkham.Matcher hiding ( AssetExhausted )
 import Arkham.Placement

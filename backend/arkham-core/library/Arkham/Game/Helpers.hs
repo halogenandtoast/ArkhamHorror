@@ -21,7 +21,7 @@ import Arkham.Action ( Action )
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Agenda.Attrs ( Field (..) )
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.Asset.Uses ( useCount )
 import Arkham.Attack
 import Arkham.Card

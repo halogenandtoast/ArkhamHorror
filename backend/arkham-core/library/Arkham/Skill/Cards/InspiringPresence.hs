@@ -7,7 +7,7 @@ where
 import Arkham.Prelude
 
 import qualified Arkham.Skill.Cards as Cards
-import Arkham.Asset.Attrs
+import Arkham.Asset.Types
 import Arkham.Classes
 import Arkham.Matcher hiding (AssetExhausted)
 import Arkham.Message hiding (AssetDamage)

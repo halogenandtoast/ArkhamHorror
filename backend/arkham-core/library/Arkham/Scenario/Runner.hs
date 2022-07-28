@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Scenario.Attrs as X
 
 import Arkham.Act.Sequence
-import Arkham.Asset.Attrs ( Field (..) )
+import Arkham.Asset.Types ( Field (..) )
 import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.Card.PlayerCard

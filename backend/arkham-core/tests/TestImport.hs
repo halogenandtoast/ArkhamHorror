@@ -17,7 +17,7 @@ import Arkham.Agenda.Attrs
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Cards.WhatsGoingOn
 import Arkham.Asset as X ( Asset(..), createAsset, lookupAsset )
-import Arkham.Asset.Attrs
+import Arkham.Asset.Types
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Cards.Adaptable1
 import Arkham.Card as X

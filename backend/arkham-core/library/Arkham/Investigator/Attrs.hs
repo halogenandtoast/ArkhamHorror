@@ -26,6 +26,7 @@ import Arkham.Json
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Data.Text qualified as T
+import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, HasTokenValue a, RunMessage a, Entity a, EntityId a ~ InvestigatorId, EntityAttrs a ~ InvestigatorAttrs) => IsInvestigator a
 
@@ -266,3 +267,51 @@ startsWithL = lens investigatorStartsWith $ \m x -> m { investigatorStartsWith =
 
 additionalActionsL :: Lens' InvestigatorAttrs [AdditionalAction]
 additionalActionsL = lens investigatorAdditionalActions $ \m x -> m { investigatorAdditionalActions = x }
+
+data Investigator = forall a. IsInvestigator a => Investigator a
+
+instance Eq Investigator where
+  (Investigator (a :: a)) == (Investigator (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Investigator where
+  show (Investigator a) = show a
+
+instance ToJSON Investigator where
+  toJSON (Investigator a) = toJSON a
+
+instance HasModifiersFor Investigator where
+  getModifiersFor source target (Investigator a) = getModifiersFor source target a
+
+instance HasTokenValue Investigator where
+  getTokenValue iid tokenFace (Investigator a) = getTokenValue iid tokenFace a
+
+instance HasAbilities Investigator where
+  getAbilities (Investigator a) = getAbilities a
+
+instance Entity Investigator where
+  type EntityId Investigator = InvestigatorId
+  type EntityAttrs Investigator = InvestigatorAttrs
+  toId = toId . toAttrs
+  toAttrs (Investigator a) = toAttrs a
+  overAttrs f (Investigator a) = Investigator $ overAttrs f a
+
+instance TargetEntity Investigator where
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+
+instance SourceEntity Investigator where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
+
+instance ToGameLoggerFormat Investigator where
+  format = format . toAttrs
+
+data SomeInvestigatorCard = forall a . IsInvestigator a => SomeInvestigatorCard (InvestigatorCard a)
+
+liftInvestigatorCard :: (forall a . InvestigatorCard a -> b) -> SomeInvestigatorCard -> b
+liftInvestigatorCard f (SomeInvestigatorCard a) = f a
+
+someInvestigatorCardCode :: SomeInvestigatorCard -> CardCode
+someInvestigatorCardCode = liftInvestigatorCard cbCardCode

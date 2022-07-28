@@ -47,8 +47,8 @@ import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.History
 import Arkham.Id
-import Arkham.Investigator
-import Arkham.Investigator.Attrs ( Field (..), InvestigatorAttrs (..) )
+import Arkham.Investigator ()
+import Arkham.Investigator.Attrs ( Investigator, Field (..), InvestigatorAttrs (..) )
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.Attrs

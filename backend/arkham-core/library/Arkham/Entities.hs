@@ -13,6 +13,7 @@ import Arkham.Classes.HasAbilities
 import Arkham.Effect
 import Arkham.Enemy
 import Arkham.Event
+import Arkham.Event.Attrs (Event)
 import Arkham.Investigator
 import Arkham.Json
 import Arkham.Location

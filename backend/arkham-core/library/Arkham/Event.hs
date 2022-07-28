@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Event where
 
 import Arkham.Prelude
@@ -7,69 +8,17 @@ import Arkham.Classes
 import Arkham.Event.Events
 import Arkham.Event.Runner
 import Arkham.Id
-import Data.Typeable
-
-data Event = forall a. IsEvent a => Event a
-
-instance Eq Event where
-  (Event (a :: a)) == (Event (b :: b)) = case eqT @a @b of
-    Just Refl -> a == b
-    Nothing -> False
-
-instance Show Event where
-  show (Event a) = show a
-
-instance ToJSON Event where
-  toJSON (Event a) = toJSON a
 
 createEvent :: IsCard a => a -> InvestigatorId -> Event
 createEvent a iid = lookupEvent (toCardCode a) iid (EventId $ toCardId a)
 
-instance HasCardCode Event where
-  toCardCode = toCardCode . toAttrs
-
-instance HasCardDef Event where
-  toCardDef = toCardDef . toAttrs
-
-instance HasAbilities Event where
-  getAbilities (Event a) = getAbilities a
-
-instance HasModifiersFor Event where
-  getModifiersFor source target (Event a) = getModifiersFor source target a
-
 instance RunMessage Event where
   runMessage msg (Event a) = Event <$> runMessage msg a
-
-instance Entity Event where
-  type EntityId Event = EventId
-  type EntityAttrs Event = EventAttrs
-  toId = toId . toAttrs
-  toAttrs (Event a) = toAttrs a
-  overAttrs f (Event a) = Event $ overAttrs f a
-
-instance TargetEntity Event where
-  toTarget = toTarget . toAttrs
-  isTarget = isTarget . toAttrs
-
-instance SourceEntity Event where
-  toSource = toSource . toAttrs
-  isSource = isSource . toAttrs
-
-instance IsCard Event where
-  toCardId = toCardId . toAttrs
-  toCard e = lookupCard (eventOriginalCardCode . toAttrs $ e) (toCardId e)
-  toCardOwner = toCardOwner . toAttrs
-
-getEventId :: Event -> EventId
-getEventId = eventId . toAttrs
 
 lookupEvent :: CardCode -> (InvestigatorId -> EventId -> Event)
 lookupEvent cardCode = case lookup cardCode allEvents of
   Nothing -> error $ "Unknown event: " <> show cardCode
   Just (SomeEventCard a) -> \i e -> Event $ cbCardBuilder a (i, e)
-
-ownerOfEvent :: Event -> InvestigatorId
-ownerOfEvent = eventOwner . toAttrs
 
 instance FromJSON Event where
   parseJSON v = flip (withObject "Event") v $ \o -> do
@@ -84,14 +33,6 @@ withEventCardCode cCode f =
   case lookup cCode allEvents of
     Nothing -> error $ "Unknown event: " <> show cCode
     Just (SomeEventCard a) -> f a
-
-data SomeEventCard = forall a. IsEvent a => SomeEventCard (EventCard a)
-
-liftSomeEventCard :: (forall a. EventCard a -> b) -> SomeEventCard -> b
-liftSomeEventCard f (SomeEventCard a) = f a
-
-someEventCardCode :: SomeEventCard -> CardCode
-someEventCardCode = liftSomeEventCard cbCardCode
 
 allEvents :: HashMap CardCode SomeEventCard
 allEvents = mapFromList $ map

@@ -17,6 +17,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
+import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EventId, EntityAttrs a ~ EventAttrs) => IsEvent a
 
@@ -125,3 +126,63 @@ instance SourceEntity EventAttrs where
   toSource = EventSource . toId
   isSource EventAttrs {eventId} (EventSource eid) = eventId == eid
   isSource _ _ = False
+
+data Event = forall a. IsEvent a => Event a
+
+instance Eq Event where
+  (Event (a :: a)) == (Event (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Event where
+  show (Event a) = show a
+
+instance ToJSON Event where
+  toJSON (Event a) = toJSON a
+
+instance HasCardCode Event where
+  toCardCode = toCardCode . toAttrs
+
+instance HasCardDef Event where
+  toCardDef = toCardDef . toAttrs
+
+instance HasAbilities Event where
+  getAbilities (Event a) = getAbilities a
+
+instance HasModifiersFor Event where
+  getModifiersFor source target (Event a) = getModifiersFor source target a
+
+instance Entity Event where
+  type EntityId Event = EventId
+  type EntityAttrs Event = EventAttrs
+  toId = toId . toAttrs
+  toAttrs (Event a) = toAttrs a
+  overAttrs f (Event a) = Event $ overAttrs f a
+
+instance TargetEntity Event where
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+
+instance SourceEntity Event where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
+
+instance IsCard Event where
+  toCardId = toCardId . toAttrs
+  toCard e = lookupCard (eventOriginalCardCode . toAttrs $ e) (toCardId e)
+  toCardOwner = toCardOwner . toAttrs
+
+getEventId :: Event -> EventId
+getEventId = eventId . toAttrs
+
+ownerOfEvent :: Event -> InvestigatorId
+ownerOfEvent = eventOwner . toAttrs
+
+data SomeEventCard = forall a. IsEvent a => SomeEventCard (EventCard a)
+
+liftSomeEventCard :: (forall a. EventCard a -> b) -> SomeEventCard -> b
+liftSomeEventCard f (SomeEventCard a) = f a
+
+someEventCardCode :: SomeEventCard -> CardCode
+someEventCardCode = liftSomeEventCard cbCardCode
+

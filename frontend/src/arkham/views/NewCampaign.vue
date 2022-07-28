@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import * as Arkham from '@/arkham/types/Deck';
 import { fetchDecks, newGame } from '@/arkham/api';
 import type { Difficulty } from '@/arkham/types/Difficulty';
+
+const route = useRoute()
 
 const scenarios = [
   { id: '02118', name: 'The Miskatonic Museum', },
@@ -23,11 +25,17 @@ const scenarios = [
   { id: '82001', name: 'Carnevale of Horrors', },
 ]
 
+console.log(route.query)
+
+const betaCampaigns = route.query.beta !== undefined
+  ? [ { id: '04', name: 'The Forgotten Age' } ]
+  : []
+
 const campaigns = [
   { id: '01', name: 'The Night of the Zealot', returnToId: '50' },
   { id: '02', name: 'The Dunwich Legacy', },
   { id: '03', name: 'The Path to Carcosa', },
-  { id: '04', name: 'The Forgotten Age', },
+  ...betaCampaigns
 ]
 
 const difficulties: Difficulty[] = ['Easy', 'Standard', 'Hard', 'Expert']

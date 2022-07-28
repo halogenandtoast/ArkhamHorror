@@ -1831,7 +1831,7 @@ instance Projection Act where
       ActClues -> pure actClues
       ActAbilities -> pure $ getAbilities a
 
-instance Projection EnemyAttrs where
+instance Projection Enemy where
   field f eid = do
     e <- getEnemy eid
     let attrs@EnemyAttrs {..} = toAttrs e

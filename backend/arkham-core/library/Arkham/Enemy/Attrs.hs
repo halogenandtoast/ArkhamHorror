@@ -32,24 +32,24 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type EnemyCard a = CardBuilder EnemyId a
 
-data instance Field EnemyAttrs :: Type -> Type where
-  EnemyEngagedInvestigators :: Field EnemyAttrs (HashSet InvestigatorId)
-  EnemyDoom :: Field EnemyAttrs Int
-  EnemyEvade :: Field EnemyAttrs Int
-  EnemyFight :: Field EnemyAttrs Int
-  EnemyClues :: Field EnemyAttrs Int
-  EnemyDamage :: Field EnemyAttrs Int
-  EnemyRemainingHealth :: Field EnemyAttrs Int
-  EnemyHealthDamage :: Field EnemyAttrs Int
-  EnemySanityDamage :: Field EnemyAttrs Int
-  EnemyTraits :: Field EnemyAttrs (HashSet Trait)
-  EnemyKeywords :: Field EnemyAttrs (HashSet Keyword)
-  EnemyAbilities :: Field EnemyAttrs [Ability]
-  EnemyCard :: Field EnemyAttrs Card
-  EnemyCardCode :: Field EnemyAttrs CardCode
-  EnemyLocation :: Field EnemyAttrs (Maybe LocationId)
-  EnemyPlacement :: Field EnemyAttrs Placement
-  EnemySealedTokens :: Field EnemyAttrs [Token]
+data instance Field Enemy :: Type -> Type where
+  EnemyEngagedInvestigators :: Field Enemy (HashSet InvestigatorId)
+  EnemyDoom :: Field Enemy Int
+  EnemyEvade :: Field Enemy Int
+  EnemyFight :: Field Enemy Int
+  EnemyClues :: Field Enemy Int
+  EnemyDamage :: Field Enemy Int
+  EnemyRemainingHealth :: Field Enemy Int
+  EnemyHealthDamage :: Field Enemy Int
+  EnemySanityDamage :: Field Enemy Int
+  EnemyTraits :: Field Enemy (HashSet Trait)
+  EnemyKeywords :: Field Enemy (HashSet Keyword)
+  EnemyAbilities :: Field Enemy [Ability]
+  EnemyCard :: Field Enemy Card
+  EnemyCardCode :: Field Enemy CardCode
+  EnemyLocation :: Field Enemy (Maybe LocationId)
+  EnemyPlacement :: Field Enemy Placement
+  EnemySealedTokens :: Field Enemy [Token]
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId

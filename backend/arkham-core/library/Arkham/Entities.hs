@@ -15,7 +15,8 @@ import Arkham.Enemy ()
 import Arkham.Enemy.Attrs (Enemy)
 import Arkham.Event
 import Arkham.Event.Attrs (Event)
-import Arkham.Investigator
+import Arkham.Investigator ()
+import Arkham.Investigator.Attrs (Investigator)
 import Arkham.Json
 import Arkham.Location
 import Arkham.Skill ()

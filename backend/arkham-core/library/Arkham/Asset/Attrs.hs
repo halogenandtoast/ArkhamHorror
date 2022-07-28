@@ -57,7 +57,6 @@ liftAssetCard f (SomeAssetCard a) = f a
 someAssetCardCode :: SomeAssetCard -> CardCode
 someAssetCardCode = liftAssetCard cbCardCode
 
-
 instance TargetEntity Asset where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs

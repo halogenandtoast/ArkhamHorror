@@ -23,9 +23,9 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type SkillCard a = CardBuilder (InvestigatorId, SkillId) a
 
-data instance Field SkillAttrs :: Type -> Type where
-  SkillTraits :: Field SkillAttrs (HashSet Trait)
-  SkillCard :: Field SkillAttrs Card
+data instance Field Skill :: Type -> Type where
+  SkillTraits :: Field Skill (HashSet Trait)
+  SkillCard :: Field Skill Card
 
 data SkillAttrs = SkillAttrs
   { skillCardCode :: CardCode

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Scenario
   ( module Arkham.Scenario
   ) where
@@ -14,54 +15,13 @@ import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios
 import Arkham.Target
 import Arkham.Token
-import Data.Typeable
-
-data Scenario = forall a. IsScenario a => Scenario a
-
-instance Eq Scenario where
-  (Scenario (a :: a)) == (Scenario (b :: b)) = case eqT @a @b of
-    Just Refl -> a == b
-    Nothing -> False
-
-instance Show Scenario where
-  show (Scenario a) = show a
-
-instance ToJSON Scenario where
-  toJSON (Scenario a) = toJSON a
 
 instance FromJSON Scenario where
   parseJSON v = flip (withObject "Scenario") v $ \o -> do
     cCode :: CardCode <- o .: "id"
-    case cCode of
-      "01104" -> Scenario . TheGathering <$> parseJSON v
-      "01120" -> Scenario . TheMidnightMasks <$> parseJSON v
-      "01142" -> Scenario . TheDevourerBelow <$> parseJSON v
-      "02041" -> Scenario . ExtracurricularActivity <$> parseJSON v
-      "02062" -> Scenario . TheHouseAlwaysWins <$> parseJSON v
-      "02118" -> Scenario . TheMiskatonicMuseum <$> parseJSON v
-      "02159" -> Scenario . TheEssexCountyExpress <$> parseJSON v
-      "02195" -> Scenario . BloodOnTheAltar <$> parseJSON v
-      "02236" -> Scenario . UndimensionedAndUnseen <$> parseJSON v
-      "02274" -> Scenario . WhereDoomAwaits <$> parseJSON v
-      "02311" -> Scenario . LostInTimeAndSpace <$> parseJSON v
-      "03043" -> Scenario . CurtainCall <$> parseJSON v
-      "03061" -> Scenario . TheLastKing <$> parseJSON v
-      "03120" -> Scenario . EchoesOfThePast <$> parseJSON v
-      "03159" -> Scenario . TheUnspeakableOath <$> parseJSON v
-      "03200" -> Scenario . APhantomOfTruth <$> parseJSON v
-      "03240" -> Scenario . ThePallidMask <$> parseJSON v
-      "03274" -> Scenario . BlackStarsRise <$> parseJSON v
-      "03316" -> Scenario . DimCarcosa <$> parseJSON v
-      "04043" -> Scenario . TheUntamedWilds <$> parseJSON v
-      "50011" -> Scenario . ReturnToTheGathering <$> parseJSON v
-      "50025" -> Scenario . ReturnToTheMidnightMasks <$> parseJSON v
-      "50032" -> Scenario . ReturnToTheDevourerBelow <$> parseJSON v
-      "81001" -> Scenario . CurseOfTheRougarou <$> parseJSON v
-      "82001" -> Scenario . CarnevaleOfHorrors <$> parseJSON v
-      _ -> error "Unknown scenario"
-
-instance HasModifiersFor Scenario where
-  getModifiersFor source target (Scenario a) = getModifiersFor source target a
+    case lookup cCode allScenarios of
+      Nothing -> error $ "Unknown scenario: " <> show cCode
+      Just (SomeScenario (_ :: Difficulty -> a)) -> Scenario <$> parseJSON @a v
 
 instance RunMessage Scenario where
   runMessage msg x@(Scenario s) = case msg of
@@ -98,49 +58,38 @@ instance HasTokenValue Scenario where
       then pure $ TokenValue tokenFace NoModifier
       else getTokenValue iid tokenFace s
 
-instance Entity Scenario where
-  type EntityId Scenario = ScenarioId
-  type EntityAttrs Scenario = ScenarioAttrs
-  toId = toId . toAttrs
-  toAttrs (Scenario a) = toAttrs a
-  overAttrs f (Scenario a) = Scenario $ overAttrs f a
-
 lookupScenario :: ScenarioId -> Difficulty -> Scenario
-lookupScenario = fromJustNote "Unknown scenario" . flip lookup allScenarios
+lookupScenario scenarioId = case lookup (unScenarioId scenarioId) allScenarios of
+  Nothing -> error $ "Unknown scenario: " <> show scenarioId
+  Just (SomeScenario f) -> Scenario . f
 
-difficultyOfScenario :: Scenario -> Difficulty
-difficultyOfScenario = scenarioDifficulty . toAttrs
+data SomeScenario = forall a. IsScenario a => SomeScenario (Difficulty -> a)
 
-scenarioActs :: Scenario -> [CardDef]
-scenarioActs s = case mapToList $ scenarioActStack (toAttrs s) of
-  [(_, actIds)] -> actIds
-  _ -> error "Not able to handle multiple act stacks yet"
-
-allScenarios :: HashMap ScenarioId (Difficulty -> Scenario)
+allScenarios :: HashMap CardCode SomeScenario
 allScenarios = mapFromList
-  [ ("01104", Scenario . theGathering)
-  , ("01120", Scenario . theMidnightMasks)
-  , ("01142", Scenario . theDevourerBelow)
-  , ("02041", Scenario . extracurricularActivity)
-  , ("02062", Scenario . theHouseAlwaysWins)
-  , ("02118", Scenario . theMiskatonicMuseum)
-  , ("02159", Scenario . theEssexCountyExpress)
-  , ("02195", Scenario . bloodOnTheAltar)
-  , ("02236", Scenario . undimensionedAndUnseen)
-  , ("02274", Scenario . whereDoomAwaits)
-  , ("02311", Scenario . lostInTimeAndSpace)
-  , ("03043", Scenario . curtainCall)
-  , ("03061", Scenario . theLastKing)
-  , ("03120", Scenario . echoesOfThePast)
-  , ("03159", Scenario . theUnspeakableOath)
-  , ("03200", Scenario . aPhantomOfTruth)
-  , ("03240", Scenario . thePallidMask)
-  , ("03274", Scenario . blackStarsRise)
-  , ("03316", Scenario . dimCarcosa)
-  , ("04043", Scenario . theUntamedWilds)
-  , ("50011", Scenario . returnToTheGathering)
-  , ("50025", Scenario . returnToTheMidnightMasks)
-  , ("50032", Scenario . returnToTheDevourerBelow)
-  , ("81001", Scenario . curseOfTheRougarou)
-  , ("82001", Scenario . carnevaleOfHorrors)
+  [ ("01104", SomeScenario theGathering)
+  , ("01120", SomeScenario theMidnightMasks)
+  , ("01142", SomeScenario theDevourerBelow)
+  , ("02041", SomeScenario extracurricularActivity)
+  , ("02062", SomeScenario theHouseAlwaysWins)
+  , ("02118", SomeScenario theMiskatonicMuseum)
+  , ("02159", SomeScenario theEssexCountyExpress)
+  , ("02195", SomeScenario bloodOnTheAltar)
+  , ("02236", SomeScenario undimensionedAndUnseen)
+  , ("02274", SomeScenario whereDoomAwaits)
+  , ("02311", SomeScenario lostInTimeAndSpace)
+  , ("03043", SomeScenario curtainCall)
+  , ("03061", SomeScenario theLastKing)
+  , ("03120", SomeScenario echoesOfThePast)
+  , ("03159", SomeScenario theUnspeakableOath)
+  , ("03200", SomeScenario aPhantomOfTruth)
+  , ("03240", SomeScenario thePallidMask)
+  , ("03274", SomeScenario blackStarsRise)
+  , ("03316", SomeScenario dimCarcosa)
+  , ("04043", SomeScenario theUntamedWilds)
+  , ("50011", SomeScenario returnToTheGathering)
+  , ("50025", SomeScenario returnToTheMidnightMasks)
+  , ("50032", SomeScenario returnToTheDevourerBelow)
+  , ("81001", SomeScenario curseOfTheRougarou)
+  , ("82001", SomeScenario carnevaleOfHorrors)
   ]

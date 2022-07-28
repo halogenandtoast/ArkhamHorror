@@ -1865,7 +1865,7 @@ instance Projection Enemy where
         InThreatArea iid -> field InvestigatorLocation iid
         _ -> pure Nothing
 
-instance Projection InvestigatorAttrs where
+instance Projection Investigator where
   field f iid = do
     i <- getInvestigator iid
     let InvestigatorAttrs {..} = toAttrs i
@@ -2233,7 +2233,7 @@ instance Projection Agenda where
       AgendaDoom -> pure agendaDoom
       AgendaAbilities -> pure $ getAbilities a
 
-instance Projection CampaignAttrs where
+instance Projection Campaign where
   field fld _ = do
     c <- fromJustNote "impossible" <$> getCampaign
     let CampaignAttrs {..} = toAttrs c
@@ -2248,7 +2248,7 @@ instance Projection EffectAttrs where
     case fld of
       EffectAbilities -> pure $ getAbilities e
 
-instance Projection EventAttrs where
+instance Projection Event where
   field fld eid = do
     e <- getEvent eid
     let
@@ -2263,7 +2263,7 @@ instance Projection EventAttrs where
         -- an event might need to be converted back to its original card
         pure $ lookupCard eventOriginalCardCode (unEventId eid)
 
-instance Projection ScenarioAttrs where
+instance Projection Scenario where
   field fld _ = do
     s <- fromJustNote "should be impossible" <$> getScenario
     let ScenarioAttrs {..} = toAttrs s
@@ -2285,7 +2285,7 @@ instance Projection ScenarioAttrs where
       ScenarioCardsUnderScenarioReference ->
         pure scenarioCardsUnderScenarioReference
 
-instance Projection SkillAttrs where
+instance Projection Skill where
   field fld sid = do
     s <- getSkill sid
     let
@@ -2295,7 +2295,7 @@ instance Projection SkillAttrs where
       SkillTraits -> pure $ cdCardTraits cdef
       SkillCard -> pure $ lookupCard skillCardCode (unSkillId sid)
 
-instance Projection TreacheryAttrs where
+instance Projection Treachery where
   field fld tid = do
     t <- getTreachery tid
     let

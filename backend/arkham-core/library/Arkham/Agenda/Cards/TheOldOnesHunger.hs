@@ -26,7 +26,7 @@ theOldOnesHunger =
 
 instance RunMessage TheOldOnesHunger where
   runMessage msg a@(TheOldOnesHunger attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       scenarioDeckCount <- length <$> getScenarioDeck PotentialSacrifices
       if scenarioDeckCount >= 2

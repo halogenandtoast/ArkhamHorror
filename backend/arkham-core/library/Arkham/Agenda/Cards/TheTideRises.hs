@@ -39,7 +39,7 @@ instance RunMessage TheTideRises where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       tidalTerrors <- mapMaybe (preview _EncounterCard)
         <$> getSetAsideCardsMatching (CardWithTitle "Tidal Terror")
-      mAgenda1C <- selectOne $ AgendaWithSequence $ AS.Agenda 1 C
+      mAgenda1C <- selectOne $ AgendaWithSequence $ AS.Sequence 1 C
       markDoubtOrConviction <- case mAgenda1C of
         Nothing -> pure []
         Just a1cId -> do

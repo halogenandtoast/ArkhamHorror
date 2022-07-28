@@ -35,7 +35,7 @@ instance RunMessage PredatorOrPrey where
     UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
       push (Resign iid)
       PredatorOrPrey <$> runMessage msg attrs
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       theMaskedHunter <- EncounterCard
         <$> genEncounterCard Enemies.theMaskedHunter
       a <$ pushAll

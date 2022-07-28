@@ -23,7 +23,7 @@ outOfTime = agenda (5, A) OutOfTime Cards.outOfTime (Static 3)
 
 instance RunMessage OutOfTime where
   runMessage msg a@(OutOfTime attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 5 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       investigatorIds <- selectList UneliminatedInvestigator
       a <$ pushAll
         ([ InvestigatorDefeated (toSource attrs) iid | iid <- investigatorIds ]

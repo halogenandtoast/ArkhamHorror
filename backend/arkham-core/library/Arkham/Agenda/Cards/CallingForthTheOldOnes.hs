@@ -23,7 +23,7 @@ callingForthTheOldOnes =
 instance RunMessage CallingForthTheOldOnes where
   runMessage msg a@(CallingForthTheOldOnes attrs@AgendaAttrs {..}) =
     case msg of
-      AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
+      AdvanceAgenda aid | aid == agendaId && onSide B attrs ->
         a <$ pushAll
           [ ShuffleEncounterDiscardBackIn
           , AdvanceAgendaDeck agendaDeckId (toSource attrs)

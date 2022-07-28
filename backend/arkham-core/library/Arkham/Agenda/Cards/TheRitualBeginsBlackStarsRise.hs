@@ -43,7 +43,7 @@ instance RunMessage TheRitualBeginsBlackStarsRise where
     AdvanceAgenda aid | aid == toId attrs && onSide D attrs -> do
       riftSeekers <- mapMaybe (preview _EncounterCard)
         <$> getSetAsideCardsMatching (CardWithTitle "Rift Seeker")
-      mAgenda1A <- selectOne $ AgendaWithSequence $ AS.Agenda 1 A
+      mAgenda1A <- selectOne $ AgendaWithSequence $ AS.Sequence 1 A
       markDoubtOrConviction <- case mAgenda1A of
         Nothing -> pure []
         Just a1aId -> do

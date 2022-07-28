@@ -40,7 +40,7 @@ instance RunMessage ChaosInTheCloverClub where
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       criminals <- selectList $ EnemyWithTrait Criminal <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Abomination)
       a <$ pushAll [ Discard $ EnemyTarget eid | eid <- criminals ]
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       a <$ push
         (chooseOne

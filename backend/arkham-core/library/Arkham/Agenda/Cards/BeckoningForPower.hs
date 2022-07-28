@@ -23,6 +23,6 @@ beckoningForPower =
 
 instance RunMessage BeckoningForPower where
   runMessage msg a@(BeckoningForPower attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs ->
       a <$ push (ScenarioResolution $ Resolution 2)
     _ -> BeckoningForPower <$> runMessage msg attrs

@@ -28,13 +28,13 @@ theRitualBegins =
 
 instance HasModifiersFor TheRitualBegins where
   getModifiersFor _ (EnemyTarget _) (TheRitualBegins attrs)
-    | agendaSequence attrs == Agenda 2 A = pure
+    | agendaSequence attrs == Sequence 2 A = pure
     $ toModifiers attrs [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ _ = pure []
 
 instance RunMessage TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       iids <- getInvestigatorIds
       a <$ pushAll
         ([ BeginSkillTest

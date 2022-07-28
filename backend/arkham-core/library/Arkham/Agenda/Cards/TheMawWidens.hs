@@ -25,7 +25,7 @@ theMawWidens = agenda (2, A) TheMawWidens Cards.theMawWidens (Static 3)
 
 instance RunMessage TheMawWidens where
   runMessage msg a@(TheMawWidens attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       locationId <- fieldMap

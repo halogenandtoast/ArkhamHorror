@@ -48,5 +48,5 @@ instance RunMessage WhatHaveYouDone where
             [ScenarioResolution $ Resolution 2]
           ]
         )
-      pure $ WhatHaveYouDone $ attrs & sequenceL .~ Act 3 B
+      pure $ WhatHaveYouDone $ attrs & sequenceL .~ Sequence 3 B
     _ -> WhatHaveYouDone <$> runMessage msg attrs

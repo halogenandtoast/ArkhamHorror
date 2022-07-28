@@ -32,11 +32,14 @@ advanceActSideA attrs advanceMode = do
       [AdvanceAct (toId attrs) (toSource attrs) advanceMode]
     ]
 
+instance RunMessage Act where
+  runMessage msg (Act a) = Act <$> runMessage msg a
+
 instance RunMessage ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
     AdvanceAct aid _ advanceMode | aid == actId && onSide A a -> do
       pushAll =<< advanceActSideA a advanceMode
-      pure $ a & (sequenceL .~ Act (unActStep $ actStep actSequence) B)
+      pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) B)
     AttachTreachery tid (ActTarget aid) | aid == actId ->
       pure $ a & treacheriesL %~ insertSet tid
     Discard (ActTarget aid) | aid == toId a -> do

@@ -11,12 +11,10 @@ import Arkham.Card.Id
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Id
-import Arkham.Label qualified as L
 import Arkham.Location.Attrs as X ( Location )
 import Arkham.Location.Locations
 import Arkham.Location.Runner
 import Arkham.Message
-import Arkham.Name
 import Data.UUID ( nil )
 
 createLocation :: IsCard a => a -> Location

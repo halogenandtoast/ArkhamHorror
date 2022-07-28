@@ -26,7 +26,7 @@ strangeDisappearances =
 
 instance RunMessage StrangeDisappearances where
   runMessage msg a@(StrangeDisappearances attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       scenarioDeckCount <- length <$> getScenarioDeck PotentialSacrifices
       if scenarioDeckCount >= 3

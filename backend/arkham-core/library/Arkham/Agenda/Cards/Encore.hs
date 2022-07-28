@@ -39,7 +39,7 @@ instance RunMessage Encore where
       , PlaceDoomOnAgenda
       , PlaceDoomOnAgenda
       ]
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
+    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       iids <- getInvestigatorIds
       a <$ pushAll
         (map

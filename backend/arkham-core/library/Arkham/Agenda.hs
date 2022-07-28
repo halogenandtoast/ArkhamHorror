@@ -5,7 +5,7 @@ module Arkham.Agenda (
 import Arkham.Prelude
 
 import Arkham.Agenda.Agendas
-import Arkham.Agenda.Runner hiding (Agenda)
+import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id

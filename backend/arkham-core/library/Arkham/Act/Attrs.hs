@@ -17,6 +17,7 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ ActId, EntityAttrs a ~ ActAttrs) => IsAct a
 
@@ -57,7 +58,7 @@ actWith (n, side) f cardDef mCost g = CardBuilder
   { cbCardCode = cdCardCode cardDef
   , cbCardBuilder = \(deckId, aid) -> f . g $ ActAttrs
     { actId = aid
-    , actSequence = AS.Act n side
+    , actSequence = AS.Sequence n side
     , actClues = 0
     , actAdvanceCost = mCost
     , actTreacheries = mempty
@@ -112,3 +113,45 @@ instance HasAbilities ActAttrs where
   getAbilities attrs@ActAttrs {..} = case actAdvanceCost of
     Just cost -> [mkAbility attrs 999 (Objective $ FastAbility cost)]
     Nothing -> []
+
+data Act = forall a. IsAct a => Act a
+
+instance Eq Act where
+  (Act (a :: a)) == (Act (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Act where
+  show (Act a) = show a
+
+instance ToJSON Act where
+  toJSON (Act a) = toJSON a
+
+instance HasAbilities Act where
+  getAbilities (Act a) = getAbilities a
+
+instance HasModifiersFor Act where
+  getModifiersFor source target (Act a) = getModifiersFor source target a
+
+instance Entity Act where
+  type EntityId Act = ActId
+  type EntityAttrs Act = ActAttrs
+  toId = toId . toAttrs
+  toAttrs (Act a) = toAttrs a
+  overAttrs f (Act a) = Act $ overAttrs f a
+
+instance TargetEntity Act where
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+
+instance SourceEntity Act where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
+
+data SomeActCard = forall a. IsAct a => SomeActCard (ActCard a)
+
+liftSomeActCard :: (forall a. ActCard a -> b) -> SomeActCard -> b
+liftSomeActCard f (SomeActCard a) = f a
+
+someActCardCode :: SomeActCard -> CardCode
+someActCardCode = liftSomeActCard cbCardCode

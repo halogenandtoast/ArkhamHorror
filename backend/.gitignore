@@ -24,3 +24,4 @@ cabal.sandbox.config
 arkham-horror-backend.cabal
 /tags
 data/
+errors.err

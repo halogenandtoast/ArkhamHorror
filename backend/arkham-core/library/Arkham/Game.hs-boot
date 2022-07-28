@@ -62,7 +62,7 @@ instance Projection Asset
 instance Projection (DiscardedEntity Asset)
 instance Projection CampaignAttrs
 instance Projection EffectAttrs
-instance Projection EnemyAttrs
+instance Projection Enemy
 instance Projection EventAttrs
 instance Projection InvestigatorAttrs
 instance Projection Location

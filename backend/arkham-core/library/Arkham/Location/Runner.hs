@@ -410,16 +410,3 @@ getShouldSpawnNonEliteAtConnectingInstead attrs = do
   pure $ flip any modifiers' $ \case
     SpawnNonEliteAtConnectingInstead{} -> True
     _ -> False
-
-instance Named LocationAttrs where
-  toName l = if locationRevealed l
-    then fromMaybe baseName (cdRevealedName $ toCardDef l)
-    else baseName
-    where baseName = toName (toCardDef l)
-
-instance Named (Unrevealed LocationAttrs) where
-  toName (Unrevealed l) = toName (toCardDef l)
-
-instance IsCard LocationAttrs where
-  toCardId = unLocationId . locationId
-  toCardOwner = const Nothing

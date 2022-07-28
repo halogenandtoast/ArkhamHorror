@@ -272,6 +272,7 @@ allLocationCards = mapFromList $ map
   , ruinsOfCarcosaAMomentsRest
   , ruinsOfCarcosaInhabitantOfCarcosa
   , ruinsOfCarcosaTheCoffin
+  , ruinsOfEztli
   , sanMarcoBasilica
   , schoolhouse_212
   , schoolhouse_213
@@ -1574,6 +1575,10 @@ palaceOfTheKing =
 expeditionCamp :: CardDef
 expeditionCamp =
   location "04050" "Expedition Camp" [Campsite, Jungle] TheUntamedWilds
+
+ruinsOfEztli :: CardDef
+ruinsOfEztli =
+  location "04053" "Ruins of Eztli" [Ancient, Ruins] TheUntamedWilds
 
 pathOfThorns :: CardDef
 pathOfThorns = location "04069" "Path of Thorns" [Jungle] Rainforest

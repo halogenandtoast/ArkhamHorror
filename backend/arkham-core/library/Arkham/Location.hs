@@ -12,57 +12,15 @@ import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Label qualified as L
+import Arkham.Location.Attrs as X ( Location )
 import Arkham.Location.Locations
 import Arkham.Location.Runner
-import Arkham.Location.Attrs as X (Location)
 import Arkham.Message
 import Arkham.Name
 import Data.UUID ( nil )
 
 createLocation :: IsCard a => a -> Location
 createLocation a = lookupLocation (toCardCode a) (LocationId $ toCardId a)
-
-toLocationSymbol :: Location -> LocationSymbol
-toLocationSymbol = locationSymbol . toAttrs
-
-toLocationLabel :: Location -> L.Label
-toLocationLabel = L.Label . locationLabel . toAttrs
-
-instance HasCardCode Location where
-  toCardCode = toCardCode . toAttrs
-
-instance HasAbilities Location where
-  getAbilities (Location a) = getAbilities a
-
-instance HasModifiersFor Location where
-  getModifiersFor source target (Location a) = getModifiersFor source target a
-
-instance RunMessage Location where
-  runMessage msg x@(Location l) = do
-    modifiers' <- getModifiers (toSource x) (toTarget x)
-    let msg' = if Blank `elem` modifiers' then Blanked msg else msg
-    Location <$> runMessage msg' l
-
-instance Entity Location where
-  type EntityId Location = LocationId
-  type EntityAttrs Location = LocationAttrs
-  toId = toId . toAttrs
-  toAttrs (Location l) = toAttrs l
-  overAttrs f (Location a) = Location $ overAttrs f a
-
-instance Named Location where
-  toName = toName . toAttrs
-
-instance Named (Unrevealed Location) where
-  toName (Unrevealed l) = toName . Unrevealed $ toAttrs l
-
-instance TargetEntity Location where
-  toTarget = toTarget . toAttrs
-  isTarget = isTarget . toAttrs
-
-instance SourceEntity Location where
-  toSource = toSource . toAttrs
-  isSource = isSource . toAttrs
 
 lookupLocationStub :: CardCode -> Location
 lookupLocationStub = ($ LocationId (CardId nil)) . lookupLocation
@@ -72,39 +30,23 @@ lookupLocation lid = case lookup lid allLocations of
   Nothing -> error $ "Unknown locaiton: " <> show lid
   Just (SomeLocationCard a) -> Location <$> cbCardBuilder a
 
-isEmptyLocation :: Location -> Bool
-isEmptyLocation =
-  and . sequence [noInvestigatorsAtLocation, noEnemiesAtLocation]
-
-noInvestigatorsAtLocation :: Location -> Bool
-noInvestigatorsAtLocation l = null investigators'
-  where investigators' = locationInvestigators $ toAttrs l
-
-noEnemiesAtLocation :: Location -> Bool
-noEnemiesAtLocation l = null enemies'
-  where enemies' = locationEnemies $ toAttrs l
-
-isRevealed :: Location -> Bool
-isRevealed = locationRevealed . toAttrs
+instance RunMessage Location where
+  runMessage msg x@(Location l) = do
+    modifiers' <- getModifiers (toSource x) (toTarget x)
+    let msg' = if Blank `elem` modifiers' then Blanked msg else msg
+    Location <$> runMessage msg' l
 
 instance FromJSON Location where
   parseJSON v = flip (withObject "Location") v $ \o -> do
     cCode :: CardCode <- o .: "cardCode"
-    withLocationCardCode cCode $ \(_ :: LocationCard a) -> Location <$> parseJSON @a v
+    withLocationCardCode cCode
+      $ \(_ :: LocationCard a) -> Location <$> parseJSON @a v
 
 withLocationCardCode
-  :: CardCode
-  -> (forall a. IsLocation a => LocationCard a -> r)
-  -> r
-withLocationCardCode cCode f =
-  case lookup cCode allLocations of
-    Nothing -> error "invalid locations"
-    Just (SomeLocationCard a) -> f a
-
-data SomeLocationCard = forall a. IsLocation a => SomeLocationCard (LocationCard a)
-
-someLocationCardCode :: SomeLocationCard -> CardCode
-someLocationCardCode (SomeLocationCard a) = cbCardCode a
+  :: CardCode -> (forall a . IsLocation a => LocationCard a -> r) -> r
+withLocationCardCode cCode f = case lookup cCode allLocations of
+  Nothing -> error "invalid locations"
+  Just (SomeLocationCard a) -> f a
 
 allLocations :: HashMap CardCode SomeLocationCard
 allLocations = mapFromList $ map
@@ -341,6 +283,16 @@ allLocations = mapFromList $ map
   -- The Forgotten Age
   -- The Untamed Wilds
   , SomeLocationCard expeditionCamp
+  , SomeLocationCard ruinsOfEztli
+  -- The Doom of Eztli
+  -- Rainforest
+  , SomeLocationCard pathOfThorns
+  , SomeLocationCard riverCanyon
+  , SomeLocationCard ropeBridge
+  , SomeLocationCard serpentsHaven
+  , SomeLocationCard circuitousTrail
+  , SomeLocationCard templeOfTheFang
+  , SomeLocationCard overgrownCairns
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway
@@ -387,3 +339,4 @@ allLocations = mapFromList $ map
   , SomeLocationCard accademiaBridge
   , SomeLocationCard theGuardian
   ]
+

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Asset where
 
 import Arkham.Prelude
@@ -6,54 +7,9 @@ import Arkham.Asset.Assets
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Id
-import Arkham.Matcher
-import Data.Typeable
-
-data Asset = forall a. IsAsset a => Asset a
-
-instance Eq Asset where
-  (Asset (a :: a)) == (Asset (b :: b)) = case eqT @a @b of
-    Just Refl -> a == b
-    Nothing -> False
-
-instance Show Asset where
-  show (Asset a) = show a
-
-instance ToJSON Asset where
-  toJSON (Asset a) = toJSON a
 
 createAsset :: IsCard a => a -> Asset
 createAsset a = lookupAsset (toCardCode a) (AssetId $ toCardId a, toCardOwner a)
-
-instance HasAbilities Asset where
-  getAbilities (Asset a) = getAbilities a
-
-instance HasModifiersFor Asset where
-  getModifiersFor source target (Asset a) = getModifiersFor source target a
-
-instance RunMessage Asset where
-  runMessage msg x@(Asset a) = do
-    inPlay <- member (toId x) <$> select AnyAsset
-    modifiers' <- if inPlay
-      then getModifiers (toSource x) (toTarget x)
-      else pure []
-    let msg' = if Blank `elem` modifiers' then Blanked msg else msg
-    Asset <$> runMessage msg' a
-
-instance Entity Asset where
-  type EntityId Asset = AssetId
-  type EntityAttrs Asset = AssetAttrs
-  toId = toId . toAttrs
-  toAttrs (Asset a) = toAttrs a
-  overAttrs f (Asset a) = Asset $ overAttrs f a
-
-instance TargetEntity Asset where
-  toTarget = toTarget . toAttrs
-  isTarget = isTarget . toAttrs
-
-instance SourceEntity Asset where
-  toSource = toSource . toAttrs
-  isSource = isSource . toAttrs
 
 lookupAsset :: CardCode -> ((AssetId, Maybe InvestigatorId) -> Asset)
 lookupAsset cardCode = case lookup cardCode allAssets of
@@ -73,14 +29,6 @@ withAssetCardCode cCode f =
   case lookup cCode allAssets of
     Nothing -> error "invalid assets"
     Just (SomeAssetCard a) -> f a
-
-data SomeAssetCard = forall a. IsAsset a => SomeAssetCard (AssetCard a)
-
-liftAssetCard :: (forall a. AssetCard a -> b) -> SomeAssetCard -> b
-liftAssetCard f (SomeAssetCard a) = f a
-
-someAssetCardCode :: SomeAssetCard -> CardCode
-someAssetCardCode = liftAssetCard cbCardCode
 
 allAssets :: HashMap CardCode SomeAssetCard
 allAssets = mapFromList $ map

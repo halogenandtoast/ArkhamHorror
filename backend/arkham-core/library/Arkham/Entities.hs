@@ -4,7 +4,8 @@ import Arkham.Prelude
 
 import Arkham.Act
 import Arkham.Agenda
-import Arkham.Asset
+import Arkham.Asset (createAsset)
+import Arkham.Asset.Attrs (Asset)
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.RunMessage

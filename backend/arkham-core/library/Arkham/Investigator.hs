@@ -22,7 +22,7 @@ instance RunMessage Investigator where
 lookupInvestigator :: InvestigatorId -> Investigator
 lookupInvestigator iid = case lookup (unInvestigatorId iid) allInvestigators of
   Nothing -> lookupPromoInvestigator iid
-  Just (SomeInvestigatorCard a) -> Investigator $ cbCardBuilder a ()
+  Just c -> toInvestigator c
 
 -- | Handle promo investigators
 --

@@ -23,28 +23,29 @@ import Arkham.Scenario.Deck as X
 import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Target
+import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasModifiersFor a, RunMessage a, HasTokenValue a, Entity a, EntityId a ~ ScenarioId, EntityAttrs a ~ ScenarioAttrs) => IsScenario a
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON, Eq)
 
-data instance Field ScenarioAttrs :: Type -> Type where
-  ScenarioCardsUnderActDeck :: Field ScenarioAttrs [Card]
-  ScenarioCardsUnderAgendaDeck :: Field ScenarioAttrs [Card]
-  ScenarioCardsUnderScenarioReference :: Field ScenarioAttrs [Card]
-  ScenarioDiscard :: Field ScenarioAttrs [EncounterCard]
-  ScenarioEncounterDeck :: Field ScenarioAttrs (Deck EncounterCard)
-  ScenarioDifficulty :: Field ScenarioAttrs Difficulty
-  ScenarioDecks :: Field ScenarioAttrs (HashMap ScenarioDeckKey [Card])
-  ScenarioVictoryDisplay :: Field ScenarioAttrs [Card]
-  ScenarioRemembered :: Field ScenarioAttrs (HashSet ScenarioLogKey)
-  ScenarioStandaloneCampaignLog :: Field ScenarioAttrs CampaignLog
-  ScenarioResignedCardCodes :: Field ScenarioAttrs [CardCode]
-  ScenarioChaosBag :: Field ScenarioAttrs ChaosBag
-  ScenarioSetAsideCards :: Field ScenarioAttrs [Card]
-  ScenarioName :: Field ScenarioAttrs Name
-  ScenarioStoryCards :: Field ScenarioAttrs (HashMap InvestigatorId [PlayerCard])
+data instance Field Scenario :: Type -> Type where
+  ScenarioCardsUnderActDeck :: Field Scenario [Card]
+  ScenarioCardsUnderAgendaDeck :: Field Scenario [Card]
+  ScenarioCardsUnderScenarioReference :: Field Scenario [Card]
+  ScenarioDiscard :: Field Scenario [EncounterCard]
+  ScenarioEncounterDeck :: Field Scenario (Deck EncounterCard)
+  ScenarioDifficulty :: Field Scenario Difficulty
+  ScenarioDecks :: Field Scenario (HashMap ScenarioDeckKey [Card])
+  ScenarioVictoryDisplay :: Field Scenario [Card]
+  ScenarioRemembered :: Field Scenario (HashSet ScenarioLogKey)
+  ScenarioStandaloneCampaignLog :: Field Scenario CampaignLog
+  ScenarioResignedCardCodes :: Field Scenario [CardCode]
+  ScenarioChaosBag :: Field Scenario ChaosBag
+  ScenarioSetAsideCards :: Field Scenario [Card]
+  ScenarioName :: Field Scenario Name
+  ScenarioStoryCards :: Field Scenario (HashMap InvestigatorId [PlayerCard])
 
 data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Name
@@ -228,4 +229,35 @@ resignedCardCodesL =
 
 storyCardsL :: Lens' ScenarioAttrs (HashMap InvestigatorId [PlayerCard])
 storyCardsL = lens scenarioStoryCards $ \m x -> m { scenarioStoryCards = x }
+
+data Scenario = forall a. IsScenario a => Scenario a
+
+instance Eq Scenario where
+  (Scenario (a :: a)) == (Scenario (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Scenario where
+  show (Scenario a) = show a
+
+instance ToJSON Scenario where
+  toJSON (Scenario a) = toJSON a
+
+instance HasModifiersFor Scenario where
+  getModifiersFor source target (Scenario a) = getModifiersFor source target a
+
+instance Entity Scenario where
+  type EntityId Scenario = ScenarioId
+  type EntityAttrs Scenario = ScenarioAttrs
+  toId = toId . toAttrs
+  toAttrs (Scenario a) = toAttrs a
+  overAttrs f (Scenario a) = Scenario $ overAttrs f a
+
+difficultyOfScenario :: Scenario -> Difficulty
+difficultyOfScenario = scenarioDifficulty . toAttrs
+
+scenarioActs :: Scenario -> [CardDef]
+scenarioActs s = case mapToList $ scenarioActStack (toAttrs s) of
+  [(_, actIds)] -> actIds
+  _ -> error "Not able to handle multiple act stacks yet"
 

@@ -60,15 +60,15 @@ instance Projection Act
 instance Projection Agenda
 instance Projection Asset
 instance Projection (DiscardedEntity Asset)
-instance Projection CampaignAttrs
+instance Projection Campaign
 instance Projection EffectAttrs
 instance Projection Enemy
-instance Projection EventAttrs
-instance Projection InvestigatorAttrs
+instance Projection Event
+instance Projection Investigator
 instance Projection Location
-instance Projection ScenarioAttrs
-instance Projection SkillAttrs
-instance Projection TreacheryAttrs
+instance Projection Scenario
+instance Projection Skill
+instance Projection Treachery
 
 instance HasTokenValue InvestigatorId
 instance HasTokenValue ()

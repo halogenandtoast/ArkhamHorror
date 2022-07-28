@@ -17,13 +17,14 @@ import Arkham.Token
 import Arkham.Json
 import Control.Monad.Writer hiding (filterM)
 import Data.List.NonEmpty qualified as NE
+import Data.Typeable
 
 class (Typeable a, Show a, Eq a, ToJSON a, FromJSON a, RunMessage a, Entity a, EntityId a ~ CampaignId, EntityAttrs a ~ CampaignAttrs) => IsCampaign a
 
-data instance Field CampaignAttrs :: Type -> Type where
-  CampaignCompletedSteps :: Field CampaignAttrs [CampaignStep]
-  CampaignStoryCards :: Field CampaignAttrs (HashMap InvestigatorId [PlayerCard])
-  CampaignCampaignLog :: Field CampaignAttrs CampaignLog
+data instance Field Campaign :: Type -> Type where
+  CampaignCompletedSteps :: Field Campaign [CampaignStep]
+  CampaignStoryCards :: Field Campaign (HashMap InvestigatorId [PlayerCard])
+  CampaignCampaignLog :: Field Campaign CampaignLog
 
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
@@ -103,3 +104,30 @@ campaign f campaignId' name difficulty chaosBagContents = f $ CampaignAttrs
   , campaignCompletedSteps = []
   , campaignResolutions = mempty
   }
+
+instance Entity Campaign where
+  type EntityId Campaign = CampaignId
+  type EntityAttrs Campaign = CampaignAttrs
+  toId = toId . toAttrs
+  toAttrs (Campaign a) = toAttrs a
+  overAttrs f (Campaign a) = Campaign $ overAttrs f a
+
+data Campaign = forall a. IsCampaign a => Campaign a
+
+instance Eq Campaign where
+  (Campaign (a :: a)) == (Campaign (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Campaign where
+  show (Campaign a) = show a
+
+instance ToJSON Campaign where
+  toJSON (Campaign a) = toJSON a
+
+difficultyOf :: Campaign -> Difficulty
+difficultyOf = campaignDifficulty . toAttrs
+
+chaosBagOf :: Campaign -> [TokenFace]
+chaosBagOf = campaignChaosBag . toAttrs
+

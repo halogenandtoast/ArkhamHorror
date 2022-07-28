@@ -32,40 +32,40 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type InvestigatorCard a = CardBuilder () a
 
-data instance Field InvestigatorAttrs :: Type -> Type where
-  InvestigatorName :: Field InvestigatorAttrs Name
-  InvestigatorRemainingActions :: Field InvestigatorAttrs Int
-  InvestigatorAdditionalActions :: Field InvestigatorAttrs [AdditionalAction]
-  InvestigatorSanity :: Field InvestigatorAttrs Int
-  InvestigatorRemainingSanity :: Field InvestigatorAttrs Int
-  InvestigatorRemainingHealth :: Field InvestigatorAttrs Int
-  InvestigatorLocation :: Field InvestigatorAttrs (Maybe LocationId)
-  InvestigatorWillpower :: Field InvestigatorAttrs Int
-  InvestigatorIntellect :: Field InvestigatorAttrs Int
-  InvestigatorCombat :: Field InvestigatorAttrs Int
-  InvestigatorAgility :: Field InvestigatorAttrs Int
-  InvestigatorHorror :: Field InvestigatorAttrs Int
-  InvestigatorDamage :: Field InvestigatorAttrs Int
-  InvestigatorResources :: Field InvestigatorAttrs Int
-  InvestigatorDoom :: Field InvestigatorAttrs Int
-  InvestigatorClues :: Field InvestigatorAttrs Int
-  InvestigatorHand :: Field InvestigatorAttrs [Card]
-  InvestigatorCardsUnderneath :: Field InvestigatorAttrs [Card]
-  InvestigatorDeck :: Field InvestigatorAttrs (Deck PlayerCard)
-  InvestigatorDiscard :: Field InvestigatorAttrs [PlayerCard]
-  InvestigatorClass :: Field InvestigatorAttrs ClassSymbol
-  InvestigatorActionsTaken :: Field InvestigatorAttrs [Action]
-  InvestigatorSlots :: Field InvestigatorAttrs (HashMap SlotType [Slot])
-  InvestigatorUsedAbilities :: Field InvestigatorAttrs [UsedAbility]
-  InvestigatorTraits :: Field InvestigatorAttrs (HashSet Trait)
-  InvestigatorAbilities :: Field InvestigatorAttrs [Ability]
-  InvestigatorCommittedCards :: Field InvestigatorAttrs [Card]
-  InvestigatorDefeated :: Field InvestigatorAttrs Bool
-  InvestigatorResigned :: Field InvestigatorAttrs Bool
-  InvestigatorPhysicalTrauma :: Field InvestigatorAttrs Int
-  InvestigatorMentalTrauma :: Field InvestigatorAttrs Int
+data instance Field Investigator :: Type -> Type where
+  InvestigatorName :: Field Investigator Name
+  InvestigatorRemainingActions :: Field Investigator Int
+  InvestigatorAdditionalActions :: Field Investigator [AdditionalAction]
+  InvestigatorSanity :: Field Investigator Int
+  InvestigatorRemainingSanity :: Field Investigator Int
+  InvestigatorRemainingHealth :: Field Investigator Int
+  InvestigatorLocation :: Field Investigator (Maybe LocationId)
+  InvestigatorWillpower :: Field Investigator Int
+  InvestigatorIntellect :: Field Investigator Int
+  InvestigatorCombat :: Field Investigator Int
+  InvestigatorAgility :: Field Investigator Int
+  InvestigatorHorror :: Field Investigator Int
+  InvestigatorDamage :: Field Investigator Int
+  InvestigatorResources :: Field Investigator Int
+  InvestigatorDoom :: Field Investigator Int
+  InvestigatorClues :: Field Investigator Int
+  InvestigatorHand :: Field Investigator [Card]
+  InvestigatorCardsUnderneath :: Field Investigator [Card]
+  InvestigatorDeck :: Field Investigator (Deck PlayerCard)
+  InvestigatorDiscard :: Field Investigator [PlayerCard]
+  InvestigatorClass :: Field Investigator ClassSymbol
+  InvestigatorActionsTaken :: Field Investigator [Action]
+  InvestigatorSlots :: Field Investigator (HashMap SlotType [Slot])
+  InvestigatorUsedAbilities :: Field Investigator [UsedAbility]
+  InvestigatorTraits :: Field Investigator (HashSet Trait)
+  InvestigatorAbilities :: Field Investigator [Ability]
+  InvestigatorCommittedCards :: Field Investigator [Card]
+  InvestigatorDefeated :: Field Investigator Bool
+  InvestigatorResigned :: Field Investigator Bool
+  InvestigatorPhysicalTrauma :: Field Investigator Int
+  InvestigatorMentalTrauma :: Field Investigator Int
   --
-  InvestigatorSupplies :: Field InvestigatorAttrs [Supply]
+  InvestigatorSupplies :: Field Investigator [Supply]
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId

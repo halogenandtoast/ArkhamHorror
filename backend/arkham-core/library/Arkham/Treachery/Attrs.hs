@@ -23,17 +23,17 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type TreacheryCard a = CardBuilder (InvestigatorId, TreacheryId) a
 
-data instance Field TreacheryAttrs :: Type -> Type where
-  TreacheryClues :: Field TreacheryAttrs Int
-  TreacheryResources :: Field TreacheryAttrs Int
-  TreacheryDoom :: Field TreacheryAttrs Int
-  TreacheryAttachedTarget :: Field TreacheryAttrs (Maybe Target)
-  TreacheryTraits :: Field TreacheryAttrs (HashSet Trait)
-  TreacheryKeywords :: Field TreacheryAttrs (HashSet Keyword)
-  TreacheryAbilities :: Field TreacheryAttrs [Ability]
-  TreacheryCardDef :: Field TreacheryAttrs CardDef
-  TreacheryCard :: Field TreacheryAttrs Card
-  TreacheryCanBeCommitted :: Field TreacheryAttrs Bool
+data instance Field Treachery :: Type -> Type where
+  TreacheryClues :: Field Treachery Int
+  TreacheryResources :: Field Treachery Int
+  TreacheryDoom :: Field Treachery Int
+  TreacheryAttachedTarget :: Field Treachery (Maybe Target)
+  TreacheryTraits :: Field Treachery (HashSet Trait)
+  TreacheryKeywords :: Field Treachery (HashSet Keyword)
+  TreacheryAbilities :: Field Treachery [Ability]
+  TreacheryCardDef :: Field Treachery CardDef
+  TreacheryCard :: Field Treachery Card
+  TreacheryCanBeCommitted :: Field Treachery Bool
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId
@@ -238,4 +238,3 @@ liftSomeTreacheryCard f (SomeTreacheryCard a) = f a
 
 someTreacheryCardCode :: SomeTreacheryCard -> CardCode
 someTreacheryCardCode = liftSomeTreacheryCard cbCardCode
-

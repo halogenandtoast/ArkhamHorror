@@ -18,15 +18,16 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ AgendaId, EntityAttrs a ~ AgendaAttrs) => IsAgenda a
 
 type AgendaCard a = CardBuilder (Int, AgendaId) a
 
-data instance Field AgendaAttrs :: Type -> Type where
-  AgendaSequence :: Field AgendaAttrs AS.AgendaSequence
-  AgendaDoom :: Field AgendaAttrs Int
-  AgendaAbilities :: Field AgendaAttrs [Ability]
+data instance Field Agenda :: Type -> Type where
+  AgendaSequence :: Field Agenda AS.AgendaSequence
+  AgendaDoom :: Field Agenda Int
+  AgendaAbilities :: Field Agenda [Ability]
 
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int
@@ -125,3 +126,46 @@ instance HasCardDef AgendaAttrs where
     Just def -> def
     Nothing ->
       error $ "missing card def for agenda " <> show (unAgendaId $ agendaId e)
+
+data Agenda = forall a. IsAgenda a => Agenda a
+
+instance Eq Agenda where
+  (Agenda (a :: a)) == (Agenda (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Agenda where
+  show (Agenda a) = show a
+
+instance ToJSON Agenda where
+  toJSON (Agenda a) = toJSON a
+
+instance HasAbilities Agenda where
+  getAbilities (Agenda a) = getAbilities a
+
+instance HasModifiersFor Agenda where
+  getModifiersFor source target (Agenda a) = getModifiersFor source target a
+
+instance Entity Agenda where
+  type EntityId Agenda = AgendaId
+  type EntityAttrs Agenda = AgendaAttrs
+  toId = toId . toAttrs
+  toAttrs (Agenda a) = toAttrs a
+  overAttrs f (Agenda a) = Agenda $ overAttrs f a
+
+instance TargetEntity Agenda where
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+
+instance SourceEntity Agenda where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
+
+data SomeAgendaCard = forall a. IsAgenda a => SomeAgendaCard (AgendaCard a)
+
+liftSomeAgendaCard :: (forall a. AgendaCard a -> b) -> SomeAgendaCard -> b
+liftSomeAgendaCard f (SomeAgendaCard a) = f a
+
+someAgendaCardCode :: SomeAgendaCard -> CardCode
+someAgendaCardCode = liftSomeAgendaCard cbCardCode
+

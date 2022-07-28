@@ -11,7 +11,7 @@ import Arkham.Act.Attrs ( ActAttrs (..), Field (..) )
 import Arkham.Action qualified as Action
 import Arkham.ActiveCost
 import Arkham.Agenda
-import Arkham.Agenda.Attrs ( AgendaAttrs (..), Field (..) )
+import Arkham.Agenda.Attrs ( Agenda, AgendaAttrs (..), Field (..) )
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset
 import Arkham.Asset.Types
@@ -1695,7 +1695,7 @@ getEffect eid =
     <$> getGame
   where missingEffect = "Unknown effect: " <> show eid
 
-instance Projection LocationAttrs where
+instance Projection Location where
   field f lid = do
     l <- getLocation lid
     let attrs@LocationAttrs {..} = toAttrs l
@@ -1822,7 +1822,7 @@ instance Projection (DiscardedEntity Asset) where
     case f of
       DiscardedAssetTraits -> pure . cdCardTraits $ toCardDef attrs
 
-instance Projection ActAttrs where
+instance Projection Act where
   field f aid = do
     a <- getAct aid
     let ActAttrs {..} = toAttrs a
@@ -2224,7 +2224,7 @@ instance Query EffectMatcher where
 instance Query ScenarioMatcher where
   select = fmap (setFromList . map toId) . getScenariosMatching
 
-instance Projection AgendaAttrs where
+instance Projection Agenda where
   field fld aid = do
     a <- getAgenda aid
     let AgendaAttrs {..} = toAttrs a

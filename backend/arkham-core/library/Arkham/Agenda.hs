@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Agenda (
   module Arkham.Agenda,
 ) where
@@ -9,49 +10,14 @@ import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
-import Data.Typeable
-
-data Agenda = forall a. IsAgenda a => Agenda a
-
-instance Eq Agenda where
-  (Agenda (a :: a)) == (Agenda (b :: b)) = case eqT @a @b of
-    Just Refl -> a == b
-    Nothing -> False
-
-instance Show Agenda where
-  show (Agenda a) = show a
-
-instance ToJSON Agenda where
-  toJSON (Agenda a) = toJSON a
 
 lookupAgenda :: AgendaId -> (Int -> Agenda)
 lookupAgenda agendaId = case lookup (unAgendaId agendaId) allAgendas of
   Nothing -> error $ "Unknown agenda: " <> show agendaId
   Just (SomeAgendaCard a) -> \i -> Agenda $ cbCardBuilder a (i, agendaId)
 
-instance HasAbilities Agenda where
-  getAbilities (Agenda a) = getAbilities a
-
 instance RunMessage Agenda where
   runMessage msg (Agenda a) = Agenda <$> runMessage msg a
-
-instance HasModifiersFor Agenda where
-  getModifiersFor source target (Agenda a) = getModifiersFor source target a
-
-instance Entity Agenda where
-  type EntityId Agenda = AgendaId
-  type EntityAttrs Agenda = AgendaAttrs
-  toId = toId . toAttrs
-  toAttrs (Agenda a) = toAttrs a
-  overAttrs f (Agenda a) = Agenda $ overAttrs f a
-
-instance TargetEntity Agenda where
-  toTarget = toTarget . toAttrs
-  isTarget = isTarget . toAttrs
-
-instance SourceEntity Agenda where
-  toSource = toSource . toAttrs
-  isSource = isSource . toAttrs
 
 instance FromJSON Agenda where
   parseJSON v = flip (withObject "Agenda") v $ \o -> do
@@ -66,14 +32,6 @@ withAgendaCardCode cCode f =
   case lookup cCode allAgendas of
     Nothing -> error $ "Unknown agenda: " <> show cCode
     Just (SomeAgendaCard a) -> f a
-
-data SomeAgendaCard = forall a. IsAgenda a => SomeAgendaCard (AgendaCard a)
-
-liftSomeAgendaCard :: (forall a. AgendaCard a -> b) -> SomeAgendaCard -> b
-liftSomeAgendaCard f (SomeAgendaCard a) = f a
-
-someAgendaCardCode :: SomeAgendaCard -> CardCode
-someAgendaCardCode = liftSomeAgendaCard cbCardCode
 
 allAgendas :: HashMap CardCode SomeAgendaCard
 allAgendas = mapFromList $ map

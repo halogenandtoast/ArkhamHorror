@@ -3,7 +3,8 @@ module Arkham.Entities where
 import Arkham.Prelude
 
 import Arkham.Act
-import Arkham.Agenda
+import Arkham.Agenda ()
+import Arkham.Agenda.Attrs (Agenda)
 import Arkham.Asset (createAsset)
 import Arkham.Asset.Types (Asset)
 import Arkham.Card

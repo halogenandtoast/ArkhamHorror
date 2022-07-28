@@ -56,8 +56,8 @@ instance Query ScenarioMatcher
 instance Query SkillMatcher
 instance Query TreacheryMatcher
 
-instance Projection ActAttrs
-instance Projection AgendaAttrs
+instance Projection Act
+instance Projection Agenda
 instance Projection Asset
 instance Projection (DiscardedEntity Asset)
 instance Projection CampaignAttrs
@@ -65,7 +65,7 @@ instance Projection EffectAttrs
 instance Projection EnemyAttrs
 instance Projection EventAttrs
 instance Projection InvestigatorAttrs
-instance Projection LocationAttrs
+instance Projection Location
 instance Projection ScenarioAttrs
 instance Projection SkillAttrs
 instance Projection TreacheryAttrs

@@ -50,31 +50,31 @@ class
 
 type LocationCard a = CardBuilder LocationId a
 
-data instance Field LocationAttrs :: Type -> Type where
-  LocationClues :: Field LocationAttrs Int
-  LocationResources :: Field LocationAttrs Int
-  LocationHorror :: Field LocationAttrs Int
-  LocationDoom :: Field LocationAttrs Int
-  LocationShroud :: Field LocationAttrs Int
-  LocationTraits :: Field LocationAttrs (HashSet Trait)
-  LocationKeywords :: Field LocationAttrs (HashSet Keyword)
-  LocationUnrevealedName :: Field LocationAttrs Name
-  LocationName :: Field LocationAttrs Name
-  LocationConnectedMatchers :: Field LocationAttrs [LocationMatcher]
-  LocationRevealedConnectedMatchers :: Field LocationAttrs [LocationMatcher]
-  LocationRevealed :: Field LocationAttrs Bool
-  LocationConnectsTo :: Field LocationAttrs (HashSet Direction)
-  LocationCardsUnderneath :: Field LocationAttrs [Card]
-  LocationConnectedLocations :: Field LocationAttrs (HashSet LocationId)
-  LocationInvestigators :: Field LocationAttrs (HashSet InvestigatorId)
-  LocationEnemies :: Field LocationAttrs (HashSet EnemyId)
-  LocationAssets :: Field LocationAttrs (HashSet AssetId)
-  LocationEvents :: Field LocationAttrs (HashSet EventId)
-  LocationTreacheries :: Field LocationAttrs (HashSet TreacheryId)
+data instance Field Location :: Type -> Type where
+  LocationClues :: Field Location Int
+  LocationResources :: Field Location Int
+  LocationHorror :: Field Location Int
+  LocationDoom :: Field Location Int
+  LocationShroud :: Field Location Int
+  LocationTraits :: Field Location (HashSet Trait)
+  LocationKeywords :: Field Location (HashSet Keyword)
+  LocationUnrevealedName :: Field Location Name
+  LocationName :: Field Location Name
+  LocationConnectedMatchers :: Field Location [LocationMatcher]
+  LocationRevealedConnectedMatchers :: Field Location [LocationMatcher]
+  LocationRevealed :: Field Location Bool
+  LocationConnectsTo :: Field Location (HashSet Direction)
+  LocationCardsUnderneath :: Field Location [Card]
+  LocationConnectedLocations :: Field Location (HashSet LocationId)
+  LocationInvestigators :: Field Location (HashSet InvestigatorId)
+  LocationEnemies :: Field Location (HashSet EnemyId)
+  LocationAssets :: Field Location (HashSet AssetId)
+  LocationEvents :: Field Location (HashSet EventId)
+  LocationTreacheries :: Field Location (HashSet TreacheryId)
   -- virtual
-  LocationCardDef :: Field LocationAttrs CardDef
-  LocationCard :: Field LocationAttrs Card
-  LocationAbilities :: Field LocationAttrs [Ability]
+  LocationCardDef :: Field Location CardDef
+  LocationCard :: Field Location Card
+  LocationAbilities :: Field Location [Ability]
 
 symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }

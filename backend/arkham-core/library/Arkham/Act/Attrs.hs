@@ -23,10 +23,10 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type ActCard a = CardBuilder (Int, ActId) a
 
-data instance Field ActAttrs :: Type -> Type where
-  ActSequence :: Field ActAttrs AS.ActSequence
-  ActClues :: Field ActAttrs Int
-  ActAbilities :: Field ActAttrs [Ability]
+data instance Field Act :: Type -> Type where
+  ActSequence :: Field Act AS.ActSequence
+  ActClues :: Field Act Int
+  ActAbilities :: Field Act [Ability]
 
 data ActAttrs = ActAttrs
   { actId :: ActId

@@ -1,6 +1,7 @@
 module Arkham.Effect.Effects.TokenEffect
   ( TokenEffect(..)
   , tokenEffect
+  , tokenEffect'
   ) where
 
 import Arkham.Prelude
@@ -18,9 +19,12 @@ newtype TokenEffect = TokenEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-tokenEffect
+tokenEffect :: EffectArgs -> TokenEffect
+tokenEffect = TokenEffect . uncurry4 (baseAttrs "tokef")
+
+tokenEffect'
   :: EffectId -> EffectMetadata Window Message -> Source -> Token -> TokenEffect
-tokenEffect eid metadata source token = TokenEffect $ EffectAttrs
+tokenEffect' eid metadata source token = TokenEffect $ EffectAttrs
   { effectId = eid
   , effectSource = source
   , effectTarget = TokenTarget token

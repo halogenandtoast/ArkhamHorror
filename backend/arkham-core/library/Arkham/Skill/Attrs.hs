@@ -17,6 +17,7 @@ import Arkham.Strategy
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
+import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ SkillId, EntityAttrs a ~ SkillAttrs) => IsSkill a
 
@@ -101,3 +102,59 @@ skill f cardDef = CardBuilder
     , skillAfterPlay = DiscardThis
     }
   }
+
+data Skill = forall a. IsSkill a => Skill a
+
+instance Eq Skill where
+  (Skill (a :: a)) == (Skill (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Skill where
+  show (Skill a) = show a
+
+instance ToJSON Skill where
+  toJSON (Skill a) = toJSON a
+
+instance HasCardCode Skill where
+  toCardCode = toCardCode . toAttrs
+
+instance HasCardDef Skill where
+  toCardDef = toCardDef . toAttrs
+
+instance HasAbilities Skill where
+  getAbilities (Skill a) = getAbilities a
+
+instance HasModifiersFor Skill where
+  getModifiersFor source target (Skill a) = getModifiersFor source target a
+
+instance Entity Skill where
+  type EntityId Skill = SkillId
+  type EntityAttrs Skill = SkillAttrs
+  toId = toId . toAttrs
+  toAttrs (Skill a) = toAttrs a
+  overAttrs f (Skill a) = Skill $ overAttrs f a
+
+instance Named Skill where
+  toName = toName . toAttrs
+
+instance TargetEntity Skill where
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+
+instance SourceEntity Skill where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
+
+instance IsCard Skill where
+  toCardId = toCardId . toAttrs
+  toCardOwner = toCardOwner . toAttrs
+
+data SomeSkillCard = forall a. IsSkill a => SomeSkillCard (SkillCard a)
+
+liftSomeSkillCard :: (forall a. SkillCard a -> b) -> SomeSkillCard -> b
+liftSomeSkillCard f (SomeSkillCard a) = f a
+
+someSkillCardCode :: SomeSkillCard -> CardCode
+someSkillCardCode = liftSomeSkillCard cbCardCode
+

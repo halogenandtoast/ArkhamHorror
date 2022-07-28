@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Treachery where
 
 import Arkham.Prelude
@@ -7,58 +8,13 @@ import Arkham.Treachery.Treacheries
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
-import Data.Typeable
-
-data Treachery = forall a. IsTreachery a => Treachery a
-
-instance Eq Treachery where
-  (Treachery (a :: a)) == (Treachery (b :: b)) = case eqT @a @b of
-    Just Refl -> a == b
-    Nothing -> False
-
-instance Show Treachery where
-  show (Treachery a) = show a
-
-instance ToJSON Treachery where
-  toJSON (Treachery a) = toJSON a
 
 createTreachery :: IsCard a => a -> InvestigatorId -> Treachery
 createTreachery a iid =
   lookupTreachery (toCardCode a) iid (TreacheryId $ toCardId a)
 
-instance HasCardDef Treachery where
-  toCardDef = toCardDef . toAttrs
-
-instance HasAbilities Treachery where
-  getAbilities (Treachery a) = getAbilities a
-
 instance RunMessage Treachery where
   runMessage msg (Treachery a) = Treachery <$> runMessage msg a
-
-instance HasModifiersFor Treachery where
-  getModifiersFor source target (Treachery a) = getModifiersFor source target a
-
-instance HasCardCode Treachery where
-  toCardCode = toCardCode . toAttrs
-
-instance Entity Treachery where
-  type EntityId Treachery = TreacheryId
-  type EntityAttrs Treachery = TreacheryAttrs
-  toId = toId . toAttrs
-  toAttrs (Treachery a) = toAttrs a
-  overAttrs f (Treachery a) = Treachery $ overAttrs f a
-
-instance TargetEntity Treachery where
-  toTarget = toTarget . toAttrs
-  isTarget = isTarget . toAttrs
-
-instance SourceEntity Treachery where
-  toSource = toSource . toAttrs
-  isSource = isSource . toAttrs
-
-instance IsCard Treachery where
-  toCardId = toCardId . toAttrs
-  toCardOwner = toCardOwner . toAttrs
 
 lookupTreachery :: CardCode -> (InvestigatorId -> TreacheryId -> Treachery)
 lookupTreachery cardCode = case lookup cardCode allTreacheries of
@@ -78,14 +34,6 @@ withTreacheryCardCode cCode f =
   case lookup cCode allTreacheries of
     Nothing -> error $ "Unknown treachery: " <> show cCode
     Just (SomeTreacheryCard a) -> f a
-
-data SomeTreacheryCard = forall a. IsTreachery a => SomeTreacheryCard (TreacheryCard a)
-
-liftSomeTreacheryCard :: (forall a. TreacheryCard a -> b) -> SomeTreacheryCard -> b
-liftSomeTreacheryCard f (SomeTreacheryCard a) = f a
-
-someTreacheryCardCode :: SomeTreacheryCard -> CardCode
-someTreacheryCardCode = liftSomeTreacheryCard cbCardCode
 
 allTreacheries :: HashMap CardCode SomeTreacheryCard
 allTreacheries = mapFromList $ map

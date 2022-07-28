@@ -35,7 +35,7 @@ import Arkham.Effect
 import Arkham.Effect.Attrs
 import Arkham.EffectMetadata
 import Arkham.Enemy
-import Arkham.Enemy.Attrs ( EnemyAttrs (..), Field (..) )
+import Arkham.Enemy.Attrs ( Enemy, EnemyAttrs (..), Field (..) )
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Attrs
@@ -95,7 +95,7 @@ import Arkham.Projection
 import Arkham.Scenario
 import Arkham.Scenario.Attrs hiding ( scenario )
 import Arkham.Skill
-import Arkham.Skill.Attrs ( Field (..), SkillAttrs (..) )
+import Arkham.Skill.Attrs ( Skill, Field (..), SkillAttrs (..) )
 import Arkham.SkillTest.Runner
 import Arkham.SkillType
 import Arkham.Source
@@ -104,7 +104,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery
-import Arkham.Treachery.Attrs ( Field (..), TreacheryAttrs (..) )
+import Arkham.Treachery.Attrs ( Treachery, Field (..), TreacheryAttrs (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )

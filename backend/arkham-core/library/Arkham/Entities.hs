@@ -11,14 +11,17 @@ import Arkham.Classes.Entity
 import Arkham.Classes.RunMessage
 import Arkham.Classes.HasAbilities
 import Arkham.Effect
-import Arkham.Enemy
+import Arkham.Enemy ()
+import Arkham.Enemy.Attrs (Enemy)
 import Arkham.Event
 import Arkham.Event.Attrs (Event)
 import Arkham.Investigator
 import Arkham.Json
 import Arkham.Location
-import Arkham.Skill
+import Arkham.Skill ()
+import Arkham.Skill.Attrs (Skill)
 import Arkham.Treachery
+import Arkham.Treachery.Attrs (Treachery)
 
 -- Entity id generation should be random, so even though this is pure now
 -- this is using a Monad

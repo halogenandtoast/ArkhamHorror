@@ -17,6 +17,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Treachery.Cards
+import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ TreacheryId, EntityAttrs a ~ TreacheryAttrs) => IsTreachery a
 
@@ -185,3 +186,56 @@ is (TreacheryTarget tid) t = tid == treacheryId t
 is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
 is (CardIdTarget cardId) t = cardId == unTreacheryId (treacheryId t)
 is _ _ = False
+
+data Treachery = forall a. IsTreachery a => Treachery a
+
+instance Eq Treachery where
+  (Treachery (a :: a)) == (Treachery (b :: b)) = case eqT @a @b of
+    Just Refl -> a == b
+    Nothing -> False
+
+instance Show Treachery where
+  show (Treachery a) = show a
+
+instance ToJSON Treachery where
+  toJSON (Treachery a) = toJSON a
+
+instance HasCardDef Treachery where
+  toCardDef = toCardDef . toAttrs
+
+instance HasAbilities Treachery where
+  getAbilities (Treachery a) = getAbilities a
+
+instance HasModifiersFor Treachery where
+  getModifiersFor source target (Treachery a) = getModifiersFor source target a
+
+instance HasCardCode Treachery where
+  toCardCode = toCardCode . toAttrs
+
+instance Entity Treachery where
+  type EntityId Treachery = TreacheryId
+  type EntityAttrs Treachery = TreacheryAttrs
+  toId = toId . toAttrs
+  toAttrs (Treachery a) = toAttrs a
+  overAttrs f (Treachery a) = Treachery $ overAttrs f a
+
+instance TargetEntity Treachery where
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+
+instance SourceEntity Treachery where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
+
+instance IsCard Treachery where
+  toCardId = toCardId . toAttrs
+  toCardOwner = toCardOwner . toAttrs
+
+data SomeTreacheryCard = forall a. IsTreachery a => SomeTreacheryCard (TreacheryCard a)
+
+liftSomeTreacheryCard :: (forall a. TreacheryCard a -> b) -> SomeTreacheryCard -> b
+liftSomeTreacheryCard f (SomeTreacheryCard a) = f a
+
+someTreacheryCardCode :: SomeTreacheryCard -> CardCode
+someTreacheryCardCode = liftSomeTreacheryCard cbCardCode
+

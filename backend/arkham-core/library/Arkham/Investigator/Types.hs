@@ -315,3 +315,6 @@ liftInvestigatorCard f (SomeInvestigatorCard a) = f a
 
 someInvestigatorCardCode :: SomeInvestigatorCard -> CardCode
 someInvestigatorCardCode = liftInvestigatorCard cbCardCode
+
+toInvestigator :: SomeInvestigatorCard -> Investigator
+toInvestigator (SomeInvestigatorCard f) = Investigator $ cbCardBuilder f ()

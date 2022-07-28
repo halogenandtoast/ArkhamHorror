@@ -1,5 +1,6 @@
 module Arkham.Effect.Effects.WindowModifierEffect
   ( windowModifierEffect
+  , windowModifierEffect'
   , WindowModifierEffect(..)
   ) where
 
@@ -17,14 +18,17 @@ newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-windowModifierEffect
+windowModifierEffect :: EffectArgs -> WindowModifierEffect
+windowModifierEffect = WindowModifierEffect . uncurry4 (baseAttrs "wmode")
+
+windowModifierEffect'
   :: EffectId
   -> EffectMetadata Window Message
   -> EffectWindow
   -> Source
   -> Target
   -> WindowModifierEffect
-windowModifierEffect eid metadata effectWindow source target =
+windowModifierEffect' eid metadata effectWindow source target =
   WindowModifierEffect $ EffectAttrs
     { effectId = eid
     , effectSource = source

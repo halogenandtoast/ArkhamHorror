@@ -82,349 +82,199 @@ instance RunMessage Enemy where
     Enemy <$> runMessage msg' x
 
 lookupEnemy :: HasCallStack => CardCode -> (EnemyId -> Enemy)
-lookupEnemy cardCode =
-  fromJustNote ("Unknown enemy: " <> pack (show cardCode))
-    $ lookup cardCode allEnemies
+lookupEnemy cardCode = case lookup cardCode allEnemies of
+  Nothing -> error $ "Unknown enemy: " <> show cardCode
+  Just (SomeEnemyCard a) -> Enemy <$> cbCardBuilder a
 
 instance FromJSON Enemy where
   parseJSON v = flip (withObject "Enemy") v $ \o -> do
     cCode :: CardCode <- o .: "cardCode"
-    case cCode of
-      -- Night of the Zealot
-      -- weakness
-      "01101" -> Enemy . MobEnforcer <$> parseJSON v
-      "01102" -> Enemy . SilverTwilightAcolyte <$> parseJSON v
-      "01103" -> Enemy . StubbornDetective <$> parseJSON v
-      -- The Gathering
-      "01116" -> Enemy . GhoulPriest <$> parseJSON v
-      "01118" -> Enemy . FleshEater <$> parseJSON v
-      "01119" -> Enemy . IcyGhoul <$> parseJSON v
-      -- The Midnight Masks
-      "01121b" -> Enemy . TheMaskedHunter <$> parseJSON v
-      "01137" -> Enemy . WolfManDrew <$> parseJSON v
-      "01138" -> Enemy . HermanCollins <$> parseJSON v
-      "01139" -> Enemy . PeterWarren <$> parseJSON v
-      "01140" -> Enemy . VictoriaDevereux <$> parseJSON v
-      "01141" -> Enemy . RuthTurner <$> parseJSON v
-      -- The Devourer Below
-      "01157" -> Enemy . Umordhoth <$> parseJSON v
-      -- Rats
-      "01159" -> Enemy . SwarmOfRats <$> parseJSON v
-      -- Ghouls
-      "01160" -> Enemy . GhoulMinion <$> parseJSON v
-      "01161" -> Enemy . RavenousGhoul <$> parseJSON v
-      -- Dark Cult
-      "01169" -> Enemy . Acolyte <$> parseJSON v
-      "01170" -> Enemy . WizardOfTheOrder <$> parseJSON v
-      -- Nightgaunts
-      "01172" -> Enemy . HuntingNightgaunt <$> parseJSON v
-      -- Agents of Hastur
-      "01175" -> Enemy . ScreechingByakhee <$> parseJSON v
-      -- Agents of Yog-Sothoth
-      "01177" -> Enemy . YithianObserver <$> parseJSON v
-      -- Agents of Shub-Niggurath
-      "01179" -> Enemy . RelentlessDarkYoung <$> parseJSON v
-      "01180" -> Enemy . GoatSpawn <$> parseJSON v
-      -- Agents of Cthulhu
-      "01181" -> Enemy . YoungDeepOne <$> parseJSON v
-      -- The Dunwich Legacy
-      -- Extracurricular Activity
-      "02058" -> Enemy . TheExperiment <$> parseJSON v
-      -- The House Always Wins
-      "02078" -> Enemy . CloverClubPitBoss <$> parseJSON v
-      -- Bishop's Thralls
-      "02086" -> Enemy . Thrall <$> parseJSON v
-      "02087" -> Enemy . WizardOfYogSothoth <$> parseJSON v
-      -- Whippoorwill
-      "02090" -> Enemy . Whippoorwill <$> parseJSON v
-      -- Beast Thralls
-      "02094" -> Enemy . AvianThrall <$> parseJSON v
-      "02095" -> Enemy . LupineThrall <$> parseJSON v
-      -- Naomi's Crew
-      "02097" -> Enemy . OBannionsThug <$> parseJSON v
-      "02098" -> Enemy . Mobster <$> parseJSON v
-      -- Hideous Abominations
-      "02103" -> Enemy . ConglomerationOfSpheres <$> parseJSON v
-      "02104" -> Enemy . ServantOfTheLurker <$> parseJSON v
-      -- The Miskatonic Museum
-      "02141" -> Enemy . HuntingHorror <$> parseJSON v
-      -- The Essex County Express
-      "02182" -> Enemy . GrapplingHorror <$> parseJSON v
-      "02183" -> Enemy . EmergentMonstrosity <$> parseJSON v
-      -- Blood on the Altar
-      "02216" -> Enemy . SilasBishop <$> parseJSON v
-      "02224" -> Enemy . ServantOfManyMouths <$> parseJSON v
-      -- Undimensioned and Unseen
-      "02255" -> Enemy . BroodOfYogSothoth <$> parseJSON v
-      -- Where Doom Awaits
-      "02293" -> Enemy . SethBishop <$> parseJSON v
-      "02294" -> Enemy . DevoteeOfTheKey <$> parseJSON v
-      "02295" -> Enemy . CrazedShoggoth <$> parseJSON v
-      -- Lost in Time and Space
-      "02323" -> Enemy . YogSothoth <$> parseJSON v
-      "02329" -> Enemy . InterstellarTraveler <$> parseJSON v
-      "02330" -> Enemy . YithianStarseeker <$> parseJSON v
-      -- The Path to Carcosa
-      -- signature
-      "03017" -> Enemy . GraveyardGhouls <$> parseJSON v
-      -- weakness
-      "03042" -> Enemy . TheThingThatFollows <$> parseJSON v
-      -- Curtain Call
-      "03059" -> Enemy . TheManInThePallidMask <$> parseJSON v
-      "03060" -> Enemy . RoyalEmissary <$> parseJSON v
-      -- The Last King
-      "03065b" -> Enemy . ConstanceDumaine <$> parseJSON v
-      "03066b" -> Enemy . JordanPerry <$> parseJSON v
-      "03067b" -> Enemy . IshimaruHaruko <$> parseJSON v
-      "03068b" -> Enemy . SebastienMoreau <$> parseJSON v
-      "03069b" -> Enemy . AshleighClarke <$> parseJSON v
-      "03081" -> Enemy . DianneDevine <$> parseJSON v
-      -- Byakhee
-      "03086" -> Enemy . SwiftByakhee <$> parseJSON v
-      -- Inhabitants of Carcosa
-      "03088" -> Enemy . BeastOfAldebaran <$> parseJSON v
-      "03089" -> Enemy . SpawnOfHali <$> parseJSON v
-      -- Hauntings
-      "03093" -> Enemy . Poltergeist <$> parseJSON v
-      -- Hastur's Gift
-      "03095" -> Enemy . Maniac <$> parseJSON v
-      "03096" -> Enemy . YoungPsychopath <$> parseJSON v
-      -- Cult of the Yellow Sign
-      "03098" -> Enemy . Fanatic <$> parseJSON v
-      "03099" -> Enemy . AgentOfTheKing <$> parseJSON v
-      -- Decay and Filth
-      "03103" -> Enemy . RoachSwarm <$> parseJSON v
-      -- Echoes of the Past
-      "03140" -> Enemy . PossessedOathspeaker <$> parseJSON v
-      "03144" -> Enemy . SeekerOfCarcosa <$> parseJSON v
-      -- The Unspeakable Oath
-      "03182b" -> Enemy . DanielChesterfield <$> parseJSON v
-      "03183" -> Enemy . AsylumGorger <$> parseJSON v
-      "03184" -> Enemy . MadPatient <$> parseJSON v
-      -- A Phantom of Truth
-      "03221a" -> Enemy . TheOrganistHopelessIDefiedHim <$> parseJSON v
-      "03221b" -> Enemy . TheOrganistDrapedInMystery <$> parseJSON v
-      "03222" -> Enemy . StealthyByakhee <$> parseJSON v
-      -- The Pallid Mask
-      "03241b" -> Enemy . SpecterOfDeath <$> parseJSON v
-      "03258" -> Enemy . CatacombsDocent <$> parseJSON v
-      "03259" -> Enemy . CorpseDweller <$> parseJSON v
-      -- Black Stars Rise
-      "03300" -> Enemy . TidalTerror <$> parseJSON v
-      "03301" -> Enemy . RiftSeeker <$> parseJSON v
-      -- Dim Carcosa
-      "03332" -> Enemy . HasturTheKingInYellow <$> parseJSON v
-      "03333" -> Enemy . HasturLordOfCarcosa <$> parseJSON v
-      "03334" -> Enemy . HasturTheTatteredKing <$> parseJSON v
-      "03335" -> Enemy . CreatureOutOfDemhe <$> parseJSON v
-      "03336" -> Enemy . WingedOne <$> parseJSON v
-      -- The Forgotten Age
-      -- signature
-      "04014" -> Enemy . SerpentsOfYig <$> parseJSON v
-      -- Return to Night of the Zealot
-      -- Return to the Gathering
-      "50022" -> Enemy . CorpseHungryGhoul <$> parseJSON v
-      "50023" -> Enemy . GhoulFromTheDepths <$> parseJSON v
-      -- Return to the Midnight Masks
-      "50026b" -> Enemy . Narogath <$> parseJSON v
-      -- Ghouls of Umordhoth
-      "50038" -> Enemy . GraveEater <$> parseJSON v
-      "50039" -> Enemy . AcolyteOfUmordhoth <$> parseJSON v
-      -- The Devourer's Cult
-      "50041" -> Enemy . DiscipleOfTheDevourer <$> parseJSON v
-      "50042" -> Enemy . CorpseTaker <$> parseJSON v
-      -- Return to Cult of Umordhoth
-      "50044" -> Enemy . JeremiahPierce <$> parseJSON v
-      "50045" -> Enemy . BillyCooper <$> parseJSON v
-      "50046" -> Enemy . AlmaHill <$> parseJSON v
-      -- Nathanial Cho
-      "60103" -> Enemy . TommyMalloy <$> parseJSON v
-      -- Curse of the Rougarou
-      "81022" -> Enemy . BogGator <$> parseJSON v
-      "81023" -> Enemy . SwampLeech <$> parseJSON v
-      "81028" -> Enemy . TheRougarou <$> parseJSON v
-      "81031" -> Enemy . SlimeCoveredDhole <$> parseJSON v
-      "81032" -> Enemy . MarshGug <$> parseJSON v
-      "81033" -> Enemy . DarkYoungHost <$> parseJSON v
-      -- Carnevale of Horrors
-      "82002b" -> Enemy . BalefulReveler <$> parseJSON v
-      "82017" -> Enemy . DonLagorio <$> parseJSON v
-      "82018" -> Enemy . ElisabettaMagro <$> parseJSON v
-      "82019" -> Enemy . SalvatoreNeri <$> parseJSON v
-      "82020" -> Enemy . SavioCorvi <$> parseJSON v
-      "82027" -> Enemy . Cnidathqua <$> parseJSON v
-      "82028" -> Enemy . Poleman <$> parseJSON v
-      "82029" -> Enemy . CarnevaleSentinel <$> parseJSON v
-      "82030" -> Enemy . WrithingAppendage <$> parseJSON v
-      _ -> error "unknown enemy"
+    withEnemyCardCode cCode $ \(_ :: EnemyCard a) -> Enemy <$> parseJSON @a v
 
-allEnemies :: HashMap CardCode (EnemyId -> Enemy)
+withEnemyCardCode
+  :: CardCode
+  -> (forall a. IsEnemy a => EnemyCard a -> r)
+  -> r
+withEnemyCardCode cCode f =
+  case lookup cCode allEnemies of
+    Nothing -> error $ "Unknown enemy: " <> show cCode
+    Just (SomeEnemyCard a) -> f a
+
+data SomeEnemyCard = forall a. IsEnemy a => SomeEnemyCard (EnemyCard a)
+
+liftSomeEnemyCard :: (forall a. EnemyCard a -> b) -> SomeEnemyCard -> b
+liftSomeEnemyCard f (SomeEnemyCard a) = f a
+
+someEnemyCardCode :: SomeEnemyCard -> CardCode
+someEnemyCardCode = liftSomeEnemyCard cbCardCode
+
+allEnemies :: HashMap CardCode SomeEnemyCard
 allEnemies = mapFromList $ map
-  (cbCardCode &&& cbCardBuilder)
+  (toFst someEnemyCardCode)
   [ -- Night of the Zealot
   -- weakness
-    Enemy <$> mobEnforcer
-  , Enemy <$> silverTwilightAcolyte
-  , Enemy <$> stubbornDetective
+    SomeEnemyCard mobEnforcer
+  , SomeEnemyCard silverTwilightAcolyte
+  , SomeEnemyCard stubbornDetective
   -- The Gathering
-  , Enemy <$> ghoulPriest
-  , Enemy <$> fleshEater
-  , Enemy <$> icyGhoul
+  , SomeEnemyCard ghoulPriest
+  , SomeEnemyCard fleshEater
+  , SomeEnemyCard icyGhoul
   -- The Midnight Masks
-  , Enemy <$> theMaskedHunter
-  , Enemy <$> wolfManDrew
-  , Enemy <$> hermanCollins
-  , Enemy <$> peterWarren
-  , Enemy <$> victoriaDevereux
-  , Enemy <$> ruthTurner
+  , SomeEnemyCard theMaskedHunter
+  , SomeEnemyCard wolfManDrew
+  , SomeEnemyCard hermanCollins
+  , SomeEnemyCard peterWarren
+  , SomeEnemyCard victoriaDevereux
+  , SomeEnemyCard ruthTurner
   -- The Devourer Below
-  , Enemy <$> umordhoth
+  , SomeEnemyCard umordhoth
   -- Rats
-  , Enemy <$> swarmOfRats
+  , SomeEnemyCard swarmOfRats
   -- Ghouls
-  , Enemy <$> ghoulMinion
-  , Enemy <$> ravenousGhoul
+  , SomeEnemyCard ghoulMinion
+  , SomeEnemyCard ravenousGhoul
   -- Dark Cult
-  , Enemy <$> acolyte
-  , Enemy <$> wizardOfTheOrder
+  , SomeEnemyCard acolyte
+  , SomeEnemyCard wizardOfTheOrder
   -- Nightgaunts
-  , Enemy <$> huntingNightgaunt
+  , SomeEnemyCard huntingNightgaunt
   -- Agents of Hastur
-  , Enemy <$> screechingByakhee
+  , SomeEnemyCard screechingByakhee
   -- Agents of Yog-Sothoth
-  , Enemy <$> yithianObserver
+  , SomeEnemyCard yithianObserver
   -- Agents of Shub-Niggurath
-  , Enemy <$> relentlessDarkYoung
-  , Enemy <$> goatSpawn
+  , SomeEnemyCard relentlessDarkYoung
+  , SomeEnemyCard goatSpawn
   -- Agents of Cthulhu
-  , Enemy <$> youngDeepOne
+  , SomeEnemyCard youngDeepOne
   -- The Dunwich Legacy
   -- Extracurricular Activity
-  , Enemy <$> theExperiment
+  , SomeEnemyCard theExperiment
   -- The House Always Wins
-  , Enemy <$> cloverClubPitBoss
+  , SomeEnemyCard cloverClubPitBoss
   -- Bishop's Thralls
-  , Enemy <$> thrall
-  , Enemy <$> wizardOfYogSothoth
+  , SomeEnemyCard thrall
+  , SomeEnemyCard wizardOfYogSothoth
   -- Whippoorwill
-  , Enemy <$> whippoorwill
+  , SomeEnemyCard whippoorwill
   -- Beast Thralls
-  , Enemy <$> avianThrall
-  , Enemy <$> lupineThrall
+  , SomeEnemyCard avianThrall
+  , SomeEnemyCard lupineThrall
   -- Naomi's Crew
-  , Enemy <$> oBannionsThug
-  , Enemy <$> mobster
+  , SomeEnemyCard oBannionsThug
+  , SomeEnemyCard mobster
   -- Hideous Abominations
-  , Enemy <$> conglomerationOfSpheres
-  , Enemy <$> servantOfTheLurker
+  , SomeEnemyCard conglomerationOfSpheres
+  , SomeEnemyCard servantOfTheLurker
   -- The Miskatonic Museum
-  , Enemy <$> huntingHorror
+  , SomeEnemyCard huntingHorror
   -- The Essex County Express
-  , Enemy <$> grapplingHorror
-  , Enemy <$> emergentMonstrosity
+  , SomeEnemyCard grapplingHorror
+  , SomeEnemyCard emergentMonstrosity
   -- Blood on the Altar
-  , Enemy <$> silasBishop
-  , Enemy <$> servantOfManyMouths
+  , SomeEnemyCard silasBishop
+  , SomeEnemyCard servantOfManyMouths
   -- Undimensioned and Unseen
-  , Enemy <$> broodOfYogSothoth
+  , SomeEnemyCard broodOfYogSothoth
   -- Where Doom Awaits
-  , Enemy <$> sethBishop
-  , Enemy <$> devoteeOfTheKey
-  , Enemy <$> crazedShoggoth
+  , SomeEnemyCard sethBishop
+  , SomeEnemyCard devoteeOfTheKey
+  , SomeEnemyCard crazedShoggoth
   -- Lost in Time and Space
-  , Enemy <$> yogSothoth
-  , Enemy <$> interstellarTraveler
-  , Enemy <$> yithianStarseeker
+  , SomeEnemyCard yogSothoth
+  , SomeEnemyCard interstellarTraveler
+  , SomeEnemyCard yithianStarseeker
   -- The Path to Carcosa
   -- signature
-  , Enemy <$> graveyardGhouls
+  , SomeEnemyCard graveyardGhouls
   -- weakness
-  , Enemy <$> theThingThatFollows
+  , SomeEnemyCard theThingThatFollows
   -- Curtain Call
-  , Enemy <$> theManInThePallidMask
-  , Enemy <$> royalEmissary
+  , SomeEnemyCard theManInThePallidMask
+  , SomeEnemyCard royalEmissary
   -- The Last King
-  , Enemy <$> constanceDumaine
-  , Enemy <$> jordanPerry
-  , Enemy <$> ishimaruHaruko
-  , Enemy <$> sebastienMoreau
-  , Enemy <$> ashleighClarke
-  , Enemy <$> dianneDevine
+  , SomeEnemyCard constanceDumaine
+  , SomeEnemyCard jordanPerry
+  , SomeEnemyCard ishimaruHaruko
+  , SomeEnemyCard sebastienMoreau
+  , SomeEnemyCard ashleighClarke
+  , SomeEnemyCard dianneDevine
   -- Byakhee
-  , Enemy <$> swiftByakhee
+  , SomeEnemyCard swiftByakhee
   -- Inhabitants of Carcosa
-  , Enemy <$> beastOfAldebaran
-  , Enemy <$> spawnOfHali
+  , SomeEnemyCard beastOfAldebaran
+  , SomeEnemyCard spawnOfHali
   -- Hauntings
-  , Enemy <$> poltergeist
+  , SomeEnemyCard poltergeist
   -- Hastur's Gift
-  , Enemy <$> maniac
-  , Enemy <$> youngPsychopath
+  , SomeEnemyCard maniac
+  , SomeEnemyCard youngPsychopath
   -- Cult of the Yellow Sign
-  , Enemy <$> fanatic
-  , Enemy <$> agentOfTheKing
+  , SomeEnemyCard fanatic
+  , SomeEnemyCard agentOfTheKing
   -- Decay and Filth
-  , Enemy <$> roachSwarm
+  , SomeEnemyCard roachSwarm
   -- Echoes of the Past
-  , Enemy <$> possessedOathspeaker
-  , Enemy <$> seekerOfCarcosa
+  , SomeEnemyCard possessedOathspeaker
+  , SomeEnemyCard seekerOfCarcosa
   -- The Unspeakable Oath
-  , Enemy <$> danielChesterfield
-  , Enemy <$> asylumGorger
-  , Enemy <$> madPatient
+  , SomeEnemyCard danielChesterfield
+  , SomeEnemyCard asylumGorger
+  , SomeEnemyCard madPatient
   -- A Phantom of Truth
-  , Enemy <$> theOrganistHopelessIDefiedHim
-  , Enemy <$> theOrganistDrapedInMystery
-  , Enemy <$> stealthyByakhee
+  , SomeEnemyCard theOrganistHopelessIDefiedHim
+  , SomeEnemyCard theOrganistDrapedInMystery
+  , SomeEnemyCard stealthyByakhee
   -- The Pallid Mask
-  , Enemy <$> specterOfDeath
-  , Enemy <$> catacombsDocent
-  , Enemy <$> corpseDweller
+  , SomeEnemyCard specterOfDeath
+  , SomeEnemyCard catacombsDocent
+  , SomeEnemyCard corpseDweller
   -- Black Stars Rise
-  , Enemy <$> tidalTerror
-  , Enemy <$> riftSeeker
+  , SomeEnemyCard tidalTerror
+  , SomeEnemyCard riftSeeker
   -- Dim Carcosa
-  , Enemy <$> hasturTheKingInYellow
-  , Enemy <$> hasturLordOfCarcosa
-  , Enemy <$> hasturTheTatteredKing
-  , Enemy <$> creatureOutOfDemhe
-  , Enemy <$> wingedOne
+  , SomeEnemyCard hasturTheKingInYellow
+  , SomeEnemyCard hasturLordOfCarcosa
+  , SomeEnemyCard hasturTheTatteredKing
+  , SomeEnemyCard creatureOutOfDemhe
+  , SomeEnemyCard wingedOne
   -- The Forgotten Age
   -- signature
-  , Enemy <$> serpentsOfYig
+  , SomeEnemyCard serpentsOfYig
   -- Return to Night of the Zealot
   -- Return to the Gathering
-  , Enemy <$> corpseHungryGhoul
-  , Enemy <$> ghoulFromTheDepths
+  , SomeEnemyCard corpseHungryGhoul
+  , SomeEnemyCard ghoulFromTheDepths
   -- Return to the Midnight Masks
-  , Enemy <$> narogath
+  , SomeEnemyCard narogath
   -- Ghouls of Umordhoth
-  , Enemy <$> graveEater
-  , Enemy <$> acolyteOfUmordhoth
+  , SomeEnemyCard graveEater
+  , SomeEnemyCard acolyteOfUmordhoth
   -- The Devourer's Cult
-  , Enemy <$> discipleOfTheDevourer
-  , Enemy <$> corpseTaker
+  , SomeEnemyCard discipleOfTheDevourer
+  , SomeEnemyCard corpseTaker
   -- Return to Cult of Umordhoth
-  , Enemy <$> jeremiahPierce
-  , Enemy <$> billyCooper
-  , Enemy <$> almaHill
+  , SomeEnemyCard jeremiahPierce
+  , SomeEnemyCard billyCooper
+  , SomeEnemyCard almaHill
   -- Nathanial Cho
-  , Enemy <$> tommyMalloy
+  , SomeEnemyCard tommyMalloy
   -- Curse of the Rougarou
-  , Enemy <$> bogGator
-  , Enemy <$> swampLeech
-  , Enemy <$> theRougarou
-  , Enemy <$> slimeCoveredDhole
-  , Enemy <$> marshGug
-  , Enemy <$> darkYoungHost
+  , SomeEnemyCard bogGator
+  , SomeEnemyCard swampLeech
+  , SomeEnemyCard theRougarou
+  , SomeEnemyCard slimeCoveredDhole
+  , SomeEnemyCard marshGug
+  , SomeEnemyCard darkYoungHost
   -- Carnevale of Horrors
-  , Enemy <$> balefulReveler
-  , Enemy <$> donLagorio
-  , Enemy <$> elisabettaMagro
-  , Enemy <$> salvatoreNeri
-  , Enemy <$> savioCorvi
-  , Enemy <$> cnidathqua
-  , Enemy <$> poleman
-  , Enemy <$> carnevaleSentinel
-  , Enemy <$> writhingAppendage
+  , SomeEnemyCard balefulReveler
+  , SomeEnemyCard donLagorio
+  , SomeEnemyCard elisabettaMagro
+  , SomeEnemyCard salvatoreNeri
+  , SomeEnemyCard savioCorvi
+  , SomeEnemyCard cnidathqua
+  , SomeEnemyCard poleman
+  , SomeEnemyCard carnevaleSentinel
+  , SomeEnemyCard writhingAppendage
   ]

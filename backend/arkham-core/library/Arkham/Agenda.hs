@@ -25,9 +25,9 @@ instance ToJSON Agenda where
   toJSON (Agenda a) = toJSON a
 
 lookupAgenda :: AgendaId -> (Int -> Agenda)
-lookupAgenda agendaId =
-  fromJustNote ("Unknown agenda: " <> show agendaId) $
-    lookup agendaId allAgendas
+lookupAgenda agendaId = case lookup (unAgendaId agendaId) allAgendas of
+  Nothing -> error $ "Unknown agenda: " <> show agendaId
+  Just (SomeAgendaCard a) -> \i -> Agenda $ cbCardBuilder a (i, agendaId)
 
 instance HasAbilities Agenda where
   getAbilities (Agenda a) = getAbilities a
@@ -56,204 +56,123 @@ instance SourceEntity Agenda where
 instance FromJSON Agenda where
   parseJSON v = flip (withObject "Agenda") v $ \o -> do
     cCode :: CardCode <- o .: "id"
-    case cCode of
-      -- Night of the Zealot
-      -- The Gathering
-      "01105" -> Agenda . WhatsGoingOn <$> parseJSON v
-      "01106" -> Agenda . RiseOfTheGhouls <$> parseJSON v
-      "01107" -> Agenda . TheyreGettingOut <$> parseJSON v
-      -- The Midnight Masks
-      "01121" -> Agenda . PredatorOrPrey <$> parseJSON v
-      "01122" -> Agenda . TimeIsRunningShort <$> parseJSON v
-      -- The Devourer Below
-      "01143" -> Agenda . TheArkhamWoods <$> parseJSON v
-      "01144" -> Agenda . TheRitualBegins <$> parseJSON v
-      "01145" -> Agenda . VengeanceAwaits <$> parseJSON v
-      -- The Dunwich Legacy
-      -- Extracurricular Activity
-      "02042" -> Agenda . QuietHalls <$> parseJSON v
-      "02043" -> Agenda . DeadOfNight <$> parseJSON v
-      "02044" -> Agenda . TheBeastUnleashed <$> parseJSON v
-      -- The House Always Wins
-      "02063" -> Agenda . TheCloverClub <$> parseJSON v
-      "02064" -> Agenda . UndergroundMuscle <$> parseJSON v
-      "02065" -> Agenda . ChaosInTheCloverClub <$> parseJSON v
-      -- The Miskatonic Museum
-      "02119" -> Agenda . RestrictedAccess <$> parseJSON v
-      "02120" -> Agenda . ShadowsDeepen <$> parseJSON v
-      "02121" -> Agenda . InEveryShadow <$> parseJSON v
-      -- The Essex County Express
-      "02160" -> Agenda . ATearInReality <$> parseJSON v
-      "02161" -> Agenda . TheMawWidens <$> parseJSON v
-      "02162" -> Agenda . RollingBackwards <$> parseJSON v
-      "02163" -> Agenda . DrawnIn <$> parseJSON v
-      "02164" -> Agenda . OutOfTime <$> parseJSON v
-      -- Blood on the Altar
-      "02196" -> Agenda . StrangeDisappearances <$> parseJSON v
-      "02197" -> Agenda . TheOldOnesHunger <$> parseJSON v
-      "02198" -> Agenda . FeedTheBeast <$> parseJSON v
-      -- Undimensioned and Unseen
-      "02237" -> Agenda . RampagingCreatures <$> parseJSON v
-      "02238" -> Agenda . BidingItsTime <$> parseJSON v
-      "02239" -> Agenda . HorrorsUnleashed <$> parseJSON v
-      -- Where Doom Awaits
-      "02275" -> Agenda . CallingForthTheOldOnes <$> parseJSON v
-      "02276" -> Agenda . BeckoningForPower <$> parseJSON v
-      -- Lost in Time and Space
-      "02312" -> Agenda . AllIsOne <$> parseJSON v
-      "02313" -> Agenda . PastPresentAndFuture <$> parseJSON v
-      "02314" -> Agenda . BreakingThrough <$> parseJSON v
-      "02315" -> Agenda . TheEndOfAllThings <$> parseJSON v
-      -- The Path to Carcosa
-      -- Curtain Call
-      "03044" -> Agenda . TheThirdAct <$> parseJSON v
-      "03045" -> Agenda . Encore <$> parseJSON v
-      -- The Last King
-      "03062" -> Agenda . FashionablyLate <$> parseJSON v
-      "03063" -> Agenda . TheTerrifyingTruth <$> parseJSON v
-      -- Echoes of the Past
-      "03121" -> Agenda . TheTruthIsHidden <$> parseJSON v
-      "03122" -> Agenda . RansackingTheManor <$> parseJSON v
-      "03123" -> Agenda . SecretsBetterLeftHidden <$> parseJSON v
-      -- The Unspeakable Oath
-      "03160" -> Agenda . LockedInside <$> parseJSON v
-      "03161" -> Agenda . TorturousDescent <$> parseJSON v
-      "03162" -> Agenda . HisDomain <$> parseJSON v
-      -- A Phantom of Truth
-      "03201" -> Agenda . TheFirstNight <$> parseJSON v
-      "03202" -> Agenda . TheSecondNight <$> parseJSON v
-      "03203" -> Agenda . TheThirdNight <$> parseJSON v
-      -- The Pallid Mask
-      "03241" -> Agenda . EmpireOfTheDead <$> parseJSON v
-      "03242" -> Agenda . EmpireOfTheUndead <$> parseJSON v
-      -- Black Stars Rise
-      "03275" -> Agenda . TheTideRises <$> parseJSON v
-      "03276a" -> Agenda . LetTheStormRageTheFloodBelow <$> parseJSON v
-      "03276b" -> Agenda . LetTheStormRageTheVortexAbove <$> parseJSON v
-      "03277" -> Agenda . TheCityFloods <$> parseJSON v
-      "03278" -> Agenda . TheRitualBeginsBlackStarsRise <$> parseJSON v
-      "03279a" -> Agenda . TheEntityAboveTheFloodBelow <$> parseJSON v
-      "03279b" -> Agenda . TheEntityAboveTheVortexAbove <$> parseJSON v
-      "03280" -> Agenda . SwallowedSky <$> parseJSON v
-      -- Dim Carcosa
-      "03317" -> Agenda . MadnessCoils <$> parseJSON v
-      "03318" -> Agenda . MadnessDrowns <$> parseJSON v
-      "03319" -> Agenda . MadnessDies <$> parseJSON v
-      -- The Forgotten Age
-      -- The Untamed Wilds
-      "04044" -> Agenda . ExpeditionIntoTheWild <$> parseJSON v
-      "04045" -> Agenda . Intruders <$> parseJSON v
-      -- Return to the Night of the Zealot
-      -- Return to the Midnight Masks
-      "50026" -> Agenda . ReturnToPredatorOrPrey <$> parseJSON v
-      -- Curse of the Rougarou
-      "81002" -> Agenda . ACreatureOfTheBayou <$> parseJSON v
-      "81003" -> Agenda . TheRougarouFeeds <$> parseJSON v
-      "81004" -> Agenda . TheCurseSpreads <$> parseJSON v
-      -- Carnevale of Horrors
-      "82002" -> Agenda . TheFestivitiesBegin <$> parseJSON v
-      "82003" -> Agenda . TheShadowOfTheEclipse <$> parseJSON v
-      "82004" -> Agenda . ChaosAtTheCarnevale <$> parseJSON v
-      _ -> error "invalid agenda"
+    withAgendaCardCode cCode $ \(_ :: AgendaCard a) -> Agenda <$> parseJSON @a v
 
-allAgendas :: HashMap AgendaId (Int -> Agenda)
+withAgendaCardCode
+  :: CardCode
+  -> (forall a. IsAgenda a => AgendaCard a -> r)
+  -> r
+withAgendaCardCode cCode f =
+  case lookup cCode allAgendas of
+    Nothing -> error $ "Unknown agenda: " <> show cCode
+    Just (SomeAgendaCard a) -> f a
+
+data SomeAgendaCard = forall a. IsAgenda a => SomeAgendaCard (AgendaCard a)
+
+liftSomeAgendaCard :: (forall a. AgendaCard a -> b) -> SomeAgendaCard -> b
+liftSomeAgendaCard f (SomeAgendaCard a) = f a
+
+someAgendaCardCode :: SomeAgendaCard -> CardCode
+someAgendaCardCode = liftSomeAgendaCard cbCardCode
+
+allAgendas :: HashMap CardCode SomeAgendaCard
 allAgendas = mapFromList $ map
-  (\cb -> (AgendaId (cbCardCode cb), \deckId -> cbCardBuilder cb (deckId, AgendaId (cbCardCode cb))))
+  (toFst someAgendaCardCode)
   [ -- Night of the Zealot
   -- The Gathering
-    Agenda <$> whatsGoingOn
-  , Agenda <$> riseOfTheGhouls
-  , Agenda <$> theyreGettingOut
+    SomeAgendaCard whatsGoingOn
+  , SomeAgendaCard riseOfTheGhouls
+  , SomeAgendaCard theyreGettingOut
   -- The Midnight Masks
-  , Agenda <$> predatorOrPrey
-  , Agenda <$> timeIsRunningShort
+  , SomeAgendaCard predatorOrPrey
+  , SomeAgendaCard timeIsRunningShort
   -- The Devourer Below
-  , Agenda <$> theArkhamWoods
-  , Agenda <$> theRitualBegins
-  , Agenda <$> vengeanceAwaits
+  , SomeAgendaCard theArkhamWoods
+  , SomeAgendaCard theRitualBegins
+  , SomeAgendaCard vengeanceAwaits
   -- The Dunwich Legacy
   -- Extracurricular Activity
-  , Agenda <$> quietHalls
-  , Agenda <$> deadOfNight
-  , Agenda <$> theBeastUnleashed
+  , SomeAgendaCard quietHalls
+  , SomeAgendaCard deadOfNight
+  , SomeAgendaCard theBeastUnleashed
   -- The House Always Wins
-  , Agenda <$> theCloverClub
-  , Agenda <$> undergroundMuscle
-  , Agenda <$> chaosInTheCloverClub
+  , SomeAgendaCard theCloverClub
+  , SomeAgendaCard undergroundMuscle
+  , SomeAgendaCard chaosInTheCloverClub
   -- The Miskatonic Museum
-  , Agenda <$> restrictedAccess
-  , Agenda <$> shadowsDeepen
-  , Agenda <$> inEveryShadow
+  , SomeAgendaCard restrictedAccess
+  , SomeAgendaCard shadowsDeepen
+  , SomeAgendaCard inEveryShadow
   -- The Essex County Express
-  , Agenda <$> aTearInReality
-  , Agenda <$> theMawWidens
-  , Agenda <$> rollingBackwards
-  , Agenda <$> drawnIn
-  , Agenda <$> outOfTime
+  , SomeAgendaCard aTearInReality
+  , SomeAgendaCard theMawWidens
+  , SomeAgendaCard rollingBackwards
+  , SomeAgendaCard drawnIn
+  , SomeAgendaCard outOfTime
   -- Blood on the Altar
-  , Agenda <$> strangeDisappearances
-  , Agenda <$> theOldOnesHunger
-  , Agenda <$> feedTheBeast
+  , SomeAgendaCard strangeDisappearances
+  , SomeAgendaCard theOldOnesHunger
+  , SomeAgendaCard feedTheBeast
   -- Undimensioned and Unseen
-  , Agenda <$> rampagingCreatures
-  , Agenda <$> bidingItsTime
-  , Agenda <$> horrorsUnleashed
+  , SomeAgendaCard rampagingCreatures
+  , SomeAgendaCard bidingItsTime
+  , SomeAgendaCard horrorsUnleashed
   -- Where Doom Awaits
-  , Agenda <$> callingForthTheOldOnes
-  , Agenda <$> beckoningForPower
+  , SomeAgendaCard callingForthTheOldOnes
+  , SomeAgendaCard beckoningForPower
   -- Lost in Time and Space
-  , Agenda <$> allIsOne
-  , Agenda <$> pastPresentAndFuture
-  , Agenda <$> breakingThrough
-  , Agenda <$> theEndOfAllThings
+  , SomeAgendaCard allIsOne
+  , SomeAgendaCard pastPresentAndFuture
+  , SomeAgendaCard breakingThrough
+  , SomeAgendaCard theEndOfAllThings
   -- The Path to Carcosa
   -- Curtain Call
-  , Agenda <$> theThirdAct
-  , Agenda <$> encore
+  , SomeAgendaCard theThirdAct
+  , SomeAgendaCard encore
   -- The Last King
-  , Agenda <$> fashionablyLate
-  , Agenda <$> theTerrifyingTruth
+  , SomeAgendaCard fashionablyLate
+  , SomeAgendaCard theTerrifyingTruth
   -- Echoes of the Past
-  , Agenda <$> theTruthIsHidden
-  , Agenda <$> ransackingTheManor
-  , Agenda <$> secretsBetterLeftHidden
+  , SomeAgendaCard theTruthIsHidden
+  , SomeAgendaCard ransackingTheManor
+  , SomeAgendaCard secretsBetterLeftHidden
   -- The Unspeakable Oath
-  , Agenda <$> lockedInside
-  , Agenda <$> torturousDescent
-  , Agenda <$> hisDomain
+  , SomeAgendaCard lockedInside
+  , SomeAgendaCard torturousDescent
+  , SomeAgendaCard hisDomain
   -- A Phantom of Truth
-  , Agenda <$> theFirstNight
-  , Agenda <$> theSecondNight
-  , Agenda <$> theThirdNight
+  , SomeAgendaCard theFirstNight
+  , SomeAgendaCard theSecondNight
+  , SomeAgendaCard theThirdNight
   -- The Pallid Mask
-  , Agenda <$> empireOfTheDead
-  , Agenda <$> empireOfTheUndead
+  , SomeAgendaCard empireOfTheDead
+  , SomeAgendaCard empireOfTheUndead
   -- Black Stars Rise
-  , Agenda <$> theTideRises
-  , Agenda <$> letTheStormRageTheFloodBelow
-  , Agenda <$> letTheStormRageTheVortexAbove
-  , Agenda <$> theCityFloods
-  , Agenda <$> theRitualBeginsBlackStarsRise
-  , Agenda <$> theEntityAboveTheFloodBelow
-  , Agenda <$> theEntityAboveTheVortexAbove
-  , Agenda <$> swallowedSky
+  , SomeAgendaCard theTideRises
+  , SomeAgendaCard letTheStormRageTheFloodBelow
+  , SomeAgendaCard letTheStormRageTheVortexAbove
+  , SomeAgendaCard theCityFloods
+  , SomeAgendaCard theRitualBeginsBlackStarsRise
+  , SomeAgendaCard theEntityAboveTheFloodBelow
+  , SomeAgendaCard theEntityAboveTheVortexAbove
+  , SomeAgendaCard swallowedSky
   -- Dim Carcosa
-  , Agenda <$> madnessCoils
-  , Agenda <$> madnessDrowns
-  , Agenda <$> madnessDies
+  , SomeAgendaCard madnessCoils
+  , SomeAgendaCard madnessDrowns
+  , SomeAgendaCard madnessDies
   -- The Forgotten Age
   -- The Untamed Wilds
-  , Agenda <$> expeditionIntoTheWild
-  , Agenda <$> intruders
+  , SomeAgendaCard expeditionIntoTheWild
+  , SomeAgendaCard intruders
   -- Return to the Night of the Zealot
   -- Return to the Midnight Masks
-  , Agenda <$> returnToPredatorOrPrey
+  , SomeAgendaCard returnToPredatorOrPrey
   -- Curse of the Rougarou
-  , Agenda <$> aCreatureOfTheBayou
-  , Agenda <$> theRougarouFeeds
-  , Agenda <$> theCurseSpreads
+  , SomeAgendaCard aCreatureOfTheBayou
+  , SomeAgendaCard theRougarouFeeds
+  , SomeAgendaCard theCurseSpreads
   -- Carnevale of Horrors
-  , Agenda <$> theFestivitiesBegin
-  , Agenda <$> theShadowOfTheEclipse
-  , Agenda <$> chaosAtTheCarnevale
+  , SomeAgendaCard theFestivitiesBegin
+  , SomeAgendaCard theShadowOfTheEclipse
+  , SomeAgendaCard chaosAtTheCarnevale
   ]

@@ -474,7 +474,7 @@ arkhamWoodsUnhallowedGround = locationWithUnrevealed
   "01150"
   "Arkham Woods"
   [Woods]
-  Sauare
+  Square
   [Squiggle]
   ("Arkham Woods" <:> "Unhallowed Ground")
   [Woods]
@@ -553,7 +553,7 @@ ritualSite =
 
 miskatonicQuad :: CardDef
 miskatonicQuad =
-  location "02048" "Miskatonic Quad" [Miskatonic] Plus [Triangle, Hourglass, Square, Diamond, Cirlce] ExtracurricularActivity
+  location "02048" "Miskatonic Quad" [Miskatonic] Plus [Triangle, Hourglass, Square, Diamond, Circle] ExtracurricularActivity
 
 humanitiesBuilding :: CardDef
 humanitiesBuilding =
@@ -1205,6 +1205,8 @@ stepsOfYhagharl = (location
                     "02327"
                     "Steps of Y'hagharl"
                     [Otherworld, Extradimensional]
+                    Plus
+                    [Diamond, Moon]
                     LostInTimeAndSpace
                   )
   { cdDoubleSided = False
@@ -1215,31 +1217,37 @@ dimensionalDoorway = (location
                        "02328"
                        "Dimensional Doorway"
                        [Otherworld, Extradimensional]
+                       Squiggle
+                       [Triangle, Moon]
                        LostInTimeAndSpace
                      )
   { cdDoubleSided = False
   }
 
 theatre :: CardDef
-theatre = location "03049" "Theatre" mempty CurtainCall
+theatre = location "03049" "Theatre" mempty Circle [Diamond, Triangle] CurtainCall
 
 lobby :: CardDef
-lobby = location "03050" "Lobby" mempty CurtainCall
+lobby = location "03050" "Lobby" mempty Triangle [Circle, Squire, Plus] CurtainCall
 
 balcony :: CardDef
 balcony =
-  (location "03051" "Balcony" mempty CurtainCall) { cdVictoryPoints = Just 1 }
+  (location "03051" "Balcony" mempty Square [Circle, Triangle] CurtainCall) { cdVictoryPoints = Just 1 }
 
 backstage :: CardDef
-backstage = location "03052" "Backstage" mempty CurtainCall
+backstage = location "03052" "Backstage" mempty Diamond [Circle, Moon] CurtainCall
 
 lightingBox :: CardDef
 lightingBox = (locationWithUnrevealed
                 "03053"
                 "Lobby Doorway"
                 [Private]
+                Plus
+                [Triangle]
                 "Lighting Box"
                 [Private]
+                Plus
+                [Triangle]
                 CurtainCall
               )
   { cdVictoryPoints = Just 1
@@ -1250,8 +1258,12 @@ boxOffice = locationWithUnrevealed
   "03054"
   "Lobby Doorway"
   [Private]
+  Plus
+  [Triangle]
   "Box Office"
   [Private]
+  Plus
+  [Triangle]
   CurtainCall
 
 greenRoom :: CardDef
@@ -1259,8 +1271,12 @@ greenRoom = (locationWithUnrevealed
               "03055"
               "Lobby Doorway"
               [Private]
+              Plus
+              [Triangle]
               "Green Room"
               [Private]
+              Plus
+              [Triangle]
               CurtainCall
             )
   { cdVictoryPoints = Just 1
@@ -1271,8 +1287,12 @@ dressingRoom = locationWithUnrevealed
   "03056"
   "Backstage Doorway"
   [Private]
+  Moon
+  [Diamond]
   "Dressing Room"
   [Private]
+  Moon
+  [Diamond]
   CurtainCall
 
 rehearsalRoom :: CardDef
@@ -1280,8 +1300,12 @@ rehearsalRoom = (locationWithUnrevealed
                   "03057"
                   "Backstage Doorway"
                   [Private]
+                  Moon
+                  [Diamond]
                   "Rehearsal Room"
                   [Private]
+                  Moon
+                  [Diamond]
                   CurtainCall
                 )
   { cdVictoryPoints = Just 1
@@ -1292,41 +1316,49 @@ trapRoom = (locationWithUnrevealed
              "03058"
              "Backstage Doorway"
              [Private]
+             Moon
+             [Diamond]
              "Trap Room"
              [Private]
+             Moon
+             [Diamond]
              CurtainCall
            )
   { cdVictoryPoints = Just 1
   }
 
 foyer :: CardDef
-foyer = location "03070" "Foyer" mempty TheLastKing
+foyer = location "03070" "Foyer" mempty T [Circle, Square, Equals] TheLastKing
 
 ballroom :: CardDef
-ballroom = location "03071" "Ballroom" mempty TheLastKing
+ballroom = location "03071" "Ballroom" mempty Square [T, Circle, Squiggle] TheLastKing
 
 livingRoom :: CardDef
-livingRoom = location "03072" "Living Room" mempty TheLastKing
+livingRoom = location "03072" "Living Room" mempty Equals [T, Circle, Plus] TheLastKing
 
 gallery :: CardDef
-gallery = location "03073" "Gallery" mempty TheLastKing
+gallery = location "03073" "Gallery" mempty Plus [Equals, Circle] TheLastKing
 
 courtyard :: CardDef
-courtyard = location "03074" "Courtyard" mempty TheLastKing
+courtyard = location "03074" "Courtyard" mempty Circle [Squiggle, Square, T, Equals, Plus] TheLastKing
 
 diningRoom :: CardDef
-diningRoom = location "03075" "Dining Room" mempty TheLastKing
+diningRoom = location "03075" "Dining Room" mempty Squiggle [Square, Circle] TheLastKing
 
 entryHall :: CardDef
-entryHall = location "03127" "Entry Hall" [GroundFloor] EchoesOfThePast
+entryHall = location "03127" "Entry Hall" [GroundFloor] Square [Circle] EchoesOfThePast
 
 historicalSocietyMeetingRoom :: CardDef
 historicalSocietyMeetingRoom = locationWithUnrevealed
   "03128"
   "Historical Society"
   [GroundFloor]
+  NoSymbol
+  [Square]
   ("Historical Society" <:> "Meeting Room")
   [GroundFloor, Passageway]
+  Diamond
+  [Square]
   EchoesOfThePast
 
 historicalSocietyRecordOffice_129 :: CardDef
@@ -1334,8 +1366,12 @@ historicalSocietyRecordOffice_129 = locationWithUnrevealed
   "03129"
   "Historical Society"
   [GroundFloor]
+  NoSymbol
+  [Square]
   ("Historical Society" <:> "Record Office")
   [GroundFloor]
+  Plus
+  [Square]
   EchoesOfThePast
 
 historicalSocietyHistoricalMuseum_130 :: CardDef
@@ -1343,20 +1379,28 @@ historicalSocietyHistoricalMuseum_130 = locationWithUnrevealed
   "03130"
   "Historical Society"
   [GroundFloor]
+  NoSymbol
+  [Square]
   ("Historical Society" <:> "Historical Museum")
   [GroundFloor]
+  Heart
+  [Square, Hourglass]
   EchoesOfThePast
 
 quietHalls_131 :: CardDef
-quietHalls_131 = location "03131" "Quiet Halls" [SecondFloor] EchoesOfThePast
+quietHalls_131 = location "03131" "Quiet Halls" [SecondFloor] Circle [Square, Star] EchoesOfThePast
 
 historicalSocietyHistoricalMuseum_132 :: CardDef
 historicalSocietyHistoricalMuseum_132 = locationWithUnrevealed
   "03132"
   "Historical Society"
   [SecondFloor]
+  NoSymbol
+  [Circle]
   ("Historical Society" <:> "Historical Museum")
   [SecondFloor]
+  Hourglass
+  [Circle, Heart]
   EchoesOfThePast
 
 historicalSocietyHistoricalLibrary_133 :: CardDef
@@ -1364,8 +1408,12 @@ historicalSocietyHistoricalLibrary_133 = locationWithUnrevealed
   "03133"
   "Historical Society"
   [SecondFloor]
+  NoSymbol
+  [Circle]
   ("Historical Society" <:> "Historical Library")
   [SecondFloor, Passageway]
+  Triangle
+  [Circle, Squiggle]
   EchoesOfThePast
 
 historicalSocietyReadingRoom :: CardDef
@@ -1373,8 +1421,12 @@ historicalSocietyReadingRoom = locationWithUnrevealed
   "03134"
   "Historical Society"
   [SecondFloor]
+  NoSymbol
+  [Circle]
   ("Historical Society" <:> "Reading Room")
   [SecondFloor]
+  T
+  [Circle]
   EchoesOfThePast
 
 quietHalls_135 :: CardDef

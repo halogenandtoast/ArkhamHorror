@@ -1185,6 +1185,7 @@ library
       Arkham.PlayerCard
       Arkham.Prelude
       Arkham.Projection
+      Arkham.Query
       Arkham.Question
       Arkham.RequestedTokenStrategy
       Arkham.Resolution
@@ -1507,6 +1508,7 @@ library
     , aeson-diff
     , base >=4.7 && <5
     , classy-prelude
+    , constraints
     , containers
     , extra
     , lens

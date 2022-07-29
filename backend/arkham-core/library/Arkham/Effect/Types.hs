@@ -22,8 +22,10 @@ import Data.Typeable
 
 class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ EffectId, EntityAttrs a ~ EffectAttrs) => IsEffect a
 
-data instance Field Effect :: Type -> Type where
-  EffectAbilities :: Field Effect [Ability]
+instance Record Effect where
+  data Field Effect :: Type -> Type where
+    EffectAbilities :: Field Effect [Ability]
+  fieldLookup = mapFromList [("EffectAbilities", SomeField EffectAbilities)]
 
 data EffectAttrs = EffectAttrs
   { effectId :: EffectId

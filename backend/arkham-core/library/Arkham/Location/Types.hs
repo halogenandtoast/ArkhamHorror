@@ -7,6 +7,7 @@ module Arkham.Location.Types
 
 import Arkham.Prelude
 
+import Data.Constraint
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Card
@@ -44,37 +45,111 @@ class
   , Entity a
   , EntityId a ~ LocationId
   , EntityAttrs a ~ LocationAttrs
-  ) => IsLocation a where
-    toLocation :: a -> Location
-    toLocation = Location
+  ) => IsLocation a
 
 type LocationCard a = CardBuilder LocationId a
 
-data instance Field Location :: Type -> Type where
-  LocationClues :: Field Location Int
-  LocationResources :: Field Location Int
-  LocationHorror :: Field Location Int
-  LocationDoom :: Field Location Int
-  LocationShroud :: Field Location Int
-  LocationTraits :: Field Location (HashSet Trait)
-  LocationKeywords :: Field Location (HashSet Keyword)
-  LocationUnrevealedName :: Field Location Name
-  LocationName :: Field Location Name
-  LocationConnectedMatchers :: Field Location [LocationMatcher]
-  LocationRevealedConnectedMatchers :: Field Location [LocationMatcher]
-  LocationRevealed :: Field Location Bool
-  LocationConnectsTo :: Field Location (HashSet Direction)
-  LocationCardsUnderneath :: Field Location [Card]
-  LocationConnectedLocations :: Field Location (HashSet LocationId)
-  LocationInvestigators :: Field Location (HashSet InvestigatorId)
-  LocationEnemies :: Field Location (HashSet EnemyId)
-  LocationAssets :: Field Location (HashSet AssetId)
-  LocationEvents :: Field Location (HashSet EventId)
-  LocationTreacheries :: Field Location (HashSet TreacheryId)
-  -- virtual
-  LocationCardDef :: Field Location CardDef
-  LocationCard :: Field Location Card
-  LocationAbilities :: Field Location [Ability]
+instance Record Location where
+  data Field Location :: Type -> Type where
+    LocationClues :: Field Location Int
+    LocationResources :: Field Location Int
+    LocationHorror :: Field Location Int
+    LocationDoom :: Field Location Int
+    LocationShroud :: Field Location Int
+    LocationTraits :: Field Location (HashSet Trait)
+    LocationKeywords :: Field Location (HashSet Keyword)
+    LocationUnrevealedName :: Field Location Name
+    LocationName :: Field Location Name
+    LocationConnectedMatchers :: Field Location [LocationMatcher]
+    LocationRevealedConnectedMatchers :: Field Location [LocationMatcher]
+    LocationRevealed :: Field Location Bool
+    LocationConnectsTo :: Field Location (HashSet Direction)
+    LocationCardsUnderneath :: Field Location [Card]
+    LocationConnectedLocations :: Field Location (HashSet LocationId)
+    LocationInvestigators :: Field Location (HashSet InvestigatorId)
+    LocationEnemies :: Field Location (HashSet EnemyId)
+    LocationAssets :: Field Location (HashSet AssetId)
+    LocationEvents :: Field Location (HashSet EventId)
+    LocationTreacheries :: Field Location (HashSet TreacheryId)
+    -- virtual
+    LocationCardDef :: Field Location CardDef
+    LocationCard :: Field Location Card
+    LocationAbilities :: Field Location [Ability]
+  fieldLookup = mapFromList
+    [ ("LocationClues", SomeField LocationClues)
+    , ("LocationResources", SomeField LocationResources)
+    , ("LocationHorror", SomeField LocationHorror)
+    , ("LocationDoom", SomeField LocationDoom)
+    , ("LocationShroud", SomeField LocationShroud)
+    , ("LocationTraits", SomeField LocationTraits)
+    , ("LocationKeywords", SomeField LocationKeywords)
+    , ("LocationUnrevealedName", SomeField LocationUnrevealedName)
+    , ("LocationName", SomeField LocationName)
+    , ("LocationConnectedMatchers", SomeField LocationConnectedMatchers)
+    , ("LocationRevealedConnectedMatchers", SomeField LocationRevealedConnectedMatchers)
+    , ("LocationRevealed", SomeField LocationRevealed)
+    , ("LocationConnectsTo", SomeField LocationConnectsTo)
+    , ("LocationCardsUnderneath", SomeField LocationCardsUnderneath)
+    , ("LocationConnectedLocations", SomeField LocationConnectedLocations)
+    , ("LocationInvestigators", SomeField LocationInvestigators)
+    , ("LocationEnemies", SomeField LocationEnemies)
+    , ("LocationAssets", SomeField LocationAssets)
+    , ("LocationEvents", SomeField LocationEvents)
+    , ("LocationTreacheries", SomeField LocationTreacheries)
+    , ("LocationCardDef", SomeField LocationCardDef)
+    , ("LocationCard", SomeField LocationCard)
+    , ("LocationAbilities", SomeField LocationAbilities)
+    ]
+
+instance (c Int, c (HashSet Trait), c Trait, c (HashSet Keyword), c Keyword, c Name, c [LocationMatcher], c LocationMatcher, c Bool, c (HashSet Direction), c Direction, c [Card], c Card, c (HashSet LocationId), c LocationId, c (HashSet InvestigatorId), c InvestigatorId, c (HashSet EnemyId), c EnemyId, c (HashSet AssetId), c AssetId, c (HashSet EventId), c EventId, c (HashSet TreacheryId), c TreacheryId, c CardDef, c [Ability], c Ability) => FieldDict c Location where
+  getDict = \case
+    LocationClues -> Dict
+    LocationResources -> Dict
+    LocationHorror -> Dict
+    LocationDoom -> Dict
+    LocationShroud -> Dict
+    LocationTraits -> Dict
+    LocationKeywords -> Dict
+    LocationUnrevealedName -> Dict
+    LocationName -> Dict
+    LocationConnectedMatchers -> Dict
+    LocationRevealedConnectedMatchers -> Dict
+    LocationRevealed -> Dict
+    LocationConnectsTo -> Dict
+    LocationCardsUnderneath -> Dict
+    LocationConnectedLocations -> Dict
+    LocationInvestigators -> Dict
+    LocationEnemies -> Dict
+    LocationAssets -> Dict
+    LocationEvents -> Dict
+    LocationTreacheries -> Dict
+    LocationCardDef -> Dict
+    LocationCard -> Dict
+    LocationAbilities -> Dict
+  getElemDict = \case
+    LocationClues -> error "not a container"
+    LocationResources -> error "not a container"
+    LocationHorror -> error "not a container"
+    LocationDoom -> error "not a container"
+    LocationShroud -> error "not a container"
+    LocationTraits -> Dict
+    LocationKeywords -> Dict
+    LocationUnrevealedName -> error "not a container"
+    LocationName -> error "not a container"
+    LocationConnectedMatchers -> Dict
+    LocationRevealedConnectedMatchers -> Dict
+    LocationRevealed -> error "not a container"
+    LocationConnectsTo -> Dict
+    LocationCardsUnderneath -> Dict
+    LocationConnectedLocations -> Dict
+    LocationInvestigators -> Dict
+    LocationEnemies -> Dict
+    LocationAssets -> Dict
+    LocationEvents -> Dict
+    LocationTreacheries -> Dict
+    LocationCardDef -> error "not a container"
+    LocationCard -> error "not a container"
+    LocationAbilities -> Dict
 
 symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }

@@ -5,6 +5,9 @@ module Arkham.Game where
 
 import Arkham.Prelude
 
+import Data.Typeable
+import Data.List qualified as L
+import Arkham.Query
 import Arkham.Ability
 import Arkham.Act
 import Arkham.Act.Types ( ActAttrs (..), Field (..) )
@@ -1927,6 +1930,75 @@ instance Query LocationMatcher where
 
 instance Query EnemyMatcher where
   select = fmap (setFromList . map toId) . getEnemiesMatching
+
+instance (FieldDict Eq Enemy, FieldDict Typeable Enemy, FieldDict Typeable Location, FieldDict Eq Location) => Queryable Enemy where
+  selectG = \case
+    And qs -> do
+      res <- traverse selectG qs
+      pure $ case res of
+        [] -> []
+        x : xs -> foldl' L.intersect x xs
+    In (x :: x) (fld :: Field Enemy typ) ->
+      withFieldDict @Typeable fld $
+      withElemFieldDict @Typeable fld $
+      withElemFieldDict @Eq fld $
+      case eqT @typ @(HashSet x) of
+        Just Refl -> do
+          enemies <- toList . gameEnemies <$> getGame
+          filterM (fieldMap fld (elem x) . toId) enemies
+        _ -> error "invalid"
+    At x -> do
+      locations <- map toId <$> selectG x
+      enemies <- toList . gameEnemies <$> getGame
+      filterM (fieldMap EnemyLocation (maybe False (`elem` locations)) . toId) enemies
+    FieldEq fld v -> withFieldDict @Eq fld  $ do
+      enemies <- toList . gameEnemies <$> getGame
+      filterM (fieldMap fld (== v) . toId) enemies
+
+instance (FieldDict Eq Asset, FieldDict Typeable Asset, FieldDict Typeable Location, FieldDict Eq Location) => Queryable Asset where
+  selectG = \case
+    And qs -> do
+      res <- traverse selectG qs
+      pure $ case res of
+        [] -> []
+        x : xs -> foldl' L.intersect x xs
+    In (x :: x) (fld :: Field Asset typ) ->
+      withFieldDict @Typeable fld $
+      withElemFieldDict @Typeable fld $
+      withElemFieldDict @Eq fld $
+      case eqT @typ @(HashSet x) of
+        Just Refl -> do
+          assets <- toList . gameAssets <$> getGame
+          filterM (fieldMap fld (elem x) . toId) assets
+        _ -> error "invalid"
+    At x -> do
+      locations <- map toId <$> selectG x
+      assets <- toList . gameAssets <$> getGame
+      filterM (fieldMap AssetLocation (maybe False (`elem` locations)) . toId) assets
+    FieldEq fld v -> withFieldDict @Eq fld  $ do
+      assets <- toList . gameAssets <$> getGame
+      filterM (fieldMap fld (== v) . toId) assets
+
+instance (FieldDict Eq Location, FieldDict Typeable Location) => Queryable Location where
+  selectG = \case
+    And qs -> do
+      res <- traverse selectG qs
+      pure $ case res of
+        [] -> []
+        x : xs -> foldl' L.intersect x xs
+    In (x :: x) (fld :: Field Location typ) ->
+      withFieldDict @Typeable fld $
+      withElemFieldDict @Typeable fld $
+      withElemFieldDict @Eq fld $
+      case eqT @typ @(HashSet x) of
+        Just Refl -> do
+          locations <- toList . gameLocations <$> getGame
+          filterM (fieldMap fld (elem x) . toId) locations
+        _ -> error "invalid"
+    At _ -> error "invalid"
+    FieldEq fld v -> withFieldDict @Eq fld  $ do
+      locations <- toList . gameLocations <$> getGame
+      filterM (fieldMap fld (== v) . toId) locations
 
 instance Query InvestigatorMatcher where
   select = fmap (setFromList . map toId) . getInvestigatorsMatching

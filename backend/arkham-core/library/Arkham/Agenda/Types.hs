@@ -24,10 +24,16 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type AgendaCard a = CardBuilder (Int, AgendaId) a
 
-data instance Field Agenda :: Type -> Type where
-  AgendaSequence :: Field Agenda AS.AgendaSequence
-  AgendaDoom :: Field Agenda Int
-  AgendaAbilities :: Field Agenda [Ability]
+instance Record Agenda where
+  data Field Agenda :: Type -> Type where
+    AgendaSequence :: Field Agenda AS.AgendaSequence
+    AgendaDoom :: Field Agenda Int
+    AgendaAbilities :: Field Agenda [Ability]
+  fieldLookup = mapFromList
+    [ ("AgendaSequence", SomeField AgendaSequence)
+    , ("AgendaDoom", SomeField AgendaDoom)
+    , ("AgendaAbilities", SomeField AgendaAbilities)
+    ]
 
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int

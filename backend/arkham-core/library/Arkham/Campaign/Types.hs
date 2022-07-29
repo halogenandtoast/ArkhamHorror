@@ -21,10 +21,16 @@ import Data.Typeable
 
 class (Typeable a, Show a, Eq a, ToJSON a, FromJSON a, RunMessage a, Entity a, EntityId a ~ CampaignId, EntityAttrs a ~ CampaignAttrs) => IsCampaign a
 
-data instance Field Campaign :: Type -> Type where
-  CampaignCompletedSteps :: Field Campaign [CampaignStep]
-  CampaignStoryCards :: Field Campaign (HashMap InvestigatorId [PlayerCard])
-  CampaignCampaignLog :: Field Campaign CampaignLog
+instance Record Campaign where
+  data Field Campaign :: Type -> Type where
+    CampaignCompletedSteps :: Field Campaign [CampaignStep]
+    CampaignStoryCards :: Field Campaign (HashMap InvestigatorId [PlayerCard])
+    CampaignCampaignLog :: Field Campaign CampaignLog
+  fieldLookup = mapFromList
+    [ ("CampaignCompletedSteps", SomeField CampaignCompletedSteps)
+    , ("CampaignStoryCards", SomeField CampaignStoryCards)
+    , ("CampaignCampaignLog", SomeField CampaignCampaignLog)
+    ]
 
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId

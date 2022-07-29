@@ -2,6 +2,7 @@ module Arkham.Asset.Types where
 
 import Arkham.Prelude
 
+import Data.Constraint
 import Arkham.Ability
 import Arkham.Asset.Cards
 import Arkham.Asset.Uses
@@ -79,33 +80,108 @@ instance Entity a => Entity (DiscardedEntity a) where
   toAttrs (DiscardedEntity a) = toAttrs a
   overAttrs f (DiscardedEntity a) = DiscardedEntity $ overAttrs f a
 
-data instance Field (DiscardedEntity Asset) :: Type -> Type where
-  DiscardedAssetTraits :: Field (DiscardedEntity Asset) (HashSet Trait)
+instance Record (DiscardedEntity Asset) where
+  data Field (DiscardedEntity Asset) :: Type -> Type where
+    DiscardedAssetTraits :: Field (DiscardedEntity Asset) (HashSet Trait)
+  fieldLookup = mapFromList [("DiscardedAssetTraits", SomeField DiscardedAssetTraits)]
 
-data instance Field Asset :: Type -> Type where
-  AssetName :: Field Asset Name
-  AssetCost :: Field Asset Int
-  AssetClues :: Field Asset Int
-  AssetHorror :: Field Asset Int
-  AssetDamage :: Field Asset Int
-  AssetRemainingHealth :: Field Asset (Maybe Int)
-  AssetRemainingSanity :: Field Asset (Maybe Int)
-  AssetDoom :: Field Asset Int
-  AssetExhausted :: Field Asset Bool
-  AssetUses :: Field Asset Uses
-  AssetStartingUses :: Field Asset Uses
-  AssetController :: Field Asset (Maybe InvestigatorId)
-  AssetLocation :: Field Asset (Maybe LocationId)
-  AssetCardCode :: Field Asset CardCode
-  AssetSlots :: Field Asset [SlotType]
-  AssetSealedTokens :: Field Asset [Token]
-  AssetPlacement :: Field Asset Placement
-  -- virtual
-  AssetClasses :: Field Asset (HashSet ClassSymbol)
-  AssetTraits :: Field Asset (HashSet Trait)
-  AssetCardDef :: Field Asset CardDef
-  AssetCard :: Field Asset Card
-  AssetAbilities :: Field Asset [Ability]
+instance Record Asset where
+  data Field Asset :: Type -> Type where
+    AssetName :: Field Asset Name
+    AssetCost :: Field Asset Int
+    AssetClues :: Field Asset Int
+    AssetHorror :: Field Asset Int
+    AssetDamage :: Field Asset Int
+    AssetRemainingHealth :: Field Asset (Maybe Int)
+    AssetRemainingSanity :: Field Asset (Maybe Int)
+    AssetDoom :: Field Asset Int
+    AssetExhausted :: Field Asset Bool
+    AssetUses :: Field Asset Uses
+    AssetStartingUses :: Field Asset Uses
+    AssetController :: Field Asset (Maybe InvestigatorId)
+    AssetLocation :: Field Asset (Maybe LocationId)
+    AssetCardCode :: Field Asset CardCode
+    AssetSlots :: Field Asset [SlotType]
+    AssetSealedTokens :: Field Asset [Token]
+    AssetPlacement :: Field Asset Placement
+    -- virtual
+    AssetClasses :: Field Asset (HashSet ClassSymbol)
+    AssetTraits :: Field Asset (HashSet Trait)
+    AssetCardDef :: Field Asset CardDef
+    AssetCard :: Field Asset Card
+    AssetAbilities :: Field Asset [Ability]
+  fieldLookup = mapFromList
+    [ ("AssetName", SomeField AssetName)
+    , ("AssetCost", SomeField AssetCost)
+    , ("AssetClues", SomeField AssetClues)
+    , ("AssetHorror", SomeField AssetHorror)
+    , ("AssetDamage", SomeField AssetDamage)
+    , ("AssetRemainingHealth", SomeField AssetRemainingHealth)
+    , ("AssetRemainingSanity", SomeField AssetRemainingSanity)
+    , ("AssetDoom", SomeField AssetDoom)
+    , ("AssetExhausted", SomeField AssetExhausted)
+    , ("AssetUses", SomeField AssetUses)
+    , ("AssetStartingUses", SomeField AssetStartingUses)
+    , ("AssetController", SomeField AssetController)
+    , ("AssetLocation", SomeField AssetLocation)
+    , ("AssetCardCode", SomeField AssetCardCode)
+    , ("AssetSlots", SomeField AssetSlots)
+    , ("AssetSealedTokens", SomeField AssetSealedTokens)
+    , ("AssetPlacement", SomeField AssetPlacement)
+    , ("AssetClasses", SomeField AssetClasses)
+    , ("AssetTraits", SomeField AssetTraits)
+    , ("AssetCardDef", SomeField AssetCardDef)
+    , ("AssetCard", SomeField AssetCard)
+    , ("AssetAbilities", SomeField AssetAbilities)
+    ]
+
+instance (c Name, c Int, c (Maybe Int), c Bool, c Uses, c (Maybe InvestigatorId), c (Maybe LocationId), c CardCode, c [SlotType], c SlotType, c [Token], c Token, c Placement, c (HashSet ClassSymbol), c ClassSymbol, c (HashSet Trait), c Trait, c CardDef, c Card, c [Ability], c Ability) => FieldDict c Asset where
+  getDict = \case
+    AssetName -> Dict
+    AssetCost -> Dict
+    AssetClues -> Dict
+    AssetHorror -> Dict
+    AssetDamage -> Dict
+    AssetRemainingHealth -> Dict
+    AssetRemainingSanity -> Dict
+    AssetDoom -> Dict
+    AssetExhausted -> Dict
+    AssetUses -> Dict
+    AssetStartingUses -> Dict
+    AssetController -> Dict
+    AssetLocation -> Dict
+    AssetCardCode -> Dict
+    AssetSlots -> Dict
+    AssetSealedTokens -> Dict
+    AssetPlacement -> Dict
+    AssetClasses -> Dict
+    AssetTraits -> Dict
+    AssetCardDef -> Dict
+    AssetCard -> Dict
+    AssetAbilities -> Dict
+  getElemDict = \case
+    AssetName -> error "not a container"
+    AssetCost -> error "not a container"
+    AssetClues -> error "not a container"
+    AssetHorror -> error "not a container"
+    AssetDamage -> error "not a container"
+    AssetRemainingHealth -> error "not a container"
+    AssetRemainingSanity -> error "not a container"
+    AssetDoom -> error "not a container"
+    AssetExhausted -> error "not a container"
+    AssetUses -> error "not a container"
+    AssetStartingUses -> error "not a container"
+    AssetController -> error "not a container"
+    AssetLocation -> error "not a container"
+    AssetCardCode -> error "not a container"
+    AssetSlots -> Dict
+    AssetSealedTokens -> Dict
+    AssetPlacement -> error "not a container"
+    AssetClasses -> Dict
+    AssetTraits -> Dict
+    AssetCardDef -> error "not a container"
+    AssetCard -> error "not a container"
+    AssetAbilities -> Dict
 
 data AssetAttrs = AssetAttrs
   { assetId :: AssetId

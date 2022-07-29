@@ -2,6 +2,7 @@ module Arkham.Enemy.Types where
 
 import Arkham.Prelude
 
+import Data.Constraint
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Card
@@ -32,24 +33,83 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type EnemyCard a = CardBuilder EnemyId a
 
-data instance Field Enemy :: Type -> Type where
-  EnemyEngagedInvestigators :: Field Enemy (HashSet InvestigatorId)
-  EnemyDoom :: Field Enemy Int
-  EnemyEvade :: Field Enemy Int
-  EnemyFight :: Field Enemy Int
-  EnemyClues :: Field Enemy Int
-  EnemyDamage :: Field Enemy Int
-  EnemyRemainingHealth :: Field Enemy Int
-  EnemyHealthDamage :: Field Enemy Int
-  EnemySanityDamage :: Field Enemy Int
-  EnemyTraits :: Field Enemy (HashSet Trait)
-  EnemyKeywords :: Field Enemy (HashSet Keyword)
-  EnemyAbilities :: Field Enemy [Ability]
-  EnemyCard :: Field Enemy Card
-  EnemyCardCode :: Field Enemy CardCode
-  EnemyLocation :: Field Enemy (Maybe LocationId)
-  EnemyPlacement :: Field Enemy Placement
-  EnemySealedTokens :: Field Enemy [Token]
+instance Record Enemy where
+  data Field Enemy :: Type -> Type where
+    EnemyEngagedInvestigators :: Field Enemy (HashSet InvestigatorId)
+    EnemyDoom :: Field Enemy Int
+    EnemyEvade :: Field Enemy Int
+    EnemyFight :: Field Enemy Int
+    EnemyClues :: Field Enemy Int
+    EnemyDamage :: Field Enemy Int
+    EnemyRemainingHealth :: Field Enemy Int
+    EnemyHealthDamage :: Field Enemy Int
+    EnemySanityDamage :: Field Enemy Int
+    EnemyTraits :: Field Enemy (HashSet Trait)
+    EnemyKeywords :: Field Enemy (HashSet Keyword)
+    EnemyAbilities :: Field Enemy [Ability]
+    EnemyCard :: Field Enemy Card
+    EnemyCardCode :: Field Enemy CardCode
+    EnemyLocation :: Field Enemy (Maybe LocationId)
+    EnemyPlacement :: Field Enemy Placement
+    EnemySealedTokens :: Field Enemy [Token]
+  fieldLookup = mapFromList
+    [ ("EnemyEngagedInvestigators", SomeField EnemyEngagedInvestigators)
+    , ("EnemyDoom", SomeField EnemyDoom)
+    , ("EnemyEvade", SomeField EnemyEvade)
+    , ("EnemyFight", SomeField EnemyFight)
+    , ("EnemyClues", SomeField EnemyClues)
+    , ("EnemyDamage", SomeField EnemyDamage)
+    , ("EnemyRemainingHealth", SomeField EnemyRemainingHealth)
+    , ("EnemyHealthDamage", SomeField EnemyHealthDamage)
+    , ("EnemySanityDamage", SomeField EnemySanityDamage)
+    , ("EnemyTraits", SomeField EnemyTraits)
+    , ("EnemyKeywords", SomeField EnemyKeywords)
+    , ("EnemyAbilities", SomeField EnemyAbilities)
+    , ("EnemyCard", SomeField EnemyCard)
+    , ("EnemyCardCode", SomeField EnemyCardCode)
+    , ("EnemyLocation", SomeField EnemyLocation)
+    , ("EnemyPlacement", SomeField EnemyPlacement)
+    , ("EnemySealedTokens", SomeField EnemySealedTokens)
+    ]
+
+instance (c (HashSet InvestigatorId), c Int, c (HashSet Trait), c (HashSet Keyword), c [Ability], c Card, c CardCode, c (Maybe LocationId), c Placement, c [Token], c Trait, c Keyword, c Ability, c Token, c InvestigatorId) => FieldDict c Enemy where
+  getDict = \case
+    EnemyEngagedInvestigators -> Dict
+    EnemyDoom -> Dict
+    EnemyEvade -> Dict
+    EnemyFight -> Dict
+    EnemyClues -> Dict
+    EnemyDamage -> Dict
+    EnemyRemainingHealth -> Dict
+    EnemyHealthDamage -> Dict
+    EnemySanityDamage -> Dict
+    EnemyTraits -> Dict
+    EnemyKeywords -> Dict
+    EnemyAbilities -> Dict
+    EnemyCard -> Dict
+    EnemyCardCode -> Dict
+    EnemyLocation -> Dict
+    EnemyPlacement -> Dict
+    EnemySealedTokens -> Dict
+  getElemDict = \case
+    EnemyEngagedInvestigators -> Dict
+    EnemyDoom -> error "not a container"
+    EnemyEvade -> error "not a container"
+    EnemyFight -> error "not a container"
+    EnemyClues -> error "not a container"
+    EnemyDamage -> error "not a container"
+    EnemyRemainingHealth -> error "not a container"
+    EnemyHealthDamage -> error "not a container"
+    EnemySanityDamage -> error "not a container"
+    EnemyTraits -> Dict
+    EnemyKeywords -> Dict
+    EnemyAbilities -> Dict
+    EnemyCard -> error "not a container"
+    EnemyCardCode -> error "not a container"
+    EnemyLocation -> error "not a container"
+    EnemyPlacement -> error "not a container"
+    EnemySealedTokens -> Dict
+
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId

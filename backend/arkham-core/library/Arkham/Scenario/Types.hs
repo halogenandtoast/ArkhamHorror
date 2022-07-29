@@ -30,22 +30,40 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasModifiersFor a, RunMes
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON, Eq)
 
-data instance Field Scenario :: Type -> Type where
-  ScenarioCardsUnderActDeck :: Field Scenario [Card]
-  ScenarioCardsUnderAgendaDeck :: Field Scenario [Card]
-  ScenarioCardsUnderScenarioReference :: Field Scenario [Card]
-  ScenarioDiscard :: Field Scenario [EncounterCard]
-  ScenarioEncounterDeck :: Field Scenario (Deck EncounterCard)
-  ScenarioDifficulty :: Field Scenario Difficulty
-  ScenarioDecks :: Field Scenario (HashMap ScenarioDeckKey [Card])
-  ScenarioVictoryDisplay :: Field Scenario [Card]
-  ScenarioRemembered :: Field Scenario (HashSet ScenarioLogKey)
-  ScenarioStandaloneCampaignLog :: Field Scenario CampaignLog
-  ScenarioResignedCardCodes :: Field Scenario [CardCode]
-  ScenarioChaosBag :: Field Scenario ChaosBag
-  ScenarioSetAsideCards :: Field Scenario [Card]
-  ScenarioName :: Field Scenario Name
-  ScenarioStoryCards :: Field Scenario (HashMap InvestigatorId [PlayerCard])
+instance Record Scenario where
+  data Field Scenario :: Type -> Type where
+    ScenarioCardsUnderActDeck :: Field Scenario [Card]
+    ScenarioCardsUnderAgendaDeck :: Field Scenario [Card]
+    ScenarioCardsUnderScenarioReference :: Field Scenario [Card]
+    ScenarioDiscard :: Field Scenario [EncounterCard]
+    ScenarioEncounterDeck :: Field Scenario (Deck EncounterCard)
+    ScenarioDifficulty :: Field Scenario Difficulty
+    ScenarioDecks :: Field Scenario (HashMap ScenarioDeckKey [Card])
+    ScenarioVictoryDisplay :: Field Scenario [Card]
+    ScenarioRemembered :: Field Scenario (HashSet ScenarioLogKey)
+    ScenarioStandaloneCampaignLog :: Field Scenario CampaignLog
+    ScenarioResignedCardCodes :: Field Scenario [CardCode]
+    ScenarioChaosBag :: Field Scenario ChaosBag
+    ScenarioSetAsideCards :: Field Scenario [Card]
+    ScenarioName :: Field Scenario Name
+    ScenarioStoryCards :: Field Scenario (HashMap InvestigatorId [PlayerCard])
+  fieldLookup = mapFromList
+    [ ("ScenarioCardsUnderActDeck", SomeField ScenarioCardsUnderActDeck)
+    , ("ScenarioCardsUnderAgendaDeck", SomeField ScenarioCardsUnderAgendaDeck)
+    , ("ScenarioCardsUnderScenarioReference", SomeField ScenarioCardsUnderScenarioReference)
+    , ("ScenarioDiscard", SomeField ScenarioDiscard)
+    , ("ScenarioEncounterDeck", SomeField ScenarioEncounterDeck)
+    , ("ScenarioDifficulty", SomeField ScenarioDifficulty)
+    , ("ScenarioDecks", SomeField ScenarioDecks)
+    , ("ScenarioVictoryDisplay", SomeField ScenarioVictoryDisplay)
+    , ("ScenarioRemembered", SomeField ScenarioRemembered)
+    , ("ScenarioStandaloneCampaignLog", SomeField ScenarioStandaloneCampaignLog)
+    , ("ScenarioResignedCardCodes", SomeField ScenarioResignedCardCodes)
+    , ("ScenarioChaosBag", SomeField ScenarioChaosBag)
+    , ("ScenarioSetAsideCards", SomeField ScenarioSetAsideCards)
+    , ("ScenarioName", SomeField ScenarioName)
+    , ("ScenarioStoryCards", SomeField ScenarioStoryCards)
+    ]
 
 data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Name

@@ -32,40 +32,76 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type InvestigatorCard a = CardBuilder () a
 
-data instance Field Investigator :: Type -> Type where
-  InvestigatorName :: Field Investigator Name
-  InvestigatorRemainingActions :: Field Investigator Int
-  InvestigatorAdditionalActions :: Field Investigator [AdditionalAction]
-  InvestigatorSanity :: Field Investigator Int
-  InvestigatorRemainingSanity :: Field Investigator Int
-  InvestigatorRemainingHealth :: Field Investigator Int
-  InvestigatorLocation :: Field Investigator (Maybe LocationId)
-  InvestigatorWillpower :: Field Investigator Int
-  InvestigatorIntellect :: Field Investigator Int
-  InvestigatorCombat :: Field Investigator Int
-  InvestigatorAgility :: Field Investigator Int
-  InvestigatorHorror :: Field Investigator Int
-  InvestigatorDamage :: Field Investigator Int
-  InvestigatorResources :: Field Investigator Int
-  InvestigatorDoom :: Field Investigator Int
-  InvestigatorClues :: Field Investigator Int
-  InvestigatorHand :: Field Investigator [Card]
-  InvestigatorCardsUnderneath :: Field Investigator [Card]
-  InvestigatorDeck :: Field Investigator (Deck PlayerCard)
-  InvestigatorDiscard :: Field Investigator [PlayerCard]
-  InvestigatorClass :: Field Investigator ClassSymbol
-  InvestigatorActionsTaken :: Field Investigator [Action]
-  InvestigatorSlots :: Field Investigator (HashMap SlotType [Slot])
-  InvestigatorUsedAbilities :: Field Investigator [UsedAbility]
-  InvestigatorTraits :: Field Investigator (HashSet Trait)
-  InvestigatorAbilities :: Field Investigator [Ability]
-  InvestigatorCommittedCards :: Field Investigator [Card]
-  InvestigatorDefeated :: Field Investigator Bool
-  InvestigatorResigned :: Field Investigator Bool
-  InvestigatorPhysicalTrauma :: Field Investigator Int
-  InvestigatorMentalTrauma :: Field Investigator Int
-  --
-  InvestigatorSupplies :: Field Investigator [Supply]
+instance Record Investigator where
+  data Field Investigator :: Type -> Type where
+    InvestigatorName :: Field Investigator Name
+    InvestigatorRemainingActions :: Field Investigator Int
+    InvestigatorAdditionalActions :: Field Investigator [AdditionalAction]
+    InvestigatorSanity :: Field Investigator Int
+    InvestigatorRemainingSanity :: Field Investigator Int
+    InvestigatorRemainingHealth :: Field Investigator Int
+    InvestigatorLocation :: Field Investigator (Maybe LocationId)
+    InvestigatorWillpower :: Field Investigator Int
+    InvestigatorIntellect :: Field Investigator Int
+    InvestigatorCombat :: Field Investigator Int
+    InvestigatorAgility :: Field Investigator Int
+    InvestigatorHorror :: Field Investigator Int
+    InvestigatorDamage :: Field Investigator Int
+    InvestigatorResources :: Field Investigator Int
+    InvestigatorDoom :: Field Investigator Int
+    InvestigatorClues :: Field Investigator Int
+    InvestigatorHand :: Field Investigator [Card]
+    InvestigatorCardsUnderneath :: Field Investigator [Card]
+    InvestigatorDeck :: Field Investigator (Deck PlayerCard)
+    InvestigatorDiscard :: Field Investigator [PlayerCard]
+    InvestigatorClass :: Field Investigator ClassSymbol
+    InvestigatorActionsTaken :: Field Investigator [Action]
+    InvestigatorSlots :: Field Investigator (HashMap SlotType [Slot])
+    InvestigatorUsedAbilities :: Field Investigator [UsedAbility]
+    InvestigatorTraits :: Field Investigator (HashSet Trait)
+    InvestigatorAbilities :: Field Investigator [Ability]
+    InvestigatorCommittedCards :: Field Investigator [Card]
+    InvestigatorDefeated :: Field Investigator Bool
+    InvestigatorResigned :: Field Investigator Bool
+    InvestigatorPhysicalTrauma :: Field Investigator Int
+    InvestigatorMentalTrauma :: Field Investigator Int
+    --
+    InvestigatorSupplies :: Field Investigator [Supply]
+
+  fieldLookup = mapFromList
+    [ ("InvestigatorName", SomeField InvestigatorName)
+    , ("InvestigatorRemainingActions", SomeField InvestigatorRemainingActions)
+    , ("InvestigatorAdditionalActions", SomeField InvestigatorAdditionalActions)
+    , ("InvestigatorSanity", SomeField InvestigatorSanity)
+    , ("InvestigatorRemainingSanity", SomeField InvestigatorRemainingSanity)
+    , ("InvestigatorRemainingHealth", SomeField InvestigatorRemainingHealth)
+    , ("InvestigatorLocation", SomeField InvestigatorLocation)
+    , ("InvestigatorWillpower", SomeField InvestigatorWillpower)
+    , ("InvestigatorIntellect", SomeField InvestigatorIntellect)
+    , ("InvestigatorCombat", SomeField InvestigatorCombat)
+    , ("InvestigatorAgility", SomeField InvestigatorAgility)
+    , ("InvestigatorHorror", SomeField InvestigatorHorror)
+    , ("InvestigatorDamage", SomeField InvestigatorDamage)
+    , ("InvestigatorResources", SomeField InvestigatorResources)
+    , ("InvestigatorDoom", SomeField InvestigatorDoom)
+    , ("InvestigatorClues", SomeField InvestigatorClues)
+    , ("InvestigatorHand", SomeField InvestigatorHand)
+    , ("InvestigatorCardsUnderneath", SomeField InvestigatorCardsUnderneath)
+    , ("InvestigatorDeck", SomeField InvestigatorDeck)
+    , ("InvestigatorDiscard", SomeField InvestigatorDiscard)
+    , ("InvestigatorClass", SomeField InvestigatorClass)
+    , ("InvestigatorActionsTaken", SomeField InvestigatorActionsTaken)
+    , ("InvestigatorSlots", SomeField InvestigatorSlots)
+    , ("InvestigatorUsedAbilities", SomeField InvestigatorUsedAbilities)
+    , ("InvestigatorTraits", SomeField InvestigatorTraits)
+    , ("InvestigatorAbilities", SomeField InvestigatorAbilities)
+    , ("InvestigatorCommittedCards", SomeField InvestigatorCommittedCards)
+    , ("InvestigatorDefeated", SomeField InvestigatorDefeated)
+    , ("InvestigatorResigned", SomeField InvestigatorResigned)
+    , ("InvestigatorPhysicalTrauma", SomeField InvestigatorPhysicalTrauma)
+    , ("InvestigatorMentalTrauma", SomeField InvestigatorMentalTrauma)
+    , ("InvestigatorSupplies", SomeField InvestigatorSupplies)
+    ]
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId

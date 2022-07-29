@@ -2,6 +2,9 @@ module Arkham.Scenario.Scenarios.TheGathering where
 
 import Arkham.Prelude
 
+import Arkham.Query
+import Arkham.Location.Types
+import Arkham.Enemy.Types
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -40,10 +43,11 @@ theGathering difficulty = scenario
 instance HasTokenValue TheGathering where
   getTokenValue iid tokenFace (TheGathering attrs) = case tokenFace of
     Skull -> do
-      ghoulCount <-
-        selectCount
-        $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
-        <> EnemyWithTrait Trait.Ghoul
+      -- ghoulCount <-
+      --   selectCount
+      --   $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
+      --   <> EnemyWithTrait Trait.Ghoul
+      ghoulCount <- selectCountG $ And [Trait.Ghoul `In` EnemyTraits, At $ iid `In` LocationInvestigators]
       pure $ toTokenValue attrs Skull ghoulCount 2
     Cultist -> pure $ TokenValue
       Cultist

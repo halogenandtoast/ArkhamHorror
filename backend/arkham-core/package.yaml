@@ -57,6 +57,7 @@ library:
     - semialign
     - pretty-simple
     - template-haskell
+    - constraints
 
 tests:
   spec:

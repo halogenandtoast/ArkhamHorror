@@ -23,12 +23,20 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type EventCard a = CardBuilder (InvestigatorId, EventId) a
 
-data instance Field Event :: Type -> Type where
-  EventAttachedTarget :: Field Event (Maybe Target)
-  EventTraits :: Field Event (HashSet Trait)
-  EventAbilities :: Field Event [Ability]
-  EventOwner :: Field Event InvestigatorId
-  EventCard :: Field Event Card
+instance Record Event where
+  data Field Event :: Type -> Type where
+    EventAttachedTarget :: Field Event (Maybe Target)
+    EventTraits :: Field Event (HashSet Trait)
+    EventAbilities :: Field Event [Ability]
+    EventOwner :: Field Event InvestigatorId
+    EventCard :: Field Event Card
+  fieldLookup = mapFromList
+    [ ("EventAttachedTarget", SomeField EventAttachedTarget)
+    , ("EventTraits", SomeField EventTraits)
+    , ("EventAbilities", SomeField EventAbilities)
+    , ("EventOwner", SomeField EventOwner)
+    , ("EventCard", SomeField EventCard)
+    ]
 
 data EventAttrs = EventAttrs
   { eventCardCode :: CardCode

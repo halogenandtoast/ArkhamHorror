@@ -5,6 +5,9 @@ module Arkham.Investigator.Cards.AgnesBaker
 
 import Arkham.Prelude
 
+import Arkham.Query
+import Arkham.Location.Types
+import Arkham.Enemy.Types (Enemy)
 import Arkham.Ability
 import Arkham.Cost
 import Arkham.Criteria
@@ -54,7 +57,7 @@ instance HasTokenValue AgnesBaker where
 instance RunMessage AgnesBaker where
   runMessage msg i@(AgnesBaker attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      targets <- selectList $ EnemyAt YourLocation
+      targets <- map toId <$> selectG @Enemy (At $ iid `In` LocationInvestigators)
       push $ chooseOne
         iid
         [ targetLabel

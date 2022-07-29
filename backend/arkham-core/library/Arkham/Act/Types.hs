@@ -23,10 +23,16 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type ActCard a = CardBuilder (Int, ActId) a
 
-data instance Field Act :: Type -> Type where
-  ActSequence :: Field Act AS.ActSequence
-  ActClues :: Field Act Int
-  ActAbilities :: Field Act [Ability]
+instance Record Act where
+  data Field Act :: Type -> Type where
+    ActSequence :: Field Act AS.ActSequence
+    ActClues :: Field Act Int
+    ActAbilities :: Field Act [Ability]
+  fieldLookup = mapFromList
+    [ ("ActSequence", SomeField ActSequence)
+    , ("ActClues", SomeField ActClues)
+    , ("ActAbilities", SomeField ActAbilities)
+    ]
 
 data ActAttrs = ActAttrs
   { actId :: ActId

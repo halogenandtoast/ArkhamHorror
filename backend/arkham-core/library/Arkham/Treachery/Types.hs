@@ -23,17 +23,30 @@ class (Typeable a, ToJSON a, FromJSON a, Eq a, Show a, HasAbilities a, HasModifi
 
 type TreacheryCard a = CardBuilder (InvestigatorId, TreacheryId) a
 
-data instance Field Treachery :: Type -> Type where
-  TreacheryClues :: Field Treachery Int
-  TreacheryResources :: Field Treachery Int
-  TreacheryDoom :: Field Treachery Int
-  TreacheryAttachedTarget :: Field Treachery (Maybe Target)
-  TreacheryTraits :: Field Treachery (HashSet Trait)
-  TreacheryKeywords :: Field Treachery (HashSet Keyword)
-  TreacheryAbilities :: Field Treachery [Ability]
-  TreacheryCardDef :: Field Treachery CardDef
-  TreacheryCard :: Field Treachery Card
-  TreacheryCanBeCommitted :: Field Treachery Bool
+instance Record Treachery where
+  data Field Treachery :: Type -> Type where
+    TreacheryClues :: Field Treachery Int
+    TreacheryResources :: Field Treachery Int
+    TreacheryDoom :: Field Treachery Int
+    TreacheryAttachedTarget :: Field Treachery (Maybe Target)
+    TreacheryTraits :: Field Treachery (HashSet Trait)
+    TreacheryKeywords :: Field Treachery (HashSet Keyword)
+    TreacheryAbilities :: Field Treachery [Ability]
+    TreacheryCardDef :: Field Treachery CardDef
+    TreacheryCard :: Field Treachery Card
+    TreacheryCanBeCommitted :: Field Treachery Bool
+  fieldLookup = mapFromList
+    [ ("TreacheryClues", SomeField TreacheryClues)
+    , ("TreacheryResources", SomeField TreacheryResources)
+    , ("TreacheryDoom", SomeField TreacheryDoom)
+    , ("TreacheryAttachedTarget", SomeField TreacheryAttachedTarget)
+    , ("TreacheryTraits", SomeField TreacheryTraits)
+    , ("TreacheryKeywords", SomeField TreacheryKeywords)
+    , ("TreacheryAbilities", SomeField TreacheryAbilities)
+    , ("TreacheryCardDef", SomeField TreacheryCardDef)
+    , ("TreacheryCard", SomeField TreacheryCard)
+    , ("TreacheryCanBeCommitted", SomeField TreacheryCanBeCommitted)
+    ]
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId

@@ -6,10 +6,11 @@ module Arkham.Investigator.Cards.DaisyWalker
 import Arkham.Prelude
 
 import Arkham.Action.Additional
-import qualified Arkham.Investigator.Cards as Cards
+import Arkham.Asset.Types
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
-import Arkham.Matcher
 import Arkham.Message
+import Arkham.Query
 import Arkham.Target
 
 newtype DaisyWalker = DaisyWalker InvestigatorAttrs
@@ -40,11 +41,9 @@ instance RunMessage DaisyWalker where
     PassedSkillTest iid _ _ (TokenTarget token) _ _ | iid == investigatorId ->
       do
         when (tokenFace token == ElderSign) $ do
-          tomeCount <-
-            selectCount
-            $ assetControlledBy investigatorId
-            <> AssetWithTrait Tome
-          when (tomeCount > 0) (push $ DrawCards iid tomeCount False)
+          tomeCount <- selectCountG $ And
+            [Tome `In` AssetTraits, AssetController ==. Just investigatorId]
+          when (tomeCount > 0) $ push $ DrawCards iid tomeCount False
         pure i
     Setup -> DaisyWalker <$> runMessage
       msg

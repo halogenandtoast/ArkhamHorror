@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Game where
 
+import Arkham.Query
 import Arkham.Ability
 import Arkham.Act.Types
 import Arkham.Agenda.Types
@@ -69,6 +70,10 @@ instance Projection Location
 instance Projection Scenario
 instance Projection Skill
 instance Projection Treachery
+
+instance (FieldDict Eq Asset, FieldDict Typeable Asset, FieldDict Typeable Location, FieldDict Eq Location) => Queryable Asset
+instance (FieldDict Eq Enemy, FieldDict Typeable Enemy, FieldDict Typeable Location, FieldDict Eq Location) => Queryable Enemy
+instance (FieldDict Eq Location, FieldDict Typeable Location) => Queryable Location
 
 instance HasTokenValue InvestigatorId
 instance HasTokenValue ()

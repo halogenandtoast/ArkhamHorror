@@ -1743,6 +1743,7 @@ instance Projection Location where
       LocationCardDef -> pure $ toCardDef attrs
       LocationCard -> pure $ lookupCard locationCardCode (unLocationId lid)
       LocationAbilities -> pure $ getAbilities l
+      LocationPrintedSymbol -> pure locationSymbol
 
 instance Projection Asset where
   field f aid = do

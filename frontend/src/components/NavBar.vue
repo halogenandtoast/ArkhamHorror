@@ -42,6 +42,7 @@ async function logout() {
           <font-awesome-icon icon="angle-down" class="user-links--dropdown-icon" />
         </label>
         <div class="user-links--dropdown">
+          <router-link to="/settings">Settings</router-link>{{' '}}
           <a href="#" @click="logout">Logout</a>
         </div>
       </template>

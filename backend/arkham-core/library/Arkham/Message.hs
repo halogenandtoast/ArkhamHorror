@@ -166,6 +166,7 @@ data Message
   | DrawFromScenarioDeck InvestigatorId ScenarioDeckKey Target Int
   | DrawRandomFromScenarioDeck InvestigatorId ScenarioDeckKey Target Int
   | DrewFromScenarioDeck InvestigatorId ScenarioDeckKey Target [Card]
+  | SetScenarioDeck ScenarioDeckKey [Card]
   | -- Victory
     AddToVictory Target
   | DefeatedAddToVictory Target

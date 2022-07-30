@@ -1,11 +1,14 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useUserStore } from '@/stores/user';
+import type { User } from '@/types';
+import { useRouter } from 'vue-router';
 import * as Arkham from '@/arkham/types/Deck';
 import { fetchDecks, newGame } from '@/arkham/api';
 import type { Difficulty } from '@/arkham/types/Difficulty';
 
-const route = useRoute()
+const store = useUserStore()
+const currentUser = computed<User | null>(() => store.getCurrentUser)
 
 const scenarios = [
   { id: '02118', name: 'The Miskatonic Museum', },
@@ -25,18 +28,18 @@ const scenarios = [
   { id: '82001', name: 'Carnevale of Horrors', },
 ]
 
-console.log(route.query)
 
-const betaCampaigns = route.query.beta !== undefined
-  ? [ { id: '04', name: 'The Forgotten Age' } ]
-  : []
-
-const campaigns = [
-  { id: '01', name: 'The Night of the Zealot', returnToId: '50' },
-  { id: '02', name: 'The Dunwich Legacy', },
-  { id: '03', name: 'The Path to Carcosa', },
-  ...betaCampaigns
-]
+const campaigns = computed(() => {
+  const betaCampaigns = currentUser.value && currentUser.value.beta
+    ? [ { id: '04', name: 'The Forgotten Age' } ]
+    : []
+  return [
+    { id: '01', name: 'The Night of the Zealot', returnToId: '50' },
+    { id: '02', name: 'The Dunwich Legacy', },
+    { id: '03', name: 'The Path to Carcosa', },
+    ...betaCampaigns
+  ]
+})
 
 const difficulties: Difficulty[] = ['Easy', 'Standard', 'Hard', 'Expert']
 
@@ -60,7 +63,7 @@ fetchDecks().then((result) => {
 })
 
 const selectedCampaignReturnToId = computed(() => {
-  const campaign = campaigns.find((c) => c.id === selectedCampaign.value);
+  const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);
   if (campaign) {
     return campaign.returnToId;
   }
@@ -77,7 +80,7 @@ const disabled = computed(() => {
 })
 
 const defaultCampaignName = computed(() => {
-  const campaign = campaigns.find((c) => c.id === selectedCampaign.value);
+  const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);
   const scenario = scenarios.find((c) => c.id === selectedScenario.value);
 
   if (!standalone.value && campaign) {
@@ -115,7 +118,7 @@ async function start() {
       ).then((game) => router.push(`/games/${game.id}`));
     }
   } else {
-    const mcampaign = campaigns.find((campaign) => campaign.id === selectedCampaign.value);
+    const mcampaign = campaigns.value.find((campaign) => campaign.id === selectedCampaign.value);
     if (mcampaign && currentCampaignName.value) {
       const campaignId = returnTo.value && mcampaign.returnToId ? mcampaign.returnToId : mcampaign.id
       newGame(

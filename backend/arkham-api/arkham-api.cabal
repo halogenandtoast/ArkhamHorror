@@ -35,6 +35,7 @@ library
       Base.Api.Handler.Authentication
       Base.Api.Handler.CurrentUser
       Base.Api.Handler.Registration
+      Base.Api.Handler.Settings
       Base.Util
       Config
       Entity.Arkham.ArkhamDBDecklist

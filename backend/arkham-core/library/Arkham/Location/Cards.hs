@@ -552,28 +552,55 @@ ritualSite =
   location "01156" "Ritual Site" [Cave] Plus [Squiggle] TheDevourerBelow
 
 miskatonicQuad :: CardDef
-miskatonicQuad =
-  location "02048" "Miskatonic Quad" [Miskatonic] Plus [Triangle, Hourglass, Square, Diamond, Circle] ExtracurricularActivity
+miskatonicQuad = location
+  "02048"
+  "Miskatonic Quad"
+  [Miskatonic]
+  Plus
+  [Triangle, Hourglass, Square, Diamond, Circle]
+  ExtracurricularActivity
 
 humanitiesBuilding :: CardDef
-humanitiesBuilding =
-  location "02049" "Humanities Building" [Miskatonic] Square [Plus, Triangle] ExtracurricularActivity
+humanitiesBuilding = location
+  "02049"
+  "Humanities Building"
+  [Miskatonic]
+  Square
+  [Plus, Triangle]
+  ExtracurricularActivity
 
 orneLibrary :: CardDef
-orneLibrary =
-  (location "02050" "Orne Library" [Miskatonic] Triangle [Plus, Square] ExtracurricularActivity)
-    { cdVictoryPoints = Just 1
-    }
+orneLibrary = (location
+                "02050"
+                "Orne Library"
+                [Miskatonic]
+                Triangle
+                [Plus, Square]
+                ExtracurricularActivity
+              )
+  { cdVictoryPoints = Just 1
+  }
 
 studentUnion :: CardDef
-studentUnion =
-  location "02051" "Student Union" [Miskatonic] Diamond [Plus, Equals] ExtracurricularActivity
+studentUnion = location
+  "02051"
+  "Student Union"
+  [Miskatonic]
+  Diamond
+  [Plus, Equals]
+  ExtracurricularActivity
 
 dormitories :: CardDef
-dormitories =
-  (location "02052" "Dormitories" [Miskatonic] Equals [Diamond] ExtracurricularActivity)
-    { cdVictoryPoints = Just 1
-    }
+dormitories = (location
+                "02052"
+                "Dormitories"
+                [Miskatonic]
+                Equals
+                [Diamond]
+                ExtracurricularActivity
+              )
+  { cdVictoryPoints = Just 1
+  }
 
 administrationBuilding :: CardDef
 administrationBuilding = location
@@ -608,30 +635,62 @@ facultyOfficesTheHourIsLate = location
   ExtracurricularActivity
 
 scienceBuilding :: CardDef
-scienceBuilding =
-  location "02056" "Science Building" [Miskatonic] Hourglass [Plus, Squiggle] ExtracurricularActivity
+scienceBuilding = location
+  "02056"
+  "Science Building"
+  [Miskatonic]
+  Hourglass
+  [Plus, Squiggle]
+  ExtracurricularActivity
 
 alchemyLabs :: CardDef
-alchemyLabs =
-  location "02057" "Alchemy Labs" [Miskatonic] Squiggle [Hourglass] ExtracurricularActivity
+alchemyLabs = location
+  "02057"
+  "Alchemy Labs"
+  [Miskatonic]
+  Squiggle
+  [Hourglass]
+  ExtracurricularActivity
 
 laBellaLuna :: CardDef
-laBellaLuna = location "02070" "La Bella Luna" [Arkham] Moon [Circle] TheHouseAlwaysWins
+laBellaLuna =
+  location "02070" "La Bella Luna" [Arkham] Moon [Circle] TheHouseAlwaysWins
 
 cloverClubLounge :: CardDef
-cloverClubLounge =
-  location "02071" "Clover Club Lounge" [CloverClub] Circle [Moon, Square, Triangle] TheHouseAlwaysWins
+cloverClubLounge = location
+  "02071"
+  "Clover Club Lounge"
+  [CloverClub]
+  Circle
+  [Moon, Square, Triangle]
+  TheHouseAlwaysWins
 
 cloverClubBar :: CardDef
-cloverClubBar =
-  location "02072" "Clover Club Bar" [CloverClub] Square [Triangle, Circle] TheHouseAlwaysWins
+cloverClubBar = location
+  "02072"
+  "Clover Club Bar"
+  [CloverClub]
+  Square
+  [Triangle, Circle]
+  TheHouseAlwaysWins
 
 cloverClubCardroom :: CardDef
-cloverClubCardroom =
-  location "02073" "Clover Club Cardroom" [CloverClub] Triangle [Circle, Square, Diamond] TheHouseAlwaysWins
+cloverClubCardroom = location
+  "02073"
+  "Clover Club Cardroom"
+  [CloverClub]
+  Triangle
+  [Circle, Square, Diamond]
+  TheHouseAlwaysWins
 
 darkenedHall :: CardDef
-darkenedHall = location "02074" "Darkened Hall" [CloverClub] Diamond [Triangle, T, Hourglass, Plus, Squiggle] TheHouseAlwaysWins
+darkenedHall = location
+  "02074"
+  "Darkened Hall"
+  [CloverClub]
+  Diamond
+  [Triangle, T, Hourglass, Plus, Squiggle]
+  TheHouseAlwaysWins
 
 artGallery :: CardDef
 artGallery = (locationWithUnrevealed
@@ -682,27 +741,58 @@ backAlley = (locationWithUnrevealed
   }
 
 museumEntrance :: CardDef
-museumEntrance =
-  location "02126" "Museum Entrance" [Miskatonic] Circle [Square] TheMiskatonicMuseum
+museumEntrance = location
+  "02126"
+  "Museum Entrance"
+  [Miskatonic]
+  Circle
+  [Square]
+  TheMiskatonicMuseum
 
 museumHalls :: CardDef
-museumHalls = location "02127" "Museum Halls" [Miskatonic] Square [Circle, Diamond, Triangle] TheMiskatonicMuseum
+museumHalls = location
+  "02127"
+  "Museum Halls"
+  [Miskatonic]
+  Square
+  [Circle, Diamond, Triangle]
+  TheMiskatonicMuseum
 
 securityOffice_128 :: CardDef
-securityOffice_128 =
-  location "02128" "Security Office" [Miskatonic] Diamond [Square] TheMiskatonicMuseum
+securityOffice_128 = location
+  "02128"
+  "Security Office"
+  [Miskatonic]
+  Diamond
+  [Square]
+  TheMiskatonicMuseum
 
 securityOffice_129 :: CardDef
-securityOffice_129 =
-  location "02129" "Security Office" [Miskatonic] Diamond [Square] TheMiskatonicMuseum
+securityOffice_129 = location
+  "02129"
+  "Security Office"
+  [Miskatonic]
+  Diamond
+  [Square]
+  TheMiskatonicMuseum
 
 administrationOffice_130 :: CardDef
-administrationOffice_130 =
-  location "02130" "Administration Office" [Miskatonic] Triangle [Square] TheMiskatonicMuseum
+administrationOffice_130 = location
+  "02130"
+  "Administration Office"
+  [Miskatonic]
+  Triangle
+  [Square]
+  TheMiskatonicMuseum
 
 administrationOffice_131 :: CardDef
-administrationOffice_131 =
-  location "02131" "Administration Office" [Miskatonic] Triangle [Square] TheMiskatonicMuseum
+administrationOffice_131 = location
+  "02131"
+  "Administration Office"
+  [Miskatonic]
+  Triangle
+  [Square]
+  TheMiskatonicMuseum
 
 exhibitHallAthabaskanExhibit :: CardDef
 exhibitHallAthabaskanExhibit = locationWithUnrevealed
@@ -905,65 +995,139 @@ parlorCar = (locationWithUnrevealed
   }
 
 engineCar_175 :: CardDef
-engineCar_175 = (location "02175" "Engine Car" [Train] NoSymbol [] TheEssexCountyExpress)
-  { cdVictoryPoints = Just 1
-  }
+engineCar_175 =
+  (location "02175" "Engine Car" [Train] NoSymbol [] TheEssexCountyExpress)
+    { cdVictoryPoints = Just 1
+    }
 
 engineCar_176 :: CardDef
-engineCar_176 = (location "02176" "Engine Car" [Train] NoSymbol [] TheEssexCountyExpress)
-  { cdVictoryPoints = Just 1
-  }
+engineCar_176 =
+  (location "02176" "Engine Car" [Train] NoSymbol [] TheEssexCountyExpress)
+    { cdVictoryPoints = Just 1
+    }
 
 engineCar_177 :: CardDef
-engineCar_177 = (location "02177" "Engine Car" [Train] NoSymbol [] TheEssexCountyExpress)
-  { cdVictoryPoints = Just 1
-  }
+engineCar_177 =
+  (location "02177" "Engine Car" [Train] NoSymbol [] TheEssexCountyExpress)
+    { cdVictoryPoints = Just 1
+    }
 
 villageCommons :: CardDef
-villageCommons =
-  location "02201" "Village Commons" [Dunwich, Central] Plus [Square, Circle, Moon] BloodOnTheAltar
+villageCommons = location
+  "02201"
+  "Village Commons"
+  [Dunwich, Central]
+  Plus
+  [Square, Circle, Moon]
+  BloodOnTheAltar
 
 bishopsBrook_202 :: CardDef
-bishopsBrook_202 = location "02202" "Bishop's Brook" [Dunwich] Square [Plus, Circle, Triangle] BloodOnTheAltar
+bishopsBrook_202 = location
+  "02202"
+  "Bishop's Brook"
+  [Dunwich]
+  Square
+  [Plus, Circle, Triangle]
+  BloodOnTheAltar
 
 bishopsBrook_203 :: CardDef
-bishopsBrook_203 = location "02203" "Bishop's Brook" [Dunwich] Square [Plus, Circle, Triangle] BloodOnTheAltar
+bishopsBrook_203 = location
+  "02203"
+  "Bishop's Brook"
+  [Dunwich]
+  Square
+  [Plus, Circle, Triangle]
+  BloodOnTheAltar
 
 burnedRuins_204 :: CardDef
-burnedRuins_204 = location "02204" "Burned Ruins" [Dunwich] Triangle [Square, Diamond] BloodOnTheAltar
+burnedRuins_204 = location
+  "02204"
+  "Burned Ruins"
+  [Dunwich]
+  Triangle
+  [Square, Diamond]
+  BloodOnTheAltar
 
 burnedRuins_205 :: CardDef
-burnedRuins_205 = location "02205" "Burned Ruins" [Dunwich] Triangle [Square, Diamond] BloodOnTheAltar
+burnedRuins_205 = location
+  "02205"
+  "Burned Ruins"
+  [Dunwich]
+  Triangle
+  [Square, Diamond]
+  BloodOnTheAltar
 
 osbornsGeneralStore_206 :: CardDef
-osbornsGeneralStore_206 =
-  location "02206" "Osborn's General Store" [Dunwich] Circle [Moon, Square] BloodOnTheAltar
+osbornsGeneralStore_206 = location
+  "02206"
+  "Osborn's General Store"
+  [Dunwich]
+  Circle
+  [Moon, Square]
+  BloodOnTheAltar
 
 osbornsGeneralStore_207 :: CardDef
-osbornsGeneralStore_207 =
-  location "02207" "Osborn's General Store" [Dunwich] Circle [Moon, Square] BloodOnTheAltar
+osbornsGeneralStore_207 = location
+  "02207"
+  "Osborn's General Store"
+  [Dunwich]
+  Circle
+  [Moon, Square]
+  BloodOnTheAltar
 
 congregationalChurch_208 :: CardDef
-congregationalChurch_208 =
-  location "02208" "Congregational Church" [Dunwich] Diamond [Plus, Triangle, Squiggle] BloodOnTheAltar
+congregationalChurch_208 = location
+  "02208"
+  "Congregational Church"
+  [Dunwich]
+  Diamond
+  [Plus, Triangle, Squiggle]
+  BloodOnTheAltar
 
 congregationalChurch_209 :: CardDef
-congregationalChurch_209 =
-  location "02209" "Congregational Church" [Dunwich] Diamond [Plus, Triangle, Squiggle] BloodOnTheAltar
+congregationalChurch_209 = location
+  "02209"
+  "Congregational Church"
+  [Dunwich]
+  Diamond
+  [Plus, Triangle, Squiggle]
+  BloodOnTheAltar
 
 houseInTheReeds_210 :: CardDef
-houseInTheReeds_210 =
-  location "02210" "House in the Reeds" [Dunwich] Squiggle [Diamond, Moon] BloodOnTheAltar
+houseInTheReeds_210 = location
+  "02210"
+  "House in the Reeds"
+  [Dunwich]
+  Squiggle
+  [Diamond, Moon]
+  BloodOnTheAltar
 
 houseInTheReeds_211 :: CardDef
-houseInTheReeds_211 =
-  location "02211" "House in the Reeds" [Dunwich] Squiggle [Diamond, Moon] BloodOnTheAltar
+houseInTheReeds_211 = location
+  "02211"
+  "House in the Reeds"
+  [Dunwich]
+  Squiggle
+  [Diamond, Moon]
+  BloodOnTheAltar
 
 schoolhouse_212 :: CardDef
-schoolhouse_212 = location "02212" "Schoolhouse" [Dunwich] Moon [Plus, Squiggle, Moon] BloodOnTheAltar
+schoolhouse_212 = location
+  "02212"
+  "Schoolhouse"
+  [Dunwich]
+  Moon
+  [Plus, Squiggle, Moon]
+  BloodOnTheAltar
 
 schoolhouse_213 :: CardDef
-schoolhouse_213 = location "02213" "Schoolhouse" [Dunwich] Moon [Plus, Squiggle, Moon] BloodOnTheAltar
+schoolhouse_213 = location
+  "02213"
+  "Schoolhouse"
+  [Dunwich]
+  Moon
+  [Plus, Squiggle, Moon]
+  BloodOnTheAltar
 
 theHiddenChamber :: CardDef
 theHiddenChamber = (location
@@ -978,66 +1142,142 @@ theHiddenChamber = (location
   }
 
 dunwichVillage_242 :: CardDef
-dunwichVillage_242 =
-  location "02242" "Dunwich Village" [Dunwich] Circle [Triangle, Square, Diamond] UndimensionedAndUnseen
+dunwichVillage_242 = location
+  "02242"
+  "Dunwich Village"
+  [Dunwich]
+  Circle
+  [Triangle, Square, Diamond]
+  UndimensionedAndUnseen
 
 dunwichVillage_243 :: CardDef
-dunwichVillage_243 =
-  location "02243" "Dunwich Village" [Dunwich] Circle [Triangle, Square, Diamond] UndimensionedAndUnseen
+dunwichVillage_243 = location
+  "02243"
+  "Dunwich Village"
+  [Dunwich]
+  Circle
+  [Triangle, Square, Diamond]
+  UndimensionedAndUnseen
 
 coldSpringGlen_244 :: CardDef
-coldSpringGlen_244 =
-  location "02244" "Cold Spring Glen" [Dunwich] Triangle [Circle, Diamond, Plus] UndimensionedAndUnseen
+coldSpringGlen_244 = location
+  "02244"
+  "Cold Spring Glen"
+  [Dunwich]
+  Triangle
+  [Circle, Diamond, Plus]
+  UndimensionedAndUnseen
 
 coldSpringGlen_245 :: CardDef
-coldSpringGlen_245 =
-  location "02245" "Cold Spring Glen" [Dunwich] Triangle [Circle, Diamond, Plus] UndimensionedAndUnseen
+coldSpringGlen_245 = location
+  "02245"
+  "Cold Spring Glen"
+  [Dunwich]
+  Triangle
+  [Circle, Diamond, Plus]
+  UndimensionedAndUnseen
 
 tenAcreMeadow_246 :: CardDef
-tenAcreMeadow_246 =
-  location "02246" "Ten-Acre Meadow" [Dunwich] Diamond [Circle, Triangle, Plus] UndimensionedAndUnseen
+tenAcreMeadow_246 = location
+  "02246"
+  "Ten-Acre Meadow"
+  [Dunwich]
+  Diamond
+  [Circle, Triangle, Plus]
+  UndimensionedAndUnseen
 
 tenAcreMeadow_247 :: CardDef
-tenAcreMeadow_247 =
-  location "02247" "Ten-Acre Meadow" [Dunwich] Diamond [Circle, Triangle, Plus] UndimensionedAndUnseen
+tenAcreMeadow_247 = location
+  "02247"
+  "Ten-Acre Meadow"
+  [Dunwich]
+  Diamond
+  [Circle, Triangle, Plus]
+  UndimensionedAndUnseen
 
 blastedHeath_248 :: CardDef
-blastedHeath_248 =
-  location "02248" "Blasted Heath" [Dunwich] Square [Circle, Hourglass] UndimensionedAndUnseen
+blastedHeath_248 = location
+  "02248"
+  "Blasted Heath"
+  [Dunwich]
+  Square
+  [Circle, Hourglass]
+  UndimensionedAndUnseen
 
 blastedHeath_249 :: CardDef
-blastedHeath_249 =
-  location "02249" "Blasted Heath" [Dunwich] Square [Circle, Hourglass] UndimensionedAndUnseen
+blastedHeath_249 = location
+  "02249"
+  "Blasted Heath"
+  [Dunwich]
+  Square
+  [Circle, Hourglass]
+  UndimensionedAndUnseen
 
 whateleyRuins_250 :: CardDef
-whateleyRuins_250 =
-  location "02250" "Whateley Ruins" [Dunwich] Plus [Triangle, Diamond, Hourglass] UndimensionedAndUnseen
+whateleyRuins_250 = location
+  "02250"
+  "Whateley Ruins"
+  [Dunwich]
+  Plus
+  [Triangle, Diamond, Hourglass]
+  UndimensionedAndUnseen
 
 whateleyRuins_251 :: CardDef
-whateleyRuins_251 =
-  location "02251" "Whateley Ruins" [Dunwich] Plus [Triangle, Diamond, Hourglass] UndimensionedAndUnseen
+whateleyRuins_251 = location
+  "02251"
+  "Whateley Ruins"
+  [Dunwich]
+  Plus
+  [Triangle, Diamond, Hourglass]
+  UndimensionedAndUnseen
 
 devilsHopYard_252 :: CardDef
-devilsHopYard_252 =
-  location "02252" "Devil's Hop Yard" [Dunwich] Hourglass [Square, Plus] UndimensionedAndUnseen
+devilsHopYard_252 = location
+  "02252"
+  "Devil's Hop Yard"
+  [Dunwich]
+  Hourglass
+  [Square, Plus]
+  UndimensionedAndUnseen
 
 devilsHopYard_253 :: CardDef
-devilsHopYard_253 =
-  location "02253" "Devil's Hop Yard" [Dunwich] Hourglass [Square, Plus] UndimensionedAndUnseen
+devilsHopYard_253 = location
+  "02253"
+  "Devil's Hop Yard"
+  [Dunwich]
+  Hourglass
+  [Square, Plus]
+  UndimensionedAndUnseen
 
 baseOfTheHill :: CardDef
-baseOfTheHill =
-  location "02282" "Base of the Hill" [Dunwich, SentinelHill] Triangle [Square, Plus, Squiggle, Hourglass] WhereDoomAwaits
+baseOfTheHill = location
+  "02282"
+  "Base of the Hill"
+  [Dunwich, SentinelHill]
+  Triangle
+  [Square, Plus, Squiggle, Hourglass]
+  WhereDoomAwaits
 
 ascendingPath :: CardDef
-ascendingPath =
-  location "02283" "Ascending Path" [Dunwich, SentinelHill] Square [Triangle, Diamond, T, Equals, Moon] WhereDoomAwaits
+ascendingPath = location
+  "02283"
+  "Ascending Path"
+  [Dunwich, SentinelHill]
+  Square
+  [Triangle, Diamond, T, Equals, Moon]
+  WhereDoomAwaits
 
 sentinelPeak :: CardDef
-sentinelPeak =
-  (location "02284" "Sentinel Peak" [Dunwich, SentinelHill] Diamond [Square] WhereDoomAwaits)
-    { cdVictoryPoints = Just 2
-    }
+sentinelPeak = (location
+                 "02284"
+                 "Sentinel Peak"
+                 [Dunwich, SentinelHill]
+                 Diamond
+                 [Square]
+                 WhereDoomAwaits
+               )
+  { cdVictoryPoints = Just 2
+  }
 
 slaughteredWoods :: CardDef
 slaughteredWoods = locationWithUnrevealed
@@ -1153,12 +1393,22 @@ anotherDimension = location
   LostInTimeAndSpace
 
 theEdgeOfTheUniverse :: CardDef
-theEdgeOfTheUniverse =
-  location "02321" "The Edge of the Universe" [Otherworld] Moon [Plus, Squiggle] LostInTimeAndSpace
+theEdgeOfTheUniverse = location
+  "02321"
+  "The Edge of the Universe"
+  [Otherworld]
+  Moon
+  [Plus, Squiggle]
+  LostInTimeAndSpace
 
 tearThroughTime :: CardDef
-tearThroughTime =
-  location "02322" "Tear Through Time" [Otherworld] Moon [Circle, Plus, Squiggle] LostInTimeAndSpace
+tearThroughTime = location
+  "02322"
+  "Tear Through Time"
+  [Otherworld]
+  Moon
+  [Circle, Plus, Squiggle]
+  LostInTimeAndSpace
 
 tearThroughSpace :: CardDef
 tearThroughSpace = (location
@@ -1225,17 +1475,22 @@ dimensionalDoorway = (location
   }
 
 theatre :: CardDef
-theatre = location "03049" "Theatre" mempty Circle [Diamond, Triangle] CurtainCall
+theatre =
+  location "03049" "Theatre" mempty Circle [Diamond, Triangle] CurtainCall
 
 lobby :: CardDef
-lobby = location "03050" "Lobby" mempty Triangle [Circle, Square, Plus] CurtainCall
+lobby =
+  location "03050" "Lobby" mempty Triangle [Circle, Square, Plus] CurtainCall
 
 balcony :: CardDef
 balcony =
-  (location "03051" "Balcony" mempty Square [Circle, Triangle] CurtainCall) { cdVictoryPoints = Just 1 }
+  (location "03051" "Balcony" mempty Square [Circle, Triangle] CurtainCall)
+    { cdVictoryPoints = Just 1
+    }
 
 backstage :: CardDef
-backstage = location "03052" "Backstage" mempty Diamond [Circle, Moon] CurtainCall
+backstage =
+  location "03052" "Backstage" mempty Diamond [Circle, Moon] CurtainCall
 
 lightingBox :: CardDef
 lightingBox = (locationWithUnrevealed
@@ -1331,22 +1586,32 @@ foyer :: CardDef
 foyer = location "03070" "Foyer" mempty T [Circle, Square, Equals] TheLastKing
 
 ballroom :: CardDef
-ballroom = location "03071" "Ballroom" mempty Square [T, Circle, Squiggle] TheLastKing
+ballroom =
+  location "03071" "Ballroom" mempty Square [T, Circle, Squiggle] TheLastKing
 
 livingRoom :: CardDef
-livingRoom = location "03072" "Living Room" mempty Equals [T, Circle, Plus] TheLastKing
+livingRoom =
+  location "03072" "Living Room" mempty Equals [T, Circle, Plus] TheLastKing
 
 gallery :: CardDef
 gallery = location "03073" "Gallery" mempty Plus [Equals, Circle] TheLastKing
 
 courtyard :: CardDef
-courtyard = location "03074" "Courtyard" mempty Circle [Squiggle, Square, T, Equals, Plus] TheLastKing
+courtyard = location
+  "03074"
+  "Courtyard"
+  mempty
+  Circle
+  [Squiggle, Square, T, Equals, Plus]
+  TheLastKing
 
 diningRoom :: CardDef
-diningRoom = location "03075" "Dining Room" mempty Squiggle [Square, Circle] TheLastKing
+diningRoom =
+  location "03075" "Dining Room" mempty Squiggle [Square, Circle] TheLastKing
 
 entryHall :: CardDef
-entryHall = location "03127" "Entry Hall" [GroundFloor] Square [Circle] EchoesOfThePast
+entryHall =
+  location "03127" "Entry Hall" [GroundFloor] Square [Circle] EchoesOfThePast
 
 historicalSocietyMeetingRoom :: CardDef
 historicalSocietyMeetingRoom = locationWithUnrevealed
@@ -1388,7 +1653,13 @@ historicalSocietyHistoricalMuseum_130 = locationWithUnrevealed
   EchoesOfThePast
 
 quietHalls_131 :: CardDef
-quietHalls_131 = location "03131" "Quiet Halls" [SecondFloor] Circle [Square, Star] EchoesOfThePast
+quietHalls_131 = location
+  "03131"
+  "Quiet Halls"
+  [SecondFloor]
+  Circle
+  [Square, Star]
+  EchoesOfThePast
 
 historicalSocietyHistoricalMuseum_132 :: CardDef
 historicalSocietyHistoricalMuseum_132 = locationWithUnrevealed
@@ -1430,7 +1701,8 @@ historicalSocietyReadingRoom = locationWithUnrevealed
   EchoesOfThePast
 
 quietHalls_135 :: CardDef
-quietHalls_135 = location "03135" "Quiet Halls" [ThirdFloor] Star [Circle] EchoesOfThePast
+quietHalls_135 =
+  location "03135" "Quiet Halls" [ThirdFloor] Star [Circle] EchoesOfThePast
 
 historicalSocietyHistoricalLibrary_136 :: CardDef
 historicalSocietyHistoricalLibrary_136 = locationWithUnrevealed
@@ -1472,9 +1744,10 @@ historicalSocietyRecordOffice_138 = locationWithUnrevealed
   EchoesOfThePast
 
 hiddenLibrary :: CardDef
-hiddenLibrary = (location "03139" "Hidden Library" mempty NoSymbol [] EchoesOfThePast)
-  { cdVictoryPoints = Just 2
-  }
+hiddenLibrary =
+  (location "03139" "Hidden Library" mempty NoSymbol [] EchoesOfThePast)
+    { cdVictoryPoints = Just 2
+    }
 
 asylumHallsWesternPatientWing_168 :: CardDef
 asylumHallsWesternPatientWing_168 = location
@@ -1513,29 +1786,57 @@ asylumHallsEasternPatientWing_171 = location
   TheUnspeakableOath
 
 kitchen :: CardDef
-kitchen = location "03172" "Kitchen" [ArkhamAsylum] Square [Triangle] TheUnspeakableOath
+kitchen =
+  location "03172" "Kitchen" [ArkhamAsylum] Square [Triangle] TheUnspeakableOath
 
 messHall :: CardDef
-messHall = (location "03173" "Mess Hall" [ArkhamAsylum] Triangle [Circle, Square] TheUnspeakableOath)
+messHall = (location
+             "03173"
+             "Mess Hall"
+             [ArkhamAsylum]
+             Triangle
+             [Circle, Square]
+             TheUnspeakableOath
+           )
   { cdVictoryPoints = Just 1
   }
 
 infirmary :: CardDef
-infirmary = (location "03174" "Infirmary" [ArkhamAsylum] Heart [Hourglass] TheUnspeakableOath)
+infirmary = (location
+              "03174"
+              "Infirmary"
+              [ArkhamAsylum]
+              Heart
+              [Hourglass]
+              TheUnspeakableOath
+            )
   { cdVictoryPoints = Just 1
   }
 
 yard :: CardDef
-yard = location "03175" "Yard" [ArkhamAsylum] Diamond [Circle, Plus] TheUnspeakableOath
+yard = location
+  "03175"
+  "Yard"
+  [ArkhamAsylum]
+  Diamond
+  [Circle, Plus]
+  TheUnspeakableOath
 
 garden :: CardDef
-garden = location "03176" "Garden" [ArkhamAsylum] Plus [Diamond] TheUnspeakableOath
+garden =
+  location "03176" "Garden" [ArkhamAsylum] Plus [Diamond] TheUnspeakableOath
 
 basementHall :: CardDef
-basementHall =
-  (location "03177" "Basement Hall" [ArkhamAsylum] Squiggle [Hourglass, Moon] TheUnspeakableOath)
-    { cdVictoryPoints = Just 1
-    }
+basementHall = (location
+                 "03177"
+                 "Basement Hall"
+                 [ArkhamAsylum]
+                 Squiggle
+                 [Hourglass, Moon]
+                 TheUnspeakableOath
+               )
+  { cdVictoryPoints = Just 1
+  }
 
 patientConfinementDanielsCell :: CardDef
 patientConfinementDanielsCell = locationWithUnrevealed
@@ -1590,13 +1891,31 @@ patientConfinementFamiliarCell = locationWithUnrevealed
   TheUnspeakableOath
 
 montparnasse :: CardDef
-montparnasse = location "03208" "Montparnasse" [Paris, Rail] Circle [Heart, Star, Plus] APhantomOfTruth
+montparnasse = location
+  "03208"
+  "Montparnasse"
+  [Paris, Rail]
+  Circle
+  [Heart, Star, Plus]
+  APhantomOfTruth
 
 montmartre209 :: CardDef
-montmartre209 = location "03209" "Montmartre" [Paris, Rail] Square [Diamond, Triangle, Equals, Moon] APhantomOfTruth
+montmartre209 = location
+  "03209"
+  "Montmartre"
+  [Paris, Rail]
+  Square
+  [Diamond, Triangle, Equals, Moon]
+  APhantomOfTruth
 
 montmartre210 :: CardDef
-montmartre210 = location "03210" "Montmartre" [Paris, Rail] Square [Diamond, Triangle, Equals, Moon] APhantomOfTruth
+montmartre210 = location
+  "03210"
+  "Montmartre"
+  [Paris, Rail]
+  Square
+  [Diamond, Triangle, Equals, Moon]
+  APhantomOfTruth
 
 grandGuignol :: CardDef
 grandGuignol = (location
@@ -1611,42 +1930,94 @@ grandGuignol = (location
   }
 
 operaGarnier212 :: CardDef
-operaGarnier212 =
-  location "03212" "Opéra Garnier" [Paris, Rail] Diamond [Triangle, Square, Heart] APhantomOfTruth
+operaGarnier212 = location
+  "03212"
+  "Opéra Garnier"
+  [Paris, Rail]
+  Diamond
+  [Triangle, Square, Heart]
+  APhantomOfTruth
 
 operaGarnier213 :: CardDef
-operaGarnier213 =
-  location "03213" "Opéra Garnier" [Paris, Rail] Diamond [Triangle, Square, Heart] APhantomOfTruth
+operaGarnier213 = location
+  "03213"
+  "Opéra Garnier"
+  [Paris, Rail]
+  Diamond
+  [Triangle, Square, Heart]
+  APhantomOfTruth
 
 gareDOrsay :: CardDef
-gareDOrsay = location "03214" "Gare d'Orsay" [Paris, Rail] Heart [Diamond, Circle, Star] APhantomOfTruth
+gareDOrsay = location
+  "03214"
+  "Gare d'Orsay"
+  [Paris, Rail]
+  Heart
+  [Diamond, Circle, Star]
+  APhantomOfTruth
 
 pereLachaiseCemetery :: CardDef
-pereLachaiseCemetery =
-  (location "03215" "Père Lachaise Cemetery" [Paris] T [Equals, Moon] APhantomOfTruth)
-    { cdVictoryPoints = Just 1
-    }
+pereLachaiseCemetery = (location
+                         "03215"
+                         "Père Lachaise Cemetery"
+                         [Paris]
+                         T
+                         [Equals, Moon]
+                         APhantomOfTruth
+                       )
+  { cdVictoryPoints = Just 1
+  }
 
 canalSaintMartin :: CardDef
-canalSaintMartin =
-  (location "03216" "Canal Saint-Martin" [Paris] Equals [Square, T, Moon] APhantomOfTruth)
-    { cdVictoryPoints = Just 1
-    }
+canalSaintMartin = (location
+                     "03216"
+                     "Canal Saint-Martin"
+                     [Paris]
+                     Equals
+                     [Square, T, Moon]
+                     APhantomOfTruth
+                   )
+  { cdVictoryPoints = Just 1
+  }
 
 leMarais217 :: CardDef
-leMarais217 = location "03217" "Le Marais" [Paris, Rail] Moon [Square, Equals, T, Plus] APhantomOfTruth
+leMarais217 = location
+  "03217"
+  "Le Marais"
+  [Paris, Rail]
+  Moon
+  [Square, Equals, T, Plus]
+  APhantomOfTruth
 
 leMarais218 :: CardDef
-leMarais218 = location "03218" "Le Marais" [Paris, Rail] Moon [Square, Equals, T, Plus] APhantomOfTruth
+leMarais218 = location
+  "03218"
+  "Le Marais"
+  [Paris, Rail]
+  Moon
+  [Square, Equals, T, Plus]
+  APhantomOfTruth
 
 notreDame :: CardDef
-notreDame = location "03219" "Notre-Dame" [Paris, Rail] Plus [Circle, Moon, Star] APhantomOfTruth
+notreDame = location
+  "03219"
+  "Notre-Dame"
+  [Paris, Rail]
+  Plus
+  [Circle, Moon, Star]
+  APhantomOfTruth
 
 gardensOfLuxembourg :: CardDef
-gardensOfLuxembourg =
-  (location "03220" "Gardens of Luxembourg" [Paris] Star [Circle, Heart, Plus] APhantomOfTruth)
-    { cdVictoryPoints = Just 1
-    }
+gardensOfLuxembourg = (location
+                        "03220"
+                        "Gardens of Luxembourg"
+                        [Paris]
+                        Star
+                        [Circle, Heart, Plus]
+                        APhantomOfTruth
+                      )
+  { cdVictoryPoints = Just 1
+  }
 
 theGateToHell :: CardDef
 theGateToHell = locationWithUnrevealed
@@ -1707,21 +2078,20 @@ boneFilledCaverns = (locationWithUnrevealed
   }
 
 wellOfSouls :: CardDef
-wellOfSouls =
-  (locationWithUnrevealed
-      "03251"
-      "Catacombs"
-      []
-      NoSymbol
-      []
-      "Well of Souls"
-      []
-      NoSymbol
-      []
-      ThePallidMask
-    )
-    { cdVictoryPoints = Just 1
-    }
+wellOfSouls = (locationWithUnrevealed
+                "03251"
+                "Catacombs"
+                []
+                NoSymbol
+                []
+                "Well of Souls"
+                []
+                NoSymbol
+                []
+                ThePallidMask
+              )
+  { cdVictoryPoints = Just 1
+  }
 
 candlelitTunnels :: CardDef
 candlelitTunnels = (locationWithUnrevealed
@@ -1756,11 +2126,20 @@ labyrinthOfBones = (locationWithUnrevealed
   }
 
 narrowShaft :: CardDef
-narrowShaft =
-  (locationWithUnrevealed "03254" "Catacombs" [] NoSymbol [] "Narrow Shaft" [] NoSymbol [] ThePallidMask
-    )
-    { cdVictoryPoints = Just 1
-    }
+narrowShaft = (locationWithUnrevealed
+                "03254"
+                "Catacombs"
+                []
+                NoSymbol
+                []
+                "Narrow Shaft"
+                []
+                NoSymbol
+                []
+                ThePallidMask
+              )
+  { cdVictoryPoints = Just 1
+  }
 
 shiveringPools :: CardDef
 shiveringPools = (locationWithUnrevealed
@@ -1808,49 +2187,108 @@ tombOfShadows = (locationWithUnrevealed
   }
 
 porteDeLAvancee :: CardDef
-porteDeLAvancee = location "03283" "Porte de l’Avancée" [] Circle [Squiggle] BlackStarsRise
+porteDeLAvancee =
+  location "03283" "Porte de l’Avancée" [] Circle [Squiggle] BlackStarsRise
 
 grandRue :: CardDef
-grandRue = location "03284" "Grand Rue" [] Squiggle [Circle, Triangle, Diamond, Equals] BlackStarsRise
+grandRue = location
+  "03284"
+  "Grand Rue"
+  []
+  Squiggle
+  [Circle, Triangle, Diamond, Equals]
+  BlackStarsRise
 
 outerWall_285 :: CardDef
-outerWall_285 =
-  (location "03285" "Outer Wall" [] Triangle [Squiggle, Diamond, Equals] BlackStarsRise) { cdVictoryPoints = Just 1 }
+outerWall_285 = (location
+                  "03285"
+                  "Outer Wall"
+                  []
+                  Triangle
+                  [Squiggle, Diamond, Equals]
+                  BlackStarsRise
+                )
+  { cdVictoryPoints = Just 1
+  }
 
 outerWall_286 :: CardDef
-outerWall_286 =
-  (location "03286" "Outer Wall" [] Triangle [Squiggle, Diamond, Equals] BlackStarsRise) { cdVictoryPoints = Just 1 }
+outerWall_286 = (location
+                  "03286"
+                  "Outer Wall"
+                  []
+                  Triangle
+                  [Squiggle, Diamond, Equals]
+                  BlackStarsRise
+                )
+  { cdVictoryPoints = Just 1
+  }
 
 northTower_287 :: CardDef
-northTower_287 = (location "03287" "North Tower" [] Diamond [Squiggle, Triangle, Equals] BlackStarsRise)
+northTower_287 = (location
+                   "03287"
+                   "North Tower"
+                   []
+                   Diamond
+                   [Squiggle, Triangle, Equals]
+                   BlackStarsRise
+                 )
   { cdVictoryPoints = Just 1
   }
 
 northTower_288 :: CardDef
-northTower_288 = (location "03288" "North Tower" [] Diamond [Squiggle, Triangle, Equals] BlackStarsRise)
+northTower_288 = (location
+                   "03288"
+                   "North Tower"
+                   []
+                   Diamond
+                   [Squiggle, Triangle, Equals]
+                   BlackStarsRise
+                 )
   { cdVictoryPoints = Just 1
   }
 
 brokenSteps_289 :: CardDef
-brokenSteps_289 = location "03289" "Broken Steps" [] Equals [Squiggle, Triangle, Diamond, Square] BlackStarsRise
+brokenSteps_289 = location
+  "03289"
+  "Broken Steps"
+  []
+  Equals
+  [Squiggle, Triangle, Diamond, Square]
+  BlackStarsRise
 
 brokenSteps_290 :: CardDef
-brokenSteps_290 = location "03290" "Broken Steps" [] Equals [Squiggle, Triangle, Diamond, Square] BlackStarsRise
+brokenSteps_290 = location
+  "03290"
+  "Broken Steps"
+  []
+  Equals
+  [Squiggle, Triangle, Diamond, Square]
+  BlackStarsRise
 
 abbeyChurch :: CardDef
-abbeyChurch = location "03291" "Abbey Church" [] Square [Equals, T, Heart, Hourglass, Moon] BlackStarsRise
+abbeyChurch = location
+  "03291"
+  "Abbey Church"
+  []
+  Square
+  [Equals, T, Heart, Hourglass, Moon]
+  BlackStarsRise
 
 choeurGothique_292 :: CardDef
-choeurGothique_292 = location "03292" "Chœur Gothique" [] T [Square, Star] BlackStarsRise
+choeurGothique_292 =
+  location "03292" "Chœur Gothique" [] T [Square, Star] BlackStarsRise
 
 choeurGothique_293 :: CardDef
-choeurGothique_293 = location "03293" "Chœur Gothique" [] T [Square, Star] BlackStarsRise
+choeurGothique_293 =
+  location "03293" "Chœur Gothique" [] T [Square, Star] BlackStarsRise
 
 cloister :: CardDef
-cloister = location "03294" "Cloister" [] Heart [Square, Hourglass] BlackStarsRise
+cloister =
+  location "03294" "Cloister" [] Heart [Square, Hourglass] BlackStarsRise
 
 knightsHall :: CardDef
-knightsHall = location "03295" "Knight's Hall" [] Hourglass [Square, Heart] BlackStarsRise
+knightsHall =
+  location "03295" "Knight's Hall" [] Hourglass [Square, Heart] BlackStarsRise
 
 chapelOfStAubertThePathIsOpen :: CardDef
 chapelOfStAubertThePathIsOpen = locationWithUnrevealed
@@ -1913,91 +2351,233 @@ abbeyTowerSpiresForbidden = (locationWithUnrevealed
   }
 
 shoresOfHali :: CardDef
-shoresOfHali = location "03325b" "Shores of Hali" [Otherworld] Circle [Square] DimCarcosa
+shoresOfHali =
+  location "03325b" "Shores of Hali" [Otherworld] Circle [Square] DimCarcosa
 
 bleakPlainsStarsOfAldebaran :: CardDef
-bleakPlainsStarsOfAldebaran =
-  location "03326b" "Bleak Plains" [Otherworld] Square [Circle, Triangle, Diamond] DimCarcosa
+bleakPlainsStarsOfAldebaran = location
+  "03326b"
+  "Bleak Plains"
+  [Otherworld]
+  Square
+  [Circle, Triangle, Diamond]
+  DimCarcosa
 
 bleakPlainsBleakDesolation :: CardDef
-bleakPlainsBleakDesolation =
-  location "03326d" "Bleak Plains" [Otherworld] Square [Circle, Triangle, Diamond] DimCarcosa
+bleakPlainsBleakDesolation = location
+  "03326d"
+  "Bleak Plains"
+  [Otherworld]
+  Square
+  [Circle, Triangle, Diamond]
+  DimCarcosa
 
 ruinsOfCarcosaInhabitantOfCarcosa :: CardDef
-ruinsOfCarcosaInhabitantOfCarcosa =
-  location "03327b" "Ruins of Carcosa" [Otherworld] Triangle [Square, Equals, Star] DimCarcosa
+ruinsOfCarcosaInhabitantOfCarcosa = location
+  "03327b"
+  "Ruins of Carcosa"
+  [Otherworld]
+  Triangle
+  [Square, Equals, Star]
+  DimCarcosa
 
 ruinsOfCarcosaAMomentsRest :: CardDef
-ruinsOfCarcosaAMomentsRest =
-  location "03327d" "Ruins of Carcosa" [Otherworld] Triangle [Square, Equals, Star] DimCarcosa
+ruinsOfCarcosaAMomentsRest = location
+  "03327d"
+  "Ruins of Carcosa"
+  [Otherworld]
+  Triangle
+  [Square, Equals, Star]
+  DimCarcosa
 
 
 ruinsOfCarcosaTheCoffin :: CardDef
-ruinsOfCarcosaTheCoffin =
-  location "03327f" "Ruins of Carcosa" [Otherworld] Triangle [Square, Equals, Star] DimCarcosa
+ruinsOfCarcosaTheCoffin = location
+  "03327f"
+  "Ruins of Carcosa"
+  [Otherworld]
+  Triangle
+  [Square, Equals, Star]
+  DimCarcosa
 
 dimStreetsMappingTheStreets :: CardDef
-dimStreetsMappingTheStreets =
-  location "03328b" "Dim Streets" [Otherworld] Diamond [Square, Equals, Star] DimCarcosa
+dimStreetsMappingTheStreets = location
+  "03328b"
+  "Dim Streets"
+  [Otherworld]
+  Diamond
+  [Square, Equals, Star]
+  DimCarcosa
 
 dimStreetsTheKingsParade :: CardDef
-dimStreetsTheKingsParade =
-  location "03328d" "Dim Streets" [Otherworld] Diamond [Square, Equals, Star] DimCarcosa
+dimStreetsTheKingsParade = location
+  "03328d"
+  "Dim Streets"
+  [Otherworld]
+  Diamond
+  [Square, Equals, Star]
+  DimCarcosa
 
 dimStreetsTheArchway :: CardDef
-dimStreetsTheArchway = location "03328f" "Dim Streets" [Otherworld] Diamond [Square, Equals, Star] DimCarcosa
+dimStreetsTheArchway = location
+  "03328f"
+  "Dim Streets"
+  [Otherworld]
+  Diamond
+  [Square, Equals, Star]
+  DimCarcosa
 
 depthsOfDemheTheHeightOfTheDepths :: CardDef
-depthsOfDemheTheHeightOfTheDepths =
-  location "03329b" "Depths of Demhe" [Otherworld] Equals [Moon, Triangle, Diamond] DimCarcosa
+depthsOfDemheTheHeightOfTheDepths = location
+  "03329b"
+  "Depths of Demhe"
+  [Otherworld]
+  Equals
+  [Moon, Triangle, Diamond]
+  DimCarcosa
 
 depthsOfDemheStepsOfThePalace :: CardDef
-depthsOfDemheStepsOfThePalace =
-  location "03329d" "Depths of Demhe" [Otherworld] Equals [Moon, Triangle, Diamond] DimCarcosa
+depthsOfDemheStepsOfThePalace = location
+  "03329d"
+  "Depths of Demhe"
+  [Otherworld]
+  Equals
+  [Moon, Triangle, Diamond]
+  DimCarcosa
 
 darkSpires :: CardDef
-darkSpires = location "03330b" "Dark Spires" [Otherworld] Moon [Equals] DimCarcosa
+darkSpires =
+  location "03330b" "Dark Spires" [Otherworld] Moon [Equals] DimCarcosa
 
 palaceOfTheKing :: CardDef
-palaceOfTheKing =
-  location "03331b" "Palace of the King" [Otherworld] Star [Triangle, Diamond] DimCarcosa
+palaceOfTheKing = location
+  "03331b"
+  "Palace of the King"
+  [Otherworld]
+  Star
+  [Triangle, Diamond]
+  DimCarcosa
 
 expeditionCamp :: CardDef
-expeditionCamp =
-  location "04050" "Expedition Camp" [Campsite, Jungle] Circle [Square, Diamond, Moon] TheUntamedWilds
+expeditionCamp = location
+  "04050"
+  "Expedition Camp"
+  [Campsite, Jungle]
+  Circle
+  [Square, Diamond, Moon]
+  TheUntamedWilds
 
 ruinsOfEztli :: CardDef
-ruinsOfEztli =
-  location "04053" "Ruins of Eztli" [Ancient, Ruins] Hourglass [Triangle, Heart] TheUntamedWilds
+ruinsOfEztli = location
+  "04053"
+  "Ruins of Eztli"
+  [Ancient, Ruins]
+  Hourglass
+  [Triangle, Heart]
+  TheUntamedWilds
 
 pathOfThorns :: CardDef
-pathOfThorns = location "04069" "Path of Thorns" [Jungle] Square [Circle, Diamond, Triangle, Squiggle] Rainforest
+pathOfThorns = (location
+                 "04069"
+                 "Path of Thorns"
+                 [Jungle]
+                 Square
+                 [Circle, Diamond, Triangle, Squiggle]
+                 Rainforest
+               )
+  { cdDoubleSided = False
+  }
+
 
 riverCanyon :: CardDef
-riverCanyon = location "04070" "River Canyon" [Jungle] Diamond [Circle, Moon, Heart, Triangle, Square] Rainforest
+riverCanyon = (location
+                "04070"
+                "River Canyon"
+                [Jungle]
+                Diamond
+                [Circle, Moon, Heart, Triangle, Square]
+                Rainforest
+              )
+  { cdDoubleSided = False
+  }
 
 ropeBridge :: CardDef
-ropeBridge = location "04071" "Rope Bridge" [Jungle] Moon [Circle, Diamond, Heart, T] Rainforest
+ropeBridge = (location
+               "04071"
+               "Rope Bridge"
+               [Jungle]
+               Moon
+               [Circle, Diamond, Heart, T]
+               Rainforest
+             )
+  { cdDoubleSided = False
+  }
 
 serpentsHaven :: CardDef
-serpentsHaven = location "04072" "Serpent's Haven" [Jungle] Triangle [Squiggle, Square, Diamond, Hourglass] Rainforest
+serpentsHaven = (location
+                  "04072"
+                  "Serpent's Haven"
+                  [Jungle]
+                  Triangle
+                  [Squiggle, Square, Diamond, Hourglass]
+                  Rainforest
+                )
+  { cdDoubleSided = False
+  }
 
 circuitousTrail :: CardDef
-circuitousTrail = location "04073" "Circuitous Trail" [Jungle] Heart [Hourglass, Diamond, Moon, T] Rainforest
+circuitousTrail = (location
+                    "04073"
+                    "Circuitous Trail"
+                    [Jungle]
+                    Heart
+                    [Hourglass, Diamond, Moon, T]
+                    Rainforest
+                  )
+  { cdDoubleSided = False
+  }
 
 templeOfTheFang :: CardDef
-templeOfTheFang =
-  location "04074" "Temple of the Fang" [Ancient, Ruins] Squiggle [Square, Triangle, Equals] Rainforest
+templeOfTheFang = (location
+                    "04074"
+                    "Temple of the Fang"
+                    [Ancient, Ruins]
+                    Squiggle
+                    [Square, Triangle, Equals]
+                    Rainforest
+                  )
+  { cdDoubleSided = False
+  }
 
 overgrownRuins :: CardDef
-overgrownRuins = location "04075" "Overgrown Ruins" [Ancient, Ruins] T [Moon, Heart, Equals] Rainforest
+overgrownRuins = (location
+                   "04075"
+                   "Overgrown Ruins"
+                   [Ancient, Ruins]
+                   T
+                   [Moon, Heart, Equals]
+                   Rainforest
+                 )
+  { cdDoubleSided = False
+  }
 
 studyAberrantGateway :: CardDef
-studyAberrantGateway =
-  location "50013" ("Study" <:> "Aberrant Gateway") mempty Circle [T] ReturnToTheGathering
+studyAberrantGateway = location
+  "50013"
+  ("Study" <:> "Aberrant Gateway")
+  mempty
+  Circle
+  [T]
+  ReturnToTheGathering
 
 guestHall :: CardDef
-guestHall = location "50014" "Guest Hall" mempty T [Circle, Heart, Star, Square] ReturnToTheGathering
+guestHall = location
+  "50014"
+  "Guest Hall"
+  mempty
+  T
+  [Circle, Heart, Star, Square]
+  ReturnToTheGathering
 
 bedroom :: CardDef
 bedroom = location "50015" "Bedroom" mempty Heart [T] ReturnToTheGathering
@@ -2184,7 +2764,13 @@ arkhamWoodsWoodenBridge = locationWithUnrevealed
   ReturnToTheDevourerBelow
 
 cursedShores :: CardDef
-cursedShores = location "81007" "Cursed Shores" [NewOrleans, Bayou] Square [Plus, Triangle, Diamond, Hourglass] TheBayou
+cursedShores = location
+  "81007"
+  "Cursed Shores"
+  [NewOrleans, Bayou]
+  Square
+  [Plus, Triangle, Diamond, Hourglass]
+  TheBayou
 
 gardenDistrict :: CardDef
 gardenDistrict = locationWithUnrevealed
@@ -2216,7 +2802,13 @@ broadmoor = (locationWithUnrevealed
   }
 
 brackishWaters :: CardDef
-brackishWaters = location "81010" "Brackish Waters" [Riverside, Bayou] Triangle [Squiggle, Square, Diamond, Hourglass] TheBayou
+brackishWaters = location
+  "81010"
+  "Brackish Waters"
+  [Riverside, Bayou]
+  Triangle
+  [Squiggle, Square, Diamond, Hourglass]
+  TheBayou
 
 audubonPark :: CardDef
 audubonPark = (locationWithUnrevealed
@@ -2248,8 +2840,13 @@ fauborgMarigny = locationWithUnrevealed
   TheBayou
 
 forgottenMarsh :: CardDef
-forgottenMarsh =
-  location "81013" "Forgotten Marsh" [Wilderness, Bayou] Diamond [Moon, Square, Triangle, Hourglass] TheBayou
+forgottenMarsh = location
+  "81013"
+  "Forgotten Marsh"
+  [Wilderness, Bayou]
+  Diamond
+  [Moon, Square, Triangle, Hourglass]
+  TheBayou
 
 trappersCabin :: CardDef
 trappersCabin = locationWithUnrevealed
@@ -2281,7 +2878,13 @@ twistedUnderbrush = (locationWithUnrevealed
   }
 
 foulSwamp :: CardDef
-foulSwamp = location "81016" "Foul Swamp" [Unhallowed, Bayou] Hourglass [Equals, Square, Triangle, Diamond] TheBayou
+foulSwamp = location
+  "81016"
+  "Foul Swamp"
+  [Unhallowed, Bayou]
+  Hourglass
+  [Equals, Square, Triangle, Diamond]
+  TheBayou
 
 ritualGrounds :: CardDef
 ritualGrounds = (locationWithUnrevealed
@@ -2313,36 +2916,56 @@ overgrownCairns = locationWithUnrevealed
   TheBayou
 
 gondola :: CardDef
-gondola = location "82006b" "Gondola" [Venice, Boat] NoSymbol [] CarnevaleOfHorrors
+gondola =
+  location "82006b" "Gondola" [Venice, Boat] NoSymbol [] CarnevaleOfHorrors
 
 sanMarcoBasilica :: CardDef
 sanMarcoBasilica =
   location "82008" "San Marco Basilica" [Venice] NoSymbol [] CarnevaleOfHorrors
 
 canalSide :: CardDef
-canalSide = location "82009" "Canal-side" [Venice] NoSymbol [] CarnevaleOfHorrors
+canalSide =
+  location "82009" "Canal-side" [Venice] NoSymbol [] CarnevaleOfHorrors
 
 streetsOfVenice :: CardDef
 streetsOfVenice =
   location "82010" "Streets of Venice" [Venice] NoSymbol [] CarnevaleOfHorrors
 
 rialtoBridge :: CardDef
-rialtoBridge =
-  location "82011" "Rialto Bridge" [Venice, Bridge] NoSymbol [] CarnevaleOfHorrors
+rialtoBridge = location
+  "82011"
+  "Rialto Bridge"
+  [Venice, Bridge]
+  NoSymbol
+  []
+  CarnevaleOfHorrors
 
 venetianGarden :: CardDef
-venetianGarden = location "82012" "Venetian Garden" [Venice] NoSymbol [] CarnevaleOfHorrors
+venetianGarden =
+  location "82012" "Venetian Garden" [Venice] NoSymbol [] CarnevaleOfHorrors
 
 bridgeOfSighs :: CardDef
-bridgeOfSighs =
-  location "82013" "Bridge of Sighs" [Venice, Bridge] NoSymbol [] CarnevaleOfHorrors
+bridgeOfSighs = location
+  "82013"
+  "Bridge of Sighs"
+  [Venice, Bridge]
+  NoSymbol
+  []
+  CarnevaleOfHorrors
 
 floodedSquare :: CardDef
-floodedSquare = location "82014" "Flooded Square" [Venice] NoSymbol [] CarnevaleOfHorrors
+floodedSquare =
+  location "82014" "Flooded Square" [Venice] NoSymbol [] CarnevaleOfHorrors
 
 accademiaBridge :: CardDef
-accademiaBridge =
-  location "82015" "Accademia Bridge" [Venice, Bridge] NoSymbol [] CarnevaleOfHorrors
+accademiaBridge = location
+  "82015"
+  "Accademia Bridge"
+  [Venice, Bridge]
+  NoSymbol
+  []
+  CarnevaleOfHorrors
 
 theGuardian :: CardDef
-theGuardian = location "82016" "The Guardian" [Venice] NoSymbol [] CarnevaleOfHorrors
+theGuardian =
+  location "82016" "The Guardian" [Venice] NoSymbol [] CarnevaleOfHorrors

@@ -4,6 +4,7 @@
     /authenticate ApiV1AuthenticationR POST
     /register ApiV1RegistrationR POST
     /whoami ApiV1CurrentUserR GET
+    /settings ApiV1SettingsR PUT
     /arkham ApiV1ArkhamP:
       /cards ApiV1ArkhamCardsR GET
       /investigators ApiV1ArkhamInvestigatorsR GET

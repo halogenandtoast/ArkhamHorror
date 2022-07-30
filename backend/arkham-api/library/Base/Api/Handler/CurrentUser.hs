@@ -8,6 +8,7 @@ import Import
 data CurrentUser = CurrentUser
   { username :: Text
   , email :: Text
+  , beta :: Bool
   }
   deriving stock Generic
   deriving anyclass ToJSON
@@ -19,4 +20,4 @@ getApiV1CurrentUserR = do
     Nothing -> notAuthenticated
     Just userId -> runDB $ do
       User {..} <- get404 userId
-      pure $ CurrentUser userUsername userEmail
+      pure $ CurrentUser userUsername userEmail userBeta

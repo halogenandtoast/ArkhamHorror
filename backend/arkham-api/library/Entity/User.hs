@@ -15,6 +15,7 @@ User json sql=users
     username Text
     email Text
     passwordDigest Text
+    beta Bool
     UniqueUsername username
     UniqueEmail email
 |]

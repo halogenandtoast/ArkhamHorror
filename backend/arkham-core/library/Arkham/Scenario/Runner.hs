@@ -238,6 +238,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         $ "Invalid scenario deck key "
         <> show key
         <> ", could not find deck in scenario"
+  SetScenarioDeck key cards ->
+    pure $ a & (decksL . at key ?~ cards)
   AddCardToScenarioDeck key card -> case lookup key scenarioDecks of
     Just cards -> pure $ a & (decksL . at key ?~ card : cards)
     _ ->

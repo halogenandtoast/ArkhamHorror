@@ -9,10 +9,19 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Helpers.Investigator
+import Arkham.Helpers.Scenario
+import Arkham.Location.Types
 import Arkham.Message
+import Arkham.Projection
+import Arkham.Scenario.Deck
+import Arkham.Scenario.Types
+import Arkham.Target
 
 newtype ExpeditionIntoTheWild = ExpeditionIntoTheWild AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -24,14 +33,54 @@ expeditionIntoTheWild =
 
 instance HasAbilities ExpeditionIntoTheWild where
   getAbilities (ExpeditionIntoTheWild a) =
-    [mkAbility a 1 $ ActionAbility (Just Action.Explore) $ ActionCost 1]
+    [ restrictedAbility a 1 (ScenarioDeckWithCard ExplorationDeck)
+        $ ActionAbility (Just Action.Explore)
+        $ ActionCost 1
+    ]
 
 instance RunMessage ExpeditionIntoTheWild where
   runMessage msg a@(ExpeditionIntoTheWild attrs) = case msg of
-    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      -- explorationDeck <- scenarioFieldMap ScenarioDecks (findWithDefault (error "missing deck") ExplorationDeck)
-      -- let
-      --   (notMatched, matchedOnTop) = break (`cardMatch`
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      explorationDeck <- scenarioFieldMap
+        ScenarioDecks
+        (findWithDefault (error "missing deck") ExplorationDeck)
+      locationSymbols <-
+        fieldMap LocationCard (cdLocationRevealedConnections . toCardDef)
+          =<< getJustLocation iid
+      let
+        isValidMatch c = case cdLocationRevealedSymbol (toCardDef c) of
+          Nothing -> cdCardType (toCardDef c) == TreacheryType
+          Just sym -> sym `elem` locationSymbols
+        (notMatched, matchedOnTop) = break isValidMatch explorationDeck
+      case matchedOnTop of
+        [] -> do
+          deck' <- shuffleM notMatched
+          pushAll
+            [ FocusCards notMatched
+            , chooseOne
+              iid
+              [ Label
+                  "No Matches Found"
+                  [UnfocusCards, SetScenarioDeck ExplorationDeck deck']
+              ]
+            ]
+        (x : xs) -> do
+          let
+            msg' = if cdCardType (toCardDef x) == LocationType
+              then PlaceLocation x
+              else DrewTreachery iid x
+          deck' <- if null notMatched
+            then pure xs
+            else shuffleM (xs <> notMatched)
+          pushAll
+            [ FocusCards (notMatched <> [x])
+            , chooseOne
+              iid
+              [ TargetLabel
+                  (CardIdTarget $ toCardId x)
+                  [UnfocusCards, SetScenarioDeck ExplorationDeck deck', msg']
+              ]
+            ]
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
       a <$ pushAll [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]

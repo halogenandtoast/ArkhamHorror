@@ -1,6 +1,7 @@
 import Home from '@/views/Home.vue';
 import SignIn from '@/views/SignIn.vue';
 import SignUp from '@/views/SignUp.vue';
+import Settings from '@/views/Settings.vue';
 
 export default [
   {
@@ -8,6 +9,12 @@ export default [
     name: 'Home',
     component: Home,
     meta: { requiresAuth: true, title: "Arkham Horror" },
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: Settings,
+    meta: { requiresAuth: true, title: "Arkham Horror: Settings" },
   },
   {
     path: '/sign-in',

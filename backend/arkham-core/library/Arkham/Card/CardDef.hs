@@ -1,5 +1,4 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
-
 module Arkham.Card.CardDef where
 
 import Arkham.Prelude

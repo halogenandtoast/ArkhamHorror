@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { withDefaults, ref, provide, onUnmounted } from 'vue'
+import { useWebSocket } from '@vueuse/core'
+import { withDefaults, ref, provide, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import * as Arkham from '@/arkham/types/Game'
 import { fetchGame, updateGame, updateGameAmounts, updateGamePaymentAmounts, updateGameRaw } from '@/arkham/api'
@@ -22,7 +23,6 @@ provide('debug', debug)
 const ready = ref(false)
 const solo = ref(false)
 const socketError = ref(false)
-const socket = ref<WebSocket | null>(null)
 const game = ref<Arkham.Game | null>(null)
 const investigatorId = ref<string | null>(null)
 const gameLog = ref<readonly string[]>(Object.freeze([]))
@@ -30,56 +30,44 @@ const gameLog = ref<readonly string[]>(Object.freeze([]))
 const route = useRoute()
 const spectate = route.fullPath.endsWith('/spectate')
 
-function connect() {
-  const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
-  const spectatePrefix = spectate ? "/spectate" : ""
-  socket.value = new WebSocket(`${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}`.replace(/https/, 'wss').replace(/http/, 'ws'));
-  socket.value.addEventListener('open', () => {
-    ready.value = true;
-    socketError.value = false;
-  });
-  socket.value.addEventListener('message', (event: MessageEvent) => {
-    const data = JSON.parse(event.data)
+const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
+const spectatePrefix = spectate ? "/spectate" : ""
+const websocketUrl = `${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}`.replace(/https/, 'wss').replace(/http/, 'ws')
 
-    if (data.tag === "GameMessage") {
-      gameLog.value = Object.freeze([...gameLog.value, data.contents])
-    }
+const onError = () => socketError.value = true
+const onConnected = () => socketError.value = false
 
-    if (data.tag === "GameUpdate") {
-      Arkham.gameDecoder.decodeToPromise(data.contents)
-        .then((updatedGame) => {
-          game.value = updatedGame;
-          if (solo.value) {
-            if (Object.keys(game.value.question).length == 1) {
-              investigatorId.value = Object.keys(game.value.question)[0]
-            } else if (game.value.activeInvestigatorId !== investigatorId.value) {
-              investigatorId.value = Object.keys(game.value.question)[0]
-            }
+const { data, close } = useWebSocket(websocketUrl, { autoReconnect: true, onError, onConnected })
+
+watch(data, (newData) => {
+  const msg = JSON.parse(newData)
+
+  if (msg.tag === "GameMessage") {
+    gameLog.value = Object.freeze([...gameLog.value, msg.contents])
+  }
+
+  if (msg.tag === "GameUpdate") {
+    Arkham.gameDecoder.decodeToPromise(msg.contents)
+      .then((updatedGame) => {
+        game.value = updatedGame;
+        if (solo.value) {
+          if (Object.keys(game.value.question).length == 1) {
+            investigatorId.value = Object.keys(game.value.question)[0]
+          } else if (game.value.activeInvestigatorId !== investigatorId.value) {
+            investigatorId.value = Object.keys(game.value.question)[0]
           }
+        }
 
-        });
-    }
-  });
-  socket.value.addEventListener('error', () => {
-    socketError.value = true;
-    if (socket.value) {
-      socket.value.close();
-      socket.value = null;
-    }
-  });
-  socket.value.addEventListener('close', () => {
-    socketError.value = true;
-    socket.value = null;
-    setTimeout(() => connect(), 1000);
-  });
-}
+      });
+  }
+}, [data])
 
 fetchGame(props.gameId, spectate).then(({ game: newGame, investigatorId: newInvestigatorId, multiplayerMode}) => {
   game.value = newGame;
   solo.value = multiplayerMode === "Solo";
   gameLog.value = Object.freeze(newGame.log);
   investigatorId.value = newInvestigatorId;
-  connect();
+  ready.value = true;
 });
 
 async function choose(idx: number) {
@@ -116,8 +104,8 @@ async function update(state: Arkham.Game) {
   game.value = state;
 }
 
-onBeforeRouteLeave(() => { if (socket.value) { socket.value.close(); socket.value = null; } })
-onUnmounted(() => { if (socket.value) { socket.value.close(); socket.value = null; }})
+onBeforeRouteLeave(() => close ())
+onUnmounted(() => close())
 
 const toggleDebug = () => debug.value = !debug.value
 

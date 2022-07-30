@@ -341,4 +341,10 @@ header {
     width: 100%;
   }
 }
+
+header {
+  font-family: Teutonic;
+  font-size: 2em;
+  text-align: center;
+}
 </style>

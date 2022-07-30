@@ -4,24 +4,23 @@ module Main where
 import ClassyPrelude
 
 import Arkham.Asset
-import Arkham.Asset.Types (assetHealth, assetSanity)
+import Arkham.Asset.Types (assetHealth, assetSanity, SomeAssetCard(..))
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card
 import Arkham.EncounterCard
 import Arkham.Enemy
 import Arkham.Enemy.Types
-  (enemyEvade, enemyFight, enemyHealth, enemyHealthDamage, enemySanityDamage)
+  (enemyEvade, enemyFight, enemyHealth, enemyHealthDamage, enemySanityDamage, SomeEnemyCard(..))
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Event.Cards qualified as Events
 import Arkham.Location
-import Arkham.Location.Types (locationRevealClues, locationShroud)
+import Arkham.Location.Types (locationRevealClues, locationShroud, SomeLocationCard(..))
 import Arkham.PlayerCard
 import Arkham.Skill
 import Arkham.Skill.Cards qualified as Skills
 import Arkham.SkillType
 import Arkham.Treachery
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Card.CardCode
-import Arkham.Card.CardDef
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
 import Arkham.Classes.Entity
@@ -381,8 +380,8 @@ runValidations cards = do
           )
 
   -- validate enemies
-  for_ (filterTestEntities $ mapToList allEnemies) $ \(ccode, builder) -> do
-    attrs <- toAttrs . builder <$> getRandom
+  for_ (filterTestEntities $ mapToList allEnemies) $ \(ccode, SomeEnemyCard builder) -> do
+    attrs <- toAttrs . cbCardBuilder builder <$> getRandom
     case lookup ccode cards of
       Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
       Just CardJson {..} -> do
@@ -423,8 +422,8 @@ runValidations cards = do
           (throw $ MissingImplementation (toCardCode def) (cdName def))
 
   -- validate locations
-  for_ (filterTestEntities $ mapToList allLocations) $ \(ccode, builder) -> do
-    attrs <- toAttrs . builder <$> getRandom
+  for_ (filterTestEntities $ mapToList allLocations) $ \(ccode, SomeLocationCard builder) -> do
+    attrs <- toAttrs . cbCardBuilder builder <$> getRandom
     case lookup ccode cards of
       Nothing -> throw $ UnknownCard ccode
       Just CardJson {..} -> do
@@ -446,8 +445,8 @@ runValidations cards = do
           )
 
   -- validate assets
-  for_ (filterTestEntities $ mapToList allAssets) $ \(ccode, builder) -> do
-    attrs <- toAttrs . builder <$> ((, Just "01001") <$> getRandom)
+  for_ (filterTestEntities $ mapToList allAssets) $ \(ccode, SomeAssetCard builder) -> do
+    attrs <- toAttrs . cbCardBuilder builder <$> ((, Just "01001") <$> getRandom)
     case lookup ccode cards of
       Nothing -> unless (ignoreCardCode ccode) (throw $ UnknownCard ccode)
       Just CardJson {..} -> do

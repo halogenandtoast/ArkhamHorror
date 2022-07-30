@@ -10,14 +10,16 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Helpers.EncounterSet
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheUntamedWilds.Story
-import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Token
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheUntamedWilds = TheUntamedWilds ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -62,6 +64,14 @@ instance RunMessage TheUntamedWilds where
         , Treacheries.lowOnSupplies
         , Treacheries.arrowsFromTheTrees
         ]
+      agentsOfYig <- map EncounterCard
+        <$> gatherEncounterSet EncounterSet.AgentsOfYig
+      setAsideCards <- (agentsOfYig <>) <$> traverse
+        genCard
+        [ Locations.ruinsOfEztli
+        , Locations.templeOfTheFang
+        , Locations.overgrownRuins
+        ]
       pushAll
         $ [ story investigatorIds intro
           , SetAgendaDeck
@@ -73,6 +83,7 @@ instance RunMessage TheUntamedWilds where
         msg
         (attrs
         & (decksL . at ExplorationDeck ?~ explorationDeck)
+        & (setAsideCardsL .~ setAsideCards)
         & (actStackL
           . at 1
           ?~ [ Acts.exploringTheRainforest

@@ -863,6 +863,7 @@ library
       Arkham.Helpers.Campaign
       Arkham.Helpers.Card
       Arkham.Helpers.ChaosBag
+      Arkham.Helpers.EncounterSet
       Arkham.Helpers.Enemy
       Arkham.Helpers.Event
       Arkham.Helpers.Investigator

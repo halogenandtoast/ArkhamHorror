@@ -6,6 +6,7 @@ module Arkham.Game.Helpers
 import Arkham.Prelude
 
 import Arkham.Helpers.Ability as X
+import Arkham.Helpers.EncounterSet as X
 import Arkham.Helpers.Log as X
 import Arkham.Helpers.Modifiers as X
 import Arkham.Helpers.Query as X
@@ -26,7 +27,6 @@ import Arkham.Asset.Uses ( useCount )
 import Arkham.Attack
 import Arkham.Card
 import Arkham.Card.Cost
-import Arkham.Card.EncounterCard
 import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.ClassSymbol
@@ -36,8 +36,6 @@ import Arkham.Criteria qualified as Criteria
 import Arkham.DamageEffect
 import Arkham.Deck hiding ( InvestigatorDiscard )
 import Arkham.DefeatedBy
-import Arkham.EncounterCard
-import Arkham.EncounterSet
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Event.Types ( Field (..) )
 import {-# SOURCE #-} Arkham.Game
@@ -69,15 +67,6 @@ import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Control.Monad.Reader ( local )
 import Data.HashSet qualified as HashSet
-
-gatherEncounterSet :: MonadRandom m => EncounterSet -> m [EncounterCard]
-gatherEncounterSet encounterSet = concat <$> for
-  defs
-  \def -> traverse genEncounterCard
-    $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
- where
-  defs =
-    filter ((== Just encounterSet) . cdEncounterSet) $ toList allEncounterCards
 
 cancelToken :: Token -> GameT ()
 cancelToken token = withQueue $ \queue ->

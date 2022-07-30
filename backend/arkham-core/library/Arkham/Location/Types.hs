@@ -75,6 +75,7 @@ data instance Field Location :: Type -> Type where
   LocationCardDef :: Field Location CardDef
   LocationCard :: Field Location Card
   LocationAbilities :: Field Location [Ability]
+  LocationPrintedSymbol :: Field Location LocationSymbol
 
 symbolL :: Lens' LocationAttrs LocationSymbol
 symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }

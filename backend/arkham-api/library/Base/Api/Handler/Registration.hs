@@ -12,8 +12,11 @@ registrationToUser Registration {..} = do
     (TE.encodeUtf8 registrationPassword)
   case mdigest of
     Nothing -> error "could not hash password"
-    Just digest ->
-      pure $ User registrationUsername registrationEmail (TE.decodeUtf8 digest)
+    Just digest -> pure $ User
+      registrationUsername
+      registrationEmail
+      (TE.decodeUtf8 digest)
+      False
 
 postApiV1RegistrationR :: Handler Token
 postApiV1RegistrationR = do

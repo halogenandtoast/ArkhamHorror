@@ -1,6 +1,7 @@
 export interface User {
   username: string;
   email: string;
+  beta: boolean;
 }
 
 export interface Authentication {

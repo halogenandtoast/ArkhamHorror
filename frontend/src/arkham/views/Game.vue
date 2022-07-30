@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useWebSocket } from '@vueuse/core'
+import { useWebSocket, useClipboard } from '@vueuse/core'
 import { withDefaults, ref, provide, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import * as Arkham from '@/arkham/types/Game'
@@ -129,11 +129,8 @@ const debugExport = () => {
   });
 }
 
-const inviteLink = `${window.location.href}/join` // fix-syntax`
-
-const copyInviteLink = () => {
-  navigator.clipboard.writeText(inviteLink);
-}
+const source = ref(`${window.location.href}/join`) // fix-syntax`
+const { copy } = useClipboard({ source })
 </script>
 
 <template>
@@ -149,7 +146,7 @@ const copyInviteLink = () => {
         <div v-if="investigatorId == game.leadInvestigatorId">
           <p>Invite them with this url:</p>
           <div class="invite-link">
-            <input type="text" :value="inviteLink"><button @click.prevent="copyInviteLink"><font-awesome-icon icon="copy" /></button>
+            <input type="text" :value="source"><button @click="copy()"><font-awesome-icon icon="copy" /></button>
           </div>
         </div>
       </div>

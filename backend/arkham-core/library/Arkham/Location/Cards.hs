@@ -1430,15 +1430,19 @@ historicalSocietyReadingRoom = locationWithUnrevealed
   EchoesOfThePast
 
 quietHalls_135 :: CardDef
-quietHalls_135 = location "03135" "Quiet Halls" [ThirdFloor] EchoesOfThePast
+quietHalls_135 = location "03135" "Quiet Halls" [ThirdFloor] Star [Circle] EchoesOfThePast
 
 historicalSocietyHistoricalLibrary_136 :: CardDef
 historicalSocietyHistoricalLibrary_136 = locationWithUnrevealed
   "03136"
   "Historical Society"
   [ThirdFloor]
+  NoSymbol
+  [Star]
   ("Historical Society" <:> "Historical Library")
   [ThirdFloor, Passageway]
+  Squiggle
+  [Star, Triangle]
   EchoesOfThePast
 
 historicalSocietyPeabodysOffice :: CardDef
@@ -1446,8 +1450,12 @@ historicalSocietyPeabodysOffice = locationWithUnrevealed
   "03137"
   "Historical Society"
   [ThirdFloor]
+  NoSymbol
+  [Star]
   ("Historical Society" <:> "Peabody's Office")
   [ThirdFloor, Passageway]
+  Moon
+  [Star]
   EchoesOfThePast
 
 historicalSocietyRecordOffice_138 :: CardDef
@@ -1455,12 +1463,16 @@ historicalSocietyRecordOffice_138 = locationWithUnrevealed
   "03138"
   "Historical Society"
   [ThirdFloor]
+  NoSymbol
+  [Star]
   ("Historical Society" <:> "Record Office")
   [ThirdFloor]
+  Equals
+  [Star]
   EchoesOfThePast
 
 hiddenLibrary :: CardDef
-hiddenLibrary = (location "03139" "Hidden Library" mempty EchoesOfThePast)
+hiddenLibrary = (location "03139" "Hidden Library" mempty NoSymbol [] EchoesOfThePast)
   { cdVictoryPoints = Just 2
   }
 
@@ -1469,6 +1481,8 @@ asylumHallsWesternPatientWing_168 = location
   "03168"
   ("Asylum Halls" <:> "Western Patient Wing")
   [ArkhamAsylum]
+  Circle
+  [Hourglass, Triangle, Diamond]
   TheUnspeakableOath
 
 asylumHallsWesternPatientWing_169 :: CardDef
@@ -1476,6 +1490,8 @@ asylumHallsWesternPatientWing_169 = location
   "03169"
   ("Asylum Halls" <:> "Western Patient Wing")
   [ArkhamAsylum]
+  Circle
+  [Hourglass, Triangle, Diamond]
   TheUnspeakableOath
 
 asylumHallsEasternPatientWing_170 :: CardDef
@@ -1483,6 +1499,8 @@ asylumHallsEasternPatientWing_170 = location
   "03170"
   ("Asylum Halls" <:> "Eastern Patient Wing")
   [ArkhamAsylum]
+  Hourglass
+  [Circle, Heart, Squiggle]
   TheUnspeakableOath
 
 asylumHallsEasternPatientWing_171 :: CardDef
@@ -1490,75 +1508,103 @@ asylumHallsEasternPatientWing_171 = location
   "03171"
   ("Asylum Halls" <:> "Eastern Patient Wing")
   [ArkhamAsylum]
+  Hourglass
+  [Circle, Heart, Squiggle]
   TheUnspeakableOath
 
 kitchen :: CardDef
-kitchen = location "03172" "Kitchen" [ArkhamAsylum] TheUnspeakableOath
+kitchen = location "03172" "Kitchen" [ArkhamAsylum] Square [Triangle] TheUnspeakableOath
 
 messHall :: CardDef
-messHall = (location "03173" "Mess Hall" [ArkhamAsylum] TheUnspeakableOath)
+messHall = (location "03173" "Mess Hall" [ArkhamAsylum] Triangle [Circle, Square] TheUnspeakableOath)
   { cdVictoryPoints = Just 1
   }
 
 infirmary :: CardDef
-infirmary = (location "03174" "Infirmary" [ArkhamAsylum] TheUnspeakableOath)
+infirmary = (location "03174" "Infirmary" [ArkhamAsylum] Heart [Hourglass] TheUnspeakableOath)
   { cdVictoryPoints = Just 1
   }
 
 yard :: CardDef
-yard = location "03175" "Yard" [ArkhamAsylum] TheUnspeakableOath
+yard = location "03175" "Yard" [ArkhamAsylum] Diamond [Circle, Plus] TheUnspeakableOath
 
 garden :: CardDef
-garden = location "03176" "Garden" [ArkhamAsylum] TheUnspeakableOath
+garden = location "03176" "Garden" [ArkhamAsylum] Plus [Diamond] TheUnspeakableOath
 
 basementHall :: CardDef
 basementHall =
-  (location "03177" "Basement Hall" [ArkhamAsylum] TheUnspeakableOath)
+  (location "03177" "Basement Hall" [ArkhamAsylum] Squiggle [Hourglass, Moon] TheUnspeakableOath)
     { cdVictoryPoints = Just 1
     }
 
 patientConfinementDanielsCell :: CardDef
-patientConfinementDanielsCell = location
+patientConfinementDanielsCell = locationWithUnrevealed
   "03178"
+  "Patient Confinement"
+  mempty
+  Moon
+  [Squiggle]
   ("Patient Confinement" <:> "Daniel's Cell")
   mempty
+  Moon
+  [Squiggle]
   TheUnspeakableOath
 
 patientConfinementOccupiedCell :: CardDef
-patientConfinementOccupiedCell = location
+patientConfinementOccupiedCell = locationWithUnrevealed
   "03179"
+  "Patient Confinement"
+  mempty
+  Moon
+  [Squiggle]
   ("Patient Confinement" <:> "Occupied Cell")
   mempty
+  Moon
+  [Squiggle]
   TheUnspeakableOath
 
 patientConfinementDrearyCell :: CardDef
-patientConfinementDrearyCell = location
+patientConfinementDrearyCell = locationWithUnrevealed
   "03180"
+  "Patient Confinement"
+  mempty
+  Moon
+  [Squiggle]
   ("Patient Confinement" <:> "Dreary Cell")
   mempty
+  Moon
+  [Squiggle]
   TheUnspeakableOath
 
 patientConfinementFamiliarCell :: CardDef
-patientConfinementFamiliarCell = location
+patientConfinementFamiliarCell = locationWithUnrevealed
   "03181"
+  "Patient Confinement"
+  mempty
+  Moon
+  [Squiggle]
   ("Patient Confinement" <:> "Familiar Cell")
   mempty
+  Moon
+  [Squiggle]
   TheUnspeakableOath
 
 montparnasse :: CardDef
-montparnasse = location "03208" "Montparnasse" [Paris, Rail] APhantomOfTruth
+montparnasse = location "03208" "Montparnasse" [Paris, Rail] Circle [Heart, Star, Plus] APhantomOfTruth
 
 montmartre209 :: CardDef
-montmartre209 = location "03209" "Montmartre" [Paris, Rail] APhantomOfTruth
+montmartre209 = location "03209" "Montmartre" [Paris, Rail] Square [Diamond, Triangle, Equals, Moon] APhantomOfTruth
 
 montmartre210 :: CardDef
-montmartre210 = location "03210" "Montmartre" [Paris, Rail] APhantomOfTruth
+montmartre210 = location "03210" "Montmartre" [Paris, Rail] Square [Diamond, Triangle, Equals, Moon] APhantomOfTruth
 
 grandGuignol :: CardDef
 grandGuignol = (location
                  "03211"
                  ("Grand Guignol" <:> "Theatre of the Great Puppet")
                  [Paris]
+                 Triangle
+                 [Diamond, Square]
                  APhantomOfTruth
                )
   { cdVictoryPoints = Just 1
@@ -1566,39 +1612,39 @@ grandGuignol = (location
 
 operaGarnier212 :: CardDef
 operaGarnier212 =
-  location "03212" "Opéra Garnier" [Paris, Rail] APhantomOfTruth
+  location "03212" "Opéra Garnier" [Paris, Rail] Diamond [Triangle, Square, Heart] APhantomOfTruth
 
 operaGarnier213 :: CardDef
 operaGarnier213 =
-  location "03213" "Opéra Garnier" [Paris, Rail] APhantomOfTruth
+  location "03213" "Opéra Garnier" [Paris, Rail] Diamond [Triangle, Square, Heart] APhantomOfTruth
 
 gareDOrsay :: CardDef
-gareDOrsay = location "03214" "Gare d'Orsay" [Paris, Rail] APhantomOfTruth
+gareDOrsay = location "03214" "Gare d'Orsay" [Paris, Rail] Heart [Diamond, Circle, Star] APhantomOfTruth
 
 pereLachaiseCemetery :: CardDef
 pereLachaiseCemetery =
-  (location "03215" "Père Lachaise Cemetery" [Paris] APhantomOfTruth)
+  (location "03215" "Père Lachaise Cemetery" [Paris] T [Equals, Moon] APhantomOfTruth)
     { cdVictoryPoints = Just 1
     }
 
 canalSaintMartin :: CardDef
 canalSaintMartin =
-  (location "03216" "Canal Saint-Martin" [Paris] APhantomOfTruth)
+  (location "03216" "Canal Saint-Martin" [Paris] Equals [Square, T, Moon] APhantomOfTruth)
     { cdVictoryPoints = Just 1
     }
 
 leMarais217 :: CardDef
-leMarais217 = location "03217" "Le Marais" [Paris, Rail] APhantomOfTruth
+leMarais217 = location "03217" "Le Marais" [Paris, Rail] Moon [Square, Equals, T, Plus] APhantomOfTruth
 
 leMarais218 :: CardDef
-leMarais218 = location "03218" "Le Marais" [Paris, Rail] APhantomOfTruth
+leMarais218 = location "03218" "Le Marais" [Paris, Rail] Moon [Square, Equals, T, Plus] APhantomOfTruth
 
 notreDame :: CardDef
-notreDame = location "03219" "Notre-Dame" [Paris, Rail] APhantomOfTruth
+notreDame = location "03219" "Notre-Dame" [Paris, Rail] Plus [Circle, Moon, Star] APhantomOfTruth
 
 gardensOfLuxembourg :: CardDef
 gardensOfLuxembourg =
-  (location "03220" "Gardens of Luxembourg" [Paris] APhantomOfTruth)
+  (location "03220" "Gardens of Luxembourg" [Paris] Star [Circle, Heart, Plus] APhantomOfTruth)
     { cdVictoryPoints = Just 1
     }
 
@@ -1607,7 +1653,11 @@ theGateToHell = locationWithUnrevealed
   "03247"
   "Catacombs"
   []
+  NoSymbol
+  []
   "The Gate to Hell"
+  []
+  NoSymbol
   []
   ThePallidMask
 
@@ -1616,7 +1666,11 @@ stoneArchways = (locationWithUnrevealed
                   "03248"
                   "Catacombs"
                   []
+                  NoSymbol
+                  []
                   "Stone Archways"
+                  []
+                  NoSymbol
                   []
                   ThePallidMask
                 )
@@ -1628,7 +1682,11 @@ cryptOfTheSepulchralLamp = locationWithUnrevealed
   "03249"
   "Catacombs"
   []
+  NoSymbol
+  []
   "Crypt of the Sepulchral Lamp"
+  []
+  NoSymbol
   []
   ThePallidMask
 
@@ -1637,7 +1695,11 @@ boneFilledCaverns = (locationWithUnrevealed
                       "03250"
                       "Catacombs"
                       []
+                      NoSymbol
+                      []
                       "Bone-Filled Caverns"
+                      []
+                      NoSymbol
                       []
                       ThePallidMask
                     )
@@ -1650,7 +1712,11 @@ wellOfSouls =
       "03251"
       "Catacombs"
       []
+      NoSymbol
+      []
       "Well of Souls"
+      []
+      NoSymbol
       []
       ThePallidMask
     )
@@ -1662,7 +1728,11 @@ candlelitTunnels = (locationWithUnrevealed
                      "03252"
                      "Catacombs"
                      []
+                     NoSymbol
+                     []
                      "Candlelit Tunnels"
+                     []
+                     NoSymbol
                      []
                      ThePallidMask
                    )
@@ -1674,7 +1744,11 @@ labyrinthOfBones = (locationWithUnrevealed
                      "03253"
                      "Catacombs"
                      []
+                     NoSymbol
+                     []
                      "Labyrinth of Bones"
+                     []
+                     NoSymbol
                      []
                      ThePallidMask
                    )
@@ -1683,7 +1757,7 @@ labyrinthOfBones = (locationWithUnrevealed
 
 narrowShaft :: CardDef
 narrowShaft =
-  (locationWithUnrevealed "03254" "Catacombs" [] "Narrow Shaft" [] ThePallidMask
+  (locationWithUnrevealed "03254" "Catacombs" [] NoSymbol [] "Narrow Shaft" [] NoSymbol [] ThePallidMask
     )
     { cdVictoryPoints = Just 1
     }
@@ -1693,7 +1767,11 @@ shiveringPools = (locationWithUnrevealed
                    "03255"
                    "Catacombs"
                    []
+                   NoSymbol
+                   []
                    "Shivering Pools"
+                   []
+                   NoSymbol
                    []
                    ThePallidMask
                  )
@@ -1705,7 +1783,11 @@ blockedPassage = locationWithUnrevealed
   "03256"
   "Catacombs"
   []
+  NoSymbol
+  []
   "Blocked Passage"
+  []
+  NoSymbol
   []
   ThePallidMask
 
@@ -1714,7 +1796,11 @@ tombOfShadows = (locationWithUnrevealed
                   "03257"
                   "Catacombs"
                   []
+                  NoSymbol
+                  []
                   "Tomb of Shadows"
+                  []
+                  NoSymbol
                   []
                   ThePallidMask
                 )

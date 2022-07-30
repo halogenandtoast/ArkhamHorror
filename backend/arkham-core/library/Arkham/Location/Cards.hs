@@ -2468,13 +2468,16 @@ expeditionCamp = location
   TheUntamedWilds
 
 ruinsOfEztli :: CardDef
-ruinsOfEztli = location
-  "04053"
-  "Ruins of Eztli"
-  [Ancient, Ruins]
-  Hourglass
-  [Triangle, Heart]
-  TheUntamedWilds
+ruinsOfEztli = (location
+                 "04053"
+                 "Ruins of Eztli"
+                 [Ancient, Ruins]
+                 Hourglass
+                 [Triangle, Heart]
+                 TheUntamedWilds
+               )
+  { cdDoubleSided = False
+  }
 
 pathOfThorns :: CardDef
 pathOfThorns = (location

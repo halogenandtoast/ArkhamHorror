@@ -30,7 +30,9 @@ const image = computed(() => {
 
 const imageForCard = (card: Card) => {
   const side = card.contents.isFlipped ? 'b' : ''
-  return `${baseUrl}/img/arkham/cards/${card.contents.art}${side}.jpg`
+  // TODO, send art with cards next to
+  const art = card.contents.art || card.contents.cardCode.replace('c', '')
+  return `${baseUrl}/img/arkham/cards/${art}${side}.jpg`
 }
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))

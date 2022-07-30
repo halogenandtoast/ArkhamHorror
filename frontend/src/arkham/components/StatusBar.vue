@@ -80,7 +80,7 @@ const testResult = computed(() => {
       </template>
     </div>
 
-    <div class="question-label" v-if="question.tag === 'QuestionLabel'">
+    <div class="question-label" v-if="question && question.tag === 'QuestionLabel'">
       <p>{{question.contents[0]}}</p>
       <div class="label-choices">
         <template v-for="(choice, index) in question.contents[1].contents" :key="index">

@@ -592,7 +592,8 @@ instance RunMessage ActiveCost where
             isAction = isActionAbility ability
             action = fromMaybe Action.Ability (abilityAction ability)
             iid = activeCostInvestigator c
-          whenActivateAbilityWindow <- checkWindows
+          whenActivateAbilityWindow <-
+            checkWindows
             [Window Timing.When (Window.ActivateAbility iid ability)]
           afterMsgs <- if isAction
             then do
@@ -601,8 +602,8 @@ instance RunMessage ActiveCost where
               pure [afterWindowMsgs, FinishAction]
             else pure []
           pushAll
-            $ [ whenActivateAbilityWindow
-              , UseCardAbility
+            $ [ whenActivateAbilityWindow | not (isForcedAbility ability)]
+            <> [ UseCardAbility
                 iid
                 (abilitySource ability)
                 (activeCostWindows c)

@@ -6,7 +6,6 @@ module Arkham.Act.Cards.CurtainCall
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Action qualified as Action
@@ -37,15 +36,12 @@ instance HasAbilities CurtainCall where
           (toSource attrs)
         )
         1
-        (Here
-        <> Negate
-             (EnemyCriteria $ EnemyExists $ enemyIs
-               Enemies.theManInThePallidMask
-             )
+        (Here <> Negate
+          (EnemyCriteria $ EnemyExists $ enemyIs Enemies.theManInThePallidMask)
         )
       $ ActionAbility (Just Action.Resign)
       $ ActionCost 1
-    , restrictedAbility
+      , restrictedAbility
         attrs
         2
         (LocationExists
@@ -54,10 +50,12 @@ instance HasAbilities CurtainCall where
         )
       $ ForcedAbility
       $ RoundEnds Timing.When
-    , restrictedAbility attrs 3 AllUndefeatedInvestigatorsResigned
-      $ Objective
-      $ ForcedAbility AnyWindow
-    ]
+      ]
+      <> [ restrictedAbility attrs 3 AllUndefeatedInvestigatorsResigned
+           $ Objective
+           $ ForcedAbility AnyWindow
+         | onSide A attrs
+         ]
 
 
 instance RunMessage CurtainCall where

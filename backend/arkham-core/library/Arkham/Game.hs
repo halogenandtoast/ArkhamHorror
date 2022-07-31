@@ -711,6 +711,8 @@ getInvestigatorsMatching matcher = do
       pure $ selfCount == maximum (ncons selfCount allCounts)
     HasMatchingAsset assetMatcher -> \i -> selectAny
       (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
+    HasMatchingTreachery treacheryMatcher -> \i -> selectAny
+      (treacheryMatcher <> TreacheryInThreatAreaOf (InvestigatorWithId $ toId i))
     InvestigatorWithTreacheryInHand treacheryMatcher -> \i -> selectAny
       (treacheryMatcher <> TreacheryInHandOf (InvestigatorWithId $ toId i))
     HasMatchingEvent eventMatcher -> \i -> selectAny

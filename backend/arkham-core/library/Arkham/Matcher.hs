@@ -107,6 +107,7 @@ data InvestigatorMatcher
   | HasMatchingAsset AssetMatcher
   | HasMatchingEvent EventMatcher
   | HasMatchingSkill SkillMatcher
+  | HasMatchingTreachery TreacheryMatcher
   | MostClues
   | UneliminatedInvestigator
   | ResignedInvestigator

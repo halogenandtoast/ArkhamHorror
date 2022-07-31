@@ -69,6 +69,7 @@ data Trait
   | Exhibit
   | Expert
   | Extradimensional
+  | Eztli
   | Fated
   | Favor
   | Firearm

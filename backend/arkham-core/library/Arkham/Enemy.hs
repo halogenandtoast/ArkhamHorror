@@ -181,6 +181,8 @@ allEnemies = mapFromList $ map
   -- The Forgotten Age
   -- signature
   , SomeEnemyCard serpentsOfYig
+  -- The Untamed Wilds
+  , SomeEnemyCard ichtaca
   -- Agents of Yig
   , SomeEnemyCard broodOfYig
   , SomeEnemyCard serpentFromYoth

@@ -2692,6 +2692,10 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . effectsL %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
+  PutCardOnTopOfDeck _ _ c ->
+    pure $ g & focusedCardsL %~ filter (/= c)
+  PutCardOnBottomOfDeck _ _ c ->
+    pure $ g & focusedCardsL %~ filter (/= c)
   FocusTargets targets -> pure $ g & focusedTargetsL .~ targets
   UnfocusTargets -> pure $ g & focusedTargetsL .~ mempty
   FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens

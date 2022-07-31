@@ -62,29 +62,31 @@ instance RunMessage ExpeditionCamp where
       pushAll
         [ FocusCards viewing
         , SetScenarioDeck ExplorationDeck rest
-        , chooseOne
-          iid
-          [ TargetLabel
-              (CardIdTarget $ toCardId c)
-              [ PutCardOnBottomOfDeck
-                iid
-                (Deck.ScenarioDeckByKey ExplorationDeck)
-                c
-              , FocusCards remaining
-              , chooseOneAtATime
-                iid
-                [ TargetLabel
-                    (CardIdTarget $ toCardId r)
-                    [ PutCardOnTopOfDeck
-                        iid
-                        (Deck.ScenarioDeckByKey ExplorationDeck)
-                        r
+        , Ask iid
+        $ QuestionLabel "Place one card on bottom of exploration deck"
+        $ ChooseOne
+            [ TargetLabel
+                (CardIdTarget $ toCardId c)
+                [ PutCardOnBottomOfDeck
+                  iid
+                  (Deck.ScenarioDeckByKey ExplorationDeck)
+                  c
+                , FocusCards remaining
+                , Ask iid
+                $ QuestionLabel "Place card on top of exploration deck"
+                $ ChooseOneAtATime
+                    [ TargetLabel
+                        (CardIdTarget $ toCardId r)
+                        [ PutCardOnTopOfDeck
+                            iid
+                            (Deck.ScenarioDeckByKey ExplorationDeck)
+                            r
+                        ]
+                    | r <- remaining
                     ]
-                | r <- remaining
                 ]
-              ]
-          | (c, remaining) <- cardPairs
-          ]
+            | (c, remaining) <- cardPairs
+            ]
         , UnfocusCards
         ]
       pure l

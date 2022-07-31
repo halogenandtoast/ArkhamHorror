@@ -8,7 +8,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.CommitRestriction
-import Arkham.EncounterSet hiding (Byakhee, Dunwich, Poison)
+import Arkham.EncounterSet hiding ( Byakhee, Dunwich, Poison )
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name
@@ -147,6 +147,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , corrosion
   , crashingFloods
   , cryptChill
+  , curseOfYig
   , cursedLuck
   , cursedSwamp
   , danceOfTheYellowKing
@@ -189,6 +190,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , oozeAndFilth
   , overgrowth
   , passageIntoTheVeil
+  , poisoned
   , possessionMurderous
   , possessionTorturous
   , possessionTraitorous
@@ -237,10 +239,10 @@ allEncounterTreacheryCards = mapFromList $ map
   , vortexOfTime
   , wallsClosingIn
   , watchersGaze
-  , whispersInYourHeadDismay
-  , whispersInYourHeadDread
   , whispersInYourHeadAnxiety
+  , whispersInYourHeadDismay
   , whispersInYourHeadDoubt
+  , whispersInYourHeadDread
   , worldsMerge
   , wormhole
   ]
@@ -803,7 +805,8 @@ eyesInTheWalls = (treachery "03260" "Eyes in the Walls" ThePallidMask 3)
   }
 
 theShadowBehindYou :: CardDef
-theShadowBehindYou = (treachery "03261" "The Shadow Behind You" ThePallidMask 3)
+theShadowBehindYou = (treachery "03261" "The Shadow Behind You" ThePallidMask 3
+                     )
   { cdCardTraits = singleton Terror
   }
 
@@ -839,12 +842,13 @@ theFinalAct = (treachery "03339" "The Final Act" DimCarcosa 1)
   }
 
 possessionTraitorous :: CardDef
-possessionTraitorous = (treachery "03340" "Possession (Traitorous)" DimCarcosa 1)
-  { cdCardTraits = setFromList [Hex, Terror]
-  , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
-  , cdCardInHandEffects = True
-  , cdCommitRestrictions = [CommittableTreachery]
-  }
+possessionTraitorous =
+  (treachery "03340" "Possession (Traitorous)" DimCarcosa 1)
+    { cdCardTraits = setFromList [Hex, Terror]
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    , cdCardInHandEffects = True
+    , cdCommitRestrictions = [CommittableTreachery]
+    }
 
 possessionTorturous :: CardDef
 possessionTorturous = (treachery "03341" "Possession (Torturous)" DimCarcosa 1)
@@ -861,19 +865,16 @@ possessionMurderous = (treachery "03342" "Possession (Murderous)" DimCarcosa 1)
   }
 
 boughtInBlood :: CardDef
-boughtInBlood = (weakness "04007" "Bought in Blood")
-  { cdCardTraits = singleton Flaw
-  }
+boughtInBlood =
+  (weakness "04007" "Bought in Blood") { cdCardTraits = singleton Flaw }
 
 callOfTheUnknown :: CardDef
-callOfTheUnknown = (weakness "04009" "Call of the Unknown")
-  { cdCardTraits = singleton Task
-  }
+callOfTheUnknown =
+  (weakness "04009" "Call of the Unknown") { cdCardTraits = singleton Task }
 
 caughtRedHanded :: CardDef
-caughtRedHanded = (weakness "04012" "Caught Red-Handed")
-  { cdCardTraits = singleton Blunder
-  }
+caughtRedHanded =
+  (weakness "04012" "Caught Red-Handed") { cdCardTraits = singleton Blunder }
 
 voiceOfTheMessenger :: CardDef
 voiceOfTheMessenger = (weakness "04016" "Voice of the Messenger")
@@ -881,24 +882,19 @@ voiceOfTheMessenger = (weakness "04016" "Voice of the Messenger")
   }
 
 thePriceOfFailure :: CardDef
-thePriceOfFailure = (weakness "04039" "The Price of Failure")
-  { cdCardTraits = singleton Pact
-  }
+thePriceOfFailure =
+  (weakness "04039" "The Price of Failure") { cdCardTraits = singleton Pact }
 
 doomed :: CardDef
-doomed = (basicWeakness "04040" "Doomed")
-  { cdCardTraits = singleton Curse
-  }
+doomed = (basicWeakness "04040" "Doomed") { cdCardTraits = singleton Curse }
 
 accursedFate :: CardDef
-accursedFate = (weakness "04041" "Accursed Fate")
-  { cdCardTraits = singleton Curse
-  }
+accursedFate =
+  (weakness "04041" "Accursed Fate") { cdCardTraits = singleton Curse }
 
 theBellTolls :: CardDef
-theBellTolls = (weakness "04042" "The Bell Tolls")
-  { cdCardTraits = singleton Curse
-  }
+theBellTolls =
+  (weakness "04042" "The Bell Tolls") { cdCardTraits = singleton Curse }
 
 overgrowth :: CardDef
 overgrowth = (treachery "04076" "Overgrowth" Rainforest 2)
@@ -921,10 +917,23 @@ lowOnSupplies = (treachery "04082" "Low on Supplies" Expedition 2)
   , cdKeywords = singleton Keyword.Peril
   }
 
-arrowsFromTheTrees :: CardDef
-arrowsFromTheTrees = (treachery "04087" "Arrows from the Trees" GuardiansOfTime 2)
-  { cdCardTraits = singleton Scheme
+curseOfYig :: CardDef
+curseOfYig = (treachery "04085" "Curse of Yig" AgentsOfYig 2)
+  { cdCardTraits = singleton Curse
   }
+
+arrowsFromTheTrees :: CardDef
+arrowsFromTheTrees =
+  (treachery "04087" "Arrows from the Trees" GuardiansOfTime 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+poisoned :: CardDef
+poisoned =
+  (treachery "04102" "Posioned" EncounterSet.Poison 4)
+    { cdCardTraits = singleton Poison
+    , cdPermanent = True
+    }
 
 theHarbinger :: CardDef
 theHarbinger = (weakness "08006" "The Harbinger")
@@ -964,9 +973,8 @@ maskOfUmordhoth = (treachery "50043" "Mask of Umôrdhoth" TheDevourersCult 2)
   }
 
 selfDestructive :: CardDef
-selfDestructive = (weakness "60104" "Self-Destructive")
-  { cdCardTraits = singleton Flaw
-  }
+selfDestructive =
+  (weakness "60104" "Self-Destructive") { cdCardTraits = singleton Flaw }
 
 calledByTheMists :: CardDef
 calledByTheMists = (weakness "60503" "Called by the Mists")

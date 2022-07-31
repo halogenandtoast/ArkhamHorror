@@ -222,8 +222,12 @@ allTreacheries = mapFromList $ map
   -- Expedition
   , SomeTreacheryCard lostInTheWilds
   , SomeTreacheryCard lowOnSupplies
+  -- Agents of Yig
+  , SomeTreacheryCard curseOfYig
   -- Guardians of Time
   , SomeTreacheryCard arrowsFromTheTrees
+  -- Poison
+  , SomeTreacheryCard poisoned
   -- Edge of the Earth
   -- signature
   , SomeTreacheryCard theHarbinger

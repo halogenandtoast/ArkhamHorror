@@ -238,8 +238,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         $ "Invalid scenario deck key "
         <> show key
         <> ", could not find deck in scenario"
-  SetScenarioDeck key cards ->
-    pure $ a & (decksL . at key ?~ cards)
+  SetScenarioDeck key cards -> pure $ a & (decksL . at key ?~ cards)
   AddCardToScenarioDeck key card -> case lookup key scenarioDecks of
     Just cards -> pure $ a & (decksL . at key ?~ card : cards)
     _ ->
@@ -257,29 +256,29 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         msgs <- windows [Window.ChosenRandomLocation randomLocationId]
         a <$ pushAll (msgs <> [ChosenRandomLocation target randomLocationId])
   PlaceLocation card -> pure $ a & setAsideCardsL %~ delete card
-  PutCardOnTopOfDeck _ Deck.EncounterDeck card ->
-    case card of
-      EncounterCard ec -> do
-        let encounterDeck = withDeck (ec :) scenarioEncounterDeck
-        pure
-          $ a
-          & (setAsideCardsL %~ deleteFirstMatch (== card))
-          & (encounterDeckL .~ encounterDeck)
-      PlayerCard _ -> error "can not place player card on top of encounter deck"
-  PutCardOnBottomOfDeck _ Deck.EncounterDeck card ->
-    case card of
-      EncounterCard ec -> do
-        let encounterDeck = withDeck (<> [ec]) scenarioEncounterDeck
-        pure
-          $ a
-          & (setAsideCardsL %~ deleteFirstMatch (== card))
-          & (encounterDeckL .~ encounterDeck)
-      PlayerCard _ -> error "can not place player card on bottom of encounter deck"
+  CreateWeaknessInThreatArea card _ -> pure $ a & setAsideCardsL %~ delete card
+  PutCardOnTopOfDeck _ Deck.EncounterDeck card -> case card of
+    EncounterCard ec -> do
+      let encounterDeck = withDeck (ec :) scenarioEncounterDeck
+      pure
+        $ a
+        & (setAsideCardsL %~ deleteFirstMatch (== card))
+        & (encounterDeckL .~ encounterDeck)
+    PlayerCard _ -> error "can not place player card on top of encounter deck"
+  PutCardOnBottomOfDeck _ Deck.EncounterDeck card -> case card of
+    EncounterCard ec -> do
+      let encounterDeck = withDeck (<> [ec]) scenarioEncounterDeck
+      pure
+        $ a
+        & (setAsideCardsL %~ deleteFirstMatch (== card))
+        & (encounterDeckL .~ encounterDeck)
+    PlayerCard _ ->
+      error "can not place player card on bottom of encounter deck"
   PutCardOnTopOfDeck _ (Deck.ScenarioDeckByKey deckKey) card ->
     pure
       $ a
       & (setAsideCardsL %~ deleteFirstMatch (== card))
-      & (decksL . at deckKey %~ Just . maybe [card] (card : ))
+      & (decksL . at deckKey %~ Just . maybe [card] (card :))
   PutCardOnBottomOfDeck _ (Deck.ScenarioDeckByKey deckKey) card ->
     pure
       $ a
@@ -460,13 +459,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & resignedCardCodesL %~ (cardCode :)
   RemoveFromEncounterDiscard ec -> pure $ a & discardL %~ filter (/= ec)
   ShuffleEncounterDiscardBackIn -> do
-    encounterDeck <- withDeckM (shuffleM . (<> scenarioDiscard)) scenarioEncounterDeck
+    encounterDeck <- withDeckM
+      (shuffleM . (<> scenarioDiscard))
+      scenarioEncounterDeck
     pure $ a & encounterDeckL .~ encounterDeck & discardL .~ mempty
   ShuffleAllInEncounterDiscardBackIn cardCode -> do
     let
       (toShuffleBackIn, discard) =
         partition ((== cardCode) . toCardCode) scenarioDiscard
-    encounterDeck <- withDeckM (shuffleM . (<> toShuffleBackIn)) scenarioEncounterDeck
+    encounterDeck <- withDeckM
+      (shuffleM . (<> toShuffleBackIn))
+      scenarioEncounterDeck
     pure $ a & encounterDeckL .~ encounterDeck & discardL .~ discard
   ShuffleBackIntoEncounterDeck (EnemyTarget eid) -> do
     card <- field EnemyCard eid

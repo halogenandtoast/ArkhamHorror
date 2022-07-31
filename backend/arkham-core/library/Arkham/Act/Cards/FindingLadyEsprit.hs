@@ -17,7 +17,6 @@ import Arkham.Classes
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Helpers.EncounterSet
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message

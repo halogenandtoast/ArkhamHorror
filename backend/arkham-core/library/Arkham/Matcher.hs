@@ -503,6 +503,9 @@ instance Monoid SkillMatcher where
 treacheryIs :: HasCardCode a => a -> TreacheryMatcher
 treacheryIs = TreacheryIs . toCardCode
 
+treacheryInThreatAreaOf :: InvestigatorId -> TreacheryMatcher
+treacheryInThreatAreaOf = TreacheryInThreatAreaOf . InvestigatorWithId
+
 data TreacheryMatcher
   = TreacheryWithTitle Text
   | TreacheryWithFullTitle Text Text

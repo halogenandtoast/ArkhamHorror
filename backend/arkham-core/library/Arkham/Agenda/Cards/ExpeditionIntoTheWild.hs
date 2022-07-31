@@ -66,9 +66,10 @@ instance RunMessage ExpeditionIntoTheWild where
             ]
         (x : xs) -> do
           let
-            msg' = if cdCardType (toCardDef x) == LocationType
-              then PlaceLocation x
-              else DrewTreachery iid x
+            msgs = if cdCardType (toCardDef x) == LocationType
+              then
+                [PlaceLocation x, MoveTo (toSource attrs) iid (toLocationId x)]
+              else [DrewTreachery iid x]
           deck' <- if null notMatched
             then pure xs
             else shuffleM (xs <> notMatched)
@@ -78,7 +79,7 @@ instance RunMessage ExpeditionIntoTheWild where
               iid
               [ TargetLabel
                   (CardIdTarget $ toCardId x)
-                  [UnfocusCards, SetScenarioDeck ExplorationDeck deck', msg']
+                  (UnfocusCards : SetScenarioDeck ExplorationDeck deck' : msgs)
               ]
             ]
       pure a

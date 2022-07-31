@@ -275,6 +275,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           & (setAsideCardsL %~ deleteFirstMatch (== card))
           & (encounterDeckL .~ encounterDeck)
       PlayerCard _ -> error "can not place player card on bottom of encounter deck"
+  PutCardOnTopOfDeck _ (Deck.ScenarioDeckByKey deckKey) card ->
+    pure
+      $ a
+      & (setAsideCardsL %~ deleteFirstMatch (== card))
+      & (decksL . at deckKey %~ Just . maybe [card] (card : ))
+  PutCardOnBottomOfDeck _ (Deck.ScenarioDeckByKey deckKey) card ->
+    pure
+      $ a
+      & (setAsideCardsL %~ deleteFirstMatch (== card))
+      & (decksL . at deckKey %~ Just . maybe [card] (<> [card]))
   AddToEncounterDeck card -> do
     encounterDeck <- withDeckM (shuffleM . (card :)) scenarioEncounterDeck
     pure

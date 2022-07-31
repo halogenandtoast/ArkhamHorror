@@ -14,12 +14,15 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.EncounterSet
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Scenario
 import Arkham.Location.Types
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Deck
+import Arkham.Scenario.Types
 import Arkham.Target
 
 newtype ExpeditionIntoTheWild = ExpeditionIntoTheWild AgendaAttrs
@@ -81,8 +84,13 @@ instance RunMessage ExpeditionIntoTheWild where
             ]
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+      setAsideAgentsOfYig <-
+        mapMaybe (preview _EncounterCard) <$> scenarioFieldMap
+          ScenarioSetAsideCards
+          (filter ((== Just AgentsOfYig) . cdEncounterSet . toCardDef))
       a <$ pushAll
         [ ShuffleEncounterDiscardBackIn
+        , ShuffleIntoEncounterDeck setAsideAgentsOfYig
         , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         ]
     _ -> ExpeditionIntoTheWild <$> runMessage msg attrs

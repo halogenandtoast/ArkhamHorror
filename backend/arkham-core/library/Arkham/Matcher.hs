@@ -710,6 +710,11 @@ data WindowMatcher
   | CommittedCards Timing Who CardListMatcher
   | CommittedCard Timing Who CardMatcher
   | ActivateAbility Timing Who AbilityMatcher
+  | Explored Timing Who ExploreMatcher
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data ExploreMatcher = SuccessfulExplore | FailedExplore
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

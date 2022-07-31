@@ -27,6 +27,7 @@ act cardCode name stage encounterSet = CardDef
   , cdActions = []
   , cdRevelation = False
   , cdVictoryPoints = Nothing
+  , cdVengeancePoints = Nothing
   , cdCriteria = mempty
   , cdOverrideActionPlayableIfCriteriaMet = False
   , cdCommitRestrictions = mempty

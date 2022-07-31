@@ -83,6 +83,6 @@ instance RunMessage ExpeditionIntoTheWild where
               ]
             ]
       pure a
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->
-      a <$ pushAll [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+      a <$ pushAll [ShuffleEncounterDiscardBackIn, AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
     _ -> ExpeditionIntoTheWild <$> runMessage msg attrs

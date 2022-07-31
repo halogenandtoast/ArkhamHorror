@@ -37,6 +37,7 @@ event cardCode name cost classSymbol = CardDef
   , cdActions = []
   , cdRevelation = False
   , cdVictoryPoints = Nothing
+  , cdVengeancePoints = Nothing
   , cdCriteria = Nothing
   , cdOverrideActionPlayableIfCriteriaMet = False
   , cdCommitRestrictions = mempty

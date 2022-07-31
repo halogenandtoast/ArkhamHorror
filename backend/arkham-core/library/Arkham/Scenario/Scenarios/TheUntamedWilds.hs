@@ -12,6 +12,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.EncounterSet
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -88,6 +89,7 @@ instance RunMessage TheUntamedWilds where
         [ Locations.ruinsOfEztli
         , Locations.templeOfTheFang
         , Locations.overgrownRuins
+        , Enemies.ichtaca
         , Treacheries.poisoned
         , Treacheries.poisoned
         , Treacheries.poisoned

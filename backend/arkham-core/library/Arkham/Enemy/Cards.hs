@@ -136,6 +136,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , hermanCollins
   , huntingHorror
   , huntingNightgaunt
+  , ichtaca
   , icyGhoul
   , interstellarTraveler
   , ishimaruHaruko
@@ -820,6 +821,13 @@ serpentsOfYig = (weakness "04014" "Serpents of Yig")
   { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
   , cdKeywords = singleton Keyword.Hunter
   , cdRevelation = True
+  }
+
+ichtaca :: CardDef
+ichtaca = (enemy "04052" ("Ichtaca" <:> "Keeper of the Eztli") TheUntamedWilds 1)
+  { cdCardTraits = setFromList [Humanoid, Eztli, Elite]
+  , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
+  , cdVictoryPoints = Just 1
   }
 
 broodOfYig :: CardDef

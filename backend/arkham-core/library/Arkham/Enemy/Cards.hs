@@ -101,6 +101,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , beastOfAldebaran
   , billyCooper
   , bogGator
+  , broodOfYig
   , broodOfYogSothoth
   , carnevaleSentinel
   , catacombsDocent
@@ -162,6 +163,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , screechingByakhee
   , sebastienMoreau
   , seekerOfCarcosa
+  , serpentFromYoth
   , servantOfManyMouths
   , servantOfTheLurker
   , sethBishop
@@ -818,6 +820,18 @@ serpentsOfYig = (weakness "04014" "Serpents of Yig")
   { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
   , cdKeywords = singleton Keyword.Hunter
   , cdRevelation = True
+  }
+
+broodOfYig :: CardDef
+broodOfYig = (enemy "04083" "Brood of Yig" AgentsOfYig 3)
+  { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
+  , cdKeywords = singleton Keyword.Hunter
+  }
+
+serpentFromYoth :: CardDef
+serpentFromYoth = (enemy "04084" "Serpent from Yoth" AgentsOfYig 1)
+  { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
+  , cdVictoryPoints = Just 1
   }
 
 corpseHungryGhoul :: CardDef

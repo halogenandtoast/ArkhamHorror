@@ -181,6 +181,9 @@ allEnemies = mapFromList $ map
   -- The Forgotten Age
   -- signature
   , SomeEnemyCard serpentsOfYig
+  -- Agents of Yig
+  , SomeEnemyCard broodOfYig
+  , SomeEnemyCard serpentFromYoth
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

@@ -9,18 +9,17 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Scenario
 import Arkham.Location.Types
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Types
 import Arkham.Target
 
 newtype ExpeditionIntoTheWild = ExpeditionIntoTheWild AgendaAttrs
@@ -41,9 +40,7 @@ instance HasAbilities ExpeditionIntoTheWild where
 instance RunMessage ExpeditionIntoTheWild where
   runMessage msg a@(ExpeditionIntoTheWild attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      explorationDeck <- scenarioFieldMap
-        ScenarioDecks
-        (findWithDefault (error "missing deck") ExplorationDeck)
+      explorationDeck <- getExplorationDeck
       locationSymbols <-
         fieldMap LocationCard (cdLocationRevealedConnections . toCardDef)
           =<< getJustLocation iid
@@ -84,5 +81,8 @@ instance RunMessage ExpeditionIntoTheWild where
             ]
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      a <$ pushAll [ShuffleEncounterDiscardBackIn, AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      a <$ pushAll
+        [ ShuffleEncounterDiscardBackIn
+        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+        ]
     _ -> ExpeditionIntoTheWild <$> runMessage msg attrs

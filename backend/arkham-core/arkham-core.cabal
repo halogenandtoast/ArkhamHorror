@@ -699,6 +699,7 @@ library
       Arkham.Enemy.Helpers
       Arkham.Enemy.Runner
       Arkham.Enemy.Types
+      Arkham.Enemy.Types.Attrs
       Arkham.Entities
       Arkham.Event
       Arkham.Event.Cards
@@ -1456,6 +1457,7 @@ library
       Arkham.Treachery.Cards.VastExpanse
       Arkham.Treachery.Cards.VaultOfEarthlyDemise
       Arkham.Treachery.Cards.VisionsOfFuturesPast
+      Arkham.Treachery.Cards.VoiceOfTheJungle
       Arkham.Treachery.Cards.VoiceOfTheMessenger
       Arkham.Treachery.Cards.VortexOfTime
       Arkham.Treachery.Cards.WallsClosingIn

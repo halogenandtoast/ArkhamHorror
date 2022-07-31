@@ -2527,6 +2527,7 @@ serpentsHaven = (location
                   Rainforest
                 )
   { cdDoubleSided = False
+  , cdVictoryPoints = Just 1
   }
 
 circuitousTrail :: CardDef
@@ -2539,6 +2540,7 @@ circuitousTrail = (location
                     Rainforest
                   )
   { cdDoubleSided = False
+  , cdVictoryPoints = Just 1
   }
 
 templeOfTheFang :: CardDef
@@ -2551,6 +2553,7 @@ templeOfTheFang = (location
                     Rainforest
                   )
   { cdDoubleSided = False
+  , cdVictoryPoints = Just 2
   }
 
 overgrownRuins :: CardDef
@@ -2563,6 +2566,7 @@ overgrownRuins = (location
                    Rainforest
                  )
   { cdDoubleSided = False
+  , cdVictoryPoints = Just 2
   }
 
 studyAberrantGateway :: CardDef

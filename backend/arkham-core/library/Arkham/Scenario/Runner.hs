@@ -619,4 +619,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     if isStandalone
       then pure $ a & standaloneCampaignLogL . recorded %~ insertSet key
       else pure a
+  ShuffleScenarioDeck deckKey -> do
+    deck' <- shuffleM $ fromMaybe [] (view (decksL . at deckKey) a)
+    pure $ a & decksL . at deckKey ?~ deck'
   _ -> pure a

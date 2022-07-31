@@ -4,6 +4,7 @@ module Arkham.Target (
 
 import Arkham.Prelude
 
+import {-# SOURCE #-} Arkham.Ability
 import Arkham.Card
 import Arkham.Card.Id
 import Arkham.Id
@@ -51,6 +52,7 @@ data Target
   | StoryTarget CardCode
   | AgendaMatcherTarget AgendaMatcher
   | CampaignTarget
+  | AbilityTarget InvestigatorId Ability
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

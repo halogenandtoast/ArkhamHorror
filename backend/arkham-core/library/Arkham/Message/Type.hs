@@ -14,5 +14,6 @@ data MessageType
     | InvestigatorDefeatedMessage
     | DamageMessage
     | DrawEncounterCardMessage
+    | ExploreMessage
     deriving stock (Eq, Show, Generic)
     deriving anyclass (ToJSON, FromJSON)

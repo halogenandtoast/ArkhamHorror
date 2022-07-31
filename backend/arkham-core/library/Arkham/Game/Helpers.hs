@@ -169,10 +169,14 @@ getCanPerformAbility !iid !source !window !ability = do
 -- can perform an ability means you can afford it
 -- it is in the right window
 -- passes restrictions
+  abilityModifiers <- getModifiers source (AbilityTarget iid ability)
   let
     mAction = case abilityType ability of
       ActionAbilityWithBefore _ mBeforeAction _ -> mBeforeAction
       _ -> abilityAction ability
+    additionalCosts = flip mapMaybe abilityModifiers $ \case
+      AdditionalCost x -> Just x
+      _ -> Nothing
     cost = abilityCost ability
   andM
     [ getCanAffordCost iid (abilitySource ability) mAction [window] cost
@@ -182,6 +186,9 @@ getCanPerformAbility !iid !source !window !ability = do
       (pure True)
       (passesCriteria iid (abilitySource ability) [window])
       (abilityCriteria ability)
+    , allM
+      (getCanAffordCost iid (abilitySource ability) mAction [window])
+      additionalCosts
     ]
 
 meetsActionRestrictions
@@ -219,7 +226,8 @@ meetsActionRestrictions iid _ Ability {..} = go abilityType
           Action.Play -> pure True
           Action.Resign -> pure True
           Action.Resource -> pure True
-          Action.Explore -> pure True
+          Action.Explore ->
+            iid <=~> Matcher.InvestigatorWithoutModifier CannotExplore
     ActionAbility Nothing _ -> matchWho iid iid Matcher.TurnInvestigator
     FastAbility _ -> pure True
     ReactionAbility _ _ -> pure True
@@ -559,6 +567,7 @@ targetToSource = \case
   StoryTarget code -> StorySource code
   AgendaMatcherTarget _ -> error "can not convert"
   CampaignTarget -> error "can not convert"
+  AbilityTarget _ _ -> error "can not convert"
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -1721,6 +1730,10 @@ windowMatches iid source window' = \case
         Matcher.FailedExplore -> result == Window.Failure
       ]
     _ -> pure False
+  Matcher.AttemptExplore timingMatcher whoMatcher -> case window' of
+    Window t (Window.AttemptExplore who) | timingMatcher == t ->
+      matchWho iid who whoMatcher
+    _ -> pure False
 
 matchWho
   :: (Monad m, HasGame m)
@@ -1788,6 +1801,7 @@ targetTraits = \case
   InvestigationTarget _ _ -> pure mempty
   AgendaMatcherTarget _ -> pure mempty
   CampaignTarget -> pure mempty
+  AbilityTarget _ _ -> pure mempty
 
 sourceTraits
   :: (HasCallStack, Monad m, HasGame m) => Source -> m (HashSet Trait)
@@ -2172,6 +2186,7 @@ agendaMatches !agendaId !mtchr = member agendaId <$> select mtchr
 actionMatches :: Monad m => Action -> Matcher.ActionMatcher -> m Bool
 actionMatches _ Matcher.AnyAction = pure True
 actionMatches a (Matcher.ActionIs a') = pure $ a == a'
+actionMatches a (Matcher.ActionOneOf as) = anyM (actionMatches a) as
 
 skillTypeMatches :: SkillType -> Matcher.SkillTypeMatcher -> Bool
 skillTypeMatches st = \case

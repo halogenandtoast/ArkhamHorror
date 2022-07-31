@@ -5,13 +5,23 @@ module Arkham.Location.Cards.SerpentsHaven
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Criteria
+import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Target
+import Arkham.Timing qualified as Timing
+import Arkham.Trait
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SerpentsHaven = SerpentsHaven LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 serpentsHaven :: LocationCard SerpentsHaven
@@ -23,10 +33,31 @@ serpentsHaven = location
   Triangle
   [Squiggle, Square, Diamond, Hourglass]
 
+instance HasModifiersFor SerpentsHaven where
+  getModifiersFor _ (EnemyTarget eid) (SerpentsHaven a) = do
+    modified <- eid <=~> (enemyAt (toId a) <> EnemyWithTrait Serpent)
+    pure $ toModifiers a [ EnemyFight 1 | modified ]
+  getModifiersFor _ _ _ = pure []
+
 instance HasAbilities SerpentsHaven where
-  getAbilities (SerpentsHaven attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (SerpentsHaven attrs) = withBaseAbilities
+    attrs
+    [ restrictedAbility
+        attrs
+        1
+        (Here <> TreacheryExists
+          (treacheryIs Treacheries.poisoned <> TreacheryInThreatAreaOf You)
+        )
+      $ ForcedAbility
+      $ PerformAction
+          Timing.After
+          You
+          (ActionOneOf [ActionIs Action.Investigate, ActionIs Action.Explore])
+    ]
 
 instance RunMessage SerpentsHaven where
-  runMessage msg (SerpentsHaven attrs) =
-    SerpentsHaven <$> runMessage msg attrs
+  runMessage msg l@(SerpentsHaven attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ InvestigatorAssignDamage iid source DamageAny 1 0
+      pure l
+    _ -> SerpentsHaven <$> runMessage msg attrs

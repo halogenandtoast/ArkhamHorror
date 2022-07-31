@@ -34,7 +34,7 @@ import Control.Monad.Extra as X
 import Control.Monad.Random as X ( MonadRandom )
 import Control.Monad.Random.Class as X ( getRandom, getRandomR, getRandoms )
 import Control.Monad.Random.Strict as X ( Random )
-import Data.Aeson as X hiding (Result(..))
+import Data.Aeson as X hiding ( Result (..) )
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Text
 import Data.Char qualified as C
@@ -216,3 +216,13 @@ frequencies :: Hashable a => [a] -> HashMap a Int
 frequencies as = HashMap.map getSum $ foldr (unionWith (<>)) mempty $ map
   (`HashMap.singleton` (Sum 1))
   as
+
+breakM :: Monad m => (a -> m Bool) -> [a] -> m ([a], [a])
+breakM _ xs@[] = pure (xs, xs)
+breakM p xs@(x : xs') = do
+  b <- p x
+  if b
+    then pure ([], xs)
+    else do
+      (ys, zs) <- breakM p xs'
+      pure (x : ys, zs)

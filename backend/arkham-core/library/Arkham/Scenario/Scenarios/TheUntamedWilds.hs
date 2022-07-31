@@ -16,14 +16,18 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.EncounterSet
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.Window
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheUntamedWilds.Story
 import Arkham.Target
+import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window (Window(..))
+import Arkham.Window qualified as Window
 
 newtype TheUntamedWilds = TheUntamedWilds ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -128,4 +132,11 @@ instance RunMessage TheUntamedWilds where
           push $ CreateWeaknessInThreatArea poisoned iid
         pure s
       _ -> pure s
+    Explore iid _ _ -> do
+      windowMsg <- checkWindows [Window Timing.When $ Window.AttemptExplore iid]
+      pushAll [windowMsg, Do msg]
+      pure s
+    Do (Explore iid source locationMatcher) -> do
+      explore iid source locationMatcher
+      pure s
     _ -> TheUntamedWilds <$> runMessage msg attrs

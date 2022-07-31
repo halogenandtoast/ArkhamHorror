@@ -2,15 +2,21 @@ module Arkham.Helpers.Location where
 
 import Arkham.Prelude
 
+import Arkham.Card.CardDef
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
-import Arkham.Location.Types ( Field (..) )
 import Arkham.Id
+import Arkham.Location.Types ( Field (..) )
+import Arkham.LocationSymbol
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+
+toConnections :: (HasGame m, Monad m) => LocationId -> m [LocationSymbol]
+toConnections lid =
+  fieldMap LocationCard (cdLocationRevealedConnections . toCardDef) lid
 
 getConnectedMatcher :: (Monad m, HasGame m) => LocationId -> m LocationMatcher
 getConnectedMatcher l = do

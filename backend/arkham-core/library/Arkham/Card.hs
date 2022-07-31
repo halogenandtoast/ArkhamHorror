@@ -11,11 +11,10 @@ import Arkham.Card.CardType as X
 import Arkham.Card.Class as X
 import Arkham.Card.Cost
 import Arkham.Card.EncounterCard
-import Arkham.Card.EncounterCard as X (EncounterCard(..))
+import Arkham.Card.EncounterCard as X ( EncounterCard (..) )
 import Arkham.Card.Id
 import Arkham.Card.PlayerCard
-import Arkham.Card.PlayerCard as X
-  (DiscardedPlayerCard(..), PlayerCard(..))
+import Arkham.Card.PlayerCard as X ( DiscardedPlayerCard (..), PlayerCard (..) )
 import Arkham.Classes.GameLogger
 import Arkham.EncounterCard
 import Arkham.Id
@@ -24,7 +23,7 @@ import Arkham.Name
 import Arkham.PlayerCard
 import Arkham.SkillType
 import Arkham.Trait
-import qualified Data.Text as T
+import Data.Text qualified as T
 
 lookupCard :: CardCode -> CardId -> Card
 lookupCard cardCode cardId =
@@ -97,6 +96,10 @@ cardMatch a = \case
   WeaknessCard -> isJust . cdCardSubType $ toCardDef a
   NonExceptional -> not . cdExceptional $ toCardDef a
   NotCard m -> not (cardMatch a m)
+  CardWithPrintedLocationSymbol sym ->
+    (== Just sym) . cdLocationRevealedSymbol $ toCardDef a
+  CardWithPrintedLocationConnection sym ->
+    elem sym . cdLocationRevealedConnections $ toCardDef a
 
 instance IsCard PlayerCard where
   toCardId = pcId

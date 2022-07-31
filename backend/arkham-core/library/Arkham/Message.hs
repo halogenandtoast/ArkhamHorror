@@ -158,7 +158,6 @@ data Message
     AddSlot InvestigatorId SlotType Slot
   | -- Adding Cards to Encounter Deck
     AddToEncounterDeck EncounterCard
-  | AddToTopOfEncounterDeck EncounterCard
   | -- Scenario Deck Messages
     AddToScenarioDeck ScenarioDeckKey Target
   | AddCardToScenarioDeck ScenarioDeckKey Card
@@ -457,17 +456,14 @@ data Message
   | PlacedLocation Name CardCode LocationId
   | PlacedLocationDirection LocationId Direction LocationId
   | PlayCard InvestigatorId Card (Maybe Target) [Window] Bool
-  -- | PlayFastEvent InvestigatorId CardId (Maybe Target) [Window]
   | PlayedCard InvestigatorId Card
   | ResolvedCard InvestigatorId Card
   | PlayerWindow InvestigatorId [Message] Bool
   | PutCardIntoPlay InvestigatorId Card (Maybe Target) [Window]
-  | PutOnTopOfDeck InvestigatorId PlayerCard
-  | PutOnBottomOfDeck InvestigatorId PlayerCard
-  | PutOnTopOfEncounterDeck InvestigatorId Target
-  | PutOnBottomOfEncounterDeck InvestigatorId Target
-  | PutCardOnTopOfEncounterDeck InvestigatorId EncounterCard
-  | PutCardOnBottomOfEncounterDeck InvestigatorId EncounterCard
+  | PutCardOnTopOfDeck InvestigatorId DeckSignifier Card
+  | PutOnTopOfDeck InvestigatorId DeckSignifier Target
+  | PutCardOnBottomOfDeck InvestigatorId DeckSignifier Card
+  | PutOnBottomOfDeck InvestigatorId DeckSignifier Target
   | RandomDiscard InvestigatorId
   | Ready Target
   | ReadyAlternative Source Target
@@ -554,7 +550,6 @@ data Message
   | ShuffleAllInEncounterDiscardBackIn CardCode
   | ShuffleBackIntoEncounterDeck Target
   | ShuffleCardsIntoDeck InvestigatorId [PlayerCard]
-  | PlaceOnBottomOfDeck InvestigatorId PlayerCard
   | ShuffleDiscardBackIn InvestigatorId
   | ShuffleEncounterDiscardBackIn
   | ShuffleIntoDeck InvestigatorId Target

@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Deck qualified as Deck
 import Arkham.Helpers
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
@@ -54,7 +55,7 @@ instance RunMessage LivreDeibon where
         (chooseOne iid
         $ [ TargetLabel
               (CardIdTarget $ toCardId c)
-              [DrawCards iid 1 False, PutOnTopOfDeck iid c]
+              [DrawCards iid 1 False, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]
           | c <- mapMaybe (preview _PlayerCard) handCards
           ]
         )

@@ -3,14 +3,15 @@ module Arkham.Investigator.Cards.NormanWithers where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Criteria
+import Arkham.Deck qualified as Deck
 import Arkham.Game.Helpers
 import Arkham.Helpers
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
-import Arkham.Matcher hiding (PlayCard)
+import Arkham.Matcher hiding ( PlayCard )
 import Arkham.Message
 import Arkham.Target
 
@@ -81,7 +82,12 @@ instance RunMessage NormanWithers where
           $ Label "Do not swap" []
           : [ TargetLabel
                 (CardIdTarget $ toCardId c)
-                [DrawCards iid 1 False, PutOnTopOfDeck iid c]
+                [ DrawCards iid 1 False
+                , PutCardOnTopOfDeck
+                  iid
+                  (Deck.InvestigatorDeck iid)
+                  (toCard c)
+                ]
             | c <- mapMaybe (preview _PlayerCard) (investigatorHand a)
             ]
           )

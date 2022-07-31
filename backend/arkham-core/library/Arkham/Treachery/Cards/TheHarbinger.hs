@@ -11,6 +11,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Deck
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
@@ -47,7 +48,7 @@ instance RunMessage TheHarbinger where
   runMessage msg t@(TheHarbinger attrs) = case msg of
     Revelation iid source | isSource attrs source -> t <$ pushAll
       ([AttachTreachery (toId attrs) (InvestigatorTarget iid)]
-      <> [ PutOnTopOfDeck iid c
+      <> [ PutCardOnTopOfDeck iid (InvestigatorDeck iid) (toCard c)
          | c <- maybeToList . toPlayerCard $ toCard attrs
          ]
       )

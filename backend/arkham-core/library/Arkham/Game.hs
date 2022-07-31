@@ -11,8 +11,8 @@ import Arkham.Act.Types ( ActAttrs (..), Field (..) )
 import Arkham.Action qualified as Action
 import Arkham.ActiveCost
 import Arkham.Agenda
-import Arkham.Agenda.Types ( Agenda, AgendaAttrs (..), Field (..) )
 import Arkham.Agenda.Sequence qualified as AS
+import Arkham.Agenda.Types ( Agenda, AgendaAttrs (..), Field (..) )
 import Arkham.Asset
 import Arkham.Asset.Types
   ( Asset, AssetAttrs (..), DiscardedEntity (..), Field (..) )
@@ -48,7 +48,8 @@ import Arkham.Helpers.Location qualified as Helpers
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator ()
-import Arkham.Investigator.Types ( Investigator, Field (..), InvestigatorAttrs (..) )
+import Arkham.Investigator.Types
+  ( Field (..), Investigator, InvestigatorAttrs (..) )
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.Types
@@ -95,7 +96,7 @@ import Arkham.Projection
 import Arkham.Scenario
 import Arkham.Scenario.Types hiding ( scenario )
 import Arkham.Skill
-import Arkham.Skill.Types ( Skill, Field (..), SkillAttrs (..) )
+import Arkham.Skill.Types ( Field (..), Skill, SkillAttrs (..) )
 import Arkham.SkillTest.Runner
 import Arkham.SkillType
 import Arkham.Source
@@ -104,7 +105,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery
-import Arkham.Treachery.Types ( Treachery, Field (..), TreacheryAttrs (..) )
+import Arkham.Treachery.Types ( Field (..), Treachery, TreacheryAttrs (..) )
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 import Arkham.Zone ( Zone )
@@ -2733,28 +2734,23 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   FoundCards cards -> pure $ g & foundCardsL .~ cards
-  AddFocusedToTopOfDeck _ EncounterDeckTarget cardId ->
+  AddFocusedToTopOfDeck iid EncounterDeckTarget cardId ->
     if null (gameFoundCards g)
       then do
         let
-          card =
-            fromJustNote "missing card"
-              $ find ((== cardId) . toCardId) (g ^. focusedCardsL)
-              >>= toEncounterCard
+          card = fromJustNote "missing card"
+            $ find ((== cardId) . toCardId) (g ^. focusedCardsL)
           focusedCards = filter ((/= cardId) . toCardId) (g ^. focusedCardsL)
-        push $ AddToTopOfEncounterDeck card
+        push $ PutCardOnTopOfDeck iid Deck.EncounterDeck card
         pure $ g & (focusedCardsL .~ focusedCards)
       else do
         let
-          card =
-            fromJustNote "missing card"
-              $ find
-                  ((== cardId) . toCardId)
-                  (concat . toList $ g ^. foundCardsL)
-              >>= toEncounterCard
+          card = fromJustNote "missing card" $ find
+            ((== cardId) . toCardId)
+            (concat . toList $ g ^. foundCardsL)
           foundCards =
             HashMap.map (filter ((/= cardId) . toCardId)) (g ^. foundCardsL)
-        push $ AddToTopOfEncounterDeck card
+        push $ PutCardOnTopOfDeck iid Deck.EncounterDeck card
         pure $ g & (foundCardsL .~ foundCards)
   GameOver -> do
     clearQueue
@@ -3926,7 +3922,10 @@ runGameMessage msg g = case msg of
         case card of
           PlayerCard pc ->
             if PlaceOnBottomOfDeckInsteadOfDiscard `elem` modifiers'
-              then push $ PlaceOnBottomOfDeck (eventOwner $ toAttrs event') pc
+              then do
+                let iid = eventOwner $ toAttrs event'
+                push
+                  $ PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) card
               else push $ AddToDiscard (eventOwner $ toAttrs event') pc
           EncounterCard _ -> error "Unhandled"
         pure $ g & entitiesL . eventsL %~ deleteMap eid

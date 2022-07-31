@@ -701,25 +701,17 @@ instance RunMessage EnemyAttrs where
         (windows'
         <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
         )
-    PutOnTopOfEncounterDeck iid target | a `isTarget` target -> do
-      case toCard a of
-        EncounterCard ec -> do
-          pushAll
-            [ RemoveEnemy $ toId a
-            , PutCardOnTopOfEncounterDeck iid ec
-            ]
-        PlayerCard _ ->
-          error "Can not place player card on top of encounter deck"
+    PutOnTopOfDeck iid deck target | a `isTarget` target -> do
+      pushAll
+        [ RemoveEnemy $ toId a
+        , PutCardOnTopOfDeck iid deck (toCard a)
+        ]
       pure a
-    PutOnBottomOfEncounterDeck iid target | a `isTarget` target -> do
-      case toCard a of
-        EncounterCard ec -> do
-          pushAll
-            [ RemoveEnemy $ toId a
-            , PutCardOnBottomOfEncounterDeck iid ec
-            ]
-        PlayerCard _ ->
-          error "Can not place player card on top of encounter deck"
+    PutOnBottomOfDeck iid deck target | a `isTarget` target -> do
+      pushAll
+        [ RemoveEnemy $ toId a
+        , PutCardOnBottomOfDeck iid deck (toCard a)
+        ]
       pure a
     RemovedFromPlay source | isSource a source -> do
       windowMsg <- checkWindows

@@ -56,11 +56,8 @@ instance HasTokenValue TheUntamedWilds where
         (min 5 explorationDeckCount)
         (max 3 explorationDeckCount)
     ElderThing -> do
-      poisoned <-
-        selectAny
-        $ treacheryIs Treacheries.poisoned
-        <> treacheryInThreatAreaOf iid
-      if poisoned
+      isPoisoned <- getIsPoisoned iid
+      if isPoisoned
         then pure $ TokenValue ElderThing AutoFailModifier
         else pure $ toTokenValue attrs ElderThing 2 3
     otherFace -> getTokenValue iid otherFace attrs
@@ -123,15 +120,9 @@ instance RunMessage TheUntamedWilds where
         )
     FailedSkillTest iid _ _ (TokenTarget token) _ _ -> case tokenFace token of
       ElderThing -> do
-        isPoisoned <-
-          selectAny
-          $ treacheryIs Treacheries.poisoned
-          <> treacheryInThreatAreaOf iid
+        isPoisoned <- getIsPoisoned iid
         unless isPoisoned $ do
-          let
-            poisoned = fromJustNote "not enough poison cards" $ find
-              ((== Treacheries.poisoned) . toCardDef)
-              (scenarioSetAsideCards attrs)
+          poisoned <- getSetAsidePoisoned
           push $ CreateWeaknessInThreatArea poisoned iid
         pure s
       _ -> pure s

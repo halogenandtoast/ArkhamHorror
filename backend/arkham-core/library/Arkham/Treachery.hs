@@ -217,6 +217,7 @@ allTreacheries = mapFromList $ map
   , SomeTreacheryCard theBellTolls
   -- Rainforest
   , SomeTreacheryCard overgrowth
+  , SomeTreacheryCard voiceOfTheJungle
   -- Serpents
   , SomeTreacheryCard snakeBite
   -- Expedition

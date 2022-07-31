@@ -2,9 +2,9 @@ module Arkham.History where
 
 import Arkham.Prelude
 
-import Arkham.Id
 import Arkham.Card.CardCode
-import Arkham.Enemy.Types
+import Arkham.Enemy.Types.Attrs
+import Arkham.Id
 import Arkham.Target
 import Data.HashMap.Strict qualified as HashMap
 
@@ -16,6 +16,7 @@ data History = History
   , historyEnemiesDefeated :: [EnemyAttrs]
   , historyMoved :: Bool
   , historyLocationsSuccessfullyInvestigated :: HashSet LocationId
+  , historySuccessfulExplore :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
@@ -25,13 +26,18 @@ instance Semigroup History where
     { historyTreacheriesDrawn = historyTreacheriesDrawn h
       <> historyTreacheriesDrawn g
     , historyDealtDamageTo = historyDealtDamageTo h <> historyDealtDamageTo g
-    , historyEnemiesDefeated = historyEnemiesDefeated h <> historyEnemiesDefeated g
+    , historyEnemiesDefeated = historyEnemiesDefeated h
+      <> historyEnemiesDefeated g
     , historyMoved = historyMoved h || historyMoved g
-    , historyLocationsSuccessfullyInvestigated = historyLocationsSuccessfullyInvestigated h <> historyLocationsSuccessfullyInvestigated g
+    , historyLocationsSuccessfullyInvestigated =
+      historyLocationsSuccessfullyInvestigated h
+        <> historyLocationsSuccessfullyInvestigated g
+    , historySuccessfulExplore = historySuccessfulExplore h
+      || historySuccessfulExplore g
     }
 
 instance Monoid History where
-  mempty = History [] [] [] False mempty
+  mempty = History [] [] [] False mempty False
 
 insertHistory
   :: InvestigatorId

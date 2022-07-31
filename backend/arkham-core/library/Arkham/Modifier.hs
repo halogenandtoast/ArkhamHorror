@@ -92,6 +92,7 @@ data ModifierType
   | CannotEngage InvestigatorId
   | CannotGainResources
   | CannotHealHorror
+  | CannotExplore
   | CannotInvestigate
   | CannotMakeAttacksOfOpportunity
   | CannotManipulateDeck

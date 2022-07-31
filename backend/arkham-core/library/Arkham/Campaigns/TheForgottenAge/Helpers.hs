@@ -6,9 +6,9 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Scenario
-import Arkham.Helpers.Window
+import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Matcher
@@ -17,10 +17,10 @@ import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Source
 import Arkham.Target
-import Arkham.Timing qualified as Timing
-import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window ( Result (..), Window (..) )
-import Arkham.Window qualified as Window
+import qualified Arkham.Timing as Timing
+import qualified Arkham.Treachery.Cards as Treacheries
+import Arkham.Window (Result(..), Window(..))
+import qualified Arkham.Window as Window
 
 getHasSupply :: (HasGame m, Monad m) => InvestigatorId -> Supply -> m Bool
 getHasSupply iid s = fieldP InvestigatorSupplies (elem s) iid
@@ -46,10 +46,13 @@ getSetAsidePoisoned =
     . find ((== Treacheries.poisoned) . toCardDef)
     <$> scenarioField ScenarioSetAsideCards
 
-explore :: InvestigatorId -> Source -> (Card -> Bool) -> GameT ()
-explore iid source isValidMatch = do
+explore :: InvestigatorId -> Source -> CardMatcher -> GameT ()
+explore iid source cardMatcher = do
   explorationDeck <- getExplorationDeck
-  let (notMatched, matchedOnTop) = break isValidMatch explorationDeck
+  let
+    cardMatcher' = CardWithOneOf [CardWithType TreacheryType, cardMatcher]
+    (notMatched, matchedOnTop) =
+      break (`cardMatch` cardMatcher') explorationDeck
   case matchedOnTop of
     [] -> do
       deck' <- shuffleM notMatched
@@ -65,9 +68,15 @@ explore iid source isValidMatch = do
     (x : xs) -> do
       msgs <- if cdCardType (toCardDef x) == LocationType
         then do
+          let historyItem = mempty { historySuccessfulExplore = True }
           windowMsg <- checkWindows
             [Window Timing.After $ Window.Explored iid Success]
-          pure [PlaceLocation x, MoveTo source iid (toLocationId x), windowMsg]
+          pure
+            [ PlaceLocation x
+            , MoveTo source iid (toLocationId x)
+            , UpdateHistory iid historyItem
+            , windowMsg
+            ]
         else do
           windowMsg <- checkWindows
             [Window Timing.After $ Window.Explored iid Failure]

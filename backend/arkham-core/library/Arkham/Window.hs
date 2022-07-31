@@ -140,5 +140,6 @@ data WindowType
   | WouldTakeDamageOrHorror Source Target Int Int
   | WouldTakeHorror Source Target
   | Explored InvestigatorId Result
+  | AttemptExplore InvestigatorId
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

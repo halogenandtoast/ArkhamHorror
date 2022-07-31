@@ -236,6 +236,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , vastExpanse
   , vaultOfEarthlyDemise
   , visionsOfFuturesPast
+  , voiceOfTheJungle
   , vortexOfTime
   , wallsClosingIn
   , watchersGaze
@@ -899,6 +900,11 @@ theBellTolls =
 overgrowth :: CardDef
 overgrowth = (treachery "04076" "Overgrowth" Rainforest 2)
   { cdCardTraits = singleton Obstacle
+  }
+
+voiceOfTheJungle :: CardDef
+voiceOfTheJungle = (treachery "04077" "Voice of the Jungle" Rainforest 2)
+  { cdCardTraits = singleton Power
   }
 
 snakeBite :: CardDef

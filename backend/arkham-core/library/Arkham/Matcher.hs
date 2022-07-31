@@ -2,8 +2,9 @@ module Arkham.Matcher where
 
 import Arkham.Prelude
 
-import Arkham.Action ( Action )
+import Arkham.Action (Action)
 import Arkham.Agenda.AdvancementReason
+import Arkham.Agenda.Sequence
 import Arkham.Asset.Uses
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
@@ -12,8 +13,8 @@ import Arkham.ClassSymbol
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Keyword ( Keyword )
-import Arkham.Keyword qualified as Keyword
+import Arkham.Keyword (Keyword)
+import qualified Arkham.Keyword as Keyword
 import Arkham.Label
 import Arkham.LocationSymbol
 import Arkham.Modifier
@@ -25,7 +26,6 @@ import {-# SOURCE #-} Arkham.Target
 import Arkham.Timing
 import Arkham.Token
 import Arkham.Trait
-import Arkham.Agenda.Sequence
 
 data Matcher = MatchInvestigator InvestigatorMatcher | MatchLocation LocationMatcher
   deriving stock (Show, Eq, Generic)
@@ -76,12 +76,14 @@ pattern InvestigatorCanMove <- InvestigatorWithoutModifier CannotMove where
   InvestigatorCanMove = InvestigatorWithoutModifier CannotMove
 
 pattern InvestigatorCanHealHorror :: InvestigatorMatcher
-pattern InvestigatorCanHealHorror <- InvestigatorWithoutModifier CannotHealHorror where
+pattern InvestigatorCanHealHorror <-
+  InvestigatorWithoutModifier CannotHealHorror where
   InvestigatorCanHealHorror = InvestigatorWithoutModifier CannotHealHorror
 
 -- Placeholder
 pattern InvestigatorCanHealDamage :: InvestigatorMatcher
-pattern InvestigatorCanHealDamage <- InvestigatorWithoutModifier CannotHealHorror where
+pattern InvestigatorCanHealDamage <-
+  InvestigatorWithoutModifier CannotHealHorror where
   InvestigatorCanHealDamage = Anyone
 
 colocatedWith :: InvestigatorId -> InvestigatorMatcher
@@ -133,6 +135,7 @@ data InvestigatorMatcher
   | TurnInvestigator
   | LeadInvestigator
   | NoDamageDealtThisTurn
+  | NoSuccessfulExploreThisTurn
   | TopCardOfDeckIs CardMatcher
   | YetToTakeTurn
   | NotInvestigator InvestigatorMatcher
@@ -228,6 +231,9 @@ instance Monoid AssetMatcher where
 
 enemyIs :: HasCardCode a => a -> EnemyMatcher
 enemyIs = EnemyIs . toCardCode
+
+enemyAt :: LocationId -> EnemyMatcher
+enemyAt = EnemyAt . LocationWithId
 
 pattern AloofEnemy :: EnemyMatcher
 pattern AloofEnemy <- EnemyWithKeyword Keyword.Aloof where
@@ -365,8 +371,7 @@ pattern LocationWithoutInvestigators <-
   LocationWithoutInvestigators = NotLocation (LocationWithInvestigator Anyone)
 
 pattern Unblocked :: LocationMatcher
-pattern Unblocked <-
-  LocationWithoutModifier Blocked where
+pattern Unblocked <- LocationWithoutModifier Blocked where
   Unblocked = LocationWithoutModifier Blocked
 
 pattern LocationOfThis :: LocationMatcher
@@ -466,13 +471,14 @@ instance Semigroup LocationMatcher where
 newtype AnyLocationMatcher = AnyLocationMatcher { getAnyLocationMatcher :: LocationMatcher }
 
 instance Semigroup AnyLocationMatcher where
-  AnyLocationMatcher l <> AnyLocationMatcher r = AnyLocationMatcher $ case (l, r) of
-    (Nowhere, x) -> x
-    (x, Nowhere) -> x
-    (LocationMatchAny xs, LocationMatchAny ys) -> LocationMatchAny $ xs <> ys
-    (LocationMatchAny xs, x) -> LocationMatchAny (x : xs)
-    (x, LocationMatchAny xs) -> LocationMatchAny (x : xs)
-    (x, y) -> LocationMatchAny [x, y]
+  AnyLocationMatcher l <> AnyLocationMatcher r =
+    AnyLocationMatcher $ case (l, r) of
+      (Nowhere, x) -> x
+      (x, Nowhere) -> x
+      (LocationMatchAny xs, LocationMatchAny ys) -> LocationMatchAny $ xs <> ys
+      (LocationMatchAny xs, x) -> LocationMatchAny (x : xs)
+      (x, LocationMatchAny xs) -> LocationMatchAny (x : xs)
+      (x, y) -> LocationMatchAny [x, y]
 
 instance Monoid AnyLocationMatcher where
   mempty = AnyLocationMatcher Nowhere
@@ -595,6 +601,8 @@ data CardMatcher
   | CardWithSkill SkillType
   | CardWithOneOf [CardMatcher]
   | CardMatches [CardMatcher]
+  | CardWithPrintedLocationConnection LocationSymbol
+  | CardWithPrintedLocationSymbol LocationSymbol
   | NotCard CardMatcher
   | IsEncounterCard
   | CardIsUnique
@@ -711,6 +719,7 @@ data WindowMatcher
   | CommittedCard Timing Who CardMatcher
   | ActivateAbility Timing Who AbilityMatcher
   | Explored Timing Who ExploreMatcher
+  | AttemptExplore Timing Who
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -843,7 +852,7 @@ data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter | DoomCounter
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data ActionMatcher = ActionIs Action | AnyAction
+data ActionMatcher = ActionIs Action | AnyAction | ActionOneOf [ActionMatcher]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

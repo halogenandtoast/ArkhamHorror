@@ -5,14 +5,16 @@ module Arkham.Location.Cards.TempleOfTheFang
 
 import Arkham.Prelude
 
+import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 
 newtype TempleOfTheFang = TempleOfTheFang LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 templeOfTheFang :: LocationCard TempleOfTheFang
 templeOfTheFang = location
@@ -23,9 +25,11 @@ templeOfTheFang = location
   Squiggle
   [Square, Triangle, Equals]
 
-instance HasAbilities TempleOfTheFang where
-  getAbilities (TempleOfTheFang attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+instance HasModifiersFor TempleOfTheFang where
+  getModifiersFor _ target (TempleOfTheFang a) | isTarget a target = do
+    n <- getVengeanceInVictoryDisplay
+    pure $ toModifiers a [ShroudModifier n | n > 0]
+  getModifiersFor _ _ _ = pure []
 
 instance RunMessage TempleOfTheFang where
   runMessage msg (TempleOfTheFang attrs) =

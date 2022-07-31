@@ -810,6 +810,9 @@ getInvestigatorsMatching matcher = do
     NoDamageDealtThisTurn -> \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ notNull (historyDealtDamageTo history)
+    NoSuccessfulExploreThisTurn -> \i -> do
+      history <- getHistory TurnHistory (toId i)
+      pure $ not (historySuccessfulExplore history)
     ContributedMatchingIcons valueMatcher -> \i -> do
       mSkillTest <- getSkillTest
       case mSkillTest of
@@ -2549,7 +2552,6 @@ createActiveCostForAdditionalCardCosts iid card = do
       , activeCostSealedTokens = []
       }
 
-
 runGameMessage :: Message -> Game -> GameT Game
 runGameMessage msg g = case msg of
   Run msgs -> g <$ pushAll msgs
@@ -2665,10 +2667,15 @@ runGameMessage msg g = case msg of
   PayForAbility ability windows' -> do
     acId <- getRandom
     iid <- toId <$> getActiveInvestigator
+    modifiers' <- getModifiers (InvestigatorSource iid) (AbilityTarget iid ability)
+    let
+      additionalCosts = flip mapMaybe modifiers' $ \case
+        AdditionalCost c -> Just c
+        _ -> Nothing
     let
       activeCost = ActiveCost
         { activeCostId = acId
-        , activeCostCosts = abilityCost ability
+        , activeCostCosts = mconcat (abilityCost ability : additionalCosts)
         , activeCostPayments = Cost.NoPayment
         , activeCostTarget = ForAbility ability
         , activeCostWindows = windows'
@@ -3947,6 +3954,12 @@ runGameMessage msg g = case msg of
         push (AddToDiscard ownerId pc { pcOwner = Just ownerId })
       EncounterCard _ -> pure ()
     pure $ g & entitiesL . treacheriesL %~ deleteMap tid
+  UpdateHistory iid historyItem -> do
+    let
+      turn = isJust $ view turnPlayerInvestigatorIdL g
+      setTurnHistory =
+        if turn then turnHistoryL %~ insertHistory iid historyItem else id
+    pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   _ -> pure g
 
 -- TODO: Clean this up, the found of stuff is a bit messy

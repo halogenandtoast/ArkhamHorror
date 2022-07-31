@@ -12,7 +12,7 @@ import Arkham.Strategy as X
 
 import Arkham.Ability
 import Arkham.Act.Sequence
-import Arkham.Action
+import Arkham.Action hiding (Explore)
 import Arkham.Action.Additional
 import Arkham.Asset.Uses
 import Arkham.Attack
@@ -33,6 +33,7 @@ import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Exception
 import Arkham.Helpers
+import Arkham.History
 import Arkham.Id
 import Arkham.Location.Base
 import Arkham.Matcher hiding ( EnemyDefeated, InvestigatorDefeated )
@@ -68,6 +69,8 @@ messageType InvestigatorDoAssignDamage{} = Just DamageMessage
 messageType InvestigatorDrewEncounterCard{} = Just DrawEncounterCardMessage
 messageType InvestigatorDefeated{} = Just InvestigatorDefeatedMessage
 messageType RunWindow{} = Just RunWindowMessage
+messageType Explore{} = Just ExploreMessage
+messageType (Do msg) = messageType msg
 messageType _ = Nothing
 
 isBlanked :: Message -> Bool
@@ -552,6 +555,7 @@ data Message
   | ShuffleCardsIntoDeck InvestigatorId [PlayerCard]
   | ShuffleDiscardBackIn InvestigatorId
   | ShuffleEncounterDiscardBackIn
+  | ShuffleScenarioDeck ScenarioDeckKey
   | ShuffleIntoDeck InvestigatorId Target
   | ShuffleIntoEncounterDeck [EncounterCard]
   | SkillTestApplyResults
@@ -617,9 +621,11 @@ data Message
   | FinishAction
   | BeginCardPayment Card
   | FinishCardPayment Card
+  | UpdateHistory InvestigatorId History
   | -- The Forgotten Age
     PickSupply InvestigatorId Supply
   | UseSupply InvestigatorId Supply
+  | Explore InvestigatorId Source CardMatcher
   | -- Fields
     UpdateLocation LocationAttrs LocationId
   deriving stock (Show, Eq)

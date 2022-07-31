@@ -1,4 +1,9 @@
-module Arkham.Enemy.Types where
+{-# OPTIONS_GHC -Wno-orphans #-}
+module Arkham.Enemy.Types
+  ( module Arkham.Enemy.Types
+  , module X
+  , Field(..)
+  ) where
 
 import Arkham.Prelude
 
@@ -10,14 +15,13 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Cost
+import Arkham.Criteria
+import Arkham.Enemy.Cards
+import Arkham.Enemy.Types.Attrs as X
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Criteria
-import Arkham.Json
-import Arkham.Enemy.Cards
-import Arkham.Modifier (Modifier)
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
@@ -51,33 +55,8 @@ data instance Field Enemy :: Type -> Type where
   EnemyPlacement :: Field Enemy Placement
   EnemySealedTokens :: Field Enemy [Token]
 
-data EnemyAttrs = EnemyAttrs
-  { enemyId :: EnemyId
-  , enemyCardCode :: CardCode
-  , enemyPlacement :: Placement
-  , enemyFight :: Int
-  , enemyHealth :: GameValue Int
-  , enemyEvade :: Int
-  , enemyDamage :: Int
-  , enemyHealthDamage :: Int
-  , enemySanityDamage :: Int
-  , enemyPrey :: PreyMatcher
-  , enemyModifiers :: HashMap Source [Modifier]
-  , enemyExhausted :: Bool
-  , enemyDoom :: Int
-  , enemyClues :: Int
-  , enemySpawnAt :: Maybe LocationMatcher
-  , enemySurgeIfUnabledToSpawn :: Bool
-  , enemyAsSelfLocation :: Maybe Text
-  , enemyMovedFromHunterKeyword :: Bool
-  , enemyDamageStrategy :: DamageStrategy
-  , enemyBearer :: Maybe InvestigatorId
-  , enemySealedTokens :: [Token]
-  }
-  deriving stock (Show, Eq, Generic)
-
 sealedTokensL :: Lens' EnemyAttrs [Token]
-sealedTokensL = lens enemySealedTokens $ \m x -> m {enemySealedTokens = x}
+sealedTokensL = lens enemySealedTokens $ \m x -> m { enemySealedTokens = x }
 
 damageStrategyL :: Lens' EnemyAttrs DamageStrategy
 damageStrategyL =
@@ -137,24 +116,14 @@ cluesL = lens enemyClues $ \m x -> m { enemyClues = x }
 allEnemyCards :: HashMap CardCode CardDef
 allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards
 
-instance HasCardCode EnemyAttrs where
-  toCardCode = enemyCardCode
+instance IsCard EnemyAttrs where
+  toCardId = unEnemyId . enemyId
+  toCardOwner = enemyBearer
 
 instance HasCardDef EnemyAttrs where
   toCardDef e = case lookup (enemyCardCode e) allEnemyCards of
     Just def -> def
     Nothing -> error $ "missing card def for enemy " <> show (enemyCardCode e)
-
-instance ToJSON EnemyAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "enemy"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "enemy"
-
-instance FromJSON EnemyAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
-
-instance IsCard EnemyAttrs where
-  toCardId = unEnemyId . enemyId
-  toCardOwner = enemyBearer
 
 enemy
   :: (EnemyAttrs -> a)
@@ -248,7 +217,7 @@ instance SourceEntity EnemyAttrs where
   isSource attrs (CardCodeSource cardCode) = toCardCode attrs == cardCode
   isSource _ _ = False
 
-data Enemy = forall a. IsEnemy a => Enemy a
+data Enemy = forall a . IsEnemy a => Enemy a
 
 instance Eq Enemy where
   (Enemy (a :: a)) == (Enemy (b :: b)) = case eqT @a @b of
@@ -282,9 +251,9 @@ instance SourceEntity Enemy where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-data SomeEnemyCard = forall a. IsEnemy a => SomeEnemyCard (EnemyCard a)
+data SomeEnemyCard = forall a . IsEnemy a => SomeEnemyCard (EnemyCard a)
 
-liftSomeEnemyCard :: (forall a. EnemyCard a -> b) -> SomeEnemyCard -> b
+liftSomeEnemyCard :: (forall a . EnemyCard a -> b) -> SomeEnemyCard -> b
 liftSomeEnemyCard f (SomeEnemyCard a) = f a
 
 someEnemyCardCode :: SomeEnemyCard -> CardCode

@@ -17,11 +17,11 @@ import Arkham.Criteria
 import Arkham.EncounterSet
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
-import Arkham.Location.Types
+import Arkham.Matcher
 import Arkham.Message
-import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
 import Arkham.SkillType
@@ -45,12 +45,11 @@ instance HasAbilities ExpeditionIntoTheWild where
 instance RunMessage ExpeditionIntoTheWild where
   runMessage msg a@(ExpeditionIntoTheWild attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      locationSymbols <-
-        fieldMap LocationCard (cdLocationRevealedConnections . toCardDef)
-          =<< getJustLocation iid
-      explore iid source $ \c -> case cdLocationRevealedSymbol (toCardDef c) of
-        Nothing -> cdCardType (toCardDef c) == TreacheryType
-        Just sym -> sym `elem` locationSymbols
+      locationSymbols <- toConnections =<< getJustLocation iid
+      push $ Explore
+        iid
+        source
+        (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       setAsideAgentsOfYig <-
@@ -58,29 +57,28 @@ instance RunMessage ExpeditionIntoTheWild where
           ScenarioSetAsideCards
           (filter ((== Just AgentsOfYig) . cdEncounterSet . toCardDef))
       iids <- getInvestigatorIds
-      pushAll $
-        [ ShuffleEncounterDiscardBackIn
-        , ShuffleIntoEncounterDeck setAsideAgentsOfYig
-        ]
+      pushAll
+        $ [ ShuffleEncounterDiscardBackIn
+          , ShuffleIntoEncounterDeck setAsideAgentsOfYig
+          ]
         <> [ BeginSkillTest
-             iid
-             (toSource attrs)
-             (InvestigatorTarget iid)
-             Nothing
-             SkillWillpower
-             3
-         | iid <- iids
-         ]
-        <> [ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+               iid
+               (toSource attrs)
+               (InvestigatorTarget iid)
+               Nothing
+               SkillWillpower
+               3
+           | iid <- iids
            ]
+        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         isPoisoned <- getIsPoisoned iid
         if isPoisoned
-           then push $ InvestigatorAssignDamage iid source DamageAny 1 1
-           else do
-             poisoned <- getSetAsidePoisoned
-             push $ CreateWeaknessInThreatArea poisoned iid
+          then push $ InvestigatorAssignDamage iid source DamageAny 1 1
+          else do
+            poisoned <- getSetAsidePoisoned
+            push $ CreateWeaknessInThreatArea poisoned iid
         pure a
     _ -> ExpeditionIntoTheWild <$> runMessage msg attrs

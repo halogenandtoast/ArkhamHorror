@@ -45,45 +45,12 @@ instance HasAbilities ExpeditionIntoTheWild where
 instance RunMessage ExpeditionIntoTheWild where
   runMessage msg a@(ExpeditionIntoTheWild attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      explorationDeck <- getExplorationDeck
       locationSymbols <-
         fieldMap LocationCard (cdLocationRevealedConnections . toCardDef)
           =<< getJustLocation iid
-      let
-        isValidMatch c = case cdLocationRevealedSymbol (toCardDef c) of
-          Nothing -> cdCardType (toCardDef c) == TreacheryType
-          Just sym -> sym `elem` locationSymbols
-        (notMatched, matchedOnTop) = break isValidMatch explorationDeck
-      case matchedOnTop of
-        [] -> do
-          deck' <- shuffleM notMatched
-          pushAll
-            [ FocusCards notMatched
-            , chooseOne
-              iid
-              [ Label
-                  "No Matches Found"
-                  [UnfocusCards, SetScenarioDeck ExplorationDeck deck']
-              ]
-            ]
-        (x : xs) -> do
-          let
-            msgs = if cdCardType (toCardDef x) == LocationType
-              then
-                [PlaceLocation x, MoveTo (toSource attrs) iid (toLocationId x)]
-              else [DrewTreachery iid x]
-          deck' <- if null notMatched
-            then pure xs
-            else shuffleM (xs <> notMatched)
-          pushAll
-            [ FocusCards (notMatched <> [x])
-            , chooseOne
-              iid
-              [ TargetLabel
-                  (CardIdTarget $ toCardId x)
-                  (UnfocusCards : SetScenarioDeck ExplorationDeck deck' : msgs)
-              ]
-            ]
+      explore iid source $ \c -> case cdLocationRevealedSymbol (toCardDef c) of
+        Nothing -> cdCardType (toCardDef c) == TreacheryType
+        Just sym -> sym `elem` locationSymbols
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       setAsideAgentsOfYig <-

@@ -16,8 +16,8 @@ import Arkham.Helpers.Window as X
 import Arkham.Helpers.Xp as X
 
 import Arkham.Ability
-import Arkham.Act.Types ( Field (..) )
 import Arkham.Act.Sequence qualified as AS
+import Arkham.Act.Types ( Field (..) )
 import Arkham.Action ( Action )
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
@@ -47,7 +47,7 @@ import Arkham.Investigator.Types ( Field (..), InvestigatorAttrs (..) )
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types hiding ( location )
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message hiding ( InvestigatorDamage, AssetDamage, PaidCost )
+import Arkham.Message hiding ( AssetDamage, InvestigatorDamage, PaidCost )
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Projection
@@ -253,12 +253,17 @@ getCanAffordAbilityCost iid Ability {..} = case abilityType of
   AbilityEffect _ -> pure True
   Objective{} -> pure True
 
-filterDepthSpecificAbilities :: (Monad m, HasGame m) => [UsedAbility] -> m [UsedAbility]
+filterDepthSpecificAbilities
+  :: (Monad m, HasGame m) => [UsedAbility] -> m [UsedAbility]
 filterDepthSpecificAbilities usedAbilities = do
   depth <- getWindowDepth
   pure $ filter (valid depth) usedAbilities
  where
-   valid depth ability = abilityLimitType (abilityLimit $ usedAbility ability) /= Just PerWindow || depth <= usedDepth ability
+  valid depth ability =
+    abilityLimitType (abilityLimit $ usedAbility ability)
+      /= Just PerWindow
+      || depth
+      <= usedDepth ability
 
 -- TODO: The limits that are correct are the one that check usedTimes Group
 -- limits for instance won't work if we have a group limit higher than one, for
@@ -267,7 +272,8 @@ filterDepthSpecificAbilities usedAbilities = do
 getCanAffordUse
   :: (Monad m, HasGame m) => InvestigatorId -> Ability -> Window -> m Bool
 getCanAffordUse iid ability window = do
-  usedAbilities <- filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
+  usedAbilities <-
+    filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
   case abilityLimit ability of
     NoLimit -> case abilityType ability of
       ReactionAbility _ _ ->
@@ -284,13 +290,12 @@ getCanAffordUse iid ability window = do
       AbilityEffect _ -> pure True
       Objective{} -> pure True
     PlayerLimit (PerSearch (Just _)) n ->
-      pure . (< n)
-        . maybe 0 usedTimes
-        $ find ((== ability) . usedAbility) usedAbilities
-    PlayerLimit _ n ->
-      pure . (< n)
-        . maybe 0 usedTimes
-        $ find ((== ability) . usedAbility) usedAbilities
+      pure . (< n) . maybe 0 usedTimes $ find
+        ((== ability) . usedAbility)
+        usedAbilities
+    PlayerLimit _ n -> pure . (< n) . maybe 0 usedTimes $ find
+      ((== ability) . usedAbility)
+      usedAbilities
     PerInvestigatorLimit _ n -> do
       -- This is difficult and based on the window, so we need to match out the
       -- relevant investigator ids from the window. If this becomes more prevalent
@@ -307,8 +312,10 @@ getCanAffordUse iid ability window = do
         _ -> error "Unhandled per investigator limit"
     GroupLimit _ n -> do
       usedAbilities' <-
-        fmap (map usedAbility) . filterDepthSpecificAbilities =<< concatMapM (field InvestigatorUsedAbilities)
-          =<< getInvestigatorIds
+        fmap (map usedAbility)
+        . filterDepthSpecificAbilities
+        =<< concatMapM (field InvestigatorUsedAbilities)
+        =<< getInvestigatorIds
       let total = count (== ability) usedAbilities'
       pure $ total < n
 
@@ -485,7 +492,10 @@ getActionsWith iid window f = do
         -- If the window is fast we only permit fast abilities, but forced
         -- abilities need to be everpresent so we include them
         needsToBeFast = windowType window == Window.FastPlayerWindow && not
-          (isFastAbility ability || isForcedAbility ability || isReactionAbility ability)
+          (isFastAbility ability
+          || isForcedAbility ability
+          || isReactionAbility ability
+          )
       if any prevents investigatorModifiers || needsToBeFast
         then pure Nothing
         else pure $ Just $ applyAbilityModifiers ability modifiers'
@@ -721,8 +731,16 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
          )
       && none prevents modifiers
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
-      && (Action.Evade `notElem` cdActions pcDef || canEvade || cdOverrideActionPlayableIfCriteriaMet pcDef)
-      && (Action.Fight `notElem` cdActions pcDef || canFight || cdOverrideActionPlayableIfCriteriaMet pcDef)
+      && (Action.Evade
+         `notElem` cdActions pcDef
+         || canEvade
+         || cdOverrideActionPlayableIfCriteriaMet pcDef
+         )
+      && (Action.Fight
+         `notElem` cdActions pcDef
+         || canFight
+         || cdOverrideActionPlayableIfCriteriaMet pcDef
+         )
       && passesCriterias
       && passesLimits
       && passesUnique
@@ -1532,12 +1550,14 @@ windowMatches iid source window' = \case
     Window t (Window.AddedToVictory card) | timingMatcher == t ->
       pure $ cardMatch card cardMatcher
     _ -> pure False
-  Matcher.AssetDefeated timingMatcher defeatedByMatcher assetMatcher -> case window' of
-    Window t (Window.AssetDefeated assetId defeatedBy) | timingMatcher == t ->
-      andM [ member assetId <$> select assetMatcher
-           , defeatedByMatches defeatedBy defeatedByMatcher
-           ]
-    _ -> pure False
+  Matcher.AssetDefeated timingMatcher defeatedByMatcher assetMatcher ->
+    case window' of
+      Window t (Window.AssetDefeated assetId defeatedBy) | timingMatcher == t ->
+        andM
+          [ member assetId <$> select assetMatcher
+          , defeatedByMatches defeatedBy defeatedByMatcher
+          ]
+      _ -> pure False
   Matcher.EnemyDefeated timingMatcher whoMatcher enemyMatcher ->
     case window' of
       Window t (Window.EnemyDefeated who enemyId) | timingMatcher == t -> liftA2
@@ -1574,28 +1594,24 @@ windowMatches iid source window' = \case
   Matcher.FastPlayerWindow -> case window' of
     Window Timing.When Window.FastPlayerWindow -> pure True
     _ -> pure False
-  Matcher.DealtDamageOrHorror whenMatcher sourceMatcher whoMatcher -> case whoMatcher of
-    Matcher.You -> case window' of
-      Window t (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _)
-        | t == whenMatcher -> andM
-          [ matchWho iid iid' whoMatcher
-          , sourceMatches source' sourceMatcher
-          ]
+  Matcher.DealtDamageOrHorror whenMatcher sourceMatcher whoMatcher ->
+    case whoMatcher of
+      Matcher.You -> case window' of
+        Window t (Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _)
+          | t == whenMatcher
+          -> andM
+            [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
+        _ -> pure False
       _ -> pure False
-    _ -> pure False
   Matcher.DealtDamage whenMatcher sourceMatcher whoMatcher -> case window' of
     Window t (Window.DealtDamage source' _ (InvestigatorTarget iid'))
       | t == whenMatcher -> andM
-        [ matchWho iid iid' whoMatcher
-        , sourceMatches source' sourceMatcher
-        ]
+        [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
     _ -> pure False
   Matcher.DealtHorror whenMatcher sourceMatcher whoMatcher -> case window' of
     Window t (Window.DealtHorror source' (InvestigatorTarget iid'))
       | t == whenMatcher -> andM
-        [ matchWho iid iid' whoMatcher
-        , sourceMatches source' sourceMatcher
-        ]
+        [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]
     _ -> pure False
   Matcher.AssignedHorror whenMatcher whoMatcher targetListMatcher ->
     case window' of
@@ -1621,7 +1637,8 @@ windowMatches iid source window' = \case
   Matcher.EnemyDealtExcessDamage timingMatcher damageEffectMatcher enemyMatcher sourceMatcher
     -> case window' of
       Window t (Window.DealtExcessDamage source' damageEffect (EnemyTarget eid) _)
-        | t == timingMatcher -> andM
+        | t == timingMatcher
+        -> andM
           [ damageEffectMatches damageEffect damageEffectMatcher
           , member eid <$> select enemyMatcher
           , sourceMatches source' sourceMatcher
@@ -1695,6 +1712,14 @@ windowMatches iid source window' = \case
   Matcher.EnemyLeavesPlay timingMatcher enemyMatcher -> case window' of
     Window t (Window.LeavePlay (EnemyTarget eid)) | t == timingMatcher ->
       member eid <$> select enemyMatcher
+    _ -> pure False
+  Matcher.Explored timingMatcher whoMatcher resultMatcher -> case window' of
+    Window t (Window.Explored who result) | timingMatcher == t -> andM
+      [ matchWho iid who whoMatcher
+      , pure $ case resultMatcher of
+        Matcher.SuccessfulExplore -> result == Window.Success
+        Matcher.FailedExplore -> result == Window.Failure
+      ]
     _ -> pure False
 
 matchWho

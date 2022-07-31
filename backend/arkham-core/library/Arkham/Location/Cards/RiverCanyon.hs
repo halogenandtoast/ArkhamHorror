@@ -5,10 +5,19 @@ module Arkham.Location.Cards.RiverCanyon
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Classes
+import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Target
 
 newtype RiverCanyon = RiverCanyon LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,8 +33,21 @@ riverCanyon = location
   [Circle, Moon, Heart, Triangle, Square]
 
 instance HasAbilities RiverCanyon where
-  getAbilities (RiverCanyon attrs) = getAbilities attrs
-    -- withBaseAbilities attrs []
+  getAbilities (RiverCanyon attrs) = withBaseAbilities
+    attrs
+    [ limitedAbility (PlayerLimit PerGame 1)
+      $ restrictedAbility
+          attrs
+          1
+          (Here <> InvestigatorExists (You <> InvestigatorWithAnyDamage))
+      $ ActionAbility Nothing
+      $ ActionCost 1
+    ]
 
 instance RunMessage RiverCanyon where
-  runMessage msg (RiverCanyon attrs) = RiverCanyon <$> runMessage msg attrs
+  runMessage msg l@(RiverCanyon attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      hasCanteen <- getHasSupply iid Canteen
+      push $ HealDamage (InvestigatorTarget iid) (if hasCanteen then 3 else 1)
+      pure l
+    _ -> RiverCanyon <$> runMessage msg attrs

@@ -107,6 +107,7 @@ allPlayerAssetCards = mapFromList $ concatMap
   [ abbessAllegriaDiBiase
   , adaptable1
   , alchemicalTransmutation
+  , alejandroVela
   , alyssaGraham
   , analyticalMind
   , ancientStone1
@@ -2055,6 +2056,14 @@ backpack = (asset "04037" "Backpack" 2 Neutral)
   { cdSkills = [SkillAgility]
   , cdCardTraits = singleton Item
   , cdSlots = [BodySlot]
+  }
+
+alejandroVela :: CardDef
+alejandroVela = (storyAsset "04051" ("Alejandro Vela" <:> "Renowned Historian") 2 TheUntamedWilds)
+  { cdSkills = [SkillWillpower, SkillIntellect, SkillWild]
+  , cdCardTraits = setFromList [Ally, Wayfarer]
+  , cdSlots = [AllySlot]
+  , cdUnique = True
   }
 
 trackShoes :: CardDef

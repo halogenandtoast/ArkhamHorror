@@ -114,6 +114,7 @@ import Control.Lens ( each, itraverseOf, itraversed, set )
 import Control.Monad.Random ( StdGen, mkStdGen )
 import Control.Monad.Reader ( runReader )
 import Control.Monad.State.Strict hiding ( filterM, foldM, state )
+import Data.Aeson (Result(..))
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH

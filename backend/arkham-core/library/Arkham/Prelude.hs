@@ -34,7 +34,7 @@ import Control.Monad.Extra as X
 import Control.Monad.Random as X ( MonadRandom )
 import Control.Monad.Random.Class as X ( getRandom, getRandomR, getRandoms )
 import Control.Monad.Random.Strict as X ( Random )
-import Data.Aeson as X
+import Data.Aeson as X hiding (Result(..))
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Text
 import Data.Char qualified as C

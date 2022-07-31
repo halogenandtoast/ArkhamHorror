@@ -21,6 +21,10 @@ import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
 import Arkham.Token (Token)
 
+data Result = Success | Failure
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
 data Window = Window
   { windowTiming :: Timing
   , windowType :: WindowType
@@ -135,5 +139,6 @@ data WindowType
   | WouldTakeDamage Source Target
   | WouldTakeDamageOrHorror Source Target Int Int
   | WouldTakeHorror Source Target
+  | Explored InvestigatorId Result
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

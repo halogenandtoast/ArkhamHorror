@@ -1743,12 +1743,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   TakenAction iid action | iid == investigatorId ->
     pure $ a & actionsTakenL %~ (<> [action])
-  PutOnTopOfDeck iid card | iid == investigatorId ->
-    pure $ a & deckL %~ Deck . (card :) . unDeck & handL %~ filter
-      ((/= Just card) . preview _PlayerCard)
-  PutOnBottomOfDeck iid card | iid == investigatorId ->
-    pure $ a & deckL %~ Deck . (<> [card]) . unDeck & handL %~ filter
-      ((/= Just card) . preview _PlayerCard)
+  PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid') card
+    | iid == investigatorId && iid == iid' -> case card of
+      PlayerCard pc ->
+        pure $ a & deckL %~ Deck . (pc :) . unDeck & handL %~ filter (/= card)
+      EncounterCard _ ->
+        error "Can not put encounter card on top of investigator deck"
+  PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid') card
+    | iid == investigatorId && iid == iid' -> case card of
+      PlayerCard pc ->
+        pure $ a & deckL %~ Deck . (<> [pc]) . unDeck & handL %~ filter
+          (/= card)
+      EncounterCard _ ->
+        error "Can not put encounter card on bottom of investigator deck"
   AddToHand iid card | iid == investigatorId -> do
     case card of
       PlayerCard card' -> do
@@ -1769,8 +1776,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ShuffleCardsIntoDeck iid cards | iid == investigatorId -> do
     deck <- shuffleM (cards <> unDeck investigatorDeck)
     pure $ a & deckL .~ Deck deck
-  PlaceOnBottomOfDeck iid card | iid == investigatorId ->
-    pure $ a & deckL %~ Deck . (<> [card]) . unDeck
   AddFocusedToHand _ (InvestigatorTarget iid') cardSource cardId
     | iid' == investigatorId -> do
       let
@@ -1797,7 +1802,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             >>= toPlayerCard
         foundCards =
           HashMap.map (filter ((/= cardId) . toCardId)) investigatorFoundCards
-      push (PutOnTopOfDeck iid' card)
+      push $ PutCardOnTopOfDeck iid' (Deck.InvestigatorDeck iid') (toCard card)
       pure $ a & foundCardsL .~ foundCards
   ShuffleAllFocusedIntoDeck _ (InvestigatorTarget iid')
     | iid' == investigatorId -> do

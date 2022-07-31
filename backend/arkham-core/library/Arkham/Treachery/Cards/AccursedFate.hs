@@ -9,6 +9,7 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Log
 import Arkham.Message
 import Arkham.Treachery.Cards qualified as Cards
@@ -34,7 +35,7 @@ instance RunMessage AccursedFate where
               [ InvestigatorAssignDamage iid source DamageAny 0 2
               , RemoveCardFromDeckForCampaign iid pc
               , AddCardToDeckForCampaign iid theBellTolls
-              , PutOnBottomOfDeck iid theBellTolls
+              , PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard theBellTolls)
               , RemoveTreachery (toId attrs)
               ]
         else do

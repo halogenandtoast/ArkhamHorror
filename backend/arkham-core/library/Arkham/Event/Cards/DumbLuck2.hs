@@ -6,6 +6,7 @@ module Arkham.Event.Cards.DumbLuck2
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Id
@@ -33,7 +34,7 @@ instance RunMessage DumbLuck2 where
     InvestigatorPlayEvent iid eid _ windows _ | eid == toId attrs -> do
       let enemyId = toEnemyId windows
       e <$ pushAll
-        [ PutOnBottomOfEncounterDeck iid (EnemyTarget enemyId)
+        [ PutOnBottomOfDeck iid Deck.EncounterDeck (EnemyTarget enemyId)
         , Discard (toTarget attrs)
         ]
     _ -> DumbLuck2 <$> runMessage msg attrs

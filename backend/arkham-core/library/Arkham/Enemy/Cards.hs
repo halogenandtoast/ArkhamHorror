@@ -36,6 +36,7 @@ baseEnemy cardCode name mEncounterSet isWeakness = CardDef
   , cdActions = []
   , cdRevelation = False
   , cdVictoryPoints = Nothing
+  , cdVengeancePoints = Nothing
   , cdCriteria = mempty
   , cdOverrideActionPlayableIfCriteriaMet = False
   , cdCommitRestrictions = mempty

@@ -39,6 +39,7 @@ baseTreachery cardCode name mEncounterSet isWeakness = CardDef
   , cdActions = []
   , cdRevelation = True
   , cdVictoryPoints = Nothing
+  , cdVengeancePoints = Nothing
   , cdCriteria = mempty
   , cdOverrideActionPlayableIfCriteriaMet = False
   , cdCommitRestrictions = mempty

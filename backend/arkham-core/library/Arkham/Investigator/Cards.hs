@@ -28,6 +28,7 @@ investigator cardCode name classSymbol traits = CardDef
   , cdActions = []
   , cdRevelation = False
   , cdVictoryPoints = Nothing
+  , cdVengeancePoints = Nothing
   , cdCriteria = mempty
   , cdOverrideActionPlayableIfCriteriaMet = False
   , cdCommitRestrictions = mempty

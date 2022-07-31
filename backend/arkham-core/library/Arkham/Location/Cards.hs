@@ -65,6 +65,7 @@ location cardCode name traits locationSymbol connectedLocationSymbols encounterS
     , cdActions = []
     , cdRevelation = False
     , cdVictoryPoints = Nothing
+    , cdVengeancePoints = Nothing
     , cdCriteria = mempty
     , cdOverrideActionPlayableIfCriteriaMet = False
     , cdCommitRestrictions = mempty

@@ -55,6 +55,7 @@ data CardDef = CardDef
   , cdActions :: [Action]
   , cdRevelation :: Bool
   , cdVictoryPoints :: Maybe Int
+  , cdVengeancePoints :: Maybe Int
   , cdCriteria :: Maybe Criterion
   , cdOverrideActionPlayableIfCriteriaMet :: Bool
   , cdCommitRestrictions :: [CommitRestriction]
@@ -153,6 +154,7 @@ testCardDef cardType cardCode = CardDef
   , cdActions = []
   , cdRevelation = False
   , cdVictoryPoints = Nothing
+  , cdVengeancePoints = Nothing
   , cdCriteria = Nothing
   , cdOverrideActionPlayableIfCriteriaMet = False
   , cdCommitRestrictions = []

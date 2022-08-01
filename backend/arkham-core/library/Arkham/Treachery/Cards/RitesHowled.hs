@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Game.Helpers
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
@@ -42,7 +43,7 @@ instance RunMessage RitesHowled where
         (do
           discardPile <- field InvestigatorDiscard iid
           push $ ShuffleCardsIntoDeck
-            iid
-            (filter (isJust . cdCardSubType . toCardDef) discardPile)
+            (Deck.InvestigatorDeck iid)
+            (map PlayerCard $ filter (isJust . cdCardSubType . toCardDef) discardPile)
         )
     _ -> RitesHowled <$> runMessage msg attrs

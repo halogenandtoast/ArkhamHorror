@@ -5,14 +5,14 @@ module Arkham.Act.Cards.TheReallyBadOnesV1
 
 import Arkham.Prelude
 
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Card.PlayerCard (genPlayerCard)
+import Arkham.Card.PlayerCard ( genPlayerCard )
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
@@ -45,9 +45,7 @@ instance RunMessage TheReallyBadOnesV1 where
         Locations.patientConfinementDanielsCell
       danielChesterfield <- PlayerCard
         <$> genPlayerCard Assets.danielChesterfield
-      enemiesUnderAct <-
-        filter ((== EnemyType) . toCardType)
-        . mapMaybe (preview _EncounterCard)
+      enemiesUnderAct <- filter ((== EnemyType) . toCardType)
         <$> scenarioField ScenarioCardsUnderActDeck
       pushAll
         (chooseOne
@@ -57,7 +55,7 @@ instance RunMessage TheReallyBadOnesV1 where
                 [TakeControlOfSetAsideAsset iid danielChesterfield]
             | iid <- investigators
             ]
-        : [ ShuffleIntoEncounterDeck enemiesUnderAct
+        : [ ShuffleCardsIntoDeck Deck.EncounterDeck enemiesUnderAct
           , ShuffleEncounterDiscardBackIn
           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
           ]

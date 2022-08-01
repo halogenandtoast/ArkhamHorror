@@ -6,6 +6,7 @@ module Arkham.Treachery.Cards.CaughtRedHanded
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -34,7 +35,7 @@ instance RunMessage CaughtRedHanded where
            | target <- hunters
            ]
         <> if null hunters
-             then [ShuffleIntoDeck iid (toTarget attrs)]
+             then [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)]
              else [Discard $ toTarget attrs]
 
       pure t

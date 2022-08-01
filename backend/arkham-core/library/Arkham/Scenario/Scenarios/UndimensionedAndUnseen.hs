@@ -15,10 +15,11 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Game.Helpers
 import Arkham.Helpers
 import Arkham.Investigator.Types ( Field (..) )
@@ -349,7 +350,13 @@ instance RunMessage UndimensionedAndUnseen where
     RequestedPlayerCard iid source mcard | isSource attrs source ->
       case mcard of
         Nothing -> pure s
-        Just card -> s <$ push (ShuffleCardsIntoDeck iid [card])
+        Just card ->
+          s
+            <$ push
+                 (ShuffleCardsIntoDeck
+                   (Deck.InvestigatorDeck iid)
+                   [PlayerCard card]
+                 )
     ScenarioResolution NoResolution ->
       s <$ pushAll [ScenarioResolution $ Resolution 1]
     ScenarioResolution (Resolution 1) -> do

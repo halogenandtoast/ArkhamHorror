@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Treachery.Cards qualified as Cards
@@ -26,7 +27,7 @@ instance RunMessage BoughtInBlood where
         selectList $ AssetControlledBy (InvestigatorWithId iid) <> AllyAsset
       inHand <- selectListMap toCardId $ InHandOf You <> BasicCardMatch IsAlly
       case (inPlay, inHand) of
-        ([], []) -> push $ ShuffleIntoDeck iid (toTarget attrs)
+        ([], []) -> push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
         (inPlay', inHand') ->
           push
             $ chooseOrRunOne iid

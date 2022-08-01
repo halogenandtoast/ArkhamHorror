@@ -6,12 +6,12 @@ module Arkham.Act.Cards.PlanningTheEscape
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Deck qualified as Deck
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Matcher
@@ -63,25 +63,26 @@ instance RunMessage PlanningTheEscape where
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) (toSource attrs) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      enemyCards <-
-        filter ((== EnemyType) . toCardType)
-        . mapMaybe (preview _EncounterCard)
+      enemyCards <- filter ((== EnemyType) . toCardType)
         <$> scenarioField ScenarioCardsUnderActDeck
       discardedCards <- scenarioField ScenarioDiscard
 
       let
-        monsterCount =
-          count (member Monster . toTraits) (enemyCards <> discardedCards)
+        monsterCount = count
+          (member Monster . toTraits)
+          (mapMaybe (preview _EncounterCard) enemyCards <> discardedCards)
 
-      a <$ pushAll
-        ([ShuffleIntoEncounterDeck enemyCards, ShuffleEncounterDiscardBackIn]
+      pushAll
+        $ [ ShuffleCardsIntoDeck Deck.EncounterDeck enemyCards
+          , ShuffleEncounterDiscardBackIn
+          ]
         <> [ DiscardEncounterUntilFirst
                (toSource attrs)
                (CardWithType EnemyType <> CardWithTrait Monster)
            | monsterCount >= 3
            ]
         <> [AdvanceActDeck (actDeckId attrs) $ toSource attrs]
-        )
+      pure a
     RequestedEncounterCard source mcard | isSource attrs source -> do
       leadInvestigatorId <- getLeadInvestigatorId
       for_ mcard $ \card -> do

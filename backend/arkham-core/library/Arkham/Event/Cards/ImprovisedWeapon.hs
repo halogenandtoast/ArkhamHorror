@@ -6,6 +6,7 @@ module Arkham.Event.Cards.ImprovisedWeapon
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
@@ -27,7 +28,7 @@ instance RunMessage ImprovisedWeapon where
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
       let
         afterMsg = case zone of
-          FromDiscard -> ShuffleIntoDeck iid (toTarget attrs)
+          FromDiscard -> ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
           _ -> Discard (toTarget attrs)
       enemyIds <- selectList CanFightEnemy
       pushAll

@@ -11,8 +11,8 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.EncounterCard
-import Arkham.Card.PlayerCard
 import Arkham.Classes
+import Arkham.Deck
 import Arkham.Difficulty
 import Arkham.Distance
 import Arkham.Effect.Window
@@ -151,14 +151,14 @@ instance RunMessage APhantomOfTruth where
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      theManInThePallidMask <- genPlayerCard Enemies.theManInThePallidMask
+      theManInThePallidMask <- genCard Enemies.theManInThePallidMask
       pushAll
         [ chooseOne
           leadInvestigatorId
           [ Label "Conviction" [RecordCount Conviction 1]
           , Label "Doubt" [RecordCount Doubt 1]
           ]
-        , ShuffleCardsIntoDeck leadInvestigatorId [theManInThePallidMask]
+        , ShuffleCardsIntoDeck (InvestigatorDeck leadInvestigatorId) [theManInThePallidMask]
         ]
       pure s
     Setup -> do
@@ -195,14 +195,14 @@ instance RunMessage APhantomOfTruth where
           , dream10 <$ guard (chasingTheStranger > 3)
           ]
 
-      paranoia <- genPlayerCard Treacheries.paranoia
-      lostSouls <- replicateM 4 (genPlayerCard Treacheries.lostSoul)
+      paranoia <- genCard Treacheries.paranoia
+      lostSouls <- replicateM 4 (genCard Treacheries.lostSoul)
       standalone <- getIsStandalone
 
       pushAll
         $ story investigatorIds intro
         : map (story investigatorIds) dreamPath
-        <> [ ShuffleCardsIntoDeck iid [lostSoul]
+        <> [ ShuffleCardsIntoDeck (InvestigatorDeck iid) [lostSoul]
            | not standalone
            , (iid, lostSoul) <- zip investigatorIds lostSouls
            ]
@@ -210,7 +210,7 @@ instance RunMessage APhantomOfTruth where
                leadInvestigatorId
                [ TargetLabel
                    (InvestigatorTarget iid)
-                   [ShuffleCardsIntoDeck iid [paranoia]]
+                   [ShuffleCardsIntoDeck (InvestigatorDeck iid) [paranoia]]
                | iid <- investigatorIds
                ]
            | showDream4

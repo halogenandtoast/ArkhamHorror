@@ -5,17 +5,17 @@ module Arkham.Agenda.Cards.UndergroundMuscle
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
+import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet
 import Arkham.Enemy.Types ( Field (..) )
 import Arkham.GameValue
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Message
 import Arkham.Projection
 import Data.Maybe ( fromJust )
@@ -52,7 +52,8 @@ instance RunMessage UndergroundMuscle where
               "Continue"
               ([ CreateEnemyAt (EncounterCard enemy) cloverClubLoungeId Nothing
                , ShuffleEncounterDiscardBackIn
-               , ShuffleIntoEncounterDeck $ rest <> strikingFear
+               , ShuffleCardsIntoDeck Deck.EncounterDeck
+                 $ map EncounterCard (rest <> strikingFear)
                ]
               <> [ MoveAction iid cloverClubLoungeId Free False
                  | iid <- laBellaLunaInvestigators

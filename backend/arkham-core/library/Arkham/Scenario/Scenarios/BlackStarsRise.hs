@@ -13,8 +13,8 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
-import Arkham.Card.PlayerCard
 import Arkham.Classes
+import Arkham.Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Types ( Field (..) )
@@ -119,8 +119,8 @@ instance RunMessage BlackStarsRise where
       pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      theManInThePallidMask <- genPlayerCard Enemies.theManInThePallidMask
-      push $ ShuffleCardsIntoDeck leadInvestigatorId [theManInThePallidMask]
+      theManInThePallidMask <- genCard Enemies.theManInThePallidMask
+      push $ ShuffleCardsIntoDeck (InvestigatorDeck leadInvestigatorId) [theManInThePallidMask]
       pure s
     Setup -> do
       investigatorIds <- getInvestigatorIds

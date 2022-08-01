@@ -231,7 +231,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ShuffleScenarioDeckIntoEncounterDeck key -> case lookup key scenarioDecks of
     Just [] -> pure a
     Just xs -> do
-      push $ ShuffleIntoEncounterDeck $ mapMaybe (preview _EncounterCard) xs
+      push $ ShuffleCardsIntoDeck Deck.EncounterDeck xs
       pure $ a & decksL %~ deleteMap key
     _ ->
       error
@@ -323,9 +323,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & cardsUnderActDeckL %~ (card :)
   PlaceNextTo ActDeckTarget cards -> do
     pure $ a & cardsNextToActDeckL <>~ cards
-  ShuffleIntoEncounterDeck encounterCards -> do
+  ShuffleCardsIntoDeck Deck.EncounterDeck cards -> do
     let
-      cards = map EncounterCard encounterCards
+      encounterCards = mapMaybe (preview _EncounterCard) cards
       filterCards = filter (`notElem` cards)
     deck' <- withDeckM (shuffleM . (<> encounterCards)) scenarioEncounterDeck
     pure
@@ -371,8 +371,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     standalone <- getIsStandalone
     if standalone
       then do
-        card <- lookupPlayerCard cardDef <$> getRandom
-        push (ShuffleCardsIntoDeck iid [card])
+        card <- genPlayerCard cardDef
+        push (ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card])
         pure $ a & storyCardsL %~ insertWith
           (<>)
           iid
@@ -619,7 +619,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     if isStandalone
       then pure $ a & standaloneCampaignLogL . recorded %~ insertSet key
       else pure a
-  ShuffleScenarioDeck deckKey -> do
+  ShuffleDeck (Deck.ScenarioDeckByKey deckKey) -> do
     deck' <- shuffleM $ fromMaybe [] (view (decksL . at deckKey) a)
+    pure $ a & decksL . at deckKey ?~ deck'
+  ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey deckKey) cards -> do
+    deck' <- shuffleM $ cards <> fromMaybe [] (view (decksL . at deckKey) a)
     pure $ a & decksL . at deckKey ?~ deck'
   _ -> pure a

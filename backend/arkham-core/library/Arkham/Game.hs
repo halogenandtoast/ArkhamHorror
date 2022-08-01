@@ -114,7 +114,7 @@ import Control.Lens ( each, itraverseOf, itraversed, set )
 import Control.Monad.Random ( StdGen, mkStdGen )
 import Control.Monad.Reader ( runReader )
 import Control.Monad.State.Strict hiding ( filterM, foldM, state )
-import Data.Aeson (Result(..))
+import Data.Aeson ( Result (..) )
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
@@ -713,7 +713,8 @@ getInvestigatorsMatching matcher = do
     HasMatchingAsset assetMatcher -> \i -> selectAny
       (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
     HasMatchingTreachery treacheryMatcher -> \i -> selectAny
-      (treacheryMatcher <> TreacheryInThreatAreaOf (InvestigatorWithId $ toId i))
+      (treacheryMatcher <> TreacheryInThreatAreaOf (InvestigatorWithId $ toId i)
+      )
     InvestigatorWithTreacheryInHand treacheryMatcher -> \i -> selectAny
       (treacheryMatcher <> TreacheryInHandOf (InvestigatorWithId $ toId i))
     HasMatchingEvent eventMatcher -> \i -> selectAny
@@ -1565,6 +1566,8 @@ enemyMatcherFilter = \case
       <$> traverse (traverseToSnd (field EnemyRemainingHealth . toId)) matches'
   EnemyWithoutModifier modifier -> \enemy ->
     notElem modifier <$> getModifiers (toSource enemy) (toTarget enemy)
+  EnemyWithModifier modifier ->
+    \enemy -> elem modifier <$> getModifiers (toSource enemy) (toTarget enemy)
   UnengagedEnemy ->
     \enemy -> selectNone $ InvestigatorEngagedWith $ EnemyWithId $ toId enemy
   UniqueEnemy -> pure . cdUnique . toCardDef . toAttrs
@@ -1586,9 +1589,8 @@ enemyMatcherFilter = \case
         )
         modifiers'
       window = Window Timing.When Window.NonFast
-    excluded <- if null enemyFilters
-      then pure False
-      else member (toId enemy) <$> select (mconcat enemyFilters)
+    excluded <- member (toId enemy)
+      <$> select (mconcat $ EnemyWithModifier CannotBeAttacked : enemyFilters)
     if excluded
       then pure False
       else anyM
@@ -2667,7 +2669,9 @@ runGameMessage msg g = case msg of
   PayForAbility ability windows' -> do
     acId <- getRandom
     iid <- toId <$> getActiveInvestigator
-    modifiers' <- getModifiers (InvestigatorSource iid) (AbilityTarget iid ability)
+    modifiers' <- getModifiers
+      (InvestigatorSource iid)
+      (AbilityTarget iid ability)
     let
       additionalCosts = flip mapMaybe modifiers' $ \case
         AdditionalCost c -> Just c
@@ -2702,10 +2706,8 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . effectsL %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
-  PutCardOnTopOfDeck _ _ c ->
-    pure $ g & focusedCardsL %~ filter (/= c)
-  PutCardOnBottomOfDeck _ _ c ->
-    pure $ g & focusedCardsL %~ filter (/= c)
+  PutCardOnTopOfDeck _ _ c -> pure $ g & focusedCardsL %~ filter (/= c)
+  PutCardOnBottomOfDeck _ _ c -> pure $ g & focusedCardsL %~ filter (/= c)
   FocusTargets targets -> pure $ g & focusedTargetsL .~ targets
   UnfocusTargets -> pure $ g & focusedTargetsL .~ mempty
   FocusTokens tokens -> pure $ g & focusedTokensL <>~ tokens
@@ -2964,10 +2966,8 @@ runGameMessage msg g = case msg of
                 (foundKey cardSource /= Zone.FromDeck)
                 (error "Expects a deck")
               push
-                (ShuffleIntoEncounterDeck
-                  (mapMaybe (preview _EncounterCard)
-                  $ findWithDefault [] Zone.FromDeck foundCards
-                  )
+                (ShuffleCardsIntoDeck Deck.EncounterDeck
+                $ findWithDefault [] Zone.FromDeck foundCards
                 )
             PutBack -> do
               when
@@ -3018,18 +3018,14 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . assetsL %~ deleteMap aid
   After (ShuffleIntoDeck _ (EventTarget eid)) ->
     pure $ g & entitiesL . eventsL %~ deleteMap eid
-  ShuffleIntoDeck iid (TreacheryTarget treacheryId) -> do
+  ShuffleIntoDeck deck (TreacheryTarget treacheryId) -> do
     treachery <- getTreachery treacheryId
-    case toCard treachery of
-      PlayerCard card -> push (ShuffleCardsIntoDeck iid [card])
-      EncounterCard _ -> error "Unhandled"
+    push $ ShuffleCardsIntoDeck deck [toCard treachery]
     pure $ g & entitiesL . treacheriesL %~ deleteMap treacheryId
-  ShuffleIntoDeck iid (EnemyTarget enemyId) -> do
+  ShuffleIntoDeck deck (EnemyTarget enemyId) -> do
     -- The Thing That Follows
     card <- field EnemyCard enemyId
-    case card of
-      PlayerCard pc -> push (ShuffleCardsIntoDeck iid [pc])
-      EncounterCard _ -> error "Unhandled"
+    push $ ShuffleCardsIntoDeck deck [card]
     pure $ g & entitiesL . enemiesL %~ deleteMap enemyId
   PlayCard iid card _mtarget windows' True -> do
     modifiers' <- getModifiers
@@ -3850,17 +3846,22 @@ runGameMessage msg g = case msg of
       : resolve (Revelation iid (TreacherySource treacheryId))
       <> [AfterRevelation iid treacheryId]
       )
-  DrewTreachery iid (PlayerCard card) -> do
+  DrewTreachery iid c@(PlayerCard card) -> do
     let
       treachery = createTreachery card iid
       treacheryId = toId treachery
+    modifiers' <- getModifiers (InvestigatorSource iid) (CardTarget c)
+    let ignoreRevelation = IgnoreRevelation `elem` modifiers'
     -- player treacheries will not trigger draw treachery windows
     pushAll
       $ [ RemoveCardFromHand iid (toCardId card)
         | cdRevelation (toCardDef card)
         ]
-      <> resolve (Revelation iid (TreacherySource treacheryId))
-      <> [AfterRevelation iid treacheryId, UnsetActiveCard]
+      <> if ignoreRevelation
+           then []
+           else
+             resolve (Revelation iid (TreacherySource treacheryId))
+               <> [AfterRevelation iid treacheryId, UnsetActiveCard]
 
     let
       historyItem = mempty { historyTreacheriesDrawn = [toCardCode treachery] }

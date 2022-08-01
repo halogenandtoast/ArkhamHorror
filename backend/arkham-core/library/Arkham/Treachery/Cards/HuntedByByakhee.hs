@@ -5,13 +5,14 @@ module Arkham.Treachery.Cards.HuntedByByakhee
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Trait
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype HuntedByByakhee = HuntedByByakhee TreacheryAttrs
@@ -29,7 +30,7 @@ instance RunMessage HuntedByByakhee where
       | isSource attrs source -> do
         t <$ pushAll
           [ DiscardTopOfEncounterDeck iid n (Just $ toTarget attrs)
-          , ShuffleIntoEncounterDeck []
+          , ShuffleDeck Deck.EncounterDeck
           ]
     DiscardedTopOfEncounterDeck iid cards target | isTarget attrs target -> do
       let

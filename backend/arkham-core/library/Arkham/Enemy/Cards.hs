@@ -123,6 +123,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , donLagorio
   , elisabettaMagro
   , emergentMonstrosity
+  , eztliGuardian
   , fanatic
   , fleshEater
   , ghoulFromTheDepths
@@ -855,6 +856,12 @@ serpentFromYoth :: CardDef
 serpentFromYoth = (enemy "04084" "Serpent from Yoth" AgentsOfYig 1)
   { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
   , cdVictoryPoints = Just 1
+  }
+
+eztliGuardian :: CardDef
+eztliGuardian = (enemy "04086" "Eztli Guardian" GuardiansOfTime 2)
+  { cdCardTraits = setFromList [Humanoid, Eztli]
+  , cdKeywords = setFromList [Keyword.Alert, Keyword.Aloof]
   }
 
 corpseHungryGhoul :: CardDef

@@ -189,6 +189,8 @@ allEnemies = mapFromList $ map
   -- Agents of Yig
   , SomeEnemyCard broodOfYig
   , SomeEnemyCard serpentFromYoth
+  -- Guardians of Time
+  , SomeEnemyCard eztliGuardian
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeEnemyCard corpseHungryGhoul

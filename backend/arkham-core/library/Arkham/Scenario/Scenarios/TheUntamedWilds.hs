@@ -39,10 +39,12 @@ theUntamedWilds difficulty = scenario
   "04043"
   "The Untamed Wilds"
   difficulty
-  [ ".               .            .             .            expeditionCamp .               .              ."
-  , ".               pathOfThorns .             .            riverCanyon    .               .              ropeBridge"
-  , ".               .            serpentsHaven .            .              circuitousTrail .              ."
-  , "templeOfTheFang .            .             ruinsOfEztli .              .               overgrownRuins ."
+  [ ".               .             ruinsOfEztli   .               ."
+  , ".               serpentsHaven ruinsOfEztli   circuitousTrail ."
+  , "templeOfTheFang serpentsHaven riverCanyon    circuitousTrail overgrownRuins"
+  , "templeOfTheFang pathOfThorns  riverCanyon    ropeBridge      overgrownRuins"
+  , ".               pathOfThorns  expeditionCamp ropeBridge      ."
+  , ".               .             expeditionCamp .               ."
   ]
 
 instance HasTokenValue TheUntamedWilds where

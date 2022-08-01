@@ -100,6 +100,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , balefulReveler
   , beastOfAldebaran
   , billyCooper
+  , boaConstrictor
   , bogGator
   , broodOfYig
   , broodOfYogSothoth
@@ -150,6 +151,7 @@ allEncounterEnemyCards = mapFromList $ concatMap
   , narogath
   , oBannionsThug
   , peterWarren
+  , pitViper
   , poleman
   , poltergeist
   , possessedOathspeaker
@@ -828,6 +830,19 @@ ichtaca = (enemy "04052" ("Ichtaca" <:> "Keeper of the Eztli") TheUntamedWilds 1
   { cdCardTraits = setFromList [Humanoid, Eztli, Elite]
   , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
   , cdVictoryPoints = Just 1
+  }
+
+pitViper :: CardDef
+pitViper = (enemy "04078" "Pit Viper" Serpents 3)
+  { cdCardTraits = setFromList [Creature, Serpent]
+  , cdVengeancePoints = Just 1
+  }
+
+boaConstrictor :: CardDef
+boaConstrictor = (enemy "04079" "Boa Constrictor" Serpents 1)
+  { cdCardTraits = setFromList [Creature, Serpent]
+  , cdKeywords = singleton Keyword.Hunter
+  , cdVengeancePoints = Just 2
   }
 
 broodOfYig :: CardDef

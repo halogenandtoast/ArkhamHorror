@@ -591,6 +591,7 @@ library
       Arkham.Enemy.Cards.BalefulReveler
       Arkham.Enemy.Cards.BeastOfAldebaran
       Arkham.Enemy.Cards.BillyCooper
+      Arkham.Enemy.Cards.BoaConstrictor
       Arkham.Enemy.Cards.BogGator
       Arkham.Enemy.Cards.BroodOfYig
       Arkham.Enemy.Cards.BroodOfYogSothoth
@@ -643,6 +644,7 @@ library
       Arkham.Enemy.Cards.Narogath
       Arkham.Enemy.Cards.OBannionsThug
       Arkham.Enemy.Cards.PeterWarren
+      Arkham.Enemy.Cards.PitViper
       Arkham.Enemy.Cards.Poleman
       Arkham.Enemy.Cards.Poltergeist
       Arkham.Enemy.Cards.PossessedOathspeaker

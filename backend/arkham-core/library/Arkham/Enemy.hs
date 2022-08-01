@@ -183,6 +183,9 @@ allEnemies = mapFromList $ map
   , SomeEnemyCard serpentsOfYig
   -- The Untamed Wilds
   , SomeEnemyCard ichtaca
+  -- Serpents
+  , SomeEnemyCard pitViper
+  , SomeEnemyCard boaConstrictor
   -- Agents of Yig
   , SomeEnemyCard broodOfYig
   , SomeEnemyCard serpentFromYoth

@@ -36,5 +36,8 @@ data ScenarioLogKey
   -- ^ Black Stars Rise
   | KnowTheSecret
   -- ^ DimCarcosa
+  | IchtachaIsLeadingTheWay
+  | YouFoughtWithIchtaca
+  -- ^ The Untamed Wilds
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

@@ -6,14 +6,15 @@ module Arkham.Scenario.Scenarios.WhereDoomAwaits
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Types ( Field (..) )
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Sequence qualified as AS
+import Arkham.Agenda.Types ( Field (..) )
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
@@ -212,7 +213,7 @@ instance RunMessage WhereDoomAwaits where
             [ SpawnEnemyAt
               (EncounterCard conglomerationOfSpheres)
               (toLocationId ascendingPath)
-            , ShuffleIntoEncounterDeck rest
+            , ShuffleCardsIntoDeck Deck.EncounterDeck $ map EncounterCard rest
             ]
         else pure []
 

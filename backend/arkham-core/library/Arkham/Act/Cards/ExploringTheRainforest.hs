@@ -10,6 +10,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Source
@@ -36,4 +37,16 @@ instance RunMessage ExploringTheRainforest where
   runMessage msg a@(ExploringTheRainforest attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
+    AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
+      ichtaca <-
+        fromJustNote "Ichtaca was not set aside"
+        . listToMaybe
+        <$> getSetAsideCardsMatching (CardWithTitle "Ichtaca")
+      locationId <- selectJust LeadInvestigatorLocation
+      pushAll
+        [ CreateEnemyAt ichtaca locationId Nothing
+        , ShuffleEncounterDiscardBackIn
+        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+        ]
+      pure a
     _ -> ExploringTheRainforest <$> runMessage msg attrs

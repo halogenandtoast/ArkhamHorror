@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyDefeated)
@@ -40,5 +41,5 @@ instance HasAbilities TheThingThatFollows where
 instance RunMessage TheThingThatFollows where
   runMessage msg e@(TheThingThatFollows attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> e <$ pushAll
-      [CancelNext EnemyDefeatedMessage, ShuffleIntoDeck iid $ toTarget attrs]
+      [CancelNext EnemyDefeatedMessage, ShuffleIntoDeck (Deck.InvestigatorDeck iid) $ toTarget attrs]
     _ -> TheThingThatFollows <$> runMessage msg attrs

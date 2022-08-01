@@ -73,6 +73,7 @@ data ModifierType
   | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
   | CancelSkills
   | CannotAttack
+  | CannotBeAttacked
   | CannotBeAttackedByNonElite
   | CannotBeFlipped
   | CannotBeDefeated
@@ -169,6 +170,7 @@ data ModifierType
   | UseSkillInPlaceOf SkillType SkillType
   | XPModifier Int
   | SkillTestAutomaticallySucceeds
+  | IgnoreRevelation
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 

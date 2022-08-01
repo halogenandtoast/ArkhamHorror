@@ -6,6 +6,7 @@ module Arkham.Event.Cards.WingingIt
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
@@ -32,7 +33,7 @@ instance RunMessage WingingIt where
         iid
       let
         eventResolution =
-          if zone == Zone.FromDiscard then ShuffleIntoDeck iid else Discard
+          if zone == Zone.FromDiscard then ShuffleIntoDeck (Deck.InvestigatorDeck iid) else Discard
         modifiers =
           [ skillTestModifier attrs (InvestigatorTarget iid) (DiscoveredClues 1)
           | zone == Zone.FromDiscard

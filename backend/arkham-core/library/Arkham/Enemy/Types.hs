@@ -22,6 +22,7 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Keyword
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
@@ -173,10 +174,12 @@ instance HasAbilities EnemyAttrs where
     [ restrictedAbility
         e
         100
-        (OnSameLocation <> AnyCriterion
-          [ Negate $ EnemyCriteria $ ThisEnemy AloofEnemy
-          , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith Anyone
-          ]
+        (OnSameLocation
+        <> AnyCriterion
+             [ Negate $ EnemyCriteria $ ThisEnemy AloofEnemy
+             , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith Anyone
+             ]
+        <> (EnemyCriteria $ ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
         )
       $ ActionAbility (Just Action.Fight) (ActionCost 1)
     , restrictedAbility

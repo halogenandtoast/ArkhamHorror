@@ -552,12 +552,11 @@ data Message
   | PutAllFocusedIntoDiscard InvestigatorId Target
   | ShuffleAllInEncounterDiscardBackIn CardCode
   | ShuffleBackIntoEncounterDeck Target
-  | ShuffleCardsIntoDeck InvestigatorId [PlayerCard]
+  | ShuffleCardsIntoDeck DeckSignifier [Card]
   | ShuffleDiscardBackIn InvestigatorId
   | ShuffleEncounterDiscardBackIn
-  | ShuffleScenarioDeck ScenarioDeckKey
-  | ShuffleIntoDeck InvestigatorId Target
-  | ShuffleIntoEncounterDeck [EncounterCard]
+  | ShuffleDeck DeckSignifier
+  | ShuffleIntoDeck DeckSignifier Target
   | SkillTestApplyResults
   | SkillTestApplyResultsAfter
   | SkillTestAsk Message

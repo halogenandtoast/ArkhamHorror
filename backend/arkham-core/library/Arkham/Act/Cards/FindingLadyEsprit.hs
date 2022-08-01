@@ -14,6 +14,7 @@ import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
@@ -71,7 +72,7 @@ instance RunMessage FindingLadyEsprit where
         )
     NextAdvanceActStep aid 2 | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      curseOfTheRougarouSet <- gatherEncounterSet
+      curseOfTheRougarouSet <- map EncounterCard <$> gatherEncounterSet
         EncounterSet.CurseOfTheRougarou
       rougarouSpawnLocations <- setToList <$> nonBayouLocations
       theRougarou <- EncounterCard <$> genEncounterCard Enemies.theRougarou
@@ -85,7 +86,7 @@ instance RunMessage FindingLadyEsprit where
              ]
          ]
         <> [ ShuffleEncounterDiscardBackIn
-           , ShuffleIntoEncounterDeck curseOfTheRougarouSet
+           , ShuffleCardsIntoDeck Deck.EncounterDeck curseOfTheRougarouSet
            , AddCampaignCardToDeck
              leadInvestigatorId
              Treacheries.curseOfTheRougarou

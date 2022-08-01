@@ -8,8 +8,10 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
@@ -22,11 +24,8 @@ drWilliamTMaleson = ally DrWilliamTMaleson Cards.drWilliamTMaleson (2, 2)
 
 instance HasAbilities DrWilliamTMaleson where
   getAbilities (DrWilliamTMaleson attrs) =
-    [ restrictedAbility
-        attrs
-        1
-        ControlsThis
-        (ReactionAbility
+    [ restrictedAbility attrs 1 ControlsThis
+        $ ReactionAbility
             (DrawCard
               Timing.When
               You
@@ -34,7 +33,6 @@ instance HasAbilities DrWilliamTMaleson where
               (DeckOf You)
             )
         $ Costs [ExhaustCost (toTarget attrs), PlaceClueOnLocationCost 1]
-        )
     ]
 
 dropUntilDraw :: [Message] -> [Message]
@@ -47,5 +45,7 @@ instance RunMessage DrWilliamTMaleson where
         InvestigatorDrewEncounterCard _ card' : queue' -> (queue', card')
         _ -> error "unhandled"
       a <$ pushAll
-        [ShuffleIntoEncounterDeck [card], InvestigatorDrawEncounterCard iid]
+        [ ShuffleCardsIntoDeck Deck.EncounterDeck [EncounterCard card]
+        , InvestigatorDrawEncounterCard iid
+        ]
     _ -> DrWilliamTMaleson <$> runMessage msg attrs

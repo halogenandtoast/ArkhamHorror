@@ -292,6 +292,7 @@ data EnemyMatcher
   | EnemyNotEngagedWithYou
   | EnemyWithMostRemainingHealth EnemyMatcher
   | EnemyWithoutModifier ModifierType
+  | EnemyWithModifier ModifierType
   | UnengagedEnemy
   | UniqueEnemy
   | NotEnemy EnemyMatcher

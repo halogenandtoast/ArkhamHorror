@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
@@ -30,7 +31,7 @@ instance RunMessage SlitheringBehindYou where
       case mHuntingHorrorId of
         Just eid ->
           t <$ pushAll
-            [PlaceDoom (EnemyTarget eid) 1, ShuffleIntoEncounterDeck []]
+            [PlaceDoom (EnemyTarget eid) 1, ShuffleDeck Deck.EncounterDeck]
         Nothing ->
           t
             <$ push

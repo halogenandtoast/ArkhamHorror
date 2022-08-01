@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Criteria
+import Arkham.Deck qualified as Deck
 import Arkham.History
 import Arkham.Id
 import {-# SOURCE #-} Arkham.GameEnv
@@ -64,7 +65,7 @@ instance RunMessage CallOfTheUnknown where
         when (lid `notMember` historyLocationsSuccessfullyInvestigated history)
           $ pushAll
               [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-              , ShuffleIntoDeck iid (toTarget attrs)
+              , ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
               ]
       pure $ CallOfTheUnknown $ attrs `with` Metadata Nothing
     _ -> CallOfTheUnknown . (`with` metadata) <$> runMessage msg attrs

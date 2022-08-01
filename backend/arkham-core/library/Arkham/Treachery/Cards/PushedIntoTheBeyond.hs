@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.EffectMetadata
 import Arkham.Matcher
 import Arkham.Message
@@ -34,7 +35,7 @@ instance RunMessage PushedIntoTheBeyond where
           iid
           [ TargetLabel
               (AssetTarget aid)
-              [ ShuffleIntoDeck iid (AssetTarget aid)
+              [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid)
               , CreateEffect
                 (CardCode "02100")
                 (Just (EffectCardCode cardCode))

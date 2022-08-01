@@ -7,20 +7,20 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Act.Sequence qualified as ActSequence
-import Arkham.Agenda.Types
+import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
 import Arkham.GameValue
-import Arkham.Matcher hiding (InvestigatorDefeated, PlaceUnderneath)
+import Arkham.Matcher hiding ( InvestigatorDefeated, PlaceUnderneath )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Resolution
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype HisDomain = HisDomain AgendaAttrs
@@ -48,13 +48,13 @@ instance RunMessage HisDomain where
         )
     UseCardAbility _ source [Window _ (Window.PlaceUnderneath _ card)] 1 _
       | isSource attrs source -> do
-        let ec = fromJustNote "wrong card type" $ preview _EncounterCard card
         removeAllMessagesMatching \case
           PlacedUnderneath ActDeckTarget card' -> card == card'
           CheckWindow _ [Window _ (Window.PlaceUnderneath ActDeckTarget card')]
             -> card == card'
           _ -> False
-        a <$ push (ShuffleIntoEncounterDeck [ec])
+        push $ ShuffleCardsIntoDeck Deck.EncounterDeck [card]
+        pure a
     HandleNoRemainingInvestigators target | isTarget attrs target -> do
       anyResigned <- selectAny ResignedInvestigator
       if anyResigned

@@ -353,9 +353,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
   RemoveCardFromSearch iid cardId | iid == investigatorId ->
     pure $ a & foundCardsL %~ HashMap.map (filter ((/= cardId) . toCardId))
-  ShuffleIntoDeck iid (TreacheryTarget tid) | iid == investigatorId ->
+  ShuffleIntoDeck (Deck.InvestigatorDeck iid) (TreacheryTarget tid) | iid == investigatorId ->
     pure $ a & treacheriesL %~ deleteSet tid
-  ShuffleIntoDeck iid (AssetTarget aid) | iid == investigatorId -> do
+  ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid) | iid == investigatorId -> do
     card <-
       fromJustNote "missing card" . preview _PlayerCard <$> field AssetCard aid
     deck' <- shuffleM (card : unDeck investigatorDeck)
@@ -365,7 +365,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (assetsL %~ deleteSet aid)
       & (deckL .~ Deck deck')
       & (slotsL %~ removeFromSlots aid)
-  ShuffleIntoDeck iid (EventTarget eid) | iid == investigatorId -> do
+  ShuffleIntoDeck (Deck.InvestigatorDeck iid) (EventTarget eid) | iid == investigatorId -> do
     card <-
       fromJustNote "missing card" . preview _PlayerCard <$> field EventCard eid
     deck' <- shuffleM (card : unDeck investigatorDeck)
@@ -1773,9 +1773,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (assetsL %~ deleteSet (AssetId $ toCardId card))
       & (slotsL %~ removeFromSlots (AssetId $ toCardId card))
       & (discardL %~ filter ((/= card) . PlayerCard))
-  ShuffleCardsIntoDeck iid cards | iid == investigatorId -> do
-    deck <- shuffleM (cards <> unDeck investigatorDeck)
-    pure $ a & deckL .~ Deck deck
+  ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards | iid == investigatorId ->
+    do
+      let cards' = mapMaybe (preview _PlayerCard) cards
+      deck <- shuffleM (cards' <> unDeck investigatorDeck)
+      pure $ a & deckL .~ Deck deck
   AddFocusedToHand _ (InvestigatorTarget iid') cardSource cardId
     | iid' == investigatorId -> do
       let
@@ -1807,9 +1809,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ShuffleAllFocusedIntoDeck _ (InvestigatorTarget iid')
     | iid' == investigatorId -> do
       let
-        cards = mapMaybe (preview _PlayerCard)
-          $ findWithDefault [] Zone.FromDeck investigatorFoundCards
-      push (ShuffleCardsIntoDeck iid' cards)
+        cards = findWithDefault [] Zone.FromDeck investigatorFoundCards
+      push (ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid') cards)
       pure $ a & foundCardsL %~ deleteMap Zone.FromDeck
   PutAllFocusedIntoDiscard _ (InvestigatorTarget iid')
     | iid' == investigatorId -> do
@@ -1836,13 +1837,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             )
         ShuffleBackIn -> do
           when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
-          push
-            (ShuffleCardsIntoDeck
-              iid
-              (mapMaybe (preview _PlayerCard)
-              $ findWithDefault [] Zone.FromDeck investigatorFoundCards
-              )
-            )
+          push $ ShuffleCardsIntoDeck
+            (Deck.InvestigatorDeck iid)
+            (findWithDefault [] Zone.FromDeck investigatorFoundCards)
         PutBack -> when
           (foundKey cardSource == Zone.FromDeck)
           (error "Can not take deck")

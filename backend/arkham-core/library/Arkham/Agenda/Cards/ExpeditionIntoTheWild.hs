@@ -14,6 +14,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
@@ -52,14 +53,13 @@ instance RunMessage ExpeditionIntoTheWild where
         (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      setAsideAgentsOfYig <-
-        mapMaybe (preview _EncounterCard) <$> scenarioFieldMap
-          ScenarioSetAsideCards
-          (filter ((== Just AgentsOfYig) . cdEncounterSet . toCardDef))
+      setAsideAgentsOfYig <- scenarioFieldMap
+        ScenarioSetAsideCards
+        (filter ((== Just AgentsOfYig) . cdEncounterSet . toCardDef))
       iids <- getInvestigatorIds
       pushAll
         $ [ ShuffleEncounterDiscardBackIn
-          , ShuffleIntoEncounterDeck setAsideAgentsOfYig
+          , ShuffleCardsIntoDeck Deck.EncounterDeck setAsideAgentsOfYig
           ]
         <> [ BeginSkillTest
                iid

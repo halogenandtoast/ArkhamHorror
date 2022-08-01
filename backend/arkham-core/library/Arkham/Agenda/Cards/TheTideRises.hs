@@ -11,9 +11,9 @@ import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
+import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
@@ -37,8 +37,7 @@ instance HasAbilities TheTideRises where
 instance RunMessage TheTideRises where
   runMessage msg a@(TheTideRises attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      tidalTerrors <- mapMaybe (preview _EncounterCard)
-        <$> getSetAsideCardsMatching (CardWithTitle "Tidal Terror")
+      tidalTerrors <- getSetAsideCardsMatching (CardWithTitle "Tidal Terror")
       mAgenda1C <- selectOne $ AgendaWithSequence $ AS.Sequence 1 C
       markDoubtOrConviction <- case mAgenda1C of
         Nothing -> pure []
@@ -47,7 +46,9 @@ instance RunMessage TheTideRises where
           markMsg <- if a1cDoom > 3 then markDoubt else markConviction
           pure [markMsg]
       pushAll
-        $ [ShuffleEncounterDiscardBackIn, ShuffleIntoEncounterDeck tidalTerrors]
+        $ [ ShuffleEncounterDiscardBackIn
+          , ShuffleCardsIntoDeck Deck.EncounterDeck tidalTerrors
+          ]
         <> markDoubtOrConviction
         <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a

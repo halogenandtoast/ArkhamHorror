@@ -6,13 +6,13 @@ module Arkham.Agenda.Cards.TorturousDescent
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Agenda.Types
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Deck qualified as Deck
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
@@ -39,17 +39,17 @@ instance RunMessage TorturousDescent where
           card <- genCard Enemies.constanceDumaine
           pure [CreateEnemyAtLocationMatching card (LocationWithTitle "Garden")]
         else pure []
-      a <$ pushAll
-        ([ DrawRandomFromScenarioDeck
-             leadInvestigatorId
-             MonstersDeck
-             (toTarget attrs)
-             1
-         ]
+      pushAll
+        $ [ DrawRandomFromScenarioDeck
+              leadInvestigatorId
+              MonstersDeck
+              (toTarget attrs)
+              1
+          ]
         <> spawnConstanceDumaineMessages
         <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
-        )
-    DrewFromScenarioDeck _ _ target cards | isTarget attrs target ->
-      a <$ push
-        (ShuffleIntoEncounterDeck $ mapMaybe (preview _EncounterCard) cards)
+      pure a
+    DrewFromScenarioDeck _ _ target cards | isTarget attrs target -> do
+      push $ ShuffleCardsIntoDeck Deck.EncounterDeck cards
+      pure a
     _ -> TorturousDescent <$> runMessage msg attrs

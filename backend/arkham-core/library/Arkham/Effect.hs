@@ -19,16 +19,19 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Window ( Window )
 
+-- start importing directly
 import Arkham.Asset.Assets
   ( mistsOfRlyehEffect
   , yaotl1Effect
+  )
+import Arkham.Enemy.Enemies
+  ( boaConstrictorEffect
   )
 import Arkham.Event.Events
   ( oneTwoPunch5Effect
   , oneTwoPunchEffect
   , willToSurviveEffect
   )
--- start importing directly
 import Arkham.Investigator.Investigators
   ( fatherMateoElderSignEffect )
 
@@ -172,6 +175,7 @@ allEffects = mapFromList
   , ("04004", SomeEffect fatherMateoElderSignEffect)
   , ("04029", SomeEffect mistsOfRlyehEffect)
   , ("04035", SomeEffect yaotl1Effect)
+  , ("04079", SomeEffect boaConstrictorEffect)
   , ("05114", SomeEffect meatCleaver)
   , ("50008", SomeEffect mindWipe3)
   , ("50033", SomeEffect arkhamWoodsGreatWillow)

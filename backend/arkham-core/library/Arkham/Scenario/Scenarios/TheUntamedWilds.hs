@@ -101,6 +101,7 @@ instance RunMessage TheUntamedWilds where
         [ Locations.ruinsOfEztli
         , Locations.templeOfTheFang
         , Locations.overgrownRuins
+        , Assets.alejandroVela
         , Enemies.ichtaca
         , Treacheries.poisoned
         , Treacheries.poisoned

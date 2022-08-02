@@ -290,7 +290,7 @@ allLocations = mapFromList $ map
   , SomeLocationCard serpentsHaven
   , SomeLocationCard circuitousTrail
   , SomeLocationCard templeOfTheFang
-  , SomeLocationCard overgrownCairns
+  , SomeLocationCard overgrownRuins
   -- Return to Night of the Zealot
   -- Return to the Gathering
   , SomeLocationCard studyAberrantGateway

@@ -13,7 +13,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyAttacks )
-import Arkham.Phase
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
@@ -35,7 +34,16 @@ instance HasAbilities EztliGuardian where
   getAbilities (EztliGuardian a) = withBaseAbilities
     a
     [ limitedAbility (GroupLimit PerPhase 1)
-      $ restrictedAbility a 1 (DuringPhase $ PhaseIs EnemyPhase)
+      $ restrictedAbility
+          a
+          1
+          (InvestigatorExists
+          $ InvestigatorAt
+          $ ConnectedFrom
+          $ LocationWithEnemy
+          $ EnemyWithId
+          $ toId a
+          )
       $ ForcedAbility
       $ PhaseStep Timing.When EnemiesAttackStep
     ]
@@ -43,12 +51,15 @@ instance HasAbilities EztliGuardian where
 instance RunMessage EztliGuardian where
   runMessage msg e@(EztliGuardian attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
-      leadInvestigatorId <- getLeadInvestigatorId
       adjacentInvestigators <-
         selectList $ InvestigatorAt $ ConnectedFrom $ LocationWithEnemy
           (EnemyWithId $ toId attrs)
       insertAfterMatching
-        [ EnemyWillAttack iid (toId attrs) (enemyDamageStrategy attrs) RegularAttack
+        [ EnemyWillAttack
+            iid
+            (toId attrs)
+            (enemyDamageStrategy attrs)
+            RegularAttack
         | iid <- adjacentInvestigators
         ]
         (== EnemiesAttack)

@@ -18,11 +18,13 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
+import Arkham.Helpers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheUntamedWilds.Story
@@ -105,8 +107,38 @@ instance RunMessage TheUntamedWilds where
         , Treacheries.poisoned
         , Treacheries.poisoned
         ]
+      encounterDeck <- buildEncounterDeckExcluding
+        [ Enemies.ichtaca
+        , Locations.pathOfThorns
+        , Locations.riverCanyon
+        , Locations.ropeBridge
+        , Locations.serpentsHaven
+        , Locations.circuitousTrail
+        , Locations.ruinsOfEztli
+        , Locations.templeOfTheFang
+        , Locations.overgrownRuins
+        ]
+        [ EncounterSet.TheUntamedWilds
+        , EncounterSet.Rainforest
+        , EncounterSet.Serpents
+        , EncounterSet.Expedition
+        , EncounterSet.GuardiansOfTime
+        , EncounterSet.Poison
+        , EncounterSet.AncientEvils
+        ]
+      let
+        encounterDeck' = flip withDeck encounterDeck $ \cards -> foldl'
+          (\cs m -> deleteFirstMatch ((== m) . toCardDef) cs)
+          cards
+          [ Treacheries.lostInTheWilds
+          , Treacheries.overgrowth
+          , Treacheries.snakeBite
+          , Treacheries.lowOnSupplies
+          , Treacheries.arrowsFromTheTrees
+          ]
       pushAll
         $ [ story investigatorIds intro
+          , SetEncounterDeck encounterDeck'
           , SetAgendaDeck
           , SetActDeck
           , PlaceLocation expeditionCamp

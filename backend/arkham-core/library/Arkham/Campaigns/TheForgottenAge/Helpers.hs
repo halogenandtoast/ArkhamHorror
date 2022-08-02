@@ -25,6 +25,12 @@ import qualified Arkham.Window as Window
 getHasSupply :: (HasGame m, Monad m) => InvestigatorId -> Supply -> m Bool
 getHasSupply iid s = fieldP InvestigatorSupplies (elem s) iid
 
+getInvestigatorsWithSupply :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
+getInvestigatorsWithSupply s = getInvestigatorIds >>= filterM (`getHasSupply` s)
+
+getInvestigatorsWithoutSupply :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
+getInvestigatorsWithoutSupply s = getInvestigatorIds >>= filterM (fmap not . (`getHasSupply` s))
+
 getVengeanceInVictoryDisplay :: (HasGame m, Monad m) => m Int
 getVengeanceInVictoryDisplay =
   sum

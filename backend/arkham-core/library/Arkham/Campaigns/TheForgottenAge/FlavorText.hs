@@ -35,3 +35,51 @@ prologue = FlavorText
     \ of interesting discoveries. If not, perhaps it’ll be a nice wedge to place\
     \ beneath Harlan’s lopsided desk."
   ]
+
+restfulSleep :: Message
+restfulSleep = FlavorText
+  (Just "Restful Sleep")
+  [ "Mercifully, I was able to sleep through each night. However, while my body\
+    \ rested, my mind was plagued by nightmares. A cavern like a gaping maw, bathed\
+    \ in dim red light...the walls slithering with the glimmering scales of a hundred\
+    \ vipers...it might have been better had I not slept at all."
+  ]
+
+tossingAndTurning :: Message
+tossingAndTurning = FlavorText
+  (Just "Tossing and Turning")
+  [ "Those nights in the jungle, I barely slept. A strange fog rolled through the\
+    \ camp each night, plunging the area in an intense and peculiar cold. My bedroll\
+    \ offered some protection against the elements, but we hadn’t been prepared for\
+    \ this unnatural weather. Flies and mosquitoes buzzed in my ears every time I\
+    \ began to drift off. Even when I finally slept, I would soon be startled awake\
+    \ by the crawling of an insect or lizard across my face. I wager I’ll get very\
+    \ little sleep on this journey..."
+  ]
+
+lowOnRations :: Message
+lowOnRations = FlavorText
+  (Just "Low on Rations")
+  [ "We thought we’d brought enough food and water for everybody, but the journey\
+    \ had taken its toll on our supplies. When the sun rose and it came time to eat,\
+    \ we discovered we were already running out of provisions."
+  ]
+
+shapesInTheTrees :: Message
+shapesInTheTrees = FlavorText
+  (Just "Shapes in the Trees")
+  [ "Most of the nights passed without incident, but on this night, I was startled\
+    \ by the rustling of tree branches along the southern border of our camp’s\
+    \ clearing. Despite the darkness, I was able to use my binoculars to see shapes\
+    \ moving in the trees. The shapes appeared human, but...why? Why do they only\
+    \ watch us from afar? What is their purpose?"
+  ]
+
+eyesInTheDark :: Message
+eyesInTheDark = FlavorText
+  (Just "Eyes in the Dark")
+  [ "Each night, I was watched. I didn’t just feel watched: I saw the eyes peering\
+    \ out from the inky darkness that surrounded our camp. They knew we were there.\
+    \ The yellow eyes watched me, alert, my weapons drawn, ready to defend the camp\
+    \ if the need arose. Our eyes met, and a darkness seized my heart."
+  ]

@@ -12,8 +12,9 @@ import Arkham.Classes
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query
-import Arkham.Investigator.Types (Field(..))
 import Arkham.Id
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Target
@@ -56,19 +57,34 @@ supplyCost = \case
 
 supplyLabel :: Supply -> [Message] -> Message
 supplyLabel s = case s of
-  Provisions -> go "Provisions" "(1 supply point each): Food and water for one person. A must-have for any journey."
-  Medicine -> go "Medicine" "(2 supply points each): To stave off disease, infection, or venom."
-  Rope -> go "Rope" "(3 supply points): Several long coils of strong rope.  Vital for climbing and spelunking."
+  Provisions -> go
+    "Provisions"
+    "(1 supply point each): Food and water for one person. A must-have for any journey."
+  Medicine -> go
+    "Medicine"
+    "(2 supply points each): To stave off disease, infection, or venom."
+  Rope -> go
+    "Rope"
+    "(3 supply points): Several long coils of strong rope.  Vital for climbing and spelunking."
   Blanket -> go "Blanket" "(2 supply points): For warmth at night."
-  Canteen -> go "Canteen" "(2 supply points): Can be refilled at streams and rivers."
-  Torches -> go "Torches" "(3 supply points): Can light up dark areas, or set sconces alight."
-  Compass -> go "Compass" "(2 supply points): Can guide you when you are hopelessly lost."
-  Map -> go "Map" "(3 supply points): Unmarked for now, but with time, you may be able to map out your surroundings."
-  Binoculars -> go "Binoculars" "(2 supply points): To help you see faraway places."
+  Canteen ->
+    go "Canteen" "(2 supply points): Can be refilled at streams and rivers."
+  Torches -> go
+    "Torches"
+    "(3 supply points): Can light up dark areas, or set sconces alight."
+  Compass -> go
+    "Compass"
+    "(2 supply points): Can guide you when you are hopelessly lost."
+  Map -> go
+    "Map"
+    "(3 supply points): Unmarked for now, but with time, you may be able to map out your surroundings."
+  Binoculars ->
+    go "Binoculars" "(2 supply points): To help you see faraway places."
   Chalk -> go "Chalk" "(2 supply points): For writing on rough stone surfaces."
-  Pendant -> go "Pendant" "(1 supply point): Useless, but fond memories bring comfort to travelers far from home."
- where
-   go label tooltip = TooltipLabel label (Tooltip tooltip)
+  Pendant -> go
+    "Pendant"
+    "(1 supply point): Useless, but fond memories bring comfort to travelers far from home."
+  where go label tooltip = TooltipLabel label (Tooltip tooltip)
 
 instance RunMessage TheForgottenAge where
   runMessage msg c@(TheForgottenAge attrs) = case msg of
@@ -93,7 +109,8 @@ instance RunMessage TheForgottenAge where
 
       when (remaining > 0) $ do
         let
-          availableSupply s = s `notElem` investigatorSupplies || s `elem` [Provisions, Medicine]
+          availableSupply s =
+            s `notElem` investigatorSupplies || s `elem` [Provisions, Medicine]
           affordableSupplies = filter ((<= remaining) . supplyCost) allSupplies
           availableSupplies = filter availableSupply affordableSupplies
         push
@@ -112,6 +129,72 @@ instance RunMessage TheForgottenAge where
               )
               availableSupplies
 
+      pure c
+    CampaignStep (Just (InterludeStep 1 _)) -> do
+      withBlanket <- getInvestigatorsWithSupply Blanket
+      withoutBlanket <- getInvestigatorsWithoutSupply Blanket
+      provisions <- do
+        iids <- selectList Anyone
+        concat <$> for
+          iids
+          \iid -> do
+            provisions <- fieldMap
+              InvestigatorSupplies
+              (filter (== Provisions))
+              iid
+            pure $ map (iid, ) provisions
+      investigatorsWithBinocularsPairs <- do
+        iids <- selectList Anyone
+        for iids $ \iid -> do
+          binoculars <- fieldMap InvestigatorSupplies (any (== Provisions)) iid
+          pure (iid, binoculars)
+      leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      let
+        lowOnRationsCount = length investigatorIds - length provisions
+        useProvisions = take (length investigatorIds) provisions
+      pushAll
+        $ map
+            (\i -> AskPlayer $ Ask
+              i
+              (ChooseOne
+                [Run [Continue "You suffer no ill effects", restfulSleep]]
+              )
+            )
+            withBlanket
+        <> map
+             (\i -> AskPlayer $ Ask
+               i
+               (ChooseOne
+                 [ Run
+                     [ Label "suffer 1 physical trauma" [SufferTrauma i 1 0]
+                     , Label "suffer 1 mental trauma" [SufferTrauma i 0 1]
+                     , tossingAndTurning
+                     ]
+                 ]
+               )
+             )
+             withoutBlanket
+        <> map (uncurry UseSupply) useProvisions
+        <> [ chooseN
+               leadInvestigatorId
+               lowOnRationsCount
+               [ targetLabel iid [story [iid] lowOnRations]
+               | iid <- investigatorIds
+               ]
+           | lowOnRationsCount > 0
+           ]
+        <> [ LabelGroup
+               "The lead investigator must choose one investigator to be the group’s lookout. Then, that investigator checks his or her supplies. If he or she has binoculars, he or she reads Shapes in the Trees. Otherwise, he or she reads Eyes in the Dark."
+               [ targetLabel
+                   iid
+                   [ if hasBinoculars
+                       then GainXP iid 2
+                       else SufferTrauma iid 0 1
+                   ]
+               | (iid, hasBinoculars) <- investigatorsWithBinocularsPairs
+               ]
+           ]
       pure c
     NextCampaignStep _ -> do
       let step = nextStep attrs

@@ -566,7 +566,7 @@ targetToSource = \case
   CardTarget{} -> error "can not convert"
   StoryTarget code -> StorySource code
   AgendaMatcherTarget _ -> error "can not convert"
-  CampaignTarget -> error "can not convert"
+  CampaignTarget -> CampaignSource
   AbilityTarget _ _ -> error "can not convert"
 
 sourceToTarget :: Source -> Target
@@ -604,6 +604,7 @@ sourceToTarget = \case
   LocationMatcherSource{} -> error "not converted"
   EnemyAttackSource a -> EnemyTarget a
   StorySource code -> StoryTarget code
+  CampaignSource -> CampaignTarget
 
 addCampaignCardToDeckChoice
   :: InvestigatorId -> [InvestigatorId] -> CardDef -> Message
@@ -1850,6 +1851,7 @@ sourceTraits = \case
   TokenSource _ -> pure mempty
   YouSource -> selectJust Matcher.You >>= field InvestigatorTraits
   LocationMatcherSource _ -> pure mempty
+  CampaignSource -> pure mempty
 
 sourceMatches
   :: (HasCallStack, Monad m, HasGame m)

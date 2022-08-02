@@ -96,6 +96,15 @@ data CampaignLogKey
   | HasturHasYouInHisGrasp
   | Possessed
   -- ^ The Path to Carcosa
+  | TheInvestigatorsWereForcedToWaitForAdditionalSupplies
+  | IchtacaObservedYourProgressWithKeenInterest
+  | AlejandroFollowedTheInvestigatorsIntoTheRuins
+  | IchtacaIsWaryOfTheInvestigators
+  | TheInvestigatorsHaveEarnedIchtacasTrust
+  | AlejandroChoseToRemainAtCamp
+  | TheInvestigatorsClearedAPathToTheEztliRuins
+  | YigsFury
+  -- ^ The Forgotten Age
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

@@ -111,6 +111,7 @@ allPlayerTreacheryCards = mapFromList $ concatMap
   , lostSoul
   , overzealous
   , paranoia
+  , poisoned
   , psychosis
   , rexsCurse
   , searchingForIzzie
@@ -146,6 +147,7 @@ allEncounterTreacheryCards = mapFromList $ map
   , collapsingReality
   , corrosion
   , crashingFloods
+  , creepingPoison
   , cryptChill
   , curseOfYig
   , cursedLuck
@@ -190,7 +192,6 @@ allEncounterTreacheryCards = mapFromList $ map
   , oozeAndFilth
   , overgrowth
   , passageIntoTheVeil
-  , poisoned
   , possessionMurderous
   , possessionTorturous
   , possessionTraitorous
@@ -934,11 +935,20 @@ arrowsFromTheTrees =
     { cdCardTraits = singleton Scheme
     }
 
+creepingPoison :: CardDef
+creepingPoison =
+  (treachery "04101" "Creeping Poison" EncounterSet.Poison 2)
+    { cdCardTraits = singleton Poison
+    , cdKeywords = singleton Keyword.Surge
+    }
+
 poisoned :: CardDef
 poisoned =
-  (treachery "04102" "Posioned" EncounterSet.Poison 4)
+  (weakness "04102" "Poisoned")
     { cdCardTraits = singleton Poison
     , cdPermanent = True
+    , cdEncounterSet = Just EncounterSet.Poison
+    , cdEncounterSetQuantity = Just 4
     }
 
 theHarbinger :: CardDef

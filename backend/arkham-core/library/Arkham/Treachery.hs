@@ -228,6 +228,7 @@ allTreacheries = mapFromList $ map
   -- Guardians of Time
   , SomeTreacheryCard arrowsFromTheTrees
   -- Poison
+  , SomeTreacheryCard creepingPoison
   , SomeTreacheryCard poisoned
   -- Edge of the Earth
   -- signature

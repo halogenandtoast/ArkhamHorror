@@ -6,27 +6,31 @@ module Arkham.Scenario.Scenarios.TheUntamedWilds
 import Arkham.Prelude
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.Sequence qualified as AS
+import Arkham.Act.Types
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.EncounterSet
-import Arkham.Helpers.Query
-import Arkham.Helpers.Scenario
-import Arkham.Helpers.Window
+import Arkham.Game.Helpers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Runner
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheUntamedWilds.Story
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype TheUntamedWilds = TheUntamedWilds ScenarioAttrs
@@ -140,5 +144,64 @@ instance RunMessage TheUntamedWilds where
       pure s
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher
+      pure s
+    ScenarioResolution res -> do
+      investigatorIds <- getInvestigatorIds
+      actStep <- fieldMap ActSequence (AS.unActStep . AS.actStep)
+        =<< selectJust AnyAct
+      xp <- getXp
+      vengeance <- getVengeanceInVictoryDisplay
+      leadInvestigatorId <- getLeadInvestigatorId
+      case res of
+        NoResolution -> do
+          foughtWithIchtaca <- remembered YouFoughtWithIchtaca
+          leadingTheWay <- remembered IchtachaIsLeadingTheWay
+          pushAll
+            $ [ story investigatorIds noResolution
+              , Record TheInvestigatorsWereForcedToWaitForAdditionalSupplies
+              ]
+            <> [ Record IchtacaObservedYourProgressWithKeenInterest
+               | actStep `elem` [1, 2]
+               ]
+            <> [ Record IchtacaIsWaryOfTheInvestigators | foughtWithIchtaca ]
+            <> [ Record AlejandroFollowedTheInvestigatorsIntoTheRuins
+               | actStep `elem` [1, 2] || foughtWithIchtaca
+               ]
+            <> [ addCampaignCardToDeckChoice
+                   leadInvestigatorId
+                   investigatorIds
+                   Assets.alejandroVela
+               ]
+            <> [ Record TheInvestigatorsHaveEarnedIchtacasTrust
+               | leadingTheWay
+               ]
+            <> [ Record AlejandroChoseToRemainAtCamp | leadingTheWay ]
+            <> [RecordCount YigsFury vengeance]
+            <> [ GainXP iid n | (iid, n) <- xp ]
+        Resolution 1 -> do
+          pushAll
+            $ [ story investigatorIds resolution1
+              , Record TheInvestigatorsClearedAPathToTheEztliRuins
+              , Record AlejandroChoseToRemainAtCamp
+              , Record TheInvestigatorsHaveEarnedIchtacasTrust
+              , RecordCount YigsFury vengeance
+              ]
+            <> [ GainXP iid n | (iid, n) <- xp ]
+        Resolution 2 -> do
+          pushAll
+            $ [ story investigatorIds resolution2
+              , Record TheInvestigatorsClearedAPathToTheEztliRuins
+              , Record AlejandroFollowedTheInvestigatorsIntoTheRuins
+              ]
+            <> [ addCampaignCardToDeckChoice
+                   leadInvestigatorId
+                   investigatorIds
+                   Assets.alejandroVela
+               ]
+            <> [ Record IchtacaIsWaryOfTheInvestigators
+               , RecordCount YigsFury vengeance
+               ]
+            <> [ GainXP iid n | (iid, n) <- xp ]
+        _ -> error "invalid resolution"
       pure s
     _ -> TheUntamedWilds <$> runMessage msg attrs

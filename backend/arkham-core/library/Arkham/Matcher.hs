@@ -721,6 +721,11 @@ data WindowMatcher
   | ActivateAbility Timing Who AbilityMatcher
   | Explored Timing Who ExploreMatcher
   | AttemptExplore Timing Who
+  | PhaseStep Timing PhaseStepMatcher
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data PhaseStepMatcher = EnemiesAttackStep
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

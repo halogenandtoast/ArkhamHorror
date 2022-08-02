@@ -1324,6 +1324,10 @@ windowMatches iid source window' = \case
     Window t (Window.PhaseEnds p) | whenMatcher == t ->
       matchPhase p phaseMatcher
     _ -> pure False
+  Matcher.PhaseStep whenMatcher phaseStepMatcher -> case window' of
+    Window t Window.EnemiesAttackStep | whenMatcher == t ->
+      pure $ phaseStepMatcher == Matcher.EnemiesAttackStep
+    _ -> pure False
   Matcher.TurnBegins whenMatcher whoMatcher -> case window' of
     Window t (Window.TurnBegins who) | t == whenMatcher ->
       matchWho iid who whoMatcher

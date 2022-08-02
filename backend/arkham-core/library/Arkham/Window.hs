@@ -141,5 +141,6 @@ data WindowType
   | WouldTakeHorror Source Target
   | Explored InvestigatorId Result
   | AttemptExplore InvestigatorId
+  | EnemiesAttackStep
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

@@ -9,14 +9,17 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Runner
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Scenario.Deck
+import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Timing qualified as Timing
@@ -34,7 +37,7 @@ huntressOfTheEztli =
 instance HasAbilities HuntressOfTheEztli where
   getAbilities (HuntressOfTheEztli x) =
     [ mkAbility x 1 $ Objective $ ForcedAbility
-      (EnemyDefeated Timing.When Anyone $ EnemyWithTitle "Ichtaca")
+      (EnemyDefeated Timing.After Anyone $ EnemyWithTitle "Ichtaca")
     , restrictedAbility
         x
         2
@@ -52,27 +55,14 @@ instance RunMessage HuntressOfTheEztli where
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      ichtacaHasCluesOnHer <- selectAny $ EnemyWithTitle "Ichtaca"
+      ichtacaDefeated <- any (`cardMatch` CardWithTitle "Ichtaca") <$> scenarioField ScenarioVictoryDisplay
       ruins <- getSetAsideCardsMatching $ CardWithTrait Ruins
-      if ichtacaHasCluesOnHer
+      if ichtacaDefeated
         then do
-          pushAll
-            [ Remember IchtachaIsLeadingTheWay
-            , AddToken Cultist
-            , ShuffleCardsIntoDeck
-              (Deck.ScenarioDeckByKey ExplorationDeck)
-              ruins
-            , AdvanceToAct
-              (actDeckId attrs)
-              Acts.searchForTheRuins
-              A
-              (toSource attrs)
-            ]
-        else do
           leadInvestigatorId <- getLeadInvestigatorId
           investigatorIds <- getInvestigatorIds
           alejandroVela <-
-            fromJustNote "The Organist was not set aside"
+            fromJustNote "Alejandro Vela was not set aside"
             . listToMaybe
             <$> getSetAsideCardsMatching (CardWithTitle "Alejandro Vela")
           pushAll
@@ -91,6 +81,19 @@ instance RunMessage HuntressOfTheEztli where
             , AdvanceToAct
               (actDeckId attrs)
               Acts.theGuardedRuins
+              A
+              (toSource attrs)
+            ]
+        else do
+          pushAll
+            [ Remember IchtachaIsLeadingTheWay
+            , AddToken Cultist
+            , ShuffleCardsIntoDeck
+              (Deck.ScenarioDeckByKey ExplorationDeck)
+              ruins
+            , AdvanceToAct
+              (actDeckId attrs)
+              Acts.searchForTheRuins
               A
               (toSource attrs)
             ]

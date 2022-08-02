@@ -37,9 +37,7 @@ instance HasAbilities EztliGuardian where
     [ limitedAbility (GroupLimit PerPhase 1)
       $ restrictedAbility a 1 (DuringPhase $ PhaseIs EnemyPhase)
       $ ForcedAbility
-      $ EnemyAttacks Timing.When Anyone AnyEnemyAttack
-      $ EnemyWithId
-      $ toId a
+      $ PhaseStep Timing.When EnemiesAttackStep
     ]
 
 instance RunMessage EztliGuardian where
@@ -49,10 +47,10 @@ instance RunMessage EztliGuardian where
       adjacentInvestigators <-
         selectList $ InvestigatorAt $ ConnectedFrom $ LocationWithEnemy
           (EnemyWithId $ toId attrs)
-      push $ chooseOneAtATime
-        leadInvestigatorId
-        [ targetLabel iid [InitiateEnemyAttack iid (toId attrs) RegularAttack]
+      insertAfterMatching
+        [ EnemyWillAttack iid (toId attrs) (enemyDamageStrategy attrs) RegularAttack
         | iid <- adjacentInvestigators
         ]
+        (== EnemiesAttack)
       pure e
     _ -> EztliGuardian <$> runMessage msg attrs

@@ -3435,7 +3435,15 @@ runGameMessage msg g = case msg of
       , Window Timing.After Window.AnyPhaseBegins
       , Window Timing.After (Window.PhaseBegins EnemyPhase)
       ]
-    pushAllEnd [phaseBeginsWindow, HuntersMove, EnemiesAttack, EndEnemy]
+    enemiesAttackWindow <- checkWindows
+      [Window Timing.When Window.EnemiesAttackStep]
+    pushAllEnd
+      [ phaseBeginsWindow
+      , HuntersMove
+      , enemiesAttackWindow
+      , EnemiesAttack
+      , EndEnemy
+      ]
     pure $ g & phaseL .~ EnemyPhase
   EnemyAttackFromDiscard iid card -> do
     let

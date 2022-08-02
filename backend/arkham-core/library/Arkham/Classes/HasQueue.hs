@@ -107,12 +107,12 @@ removeAllMessagesMatching matcher = withQueue_ $ filter (not . matcher)
 
 insertAfterMatching
   :: (MonadIO m, MonadReader env m, HasQueue env)
-  => Message
+  => [Message]
   -> (Message -> Bool)
   -> m ()
-insertAfterMatching msg p = withQueue_ \queue ->
+insertAfterMatching msgs p = withQueue_ \queue ->
   let
     (before, rest) = break p queue
   in case rest of
-    (x : xs) -> before <> (x : msg : xs)
+    (x : xs) -> before <> (x : msgs <> xs)
     _ -> queue

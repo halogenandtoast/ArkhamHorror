@@ -45,7 +45,7 @@ instance RunMessage BaitAndSwitch where
             | choice <- choices
             ]
         insertAfterMatching
-          enemyMoveChoices
+          [enemyMoveChoices]
           \case
             AfterEvadeEnemy{} -> True
             _ -> False

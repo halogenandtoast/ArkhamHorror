@@ -211,6 +211,7 @@ instance RunMessage TheUntamedWilds where
             <> [ Record AlejandroChoseToRemainAtCamp | leadingTheWay ]
             <> [RecordCount YigsFury vengeance]
             <> [ GainXP iid n | (iid, n) <- xp ]
+            <> [ EndOfGame Nothing ]
         Resolution 1 -> do
           pushAll
             $ [ story investigatorIds resolution1
@@ -220,6 +221,7 @@ instance RunMessage TheUntamedWilds where
               , RecordCount YigsFury vengeance
               ]
             <> [ GainXP iid n | (iid, n) <- xp ]
+            <> [ EndOfGame Nothing ]
         Resolution 2 -> do
           pushAll
             $ [ story investigatorIds resolution2
@@ -235,6 +237,7 @@ instance RunMessage TheUntamedWilds where
                , RecordCount YigsFury vengeance
                ]
             <> [ GainXP iid n | (iid, n) <- xp ]
+            <> [ EndOfGame Nothing ]
         _ -> error "invalid resolution"
       pure s
     _ -> TheUntamedWilds <$> runMessage msg attrs

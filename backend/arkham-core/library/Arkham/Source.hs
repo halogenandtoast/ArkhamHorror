@@ -48,5 +48,6 @@ data Source
   | TokenSource Token
   | TreacherySource TreacheryId
   | YouSource
+  | CampaignSource
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

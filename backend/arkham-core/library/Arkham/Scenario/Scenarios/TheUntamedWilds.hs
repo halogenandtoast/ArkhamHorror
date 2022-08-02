@@ -194,11 +194,11 @@ instance RunMessage TheUntamedWilds where
               , Record TheInvestigatorsWereForcedToWaitForAdditionalSupplies
               ]
             <> [ Record IchtacaObservedYourProgressWithKeenInterest
-               | actStep `elem` [1, 2]
+               | actStep < 3
                ]
             <> [ Record IchtacaIsWaryOfTheInvestigators | foughtWithIchtaca ]
             <> [ Record AlejandroFollowedTheInvestigatorsIntoTheRuins
-               | actStep `elem` [1, 2] || foughtWithIchtaca
+               | actStep < 3 || foughtWithIchtaca
                ]
             <> [ addCampaignCardToDeckChoice
                    leadInvestigatorId

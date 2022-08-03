@@ -2558,6 +2558,7 @@ runGameMessage :: Message -> Game -> GameT Game
 runGameMessage msg g = case msg of
   Run msgs -> g <$ pushAll msgs
   Label _ msgs -> g <$ pushAll msgs
+  LabelGroup _ msgs -> g <$ pushAll msgs
   TooltipLabel _ _ msgs -> g <$ pushAll msgs
   TargetLabel _ msgs -> g <$ pushAll msgs
   SkillLabel _ msgs -> g <$ pushAll msgs

@@ -154,47 +154,33 @@ instance RunMessage TheForgottenAge where
         lowOnRationsCount = length investigatorIds - length provisions
         useProvisions = take (length investigatorIds) provisions
       pushAll
-        $ map
-            (\i -> AskPlayer $ Ask
-              i
-              (ChooseOne
-                [Run [Continue "You suffer no ill effects", restfulSleep]]
-              )
-            )
-            withBlanket
-        <> map
-             (\i -> AskPlayer $ Ask
-               i
-               (ChooseOne
-                 [ Run
-                     [ Label "suffer 1 physical trauma" [SufferTrauma i 1 0]
-                     , Label "suffer 1 mental trauma" [SufferTrauma i 0 1]
-                     , tossingAndTurning
-                     ]
-                 ]
-               )
-             )
-             withoutBlanket
+        $ [ story withBlanket restfulSleep | notNull withBlanket ]
+        <> [ story withoutBlanket tossingAndTurning | notNull withoutBlanket ]
         <> map (uncurry UseSupply) useProvisions
-        <> [ chooseN
-               leadInvestigatorId
-               lowOnRationsCount
-               [ targetLabel iid [story [iid] lowOnRations]
-               | iid <- investigatorIds
-               ]
+        <> [ Ask leadInvestigatorId
+             $ QuestionLabel
+                 "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations"
+             $ ChooseN
+                 lowOnRationsCount
+                 [ targetLabel iid [story [iid] lowOnRations]
+                 | iid <- investigatorIds
+                 ]
            | lowOnRationsCount > 0
            ]
-        <> [ LabelGroup
-               "The lead investigator must choose one investigator to be the group’s lookout. Then, that investigator checks his or her supplies. If he or she has binoculars, he or she reads Shapes in the Trees. Otherwise, he or she reads Eyes in the Dark."
-               [ targetLabel
-                   iid
-                   [ if hasBinoculars
-                       then GainXP iid 2
-                       else SufferTrauma iid 0 1
-                   ]
-               | (iid, hasBinoculars) <- investigatorsWithBinocularsPairs
-               ]
+        <> [ Ask leadInvestigatorId
+             $ QuestionLabel
+                 "The lead investigator must choose one investigator to be the group’s lookout. Then, that investigator checks his or her supplies. If he or she has binoculars, he or she reads Shapes in the Trees. Otherwise, he or she reads Eyes in the Dark."
+             $ ChooseOne
+                 [ targetLabel
+                     iid
+                     (if hasBinoculars
+                       then [story [iid] shapesInTheTrees, GainXP iid 2]
+                       else [story [iid] eyesInTheDark, SufferTrauma iid 0 1]
+                     )
+                 | (iid, hasBinoculars) <- investigatorsWithBinocularsPairs
+                 ]
            ]
+        <> [NextCampaignStep Nothing]
       pure c
     NextCampaignStep _ -> do
       let step = nextStep attrs

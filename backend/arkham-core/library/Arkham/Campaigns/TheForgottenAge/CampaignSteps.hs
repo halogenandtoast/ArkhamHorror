@@ -8,8 +8,8 @@ import Arkham.CampaignStep
 nextStep :: CampaignAttrs -> Maybe CampaignStep
 nextStep a = case campaignStep a of
   Just PrologueStep -> Just (ScenarioStep "04043")
-  Just (ScenarioStep "04043") -> Just (UpgradeDeckStep $ InterludeStep 1 Nothing)
-  Just (InterludeStep 1 _) -> Just (ScenarioStep "04054")
+  Just (ScenarioStep "04043") -> Just (InterludeStep 1 Nothing)
+  Just (InterludeStep 1 _) -> Just (UpgradeDeckStep $ ScenarioStep "04054")
   Just (ScenarioStep "04054") -> Just (UpgradeDeckStep $ InterludeStep 2 Nothing)
   Just (InterludeStep 2 _) -> Just (ScenarioStep "04113")
   -- resupply

@@ -8,20 +8,24 @@ import Arkham.Prelude
 import Arkham.Campaign.Runner
 import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.CampaignStep
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Source
 import Arkham.Target
 
 newtype TheForgottenAge = TheForgottenAge CampaignAttrs
   deriving anyclass IsCampaign
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 theForgottenAge :: Difficulty -> TheForgottenAge
 theForgottenAge difficulty = campaign
@@ -130,39 +134,62 @@ instance RunMessage TheForgottenAge where
               availableSupplies
 
       pure c
-    CampaignStep (Just (InterludeStep 1 _)) -> do
-      withBlanket <- getInvestigatorsWithSupply Blanket
-      withoutBlanket <- getInvestigatorsWithoutSupply Blanket
-      provisions <- do
-        iids <- selectList Anyone
-        concat <$> for
-          iids
-          \iid -> do
-            provisions <- fieldMap
-              InvestigatorSupplies
-              (filter (== Provisions))
-              iid
-            pure $ map (iid, ) provisions
-      investigatorsWithBinocularsPairs <- do
-        iids <- selectList Anyone
-        for iids $ \iid -> do
-          binoculars <- fieldMap InvestigatorSupplies (any (== Provisions)) iid
-          pure (iid, binoculars)
+    CampaignStep (Just (InterludeStep 1 mkey)) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
+      withBlanket <- getInvestigatorsWithSupply Blanket
+      withoutBlanket <- getInvestigatorsWithoutSupply Blanket
+      withMedicine <- flip concatMapM investigatorIds $ \iid -> do
+        n <- getSupplyCount iid Medicine
+        pure $ replicate n iid
+      let
+        withPoisoned =
+          flip mapMaybe (mapToList $ campaignDecks attrs)
+            $ \(iid, Deck cards) ->
+                if any (`cardMatch` CardWithTitle "Poisoned") cards
+                  then Just iid
+                  else Nothing
+      provisions <- concat <$> for
+        investigatorIds
+        \iid -> do
+          provisions <- fieldMap
+            InvestigatorSupplies
+            (filter (== Provisions))
+            iid
+          pure $ map (iid, ) provisions
+      investigatorsWithBinocularsPairs <- for investigatorIds $ \iid -> do
+        binoculars <- fieldMap InvestigatorSupplies (any (== Provisions)) iid
+        pure (iid, binoculars)
       let
         lowOnRationsCount = length investigatorIds - length provisions
         useProvisions = take (length investigatorIds) provisions
       pushAll
         $ [ story withBlanket restfulSleep | notNull withBlanket ]
-        <> [ story withoutBlanket tossingAndTurning | notNull withoutBlanket ]
+        <> concatMap
+             (\iid ->
+               [ story [iid] tossingAndTurning
+               , chooseOne
+                 iid
+                 [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
+                 , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
+                 ]
+               ]
+             )
+             withoutBlanket
         <> map (uncurry UseSupply) useProvisions
         <> [ Ask leadInvestigatorId
              $ QuestionLabel
                  "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations"
              $ ChooseN
                  lowOnRationsCount
-                 [ targetLabel iid [story [iid] lowOnRations]
+                 [ targetLabel
+                     iid
+                     [ story [iid] lowOnRations
+                     , HandleTargetChoice
+                       iid
+                       CampaignSource
+                       (InvestigatorTarget iid)
+                     ]
                  | iid <- investigatorIds
                  ]
            | lowOnRationsCount > 0
@@ -180,6 +207,40 @@ instance RunMessage TheForgottenAge where
                  | (iid, hasBinoculars) <- investigatorsWithBinocularsPairs
                  ]
            ]
+        <> (if notNull withMedicine && notNull withPoisoned
+             then
+               [ Ask leadInvestigatorId
+                 $ QuestionLabel
+                     "Choose an investigator to removed poisoned by using a medicine"
+                 $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
+                 $ Done "Do not use medicine"
+                 : [ targetLabel
+                       poisoned
+                       [ RemoveCampaignCardFromDeck poisoned "04102"
+                       , UseSupply doctor Medicine
+                       ]
+                   | (poisoned, doctor) <- zip withPoisoned withMedicine
+                   ]
+               ]
+             else []
+           )
+        <> [CampaignStep (Just (InterludeStepPart 1 mkey 2))]
+      pure c
+    CampaignStep (Just (InterludeStepPart 1 _ 2)) -> do
+      let
+        withPoisoned =
+          flip mapMaybe (mapToList $ campaignDecks attrs)
+            $ \(iid, Deck cards) ->
+                if any (`cardMatch` CardWithTitle "Poisoned") cards
+                  then Just iid
+                  else Nothing
+      pushAll
+        $ (if notNull withPoisoned
+            then
+              story withPoisoned thePoisonSpreads
+                : [ SufferTrauma iid 1 0 | iid <- withPoisoned ]
+            else []
+          )
         <> [NextCampaignStep Nothing]
       pure c
     NextCampaignStep _ -> do
@@ -190,4 +251,15 @@ instance RunMessage TheForgottenAge where
         $ attrs
         & (stepL .~ step)
         & (completedStepsL %~ completeStep (campaignStep attrs))
+    HandleTargetChoice _ CampaignSource (InvestigatorTarget iid) -> do
+      pure
+        . TheForgottenAge
+        $ attrs
+        & (modifiersL %~ insertWith
+            (<>)
+            iid
+            [toModifier CampaignSource $ StartingResources (-3)]
+          )
+    EndOfScenario _ -> do
+      pure . TheForgottenAge $ attrs & modifiersL .~ mempty
     _ -> TheForgottenAge <$> runMessage msg attrs

@@ -83,3 +83,12 @@ eyesInTheDark = FlavorText
     \ The yellow eyes watched me, alert, my weapons drawn, ready to defend the camp\
     \ if the need arose. Our eyes met, and a darkness seized my heart."
   ]
+
+thePoisonSpreads :: Message
+thePoisonSpreads = FlavorText
+  (Just "The Poison Spreads")
+  [ "As the days went by, the poison continued to spread through my body. By the\
+    \ second night, my skin was drenched in sweat. I started having difficutly\
+    \ breathing, and I began every morning by retching up most of the previous\
+    \ night’s dinner."
+  ]

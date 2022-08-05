@@ -23,7 +23,10 @@ import Arkham.Window (Result(..), Window(..))
 import qualified Arkham.Window as Window
 
 getHasSupply :: (HasGame m, Monad m) => InvestigatorId -> Supply -> m Bool
-getHasSupply iid s = fieldP InvestigatorSupplies (elem s) iid
+getHasSupply iid s = (> 0) <$> getSupplyCount iid s
+
+getSupplyCount :: (HasGame m, Monad m) => InvestigatorId -> Supply -> m Int
+getSupplyCount iid s = fieldMap InvestigatorSupplies (length . filter (== s)) iid
 
 getInvestigatorsWithSupply :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
 getInvestigatorsWithSupply s = getInvestigatorIds >>= filterM (`getHasSupply` s)

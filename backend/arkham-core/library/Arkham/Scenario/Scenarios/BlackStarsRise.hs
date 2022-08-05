@@ -282,7 +282,7 @@ instance RunMessage BlackStarsRise where
               ]
             <> updateSlain
             <> gainXp
-            <> [EndOfScenario Nothing]
+            <> [EndOfGame Nothing]
         Resolution 2 -> do
           pushAll
             $ [ story iids resolution2
@@ -297,7 +297,7 @@ instance RunMessage BlackStarsRise where
               ]
             <> updateSlain
             <> gainXp
-            <> [EndOfScenario Nothing]
+            <> [EndOfGame Nothing]
         Resolution 3 -> do
           pushAll
             $ story iids resolution3

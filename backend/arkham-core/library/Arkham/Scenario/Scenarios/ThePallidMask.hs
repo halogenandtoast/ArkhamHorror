@@ -345,6 +345,6 @@ instance RunMessage ThePallidMask where
       pure s
     ScenarioResolutionStep 1 _ -> do
       gainXp <- map (uncurry GainXP) <$> getXp
-      pushAll $ gainXp <> [EndOfScenario Nothing]
+      pushAll $ gainXp <> [EndOfGame Nothing]
       pure s
     _ -> ThePallidMask <$> runMessage msg attrs

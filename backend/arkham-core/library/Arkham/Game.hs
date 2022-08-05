@@ -2062,6 +2062,10 @@ instance HasModifiersFor () where
         (pure [])
         (getModifiersFor source target)
         (modeScenario $ g ^. modeL)
+      , maybe
+        (pure [])
+        (getModifiersFor source target)
+        (modeCampaign $ g ^. modeL)
       ]
     traits <- targetTraits target
     let

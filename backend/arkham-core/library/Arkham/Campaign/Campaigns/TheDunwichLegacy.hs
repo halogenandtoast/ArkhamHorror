@@ -18,7 +18,7 @@ import Arkham.Message
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
   deriving anyclass IsCampaign
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
 
 findOwner :: (Monad m, HasGame m) => CardCode -> m (Maybe InvestigatorId)
 findOwner cardCode = do

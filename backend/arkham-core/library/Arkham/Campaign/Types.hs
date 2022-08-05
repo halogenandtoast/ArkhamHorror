@@ -2,24 +2,27 @@ module Arkham.Campaign.Types where
 
 import Arkham.Prelude
 
-import Arkham.PlayerCard
 import Arkham.CampaignLog
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Difficulty
 import Arkham.Helpers
+import Arkham.Modifier
 import Arkham.Id
+import Arkham.Json
+import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Target
 import Arkham.Token
-import Arkham.Json
-import Control.Monad.Writer hiding (filterM)
+import Control.Monad.Writer hiding ( filterM )
 import Data.List.NonEmpty qualified as NE
 import Data.Typeable
 
-class (Typeable a, Show a, Eq a, ToJSON a, FromJSON a, RunMessage a, Entity a, EntityId a ~ CampaignId, EntityAttrs a ~ CampaignAttrs) => IsCampaign a
+class (Typeable a, Show a, Eq a, ToJSON a, FromJSON a, HasModifiersFor a, RunMessage a, Entity a, EntityId a ~ CampaignId, EntityAttrs a ~ CampaignAttrs) => IsCampaign a
 
 data instance Field Campaign :: Type -> Type where
   CampaignCompletedSteps :: Field Campaign [CampaignStep]
@@ -37,8 +40,14 @@ data CampaignAttrs = CampaignAttrs
   , campaignStep :: Maybe CampaignStep
   , campaignCompletedSteps :: [CampaignStep]
   , campaignResolutions :: HashMap ScenarioId Resolution
+  , campaignModifiers :: HashMap InvestigatorId [Modifier]
   }
   deriving stock (Show, Eq, Generic)
+
+instance HasModifiersFor CampaignAttrs where
+  getModifiersFor _ (InvestigatorTarget iid) attrs =
+    pure $ findWithDefault [] iid (campaignModifiers attrs)
+  getModifiersFor _ _ _ = pure []
 
 completedStepsL :: Lens' CampaignAttrs [CampaignStep]
 completedStepsL =
@@ -66,6 +75,9 @@ completeStep :: Maybe CampaignStep -> [CampaignStep] -> [CampaignStep]
 completeStep (Just step') steps = step' : steps
 completeStep Nothing steps = steps
 
+modifiersL :: Lens' CampaignAttrs (HashMap InvestigatorId [Modifier])
+modifiersL = lens campaignModifiers $ \m x -> m { campaignModifiers = x }
+
 instance Entity CampaignAttrs where
   type EntityId CampaignAttrs = CampaignId
   type EntityAttrs CampaignAttrs = CampaignAttrs
@@ -91,7 +103,13 @@ addRandomBasicWeaknessIfNeeded deck = runWriterT $ do
         (sample (NE.fromList allBasicWeaknesses) >>= tell . pure)
       pure $ toCardDef card /= randomWeakness
 
-campaign :: (CampaignAttrs -> a) -> CampaignId -> Text -> Difficulty -> [TokenFace] -> a
+campaign
+  :: (CampaignAttrs -> a)
+  -> CampaignId
+  -> Text
+  -> Difficulty
+  -> [TokenFace]
+  -> a
 campaign f campaignId' name difficulty chaosBagContents = f $ CampaignAttrs
   { campaignId = campaignId'
   , campaignName = name
@@ -103,6 +121,7 @@ campaign f campaignId' name difficulty chaosBagContents = f $ CampaignAttrs
   , campaignStep = Just PrologueStep
   , campaignCompletedSteps = []
   , campaignResolutions = mempty
+  , campaignModifiers = mempty
   }
 
 instance Entity Campaign where
@@ -112,7 +131,7 @@ instance Entity Campaign where
   toAttrs (Campaign a) = toAttrs a
   overAttrs f (Campaign a) = Campaign $ overAttrs f a
 
-data Campaign = forall a. IsCampaign a => Campaign a
+data Campaign = forall a . IsCampaign a => Campaign a
 
 instance Eq Campaign where
   (Campaign (a :: a)) == (Campaign (b :: b)) = case eqT @a @b of
@@ -124,6 +143,9 @@ instance Show Campaign where
 
 instance ToJSON Campaign where
   toJSON (Campaign a) = toJSON a
+
+instance HasModifiersFor Campaign where
+  getModifiersFor source target (Campaign a) = getModifiersFor source target a
 
 difficultyOf :: Campaign -> Difficulty
 difficultyOf = campaignDifficulty . toAttrs

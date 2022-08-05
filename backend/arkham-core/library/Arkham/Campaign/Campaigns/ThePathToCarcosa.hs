@@ -21,7 +21,7 @@ import Arkham.Token
 
 newtype ThePathToCarcosa = ThePathToCarcosa CampaignAttrs
   deriving anyclass IsCampaign
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
 
 thePathToCarcosa :: Difficulty -> ThePathToCarcosa
 thePathToCarcosa difficulty = campaign

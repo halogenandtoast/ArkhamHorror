@@ -9,6 +9,7 @@ data CampaignStep
   | ScenarioStep ScenarioId
   | ScenarioStepPart ScenarioId Int
   | InterludeStep Int (Maybe InterludeKey)
+  | InterludeStepPart Int (Maybe InterludeKey) Int
   | UpgradeDeckStep CampaignStep
   | EpilogueStep
   deriving stock (Show, Eq, Generic)

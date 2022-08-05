@@ -3,7 +3,7 @@ module Arkham.Campaign.Runner (module X) where
 
 import Arkham.Prelude
 
-import Arkham.Card.CardDef
+import Arkham.Card
 import Arkham.Campaign.Types as X
 import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage
@@ -41,6 +41,8 @@ instance RunMessage CampaignAttrs where
         $ a
         & storyCardsL
         %~ adjustMap (filter ((/= cardCode) . cdCardCode . toCardDef)) iid
+        & decksL
+        %~ adjustMap (withDeck (filter ((/= cardCode) . cdCardCode . toCardDef))) iid
     AddToken token -> pure $ a & chaosBagL %~ (token :)
     RemoveAllTokens token -> pure $ a & chaosBagL %~ filter (/= token)
     InitDeck iid deck -> do
@@ -108,6 +110,8 @@ instance RunMessage CampaignAttrs where
       (<>)
       DrivenInsaneInvestigators
       (singleton $ Recorded $ unInvestigatorId iid)
+    CreateWeaknessInThreatArea (PlayerCard pc) iid -> do
+      pure $ a & decksL %~ adjustMap (withDeck (pc { pcOwner = Just iid } :)) iid
     AddCardToDeckForCampaign iid pc -> do
       pure $ a & decksL %~ adjustMap (withDeck (pc { pcOwner = Just iid } :)) iid
     RemoveCardFromDeckForCampaign iid pc ->

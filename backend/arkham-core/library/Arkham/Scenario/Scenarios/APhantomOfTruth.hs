@@ -372,6 +372,6 @@ instance RunMessage APhantomOfTruth where
            ]
         <> updateSlain
         <> gainXp
-        <> [EndOfScenario Nothing]
+        <> [EndOfGame Nothing]
       pure s
     _ -> APhantomOfTruth <$> runMessage msg attrs

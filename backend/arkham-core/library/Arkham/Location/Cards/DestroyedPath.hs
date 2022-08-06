@@ -25,16 +25,7 @@ newtype DestroyedPath = DestroyedPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 destroyedPath :: LocationCard DestroyedPath
-destroyedPath = locationWith
-  DestroyedPath
-  Cards.destroyedPath
-  3
-  (Static 0)
-  NoSymbol
-  []
-  ((revealedSymbolL .~ Squiggle)
-  . (revealedConnectedMatchersL .~ map LocationWithSymbol [Triangle, Equals])
-  )
+destroyedPath = location DestroyedPath Cards.destroyedPath 3 (Static 0)
 
 instance HasAbilities DestroyedPath where
   getAbilities (DestroyedPath attrs) =

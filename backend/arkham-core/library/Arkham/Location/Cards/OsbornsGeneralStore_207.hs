@@ -6,12 +6,12 @@ module Arkham.Location.Cards.OsbornsGeneralStore_207
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (osbornsGeneralStore_207)
 import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( osbornsGeneralStore_207 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -23,32 +23,28 @@ newtype OsbornsGeneralStore_207 = OsbornsGeneralStore_207 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 osbornsGeneralStore_207 :: LocationCard OsbornsGeneralStore_207
-osbornsGeneralStore_207 = location
-  OsbornsGeneralStore_207
-  Cards.osbornsGeneralStore_207
-  3
-  (PerPlayer 1)
-  Circle
-  [Moon, Square]
+osbornsGeneralStore_207 =
+  location OsbornsGeneralStore_207 Cards.osbornsGeneralStore_207 3 (PerPlayer 1)
 
 instance HasAbilities OsbornsGeneralStore_207 where
-  getAbilities (OsbornsGeneralStore_207 attrs) = do
+  getAbilities (OsbornsGeneralStore_207 attrs) =
     let rest = withDrawCardUnderneathAction attrs
-    [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
-            [ActionCost 1, ResourceCost 1]
-        | locationRevealed attrs
-        ]
+    in
+      [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
+          [ActionCost 1, ResourceCost 1]
+      | locationRevealed attrs
+      ]
       <> rest
 
 instance RunMessage OsbornsGeneralStore_207 where
   runMessage msg l@(OsbornsGeneralStore_207 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> l <$ push
-      (Search
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ Search
         iid
         source
         (InvestigatorTarget iid)
         [fromTopOfDeck 3]
         (CardWithType AssetType <> CardWithTrait Item)
         (DrawFound iid 1)
-      )
+      pure l
     _ -> OsbornsGeneralStore_207 <$> runMessage msg attrs

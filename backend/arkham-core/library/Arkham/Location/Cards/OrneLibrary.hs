@@ -2,12 +2,12 @@ module Arkham.Location.Cards.OrneLibrary where
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (orneLibrary)
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( orneLibrary )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Target
 
 newtype OrneLibrary = OrneLibrary LocationAttrs
@@ -15,8 +15,7 @@ newtype OrneLibrary = OrneLibrary LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 orneLibrary :: LocationCard OrneLibrary
-orneLibrary =
-  location OrneLibrary Cards.orneLibrary 3 (PerPlayer 1) Triangle [Plus, Square]
+orneLibrary = location OrneLibrary Cards.orneLibrary 3 (PerPlayer 1)
 
 instance HasModifiersFor OrneLibrary where
   getModifiersFor _ (InvestigatorTarget iid) (OrneLibrary attrs)

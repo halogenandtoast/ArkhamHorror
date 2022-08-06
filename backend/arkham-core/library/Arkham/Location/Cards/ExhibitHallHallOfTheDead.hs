@@ -6,11 +6,11 @@ module Arkham.Location.Cards.ExhibitHallHallOfTheDead
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (exhibitHallHallOfTheDead)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( exhibitHallHallOfTheDead )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -20,15 +20,11 @@ newtype ExhibitHallHallOfTheDead = ExhibitHallHallOfTheDead LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallHallOfTheDead :: LocationCard ExhibitHallHallOfTheDead
-exhibitHallHallOfTheDead = locationWithRevealedSideConnections
+exhibitHallHallOfTheDead = location
   ExhibitHallHallOfTheDead
   Cards.exhibitHallHallOfTheDead
   3
   (PerPlayer 2)
-  NoSymbol
-  [Square]
-  Squiggle
-  [Square, Hourglass]
 
 instance HasAbilities ExhibitHallHallOfTheDead where
   getAbilities (ExhibitHallHallOfTheDead x) = withBaseAbilities

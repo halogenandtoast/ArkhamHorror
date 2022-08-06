@@ -6,14 +6,14 @@ module Arkham.Location.Cards.Gondola
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Matcher
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
@@ -23,7 +23,7 @@ newtype Gondola = Gondola LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gondola :: LocationCard Gondola
-gondola = location Gondola Cards.gondola 5 (Static 0) NoSymbol []
+gondola = location Gondola Cards.gondola 5 (Static 0)
 
 instance HasAbilities Gondola where
   getAbilities (Gondola x) = withBaseAbilities
@@ -35,8 +35,7 @@ instance HasAbilities Gondola where
 instance RunMessage Gondola where
   runMessage msg l@(Gondola attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
-      locationIds <-
-        setToList . deleteSet (toId attrs) <$> select Anywhere
+      locationIds <- setToList . deleteSet (toId attrs) <$> select Anywhere
       l <$ pushAll
         (MoveAllTo (toSource attrs) (toId attrs)
         : [ RemoveLocation lid | lid <- locationIds ]

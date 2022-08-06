@@ -13,7 +13,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 
 newtype PatientConfinementDanielsCell = PatientConfinementDanielsCell LocationAttrs
@@ -26,8 +26,6 @@ patientConfinementDanielsCell = locationWith
   Cards.patientConfinementDanielsCell
   2
   (Static 1)
-  Moon
-  [Squiggle]
   (costToEnterUnrevealedL .~ Costs [ActionCost 1, ClueCost 1])
 
 instance HasAbilities PatientConfinementDanielsCell where
@@ -44,5 +42,6 @@ instance RunMessage PatientConfinementDanielsCell where
   runMessage msg l@(PatientConfinementDanielsCell attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       actIds <- selectList AnyAct
-      l <$ pushAll (map (\aid -> AdvanceAct aid source AdvancedWithOther) actIds)
+      l <$ pushAll
+        (map (\aid -> AdvanceAct aid source AdvancedWithOther) actIds)
     _ -> PatientConfinementDanielsCell <$> runMessage msg attrs

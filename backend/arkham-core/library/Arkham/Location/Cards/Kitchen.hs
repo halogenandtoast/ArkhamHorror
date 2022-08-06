@@ -6,13 +6,13 @@ module Arkham.Location.Cards.Kitchen
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
@@ -23,7 +23,7 @@ newtype Kitchen = Kitchen LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 kitchen :: LocationCard Kitchen
-kitchen = location Kitchen Cards.kitchen 2 (PerPlayer 1) Square [Triangle]
+kitchen = location Kitchen Cards.kitchen 2 (PerPlayer 1)
 
 instance HasAbilities Kitchen where
   getAbilities (Kitchen attrs) = withBaseAbilities

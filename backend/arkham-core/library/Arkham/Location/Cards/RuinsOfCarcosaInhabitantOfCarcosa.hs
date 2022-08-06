@@ -30,8 +30,6 @@ ruinsOfCarcosaInhabitantOfCarcosa = locationWith
   Cards.ruinsOfCarcosaInhabitantOfCarcosa
   2
   (PerPlayer 1)
-  Triangle
-  [Square, Equals, Star]
   ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasAbilities RuinsOfCarcosaInhabitantOfCarcosa where

@@ -6,11 +6,11 @@ module Arkham.Location.Cards.RehearsalRoom
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -20,8 +20,7 @@ newtype RehearsalRoom = RehearsalRoom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rehearsalRoom :: LocationCard RehearsalRoom
-rehearsalRoom =
-  location RehearsalRoom Cards.rehearsalRoom 1 (PerPlayer 1) Moon [Diamond]
+rehearsalRoom = location RehearsalRoom Cards.rehearsalRoom 1 (PerPlayer 1)
 
 instance HasAbilities RehearsalRoom where
   getAbilities (RehearsalRoom attrs) = withBaseAbilities

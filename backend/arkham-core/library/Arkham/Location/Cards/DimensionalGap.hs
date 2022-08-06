@@ -6,14 +6,14 @@ module Arkham.Location.Cards.DimensionalGap
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (dimensionalGap)
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( dimensionalGap )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 
 newtype DimensionalGap = DimensionalGap LocationAttrs
@@ -21,16 +21,7 @@ newtype DimensionalGap = DimensionalGap LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimensionalGap :: LocationCard DimensionalGap
-dimensionalGap = locationWith
-  DimensionalGap
-  Cards.dimensionalGap
-  3
-  (PerPlayer 1)
-  NoSymbol
-  []
-  ((revealedSymbolL .~ T)
-  . (revealedConnectedMatchersL .~ map LocationWithSymbol [Square, Moon])
-  )
+dimensionalGap = location DimensionalGap Cards.dimensionalGap 3 (PerPlayer 1)
 
 instance HasAbilities DimensionalGap where
   getAbilities (DimensionalGap attrs) =

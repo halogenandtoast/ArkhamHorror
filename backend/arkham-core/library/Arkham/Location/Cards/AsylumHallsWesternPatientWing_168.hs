@@ -6,15 +6,15 @@ module Arkham.Location.Cards.AsylumHallsWesternPatientWing_168
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (EnemyDefeated)
+import Arkham.Message hiding ( EnemyDefeated )
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
@@ -29,8 +29,6 @@ asylumHallsWesternPatientWing_168 = location
   Cards.asylumHallsWesternPatientWing_168
   2
   (Static 0)
-  Circle
-  [Hourglass, Triangle, Diamond]
 
 instance HasAbilities AsylumHallsWesternPatientWing_168 where
   getAbilities (AsylumHallsWesternPatientWing_168 attrs) = withBaseAbilities

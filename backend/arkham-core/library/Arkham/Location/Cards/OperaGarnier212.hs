@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.GameValue
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.SkillTest
@@ -20,20 +20,17 @@ newtype OperaGarnier212 = OperaGarnier212 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 operaGarnier212 :: LocationCard OperaGarnier212
-operaGarnier212 = location
-  OperaGarnier212
-  Cards.operaGarnier212
-  5
-  (PerPlayer 1)
-  Diamond
-  [Triangle, Square, Heart]
+operaGarnier212 =
+  location OperaGarnier212 Cards.operaGarnier212 5 (PerPlayer 1)
 
 instance HasModifiersFor OperaGarnier212 where
-  getModifiersFor (SkillTestSource _ _ _ (Just Action.Investigate)) (CardIdTarget _) (OperaGarnier212 attrs) = do
-    mtarget <- getSkillTestTarget
-    case mtarget of
-      Just target | isTarget attrs target -> pure $ toModifiers attrs [DoubleSkillIcons]
-      _ -> pure []
+  getModifiersFor (SkillTestSource _ _ _ (Just Action.Investigate)) (CardIdTarget _) (OperaGarnier212 attrs)
+    = do
+      mtarget <- getSkillTestTarget
+      case mtarget of
+        Just target | isTarget attrs target ->
+          pure $ toModifiers attrs [DoubleSkillIcons]
+        _ -> pure []
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities OperaGarnier212 where

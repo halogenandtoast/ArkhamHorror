@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -22,13 +22,7 @@ newtype Montparnasse = Montparnasse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 montparnasse :: LocationCard Montparnasse
-montparnasse = location
-  Montparnasse
-  Cards.montparnasse
-  2
-  (PerPlayer 1)
-  Circle
-  [Heart, Star, Plus]
+montparnasse = location Montparnasse Cards.montparnasse 2 (PerPlayer 1)
 
 instance HasAbilities Montparnasse where
   getAbilities (Montparnasse attrs) = withBaseAbilities

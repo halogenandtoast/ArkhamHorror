@@ -6,12 +6,12 @@ module Arkham.Location.Cards.HistoricalSocietyRecordOffice_138
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Location.Runner
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -22,15 +22,11 @@ newtype HistoricalSocietyRecordOffice_138 = HistoricalSocietyRecordOffice_138 Lo
 
 historicalSocietyRecordOffice_138
   :: LocationCard HistoricalSocietyRecordOffice_138
-historicalSocietyRecordOffice_138 = locationWithRevealedSideConnections
+historicalSocietyRecordOffice_138 = location
   HistoricalSocietyRecordOffice_138
   Cards.historicalSocietyRecordOffice_138
   2
   (PerPlayer 1)
-  NoSymbol
-  [Star]
-  Equals
-  [Star]
 
 instance HasModifiersFor HistoricalSocietyRecordOffice_138 where
   getModifiersFor _ (EnemyTarget eid) (HistoricalSocietyRecordOffice_138 attrs)

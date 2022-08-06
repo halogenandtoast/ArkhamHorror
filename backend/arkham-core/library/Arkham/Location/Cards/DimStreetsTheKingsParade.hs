@@ -13,8 +13,8 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
-import Arkham.SkillType
 import Arkham.Scenarios.DimCarcosa.Helpers
+import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -29,8 +29,6 @@ dimStreetsTheKingsParade = locationWith
   Cards.dimStreetsTheKingsParade
   2
   (PerPlayer 1)
-  Diamond
-  [Square, Equals, Star]
   ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasAbilities DimStreetsTheKingsParade where

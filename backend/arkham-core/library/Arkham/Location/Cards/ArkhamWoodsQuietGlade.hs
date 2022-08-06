@@ -6,13 +6,13 @@ module Arkham.Location.Cards.ArkhamWoodsQuietGlade
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (arkhamWoodsQuietGlade)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( arkhamWoodsQuietGlade )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target
@@ -22,15 +22,8 @@ newtype ArkhamWoodsQuietGlade = ArkhamWoodsQuietGlade LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsQuietGlade :: LocationCard ArkhamWoodsQuietGlade
-arkhamWoodsQuietGlade = locationWithRevealedSideConnections
-  ArkhamWoodsQuietGlade
-  Cards.arkhamWoodsQuietGlade
-  1
-  (Static 0)
-  Square
-  [Squiggle]
-  Moon
-  [Squiggle, Equals, Hourglass]
+arkhamWoodsQuietGlade =
+  location ArkhamWoodsQuietGlade Cards.arkhamWoodsQuietGlade 1 (Static 0)
 
 instance HasAbilities ArkhamWoodsQuietGlade where
   getAbilities (ArkhamWoodsQuietGlade attrs) | locationRevealed attrs =

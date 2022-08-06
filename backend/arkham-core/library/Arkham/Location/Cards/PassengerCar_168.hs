@@ -6,14 +6,14 @@ module Arkham.Location.Cards.PassengerCar_168
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (passengerCar_168)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( passengerCar_168 )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -31,8 +31,6 @@ passengerCar_168 = locationWith
   Cards.passengerCar_168
   4
   (PerPlayer 1)
-  NoSymbol
-  []
   (connectsToL .~ setFromList [LeftOf, RightOf])
 
 instance HasModifiersFor PassengerCar_168 where
@@ -74,7 +72,7 @@ instance RunMessage PassengerCar_168 where
               [InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0]
             , Label
               "Discard cards with at least 2 {combat} icons"
-              [ PayForAbility (abilityEffect attrs cost) [] ]
+              [PayForAbility (abilityEffect attrs cost) []]
             ]
           )
         else push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0)

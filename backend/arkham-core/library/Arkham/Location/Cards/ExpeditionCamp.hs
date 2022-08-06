@@ -26,13 +26,7 @@ newtype ExpeditionCamp = ExpeditionCamp LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 expeditionCamp :: LocationCard ExpeditionCamp
-expeditionCamp = location
-  ExpeditionCamp
-  Cards.expeditionCamp
-  1
-  (Static 0)
-  Circle
-  [Square, Diamond, Moon]
+expeditionCamp = location ExpeditionCamp Cards.expeditionCamp 1 (Static 0)
 
 instance HasAbilities ExpeditionCamp where
   getAbilities (ExpeditionCamp attrs) =

@@ -3,14 +3,14 @@ module Arkham.Location.Cards.AdministrationBuilding where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (administrationBuilding)
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( administrationBuilding )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 
 newtype AdministrationBuilding = AdministrationBuilding LocationAttrs
@@ -18,13 +18,8 @@ newtype AdministrationBuilding = AdministrationBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 administrationBuilding :: LocationCard AdministrationBuilding
-administrationBuilding = location
-  AdministrationBuilding
-  Cards.administrationBuilding
-  4
-  (PerPlayer 1)
-  Circle
-  [Plus, T]
+administrationBuilding =
+  location AdministrationBuilding Cards.administrationBuilding 4 (PerPlayer 1)
 
 instance HasAbilities AdministrationBuilding where
   getAbilities (AdministrationBuilding x) =

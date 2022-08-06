@@ -22,13 +22,8 @@ newtype PorteDeLAvancee = PorteDeLAvancee LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 porteDeLAvancee :: LocationCard PorteDeLAvancee
-porteDeLAvancee = location
-  PorteDeLAvancee
-  Cards.porteDeLAvancee
-  3
-  (PerPlayer 1)
-  Circle
-  [Squiggle]
+porteDeLAvancee =
+  location PorteDeLAvancee Cards.porteDeLAvancee 3 (PerPlayer 1)
 
 instance HasAbilities PorteDeLAvancee where
   getAbilities (PorteDeLAvancee a) = withBaseAbilities

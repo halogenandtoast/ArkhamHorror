@@ -6,13 +6,13 @@ module Arkham.Location.Cards.Northside
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (northside)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( northside )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 
 newtype Northside = Northside LocationAttrs
@@ -20,19 +20,16 @@ newtype Northside = Northside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northside :: LocationCard Northside
-northside =
-  location Northside Cards.northside 3 (PerPlayer 2) T [Diamond, Triangle]
+northside = location Northside Cards.northside 3 (PerPlayer 2)
 
 instance HasAbilities Northside where
   getAbilities (Northside x) | locationRevealed x =
-    withBaseAbilities x $
-      [ restrictedAbility
-            x
-            1
-            Here
-            (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 5])
-          & (abilityLimitL .~ GroupLimit PerGame 1)
-      ]
+    withBaseAbilities x
+      $ [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility x 1 Here
+          $ ActionAbility Nothing
+          $ Costs [ActionCost 1, ResourceCost 5]
+        ]
   getAbilities (Northside attrs) = getAbilities attrs
 
 instance RunMessage Northside where

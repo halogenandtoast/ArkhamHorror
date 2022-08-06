@@ -2,11 +2,11 @@ module Arkham.Location.Cards.Easttown where
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (easttown)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( easttown )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Target
 import Arkham.Trait
@@ -16,8 +16,7 @@ newtype Easttown = Easttown LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 easttown :: LocationCard Easttown
-easttown =
-  location Easttown Cards.easttown 2 (PerPlayer 1) Moon [Circle, Triangle]
+easttown = location Easttown Cards.easttown 2 (PerPlayer 1)
 
 instance HasModifiersFor Easttown where
   getModifiersFor _ (InvestigatorTarget iid) (Easttown attrs) =

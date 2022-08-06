@@ -5,10 +5,10 @@ module Arkham.Location.Cards.BishopsBrook_202
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (bishopsBrook_202)
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( bishopsBrook_202 )
 import Arkham.Location.Runner
 import Arkham.Target
 
@@ -17,13 +17,8 @@ newtype BishopsBrook_202 = BishopsBrook_202 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bishopsBrook_202 :: LocationCard BishopsBrook_202
-bishopsBrook_202 = location
-  BishopsBrook_202
-  Cards.bishopsBrook_202
-  3
-  (Static 2)
-  Square
-  [Plus, Circle, Triangle]
+bishopsBrook_202 =
+  location BishopsBrook_202 Cards.bishopsBrook_202 3 (Static 2)
 
 instance HasModifiersFor BishopsBrook_202 where
   getModifiersFor _ (EnemyTarget eid) (BishopsBrook_202 attrs@LocationAttrs {..})

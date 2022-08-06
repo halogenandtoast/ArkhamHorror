@@ -196,6 +196,7 @@ allLocationCards = mapFromList $ map
   , engineCar_176
   , engineCar_177
   , entryHall
+  , entryway
   , exhibitHallAthabaskanExhibit
   , exhibitHallEgyptianExhibit
   , exhibitHallHallOfTheDead
@@ -2479,6 +2480,15 @@ ruinsOfEztli = (location
                )
   { cdDoubleSided = False
   }
+
+entryway :: CardDef
+entryway = location
+                 "04060"
+                 "Entryway"
+                 [Ancient, Ruins]
+                 Circle
+                 [Square, Star]
+                 TheDoomOfEztli
 
 pathOfThorns :: CardDef
 pathOfThorns = (location

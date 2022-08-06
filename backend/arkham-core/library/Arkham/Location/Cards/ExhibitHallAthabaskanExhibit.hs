@@ -6,11 +6,11 @@ module Arkham.Location.Cards.ExhibitHallAthabaskanExhibit
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (exhibitHallAthabaskanExhibit)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( exhibitHallAthabaskanExhibit )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -22,15 +22,11 @@ newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit LocationAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallAthabaskanExhibit :: LocationCard ExhibitHallAthabaskanExhibit
-exhibitHallAthabaskanExhibit = locationWithRevealedSideConnections
+exhibitHallAthabaskanExhibit = location
   ExhibitHallAthabaskanExhibit
   Cards.exhibitHallAthabaskanExhibit
   1
   (Static 0)
-  NoSymbol
-  [Square]
-  Plus
-  [Square]
 
 instance HasModifiersFor ExhibitHallAthabaskanExhibit where
   getModifiersFor _ (InvestigatorTarget iid) (ExhibitHallAthabaskanExhibit attrs)

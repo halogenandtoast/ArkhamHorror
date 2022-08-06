@@ -7,13 +7,13 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.ChaosBag.RevealStrategy
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.RequestedTokenStrategy
@@ -25,8 +25,7 @@ newtype DiningRoom = DiningRoom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 diningRoom :: LocationCard DiningRoom
-diningRoom =
-  location DiningRoom Cards.diningRoom 2 (Static 0) Squiggle [Square, Circle]
+diningRoom = location DiningRoom Cards.diningRoom 2 (Static 0)
 
 instance HasAbilities DiningRoom where
   getAbilities (DiningRoom attrs) = withBaseAbilities

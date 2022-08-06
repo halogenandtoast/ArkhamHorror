@@ -6,13 +6,13 @@ module Arkham.Location.Cards.TheEdgeOfTheUniverse
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (theEdgeOfTheUniverse)
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( theEdgeOfTheUniverse )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Phase
@@ -23,13 +23,8 @@ newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEdgeOfTheUniverse :: LocationCard TheEdgeOfTheUniverse
-theEdgeOfTheUniverse = location
-  TheEdgeOfTheUniverse
-  Cards.theEdgeOfTheUniverse
-  2
-  (PerPlayer 2)
-  Moon
-  [Plus, Squiggle]
+theEdgeOfTheUniverse =
+  location TheEdgeOfTheUniverse Cards.theEdgeOfTheUniverse 2 (PerPlayer 2)
 
 instance HasModifiersFor TheEdgeOfTheUniverse where
   getModifiersFor _ (InvestigatorTarget iid) (TheEdgeOfTheUniverse attrs)

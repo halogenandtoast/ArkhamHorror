@@ -5,12 +5,12 @@ module Arkham.Location.Cards.AdministrationOffice_131
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (administrationOffice_131)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Investigator.Types (Field(..))
-import Arkham.Location.Runner
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Cards qualified as Cards ( administrationOffice_131 )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Projection
 import Arkham.Source
 
@@ -24,8 +24,6 @@ administrationOffice_131 = location
   Cards.administrationOffice_131
   2
   (PerPlayer 2)
-  Triangle
-  [Square]
 
 instance HasModifiersFor AdministrationOffice_131 where
   getModifiersFor (InvestigatorSource iid) target (AdministrationOffice_131 attrs)

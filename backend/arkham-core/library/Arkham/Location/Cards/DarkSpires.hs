@@ -26,8 +26,6 @@ darkSpires = locationWith
   Cards.darkSpires
   3
   (PerPlayer 2)
-  Moon
-  [Moon, Equals]
   ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance RunMessage DarkSpires where

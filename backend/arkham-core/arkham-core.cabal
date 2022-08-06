@@ -1024,6 +1024,7 @@ library
       Arkham.Location.Cards.EngineCar_176
       Arkham.Location.Cards.EngineCar_177
       Arkham.Location.Cards.EntryHall
+      Arkham.Location.Cards.Entryway
       Arkham.Location.Cards.ExhibitHallAthabaskanExhibit
       Arkham.Location.Cards.ExhibitHallEgyptianExhibit
       Arkham.Location.Cards.ExhibitHallHallOfTheDead
@@ -1243,6 +1244,7 @@ library
       Arkham.Scenarios.DimCarcosa.Story
       Arkham.Scenarios.EchoesOfThePast.Story
       Arkham.Scenarios.TheDevourerBelow.Story
+      Arkham.Scenarios.TheDoomOfEztli.Story
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
       Arkham.Scenarios.TheGathering.Story
       Arkham.Scenarios.TheLastKing.Story

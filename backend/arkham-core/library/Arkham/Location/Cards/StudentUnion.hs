@@ -6,15 +6,15 @@ module Arkham.Location.Cards.StudentUnion
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (studentUnion)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( studentUnion )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -23,8 +23,7 @@ newtype StudentUnion = StudentUnion LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 studentUnion :: LocationCard StudentUnion
-studentUnion =
-  location StudentUnion Cards.studentUnion 1 (Static 2) Diamond [Plus, Equals]
+studentUnion = location StudentUnion Cards.studentUnion 1 (Static 2)
 
 instance HasAbilities StudentUnion where
   getAbilities (StudentUnion attrs) =

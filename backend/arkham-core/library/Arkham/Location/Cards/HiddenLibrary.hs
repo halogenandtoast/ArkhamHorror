@@ -5,11 +5,11 @@ module Arkham.Location.Cards.HiddenLibrary
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Target
 import Arkham.Trait
@@ -19,8 +19,7 @@ newtype HiddenLibrary = HiddenLibrary LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hiddenLibrary :: LocationCard HiddenLibrary
-hiddenLibrary =
-  location HiddenLibrary Cards.hiddenLibrary 4 (PerPlayer 3) NoSymbol []
+hiddenLibrary = location HiddenLibrary Cards.hiddenLibrary 4 (PerPlayer 3)
 
 instance HasModifiersFor HiddenLibrary where
   getModifiersFor _ (LocationTarget lid) (HiddenLibrary attrs)

@@ -22,19 +22,14 @@ newtype SecurityOffice_129 = SecurityOffice_129 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 securityOffice_129 :: LocationCard SecurityOffice_129
-securityOffice_129 = location
-  SecurityOffice_129
-  Cards.securityOffice_129
-  3
-  (PerPlayer 2)
-  Diamond
-  [Square]
+securityOffice_129 =
+  location SecurityOffice_129 Cards.securityOffice_129 3 (PerPlayer 2)
 
 instance HasAbilities SecurityOffice_129 where
   getAbilities (SecurityOffice_129 x) = withBaseAbilities
     x
-    [ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 2)
-        & (abilityLimitL .~ PlayerLimit PerTurn 1)
+    [ limitedAbility (PlayerLimit PerTurn 1)
+        $ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 2)
     | locationRevealed x
     ]
 
@@ -43,15 +38,13 @@ instance RunMessage SecurityOffice_129 where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unrevealedExhibitHalls <-
         selectList $ UnrevealedLocation <> LocationWithTitle "ExhibitHall"
-      l <$ push
-        (chooseOne
-          iid
-          (TargetLabel
-              ScenarioDeckTarget
-              [LookAtTopOfDeck iid ScenarioDeckTarget 1]
-          : [ LookAtRevealed iid (toSource attrs) (LocationTarget exhibitHall)
-            | exhibitHall <- unrevealedExhibitHalls
-            ]
-          )
-        )
+      push
+        $ chooseOne iid
+        $ TargetLabel
+            ScenarioDeckTarget
+            [LookAtTopOfDeck iid ScenarioDeckTarget 1]
+        : [ LookAtRevealed iid (toSource attrs) (LocationTarget exhibitHall)
+          | exhibitHall <- unrevealedExhibitHalls
+          ]
+      pure l
     _ -> SecurityOffice_129 <$> runMessage msg attrs

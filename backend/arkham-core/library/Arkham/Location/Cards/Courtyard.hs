@@ -6,13 +6,13 @@ module Arkham.Location.Cards.Courtyard
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -22,13 +22,7 @@ newtype Courtyard = Courtyard LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 courtyard :: LocationCard Courtyard
-courtyard = location
-  Courtyard
-  Cards.courtyard
-  5
-  (Static 0)
-  Circle
-  [Squiggle, Square, T, Equals, Plus]
+courtyard = location Courtyard Cards.courtyard 5 (Static 0)
 
 instance HasAbilities Courtyard where
   getAbilities (Courtyard attrs) = withBaseAbilities

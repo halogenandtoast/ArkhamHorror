@@ -27,8 +27,6 @@ bleakPlainsBleakDesolation = locationWith
   Cards.bleakPlainsBleakDesolation
   4
   (PerPlayer 1)
-  Square
-  [Circle, Triangle, Diamond]
   ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasModifiersFor BleakPlainsBleakDesolation where

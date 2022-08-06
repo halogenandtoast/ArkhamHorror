@@ -6,17 +6,17 @@ module Arkham.Location.Cards.StudyAberrantGateway
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (studyAberrantGateway)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( studyAberrantGateway )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
@@ -24,13 +24,8 @@ newtype StudyAberrantGateway = StudyAberrantGateway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 studyAberrantGateway :: LocationCard StudyAberrantGateway
-studyAberrantGateway = location
-  StudyAberrantGateway
-  Cards.studyAberrantGateway
-  3
-  (PerPlayer 1)
-  Circle
-  [T]
+studyAberrantGateway =
+  location StudyAberrantGateway Cards.studyAberrantGateway 3 (PerPlayer 1)
 
 instance HasAbilities StudyAberrantGateway where
   getAbilities (StudyAberrantGateway attrs) = withBaseAbilities

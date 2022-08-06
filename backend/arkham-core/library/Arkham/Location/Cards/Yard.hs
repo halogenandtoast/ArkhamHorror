@@ -6,15 +6,15 @@ module Arkham.Location.Cards.Yard
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Investigator.Types (Field(..))
-import Arkham.Location.Runner
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.Projection
 import Arkham.ScenarioLogKey
@@ -27,7 +27,7 @@ newtype Yard = Yard LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yard :: LocationCard Yard
-yard = location Yard Cards.yard 1 (PerPlayer 1) Diamond [Circle, Plus]
+yard = location Yard Cards.yard 1 (PerPlayer 1)
 
 instance HasModifiersFor Yard where
   getModifiersFor _ (LocationTarget lid) (Yard attrs) | lid == toId attrs = do

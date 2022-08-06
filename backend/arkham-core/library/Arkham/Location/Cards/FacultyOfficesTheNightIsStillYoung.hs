@@ -6,17 +6,17 @@ module Arkham.Location.Cards.FacultyOfficesTheNightIsStillYoung
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
-  (facultyOfficesTheNightIsStillYoung)
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards
+  ( facultyOfficesTheNightIsStillYoung )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
@@ -32,8 +32,6 @@ facultyOfficesTheNightIsStillYoung = location
   Cards.facultyOfficesTheNightIsStillYoung
   2
   (PerPlayer 2)
-  T
-  [Circle]
 
 instance HasModifiersFor FacultyOfficesTheNightIsStillYoung where
   getModifiersFor _ target (FacultyOfficesTheNightIsStillYoung attrs)

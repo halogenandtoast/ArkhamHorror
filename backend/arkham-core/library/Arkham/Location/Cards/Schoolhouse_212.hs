@@ -5,12 +5,12 @@ module Arkham.Location.Cards.Schoolhouse_212
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (schoolhouse_212)
 import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( schoolhouse_212 )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Target
 
@@ -19,13 +19,7 @@ newtype Schoolhouse_212 = Schoolhouse_212 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 schoolhouse_212 :: LocationCard Schoolhouse_212
-schoolhouse_212 = location
-  Schoolhouse_212
-  Cards.schoolhouse_212
-  4
-  (Static 1)
-  Moon
-  [Plus, Squiggle, Circle]
+schoolhouse_212 = location Schoolhouse_212 Cards.schoolhouse_212 4 (Static 1)
 
 instance HasModifiersFor Schoolhouse_212 where
   getModifiersFor _ (InvestigatorTarget iid) (Schoolhouse_212 attrs) =

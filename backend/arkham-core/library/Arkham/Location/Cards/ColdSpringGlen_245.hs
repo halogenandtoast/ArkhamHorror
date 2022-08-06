@@ -6,14 +6,14 @@ module Arkham.Location.Cards.ColdSpringGlen_245
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (coldSpringGlen_245)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( coldSpringGlen_245 )
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (ChosenRandomLocation)
+import Arkham.Message hiding ( ChosenRandomLocation )
 import Arkham.Message qualified as Message
 import Arkham.SkillType
 import Arkham.Target
@@ -24,13 +24,8 @@ newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coldSpringGlen_245 :: LocationCard ColdSpringGlen_245
-coldSpringGlen_245 = location
-  ColdSpringGlen_245
-  Cards.coldSpringGlen_245
-  2
-  (Static 0)
-  Triangle
-  [Circle, Diamond, Plus]
+coldSpringGlen_245 =
+  location ColdSpringGlen_245 Cards.coldSpringGlen_245 2 (Static 0)
 
 instance HasModifiersFor ColdSpringGlen_245 where
   getModifiersFor _ (EnemyTarget eid) (ColdSpringGlen_245 attrs) =
@@ -41,12 +36,12 @@ instance HasModifiersFor ColdSpringGlen_245 where
 
 instance HasAbilities ColdSpringGlen_245 where
   getAbilities (ColdSpringGlen_245 attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1 $ ReactionAbility
-          (ChosenRandomLocation Timing.After $ LocationWithId $ toId attrs)
-          Free
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1 $ ReactionAbility
+            (ChosenRandomLocation Timing.After $ LocationWithId $ toId attrs)
+            Free
+        | locationRevealed attrs
+        ]
 
 instance RunMessage ColdSpringGlen_245 where
   runMessage msg l@(ColdSpringGlen_245 attrs) = case msg of

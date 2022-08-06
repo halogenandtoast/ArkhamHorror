@@ -25,15 +25,11 @@ newtype MuseumHalls = MuseumHalls LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 museumHalls :: LocationCard MuseumHalls
-museumHalls = locationWithRevealedSideConnectionsWith
+museumHalls = locationWith
   MuseumHalls
   Cards.museumHalls
   2
   (Static 0)
-  Square
-  [Circle]
-  Square
-  [Circle, Diamond, Triangle]
   (revealedConnectedMatchersL <>~ [LocationWithTitle "Exhibit Hall"])
 
 instance HasModifiersFor MuseumHalls where

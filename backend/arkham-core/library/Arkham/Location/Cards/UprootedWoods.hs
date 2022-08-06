@@ -6,14 +6,14 @@ module Arkham.Location.Cards.UprootedWoods
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (uprootedWoods)
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( uprootedWoods )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 
 newtype UprootedWoods = UprootedWoods LocationAttrs
@@ -21,15 +21,7 @@ newtype UprootedWoods = UprootedWoods LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 uprootedWoods :: LocationCard UprootedWoods
-uprootedWoods = locationWithRevealedSideConnections
-  UprootedWoods
-  Cards.uprootedWoods
-  2
-  (PerPlayer 1)
-  NoSymbol
-  []
-  Moon
-  [Square, T]
+uprootedWoods = location UprootedWoods Cards.uprootedWoods 2 (PerPlayer 1)
 
 instance HasAbilities UprootedWoods where
   getAbilities (UprootedWoods attrs) =

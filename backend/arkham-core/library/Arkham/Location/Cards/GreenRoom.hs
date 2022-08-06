@@ -23,7 +23,7 @@ newtype GreenRoom = GreenRoom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 greenRoom :: LocationCard GreenRoom
-greenRoom = location GreenRoom Cards.greenRoom 5 (PerPlayer 1) Plus [Triangle]
+greenRoom = location GreenRoom Cards.greenRoom 5 (PerPlayer 1)
 
 instance HasAbilities GreenRoom where
   getAbilities (GreenRoom attrs) = withBaseAbilities

@@ -6,11 +6,11 @@ module Arkham.Location.Cards.ExhibitHallMedusaExhibit
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (exhibitHallMedusaExhibit)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( exhibitHallMedusaExhibit )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -20,15 +20,11 @@ newtype ExhibitHallMedusaExhibit = ExhibitHallMedusaExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallMedusaExhibit :: LocationCard ExhibitHallMedusaExhibit
-exhibitHallMedusaExhibit = locationWithRevealedSideConnections
+exhibitHallMedusaExhibit = location
   ExhibitHallMedusaExhibit
   Cards.exhibitHallMedusaExhibit
   2
   (PerPlayer 1)
-  NoSymbol
-  [Square]
-  T
-  [Square, Moon]
 
 instance HasAbilities ExhibitHallMedusaExhibit where
   getAbilities (ExhibitHallMedusaExhibit x) = withBaseAbilities

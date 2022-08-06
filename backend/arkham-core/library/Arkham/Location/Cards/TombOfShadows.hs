@@ -28,8 +28,6 @@ tombOfShadows = locationWith
   Cards.tombOfShadows
   4
   (PerPlayer 2)
-  NoSymbol
-  []
   ((connectsToL .~ adjacentLocations)
   . (costToEnterUnrevealedL
     .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
@@ -42,7 +40,7 @@ instance HasModifiersFor TombOfShadows where
       (enemyIs Enemies.theManInThePallidMask
       <> EnemyAt (LocationWithId $ toId attrs)
       )
-    -- preventing the man in the pallid mask from being defeate is handled by
+    -- preventing the man in the pallid mask from being defeated is handled by
     -- the man in the pallid mask
     pure $ toModifiers attrs [ HealthModifier 1 | active ]
   getModifiersFor _ _ _ = pure []

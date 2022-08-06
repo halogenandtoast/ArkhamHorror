@@ -11,7 +11,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -23,13 +23,7 @@ newtype Montmartre210 = Montmartre210 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 montmartre210 :: LocationCard Montmartre210
-montmartre210 = location
-  Montmartre210
-  Cards.montmartre210
-  2
-  (PerPlayer 1)
-  Square
-  [Diamond, Triangle, Equals, Moon]
+montmartre210 = location Montmartre210 Cards.montmartre210 2 (PerPlayer 1)
 
 instance HasAbilities Montmartre210 where
   getAbilities (Montmartre210 attrs) = withBaseAbilities
@@ -55,7 +49,9 @@ instance RunMessage Montmartre210 where
       ammoAssets <-
         selectListMap AssetTarget $ AssetControlledBy You <> AssetWithUses Ammo
       supplyAssets <-
-        selectListMap AssetTarget $ AssetControlledBy You <> AssetWithUses Supply
+        selectListMap AssetTarget
+        $ AssetControlledBy You
+        <> AssetWithUses Supply
       push
         $ chooseOne iid
         $ [ AddUses target Ammo 1 | target <- ammoAssets ]

@@ -5,9 +5,9 @@ module Arkham.Location.Cards.EntryHall
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Trait
@@ -22,8 +22,6 @@ entryHall = locationWith
   Cards.entryHall
   2
   (Static 0)
-  Square
-  [Circle]
   ((connectedMatchersL <>~ [LocationWithTrait GroundFloor])
   . (revealedConnectedMatchersL <>~ [LocationWithTrait GroundFloor])
   )

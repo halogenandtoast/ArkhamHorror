@@ -25,13 +25,7 @@ newtype SerpentsHaven = SerpentsHaven LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 serpentsHaven :: LocationCard SerpentsHaven
-serpentsHaven = location
-  SerpentsHaven
-  Cards.serpentsHaven
-  2
-  (PerPlayer 2)
-  Triangle
-  [Squiggle, Square, Diamond, Hourglass]
+serpentsHaven = location SerpentsHaven Cards.serpentsHaven 2 (PerPlayer 2)
 
 instance HasModifiersFor SerpentsHaven where
   getModifiersFor _ (EnemyTarget eid) (SerpentsHaven a) = do

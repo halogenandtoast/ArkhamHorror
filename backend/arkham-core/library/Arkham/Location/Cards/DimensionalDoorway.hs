@@ -25,13 +25,8 @@ newtype DimensionalDoorway = DimensionalDoorway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimensionalDoorway :: LocationCard DimensionalDoorway
-dimensionalDoorway = location
-  DimensionalDoorway
-  Cards.dimensionalDoorway
-  2
-  (PerPlayer 1)
-  Squiggle
-  [Triangle, Moon]
+dimensionalDoorway =
+  location DimensionalDoorway Cards.dimensionalDoorway 2 (PerPlayer 1)
 
 instance HasAbilities DimensionalDoorway where
   getAbilities (DimensionalDoorway attrs) =

@@ -5,11 +5,11 @@ module Arkham.Location.Cards.VipArea
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (vipArea)
 import Arkham.Classes
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( vipArea )
 import Arkham.Location.Runner
 import Arkham.Phase
 import Arkham.Target
@@ -19,14 +19,7 @@ newtype VipArea = VipArea LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 vipArea :: LocationCard VipArea
-vipArea = locationWith
-  VipArea
-  Cards.vipArea
-  3
-  (PerPlayer 1)
-  T
-  [Diamond]
-  (revealedSymbolL .~ Plus)
+vipArea = location VipArea Cards.vipArea 3 (PerPlayer 1)
 
 instance HasModifiersFor VipArea where
   getModifiersFor _ (InvestigatorTarget iid) (VipArea attrs)

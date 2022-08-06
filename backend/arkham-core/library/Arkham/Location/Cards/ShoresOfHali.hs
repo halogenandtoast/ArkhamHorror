@@ -27,8 +27,6 @@ shoresOfHali = locationWith
   Cards.shoresOfHali
   3
   (PerPlayer 2)
-  Circle
-  [Square]
   ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance RunMessage ShoresOfHali where

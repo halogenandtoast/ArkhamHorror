@@ -3,12 +3,12 @@ module Arkham.Location.Cards.RitualSite where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (ritualSite)
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( ritualSite )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -18,16 +18,15 @@ newtype RitualSite = RitualSite LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ritualSite :: LocationCard RitualSite
-ritualSite =
-  location RitualSite Cards.ritualSite 3 (PerPlayer 2) Plus [Squiggle]
+ritualSite = location RitualSite Cards.ritualSite 3 (PerPlayer 2)
 
 instance HasAbilities RitualSite where
   getAbilities (RitualSite attrs) | locationRevealed attrs =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 (CluesOnThis $ LessThan $ PerPlayer 2)
-        $ ForcedAbility
-        $ RoundEnds Timing.When
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 (CluesOnThis $ LessThan $ PerPlayer 2)
+          $ ForcedAbility
+          $ RoundEnds Timing.When
+        ]
   getAbilities (RitualSite attrs) = getAbilities attrs
 
 instance RunMessage RitualSite where

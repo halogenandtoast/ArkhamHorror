@@ -30,8 +30,6 @@ labyrinthOfBones = locationWith
   Cards.labyrinthOfBones
   2
   (PerPlayer 2)
-  NoSymbol
-  []
   ((connectsToL .~ adjacentLocations)
   . (costToEnterUnrevealedL
     .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]

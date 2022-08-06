@@ -6,13 +6,13 @@ module Arkham.Location.Cards.Infirmary
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 
 newtype Infirmary = Infirmary LocationAttrs
@@ -20,8 +20,7 @@ newtype Infirmary = Infirmary LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 infirmary :: LocationCard Infirmary
-infirmary =
-  location Infirmary Cards.infirmary 3 (PerPlayer 1) Heart [Hourglass]
+infirmary = location Infirmary Cards.infirmary 3 (PerPlayer 1)
 
 instance HasAbilities Infirmary where
   getAbilities (Infirmary attrs) = withBaseAbilities

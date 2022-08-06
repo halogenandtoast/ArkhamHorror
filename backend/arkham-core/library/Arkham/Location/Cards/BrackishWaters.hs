@@ -7,15 +7,15 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -26,13 +26,7 @@ newtype BrackishWaters = BrackishWaters LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brackishWaters :: LocationCard BrackishWaters
-brackishWaters = location
-  BrackishWaters
-  Cards.brackishWaters
-  1
-  (Static 0)
-  Triangle
-  [Squiggle, Square, Diamond, Hourglass]
+brackishWaters = location BrackishWaters Cards.brackishWaters 1 (Static 0)
 
 instance HasModifiersFor BrackishWaters where
   getModifiersFor _ (InvestigatorTarget iid) (BrackishWaters attrs) =

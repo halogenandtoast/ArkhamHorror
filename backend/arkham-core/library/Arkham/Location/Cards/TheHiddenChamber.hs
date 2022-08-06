@@ -6,14 +6,14 @@ module Arkham.Location.Cards.TheHiddenChamber
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Location.Runner
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
@@ -24,7 +24,7 @@ newtype TheHiddenChamber = TheHiddenChamber LocationAttrs
 
 theHiddenChamber :: LocationCard TheHiddenChamber
 theHiddenChamber =
-  location TheHiddenChamber Cards.theHiddenChamber 3 (Static 0) NoSymbol []
+  location TheHiddenChamber Cards.theHiddenChamber 3 (Static 0)
 
 instance HasModifiersFor TheHiddenChamber where
   getModifiersFor _ target (TheHiddenChamber attrs) | isTarget attrs target = do

@@ -6,13 +6,13 @@ module Arkham.Location.Cards.ReturnToCellar
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 
 newtype ReturnToCellar = ReturnToCellar LocationAttrs
@@ -20,13 +20,7 @@ newtype ReturnToCellar = ReturnToCellar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToCellar :: LocationCard ReturnToCellar
-returnToCellar = location
-  ReturnToCellar
-  Cards.returnToCellar
-  2
-  (PerPlayer 1)
-  Plus
-  [Square, Squiggle]
+returnToCellar = location ReturnToCellar Cards.returnToCellar 2 (PerPlayer 1)
 
 instance HasAbilities ReturnToCellar where
   getAbilities (ReturnToCellar attrs) =

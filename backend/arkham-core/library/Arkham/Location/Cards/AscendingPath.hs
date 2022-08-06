@@ -29,8 +29,6 @@ ascendingPath = locationWith
   Cards.ascendingPath
   3
   (Static 0)
-  Square
-  [Triangle, Diamond, T, Equals, Moon]
   (revealedConnectedMatchersL <>~ [LocationWithTitle "Altered Path"])
 
 instance HasModifiersFor AscendingPath where

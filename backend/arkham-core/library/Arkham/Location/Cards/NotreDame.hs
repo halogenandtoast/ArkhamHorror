@@ -10,7 +10,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -23,8 +23,7 @@ newtype NotreDame = NotreDame LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 notreDame :: LocationCard NotreDame
-notreDame =
-  location NotreDame Cards.notreDame 3 (PerPlayer 1) Plus [Circle, Moon, Star]
+notreDame = location NotreDame Cards.notreDame 3 (PerPlayer 1)
 
 instance HasModifiersFor NotreDame where
   getModifiersFor _ (EnemyTarget eid) (NotreDame attrs)
@@ -53,8 +52,12 @@ instance RunMessage NotreDame where
         hasDoom <- agendaMatches agenda AgendaWithAnyDoom
         l <$ push
           (chooseOrRunOne iid
-          $ Label "Place 1 doom on current agenda" [PlaceDoom (AgendaTarget agenda) 1]
-          : [ Label "Remove 1 doom on current agenda" [RemoveDoom (AgendaTarget agenda) 1]
+          $ Label
+              "Place 1 doom on current agenda"
+              [PlaceDoom (AgendaTarget agenda) 1]
+          : [ Label
+                "Remove 1 doom on current agenda"
+                [RemoveDoom (AgendaTarget agenda) 1]
             | hasDoom
             ]
           )

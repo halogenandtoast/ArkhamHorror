@@ -334,6 +334,11 @@ instance Semigroup EventMatcher where
 
 type Where = LocationMatcher
 
+pattern LocationWithAnyDoom :: LocationMatcher
+pattern LocationWithAnyDoom <-
+  LocationWithDoom (GreaterThan (Static 0)) where
+  LocationWithAnyDoom = LocationWithDoom (GreaterThan (Static 0))
+
 pattern LocationWithAnyClues :: LocationMatcher
 pattern LocationWithAnyClues <-
   LocationWithClues (GreaterThan (Static 0)) where

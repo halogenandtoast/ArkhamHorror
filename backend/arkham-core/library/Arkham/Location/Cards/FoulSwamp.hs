@@ -6,13 +6,13 @@ module Arkham.Location.Cards.FoulSwamp
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (foulSwamp)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( foulSwamp )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
@@ -23,13 +23,7 @@ newtype FoulSwamp = FoulSwamp LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 foulSwamp :: LocationCard FoulSwamp
-foulSwamp = location
-  FoulSwamp
-  Cards.foulSwamp
-  2
-  (Static 0)
-  Hourglass
-  [Equals, Square, Triangle, Diamond]
+foulSwamp = location FoulSwamp Cards.foulSwamp 2 (Static 0)
 
 instance HasModifiersFor FoulSwamp where
   getModifiersFor _ (InvestigatorTarget iid) (FoulSwamp attrs)

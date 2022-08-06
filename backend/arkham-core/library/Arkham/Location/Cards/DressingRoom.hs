@@ -22,8 +22,7 @@ newtype DressingRoom = DressingRoom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dressingRoom :: LocationCard DressingRoom
-dressingRoom =
-  location DressingRoom Cards.dressingRoom 4 (Static 0) Moon [Diamond]
+dressingRoom = location DressingRoom Cards.dressingRoom 4 (Static 0)
 
 instance HasAbilities DressingRoom where
   getAbilities (DressingRoom attrs) = withBaseAbilities

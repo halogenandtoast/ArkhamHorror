@@ -3,11 +3,11 @@ module Arkham.Location.Cards.ArkhamWoodsUnhallowedGround where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (arkhamWoodsUnhallowedGround)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( arkhamWoodsUnhallowedGround )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -19,15 +19,11 @@ newtype ArkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsUnhallowedGround :: LocationCard ArkhamWoodsUnhallowedGround
-arkhamWoodsUnhallowedGround = locationWithRevealedSideConnections
+arkhamWoodsUnhallowedGround = location
   ArkhamWoodsUnhallowedGround
   Cards.arkhamWoodsUnhallowedGround
   4
   (PerPlayer 1)
-  Square
-  [Squiggle]
-  Triangle
-  [Squiggle, Hourglass, Diamond]
 
 instance HasAbilities ArkhamWoodsUnhallowedGround where
   getAbilities (ArkhamWoodsUnhallowedGround x) | locationRevealed x =

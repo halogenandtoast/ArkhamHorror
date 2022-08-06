@@ -3,13 +3,13 @@ module Arkham.Location.Cards.HoleInTheWall where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (holeInTheWall)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( holeInTheWall )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 
 newtype HoleInTheWall = HoleInTheWall LocationAttrs
@@ -17,13 +17,7 @@ newtype HoleInTheWall = HoleInTheWall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 holeInTheWall :: LocationCard HoleInTheWall
-holeInTheWall = location
-  HoleInTheWall
-  Cards.holeInTheWall
-  1
-  (Static 0)
-  Square
-  [T, Triangle, Plus, Diamond]
+holeInTheWall = location HoleInTheWall Cards.holeInTheWall 1 (Static 0)
 
 instance HasAbilities HoleInTheWall where
   getAbilities (HoleInTheWall attrs) =

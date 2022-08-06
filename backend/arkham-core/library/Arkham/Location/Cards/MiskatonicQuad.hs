@@ -5,10 +5,10 @@ module Arkham.Location.Cards.MiskatonicQuad
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (miskatonicQuad)
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( miskatonicQuad )
 import Arkham.Location.Runner
 
 newtype MiskatonicQuad = MiskatonicQuad LocationAttrs
@@ -16,13 +16,7 @@ newtype MiskatonicQuad = MiskatonicQuad LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicQuad :: LocationCard MiskatonicQuad
-miskatonicQuad = location
-  MiskatonicQuad
-  Cards.miskatonicQuad
-  3
-  (Static 0)
-  Plus
-  [Triangle, Hourglass, Square, Diamond, Circle]
+miskatonicQuad = location MiskatonicQuad Cards.miskatonicQuad 3 (Static 0)
 
 instance HasAbilities MiskatonicQuad where
   getAbilities (MiskatonicQuad a) =

@@ -6,9 +6,9 @@ module Arkham.Location.Cards.ChapelOfStAubertThePathIsOpen
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Criteria
-import Arkham.Cost
 import Arkham.Classes
+import Arkham.Cost
+import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
@@ -31,8 +31,6 @@ chapelOfStAubertThePathIsOpen = location
   Cards.chapelOfStAubertThePathIsOpen
   3
   (PerPlayer 2)
-  Moon
-  [Square]
 
 instance HasModifiersFor ChapelOfStAubertThePathIsOpen where
   getModifiersFor _ target (ChapelOfStAubertThePathIsOpen attrs)

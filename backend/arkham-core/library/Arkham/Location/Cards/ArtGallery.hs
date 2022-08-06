@@ -6,12 +6,12 @@ module Arkham.Location.Cards.ArtGallery
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (artGallery)
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( artGallery )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -23,14 +23,7 @@ newtype ArtGallery = ArtGallery LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 artGallery :: LocationCard ArtGallery
-artGallery = locationWith
-  ArtGallery
-  Cards.artGallery
-  2
-  (PerPlayer 1)
-  T
-  [Diamond]
-  (revealedSymbolL .~ Hourglass)
+artGallery = location ArtGallery Cards.artGallery 2 (PerPlayer 1)
 
 instance HasAbilities ArtGallery where
   getAbilities (ArtGallery x) = withBaseAbilities

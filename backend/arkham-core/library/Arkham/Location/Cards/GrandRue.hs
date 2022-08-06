@@ -23,13 +23,7 @@ newtype GrandRue = GrandRue LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grandRue :: LocationCard GrandRue
-grandRue = location
-  GrandRue
-  Cards.grandRue
-  1
-  (PerPlayer 1)
-  Squiggle
-  [Circle, Triangle, Diamond, Equals]
+grandRue = location GrandRue Cards.grandRue 1 (PerPlayer 1)
 
 instance HasAbilities GrandRue where
   getAbilities (GrandRue a) = withBaseAbilities

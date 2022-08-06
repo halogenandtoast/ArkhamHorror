@@ -5,12 +5,12 @@ module Arkham.Location.Cards.EngineCar_175
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (engineCar_175)
 import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( engineCar_175 )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Projection
 
 newtype EngineCar_175 = EngineCar_175 LocationAttrs
@@ -23,8 +23,6 @@ engineCar_175 = locationWith
   Cards.engineCar_175
   4
   (PerPlayer 2)
-  NoSymbol
-  []
   (connectsToL .~ singleton LeftOf)
 
 instance HasModifiersFor EngineCar_175 where

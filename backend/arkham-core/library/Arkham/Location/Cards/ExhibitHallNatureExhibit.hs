@@ -6,11 +6,11 @@ module Arkham.Location.Cards.ExhibitHallNatureExhibit
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (exhibitHallNatureExhibit)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( exhibitHallNatureExhibit )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -20,15 +20,11 @@ newtype ExhibitHallNatureExhibit = ExhibitHallNatureExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallNatureExhibit :: LocationCard ExhibitHallNatureExhibit
-exhibitHallNatureExhibit = locationWithRevealedSideConnections
+exhibitHallNatureExhibit = location
   ExhibitHallNatureExhibit
   Cards.exhibitHallNatureExhibit
   4
   (PerPlayer 1)
-  NoSymbol
-  [Square]
-  Hourglass
-  [Square, Squiggle]
 
 instance HasAbilities ExhibitHallNatureExhibit where
   getAbilities (ExhibitHallNatureExhibit x) = withBaseAbilities

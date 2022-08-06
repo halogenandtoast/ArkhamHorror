@@ -31,8 +31,6 @@ palaceOfTheKing = locationWith
   Cards.palaceOfTheKing
   2
   (PerPlayer 3)
-  Star
-  [Triangle, Diamond]
   ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasModifiersFor PalaceOfTheKing where

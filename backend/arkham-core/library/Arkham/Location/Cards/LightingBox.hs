@@ -5,11 +5,11 @@ module Arkham.Location.Cards.LightingBox
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Target
 
@@ -18,8 +18,7 @@ newtype LightingBox = LightingBox LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 lightingBox :: LocationCard LightingBox
-lightingBox =
-  location LightingBox Cards.lightingBox 4 (PerPlayer 1) Plus [Triangle]
+lightingBox = location LightingBox Cards.lightingBox 4 (PerPlayer 1)
 
 instance HasModifiersFor LightingBox where
   getModifiersFor _ (InvestigatorTarget iid) (LightingBox attrs)

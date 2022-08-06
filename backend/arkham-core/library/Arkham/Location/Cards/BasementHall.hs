@@ -6,14 +6,14 @@ module Arkham.Location.Cards.BasementHall
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 
@@ -22,13 +22,7 @@ newtype BasementHall = BasementHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 basementHall :: LocationCard BasementHall
-basementHall = location
-  BasementHall
-  Cards.basementHall
-  4
-  (PerPlayer 1)
-  Squiggle
-  [Hourglass, Moon]
+basementHall = location BasementHall Cards.basementHall 4 (PerPlayer 1)
 
 instance HasModifiersFor BasementHall where
   getModifiersFor _ (LocationTarget lid) (BasementHall attrs)

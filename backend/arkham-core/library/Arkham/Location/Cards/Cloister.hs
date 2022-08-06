@@ -24,8 +24,7 @@ newtype Cloister = Cloister LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloister :: LocationCard Cloister
-cloister =
-  location Cloister Cards.cloister 2 (PerPlayer 1) Heart [Square, Hourglass]
+cloister = location Cloister Cards.cloister 2 (PerPlayer 1)
 
 instance HasAbilities Cloister where
   getAbilities (Cloister a) = withBaseAbilities

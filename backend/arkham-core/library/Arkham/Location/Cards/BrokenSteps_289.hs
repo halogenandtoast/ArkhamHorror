@@ -9,14 +9,14 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Scenario.Types (Field(..))
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
@@ -25,13 +25,7 @@ newtype BrokenSteps_289 = BrokenSteps_289 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brokenSteps_289 :: LocationCard BrokenSteps_289
-brokenSteps_289 = location
-  BrokenSteps_289
-  Cards.brokenSteps_289
-  4
-  (Static 0)
-  Equals
-  [Squiggle, Triangle, Diamond, Square]
+brokenSteps_289 = location BrokenSteps_289 Cards.brokenSteps_289 4 (Static 0)
 
 instance HasAbilities BrokenSteps_289 where
   getAbilities (BrokenSteps_289 a) =
@@ -47,8 +41,9 @@ instance RunMessage BrokenSteps_289 where
   runMessage msg l@(BrokenSteps_289 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       actionsRemaining <- field InvestigatorRemainingActions iid
-      mOmenCard <- find (`cardMatch` (CardWithTrait Omen <> CardWithType TreacheryType))
-        <$> scenarioField ScenarioDiscard
+      mOmenCard <-
+        find (`cardMatch` (CardWithTrait Omen <> CardWithType TreacheryType))
+          <$> scenarioField ScenarioDiscard
       let
         choices =
           [ Label "Lose 1 Action" [LoseActions iid source 1]

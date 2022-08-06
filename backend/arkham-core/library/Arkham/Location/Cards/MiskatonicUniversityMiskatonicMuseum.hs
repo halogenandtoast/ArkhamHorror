@@ -6,14 +6,14 @@ module Arkham.Location.Cards.MiskatonicUniversityMiskatonicMuseum
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
-  (miskatonicUniversityMiskatonicMuseum)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
+  ( miskatonicUniversityMiskatonicMuseum )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 
 newtype MiskatonicUniversityMiskatonicMuseum = MiskatonicUniversityMiskatonicMuseum LocationAttrs
@@ -27,16 +27,14 @@ miskatonicUniversityMiskatonicMuseum = location
   Cards.miskatonicUniversityMiskatonicMuseum
   3
   (PerPlayer 1)
-  Diamond
-  [T, Plus, Circle, Square]
 
 instance HasAbilities MiskatonicUniversityMiskatonicMuseum where
   getAbilities (MiskatonicUniversityMiskatonicMuseum attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
-          & (abilityLimitL .~ PlayerLimit PerGame 1)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
+            & (abilityLimitL .~ PlayerLimit PerGame 1)
+        | locationRevealed attrs
+        ]
 
 instance RunMessage MiskatonicUniversityMiskatonicMuseum where
   runMessage msg l@(MiskatonicUniversityMiskatonicMuseum attrs) = case msg of

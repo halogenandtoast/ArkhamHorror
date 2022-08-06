@@ -12,7 +12,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import qualified Arkham.Location.Cards as Cards (cloverClubLounge)
+import Arkham.Location.Cards qualified as Cards ( cloverClubLounge )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -23,29 +23,19 @@ newtype CloverClubLounge = CloverClubLounge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubLounge :: LocationCard CloverClubLounge
-cloverClubLounge = location
-  CloverClubLounge
-  Cards.cloverClubLounge
-  2
-  (Static 0)
-  Circle
-  [Moon, Square, Triangle]
+cloverClubLounge =
+  location CloverClubLounge Cards.cloverClubLounge 2 (Static 0)
 
 instance HasAbilities CloverClubLounge where
   getAbilities (CloverClubLounge attrs) =
     withBaseAbilities attrs
-      $ [ restrictedAbility
-              attrs
-              1
-              (OnAct 1)
-              (ActionAbility Nothing $ Costs
-                [ ActionCost 1
-                , HandDiscardCost 1
-                $ CardWithType AssetType
-                <> CardWithTrait Ally
-                ]
-              )
-            & (abilityLimitL .~ PlayerLimit PerGame 1)
+      $ [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility attrs 1 (OnAct 1)
+          $ ActionAbility Nothing
+          $ Costs
+              [ ActionCost 1
+              , HandDiscardCost 1 $ CardWithType AssetType <> CardWithTrait Ally
+              ]
         | locationRevealed attrs
         ]
 

@@ -5,11 +5,11 @@ module Arkham.Location.Cards.BurnedRuins_204
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (burnedRuins_204)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( burnedRuins_204 )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Target
 
 newtype BurnedRuins_204 = BurnedRuins_204 LocationAttrs
@@ -17,13 +17,7 @@ newtype BurnedRuins_204 = BurnedRuins_204 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burnedRuins_204 :: LocationCard BurnedRuins_204
-burnedRuins_204 = location
-  BurnedRuins_204
-  Cards.burnedRuins_204
-  3
-  (Static 3)
-  Triangle
-  [Square, Diamond]
+burnedRuins_204 = location BurnedRuins_204 Cards.burnedRuins_204 3 (Static 3)
 
 instance HasModifiersFor BurnedRuins_204 where
   getModifiersFor _ (EnemyTarget eid) (BurnedRuins_204 attrs@LocationAttrs {..})

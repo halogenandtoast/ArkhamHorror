@@ -6,14 +6,14 @@ module Arkham.Location.Cards.DevilsHopYard_252
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (devilsHopYard_252)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Cards qualified as Cards ( devilsHopYard_252 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -26,18 +26,13 @@ newtype DevilsHopYard_252 = DevilsHopYard_252 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 devilsHopYard_252 :: LocationCard DevilsHopYard_252
-devilsHopYard_252 = location
-  DevilsHopYard_252
-  Cards.devilsHopYard_252
-  1
-  (Static 2)
-  Hourglass
-  [Square, Plus]
+devilsHopYard_252 =
+  location DevilsHopYard_252 Cards.devilsHopYard_252 1 (Static 2)
 
 instance HasAbilities DevilsHopYard_252 where
   getAbilities (DevilsHopYard_252 attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
+    withBaseAbilities attrs
+      $ [ limitedAbility (GroupLimit PerGame 1) $ restrictedAbility
             attrs
             1
             (Here
@@ -49,9 +44,8 @@ instance HasAbilities DevilsHopYard_252 where
                  )
             )
             (FastAbility Free)
-          & (abilityLimitL .~ GroupLimit PerGame 1)
-      | locationRevealed attrs
-      ]
+        | locationRevealed attrs
+        ]
 
 instance RunMessage DevilsHopYard_252 where
   runMessage msg l@(DevilsHopYard_252 attrs) = case msg of

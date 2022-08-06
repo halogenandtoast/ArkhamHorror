@@ -6,15 +6,15 @@ module Arkham.Location.Cards.TrapRoom
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 
 newtype TrapRoom = TrapRoom LocationAttrs
@@ -22,7 +22,7 @@ newtype TrapRoom = TrapRoom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trapRoom :: LocationCard TrapRoom
-trapRoom = location TrapRoom Cards.trapRoom 3 (PerPlayer 1) Moon [Diamond]
+trapRoom = location TrapRoom Cards.trapRoom 3 (PerPlayer 1)
 
 instance HasAbilities TrapRoom where
   getAbilities (TrapRoom attrs) = withBaseAbilities

@@ -6,13 +6,13 @@ module Arkham.Location.Cards.SecurityOffice_128
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (securityOffice_128)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( securityOffice_128 )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.Target
 
@@ -21,19 +21,14 @@ newtype SecurityOffice_128 = SecurityOffice_128 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 securityOffice_128 :: LocationCard SecurityOffice_128
-securityOffice_128 = location
-  SecurityOffice_128
-  Cards.securityOffice_128
-  2
-  (PerPlayer 1)
-  Diamond
-  [Square]
+securityOffice_128 =
+  location SecurityOffice_128 Cards.securityOffice_128 2 (PerPlayer 1)
 
 instance HasAbilities SecurityOffice_128 where
   getAbilities (SecurityOffice_128 x) = withBaseAbilities
     x
-    [ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 2)
-        & (abilityLimitL .~ PlayerLimit PerTurn 1)
+    [ limitedAbility (PlayerLimit PerTurn 1)
+        $ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 2)
     | locationRevealed x
     ]
 

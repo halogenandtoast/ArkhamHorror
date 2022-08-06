@@ -6,14 +6,14 @@ module Arkham.Location.Cards.ColdSpringGlen_244
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (coldSpringGlen_244)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Cards qualified as Cards ( coldSpringGlen_244 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -26,13 +26,8 @@ newtype ColdSpringGlen_244 = ColdSpringGlen_244 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coldSpringGlen_244 :: LocationCard ColdSpringGlen_244
-coldSpringGlen_244 = location
-  ColdSpringGlen_244
-  Cards.coldSpringGlen_244
-  3
-  (Static 2)
-  Triangle
-  [Circle, Diamond, Plus]
+coldSpringGlen_244 =
+  location ColdSpringGlen_244 Cards.coldSpringGlen_244 3 (Static 2)
 
 instance HasModifiersFor ColdSpringGlen_244 where
   getModifiersFor _ (EnemyTarget eid) (ColdSpringGlen_244 attrs) =
@@ -44,19 +39,16 @@ instance HasModifiersFor ColdSpringGlen_244 where
 instance HasAbilities ColdSpringGlen_244 where
   getAbilities (ColdSpringGlen_244 attrs) = withResignAction
     attrs
-    [ restrictedAbility
-          attrs
-          1
-          (Here
-          <> InvestigatorExists (You <> InvestigatorWithAnyClues)
-          <> EnemyCriteria
-               (EnemyExists
-               $ EnemyAt YourLocation
-               <> EnemyWithTrait Abomination
-               )
-          )
-          (FastAbility Free)
-        & (abilityLimitL .~ GroupLimit PerGame 1)
+    [ limitedAbility (GroupLimit PerGame 1) $ restrictedAbility
+        attrs
+        1
+        (Here
+        <> InvestigatorExists (You <> InvestigatorWithAnyClues)
+        <> EnemyCriteria
+             (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Abomination
+             )
+        )
+        (FastAbility Free)
     | locationRevealed attrs
     ]
 

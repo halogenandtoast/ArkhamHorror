@@ -6,14 +6,14 @@ module Arkham.Location.Cards.HistoricalSocietyMeetingRoom
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Matcher hiding (DiscoverClues, RevealLocation)
+import Arkham.Location.Runner
+import Arkham.Matcher hiding ( DiscoverClues, RevealLocation )
 import Arkham.Message
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
@@ -23,14 +23,11 @@ newtype HistoricalSocietyMeetingRoom = HistoricalSocietyMeetingRoom LocationAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 historicalSocietyMeetingRoom :: LocationCard HistoricalSocietyMeetingRoom
-historicalSocietyMeetingRoom = locationWith
+historicalSocietyMeetingRoom = location
   HistoricalSocietyMeetingRoom
   Cards.historicalSocietyMeetingRoom
   4
   (PerPlayer 1)
-  NoSymbol
-  [Square]
-  (revealedSymbolL .~ Diamond)
 
 instance HasAbilities HistoricalSocietyMeetingRoom where
   getAbilities (HistoricalSocietyMeetingRoom attrs) =

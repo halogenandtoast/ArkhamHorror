@@ -6,12 +6,12 @@ module Arkham.Location.Cards.RialtoBridge
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -26,20 +26,18 @@ rialtoBridge = locationWith
   Cards.rialtoBridge
   2
   (Static 1)
-  NoSymbol
-  []
   (connectsToL .~ singleton RightOf)
 
 instance HasAbilities RialtoBridge where
   getAbilities (RialtoBridge attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ Leaves Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ Leaves Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage RialtoBridge where
   runMessage msg l@(RialtoBridge attrs) = case msg of

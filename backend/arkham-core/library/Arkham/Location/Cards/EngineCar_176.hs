@@ -6,15 +6,15 @@ module Arkham.Location.Cards.EngineCar_176
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (engineCar_176)
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( engineCar_176 )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
@@ -28,8 +28,6 @@ engineCar_176 = locationWith
   Cards.engineCar_176
   2
   (PerPlayer 2)
-  NoSymbol
-  []
   (connectsToL .~ singleton LeftOf)
 
 instance HasModifiersFor EngineCar_176 where
@@ -42,14 +40,15 @@ instance HasModifiersFor EngineCar_176 where
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities EngineCar_176 where
-  getAbilities (EngineCar_176 x) = withBaseAbilities x $
-    [ restrictedAbility x 1 Here
-      $ ForcedAbility
-      $ RevealLocation Timing.After You
-      $ LocationWithId
-      $ toId x
-    | locationRevealed x
-    ]
+  getAbilities (EngineCar_176 x) =
+    withBaseAbilities x
+      $ [ restrictedAbility x 1 Here
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId x
+        | locationRevealed x
+        ]
 
 instance RunMessage EngineCar_176 where
   runMessage msg l@(EngineCar_176 attrs) = case msg of

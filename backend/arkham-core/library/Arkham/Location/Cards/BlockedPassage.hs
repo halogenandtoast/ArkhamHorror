@@ -29,8 +29,6 @@ blockedPassage = locationWith
   Cards.blockedPassage
   7
   (Static 0)
-  NoSymbol
-  []
   ((connectsToL .~ adjacentLocations)
   . (costToEnterUnrevealedL
     .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]

@@ -23,8 +23,6 @@ chapelOfStAubertWatersForbidden = location
   Cards.chapelOfStAubertWatersForbidden
   2
   (PerPlayer 3)
-  Moon
-  [Square]
 
 instance HasModifiersFor ChapelOfStAubertWatersForbidden where
   getModifiersFor _ target (ChapelOfStAubertWatersForbidden attrs)

@@ -6,16 +6,16 @@ module Arkham.Location.Cards.Ballroom
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (MoveAction)
+import Arkham.Message hiding ( MoveAction )
 import Arkham.Timing qualified as Timing
 
 newtype Ballroom = Ballroom LocationAttrs
@@ -23,22 +23,16 @@ newtype Ballroom = Ballroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ballroom :: LocationCard Ballroom
-ballroom =
-  location Ballroom Cards.ballroom 4 (Static 0) Square [T, Circle, Squiggle]
+ballroom = location Ballroom Cards.ballroom 4 (Static 0)
 
 instance HasAbilities Ballroom where
   getAbilities (Ballroom attrs) = withBaseAbilities
     attrs
-    [ restrictedAbility
-        attrs
-        1
-        Here
-        (ReactionAbility
+    [ limitedAbility (GroupLimit PerPhase 1)
+      $ restrictedAbility attrs 1 Here
+      $ ReactionAbility
           (PerformAction Timing.After You $ ActionIs Action.Parley)
           Free
-        )
-      & abilityLimitL
-      .~ GroupLimit PerPhase 1
     | locationRevealed attrs
     ]
 

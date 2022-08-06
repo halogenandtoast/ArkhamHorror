@@ -6,12 +6,12 @@ module Arkham.Location.Cards.MessHall
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -21,8 +21,7 @@ newtype MessHall = MessHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 messHall :: LocationCard MessHall
-messHall =
-  location MessHall Cards.messHall 2 (PerPlayer 2) Triangle [Circle, Square]
+messHall = location MessHall Cards.messHall 2 (PerPlayer 2)
 
 instance HasAbilities MessHall where
   getAbilities (MessHall attrs) = withBaseAbilities

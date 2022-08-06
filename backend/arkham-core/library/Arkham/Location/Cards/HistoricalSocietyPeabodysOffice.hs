@@ -7,12 +7,12 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Location.Runner
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -22,15 +22,11 @@ newtype HistoricalSocietyPeabodysOffice = HistoricalSocietyPeabodysOffice Locati
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 historicalSocietyPeabodysOffice :: LocationCard HistoricalSocietyPeabodysOffice
-historicalSocietyPeabodysOffice = locationWithRevealedSideConnections
+historicalSocietyPeabodysOffice = location
   HistoricalSocietyPeabodysOffice
   Cards.historicalSocietyPeabodysOffice
   4
   (PerPlayer 2)
-  NoSymbol
-  [Star]
-  Moon
-  [Star]
 
 instance HasModifiersFor HistoricalSocietyPeabodysOffice where
   getModifiersFor _ (LocationTarget lid) (HistoricalSocietyPeabodysOffice attrs)

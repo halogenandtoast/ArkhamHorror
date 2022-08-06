@@ -7,15 +7,15 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Card
-import Arkham.Card.PlayerCard (genPlayerCard)
+import Arkham.Card.PlayerCard ( genPlayerCard )
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -26,8 +26,7 @@ newtype TrappersCabin = TrappersCabin LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trappersCabin :: LocationCard TrappersCabin
-trappersCabin =
-  location TrappersCabin Cards.trappersCabin 3 (Static 0) Moon [Diamond, Moon]
+trappersCabin = location TrappersCabin Cards.trappersCabin 3 (Static 0)
 
 instance HasModifiersFor TrappersCabin where
   getModifiersFor _ (InvestigatorTarget iid) (TrappersCabin attrs) =
@@ -38,15 +37,15 @@ instance HasModifiersFor TrappersCabin where
 
 instance HasAbilities TrappersCabin where
   getAbilities (TrappersCabin attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          (Here <> Negate (AssetExists $ assetIs Assets.bearTrap))
-        $ ActionAbility Nothing
-        $ Costs [ActionCost 1, ResourceCost 5]
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            (Here <> Negate (AssetExists $ assetIs Assets.bearTrap))
+          $ ActionAbility Nothing
+          $ Costs [ActionCost 1, ResourceCost 5]
+        | locationRevealed attrs
+        ]
 
 instance RunMessage TrappersCabin where
   runMessage msg l@(TrappersCabin attrs) = case msg of

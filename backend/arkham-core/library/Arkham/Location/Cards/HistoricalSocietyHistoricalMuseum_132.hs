@@ -6,13 +6,13 @@ module Arkham.Location.Cards.HistoricalSocietyHistoricalMuseum_132
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Location.Runner
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.SkillTest
 import Arkham.SkillType
@@ -26,23 +26,20 @@ newtype HistoricalSocietyHistoricalMuseum_132 = HistoricalSocietyHistoricalMuseu
 
 historicalSocietyHistoricalMuseum_132
   :: LocationCard HistoricalSocietyHistoricalMuseum_132
-historicalSocietyHistoricalMuseum_132 = locationWithRevealedSideConnections
+historicalSocietyHistoricalMuseum_132 = location
   HistoricalSocietyHistoricalMuseum_132
   Cards.historicalSocietyHistoricalMuseum_132
   2
   (PerPlayer 1)
-  NoSymbol
-  [Circle]
-  Hourglass
-  [Circle, Heart]
 
 instance HasModifiersFor HistoricalSocietyHistoricalMuseum_132 where
   getModifiersFor (SkillTestSource _ _ _ (Just Action.Investigate)) (InvestigatorTarget _) (HistoricalSocietyHistoricalMuseum_132 attrs)
     = do
-    mtarget <- getSkillTestTarget
-    case mtarget of
-      Just target | isTarget attrs target -> pure $ toModifiers attrs [SkillCannotBeIncreased SkillIntellect]
-      _ -> pure []
+      mtarget <- getSkillTestTarget
+      case mtarget of
+        Just target | isTarget attrs target ->
+          pure $ toModifiers attrs [SkillCannotBeIncreased SkillIntellect]
+        _ -> pure []
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities HistoricalSocietyHistoricalMuseum_132 where

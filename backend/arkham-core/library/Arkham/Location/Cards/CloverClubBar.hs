@@ -6,12 +6,12 @@ module Arkham.Location.Cards.CloverClubBar
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (cloverClubBar)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( cloverClubBar )
 import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.ScenarioLogKey
@@ -21,23 +21,15 @@ newtype CloverClubBar = CloverClubBar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubBar :: LocationCard CloverClubBar
-cloverClubBar = location
-  CloverClubBar
-  Cards.cloverClubBar
-  3
-  (Static 0)
-  Square
-  [Triangle, Circle]
+cloverClubBar = location CloverClubBar Cards.cloverClubBar 3 (Static 0)
 
 instance HasAbilities CloverClubBar where
   getAbilities (CloverClubBar attrs) = withBaseAbilities
     attrs
-    [ restrictedAbility
-          attrs
-          1
-          (OnAct 1 <> Here)
-          (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
-        & (abilityLimitL .~ PlayerLimit PerGame 1)
+    [ limitedAbility (PlayerLimit PerGame 1)
+      $ restrictedAbility attrs 1 (OnAct 1 <> Here)
+      $ ActionAbility Nothing
+      $ Costs [ActionCost 1, ResourceCost 2]
     | locationRevealed attrs
     ]
 

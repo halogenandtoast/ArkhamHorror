@@ -23,13 +23,8 @@ newtype ChoeurGothique_293 = ChoeurGothique_293 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 choeurGothique_293 :: LocationCard ChoeurGothique_293
-choeurGothique_293 = location
-  ChoeurGothique_293
-  Cards.choeurGothique_293
-  3
-  (PerPlayer 1)
-  T
-  [Square, Star]
+choeurGothique_293 =
+  location ChoeurGothique_293 Cards.choeurGothique_293 3 (PerPlayer 1)
 
 instance HasAbilities ChoeurGothique_293 where
   getAbilities (ChoeurGothique_293 a) = withBaseAbilities

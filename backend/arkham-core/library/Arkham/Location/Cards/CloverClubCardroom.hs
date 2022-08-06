@@ -23,22 +23,15 @@ newtype CloverClubCardroom = CloverClubCardroom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cloverClubCardroom :: LocationCard CloverClubCardroom
-cloverClubCardroom = location
-  CloverClubCardroom
-  Cards.cloverClubCardroom
-  3
-  (Static 0)
-  Triangle
-  [Circle, Square, Diamond]
+cloverClubCardroom =
+  location CloverClubCardroom Cards.cloverClubCardroom 3 (Static 0)
 
 instance HasAbilities CloverClubCardroom where
   getAbilities (CloverClubCardroom attrs) = withBaseAbilities
     attrs
-    [ restrictedAbility
-        attrs
-        1
-        (OnAct 1 <> Here)
-        (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
+    [ restrictedAbility attrs 1 (OnAct 1 <> Here)
+      $ ActionAbility Nothing
+      $ Costs [ActionCost 1, ResourceCost 2]
     | locationRevealed attrs
     ]
 

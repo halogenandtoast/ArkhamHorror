@@ -145,8 +145,4 @@ ul.tabs__header > li.tab--selected {
 .tab--has-actions {
   box-shadow: 0 0 5px #ff00ff;
 }
-
-.player-info {
-  flex-grow: 1;
-}
 </style>

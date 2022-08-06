@@ -1,13 +1,11 @@
 <template>
-  <div id="app">
-    <NavBar/>
-    <Suspense>
-      <router-view/>
-      <template #fallback>
-        Loading...
-      </template>
-    </Suspense>
-  </div>
+  <NavBar/>
+  <Suspense>
+    <router-view/>
+    <template #fallback>
+      Loading...
+    </template>
+  </Suspense>
 </template>
 
 <script lang="ts" setup>
@@ -41,7 +39,10 @@ body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 

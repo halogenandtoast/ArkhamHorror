@@ -403,6 +403,8 @@ const phase = computed(() => props.game.phase)
 }
 
 .scenario-body {
+  display: flex;
+  flex-direction: column;
   background-image: linear-gradient(darken(#E5EAEC, 10), #E5EAEC);
 
   @media (prefers-color-scheme: dark) {
@@ -410,15 +412,12 @@ const phase = computed(() => props.game.phase)
   }
 
   width: 100%;
-  height: 100%;
-  z-index: 1;
-  display: grid;
-  grid-template-rows: min-content min-content 1fr min-content;
   flex: 1;
 }
 
 .location-cards {
   display: flex;
+  flex: 1;
   justify-content: center;
   align-items: center;
   overflow: auto;
@@ -548,6 +547,7 @@ const phase = computed(() => props.game.phase)
   display: flex;
   user-select: none;
   width: 100%;
+  flex: 1;
 }
 
 .active-phase {

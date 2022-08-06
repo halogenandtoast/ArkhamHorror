@@ -734,6 +734,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
         possibleSlots <- getPotentialSlots c iid
         pure $ null $ cdSlots pcDef \\ possibleSlots
 
+
     pure
       $ (cdCardType pcDef /= SkillType)
       && ((costStatus == PaidCost)

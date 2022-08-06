@@ -5,10 +5,10 @@ module Arkham.Location.Cards.OsbornsGeneralStore_206
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (osbornsGeneralStore_206)
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( osbornsGeneralStore_206 )
 import Arkham.Location.Runner
 import Arkham.Target
 
@@ -17,13 +17,8 @@ newtype OsbornsGeneralStore_206 = OsbornsGeneralStore_206 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 osbornsGeneralStore_206 :: LocationCard OsbornsGeneralStore_206
-osbornsGeneralStore_206 = location
-  OsbornsGeneralStore_206
-  Cards.osbornsGeneralStore_206
-  2
-  (PerPlayer 1)
-  Circle
-  [Moon, Square]
+osbornsGeneralStore_206 =
+  location OsbornsGeneralStore_206 Cards.osbornsGeneralStore_206 2 (PerPlayer 1)
 
 instance HasModifiersFor OsbornsGeneralStore_206 where
   getModifiersFor _ (InvestigatorTarget iid) (OsbornsGeneralStore_206 attrs) =

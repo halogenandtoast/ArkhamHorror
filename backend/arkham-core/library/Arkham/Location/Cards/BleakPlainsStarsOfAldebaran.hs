@@ -27,8 +27,6 @@ bleakPlainsStarsOfAldebaran = locationWith
   Cards.bleakPlainsStarsOfAldebaran
   4
   (PerPlayer 1)
-  Square
-  [Circle, Triangle, Diamond]
   ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasModifiersFor BleakPlainsStarsOfAldebaran where

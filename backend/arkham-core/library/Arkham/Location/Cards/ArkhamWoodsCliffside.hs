@@ -2,9 +2,9 @@ module Arkham.Location.Cards.ArkhamWoodsCliffside where
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (arkhamWoodsCliffside)
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( arkhamWoodsCliffside )
 import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.SkillType
@@ -14,15 +14,8 @@ newtype ArkhamWoodsCliffside = ArkhamWoodsCliffside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 arkhamWoodsCliffside :: LocationCard ArkhamWoodsCliffside
-arkhamWoodsCliffside = locationWithRevealedSideConnections
-  ArkhamWoodsCliffside
-  Cards.arkhamWoodsCliffside
-  2
-  (PerPlayer 1)
-  Square
-  [Squiggle]
-  Hourglass
-  [Squiggle, Moon, Triangle]
+arkhamWoodsCliffside =
+  location ArkhamWoodsCliffside Cards.arkhamWoodsCliffside 2 (PerPlayer 1)
 
 -- TODO: Move this to a modifier
 instance RunMessage ArkhamWoodsCliffside where

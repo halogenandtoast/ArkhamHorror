@@ -6,13 +6,13 @@ module Arkham.Location.Cards.TwistedUnderbrush
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (twistedUnderbrush)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( twistedUnderbrush )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 
 newtype TwistedUnderbrush = TwistedUnderbrush LocationAttrs
@@ -20,20 +20,15 @@ newtype TwistedUnderbrush = TwistedUnderbrush LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twistedUnderbrush :: LocationCard TwistedUnderbrush
-twistedUnderbrush = location
-  TwistedUnderbrush
-  Cards.twistedUnderbrush
-  3
-  (PerPlayer 1)
-  Moon
-  [Diamond, Moon]
+twistedUnderbrush =
+  location TwistedUnderbrush Cards.twistedUnderbrush 3 (PerPlayer 1)
 
 instance HasAbilities TwistedUnderbrush where
   getAbilities (TwistedUnderbrush attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ ActionCost 1
+        | locationRevealed attrs
+        ]
 
 instance RunMessage TwistedUnderbrush where
   runMessage msg l@(TwistedUnderbrush attrs) = case msg of

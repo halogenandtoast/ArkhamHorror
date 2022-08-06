@@ -6,13 +6,13 @@ module Arkham.Location.Cards.EasttownArkhamPoliceStation
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (easttownArkhamPoliceStation)
 import Arkham.Asset.Uses
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( easttownArkhamPoliceStation )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -28,16 +28,16 @@ easttownArkhamPoliceStation = location
   Cards.easttownArkhamPoliceStation
   4
   (PerPlayer 2)
-  Moon
-  [Circle, Triangle]
 
 instance HasAbilities EasttownArkhamPoliceStation where
   getAbilities (EasttownArkhamPoliceStation attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
-          & (abilityLimitL .~ PlayerLimit PerGame 1)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 1
+        | locationRevealed attrs
+        ]
 
 instance RunMessage EasttownArkhamPoliceStation where
   runMessage msg l@(EasttownArkhamPoliceStation attrs) = case msg of

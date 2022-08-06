@@ -6,12 +6,12 @@ module Arkham.Location.Cards.BridgeOfSighs
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -26,20 +26,18 @@ bridgeOfSighs = locationWith
   Cards.bridgeOfSighs
   1
   (Static 2)
-  NoSymbol
-  []
   (connectsToL .~ singleton RightOf)
 
 instance HasAbilities BridgeOfSighs where
   getAbilities (BridgeOfSighs attrs) =
-    withBaseAbilities attrs $
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ Leaves Timing.After You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ mkAbility attrs 1
+          $ ForcedAbility
+          $ Leaves Timing.After You
+          $ LocationWithId
+          $ toId attrs
+        | locationRevealed attrs
+        ]
 
 instance RunMessage BridgeOfSighs where
   runMessage msg l@(BridgeOfSighs attrs) = case msg of

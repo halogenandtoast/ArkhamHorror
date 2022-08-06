@@ -6,15 +6,15 @@ module Arkham.Location.Cards.DarkenedHall
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Id
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 
 newtype DarkenedHall = DarkenedHall LocationAttrs
@@ -22,16 +22,7 @@ newtype DarkenedHall = DarkenedHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkenedHall :: LocationCard DarkenedHall
-darkenedHall = locationWith
-  DarkenedHall
-  Cards.darkenedHall
-  4
-  (Static 0)
-  Diamond
-  [Triangle]
-  (revealedConnectedMatchersL
-  .~ map LocationWithSymbol [Triangle, T, Hourglass, Plus, Squiggle]
-  )
+darkenedHall = location DarkenedHall Cards.darkenedHall 4 (Static 0)
 
 instance HasAbilities DarkenedHall where
   getAbilities (DarkenedHall x) = withBaseAbilities

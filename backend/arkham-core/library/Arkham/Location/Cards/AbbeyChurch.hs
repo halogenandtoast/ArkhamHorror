@@ -6,8 +6,8 @@ module Arkham.Location.Cards.AbbeyChurch
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Types ( Field (AgendaSequence) )
 import Arkham.Agenda.Sequence qualified as AS
+import Arkham.Agenda.Types ( Field (AgendaSequence) )
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.GameValue
@@ -29,8 +29,6 @@ abbeyChurch = locationWith
   Cards.abbeyChurch
   3
   (PerPlayer 1)
-  Square
-  [Equals, T, Heart, Hourglass, Moon]
   (costToEnterUnrevealedL
   .~ GroupClueCost (PerPlayer 3) (LocationWithTitle "Broken Steps")
   )

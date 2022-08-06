@@ -6,13 +6,13 @@ module Arkham.Location.Cards.ReturnToAttic
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 
 newtype ReturnToAttic = ReturnToAttic LocationAttrs
@@ -20,13 +20,7 @@ newtype ReturnToAttic = ReturnToAttic LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 returnToAttic :: LocationCard ReturnToAttic
-returnToAttic = location
-  ReturnToAttic
-  Cards.returnToAttic
-  3
-  (PerPlayer 1)
-  Triangle
-  [Square, Moon]
+returnToAttic = location ReturnToAttic Cards.returnToAttic 3 (PerPlayer 1)
 
 instance HasAbilities ReturnToAttic where
   getAbilities (ReturnToAttic attrs) =

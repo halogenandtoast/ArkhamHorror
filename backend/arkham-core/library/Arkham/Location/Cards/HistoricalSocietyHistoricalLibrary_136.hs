@@ -6,14 +6,14 @@ module Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_136
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Location.Runner
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -24,15 +24,11 @@ newtype HistoricalSocietyHistoricalLibrary_136 = HistoricalSocietyHistoricalLibr
 
 historicalSocietyHistoricalLibrary_136
   :: LocationCard HistoricalSocietyHistoricalLibrary_136
-historicalSocietyHistoricalLibrary_136 = locationWithRevealedSideConnections
+historicalSocietyHistoricalLibrary_136 = location
   HistoricalSocietyHistoricalLibrary_136
   Cards.historicalSocietyHistoricalLibrary_136
   3
   (PerPlayer 2)
-  NoSymbol
-  [Star]
-  Squiggle
-  [Star, Triangle]
 
 instance HasAbilities HistoricalSocietyHistoricalLibrary_136 where
   getAbilities (HistoricalSocietyHistoricalLibrary_136 attrs) =

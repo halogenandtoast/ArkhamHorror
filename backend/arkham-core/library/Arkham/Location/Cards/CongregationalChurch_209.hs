@@ -6,11 +6,11 @@ module Arkham.Location.Cards.CongregationalChurch_209
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -25,17 +25,16 @@ congregationalChurch_209 = location
   Cards.congregationalChurch_209
   2
   (PerPlayer 1)
-  Diamond
-  [Plus, Triangle, Squiggle]
 
 instance HasAbilities CongregationalChurch_209 where
-  getAbilities (CongregationalChurch_209 attrs) = do
+  getAbilities (CongregationalChurch_209 attrs) =
     let rest = withDrawCardUnderneathAction attrs
-    [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
-            [ActionCost 1, HandDiscardCost 1 AnyCard]
-        | locationRevealed attrs
-        ]
-      <> rest
+    in
+      rest
+        <> [ restrictedAbility attrs 1 Here $ ActionAbility Nothing $ Costs
+               [ActionCost 1, HandDiscardCost 1 AnyCard]
+           | locationRevealed attrs
+           ]
 
 instance RunMessage CongregationalChurch_209 where
   runMessage msg l@(CongregationalChurch_209 attrs) = case msg of

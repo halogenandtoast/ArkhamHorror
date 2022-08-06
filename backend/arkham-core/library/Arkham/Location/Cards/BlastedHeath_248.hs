@@ -6,14 +6,14 @@ module Arkham.Location.Cards.BlastedHeath_248
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (blastedHeath_248)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Cards qualified as Cards ( blastedHeath_248 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -26,18 +26,13 @@ newtype BlastedHeath_248 = BlastedHeath_248 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blastedHeath_248 :: LocationCard BlastedHeath_248
-blastedHeath_248 = location
-  BlastedHeath_248
-  Cards.blastedHeath_248
-  4
-  (Static 3)
-  Square
-  [Circle, Hourglass]
+blastedHeath_248 =
+  location BlastedHeath_248 Cards.blastedHeath_248 4 (Static 3)
 
 instance HasAbilities BlastedHeath_248 where
   getAbilities (BlastedHeath_248 attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
+    withBaseAbilities attrs
+      $ [ limitedAbility (GroupLimit PerGame 1) $ restrictedAbility
             attrs
             1
             (Here
@@ -50,9 +45,8 @@ instance HasAbilities BlastedHeath_248 where
                  )
             )
             (FastAbility Free)
-          & (abilityLimitL .~ GroupLimit PerGame 1)
-      | locationRevealed attrs
-      ]
+        | locationRevealed attrs
+        ]
 
 instance RunMessage BlastedHeath_248 where
   runMessage msg l@(BlastedHeath_248 attrs) = case msg of

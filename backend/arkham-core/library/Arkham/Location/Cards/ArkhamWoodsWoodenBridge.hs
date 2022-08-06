@@ -3,11 +3,11 @@ module Arkham.Location.Cards.ArkhamWoodsWoodenBridge where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (arkhamWoodsWoodenBridge)
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( arkhamWoodsWoodenBridge )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -18,15 +18,8 @@ newtype ArkhamWoodsWoodenBridge = ArkhamWoodsWoodenBridge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsWoodenBridge :: LocationCard ArkhamWoodsWoodenBridge
-arkhamWoodsWoodenBridge = locationWithRevealedSideConnections
-  ArkhamWoodsWoodenBridge
-  Cards.arkhamWoodsWoodenBridge
-  3
-  (PerPlayer 1)
-  Square
-  [Squiggle]
-  Circle
-  [Squiggle, Droplet]
+arkhamWoodsWoodenBridge =
+  location ArkhamWoodsWoodenBridge Cards.arkhamWoodsWoodenBridge 3 (PerPlayer 1)
 
 instance HasAbilities ArkhamWoodsWoodenBridge where
   getAbilities (ArkhamWoodsWoodenBridge attrs) =

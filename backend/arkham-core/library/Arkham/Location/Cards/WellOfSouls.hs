@@ -30,8 +30,6 @@ wellOfSouls = locationWith
   Cards.wellOfSouls
   4
   (PerPlayer 1)
-  NoSymbol
-  []
   ((connectsToL .~ adjacentLocations)
   . (costToEnterUnrevealedL
     .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
@@ -42,22 +40,24 @@ instance HasAbilities WellOfSouls where
   getAbilities (WellOfSouls attrs) =
     withBaseAbilities attrs $ if locationRevealed attrs
       then
-        [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds Timing.After You
+        [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds
+          Timing.After
+          You
         , restrictedAbility
-            attrs
-            2
-            (AnyCriterion
-              [ Negate
-                  (LocationExists
-                  $ LocationInDirection dir (LocationWithId $ toId attrs)
-                  )
-              | dir <- [Above, Below, RightOf]
-              ]
-            )
-          $ ForcedAbility
-          $ RevealLocation Timing.When Anyone
-          $ LocationWithId
-          $ toId attrs
+          attrs
+          2
+          (AnyCriterion
+            [ Negate
+                (LocationExists
+                $ LocationInDirection dir (LocationWithId $ toId attrs)
+                )
+            | dir <- [Above, Below, RightOf]
+            ]
+          )
+        $ ForcedAbility
+        $ RevealLocation Timing.When Anyone
+        $ LocationWithId
+        $ toId attrs
         ]
       else []
 

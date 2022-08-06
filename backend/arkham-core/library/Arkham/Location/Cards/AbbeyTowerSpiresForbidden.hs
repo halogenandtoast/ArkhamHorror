@@ -1,8 +1,7 @@
 module Arkham.Location.Cards.AbbeyTowerSpiresForbidden
   ( abbeyTowerSpiresForbidden
   , AbbeyTowerSpiresForbidden(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -19,7 +18,11 @@ newtype AbbeyTowerSpiresForbidden = AbbeyTowerSpiresForbidden LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 abbeyTowerSpiresForbidden :: LocationCard AbbeyTowerSpiresForbidden
-abbeyTowerSpiresForbidden = location AbbeyTowerSpiresForbidden Cards.abbeyTowerSpiresForbidden 2 (PerPlayer 3) Star [T]
+abbeyTowerSpiresForbidden = location
+  AbbeyTowerSpiresForbidden
+  Cards.abbeyTowerSpiresForbidden
+  2
+  (PerPlayer 3)
 
 instance HasModifiersFor AbbeyTowerSpiresForbidden where
   getModifiersFor _ target (AbbeyTowerSpiresForbidden attrs)

@@ -20,13 +20,7 @@ newtype RuinsOfEztli = RuinsOfEztli LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ruinsOfEztli :: LocationCard RuinsOfEztli
-ruinsOfEztli = location
-  RuinsOfEztli
-  Cards.ruinsOfEztli
-  3
-  (PerPlayer 2)
-  Hourglass
-  [Triangle, Heart]
+ruinsOfEztli = location RuinsOfEztli Cards.ruinsOfEztli 3 (PerPlayer 2)
 
 instance HasAbilities RuinsOfEztli where
   getAbilities (RuinsOfEztli attrs) = withBaseAbilities

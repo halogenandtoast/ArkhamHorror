@@ -2,11 +2,11 @@ module Arkham.Location.Cards.FacultyOfficesTheHourIsLate where
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (facultyOfficesTheHourIsLate)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( facultyOfficesTheHourIsLate )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 
 newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs
   deriving anyclass IsLocation
@@ -18,8 +18,6 @@ facultyOfficesTheHourIsLate = location
   Cards.facultyOfficesTheHourIsLate
   2
   (Static 0)
-  T
-  [Circle]
 
 instance HasModifiersFor FacultyOfficesTheHourIsLate where
   getModifiersFor _ target (FacultyOfficesTheHourIsLate attrs)

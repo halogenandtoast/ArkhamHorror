@@ -27,8 +27,6 @@ depthsOfDemheStepsOfThePalace = locationWith
   Cards.depthsOfDemheStepsOfThePalace
   4
   (PerPlayer 1)
-  Equals
-  [Moon, Triangle, Diamond]
   ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasModifiersFor DepthsOfDemheStepsOfThePalace where

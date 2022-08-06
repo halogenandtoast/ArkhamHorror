@@ -30,23 +30,15 @@ rivertownAbandonedWarehouse = location
   Cards.rivertownAbandonedWarehouse
   4
   (PerPlayer 1)
-  Circle
-  [Moon, Diamond, Square, Squiggle, Hourglass]
 
 instance HasAbilities RivertownAbandonedWarehouse where
   getAbilities (RivertownAbandonedWarehouse attrs) =
     withBaseAbilities attrs
-      $ [ restrictedAbility
-              attrs
-              1
-              Here
-              (ActionAbility Nothing
-              $ Costs
-                  [ ActionCost 1
-                  , HandDiscardCost 1 $ CardWithSkill SkillWillpower
-                  ]
-              )
-            & (abilityLimitL .~ GroupLimit PerGame 1)
+      $ [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ Costs
+              [ActionCost 1, HandDiscardCost 1 $ CardWithSkill SkillWillpower]
         | locationRevealed attrs
         ]
 
@@ -61,12 +53,8 @@ instance RunMessage RivertownAbandonedWarehouse where
     UseCardAbility iid source _ 1 payments | isSource attrs source -> do
       let doomToRemove = willpowerCount payments
       cultists <- selectList $ EnemyWithTrait Cultist
-      l <$ unless
-        (null cultists)
-        (push
-          (chooseOne
-            iid
-            [ RemoveDoom (EnemyTarget eid) doomToRemove | eid <- cultists ]
-          )
-        )
+      unless (null cultists) $ push $ chooseOne
+        iid
+        [ RemoveDoom (EnemyTarget eid) doomToRemove | eid <- cultists ]
+      pure l
     _ -> RivertownAbandonedWarehouse <$> runMessage msg attrs

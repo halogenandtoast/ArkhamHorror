@@ -6,15 +6,15 @@ module Arkham.Location.Cards.StreetsOfVenice
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Matcher hiding (MoveAction)
+import Arkham.Location.Runner
+import Arkham.Matcher hiding ( MoveAction )
 import Arkham.Message
 
 newtype StreetsOfVenice = StreetsOfVenice LocationAttrs
@@ -27,8 +27,6 @@ streetsOfVenice = locationWith
   Cards.streetsOfVenice
   2
   (Static 2)
-  NoSymbol
-  []
   (connectsToL .~ singleton RightOf)
 
 instance HasAbilities StreetsOfVenice where

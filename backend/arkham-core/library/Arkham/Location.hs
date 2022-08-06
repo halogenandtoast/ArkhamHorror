@@ -283,6 +283,7 @@ allLocations = mapFromList $ map
   , SomeLocationCard expeditionCamp
   , SomeLocationCard ruinsOfEztli
   -- The Doom of Eztli
+  , SomeLocationCard entryway
   -- Rainforest
   , SomeLocationCard pathOfThorns
   , SomeLocationCard riverCanyon

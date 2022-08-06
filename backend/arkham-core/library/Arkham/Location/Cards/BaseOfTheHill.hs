@@ -29,8 +29,6 @@ baseOfTheHill = locationWith
   Cards.baseOfTheHill
   3
   (Static 0)
-  Triangle
-  [Square, Plus, Squiggle, Hourglass]
   (revealedConnectedMatchersL <>~ [LocationWithTitle "Diverging Path"])
 
 instance HasAbilities BaseOfTheHill where

@@ -24,13 +24,7 @@ newtype KnightsHall = KnightsHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 knightsHall :: LocationCard KnightsHall
-knightsHall = location
-  KnightsHall
-  Cards.knightsHall
-  2
-  (PerPlayer 1)
-  Hourglass
-  [Square, Heart]
+knightsHall = location KnightsHall Cards.knightsHall 2 (PerPlayer 1)
 
 instance HasAbilities KnightsHall where
   getAbilities (KnightsHall a) = withBaseAbilities

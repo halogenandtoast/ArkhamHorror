@@ -6,13 +6,13 @@ module Arkham.Location.Cards.TenAcreMeadow_246
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (tenAcreMeadow_246)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( tenAcreMeadow_246 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -24,13 +24,8 @@ newtype TenAcreMeadow_246 = TenAcreMeadow_246 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tenAcreMeadow_246 :: LocationCard TenAcreMeadow_246
-tenAcreMeadow_246 = location
-  TenAcreMeadow_246
-  Cards.tenAcreMeadow_246
-  3
-  (Static 1)
-  Diamond
-  [Circle, Triangle, Plus]
+tenAcreMeadow_246 =
+  location TenAcreMeadow_246 Cards.tenAcreMeadow_246 3 (Static 1)
 
 instance HasAbilities TenAcreMeadow_246 where
   getAbilities (TenAcreMeadow_246 attrs) = withBaseAbilities

@@ -29,8 +29,6 @@ floodedSquare = locationWith
   Cards.floodedSquare
   4
   (PerPlayer 1)
-  NoSymbol
-  []
   (connectsToL .~ singleton RightOf)
 
 instance HasAbilities FloodedSquare where

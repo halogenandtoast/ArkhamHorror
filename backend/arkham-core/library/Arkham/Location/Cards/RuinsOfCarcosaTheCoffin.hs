@@ -8,12 +8,11 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.DamageEffect
-import Arkham.Helpers.Ability
-import Arkham.GameValue
 import Arkham.Game.Helpers
+import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.Message
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
@@ -29,8 +28,6 @@ ruinsOfCarcosaTheCoffin = locationWith
   Cards.ruinsOfCarcosaTheCoffin
   2
   (PerPlayer 1)
-  Triangle
-  [Square, Equals, Star]
   ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance HasAbilities RuinsOfCarcosaTheCoffin where

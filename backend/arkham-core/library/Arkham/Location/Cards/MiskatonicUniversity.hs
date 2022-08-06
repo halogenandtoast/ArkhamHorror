@@ -6,13 +6,13 @@ module Arkham.Location.Cards.MiskatonicUniversity
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (miskatonicUniversity)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( miskatonicUniversity )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -23,13 +23,8 @@ newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicUniversity :: LocationCard MiskatonicUniversity
-miskatonicUniversity = location
-  MiskatonicUniversity
-  Cards.miskatonicUniversity
-  4
-  (PerPlayer 2)
-  Diamond
-  [T, Plus, Circle, Square]
+miskatonicUniversity =
+  location MiskatonicUniversity Cards.miskatonicUniversity 4 (PerPlayer 2)
 
 instance HasAbilities MiskatonicUniversity where
   getAbilities (MiskatonicUniversity x) = withBaseAbilities

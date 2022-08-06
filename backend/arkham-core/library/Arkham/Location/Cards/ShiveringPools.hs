@@ -11,7 +11,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Investigator.Types ( Field(..))
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
@@ -32,8 +32,6 @@ shiveringPools = locationWith
   Cards.shiveringPools
   5
   (PerPlayer 1)
-  NoSymbol
-  []
   ((connectsToL .~ adjacentLocations)
   . (costToEnterUnrevealedL
     .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
@@ -44,22 +42,24 @@ instance HasAbilities ShiveringPools where
   getAbilities (ShiveringPools attrs) =
     withBaseAbilities attrs $ if locationRevealed attrs
       then
-        [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds Timing.After You
+        [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds
+          Timing.After
+          You
         , restrictedAbility
-            attrs
-            2
-            (AnyCriterion
-              [ Negate
-                  (LocationExists
-                  $ LocationInDirection dir (LocationWithId $ toId attrs)
-                  )
-              | dir <- [Below, RightOf]
-              ]
-            )
-          $ ForcedAbility
-          $ RevealLocation Timing.When Anyone
-          $ LocationWithId
-          $ toId attrs
+          attrs
+          2
+          (AnyCriterion
+            [ Negate
+                (LocationExists
+                $ LocationInDirection dir (LocationWithId $ toId attrs)
+                )
+            | dir <- [Below, RightOf]
+            ]
+          )
+        $ ForcedAbility
+        $ RevealLocation Timing.When Anyone
+        $ LocationWithId
+        $ toId attrs
         ]
       else []
 
@@ -72,11 +72,7 @@ instance RunMessage ShiveringPools where
         $ Label
             "Take 1 direct damage"
             [InvestigatorDirectDamage iid (toSource attrs) 1 0]
-        : [ Label
-              "Lose 5 resources"
-              [LoseResources iid 5]
-          | hasResources
-          ]
+        : [ Label "Lose 5 resources" [LoseResources iid 5] | hasResources ]
       pure l
     UseCardAbility iid (isSource attrs -> True) _ 2 _ -> do
       push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) 1)

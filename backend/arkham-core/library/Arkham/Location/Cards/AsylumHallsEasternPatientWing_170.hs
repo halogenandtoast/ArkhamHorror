@@ -6,14 +6,14 @@ module Arkham.Location.Cards.AsylumHallsEasternPatientWing_170
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Location.Runner
+import Arkham.Matcher hiding ( EnemyEvaded )
 import Arkham.Message
 import Arkham.Target
 import Arkham.Trait
@@ -29,8 +29,6 @@ asylumHallsEasternPatientWing_170 = location
   Cards.asylumHallsEasternPatientWing_170
   3
   (Static 0)
-  Hourglass
-  [Circle, Heart, Squiggle]
 
 instance HasAbilities AsylumHallsEasternPatientWing_170 where
   getAbilities (AsylumHallsEasternPatientWing_170 attrs) = withBaseAbilities

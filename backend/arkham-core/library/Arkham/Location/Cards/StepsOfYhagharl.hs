@@ -8,15 +8,15 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import qualified Arkham.Location.Cards as Cards (stepsOfYhagharl)
+import Arkham.Location.Cards qualified as Cards ( stepsOfYhagharl )
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Scenario.Types (Field(..))
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.SkillType
 import Arkham.Target
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
@@ -24,13 +24,8 @@ newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stepsOfYhagharl :: LocationCard StepsOfYhagharl
-stepsOfYhagharl = location
-  StepsOfYhagharl
-  Cards.stepsOfYhagharl
-  3
-  (PerPlayer 1)
-  Plus
-  [Diamond, Moon]
+stepsOfYhagharl =
+  location StepsOfYhagharl Cards.stepsOfYhagharl 3 (PerPlayer 1)
 
 instance HasAbilities StepsOfYhagharl where
   getAbilities (StepsOfYhagharl attrs) =

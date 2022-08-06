@@ -27,13 +27,8 @@ newtype AbbeyTowerThePathIsOpen = AbbeyTowerThePathIsOpen LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abbeyTowerThePathIsOpen :: LocationCard AbbeyTowerThePathIsOpen
-abbeyTowerThePathIsOpen = location
-  AbbeyTowerThePathIsOpen
-  Cards.abbeyTowerThePathIsOpen
-  3
-  (PerPlayer 2)
-  Star
-  [T]
+abbeyTowerThePathIsOpen =
+  location AbbeyTowerThePathIsOpen Cards.abbeyTowerThePathIsOpen 3 (PerPlayer 2)
 
 instance HasModifiersFor AbbeyTowerThePathIsOpen where
   getModifiersFor _ target (AbbeyTowerThePathIsOpen attrs)

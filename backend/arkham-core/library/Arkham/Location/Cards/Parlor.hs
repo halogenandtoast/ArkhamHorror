@@ -3,15 +3,15 @@ module Arkham.Location.Cards.Parlor where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -23,7 +23,7 @@ newtype Parlor = Parlor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 parlor :: LocationCard Parlor
-parlor = location Parlor Cards.parlor 2 (Static 0) Diamond [Square]
+parlor = location Parlor Cards.parlor 2 (Static 0)
 
 instance HasModifiersFor Parlor where
   getModifiersFor _ target (Parlor attrs) | isTarget attrs target =

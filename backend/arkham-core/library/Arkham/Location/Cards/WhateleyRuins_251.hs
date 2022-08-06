@@ -26,13 +26,8 @@ newtype WhateleyRuins_251 = WhateleyRuins_251 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whateleyRuins_251 :: LocationCard WhateleyRuins_251
-whateleyRuins_251 = location
-  WhateleyRuins_251
-  Cards.whateleyRuins_251
-  2
-  (PerPlayer 2)
-  Plus
-  [Triangle, Diamond, Hourglass]
+whateleyRuins_251 =
+  location WhateleyRuins_251 Cards.whateleyRuins_251 2 (PerPlayer 2)
 
 instance HasModifiersFor WhateleyRuins_251 where
   getModifiersFor _ (InvestigatorTarget iid) (WhateleyRuins_251 attrs) =

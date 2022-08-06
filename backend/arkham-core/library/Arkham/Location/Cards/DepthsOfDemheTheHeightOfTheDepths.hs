@@ -33,8 +33,6 @@ depthsOfDemheTheHeightOfTheDepths = locationWith
   Cards.depthsOfDemheTheHeightOfTheDepths
   4
   (PerPlayer 1)
-  Equals
-  [Moon, Triangle, Diamond]
   ((canBeFlippedL .~ True) . (revealedL .~ True))
 
 instance RunMessage DepthsOfDemheTheHeightOfTheDepths where

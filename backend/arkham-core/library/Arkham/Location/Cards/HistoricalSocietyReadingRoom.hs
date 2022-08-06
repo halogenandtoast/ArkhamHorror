@@ -26,15 +26,11 @@ newtype HistoricalSocietyReadingRoom = HistoricalSocietyReadingRoom LocationAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 historicalSocietyReadingRoom :: LocationCard HistoricalSocietyReadingRoom
-historicalSocietyReadingRoom = locationWithRevealedSideConnections
+historicalSocietyReadingRoom = location
   HistoricalSocietyReadingRoom
   Cards.historicalSocietyReadingRoom
   5
   (Static 1)
-  NoSymbol
-  [Circle]
-  T
-  [Circle]
 
 instance HasAbilities HistoricalSocietyReadingRoom where
   getAbilities (HistoricalSocietyReadingRoom attrs) =

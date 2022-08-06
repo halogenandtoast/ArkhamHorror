@@ -5,12 +5,12 @@ module Arkham.Location.Cards.ExhibitHallRestrictedHall
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 
 newtype ExhibitHallRestrictedHall = ExhibitHallRestrictedHall LocationAttrs
@@ -18,15 +18,11 @@ newtype ExhibitHallRestrictedHall = ExhibitHallRestrictedHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 exhibitHallRestrictedHall :: LocationCard ExhibitHallRestrictedHall
-exhibitHallRestrictedHall = locationWithRevealedSideConnections
+exhibitHallRestrictedHall = location
   ExhibitHallRestrictedHall
   Cards.exhibitHallRestrictedHall
   3
   (PerPlayer 2)
-  NoSymbol
-  [Square]
-  Equals
-  [Square]
 
 instance HasModifiersFor ExhibitHallRestrictedHall where
   getModifiersFor _ target (ExhibitHallRestrictedHall attrs)

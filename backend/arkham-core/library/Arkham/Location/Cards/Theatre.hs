@@ -5,9 +5,9 @@ module Arkham.Location.Cards.Theatre
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 
 newtype Theatre = Theatre LocationAttrs
@@ -15,8 +15,7 @@ newtype Theatre = Theatre LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theatre :: LocationCard Theatre
-theatre =
-  location Theatre Cards.theatre 2 (Static 0) Circle [Diamond, Triangle]
+theatre = location Theatre Cards.theatre 2 (Static 0)
 
 instance RunMessage Theatre where
   runMessage msg (Theatre attrs) = Theatre <$> runMessage msg attrs

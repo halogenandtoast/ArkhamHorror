@@ -3,11 +3,11 @@ module Arkham.Location.Cards.ArkhamWoodsLakeside where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (arkhamWoodsLakeside)
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( arkhamWoodsLakeside )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -18,29 +18,22 @@ newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsLakeside :: LocationCard ArkhamWoodsLakeside
-arkhamWoodsLakeside = locationWithRevealedSideConnections
-  ArkhamWoodsLakeside
-  Cards.arkhamWoodsLakeside
-  2
-  (PerPlayer 1)
-  Square
-  [Squiggle]
-  Star
-  [Squiggle, Heart]
+arkhamWoodsLakeside =
+  location ArkhamWoodsLakeside Cards.arkhamWoodsLakeside 2 (PerPlayer 1)
 
 instance HasAbilities ArkhamWoodsLakeside where
   getAbilities (ArkhamWoodsLakeside attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-          attrs
-          1
-          (Here <> DuringSkillTest
-            (WhileInvestigating $ LocationWithId $ toId attrs)
-          )
-        $ ForcedAbility
-        $ RevealChaosToken Timing.After You AnyToken
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+            attrs
+            1
+            (Here <> DuringSkillTest
+              (WhileInvestigating $ LocationWithId $ toId attrs)
+            )
+          $ ForcedAbility
+          $ RevealChaosToken Timing.After You AnyToken
+        | locationRevealed attrs
+        ]
 
 instance RunMessage ArkhamWoodsLakeside where
   runMessage msg l@(ArkhamWoodsLakeside attrs) = case msg of

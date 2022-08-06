@@ -22,13 +22,7 @@ newtype OuterWall_285 = OuterWall_285 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outerWall_285 :: LocationCard OuterWall_285
-outerWall_285 = location
-  OuterWall_285
-  Cards.outerWall_285
-  2
-  (PerPlayer 2)
-  Triangle
-  [Squiggle, Diamond, Equals]
+outerWall_285 = location OuterWall_285 Cards.outerWall_285 2 (PerPlayer 2)
 
 instance HasAbilities OuterWall_285 where
   getAbilities (OuterWall_285 a) = withBaseAbilities

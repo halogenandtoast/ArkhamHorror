@@ -2,9 +2,9 @@ module Arkham.Location.Cards.ArkhamWoodsOldHouse where
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (arkhamWoodsOldHouse)
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( arkhamWoodsOldHouse )
 import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.SkillType
@@ -14,15 +14,8 @@ newtype ArkhamWoodsOldHouse = ArkhamWoodsOldHouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 arkhamWoodsOldHouse :: LocationCard ArkhamWoodsOldHouse
-arkhamWoodsOldHouse = locationWithRevealedSideConnections
-  ArkhamWoodsOldHouse
-  Cards.arkhamWoodsOldHouse
-  2
-  (PerPlayer 1)
-  Square
-  [Squiggle]
-  Diamond
-  [Squiggle, Triangle, T]
+arkhamWoodsOldHouse =
+  location ArkhamWoodsOldHouse Cards.arkhamWoodsOldHouse 2 (PerPlayer 1)
 
 -- TODO: Move this to a modifier
 instance RunMessage ArkhamWoodsOldHouse where

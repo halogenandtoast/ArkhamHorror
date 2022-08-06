@@ -5,25 +5,20 @@ module Arkham.Location.Cards.TearThroughTime
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 
 newtype TearThroughTime = TearThroughTime LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tearThroughTime :: LocationCard TearThroughTime
-tearThroughTime = location
-  TearThroughTime
-  Cards.tearThroughTime
-  2
-  (PerPlayer 2)
-  Moon
-  [Circle, Plus, Squiggle]
+tearThroughTime =
+  location TearThroughTime Cards.tearThroughTime 2 (PerPlayer 2)
 
 instance HasAbilities TearThroughTime where
   getAbilities (TearThroughTime attrs) =

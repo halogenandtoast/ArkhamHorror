@@ -18,8 +18,7 @@ newtype MuseumEntrance = MuseumEntrance LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 museumEntrance :: LocationCard MuseumEntrance
-museumEntrance =
-  location MuseumEntrance Cards.museumEntrance 3 (Static 2) Circle [Square]
+museumEntrance = location MuseumEntrance Cards.museumEntrance 3 (Static 2)
 
 instance HasModifiersFor MuseumEntrance where
   getModifiersFor _ (InvestigatorTarget iid) (MuseumEntrance attrs) =

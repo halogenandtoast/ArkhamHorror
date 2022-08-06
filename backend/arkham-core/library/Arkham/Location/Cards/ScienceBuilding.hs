@@ -19,13 +19,8 @@ newtype ScienceBuilding = ScienceBuilding LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scienceBuilding :: LocationCard ScienceBuilding
-scienceBuilding = location
-  ScienceBuilding
-  Cards.scienceBuilding
-  2
-  (PerPlayer 1)
-  Hourglass
-  [Plus, Squiggle]
+scienceBuilding =
+  location ScienceBuilding Cards.scienceBuilding 2 (PerPlayer 1)
 
 instance HasAbilities ScienceBuilding where
   getAbilities (ScienceBuilding x) =

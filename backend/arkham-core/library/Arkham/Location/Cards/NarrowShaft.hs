@@ -33,8 +33,6 @@ narrowShaft = locationWith
   Cards.narrowShaft
   2
   (PerPlayer 1)
-  NoSymbol
-  []
   ((connectsToL .~ adjacentLocations)
   . (costToEnterUnrevealedL
     .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
@@ -45,22 +43,26 @@ instance HasAbilities NarrowShaft where
   getAbilities (NarrowShaft attrs) =
     withBaseAbilities attrs $ if locationRevealed attrs
       then
-        [ mkAbility attrs 1 $ ForcedAbility $ Moves Timing.When You (LocationWithId $ toId attrs) UnrevealedLocation
+        [ mkAbility attrs 1 $ ForcedAbility $ Moves
+          Timing.When
+          You
+          (LocationWithId $ toId attrs)
+          UnrevealedLocation
         , restrictedAbility
-            attrs
-            2
-            (AnyCriterion
-              [ Negate
-                  (LocationExists
-                  $ LocationInDirection dir (LocationWithId $ toId attrs)
-                  )
-              | dir <- [Above, Below, RightOf]
-              ]
-            )
-          $ ForcedAbility
-          $ RevealLocation Timing.When Anyone
-          $ LocationWithId
-          $ toId attrs
+          attrs
+          2
+          (AnyCriterion
+            [ Negate
+                (LocationExists
+                $ LocationInDirection dir (LocationWithId $ toId attrs)
+                )
+            | dir <- [Above, Below, RightOf]
+            ]
+          )
+        $ ForcedAbility
+        $ RevealLocation Timing.When Anyone
+        $ LocationWithId
+        $ toId attrs
         ]
       else []
 

@@ -6,14 +6,14 @@ module Arkham.Location.Cards.WhateleyRuins_250
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (whateleyRuins_250)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Exception
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Investigator.Types (Field(..))
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Cards qualified as Cards ( whateleyRuins_250 )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -27,13 +27,8 @@ newtype WhateleyRuins_250 = WhateleyRuins_250 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whateleyRuins_250 :: LocationCard WhateleyRuins_250
-whateleyRuins_250 = location
-  WhateleyRuins_250
-  Cards.whateleyRuins_250
-  3
-  (PerPlayer 2)
-  Plus
-  [Triangle, Diamond, Hourglass]
+whateleyRuins_250 =
+  location WhateleyRuins_250 Cards.whateleyRuins_250 3 (PerPlayer 2)
 
 instance HasModifiersFor WhateleyRuins_250 where
   getModifiersFor _ (InvestigatorTarget iid) (WhateleyRuins_250 attrs) =
@@ -44,23 +39,23 @@ instance HasModifiersFor WhateleyRuins_250 where
 
 instance HasAbilities WhateleyRuins_250 where
   getAbilities (WhateleyRuins_250 attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-            attrs
-            1
-            (Here
-            <> InvestigatorExists
-                 (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
-            <> EnemyCriteria
-                 (EnemyExists
-                 $ EnemyAt YourLocation
-                 <> EnemyWithTrait Abomination
-                 )
-            )
-            (FastAbility Free)
-          & (abilityLimitL .~ GroupLimit PerGame 1)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ restrictedAbility
+              attrs
+              1
+              (Here
+              <> InvestigatorExists
+                   (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+              <> EnemyCriteria
+                   (EnemyExists
+                   $ EnemyAt YourLocation
+                   <> EnemyWithTrait Abomination
+                   )
+              )
+              (FastAbility Free)
+            & (abilityLimitL .~ GroupLimit PerGame 1)
+        | locationRevealed attrs
+        ]
 
 instance RunMessage WhateleyRuins_250 where
   runMessage msg l@(WhateleyRuins_250 attrs) = case msg of

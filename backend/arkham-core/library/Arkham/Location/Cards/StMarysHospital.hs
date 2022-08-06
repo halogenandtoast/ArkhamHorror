@@ -6,13 +6,13 @@ module Arkham.Location.Cards.StMarysHospital
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (stMarysHospital)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( stMarysHospital )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -22,27 +22,21 @@ newtype StMarysHospital = StMarysHospital LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stMarysHospital :: LocationCard StMarysHospital
-stMarysHospital = location
-  StMarysHospital
-  Cards.stMarysHospital
-  2
-  (PerPlayer 1)
-  Plus
-  [Diamond, Square]
+stMarysHospital =
+  location StMarysHospital Cards.stMarysHospital 2 (PerPlayer 1)
 
 instance HasAbilities StMarysHospital where
   getAbilities (StMarysHospital x) | locationRevealed x =
-    withBaseAbilities x $
-      [ restrictedAbility
-          x
-          1
-          (Here <> InvestigatorExists (You <> InvestigatorWithAnyDamage))
-          (ActionAbility Nothing $ ActionCost 1)
-        & abilityLimitL
-        .~ PlayerLimit PerGame 1
-      ]
-  getAbilities (StMarysHospital attrs) =
-    getAbilities attrs
+    withBaseAbilities x
+      $ [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility
+              x
+              1
+              (Here <> InvestigatorExists (You <> InvestigatorWithAnyDamage))
+          $ ActionAbility Nothing
+          $ ActionCost 1
+        ]
+  getAbilities (StMarysHospital attrs) = getAbilities attrs
 
 instance RunMessage StMarysHospital where
   runMessage msg l@(StMarysHospital attrs) = case msg of

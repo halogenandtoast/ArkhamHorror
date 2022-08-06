@@ -14,7 +14,7 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Scenario.Types (Field(..))
+import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
@@ -23,13 +23,7 @@ newtype BrokenSteps_290 = BrokenSteps_290 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brokenSteps_290 :: LocationCard BrokenSteps_290
-brokenSteps_290 = location
-  BrokenSteps_290
-  Cards.brokenSteps_290
-  3
-  (Static 0)
-  Equals
-  [Squiggle, Triangle, Diamond, Square]
+brokenSteps_290 = location BrokenSteps_290 Cards.brokenSteps_290 3 (Static 0)
 
 instance HasAbilities BrokenSteps_290 where
   getAbilities (BrokenSteps_290 a) =
@@ -45,8 +39,9 @@ instance RunMessage BrokenSteps_290 where
   runMessage msg l@(BrokenSteps_290 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       hasAssets <- selectAny $ assetControlledBy iid <> DiscardableAsset
-      mCultistCard <- find (`cardMatch` (CardWithTrait Cultist <> CardWithType EnemyType))
-        <$> scenarioField ScenarioDiscard
+      mCultistCard <-
+        find (`cardMatch` (CardWithTrait Cultist <> CardWithType EnemyType))
+          <$> scenarioField ScenarioDiscard
       let
         choices =
           [ Label "Discard an asset" [ChooseAndDiscardAsset iid AnyAsset]

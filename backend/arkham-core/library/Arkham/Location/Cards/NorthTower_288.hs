@@ -5,8 +5,8 @@ module Arkham.Location.Cards.NorthTower_288
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Types ( Field (AgendaDoom) )
 import Arkham.Agenda.Sequence ( AgendaSide (A, C) )
+import Arkham.Agenda.Types ( Field (AgendaDoom) )
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
@@ -22,13 +22,7 @@ newtype NorthTower_288 = NorthTower_288 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 northTower_288 :: LocationCard NorthTower_288
-northTower_288 = location
-  NorthTower_288
-  Cards.northTower_288
-  4
-  (PerPlayer 1)
-  Diamond
-  [Squiggle, Triangle, Equals]
+northTower_288 = location NorthTower_288 Cards.northTower_288 4 (PerPlayer 1)
 
 instance HasModifiersFor NorthTower_288 where
   getModifiersFor (SkillTestSource iid _ _ _) SkillTestTarget (NorthTower_288 a)

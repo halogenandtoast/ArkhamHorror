@@ -6,15 +6,15 @@ module Arkham.Location.Cards.DiningCar
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (diningCar)
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( diningCar )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
@@ -28,8 +28,6 @@ diningCar = locationWith
   Cards.diningCar
   2
   (Static 0)
-  NoSymbol
-  []
   (connectsToL .~ setFromList [LeftOf, RightOf])
 
 instance HasModifiersFor DiningCar where
@@ -42,14 +40,15 @@ instance HasModifiersFor DiningCar where
   getModifiersFor _ _ _ = pure []
 
 instance HasAbilities DiningCar where
-  getAbilities (DiningCar x) = withBaseAbilities x $
-    [ restrictedAbility x 1 Here
-      $ ForcedAbility
-      $ RevealLocation Timing.After You
-      $ LocationWithId
-      $ toId x
-    | locationRevealed x
-    ]
+  getAbilities (DiningCar x) =
+    withBaseAbilities x
+      $ [ restrictedAbility x 1 Here
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId x
+        | locationRevealed x
+        ]
 
 instance RunMessage DiningCar where
   runMessage msg l@(DiningCar attrs) = case msg of

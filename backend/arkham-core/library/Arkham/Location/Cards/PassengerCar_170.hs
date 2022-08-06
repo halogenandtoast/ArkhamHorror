@@ -31,8 +31,6 @@ passengerCar_170 = locationWith
   Cards.passengerCar_170
   3
   (PerPlayer 2)
-  NoSymbol
-  []
   (connectsToL .~ setFromList [LeftOf, RightOf])
 
 instance HasModifiersFor PassengerCar_170 where

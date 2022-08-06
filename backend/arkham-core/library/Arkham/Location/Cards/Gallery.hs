@@ -6,13 +6,13 @@ module Arkham.Location.Cards.Gallery
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Investigator.Types (Field(..))
-import Arkham.Location.Runner
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
@@ -25,7 +25,7 @@ newtype Gallery = Gallery LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gallery :: LocationCard Gallery
-gallery = location Gallery Cards.gallery 1 (Static 0) Plus [Equals, Circle]
+gallery = location Gallery Cards.gallery 1 (Static 0)
 
 instance HasAbilities Gallery where
   getAbilities (Gallery attrs) = withBaseAbilities

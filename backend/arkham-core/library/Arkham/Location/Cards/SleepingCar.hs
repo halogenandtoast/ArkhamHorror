@@ -6,14 +6,14 @@ module Arkham.Location.Cards.SleepingCar
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (sleepingCar)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( sleepingCar )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.Projection
 import Arkham.ScenarioLogKey
@@ -28,8 +28,6 @@ sleepingCar = locationWith
   Cards.sleepingCar
   4
   (Static 1)
-  NoSymbol
-  []
   (connectsToL .~ setFromList [LeftOf, RightOf])
 
 instance HasModifiersFor SleepingCar where
@@ -43,11 +41,13 @@ instance HasModifiersFor SleepingCar where
 
 instance HasAbilities SleepingCar where
   getAbilities (SleepingCar attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
-          & (abilityLimitL .~ GroupLimit PerGame 1)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ limitedAbility (GroupLimit PerGame 1)
+          $ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 1
+        | locationRevealed attrs
+        ]
 
 instance RunMessage SleepingCar where
   runMessage msg l@(SleepingCar attrs) = case msg of

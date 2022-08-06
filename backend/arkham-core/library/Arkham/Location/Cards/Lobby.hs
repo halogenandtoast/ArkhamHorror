@@ -6,17 +6,17 @@ module Arkham.Location.Cards.Lobby
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Timing qualified as Timing
 
 newtype Lobby = Lobby LocationAttrs
@@ -24,7 +24,7 @@ newtype Lobby = Lobby LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lobby :: LocationCard Lobby
-lobby = location Lobby Cards.lobby 4 (Static 1) Triangle [Circle, Square, Plus]
+lobby = location Lobby Cards.lobby 4 (Static 1)
 
 instance HasAbilities Lobby where
   getAbilities (Lobby attrs) =

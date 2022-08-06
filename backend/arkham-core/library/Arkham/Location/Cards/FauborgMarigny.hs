@@ -5,12 +5,12 @@ module Arkham.Location.Cards.FauborgMarigny
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (fauborgMarigny)
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( fauborgMarigny )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Target
 
@@ -19,13 +19,7 @@ newtype FauborgMarigny = FauborgMarigny LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fauborgMarigny :: LocationCard FauborgMarigny
-fauborgMarigny = location
-  FauborgMarigny
-  Cards.fauborgMarigny
-  4
-  (Static 0)
-  Squiggle
-  [Triangle, Squiggle]
+fauborgMarigny = location FauborgMarigny Cards.fauborgMarigny 4 (Static 0)
 
 instance HasModifiersFor FauborgMarigny where
   getModifiersFor _ (InvestigatorTarget iid) (FauborgMarigny attrs) =

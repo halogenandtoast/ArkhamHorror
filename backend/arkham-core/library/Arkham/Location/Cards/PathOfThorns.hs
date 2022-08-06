@@ -21,13 +21,7 @@ newtype PathOfThorns = PathOfThorns LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pathOfThorns :: LocationCard PathOfThorns
-pathOfThorns = location
-  PathOfThorns
-  Cards.pathOfThorns
-  3
-  (PerPlayer 1)
-  Square
-  [Circle, Diamond, Triangle, Squiggle]
+pathOfThorns = location PathOfThorns Cards.pathOfThorns 3 (PerPlayer 1)
 
 instance HasAbilities PathOfThorns where
   getAbilities (PathOfThorns a) = withBaseAbilities

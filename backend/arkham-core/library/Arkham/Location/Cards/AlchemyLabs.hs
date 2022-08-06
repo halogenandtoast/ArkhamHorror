@@ -25,8 +25,7 @@ newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alchemyLabs :: LocationCard AlchemyLabs
-alchemyLabs =
-  location AlchemyLabs Cards.alchemyLabs 5 (Static 0) Squiggle [Hourglass]
+alchemyLabs = location AlchemyLabs Cards.alchemyLabs 5 (Static 0)
 
 instance HasModifiersFor AlchemyLabs where
   getModifiersFor _ target (AlchemyLabs attrs) | isTarget attrs target =

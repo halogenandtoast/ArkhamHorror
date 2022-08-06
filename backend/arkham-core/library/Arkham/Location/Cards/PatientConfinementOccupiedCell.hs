@@ -6,13 +6,13 @@ module Arkham.Location.Cards.PatientConfinementOccupiedCell
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
@@ -28,8 +28,6 @@ patientConfinementOccupiedCell = locationWith
   Cards.patientConfinementOccupiedCell
   5
   (Static 1)
-  Moon
-  [Squiggle]
   (costToEnterUnrevealedL .~ Costs [ActionCost 1, ClueCost 1])
 
 instance HasAbilities PatientConfinementOccupiedCell where

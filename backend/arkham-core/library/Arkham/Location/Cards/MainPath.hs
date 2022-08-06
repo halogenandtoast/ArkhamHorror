@@ -5,9 +5,9 @@ module Arkham.Location.Cards.MainPath
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (mainPath)
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( mainPath )
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Trait
@@ -22,8 +22,6 @@ mainPath = locationWith
   Cards.mainPath
   2
   (Static 0)
-  Squiggle
-  [Square, Plus]
   (revealedConnectedMatchersL <>~ [LocationWithTrait Woods])
 
 instance HasAbilities MainPath where

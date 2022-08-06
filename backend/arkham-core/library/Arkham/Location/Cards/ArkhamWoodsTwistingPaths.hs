@@ -3,12 +3,12 @@ module Arkham.Location.Cards.ArkhamWoodsTwistingPaths where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (arkhamWoodsTwistingPaths)
 import Arkham.Classes
 import Arkham.EffectMetadata
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( arkhamWoodsTwistingPaths )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -20,15 +20,11 @@ newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamWoodsTwistingPaths :: LocationCard ArkhamWoodsTwistingPaths
-arkhamWoodsTwistingPaths = locationWithRevealedSideConnections
+arkhamWoodsTwistingPaths = location
   ArkhamWoodsTwistingPaths
   Cards.arkhamWoodsTwistingPaths
   3
   (PerPlayer 1)
-  Square
-  [Squiggle]
-  T
-  [Squiggle, Diamond, Equals]
 
 instance HasAbilities ArkhamWoodsTwistingPaths where
   getAbilities (ArkhamWoodsTwistingPaths attrs) | locationRevealed attrs =

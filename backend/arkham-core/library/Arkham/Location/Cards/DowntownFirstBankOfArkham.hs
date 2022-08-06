@@ -6,13 +6,13 @@ module Arkham.Location.Cards.DowntownFirstBankOfArkham
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (downtownFirstBankOfArkham)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( downtownFirstBankOfArkham )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 
 newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham LocationAttrs
@@ -25,18 +25,14 @@ downtownFirstBankOfArkham = location
   Cards.downtownFirstBankOfArkham
   3
   (PerPlayer 1)
-  Triangle
-  [Moon, T]
 
 instance HasAbilities DowntownFirstBankOfArkham where
   getAbilities (DowntownFirstBankOfArkham attrs) = withBaseAbilities
     attrs
-    [ restrictedAbility
-          attrs
-          1
-          (Here <> CanGainResources)
-          (ActionAbility Nothing $ ActionCost 1)
-        & (abilityLimitL .~ PlayerLimit PerGame 1)
+    [ limitedAbility (PlayerLimit PerGame 1)
+      $ restrictedAbility attrs 1 (Here <> CanGainResources)
+      $ ActionAbility Nothing
+      $ ActionCost 1
     | locationRevealed attrs
     ]
 

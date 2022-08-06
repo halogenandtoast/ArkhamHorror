@@ -6,12 +6,12 @@ module Arkham.Location.Cards.RiverCanyon
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
@@ -24,13 +24,7 @@ newtype RiverCanyon = RiverCanyon LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riverCanyon :: LocationCard RiverCanyon
-riverCanyon = location
-  RiverCanyon
-  Cards.riverCanyon
-  4
-  (PerPlayer 1)
-  Diamond
-  [Circle, Moon, Heart, Triangle, Square]
+riverCanyon = location RiverCanyon Cards.riverCanyon 4 (PerPlayer 1)
 
 instance HasAbilities RiverCanyon where
   getAbilities (RiverCanyon attrs) = withBaseAbilities

@@ -6,13 +6,13 @@ module Arkham.Location.Cards.QuietHalls_135
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Trait
@@ -27,8 +27,6 @@ quietHalls_135 = locationWith
   Cards.quietHalls_135
   3
   (Static 0)
-  Star
-  [Circle]
   ((connectedMatchersL <>~ [LocationWithTrait ThirdFloor])
   . (revealedConnectedMatchersL <>~ [LocationWithTrait ThirdFloor])
   )

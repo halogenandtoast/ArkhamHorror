@@ -5,9 +5,9 @@ module Arkham.Location.Cards.Schoolhouse_213
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (schoolhouse_213)
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( schoolhouse_213 )
 import Arkham.Location.Runner
 import Arkham.Message
 
@@ -16,16 +16,9 @@ newtype Schoolhouse_213 = Schoolhouse_213 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 schoolhouse_213 :: LocationCard Schoolhouse_213
-schoolhouse_213 = location
-  Schoolhouse_213
-  Cards.schoolhouse_213
-  4
-  (Static 1)
-  Moon
-  [Plus, Squiggle, Circle]
+schoolhouse_213 = location Schoolhouse_213 Cards.schoolhouse_213 4 (Static 1)
 
 instance HasModifiersFor Schoolhouse_213
-
 
 instance HasAbilities Schoolhouse_213 where
   getAbilities = withDrawCardUnderneathAction

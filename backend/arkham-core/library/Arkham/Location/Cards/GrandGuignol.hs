@@ -10,25 +10,19 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
-import qualified Arkham.Location.Cards as Cards
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
-import qualified Arkham.Timing as Timing
+import Arkham.Message hiding ( RevealLocation )
+import Arkham.Timing qualified as Timing
 
 newtype GrandGuignol = GrandGuignol LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grandGuignol :: LocationCard GrandGuignol
-grandGuignol = location
-  GrandGuignol
-  Cards.grandGuignol
-  3
-  (PerPlayer 1)
-  Triangle
-  [Diamond, Square]
+grandGuignol = location GrandGuignol Cards.grandGuignol 3 (PerPlayer 1)
 
 instance HasAbilities GrandGuignol where
   getAbilities (GrandGuignol attrs) = withBaseAbilities
@@ -44,8 +38,9 @@ instance HasAbilities GrandGuignol where
 instance RunMessage GrandGuignol where
   runMessage msg a@(GrandGuignol attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      nonWeaknessCards <- selectListMap toCardId (BasicCardMatch NonWeakness <> InHandOf
-        (InvestigatorWithId iid))
+      nonWeaknessCards <- selectListMap
+        toCardId
+        (BasicCardMatch NonWeakness <> InHandOf (InvestigatorWithId iid))
       push
         $ chooseOrRunOne iid
         $ Label

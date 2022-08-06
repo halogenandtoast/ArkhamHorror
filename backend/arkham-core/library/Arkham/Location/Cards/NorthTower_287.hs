@@ -1,8 +1,7 @@
 module Arkham.Location.Cards.NorthTower_287
   ( northTower_287
   , NorthTower_287(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -23,7 +22,7 @@ newtype NorthTower_287 = NorthTower_287 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northTower_287 :: LocationCard NorthTower_287
-northTower_287 = location NorthTower_287 Cards.northTower_287 2 (PerPlayer 2) Diamond [Squiggle, Triangle, Equals]
+northTower_287 = location NorthTower_287 Cards.northTower_287 2 (PerPlayer 2)
 
 instance HasAbilities NorthTower_287 where
   getAbilities (NorthTower_287 a) = withBaseAbilities

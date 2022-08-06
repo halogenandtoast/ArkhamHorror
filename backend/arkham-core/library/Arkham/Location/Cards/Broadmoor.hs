@@ -5,9 +5,9 @@ module Arkham.Location.Cards.Broadmoor
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (broadmoor)
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( broadmoor )
 import Arkham.Location.Runner
 
 newtype Broadmoor = Broadmoor LocationAttrs
@@ -15,8 +15,7 @@ newtype Broadmoor = Broadmoor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 broadmoor :: LocationCard Broadmoor
-broadmoor =
-  location Broadmoor Cards.broadmoor 3 (PerPlayer 1) Plus [Square, Plus]
+broadmoor = location Broadmoor Cards.broadmoor 3 (PerPlayer 1)
 
 instance HasAbilities Broadmoor where
   getAbilities (Broadmoor a) = withResignAction a []

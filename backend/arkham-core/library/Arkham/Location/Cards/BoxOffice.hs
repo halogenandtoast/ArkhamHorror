@@ -6,13 +6,13 @@ module Arkham.Location.Cards.BoxOffice
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.ScenarioLogKey
 
@@ -21,7 +21,7 @@ newtype BoxOffice = BoxOffice LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 boxOffice :: LocationCard BoxOffice
-boxOffice = location BoxOffice Cards.boxOffice 2 (Static 0) Plus [Triangle]
+boxOffice = location BoxOffice Cards.boxOffice 2 (Static 0)
 
 instance HasAbilities BoxOffice where
   getAbilities (BoxOffice attrs) = withBaseAbilities

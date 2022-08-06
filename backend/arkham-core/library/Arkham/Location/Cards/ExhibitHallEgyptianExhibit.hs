@@ -6,11 +6,11 @@ module Arkham.Location.Cards.ExhibitHallEgyptianExhibit
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (exhibitHallEgyptianExhibit)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( exhibitHallEgyptianExhibit )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Timing qualified as Timing
@@ -20,15 +20,11 @@ newtype ExhibitHallEgyptianExhibit = ExhibitHallEgyptianExhibit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exhibitHallEgyptianExhibit :: LocationCard ExhibitHallEgyptianExhibit
-exhibitHallEgyptianExhibit = locationWithRevealedSideConnections
+exhibitHallEgyptianExhibit = location
   ExhibitHallEgyptianExhibit
   Cards.exhibitHallEgyptianExhibit
   3
   (PerPlayer 2)
-  NoSymbol
-  [Square]
-  Moon
-  [Square, T]
 
 instance HasAbilities ExhibitHallEgyptianExhibit where
   getAbilities (ExhibitHallEgyptianExhibit x) = withBaseAbilities

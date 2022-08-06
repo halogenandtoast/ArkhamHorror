@@ -5,11 +5,11 @@ module Arkham.Location.Cards.AsylumHallsWesternPatientWing_169
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Target
 
 newtype AsylumHallsWesternPatientWing_169 = AsylumHallsWesternPatientWing_169 LocationAttrs
@@ -23,8 +23,6 @@ asylumHallsWesternPatientWing_169 = location
   Cards.asylumHallsWesternPatientWing_169
   3
   (PerPlayer 1)
-  Circle
-  [Hourglass, Triangle, Diamond]
 
 instance HasAbilities AsylumHallsWesternPatientWing_169 where
   getAbilities (AsylumHallsWesternPatientWing_169 attrs) = getAbilities attrs

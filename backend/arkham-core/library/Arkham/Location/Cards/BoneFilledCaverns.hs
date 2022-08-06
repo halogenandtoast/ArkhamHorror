@@ -36,8 +36,6 @@ boneFilledCaverns = locationWith
   Cards.boneFilledCaverns
   3
   (PerPlayer 2)
-  NoSymbol
-  []
   ((connectsToL .~ adjacentLocations)
   . (costToEnterUnrevealedL
     .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]

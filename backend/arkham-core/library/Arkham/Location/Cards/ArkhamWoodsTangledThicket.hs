@@ -2,9 +2,9 @@ module Arkham.Location.Cards.ArkhamWoodsTangledThicket where
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (arkhamWoodsTangledThicket)
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Location.Cards qualified as Cards ( arkhamWoodsTangledThicket )
 import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.SkillType
@@ -14,15 +14,11 @@ newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 arkhamWoodsTangledThicket :: LocationCard ArkhamWoodsTangledThicket
-arkhamWoodsTangledThicket = locationWithRevealedSideConnections
+arkhamWoodsTangledThicket = location
   ArkhamWoodsTangledThicket
   Cards.arkhamWoodsTangledThicket
   2
   (PerPlayer 1)
-  Square
-  [Squiggle]
-  Equals
-  [Squiggle, T, Moon]
 
 -- TODO: Move this to a modifier
 instance RunMessage ArkhamWoodsTangledThicket where

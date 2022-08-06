@@ -6,14 +6,14 @@ module Arkham.Location.Cards.VenetianGarden
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 import Arkham.Target
 
@@ -27,21 +27,17 @@ venetianGarden = locationWith
   Cards.venetianGarden
   3
   (PerPlayer 1)
-  NoSymbol
-  []
   (connectsToL .~ singleton RightOf)
 
 instance HasAbilities VenetianGarden where
   getAbilities (VenetianGarden attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility
-            attrs
-            1
-            Here
-            (ActionAbility Nothing $ Costs [ActionCost 2, ResourceCost 2])
-          & (abilityLimitL .~ PlayerLimit PerGame 1)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ Costs [ActionCost 2, ResourceCost 2]
+        | locationRevealed attrs
+        ]
 
 instance RunMessage VenetianGarden where
   runMessage msg l@(VenetianGarden attrs) = case msg of

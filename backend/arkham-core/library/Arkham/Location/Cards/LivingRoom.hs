@@ -6,16 +6,16 @@ module Arkham.Location.Cards.LivingRoom
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (MoveAction)
+import Arkham.Message hiding ( MoveAction )
 import Arkham.Timing qualified as Timing
 
 newtype LivingRoom = LivingRoom LocationAttrs
@@ -23,22 +23,16 @@ newtype LivingRoom = LivingRoom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 livingRoom :: LocationCard LivingRoom
-livingRoom =
-  location LivingRoom Cards.livingRoom 3 (Static 0) Equals [T, Circle, Plus]
+livingRoom = location LivingRoom Cards.livingRoom 3 (Static 0)
 
 instance HasAbilities LivingRoom where
   getAbilities (LivingRoom attrs) = withBaseAbilities
     attrs
-    [ restrictedAbility
-        attrs
-        1
-        Here
-        (ReactionAbility
+    [ limitedAbility (GroupLimit PerPhase 1)
+      $ restrictedAbility attrs 1 Here
+      $ ReactionAbility
           (PerformAction Timing.After You $ ActionIs Action.Parley)
           Free
-        )
-      & abilityLimitL
-      .~ GroupLimit PerPhase 1
     | locationRevealed attrs
     ]
 

@@ -6,13 +6,13 @@ module Arkham.Location.Cards.SouthsideHistoricalSociety
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (southsideHistoricalSociety)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( southsideHistoricalSociety )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Message
 
 newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety LocationAttrs
@@ -25,22 +25,16 @@ southsideHistoricalSociety = location
   Cards.southsideHistoricalSociety
   3
   (PerPlayer 1)
-  Square
-  [Diamond, Plus, Circle]
 
 instance HasAbilities SouthsideHistoricalSociety where
   getAbilities (SouthsideHistoricalSociety x) | locationRevealed x =
-    withBaseAbilities x $
-      [ restrictedAbility
-          x
-          1
-          (Here <> CanDrawCards)
-          (ActionAbility Nothing $ ActionCost 1)
-        & abilityLimitL
-        .~ PlayerLimit PerGame 1
-      ]
-  getAbilities (SouthsideHistoricalSociety x) =
-    getAbilities x
+    withBaseAbilities x
+      $ [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility x 1 (Here <> CanDrawCards)
+          $ ActionAbility Nothing
+          $ ActionCost 1
+        ]
+  getAbilities (SouthsideHistoricalSociety x) = getAbilities x
 
 instance RunMessage SouthsideHistoricalSociety where
   runMessage msg l@(SouthsideHistoricalSociety attrs) = case msg of

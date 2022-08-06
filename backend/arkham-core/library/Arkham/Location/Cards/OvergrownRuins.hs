@@ -22,13 +22,7 @@ newtype OvergrownRuins = OvergrownRuins LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 overgrownRuins :: LocationCard OvergrownRuins
-overgrownRuins = location
-  OvergrownRuins
-  Cards.overgrownRuins
-  5
-  (PerPlayer 1)
-  T
-  [Moon, Heart, Equals]
+overgrownRuins = location OvergrownRuins Cards.overgrownRuins 5 (PerPlayer 1)
 
 instance HasAbilities OvergrownRuins where
   getAbilities (OvergrownRuins a) =

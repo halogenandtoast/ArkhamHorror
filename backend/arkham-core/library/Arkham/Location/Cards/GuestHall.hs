@@ -2,12 +2,12 @@ module Arkham.Location.Cards.GuestHall where
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards (guestHall)
 import Arkham.Action
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( guestHall )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Target
 
 newtype GuestHall = GuestHall LocationAttrs
@@ -15,13 +15,7 @@ newtype GuestHall = GuestHall LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 guestHall :: LocationCard GuestHall
-guestHall = location
-  GuestHall
-  Cards.guestHall
-  1
-  (Static 0)
-  T
-  [Circle, Heart, Star, Square]
+guestHall = location GuestHall Cards.guestHall 1 (Static 0)
 
 instance HasModifiersFor GuestHall where
   getModifiersFor _ (InvestigatorTarget iid) (GuestHall attrs) =

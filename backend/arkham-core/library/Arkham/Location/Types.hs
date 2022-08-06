@@ -187,101 +187,53 @@ location
   -> CardDef
   -> Int
   -> GameValue Int
-  -> LocationSymbol
-  -> [LocationSymbol]
   -> CardBuilder LocationId a
-location f def shroud' revealClues symbol' connectedSymbols' =
-  locationWith f def shroud' revealClues symbol' connectedSymbols' id
-
-locationWithRevealedSideConnections
-  :: (LocationAttrs -> a)
-  -> CardDef
-  -> Int
-  -> GameValue Int
-  -> LocationSymbol
-  -> [LocationSymbol]
-  -> LocationSymbol
-  -> [LocationSymbol]
-  -> CardBuilder LocationId a
-locationWithRevealedSideConnections f def shroud' revealClues symbol' connectedSymbols' revealedSymbol' revealedConnectedSymbols'
-  = locationWithRevealedSideConnectionsWith
-    f
-    def
-    shroud'
-    revealClues
-    symbol'
-    connectedSymbols'
-    revealedSymbol'
-    revealedConnectedSymbols'
-    id
-
-locationWithRevealedSideConnectionsWith
-  :: (LocationAttrs -> a)
-  -> CardDef
-  -> Int
-  -> GameValue Int
-  -> LocationSymbol
-  -> [LocationSymbol]
-  -> LocationSymbol
-  -> [LocationSymbol]
-  -> (LocationAttrs -> LocationAttrs)
-  -> CardBuilder LocationId a
-locationWithRevealedSideConnectionsWith f def shroud' revealClues symbol' connectedSymbols' revealedSymbol' revealedConnectedSymbols' g
-  = locationWith
-    f
-    def
-    shroud'
-    revealClues
-    symbol'
-    connectedSymbols'
-    (g
-    . (revealedConnectedMatchersL
-      <>~ map LocationWithSymbol revealedConnectedSymbols'
-      )
-    . (revealedSymbolL .~ revealedSymbol')
-    )
+location f def shroud' revealClues = locationWith f def shroud' revealClues id
 
 locationWith
   :: (LocationAttrs -> a)
   -> CardDef
   -> Int
   -> GameValue Int
-  -> LocationSymbol
-  -> [LocationSymbol]
   -> (LocationAttrs -> LocationAttrs)
   -> CardBuilder LocationId a
-locationWith f def shroud' revealClues symbol' connectedSymbols' g =
-  CardBuilder
-    { cbCardCode = cdCardCode def
-    , cbCardBuilder = \lid -> f . g $ LocationAttrs
-      { locationId = lid
-      , locationCardCode = toCardCode def
-      , locationLabel = nameToLabel (cdName def)
-      , locationRevealClues = revealClues
-      , locationClues = 0
-      , locationHorror = 0
-      , locationDoom = 0
-      , locationResources = 0
-      , locationShroud = shroud'
-      , locationRevealed = not (cdDoubleSided def)
-      , locationInvestigators = mempty
-      , locationEnemies = mempty
-      , locationSymbol = symbol'
-      , locationRevealedSymbol = symbol'
-      , locationConnectedMatchers = map LocationWithSymbol connectedSymbols'
-      , locationRevealedConnectedMatchers = map
-        LocationWithSymbol
-        connectedSymbols'
-      , locationTreacheries = mempty
-      , locationEvents = mempty
-      , locationAssets = mempty
-      , locationDirections = mempty
-      , locationConnectsTo = mempty
-      , locationCardsUnderneath = mempty
-      , locationCostToEnterUnrevealed = ActionCost 1
-      , locationCanBeFlipped = False
-      }
+locationWith f def shroud' revealClues g = CardBuilder
+  { cbCardCode = cdCardCode def
+  , cbCardBuilder = \lid -> f . g $ LocationAttrs
+    { locationId = lid
+    , locationCardCode = toCardCode def
+    , locationLabel = nameToLabel (cdName def)
+    , locationRevealClues = revealClues
+    , locationClues = 0
+    , locationHorror = 0
+    , locationDoom = 0
+    , locationResources = 0
+    , locationShroud = shroud'
+    , locationRevealed = not (cdDoubleSided def)
+    , locationInvestigators = mempty
+    , locationEnemies = mempty
+    , locationSymbol = fromJustNote
+      "missing location symbol"
+      (cdLocationSymbol def)
+    , locationRevealedSymbol = fromJustNote
+      "missing revealed location symbol"
+      (cdLocationRevealedSymbol def)
+    , locationConnectedMatchers = map
+      LocationWithSymbol
+      (cdLocationConnections def)
+    , locationRevealedConnectedMatchers = map
+      LocationWithSymbol
+      (cdLocationRevealedConnections def)
+    , locationTreacheries = mempty
+    , locationEvents = mempty
+    , locationAssets = mempty
+    , locationDirections = mempty
+    , locationConnectsTo = mempty
+    , locationCardsUnderneath = mempty
+    , locationCostToEnterUnrevealed = ActionCost 1
+    , locationCanBeFlipped = False
     }
+  }
 
 locationResignAction :: LocationAttrs -> Ability
 locationResignAction attrs = toLocationAbility

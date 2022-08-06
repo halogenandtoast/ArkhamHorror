@@ -2,12 +2,12 @@ module Arkham.Location.Cards.ArkhamWoodsCorpseRiddenClearing where
 
 import Arkham.Prelude
 
-import Arkham.Location.Cards qualified as Cards
-  (arkhamWoodsCorpseRiddenClearing)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
+  ( arkhamWoodsCorpseRiddenClearing )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Target
 
 newtype ArkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing LocationAttrs
@@ -15,15 +15,11 @@ newtype ArkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing Locati
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 arkhamWoodsCorpseRiddenClearing :: LocationCard ArkhamWoodsCorpseRiddenClearing
-arkhamWoodsCorpseRiddenClearing = locationWithRevealedSideConnections
+arkhamWoodsCorpseRiddenClearing = location
   ArkhamWoodsCorpseRiddenClearing
   Cards.arkhamWoodsCorpseRiddenClearing
   3
   (PerPlayer 1)
-  Square
-  [Squiggle]
-  Droplet
-  [Squiggle, Circle]
 
 instance HasModifiersFor ArkhamWoodsCorpseRiddenClearing where
   getModifiersFor _ (EnemyTarget eid) (ArkhamWoodsCorpseRiddenClearing attrs) =

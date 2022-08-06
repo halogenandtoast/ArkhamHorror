@@ -6,13 +6,13 @@ module Arkham.Location.Cards.SouthsideMasBoardingHouse
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (southsideMasBoardingHouse)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( southsideMasBoardingHouse )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
@@ -27,15 +27,12 @@ southsideMasBoardingHouse = location
   Cards.southsideMasBoardingHouse
   2
   (PerPlayer 1)
-  Square
-  [Diamond, Plus, Circle]
 
 instance HasAbilities SouthsideMasBoardingHouse where
   getAbilities (SouthsideMasBoardingHouse x) | locationRevealed x =
     withBaseAbilities x
-      $ [ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 1)
-          & abilityLimitL
-          .~ PlayerLimit PerGame 1
+      $ [ limitedAbility (PlayerLimit PerGame 1)
+            $ restrictedAbility x 1 Here (ActionAbility Nothing $ ActionCost 1)
         ]
   getAbilities (SouthsideMasBoardingHouse attrs) = getAbilities attrs
 

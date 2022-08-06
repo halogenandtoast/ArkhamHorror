@@ -3,11 +3,11 @@ module Arkham.Location.Cards.Graveyard where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (graveyard)
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( graveyard )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
@@ -19,14 +19,15 @@ newtype Graveyard = Graveyard LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 graveyard :: LocationCard Graveyard
-graveyard =
-  location Graveyard Cards.graveyard 1 (PerPlayer 2) Hourglass [Circle]
+graveyard = location Graveyard Cards.graveyard 1 (PerPlayer 2)
 
 instance HasAbilities Graveyard where
-  getAbilities (Graveyard x) = withBaseAbilities x $
-    [ mkAbility x 1
-        $ ForcedAbility (Enters Timing.After Anyone $ LocationWithId (toId x))
-    ]
+  getAbilities (Graveyard x) =
+    withBaseAbilities x
+      $ [ mkAbility x 1
+            $ ForcedAbility
+                (Enters Timing.After Anyone $ LocationWithId (toId x))
+        ]
 
 instance RunMessage Graveyard where
   runMessage msg l@(Graveyard attrs) = case msg of

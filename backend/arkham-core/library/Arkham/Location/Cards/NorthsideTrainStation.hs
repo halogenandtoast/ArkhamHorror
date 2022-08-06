@@ -6,13 +6,13 @@ module Arkham.Location.Cards.NorthsideTrainStation
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (northsideTrainStation)
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards ( northsideTrainStation )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Trait
@@ -22,21 +22,18 @@ newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northsideTrainStation :: LocationCard NorthsideTrainStation
-northsideTrainStation = location
-  NorthsideTrainStation
-  Cards.northsideTrainStation
-  2
-  (PerPlayer 1)
-  T
-  [Diamond, Triangle]
+northsideTrainStation =
+  location NorthsideTrainStation Cards.northsideTrainStation 2 (PerPlayer 1)
 
 instance HasAbilities NorthsideTrainStation where
   getAbilities (NorthsideTrainStation attrs) =
-    withBaseAbilities attrs $
-      [ restrictedAbility attrs 1 Here (ActionAbility Nothing $ ActionCost 1)
-          & (abilityLimitL .~ PlayerLimit PerGame 1)
-      | locationRevealed attrs
-      ]
+    withBaseAbilities attrs
+      $ [ limitedAbility (PlayerLimit PerGame 1)
+          $ restrictedAbility attrs 1 Here
+          $ ActionAbility Nothing
+          $ ActionCost 1
+        | locationRevealed attrs
+        ]
 
 instance RunMessage NorthsideTrainStation where
   runMessage msg l@(NorthsideTrainStation attrs) = case msg of

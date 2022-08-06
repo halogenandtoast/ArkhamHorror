@@ -6,15 +6,15 @@ module Arkham.Location.Cards.LostMemories
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Location.Cards qualified as Cards (lostMemories)
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.GameValue
-import Arkham.Investigator.Types (Field(..))
-import Arkham.Location.Runner
+import Arkham.Investigator.Types ( Field (..) )
+import Arkham.Location.Cards qualified as Cards ( lostMemories )
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
@@ -23,15 +23,7 @@ newtype LostMemories = LostMemories LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lostMemories :: LocationCard LostMemories
-lostMemories = locationWithRevealedSideConnections
-  LostMemories
-  Cards.lostMemories
-  2
-  (PerPlayer 1)
-  NoSymbol
-  []
-  T
-  [Square, Moon]
+lostMemories = location LostMemories Cards.lostMemories 2 (PerPlayer 1)
 
 instance HasAbilities LostMemories where
   getAbilities (LostMemories attrs) =

@@ -13,11 +13,11 @@ import Arkham.Criteria
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Keyword
-import Arkham.Location.Runner
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
+import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Message hiding (RevealLocation)
+import Arkham.Message hiding ( RevealLocation )
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -27,8 +27,7 @@ newtype Backstage = Backstage LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 backstage :: LocationCard Backstage
-backstage =
-  location Backstage Cards.backstage 3 (Static 1) Diamond [Circle, Moon]
+backstage = location Backstage Cards.backstage 3 (Static 1)
 
 instance HasModifiersFor Backstage where
   getModifiersFor (InvestigatorSource iid) (CardTarget card) (Backstage attrs)

@@ -372,6 +372,7 @@ const phase = computed(() => props.game.phase)
   justify-content: center;
   padding-bottom: 10px;
   position: relative;
+  width: 100%;
 }
 
 .clue--can-investigate {
@@ -411,6 +412,7 @@ const phase = computed(() => props.game.phase)
     background-image: linear-gradient(#282A36, darken(#282A36, 2));
   }
 
+  z-index: 1;
   width: 100%;
   flex: 1;
 }

@@ -9,7 +9,6 @@ import api from '@/api';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import Scenario from '@/arkham/components/Scenario.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
-import GameBar from '@/arkham/components/GameBar.vue'
 import { onBeforeRouteLeave } from 'vue-router'
 
 export interface Props {
@@ -153,7 +152,6 @@ const { copy } = useClipboard({ source })
       </div>
     </div>
     <template v-else>
-      <GameBar :game="game" />
       <div class="game-main">
         <Campaign
           v-if="game.campaign"

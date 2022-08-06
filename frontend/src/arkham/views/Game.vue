@@ -9,6 +9,7 @@ import api from '@/api';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import Scenario from '@/arkham/components/Scenario.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
+import GameBar from '@/arkham/components/GameBar.vue'
 import { onBeforeRouteLeave } from 'vue-router'
 
 export interface Props {
@@ -151,56 +152,67 @@ const { copy } = useClipboard({ source })
         </div>
       </div>
     </div>
-    <div v-else class="game">
-      <Campaign
-        v-if="game.campaign"
-        :game="game"
-        :gameLog="gameLog"
-        :investigatorId="investigatorId"
-        @choose="choose"
-        @update="update"
-      />
-      <Scenario
-        v-else-if="game.scenario && !game.gameOver"
-        :game="game"
-        :gameLog="gameLog"
-        :scenario="game.scenario"
-        :investigatorId="investigatorId"
-        @choose="choose"
-        @update="update"
-      />
-      <div class="sidebar" v-if="game.gameState !== 'IsPending'">
-        <CardOverlay />
-        <GameLog :game="game" :gameLog="gameLog" />
-        <router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}"
->
-          <button :href="href" @click="navigate">View Log</button>
-        </router-link>
-        <button @click="toggleDebug">Toggle Debug</button>
-        <button @click="debugExport">Debug Export</button>
-      </div>
-      <div v-if="game.gameOver">
-        <p>Game over</p>
-
-        <div v-for="entry in game.campaign.log.recorded" :key="entry">
-          {{entry}}
+    <template v-else>
+      <GameBar :game="game" />
+      <div class="game-main">
+        <Campaign
+          v-if="game.campaign"
+          :game="game"
+          :gameLog="gameLog"
+          :investigatorId="investigatorId"
+          @choose="choose"
+          @update="update"
+        />
+        <Scenario
+          v-else-if="game.scenario && !game.gameOver"
+          :game="game"
+          :gameLog="gameLog"
+          :scenario="game.scenario"
+          :investigatorId="investigatorId"
+          @choose="choose"
+          @update="update"
+        />
+        <div class="sidebar" v-if="game.scenario && game.gameState !== 'IsPending'">
+          <CardOverlay />
+          <GameLog :game="game" :gameLog="gameLog" />
+          <router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}"
+  >
+            <button :href="href" @click="navigate">View Log</button>
+          </router-link>
+          <button @click="toggleDebug">Toggle Debug</button>
+          <button @click="debugExport">Debug Export</button>
         </div>
+        <div v-if="game.gameOver">
+          <p>Game over</p>
 
-        <div v-for="(entry, idx) in game.campaign.log.recordedSets" :key="idx">
-          {{entry[0]}}: {{entry[1].join(", ")}}
+          <div v-for="entry in game.campaign.log.recorded" :key="entry">
+            {{entry}}
+          </div>
+
+          <div v-for="(entry, idx) in game.campaign.log.recordedSets" :key="idx">
+            {{entry[0]}}: {{entry[1].join(", ")}}
+          </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .action { border: 5px solid $select; border-radius: 15px; }
 
-.game {
+#game {
   width: 100vw;
-  height: calc(100vh - 40px);
   display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.game-main {
+  width: 100vw;
+  height: calc(100vh - 80px);
+  display: flex;
+  flex: 1;
 }
 
 .socketWarning  {

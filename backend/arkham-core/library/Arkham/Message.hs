@@ -20,7 +20,7 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Card.Id
-import Arkham.Campaigns.TheForgottenAge.Supply
+-- import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ClassSymbol
@@ -371,7 +371,7 @@ data Message
   | InitiatePlayCardAs InvestigatorId CardId Card [Message] ChosenCardStrategy Bool
   | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
   -- | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
-  | CheckAdditionalActionCosts InvestigatorId Target Source Action [Message]
+  | CheckAdditionalActionCosts InvestigatorId Target Action [Message]
   | -- Maybe Target is handler for success
     Investigate InvestigatorId LocationId Source (Maybe Target) SkillType Bool
   | -- | uses the internal method and then checks defeat
@@ -621,9 +621,9 @@ data Message
   | BeginCardPayment Card
   | FinishCardPayment Card
   | UpdateHistory InvestigatorId History
-  | -- The Forgotten Age
-    PickSupply InvestigatorId Supply
-  | UseSupply InvestigatorId Supply
+  -- | -- The Forgotten Age
+  --   PickSupply InvestigatorId Supply
+  -- | UseSupply InvestigatorId Supply
   | Explore InvestigatorId Source CardMatcher
   | -- Fields
     UpdateLocation LocationAttrs LocationId

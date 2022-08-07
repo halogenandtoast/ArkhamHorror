@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Projection
 import Arkham.Matcher
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Classes.Query
 import Arkham.Id
 import Arkham.Helpers.Scenario

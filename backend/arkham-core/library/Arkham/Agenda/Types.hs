@@ -144,7 +144,7 @@ instance HasAbilities Agenda where
   getAbilities (Agenda a) = getAbilities a
 
 instance HasModifiersFor Agenda where
-  getModifiersFor source target (Agenda a) = getModifiersFor source target a
+  getModifiersFor target (Agenda a) = getModifiersFor target a
 
 instance Entity Agenda where
   type EntityId Agenda = AgendaId

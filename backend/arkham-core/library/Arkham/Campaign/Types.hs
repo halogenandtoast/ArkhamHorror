@@ -45,9 +45,9 @@ data CampaignAttrs = CampaignAttrs
   deriving stock (Show, Eq, Generic)
 
 instance HasModifiersFor CampaignAttrs where
-  getModifiersFor _ (InvestigatorTarget iid) attrs =
+  getModifiersFor (InvestigatorTarget iid) attrs =
     pure $ findWithDefault [] iid (campaignModifiers attrs)
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 completedStepsL :: Lens' CampaignAttrs [CampaignStep]
 completedStepsL =
@@ -145,7 +145,7 @@ instance ToJSON Campaign where
   toJSON (Campaign a) = toJSON a
 
 instance HasModifiersFor Campaign where
-  getModifiersFor source target (Campaign a) = getModifiersFor source target a
+  getModifiersFor target (Campaign a) = getModifiersFor target a
 
 difficultyOf :: Campaign -> Difficulty
 difficultyOf = campaignDifficulty . toAttrs

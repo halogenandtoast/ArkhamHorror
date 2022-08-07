@@ -6,8 +6,8 @@ module Arkham.Enemy.Runner
 
 import Arkham.Prelude
 
-import Arkham.Enemy.Types as X
 import Arkham.Enemy.Helpers as X hiding ( EnemyEvade, EnemyFight )
+import Arkham.Enemy.Types as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Enemy as X
 
@@ -189,7 +189,7 @@ instance RunMessage EnemyAttrs where
                 )
       pure $ a & exhaustedL .~ False
     ReadyExhausted -> do
-      modifiers' <- getModifiers (toSource a) (toTarget a)
+      modifiers' <- getModifiers (toTarget a)
       let
         alternativeSources = mapMaybe
           (\case
@@ -258,7 +258,7 @@ instance RunMessage EnemyAttrs where
     After (EndTurn _) -> a <$ push (EnemyCheckEngagement $ toId a)
     EnemyCheckEngagement eid | eid == enemyId -> do
       keywords <- getModifiedKeywords a
-      modifiers' <- getModifiers (EnemySource eid) (EnemyTarget eid)
+      modifiers' <- getModifiers (EnemyTarget eid)
       let
         modifiedFilter = if Keyword.Massive `elem` keywords
           then const True
@@ -304,7 +304,7 @@ instance RunMessage EnemyAttrs where
       case enemyLocation of
         Nothing -> pure a
         Just loc -> do
-          modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
+          modifiers' <- getModifiers (EnemyTarget enemyId)
           let
             matchForcedTargetLocation = \case
               DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
@@ -384,7 +384,7 @@ instance RunMessage EnemyAttrs where
                 )
               pure $ a & movedFromHunterKeywordL .~ True
     EnemiesAttack | not enemyExhausted -> do
-      modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
+      modifiers' <- getModifiers (EnemyTarget enemyId)
       unless (CannotAttack `elem` modifiers') $ do
         iids <- selectList $ investigatorEngagedWith enemyId
         pushAll $ map
@@ -429,9 +429,7 @@ instance RunMessage EnemyAttrs where
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a
-        modifiers' <- getModifiers
-          (InvestigatorSource iid)
-          (InvestigatorTarget iid)
+        modifiers' <- getModifiers (InvestigatorTarget iid)
         a <$ pushAll
           ([ FailedAttackEnemy iid enemyId
            , CheckWindow
@@ -518,7 +516,10 @@ instance RunMessage EnemyAttrs where
       whenAttacksWindow <- checkWindows
         [Window Timing.When (Window.EnemyAttacks iid eid attackType)]
       afterAttacksEventIfCancelledWindow <- checkWindows
-        [Window Timing.After (Window.EnemyAttacksEvenIfCancelled iid eid attackType)]
+        [ Window
+            Timing.After
+            (Window.EnemyAttacksEvenIfCancelled iid eid attackType)
+        ]
       whenWouldAttackWindow <- checkWindows
         [Window Timing.When (Window.EnemyWouldAttack iid eid attackType)]
       a <$ pushAll
@@ -529,7 +530,7 @@ instance RunMessage EnemyAttrs where
         , afterAttacksEventIfCancelledWindow
         ]
     PerformEnemyAttack iid eid damageStrategy attackType | eid == enemyId -> do
-      modifiers <- getModifiers (EnemySource enemyId) (InvestigatorTarget iid)
+      modifiers <- getModifiers (InvestigatorTarget iid)
       let
         validEnemyMatcher = foldl' applyModifiers AnyEnemy modifiers
         applyModifiers m (CancelAttacksByEnemies n) = m <> (NotEnemy n)
@@ -614,48 +615,67 @@ instance RunMessage EnemyAttrs where
             , EnemyDamaged eid iid source damageEffect amount True
             , takeDamageAfterMsg
             ]
-    EnemyDamaged eid iid source damageEffect amount direct | eid == enemyId -> do
-      amount' <- getModifiedDamageAmount a direct amount
-      canBeDefeated <- withoutModifier a CannotBeDefeated
-      modifiers' <- getModifiers (toSource a) (toTarget a)
-      let
-        canOnlyBeDefeatedByModifier = \case
-          CanOnlyBeDefeatedBy source' -> First (Just source')
-          _ -> First Nothing
-        mOnlyBeDefeatedByModifier =
-          getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
-        validDefeat =
-          canBeDefeated && maybe True (== source) mOnlyBeDefeatedByModifier
-      when validDefeat $ do
-        modifiedHealth <- getModifiedHealth a
-        when (a ^. damageL + amount' >= modifiedHealth) $ do
-          let excess = (a ^. damageL + amount') - modifiedHealth
-          whenMsg <- checkWindows
-            [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
-          afterMsg <- checkWindows
-            [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
-          whenExcessMsg <- checkWindows
-            [Window Timing.When (Window.DealtExcessDamage source damageEffect (EnemyTarget eid) excess) | excess > 0]
-          afterExcessMsg <- checkWindows
-            [Window Timing.After (Window.DealtExcessDamage source damageEffect (EnemyTarget eid) excess) | excess > 0]
-          pushAll
-            [ whenExcessMsg
-            , afterExcessMsg
-            , whenMsg
-            , afterMsg
-            , EnemyDefeated
-              eid
-              iid
-              (toCardCode a)
-              source
-              (setToList $ toTraits a)
-            ]
-      pure $ a & damageL +~ amount'
+    EnemyDamaged eid iid source damageEffect amount direct | eid == enemyId ->
+      do
+        amount' <- getModifiedDamageAmount a direct amount
+        canBeDefeated <- withoutModifier a CannotBeDefeated
+        modifiers' <- getModifiers (toTarget a)
+        let
+          canOnlyBeDefeatedByModifier = \case
+            CanOnlyBeDefeatedBy source' -> First (Just source')
+            _ -> First Nothing
+          mOnlyBeDefeatedByModifier =
+            getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
+          validDefeat =
+            canBeDefeated && maybe True (== source) mOnlyBeDefeatedByModifier
+        when validDefeat $ do
+          modifiedHealth <- getModifiedHealth a
+          when (a ^. damageL + amount' >= modifiedHealth) $ do
+            let excess = (a ^. damageL + amount') - modifiedHealth
+            whenMsg <- checkWindows
+              [Window Timing.When (Window.EnemyWouldBeDefeated eid)]
+            afterMsg <- checkWindows
+              [Window Timing.After (Window.EnemyWouldBeDefeated eid)]
+            whenExcessMsg <- checkWindows
+              [ Window
+                  Timing.When
+                  (Window.DealtExcessDamage
+                    source
+                    damageEffect
+                    (EnemyTarget eid)
+                    excess
+                  )
+              | excess > 0
+              ]
+            afterExcessMsg <- checkWindows
+              [ Window
+                  Timing.After
+                  (Window.DealtExcessDamage
+                    source
+                    damageEffect
+                    (EnemyTarget eid)
+                    excess
+                  )
+              | excess > 0
+              ]
+            pushAll
+              [ whenExcessMsg
+              , afterExcessMsg
+              , whenMsg
+              , afterMsg
+              , EnemyDefeated
+                eid
+                iid
+                (toCardCode a)
+                source
+                (setToList $ toTraits a)
+              ]
+        pure $ a & damageL +~ amount'
     DefeatEnemy eid iid source | eid == enemyId -> do
       canBeDefeated <- withoutModifier a CannotBeDefeated
       modifiedHealth <- getModifiedHealth a
       canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
-      modifiers' <- getModifiers (toSource a) (toTarget a)
+      modifiers' <- getModifiers (toTarget a)
       let
         defeatedByDamage = a ^. damageL >= modifiedHealth
         canOnlyBeDefeatedByModifier = \case
@@ -702,16 +722,10 @@ instance RunMessage EnemyAttrs where
         <> [RemovedFromPlay $ toSource a, Discarded (toTarget a) (toCard a)]
         )
     PutOnTopOfDeck iid deck target | a `isTarget` target -> do
-      pushAll
-        [ RemoveEnemy $ toId a
-        , PutCardOnTopOfDeck iid deck (toCard a)
-        ]
+      pushAll [RemoveEnemy $ toId a, PutCardOnTopOfDeck iid deck (toCard a)]
       pure a
     PutOnBottomOfDeck iid deck target | a `isTarget` target -> do
-      pushAll
-        [ RemoveEnemy $ toId a
-        , PutCardOnBottomOfDeck iid deck (toCard a)
-        ]
+      pushAll [RemoveEnemy $ toId a, PutCardOnBottomOfDeck iid deck (toCard a)]
       pure a
     RemovedFromPlay source | isSource a source -> do
       windowMsg <- checkWindows
@@ -740,14 +754,14 @@ instance RunMessage EnemyAttrs where
     CheckAttackOfOpportunity iid isFast | not isFast && not enemyExhausted -> do
       willAttack <- member iid <$> select (investigatorEngagedWith enemyId)
       when willAttack $ do
-        modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
+        modifiers' <- getModifiers (EnemyTarget enemyId)
         unless (CannotMakeAttacksOfOpportunity `elem` modifiers')
           $ push
           $ EnemyWillAttack iid enemyId enemyDamageStrategy AttackOfOpportunity
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do
       lid <- getJustLocation iid
-      modifiers' <- getModifiers (toSource a) (EnemyTarget enemyId)
+      modifiers' <- getModifiers (EnemyTarget enemyId)
       let
         getModifiedSpawnAt [] = enemySpawnAt
         getModifiedSpawnAt (SpawnLocation m : _) = Just m

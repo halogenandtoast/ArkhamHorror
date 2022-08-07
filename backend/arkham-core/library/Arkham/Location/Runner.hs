@@ -17,17 +17,14 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Direction
-import Arkham.Enemy.Types ( Field(..) )
+import Arkham.Enemy.Types ( Field (..) )
 import Arkham.Exception
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
-import Arkham.Investigator.Types ( Field(..) )
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Location.Helpers
 import Arkham.Matcher
-  ( LocationMatcher (..)
-  , InvestigatorMatcher (..)
-  , locationWithEnemy
-  )
+  ( InvestigatorMatcher (..), LocationMatcher (..), locationWithEnemy )
 import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillTest
@@ -53,10 +50,8 @@ cluesToDiscover :: (Monad m, HasGame m) => InvestigatorId -> Int -> m Int
 cluesToDiscover investigatorId startValue = do
   msource <- getSkillTestSource
   case msource of
-    Just source -> do
-      modifiers <- getModifiers
-        source
-        (InvestigatorTarget investigatorId)
+    Just _ -> do
+      modifiers <- getModifiers (InvestigatorTarget investigatorId)
       pure $ foldr applyModifier startValue modifiers
     Nothing -> pure startValue
  where
@@ -102,7 +97,7 @@ instance RunMessage LocationAttrs where
              )
     Successful (Action.Investigate, _) iid _ target _ | isTarget a target -> do
       let lid = toId a
-      modifiers' <- getModifiers (InvestigatorSource iid) (LocationTarget lid)
+      modifiers' <- getModifiers (LocationTarget lid)
       clueAmount <- cluesToDiscover iid 1
       whenWindowMsg <- checkWindows
         [Window Timing.When (Window.SuccessfulInvestigation iid lid)]
@@ -112,7 +107,11 @@ instance RunMessage LocationAttrs where
         (AlternateSuccessfullInvestigation `elem` modifiers')
         (pushAll
           [ whenWindowMsg
-          , InvestigatorDiscoverClues iid lid clueAmount (Just Action.Investigate)
+          , InvestigatorDiscoverClues
+            iid
+            lid
+            clueAmount
+            (Just Action.Investigate)
           , afterWindowMsg
           ]
         )
@@ -184,10 +183,13 @@ instance RunMessage LocationAttrs where
     SetLocationAsIf iid lid | lid /= locationId -> do
       pure $ a & investigatorsL %~ deleteSet iid
     AddToVictory (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
-    DefeatedAddToVictory (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
+    DefeatedAddToVictory (EnemyTarget eid) ->
+      pure $ a & enemiesL %~ deleteSet eid
     EnemyEngageInvestigator eid iid -> do
       mlid <- field InvestigatorLocation iid
-      if mlid == Just locationId then pure $ a & enemiesL %~ insertSet eid else pure a
+      if mlid == Just locationId
+        then pure $ a & enemiesL %~ insertSet eid
+        else pure a
     EnemyMove eid lid | lid == locationId -> do
       willMove <- canEnterLocation eid lid
       pure $ if willMove then a & enemiesL %~ insertSet eid else a
@@ -209,12 +211,11 @@ instance RunMessage LocationAttrs where
         traits' <- field EnemyTraits eid
         when (Elite `notElem` traits') $ do
           activeInvestigatorId <- getActiveInvestigatorId
-          connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
+          connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId
+            lid
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
-              modifiers' <- getModifiers
-                (EnemySource eid)
-                (LocationTarget locationId')
+              modifiers' <- getModifiers (LocationTarget locationId')
               pure . not $ flip any modifiers' $ \case
                 SpawnNonEliteAtConnectingInstead{} -> True
                 _ -> False
@@ -241,7 +242,7 @@ instance RunMessage LocationAttrs where
       when (locationClues > 0) (push $ PlaceClues target locationClues)
       pure $ a & cluesL .~ 0
     PlaceClues target n | isTarget a target -> do
-      modifiers' <- getModifiers (toSource a) (toTarget a)
+      modifiers' <- getModifiers (toTarget a)
       windows' <- windows [Window.PlacedClues (toTarget a) n]
       if CannotPlaceClues `elem` modifiers'
         then pure a
@@ -263,15 +264,16 @@ instance RunMessage LocationAttrs where
     RemoveAllDoom _ -> pure $ a & doomL .~ 0
     PlacedLocation _ _ lid | lid == locationId -> do
       when locationRevealed $ do
-        modifiers' <- getModifiers (toSource a) (toTarget a)
+        modifiers' <- getModifiers (toTarget a)
         locationClueCount <- if CannotPlaceClues `elem` modifiers'
           then pure 0
           else getPlayerCountValue locationRevealClues
 
-        pushAll [ PlaceClues (toTarget a) locationClueCount | locationClueCount > 0 ]
+        pushAll
+          [ PlaceClues (toTarget a) locationClueCount | locationClueCount > 0 ]
       pure a
     RevealLocation miid lid | lid == locationId -> do
-      modifiers' <- getModifiers (toSource a) (toTarget a)
+      modifiers' <- getModifiers (toTarget a)
       locationClueCount <- if CannotPlaceClues `elem` modifiers'
         then pure 0
         else getPlayerCountValue locationRevealClues
@@ -320,49 +322,34 @@ instance RunMessage LocationAttrs where
       )
     _ -> pure a
 
-locationEnemiesWithTrait
-  :: LocationAttrs
-  -> Trait
-  -> GameT [EnemyId]
+locationEnemiesWithTrait :: LocationAttrs -> Trait -> GameT [EnemyId]
 locationEnemiesWithTrait LocationAttrs { locationEnemies } trait =
   filterM (fieldMap EnemyTraits (member trait)) (setToList locationEnemies)
 
-locationInvestigatorsWithClues
-  :: LocationAttrs
-  -> GameT [InvestigatorId]
+locationInvestigatorsWithClues :: LocationAttrs -> GameT [InvestigatorId]
 locationInvestigatorsWithClues LocationAttrs { locationInvestigators } =
-  filterM
-    (fieldMap InvestigatorClues (> 0))
-    (setToList locationInvestigators)
+  filterM (fieldMap InvestigatorClues (> 0)) (setToList locationInvestigators)
 
-getModifiedShroudValueFor
-  :: LocationAttrs -> GameT Int
+getModifiedShroudValueFor :: LocationAttrs -> GameT Int
 getModifiedShroudValueFor attrs = do
-  modifiers' <- getModifiers (toSource attrs) (toTarget attrs)
+  modifiers' <- getModifiers (toTarget attrs)
   pure $ foldr applyModifier (locationShroud attrs) modifiers'
  where
   applyModifier (ShroudModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getInvestigateAllowed
-  :: InvestigatorId
-  -> LocationAttrs
-  -> GameT Bool
-getInvestigateAllowed iid attrs = do
-  modifiers1' <- getModifiers (toSource attrs) (toTarget attrs)
-  modifiers2' <- getModifiers (InvestigatorSource iid) (toTarget attrs)
-  pure $ not (any isCannotInvestigate $ modifiers1' <> modifiers2')
+getInvestigateAllowed :: InvestigatorId -> LocationAttrs -> GameT Bool
+getInvestigateAllowed _iid attrs = do
+  modifiers' <- getModifiers (toTarget attrs)
+  pure $ none isCannotInvestigate modifiers'
  where
   isCannotInvestigate CannotInvestigate{} = True
   isCannotInvestigate _ = False
 
-canEnterLocation
-  :: EnemyId
-  -> LocationId
-  -> GameT Bool
+canEnterLocation :: EnemyId -> LocationId -> GameT Bool
 canEnterLocation eid lid = do
   traits' <- field EnemyTraits eid
-  modifiers' <- getModifiers (EnemySource eid) (LocationTarget lid)
+  modifiers' <- getModifiers (LocationTarget lid)
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits'
     _ -> False
@@ -405,7 +392,7 @@ instance HasAbilities LocationAttrs where
 
 getShouldSpawnNonEliteAtConnectingInstead :: LocationAttrs -> GameT Bool
 getShouldSpawnNonEliteAtConnectingInstead attrs = do
-  modifiers' <- getModifiers (toSource attrs) (toTarget attrs)
+  modifiers' <- getModifiers (toTarget attrs)
   pure $ flip any modifiers' $ \case
     SpawnNonEliteAtConnectingInstead{} -> True
     _ -> False

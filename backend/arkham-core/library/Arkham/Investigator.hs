@@ -15,7 +15,7 @@ import Arkham.Message
 
 instance RunMessage Investigator where
   runMessage msg i@(Investigator a) = do
-    modifiers' <- getModifiers (toSource i) (toTarget i)
+    modifiers' <- getModifiers (toTarget i)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     Investigator <$> runMessage msg' a
 

@@ -8,7 +8,7 @@ import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Trait
-import Arkham.Campaigns.TheForgottenAge.Supply
+-- import Arkham.Campaigns.TheForgottenAge.Supply
 
 data DiscardSignifier = AnyPlayerDiscard | DiscardOf Who
   deriving stock (Show, Eq, Generic)
@@ -73,7 +73,7 @@ data Criterion
   | EnemyCriteria EnemyCriterion
   | ExtendedCardExists ExtendedCardMatcher
   | FirstAction
-  | HasSupply Supply
+  -- | HasSupply Supply
   | Here
   | HorrorOnThis ValueMatcher
   | DamageOnThis ValueMatcher

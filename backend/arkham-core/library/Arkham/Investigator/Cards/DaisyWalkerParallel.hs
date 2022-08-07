@@ -40,7 +40,7 @@ daisyWalkerParallel = investigator
     }
 
 instance HasModifiersFor DaisyWalkerParallel where
-  getModifiersFor _ (InvestigatorTarget iid) (DaisyWalkerParallel attrs@InvestigatorAttrs {..})
+  getModifiersFor (InvestigatorTarget iid) (DaisyWalkerParallel attrs@InvestigatorAttrs {..})
     | iid == investigatorId
     = do
       tomeCount <-
@@ -51,7 +51,7 @@ instance HasModifiersFor DaisyWalkerParallel where
         $ toModifiers attrs
         $ SkillModifier SkillWillpower tomeCount
         : [SanityModifier tomeCount]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance HasTokenValue DaisyWalkerParallel where
   getTokenValue iid ElderSign (DaisyWalkerParallel attrs)

@@ -150,7 +150,7 @@ instance HasAbilities Event where
   getAbilities (Event a) = getAbilities a
 
 instance HasModifiersFor Event where
-  getModifiersFor source target (Event a) = getModifiersFor source target a
+  getModifiersFor target (Event a) = getModifiersFor target a
 
 instance Entity Event where
   type EntityId Event = EventId

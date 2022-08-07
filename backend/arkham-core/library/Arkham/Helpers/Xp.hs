@@ -4,16 +4,15 @@ import Arkham.Prelude
 
 import Arkham.Card.CardDef
 import Arkham.Classes.Query
-import Arkham.Helpers.Query
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Id
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Scenario.Types ( Field (..) )
-import Arkham.Source
 import Arkham.Target
 
 getXp :: (Monad m, HasGame m) => m [(InvestigatorId, Int)]
@@ -25,9 +24,7 @@ getXpWithBonus bonus = do
   for
     investigatorIds
     \iid -> do
-      modifiers' <- getModifiers
-        (InvestigatorSource iid)
-        (InvestigatorTarget iid)
+      modifiers' <- getModifiers (InvestigatorTarget iid)
       victoryPileVictory <- mconcat <$> scenarioFieldMap
         ScenarioVictoryDisplay
         (map (Sum . fromMaybe 0 . cdVictoryPoints . toCardDef))

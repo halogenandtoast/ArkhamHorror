@@ -36,12 +36,12 @@ tokenEffect' eid metadata source token = TokenEffect $ EffectAttrs
   }
 
 instance HasModifiersFor TokenEffect where
-  getModifiersFor _ target (TokenEffect attrs) | target == effectTarget attrs =
+  getModifiersFor target (TokenEffect attrs) | target == effectTarget attrs =
     case effectMetadata attrs of
       Just (EffectModifiers modifiers) -> pure modifiers
       Just (FailedByEffectModifiers modifiers) -> pure modifiers
       _ -> pure []
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance RunMessage TokenEffect where
   runMessage msg e@(TokenEffect attrs@EffectAttrs {..}) = case msg of

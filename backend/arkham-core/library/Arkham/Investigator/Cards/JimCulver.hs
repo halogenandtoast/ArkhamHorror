@@ -2,9 +2,10 @@ module Arkham.Investigator.Cards.JimCulver where
 
 import Arkham.Prelude
 
-import Arkham.Investigator.Cards qualified as Cards
 import Arkham.EffectMetadata
 import Arkham.Game.Helpers
+import Arkham.Helpers.SkillTest
+import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Message
 import Arkham.Source
@@ -28,10 +29,14 @@ jimCulver = investigator
     }
 
 instance HasModifiersFor JimCulver where
-  getModifiersFor (SkillTestSource iid _ _ _) (TokenTarget token) (JimCulver attrs)
-    | iid == investigatorId attrs && tokenFace token == Skull
-    = pure $ toModifiers attrs [ChangeTokenModifier $ PositiveModifier 0]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor (TokenTarget token) (JimCulver attrs)
+    | tokenFace token == Skull = do
+      mSkillTestSource <- getSkillTestSource
+      case mSkillTestSource of
+        Just (SkillTestSource iid _ _ _) | iid == toId attrs ->
+          pure $ toModifiers attrs [ChangeTokenModifier $ PositiveModifier 0]
+        _ -> pure []
+  getModifiersFor _ _ = pure []
 
 instance HasTokenValue JimCulver where
   getTokenValue iid ElderSign (JimCulver attrs) | iid == investigatorId attrs =

@@ -25,7 +25,7 @@ litaChantler =
   allyWith LitaChantler Cards.litaChantler (3, 3) (isStoryL .~ True)
 
 instance HasModifiersFor LitaChantler where
-  getModifiersFor _ (InvestigatorTarget iid) (LitaChantler a@AssetAttrs {..}) =
+  getModifiersFor (InvestigatorTarget iid) (LitaChantler a@AssetAttrs {..}) =
     do
       case assetPlacement of
         InPlayArea controllerId -> do
@@ -35,7 +35,7 @@ instance HasModifiersFor LitaChantler where
             <> LocationWithInvestigator (InvestigatorWithId controllerId)
           pure [ toModifier a (SkillModifier SkillCombat 1) | sameLocation ]
         _ -> pure []
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities LitaChantler where
   getAbilities (LitaChantler a) =

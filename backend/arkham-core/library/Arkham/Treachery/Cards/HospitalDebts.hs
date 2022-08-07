@@ -27,12 +27,12 @@ hospitalDebts :: TreacheryCard HospitalDebts
 hospitalDebts = treachery HospitalDebts Cards.hospitalDebts
 
 instance HasModifiersFor HospitalDebts where
-  getModifiersFor _ (InvestigatorTarget iid) (HospitalDebts attrs) = do
+  getModifiersFor (InvestigatorTarget iid) (HospitalDebts attrs) = do
     let resources' = treacheryResources attrs
     pure $ toModifiers
       attrs
       [ XPModifier (-2) | treacheryOnInvestigator iid attrs && resources' < 6 ]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities HospitalDebts where
   getAbilities (HospitalDebts a) =

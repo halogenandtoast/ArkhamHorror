@@ -40,7 +40,7 @@ instance HasAbilities Asset where
   getAbilities (Asset a) = getAbilities a
 
 instance HasModifiersFor Asset where
-  getModifiersFor source target (Asset a) = getModifiersFor source target a
+  getModifiersFor target (Asset a) = getModifiersFor target a
 
 instance Entity Asset where
   type EntityId Asset = AssetId

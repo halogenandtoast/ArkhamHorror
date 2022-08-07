@@ -49,8 +49,8 @@ activeCostActions :: ActiveCost -> [Action]
 activeCostActions ac = case activeCostTarget ac of
   ForAbility a -> [fromMaybe Action.Ability (abilityAction a)]
   ForCard c -> if null (cdActions $ toCardDef c)
-                  then [Action.Play]
-                  else cdActions $ toCardDef c
+    then [Action.Play]
+    else cdActions $ toCardDef c
   ForCost _ -> []
 
 addActiveCostCost :: Cost -> ActiveCost -> ActiveCost
@@ -85,12 +85,12 @@ getActionCostModifier :: (Monad m, HasGame m) => ActiveCost -> m Int
 getActionCostModifier ac = do
   let iid = activeCostInvestigator ac
   takenActions <- field InvestigatorActionsTaken iid
-  modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
+  modifiers <- getModifiers (InvestigatorTarget iid)
   pure $ foldr (applyModifier takenActions) 0 modifiers
  where
   actions = case activeCostActions ac of
-              [] -> error "expected action"
-              as -> as
+    [] -> error "expected action"
+    as -> as
   applyModifier takenActions (ActionCostOf match m) n =
     if any (matchTarget takenActions match) actions then n + m else n
   applyModifier _ _ n = n
@@ -189,20 +189,19 @@ instance RunMessage ActiveCost where
       let iid = activeCostInvestigator c
       case activeCostTarget c of
         ForCost _ -> do
-          pushAll [PayCost acId iid False (activeCostCosts c), PayCostFinished acId]
+          pushAll
+            [PayCost acId iid False (activeCostCosts c), PayCostFinished acId]
           pure c
         ForCard card -> do
-          modifiers' <- getModifiers
-            (InvestigatorSource iid)
-            (InvestigatorTarget iid)
+          modifiers' <- getModifiers (InvestigatorTarget iid)
           let
             cardDef = toCardDef card
             modifiersPreventAttackOfOpportunity =
               ActionDoesNotCauseAttacksOfOpportunity Action.Play
                 `elem` modifiers'
             actions = case cdActions cardDef of
-                       [] -> [Action.Play]
-                       as -> as
+              [] -> [Action.Play]
+              as -> as
           beforeWindowMsg <- checkWindows
             $ map (Window Timing.When . Window.PerformAction iid) actions
           pushAll
@@ -222,9 +221,7 @@ instance RunMessage ActiveCost where
             <> [PayCostFinished acId]
           pure c
         ForAbility a@Ability {..} -> do
-          modifiers' <- getModifiers
-            (InvestigatorSource iid)
-            (InvestigatorTarget iid)
+          modifiers' <- getModifiers (InvestigatorTarget iid)
           let
             modifiersPreventAttackOfOpportunity = maybe
               False
@@ -246,17 +243,24 @@ instance RunMessage ActiveCost where
         withPayment payment = pure $ c & costPaymentsL <>~ payment
         source = activeCostSource c
         actions = case activeCostActions c of
-                    [] -> error "action expected"
-                    as -> as
+          [] -> error "action expected"
+          as -> as
       case cost of
         OrCost xs -> do
-          push $ chooseOne iid $ map (\x -> Label (displayCostType x) [PayCost acId iid skipAdditionalCosts x]) xs
+          push $ chooseOne iid $ map
+            (\x -> Label
+              (displayCostType x)
+              [PayCost acId iid skipAdditionalCosts x]
+            )
+            xs
           pure c
         Costs xs ->
           c <$ pushAll [ PayCost acId iid skipAdditionalCosts x | x <- xs ]
         UpTo 0 _ -> pure c
         UpTo n cost' -> do
-          canAfford <- andM $ map (\a -> getCanAffordCost iid source (Just a) [] cost') actions
+          canAfford <- andM $ map
+            (\a -> getCanAffordCost iid source (Just a) [] cost')
+            actions
           c <$ when
             canAfford
             (push $ Ask iid $ ChoosePaymentAmounts
@@ -390,9 +394,7 @@ instance RunMessage ActiveCost where
             ForCard card -> do
               iids <- filter (/= iid) <$> getInvestigatorIds
               iidsWithModifiers <- for iids $ \iid' -> do
-                modifiers <- getModifiers
-                  (InvestigatorSource iid')
-                  (InvestigatorTarget iid')
+                modifiers <- getModifiers (InvestigatorTarget iid')
                 pure (iid', modifiers)
               canHelpPay <- flip filterM iidsWithModifiers $ \(_, modifiers) ->
                 do
@@ -449,10 +451,11 @@ instance RunMessage ActiveCost where
           costModifier <- if skipAdditionalCosts
             then pure 0
             else getActionCostModifier c
-          let modifiedActionCost = max 0 (x + costModifier)
-              mAction = case activeCostTarget c of
-                          ForAbility a -> abilityAction a
-                          _ -> Nothing
+          let
+            modifiedActionCost = max 0 (x + costModifier)
+            mAction = case activeCostTarget c of
+              ForAbility a -> abilityAction a
+              _ -> Nothing
           push (SpendActions iid source mAction modifiedActionCost)
           withPayment $ ActionPayment x
         UseCost assetMatcher uType n -> do
@@ -592,8 +595,7 @@ instance RunMessage ActiveCost where
             isAction = isActionAbility ability
             action = fromMaybe Action.Ability (abilityAction ability)
             iid = activeCostInvestigator c
-          whenActivateAbilityWindow <-
-            checkWindows
+          whenActivateAbilityWindow <- checkWindows
             [Window Timing.When (Window.ActivateAbility iid ability)]
           afterMsgs <- if isAction
             then do
@@ -602,14 +604,14 @@ instance RunMessage ActiveCost where
               pure [afterWindowMsgs, FinishAction]
             else pure []
           pushAll
-            $ [ whenActivateAbilityWindow | not (isForcedAbility ability)]
+            $ [ whenActivateAbilityWindow | not (isForcedAbility ability) ]
             <> [ UseCardAbility
-                iid
-                (abilitySource ability)
-                (activeCostWindows c)
-                (abilityIndex ability)
-                (activeCostPayments c)
-              ]
+                   iid
+                   (abilitySource ability)
+                   (activeCostWindows c)
+                   (abilityIndex ability)
+                   (activeCostPayments c)
+               ]
             <> afterMsgs
         ForCard card -> do
           let iid = activeCostInvestigator c
@@ -619,7 +621,7 @@ instance RunMessage ActiveCost where
               ]
             <> [ SealedToken token card | token <- activeCostSealedTokens c ]
             <> [FinishAction]
-        ForCost card ->
-          pushAll [ SealedToken token card | token <- activeCostSealedTokens c ]
+        ForCost card -> pushAll
+          [ SealedToken token card | token <- activeCostSealedTokens c ]
       pure c
     _ -> pure c

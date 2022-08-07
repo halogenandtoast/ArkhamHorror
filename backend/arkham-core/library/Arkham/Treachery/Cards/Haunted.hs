@@ -24,11 +24,11 @@ haunted :: TreacheryCard Haunted
 haunted = treachery Haunted Cards.haunted
 
 instance HasModifiersFor Haunted where
-  getModifiersFor _ (InvestigatorTarget iid) (Haunted attrs) =
+  getModifiersFor (InvestigatorTarget iid) (Haunted attrs) =
     pure $ toModifiers
       attrs
       [ AnySkillValue (-1) | treacheryOnInvestigator iid attrs ]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities Haunted where
   getAbilities (Haunted a) =

@@ -16,8 +16,77 @@ library
       Arkham.Act
       Arkham.Act.Acts
       Arkham.Act.Cards
+      Arkham.Act.Cards.AfterHours
+      Arkham.Act.Cards.AllIn
+      Arkham.Act.Cards.ArkhamAsylum
+      Arkham.Act.Cards.AscendingTheHillV1
+      Arkham.Act.Cards.AscendingTheHillV2
+      Arkham.Act.Cards.AscendingTheHillV3
+      Arkham.Act.Cards.Awakening
+      Arkham.Act.Cards.BeginnersLuck
+      Arkham.Act.Cards.BreakingAndEntering
+      Arkham.Act.Cards.CampusSafety
+      Arkham.Act.Cards.CloseTheRift
+      Arkham.Act.Cards.CurtainCall
+      Arkham.Act.Cards.DiscoveringTheTruth
+      Arkham.Act.Cards.DisruptingTheRitual
+      Arkham.Act.Cards.ExploringTheRainforest
+      Arkham.Act.Cards.FindingANewWay
+      Arkham.Act.Cards.FindingAWayInside
+      Arkham.Act.Cards.FindingLadyEsprit
+      Arkham.Act.Cards.Fold
+      Arkham.Act.Cards.GetTheEngineRunning
+      Arkham.Act.Cards.GetToTheBoats
+      Arkham.Act.Cards.HuntingTheRougarou
+      Arkham.Act.Cards.HuntressOfTheEztli
+      Arkham.Act.Cards.InLostCarcosa
+      Arkham.Act.Cards.IntoTheBeyond
+      Arkham.Act.Cards.IntoTheDarkness
+      Arkham.Act.Cards.InvestigatingTheTrail
+      Arkham.Act.Cards.LeadingTheWay
+      Arkham.Act.Cards.MistakesOfThePast
+      Arkham.Act.Cards.MysteriousGateway
+      Arkham.Act.Cards.NightAtTheMuseum
+      Arkham.Act.Cards.NoAsylum
+      Arkham.Act.Cards.OpenThePathAbove
+      Arkham.Act.Cards.OpenThePathBelow
+      Arkham.Act.Cards.OutOfThisWorld
+      Arkham.Act.Cards.PlanningTheEscape
+      Arkham.Act.Cards.PursuingShadows
+      Arkham.Act.Cards.RaceForAnswers
+      Arkham.Act.Cards.RicesWhereabouts
+      Arkham.Act.Cards.Row
+      Arkham.Act.Cards.Run
+      Arkham.Act.Cards.SaracenicScript
+      Arkham.Act.Cards.SearchForTheRuins
+      Arkham.Act.Cards.SearchForTheStrangerV1
+      Arkham.Act.Cards.SearchForTheStrangerV2
+      Arkham.Act.Cards.SearchForTheStrangerV3
+      Arkham.Act.Cards.SearchingForAnswers
+      Arkham.Act.Cards.SearchingForTheTome
+      Arkham.Act.Cards.SkinGame
+      Arkham.Act.Cards.StalkedByShadows
       Arkham.Act.Cards.TheBarrier
+      Arkham.Act.Cards.TheCarnevaleConspiracy
+      Arkham.Act.Cards.TheChamberOfTheBeast
+      Arkham.Act.Cards.TheGateOpens
+      Arkham.Act.Cards.TheGuardedRuins
+      Arkham.Act.Cards.TheKingInTatters
+      Arkham.Act.Cards.TheOath
+      Arkham.Act.Cards.TheParisianConspiracyV1
+      Arkham.Act.Cards.TheParisianConspiracyV2
+      Arkham.Act.Cards.ThePathIsBarred
+      Arkham.Act.Cards.ThePathToTheHill
+      Arkham.Act.Cards.TheReallyBadOnesV1
+      Arkham.Act.Cards.TheReallyBadOnesV2
+      Arkham.Act.Cards.TheStrangerACityAflame
+      Arkham.Act.Cards.TheStrangerThePathIsMine
+      Arkham.Act.Cards.TheStrangerTheShoresOfHali
+      Arkham.Act.Cards.TheWayOut
+      Arkham.Act.Cards.TheyMustBeDestroyed
+      Arkham.Act.Cards.ThroughTheCatacombs
       Arkham.Act.Cards.Trapped
+      Arkham.Act.Cards.UncoveringTheConspiracy
       Arkham.Act.Cards.WhatHaveYouDone
       Arkham.Act.Helpers
       Arkham.Act.Runner
@@ -30,8 +99,74 @@ library
       Arkham.Agenda.AdvancementReason
       Arkham.Agenda.Agendas
       Arkham.Agenda.Cards
+      Arkham.Agenda.Cards.ACreatureOfTheBayou
+      Arkham.Agenda.Cards.AllIsOne
+      Arkham.Agenda.Cards.ATearInReality
+      Arkham.Agenda.Cards.BeckoningForPower
+      Arkham.Agenda.Cards.BidingItsTime
+      Arkham.Agenda.Cards.BreakingThrough
+      Arkham.Agenda.Cards.CallingForthTheOldOnes
+      Arkham.Agenda.Cards.ChaosAtTheCarnevale
+      Arkham.Agenda.Cards.ChaosInTheCloverClub
+      Arkham.Agenda.Cards.DeadOfNight
+      Arkham.Agenda.Cards.DrawnIn
+      Arkham.Agenda.Cards.EmpireOfTheDead
+      Arkham.Agenda.Cards.EmpireOfTheUndead
+      Arkham.Agenda.Cards.Encore
+      Arkham.Agenda.Cards.ExpeditionIntoTheWild
+      Arkham.Agenda.Cards.FashionablyLate
+      Arkham.Agenda.Cards.FeedTheBeast
+      Arkham.Agenda.Cards.HisDomain
+      Arkham.Agenda.Cards.HorrorsUnleashed
+      Arkham.Agenda.Cards.InEveryShadow
+      Arkham.Agenda.Cards.Intruders
+      Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow
+      Arkham.Agenda.Cards.LetTheStormRageTheVortexAbove
+      Arkham.Agenda.Cards.LockedInside
+      Arkham.Agenda.Cards.MadnessCoils
+      Arkham.Agenda.Cards.MadnessDies
+      Arkham.Agenda.Cards.MadnessDrowns
+      Arkham.Agenda.Cards.OutOfTime
+      Arkham.Agenda.Cards.PastPresentAndFuture
+      Arkham.Agenda.Cards.PredatorOrPrey
+      Arkham.Agenda.Cards.QuietHalls
+      Arkham.Agenda.Cards.RampagingCreatures
+      Arkham.Agenda.Cards.RansackingTheManor
+      Arkham.Agenda.Cards.RestrictedAccess
+      Arkham.Agenda.Cards.ReturnToPredatorOrPrey
       Arkham.Agenda.Cards.RiseOfTheGhouls
+      Arkham.Agenda.Cards.RollingBackwards
+      Arkham.Agenda.Cards.SecretsBetterLeftHidden
+      Arkham.Agenda.Cards.ShadowsDeepen
+      Arkham.Agenda.Cards.StrangeDisappearances
+      Arkham.Agenda.Cards.SwallowedSky
+      Arkham.Agenda.Cards.TheArkhamWoods
+      Arkham.Agenda.Cards.TheBeastUnleashed
+      Arkham.Agenda.Cards.TheCityFloods
+      Arkham.Agenda.Cards.TheCloverClub
+      Arkham.Agenda.Cards.TheCurseSpreads
+      Arkham.Agenda.Cards.TheEndOfAllThings
+      Arkham.Agenda.Cards.TheEntityAboveTheFloodBelow
+      Arkham.Agenda.Cards.TheEntityAboveTheVortexAbove
+      Arkham.Agenda.Cards.TheFestivitiesBegin
+      Arkham.Agenda.Cards.TheFirstNight
+      Arkham.Agenda.Cards.TheMawWidens
+      Arkham.Agenda.Cards.TheOldOnesHunger
+      Arkham.Agenda.Cards.TheRitualBegins
+      Arkham.Agenda.Cards.TheRitualBeginsBlackStarsRise
+      Arkham.Agenda.Cards.TheRougarouFeeds
+      Arkham.Agenda.Cards.TheSecondNight
+      Arkham.Agenda.Cards.TheShadowOfTheEclipse
+      Arkham.Agenda.Cards.TheTerrifyingTruth
+      Arkham.Agenda.Cards.TheThirdAct
+      Arkham.Agenda.Cards.TheThirdNight
+      Arkham.Agenda.Cards.TheTideRises
+      Arkham.Agenda.Cards.TheTruthIsHidden
       Arkham.Agenda.Cards.TheyreGettingOut
+      Arkham.Agenda.Cards.TimeIsRunningShort
+      Arkham.Agenda.Cards.TorturousDescent
+      Arkham.Agenda.Cards.UndergroundMuscle
+      Arkham.Agenda.Cards.VengeanceAwaits
       Arkham.Agenda.Cards.WhatsGoingOn
       Arkham.Agenda.Helpers
       Arkham.Agenda.Runner
@@ -40,14 +175,261 @@ library
       Arkham.Asset
       Arkham.Asset.Assets
       Arkham.Asset.Cards
+      Arkham.Asset.Cards.AbbessAllegriaDiBiase
+      Arkham.Asset.Cards.AdamLynch
+      Arkham.Asset.Cards.Adaptable1
+      Arkham.Asset.Cards.AlchemicalConcoction
+      Arkham.Asset.Cards.AlchemicalTransmutation
+      Arkham.Asset.Cards.AlejandroVela
+      Arkham.Asset.Cards.AlyssaGraham
+      Arkham.Asset.Cards.AnalyticalMind
+      Arkham.Asset.Cards.AncientStone1
+      Arkham.Asset.Cards.Aquinnah1
+      Arkham.Asset.Cards.Aquinnah3
+      Arkham.Asset.Cards.ArcaneEnlightenment
+      Arkham.Asset.Cards.ArcaneInitiate
+      Arkham.Asset.Cards.ArcaneInitiate3
+      Arkham.Asset.Cards.ArcaneInsight4
+      Arkham.Asset.Cards.ArcaneStudies
+      Arkham.Asset.Cards.ArcaneStudies2
+      Arkham.Asset.Cards.ArchaicGlyphs
+      Arkham.Asset.Cards.ArchaicGlyphsGuidingStones3
+      Arkham.Asset.Cards.ArchaicGlyphsProphecyForetold3
+      Arkham.Asset.Cards.ArmorOfArdennes5
+      Arkham.Asset.Cards.ArtStudent
+      Arkham.Asset.Cards.AshleighClarke
+      Arkham.Asset.Cards.Backpack
+      Arkham.Asset.Cards.Bandolier
+      Arkham.Asset.Cards.BaseballBat
+      Arkham.Asset.Cards.Bauta
+      Arkham.Asset.Cards.BearTrap
+      Arkham.Asset.Cards.BeatCop
+      Arkham.Asset.Cards.BeatCop2
+      Arkham.Asset.Cards.Blackjack
+      Arkham.Asset.Cards.BloodPact3
+      Arkham.Asset.Cards.BookOfShadows1
+      Arkham.Asset.Cards.BookOfShadows3
+      Arkham.Asset.Cards.BoxingGloves
+      Arkham.Asset.Cards.BoxingGloves3
+      Arkham.Asset.Cards.BrotherXavier1
+      Arkham.Asset.Cards.BulletproofVest3
+      Arkham.Asset.Cards.Burglary
+      Arkham.Asset.Cards.CatBurglar1
+      Arkham.Asset.Cards.CelaenoFragments
+      Arkham.Asset.Cards.Chainsaw4
+      Arkham.Asset.Cards.Charisma3
+      Arkham.Asset.Cards.CharlesRossEsq
+      Arkham.Asset.Cards.CharonsObol1
+      Arkham.Asset.Cards.CherishedKeepsake
+      Arkham.Asset.Cards.CherishedKeepsake1
+      Arkham.Asset.Cards.ChicagoTypewriter4
+      Arkham.Asset.Cards.ClarityOfMind
+      Arkham.Asset.Cards.ClaspOfBlackOnyx
+      Arkham.Asset.Cards.CombatTraining1
+      Arkham.Asset.Cards.ConstanceDumaine
+      Arkham.Asset.Cards.Courage
+      Arkham.Asset.Cards.DaisysToteBag
+      Arkham.Asset.Cards.DaisysToteBagAdvanced
+      Arkham.Asset.Cards.DanielChesterfield
+      Arkham.Asset.Cards.DarioElAmin
+      Arkham.Asset.Cards.DarkHorse
+      Arkham.Asset.Cards.DavidRenfield
+      Arkham.Asset.Cards.DecoratedSkull
+      Arkham.Asset.Cards.DejaVu5
+      Arkham.Asset.Cards.DigDeep
+      Arkham.Asset.Cards.DigDeep2
+      Arkham.Asset.Cards.DiscOfItzamna2
+      Arkham.Asset.Cards.DrawingThin
+      Arkham.Asset.Cards.DrElliHorowitz
+      Arkham.Asset.Cards.DrFrancisMorgan
+      Arkham.Asset.Cards.DrHenryArmitage
+      Arkham.Asset.Cards.DrMilanChristopher
+      Arkham.Asset.Cards.DrWilliamTMaleson
+      Arkham.Asset.Cards.Duke
+      Arkham.Asset.Cards.EarlSawyer
+      Arkham.Asset.Cards.EighteenDerringer
+      Arkham.Asset.Cards.EighteenDerringer2
+      Arkham.Asset.Cards.ElderSignAmulet3
+      Arkham.Asset.Cards.Encyclopedia
+      Arkham.Asset.Cards.Encyclopedia2
+      Arkham.Asset.Cards.EsotericFormula
+      Arkham.Asset.Cards.Fieldwork
+      Arkham.Asset.Cards.FineClothes
+      Arkham.Asset.Cards.FinnsTrustyThirtyEight
+      Arkham.Asset.Cards.FireAxe
+      Arkham.Asset.Cards.FireExtinguisher1
+      Arkham.Asset.Cards.FirstAid
+      Arkham.Asset.Cards.FirstAid3
+      Arkham.Asset.Cards.FishingNet
       Arkham.Asset.Cards.Flashlight
+      Arkham.Asset.Cards.FleshWard
+      Arkham.Asset.Cards.ForbiddenKnowledge
       Arkham.Asset.Cards.FortyFiveAutomatic
+      Arkham.Asset.Cards.FortyFiveAutomatic2
+      Arkham.Asset.Cards.FortyOneDerringer
+      Arkham.Asset.Cards.FortyOneDerringer2
+      Arkham.Asset.Cards.GildedVolto
+      Arkham.Asset.Cards.GrannyOrne
+      Arkham.Asset.Cards.GrannyOrne3
+      Arkham.Asset.Cards.GravediggersShovel
+      Arkham.Asset.Cards.GreteWagner
+      Arkham.Asset.Cards.GreteWagner3
+      Arkham.Asset.Cards.GrimmsFairyTales
+      Arkham.Asset.Cards.GrotesqueStatue4
+      Arkham.Asset.Cards.Grounded1
       Arkham.Asset.Cards.GuardDog
+      Arkham.Asset.Cards.HardKnocks
+      Arkham.Asset.Cards.HardKnocks2
+      Arkham.Asset.Cards.HaroldWalsted
+      Arkham.Asset.Cards.HeirloomOfHyperborea
+      Arkham.Asset.Cards.HelplessPassenger
+      Arkham.Asset.Cards.HigherEducation
+      Arkham.Asset.Cards.HigherEducation3
+      Arkham.Asset.Cards.HiredMuscle1
+      Arkham.Asset.Cards.HolyRosary
+      Arkham.Asset.Cards.Hyperawareness
+      Arkham.Asset.Cards.Hyperawareness2
+      Arkham.Asset.Cards.InnocentReveler
+      Arkham.Asset.Cards.InTheKnow1
+      Arkham.Asset.Cards.IshimaruHaruko
+      Arkham.Asset.Cards.JakeWilliams
+      Arkham.Asset.Cards.JazzMulligan
+      Arkham.Asset.Cards.JennysTwin45s
+      Arkham.Asset.Cards.JewelOfAureolus3
+      Arkham.Asset.Cards.JimsTrumpet
+      Arkham.Asset.Cards.JoeyTheRatVigil
+      Arkham.Asset.Cards.JordanPerry
+      Arkham.Asset.Cards.KeenEye
+      Arkham.Asset.Cards.KeenEye3
+      Arkham.Asset.Cards.KeyOfYs
+      Arkham.Asset.Cards.KeyToTheChamber
       Arkham.Asset.Cards.Knife
+      Arkham.Asset.Cards.Knuckleduster
+      Arkham.Asset.Cards.Kukri
+      Arkham.Asset.Cards.LaboratoryAssistant
+      Arkham.Asset.Cards.LadyEsprit
+      Arkham.Asset.Cards.Lantern
+      Arkham.Asset.Cards.LeatherCoat
+      Arkham.Asset.Cards.LeatherCoat1
+      Arkham.Asset.Cards.LeoDeLuca
+      Arkham.Asset.Cards.LeoDeLuca1
+      Arkham.Asset.Cards.LightningGun5
+      Arkham.Asset.Cards.LiquidCourage
       Arkham.Asset.Cards.LitaChantler
+      Arkham.Asset.Cards.LivreDeibon
+      Arkham.Asset.Cards.Lockpicks
+      Arkham.Asset.Cards.Lockpicks1
+      Arkham.Asset.Cards.LoneWolf
+      Arkham.Asset.Cards.LuckyDice2
+      Arkham.Asset.Cards.Lupara3
       Arkham.Asset.Cards.Machete
+      Arkham.Asset.Cards.MadameLabranche
+      Arkham.Asset.Cards.MagnifyingGlass
+      Arkham.Asset.Cards.MagnifyingGlass1
+      Arkham.Asset.Cards.MaskedCarnevaleGoer_17
+      Arkham.Asset.Cards.MaskedCarnevaleGoer_18
+      Arkham.Asset.Cards.MaskedCarnevaleGoer_19
+      Arkham.Asset.Cards.MaskedCarnevaleGoer_20
+      Arkham.Asset.Cards.MaskedCarnevaleGoer_21
+      Arkham.Asset.Cards.MeatCleaver
+      Arkham.Asset.Cards.MedicalTexts
+      Arkham.Asset.Cards.MedicoDellaPeste
+      Arkham.Asset.Cards.MistsOfRlyeh
+      Arkham.Asset.Cards.MitchBrown
+      Arkham.Asset.Cards.MonstrousTransformation
+      Arkham.Asset.Cards.Moxie1
+      Arkham.Asset.Cards.MrPeabody
+      Arkham.Asset.Cards.MysteriousRaven
+      Arkham.Asset.Cards.Newspaper
+      Arkham.Asset.Cards.Newspaper2
+      Arkham.Asset.Cards.OccultLexicon
+      Arkham.Asset.Cards.OldBookOfLore
+      Arkham.Asset.Cards.OldKeyring
+      Arkham.Asset.Cards.Painkillers
+      Arkham.Asset.Cards.Pantalone
+      Arkham.Asset.Cards.Pathfinder1
+      Arkham.Asset.Cards.PeterClover
+      Arkham.Asset.Cards.PeterSylvestre
+      Arkham.Asset.Cards.PeterSylvestre2
       Arkham.Asset.Cards.PhysicalTraining
+      Arkham.Asset.Cards.PhysicalTraining2
+      Arkham.Asset.Cards.PhysicalTraining4
+      Arkham.Asset.Cards.Pickpocketing
+      Arkham.Asset.Cards.Pickpocketing2
+      Arkham.Asset.Cards.Plucky1
+      Arkham.Asset.Cards.PoliceBadge2
+      Arkham.Asset.Cards.PowderOfIbnGhazi
+      Arkham.Asset.Cards.ProfessorWarrenRice
+      Arkham.Asset.Cards.ProtectiveIncantation1
+      Arkham.Asset.Cards.QuickLearner4
+      Arkham.Asset.Cards.RabbitsFoot
+      Arkham.Asset.Cards.RabbitsFoot3
+      Arkham.Asset.Cards.RandallCho
+      Arkham.Asset.Cards.Relentless
+      Arkham.Asset.Cards.RelicHunter3
+      Arkham.Asset.Cards.ResearchLibrarian
+      Arkham.Asset.Cards.RiteOfSeeking
+      Arkham.Asset.Cards.RiteOfSeeking4
+      Arkham.Asset.Cards.RitualCandles
       Arkham.Asset.Cards.Rolands38Special
+      Arkham.Asset.Cards.Safeguard
+      Arkham.Asset.Cards.Scavenging
+      Arkham.Asset.Cards.ScientificTheory1
+      Arkham.Asset.Cards.Scrapper
+      Arkham.Asset.Cards.Scrapper3
+      Arkham.Asset.Cards.ScrollOfProphecies
+      Arkham.Asset.Cards.Scrying
+      Arkham.Asset.Cards.Scrying3
+      Arkham.Asset.Cards.SebastienMoreau
+      Arkham.Asset.Cards.Shotgun4
+      Arkham.Asset.Cards.Shrivelling
+      Arkham.Asset.Cards.Shrivelling3
+      Arkham.Asset.Cards.Shrivelling5
+      Arkham.Asset.Cards.SmokingPipe
+      Arkham.Asset.Cards.SongOfTheDead2
+      Arkham.Asset.Cards.SophieInLovingMemory
+      Arkham.Asset.Cards.SophieItWasAllMyFault
+      Arkham.Asset.Cards.SpiritAthame1
+      Arkham.Asset.Cards.SpiritSpeaker
+      Arkham.Asset.Cards.SpringfieldM19034
+      Arkham.Asset.Cards.Stealth
+      Arkham.Asset.Cards.StHubertsKey
+      Arkham.Asset.Cards.StickToThePlan
+      Arkham.Asset.Cards.Straitjacket
+      Arkham.Asset.Cards.StrangeSolution
+      Arkham.Asset.Cards.StrangeSolutionAcidicIchor4
+      Arkham.Asset.Cards.StrangeSolutionFreezingVariant4
+      Arkham.Asset.Cards.StrangeSolutionRestorativeConcoction4
+      Arkham.Asset.Cards.StrayCat
+      Arkham.Asset.Cards.Streetwise3
+      Arkham.Asset.Cards.Suggestion4
+      Arkham.Asset.Cards.SurvivalKnife
+      Arkham.Asset.Cards.Switchblade
+      Arkham.Asset.Cards.Switchblade2
+      Arkham.Asset.Cards.TheChthonianStone
+      Arkham.Asset.Cards.TheCodexOfAges
+      Arkham.Asset.Cards.TheGoldPocketWatch4
+      Arkham.Asset.Cards.TheKingInYellow
+      Arkham.Asset.Cards.TheNecronomicon
+      Arkham.Asset.Cards.TheNecronomiconAdvanced
+      Arkham.Asset.Cards.TheNecronomiconOlausWormiusTranslation
+      Arkham.Asset.Cards.ThePallidMask
+      Arkham.Asset.Cards.TheRedGlovedMan5
+      Arkham.Asset.Cards.TheTatteredCloak
+      Arkham.Asset.Cards.ThirtyTwoColt
+      Arkham.Asset.Cards.ToothOfEztli
+      Arkham.Asset.Cards.TrackShoes
+      Arkham.Asset.Cards.TreasureHunter1
+      Arkham.Asset.Cards.TrenchKnife
+      Arkham.Asset.Cards.TrueGrit
+      Arkham.Asset.Cards.TryAndTryAgain3
+      Arkham.Asset.Cards.UntilTheEndOfTime
+      Arkham.Asset.Cards.Venturer
+      Arkham.Asset.Cards.WendysAmulet
+      Arkham.Asset.Cards.WhittonGreene
+      Arkham.Asset.Cards.Yaotl1
+      Arkham.Asset.Cards.ZebulonWhateley
+      Arkham.Asset.Cards.ZoeysCross
       Arkham.Asset.Helpers
       Arkham.Asset.Runner
       Arkham.Asset.Types
@@ -64,6 +446,21 @@ library
       Arkham.Campaigns.NightOfTheZealot.ChaosBag
       Arkham.Campaigns.NightOfTheZealot.FlavorText
       Arkham.Campaigns.NightOfTheZealot.Import
+      Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
+      Arkham.Campaigns.TheDunwichLegacy.ChaosBag
+      Arkham.Campaigns.TheDunwichLegacy.FlavorText
+      Arkham.Campaigns.TheDunwichLegacy.Import
+      Arkham.Campaigns.TheForgottenAge.CampaignSteps
+      Arkham.Campaigns.TheForgottenAge.ChaosBag
+      Arkham.Campaigns.TheForgottenAge.FlavorText
+      Arkham.Campaigns.TheForgottenAge.Helpers
+      Arkham.Campaigns.TheForgottenAge.Import
+      Arkham.Campaigns.TheForgottenAge.Supply
+      Arkham.Campaigns.ThePathToCarcosa.CampaignSteps
+      Arkham.Campaigns.ThePathToCarcosa.ChaosBag
+      Arkham.Campaigns.ThePathToCarcosa.FlavorText
+      Arkham.Campaigns.ThePathToCarcosa.Helpers
+      Arkham.Campaigns.ThePathToCarcosa.Import
       Arkham.CampaignStep
       Arkham.Card
       Arkham.Card.CardCode
@@ -240,7 +637,29 @@ library
       Arkham.Scenario.Scenarios.TheGathering
       Arkham.Scenario.Types
       Arkham.ScenarioLogKey
+      Arkham.Scenarios.APhantomOfTruth.Helpers
+      Arkham.Scenarios.APhantomOfTruth.Story
+      Arkham.Scenarios.BlackStarsRise.Story
+      Arkham.Scenarios.BloodOnTheAltar.Story
+      Arkham.Scenarios.CarnevaleOfHorrors.Helpers
+      Arkham.Scenarios.CurseOfTheRougarou.Helpers
+      Arkham.Scenarios.CurtainCall.Helpers
+      Arkham.Scenarios.CurtainCall.Story
+      Arkham.Scenarios.DimCarcosa.Helpers
+      Arkham.Scenarios.DimCarcosa.Story
+      Arkham.Scenarios.EchoesOfThePast.Story
+      Arkham.Scenarios.TheDevourerBelow.Story
+      Arkham.Scenarios.TheDoomOfEztli.Story
+      Arkham.Scenarios.TheEssexCountyExpress.Helpers
       Arkham.Scenarios.TheGathering.Story
+      Arkham.Scenarios.TheLastKing.Story
+      Arkham.Scenarios.TheMidnightMasks.Story
+      Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+      Arkham.Scenarios.ThePallidMask.Helpers
+      Arkham.Scenarios.ThePallidMask.Story
+      Arkham.Scenarios.TheUnspeakableOath.Story
+      Arkham.Scenarios.TheUntamedWilds.Story
+      Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Skill
       Arkham.Skill.Cards
       Arkham.Skill.Cards.Deduction

@@ -254,7 +254,7 @@ investigator f cardDef Stats {..} =
         , investigatorUsedAbilities = mempty
         , investigatorAdditionalActions = []
         , investigatorHorrorHealed = 0
-        -- , investigatorSupplies = []
+        , investigatorSupplies = []
         }
       }
 

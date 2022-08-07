@@ -13,7 +13,9 @@ import {-# SOURCE #-} Arkham.Game
 import Arkham.History
 import Arkham.Id
 import Arkham.Message
+import Arkham.Modifier
 import Arkham.SkillTest.Base
+import Arkham.Target
 import Control.Monad.Random.Lazy hiding ( filterM, foldM, fromList )
 
 newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
@@ -108,6 +110,9 @@ getDepthLock = gameDepthLock <$> getGame
 
 getAllAbilities :: (Monad m, HasGame m) => m [Ability]
 getAllAbilities = getAbilities <$> getGame
+
+getAllModifiers :: (Monad m, HasGame m) => m (HashMap Target [Modifier])
+getAllModifiers = gameModifiers <$> getGame
 
 getActiveAbilities :: (Monad m, HasGame m) => m [Ability]
 getActiveAbilities = gameActiveAbilities <$> getGame

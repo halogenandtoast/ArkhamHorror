@@ -119,6 +119,8 @@ import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
 import Data.Align hiding ( nil )
+import Data.HashMap.Monoidal ( MonoidalHashMap )
+import Data.HashMap.Monoidal qualified as MonoidalHashMap
 import Data.HashMap.Strict ( size )
 import Data.HashMap.Strict qualified as HashMap
 import Data.List.Extra ( groupOn )
@@ -160,6 +162,7 @@ data Game = Game
     gameMode :: GameMode
   , -- Entities
     gameEntities :: Entities
+  , gameModifiers :: HashMap Target [Modifier]
   , gameEncounterDiscardEntities :: Entities
   , gameInHandEntities :: HashMap InvestigatorId Entities
   , gameInDiscardEntities :: HashMap InvestigatorId Entities
@@ -265,6 +268,7 @@ newGame scenarioOrCampaignId seed playerCount investigatorsList difficulty = do
       , gameEntities = defaultEntities
         { entitiesInvestigators = investigatorsMap
         }
+      , gameModifiers = mempty
       , gameEncounterDiscardEntities = defaultEntities
       , gameInHandEntities = mempty
       , gameInDiscardEntities = mempty
@@ -533,6 +537,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
     , "id" .= toJSON gid
     , "log" .= toJSON glog
     , "mode" .= toJSON gameMode
+    , "modifiers" .= toJSON gameModifiers
     , "encounterDeckSize" .= toJSON
       (maybe 0 (length . unDeck . scenarioEncounterDeck . toAttrs)
       $ modeScenario gameMode
@@ -3949,10 +3954,100 @@ preloadEntities g = do
     , gameInSearchEntities = searchEntities
     }
 
+preloadModifiers :: forall m . (HasGame m, Monad m) => Game -> m Game
+preloadModifiers g = do
+  let entities :: [SomeEntity] = overEntities pure (gameEntities g)
+  modifiers' :: HashMap Target [Modifier] <-
+    MonoidalHashMap.getMonoidalHashMap
+      <$> overEntitiesM (toEntityModifiers entities) (gameEntities g)
+  pure $ g { gameModifiers = modifiers' }
+ where
+  toEntityModifiers
+    :: [SomeEntity] -> SomeEntity -> m (MonoidalHashMap Target [Modifier])
+  toEntityModifiers es (SomeEntity e) = foldMapM
+    (\e' ->
+      MonoidalHashMap.singleton (toTarget e)
+        <$> getModifiersFor (toTarget e) e'
+    )
+    es
+
+instance IsSomeEntityId SkillId where
+  toSomeEntityId (SkillId x) = toSomeEntityId x
+
+instance IsSomeEntityId EffectId where
+  toSomeEntityId (EffectId x) = toSomeEntityId x
+
+instance IsSomeEntityId EventId where
+  toSomeEntityId (EventId x) = toSomeEntityId x
+
+instance IsSomeEntityId TreacheryId where
+  toSomeEntityId (TreacheryId x) = toSomeEntityId x
+
+instance IsSomeEntityId AgendaId where
+  toSomeEntityId (AgendaId x) = toSomeEntityId x
+
+instance IsSomeEntityId ActId where
+  toSomeEntityId (ActId x) = toSomeEntityId x
+
+instance IsSomeEntityId AssetId where
+  toSomeEntityId (AssetId x) = toSomeEntityId x
+
+instance IsSomeEntityId EnemyId where
+  toSomeEntityId (EnemyId x) = toSomeEntityId x
+
+instance IsSomeEntityId InvestigatorId where
+  toSomeEntityId (InvestigatorId x) = toSomeEntityId x
+
+instance IsSomeEntityId LocationId where
+  toSomeEntityId (LocationId x) = toSomeEntityId x
+
+instance IsSomeEntityId CardId where
+  toSomeEntityId (CardId x) = toSomeEntityId x
+
+data SomeEntity
+  = forall e
+  . ( Show e
+    , TargetEntity e
+    , Entity e
+    , HasModifiersFor e
+    , IsSomeEntityId (EntityId e)
+    ) =>
+    SomeEntity e
+
+instance TargetEntity SomeEntity where
+  toTarget (SomeEntity e) = toTarget e
+
+instance Show SomeEntity where
+  show (SomeEntity e) = show e
+
+instance HasModifiersFor SomeEntity where
+  getModifiersFor target (SomeEntity e) = getModifiersFor target e
+
+overEntities :: Monoid a => (SomeEntity -> a) -> Entities -> a
+overEntities f e = runIdentity $ overEntitiesM (Identity . f) e
+
+overEntitiesM :: (Monoid a, Monad m) => (SomeEntity -> m a) -> Entities -> m a
+overEntitiesM f e = foldMapM f someEntities
+  where someEntities = toSomeEntities e
+
+toSomeEntities :: Entities -> [SomeEntity]
+toSomeEntities Entities {..} =
+  map SomeEntity (toList entitiesLocations)
+    <> map SomeEntity (toList entitiesInvestigators)
+    <> map SomeEntity (toList entitiesEnemies)
+    <> map SomeEntity (toList entitiesAssets)
+    <> map SomeEntity (toList entitiesActs)
+    <> map SomeEntity (toList entitiesAgendas)
+    <> map SomeEntity (toList entitiesTreacheries)
+    <> map SomeEntity (toList entitiesEvents)
+    <> map SomeEntity (toList entitiesEffects)
+    <> map SomeEntity (toList entitiesSkills)
+
 instance RunMessage Game where
   runMessage msg g = do
     preloadEntities g
       >>= runPreGameMessage msg
+      >>= preloadModifiers
       >>= traverseOf (modeL . here) (runMessage msg)
       >>= traverseOf (modeL . there) (runMessage msg)
       >>= traverseOf entitiesL (runMessage msg)

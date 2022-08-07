@@ -336,6 +336,7 @@ library
     , containers
     , extra
     , lens
+    , monoidal-containers
     , mtl
     , pretty-simple
     , random-shuffle

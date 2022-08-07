@@ -6,8 +6,8 @@ import Arkham.Agenda.Types (Field(..))
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Id
 import Arkham.Classes.Query
-import Arkham.GameEnv
-import Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv
+import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Matcher
 import Arkham.Projection
 

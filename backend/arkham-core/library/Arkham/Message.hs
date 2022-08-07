@@ -20,7 +20,7 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.Card.Id
--- import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ClassSymbol
@@ -621,9 +621,9 @@ data Message
   | BeginCardPayment Card
   | FinishCardPayment Card
   | UpdateHistory InvestigatorId History
-  -- | -- The Forgotten Age
-  --   PickSupply InvestigatorId Supply
-  -- | UseSupply InvestigatorId Supply
+  | -- The Forgotten Age
+    PickSupply InvestigatorId Supply
+  | UseSupply InvestigatorId Supply
   | Explore InvestigatorId Source CardMatcher
   | -- Fields
     UpdateLocation LocationAttrs LocationId

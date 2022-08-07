@@ -438,6 +438,10 @@ library
       Arkham.Campaign
       Arkham.Campaign.Campaigns
       Arkham.Campaign.Campaigns.NightOfTheZealot
+      Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
+      Arkham.Campaign.Campaigns.TheDunwichLegacy
+      Arkham.Campaign.Campaigns.TheForgottenAge
+      Arkham.Campaign.Campaigns.ThePathToCarcosa
       Arkham.Campaign.Runner
       Arkham.Campaign.Types
       Arkham.CampaignLog
@@ -502,8 +506,71 @@ library
       Arkham.Distance
       Arkham.Effect
       Arkham.Effect.Effects
+      Arkham.Effect.Effects.AChanceEncounter
+      Arkham.Effect.Effects.AlchemicalTransmutation
+      Arkham.Effect.Effects.ArcaneBarrier
+      Arkham.Effect.Effects.ArkhamWoodsGreatWillow
+      Arkham.Effect.Effects.ArkhamWoodsTwistingPaths
+      Arkham.Effect.Effects.BaseballBat
+      Arkham.Effect.Effects.BindMonster2
+      Arkham.Effect.Effects.BlindingLight
+      Arkham.Effect.Effects.BlindingLight2
+      Arkham.Effect.Effects.CallingInFavors
+      Arkham.Effect.Effects.CharlesRossEsq
+      Arkham.Effect.Effects.CursedShores
+      Arkham.Effect.Effects.CurseOfTheRougarouTabletToken
+      Arkham.Effect.Effects.DaisysToteBagAdvanced
+      Arkham.Effect.Effects.Deduction2
+      Arkham.Effect.Effects.EideticMemory3
+      Arkham.Effect.Effects.ExposeWeakness1
+      Arkham.Effect.Effects.Fieldwork
+      Arkham.Effect.Effects.FightOrFlight
+      Arkham.Effect.Effects.FireExtinguisher1
+      Arkham.Effect.Effects.GildedVolto
+      Arkham.Effect.Effects.Improvisation
+      Arkham.Effect.Effects.JeremiahPierce
+      Arkham.Effect.Effects.LeMarais218
+      Arkham.Effect.Effects.LetMeHandleThis
+      Arkham.Effect.Effects.Lockpicks
+      Arkham.Effect.Effects.Lockpicks1
+      Arkham.Effect.Effects.LuckyDice2
+      Arkham.Effect.Effects.MeatCleaver
+      Arkham.Effect.Effects.Mesmerize
+      Arkham.Effect.Effects.MindOverMatter
+      Arkham.Effect.Effects.MindWipe1
+      Arkham.Effect.Effects.MindWipe3
+      Arkham.Effect.Effects.MinhThiPhan
+      Arkham.Effect.Effects.Montmartre209
+      Arkham.Effect.Effects.MrPeabody
+      Arkham.Effect.Effects.NarrowShaft
+      Arkham.Effect.Effects.NathanielCho
+      Arkham.Effect.Effects.OnTheLam
+      Arkham.Effect.Effects.Overzealous
+      Arkham.Effect.Effects.PereLachaiseCemetery
+      Arkham.Effect.Effects.PushedIntoTheBeyond
+      Arkham.Effect.Effects.QuickThinking
+      Arkham.Effect.Effects.RiteOfSeeking
+      Arkham.Effect.Effects.RiteOfSeeking4
+      Arkham.Effect.Effects.Shrivelling
+      Arkham.Effect.Effects.SleightOfHand
+      Arkham.Effect.Effects.SongOfTheDead2
+      Arkham.Effect.Effects.StormOfSpirits
+      Arkham.Effect.Effects.SureGamble3
+      Arkham.Effect.Effects.TenAcreMeadow_246
+      Arkham.Effect.Effects.TheKingsEdict
+      Arkham.Effect.Effects.TheOrganistHopelessIDefiedHim
+      Arkham.Effect.Effects.ThePaintedWorld
+      Arkham.Effect.Effects.TheStrangerACityAflame
+      Arkham.Effect.Effects.TheStrangerThePathIsMine
+      Arkham.Effect.Effects.TheStrangerTheShoresOfHali
       Arkham.Effect.Effects.TokenEffect
+      Arkham.Effect.Effects.TommyMalloy
+      Arkham.Effect.Effects.UncageTheSoul
+      Arkham.Effect.Effects.UndimensionedAndUnseenTabletToken
+      Arkham.Effect.Effects.WilliamYorick
+      Arkham.Effect.Effects.WillToSurvive3
       Arkham.Effect.Effects.WindowModifierEffect
+      Arkham.Effect.Effects.YogSothoth
       Arkham.Effect.Helpers
       Arkham.Effect.Runner
       Arkham.Effect.Types

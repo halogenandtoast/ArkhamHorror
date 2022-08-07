@@ -62,6 +62,7 @@ data ModifierType
   | BecomesFast
   | Blank
   | Blocked
+  | CannotEnter LocationId
   | CanAssignDamageToAsset AssetId
   | CanBeAssignedDirectDamage
   | CanBeFoughtAsIfAtYourLocation
@@ -96,6 +97,7 @@ data ModifierType
   | CannotHealHorror
   | CannotExplore
   | CannotInvestigate
+  | CannotInvestigateLocation LocationId
   | CannotMakeAttacksOfOpportunity
   | CannotManipulateDeck
   | ActionDoesNotCauseAttacksOfOpportunity Action

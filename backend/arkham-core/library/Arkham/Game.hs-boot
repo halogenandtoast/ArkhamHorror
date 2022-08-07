@@ -19,9 +19,11 @@ import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Phase
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Target
 import Arkham.Scenario.Types
 import Arkham.Skill.Types
 import Arkham.SkillTest.Base
@@ -76,6 +78,7 @@ instance HasTokenValue ()
 gameActiveAbilities :: Game -> [Ability]
 gamePhase :: Game -> Phase
 gameSkillTest :: Game -> Maybe SkillTest
+gameModifiers :: Game -> HashMap Target [Modifier]
 gameWindowDepth :: Game -> Int
 gameDepthLock :: Game -> Int
 gamePhaseHistory :: Game -> HashMap InvestigatorId History

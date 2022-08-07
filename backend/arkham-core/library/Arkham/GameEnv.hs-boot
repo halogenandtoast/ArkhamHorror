@@ -6,7 +6,9 @@ import Arkham.Ability
 import Arkham.Classes.HasQueue
 import Arkham.Distance
 import Arkham.Id
+import Arkham.Modifier
 import Arkham.Phase
+import Arkham.Target
 import Arkham.SkillTest.Base
 
 data GameEnv
@@ -22,6 +24,7 @@ instance MonadReader GameEnv GameT
 
 instance HasQueue GameEnv
 
+getAllModifiers :: (Monad m, HasGame m) => m (HashMap Target [Modifier])
 getActiveAbilities :: (Monad m, HasGame m) => m [Ability]
 getPhase :: (Monad m, HasGame m) => m Phase
 getWindowDepth :: (Monad m, HasGame m) => m Int

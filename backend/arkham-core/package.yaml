@@ -41,6 +41,7 @@ library:
     - aeson >= 1.5.4.1
     - lens
     - unordered-containers >= 0.2.12.0
+    - monoidal-containers
     - safe
     - these
     - classy-prelude

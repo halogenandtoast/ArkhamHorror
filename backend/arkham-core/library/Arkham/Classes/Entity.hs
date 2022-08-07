@@ -1,13 +1,27 @@
-module Arkham.Classes.Entity (
-  module Arkham.Classes.Entity,
-  module X,
-) where
+module Arkham.Classes.Entity
+  ( module Arkham.Classes.Entity
+  , module X
+  ) where
 
-import Arkham.Prelude hiding (to)
+import Arkham.Prelude hiding ( to )
 
 import Arkham.Classes.Entity.Source as X
 import Arkham.Target
+import Arkham.Card.CardCode
 import Arkham.Token
+
+data SomeEntityId = EntityUUID UUID | EntityCardCode CardCode
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+class IsSomeEntityId a where
+  toSomeEntityId :: a -> SomeEntityId
+
+instance IsSomeEntityId UUID where
+  toSomeEntityId = EntityUUID
+
+instance IsSomeEntityId CardCode where
+  toSomeEntityId = EntityCardCode
 
 class Entity a where
   type EntityId a
@@ -39,11 +53,8 @@ instance TargetEntity a => TargetEntity (a `With` b) where
   toTarget (a `With` _) = toTarget a
   isTarget (a `With` _) = isTarget a
 
-insertEntity ::
-  (Entity v, EntityId v ~ k, Hashable k) =>
-  v ->
-  HashMap k v ->
-  HashMap k v
+insertEntity
+  :: (Entity v, EntityId v ~ k, Hashable k) => v -> HashMap k v -> HashMap k v
 insertEntity a = insertMap (toId a) a
 
 instance TargetEntity Token where

@@ -6,7 +6,6 @@ module Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 import Arkham.Classes.Entity
-import Arkham.Classes.HasModifiersFor
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.Game ()
@@ -16,7 +15,8 @@ import Arkham.Modifier as X
 import Arkham.Target
 
 getModifiers :: (Monad m, HasGame m) => Target -> m [ModifierType]
-getModifiers target = map modifierType <$> getModifiersFor target ()
+getModifiers target =
+  map modifierType . findWithDefault [] target <$> getAllModifiers
 
 hasModifier
   :: (Monad m, HasGame m, TargetEntity a) => a -> ModifierType -> m Bool

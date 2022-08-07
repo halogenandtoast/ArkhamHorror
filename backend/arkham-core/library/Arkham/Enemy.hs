@@ -23,7 +23,7 @@ instance RunMessage Enemy where
     -- discard.
     allEnemyIds <- select AnyEnemy
     modifiers' <- if toId e `member` allEnemyIds
-      then getModifiers (toSource e) (toTarget e)
+      then getModifiers (toTarget e)
       else pure []
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     Enemy <$> runMessage msg' x
@@ -59,171 +59,171 @@ allEnemies = mapFromList $ map
   , SomeEnemyCard ghoulPriest
   , SomeEnemyCard fleshEater
   , SomeEnemyCard icyGhoul
-  -- The Midnight Masks
-  , SomeEnemyCard theMaskedHunter
-  , SomeEnemyCard wolfManDrew
-  , SomeEnemyCard hermanCollins
-  , SomeEnemyCard peterWarren
-  , SomeEnemyCard victoriaDevereux
-  , SomeEnemyCard ruthTurner
-  -- The Devourer Below
-  , SomeEnemyCard umordhoth
+  -- -- The Midnight Masks
+  -- , SomeEnemyCard theMaskedHunter
+  -- , SomeEnemyCard wolfManDrew
+  -- , SomeEnemyCard hermanCollins
+  -- , SomeEnemyCard peterWarren
+  -- , SomeEnemyCard victoriaDevereux
+  -- , SomeEnemyCard ruthTurner
+  -- -- The Devourer Below
+  -- , SomeEnemyCard umordhoth
   -- Rats
   , SomeEnemyCard swarmOfRats
   -- Ghouls
   , SomeEnemyCard ghoulMinion
   , SomeEnemyCard ravenousGhoul
-  -- Dark Cult
-  , SomeEnemyCard acolyte
-  , SomeEnemyCard wizardOfTheOrder
-  -- Nightgaunts
-  , SomeEnemyCard huntingNightgaunt
-  -- Agents of Hastur
-  , SomeEnemyCard screechingByakhee
-  -- Agents of Yog-Sothoth
-  , SomeEnemyCard yithianObserver
-  -- Agents of Shub-Niggurath
-  , SomeEnemyCard relentlessDarkYoung
-  , SomeEnemyCard goatSpawn
-  -- Agents of Cthulhu
-  , SomeEnemyCard youngDeepOne
-  -- The Dunwich Legacy
-  -- Extracurricular Activity
-  , SomeEnemyCard theExperiment
-  -- The House Always Wins
-  , SomeEnemyCard cloverClubPitBoss
-  -- Bishop's Thralls
-  , SomeEnemyCard thrall
-  , SomeEnemyCard wizardOfYogSothoth
-  -- Whippoorwill
-  , SomeEnemyCard whippoorwill
-  -- Beast Thralls
-  , SomeEnemyCard avianThrall
-  , SomeEnemyCard lupineThrall
-  -- Naomi's Crew
-  , SomeEnemyCard oBannionsThug
-  , SomeEnemyCard mobster
-  -- Hideous Abominations
-  , SomeEnemyCard conglomerationOfSpheres
-  , SomeEnemyCard servantOfTheLurker
-  -- The Miskatonic Museum
-  , SomeEnemyCard huntingHorror
-  -- The Essex County Express
-  , SomeEnemyCard grapplingHorror
-  , SomeEnemyCard emergentMonstrosity
-  -- Blood on the Altar
-  , SomeEnemyCard silasBishop
-  , SomeEnemyCard servantOfManyMouths
-  -- Undimensioned and Unseen
-  , SomeEnemyCard broodOfYogSothoth
-  -- Where Doom Awaits
-  , SomeEnemyCard sethBishop
-  , SomeEnemyCard devoteeOfTheKey
-  , SomeEnemyCard crazedShoggoth
-  -- Lost in Time and Space
-  , SomeEnemyCard yogSothoth
-  , SomeEnemyCard interstellarTraveler
-  , SomeEnemyCard yithianStarseeker
-  -- The Path to Carcosa
-  -- signature
-  , SomeEnemyCard graveyardGhouls
-  -- weakness
-  , SomeEnemyCard theThingThatFollows
-  -- Curtain Call
-  , SomeEnemyCard theManInThePallidMask
-  , SomeEnemyCard royalEmissary
-  -- The Last King
-  , SomeEnemyCard constanceDumaine
-  , SomeEnemyCard jordanPerry
-  , SomeEnemyCard ishimaruHaruko
-  , SomeEnemyCard sebastienMoreau
-  , SomeEnemyCard ashleighClarke
-  , SomeEnemyCard dianneDevine
-  -- Byakhee
-  , SomeEnemyCard swiftByakhee
-  -- Inhabitants of Carcosa
-  , SomeEnemyCard beastOfAldebaran
-  , SomeEnemyCard spawnOfHali
-  -- Hauntings
-  , SomeEnemyCard poltergeist
-  -- Hastur's Gift
-  , SomeEnemyCard maniac
-  , SomeEnemyCard youngPsychopath
-  -- Cult of the Yellow Sign
-  , SomeEnemyCard fanatic
-  , SomeEnemyCard agentOfTheKing
-  -- Decay and Filth
-  , SomeEnemyCard roachSwarm
-  -- Echoes of the Past
-  , SomeEnemyCard possessedOathspeaker
-  , SomeEnemyCard seekerOfCarcosa
-  -- The Unspeakable Oath
-  , SomeEnemyCard danielChesterfield
-  , SomeEnemyCard asylumGorger
-  , SomeEnemyCard madPatient
-  -- A Phantom of Truth
-  , SomeEnemyCard theOrganistHopelessIDefiedHim
-  , SomeEnemyCard theOrganistDrapedInMystery
-  , SomeEnemyCard stealthyByakhee
-  -- The Pallid Mask
-  , SomeEnemyCard specterOfDeath
-  , SomeEnemyCard catacombsDocent
-  , SomeEnemyCard corpseDweller
-  -- Black Stars Rise
-  , SomeEnemyCard tidalTerror
-  , SomeEnemyCard riftSeeker
-  -- Dim Carcosa
-  , SomeEnemyCard hasturTheKingInYellow
-  , SomeEnemyCard hasturLordOfCarcosa
-  , SomeEnemyCard hasturTheTatteredKing
-  , SomeEnemyCard creatureOutOfDemhe
-  , SomeEnemyCard wingedOne
-  -- The Forgotten Age
-  -- signature
-  , SomeEnemyCard serpentsOfYig
-  -- The Untamed Wilds
-  , SomeEnemyCard ichtaca
-  -- Serpents
-  , SomeEnemyCard pitViper
-  , SomeEnemyCard boaConstrictor
-  -- Agents of Yig
-  , SomeEnemyCard broodOfYig
-  , SomeEnemyCard serpentFromYoth
-  -- Guardians of Time
-  , SomeEnemyCard eztliGuardian
-  -- Return to Night of the Zealot
-  -- Return to the Gathering
-  , SomeEnemyCard corpseHungryGhoul
-  , SomeEnemyCard ghoulFromTheDepths
-  -- Return to the Midnight Masks
-  , SomeEnemyCard narogath
-  -- Ghouls of Umordhoth
-  , SomeEnemyCard graveEater
-  , SomeEnemyCard acolyteOfUmordhoth
-  -- The Devourer's Cult
-  , SomeEnemyCard discipleOfTheDevourer
-  , SomeEnemyCard corpseTaker
-  -- Return to Cult of Umordhoth
-  , SomeEnemyCard jeremiahPierce
-  , SomeEnemyCard billyCooper
-  , SomeEnemyCard almaHill
-  -- Nathanial Cho
-  , SomeEnemyCard tommyMalloy
-  -- Curse of the Rougarou
-  , SomeEnemyCard bogGator
-  , SomeEnemyCard swampLeech
-  , SomeEnemyCard theRougarou
-  , SomeEnemyCard slimeCoveredDhole
-  , SomeEnemyCard marshGug
-  , SomeEnemyCard darkYoungHost
-  -- Carnevale of Horrors
-  , SomeEnemyCard balefulReveler
-  , SomeEnemyCard donLagorio
-  , SomeEnemyCard elisabettaMagro
-  , SomeEnemyCard salvatoreNeri
-  , SomeEnemyCard savioCorvi
-  , SomeEnemyCard cnidathqua
-  , SomeEnemyCard poleman
-  , SomeEnemyCard carnevaleSentinel
-  , SomeEnemyCard writhingAppendage
+  -- -- Dark Cult
+  -- , SomeEnemyCard acolyte
+  -- , SomeEnemyCard wizardOfTheOrder
+  -- -- Nightgaunts
+  -- , SomeEnemyCard huntingNightgaunt
+  -- -- Agents of Hastur
+  -- , SomeEnemyCard screechingByakhee
+  -- -- Agents of Yog-Sothoth
+  -- , SomeEnemyCard yithianObserver
+  -- -- Agents of Shub-Niggurath
+  -- , SomeEnemyCard relentlessDarkYoung
+  -- , SomeEnemyCard goatSpawn
+  -- -- Agents of Cthulhu
+  -- , SomeEnemyCard youngDeepOne
+  -- -- The Dunwich Legacy
+  -- -- Extracurricular Activity
+  -- , SomeEnemyCard theExperiment
+  -- -- The House Always Wins
+  -- , SomeEnemyCard cloverClubPitBoss
+  -- -- Bishop's Thralls
+  -- , SomeEnemyCard thrall
+  -- , SomeEnemyCard wizardOfYogSothoth
+  -- -- Whippoorwill
+  -- , SomeEnemyCard whippoorwill
+  -- -- Beast Thralls
+  -- , SomeEnemyCard avianThrall
+  -- , SomeEnemyCard lupineThrall
+  -- -- Naomi's Crew
+  -- , SomeEnemyCard oBannionsThug
+  -- , SomeEnemyCard mobster
+  -- -- Hideous Abominations
+  -- , SomeEnemyCard conglomerationOfSpheres
+  -- , SomeEnemyCard servantOfTheLurker
+  -- -- The Miskatonic Museum
+  -- , SomeEnemyCard huntingHorror
+  -- -- The Essex County Express
+  -- , SomeEnemyCard grapplingHorror
+  -- , SomeEnemyCard emergentMonstrosity
+  -- -- Blood on the Altar
+  -- , SomeEnemyCard silasBishop
+  -- , SomeEnemyCard servantOfManyMouths
+  -- -- Undimensioned and Unseen
+  -- , SomeEnemyCard broodOfYogSothoth
+  -- -- Where Doom Awaits
+  -- , SomeEnemyCard sethBishop
+  -- , SomeEnemyCard devoteeOfTheKey
+  -- , SomeEnemyCard crazedShoggoth
+  -- -- Lost in Time and Space
+  -- , SomeEnemyCard yogSothoth
+  -- , SomeEnemyCard interstellarTraveler
+  -- , SomeEnemyCard yithianStarseeker
+  -- -- The Path to Carcosa
+  -- -- signature
+  -- , SomeEnemyCard graveyardGhouls
+  -- -- weakness
+  -- , SomeEnemyCard theThingThatFollows
+  -- -- Curtain Call
+  -- , SomeEnemyCard theManInThePallidMask
+  -- , SomeEnemyCard royalEmissary
+  -- -- The Last King
+  -- , SomeEnemyCard constanceDumaine
+  -- , SomeEnemyCard jordanPerry
+  -- , SomeEnemyCard ishimaruHaruko
+  -- , SomeEnemyCard sebastienMoreau
+  -- , SomeEnemyCard ashleighClarke
+  -- , SomeEnemyCard dianneDevine
+  -- -- Byakhee
+  -- , SomeEnemyCard swiftByakhee
+  -- -- Inhabitants of Carcosa
+  -- , SomeEnemyCard beastOfAldebaran
+  -- , SomeEnemyCard spawnOfHali
+  -- -- Hauntings
+  -- , SomeEnemyCard poltergeist
+  -- -- Hastur's Gift
+  -- , SomeEnemyCard maniac
+  -- , SomeEnemyCard youngPsychopath
+  -- -- Cult of the Yellow Sign
+  -- , SomeEnemyCard fanatic
+  -- , SomeEnemyCard agentOfTheKing
+  -- -- Decay and Filth
+  -- , SomeEnemyCard roachSwarm
+  -- -- Echoes of the Past
+  -- , SomeEnemyCard possessedOathspeaker
+  -- , SomeEnemyCard seekerOfCarcosa
+  -- -- The Unspeakable Oath
+  -- , SomeEnemyCard danielChesterfield
+  -- , SomeEnemyCard asylumGorger
+  -- , SomeEnemyCard madPatient
+  -- -- A Phantom of Truth
+  -- , SomeEnemyCard theOrganistHopelessIDefiedHim
+  -- , SomeEnemyCard theOrganistDrapedInMystery
+  -- , SomeEnemyCard stealthyByakhee
+  -- -- The Pallid Mask
+  -- , SomeEnemyCard specterOfDeath
+  -- , SomeEnemyCard catacombsDocent
+  -- , SomeEnemyCard corpseDweller
+  -- -- Black Stars Rise
+  -- , SomeEnemyCard tidalTerror
+  -- , SomeEnemyCard riftSeeker
+  -- -- Dim Carcosa
+  -- , SomeEnemyCard hasturTheKingInYellow
+  -- , SomeEnemyCard hasturLordOfCarcosa
+  -- , SomeEnemyCard hasturTheTatteredKing
+  -- , SomeEnemyCard creatureOutOfDemhe
+  -- , SomeEnemyCard wingedOne
+  -- -- The Forgotten Age
+  -- -- signature
+  -- , SomeEnemyCard serpentsOfYig
+  -- -- The Untamed Wilds
+  -- , SomeEnemyCard ichtaca
+  -- -- Serpents
+  -- , SomeEnemyCard pitViper
+  -- , SomeEnemyCard boaConstrictor
+  -- -- Agents of Yig
+  -- , SomeEnemyCard broodOfYig
+  -- , SomeEnemyCard serpentFromYoth
+  -- -- Guardians of Time
+  -- , SomeEnemyCard eztliGuardian
+  -- -- Return to Night of the Zealot
+  -- -- Return to the Gathering
+  -- , SomeEnemyCard corpseHungryGhoul
+  -- , SomeEnemyCard ghoulFromTheDepths
+  -- -- Return to the Midnight Masks
+  -- , SomeEnemyCard narogath
+  -- -- Ghouls of Umordhoth
+  -- , SomeEnemyCard graveEater
+  -- , SomeEnemyCard acolyteOfUmordhoth
+  -- -- The Devourer's Cult
+  -- , SomeEnemyCard discipleOfTheDevourer
+  -- , SomeEnemyCard corpseTaker
+  -- -- Return to Cult of Umordhoth
+  -- , SomeEnemyCard jeremiahPierce
+  -- , SomeEnemyCard billyCooper
+  -- , SomeEnemyCard almaHill
+  -- -- Nathanial Cho
+  -- , SomeEnemyCard tommyMalloy
+  -- -- Curse of the Rougarou
+  -- , SomeEnemyCard bogGator
+  -- , SomeEnemyCard swampLeech
+  -- , SomeEnemyCard theRougarou
+  -- , SomeEnemyCard slimeCoveredDhole
+  -- , SomeEnemyCard marshGug
+  -- , SomeEnemyCard darkYoungHost
+  -- -- Carnevale of Horrors
+  -- , SomeEnemyCard balefulReveler
+  -- , SomeEnemyCard donLagorio
+  -- , SomeEnemyCard elisabettaMagro
+  -- , SomeEnemyCard salvatoreNeri
+  -- , SomeEnemyCard savioCorvi
+  -- , SomeEnemyCard cnidathqua
+  -- , SomeEnemyCard poleman
+  -- , SomeEnemyCard carnevaleSentinel
+  -- , SomeEnemyCard writhingAppendage
   ]

@@ -11,7 +11,7 @@ import Arkham.SkillTest as X
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.Classes
-import Arkham.Game.Helpers hiding (matches)
+import Arkham.Game.Helpers hiding ( matches )
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Message
@@ -21,16 +21,15 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 import Arkham.Token
-import Arkham.Window (Window(..))
-import qualified Arkham.Window as Window
-import qualified Data.HashMap.Strict as HashMap
+import Arkham.Window ( Window (..) )
+import Arkham.Window qualified as Window
+import Data.HashMap.Strict qualified as HashMap
 
 skillIconCount :: SkillTest -> GameT Int
-skillIconCount st@SkillTest {..} = do
+skillIconCount SkillTest {..} = do
   investigatorModifiers <- getModifiers
-    (toSource st)
     (InvestigatorTarget skillTestInvestigator)
   if SkillCannotBeIncreased skillTestSkillType `elem` investigatorModifiers
     then pure 0
@@ -39,7 +38,7 @@ skillIconCount st@SkillTest {..} = do
       (toList skillTestCommittedCards)
  where
   iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
-    modifiers' <- getModifiers (toSource st) (CardIdTarget pcId)
+    modifiers' <- getModifiers (CardIdTarget pcId)
     pure $ foldr
       applyAfterSkillModifiers
       (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')
@@ -55,7 +54,7 @@ skillIconCount st@SkillTest {..} = do
 
 getModifiedSkillTestDifficulty :: SkillTest -> GameT Int
 getModifiedSkillTestDifficulty s = do
-  modifiers' <- getModifiers (toSource s) SkillTestTarget
+  modifiers' <- getModifiers SkillTestTarget
   let
     preModifiedDifficulty =
       foldr applyPreModifier (skillTestDifficulty s) modifiers'
@@ -71,8 +70,8 @@ getModifiedSkillTestDifficulty s = do
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
 getModifiedTokenValue :: SkillTest -> Token -> GameT Int
 getModifiedTokenValue s t = do
-  tokenModifiers' <- getModifiers (toSource s) (TokenTarget t)
-  modifiedTokenFaces' <- getModifiedTokenFaces s [t]
+  tokenModifiers' <- getModifiers (TokenTarget t)
+  modifiedTokenFaces' <- getModifiedTokenFaces [t]
   getSum . mconcat <$> for
     modifiedTokenFaces'
     (\tokenFace -> do
@@ -101,7 +100,7 @@ getModifiedTokenValue s t = do
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
-      modifiers' <- getModifiers (toSource s) (InvestigatorTarget iid)
+      modifiers' <- getModifiers (InvestigatorTarget iid)
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then do
           let
@@ -114,19 +113,17 @@ instance RunMessage SkillTest where
               pushAll [RevealSkillTestTokens iid, RunSkillTest iid]
               for_ tokensTreatedAsRevealed $ \tokenFace -> do
                 t <- getRandom
-                pushAll $ resolve
-                  (RevealToken
-                    (toSource s)
-                    iid
-                    (Token t tokenFace)
-                  )
+                pushAll
+                  $ resolve (RevealToken (toSource s) iid (Token t tokenFace))
               pure s
         else if SkillTestAutomaticallySucceeds `elem` modifiers'
           then s <$ push PassSkillTest
           else do
-            let applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
-                applyRevealStategyModifier n _ = n
-                revealStrategy = foldl' applyRevealStategyModifier (Reveal 1) modifiers'
+            let
+              applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
+              applyRevealStategyModifier n _ = n
+              revealStrategy =
+                foldl' applyRevealStategyModifier (Reveal 1) modifiers'
             s <$ pushAll
               [ RequestTokens (toSource s) (Just iid) revealStrategy SetAside
               , RunSkillTest iid
@@ -169,7 +166,7 @@ instance RunMessage SkillTest where
         concatMapM
         (skillTestRevealedTokens \\ skillTestResolvedTokens)
         \token -> do
-          faces <- getModifiedTokenFaces s [token]
+          faces <- getModifiedTokenFaces [token]
           pure [ (token, face) | face <- faces ]
       pushAll
         [ ResolveToken drawnToken tokenFace iid
@@ -181,10 +178,7 @@ instance RunMessage SkillTest where
           %~ (<> [ TokenTarget token' | token' <- skillTestRevealedTokens ])
           )
     PassSkillTest -> do
-      stats <- modifiedStatsOf
-        (toSource s)
-        skillTestAction
-        skillTestInvestigator
+      stats <- modifiedStatsOf skillTestAction skillTestInvestigator
       iconCount <- skillIconCount s
       let
         currentSkillValue = statsSkillValue stats skillTestSkillType
@@ -273,15 +267,16 @@ instance RunMessage SkillTest where
            ]
         )
     SkillTestResults{} -> do
-      modifiers' <- getModifiers (toSource s) (toTarget s)
+      modifiers' <- getModifiers (toTarget s)
       push (chooseOne skillTestInvestigator [SkillTestApplyResults])
       let
-          modifiedSkillTestResult = foldl' modifySkillTestResult skillTestResult modifiers'
-          modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
-            Unrun -> Unrun
-            SucceededBy b m -> SucceededBy b (max 0 (m + n))
-            FailedBy b m -> FailedBy b (max 0 (m + n))
-          modifySkillTestResult r _ = r
+        modifiedSkillTestResult =
+          foldl' modifySkillTestResult skillTestResult modifiers'
+        modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
+          Unrun -> Unrun
+          SucceededBy b m -> SucceededBy b (max 0 (m + n))
+          FailedBy b m -> FailedBy b (max 0 (m + n))
+        modifySkillTestResult r _ = r
       case modifiedSkillTestResult of
         SucceededBy _ n -> pushAll
           ([ Will
@@ -334,14 +329,15 @@ instance RunMessage SkillTest where
     SkillTestApplyResultsAfter -> do
       -- ST.7 -- apply results
       push $ SkillTestEnds skillTestSource -- -> ST.8 -- Skill test ends
-      modifiers' <- getModifiers (toSource s) (toTarget s)
+      modifiers' <- getModifiers (toTarget s)
       let
-          modifiedSkillTestResult = foldl' modifySkillTestResult skillTestResult modifiers'
-          modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
-            Unrun -> Unrun
-            SucceededBy b m -> SucceededBy b (max 0 (m + n))
-            FailedBy b m -> FailedBy b (max 0 (m + n))
-          modifySkillTestResult r _ = r
+        modifiedSkillTestResult =
+          foldl' modifySkillTestResult skillTestResult modifiers'
+        modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
+          Unrun -> Unrun
+          SucceededBy b m -> SucceededBy b (max 0 (m + n))
+          FailedBy b m -> FailedBy b (max 0 (m + n))
+        modifySkillTestResult r _ = r
       case modifiedSkillTestResult of
         SucceededBy _ n -> pushAll
           ([ After
@@ -394,14 +390,16 @@ instance RunMessage SkillTest where
     SkillTestApplyResults -> do
       -- ST.7 Apply Results
       push SkillTestApplyResultsAfter
-      modifiers' <- getModifiers (toSource s) (toTarget s)
-      let successTimes = if DoubleSuccess `elem` modifiers' then 2 else 1
-          modifiedSkillTestResult = foldl' modifySkillTestResult skillTestResult modifiers'
-          modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
-            Unrun -> Unrun
-            SucceededBy b m -> SucceededBy b (max 0 (m + n))
-            FailedBy b m -> FailedBy b (max 0 (m + n))
-          modifySkillTestResult r _ = r
+      modifiers' <- getModifiers (toTarget s)
+      let
+        successTimes = if DoubleSuccess `elem` modifiers' then 2 else 1
+        modifiedSkillTestResult =
+          foldl' modifySkillTestResult skillTestResult modifiers'
+        modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
+          Unrun -> Unrun
+          SucceededBy b m -> SucceededBy b (max 0 (m + n))
+          FailedBy b m -> FailedBy b (max 0 (m + n))
+        modifySkillTestResult r _ = r
       s <$ case modifiedSkillTestResult of
         SucceededBy _ n -> pushAll $ cycleN
           successTimes
@@ -491,11 +489,8 @@ instance RunMessage SkillTest where
           (getModifiedTokenValue s)
         pure $ s & valueModifierL %~ subtract tokenValues
     RecalculateSkillTestResults -> do
-      modifiers' <- getModifiers (toSource s) SkillTestTarget
-      stats <- modifiedStatsOf
-        (toSource s)
-        skillTestAction
-        skillTestInvestigator
+      modifiers' <- getModifiers SkillTestTarget
+      stats <- modifiedStatsOf skillTestAction skillTestInvestigator
       modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
       iconCount <- if CancelSkills `elem` modifiers'
         then pure 0
@@ -513,14 +508,11 @@ instance RunMessage SkillTest where
         (resultValueModifiers <$ guard (resultValueModifiers /= 0))
       pure s
     RunSkillTest _ -> do
-      modifiers' <- getModifiers (toSource s) SkillTestTarget
+      modifiers' <- getModifiers SkillTestTarget
       tokenValues <- sum <$> for
         (skillTestRevealedTokens <> skillTestResolvedTokens)
         (getModifiedTokenValue s)
-      stats <- modifiedStatsOf
-        (toSource s)
-        skillTestAction
-        skillTestInvestigator
+      stats <- modifiedStatsOf skillTestAction skillTestInvestigator
       modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
       iconCount <- if CancelSkills `elem` modifiers'
         then pure 0

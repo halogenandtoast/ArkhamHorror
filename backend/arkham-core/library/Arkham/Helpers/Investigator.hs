@@ -2,7 +2,6 @@ module Arkham.Helpers.Investigator where
 
 import Arkham.Prelude
 
-import Data.UUID (nil)
 import Arkham.Action
 import Arkham.Card
 import Arkham.Card.Id
@@ -13,17 +12,18 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Slot
 import Arkham.Id
-import Arkham.SkillTest.Base
 import Arkham.Investigator.Types
-import Arkham.Treachery.Types ( Field (..) )
-import Arkham.Matcher hiding (InvestigatorDefeated)
+import Arkham.Matcher hiding ( InvestigatorDefeated )
 import Arkham.Projection
+import Arkham.SkillTest.Base
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
-import Control.Monad.Extra (orM)
-import Data.Foldable (foldrM)
+import Arkham.Treachery.Types ( Field (..) )
+import Control.Monad.Extra ( orM )
+import Data.Foldable ( foldrM )
+import Data.UUID ( nil )
 
 getSkillValue :: (Monad m, HasGame m) => SkillType -> InvestigatorId -> m Int
 getSkillValue st iid = case st of
@@ -34,26 +34,38 @@ getSkillValue st iid = case st of
   SkillWild -> error "no wild skill"
 
 skillValueFor
-  :: (Monad m, HasGame m) => SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> m Int
+  :: (Monad m, HasGame m)
+  => SkillType
+  -> Maybe Action
+  -> [ModifierType]
+  -> InvestigatorId
+  -> m Int
 skillValueFor skill maction tempModifiers iid = do
   base <- baseSkillValueFor skill maction tempModifiers iid
   foldrM applyModifier base tempModifiers
  where
   canBeIncreased = SkillCannotBeIncreased skill `notElem` tempModifiers
-  applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 = pure $ max 0 (n + m)
+  applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 =
+    pure $ max 0 (n + m)
   applyModifier (AddSkillValue sv) n | canBeIncreased = do
     m <- getSkillValue sv iid
     pure $ max 0 (n + m)
   applyModifier (SkillModifier skillType m) n | canBeIncreased || m < 0 =
     pure $ if skillType == skill then max 0 (n + m) else n
   applyModifier (ActionSkillModifier action skillType m) n
-    | canBeIncreased || m < 0 = pure $ if skillType == skill && Just action == maction
+    | canBeIncreased || m < 0
+    = pure $ if skillType == skill && Just action == maction
       then max 0 (n + m)
       else n
   applyModifier _ n = pure n
 
 baseSkillValueFor
-  :: (Monad m, HasGame m) => SkillType -> Maybe Action -> [ModifierType] -> InvestigatorId -> m Int
+  :: (Monad m, HasGame m)
+  => SkillType
+  -> Maybe Action
+  -> [ModifierType]
+  -> InvestigatorId
+  -> m Int
 baseSkillValueFor skill _maction tempModifiers iid = do
   baseValue <- getSkillValue skill iid
   pure $ foldr applyModifier baseValue tempModifiers
@@ -63,8 +75,7 @@ baseSkillValueFor skill _maction tempModifiers iid = do
 
 damageValueFor :: (Monad m, HasGame m) => Int -> InvestigatorAttrs -> m Int
 damageValueFor baseValue attrs = do
-  source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
-  modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
+  modifiers <- getModifiers (InvestigatorTarget $ investigatorId attrs)
   pure $ foldr applyModifier baseValue modifiers
  where
   applyModifier (DamageDealt m) n = max 0 (n + m)
@@ -88,8 +99,7 @@ getIsScenarioAbility = do
 
 getHandSize :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getHandSize attrs = do
-  source <- fromMaybe (toSource attrs) <$> getSkillTestSource
-  modifiers <- getModifiers source (InvestigatorTarget $ investigatorId attrs)
+  modifiers <- getModifiers (InvestigatorTarget $ investigatorId attrs)
   pure $ foldr applyModifier 8 modifiers
  where
   applyModifier (HandSize m) n = max 0 (n + m)
@@ -103,13 +113,13 @@ getInHandCount attrs = do
       HandSizeCardCount m -> m
       _ -> n
     getCardHandSize c = do
-      modifiers <- getModifiers (toSource attrs) (CardTarget c)
+      modifiers <- getModifiers (CardTarget c)
       pure $ foldl' applyModifier 1 modifiers
   sum <$> traverse getCardHandSize cards
 
 getAbilitiesForTurn :: (Monad m, HasGame m) => InvestigatorAttrs -> m Int
 getAbilitiesForTurn attrs = do
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
+  modifiers <- getModifiers (toTarget attrs)
   pure $ foldr applyModifier 3 modifiers
  where
   applyModifier (AdditionalActions m) n = max 0 (n + m)
@@ -117,7 +127,7 @@ getAbilitiesForTurn attrs = do
 
 getCanDiscoverClues :: (Monad m, HasGame m) => InvestigatorAttrs -> m Bool
 getCanDiscoverClues attrs = do
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
+  modifiers <- getModifiers (toTarget attrs)
   pure $ not (any match modifiers)
  where
   match CannotDiscoverClues{} = True
@@ -125,7 +135,7 @@ getCanDiscoverClues attrs = do
 
 getCanSpendClues :: (Monad m, HasGame m) => InvestigatorAttrs -> m Bool
 getCanSpendClues attrs = do
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
+  modifiers <- getModifiers (toTarget attrs)
   pure $ not (any match modifiers)
  where
   match CannotSpendClues{} = True
@@ -142,11 +152,12 @@ fitsAvailableSlots slotTypes cardDef a = null
     (nub slotTypes)
   )
 
-availableSlotTypesFor :: IsCard a => SlotType -> a -> InvestigatorAttrs -> [SlotType]
-availableSlotTypesFor slotType a attrs = case lookup slotType (attrs ^. slotsL) of
-  Nothing -> []
-  Just slots ->
-    replicate (length (filter (canPutIntoSlot a) slots)) slotType
+availableSlotTypesFor
+  :: IsCard a => SlotType -> a -> InvestigatorAttrs -> [SlotType]
+availableSlotTypesFor slotType a attrs =
+  case lookup slotType (attrs ^. slotsL) of
+    Nothing -> []
+    Just slots -> replicate (length (filter (canPutIntoSlot a) slots)) slotType
 
 placeInAvailableSlot :: IsCard a => AssetId -> a -> [Slot] -> [Slot]
 placeInAvailableSlot _ _ [] = []
@@ -189,8 +200,11 @@ investigator f cardDef Stats {..} =
         { investigatorId = iid
         , investigatorName = cdName cardDef
         , investigatorCardCode = cdCardCode cardDef
-        , investigatorClass = fromJustNote "missing class symbol"
-          . headMay . setToList $ cdClassSymbols cardDef
+        , investigatorClass =
+          fromJustNote "missing class symbol"
+          . headMay
+          . setToList
+          $ cdClassSymbols cardDef
         , investigatorHealth = health
         , investigatorSanity = sanity
         , investigatorWillpower = willpower
@@ -240,7 +254,7 @@ investigator f cardDef Stats {..} =
         , investigatorUsedAbilities = mempty
         , investigatorAdditionalActions = []
         , investigatorHorrorHealed = 0
-        , investigatorSupplies = []
+        -- , investigatorSupplies = []
         }
       }
 
@@ -252,7 +266,7 @@ matchTarget _ (EnemyAction a _) action = action == a
 
 getActionCost :: (Monad m, HasGame m) => InvestigatorAttrs -> [Action] -> m Int
 getActionCost attrs as = do
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
+  modifiers <- getModifiers (toTarget attrs)
   pure $ foldr applyModifier 1 modifiers
  where
   applyModifier (ActionCostOf match m) n =
@@ -280,14 +294,15 @@ drawOpeningHand a n = go n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
     then go m (c : d, h, cs)
     else go (m - 1) (d, PlayerCard c : h, cs)
 
-canCommitToAnotherLocation :: (Monad m, HasGame m) => InvestigatorAttrs -> m Bool
+canCommitToAnotherLocation
+  :: (Monad m, HasGame m) => InvestigatorAttrs -> m Bool
 canCommitToAnotherLocation attrs = do
   commitedCards <-
     skillTestCommittedCards . fromJustNote "no skill test" <$> getSkillTest
   let
     committedCardIds =
       map snd . filter ((== toId attrs) . fst) $ toList commitedCards
-  modifiers <- getModifiers (toSource attrs) (toTarget attrs)
+  modifiers <- getModifiers (toTarget attrs)
   pure $ any (permit committedCardIds) modifiers
  where
   permit n (CanCommitToSkillTestPerformedByAnInvestigatorAtAnotherLocation m) =
@@ -303,7 +318,8 @@ findCard cardId a =
     <> map PlayerCard (unDeck $ a ^. deckL)
   where findMatch = find ((== cardId) . toCardId)
 
-getJustLocation :: (HasCallStack, Monad m, HasGame m) => InvestigatorId -> m LocationId
+getJustLocation
+  :: (HasCallStack, Monad m, HasGame m) => InvestigatorId -> m LocationId
 getJustLocation =
   fieldMap InvestigatorLocation (fromJustNote "must be at a location")
 
@@ -311,12 +327,9 @@ enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
 enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId
 
 modifiedStatsOf
-  :: (Monad m, HasGame m) => Source
-  -> Maybe Action
-  -> InvestigatorId
-  -> m Stats
-modifiedStatsOf source maction i = do
-  modifiers' <- getModifiers source (InvestigatorTarget i)
+  :: (Monad m, HasGame m) => Maybe Action -> InvestigatorId -> m Stats
+modifiedStatsOf maction i = do
+  modifiers' <- getModifiers (InvestigatorTarget i)
   remainingHealth <- field InvestigatorRemainingHealth i
   remainingSanity <- field InvestigatorRemainingSanity i
   willpower' <- skillValueFor SkillWillpower maction modifiers' i
@@ -332,9 +345,10 @@ modifiedStatsOf source maction i = do
     , sanity = remainingSanity
     }
 
-getAvailableSkillsFor :: (Monad m, HasGame m) => SkillType -> InvestigatorId -> m [SkillType]
+getAvailableSkillsFor
+  :: (Monad m, HasGame m) => SkillType -> InvestigatorId -> m [SkillType]
 getAvailableSkillsFor skillType iid = do
-  modifiers <- getModifiers (InvestigatorSource iid) (InvestigatorTarget iid)
+  modifiers <- getModifiers (InvestigatorTarget iid)
   pure $ foldr applyModifier [skillType] modifiers
  where
   applyModifier (UseSkillInPlaceOf toReplace toUse) skills
@@ -342,4 +356,5 @@ getAvailableSkillsFor skillType iid = do
   applyModifier _ skills = skills
 
 isEliminated :: (Monad m, HasGame m) => InvestigatorId -> m Bool
-isEliminated iid = orM $ sequence [field InvestigatorResigned, field InvestigatorDefeated] iid
+isEliminated iid =
+  orM $ sequence [field InvestigatorResigned, field InvestigatorDefeated] iid

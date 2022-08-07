@@ -26,9 +26,9 @@ parlor :: LocationCard Parlor
 parlor = location Parlor Cards.parlor 2 (Static 0)
 
 instance HasModifiersFor Parlor where
-  getModifiersFor _ target (Parlor attrs) | isTarget attrs target =
+  getModifiersFor target (Parlor attrs) | isTarget attrs target =
     pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities Parlor where
   getAbilities (Parlor attrs) = withResignAction

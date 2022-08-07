@@ -4,8 +4,8 @@ import Arkham.Prelude
 
 import Arkham.Campaign.Types
 import Arkham.Classes.Query
-import {-# SOURCE #-} Arkham.GameEnv
-import {-# SOURCE #-} Arkham.Game ()
+import Arkham.GameEnv
+import Arkham.Game ()
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Id

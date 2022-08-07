@@ -26,7 +26,7 @@ machete :: AssetCard Machete
 machete = asset Machete Cards.machete
 
 instance HasModifiersFor Machete where
-  getModifiersFor _ (InvestigatorTarget iid) (Machete attrs) = do
+  getModifiersFor (InvestigatorTarget iid) (Machete attrs) = do
     mSkillTestSource <- getSkillTestSource
     mSkillTestTarget <- getSkillTestTarget
     case (mSkillTestTarget, mSkillTestSource) of
@@ -36,7 +36,7 @@ instance HasModifiersFor Machete where
             iid
           pure $ toModifiers attrs [ DamageDealt 1 | engagedEnemies == [eid] ]
       _ -> pure []
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities Machete where
   getAbilities (Machete a) =

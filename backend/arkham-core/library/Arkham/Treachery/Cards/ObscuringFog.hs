@@ -22,10 +22,10 @@ obscuringFog :: TreacheryCard ObscuringFog
 obscuringFog = treachery ObscuringFog Cards.obscuringFog
 
 instance HasModifiersFor ObscuringFog where
-  getModifiersFor _ (LocationTarget lid) (ObscuringFog attrs) =
+  getModifiersFor (LocationTarget lid) (ObscuringFog attrs) =
     pure
       $ toModifiers attrs [ ShroudModifier 2 | treacheryOnLocation lid attrs ]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities ObscuringFog where
   getAbilities (ObscuringFog a) = case treacheryAttachedTarget a of

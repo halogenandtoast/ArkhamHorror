@@ -23,13 +23,13 @@ dissonantVoices :: TreacheryCard DissonantVoices
 dissonantVoices = treachery DissonantVoices Cards.dissonantVoices
 
 instance HasModifiersFor DissonantVoices where
-  getModifiersFor _ (InvestigatorTarget iid) (DissonantVoices attrs) =
+  getModifiersFor (InvestigatorTarget iid) (DissonantVoices attrs) =
     pure $ toModifiers
       attrs
       [ CannotPlay (CardWithOneOf $ map CardWithType [AssetType, EventType])
       | treacheryOnInvestigator iid attrs
       ]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities DissonantVoices where
   getAbilities (DissonantVoices a) =

@@ -288,7 +288,7 @@ instance HasAbilities Location where
   getAbilities (Location a) = getAbilities a
 
 instance HasModifiersFor Location where
-  getModifiersFor source target (Location a) = getModifiersFor source target a
+  getModifiersFor target (Location a) = getModifiersFor target a
 
 instance Entity Location where
   type EntityId Location = LocationId

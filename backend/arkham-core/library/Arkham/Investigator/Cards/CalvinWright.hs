@@ -30,7 +30,7 @@ calvinWright = investigator
     }
 
 instance HasModifiersFor CalvinWright where
-  getModifiersFor _ (InvestigatorTarget iid) (CalvinWright a) | iid == toId a =
+  getModifiersFor (InvestigatorTarget iid) (CalvinWright a) | iid == toId a =
     do
       let
         horror = investigatorSanityDamage a
@@ -41,7 +41,7 @@ instance HasModifiersFor CalvinWright where
         <> [ SkillModifier SkillIntellect horror | horror > 0 ]
         <> [ SkillModifier SkillCombat damage | damage > 0 ]
         <> [ SkillModifier SkillAgility damage | damage > 0 ]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities CalvinWright where
   getAbilities (CalvinWright _) = []

@@ -237,7 +237,7 @@ instance HasAbilities Enemy where
   getAbilities (Enemy a) = getAbilities a
 
 instance HasModifiersFor Enemy where
-  getModifiersFor source target (Enemy a) = getModifiersFor source target a
+  getModifiersFor target (Enemy a) = getModifiersFor target a
 
 instance Entity Enemy where
   type EntityId Enemy = EnemyId

@@ -24,11 +24,11 @@ stubbornDetective = enemyWith
   (\a -> a & preyL .~ BearerOf (toId a))
 
 instance HasModifiersFor StubbornDetective where
-  getModifiersFor _ (InvestigatorTarget iid) (StubbornDetective a@EnemyAttrs {..})
+  getModifiersFor (InvestigatorTarget iid) (StubbornDetective a@EnemyAttrs {..})
     = do
       sameLocation <- iid <=~> InvestigatorAt (locationWithEnemy enemyId)
       pure $ toModifiers a [ Blank | sameLocation ]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance RunMessage StubbornDetective where
   runMessage msg (StubbornDetective attrs) =

@@ -3,7 +3,7 @@ module Arkham.Helpers.ChaosBag where
 import Arkham.Prelude
 
 import Arkham.ChaosBag.Base
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Scenario
 import Arkham.Scenario.Types ( Field (..) )
 import Arkham.Token

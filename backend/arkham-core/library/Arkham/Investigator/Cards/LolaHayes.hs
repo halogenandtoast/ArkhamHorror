@@ -17,9 +17,9 @@ newtype LolaHayes = LolaHayes InvestigatorAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor LolaHayes where
-  getModifiersFor _ target (LolaHayes attrs) | isTarget attrs target =
+  getModifiersFor target (LolaHayes attrs) | isTarget attrs target =
     pure $ toModifiers attrs [CanOnlyUseCardsInRole $ investigatorClass attrs]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 lolaHayes :: InvestigatorCard LolaHayes
 lolaHayes = investigator

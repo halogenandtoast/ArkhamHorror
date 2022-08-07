@@ -6,7 +6,7 @@ import Arkham.Card.CardDef
 import Arkham.Classes.Entity
 import Arkham.Classes.HasQueue
 import Arkham.Event.Types
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Message
 import Arkham.Target
 

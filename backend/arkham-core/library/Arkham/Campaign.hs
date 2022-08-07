@@ -29,8 +29,8 @@ data SomeCampaign = forall a. IsCampaign a => SomeCampaign (Difficulty -> a)
 allCampaigns :: HashMap CampaignId SomeCampaign
 allCampaigns = mapFromList
   [ ("01", SomeCampaign nightOfTheZealot)
-  , ("02", SomeCampaign theDunwichLegacy)
-  , ("03", SomeCampaign thePathToCarcosa)
-  , ("04", SomeCampaign theForgottenAge)
-  , ("50", SomeCampaign returnToNightOfTheZealot)
+  -- , ("02", SomeCampaign theDunwichLegacy)
+  -- , ("03", SomeCampaign thePathToCarcosa)
+  -- , ("04", SomeCampaign theForgottenAge)
+  -- , ("50", SomeCampaign returnToNightOfTheZealot)
   ]

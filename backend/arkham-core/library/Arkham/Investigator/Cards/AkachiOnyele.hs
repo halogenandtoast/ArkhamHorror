@@ -9,7 +9,6 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Message
 import Arkham.Projection
-import Arkham.Source
 import Arkham.Target
 
 newtype AkachiOnyele = AkachiOnyele InvestigatorAttrs
@@ -17,17 +16,19 @@ newtype AkachiOnyele = AkachiOnyele InvestigatorAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor AkachiOnyele where
-  getModifiersFor (InvestigatorSource iid) (AssetTarget aid) (AkachiOnyele attrs)
-    | toId attrs == iid
-    = do
-      startingChargesCount <- fieldMap
-        AssetStartingUses
-        (\u -> if useType u == Just Charge then useCount u else 0)
-        aid
-      pure $ toModifiers
-        attrs
-        [ AdditionalStartingUses 1 | startingChargesCount > 0 ]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor (AssetTarget aid) (AkachiOnyele attrs) = do
+    akachiAsset <- fieldP AssetController (== Just (toId attrs)) aid
+    if akachiAsset
+      then do
+        startingChargesCount <- fieldMap
+          AssetStartingUses
+          (\u -> if useType u == Just Charge then useCount u else 0)
+          aid
+        pure $ toModifiers
+          attrs
+          [ AdditionalStartingUses 1 | startingChargesCount > 0 ]
+      else pure []
+  getModifiersFor _ _ = pure []
 
 akachiOnyele :: InvestigatorCard AkachiOnyele
 akachiOnyele = investigator

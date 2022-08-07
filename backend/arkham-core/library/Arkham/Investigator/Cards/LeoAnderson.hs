@@ -42,10 +42,10 @@ leoAnderson = investigator
     }
 
 instance HasModifiersFor LeoAnderson where
-  getModifiersFor _ (CardIdTarget cid) (LeoAnderson (attrs `With` metadata))
+  getModifiersFor (CardIdTarget cid) (LeoAnderson (attrs `With` metadata))
     | Just cid == fmap toCardId (responseCard metadata)
     = pure $ toModifiers attrs [ReduceCostOf (CardWithId cid) 1]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities LeoAnderson where
   getAbilities (LeoAnderson a) =

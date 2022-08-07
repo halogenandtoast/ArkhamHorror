@@ -11,7 +11,6 @@ import Arkham.Location.Types ( Field (..) )
 import Arkham.LocationSymbol
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Source
 import Arkham.Target
 
 toConnections :: (HasGame m, Monad m) => LocationId -> m [LocationSymbol]
@@ -29,7 +28,7 @@ getConnectedMatcher l = do
     then field LocationRevealedConnectedMatchers l
     else field LocationConnectedMatchers l
 
-  modifiers <- getModifiers (LocationSource l) (LocationTarget l)
+  modifiers <- getModifiers (LocationTarget l)
   LocationMatchAny
     <$> foldM applyModifier (base <> directionalMatchers) modifiers
  where

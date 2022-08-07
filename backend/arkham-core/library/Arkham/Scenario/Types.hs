@@ -244,7 +244,7 @@ instance ToJSON Scenario where
   toJSON (Scenario a) = toJSON a
 
 instance HasModifiersFor Scenario where
-  getModifiersFor source target (Scenario a) = getModifiersFor source target a
+  getModifiersFor target (Scenario a) = getModifiersFor target a
 
 instance Entity Scenario where
   type EntityId Scenario = ScenarioId

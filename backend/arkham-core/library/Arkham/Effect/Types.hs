@@ -111,7 +111,7 @@ instance ToJSON Effect where
   toJSON (Effect a) = toJSON a
 
 instance HasModifiersFor Effect where
-  getModifiersFor source target (Effect a) = getModifiersFor source target a
+  getModifiersFor target (Effect a) = getModifiersFor target a
 
 instance HasAbilities Effect where
   getAbilities (Effect a) = getAbilities a

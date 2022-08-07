@@ -41,12 +41,12 @@ windowModifierEffect' eid metadata effectWindow source target =
     }
 
 instance HasModifiersFor WindowModifierEffect where
-  getModifiersFor _ target (WindowModifierEffect EffectAttrs {..})
+  getModifiersFor target (WindowModifierEffect EffectAttrs {..})
     | target == effectTarget = case effectMetadata of
       Just (EffectModifiers modifiers) -> pure modifiers
       Just (FailedByEffectModifiers modifiers) -> pure modifiers
       _ -> pure []
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance RunMessage WindowModifierEffect where
   runMessage msg e@(WindowModifierEffect attrs) = case msg of

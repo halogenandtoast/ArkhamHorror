@@ -24,13 +24,13 @@ frozenInFear :: TreacheryCard FrozenInFear
 frozenInFear = treachery FrozenInFear Cards.frozenInFear
 
 instance HasModifiersFor FrozenInFear where
-  getModifiersFor _ (InvestigatorTarget iid) (FrozenInFear attrs) =
+  getModifiersFor (InvestigatorTarget iid) (FrozenInFear attrs) =
     pure $ toModifiers
       attrs
       [ ActionCostOf (FirstOneOf [Action.Move, Action.Fight, Action.Evade]) 1
       | treacheryOnInvestigator iid attrs
       ]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities FrozenInFear where
   getAbilities (FrozenInFear a) =

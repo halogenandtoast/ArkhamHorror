@@ -426,27 +426,13 @@ getCampaign = modeCampaign . view modeL <$> getGame
 withModifiers
   :: (Monad m, HasGame m, TargetEntity a) => a -> m (With a ModifierData)
 withModifiers a = do
-  mTurnInvestigator <- selectOne TurnInvestigator
-  mLeadInvestigator <- selectOne LeadInvestigator
-  someone <- selectJust Anyone
-
-  let
-    source = InvestigatorSource
-      $ fromMaybe someone (mTurnInvestigator <|> mLeadInvestigator)
-  modifiers' <- getModifiersFor source (toTarget a) ()
+  modifiers' <- getModifiersFor (toTarget a) ()
   pure $ a `with` ModifierData modifiers'
 
 withEnemyMetadata
   :: (Monad m, HasGame m) => Enemy -> m (With Enemy EnemyMetadata)
 withEnemyMetadata a = do
-  mTurnInvestigator <- selectOne TurnInvestigator
-  mLeadInvestigator <- selectOne LeadInvestigator
-  someone <- selectJust Anyone
-
-  let
-    source = InvestigatorSource
-      $ fromMaybe someone (mTurnInvestigator <|> mLeadInvestigator)
-  emModifiers <- getModifiersFor source (toTarget a) ()
+  emModifiers <- getModifiersFor (toTarget a) ()
   emEngagedInvestigators <- select $ investigatorEngagedWith (toId a)
   emTreacheries <- select $ TreacheryOnEnemy $ EnemyWithId (toId a)
   emAssets <- select $ EnemyAsset (toId a)
@@ -469,14 +455,7 @@ withLocationConnectionData inner@(With target _) = do
 withAssetMetadata
   :: (Monad m, HasGame m) => Asset -> m (With Asset AssetMetadata)
 withAssetMetadata a = do
-  mTurnInvestigator <- selectOne TurnInvestigator
-  mLeadInvestigator <- selectOne LeadInvestigator
-  someone <- selectJust Anyone
-
-  let
-    source = InvestigatorSource
-      $ fromMaybe someone (mTurnInvestigator <|> mLeadInvestigator)
-  amModifiers <- getModifiersFor source (toTarget a) ()
+  amModifiers <- getModifiersFor (toTarget a) ()
   amEvents <- select (EventAttachedToAsset $ AssetWithId $ toId a)
   amAssets <- select (AssetAttachedToAsset $ AssetWithId $ toId a)
   pure $ a `with` AssetMetadata { .. }
@@ -507,12 +486,9 @@ instance ToJSON WithDeckSize where
     _ -> error "failed to serialize investigator"
 
 withSkillTestModifiers
-  :: (Monad m, HasGame m, TargetEntity a)
-  => SkillTest
-  -> a
-  -> m (With a ModifierData)
-withSkillTestModifiers st a = do
-  modifiers' <- getModifiersFor (toSource st) (toTarget a) ()
+  :: (Monad m, HasGame m, TargetEntity a) => a -> m (With a ModifierData)
+withSkillTestModifiers a = do
+  modifiers' <- getModifiersFor (toTarget a) ()
   pure $ a `with` ModifierData modifiers'
 
 gameSkills :: Game -> EntityMap Skill
@@ -598,9 +574,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       (runReader
         (maybe
           (pure [])
-          (\st ->
-            traverse (withSkillTestModifiers st) (skillTestSetAsideTokens st)
-          )
+          (\st -> traverse withSkillTestModifiers (skillTestSetAsideTokens st))
           gameSkillTest
         )
         g
@@ -793,7 +767,7 @@ getInvestigatorsMatching matcher = do
         . investigatorDiscard
         . toAttrs
     InvestigatorWithoutModifier modifierType -> \i -> do
-      modifiers' <- getModifiers (toSource i) (toTarget i)
+      modifiers' <- getModifiers (toTarget i)
       pure $ modifierType `notElem` modifiers'
     UneliminatedInvestigator ->
       pure
@@ -826,7 +800,7 @@ getInvestigatorsMatching matcher = do
               toList . filterMap ((== toId i) . fst) $ skillTestCommittedCards
                 st
             iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
-              modifiers' <- getModifiers (toSource st) (CardIdTarget pcId)
+              modifiers' <- getModifiers (CardIdTarget pcId)
               pure $ foldr
                 applyAfterSkillModifiers
                 (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')
@@ -982,10 +956,10 @@ getGameAbilities = do
   g <- getGame
   let
     blanked a = do
-      modifiers <- getModifiers (toSource a) (toTarget a)
+      modifiers <- getModifiers (toTarget a)
       pure $ Blank `elem` modifiers
     unblanked a = do
-      modifiers <- getModifiers (toSource a) (toTarget a)
+      modifiers <- getModifiers (toTarget a)
       pure $ Blank `notElem` modifiers
   enemyAbilities <- concatMap getAbilities
     <$> filterM unblanked (toList $ g ^. entitiesL . enemiesL)
@@ -1067,9 +1041,8 @@ getLocationsMatching lmatcher = do
     EmptyLocation -> pure $ filter isEmptyLocation ls
     LocationWithoutInvestigators -> pure $ filter noInvestigatorsAtLocation ls
     LocationWithoutEnemies -> pure $ filter noEnemiesAtLocation ls
-    LocationWithoutModifier modifier' -> filterM
-      (\l -> notElem modifier' <$> getModifiers (toSource l) (toTarget l))
-      ls
+    LocationWithoutModifier modifier' ->
+      filterM (\l -> notElem modifier' <$> getModifiers (toTarget l)) ls
     LocationWithEnemy enemyMatcher -> do
       enemies <- select enemyMatcher
       pure $ filter
@@ -1195,9 +1168,7 @@ getLocationsMatching lmatcher = do
         <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
       pure $ filter ((`member` matches') . toId) ls
     InvestigatableLocation -> flip filterM ls
-      $ \l -> notElem CannotInvestigate <$> getModifiers
-          (toSource l)
-          (toTarget l)
+      $ \l -> notElem CannotInvestigate <$> getModifiers (toTarget l)
     ConnectedTo matcher -> do
       -- locations with connections to locations that match
       -- so we filter each location by generating it's connections
@@ -1268,8 +1239,8 @@ getLocationsMatching lmatcher = do
               . groupOn snd
               $ sortOn snd candidates
       pure $ filter ((`member` matches') . toId) ls
-    BlockedLocation -> flip filterM ls
-      $ \l -> notElem Blocked <$> getModifiers (toSource l) (toTarget l)
+    BlockedLocation ->
+      flip filterM ls $ \l -> notElem Blocked <$> getModifiers (toTarget l)
     -- these can not be queried
     LocationLeavingPlay -> pure []
     SameLocation -> pure []
@@ -1339,10 +1310,10 @@ getAssetsMatching matcher = do
     AssetReady -> pure $ filter (not . assetExhausted . toAttrs) as
     M.AssetExhausted -> pure $ filter (assetExhausted . toAttrs) as
     AssetWithoutModifier modifierType -> flip filterM as $ \a -> do
-      modifiers' <- getModifiers (toSource a) (toTarget a)
+      modifiers' <- getModifiers (toTarget a)
       pure $ modifierType `notElem` modifiers'
     AssetWithModifier modifierType -> flip filterM as $ \a -> do
-      modifiers' <- getModifiers (toSource a) (toTarget a)
+      modifiers' <- getModifiers (toTarget a)
       pure $ modifierType `elem` modifiers'
     AssetMatches ms -> foldM filterMatcher as ms
     AssetWithUseType uType -> filterM
@@ -1368,9 +1339,7 @@ getAssetsMatching matcher = do
       otherDamageableAssets <-
         map fst
         . filter (elem CanBeAssignedDamage . snd)
-        <$> traverse
-              (traverseToSnd $ getModifiers (InvestigatorSource iid) . toTarget)
-              otherAssets
+        <$> traverse (traverseToSnd $ getModifiers . toTarget) otherAssets
       filterM isHealthDamageable (investigatorAssets <> otherDamageableAssets)
     AssetCanBeAssignedHorrorBy iid -> do
       investigatorAssets <- filterMatcher
@@ -1383,9 +1352,7 @@ getAssetsMatching matcher = do
       otherDamageableAssets <-
         map fst
         . filter (elem CanBeAssignedDamage . snd)
-        <$> traverse
-              (traverseToSnd $ getModifiers (InvestigatorSource iid) . toTarget)
-              otherAssets
+        <$> traverse (traverseToSnd $ getModifiers . toTarget) otherAssets
       filterM isSanityDamageable (investigatorAssets <> otherDamageableAssets)
     ClosestAsset start assetMatcher -> flip filterM as $ \asset -> do
       aids <- selectList assetMatcher
@@ -1566,10 +1533,10 @@ enemyMatcherFilter = \case
     elem enemy
       . maxes
       <$> traverse (traverseToSnd (field EnemyRemainingHealth . toId)) matches'
-  EnemyWithoutModifier modifier -> \enemy ->
-    notElem modifier <$> getModifiers (toSource enemy) (toTarget enemy)
+  EnemyWithoutModifier modifier ->
+    \enemy -> notElem modifier <$> getModifiers (toTarget enemy)
   EnemyWithModifier modifier ->
-    \enemy -> elem modifier <$> getModifiers (toSource enemy) (toTarget enemy)
+    \enemy -> elem modifier <$> getModifiers (toTarget enemy)
   UnengagedEnemy ->
     \enemy -> selectNone $ InvestigatorEngagedWith $ EnemyWithId $ toId enemy
   UniqueEnemy -> pure . cdUnique . toCardDef . toAttrs
@@ -1582,7 +1549,7 @@ enemyMatcherFilter = \case
       Just loc -> member loc <$> select locationMatcher
   CanFightEnemy -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
-    modifiers' <- getModifiers (toSource enemy) (InvestigatorTarget iid)
+    modifiers' <- getModifiers (InvestigatorTarget iid)
     let
       enemyFilters = mapMaybe
         (\case
@@ -1607,7 +1574,7 @@ enemyMatcherFilter = \case
         (getAbilities enemy)
   CanEvadeEnemy -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
-    modifiers' <- getModifiers (toSource enemy) (InvestigatorTarget iid)
+    modifiers' <- getModifiers (InvestigatorTarget iid)
     let
       enemyFilters = mapMaybe
         (\case
@@ -1717,8 +1684,7 @@ instance Projection Location where
       LocationDoom -> pure locationDoom
       LocationShroud -> pure locationShroud
       LocationTraits -> do
-        modifiers <- withDepthGuard 3 []
-          $ getModifiers (toSource attrs) (toTarget attrs)
+        modifiers <- withDepthGuard 3 [] $ getModifiers (toTarget attrs)
         let
           addedTraits = flip mapMaybe modifiers $ \case
             AddTrait t -> Just t
@@ -1769,7 +1735,7 @@ instance Projection Asset where
       AssetRemainingHealth -> case assetHealth of
         Nothing -> pure Nothing
         Just n -> do
-          modifiers' <- getModifiers (AssetSource aid) (AssetTarget aid)
+          modifiers' <- getModifiers (AssetTarget aid)
           let
             modifiedHealth = foldl' applyHealthModifiers n modifiers'
             applyHealthModifiers h (HealthModifier m) = max 0 (h + m)
@@ -1778,7 +1744,7 @@ instance Projection Asset where
       AssetRemainingSanity -> case assetSanity of
         Nothing -> pure Nothing
         Just n -> do
-          modifiers' <- getModifiers (AssetSource aid) (AssetTarget aid)
+          modifiers' <- getModifiers (AssetTarget aid)
           let
             modifiedSanity = foldl' applySanityModifiers n modifiers'
             applySanityModifiers s (SanityModifier m) = max 0 (s + m)
@@ -1793,7 +1759,7 @@ instance Projection Asset where
         InPlayArea iid -> pure $ Just iid
         InThreatArea iid -> pure $ Just iid
         _ -> do
-          modifiers' <- getModifiers (AssetSource aid) (AssetTarget aid)
+          modifiers' <- getModifiers (AssetTarget aid)
           pure $ asum $ flip map modifiers' $ \case
             AsIfUnderControlOf iid -> Just iid
             _ -> Nothing
@@ -1926,7 +1892,7 @@ instance Projection Investigator where
               $ skillTestCommittedCards skillTest
       InvestigatorDefeated -> pure investigatorDefeated
       InvestigatorResigned -> pure investigatorResigned
-      InvestigatorSupplies -> pure investigatorSupplies
+      -- InvestigatorSupplies -> pure investigatorSupplies
 
 instance Query AssetMatcher where
   select = fmap (setFromList . map toId) . getAssetsMatching
@@ -2044,30 +2010,24 @@ instance HasTokenValue InvestigatorId where
     getTokenValue iid token investigator'
 
 instance HasModifiersFor () where
-  getModifiersFor source target _ = do
+  getModifiersFor target _ = do
     g <- getGame
     allModifiers' <- concat <$> sequence
-      [ getModifiersFor source target (g ^. entitiesL)
+      [ getModifiersFor target (g ^. entitiesL)
       , case target of
         InvestigatorTarget i -> maybe
           (pure [])
-          (getModifiersFor source (InvestigatorHandTarget i))
+          (getModifiersFor (InvestigatorHandTarget i))
           (g ^. inHandEntitiesL . at i)
         _ -> pure []
       , case target of
         InvestigatorTarget i -> maybe
           (pure [])
-          (getModifiersFor source (InvestigatorDiscardTarget i))
+          (getModifiersFor (InvestigatorDiscardTarget i))
           (g ^. inDiscardEntitiesL . at i)
         _ -> pure []
-      , maybe
-        (pure [])
-        (getModifiersFor source target)
-        (modeScenario $ g ^. modeL)
-      , maybe
-        (pure [])
-        (getModifiersFor source target)
-        (modeCampaign $ g ^. modeL)
+      , maybe (pure []) (getModifiersFor target) (modeScenario $ g ^. modeL)
+      , maybe (pure []) (getModifiersFor target) (modeCampaign $ g ^. modeL)
       ]
     traits <- targetTraits target
     let
@@ -2081,29 +2041,19 @@ instance HasModifiersFor () where
       else allModifiers
 
 instance HasModifiersFor Entities where
-  getModifiersFor source target e = concat <$> sequence
-    [ concat
-      <$> traverse (getModifiersFor source target) (e ^. enemiesL . to toList)
+  getModifiersFor target e = concat <$> sequence
+    [ concat <$> traverse (getModifiersFor target) (e ^. enemiesL . to toList)
+    , concat <$> traverse (getModifiersFor target) (e ^. assetsL . to toList)
+    , concat <$> traverse (getModifiersFor target) (e ^. agendasL . to toList)
+    , concat <$> traverse (getModifiersFor target) (e ^. actsL . to toList)
+    , concat <$> traverse (getModifiersFor target) (e ^. locationsL . to toList)
+    , concat <$> traverse (getModifiersFor target) (e ^. effectsL . to toList)
+    , concat <$> traverse (getModifiersFor target) (e ^. eventsL . to toList)
+    , concat <$> traverse (getModifiersFor target) (e ^. skillsL . to toList)
     , concat
-      <$> traverse (getModifiersFor source target) (e ^. assetsL . to toList)
+      <$> traverse (getModifiersFor target) (e ^. treacheriesL . to toList)
     , concat
-      <$> traverse (getModifiersFor source target) (e ^. agendasL . to toList)
-    , concat
-      <$> traverse (getModifiersFor source target) (e ^. actsL . to toList)
-    , concat
-      <$> traverse (getModifiersFor source target) (e ^. locationsL . to toList)
-    , concat
-      <$> traverse (getModifiersFor source target) (e ^. effectsL . to toList)
-    , concat
-      <$> traverse (getModifiersFor source target) (e ^. eventsL . to toList)
-    , concat
-      <$> traverse (getModifiersFor source target) (e ^. skillsL . to toList)
-    , concat <$> traverse
-      (getModifiersFor source target)
-      (e ^. treacheriesL . to toList)
-    , concat <$> traverse
-      (getModifiersFor source target)
-      (e ^. investigatorsL . to toList)
+      <$> traverse (getModifiersFor target) (e ^. investigatorsL . to toList)
     ]
 
 -- the results will have the initial location at 0, we need to drop
@@ -2326,7 +2276,7 @@ instance Projection Treachery where
       TreacheryTraits -> pure $ cdCardTraits cdef
       TreacheryKeywords -> do
         modifiers' <- foldMapM
-          (getModifiers (toSource t))
+          getModifiers
           [toTarget t, CardIdTarget $ toCardId t]
         let
           additionalKeywords = foldl' applyModifier [] modifiers'
@@ -2490,10 +2440,8 @@ createActiveCostForCard
   -> m ActiveCost
 createActiveCostForCard iid card windows' = do
   acId <- getRandom
-  modifiers' <- getModifiers
-    (InvestigatorSource iid)
-    (CardIdTarget $ toCardId card)
-  modifiers'' <- getModifiers (InvestigatorSource iid) (CardTarget card)
+  modifiers' <- getModifiers (CardIdTarget $ toCardId card)
+  modifiers'' <- getModifiers (CardTarget card)
   let allModifiers = modifiers' <> modifiers''
   resources <- getModifiedCardCost iid card
   investigator' <- getInvestigator iid
@@ -2531,10 +2479,8 @@ createActiveCostForAdditionalCardCosts
   -> m (Maybe ActiveCost)
 createActiveCostForAdditionalCardCosts iid card = do
   acId <- getRandom
-  modifiers' <- getModifiers
-    (InvestigatorSource iid)
-    (CardIdTarget $ toCardId card)
-  modifiers'' <- getModifiers (InvestigatorSource iid) (CardTarget card)
+  modifiers' <- getModifiers (CardIdTarget $ toCardId card)
+  modifiers'' <- getModifiers (CardTarget card)
   let allModifiers = modifiers' <> modifiers''
   let
     additionalCosts = flip mapMaybe allModifiers $ \case
@@ -2674,9 +2620,7 @@ runGameMessage msg g = case msg of
   PayForAbility ability windows' -> do
     acId <- getRandom
     iid <- toId <$> getActiveInvestigator
-    modifiers' <- getModifiers
-      (InvestigatorSource iid)
-      (AbilityTarget iid ability)
+    modifiers' <- getModifiers (AbilityTarget iid ability)
     let
       additionalCosts = flip mapMaybe modifiers' $ \case
         AdditionalCost c -> Just c
@@ -2922,7 +2866,7 @@ runGameMessage msg g = case msg of
   SkillTestEnds _ -> do
     skillPairs <-
       for (mapToList $ g ^. entitiesL . skillsL) $ \(skillId, skill) -> do
-        modifiers' <- getModifiers GameSource (SkillTarget skillId)
+        modifiers' <- getModifiers (SkillTarget skillId)
         pure $ if ReturnToHandAfterTest `elem` modifiers'
           then
             ( ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId)
@@ -3033,10 +2977,8 @@ runGameMessage msg g = case msg of
     push $ ShuffleCardsIntoDeck deck [card]
     pure $ g & entitiesL . enemiesL %~ deleteMap enemyId
   PlayCard iid card _mtarget windows' True -> do
-    modifiers' <- getModifiers
-      (InvestigatorSource iid)
-      (CardIdTarget $ toCardId card)
-    modifiers'' <- getModifiers (InvestigatorSource iid) (CardTarget card)
+    modifiers' <- getModifiers (CardIdTarget $ toCardId card)
+    modifiers'' <- getModifiers (CardTarget card)
     investigator' <- getInvestigator iid
     let allModifiers = modifiers' <> modifiers''
     activeCost <- createActiveCostForCard iid card windows'
@@ -3198,7 +3140,7 @@ runGameMessage msg g = case msg of
       _ -> push (AskMap askMap)
     pure g
   EnemyWillAttack iid eid damageStrategy attackType -> do
-    modifiers' <- getModifiers (EnemySource eid) (InvestigatorTarget iid)
+    modifiers' <- getModifiers (InvestigatorTarget iid)
     traits <- field EnemyTraits eid
     let
       cannotBeAttackedByNonElites = flip any modifiers' $ \case
@@ -3220,9 +3162,7 @@ runGameMessage msg g = case msg of
             push aoo
           Just (EnemyWillAttack iid2 eid2 damageStrategy2 attackType2) -> do
             _ <- popMessage
-            modifiers2' <- getModifiers
-              (EnemySource eid2)
-              (InvestigatorTarget iid2)
+            modifiers2' <- getModifiers (InvestigatorTarget iid2)
             traits2 <- field EnemyTraits eid2
             let
               cannotBeAttackedByNonElites2 = flip any modifiers2' $ \case
@@ -3500,7 +3440,7 @@ runGameMessage msg g = case msg of
     allDrawWindow <- checkWindows
       [Window Timing.When Window.AllDrawEncounterCard]
     fastWindow <- checkWindows [Window Timing.When Window.FastPlayerWindow]
-    modifiers <- getModifiers GameSource (PhaseTarget MythosPhase)
+    modifiers <- getModifiers (PhaseTarget MythosPhase)
     pushAllEnd
       $ phaseBeginsWindow
       : [ PlaceDoomOnAgenda
@@ -3863,7 +3803,7 @@ runGameMessage msg g = case msg of
     let
       treachery = createTreachery card iid
       treacheryId = toId treachery
-    modifiers' <- getModifiers (InvestigatorSource iid) (CardTarget c)
+    modifiers' <- getModifiers (CardTarget c)
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
     -- player treacheries will not trigger draw treachery windows
     pushAll
@@ -3942,7 +3882,7 @@ runGameMessage msg g = case msg of
   Exiled (AssetTarget aid) _ -> pure $ g & entitiesL . assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
     event' <- getEvent eid
-    modifiers' <- getModifiers GameSource (EventTarget eid)
+    modifiers' <- getModifiers (EventTarget eid)
     if RemoveFromGameInsteadOfDiscard `elem` modifiers'
       then g <$ push (RemoveFromGame (EventTarget eid))
       else do

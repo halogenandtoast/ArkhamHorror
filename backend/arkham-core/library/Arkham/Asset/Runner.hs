@@ -5,8 +5,8 @@ module Arkham.Asset.Runner
 
 import Arkham.Prelude
 
-import Arkham.Asset.Types as X
 import Arkham.Asset.Helpers as X
+import Arkham.Asset.Types as X
 import Arkham.Asset.Uses as X
 import Arkham.Classes as X
 import Arkham.Message as X hiding ( AssetDamage )
@@ -14,18 +14,17 @@ import Arkham.Message as X hiding ( AssetDamage )
 import Arkham.Card
 import Arkham.DefeatedBy
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Matcher (AssetMatcher(AnyAsset))
+import Arkham.Matcher ( AssetMatcher (AnyAsset) )
 import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 defeated :: (Monad m, HasGame m) => AssetAttrs -> m (Maybe DefeatedBy)
-defeated AssetAttrs {assetId} = do
+defeated AssetAttrs { assetId } = do
   remainingHealth <- field AssetRemainingHealth assetId
   remainingSanity <- field AssetRemainingSanity assetId
   pure $ case (remainingHealth, remainingSanity) of
@@ -37,9 +36,7 @@ defeated AssetAttrs {assetId} = do
 instance RunMessage Asset where
   runMessage msg x@(Asset a) = do
     inPlay <- member (toId x) <$> select AnyAsset
-    modifiers' <- if inPlay
-      then getModifiers (toSource x) (toTarget x)
-      else pure []
+    modifiers' <- if inPlay then getModifiers (toTarget x) else pure []
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     Asset <$> runMessage msg' a
 
@@ -51,7 +48,7 @@ instance RunMessage AssetAttrs where
     UnsealToken token -> pure $ a & sealedTokensL %~ filter (/= token)
     ReadyExhausted -> case assetPlacement of
       InPlayArea iid -> do
-        modifiers <- getModifiers (toSource a) (InvestigatorTarget iid)
+        modifiers <- getModifiers (InvestigatorTarget iid)
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else a <$ push (Ready $ toTarget a)
@@ -68,25 +65,23 @@ instance RunMessage AssetAttrs where
     CheckDefeated _ -> do
       mDefeated <- defeated a
       for_ mDefeated $ \defeatedBy -> do
-          whenWindow <- checkWindows
-            [Window Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
-          afterWindow <- checkWindows
-            [Window Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
-          pushAll
-            $ [whenWindow]
-            <> resolve (AssetDefeated assetId)
-            <> [afterWindow]
+        whenWindow <- checkWindows
+          [Window Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
+        afterWindow <- checkWindows
+          [Window Timing.When (Window.AssetDefeated (toId a) defeatedBy)]
+        pushAll
+          $ [whenWindow]
+          <> resolve (AssetDefeated assetId)
+          <> [afterWindow]
       pure a
     AssetDefeated aid | aid == assetId -> a <$ push (Discard $ toTarget a)
     Msg.AssetDamage aid _ damage horror | aid == assetId -> do
-      pushAll $
-        [PlaceDamage (toTarget a) damage | damage > 0]
-        <> [PlaceHorror (toTarget a) horror | horror > 0]
+      pushAll
+        $ [ PlaceDamage (toTarget a) damage | damage > 0 ]
+        <> [ PlaceHorror (toTarget a) horror | horror > 0 ]
       pure a
-    PlaceDamage target n | isTarget a target ->
-      pure $ a & damageL +~ n
-    PlaceHorror target n | isTarget a target ->
-      pure $ a & horrorL +~ n
+    PlaceDamage target n | isTarget a target -> pure $ a & damageL +~ n
+    PlaceHorror target n | isTarget a target -> pure $ a & horrorL +~ n
     HealDamage (isTarget a -> True) n ->
       pure $ a & damageL %~ max 0 . subtract n
     HealHorror (isTarget a -> True) n ->
@@ -98,8 +93,7 @@ instance RunMessage AssetAttrs where
           InThreatArea iid' -> iid == iid'
           AttachedToInvestigator iid' -> iid == iid'
           _ -> False
-      when shouldResignWith $
-        push $ ResignWith (AssetTarget assetId)
+      when shouldResignWith $ push $ ResignWith (AssetTarget assetId)
       pure a
     InvestigatorEliminated iid -> do
       let
@@ -108,8 +102,7 @@ instance RunMessage AssetAttrs where
           InThreatArea iid' -> iid == iid'
           AttachedToInvestigator iid' -> iid == iid'
           _ -> False
-      when shouldDiscard $
-        push $ Discard (AssetTarget assetId)
+      when shouldDiscard $ push $ Discard (AssetTarget assetId)
       pure a
     AddUses target useType' n | a `isTarget` target -> case assetUses of
       Uses useType'' m | useType' == useType'' ->
@@ -124,14 +117,8 @@ instance RunMessage AssetAttrs where
         pure $ a & usesL .~ Uses useType' remainingUses
       _ -> error "Trying to use the wrong use type"
     AttachAsset aid target | aid == assetId -> case target of
-      LocationTarget lid ->
-        pure
-          $ a
-          & (placementL .~ AttachedToLocation lid)
-      EnemyTarget eid ->
-        pure
-          $ a
-          & (placementL .~ AttachedToEnemy eid)
+      LocationTarget lid -> pure $ a & (placementL .~ AttachedToLocation lid)
+      EnemyTarget eid -> pure $ a & (placementL .~ AttachedToEnemy eid)
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | a `isTarget` target ->
       a <$ push (RemoveFromPlay $ toSource a)
@@ -157,7 +144,7 @@ instance RunMessage AssetAttrs where
       -- we specifically use the investigator source here because the
       -- asset has no knowledge of being owned yet, and this will allow
       -- us to bring the investigator's id into scope
-      modifiers <- getModifiers (InvestigatorSource iid) (toTarget a)
+      modifiers <- getModifiers (toTarget a)
       let
         startingUses = cdUses $ toCardDef a
         applyModifier (Uses uType m) (AdditionalStartingUses n) =
@@ -193,7 +180,7 @@ instance RunMessage AssetAttrs where
     Exhaust target | a `isTarget` target -> pure $ a & exhaustedL .~ True
     Ready target | a `isTarget` target -> case assetPlacement of
       InPlayArea iid -> do
-        modifiers <- getModifiers (toSource a) (InvestigatorTarget iid)
+        modifiers <- getModifiers (InvestigatorTarget iid)
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhaustedL .~ False

@@ -26,23 +26,17 @@ instance FromJSON Scenario where
 instance RunMessage Scenario where
   runMessage msg x@(Scenario s) = case msg of
     ResolveToken _ tokenFace _ -> do
-      modifiers' <- getModifiers
-        (toSource $ toAttrs s)
-        (TokenFaceTarget tokenFace)
+      modifiers' <- getModifiers (TokenFaceTarget tokenFace)
       if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
         then pure x
         else go
     FailedSkillTest _ _ _ (TokenTarget token) _ _ -> do
-      modifiers' <- getModifiers
-        (toSource $ toAttrs s)
-        (TokenFaceTarget $ tokenFace token)
+      modifiers' <- getModifiers (TokenFaceTarget $ tokenFace token)
       if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
         then pure x
         else go
     PassedSkillTest _ _ _ (TokenTarget token) _ _ -> do
-      modifiers' <- getModifiers
-        (toSource $ toAttrs s)
-        (TokenFaceTarget $ tokenFace token)
+      modifiers' <- getModifiers (TokenFaceTarget $ tokenFace token)
       if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
         then pure x
         else go
@@ -51,45 +45,44 @@ instance RunMessage Scenario where
 
 instance HasTokenValue Scenario where
   getTokenValue iid tokenFace (Scenario s) = do
-    modifiers' <- getModifiers
-      (toSource $ toAttrs s)
-      (TokenFaceTarget tokenFace)
+    modifiers' <- getModifiers (TokenFaceTarget tokenFace)
     if any (`elem` modifiers') [IgnoreTokenEffects, IgnoreToken]
       then pure $ TokenValue tokenFace NoModifier
       else getTokenValue iid tokenFace s
 
 lookupScenario :: ScenarioId -> Difficulty -> Scenario
-lookupScenario scenarioId = case lookup (unScenarioId scenarioId) allScenarios of
-  Nothing -> error $ "Unknown scenario: " <> show scenarioId
-  Just (SomeScenario f) -> Scenario . f
+lookupScenario scenarioId =
+  case lookup (unScenarioId scenarioId) allScenarios of
+    Nothing -> error $ "Unknown scenario: " <> show scenarioId
+    Just (SomeScenario f) -> Scenario . f
 
-data SomeScenario = forall a. IsScenario a => SomeScenario (Difficulty -> a)
+data SomeScenario = forall a . IsScenario a => SomeScenario (Difficulty -> a)
 
 allScenarios :: HashMap CardCode SomeScenario
-allScenarios = mapFromList
-  [ ("01104", SomeScenario theGathering)
-  , ("01120", SomeScenario theMidnightMasks)
-  , ("01142", SomeScenario theDevourerBelow)
-  , ("02041", SomeScenario extracurricularActivity)
-  , ("02062", SomeScenario theHouseAlwaysWins)
-  , ("02118", SomeScenario theMiskatonicMuseum)
-  , ("02159", SomeScenario theEssexCountyExpress)
-  , ("02195", SomeScenario bloodOnTheAltar)
-  , ("02236", SomeScenario undimensionedAndUnseen)
-  , ("02274", SomeScenario whereDoomAwaits)
-  , ("02311", SomeScenario lostInTimeAndSpace)
-  , ("03043", SomeScenario curtainCall)
-  , ("03061", SomeScenario theLastKing)
-  , ("03120", SomeScenario echoesOfThePast)
-  , ("03159", SomeScenario theUnspeakableOath)
-  , ("03200", SomeScenario aPhantomOfTruth)
-  , ("03240", SomeScenario thePallidMask)
-  , ("03274", SomeScenario blackStarsRise)
-  , ("03316", SomeScenario dimCarcosa)
-  , ("04043", SomeScenario theUntamedWilds)
-  , ("50011", SomeScenario returnToTheGathering)
-  , ("50025", SomeScenario returnToTheMidnightMasks)
-  , ("50032", SomeScenario returnToTheDevourerBelow)
-  , ("81001", SomeScenario curseOfTheRougarou)
-  , ("82001", SomeScenario carnevaleOfHorrors)
-  ]
+allScenarios =
+  mapFromList [("01104", SomeScenario theGathering)
+  -- , ("01120", SomeScenario theMidnightMasks)
+  -- , ("01142", SomeScenario theDevourerBelow)
+  -- , ("02041", SomeScenario extracurricularActivity)
+  -- , ("02062", SomeScenario theHouseAlwaysWins)
+  -- , ("02118", SomeScenario theMiskatonicMuseum)
+  -- , ("02159", SomeScenario theEssexCountyExpress)
+  -- , ("02195", SomeScenario bloodOnTheAltar)
+  -- , ("02236", SomeScenario undimensionedAndUnseen)
+  -- , ("02274", SomeScenario whereDoomAwaits)
+  -- , ("02311", SomeScenario lostInTimeAndSpace)
+  -- , ("03043", SomeScenario curtainCall)
+  -- , ("03061", SomeScenario theLastKing)
+  -- , ("03120", SomeScenario echoesOfThePast)
+  -- , ("03159", SomeScenario theUnspeakableOath)
+  -- , ("03200", SomeScenario aPhantomOfTruth)
+  -- , ("03240", SomeScenario thePallidMask)
+  -- , ("03274", SomeScenario blackStarsRise)
+  -- , ("03316", SomeScenario dimCarcosa)
+  -- , ("04043", SomeScenario theUntamedWilds)
+  -- , ("50011", SomeScenario returnToTheGathering)
+  -- , ("50025", SomeScenario returnToTheMidnightMasks)
+  -- , ("50032", SomeScenario returnToTheDevourerBelow)
+  -- , ("81001", SomeScenario curseOfTheRougarou)
+  -- , ("82001", SomeScenario carnevaleOfHorrors)
+                                                   ]

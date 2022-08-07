@@ -244,10 +244,45 @@ library
       Arkham.Skill
       Arkham.Skill.Cards
       Arkham.Skill.Cards.Deduction
+      Arkham.Skill.Cards.Deduction2
+      Arkham.Skill.Cards.Defiance
+      Arkham.Skill.Cards.DesperateSearch
+      Arkham.Skill.Cards.DoubleOrNothing
+      Arkham.Skill.Cards.Eureka
+      Arkham.Skill.Cards.Fearless
+      Arkham.Skill.Cards.Fearless2
       Arkham.Skill.Cards.Guts
+      Arkham.Skill.Cards.InquiringMind
+      Arkham.Skill.Cards.InspiringPresence
+      Arkham.Skill.Cards.LastChance
+      Arkham.Skill.Cards.Leadership
+      Arkham.Skill.Cards.ManualDexterity
+      Arkham.Skill.Cards.NeitherRainNorSnow
+      Arkham.Skill.Cards.NotWithoutAFight
+      Arkham.Skill.Cards.Opportunist
+      Arkham.Skill.Cards.Opportunist2
       Arkham.Skill.Cards.Overpower
+      Arkham.Skill.Cards.Overpower2
+      Arkham.Skill.Cards.Perception
+      Arkham.Skill.Cards.QuickThinking
+      Arkham.Skill.Cards.RecklessAssault
+      Arkham.Skill.Cards.Resourceful
+      Arkham.Skill.Cards.RiseToTheOccasion
+      Arkham.Skill.Cards.RunForYourLife
+      Arkham.Skill.Cards.SayYourPrayers
+      Arkham.Skill.Cards.SealOfTheElderSign5
+      Arkham.Skill.Cards.StrokeOfLuck2
+      Arkham.Skill.Cards.SurvivalInstinct
+      Arkham.Skill.Cards.SurvivalInstinct2
+      Arkham.Skill.Cards.TakeHeart
+      Arkham.Skill.Cards.TheHomeFront
+      Arkham.Skill.Cards.TorrentOfPower
+      Arkham.Skill.Cards.TrueUnderstanding
       Arkham.Skill.Cards.UnexpectedCourage
+      Arkham.Skill.Cards.UnexpectedCourage2
       Arkham.Skill.Cards.ViciousBlow
+      Arkham.Skill.Cards.ViciousBlow2
+      Arkham.Skill.Cards.WatchThis
       Arkham.Skill.Runner
       Arkham.Skill.Skills
       Arkham.Skill.Types

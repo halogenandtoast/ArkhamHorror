@@ -219,7 +219,7 @@ testLocationWithDef
 testLocationWithDef defF attrsF = do
   cbCardBuilder
       (Location
-      <$> locationWith Study (defF Cards.study) 0 (Static 0) Square [] attrsF
+      <$> locationWith Study (defF Cards.study) 0 (Static 0) attrsF
       )
     <$> getRandom
 

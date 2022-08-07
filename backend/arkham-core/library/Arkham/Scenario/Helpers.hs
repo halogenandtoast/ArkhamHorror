@@ -13,7 +13,6 @@ import Arkham.Matcher
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Game.Helpers as X
 import Arkham.Helpers
-import Arkham.Helpers.Scenario as X
 
 getHasRecordOrStandalone
   :: (Monad m, HasGame m) => CampaignLogKey

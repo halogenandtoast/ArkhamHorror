@@ -775,7 +775,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         then selectList (matcher <> AssetCanBeAssignedDamageBy iid)
         else pure mempty
       let
-        getDamageTargets xs = if length xs > length healthDamageableAssets + 1
+        getDamageTargets xs = if length xs >= length healthDamageableAssets + 1
           then getDamageTargets (drop (length healthDamageableAssets + 1) xs)
           else xs
         damageTargets' = getDamageTargets damageTargets
@@ -819,14 +819,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       --   <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
       --   )
       let
-        getDamageTargets xs = if length xs > length sanityDamageableAssets + 1
+        getDamageTargets xs = if length xs >= length sanityDamageableAssets + 1
           then getDamageTargets (drop (length sanityDamageableAssets + 1) xs)
           else xs
         horrorTargets' = getDamageTargets horrorTargets
         sanityDamageableAssets' = filter
           ((`notElem` horrorTargets') . AssetTarget)
           sanityDamageableAssets
-        assignRestOfHealthDamage = InvestigatorDoAssignDamage
+        assignRestOfSanityDamage = InvestigatorDoAssignDamage
           investigatorId
           source
           DamageEvenly
@@ -835,12 +835,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (sanity - 1)
         -- N.B. we have to add to the end of targets to handle the drop logic
         damageAsset aid = Run
-          [ Msg.AssetDamage aid source 1 0
-          , assignRestOfHealthDamage mempty (horrorTargets <> [AssetTarget aid])
+          [ Msg.AssetDamage aid source 0 1
+          , assignRestOfSanityDamage mempty (horrorTargets <> [AssetTarget aid])
           ]
         damageInvestigator = Run
-          [ Msg.InvestigatorDamage investigatorId source 1 0
-          , assignRestOfHealthDamage
+          [ Msg.InvestigatorDamage investigatorId source 0 1
+          , assignRestOfSanityDamage
             mempty
             (horrorTargets <> [InvestigatorTarget investigatorId])
           ]

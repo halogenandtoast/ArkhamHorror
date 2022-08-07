@@ -8,6 +8,16 @@ api.watch:
 		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec arkham-api &\"" \
 
+.PHONY: api.prof
+api.prof:
+	cd arkham-api && \
+	stack build --profile --test --no-run-tests --fast arkham-api \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+	  --file-watch \
+		$(EXTRA_STACK_FLAGS) \
+	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec --profile -- arkham-api +RTS -p &\"" \
+
 ## Generate a tags file for source-code navigation
 .PHONY: tags
 tags:

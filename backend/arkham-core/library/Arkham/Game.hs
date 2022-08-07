@@ -166,11 +166,13 @@ data Game = Game
   , gameInSearchEntities :: Entities
   , gameEnemiesInVoid :: EntityMap Enemy
   , -- Player Details
-    gamePlayerCount :: Int -- used for determining if game should start
+    -- used for determining if game should start
+    gamePlayerCount :: Int
   , gameActiveInvestigatorId :: InvestigatorId
   , gameTurnPlayerInvestigatorId :: Maybe InvestigatorId
   , gameLeadInvestigatorId :: InvestigatorId
-  , gamePlayerOrder :: [InvestigatorId] -- For "in player order"
+  , -- For "in player order"
+    gamePlayerOrder :: [InvestigatorId]
   , -- Game Details
     gamePhase :: Phase
   , gameSkillTest :: Maybe SkillTest
@@ -2415,14 +2417,12 @@ runMessages mLogger = do
                   pushEnd EndInvestigation
                   runMessages mLogger
                 [x] -> do
-                  push (ChoosePlayer x SetTurnPlayer)
+                  push $ ChoosePlayer x SetTurnPlayer
                   runMessages mLogger
                 xs -> do
-                  push
-                    (chooseOne
-                      (g ^. leadInvestigatorIdL)
-                      [ ChoosePlayer iid SetTurnPlayer | iid <- xs ]
-                    )
+                  push $ chooseOne
+                    (g ^. leadInvestigatorIdL)
+                    [ ChoosePlayer iid SetTurnPlayer | iid <- xs ]
                   runMessages mLogger
             else do
               let turnPlayer = fromJustNote "verified above" mTurnInvestigator

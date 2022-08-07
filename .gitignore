@@ -28,3 +28,4 @@ yarn-error.log*
 *.hie-boot
 .tmp
 logfile
+*.prof

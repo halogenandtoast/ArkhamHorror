@@ -706,11 +706,155 @@ library
       Arkham.Entities
       Arkham.Event
       Arkham.Event.Cards
+      Arkham.Event.Cards.AceInTheHole3
+      Arkham.Event.Cards.AChanceEncounter
+      Arkham.Event.Cards.AChanceEncounter2
+      Arkham.Event.Cards.Ambush1
+      Arkham.Event.Cards.AnatomicalDiagrams
+      Arkham.Event.Cards.AstoundingRevelation
+      Arkham.Event.Cards.AstralTravel
+      Arkham.Event.Cards.ATestOfWill
+      Arkham.Event.Cards.ATestOfWill1
+      Arkham.Event.Cards.ATestOfWill2
+      Arkham.Event.Cards.Backstab
+      Arkham.Event.Cards.BaitAndSwitch
+      Arkham.Event.Cards.Barricade
+      Arkham.Event.Cards.Barricade3
+      Arkham.Event.Cards.BindMonster2
+      Arkham.Event.Cards.BlindingLight
+      Arkham.Event.Cards.BlindingLight2
+      Arkham.Event.Cards.BloodRite
+      Arkham.Event.Cards.BuryThemDeep
+      Arkham.Event.Cards.CallingInFavors
+      Arkham.Event.Cards.CheapShot
+      Arkham.Event.Cards.CheatDeath5
+      Arkham.Event.Cards.CleanThemOut
+      Arkham.Event.Cards.CloseCall2
+      Arkham.Event.Cards.Contraband
+      Arkham.Event.Cards.Contraband2
+      Arkham.Event.Cards.Counterpunch
+      Arkham.Event.Cards.Counterpunch2
+      Arkham.Event.Cards.CrypticResearch4
+      Arkham.Event.Cards.CunningDistraction
+      Arkham.Event.Cards.DaringManeuver
+      Arkham.Event.Cards.DarkMemory
+      Arkham.Event.Cards.DarkPact
+      Arkham.Event.Cards.DarkProphecy
+      Arkham.Event.Cards.DecipheredReality5
+      Arkham.Event.Cards.DelveTooDeep
+      Arkham.Event.Cards.DevilsLuck
       Arkham.Event.Cards.Dodge
+      Arkham.Event.Cards.DrawnToTheFlame
+      Arkham.Event.Cards.DumbLuck
+      Arkham.Event.Cards.DumbLuck2
       Arkham.Event.Cards.DynamiteBlast
+      Arkham.Event.Cards.DynamiteBlast2
+      Arkham.Event.Cards.DynamiteBlast3
+      Arkham.Event.Cards.EatLead2
+      Arkham.Event.Cards.Eavesdrop
+      Arkham.Event.Cards.EideticMemory3
+      Arkham.Event.Cards.Elusive
+      Arkham.Event.Cards.EmergencyAid
       Arkham.Event.Cards.EmergencyCache
+      Arkham.Event.Cards.EmergencyCache2
+      Arkham.Event.Cards.EmergencyCache3
+      Arkham.Event.Cards.EverVigilant1
       Arkham.Event.Cards.Evidence
+      Arkham.Event.Cards.Evidence1
+      Arkham.Event.Cards.ExposeWeakness1
+      Arkham.Event.Cards.ExtraAmmunition1
+      Arkham.Event.Cards.FightOrFlight
+      Arkham.Event.Cards.FirstWatch
+      Arkham.Event.Cards.Flare1
+      Arkham.Event.Cards.Forewarned1
+      Arkham.Event.Cards.Galvanize1
+      Arkham.Event.Cards.GetOverHere
+      Arkham.Event.Cards.GetOverHere2
+      Arkham.Event.Cards.Glory
+      Arkham.Event.Cards.GritYourTeeth
+      Arkham.Event.Cards.Guidance
+      Arkham.Event.Cards.HeroicRescue
+      Arkham.Event.Cards.HidingSpot
+      Arkham.Event.Cards.HotStreak2
+      Arkham.Event.Cards.HotStreak4
+      Arkham.Event.Cards.HypnoticGaze
+      Arkham.Event.Cards.IfItBleeds
+      Arkham.Event.Cards.IllSeeYouInHell
+      Arkham.Event.Cards.ImOuttaHere
+      Arkham.Event.Cards.Improvisation
+      Arkham.Event.Cards.ImprovisedWeapon
+      Arkham.Event.Cards.Infighting3
+      Arkham.Event.Cards.IveGotAPlan
+      Arkham.Event.Cards.IveGotAPlan2
+      Arkham.Event.Cards.IveHadWorse4
+      Arkham.Event.Cards.LessonLearned2
+      Arkham.Event.Cards.LetMeHandleThis
+      Arkham.Event.Cards.LiveAndLearn
+      Arkham.Event.Cards.LogicalReasoning
+      Arkham.Event.Cards.LookWhatIFound
+      Arkham.Event.Cards.LookWhatIFound2
+      Arkham.Event.Cards.Lucky
+      Arkham.Event.Cards.Lucky2
+      Arkham.Event.Cards.Lucky3
+      Arkham.Event.Cards.Lure1
+      Arkham.Event.Cards.ManoAMano1
+      Arkham.Event.Cards.ManoAMano2
+      Arkham.Event.Cards.MindOverMatter
+      Arkham.Event.Cards.MindWipe1
+      Arkham.Event.Cards.MindWipe3
+      Arkham.Event.Cards.MomentOfRespite3
+      Arkham.Event.Cards.MonsterSlayer
+      Arkham.Event.Cards.MonsterSlayer5
+      Arkham.Event.Cards.MoonlightRitual
+      Arkham.Event.Cards.NarrowEscape
+      Arkham.Event.Cards.NoStoneUnturned
+      Arkham.Event.Cards.NoStoneUnturned5
+      Arkham.Event.Cards.OneTwoPunch
+      Arkham.Event.Cards.OneTwoPunch5
+      Arkham.Event.Cards.OnTheHunt
+      Arkham.Event.Cards.OnTheLam
+      Arkham.Event.Cards.Oops
+      Arkham.Event.Cards.PreparedForTheWorst
+      Arkham.Event.Cards.PreposterousSketches
+      Arkham.Event.Cards.PreposterousSketches2
+      Arkham.Event.Cards.QuantumFlux
+      Arkham.Event.Cards.Recharge2
+      Arkham.Event.Cards.Reliable1
+      Arkham.Event.Cards.ScroungeForSupplies
+      Arkham.Event.Cards.SearchForTheTruth
+      Arkham.Event.Cards.SecondWind
+      Arkham.Event.Cards.SeekingAnswers
+      Arkham.Event.Cards.Shortcut
+      Arkham.Event.Cards.Shortcut2
+      Arkham.Event.Cards.SleightOfHand
+      Arkham.Event.Cards.SmuggledGoods
+      Arkham.Event.Cards.SnareTrap2
+      Arkham.Event.Cards.SneakAttack
+      Arkham.Event.Cards.SneakAttack2
+      Arkham.Event.Cards.StandTogether
+      Arkham.Event.Cards.StandTogether3
+      Arkham.Event.Cards.StormOfSpirits
+      Arkham.Event.Cards.SureGamble3
+      Arkham.Event.Cards.Taunt
+      Arkham.Event.Cards.Taunt2
+      Arkham.Event.Cards.Taunt3
+      Arkham.Event.Cards.Teamwork
+      Arkham.Event.Cards.ThePaintedWorld
+      Arkham.Event.Cards.ThinkOnYourFeet
+      Arkham.Event.Cards.TimeWarp2
+      Arkham.Event.Cards.TrueSurvivor3
+      Arkham.Event.Cards.Trusted
+      Arkham.Event.Cards.UncageTheSoul
+      Arkham.Event.Cards.UnearthTheAncients
+      Arkham.Event.Cards.WardOfProtection
+      Arkham.Event.Cards.WardOfProtection2
+      Arkham.Event.Cards.WardOfProtection5
+      Arkham.Event.Cards.Waylay
+      Arkham.Event.Cards.WillToSurvive
+      Arkham.Event.Cards.WillToSurvive3
+      Arkham.Event.Cards.WingingIt
       Arkham.Event.Cards.WorkingAHunch
+      Arkham.Event.Cards.YouHandleThisOne
       Arkham.Event.Events
       Arkham.Event.Helpers
       Arkham.Event.Runner
@@ -809,7 +953,32 @@ library
       Arkham.Scenario.Helpers
       Arkham.Scenario.Runner
       Arkham.Scenario.Scenarios
+      Arkham.Scenario.Scenarios.APhantomOfTruth
+      Arkham.Scenario.Scenarios.BlackStarsRise
+      Arkham.Scenario.Scenarios.BloodOnTheAltar
+      Arkham.Scenario.Scenarios.CarnevaleOfHorrors
+      Arkham.Scenario.Scenarios.CurseOfTheRougarou
+      Arkham.Scenario.Scenarios.CurtainCall
+      Arkham.Scenario.Scenarios.DimCarcosa
+      Arkham.Scenario.Scenarios.EchoesOfThePast
+      Arkham.Scenario.Scenarios.ExtracurricularActivity
+      Arkham.Scenario.Scenarios.LostInTimeAndSpace
+      Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
+      Arkham.Scenario.Scenarios.ReturnToTheGathering
+      Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
+      Arkham.Scenario.Scenarios.TheDevourerBelow
+      Arkham.Scenario.Scenarios.TheDoomOfEztli
+      Arkham.Scenario.Scenarios.TheEssexCountyExpress
       Arkham.Scenario.Scenarios.TheGathering
+      Arkham.Scenario.Scenarios.TheHouseAlwaysWins
+      Arkham.Scenario.Scenarios.TheLastKing
+      Arkham.Scenario.Scenarios.TheMidnightMasks
+      Arkham.Scenario.Scenarios.TheMiskatonicMuseum
+      Arkham.Scenario.Scenarios.ThePallidMask
+      Arkham.Scenario.Scenarios.TheUnspeakableOath
+      Arkham.Scenario.Scenarios.TheUntamedWilds
+      Arkham.Scenario.Scenarios.UndimensionedAndUnseen
+      Arkham.Scenario.Scenarios.WhereDoomAwaits
       Arkham.Scenario.Types
       Arkham.ScenarioLogKey
       Arkham.Scenarios.APhantomOfTruth.Helpers

@@ -344,6 +344,7 @@ getInvestigateAllowed _iid attrs = do
   pure $ none isCannotInvestigate modifiers'
  where
   isCannotInvestigate CannotInvestigate{} = True
+  isCannotInvestigate (CannotInvestigateLocation lid) = lid == toId attrs
   isCannotInvestigate _ = False
 
 canEnterLocation :: EnemyId -> LocationId -> GameT Bool
@@ -381,7 +382,7 @@ instance HasAbilities LocationAttrs where
         l
         102
         (OnLocation (AccessibleTo $ LocationWithId $ toId l)
-        <> InvestigatorExists (You <> InvestigatorWithoutModifier CannotMove)
+        <> InvestigatorExists (You <> InvestigatorWithoutModifier CannotMove <> InvestigatorWithoutModifier (CannotEnter $ toId l))
         )
       $ ActionAbility (Just Action.Move) moveCost
     ]

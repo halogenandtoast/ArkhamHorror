@@ -1334,31 +1334,37 @@ getAssetsMatching matcher = do
       )
       as
     AssetCanBeAssignedDamageBy iid -> do
-      investigatorAssets <- filterMatcher
-        as
-        (AssetControlledBy $ InvestigatorWithId iid)
+      modifiers' <- getModifiers (InvestigatorTarget iid)
       let
-        otherAssets = filter (`notElem` investigatorAssets) as
+        otherDamageableAssetIds = flip mapMaybe modifiers' $ \case
+          CanAssignDamageToAsset aid -> Just aid
+          _ -> Nothing
+      assets <- filterMatcher
+        as
+        (AssetOneOf
+        $ AssetControlledBy (InvestigatorWithId iid)
+        : map AssetWithId otherDamageableAssetIds
+        )
+      let
         isHealthDamageable a =
           fieldP AssetRemainingHealth (maybe False (> 0)) (toId a)
-      otherDamageableAssets <-
-        map fst
-        . filter (elem CanBeAssignedDamage . snd)
-        <$> traverse (traverseToSnd $ getModifiers . toTarget) otherAssets
-      filterM isHealthDamageable (investigatorAssets <> otherDamageableAssets)
+      filterM isHealthDamageable assets
     AssetCanBeAssignedHorrorBy iid -> do
-      investigatorAssets <- filterMatcher
-        as
-        (AssetControlledBy $ InvestigatorWithId iid)
+      modifiers' <- getModifiers (InvestigatorTarget iid)
       let
-        otherAssets = filter (`notElem` investigatorAssets) as
+        otherDamageableAssetIds = flip mapMaybe modifiers' $ \case
+          CanAssignDamageToAsset aid -> Just aid
+          _ -> Nothing
+      assets <- filterMatcher
+        as
+        (AssetOneOf
+        $ AssetControlledBy (InvestigatorWithId iid)
+        : map AssetWithId otherDamageableAssetIds
+        )
+      let
         isSanityDamageable a =
           fieldP AssetRemainingSanity (maybe False (> 0)) (toId a)
-      otherDamageableAssets <-
-        map fst
-        . filter (elem CanBeAssignedDamage . snd)
-        <$> traverse (traverseToSnd $ getModifiers . toTarget) otherAssets
-      filterM isSanityDamageable (investigatorAssets <> otherDamageableAssets)
+      filterM isSanityDamageable assets
     ClosestAsset start assetMatcher -> flip filterM as $ \asset -> do
       aids <- selectList assetMatcher
       if toId asset `elem` aids
@@ -1897,7 +1903,7 @@ instance Projection Investigator where
               $ skillTestCommittedCards skillTest
       InvestigatorDefeated -> pure investigatorDefeated
       InvestigatorResigned -> pure investigatorResigned
-      -- InvestigatorSupplies -> pure investigatorSupplies
+      InvestigatorSupplies -> pure investigatorSupplies
 
 instance Query AssetMatcher where
   select = fmap (setFromList . map toId) . getAssetsMatching

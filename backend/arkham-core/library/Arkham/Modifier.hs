@@ -34,6 +34,7 @@ data Modifier = Modifier
 
 data ModifierType
   = ActionCostOf ActionTarget Int
+  | AbilityModifier Target Int ModifierType
   | SkillTestResultValueModifier Int
   | TraitRestrictedModifier Trait ModifierType
   | ActionCostModifier Int
@@ -61,7 +62,7 @@ data ModifierType
   | BecomesFast
   | Blank
   | Blocked
-  | CanBeAssignedDamage
+  | CanAssignDamageToAsset AssetId
   | CanBeAssignedDirectDamage
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast CardMatcher

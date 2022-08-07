@@ -2,7 +2,7 @@ module Arkham.Investigator.Types where
 
 import Arkham.Prelude
 
--- import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Projection
 import Arkham.Ability
 import Arkham.Action.Additional
@@ -65,7 +65,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorPhysicalTrauma :: Field Investigator Int
   InvestigatorMentalTrauma :: Field Investigator Int
   --
-  -- InvestigatorSupplies :: Field Investigator [Supply]
+  InvestigatorSupplies :: Field Investigator [Supply]
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId
@@ -109,7 +109,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   -- handling liquid courage
   , investigatorHorrorHealed :: Int
   -- the forgotten age
-  -- , investigatorSupplies :: [Supply]
+  , investigatorSupplies :: [Supply]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -259,8 +259,8 @@ locationL = lens investigatorLocation $ \m x -> m { investigatorLocation = x }
 horrorHealedL :: Lens' InvestigatorAttrs Int
 horrorHealedL = lens investigatorHorrorHealed $ \m x -> m { investigatorHorrorHealed = x }
 
--- suppliesL :: Lens' InvestigatorAttrs [Supply]
--- suppliesL = lens investigatorSupplies $ \m x -> m { investigatorSupplies = x }
+suppliesL :: Lens' InvestigatorAttrs [Supply]
+suppliesL = lens investigatorSupplies $ \m x -> m { investigatorSupplies = x }
 
 startsWithL :: Lens' InvestigatorAttrs [CardDef]
 startsWithL = lens investigatorStartsWith $ \m x -> m { investigatorStartsWith = x }

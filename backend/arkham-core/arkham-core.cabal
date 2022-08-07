@@ -581,15 +581,123 @@ library
       Arkham.EncounterSet
       Arkham.Enemy
       Arkham.Enemy.Cards
+      Arkham.Enemy.Cards.Acolyte
+      Arkham.Enemy.Cards.AcolyteOfUmordhoth
+      Arkham.Enemy.Cards.AgentOfTheKing
+      Arkham.Enemy.Cards.AlmaHill
+      Arkham.Enemy.Cards.AshleighClarke
+      Arkham.Enemy.Cards.AsylumGorger
+      Arkham.Enemy.Cards.AvianThrall
+      Arkham.Enemy.Cards.BalefulReveler
+      Arkham.Enemy.Cards.BeastOfAldebaran
+      Arkham.Enemy.Cards.BillyCooper
+      Arkham.Enemy.Cards.BoaConstrictor
+      Arkham.Enemy.Cards.BogGator
+      Arkham.Enemy.Cards.BroodOfYig
+      Arkham.Enemy.Cards.BroodOfYogSothoth
+      Arkham.Enemy.Cards.CarnevaleSentinel
+      Arkham.Enemy.Cards.CatacombsDocent
+      Arkham.Enemy.Cards.CloverClubPitBoss
+      Arkham.Enemy.Cards.Cnidathqua
+      Arkham.Enemy.Cards.ConglomerationOfSpheres
+      Arkham.Enemy.Cards.ConstanceDumaine
+      Arkham.Enemy.Cards.CorpseDweller
+      Arkham.Enemy.Cards.CorpseHungryGhoul
+      Arkham.Enemy.Cards.CorpseTaker
+      Arkham.Enemy.Cards.CrazedShoggoth
+      Arkham.Enemy.Cards.CreatureOutOfDemhe
+      Arkham.Enemy.Cards.DanielChesterfield
+      Arkham.Enemy.Cards.DarkYoungHost
+      Arkham.Enemy.Cards.DevoteeOfTheKey
+      Arkham.Enemy.Cards.DianneDevine
+      Arkham.Enemy.Cards.DiscipleOfTheDevourer
+      Arkham.Enemy.Cards.DonLagorio
+      Arkham.Enemy.Cards.ElisabettaMagro
+      Arkham.Enemy.Cards.EmergentMonstrosity
+      Arkham.Enemy.Cards.EztliGuardian
+      Arkham.Enemy.Cards.Fanatic
       Arkham.Enemy.Cards.FleshEater
+      Arkham.Enemy.Cards.GhoulFromTheDepths
       Arkham.Enemy.Cards.GhoulMinion
       Arkham.Enemy.Cards.GhoulPriest
+      Arkham.Enemy.Cards.GoatSpawn
+      Arkham.Enemy.Cards.GrapplingHorror
+      Arkham.Enemy.Cards.GraveEater
+      Arkham.Enemy.Cards.GraveyardGhouls
+      Arkham.Enemy.Cards.HasturLordOfCarcosa
+      Arkham.Enemy.Cards.HasturTheKingInYellow
+      Arkham.Enemy.Cards.HasturTheTatteredKing
+      Arkham.Enemy.Cards.HermanCollins
+      Arkham.Enemy.Cards.HuntingHorror
+      Arkham.Enemy.Cards.HuntingNightgaunt
+      Arkham.Enemy.Cards.Ichtaca
       Arkham.Enemy.Cards.IcyGhoul
+      Arkham.Enemy.Cards.InterstellarTraveler
+      Arkham.Enemy.Cards.IshimaruHaruko
+      Arkham.Enemy.Cards.JeremiahPierce
+      Arkham.Enemy.Cards.JordanPerry
+      Arkham.Enemy.Cards.LupineThrall
+      Arkham.Enemy.Cards.MadPatient
+      Arkham.Enemy.Cards.Maniac
+      Arkham.Enemy.Cards.MarshGug
       Arkham.Enemy.Cards.MobEnforcer
+      Arkham.Enemy.Cards.Mobster
+      Arkham.Enemy.Cards.Narogath
+      Arkham.Enemy.Cards.OBannionsThug
+      Arkham.Enemy.Cards.PeterWarren
+      Arkham.Enemy.Cards.PitViper
+      Arkham.Enemy.Cards.Poleman
+      Arkham.Enemy.Cards.Poltergeist
+      Arkham.Enemy.Cards.PossessedOathspeaker
       Arkham.Enemy.Cards.RavenousGhoul
+      Arkham.Enemy.Cards.RelentlessDarkYoung
+      Arkham.Enemy.Cards.RiftSeeker
+      Arkham.Enemy.Cards.RoachSwarm
+      Arkham.Enemy.Cards.RoyalEmissary
+      Arkham.Enemy.Cards.RuthTurner
+      Arkham.Enemy.Cards.SalvatoreNeri
+      Arkham.Enemy.Cards.SavioCorvi
+      Arkham.Enemy.Cards.ScreechingByakhee
+      Arkham.Enemy.Cards.SebastienMoreau
+      Arkham.Enemy.Cards.SeekerOfCarcosa
+      Arkham.Enemy.Cards.SerpentFromYoth
+      Arkham.Enemy.Cards.SerpentsOfYig
+      Arkham.Enemy.Cards.ServantOfManyMouths
+      Arkham.Enemy.Cards.ServantOfTheLurker
+      Arkham.Enemy.Cards.SethBishop
+      Arkham.Enemy.Cards.SilasBishop
       Arkham.Enemy.Cards.SilverTwilightAcolyte
+      Arkham.Enemy.Cards.SlimeCoveredDhole
+      Arkham.Enemy.Cards.SpawnOfHali
+      Arkham.Enemy.Cards.SpecterOfDeath
+      Arkham.Enemy.Cards.StealthyByakhee
       Arkham.Enemy.Cards.StubbornDetective
+      Arkham.Enemy.Cards.SwampLeech
       Arkham.Enemy.Cards.SwarmOfRats
+      Arkham.Enemy.Cards.SwiftByakhee
+      Arkham.Enemy.Cards.TheExperiment
+      Arkham.Enemy.Cards.TheManInThePallidMask
+      Arkham.Enemy.Cards.TheMaskedHunter
+      Arkham.Enemy.Cards.TheOrganistDrapedInMystery
+      Arkham.Enemy.Cards.TheOrganistHopelessIDefiedHim
+      Arkham.Enemy.Cards.TheRougarou
+      Arkham.Enemy.Cards.TheThingThatFollows
+      Arkham.Enemy.Cards.Thrall
+      Arkham.Enemy.Cards.TidalTerror
+      Arkham.Enemy.Cards.TommyMalloy
+      Arkham.Enemy.Cards.Umordhoth
+      Arkham.Enemy.Cards.VictoriaDevereux
+      Arkham.Enemy.Cards.Whippoorwill
+      Arkham.Enemy.Cards.WingedOne
+      Arkham.Enemy.Cards.WizardOfTheOrder
+      Arkham.Enemy.Cards.WizardOfYogSothoth
+      Arkham.Enemy.Cards.WolfManDrew
+      Arkham.Enemy.Cards.WrithingAppendage
+      Arkham.Enemy.Cards.YithianObserver
+      Arkham.Enemy.Cards.YithianStarseeker
+      Arkham.Enemy.Cards.YogSothoth
+      Arkham.Enemy.Cards.YoungDeepOne
+      Arkham.Enemy.Cards.YoungPsychopath
       Arkham.Enemy.Enemies
       Arkham.Enemy.Helpers
       Arkham.Enemy.Runner

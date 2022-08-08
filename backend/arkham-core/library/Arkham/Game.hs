@@ -121,7 +121,7 @@ import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
 import Data.Align hiding ( nil )
-import Data.HashMap.Monoidal ( MonoidalHashMap )
+import Data.HashMap.Monoidal ( getMonoidalHashMap )
 import Data.HashMap.Monoidal qualified as MonoidalHashMap
 import Data.HashMap.Strict ( size )
 import Data.HashMap.Strict qualified as HashMap
@@ -2322,6 +2322,22 @@ putGame g = do
   ref <- view gameRefL
   atomicWriteIORef ref g
 
+overGame
+  :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> Game) -> m ()
+overGame f = overGameM (pure . f)
+
+overGameM
+  :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> m Game) -> m ()
+overGameM f = readGame >>= f >>= putGame
+
+withGameM
+  :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> m a) -> m a
+withGameM f = readGame >>= f
+
+withGameM_
+  :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> m a) -> m ()
+withGameM_ f = readGame >>= void . f
+
 runMessages
   :: ( MonadIO m
      , HasGameRef env
@@ -2334,9 +2350,9 @@ runMessages
   -> m ()
 runMessages mLogger = do
   g <- readGame
-  debugLevel <- liftIO $ fromMaybe (0 :: Int) . join . fmap readMay <$> lookupEnv "DEBUG"
-  when (debugLevel == 2) $
-    peekQueue >>= pPrint >> putStrLn "\n"
+  debugLevel <-
+    liftIO $ fromMaybe (0 :: Int) . join . fmap readMay <$> lookupEnv "DEBUG"
+  when (debugLevel == 2) $ peekQueue >>= pPrint >> putStrLn "\n"
 
   unless (g ^. gameStateL /= IsActive) $ do
     mmsg <- popMessage
@@ -2348,7 +2364,8 @@ runMessages mLogger = do
         EnemyPhase -> pure ()
         UpkeepPhase -> pure ()
         InvestigationPhase -> do
-          mTurnInvestigator <- runWithEnv $ traverse getInvestigator =<< selectOne TurnInvestigator
+          mTurnInvestigator <-
+            runWithEnv $ traverse getInvestigator =<< selectOne TurnInvestigator
           if all
               (or
               . sequence
@@ -2376,47 +2393,44 @@ runMessages mLogger = do
                 )
                 (gamePlayerOrder g)
               case playingInvestigators of
-                [] -> do
-                  pushEnd EndInvestigation
-                  runMessages mLogger
-                [x] -> do
-                  push $ ChoosePlayer x SetTurnPlayer
-                  runMessages mLogger
-                xs -> do
-                  push $ chooseOne
-                    (g ^. leadInvestigatorIdL)
-                    [ ChoosePlayer iid SetTurnPlayer | iid <- xs ]
-                  runMessages mLogger
+                [] -> pushEnd EndInvestigation
+                [x] -> push $ ChoosePlayer x SetTurnPlayer
+                xs -> push $ chooseOne
+                  (g ^. leadInvestigatorIdL)
+                  [ ChoosePlayer iid SetTurnPlayer | iid <- xs ]
+
+              runMessages mLogger
             else do
               let turnPlayer = fromJustNote "verified above" mTurnInvestigator
               pushAllEnd [PlayerWindow (toId turnPlayer) [] False]
                 >> runMessages mLogger
       Just msg -> do
-        when (debugLevel == 1) $
-          pPrint msg >> putStrLn "\n"
+        when (debugLevel == 1) $ do
+          pPrint msg
+          putStrLn "\n"
 
-        liftIO $ maybe (pure ()) ($ msg) mLogger
+        for_ mLogger $ liftIO . ($ msg)
+
         case msg of
           Ask iid q -> do
-            runWithEnv (toExternalGame
-                  (g & activeInvestigatorIdL .~ iid)
-                  (singletonMap iid q))
-              >>= putGame
-          AskMap askMap -> do
             runWithEnv
-              (toExternalGame g askMap) >>= putGame
+                (toExternalGame
+                  (g & activeInvestigatorIdL .~ iid)
+                  (singletonMap iid q)
+                )
+              >>= putGame
+          AskMap askMap -> runWithEnv (toExternalGame g askMap) >>= putGame
           _ -> do
             -- Hidden Library handling
             -- > While an enemy is moving, Hidden Library gains the Passageway trait.
             -- Therefor we must track the "while" aspect
-            let
-              g' = case msg of
-                HunterMove eid -> g & enemyMovingL ?~ eid
-                WillMoveEnemy eid _ -> g & enemyMovingL ?~ eid
-                _ -> g
-            putGame g'
-            g'' <- runWithEnv (runMessage msg g')
-            putGame g''
+            case msg of
+              HunterMove eid -> overGame $ enemyMovingL ?~ eid
+              WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
+              _ -> pure ()
+            res <- runWithEnv $ runMessage msg =<< getGame
+            putGame res
+
             runMessages mLogger
 
 runPreGameMessage :: Message -> Game -> GameT Game
@@ -3960,76 +3974,22 @@ preloadEntities g = do
 
 preloadModifiers :: forall m . (HasGame m, Monad m) => Game -> m Game
 preloadModifiers g = do
-  let entities :: [SomeEntity] = overEntities pure (gameEntities g)
-  modifiers' :: MonoidalHashMap Target [Modifier] <- overEntitiesM
-    (toEntityModifiers entities)
-    (gameEntities g)
-  let
-    tokens = nub $ maybe [] allSkillTestTokens (gameSkillTest g) <> maybe
-      []
-      (allChaosBagTokens . scenarioChaosBag . toAttrs)
-      (modeScenario $ gameMode g)
-  tokenModifiers <- foldMapM (toTargetModifiers entities . TokenTarget) tokens
-  pure $ g
-    { gameModifiers = MonoidalHashMap.getMonoidalHashMap
-      (modifiers' <> tokenModifiers)
-    }
+  allModifiers <- getMonoidalHashMap <$> foldMapM
+    (`toTargetModifiers` entities)
+    (SkillTestTarget : map TokenTarget tokens <> map toTarget entities)
+  pure $ g { gameModifiers = allModifiers }
  where
-  toEntityModifiers
-    :: [SomeEntity] -> SomeEntity -> m (MonoidalHashMap Target [Modifier])
-  toEntityModifiers es (SomeEntity e) = foldMapM
-    (\e' ->
-      MonoidalHashMap.singleton (toTarget e)
-        <$> getModifiersFor (toTarget e) e'
-    )
-    es
-  toTargetModifiers
-    :: [SomeEntity] -> Target -> m (MonoidalHashMap Target [Modifier])
-  toTargetModifiers es target = foldMapM
-    (\e' -> MonoidalHashMap.singleton target <$> getModifiersFor target e')
-    es
-
-instance IsSomeEntityId SkillId where
-  toSomeEntityId (SkillId x) = toSomeEntityId x
-
-instance IsSomeEntityId EffectId where
-  toSomeEntityId (EffectId x) = toSomeEntityId x
-
-instance IsSomeEntityId EventId where
-  toSomeEntityId (EventId x) = toSomeEntityId x
-
-instance IsSomeEntityId TreacheryId where
-  toSomeEntityId (TreacheryId x) = toSomeEntityId x
-
-instance IsSomeEntityId AgendaId where
-  toSomeEntityId (AgendaId x) = toSomeEntityId x
-
-instance IsSomeEntityId ActId where
-  toSomeEntityId (ActId x) = toSomeEntityId x
-
-instance IsSomeEntityId AssetId where
-  toSomeEntityId (AssetId x) = toSomeEntityId x
-
-instance IsSomeEntityId EnemyId where
-  toSomeEntityId (EnemyId x) = toSomeEntityId x
-
-instance IsSomeEntityId InvestigatorId where
-  toSomeEntityId (InvestigatorId x) = toSomeEntityId x
-
-instance IsSomeEntityId LocationId where
-  toSomeEntityId (LocationId x) = toSomeEntityId x
-
-instance IsSomeEntityId CardId where
-  toSomeEntityId (CardId x) = toSomeEntityId x
+  entities = overEntities (: []) (gameEntities g)
+  tokens = nub $ maybe [] allSkillTestTokens (gameSkillTest g) <> maybe
+    []
+    (allChaosBagTokens . scenarioChaosBag . toAttrs)
+    (modeScenario $ gameMode g)
+  toTargetModifiers target = foldMapM
+    (fmap (MonoidalHashMap.singleton target) . getModifiersFor target)
 
 data SomeEntity
   = forall e
-  . ( Show e
-    , TargetEntity e
-    , Entity e
-    , HasModifiersFor e
-    , IsSomeEntityId (EntityId e)
-    ) =>
+  . (Show e, TargetEntity e, Entity e, HasModifiersFor e) =>
     SomeEntity e
 
 instance TargetEntity SomeEntity where

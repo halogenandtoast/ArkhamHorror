@@ -259,7 +259,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   CreateWeaknessInThreatArea card _ -> pure $ a & setAsideCardsL %~ delete card
   PutCardOnTopOfDeck _ Deck.EncounterDeck card -> case card of
     EncounterCard ec -> do
-      let encounterDeck = withDeck (ec :) scenarioEncounterDeck
+      let
+        encounterDeck = flip withDeck scenarioEncounterDeck $ \cards ->
+          ec : deleteFirst ec cards
       pure
         $ a
         & (setAsideCardsL %~ deleteFirstMatch (== card))
@@ -274,16 +276,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         & (encounterDeckL .~ encounterDeck)
     PlayerCard _ ->
       error "can not place player card on bottom of encounter deck"
-  PutCardOnTopOfDeck _ (Deck.ScenarioDeckByKey deckKey) card ->
+  PutCardOnTopOfDeck _ (Deck.ScenarioDeckByKey deckKey) card -> do
+    let
+      deck = fromMaybe [] $ view (decksL . at deckKey) a
+      deck' = card : deleteFirst card deck
     pure
       $ a
       & (setAsideCardsL %~ deleteFirstMatch (== card))
-      & (decksL . at deckKey %~ Just . maybe [card] (card :))
-  PutCardOnBottomOfDeck _ (Deck.ScenarioDeckByKey deckKey) card ->
+      & (decksL . at deckKey ?~ deck')
+  PutCardOnBottomOfDeck _ (Deck.ScenarioDeckByKey deckKey) card -> do
+    let
+      deck = fromMaybe [] $ view (decksL . at deckKey) a
+      deck' = deleteFirst card deck <> [card]
     pure
       $ a
       & (setAsideCardsL %~ deleteFirstMatch (== card))
-      & (decksL . at deckKey %~ Just . maybe [card] (<> [card]))
+      & (decksL . at deckKey ?~ deck')
   AddToEncounterDeck card -> do
     encounterDeck <- withDeckM (shuffleM . (card :)) scenarioEncounterDeck
     pure

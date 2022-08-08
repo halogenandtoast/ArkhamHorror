@@ -1,6 +1,7 @@
 {-# LANGUAGE StrictData #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Game where
 
 import Arkham.Prelude
@@ -24,6 +25,7 @@ import Arkham.Card
 import Arkham.Card.Cost
 import Arkham.Card.Id
 import Arkham.Card.PlayerCard
+import Arkham.ChaosBag.Base
 import Arkham.Classes
 import Arkham.Classes.HasDistance
 import Arkham.Cost qualified as Cost
@@ -430,13 +432,13 @@ getCampaign = modeCampaign . view modeL <$> getGame
 withModifiers
   :: (Monad m, HasGame m, TargetEntity a) => a -> m (With a ModifierData)
 withModifiers a = do
-  modifiers' <- getModifiersFor (toTarget a) ()
+  modifiers' <- getModifiers' (toTarget a)
   pure $ a `with` ModifierData modifiers'
 
 withEnemyMetadata
   :: (Monad m, HasGame m) => Enemy -> m (With Enemy EnemyMetadata)
 withEnemyMetadata a = do
-  emModifiers <- getModifiersFor (toTarget a) ()
+  emModifiers <- getModifiers' (toTarget a)
   emEngagedInvestigators <- select $ investigatorEngagedWith (toId a)
   emTreacheries <- select $ TreacheryOnEnemy $ EnemyWithId (toId a)
   emAssets <- select $ EnemyAsset (toId a)
@@ -459,7 +461,7 @@ withLocationConnectionData inner@(With target _) = do
 withAssetMetadata
   :: (Monad m, HasGame m) => Asset -> m (With Asset AssetMetadata)
 withAssetMetadata a = do
-  amModifiers <- getModifiersFor (toTarget a) ()
+  amModifiers <- getModifiers' (toTarget a)
   amEvents <- select (EventAttachedToAsset $ AssetWithId $ toId a)
   amAssets <- select (AssetAttachedToAsset $ AssetWithId $ toId a)
   pure $ a `with` AssetMetadata { .. }
@@ -492,7 +494,7 @@ instance ToJSON WithDeckSize where
 withSkillTestModifiers
   :: (Monad m, HasGame m, TargetEntity a) => a -> m (With a ModifierData)
 withSkillTestModifiers a = do
-  modifiers' <- getModifiersFor (toTarget a) ()
+  modifiers' <- getModifiers' (toTarget a)
   pure $ a `with` ModifierData modifiers'
 
 gameSkills :: Game -> EntityMap Skill
@@ -2020,36 +2022,36 @@ instance HasTokenValue InvestigatorId where
     investigator' <- getInvestigator iid'
     getTokenValue iid token investigator'
 
-instance HasModifiersFor () where
-  getModifiersFor target _ = do
-    g <- getGame
-    allModifiers' <- concat <$> sequence
-      [ getModifiersFor target (g ^. entitiesL)
-      , case target of
-        InvestigatorTarget i -> maybe
-          (pure [])
-          (getModifiersFor (InvestigatorHandTarget i))
-          (g ^. inHandEntitiesL . at i)
-        _ -> pure []
-      , case target of
-        InvestigatorTarget i -> maybe
-          (pure [])
-          (getModifiersFor (InvestigatorDiscardTarget i))
-          (g ^. inDiscardEntitiesL . at i)
-        _ -> pure []
-      , maybe (pure []) (getModifiersFor target) (modeScenario $ g ^. modeL)
-      , maybe (pure []) (getModifiersFor target) (modeCampaign $ g ^. modeL)
-      ]
-    traits <- targetTraits target
-    let
-      applyTraitRestrictedModifiers m = case modifierType m of
-        TraitRestrictedModifier trait modifierType' ->
-          m { modifierType = modifierType' } <$ guard (trait `member` traits)
-        _ -> Just m
-      allModifiers = mapMaybe applyTraitRestrictedModifiers allModifiers'
-    pure $ if any ((== Blank) . modifierType) allModifiers
-      then filter ((/= targetToSource target) . modifierSource) allModifiers
-      else allModifiers
+-- instance HasModifiersFor () where
+--   getModifiersFor target _ = do
+--     g <- getGame
+--     allModifiers' <- concat <$> sequence
+--       [ getModifiersFor target (g ^. entitiesL)
+--       , case target of
+--         InvestigatorTarget i -> maybe
+--           (pure [])
+--           (getModifiersFor (InvestigatorHandTarget i))
+--           (g ^. inHandEntitiesL . at i)
+--         _ -> pure []
+--       , case target of
+--         InvestigatorTarget i -> maybe
+--           (pure [])
+--           (getModifiersFor (InvestigatorDiscardTarget i))
+--           (g ^. inDiscardEntitiesL . at i)
+--         _ -> pure []
+--       , maybe (pure []) (getModifiersFor target) (modeScenario $ g ^. modeL)
+--       , maybe (pure []) (getModifiersFor target) (modeCampaign $ g ^. modeL)
+--       ]
+--     traits <- targetTraits target
+--     let
+--       applyTraitRestrictedModifiers m = case modifierType m of
+--         TraitRestrictedModifier trait modifierType' ->
+--           m { modifierType = modifierType' } <$ guard (trait `member` traits)
+--         _ -> Just m
+--       allModifiers = mapMaybe applyTraitRestrictedModifiers allModifiers'
+--     pure $ if any ((== Blank) . modifierType) allModifiers
+--       then filter ((/= targetToSource target) . modifierSource) allModifiers
+--       else allModifiers
 
 instance HasModifiersFor Entities where
   getModifiersFor target e = concat <$> sequence
@@ -3963,10 +3965,19 @@ preloadEntities g = do
 preloadModifiers :: forall m . (HasGame m, Monad m) => Game -> m Game
 preloadModifiers g = do
   let entities :: [SomeEntity] = overEntities pure (gameEntities g)
-  modifiers' :: HashMap Target [Modifier] <-
-    MonoidalHashMap.getMonoidalHashMap
-      <$> overEntitiesM (toEntityModifiers entities) (gameEntities g)
-  pure $ g { gameModifiers = modifiers' }
+  modifiers' :: MonoidalHashMap Target [Modifier] <- overEntitiesM
+    (toEntityModifiers entities)
+    (gameEntities g)
+  let
+    tokens = nub $ maybe [] allSkillTestTokens (gameSkillTest g) <> maybe
+      []
+      (allChaosBagTokens . scenarioChaosBag . toAttrs)
+      (modeScenario $ gameMode g)
+  tokenModifiers <- foldMapM (toTargetModifiers entities . TokenTarget) tokens
+  pure $ g
+    { gameModifiers = traceShowId $ MonoidalHashMap.getMonoidalHashMap
+      (modifiers' <> tokenModifiers)
+    }
  where
   toEntityModifiers
     :: [SomeEntity] -> SomeEntity -> m (MonoidalHashMap Target [Modifier])
@@ -3975,6 +3986,11 @@ preloadModifiers g = do
       MonoidalHashMap.singleton (toTarget e)
         <$> getModifiersFor (toTarget e) e'
     )
+    es
+  toTargetModifiers
+    :: [SomeEntity] -> Target -> m (MonoidalHashMap Target [Modifier])
+  toTargetModifiers es target = foldMapM
+    (\e' -> MonoidalHashMap.singleton target <$> getModifiersFor target e')
     es
 
 instance IsSomeEntityId SkillId where

@@ -26,7 +26,7 @@ spec = do
           )
         $ do
             runMessages
-            getModifiers (TestSource mempty) (toTarget location)
+            getModifiers (toTarget location)
               `shouldReturn` [CannotBeEnteredByNonElite]
             assert $ fieldP LocationEvents (== setFromList [toId barricade]) (toId location)
             assert $ fieldP InvestigatorDiscard null (toId investigator)
@@ -51,7 +51,7 @@ spec = do
         $ do
             runMessages
             chooseOnlyOption "trigger barricade"
-            getModifiers (TestSource mempty) (toTarget location1)
+            getModifiers (toTarget location1)
               `shouldReturn` []
             assert $ fieldP LocationEvents null (toId location1)
             assert $ fieldP InvestigatorDiscard (== [barricadeCard]) (toId investigator)

@@ -118,7 +118,7 @@ spec = describe "Oops!" $ do
           fieldAssert EnemyDamage (== 0) enemy
           fieldAssert EnemyDamage (== 1) enemy2
 
-  it "[FAQ] shotgun only deals 1 damage" $ do
+  fit "[FAQ] shotgun only deals 1 damage" $ do
     investigator <-
       testJenny
       $ (Investigator.combatL .~ 1)

@@ -2,9 +2,9 @@ module Arkham.ChaosBag.Base where
 
 import Arkham.Prelude
 
+import Arkham.ChaosBagStepState
 import Arkham.Json
 import Arkham.Token
-import Arkham.ChaosBagStepState
 
 data ChaosBag = ChaosBag
   { chaosBagTokens :: [Token]
@@ -14,6 +14,10 @@ data ChaosBag = ChaosBag
   , chaosBagForceDraw :: Maybe TokenFace
   }
   deriving stock (Show, Eq, Generic)
+
+allChaosBagTokens :: ChaosBag -> [Token]
+allChaosBagTokens ChaosBag {..} =
+  chaosBagTokens <> chaosBagSetAsideTokens <> chaosBagRevealedTokens
 
 instance ToJSON ChaosBag where
   toJSON = genericToJSON $ aesonOptions $ Just "chaosBag"

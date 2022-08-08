@@ -32,6 +32,12 @@ data SkillTest = SkillTest
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 
+allSkillTestTokens :: SkillTest -> [Token]
+allSkillTestTokens SkillTest {..} =
+  skillTestSetAsideTokens
+  <> skillTestRevealedTokens
+  <> skillTestResolvedTokens
+
 instance ToJSON SkillTest where
   toJSON = genericToJSON $ aesonOptions $ Just "skillTest"
   toEncoding = genericToEncoding $ aesonOptions $ Just "skillTest"

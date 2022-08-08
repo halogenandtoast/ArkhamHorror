@@ -16,7 +16,7 @@ spec = describe "The Masked Hunter" $ do
           (entitiesL . enemiesL %~ insertEntity theMaskedHunter)
         $ do
             runMessages
-            getModifiers (TestSource mempty) (toTarget investigator)
+            getModifiers (toTarget investigator)
               `shouldReturn` [CannotDiscoverClues, CannotSpendClues]
 
     it
@@ -32,5 +32,5 @@ spec = describe "The Masked Hunter" $ do
               (entitiesL . enemiesL %~ insertEntity theMaskedHunter)
             $ do
                 runMessages
-                getModifiers (TestSource mempty) (toTarget investigator)
+                getModifiers (toTarget investigator)
                   `shouldReturn` []

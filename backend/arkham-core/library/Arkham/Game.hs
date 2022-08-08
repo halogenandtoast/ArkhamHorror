@@ -2428,7 +2428,8 @@ runMessages mLogger = do
               HunterMove eid -> overGame $ enemyMovingL ?~ eid
               WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
               _ -> pure ()
-            runWithEnv (getGame >>= runMessage msg >>= preloadModifiers) >>= putGame
+            runWithEnv (getGame >>= runMessage msg >>= preloadModifiers)
+              >>= putGame
             runMessages mLogger
 
 runPreGameMessage :: Message -> Game -> GameT Game
@@ -3972,10 +3973,19 @@ preloadEntities g = do
 
 preloadModifiers :: Monad m => Game -> m Game
 preloadModifiers g = flip runReaderT g $ do
-    allModifiers <- getMonoidalHashMap <$> foldMapM
-      (`toTargetModifiers` entities)
-      (SkillTestTarget : map TokenTarget tokens <> map toTarget entities)
-    pure $ g { gameModifiers = allModifiers }
+  let cards = allCards g
+  allModifiers <- getMonoidalHashMap <$> foldMapM
+    (`toTargetModifiers` entities)
+    (SkillTestTarget
+    : map TokenTarget tokens
+    <> map toTarget entities
+    <> map CardTarget cards
+    <> map (CardIdTarget . toCardId) cards
+    <> map
+         (InvestigatorHandTarget . toId)
+         (toList $ entitiesInvestigators $ gameEntities g)
+    )
+  pure $ g { gameModifiers = allModifiers }
  where
   entities = overEntities (: []) (gameEntities g)
   tokens = nub $ maybe [] allSkillTestTokens (gameSkillTest g) <> maybe
@@ -3984,6 +3994,48 @@ preloadModifiers g = flip runReaderT g $ do
     (modeScenario $ gameMode g)
   toTargetModifiers target =
     foldMapM (fmap (MonoidalHashMap.singleton target) . getModifiersFor target)
+  allCards Game {..} =
+    let
+      Entities {..} = gameEntities
+      agendaCards =
+        concatMap (agendaCardsUnderneath . toAttrs) (toList entitiesAgendas)
+      assetCards =
+        concatMap (assetCardsUnderneath . toAttrs) (toList entitiesAssets)
+      investigatorCards = concatMap
+        (concat
+        . sequence
+            [ map PlayerCard . unDeck . investigatorDeck
+            , map PlayerCard . investigatorDiscard
+            , investigatorHand
+            , investigatorCardsUnderneath
+            ]
+        . toAttrs
+        )
+        (toList entitiesInvestigators)
+      locationCards =
+        concatMap (locationCardsUnderneath . toAttrs) (toList entitiesLocations)
+      scenarioCards = case modeScenario gameMode of
+        Just s ->
+          concat
+            . sequence
+                [ scenarioCardsUnderScenarioReference
+                , scenarioCardsUnderAgendaDeck
+                , scenarioCardsUnderActDeck
+                , scenarioCardsNextToActDeck
+                , concat . toList . scenarioDecks
+                , scenarioSetAsideCards
+                , scenarioVictoryDisplay
+                , map EncounterCard . unDeck . scenarioEncounterDeck
+                , map EncounterCard . scenarioDiscard
+                ]
+            $ toAttrs s
+        Nothing -> []
+    in
+      agendaCards
+      <> assetCards
+      <> investigatorCards
+      <> locationCards
+      <> scenarioCards
 
 data SomeEntity
   = forall e

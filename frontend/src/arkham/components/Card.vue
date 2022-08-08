@@ -54,7 +54,7 @@ function canInteract(c: Message): boolean {
     case MessageType.FOUND_ENEMY_IN_VOID:
       return c.contents[2] === id.value;
     case MessageType.TARGET_LABEL:
-      return (c.contents[0].tag === "EncounterCardTarget" && c.contents[0].contents.id === id.value) || (c.contents[0].tag === "CardIdTarget" && c.contents[0].contents === id.value) || (c.contents[0].tag === "SkillTarget" && c.contents[0].contents === id.value)
+      return (c.contents[0].tag === "EncounterCardTarget" && c.contents[0].contents.id === id.value) || (c.contents[0].tag === "CardTarget" && c.contents[0].contents.contents.id === id.value) || (c.contents[0].tag === "SkillTarget" && c.contents[0].contents === id.value)
 
     case MessageType.RUN:
       return c.contents.some((c1: Message) => canInteract(c1));

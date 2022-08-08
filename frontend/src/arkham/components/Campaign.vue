@@ -6,6 +6,7 @@ import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
 import Scenario from '@/arkham/components/Scenario.vue';
 import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
 import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
+import StatusBar from '@/arkham/components/StatusBar.vue';
 
 export interface Props {
   game: Game
@@ -41,6 +42,7 @@ const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.st
     />
     <template v-else>
       <Story :game="game" :investigatorId="investigatorId" @choose="choose" />
+      <StatusBar :game="game" :investigatorId="investigatorId" @choose="choose" />
       <PlayerOrder
         :game="game"
         :investigatorId="investigatorId"

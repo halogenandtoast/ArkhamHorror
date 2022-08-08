@@ -15,8 +15,11 @@ import Arkham.Modifier as X
 import Arkham.Target
 
 getModifiers :: (Monad m, HasGame m) => Target -> m [ModifierType]
-getModifiers target =
-  map modifierType . findWithDefault [] target <$> getAllModifiers
+getModifiers target = map modifierType <$> getModifiers' target
+
+getModifiers' :: (Monad m, HasGame m) => Target -> m [Modifier]
+getModifiers' target =
+  findWithDefault [] target <$> getAllModifiers
 
 hasModifier
   :: (Monad m, HasGame m, TargetEntity a) => a -> ModifierType -> m Bool

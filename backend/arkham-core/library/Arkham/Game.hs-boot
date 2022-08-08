@@ -6,7 +6,6 @@ import Arkham.Act.Types
 import Arkham.Agenda.Types
 import Arkham.Asset.Types
 import Arkham.Campaign.Types
-import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasTokenValue
 import Arkham.Classes.HasDistance
 import Arkham.Classes.HasAbilities
@@ -37,8 +36,6 @@ class HasGameRef a where
 
 class HasStdGen a where
   genL :: Lens' a (IORef StdGen)
-
-instance HasModifiersFor ()
 
 instance Query AbilityMatcher
 instance Query ActMatcher

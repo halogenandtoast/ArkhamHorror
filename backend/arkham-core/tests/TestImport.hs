@@ -416,6 +416,7 @@ newGame investigator = do
     , gameEntities = defaultEntities
       { entitiesInvestigators = HashMap.singleton investigatorId investigator
       }
+    , gameModifiers = mempty
     , gameEncounterDiscardEntities = defaultEntities
     , gameInHandEntities = mempty
     , gameInDiscardEntities = mempty

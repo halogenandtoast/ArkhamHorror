@@ -24,7 +24,6 @@ spec = describe "Beat Cop" $ do
       $ do
           runMessages
           stats <- modifiedStatsOf
-            (toSource investigator)
             Nothing
             (toId investigator)
           combat stats `shouldBe` 2

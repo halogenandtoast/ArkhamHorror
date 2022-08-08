@@ -28,7 +28,7 @@ spec = do
               )
             $ do
                 runMessages
-                getModifiers (TestSource mempty) (toTarget location)
+                getModifiers (toTarget location)
                   `shouldReturn` [ CannotBeEnteredByNonElite
                                  , SpawnNonEliteAtConnectingInstead
                                  ]
@@ -52,7 +52,7 @@ spec = do
           )
         $ do
             runMessages
-            getModifiers (TestSource mempty) (toTarget location)
+            getModifiers (toTarget location)
               `shouldReturn` []
             assert $ fieldP LocationEvents null (toId location)
             assert $ fieldP InvestigatorDiscard (== [barricade3Card]) (toId investigator)

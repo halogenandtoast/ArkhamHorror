@@ -47,6 +47,10 @@ peekMessage = withQueue \case
   [] -> ([], Nothing)
   (m : ms) -> (m : ms, Just m)
 
+peekQueue
+  :: (MonadIO m, MonadReader env m, HasQueue env) => m [Message]
+peekQueue = withQueue $ \q -> (q, q)
+
 pushEnd :: (MonadIO m, MonadReader env m, HasQueue env) => Message -> m ()
 pushEnd = pushAllEnd . pure
 

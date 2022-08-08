@@ -2314,6 +2314,14 @@ instance HasDistance Game where
       . mapToList
       $ result
 
+readGame :: (MonadIO m, MonadReader env m, HasGameRef env) => m Game
+readGame = view gameRefL >>= readIORef
+
+putGame :: (MonadIO m, MonadReader env m, HasGameRef env) => Game -> m ()
+putGame g = do
+  ref <- view gameRefL
+  atomicWriteIORef ref g
+
 runMessages
   :: ( MonadIO m
      , HasGameRef env
@@ -2325,13 +2333,10 @@ runMessages
   => Maybe (Message -> IO ())
   -> m ()
 runMessages mLogger = do
-  queueRef <- view messageQueue
-  gameRef <- view gameRefL
-  g <- liftIO $ readIORef gameRef
-
-  liftIO $ whenM
-    ((== Just "2") <$> lookupEnv "DEBUG")
-    (readIORef queueRef >>= pPrint >> putStrLn "\n")
+  g <- readGame
+  debugLevel <- liftIO $ fromMaybe (0 :: Int) . join . fmap readMay <$> lookupEnv "DEBUG"
+  when (debugLevel == 2) $
+    peekQueue >>= pPrint >> putStrLn "\n"
 
   unless (g ^. gameStateL /= IsActive) $ do
     mmsg <- popMessage
@@ -2343,13 +2348,8 @@ runMessages mLogger = do
         EnemyPhase -> pure ()
         UpkeepPhase -> pure ()
         InvestigationPhase -> do
-          gameEnv <- toGameEnv
-          mTurnInvestigator <-
-            runGameEnvT gameEnv
-            $ maybe (pure Nothing) (fmap Just . getInvestigator)
-            =<< selectOne TurnInvestigator
-          if maybe
-              True
+          mTurnInvestigator <- runWithEnv $ traverse getInvestigator =<< selectOne TurnInvestigator
+          if all
               (or
               . sequence
                   [ investigatorEndedTurn
@@ -2360,7 +2360,7 @@ runMessages mLogger = do
               )
               mTurnInvestigator
             then do
-              playingInvestigators <- runGameEnvT gameEnv $ filterM
+              playingInvestigators <- runWithEnv $ filterM
                 (fmap
                     (not
                     . (or
@@ -2392,24 +2392,19 @@ runMessages mLogger = do
               pushAllEnd [PlayerWindow (toId turnPlayer) [] False]
                 >> runMessages mLogger
       Just msg -> do
-        liftIO $ whenM
-          ((== Just "1") <$> lookupEnv "DEBUG")
-          (pPrint msg >> putStrLn "\n")
+        when (debugLevel == 1) $
+          pPrint msg >> putStrLn "\n"
 
         liftIO $ maybe (pure ()) ($ msg) mLogger
         case msg of
           Ask iid q -> do
-            toGameEnv >>= flip
-              runGameEnvT
-              (toExternalGame
+            runWithEnv (toExternalGame
                   (g & activeInvestigatorIdL .~ iid)
-                  (singletonMap iid q)
-              >>= atomicWriteIORef gameRef
-              )
+                  (singletonMap iid q))
+              >>= putGame
           AskMap askMap -> do
-            toGameEnv >>= flip
-              runGameEnvT
-              (toExternalGame g askMap >>= atomicWriteIORef gameRef)
+            runWithEnv
+              (toExternalGame g askMap) >>= putGame
           _ -> do
             -- Hidden Library handling
             -- > While an enemy is moving, Hidden Library gains the Passageway trait.
@@ -2419,9 +2414,9 @@ runMessages mLogger = do
                 HunterMove eid -> g & enemyMovingL ?~ eid
                 WillMoveEnemy eid _ -> g & enemyMovingL ?~ eid
                 _ -> g
-            atomicWriteIORef gameRef g'
-            g'' <- toGameEnv >>= flip runGameEnvT (runMessage msg g')
-            atomicWriteIORef gameRef g''
+            putGame g'
+            g'' <- runWithEnv (runMessage msg g')
+            putGame g''
             runMessages mLogger
 
 runPreGameMessage :: Message -> Game -> GameT Game
@@ -2664,7 +2659,8 @@ runGameMessage msg g = case msg of
     push
       (CreatedEffect effectId (Just effectMetadata) source (TokenTarget token))
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
-  DisableEffect effectId ->
+  DisableEffect effectId -> do
+    -- push $ Continue "OK"
     pure $ g & entitiesL . effectsL %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
@@ -3975,7 +3971,7 @@ preloadModifiers g = do
       (modeScenario $ gameMode g)
   tokenModifiers <- foldMapM (toTargetModifiers entities . TokenTarget) tokens
   pure $ g
-    { gameModifiers = traceShowId $ MonoidalHashMap.getMonoidalHashMap
+    { gameModifiers = MonoidalHashMap.getMonoidalHashMap
       (modifiers' <> tokenModifiers)
     }
  where

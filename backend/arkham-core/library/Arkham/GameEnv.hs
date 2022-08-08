@@ -65,6 +65,19 @@ toGameEnv = do
   logger <- view gameLoggerL
   pure $ GameEnv game queueRef gen logger
 
+runWithEnv
+  :: ( HasGameRef env
+     , HasQueue env
+     , HasStdGen env
+     , HasGameLogger env
+     , MonadReader env m
+     , MonadIO m
+     )
+  => GameT a -> m a
+runWithEnv body = do
+  gameEnv <- toGameEnv
+  runGameEnvT gameEnv body
+
 instance MonadRandom GameT where
   getRandomR lohi = do
     ref <- view genL

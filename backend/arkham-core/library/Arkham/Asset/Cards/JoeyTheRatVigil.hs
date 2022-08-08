@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.Cost
 import Arkham.Criteria hiding ( DuringTurn )
 import Arkham.Investigator.Types ( Field (..) )
@@ -58,7 +57,7 @@ instance RunMessage JoeyTheRatVigil where
         items
       push $ chooseOne
         iid
-        [ TargetLabel (CardIdTarget $ toCardId item) [PayCardCost iid item windows'']
+        [ TargetLabel (CardTarget item) [PayCardCost iid item windows'']
         | item <- playableItems
         ]
       pure a

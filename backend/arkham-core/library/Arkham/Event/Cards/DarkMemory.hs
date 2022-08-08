@@ -34,7 +34,7 @@ instance RunMessage DarkMemory where
       [ RevealInHand $ toCardId attrs
       , InvestigatorAssignDamage
         iid
-        (CardIdSource $ toCardId attrs)
+        (CardSource $ toCard attrs)
         DamageAny
         0
         2

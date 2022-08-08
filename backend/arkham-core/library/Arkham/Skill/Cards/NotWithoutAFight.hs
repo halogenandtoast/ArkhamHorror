@@ -22,8 +22,8 @@ notWithoutAFight :: SkillCard NotWithoutAFight
 notWithoutAFight = skill NotWithoutAFight Cards.notWithoutAFight
 
 instance HasModifiersFor NotWithoutAFight where
-  getModifiersFor (CardIdTarget cid) (NotWithoutAFight attrs)
-    | toCardId attrs == cid = do
+  getModifiersFor (CardTarget c) (NotWithoutAFight attrs)
+    | toCardId attrs == toCardId c = do
       n <- selectCount $ EnemyIsEngagedWith $ InvestigatorWithId $ skillOwner
         attrs
       pure $ toModifiers

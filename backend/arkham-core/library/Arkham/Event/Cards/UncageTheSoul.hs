@@ -54,12 +54,12 @@ instance RunMessage UncageTheSoul where
         [ chooseOne
           iid
           [ TargetLabel
-              (CardIdTarget $ toCardId c)
+              (CardTarget c)
               [ CreateEffect
                 (toCardCode attrs)
                 Nothing
                 (toSource attrs)
-                (CardIdTarget $ toCardId c)
+                (CardTarget $ toCard c)
               , PayCardCost iid c windows''
               ]
           | c <- cards

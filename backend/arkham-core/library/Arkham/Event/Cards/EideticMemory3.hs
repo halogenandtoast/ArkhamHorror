@@ -50,8 +50,8 @@ instance RunMessage EideticMemory3 where
         [ CreateEffect
             "03306"
             Nothing
-            (CardIdSource $ toCardId attrs)
-            (CardIdTarget $ toCardId attrs)
+            (CardSource $ toCard attrs)
+            (CardTarget $ toCard attrs)
         ]
         RemoveChosenCardFromGame
         True

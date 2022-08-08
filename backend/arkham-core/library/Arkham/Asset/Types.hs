@@ -280,7 +280,7 @@ instance TargetEntity AssetAttrs where
   isTarget attrs@AssetAttrs {..} = \case
     AssetTarget aid -> aid == assetId
     CardCodeTarget cardCode -> cdCardCode (toCardDef attrs) == cardCode
-    CardIdTarget cardId -> cardId == unAssetId assetId
+    CardTarget card -> toCardId card == unAssetId assetId
     SkillTestInitiatorTarget target -> isTarget attrs target
     _ -> False
 

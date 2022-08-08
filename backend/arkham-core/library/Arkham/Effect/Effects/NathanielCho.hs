@@ -51,8 +51,8 @@ instance RunMessage NathanielCho where
             [ chooseOne
               iid
               [ TargetLabel
-                  (CardIdTarget $ toCardId event)
-                  [ReturnToHand iid (CardIdTarget $ toCardId event)]
+                  (CardTarget $ toCard event)
+                  [ReturnToHand iid (CardTarget $ toCard event)]
               | event <- events
               ]
             , DisableEffect $ toId attrs

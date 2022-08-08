@@ -6,7 +6,6 @@ module Arkham.Investigator.Cards.MinhThiPhan
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Card hiding ( CommittedCard )
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Id
@@ -61,7 +60,7 @@ instance RunMessage MinhThiPhan where
           (unInvestigatorId $ toId attrs)
           Nothing
           (toSource attrs)
-          (CardIdTarget $ toCardId card)
+          (CardTarget card)
         )
     ResolveToken _ ElderSign iid | iid == toId attrs -> do
       skills <- selectList AnySkill

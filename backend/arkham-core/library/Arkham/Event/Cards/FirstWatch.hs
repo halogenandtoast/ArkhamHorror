@@ -83,7 +83,7 @@ instance RunMessage FirstWatch where
           [ chooseOneAtATime
             eventOwner
             [ TargetLabel
-                (CardIdTarget $ toCardId card)
+                (CardTarget $ EncounterCard card)
                 [ UseCardAbilityChoice
                     eventOwner
                     (EventSource eventId)

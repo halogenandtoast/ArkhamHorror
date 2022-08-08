@@ -55,7 +55,7 @@ instance RunMessage Backpack where
           3
           "Done choosing cards"
           [ TargetLabel
-              (CardIdTarget $ toCardId c)
+              (CardTarget c)
               [PlaceUnderneath (toTarget attrs) [c]]
           | c <- cards
           ]

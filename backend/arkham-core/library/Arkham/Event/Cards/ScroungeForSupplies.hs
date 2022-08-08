@@ -5,9 +5,8 @@ module Arkham.Event.Cards.ScroungeForSupplies
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
-import Arkham.Card
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -32,7 +31,7 @@ instance RunMessage ScroungeForSupplies where
       e <$ pushAll
         [ chooseOne
           iid
-          [ TargetLabel (CardIdTarget $ toCardId target) [AddToHand iid target]
+          [ TargetLabel (CardTarget target) [AddToHand iid target]
           | target <- targets
           ]
         , Discard (toTarget attrs)

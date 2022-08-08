@@ -43,7 +43,7 @@ instance RunMessage TheArkhamWoods where
         mainPathId <- getJustLocationIdByName "Main Path"
         a <$ pushAll
           [ SpawnEnemyAt (EncounterCard card) mainPathId
-          , PlaceDoom (CardIdTarget $ toCardId card) 1
+          , PlaceDoom (CardTarget $ EncounterCard card) 1
           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
           ]
     _ -> TheArkhamWoods <$> runMessage msg attrs

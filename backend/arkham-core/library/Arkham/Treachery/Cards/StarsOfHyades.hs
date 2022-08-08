@@ -38,7 +38,7 @@ instance RunMessage StarsOfHyades where
           pushAll
             (chooseOne
                 iid
-                [RemoveFromGame (CardIdTarget $ toCardId discardedEvent)]
+                [RemoveFromGame (CardTarget discardedEvent)]
             : [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
               | deckSize >= 5
               ]

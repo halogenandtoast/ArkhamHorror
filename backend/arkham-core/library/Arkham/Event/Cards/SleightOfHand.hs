@@ -33,7 +33,7 @@ instance RunMessage SleightOfHand where
         [ chooseOne
           iid
           [ TargetLabel
-              (CardIdTarget $ toCardId card)
+              (CardTarget card)
               [ PutCardIntoPlay iid card (Just $ toTarget attrs) windows'
               , CreateEffect
                 (toCardCode attrs)

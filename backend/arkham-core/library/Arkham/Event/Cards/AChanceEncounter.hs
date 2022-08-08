@@ -44,14 +44,14 @@ instance RunMessage AChanceEncounter where
         , chooseOne
           iid
           [ TargetLabel
-              (CardIdTarget $ toCardId card)
+              (CardTarget card)
               [ PutCardIntoPlay iid card Nothing windows'
               , RemoveFromDiscard iid (toCardId card)
               , CreateEffect
                 "02270"
                 Nothing
                 (toSource attrs)
-                (CardIdTarget $ toCardId card)
+                (CardTarget card)
               ]
           | card <- filteredDiscards
           ]

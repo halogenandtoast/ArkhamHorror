@@ -79,7 +79,7 @@ instance RunMessage DrElliHorowitz where
             [ chooseOne
                 iid
                 [ TargetLabel
-                    (CardIdTarget $ toCardId c)
+                    (CardTarget c)
                     [CreateAssetAt c $ AttachedToAsset (toId attrs) (Just $ InPlayArea iid)]
                 | c <- validCardsAfterSeal
                 ]

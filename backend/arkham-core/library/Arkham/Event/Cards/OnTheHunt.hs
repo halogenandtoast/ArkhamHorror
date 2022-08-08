@@ -46,7 +46,7 @@ instance RunMessage OnTheHunt where
       push $ chooseOne
         iid
         [ TargetLabel
-            (CardIdTarget $ toCardId card)
+            (CardTarget $ EncounterCard card)
             [InvestigatorDrewEncounterCard iid card]
         | card <- enemyCards
         ]

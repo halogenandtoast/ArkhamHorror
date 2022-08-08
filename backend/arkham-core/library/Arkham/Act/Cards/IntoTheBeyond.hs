@@ -52,7 +52,7 @@ instance RunMessage IntoTheBeyond where
           , chooseOne
             iid
             [ TargetLabel
-                (CardIdTarget $ toCardId location)
+                (CardTarget $ EncounterCard location)
                 [ RemoveFromEncounterDiscard location
                 , InvestigatorDrewEncounterCard iid location
                 ]

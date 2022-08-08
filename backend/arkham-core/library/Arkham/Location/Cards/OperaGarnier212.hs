@@ -23,7 +23,7 @@ operaGarnier212 =
   location OperaGarnier212 Cards.operaGarnier212 5 (PerPlayer 1)
 
 instance HasModifiersFor OperaGarnier212 where
-  getModifiersFor (CardIdTarget _) (OperaGarnier212 attrs) = do
+  getModifiersFor (CardTarget _) (OperaGarnier212 attrs) = do
     mtarget <- getSkillTestTarget
     mAction <- getSkillTestAction
     case (mAction, mtarget) of

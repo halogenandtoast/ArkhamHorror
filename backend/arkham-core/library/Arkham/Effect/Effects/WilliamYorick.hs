@@ -34,7 +34,7 @@ instance RunMessage WilliamYorick where
               $ chooseOne iid
               $ Done "Do not return card to hand"
               : [ TargetLabel
-                    (CardIdTarget $ toCardId card)
+                    (CardTarget $ PlayerCard card)
                     [AddToHand iid $ PlayerCard card]
                 | card <- discards
                 ]

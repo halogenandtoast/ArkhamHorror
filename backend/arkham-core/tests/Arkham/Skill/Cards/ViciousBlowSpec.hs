@@ -31,7 +31,7 @@ spec = describe "Vicious Blow" $ do
           (fight:_) <- field EnemyAbilities (toId enemy)
           pushAndRun $ UseAbility (toId investigator) fight []
           chooseOptionMatching "commit vicious blow" $ \case
-            TargetLabel (CardIdTarget _) _ -> True
+            TargetLabel (CardTarget _) _ -> True
             _ -> False
           chooseOptionMatching "Begin skill test" $ \case
             StartSkillTest _ -> True

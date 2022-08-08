@@ -59,7 +59,7 @@ instance RunMessage CloseTheRift where
           , chooseOne
             iid
             [ TargetLabel
-                (CardIdTarget $ toCardId location)
+                (CardTarget $ EncounterCard location)
                 [InvestigatorDrewEncounterCard iid location]
             | location <- locationCards
             ]

@@ -17,22 +17,27 @@ import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Source
 import Arkham.Target
-import qualified Arkham.Timing as Timing
-import qualified Arkham.Treachery.Cards as Treacheries
-import Arkham.Window (Result(..), Window(..))
-import qualified Arkham.Window as Window
+import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window ( Result (..), Window (..) )
+import Arkham.Window qualified as Window
 
 getHasSupply :: (HasGame m, Monad m) => InvestigatorId -> Supply -> m Bool
 getHasSupply iid s = (> 0) <$> getSupplyCount iid s
 
 getSupplyCount :: (HasGame m, Monad m) => InvestigatorId -> Supply -> m Int
-getSupplyCount iid s = fieldMap InvestigatorSupplies (length . filter (== s)) iid
+getSupplyCount iid s =
+  fieldMap InvestigatorSupplies (length . filter (== s)) iid
 
-getInvestigatorsWithSupply :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
-getInvestigatorsWithSupply s = getInvestigatorIds >>= filterM (`getHasSupply` s)
+getInvestigatorsWithSupply
+  :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
+getInvestigatorsWithSupply s =
+  getInvestigatorIds >>= filterM (`getHasSupply` s)
 
-getInvestigatorsWithoutSupply :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
-getInvestigatorsWithoutSupply s = getInvestigatorIds >>= filterM (fmap not . (`getHasSupply` s))
+getInvestigatorsWithoutSupply
+  :: (HasGame m, Monad m) => Supply -> m [InvestigatorId]
+getInvestigatorsWithoutSupply s =
+  getInvestigatorIds >>= filterM (fmap not . (`getHasSupply` s))
 
 getVengeanceInVictoryDisplay :: (HasGame m, Monad m) => m Int
 getVengeanceInVictoryDisplay =
@@ -96,7 +101,7 @@ explore iid source cardMatcher = do
         , chooseOne
           iid
           [ TargetLabel
-              (CardIdTarget $ toCardId x)
+              (CardTarget x)
               (UnfocusCards : SetScenarioDeck ExplorationDeck deck' : msgs)
           ]
         ]

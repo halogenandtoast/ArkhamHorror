@@ -20,7 +20,7 @@ aChanceEncounter = AChanceEncounter . uncurry4 (baseAttrs "02270")
 instance RunMessage AChanceEncounter where
   runMessage msg e@(AChanceEncounter attrs@EffectAttrs {..}) = case msg of
     EndRoundWindow -> case effectTarget of
-      CardIdTarget cardId ->
-        e <$ pushAll [Discard $ CardIdTarget cardId, DisableEffect effectId]
+      CardTarget card ->
+        e <$ pushAll [Discard $ CardTarget card, DisableEffect effectId]
       _ -> error "Wrong target type"
     _ -> AChanceEncounter <$> runMessage msg attrs

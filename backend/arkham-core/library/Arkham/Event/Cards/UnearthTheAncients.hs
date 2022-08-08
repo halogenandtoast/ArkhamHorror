@@ -40,7 +40,7 @@ instance RunMessage UnearthTheAncients where
       push $ chooseOne
         iid
         [ TargetLabel
-            (CardIdTarget $ toCardId asset)
+            (CardTarget asset)
             [ResolveEvent iid eid (Just $ CardTarget asset) windows']
         | asset <- assets
         ]

@@ -130,12 +130,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   DrawStartingHand iid | iid == investigatorId -> do
     let (discard, hand, deck) = drawOpeningHand a 5
     pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
-  ReturnToHand iid (CardIdTarget cid) | iid == investigatorId -> do
+  ReturnToHand iid (CardTarget card) | iid == investigatorId -> do
     -- Card is assumed to be in your discard
     -- but since find card can also return cards in your hand
     -- we filter again just in case
     let
-      card = findCard cid a
       discardFilter = case preview _PlayerCard card of
         Just pc -> filter (/= pc)
         Nothing -> id
@@ -336,9 +335,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     (chooseOne iid
     $ [ DiscardCard iid (toCardId card) | card <- discardableCards a ]
     )
-  Discard (CardIdTarget cardId)
-    | isJust (find ((== cardId) . toCardId) investigatorHand) -> a
-    <$ push (DiscardCard investigatorId cardId)
+  Discard (CardTarget card)
+    | isJust (find (== card) investigatorHand) -> a
+    <$ push (DiscardCard investigatorId $ toCardId card)
   DiscardHand iid | iid == investigatorId ->
     a <$ pushAll (map (DiscardCard iid . toCardId) investigatorHand)
   DiscardCard iid cardId | iid == investigatorId -> do
@@ -407,8 +406,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (AssetTarget aid) ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
-  RemoveFromGame (CardIdTarget cid) ->
-    pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
+  RemoveFromGame (CardTarget card) ->
+    pure $ a & cardsUnderneathL %~ filter (/= card)
   ChooseFightEnemy iid source mTarget skillType enemyMatcher isAction
     | iid == investigatorId -> do
       enemyIds <- selectList (CanFightEnemy <> enemyMatcher)
@@ -1071,7 +1070,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         (chooseOne
           iid
           [ TargetLabel
-              (CardIdTarget $ toCardId choice)
+              (CardTarget choice)
               [ ReturnToHand iid (EventTarget $ EventId cardId)
               , InitiatePlayCardAs
                 iid
@@ -1563,13 +1562,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           iid
           (map
               (\card -> TargetLabel
-                (CardIdTarget $ toCardId card)
+                (CardTarget card)
                 [SkillTestCommitCard iid card, beginMessage]
               )
               committableCards
           <> map
                (\card -> TargetLabel
-                 (CardIdTarget $ toCardId card)
+                 (CardTarget card)
                  [SkillTestUncommitCard iid card, beginMessage]
                )
                committedCards
@@ -1667,13 +1666,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           investigatorId
           (map
               (\card -> TargetLabel
-                (CardIdTarget $ toCardId card)
+                (CardTarget card)
                 [SkillTestCommitCard investigatorId card, beginMessage]
               )
               committableCards
           <> map
                (\card -> TargetLabel
-                 (CardIdTarget $ toCardId card)
+                 (CardTarget card)
                  [SkillTestUncommitCard investigatorId card, beginMessage]
                )
                committedCards
@@ -1706,7 +1705,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           a <$ push
             (chooseOne iid
             $ [ TargetLabel
-                  (CardIdTarget $ toCardId c)
+                  (CardTarget c)
                   [PayCardCost iid c windows, RunWindow iid windows]
               | c <- playableCards
               ]
@@ -1904,7 +1903,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           let
             choices =
               [ TargetLabel
-                  (CardIdTarget $ toCardId card)
+                  (CardTarget card)
                   [AddToHand who card, PayCardCost iid card windows']
               | (_, cards) <- playableCards
               , card <- cards

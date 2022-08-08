@@ -36,7 +36,7 @@ spec = describe
           chooseOnlyOption "Begin skill test"
           chooseOnlyOption "Apply results"
           chooseOptionMatching "Play evidence" $ \case
-            TargetLabel (CardIdTarget _) _ -> True
+            TargetLabel (CardTarget _) _ -> True
             _ -> False
           fieldAssert InvestigatorClues (== 1) investigator
           fieldAssert LocationClues (== 0) location

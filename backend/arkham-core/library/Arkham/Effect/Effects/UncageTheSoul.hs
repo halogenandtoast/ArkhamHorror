@@ -21,13 +21,13 @@ uncageTheSoul :: EffectArgs -> UncageTheSoul
 uncageTheSoul = UncageTheSoul . uncurry4 (baseAttrs "03033")
 
 instance HasModifiersFor UncageTheSoul where
-  getModifiersFor target@(CardIdTarget cid) (UncageTheSoul attrs)
+  getModifiersFor target@(CardTarget card) (UncageTheSoul attrs)
     | effectTarget attrs == target = pure
-    $ toModifiers attrs [ReduceCostOf (CardWithId cid) 3]
+    $ toModifiers attrs [ReduceCostOf (CardWithId $ toCardId card) 3]
   getModifiersFor _ _ = pure []
 
 instance RunMessage UncageTheSoul where
   runMessage msg e@(UncageTheSoul attrs) = case msg of
-    ResolvedCard _ card | CardIdTarget (toCardId card) == effectTarget attrs ->
+    ResolvedCard _ card | CardTarget card == effectTarget attrs ->
       e <$ push (DisableEffect $ toId attrs)
     _ -> UncageTheSoul <$> runMessage msg attrs

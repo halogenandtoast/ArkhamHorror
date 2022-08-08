@@ -34,7 +34,6 @@ data Target
   | ActDeckTarget
   | AgendaTarget AgendaId
   | ActTarget ActId
-  | CardIdTarget CardId
   | CardTarget Card
   | CardCodeTarget CardCode
   | SearchedCardTarget CardId
@@ -64,9 +63,6 @@ instance IdToTarget ActId where
 
 instance IdToTarget AgendaId where
   idToTarget = AgendaTarget
-
-instance IdToTarget CardId where
-  idToTarget = CardIdTarget
 
 instance IdToTarget LocationId where
   idToTarget = LocationTarget

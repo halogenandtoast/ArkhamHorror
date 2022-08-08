@@ -47,8 +47,8 @@ instance RunMessage ThePaintedWorld where
         [ CreateEffect
             "03012"
             Nothing
-            (CardIdSource $ toCardId attrs)
-            (CardIdTarget $ toCardId attrs)
+            (CardSource $ toCard attrs)
+            (CardTarget $ toCard attrs)
         ]
         LeaveChosenCard
         True

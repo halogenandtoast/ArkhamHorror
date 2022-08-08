@@ -806,8 +806,8 @@ getInvestigatorsMatching matcher = do
             cards =
               toList . filterMap ((== toId i) . fst) $ skillTestCommittedCards
                 st
-            iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
-              modifiers' <- getModifiers (CardIdTarget pcId)
+            iconsForCard c@(PlayerCard _) = do
+              modifiers' <- getModifiers (CardTarget c)
               pure $ foldr
                 applyAfterSkillModifiers
                 (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')
@@ -2022,37 +2022,6 @@ instance HasTokenValue InvestigatorId where
     investigator' <- getInvestigator iid'
     getTokenValue iid token investigator'
 
--- instance HasModifiersFor () where
---   getModifiersFor target _ = do
---     g <- getGame
---     allModifiers' <- concat <$> sequence
---       [ getModifiersFor target (g ^. entitiesL)
---       , case target of
---         InvestigatorTarget i -> maybe
---           (pure [])
---           (getModifiersFor (InvestigatorHandTarget i))
---           (g ^. inHandEntitiesL . at i)
---         _ -> pure []
---       , case target of
---         InvestigatorTarget i -> maybe
---           (pure [])
---           (getModifiersFor (InvestigatorDiscardTarget i))
---           (g ^. inDiscardEntitiesL . at i)
---         _ -> pure []
---       , maybe (pure []) (getModifiersFor target) (modeScenario $ g ^. modeL)
---       , maybe (pure []) (getModifiersFor target) (modeCampaign $ g ^. modeL)
---       ]
---     traits <- targetTraits target
---     let
---       applyTraitRestrictedModifiers m = case modifierType m of
---         TraitRestrictedModifier trait modifierType' ->
---           m { modifierType = modifierType' } <$ guard (trait `member` traits)
---         _ -> Just m
---       allModifiers = mapMaybe applyTraitRestrictedModifiers allModifiers'
---     pure $ if any ((== Blank) . modifierType) allModifiers
---       then filter ((/= targetToSource target) . modifierSource) allModifiers
---       else allModifiers
-
 instance HasModifiersFor Entities where
   getModifiersFor target e = concat <$> sequence
     [ concat <$> traverse (getModifiersFor target) (e ^. enemiesL . to toList)
@@ -2288,9 +2257,7 @@ instance Projection Treachery where
       TreacheryAttachedTarget -> pure treacheryAttachedTarget
       TreacheryTraits -> pure $ cdCardTraits cdef
       TreacheryKeywords -> do
-        modifiers' <- foldMapM
-          getModifiers
-          [toTarget t, CardIdTarget $ toCardId t]
+        modifiers' <- foldMapM getModifiers [toTarget t, CardTarget $ toCard t]
         let
           additionalKeywords = foldl' applyModifier [] modifiers'
           applyModifier ks = \case
@@ -2428,7 +2395,8 @@ runMessages mLogger = do
               HunterMove eid -> overGame $ enemyMovingL ?~ eid
               WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
               _ -> pure ()
-            runWithEnv (getGame >>= runMessage msg >>= preloadModifiers) >>= putGame
+            runWithEnv (getGame >>= runMessage msg >>= preloadModifiers)
+              >>= putGame
             runMessages mLogger
 
 runPreGameMessage :: Message -> Game -> GameT Game
@@ -2460,9 +2428,7 @@ createActiveCostForCard
   -> m ActiveCost
 createActiveCostForCard iid card windows' = do
   acId <- getRandom
-  modifiers' <- getModifiers (CardIdTarget $ toCardId card)
-  modifiers'' <- getModifiers (CardTarget card)
-  let allModifiers = modifiers' <> modifiers''
+  modifiers' <- getModifiers (CardTarget card)
   resources <- getModifiedCardCost iid card
   investigator' <- getInvestigator iid
   let
@@ -2473,7 +2439,7 @@ createActiveCostForCard iid card windows' = do
           (Cost.ResourceCost 1)
         else Cost.Free
       else Cost.ResourceCost resources
-    additionalCosts = flip mapMaybe allModifiers $ \case
+    additionalCosts = flip mapMaybe modifiers' $ \case
       AdditionalCost c -> Just c
       _ -> Nothing
     sealTokenCosts =
@@ -2499,11 +2465,9 @@ createActiveCostForAdditionalCardCosts
   -> m (Maybe ActiveCost)
 createActiveCostForAdditionalCardCosts iid card = do
   acId <- getRandom
-  modifiers' <- getModifiers (CardIdTarget $ toCardId card)
-  modifiers'' <- getModifiers (CardTarget card)
-  let allModifiers = modifiers' <> modifiers''
+  modifiers' <- getModifiers (CardTarget card)
   let
-    additionalCosts = flip mapMaybe allModifiers $ \case
+    additionalCosts = flip mapMaybe modifiers' $ \case
       AdditionalCost c -> Just c
       _ -> Nothing
     sealTokenCosts =
@@ -2998,17 +2962,13 @@ runGameMessage msg g = case msg of
     push $ ShuffleCardsIntoDeck deck [card]
     pure $ g & entitiesL . enemiesL %~ deleteMap enemyId
   PlayCard iid card _mtarget windows' True -> do
-    modifiers' <- getModifiers (CardIdTarget $ toCardId card)
-    modifiers'' <- getModifiers (CardTarget card)
+    modifiers' <- getModifiers (CardTarget card)
     investigator' <- getInvestigator iid
-    let allModifiers = modifiers' <> modifiers''
     activeCost <- createActiveCostForCard iid card windows'
     let
       isFast = case card of
         PlayerCard pc ->
-          isJust (cdFastWindow $ toCardDef pc)
-            || BecomesFast
-            `elem` allModifiers
+          isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` modifiers'
         _ -> False
       actions = case cdActions (toCardDef card) of
         [] -> [Action.Play]
@@ -3970,12 +3930,56 @@ preloadEntities g = do
     , gameInSearchEntities = searchEntities
     }
 
+allCards :: Game -> [Card]
+allCards Game {..} =
+  let
+    Entities {..} = gameEntities
+    agendaCards =
+      concatMap (agendaCardsUnderneath . toAttrs) (toList entitiesAgendas)
+    assetCards =
+      concatMap (assetCardsUnderneath . toAttrs) (toList entitiesAssets)
+    investigatorCards = concatMap
+      (concat
+      . sequence
+          [ map PlayerCard . unDeck . investigatorDeck
+          , map PlayerCard . investigatorDiscard
+          , investigatorHand
+          , investigatorCardsUnderneath
+          ]
+      . toAttrs
+      )
+      (toList entitiesInvestigators)
+    locationCards =
+      concatMap (locationCardsUnderneath . toAttrs) (toList entitiesLocations)
+    scenarioCards = case modeScenario gameMode of
+      Just s ->
+        concat
+          . sequence
+              [ scenarioCardsUnderScenarioReference
+              , scenarioCardsUnderAgendaDeck
+              , scenarioCardsUnderActDeck
+              , scenarioCardsNextToActDeck
+              , concat . toList . scenarioDecks
+              , scenarioSetAsideCards
+              , scenarioVictoryDisplay
+              , map EncounterCard . unDeck . scenarioEncounterDeck
+              , map EncounterCard . scenarioDiscard
+              ]
+          $ toAttrs s
+      Nothing -> []
+  in
+    agendaCards
+    <> assetCards
+    <> investigatorCards
+    <> locationCards
+    <> scenarioCards
+
 preloadModifiers :: Monad m => Game -> m Game
 preloadModifiers g = flip runReaderT g $ do
-    allModifiers <- getMonoidalHashMap <$> foldMapM
-      (`toTargetModifiers` entities)
-      (SkillTestTarget : map TokenTarget tokens <> map toTarget entities)
-    pure $ g { gameModifiers = allModifiers }
+  allModifiers <- getMonoidalHashMap <$> foldMapM
+    (`toTargetModifiers` entities)
+    (SkillTestTarget : map TokenTarget tokens <> map toTarget entities)
+  pure $ g { gameModifiers = allModifiers }
  where
   entities = overEntities (: []) (gameEntities g)
   tokens = nub $ maybe [] allSkillTestTokens (gameSkillTest g) <> maybe

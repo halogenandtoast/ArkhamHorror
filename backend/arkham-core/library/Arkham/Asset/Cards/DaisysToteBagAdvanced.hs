@@ -56,5 +56,5 @@ instance RunMessage DaisysToteBagAdvanced where
     UseCardAbility _ source [Window Timing.When (Window.PlayCard _ card)] 1 _
       | isSource attrs source
       -> a <$ push
-        (CreateEffect "90002" Nothing source (CardIdTarget $ toCardId card))
+        (CreateEffect "90002" Nothing source (CardTarget card))
     _ -> DaisysToteBagAdvanced <$> runMessage msg attrs

@@ -72,7 +72,7 @@ instance RunMessage WilliamYorick where
       i <$ push
         (chooseOne iid
         $ [ TargetLabel
-              (CardIdTarget $ toCardId card)
+              (CardTarget $ PlayerCard card)
               (playCardMsgs $ PlayerCard card)
           | card <- playableTargets
           ]

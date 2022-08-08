@@ -184,7 +184,7 @@ treacheryWith f cardDef g = CardBuilder
 is :: Target -> TreacheryAttrs -> Bool
 is (TreacheryTarget tid) t = tid == treacheryId t
 is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
-is (CardIdTarget cardId) t = cardId == unTreacheryId (treacheryId t)
+is (CardTarget card) t = toCardId card == unTreacheryId (treacheryId t)
 is _ _ = False
 
 data Treachery = forall a. IsTreachery a => Treachery a

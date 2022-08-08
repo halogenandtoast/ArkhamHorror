@@ -31,7 +31,7 @@ instance RunMessage Overzealous where
             (toCardCode attrs)
             Nothing
             (toSource attrs)
-            (CardIdTarget $ toCardId card)
+            (CardTarget $ EncounterCard card)
           , InvestigatorDrewEncounterCard iid card
           ]
     _ -> Overzealous <$> runMessage msg attrs

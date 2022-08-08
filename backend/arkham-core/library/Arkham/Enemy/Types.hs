@@ -210,7 +210,7 @@ instance TargetEntity EnemyAttrs where
   toTarget = EnemyTarget . toId
   isTarget EnemyAttrs { enemyId } (EnemyTarget eid) = enemyId == eid
   isTarget attrs (CardCodeTarget cardCode) = toCardCode attrs == cardCode
-  isTarget attrs (CardIdTarget cardId) = toCardId attrs == cardId
+  isTarget attrs (CardTarget card) = toCardId attrs == toCardId card
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 

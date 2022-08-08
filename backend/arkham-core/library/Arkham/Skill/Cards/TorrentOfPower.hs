@@ -33,8 +33,8 @@ chargesSpent (UsesPayment n) = n
 chargesSpent _ = 0
 
 instance HasModifiersFor TorrentOfPower where
-  getModifiersFor (CardIdTarget cid) (TorrentOfPower attrs)
-    | toCardId attrs == cid = do
+  getModifiersFor (CardTarget c) (TorrentOfPower attrs)
+    | toCardId attrs == toCardId c = do
       mSkillTest <- getSkillTest
       case mSkillTest of
         Just _ -> do

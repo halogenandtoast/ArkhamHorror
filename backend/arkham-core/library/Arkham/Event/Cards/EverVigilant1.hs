@@ -56,7 +56,7 @@ instance RunMessage EverVigilant1 where
         iid
         1
         "Do not play asset"
-        [ TargetLabel (CardIdTarget $ toCardId c) [PayCardCost iid c windows'']
+        [ TargetLabel (CardTarget c) [PayCardCost iid c windows'']
         | c <- playableCards
         ]
       pure e

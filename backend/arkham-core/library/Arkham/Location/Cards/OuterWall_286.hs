@@ -26,7 +26,7 @@ outerWall_286 :: LocationCard OuterWall_286
 outerWall_286 = location OuterWall_286 Cards.outerWall_286 4 (PerPlayer 1)
 
 instance HasModifiersFor OuterWall_286 where
-  getModifiersFor (CardIdTarget _) (OuterWall_286 a) = do
+  getModifiersFor (CardTarget _) (OuterWall_286 a) = do
     mSkillTestSource <- getSkillTestSource
     case mSkillTestSource of
       Just (SkillTestSource iid _ _ _) -> do

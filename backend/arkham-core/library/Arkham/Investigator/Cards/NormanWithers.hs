@@ -43,10 +43,10 @@ instance HasModifiersFor NormanWithers where
       $ toModifiers a
       $ TopCardOfDeckIsRevealed
       : [ CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata) ]
-  getModifiersFor (CardIdTarget cid) (NormanWithers (a `With` _)) =
+  getModifiersFor (CardTarget card) (NormanWithers (a `With` _)) =
     case unDeck (investigatorDeck a) of
-      x : _ | toCardId x == cid ->
-        pure $ toModifiers a [ReduceCostOf (CardWithId cid) 1]
+      x : _ | toCardId x == toCardId card ->
+        pure $ toModifiers a [ReduceCostOf (CardWithId $ toCardId card) 1]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -81,7 +81,7 @@ instance RunMessage NormanWithers where
           (chooseOne iid
           $ Label "Do not swap" []
           : [ TargetLabel
-                (CardIdTarget $ toCardId c)
+                (CardTarget $ PlayerCard c)
                 [ DrawCards iid 1 False
                 , PutCardOnTopOfDeck
                   iid

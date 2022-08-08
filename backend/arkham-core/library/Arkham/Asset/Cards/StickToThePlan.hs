@@ -30,8 +30,8 @@ instance HasModifiersFor StickToThePlan where
   getModifiersFor (InvestigatorTarget iid) (StickToThePlan attrs)
     | controlledBy attrs iid = pure
     $ toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
-  getModifiersFor (CardIdTarget cardId) (StickToThePlan attrs)
-    | cardId `elem` map toCardId (assetCardsUnderneath attrs) = pure
+  getModifiersFor (CardTarget card) (StickToThePlan attrs)
+    | toCardId card  `elem` map toCardId (assetCardsUnderneath attrs) = pure
     $ toModifiers
         attrs
         [AdditionalCost $ ExhaustCost $ AssetTarget $ toId attrs]
@@ -67,7 +67,7 @@ instance RunMessage StickToThePlan where
         3
         "Choose no more events"
         [ TargetLabel
-            (CardIdTarget $ toCardId card)
+            (CardTarget card)
             [ RemoveCardFromSearch iid (toCardId card)
             , PlaceUnderneath (toTarget attrs) [card]
             ]
@@ -93,7 +93,7 @@ instance RunMessage StickToThePlan where
               [AdditionalCost $ ExhaustCost $ AssetTarget $ toId attrs]
             )
             (toSource attrs)
-            (CardIdTarget $ toCardId card)
+            (CardTarget card)
           , AddToHand iid card
           , msg
           ]

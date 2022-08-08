@@ -23,8 +23,8 @@ leadership :: SkillCard Leadership
 leadership = skill Leadership Cards.leadership
 
 instance HasModifiersFor Leadership where
-  getModifiersFor (CardIdTarget cid) (Leadership attrs)
-    | toCardId attrs == cid = do
+  getModifiersFor (CardTarget c) (Leadership attrs)
+    | toCardId attrs == toCardId c = do
       mSkillTestSource <- getSkillTestSource
       case mSkillTestSource of
         Just (SkillTestSource iid' _ _ _) | skillOwner attrs /= iid' ->

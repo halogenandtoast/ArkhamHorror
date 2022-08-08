@@ -45,7 +45,7 @@ instance RunMessage HuntedByByakhee where
             , chooseOne
               iid
               [ TargetLabel
-                  (CardIdTarget $ toCardId enemy)
+                  (CardTarget $ EncounterCard enemy)
                   [ RemoveFromEncounterDiscard enemy
                   , InvestigatorDrewEncounterCard iid enemy
                   ]

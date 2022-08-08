@@ -42,9 +42,9 @@ leoAnderson = investigator
     }
 
 instance HasModifiersFor LeoAnderson where
-  getModifiersFor (CardIdTarget cid) (LeoAnderson (attrs `With` metadata))
-    | Just cid == fmap toCardId (responseCard metadata)
-    = pure $ toModifiers attrs [ReduceCostOf (CardWithId cid) 1]
+  getModifiersFor (CardTarget card) (LeoAnderson (attrs `With` metadata))
+    | Just (toCardId card) == fmap toCardId (responseCard metadata)
+    = pure $ toModifiers attrs [ReduceCostOf (CardWithId $ toCardId card) 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LeoAnderson where
@@ -80,7 +80,7 @@ instance RunMessage LeoAnderson where
       push $ chooseOne
         iid
         [ TargetLabel
-            (CardIdTarget $ toCardId c)
+            (CardTarget c)
             [UseCardAbilityChoiceTarget iid source windows' 1 payment (CardTarget c)]
         | c <- cards
         ]

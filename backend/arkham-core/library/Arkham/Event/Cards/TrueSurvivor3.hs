@@ -5,7 +5,6 @@ module Arkham.Event.Cards.TrueSurvivor3
 
 import Arkham.Prelude
 
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -34,7 +33,7 @@ instance RunMessage TrueSurvivor3 where
         [ chooseN
           iid
           3
-          [ TargetLabel (CardIdTarget $ toCardId target) [AddToHand iid target]
+          [ TargetLabel (CardTarget target) [AddToHand iid target]
           | target <- targets
           ]
         , Discard (toTarget attrs)

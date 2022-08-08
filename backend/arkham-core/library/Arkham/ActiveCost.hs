@@ -59,8 +59,8 @@ addActiveCostCost cost ac = ac & costsL <>~ cost
 activeCostSource :: ActiveCost -> Source
 activeCostSource ac = case activeCostTarget ac of
   ForAbility a -> abilitySource a
-  ForCard c -> CardIdSource $ toCardId c
-  ForCost c -> CardIdSource $ toCardId c
+  ForCard c -> CardSource c
+  ForCost c -> CardSource c
 
 costsL :: Lens' ActiveCost Cost
 costsL = lens activeCostCosts $ \m x -> m { activeCostCosts = x }
@@ -512,7 +512,7 @@ instance RunMessage ActiveCost where
             iid
             x
             [ TargetLabel
-                (CardIdTarget $ toCardId card)
+                (CardTarget $ PlayerCard card)
                 [ PayCost
                     acId
                     iid
@@ -537,12 +537,12 @@ instance RunMessage ActiveCost where
               iid
               x
               [ TargetLabel
-                  (CardIdTarget $ toCardId card)
+                  (CardTarget card)
                   [ PayCost
                       acId
                       iid
                       skipAdditionalCosts
-                      (DiscardCost $ CardIdTarget $ toCardId card)
+                      (DiscardCost $ CardTarget card)
                   ]
               | card <- cards
               ]

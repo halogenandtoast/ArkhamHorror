@@ -545,7 +545,6 @@ targetToSource = \case
   ScenarioDeckTarget -> error "can not covert"
   AgendaTarget aid -> AgendaSource aid
   ActTarget aid -> ActSource aid
-  CardIdTarget _ -> error "can not convert"
   CardCodeTarget _ -> error "can not convert"
   SearchedCardTarget _ -> error "can not convert"
   EventTarget eid -> EventSource eid
@@ -571,10 +570,10 @@ sourceToTarget = \case
   YouSource -> YouTarget
   AssetSource aid -> AssetTarget aid
   EnemySource eid -> EnemyTarget eid
-  CardIdSource cid -> CardIdTarget cid
   ScenarioSource sid -> ScenarioTarget sid
   InvestigatorSource iid -> InvestigatorTarget iid
   CardCodeSource cid -> CardCodeTarget cid
+  CardSource c -> CardTarget c
   TokenSource t -> TokenTarget t
   TokenEffectSource _ -> error "not implemented"
   AgendaSource aid -> AgendaTarget aid
@@ -708,8 +707,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
     canEvade <- hasEvadeActions iid (Matcher.DuringTurn Matcher.You)
     canFight <- hasFightActions iid (Matcher.DuringTurn Matcher.You)
     passesLimits <- allM passesLimit (cdLimits pcDef)
-    cardModifiers <- getModifiers
-      (CardIdTarget $ toCardId c)
+    cardModifiers <- getModifiers (CardTarget c)
     let
       additionalCosts = flip mapMaybe cardModifiers $ \case
         AdditionalCost x -> Just x
@@ -720,7 +718,7 @@ getIsPlayableWithResources iid source availableResources costStatus windows' c@(
         _ -> Nothing
 
     canAffordAdditionalCosts <- allM
-      (getCanAffordCost iid (CardIdSource $ toCardId c) Nothing windows')
+      (getCanAffordCost iid (CardSource c) Nothing windows')
       (additionalCosts <> sealedTokenCost)
 
     passesSlots <- if null (cdSlots pcDef)
@@ -1077,8 +1075,7 @@ passesEnemyCriteria _iid source windows' criterion = selectAny
 getModifiedCardCost :: (Monad m, HasGame m) => InvestigatorId -> Card -> m Int
 getModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  cardModifiers <- getModifiers
-    (CardIdTarget $ toCardId c)
+  cardModifiers <- getModifiers (CardTarget c)
   foldM applyModifier startingCost (modifiers <> cardModifiers)
  where
   pcDef = toCardDef c
@@ -1765,7 +1762,6 @@ targetTraits = \case
   AssetTarget aid -> field AssetTraits aid
 
   CardCodeTarget _ -> pure mempty
-  CardIdTarget _ -> pure mempty
   EffectTarget _ -> pure mempty
 
   EnemyTarget eid -> field EnemyTraits eid
@@ -1816,7 +1812,7 @@ sourceTraits = \case
   AssetSource aid -> field AssetTraits aid
 
   CardCodeSource _ -> pure mempty
-  CardIdSource _ -> pure mempty
+  CardSource card -> pure $ toTraits card
   DeckSource -> pure mempty
   EffectSource _ -> pure mempty
   EmptyDeckSource -> pure mempty

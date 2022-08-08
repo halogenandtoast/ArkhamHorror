@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
@@ -57,7 +56,7 @@ instance RunMessage ExpeditionCamp where
         $ QuestionLabel "Place one card on bottom of exploration deck"
         $ ChooseOne
             [ TargetLabel
-                (CardIdTarget $ toCardId c)
+                (CardTarget c)
                 [ PutCardOnBottomOfDeck
                   iid
                   (Deck.ScenarioDeckByKey ExplorationDeck)
@@ -67,7 +66,7 @@ instance RunMessage ExpeditionCamp where
                 $ QuestionLabel "Place card on top of exploration deck"
                 $ ChooseOneAtATime
                     [ TargetLabel
-                        (CardIdTarget $ toCardId r)
+                        (CardTarget r)
                         [ PutCardOnTopOfDeck
                             iid
                             (Deck.ScenarioDeckByKey ExplorationDeck)

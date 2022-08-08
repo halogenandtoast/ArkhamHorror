@@ -58,8 +58,8 @@ instance RunMessage Corrosion where
           asset
           [Discard (AssetTarget asset), RevelationChoice iid source (n - cost)]
         discardHandAsset card = TargetLabel
-          (CardIdTarget $ toCardId card)
-          [ Discard (CardIdTarget $ toCardId card)
+          (CardTarget card)
+          [ Discard (CardTarget card)
           , RevelationChoice
             iid
             source

@@ -61,7 +61,7 @@ instance RunMessage AChanceEncounter2 where
         , chooseOne
           iid
           [ TargetLabel
-              (CardIdTarget $ toCardId card')
+              (CardTarget card')
               [ PutCardIntoPlay iid card Nothing (defaultWindows iid)
               , RemoveFromDiscard iid (toCardId card')
               ]

@@ -5,7 +5,6 @@ module Arkham.Effect.Effects.DaisysToteBagAdvanced
 
 import Arkham.Prelude
 
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Helpers
 import Arkham.Effect.Runner
@@ -26,6 +25,6 @@ instance HasModifiersFor DaisysToteBagAdvanced where
 
 instance RunMessage DaisysToteBagAdvanced where
   runMessage msg e@(DaisysToteBagAdvanced attrs) = case msg of
-    PlayedCard _ card | CardIdTarget (toCardId card) == effectTarget attrs ->
+    PlayedCard _ card | CardTarget card == effectTarget attrs ->
       e <$ push (DisableEffect $ toId attrs)
     _ -> DaisysToteBagAdvanced <$> runMessage msg attrs

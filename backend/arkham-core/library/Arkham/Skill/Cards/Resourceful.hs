@@ -33,7 +33,7 @@ instance RunMessage Resourceful where
         (push $ chooseOne
           (skillOwner attrs)
           [ TargetLabel
-              (CardIdTarget $ toCardId card)
+              (CardTarget card)
               [ RemoveFromDiscard (skillOwner attrs) (toCardId card)
               , AddToHand (skillOwner attrs) card
               ]

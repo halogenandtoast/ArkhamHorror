@@ -5,6 +5,7 @@ module Arkham.Source (
 import Arkham.Prelude
 
 import Arkham.Action (Action)
+import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.CardCode
 import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Card.PlayerCard
@@ -24,7 +25,7 @@ data Source
   | AssetMatcherSource AssetMatcher
   | AssetSource AssetId
   | CardCodeSource CardCode
-  | CardIdSource CardId
+  | CardSource Card
   | DeckSource
   | EffectSource EffectId
   | EmptyDeckSource

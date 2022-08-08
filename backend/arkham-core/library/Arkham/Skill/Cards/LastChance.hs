@@ -23,7 +23,7 @@ lastChance :: SkillCard LastChance
 lastChance = skill LastChance Cards.lastChance
 
 instance HasModifiersFor LastChance where
-  getModifiersFor (CardIdTarget cid) (LastChance a) | toCardId a == cid = do
+  getModifiersFor (CardTarget card) (LastChance a) | toCardId a == toCardId card = do
     n <- fieldMap InvestigatorHand length (skillOwner a)
     pure $ toModifiers a [RemoveSkillIcons $ replicate n SkillWild]
   getModifiersFor _ _ = pure []

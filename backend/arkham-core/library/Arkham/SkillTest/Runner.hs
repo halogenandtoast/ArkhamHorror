@@ -37,8 +37,8 @@ skillIconCount SkillTest {..} = do
       (iconsForCard . snd)
       (toList skillTestCommittedCards)
  where
-  iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
-    modifiers' <- getModifiers (CardIdTarget pcId)
+  iconsForCard c@(PlayerCard _) = do
+    modifiers' <- getModifiers (CardTarget c)
     pure $ foldr
       applyAfterSkillModifiers
       (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')

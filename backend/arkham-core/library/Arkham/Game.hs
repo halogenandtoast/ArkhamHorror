@@ -2328,7 +2328,7 @@ overGame f = overGameM (pure . f)
 
 overGameM
   :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> m Game) -> m ()
-overGameM f = readGame >>= f >>= putGame
+overGameM f = withGameM f >>= putGame
 
 withGameM
   :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> m a) -> m a
@@ -2336,7 +2336,7 @@ withGameM f = readGame >>= f
 
 withGameM_
   :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> m a) -> m ()
-withGameM_ f = readGame >>= void . f
+withGameM_ f = withGameM (void . f)
 
 runMessages
   :: ( MonadIO m
@@ -2350,8 +2350,8 @@ runMessages
   -> m ()
 runMessages mLogger = do
   g <- readGame
-  debugLevel <-
-    liftIO $ fromMaybe (0 :: Int) . join . fmap readMay <$> lookupEnv "DEBUG"
+  debugLevel <- fromMaybe @Int 0 . join . fmap readMay <$> liftIO
+    (lookupEnv "DEBUG")
   when (debugLevel == 2) $ peekQueue >>= pPrint >> putStrLn "\n"
 
   unless (g ^. gameStateL /= IsActive) $ do
@@ -2428,9 +2428,7 @@ runMessages mLogger = do
               HunterMove eid -> overGame $ enemyMovingL ?~ eid
               WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
               _ -> pure ()
-            res <- runWithEnv $ runMessage msg =<< getGame
-            putGame res
-
+            runWithEnv (getGame >>= runMessage msg >>= preloadModifiers) >>= putGame
             runMessages mLogger
 
 runPreGameMessage :: Message -> Game -> GameT Game
@@ -3972,20 +3970,20 @@ preloadEntities g = do
     , gameInSearchEntities = searchEntities
     }
 
-preloadModifiers :: forall m . (HasGame m, Monad m) => Game -> m Game
-preloadModifiers g = do
-  allModifiers <- getMonoidalHashMap <$> foldMapM
-    (`toTargetModifiers` entities)
-    (SkillTestTarget : map TokenTarget tokens <> map toTarget entities)
-  pure $ g { gameModifiers = allModifiers }
+preloadModifiers :: Monad m => Game -> m Game
+preloadModifiers g = flip runReaderT g $ do
+    allModifiers <- getMonoidalHashMap <$> foldMapM
+      (`toTargetModifiers` entities)
+      (SkillTestTarget : map TokenTarget tokens <> map toTarget entities)
+    pure $ g { gameModifiers = allModifiers }
  where
   entities = overEntities (: []) (gameEntities g)
   tokens = nub $ maybe [] allSkillTestTokens (gameSkillTest g) <> maybe
     []
     (allChaosBagTokens . scenarioChaosBag . toAttrs)
     (modeScenario $ gameMode g)
-  toTargetModifiers target = foldMapM
-    (fmap (MonoidalHashMap.singleton target) . getModifiersFor target)
+  toTargetModifiers target =
+    foldMapM (fmap (MonoidalHashMap.singleton target) . getModifiersFor target)
 
 data SomeEntity
   = forall e
@@ -4025,7 +4023,6 @@ instance RunMessage Game where
   runMessage msg g = do
     preloadEntities g
       >>= runPreGameMessage msg
-      >>= preloadModifiers
       >>= traverseOf (modeL . here) (runMessage msg)
       >>= traverseOf (modeL . there) (runMessage msg)
       >>= traverseOf entitiesL (runMessage msg)

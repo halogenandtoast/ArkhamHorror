@@ -1817,7 +1817,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         cards = mapMaybe (preview _PlayerCard)
           $ findWithDefault [] Zone.FromDiscard investigatorFoundCards
       pure $ a & foundCardsL %~ deleteMap Zone.FromDiscard & discardL <>~ cards
-  DisengageEnemy iid eid | iid == investigatorId ->
+  DisengageEnemy iid eid | iid == investigatorId -> do
     pure $ a & engagedEnemiesL %~ deleteSet eid
   EndSearch iid _ (InvestigatorTarget iid') cardSources
     | iid == investigatorId -> do

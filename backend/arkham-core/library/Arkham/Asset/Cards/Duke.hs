@@ -35,10 +35,6 @@ instance HasModifiersFor Duke where
       Just (SkillTestSource _ _ source (Just Action.Fight))
         | isSource a source -> pure
         $ toModifiers a [BaseSkillOf SkillCombat 4, DamageDealt 1]
-      _ -> pure []
-  getModifiersFor (InvestigatorTarget iid) (Duke a) | controlledBy a iid = do
-    mSkillTestSource <- getSkillTestSource
-    case mSkillTestSource of
       Just (SkillTestSource _ _ source (Just Action.Investigate))
         | isSource a source -> pure
         $ toModifiers a [BaseSkillOf SkillIntellect 4]

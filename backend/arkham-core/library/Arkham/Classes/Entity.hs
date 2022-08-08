@@ -7,21 +7,7 @@ import Arkham.Prelude hiding ( to )
 
 import Arkham.Classes.Entity.Source as X
 import Arkham.Target
-import Arkham.Card.CardCode
 import Arkham.Token
-
-data SomeEntityId = EntityUUID UUID | EntityCardCode CardCode
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
-
-class IsSomeEntityId a where
-  toSomeEntityId :: a -> SomeEntityId
-
-instance IsSomeEntityId UUID where
-  toSomeEntityId = EntityUUID
-
-instance IsSomeEntityId CardCode where
-  toSomeEntityId = EntityCardCode
 
 class Entity a where
   type EntityId a

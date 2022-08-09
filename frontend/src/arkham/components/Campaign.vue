@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
-import Story from '@/arkham/components/Story.vue';
+// import Story from '@/arkham/components/Story.vue';
 import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
 import Scenario from '@/arkham/components/Scenario.vue';
 import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
@@ -41,7 +41,6 @@ const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.st
       @update="update"
     />
     <template v-else>
-      <Story :game="game" :investigatorId="investigatorId" @choose="choose" />
       <StatusBar :game="game" :investigatorId="investigatorId" @choose="choose" />
       <PlayerOrder
         :game="game"

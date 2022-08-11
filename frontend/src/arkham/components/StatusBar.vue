@@ -91,8 +91,6 @@ const testResult = computed(() => {
       </div>
     </div>
 
-
-
     <div class="choices">
       <template v-for="(choice, index) in choices" :key="index">
         <div v-if="choice.tag === MessageType.AFTER_DISCOVER_CLUES">

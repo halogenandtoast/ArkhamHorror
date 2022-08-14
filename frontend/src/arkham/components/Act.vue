@@ -63,13 +63,17 @@ function canInteract(c: Message): boolean {
 const interactAction = computed(() => choices.value.findIndex(canInteract));
 
 function isAbility(v: Message) {
- return (v.tag === 'UseAbility' && v.contents[1].source.tag === 'ActSource' && v.contents[1].source.contents === id.value)
+  if (v.contents && v.contents[1] && v.contents[1].source) {
+    return (v.tag === 'UseAbility' && v.contents[1].source.tag === 'ActSource' && v.contents[1].source.contents === id.value)
+  }
+
+  return false;
 }
 
 const abilities = computed(() => {
   return choices.value
     .reduce<number[]>((acc, v, i) => {
-      if (v.tag === 'Run' && isAbility(v.contents[0])) {
+      if (v.tag === 'Run' && v.contents[0] && isAbility(v.contents[0])) {
         return [...acc, i];
       } else if (isAbility(v)) {
         return [...acc, i];

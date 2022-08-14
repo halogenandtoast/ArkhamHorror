@@ -108,14 +108,16 @@ const cardAction = computed(() => {
 })
 
 function isActivate(v: Message) {
-  if (v.tag !== 'UseAbility') {
-    return false
-  }
+  if (v) {
+    if (v.tag !== 'UseAbility') {
+      return false
+    }
 
-  const { contents } = v.contents[1].source;
+    const { contents } = v.contents[1].source;
 
-  if (contents === id.value) {
-    return true
+    if (contents === id.value) {
+      return true
+    }
   }
 
   return false

@@ -91,6 +91,16 @@ const testResult = computed(() => {
       </div>
     </div>
 
+    <div class="intro-text" v-if="question && question.tag === MessageType.READ">
+      <h1 v-if="question.contents[0].title">{{question.contents[0].title}}</h1>
+      <p
+        v-for="(paragraph, index) in question.contents[0].body"
+        :key="index"
+      >{{paragraph}}</p>
+      <button v-for="(readChoice, readIndex) in question.contents[1]" @click="choose(readIndex)" :key="readIndex">{{readChoice[0]}}</button>
+    </div>
+
+
     <div class="choices">
       <template v-for="(choice, index) in choices" :key="index">
         <div v-if="choice.tag === MessageType.AFTER_DISCOVER_CLUES">
@@ -103,20 +113,6 @@ const testResult = computed(() => {
 
         <div v-if="choice.tag === MessageType.DONE">
           <button @click="choose(index)">{{choice.contents}}</button>
-        </div>
-
-        <div
-          v-if="choice.tag === MessageType.RUN
-            && (choice.contents[0] && choice.contents[0].tag === MessageType.CONTINUE)"
-          >
-          <div v-if="choice.contents[1].tag === MessageType.FLAVOR_TEXT" class="intro-text">
-            <h1 v-if="choice.contents[1].contents[0]">{{choice.contents[1].contents[0]}}</h1>
-            <p
-              v-for="(paragraph, index) in choice.contents[1].contents[1]"
-              :key="index"
-            >{{paragraph}}</p>
-          </div>
-          <button @click="choose(index)">{{choice.contents[0].contents}}</button>
         </div>
 
         <div v-if="choice.tag === MessageType.LABEL">

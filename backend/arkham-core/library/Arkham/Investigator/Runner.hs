@@ -184,8 +184,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then FinishedWithMulligan investigatorId
       else
         chooseOne iid
-        $ Run
-            [Continue "Done With Mulligan", FinishedWithMulligan investigatorId]
+        $ Label "Done With Mulligan" [FinishedWithMulligan investigatorId]
         : [ Run [DiscardCard iid (toCardId card), InvestigatorMulligan iid]
           | card <- investigatorHand
           ]

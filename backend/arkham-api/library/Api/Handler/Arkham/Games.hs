@@ -460,6 +460,9 @@ handleAnswer Game {..} investigatorId = \case
  where
   go f q response = case q of
     QuestionLabel lbl q' -> go (QuestionLabel lbl) q' response
+    Read t qs -> case qs !!? qrChoice response of
+      Nothing -> [Ask investigatorId $ f $ Read t qs]
+      Just (_, msg) -> [msg]
     ChooseOne qs -> case qs !!? qrChoice response of
       Nothing -> [Ask investigatorId $ f $ ChooseOne qs]
       Just msg -> [msg]

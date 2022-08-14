@@ -165,7 +165,7 @@ const abilities = computed(() => {
         return [...acc, i];
       }
 
-      if (v.tag === 'Run' && isAbility(v.contents[0])) {
+      if (v.tag === 'Run' && v.contents[0] && isAbility(v.contents[0])) {
         return [...acc, i];
       }
 

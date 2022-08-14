@@ -76,6 +76,8 @@ export function choices(game: Game, investigatorId: string): Message[] {
         return q.contents;
       case 'QuestionLabel':
         return toContents(q.contents[1]);
+      case 'Read':
+        return q.contents[1].map(([, q]) => q);
       case 'ChooseOneFromSource':
       {
         const { choices: sourceChoices } = q.contents;

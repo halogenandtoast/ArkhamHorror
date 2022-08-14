@@ -2,7 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseDynamicCardAmounts | ChooseAmounts | QuestionLabel;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseDynamicCardAmounts | ChooseAmounts | QuestionLabel | Read;
 
 export interface ChooseOne {
   tag: 'ChooseOne';
@@ -12,6 +12,16 @@ export interface ChooseOne {
 export interface QuestionLabel {
   tag: 'QuestionLabel';
   contents: [string, Question];
+}
+
+export interface FlavorText {
+  title: string | null;
+  body: string[];
+}
+
+export interface Read {
+  tag: 'Read';
+  contents: [FlavorText, [string, Message][]];
 }
 
 export interface ChooseN {
@@ -141,6 +151,33 @@ export const questionLabelDecoder: JsonDecoder.Decoder<QuestionLabel> = JsonDeco
   'QuestionLabel',
 );
 
+export const flavorTextDecoder: JsonDecoder.Decoder<FlavorText> = JsonDecoder.object<FlavorText>(
+  {
+    title: JsonDecoder.nullable(JsonDecoder.string),
+    body: JsonDecoder.array(JsonDecoder.string, 'string[]')
+  },
+  'FlavorText',
+);
+
+export const readDecoder: JsonDecoder.Decoder<Read> = JsonDecoder.object<Read>(
+  {
+    tag: JsonDecoder.isExactly('Read'),
+    contents: JsonDecoder.tuple(
+      [ flavorTextDecoder,
+        JsonDecoder.array(
+          JsonDecoder.tuple(
+            [JsonDecoder.string, messageDecoder],
+            '[string, message]'
+          ),
+          '[string, message][]'
+        )
+      ],
+      '[FlavorText, [string, message][]'
+    )
+  },
+  'Read',
+);
+
 export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
   {
     tag: JsonDecoder.isExactly('ChooseOne'),
@@ -210,6 +247,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     choosePaymentAmountsDecoder,
     chooseDynamicCardAmountsDecoder,
     questionLabelDecoder,
+    readDecoder,
   ],
   'Question',
 );

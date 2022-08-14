@@ -32,8 +32,7 @@ letTheStormRageTheFloodBelow = agenda
 
 instance HasModifiersFor LetTheStormRageTheFloodBelow where
   getModifiersFor (TreacheryTarget tid) (LetTheStormRageTheFloodBelow a) = do
-    isAncientEvils <- member tid
-      <$> select (treacheryIs Treacheries.ancientEvils)
+    isAncientEvils <- tid <=~> treacheryIs Treacheries.ancientEvils
     pure $ toModifiers a [ AddKeyword Keyword.Surge | isAncientEvils ]
   getModifiersFor _ _ = pure []
 
@@ -49,9 +48,7 @@ instance RunMessage LetTheStormRageTheFloodBelow where
   runMessage msg a@(LetTheStormRageTheFloodBelow attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       pushAll
-        [ Discard (AgendaTarget $ toId attrs)
-        , AddAct Acts.openThePathBelow
-        ]
+        [Discard (AgendaTarget $ toId attrs), AddAct Acts.openThePathBelow]
       pure a
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds

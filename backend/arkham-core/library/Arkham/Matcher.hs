@@ -27,7 +27,9 @@ import Arkham.Timing
 import Arkham.Token
 import Arkham.Trait
 
-data Matcher = MatchInvestigator InvestigatorMatcher | MatchLocation LocationMatcher
+data Matcher
+  = MatchInvestigator InvestigatorMatcher
+  | MatchLocation LocationMatcher
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -158,7 +160,10 @@ instance Semigroup InvestigatorMatcher where
   x <> InvestigatorMatches xs = InvestigatorMatches (x : xs)
   x <> y = InvestigatorMatches [x, y]
 
-data PreyMatcher = Prey InvestigatorMatcher | OnlyPrey InvestigatorMatcher | BearerOf EnemyId
+data PreyMatcher
+  = Prey InvestigatorMatcher
+  | OnlyPrey InvestigatorMatcher
+  | BearerOf EnemyId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -811,7 +816,10 @@ instance Semigroup SkillTestMatcher where
   x <> SkillTestMatches xs = SkillTestMatches $ x : xs
   x <> y = SkillTestMatches [x, y]
 
-data SkillTestResultMatcher = FailureResult ValueMatcher | SuccessResult ValueMatcher | AnyResult
+data SkillTestResultMatcher
+  = FailureResult ValueMatcher
+  | SuccessResult ValueMatcher
+  | AnyResult
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

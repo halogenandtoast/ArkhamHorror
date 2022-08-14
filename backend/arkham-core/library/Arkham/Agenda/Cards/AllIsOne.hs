@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Types
 import Arkham.Agenda.Runner
 import Arkham.CampaignLogKey
 import Arkham.Card.CardType
@@ -41,19 +40,20 @@ instance RunMessage AllIsOne where
       failedToSaveStudents <- getHasRecord
         TheInvestigatorsFailedToSaveTheStudents
       investigatorIds <- getInvestigatorIds
-      a <$ pushAll
-        ([ ShuffleEncounterDiscardBackIn
-         , DiscardEncounterUntilFirst
-           (toSource attrs)
-           (CardWithType LocationType)
-         ]
+      pushAll
+        $ [ ShuffleEncounterDiscardBackIn
+          , DiscardEncounterUntilFirst
+            (toSource attrs)
+            (CardWithType LocationType)
+          ]
         <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
            | failedToSaveStudents
            , iid <- investigatorIds
            ]
         <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
-        )
+      pure a
     RequestedEncounterCard source (Just card) | isSource attrs source -> do
       leadInvestigator <- getLeadInvestigatorId
-      a <$ push (InvestigatorDrewEncounterCard leadInvestigator card)
+      push $ InvestigatorDrewEncounterCard leadInvestigator card
+      pure a
     _ -> AllIsOne <$> runMessage msg attrs

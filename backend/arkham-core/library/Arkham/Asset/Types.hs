@@ -26,7 +26,7 @@ import Data.Typeable
 data Asset = forall a . IsAsset a => Asset a
 
 instance Eq Asset where
-  (Asset (a :: a)) == (Asset (b :: b)) = case eqT @a @b of
+  Asset (a :: a) == Asset (b :: b) = case eqT @a @b of
     Just Refl -> a == b
     Nothing -> False
 

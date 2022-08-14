@@ -265,7 +265,7 @@ on iid LocationAttrs { locationInvestigators } =
 data Location = forall a . IsLocation a => Location a
 
 instance Eq Location where
-  (Location (a :: a)) == (Location (b :: b)) = case eqT @a @b of
+  Location (a :: a) == Location (b :: b) = case eqT @a @b of
     Just Refl -> a == b
     Nothing -> False
 

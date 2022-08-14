@@ -233,7 +233,7 @@ storyCardsL = lens scenarioStoryCards $ \m x -> m { scenarioStoryCards = x }
 data Scenario = forall a. IsScenario a => Scenario a
 
 instance Eq Scenario where
-  (Scenario (a :: a)) == (Scenario (b :: b)) = case eqT @a @b of
+  Scenario (a :: a) == Scenario (b :: b) = case eqT @a @b of
     Just Refl -> a == b
     Nothing -> False
 

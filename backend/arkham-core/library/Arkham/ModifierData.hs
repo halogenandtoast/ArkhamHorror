@@ -4,8 +4,8 @@ module Arkham.ModifierData
 
 import Arkham.Prelude
 
-import Arkham.Json
 import Arkham.Id
+import Arkham.Json
 import Arkham.Modifier
 
 newtype ModifierData = ModifierData { mdModifiers :: [Modifier] }

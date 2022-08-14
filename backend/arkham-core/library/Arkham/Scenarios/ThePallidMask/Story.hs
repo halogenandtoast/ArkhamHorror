@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-intro1 :: Message
+intro1 :: FlavorText
 intro1 = FlavorText
   (Just "Intro 1")
   [ "You are stirred awake by dirty, stale air and dust in your throat. You are\
@@ -15,7 +15,7 @@ intro1 = FlavorText
     \ you, open-mouthed skulls peering back at you everywhere you look."
   ]
 
-intro2 :: Message
+intro2 :: FlavorText
 intro2 = FlavorText
   (Just "Intro 2")
   [ "The contents of Nigel Engram’s home answer none of your questions about The\
@@ -27,7 +27,7 @@ intro2 = FlavorText
     \ underneath Rue de la Tombe-Issoire."
   ]
 
-harukosInformation :: Message
+harukosInformation :: FlavorText
 harukosInformation = FlavorText
   (Just "Haruko's Information")
   [ "Just past the archway closest to you, you see a familiar symbol etched into\
@@ -40,7 +40,7 @@ harukosInformation = FlavorText
     \ new path."
   ]
 
-noResolution :: Message
+noResolution :: FlavorText
 noResolution = FlavorText
   (Just "No Resolution")
   [ "You are shaken awake by a police officer and\
@@ -69,7 +69,7 @@ noResolution = FlavorText
     \to read."
   ]
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   [ "The burned skull holds the key to everything.\
@@ -97,7 +97,7 @@ resolution1 = FlavorText
     \ Path Is Open.”"
   ]
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "You fall ceaselessly through the empty abyss.\

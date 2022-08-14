@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-intro1 :: Message
+intro1 :: FlavorText
 intro1 = FlavorText
   (Just "Scenario IV: The Unspeakable Oath")
   [ "“Wake up, Daniel.” The words\
@@ -23,7 +23,7 @@ intro1 = FlavorText
     \ Asylum, hoping your hunch is correct."
   ]
 
-intro2 :: Message
+intro2 :: FlavorText
 intro2 = FlavorText
   (Just "Scenario IV: The Unspeakable Oath")
   [ "Over the course of the next few days, you delve into the\
@@ -43,7 +43,7 @@ intro2 = FlavorText
     \ and head downtown, towards Arkham Asylum."
   ]
 
-intro3 :: Message
+intro3 :: FlavorText
 intro3 = FlavorText
   Nothing
   [ "As you enter the asylum, you stop to speak with the\
@@ -66,7 +66,7 @@ intro3 = FlavorText
     \ you seek, you are escorted into the patient wing of Arkham Asylum…"
   ]
 
-constancesInformation :: Message
+constancesInformation :: FlavorText
 constancesInformation = FlavorText
   (Just "Constances's Information")
   [ "You recall what Constance had told you\
@@ -82,13 +82,13 @@ constancesInformation = FlavorText
     \ him about this."
   ]
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   ["…And so ended the madness of The King in\
     \ Yellow."]
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "You are confronted by a number\
@@ -102,7 +102,7 @@ resolution2 = FlavorText
     \ but you have no time for that yet."
   ]
 
-resolution3 :: Message
+resolution3 :: FlavorText
 resolution3 = FlavorText
   (Just "Resolution 3")
   [ "With the asylum staff distracted\
@@ -116,7 +116,7 @@ resolution3 = FlavorText
     \ breaking into a run as you make it to the other side."
   ]
 
-defeat :: Message
+defeat :: FlavorText
 defeat = FlavorText
   (Just "Investigator Defeat")
   [ "“Doctor Mintz, the patient has been\

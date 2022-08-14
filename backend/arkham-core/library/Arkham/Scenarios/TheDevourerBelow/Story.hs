@@ -2,9 +2,9 @@ module Arkham.Scenarios.TheDevourerBelow.Story where
 
 import Arkham.Prelude
 
-import Arkham.Message
+import Arkham.Text
 
-intro :: Message
+intro :: FlavorText
 intro = FlavorText
   (Just "Part III: The Devourer Below")
   [ "After a frantic nighttime search throughout Arkham, you have tracker\
@@ -28,7 +28,7 @@ intro = FlavorText
     \ Frightened but determined to stop the ritual, you head into the woods…"
   ]
 
-noResolution :: Message
+noResolution :: FlavorText
 noResolution = FlavorText
   Nothing
   [ "Too frightened to face her fate, Lita flees\
@@ -40,7 +40,7 @@ noResolution = FlavorText
     \ in the shadows to this day, searching…killing"
   ]
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   [ "You have managed to prevent the cult from\
@@ -51,7 +51,7 @@ resolution1 = FlavorText
     \ tale. Perhaps it was all in your head, after all."
   ]
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "Through force of arms and strength of will,\
@@ -68,7 +68,7 @@ resolution2 = FlavorText
     \ the deep, dark corners of reality?"
   ]
 
-resolution3 :: Message
+resolution3 :: FlavorText
 resolution3 = FlavorText
   (Just "Resolution 3")
   [ "In the face of this horror, you don’t believe there\

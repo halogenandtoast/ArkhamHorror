@@ -6,6 +6,7 @@ module Arkham.Message
 
 import Arkham.Prelude
 
+import Arkham.Text as X
 import Arkham.Message.Type as X
 import Arkham.Question as X
 import Arkham.Strategy as X
@@ -80,10 +81,10 @@ isBlanked _ = False
 resolve :: Message -> [Message]
 resolve msg = [When msg, msg, After msg]
 
-story :: [InvestigatorId] -> Message -> Message
-story iids msg = AskMap
+story :: [InvestigatorId] -> FlavorText -> Message
+story iids flavor = AskMap
   (mapFromList
-    [ (iid, ChooseOne [Run [Continue "Continue", msg]]) | iid <- iids ]
+    [ (iid, Read flavor [("Continue", Run [])]) | iid <- iids ]
   )
 
 -- TODO: Better handle in play and out of play
@@ -105,9 +106,6 @@ it to be accessible from both.
 doNotMask :: Message -> Bool
 doNotMask UseCardAbility{} = True
 doNotMask _ = False
-
-newtype Tooltip = Tooltip Text
-  deriving newtype (Show, Eq, ToJSON, FromJSON)
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
@@ -336,7 +334,6 @@ data Message
   | FindAndDrawEncounterCard InvestigatorId CardMatcher
   | FindEncounterCard InvestigatorId Target CardMatcher
   | FinishedWithMulligan InvestigatorId
-  | FlavorText (Maybe Text) [Text]
   | FocusCards [Card]
   | FocusTargets [Target]
   | FocusTokens [Token]

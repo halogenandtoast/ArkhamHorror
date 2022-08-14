@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-intro1 :: Message
+intro1 :: FlavorText
 intro1 = FlavorText
   (Just "Scenario IV: The Unspeakable Oath")
   [ "Several months have passed since The\
@@ -33,7 +33,7 @@ intro1 = FlavorText
     \ suns, shattered moons, and twisted spires."
   ]
 
-intro2 :: Message
+intro2 :: FlavorText
 intro2 = FlavorText
   (Just "Scenario IV: The Unspeakable Oath")
   [ "It has been several weeks since the events in the asylum, and\
@@ -47,7 +47,7 @@ intro2 = FlavorText
     \ shattered moons, and twisted spires."
   ]
 
-dream1 :: Message
+dream1 :: FlavorText
 dream1 = FlavorText
   (Just "Dream 1")
   [ "You fall through the empty abyss of Hali. Creatures of\
@@ -57,7 +57,7 @@ dream1 = FlavorText
     \ outstretched arm."
   ]
 
-dream2 :: Message
+dream2 :: FlavorText
 dream2 = FlavorText
   (Just "Dream 2")
   [ "Constance takes your hand and pulls you onto the polished\
@@ -65,7 +65,7 @@ dream2 = FlavorText
     \ For celebration!”"
   ]
 
-dream3 :: Message
+dream3 :: FlavorText
 dream3 = FlavorText
   (Just "Dream 3")
   [ "“Ah, if it isn’t our esteemed guest,” the man with the\
@@ -75,7 +75,7 @@ dream3 = FlavorText
     \ “Tell me: how are you enjoying Act 2, so far?”"
   ]
 
-dream4 :: Message
+dream4 :: FlavorText
 dream4 = FlavorText
   (Just "Dream 4")
   [ "Smoke and embers float upwards into the starless night\
@@ -84,14 +84,14 @@ dream4 = FlavorText
     \ know that isn’t true."
   ]
 
-dream5 :: Message
+dream5 :: FlavorText
 dream5 = FlavorText
   (Just "Dream 5")
   [ "You peer in the mirror, and your reflection gives you a\
     \ curious glance. “Wait a second, this isn’t Dream 1,” you say."
   ]
 
-dream6 :: Message
+dream6 :: FlavorText
 dream6 = FlavorText
   (Just "Dream 6")
   [ "The lights of the theatre dim and a spotlight shines on the\
@@ -101,7 +101,7 @@ dream6 = FlavorText
     \ bulbous form."
   ]
 
-dream7 :: Message
+dream7 :: FlavorText
 dream7 = FlavorText
   (Just "Dream 7")
   [ "You find yourself inside the Arkham Police Department,\
@@ -117,14 +117,14 @@ dream7 = FlavorText
     \ possibly know?"
   ]
 
-dream8 :: Message
+dream8 :: FlavorText
 dream8 = FlavorText
   (Just "Dream 8")
   [ "You peer in the mirror, and the Stranger peers back at you.\
     \ His gaze drills into your mind. The mirror shatters."
   ]
 
-dream9 :: Message
+dream9 :: FlavorText
 dream9 = FlavorText
   (Just "Dream 9")
   [ "You chase the Stranger through dark, chilly passageways\
@@ -134,7 +134,7 @@ dream9 = FlavorText
     \ pulled into the wall. Their mocking laughs reach an awful crescendo."
   ]
 
-dream10 :: Message
+dream10 :: FlavorText
 dream10 = FlavorText
   (Just "Dream 10")
   [ "You chase the Stranger up a steep staircase of broken\
@@ -147,7 +147,7 @@ dream10 = FlavorText
     \ it not?” the Stranger says quietly."
   ]
 
-dream11 :: Message
+dream11 :: FlavorText
 dream11 = FlavorText
   (Just "Dream 11")
   [ "You avoid looking at the stained glass. If this vile man\
@@ -156,7 +156,7 @@ dream11 = FlavorText
     \ forward to confront the Stranger"
   ]
 
-dream12 :: Message
+dream12 :: FlavorText
 dream12 = FlavorText
   (Just "Dream 12")
   [ "You peer up at the stained glass, curious. What is the shape\
@@ -164,14 +164,14 @@ dream12 = FlavorText
     \ strange design?"
   ]
 
-dream13 :: Message
+dream13 :: FlavorText
 dream13 = FlavorText
   (Just "Dream 13")
   [ "Daniel’s voice calls out to you. “They are opening the path to\
     \ Carcosa.”"
   ]
 
-awakening :: Message
+awakening :: FlavorText
 awakening = FlavorText
   (Just "Awakening")
   [ "You awaken from your fitful dream, sweating and\
@@ -182,7 +182,7 @@ awakening = FlavorText
     \ Paris, the City of Lights."
   ]
 
-jordansInformation :: Message
+jordansInformation :: FlavorText
 jordansInformation = FlavorText
   (Just "Jordan's Information")
   [ "According to Mr. Jordan Perry, who had\
@@ -194,7 +194,7 @@ jordansInformation = FlavorText
     \ hoping to find Mr. Engram..."
   ]
 
-noResolution :: Message
+noResolution :: FlavorText
 noResolution = FlavorText
   (Just "No Resolution")
   [ "You lose track of yourself\
@@ -213,7 +213,7 @@ noResolution = FlavorText
     \ of that night."
   ]
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   [ "You can only assume this house belongs to\
@@ -239,7 +239,7 @@ resolution1 = FlavorText
   , "He is already here"
   ]
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "You can only assume this house belongs to Nigel\
@@ -282,7 +282,7 @@ resolution2 = FlavorText
     \ from weeks of decomposition."
   ]
 
-resolution3 :: Message
+resolution3 :: FlavorText
 resolution3 = FlavorText
   (Just "Resolution 3")
   [ "As the sun rises once more over the skyline of\

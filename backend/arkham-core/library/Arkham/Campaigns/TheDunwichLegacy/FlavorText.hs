@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-prologue :: Message
+prologue :: FlavorText
 prologue = FlavorText
   (Just "Prologue")
   [ "Dr. Henry Armitage pours himself a glass of pinot and sits down at his\
@@ -34,7 +34,7 @@ prologue = FlavorText
     \ wish to ask Francis for help, if you can reach him.”"
   ]
 
-armitagesFate1 :: Message
+armitagesFate1 :: FlavorText
 armitagesFate1 = FlavorText
   (Just "Interlude I: Armitage's Fate")
   [ "You are more than a little rattled by your experiences\
@@ -54,7 +54,7 @@ armitagesFate1 = FlavorText
     \ experiences earlier tonight…"
   ]
 
-armitagesFate2 :: Message
+armitagesFate2 :: FlavorText
 armitagesFate2 = FlavorText
   (Just "Interlude 1: Armitage's Fate")
   [ "When you arrive at Dr. Armitage’s home in\
@@ -66,7 +66,7 @@ armitagesFate2 = FlavorText
     \ not been for your harrowing experiences earlier that night…"
   ]
 
-interlude2 :: Message
+interlude2 :: FlavorText
 interlude2 = FlavorText
   (Just "Interlude II: The Survivors")
   [ "Inside the chamber that contained the terrible beast, you find the missing\
@@ -76,7 +76,7 @@ interlude2 = FlavorText
     \ bonds, and they offer you their thanks. You begin to plan your next move."
   ]
 
-interlude2DrHenryArmitage :: Message
+interlude2DrHenryArmitage :: FlavorText
 interlude2DrHenryArmitage = FlavorText
   (Just "Interlude II: The Survivors")
   [ "“It is far worse than we had thought,” Dr. Armitage\
@@ -89,7 +89,7 @@ interlude2DrHenryArmitage = FlavorText
     \ the key, yes, the powder is the only way…”"
   ]
 
-interlude2ProfessorWarrenRice :: Message
+interlude2ProfessorWarrenRice :: FlavorText
 interlude2ProfessorWarrenRice = FlavorText
   (Just "Interlude II: The Survivors")
   [ "Professor Rice adjusts his glasses and studies the\
@@ -101,7 +101,7 @@ interlude2ProfessorWarrenRice = FlavorText
     \ of recreating the powder."
   ]
 
-interlude2DrFrancisMorgan :: Message
+interlude2DrFrancisMorgan :: FlavorText
 interlude2DrFrancisMorgan = FlavorText
   (Just "Interlude II: The Survivors")
   [ "“Thank you for everything you’ve done,” Dr. Morgan\
@@ -111,7 +111,7 @@ interlude2DrFrancisMorgan = FlavorText
     \ we’re going to need that powder. I think I remember how he made it…”"
   ]
 
-interlude2ZebulonWhateley :: Message
+interlude2ZebulonWhateley :: FlavorText
 interlude2ZebulonWhateley = FlavorText
   (Just "Interlude II: The Survivors")
   [ "“Dunwich’s had its fair share of oddities,” Zebulon\
@@ -122,7 +122,7 @@ interlude2ZebulonWhateley = FlavorText
     \ “Whoever dun this gotta pay. I’ll do all I can to help.”"
   ]
 
-interlude2EarlSawyer :: Message
+interlude2EarlSawyer :: FlavorText
 interlude2EarlSawyer = FlavorText
   (Just "Interlude II: The Survivors")
   [ "“I never could’a made it if it weren’t for you,” Earl says with a stammer,\

@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-intro :: Message
+intro :: FlavorText
 intro = FlavorText
   (Just "Scenario III: Echoes of the Past")
   [ "Your head throbs with a dull ache as you drive\
@@ -30,7 +30,7 @@ intro = FlavorText
     \ you will find answers to the questions that burn in your mind."
   ]
 
-sebastiensInformation :: Message
+sebastiensInformation :: FlavorText
 sebastiensInformation = FlavorText
   (Just "Sebastien's Information")
   [ "You recall what Sebastien told you during\
@@ -44,7 +44,7 @@ sebastiensInformation = FlavorText
     \ other articles describing what happened in the past."
   ]
 
-noResolution :: Message
+noResolution :: FlavorText
 noResolution = FlavorText
   (Just
     "If no resolution was reached (each investigator resigned or was defeated)"
@@ -52,7 +52,7 @@ noResolution = FlavorText
   [ "You barely escape the building with your body and mind intact, and flee to safety. Read Resolution 4."
   ]
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   [ "There are no coincidences when it comes to The\
@@ -65,7 +65,7 @@ resolution1 = FlavorText
     \ after the production ended. Perhaps he’s still there…"
   ]
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "This investigation would make anybody\
@@ -80,7 +80,7 @@ resolution2 = FlavorText
     \ he’s still there..."
   ]
 
-resolution3 :: Message
+resolution3 :: FlavorText
 resolution3 = FlavorText
   (Just "Resolution 3")
   [ "The figure collapses to the ground, its warped,\
@@ -95,7 +95,7 @@ resolution3 = FlavorText
     \ rattles to the floor."
   ]
 
-resolution4 :: Message
+resolution4 :: FlavorText
 resolution4 = FlavorText
   (Just "Resolution 4")
   [ "The night’s events have left you exhausted.\

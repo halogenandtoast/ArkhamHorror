@@ -56,7 +56,7 @@ undimensionedAndUnseen difficulty = scenario
   , ". coldSpringGlen ."
   ]
 
-undimensionedAndUnseenIntro :: Message
+undimensionedAndUnseenIntro :: FlavorText
 undimensionedAndUnseenIntro = FlavorText
   (Just "Scenario V: Undimensioned and Unseen")
   [ "Your search of the village of Dunwich has\
@@ -86,7 +86,7 @@ undimensionedAndUnseenIntro = FlavorText
     \ are clamoring amongst themselves, raising their voices in a panic."
   ]
 
-undimensionedAndUnseenPart1 :: Message
+undimensionedAndUnseenPart1 :: FlavorText
 undimensionedAndUnseenPart1 = FlavorText
   Nothing
   [ "You aim to calm the townsfolk so they can explain to you what\
@@ -103,7 +103,7 @@ undimensionedAndUnseenPart1 = FlavorText
     \ on the loose…."
   ]
 
-undimensionedAndUnseenPart2 :: Message
+undimensionedAndUnseenPart2 :: FlavorText
 undimensionedAndUnseenPart2 = FlavorText
   Nothing
   [ "You warn the townsfolk that they are in grave danger, and urge\

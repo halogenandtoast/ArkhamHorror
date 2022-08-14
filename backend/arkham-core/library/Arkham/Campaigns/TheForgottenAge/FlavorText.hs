@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-prologue :: Message
+prologue :: FlavorText
 prologue = FlavorText
   (Just "Prologue")
   [ "Tuesday, June 2nd, 1925"
@@ -36,7 +36,7 @@ prologue = FlavorText
     \ beneath Harlan’s lopsided desk."
   ]
 
-restfulSleep :: Message
+restfulSleep :: FlavorText
 restfulSleep = FlavorText
   (Just "Restful Sleep")
   [ "Mercifully, I was able to sleep through each night. However, while my body\
@@ -45,7 +45,7 @@ restfulSleep = FlavorText
     \ vipers...it might have been better had I not slept at all."
   ]
 
-tossingAndTurning :: Message
+tossingAndTurning :: FlavorText
 tossingAndTurning = FlavorText
   (Just "Tossing and Turning")
   [ "Those nights in the jungle, I barely slept. A strange fog rolled through the\
@@ -57,7 +57,7 @@ tossingAndTurning = FlavorText
     \ little sleep on this journey..."
   ]
 
-lowOnRations :: Message
+lowOnRations :: FlavorText
 lowOnRations = FlavorText
   (Just "Low on Rations")
   [ "We thought we’d brought enough food and water for everybody, but the journey\
@@ -65,7 +65,7 @@ lowOnRations = FlavorText
     \ we discovered we were already running out of provisions."
   ]
 
-shapesInTheTrees :: Message
+shapesInTheTrees :: FlavorText
 shapesInTheTrees = FlavorText
   (Just "Shapes in the Trees")
   [ "Most of the nights passed without incident, but on this night, I was startled\
@@ -75,7 +75,7 @@ shapesInTheTrees = FlavorText
     \ watch us from afar? What is their purpose?"
   ]
 
-eyesInTheDark :: Message
+eyesInTheDark :: FlavorText
 eyesInTheDark = FlavorText
   (Just "Eyes in the Dark")
   [ "Each night, I was watched. I didn’t just feel watched: I saw the eyes peering\
@@ -84,7 +84,7 @@ eyesInTheDark = FlavorText
     \ if the need arose. Our eyes met, and a darkness seized my heart."
   ]
 
-thePoisonSpreads :: Message
+thePoisonSpreads :: FlavorText
 thePoisonSpreads = FlavorText
   (Just "The Poison Spreads")
   [ "As the days went by, the poison continued to spread through my body. By the\

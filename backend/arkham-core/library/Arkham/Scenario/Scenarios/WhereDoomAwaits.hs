@@ -49,7 +49,7 @@ whereDoomAwaits difficulty = scenario
   , "alteredPath1 alteredPath2 alteredPath3"
   ]
 
-whereDoomAwaitsIntro :: Message
+whereDoomAwaitsIntro :: FlavorText
 whereDoomAwaitsIntro = FlavorText
   (Just "Scenario VI: Where Doom Awaits")
   [ "You awaken to the sound of screeching. Fearing\
@@ -76,7 +76,7 @@ whereDoomAwaitsIntro = FlavorText
     \ only Dunwich, but for the entire world."
   ]
 
-whereDoomAwaitsPart1 :: Message
+whereDoomAwaitsPart1 :: FlavorText
 whereDoomAwaitsPart1 = FlavorText
   Nothing
   [ "The path leading up Sentinel Hill is narrow and too torn up for\

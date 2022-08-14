@@ -1236,20 +1236,27 @@ library
       Arkham.Scenarios.APhantomOfTruth.Story
       Arkham.Scenarios.BlackStarsRise.Story
       Arkham.Scenarios.BloodOnTheAltar.Story
+      Arkham.Scenarios.CarnevaleOfHorrors.FlavorText
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
+      Arkham.Scenarios.CurseOfTheRougarou.FlavorText
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.CurtainCall.Helpers
       Arkham.Scenarios.CurtainCall.Story
       Arkham.Scenarios.DimCarcosa.Helpers
       Arkham.Scenarios.DimCarcosa.Story
       Arkham.Scenarios.EchoesOfThePast.Story
+      Arkham.Scenarios.ExtracurricularActivity.FlavorText
+      Arkham.Scenarios.LostInTimeAndSpace.FlavorText
       Arkham.Scenarios.TheDevourerBelow.Story
       Arkham.Scenarios.TheDoomOfEztli.Story
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
+      Arkham.Scenarios.TheEssexCountyExpress.Story
       Arkham.Scenarios.TheGathering.Story
+      Arkham.Scenarios.TheHouseAlwaysWins.Story
       Arkham.Scenarios.TheLastKing.Story
       Arkham.Scenarios.TheMidnightMasks.Story
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+      Arkham.Scenarios.TheMiskatonicMuseum.Story
       Arkham.Scenarios.ThePallidMask.Helpers
       Arkham.Scenarios.ThePallidMask.Story
       Arkham.Scenarios.TheUnspeakableOath.Story
@@ -1312,6 +1319,7 @@ library
       Arkham.Story.Cards
       Arkham.Strategy
       Arkham.Target
+      Arkham.Text
       Arkham.Timing
       Arkham.Token
       Arkham.TokenResponse

@@ -22,6 +22,7 @@ import Arkham.Message
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.CurseOfTheRougarou.FlavorText
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Source
 import Arkham.Target
@@ -96,37 +97,7 @@ instance RunMessage CurseOfTheRougarou where
              ]
         <> [ RevealLocation Nothing bayouId
            , MoveAllTo (toSource attrs) bayouId
-           , AskMap
-           . mapFromList
-           $ [ ( iid
-               , ChooseOne
-                 [ Run
-                     [ Continue "Continue"
-                     , FlavorText
-                       (Just "Terror Grips New Orleans!")
-                       [ "Minnie Klein, your contact at the Arkham Advertiser, has slipped\
-                      \ you a draft of the article over a cup of coffee at Velma's Diner. It\
-                      \ would have gone to print had Doyle Jeffries, the lead editor, not\
-                      \ scoffed at the concept. \"I believe his exact words were, 'I ain't\
-                      \ printing the ravings of some Voodoo lunatic and passing is as news,'\"\
-                      \ she explained. From the sly grin spreading across her face, you could\
-                      \ tell she smelled a story."
-                       , "The headline was sensationalist. Three killings, in nine days was\
-                      \ enough to spook a town, sure. But you doubt all of New Orleans is\
-                      \ gripped by terror, or even knows about the killings. Still, something\
-                      \ piqued your interest. \"Lady Esprit,\" the Voodoo priestess from the\
-                      \ article, claimed that a malign curse had taken root in the bayou."
-                       , "\"There's something to this, isn't there? I know that look,\"\
-                      \ Minnie said. You weren't sure. If Lady Esprit was right, this\
-                      \ \"roux-ga-roux\" wouldn't stop killing at three, that's for sure.\
-                      \ But curses? Wolf-people? How could such things be real? Only one way\
-                      \ to find out. You put on your coat and head for the Northside Station..."
-                       ]
-                     ]
-                 ]
-               )
-             | iid <- investigatorIds
-             ]
+           , story investigatorIds intro
            ]
 
       CurseOfTheRougarou <$> runMessage
@@ -235,88 +206,44 @@ instance RunMessage CurseOfTheRougarou where
     ScenarioResolution NoResolution ->
       runMessage (ScenarioResolution $ Resolution 1) s
     ScenarioResolution (Resolution 1) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      iids <- getInvestigatorIds
       xp <- getXp
-      s <$ push
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                (Just "Resolution 1")
-                [ "Somehow, you manage to make it back safely before daybreak,\
-                    \ resting until late in the afternoon. It isn't until you seek\
-                    \ out Lady Esprit the next day that you realize who last night's\
-                    \ victim was. With a heavy heart and an unshakable dread, you\
-                    \ choose to bury her body instead of contacting the authorities\
-                    \—the less people who delve this deep into the bayou, the better."
-                ]
-              , Record TheRougarouContinuesToHauntTheBayou
-              ]
-            <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [EndOfGame Nothing]
-          ]
-        )
+      pushAll
+        $ [story iids resolution1, Record TheRougarouContinuesToHauntTheBayou]
+        <> [ GainXP iid n | (iid, n) <- xp ]
+        <> [EndOfGame Nothing]
+      pure s
     ScenarioResolution (Resolution 2) -> do
+      iids <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       xp <- getXp
-      s <$ push
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                (Just "Resolution 2")
-                [ "The creature gives a pitiful wail as dark miry blood oozes from\
-                  \ its wounds. By the time its body collapses into the mud, it has\
-                  \ transformed back into its original form—the form of a yound dark\
-                  \-skinned man, his expression twisted in agony. You bring his body\
-                  \ back to Lady Esprit and she works her strange magic, removing the\
-                  \ stain of the curse from the land. \"Call on me should you ever\
-                  \ need my help,\" the mysterious woman tells you."
-                ]
-              , Record TheRougarouIsDestroyed
-              , RemoveCampaignCardFromDeck leadInvestigatorId "81029"
-              , chooseOne
-                leadInvestigatorId
-                [ Label
-                  "Add Lady Esprit to your deck"
-                  [AddCampaignCardToDeck leadInvestigatorId Assets.ladyEsprit]
-                , Label "Do not add Lady Esprit to your deck" []
-                ]
-              ]
-            <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [EndOfGame Nothing]
+      pushAll
+        $ [ story iids resolution2
+          , Record TheRougarouIsDestroyed
+          , RemoveCampaignCardFromDeck leadInvestigatorId "81029"
+          , chooseOne
+            leadInvestigatorId
+            [ Label
+              "Add Lady Esprit to your deck"
+              [AddCampaignCardToDeck leadInvestigatorId Assets.ladyEsprit]
+            , Label "Do not add Lady Esprit to your deck" []
+            ]
           ]
-        )
+        <> [ GainXP iid n | (iid, n) <- xp ]
+        <> [EndOfGame Nothing]
+      pure s
     ScenarioResolution (Resolution 3) -> do
+      iids <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       xp <- getXp
-      s <$ push
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                (Just "Resolution 3")
-                [ "Somehow, you have managed to quell the rage and bloodlust\
-                  \ of the curse within the creature, and in moments the shape\
-                  \ of a young, dark-skinned man stands before you, panting and\
-                  \ sweating. He seems to onky just now understand everything\
-                  \ he's done, and agrees to flee to a secluded corner of the\
-                  \ earth where he can harm no one. However, the curse lives\
-                  \ on. He sees it in your eyes and grips your arm tightly.\
-                  \\"Don't let it take control,\" he warns. \"I was weak, but\
-                  \ you—I can tell you are strong. Control the curse as I could\
-                  \ not.\""
-                ]
-              , Record TheRougarouEscapedAndYouEmbracedTheCurse
-              , AddCampaignCardToDeck
-                leadInvestigatorId
-                Assets.monstrousTransformation
-              ]
-            <> [ GainXP iid n | (iid, n) <- xp ]
-            <> [EndOfGame Nothing]
+      pushAll
+        $ [ story iids resolution3
+          , Record TheRougarouEscapedAndYouEmbracedTheCurse
+          , AddCampaignCardToDeck
+            leadInvestigatorId
+            Assets.monstrousTransformation
           ]
-        )
+        <> [ GainXP iid n | (iid, n) <- xp ]
+        <> [EndOfGame Nothing]
+      pure s
     _ -> CurseOfTheRougarou <$> runMessage msg attrs

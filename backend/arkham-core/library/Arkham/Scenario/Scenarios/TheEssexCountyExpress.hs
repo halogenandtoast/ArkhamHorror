@@ -28,6 +28,7 @@ import Arkham.Modifier
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.TheEssexCountyExpress.Story
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
@@ -47,7 +48,7 @@ theEssexCountyExpress difficulty = scenario
   difficulty
   ["trainCar6 trainCar5 trainCar4 trainCar3 trainCar2 trainCar1 engineCar"]
 
-theEssexCountyExpressIntro :: Message
+theEssexCountyExpressIntro :: FlavorText
 theEssexCountyExpressIntro = FlavorText
   (Just "Scenario III: The Essex County Express")
   [ "Recent events in the Museum have forced you to\
@@ -117,10 +118,9 @@ standaloneTokens =
   , ElderSign
   ]
 
-investigatorDefeat :: (Monad m, HasGame m) => m [Message]
-investigatorDefeat = do
+readInvestigatorDefeat :: (Monad m, HasGame m) => m [Message]
+readInvestigatorDefeat = do
   campaignStoryCards <- getCampaignStoryCards
-  leadInvestigatorId <- getLeadInvestigatorId
   defeatedInvestigatorIds <- selectList DefeatedInvestigator
   let
     findOwner cardCode =
@@ -134,26 +134,7 @@ investigatorDefeat = do
     then pure []
     else
       pure
-      $ [ chooseOne
-            leadInvestigatorId
-            [ Run
-                [ Continue "Continue"
-                , FlavorText
-                  (Just "Investigator Defeat")
-                  [ "Your experience beyond the gate is\
-                   \ simultaneously terrifying and impossible to recall with clarity.\
-                   \ A hypnotic spectacle of lights, otherworldly sensations, and\
-                   \ altered geometry dances at the tattered edges of your mind. An\
-                   \ unearthly voice from beyond rings in your ears, its significance\
-                   \ an enigma. When you awaken, you find yourself in the woods,\
-                   \ several miles from the Miskatonic River. Destroyed train cars\
-                   \ surround you. They are crumpled as if from a severe impact;\
-                   \ they are also decayed as if years of rust and squalor have\
-                   \ claimed them. There is no sign of the other passengers."
-                  ]
-                ]
-            ]
-        ]
+      $ [ story defeatedInvestigatorIds investigatorDefeat ]
       <> [ Record TheNecronomiconWasStolen | isJust mNecronomiconOwner ]
       <> [ RemoveCampaignCardFromDeck owner "02140"
          | owner <- maybeToList mNecronomiconOwner
@@ -301,56 +282,28 @@ instance RunMessage TheEssexCountyExpress where
       ScenarioResolution NoResolution ->
         s <$ pushAll [ScenarioResolution $ Resolution 2]
       ScenarioResolution (Resolution 1) -> do
-        msgs <- investigatorDefeat
-        leadInvestigatorId <- getLeadInvestigatorId
+        msgs <- readInvestigatorDefeat
+        iids <- getInvestigatorIds
         defeatedInvestigatorIds <- selectList DefeatedInvestigator
         xp <- getXp
-        s <$ pushAll
-          (msgs
-          <> [ chooseOne
-                 leadInvestigatorId
-                 [ Run
-                     [ Continue "Continue"
-                     , FlavorText
-                       (Just "Resolution 1")
-                       [ "You breathe a sigh of relief as the gate behind\
-                     \ the train collapses harmlessly upon itself. The few passengers\
-                     \ who survived the ordeal seem unable to comprehend what\
-                     \ just happened. One passenger mentions “a pipe bursting in\
-                     \ the rear car,” and that quickly becomes the explanation for\
-                     \ the innocent and ignorant, those who either cannot or choose\
-                     \ not to delve further into the mystery. You, on the other hand,\
-                     \ know better… although in hindsight, you wish you didn’t."
-                       ]
-                     ]
-                 ]
-             ]
+        pushAll
+          $ msgs
+          <> [story iids resolution1]
           <> [ GainXP
                  iid
                  (n + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
              | (iid, n) <- xp
              ]
           <> [EndOfGame Nothing]
-          )
+        pure s
       ScenarioResolution (Resolution 2) -> do
-        msgs <- investigatorDefeat
-        leadInvestigatorId <- getLeadInvestigatorId
+        msgs <- readInvestigatorDefeat
+        iids <- getInvestigatorIds
         defeatedInvestigatorIds <- selectList DefeatedInvestigator
         xp <- getXp
-        s <$ pushAll
-          (msgs
-          <> [ chooseOne
-               leadInvestigatorId
-               [ Run
-                   [ Continue "Continue"
-                   , FlavorText
-                     (Just "Resolution 2")
-                     [ "Rattled,\
-                     \ you begin walking alongside the train tracks, making your\
-                     \ way towards Dunwich."
-                     ]
-                   ]
-               ]
+        pushAll
+          $ msgs
+          <> [ story iids resolution2
              , Record TheInvestigatorsWereDelayedOnTheirWayToDunwich
              ]
           <> [ GainXP
@@ -359,5 +312,5 @@ instance RunMessage TheEssexCountyExpress where
              | (iid, n) <- xp
              ]
           <> [EndOfGame Nothing]
-          )
+        pure s
       _ -> TheEssexCountyExpress <$> runMessage msg attrs

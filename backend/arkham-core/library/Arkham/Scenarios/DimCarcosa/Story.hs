@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-intro1 :: Message
+intro1 :: FlavorText
 intro1 = FlavorText
   (Just "Intro 1")
   [ "You swim to the edge of the water and throw yourself upon the rocky shore,\
@@ -17,7 +17,7 @@ intro1 = FlavorText
     \ Carcosa—the realm of madness in the stars, where Hastur reigns supreme."
   ]
 
-intro2 :: Message
+intro2 :: FlavorText
 intro2 = FlavorText
   (Just "Intro 2")
   [ "You land on a piece of black obsidian stone winding up a dark spire. You cough\
@@ -29,7 +29,7 @@ intro2 = FlavorText
     \ madness in the stars, where Hastur reigns supreme."
   ]
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   [ "You stand atop the balcony of the abbey tower in Mont Saint-Michel, wet wind\
@@ -40,7 +40,7 @@ resolution1 = FlavorText
     \ and watch as it flies into the tempest-tossed waves below."
   ]
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "A roar of applause startles you awake. The crowd of the theatre rises to their\
@@ -60,7 +60,7 @@ resolution2 = FlavorText
     \ leaves through the Ward Theatre’s front entrance."
   ]
 
-resolution3 :: Message
+resolution3 :: FlavorText
 resolution3 = FlavorText
   (Just "Resolution 3")
   [ "When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s\
@@ -78,7 +78,7 @@ resolution3 = FlavorText
     \ head back?”"
   ]
 
-resolution4 :: Message
+resolution4 :: FlavorText
 resolution4 = FlavorText
   (Just "Resolution 4")
   [ "When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s\
@@ -91,7 +91,7 @@ resolution4 = FlavorText
     \ of Carcosa rise behind the shattered moon."
   ]
 
-resolution5 :: Message
+resolution5 :: FlavorText
 resolution5 = FlavorText
   (Just "Resolution 5")
   [ "The outside world will never know how you tried to save them. They treat you\

@@ -20,6 +20,7 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
+import Arkham.Scenarios.ExtracurricularActivity.FlavorText
 import Arkham.Target
 import Arkham.Token
 
@@ -37,15 +38,6 @@ extracurricularActivity difficulty = scenario
   [ "orneLibrary        miskatonicQuad scienceBuilding alchemyLabs"
   , "humanitiesBuilding studentUnion   administrationBuilding ."
   , ".                  dormitories    facultyOffices         ."
-  ]
-
-extracurricularActivityIntro :: Message
-extracurricularActivityIntro = FlavorText
-  (Just "Scenario I-A: Extracurricular Activity")
-  [ "Dr. Armitage is worried his colleague, Professor Warren Rice, might be\
-    \ in trouble, so he has asked for your help in finding his friend. He seems\
-    \ unreasonably nervous about his colleague’s disappearance considering\
-    \ Professor Rice has only been “missing” for a matter of hours…"
   ]
 
 instance HasTokenValue ExtracurricularActivity where
@@ -104,7 +96,7 @@ instance RunMessage ExtracurricularActivity where
         , PlaceLocation administrationBuilding
         , RevealLocation Nothing miskatonicQuadId
         , MoveAllTo (toSource attrs) miskatonicQuadId
-        , story investigatorIds extracurricularActivityIntro
+        , story investigatorIds intro
         ]
 
       setAsideCards <- traverse
@@ -159,154 +151,72 @@ instance RunMessage ExtracurricularActivity where
           push $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()
     ScenarioResolution NoResolution -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      iids <- getInvestigatorIds
       xp <- getXp
-      s <$ pushAll
-        ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 Nothing
-                 [ "As you flee from the university,\
-                  \ you hear screaming from the northern end of the campus. An\
-                  \ ambulance passes you by, and you fear the worst. Hours later,\
-                  \ you learn that a ‘rabid dog of some sort’ found its way into\
-                  \ the university dormitories. The creature attacked the students\
-                  \ inside and many were mauled or killed in the attack."
-                 ]
-               ]
-           ]
-         , Record ProfessorWarrenRiceWasKidnapped
-         , Record TheInvestigatorsFailedToSaveTheStudents
-         , AddToken Tablet
-         ]
+      pushAll
+        $ [ story iids noResolution
+          , Record ProfessorWarrenRiceWasKidnapped
+          , Record TheInvestigatorsFailedToSaveTheStudents
+          , AddToken Tablet
+          ]
         <> [ GainXP iid (n + 1) | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
-        )
+      pure s
     ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
+      iids <- getInvestigatorIds
       xp <- getXp
-      s <$ pushAll
-        ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 (Just "Resolution 1")
-                 [ "You find Professor Rice bound and gagged\
-                  \ in the closet of his office. When you free him, he informs you\
-                  \ that the strange men and women wandering around the\
-                  \ campus had been stalking him for hours. They cornered him\
-                  \ in his office and tied him up, although for what purpose, Rice\
-                  \ isn’t sure. You inform him that Dr. Armitage sent you, and\
-                  \ Rice looks relieved, although he suspects that Dr. Morgan\
-                  \ might be in danger as well. Because the strangers on campus\
-                  \ seem to have been targeting Professor Rice, you decide that\
-                  \ the best course of action is to escort him away from the\
-                  \ campus as quickly as possible. As you leave the university,\
-                  \ you hear screaming from the northern end of the campus. An\
-                  \ ambulance passes you by, and you fear the worst. Hours later,\
-                  \ you learn that a ‘rabid dog of some sort’ found its way into\
-                  \ the university dormitories. The creature attacked the students\
-                  \ inside, and many were mauled or killed in the attack."
-                 ]
-               ]
-           ]
-         , Record TheInvestigatorsRescuedProfessorWarrenRice
-         , AddToken Tablet
-         , chooseOne
-           leadInvestigatorId
-           [ Label
-             "Add Professor Warren Rice to your deck"
-             [ AddCampaignCardToDeck
-                 leadInvestigatorId
-                 Assets.professorWarrenRice
-             ]
-           , Label "Do not add Professor Warren Rice to your deck" []
-           ]
-         ]
+      pushAll
+        $ [ story iids resolution1
+          , Record TheInvestigatorsRescuedProfessorWarrenRice
+          , AddToken Tablet
+          , chooseOne
+            leadInvestigatorId
+            [ Label
+              "Add Professor Warren Rice to your deck"
+              [ AddCampaignCardToDeck
+                  leadInvestigatorId
+                  Assets.professorWarrenRice
+              ]
+            , Label "Do not add Professor Warren Rice to your deck" []
+            ]
+          ]
         <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
-        )
+      pure s
     ScenarioResolution (Resolution 2) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      iids <- getInvestigatorIds
       xp <- getXp
-      s <$ pushAll
-        ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 (Just "Resolution 2")
-                 [ "You pull each of the dormitory’s fire alarms\
-                  \ and usher the students out of the building’s north exit,\
-                  \ hoping to make your way off campus. Many of the students\
-                  \ are confused and exhausted, but you believe an attempt to\
-                  \ explain the situation will do more harm than good. Minutes\
-                  \ later, a terrible screech echoes across the campus, piercing\
-                  \ and shrill. You tell the students to wait and head back to the\
-                  \ dormitories to investigate. Oddly, you find no trace of the\
-                  \ strange creature—a prospect that worries you more than it\
-                  \ relieves you. You hurry to the faculty offices to find Professor\
-                  \ Rice, but there is no sign of him anywhere."
-                 ]
-               ]
-           ]
-         , Record ProfessorWarrenRiceWasKidnapped
-         , Record TheStudentsWereRescued
-         ]
+      pushAll
+        $ [ story iids resolution2
+          , Record ProfessorWarrenRiceWasKidnapped
+          , Record TheStudentsWereRescued
+          ]
         <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
-        )
+      pure s
     ScenarioResolution (Resolution 3) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      iids <- getInvestigatorIds
       xp <- getXp
-      s <$ pushAll
-        ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 (Just "Resolution 3")
-                 [ "After defeating the strange and terrifying\
-                  \ creature from the Department of Alchemy, you rush to the\
-                  \ faculty offices to find Professor Rice. By the time you get to his\
-                  \ office, there is no sign of him anywhere."
-                 ]
-               ]
-           ]
-         , Record ProfessorWarrenRiceWasKidnapped
-         , Record TheExperimentWasDefeated
-         ]
+      pushAll
+        $ [ story iids resolution3
+          , Record ProfessorWarrenRiceWasKidnapped
+          , Record TheExperimentWasDefeated
+          ]
         <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
-        )
+      pure s
     ScenarioResolution (Resolution 4) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      iids <- getInvestigatorIds
       xp <- getXp
-      s <$ pushAll
-        ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 (Just "Resolution 4")
-                 [ "You awaken hours later, exhausted and\
-                  \ injured. You’re not sure what you saw, but the sight of it filled\
-                  \ your mind with terror. From other survivors, you learn that\
-                  \ a ‘rabid dog of some sort’ found its way into the university\
-                  \ dormitories. The creature attacked the students inside, and\
-                  \ many were mauled or killed in the attack."
-                 ]
-               ]
-           ]
-         , Record InvestigatorsWereUnconsciousForSeveralHours
-         , Record ProfessorWarrenRiceWasKidnapped
-         , Record TheInvestigatorsFailedToSaveTheStudents
-         , AddToken Tablet
-         ]
+      pushAll
+        $ [ story iids resolution4
+          , Record InvestigatorsWereUnconsciousForSeveralHours
+          , Record ProfessorWarrenRiceWasKidnapped
+          , Record TheInvestigatorsFailedToSaveTheStudents
+          , AddToken Tablet
+          ]
         <> [ GainXP iid (n + 1) | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
-        )
+      pure s
     _ -> ExtracurricularActivity <$> runMessage msg attrs

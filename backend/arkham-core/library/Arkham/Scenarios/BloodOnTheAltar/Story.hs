@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-intro :: Message
+intro :: FlavorText
 intro = FlavorText
   (Just "Scenario IV: Blood on the Altar")
   [ "When you finally reach Dunwich, you are\
@@ -31,7 +31,7 @@ intro = FlavorText
     \ answers."
   ]
 
-noResolution :: Message
+noResolution :: FlavorText
 noResolution = FlavorText
   Nothing
   [ "The cries of the whippoorwills\
@@ -41,7 +41,7 @@ noResolution = FlavorText
     \ of the missing townsfolk, nor will there be ever again."
   ]
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   [ "As you land the finishing blow, the creature’s\
@@ -52,7 +52,7 @@ resolution1 = FlavorText
     \ was, you’re glad it’s now dead."
   ]
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "With the creature that once was Silas\
@@ -70,7 +70,7 @@ resolution2 = FlavorText
     \ his shirt. You take it with you, hoping to find a use for it."
   ]
 
-resolution3 :: Message
+resolution3 :: FlavorText
 resolution3 = FlavorText
   (Just "Resolution 3")
   [ "With the creature that once was Silas lashing\

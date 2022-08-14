@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Id
 import Arkham.Target
+import Arkham.Text
 
 data Question msg
     = ChooseOne [msg]
@@ -21,6 +22,7 @@ data Question msg
     | ChooseAmounts Text Int [(Text, (Int, Int))] Target
     | ChooseUpgradeDeck
     | QuestionLabel Text (Question msg)
+    | Read FlavorText [(Text, msg)]
     deriving stock (Show, Eq, Generic)
     deriving anyclass (FromJSON, ToJSON)
 

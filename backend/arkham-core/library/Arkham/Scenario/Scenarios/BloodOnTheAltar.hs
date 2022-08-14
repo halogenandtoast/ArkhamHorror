@@ -21,8 +21,8 @@ import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
 import Arkham.Id
-import Arkham.Location.Types ( Field (..) )
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Matcher hiding ( PlaceUnderneath, RevealLocation )
 import Arkham.Message
 import Arkham.Name
@@ -281,7 +281,7 @@ instance RunMessage BloodOnTheAltar where
             push (PlaceDoom (AgendaTarget agendaId) 1)
           _ -> pure ()
       ScenarioResolution NoResolution -> do
-        leadInvestigatorId <- getLeadInvestigatorId
+        iids <- getInvestigatorIds
         agendaId <- selectJust AnyAgenda
         xp <- getXp
         let
@@ -294,85 +294,57 @@ instance RunMessage BloodOnTheAltar where
         removeSacrificedMessages <- getRemoveSacrificedMessages
           sacrificedToYogSothoth
         removeNecronomicon <- getRemoveNecronomicon
-        s <$ pushAll
-          ([ chooseOne
-               leadInvestigatorId
-               [ Run
-                 $ [ Continue "Continue"
-                   , noResolution
-                   , Record TheRitualWasCompleted
-                   , PlaceUnderneath (AgendaTarget agendaId) potentialSacrifices
-                   ]
-                 <> removeSacrificedMessages
-                 <> removeNecronomicon
-               ]
-           ]
+        pushAll
+          $ [ story iids noResolution
+            , Record TheRitualWasCompleted
+            , PlaceUnderneath (AgendaTarget agendaId) potentialSacrifices
+            ]
+          <> removeSacrificedMessages
+          <> removeNecronomicon
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame Nothing]
-          )
+        pure s
       ScenarioResolution (Resolution 1) -> do
-        leadInvestigatorId <- getLeadInvestigatorId
+        iids <- getInvestigatorIds
         xp <- getXp
         let sacrificedToYogSothoth = map toCardCode sacrificed
         removeSacrificedMessages <- getRemoveSacrificedMessages
           sacrificedToYogSothoth
         removeNecronomicon <- getRemoveNecronomicon
-        s <$ pushAll
-          ([ chooseOne
-               leadInvestigatorId
-               [ Run
-                 $ [ Continue "Continue"
-                   , resolution1
-                   , Record TheInvestigatorsPutSilasBishopOutOfHisMisery
-                   ]
-                 <> removeSacrificedMessages
-                 <> removeNecronomicon
-               ]
-           ]
+        pushAll
+          $ [ story iids resolution1
+            , Record TheInvestigatorsPutSilasBishopOutOfHisMisery
+            ]
+          <> removeSacrificedMessages
+          <> removeNecronomicon
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame Nothing]
-          )
+        pure s
       ScenarioResolution (Resolution 2) -> do
-        leadInvestigatorId <- getLeadInvestigatorId
+        iids <- getInvestigatorIds
         xp <- getXp
         let sacrificedToYogSothoth = map toCardCode sacrificed
         removeSacrificedMessages <- getRemoveSacrificedMessages
           sacrificedToYogSothoth
-        s <$ pushAll
-          ([ chooseOne
-               leadInvestigatorId
-               [ Run
-                 $ [ Continue "Continue"
-                   , resolution2
-                   , Record TheInvestigatorsRestoredSilasBishop
-                   ]
-                 <> removeSacrificedMessages
-               ]
-           ]
+        pushAll
+          $ [story iids resolution2, Record TheInvestigatorsRestoredSilasBishop]
+          <> removeSacrificedMessages
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame Nothing]
-          )
+        pure s
       ScenarioResolution (Resolution 3) -> do
-        leadInvestigatorId <- getLeadInvestigatorId
+        iids <- getInvestigatorIds
         xp <- getXp
         let sacrificedToYogSothoth = map toCardCode sacrificed
         removeSacrificedMessages <- getRemoveSacrificedMessages
           sacrificedToYogSothoth
         removeNecronomicon <- getRemoveNecronomicon
-        s <$ pushAll
-          ([ chooseOne
-               leadInvestigatorId
-               [ Run
-                 $ [ Continue "Continue"
-                   , resolution3
-                   , Record TheInvestigatorsBanishedSilasBishop
-                   ]
-                 <> removeSacrificedMessages
-                 <> [RecordSet SacrificedToYogSothoth sacrificedToYogSothoth]
-                 <> removeNecronomicon
-               ]
-           ]
+        pushAll
+          $ [story iids resolution3, Record TheInvestigatorsBanishedSilasBishop]
+          <> removeSacrificedMessages
+          <> [RecordSet SacrificedToYogSothoth sacrificedToYogSothoth]
+          <> removeNecronomicon
           <> [ GainXP iid (n + 2) | (iid, n) <- xp ]
           <> [EndOfGame Nothing]
-          )
+        pure s
       _ -> BloodOnTheAltar . (`with` metadata) <$> runMessage msg attrs

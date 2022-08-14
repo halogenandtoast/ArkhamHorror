@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-intro :: Message
+intro :: FlavorText
 intro = FlavorText
   (Just "Scenario I: The Untamed Wilds")
   [ "Sunday, June 28th, 1925"
@@ -24,7 +24,7 @@ intro = FlavorText
     \ history. Tonight, we rest. Tomorrow, we venture into uncharted wilds."
   ]
 
-noResolution :: Message
+noResolution :: FlavorText
 noResolution = FlavorText
   (Just "No Resolution")
   [ "Wednesday, July 1st, 1925"
@@ -48,7 +48,7 @@ noResolution = FlavorText
     \ to wait and recover from our wounds."
   ]
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   [ "Thursday, July 2nd, 1925"
@@ -77,7 +77,7 @@ resolution1 = FlavorText
     \ the ruins to see what secrets they hide."
   ]
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "Thursday, July 2nd, 1925"

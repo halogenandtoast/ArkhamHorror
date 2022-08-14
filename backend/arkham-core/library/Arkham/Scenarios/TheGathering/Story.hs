@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-theGatheringIntro :: Message
+theGatheringIntro :: FlavorText
 theGatheringIntro = FlavorText
   (Just "Part I: The Gathering")
   [ "You and your partners have been investigating strange events taking place\
@@ -16,7 +16,7 @@ theGatheringIntro = FlavorText
     \ investigator’s home to discuss these bizarre events."
   ]
 
-noResolution :: Message
+noResolution :: FlavorText
 noResolution = FlavorText
   Nothing
   [ "You barely manage to escape\
@@ -31,7 +31,7 @@ noResolution = FlavorText
   \ your front porch out into the rainy street, toward Rivertown."
   ]
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   [ "You nod and allow the red-haired woman to\
@@ -43,7 +43,7 @@ resolution1 = FlavorText
   \ Alone, we are surely doomed…but together, we can stop it.”"
   ]
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "You refuse to follow the overzealous woman’s\
@@ -56,7 +56,7 @@ resolution2 = FlavorText
   \ events…but she doesn’t seem to trust you very much."
   ]
 
-resolution3 :: Message
+resolution3 :: FlavorText
 resolution3 = FlavorText
   (Just "Resolution 3")
   [ "You run to the hallway to try to find a way to\

@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-intro :: Message
+intro :: FlavorText
 intro = FlavorText
   (Just "Scenario II: The Last King")
   [ "If anyone has the answers to the questions that burn in your mind, it’s\
@@ -14,7 +14,7 @@ intro = FlavorText
     \ the play’s one-night engagement in Arkham."
   ]
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   [ "The brisk autumn air embraces you as you exit\
@@ -31,7 +31,7 @@ resolution1 = FlavorText
     \ jazz drift out from the courtyard."
   ]
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "“Excuse me, but it’s very late,” you hear a\
@@ -55,7 +55,7 @@ resolution2 = FlavorText
     \ memory you will find your answers."
   ]
 
-resolution3 :: Message
+resolution3 :: FlavorText
 resolution3 = FlavorText
   (Just "Resolution 3")
   [ "Several days later, you find yourself\

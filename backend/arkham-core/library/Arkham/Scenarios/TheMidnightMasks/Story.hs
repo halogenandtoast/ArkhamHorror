@@ -6,7 +6,7 @@ import Arkham.Message
 
 data TheMidnightMasksIntroVersion = TheMidnightMasksIntroOne | TheMidnightMasksIntroTwo
 
-introPart1 :: TheMidnightMasksIntroVersion -> Message
+introPart1 :: TheMidnightMasksIntroVersion -> FlavorText
 introPart1 version = FlavorText (Just "Part II: The MidnightMasks") body
  where
   body = case version of
@@ -29,7 +29,7 @@ introPart1 version = FlavorText (Just "Part II: The MidnightMasks") body
         \ crypts, caverns, and tunnels beneath the city of Arkham…”"
       ]
 
-introPart2 :: Message
+introPart2 :: FlavorText
 introPart2 = FlavorText
   (Just "Part II: The MidnightMasks")
   [ "“These creatures feed on the corpses of humans, and they are served\
@@ -52,7 +52,7 @@ introPart2 = FlavorText
     \ cultists we find before midnight, the better.”"
   ]
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   [ "You’ve managed to obtain some useful\
@@ -60,7 +60,7 @@ resolution1 = FlavorText
     \ it’s enough."
   ]
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "Twelve bells ring out, signaling midnight. You’re\

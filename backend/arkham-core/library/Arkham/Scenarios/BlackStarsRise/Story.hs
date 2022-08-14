@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-intro :: Message
+intro :: FlavorText
 intro = FlavorText
   (Just "Scenario VII: Black Stars Rise")
   [ "The island commune of Mont Saint-Michel\
@@ -21,7 +21,7 @@ intro = FlavorText
     \ the ritual to come."
   ]
 
-ashleighsInformation :: Message
+ashleighsInformation :: FlavorText
 ashleighsInformation = FlavorText
   (Just "Ashleigh's Information")
   [ "You recall the night where this all began,\
@@ -35,7 +35,7 @@ ashleighsInformation = FlavorText
     \ if Ashleigh was singing about this very moment."
   ]
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   [ "You hold your breath as you swim through freezing water toward the spires\
@@ -44,7 +44,7 @@ resolution1 = FlavorText
     \ surface and gasp as air fills your lungs."
   ]
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "You marvel at the cloud-waves encircling you and fly toward the spires above.\
@@ -53,7 +53,7 @@ resolution2 = FlavorText
     \ body."
   ]
 
-resolution3 :: Message
+resolution3 :: FlavorText
 resolution3 = FlavorText
   (Just "Resolution 3")
   [ "When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s\

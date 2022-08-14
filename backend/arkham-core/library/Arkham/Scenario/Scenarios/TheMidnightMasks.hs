@@ -10,8 +10,8 @@ import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Enemy.Types
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
   ( CardMatcher (..), EnemyMatcher (..), ExtendedCardMatcher (..) )
@@ -176,7 +176,7 @@ instance RunMessage TheMidnightMasks where
     ScenarioResolution NoResolution ->
       s <$ push (ScenarioResolution $ Resolution 1)
     ScenarioResolution (Resolution n) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      iids <- getInvestigatorIds
       victoryDisplay <- mapSet toCardCode
         <$> select (VictoryDisplayCardMatch AnyCard)
       xp <- getXp
@@ -185,21 +185,14 @@ instance RunMessage TheMidnightMasks where
         cultistsWeInterrogated = allCultists `intersection` victoryDisplay
         cultistsWhoGotAway = allCultists `difference` cultistsWeInterrogated
         ghoulPriestDefeated = "01116" `elem` victoryDisplay
-      s <$ push
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , resolution
-              , RecordSet
-                CultistsWeInterrogated
-                (setToList cultistsWeInterrogated)
-              , RecordSet CultistsWhoGotAway (setToList cultistsWhoGotAway)
-              ]
-            <> [ Record ItIsPastMidnight | n == 2 ]
-            <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]
-            <> [ GainXP iid x | (iid, x) <- xp ]
-            <> [EndOfGame Nothing]
+      pushAll
+        $ [ story iids resolution
+          , RecordSet CultistsWeInterrogated (setToList cultistsWeInterrogated)
+          , RecordSet CultistsWhoGotAway (setToList cultistsWhoGotAway)
           ]
-        )
+        <> [ Record ItIsPastMidnight | n == 2 ]
+        <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]
+        <> [ GainXP iid x | (iid, x) <- xp ]
+        <> [EndOfGame Nothing]
+      pure s
     _ -> TheMidnightMasks <$> runMessage msg attrs

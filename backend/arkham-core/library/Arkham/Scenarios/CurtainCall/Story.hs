@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-intro :: Message
+intro :: FlavorText
 intro = FlavorText
   (Just "Scenario I: Curtain Call")
   [ "You awaken with a start, as though shaken by an unseen force. You\
@@ -21,7 +21,7 @@ intro = FlavorText
 
 -- "
 
-noResolution :: Message
+noResolution :: FlavorText
 noResolution = FlavorText
   (Just "No Resolution")
   [ "Once again you are startled awake, this time by\
@@ -62,7 +62,7 @@ noResolution = FlavorText
 
 -- "
 
-resolution1 :: Message
+resolution1 :: FlavorText
 resolution1 = FlavorText
   (Just "Resolution 1")
   [ "Fleeing from the theatre, you head straight to\
@@ -100,7 +100,7 @@ resolution1 = FlavorText
 
 -- "
 
-resolution2 :: Message
+resolution2 :: FlavorText
 resolution2 = FlavorText
   (Just "Resolution 2")
   [ "You think about going to the police, but\

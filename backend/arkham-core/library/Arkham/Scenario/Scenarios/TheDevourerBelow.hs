@@ -183,13 +183,7 @@ instance RunMessage TheDevourerBelow where
           Resolution 3 ->
             (resolution3, TheInvestigatorsSacrificedLitaChantlerToUmordhoth)
           _ -> error "Invalid resolution"
-      leadInvestigatorId <- getLeadInvestigatorId
-      s <$ push
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [Continue "Continue", resolution, Record record]
-            <> [EndOfGame Nothing]
-          ]
-        )
+      iids <- getInvestigatorIds
+      pushAll [story iids resolution, Record record, EndOfGame Nothing]
+      pure s
     _ -> TheDevourerBelow <$> runMessage msg attrs

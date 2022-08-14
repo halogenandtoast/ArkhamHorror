@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Message
 
-intro1 :: Message
+intro1 :: FlavorText
 intro1 = FlavorText
   (Just "Intro 1")
   [ "Wednesday, July 8th, 1925"
@@ -22,7 +22,7 @@ intro1 = FlavorText
     \ lying in wait, preparing to ambush while we sleep at night?"
   ]
 
-intro2 :: Message
+intro2 :: FlavorText
 intro2 = FlavorText
   (Just "Intro 2")
   [ "Friday, July 3rd, 1925"

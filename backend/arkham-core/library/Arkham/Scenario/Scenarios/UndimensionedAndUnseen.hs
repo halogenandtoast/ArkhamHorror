@@ -31,6 +31,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
+import Arkham.Scenarios.UndimensionedAndUnseen.Story
 import Arkham.SkillTest
 import Arkham.Source
 import Arkham.Target
@@ -54,68 +55,6 @@ undimensionedAndUnseen difficulty = scenario
   , "dunwichVillage tenAcreMeadow whateleyRuins"
   , ". coldSpringGlen whateleyRuins"
   , ". coldSpringGlen ."
-  ]
-
-undimensionedAndUnseenIntro :: FlavorText
-undimensionedAndUnseenIntro = FlavorText
-  (Just "Scenario V: Undimensioned and Unseen")
-  [ "Your search of the village of Dunwich has\
-    \ uncovered a number of documents, journal entries,\
-    \ and esoteric theories. Reading through these\
-    \ materials leaves you exhausted and emotionally\
-    \ drained. Most of the content was written by\
-    \ a single source—a man named Seth Bishop.\
-    \ When you ask around town, you learn that Seth\
-    \ is a citizen of Dunwich. Along with several others, Seth had witnessed\
-    \ firsthand the devastation wrought by the events of “the Dunwich\
-    \ horror,” as Armitage had dubbed the incident. Curiously, since that time,\
-    \ very few people had seen Seth around town, and those who did claimed\
-    \ his eyes had been bloodshot and his face sweaty and pale."
-  , "You don’t doubt that somebody who has seen what Seth has seen would\
-    \ appear nervous or paranoid. But the more you read of his frantic and\
-    \ unhinged writings, the more you believe he is involved in recent events.\
-    \ His writings speak of having “gathered the remains” and of using\
-    \ arcane methods to “imbue the fathers’ essence” into other creatures, and\
-    \ eventually, into other people. The explanations and diagrams that follow\
-    \ are unfathomably complex and defy understanding."
-  , "Before you are able to find Seth and confront him, several men and\
-    \ women from the village approach you in a panic. “It’s back!” one of them\
-    \ wails. You recognize him as Curtis Whateley, of the undecayed branch.\
-    \ “Whatever it was that killed them Fryes, it’s back! Up and smashed the\
-    \ Bishops’ home like it were made o’ paper!” Curtis and the other townsfolk\
-    \ are clamoring amongst themselves, raising their voices in a panic."
-  ]
-
-undimensionedAndUnseenPart1 :: FlavorText
-undimensionedAndUnseenPart1 = FlavorText
-  Nothing
-  [ "You aim to calm the townsfolk so they can explain to you what\
-    \ is going on. They inform you that there was a rumbling to the north, and\
-    \ when they went to investigate they found the Bishops’ farmhouse had\
-    \ been torn to shreds. A trail of heavy tracks led into nearby Cold Spring\
-    \ Glen. “You know what to do, right? You Arkham folk stopped that thing\
-    \ last time,” one of the townsfolk says. Curtis shakes his head and bites at\
-    \ his lip."
-  , "“We couldn’t even see that hellish thing until the old professor sprayed\
-    \ that there powder on it,” He says. “To this day, I wish I hadn’t seen it at\
-    \ all…” Something must be done to stop the monster’s rampage. But, if the\
-    \ documents you found are true, there may be more than one such creature\
-    \ on the loose…."
-  ]
-
-undimensionedAndUnseenPart2 :: FlavorText
-undimensionedAndUnseenPart2 = FlavorText
-  Nothing
-  [ "You warn the townsfolk that they are in grave danger, and urge\
-    \ them to flee Dunwich while they can. Several of them immediately heed\
-    \ your advice, remembering the terrible monstrosity that had previously\
-    \ endangered the town. Curtis drops to his knees in despair, sweating\
-    \ feverishly. “It’s that thing again, ain’t it? It’s come back fer us,” Curtis\
-    \ stutters. “I hope you’ve got some of that powder the old professor had last\
-    \ time. We couldn’t even see the damned thing until he sprayed it. To this\
-    \ day, I wish I hadn’t seen it at all…” Something must be done to stop the\
-    \ monster’s rampage. But, if the documents you found are true, there may\
-    \ be more than one such creature on the loose…."
   ]
 
 standaloneTokens :: [TokenFace]
@@ -172,7 +111,7 @@ instance RunMessage UndimensionedAndUnseen where
       investigatorIds <- getInvestigatorIds
       leadInvestigatorId <- getLeadInvestigatorId
       s <$ pushAll
-        [ story investigatorIds undimensionedAndUnseenIntro
+        [ story investigatorIds intro
         , chooseOne
           leadInvestigatorId
           [ Label
@@ -267,12 +206,7 @@ instance RunMessage UndimensionedAndUnseen where
           ]
 
       pushAll
-        $ [ story
-            investigatorIds
-            (if n == 1
-              then undimensionedAndUnseenPart1
-              else undimensionedAndUnseenPart2
-            )
+        $ [ story investigatorIds (if n == 1 then introPart1 else introPart2)
           , Record
             (if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk)
           , SetEncounterDeck encounterDeck
@@ -360,54 +294,27 @@ instance RunMessage UndimensionedAndUnseen where
     ScenarioResolution NoResolution ->
       s <$ pushAll [ScenarioResolution $ Resolution 1]
     ScenarioResolution (Resolution 1) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
       broodEscapedIntoTheWild <-
         (+ count ((== "02255") . toCardCode) (scenarioSetAsideCards attrs))
         . length
         <$> getBroodOfYogSothoth
-      s <$ pushAll
-        ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 (Just "Resolution 1")
-                 [ "You did all you could to stop the rampaging\
-                         \ monsters, but there were more of them than you realized and\
-                         \ you weren’t able to slay them all. Exhausted and terrified, you\
-                         \ retreat to Zebulon’s home and hope to survive the night."
-                 ]
-               ]
-           ]
-         , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
-         ]
+      pushAll
+        $ [ story investigatorIds resolution1
+          , RecordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
+          ]
         <> [ RemoveCampaignCardFromDeck iid "02219" | iid <- investigatorIds ]
         <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
-        )
+      pure s
     ScenarioResolution (Resolution 2) -> do
-      leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ pushAll
-        ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 (Just "Resolution 2")
-                 [ "After slaying what seems to be the last of\
-                     \ the rampaging monsters you retreat to Zebulon’s home,\
-                     \ exhausted and rattled by your experience"
-                 ]
-               ]
-           ]
-         , Record NoBroodEscapedIntoTheWild
-         ]
+      pushAll
+        $ [story investigatorIds resolution2, Record NoBroodEscapedIntoTheWild]
         <> [ RemoveCampaignCardFromDeck iid "02219" | iid <- investigatorIds ]
         <> [ GainXP iid n | (iid, n) <- xp ]
         <> [EndOfGame Nothing]
-        )
+      pure s
     _ -> UndimensionedAndUnseen <$> runMessage msg attrs

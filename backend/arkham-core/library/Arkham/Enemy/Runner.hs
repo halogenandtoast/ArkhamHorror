@@ -49,6 +49,7 @@ import Data.Monoid ( First (..) )
 filterOutEnemyMessages :: EnemyId -> Message -> Maybe Message
 filterOutEnemyMessages eid (Ask iid q) = case q of
   QuestionLabel{} -> error "currently unhandled"
+  Read{} -> error "currently unhandled"
   ChooseOne msgs -> case mapMaybe (filterOutEnemyMessages eid) msgs of
     [] -> Nothing
     x -> Just (Ask iid $ ChooseOne x)

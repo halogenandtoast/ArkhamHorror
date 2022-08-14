@@ -1262,6 +1262,8 @@ library
       Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.TheUntamedWilds.Story
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
+      Arkham.Scenarios.UndimensionedAndUnseen.Story
+      Arkham.Scenarios.WhereDoomAwaits.Story
       Arkham.Skill
       Arkham.Skill.Cards
       Arkham.Skill.Cards.Deduction

@@ -2,14 +2,14 @@ module Arkham.Location.Base where
 
 import Arkham.Prelude
 
-import Arkham.Json
-import Arkham.Direction
-import Arkham.Id
-import Arkham.Cost
 import Arkham.Card
+import Arkham.Cost
+import Arkham.Direction
 import Arkham.GameValue
+import Arkham.Id
+import Arkham.Json
 import Arkham.LocationSymbol
-import Arkham.Matcher (LocationMatcher(..))
+import Arkham.Matcher ( LocationMatcher (..) )
 
 data LocationAttrs = LocationAttrs
   { locationId :: LocationId

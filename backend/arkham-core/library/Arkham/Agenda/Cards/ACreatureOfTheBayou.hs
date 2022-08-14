@@ -6,15 +6,14 @@ module Arkham.Agenda.Cards.ACreatureOfTheBayou
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Agenda.Types
-import Arkham.Agenda.Helpers hiding (matches)
+import Arkham.Agenda.Helpers hiding ( matches )
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Location.Types (Field(..))
 import Arkham.GameValue
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Target
 
 newtype ACreatureOfTheBayou = ACreatureOfTheBayou AgendaAttrs

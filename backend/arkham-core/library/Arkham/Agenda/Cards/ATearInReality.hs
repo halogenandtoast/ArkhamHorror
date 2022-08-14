@@ -5,7 +5,6 @@ module Arkham.Agenda.Cards.ATearInReality
 
 import Arkham.Prelude
 
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
@@ -33,9 +32,9 @@ instance RunMessage ATearInReality where
         (fromJustNote "must be at location")
         leadInvestigatorId
       lid <- leftmostLocation locationId
-      a <$ pushAll
-        (RemoveLocation lid
+      pushAll
+        $ RemoveLocation lid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
         <> [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
-        )
+      pure a
     _ -> ATearInReality <$> runMessage msg attrs

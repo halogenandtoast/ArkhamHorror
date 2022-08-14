@@ -184,7 +184,10 @@ instance Semigroup Payment where
   a <> Payments xs = Payments (a : xs)
   a <> b = Payments [a, b]
 
-data CostZone = FromHandOf InvestigatorMatcher | FromPlayAreaOf InvestigatorMatcher | CostZones [CostZone]
+data CostZone
+  = FromHandOf InvestigatorMatcher
+  | FromPlayAreaOf InvestigatorMatcher
+  | CostZones [CostZone]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

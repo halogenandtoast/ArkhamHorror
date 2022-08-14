@@ -62,7 +62,8 @@ resourcesL :: Lens' TreacheryAttrs Int
 resourcesL = lens treacheryResources $ \m x -> m { treacheryResources = x }
 
 canBeCommittedL :: Lens' TreacheryAttrs Bool
-canBeCommittedL = lens treacheryCanBeCommitted $ \m x -> m { treacheryCanBeCommitted = x }
+canBeCommittedL =
+  lens treacheryCanBeCommitted $ \m x -> m { treacheryCanBeCommitted = x }
 
 instance HasCardCode TreacheryAttrs where
   toCardCode = treacheryCardCode
@@ -105,9 +106,6 @@ instance SourceEntity TreacheryAttrs where
 instance IsCard TreacheryAttrs where
   toCardId = unTreacheryId . treacheryId
   toCardOwner = treacheryOwner
-
--- ownedBy :: Attrs -> InvestigatorId -> Bool
--- ownedBy Attrs { treacheryOwner } iid = treacheryOwner == Just iid
 
 treacheryOn :: Target -> TreacheryAttrs -> Bool
 treacheryOn t TreacheryAttrs { treacheryAttachedTarget } =
@@ -187,10 +185,10 @@ is (CardCodeTarget cardCode) t = cardCode == cdCardCode (toCardDef t)
 is (CardIdTarget cardId) t = cardId == unTreacheryId (treacheryId t)
 is _ _ = False
 
-data Treachery = forall a. IsTreachery a => Treachery a
+data Treachery = forall a . IsTreachery a => Treachery a
 
 instance Eq Treachery where
-  (Treachery (a :: a)) == (Treachery (b :: b)) = case eqT @a @b of
+  Treachery (a :: a) == Treachery (b :: b) = case eqT @a @b of
     Just Refl -> a == b
     Nothing -> False
 
@@ -231,9 +229,11 @@ instance IsCard Treachery where
   toCardId = toCardId . toAttrs
   toCardOwner = toCardOwner . toAttrs
 
-data SomeTreacheryCard = forall a. IsTreachery a => SomeTreacheryCard (TreacheryCard a)
+data SomeTreacheryCard = forall a . IsTreachery a => SomeTreacheryCard
+  (TreacheryCard a)
 
-liftSomeTreacheryCard :: (forall a. TreacheryCard a -> b) -> SomeTreacheryCard -> b
+liftSomeTreacheryCard
+  :: (forall a . TreacheryCard a -> b) -> SomeTreacheryCard -> b
 liftSomeTreacheryCard f (SomeTreacheryCard a) = f a
 
 someTreacheryCardCode :: SomeTreacheryCard -> CardCode

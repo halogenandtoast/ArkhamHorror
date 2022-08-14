@@ -223,7 +223,7 @@ instance SourceEntity EnemyAttrs where
 data Enemy = forall a . IsEnemy a => Enemy a
 
 instance Eq Enemy where
-  (Enemy (a :: a)) == (Enemy (b :: b)) = case eqT @a @b of
+  Enemy (a :: a) == Enemy (b :: b) = case eqT @a @b of
     Just Refl -> a == b
     Nothing -> False
 
@@ -261,4 +261,3 @@ liftSomeEnemyCard f (SomeEnemyCard a) = f a
 
 someEnemyCardCode :: SomeEnemyCard -> CardCode
 someEnemyCardCode = liftSomeEnemyCard cbCardCode
-

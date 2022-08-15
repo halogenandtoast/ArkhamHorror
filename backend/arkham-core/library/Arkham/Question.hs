@@ -2,16 +2,33 @@ module Arkham.Question where
 
 import Arkham.Prelude
 
+import Arkham.Ability
+import Arkham.Card.CardCode
 import Arkham.Id
+import Arkham.SkillType
 import Arkham.Target
 import Arkham.Text
+import Arkham.Window
+
+data UI msg
+  = Label Text [msg]
+  | TooltipLabel Text Tooltip [msg]
+  | LabelGroup Text [msg]
+  | CardLabel CardCode [msg]
+  | TargetLabel Target [msg]
+  | SkillLabel SkillType [msg]
+  | EvadeLabel EnemyId [msg]
+  | AbilityLabel InvestigatorId Ability [Window]
+  | Done Text
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)
 
 data Question msg
-    = ChooseOne [msg]
-    | ChooseN Int [msg]
-    | ChooseSome [msg]
-    | ChooseUpToN Int [msg]
-    | ChooseOneAtATime [msg]
+    = ChooseOne [UI msg]
+    | ChooseN Int [UI msg]
+    | ChooseSome [UI msg]
+    | ChooseUpToN Int [UI msg]
+    | ChooseOneAtATime [UI msg]
     | -- | Choosing payment amounts
       -- The core idea is that costs get broken up into unitary costs and we
       -- let the players decide how many times an individual player will pay

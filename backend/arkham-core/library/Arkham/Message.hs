@@ -270,7 +270,6 @@ data Message
   | DiscoverCluesAtLocation InvestigatorId LocationId Int (Maybe Action)
   | DisengageEnemy InvestigatorId EnemyId
   | DisengageEnemyFromAll EnemyId
-  | Done Text
   | DrawAnotherToken InvestigatorId
   | DrawCards InvestigatorId Int Bool
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
@@ -406,10 +405,6 @@ data Message
   | InvestigatorTakeDamage InvestigatorId Source Int Int
   | InvestigatorWhenDefeated Source InvestigatorId
   | InvestigatorWhenEliminated Source InvestigatorId
-  | Label Text [Message]
-  | TooltipLabel Text Tooltip [Message]
-  | LabelGroup Text [Message]
-  | CardLabel CardCode [Message]
   | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator
   | LookAtRevealed InvestigatorId Source Target
   | LookAtTopOfDeck InvestigatorId Target Int
@@ -458,7 +453,7 @@ data Message
   | PlayCard InvestigatorId Card (Maybe Target) [Window] Bool
   | PlayedCard InvestigatorId Card
   | ResolvedCard InvestigatorId Card
-  | PlayerWindow InvestigatorId [Message] Bool
+  | PlayerWindow InvestigatorId [UI Message] Bool
   | PutCardIntoPlay InvestigatorId Card (Maybe Target) [Window]
   | PutCardOnTopOfDeck InvestigatorId DeckSignifier Card
   | PutOnTopOfDeck InvestigatorId DeckSignifier Target
@@ -584,9 +579,6 @@ data Message
   | DrawStartingHand InvestigatorId
   | TakeStartingResources InvestigatorId
   | TakenAction InvestigatorId Action
-  | TargetLabel Target [Message]
-  | SkillLabel SkillType [Message]
-  | EvadeLabel EnemyId [Message]
   | ChosenEvadeEnemy Source EnemyId
   | TriggerSkillTest InvestigatorId
   | TryEvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
@@ -628,31 +620,43 @@ data Message
 
 $(deriveJSON defaultOptions ''Message)
 
-targetLabel :: IdToTarget entityId => entityId -> [Message] -> Message
+uiToRun :: UI Message -> Message
+uiToRun = \case
+  Label _ msgs -> Run msgs
+  TooltipLabel _ _ msgs -> Run msgs
+  LabelGroup _ msgs -> Run msgs
+  CardLabel _ msgs -> Run msgs
+  TargetLabel _ msgs -> Run msgs
+  SkillLabel _ msgs -> Run msgs
+  EvadeLabel _ msgs -> Run msgs
+  AbilityLabel iid ab windows -> UseAbility iid ab windows
+  Done _ -> Run []
+
+targetLabel :: IdToTarget entityId => entityId -> [Message] -> UI Message
 targetLabel entityId = TargetLabel (idToTarget entityId)
 
-chooseOrRunOne :: InvestigatorId -> [Message] -> Message
-chooseOrRunOne _ [x] = x
+chooseOrRunOne :: InvestigatorId -> [UI Message] -> Message
+chooseOrRunOne _ [x] = uiToRun x
 chooseOrRunOne iid msgs = chooseOne iid msgs
 
-chooseOne :: InvestigatorId -> [Message] -> Message
+chooseOne :: InvestigatorId -> [UI Message] -> Message
 chooseOne _ [] = throw $ InvalidState "No messages for chooseOne"
 chooseOne iid msgs = Ask iid (ChooseOne msgs)
 
-chooseOneAtATime :: InvestigatorId -> [Message] -> Message
+chooseOneAtATime :: InvestigatorId -> [UI Message] -> Message
 chooseOneAtATime _ [] = throw $ InvalidState "No messages for chooseOneAtATime"
 chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
 
-chooseSome :: InvestigatorId -> Text -> [Message] -> Message
+chooseSome :: InvestigatorId -> Text -> [UI Message] -> Message
 chooseSome _ _ [] = throw $ InvalidState "No messages for chooseSome"
 chooseSome iid doneText msgs = Ask iid (ChooseSome $ Done doneText : msgs)
 
-chooseUpToN :: InvestigatorId -> Int -> Text -> [Message] -> Message
+chooseUpToN :: InvestigatorId -> Int -> Text -> [UI Message] -> Message
 chooseUpToN _ _ _ [] = throw $ InvalidState "No messages for chooseSome"
 chooseUpToN iid n doneText msgs =
   Ask iid (ChooseUpToN n $ Done doneText : msgs)
 
-chooseN :: InvestigatorId -> Int -> [Message] -> Message
+chooseN :: InvestigatorId -> Int -> [UI Message] -> Message
 chooseN _ _ [] = throw $ InvalidState "No messages for chooseN"
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
 

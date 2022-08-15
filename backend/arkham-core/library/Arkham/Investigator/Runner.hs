@@ -1688,41 +1688,38 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   RunWindow iid windows | iid == investigatorId -> do
     actions <- nub . concat <$> traverse (getActions iid) windows
     playableCards <- getPlayableCards a UnpaidCost windows
-    if notNull playableCards || notNull actions
-      then if any isForcedAbility actions
-        then do
-          -- Silent forced abilities should trigger automatically
-          let
-            (silent, normal) = partition isSilentForcedAbility actions
-            toUseAbilities = map (($ windows) . UseAbility iid)
-          a <$ pushAll
-            (toUseAbilities silent
-            <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
-            <> [RunWindow iid windows]
-            )
-        else do
-          actionsWithMatchingWindows <- for actions $ \ability@Ability {..} ->
-            (ability, )
-              <$> filterM
-                    (\w -> windowMatches iid abilitySource w abilityWindow)
-                    windows
-          a <$ push
-            (chooseOne iid
-            $ [ TargetLabel
-                  (CardIdTarget $ toCardId c)
-                  [PayCardCost iid c windows, RunWindow iid windows]
-              | c <- playableCards
-              ]
-            <> map
-                 (\(ability, windows') ->
-                   Run
-                     . (: [RunWindow iid windows]) -- original set of windows
-                     $ UseAbility iid ability windows'
-                 )
-                 actionsWithMatchingWindows
-            <> [Continue "Skip playing fast cards or using reactions"]
-            )
-      else pure a
+    unless (null playableCards && null actions) $ if any isForcedAbility actions
+      then do
+        let
+          (silent, normal) = partition isSilentForcedAbility actions
+          toUseAbilities = map (($ windows) . AbilityLabel iid)
+        -- Silent forced abilities should trigger automatically
+        pushAll
+          $ toUseAbilities silent
+          <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
+          <> [RunWindow iid windows]
+      else do
+        actionsWithMatchingWindows <- for actions $ \ability@Ability {..} ->
+          (ability, )
+            <$> filterM
+                  (\w -> windowMatches iid abilitySource w abilityWindow)
+                  windows
+        push
+          $ chooseOne iid
+          $ [ TargetLabel
+                (CardIdTarget $ toCardId c)
+                [PayCardCost iid c windows, RunWindow iid windows]
+            | c <- playableCards
+            ]
+          <> map
+               (\(ability, windows') ->
+                 Run
+                   . (: [RunWindow iid windows]) -- original set of windows
+                   $ UseAbility iid ability windows'
+               )
+               actionsWithMatchingWindows
+          <> [Label "Skip playing fast cards or using reactions" []]
+    pure a
   SpendActions iid source mAction n | iid == investigatorId -> do
     mAdditionalAction <- findM
       (additionalActionCovers source mAction)
@@ -1833,7 +1830,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
           push
             (chooseOneAtATime iid $ map
-              (AddFocusedToTopOfDeck iid (InvestigatorTarget iid') . toCardId)
+              (\c -> TargetLabel
+                (CardIdTarget $ toCardId c)
+                [ AddFocusedToTopOfDeck
+                    iid
+                    (InvestigatorTarget iid')
+                    (toCardId c)
+                ]
+              )
               (findWithDefault [] Zone.FromDeck investigatorFoundCards)
             )
         ShuffleBackIn -> do
@@ -1880,11 +1884,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         DrawFound who n -> do
           let
             choices =
-              [ AddFocusedToHand
-                  iid
-                  (InvestigatorTarget who)
-                  zone
-                  (toCardId card)
+              [ TargetLabel
+                  (CardIdTarget $ toCardId card)
+                  [ AddFocusedToHand
+                      iid
+                      (InvestigatorTarget who)
+                      zone
+                      (toCardId card)
+                  ]
               | (zone, cards) <- mapToList targetCards
               , card <- cards
               ]
@@ -2034,12 +2041,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           -- Silent forced abilities should trigger automatically
         let
           (silent, normal) = partition isSilentForcedAbility actions
-          toUseAbilities = map (($ windows) . UseAbility iid)
-        a <$ pushAll
-          (toUseAbilities silent
+          toForcedAbilities = map (($ windows) . UseAbility iid)
+          toUseAbilities = map (($ windows) . AbilityLabel iid)
+        pushAll
+          $ toForcedAbilities silent
           <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
           <> [PlayerWindow iid additionalActions isAdditional]
-          )
       else do
         modifiers <- getModifiers (InvestigatorTarget iid)
         canAffordTakeResources <- getCanAfford a [Action.Resource]
@@ -2047,32 +2054,34 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         canAffordPlayCard <- getCanAfford a [Action.Play]
         playableCards <- getPlayableCards a UnpaidCost windows
         let usesAction = not isAdditional
-        a <$ push
-          (AskPlayer $ chooseOne
-            iid
-            (additionalActions
-            <> [ TakeResources iid 1 usesAction
-               | canAffordTakeResources
-                 && CannotGainResources
-                 `notElem` modifiers
+        push
+          $ AskPlayer
+          $ chooseOne iid
+          $ additionalActions
+          <> [ ComponentLabel
+                 (InvestigatorComponent iid ResourceToken)
+                 [TakeResources iid 1 usesAction]
+             | canAffordTakeResources && CannotGainResources `notElem` modifiers
+             ]
+          <> [ ComponentLabel
+                 (InvestigatorDeckComponent iid)
+                 [DrawCards iid 1 usesAction]
+             | canAffordDrawCards && none
+               (`elem` modifiers)
+               [ CannotTakeAction (IsAction Action.Draw)
+               , CannotDrawCards
+               , CannotManipulateDeck
                ]
-            <> [ DrawCards iid 1 usesAction
-               | canAffordDrawCards
-                 && CannotTakeAction (IsAction Action.Draw)
-                 `notElem` modifiers
-                 && CannotDrawCards
-                 `notElem` modifiers
-                 && CannotManipulateDeck
-                 `notElem` modifiers
-               ]
-            <> [ TargetLabel (CardIdTarget $ toCardId c) [InitiatePlayCard iid (toCardId c) Nothing usesAction]
-               | c <- playableCards
-               , canAffordPlayCard || isFastCard c
-               ]
-            <> [ChooseEndTurn iid]
-            <> map (($ windows) . AbilityLabel iid) actions
-            )
-          )
+             ]
+          <> [ TargetLabel
+                 (CardIdTarget $ toCardId c)
+                 [InitiatePlayCard iid (toCardId c) Nothing usesAction]
+             | c <- playableCards
+             , canAffordPlayCard || isFastCard c
+             ]
+          <> [EndTurnButton iid [ChooseEndTurn iid]]
+          <> map (($ windows) . AbilityLabel iid) actions
+    pure a
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
     let
       windows =
@@ -2088,11 +2097,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           usesAction = not isAdditional
           choices =
             additionalActions
-              <> [ TargetLabel (CardIdTarget $ toCardId c) [InitiatePlayCard
-                     investigatorId
-                     (toCardId c)
-                     Nothing
-                     usesAction]
+              <> [ TargetLabel
+                     (CardIdTarget $ toCardId c)
+                     [ InitiatePlayCard
+                         investigatorId
+                         (toCardId c)
+                         Nothing
+                         usesAction
+                     ]
                  | c <- playableCards
                  ]
               <> map (($ windows) . AbilityLabel investigatorId) actions

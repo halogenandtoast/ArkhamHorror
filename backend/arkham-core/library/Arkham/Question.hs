@@ -10,6 +10,17 @@ import Arkham.Target
 import Arkham.Text
 import Arkham.Window
 
+data Component
+  = InvestigatorComponent InvestigatorId GameTokenType
+  | InvestigatorDeckComponent InvestigatorId
+  | AssetComponent AssetId GameTokenType
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+data GameTokenType = ResourceToken | ClueToken | DamageToken | HorrorToken | DoomToken
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
 data UI msg
   = Label Text [msg]
   | TooltipLabel Text Tooltip [msg]
@@ -18,7 +29,9 @@ data UI msg
   | TargetLabel Target [msg]
   | SkillLabel SkillType [msg]
   | EvadeLabel EnemyId [msg]
-  | AbilityLabel InvestigatorId Ability [Window]
+  | AbilityLabel InvestigatorId Ability [Window] [msg]
+  | ComponentLabel Component [msg]
+  | EndTurnButton InvestigatorId [msg]
   | Done Text
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

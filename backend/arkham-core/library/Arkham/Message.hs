@@ -630,6 +630,8 @@ uiToRun = \case
   SkillLabel _ msgs -> Run msgs
   EvadeLabel _ msgs -> Run msgs
   AbilityLabel iid ab windows -> UseAbility iid ab windows
+  ComponentLabel _ msgs -> Run msgs
+  EndTurnButton _ msgs -> Run msgs
   Done _ -> Run []
 
 targetLabel :: IdToTarget entityId => entityId -> [Message] -> UI Message

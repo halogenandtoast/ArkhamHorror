@@ -17,29 +17,30 @@ export const useUserStore = defineStore("user", {
     currentUser: null,
     token: null,
   } as UserState),
+
   getters: {
     getCurrentUser(state) {
       return state.currentUser
     }
   },
+
   actions: {
     async authenticate(credentials: Credentials) {
       const authentication = await api.post<Authentication>('authenticate', credentials)
       this.token = authentication.data.token
-      return this.setCurrentUser()
+      this.setCurrentUser()
     },
 
     async register(registration: Registration) {
       const authentication = await api.post<Authentication>('register', registration)
       this.token = authentication.data.token
-      return this.setCurrentUser()
+      this.setCurrentUser()
     },
 
     async logout() {
       localStorage.removeItem('token')
       delete api.defaults.headers.common.Authorization
       this.signOut()
-      return Promise.resolve()
     },
 
     async setCurrentUser() {
@@ -59,15 +60,13 @@ export const useUserStore = defineStore("user", {
       const token = localStorage.getItem('token');
       if (token !== null && token !== undefined) {
         this.token = token
-        return this.setCurrentUser()
+        this.setCurrentUser()
       }
-      return Promise.resolve()
     },
 
     async signOut() {
       this.currentUser = null
       this.token = null
-      return Promise.resolve()
     }
   }
 })

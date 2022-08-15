@@ -144,30 +144,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ discardFilter)
       & (handL %~ filter (/= card))
       & (handL %~ (card :))
-  CheckAdditionalActionCosts iid _ action msgs | iid == investigatorId ->
-    do
-      modifiers' <- getModifiers (toTarget a)
-      let
-        additionalCosts = mapMaybe
-          (\case
-            ActionCostOf (IsAction action') n | action == action' ->
-              Just (ActionCost n)
-            _ -> Nothing
-          )
-          modifiers'
-      a <$ if null additionalCosts
-        then pushAll msgs
-        else do
-          canPay <- getCanAffordCost
-            iid
-            (toSource a)
-            Nothing
-            [Window Timing.When Window.NonFast]
-            (mconcat additionalCosts)
-          when canPay
-            $ pushAll
-            $ [PayForAbility (abilityEffect a $ mconcat additionalCosts) []]
-            <> msgs
+  CheckAdditionalActionCosts iid _ action msgs | iid == investigatorId -> do
+    modifiers' <- getModifiers (toTarget a)
+    let
+      additionalCosts = mapMaybe
+        (\case
+          ActionCostOf (IsAction action') n | action == action' ->
+            Just (ActionCost n)
+          _ -> Nothing
+        )
+        modifiers'
+    a <$ if null additionalCosts
+      then pushAll msgs
+      else do
+        canPay <- getCanAffordCost
+          iid
+          (toSource a)
+          Nothing
+          [Window Timing.When Window.NonFast]
+          (mconcat additionalCosts)
+        when canPay
+          $ pushAll
+          $ [PayForAbility (abilityEffect a $ mconcat additionalCosts) []]
+          <> msgs
   TakeStartingResources iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     let
@@ -352,24 +351,30 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & handL %~ filter ((/= cardId) . toCardId)
   RemoveCardFromSearch iid cardId | iid == investigatorId ->
     pure $ a & foundCardsL %~ HashMap.map (filter ((/= cardId) . toCardId))
-  ShuffleIntoDeck (Deck.InvestigatorDeck iid) (TreacheryTarget tid) | iid == investigatorId ->
-    pure $ a & treacheriesL %~ deleteSet tid
-  ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid) | iid == investigatorId -> do
-    card <-
-      fromJustNote "missing card" . preview _PlayerCard <$> field AssetCard aid
-    deck' <- shuffleM (card : unDeck investigatorDeck)
-    push $ After msg
-    pure
-      $ a
-      & (assetsL %~ deleteSet aid)
-      & (deckL .~ Deck deck')
-      & (slotsL %~ removeFromSlots aid)
-  ShuffleIntoDeck (Deck.InvestigatorDeck iid) (EventTarget eid) | iid == investigatorId -> do
-    card <-
-      fromJustNote "missing card" . preview _PlayerCard <$> field EventCard eid
-    deck' <- shuffleM (card : unDeck investigatorDeck)
-    push $ After msg
-    pure $ a & (deckL .~ Deck deck')
+  ShuffleIntoDeck (Deck.InvestigatorDeck iid) (TreacheryTarget tid)
+    | iid == investigatorId -> pure $ a & treacheriesL %~ deleteSet tid
+  ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid)
+    | iid == investigatorId -> do
+      card <-
+        fromJustNote "missing card"
+        . preview _PlayerCard
+        <$> field AssetCard aid
+      deck' <- shuffleM (card : unDeck investigatorDeck)
+      push $ After msg
+      pure
+        $ a
+        & (assetsL %~ deleteSet aid)
+        & (deckL .~ Deck deck')
+        & (slotsL %~ removeFromSlots aid)
+  ShuffleIntoDeck (Deck.InvestigatorDeck iid) (EventTarget eid)
+    | iid == investigatorId -> do
+      card <-
+        fromJustNote "missing card"
+        . preview _PlayerCard
+        <$> field EventCard eid
+      deck' <- shuffleM (card : unDeck investigatorDeck)
+      push $ After msg
+      pure $ a & (deckL .~ Deck deck')
   AddTreacheryToHand iid tid | iid == investigatorId ->
     pure $ a & inHandTreacheriesL %~ insertSet tid
   Discard (TreacheryTarget tid) ->
@@ -1429,9 +1434,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     unlessM (hasModifier a CannotDrawCards)
       $ push (DrawCards investigatorId 1 False)
-    mayChooseNotToTakeResources <-
-      elem MayChooseNotToTakeUpkeepResources
-        <$> getModifiers (InvestigatorTarget investigatorId)
+    mayChooseNotToTakeResources <- elem MayChooseNotToTakeUpkeepResources
+      <$> getModifiers (InvestigatorTarget investigatorId)
     if mayChooseNotToTakeResources
       then a <$ push
         (chooseOne
@@ -1771,8 +1775,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (assetsL %~ deleteSet (AssetId $ toCardId card))
       & (slotsL %~ removeFromSlots (AssetId $ toCardId card))
       & (discardL %~ filter ((/= card) . PlayerCard))
-  ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards | iid == investigatorId ->
-    do
+  ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards
+    | iid == investigatorId -> do
       let cards' = mapMaybe (preview _PlayerCard) cards
       deck <- shuffleM (cards' <> unDeck investigatorDeck)
       pure $ a & deckL .~ Deck deck
@@ -1806,8 +1810,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure $ a & foundCardsL .~ foundCards
   ShuffleAllFocusedIntoDeck _ (InvestigatorTarget iid')
     | iid' == investigatorId -> do
-      let
-        cards = findWithDefault [] Zone.FromDeck investigatorFoundCards
+      let cards = findWithDefault [] Zone.FromDeck investigatorFoundCards
       push (ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid') cards)
       pure $ a & foundCardsL %~ deleteMap Zone.FromDeck
   PutAllFocusedIntoDiscard _ (InvestigatorTarget iid')
@@ -2038,8 +2041,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> [PlayerWindow iid additionalActions isAdditional]
           )
       else do
-        modifiers <- getModifiers
-          (InvestigatorTarget iid)
+        modifiers <- getModifiers (InvestigatorTarget iid)
         canAffordTakeResources <- getCanAfford a [Action.Resource]
         canAffordDrawCards <- getCanAfford a [Action.Draw]
         canAffordPlayCard <- getCanAfford a [Action.Play]
@@ -2063,12 +2065,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                  && CannotManipulateDeck
                  `notElem` modifiers
                ]
-            <> [ InitiatePlayCard iid (toCardId c) Nothing usesAction
+            <> [ TargetLabel (CardIdTarget $ toCardId c) [InitiatePlayCard iid (toCardId c) Nothing usesAction]
                | c <- playableCards
                , canAffordPlayCard || isFastCard c
                ]
             <> [ChooseEndTurn iid]
-            <> map (($ windows) . UseAbility iid) actions
+            <> map (($ windows) . AbilityLabel iid) actions
             )
           )
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
@@ -2086,14 +2088,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           usesAction = not isAdditional
           choices =
             additionalActions
-              <> [ InitiatePlayCard
+              <> [ TargetLabel (CardIdTarget $ toCardId c) [InitiatePlayCard
                      investigatorId
                      (toCardId c)
                      Nothing
-                     usesAction
+                     usesAction]
                  | c <- playableCards
                  ]
-              <> map (($ windows) . UseAbility investigatorId) actions
+              <> map (($ windows) . AbilityLabel investigatorId) actions
         a <$ unless
           (null choices)
           (push $ AskPlayer $ chooseOne investigatorId choices)
@@ -2182,7 +2184,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           )
         )
   PickSupply iid s | iid == investigatorId -> pure $ a & suppliesL %~ (s :)
-  UseSupply iid s | iid == investigatorId -> pure $ a & suppliesL %~ deleteFirst s
+  UseSupply iid s | iid == investigatorId ->
+    pure $ a & suppliesL %~ deleteFirst s
   Blanked msg' -> runMessage msg' a
   _ -> pure a
 

@@ -32,27 +32,24 @@ instance RunMessage Scrying3 where
   runMessage msg a@(Scrying3 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       targets <- map InvestigatorTarget <$> getInvestigatorIds
-      a <$ push
-        (chooseOne iid
-        $ Search
-            iid
-            source
-            EncounterDeckTarget
-            [(FromTopOfDeck 3, PutBackInAnyOrder)]
-            AnyCard
-            (DeferSearchedToTarget $ toTarget attrs)
-        : [ Search
-              iid
-              source
-              target
-              [(FromTopOfDeck 3, PutBackInAnyOrder)]
-              AnyCard
-            (DeferSearchedToTarget $ toTarget attrs)
-          | target <- targets
-          ]
-        )
-    SearchFound iid (isTarget attrs -> True)  _ cards -> do
-      when (any (\c -> any (`elem` toTraits c) [Omen, Terror]) cards) $
-        push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+      push $ chooseOne
+        iid
+        [ TargetLabel
+            target
+            [ Search
+                iid
+                source
+                target
+                [(FromTopOfDeck 3, PutBackInAnyOrder)]
+                AnyCard
+                (DeferSearchedToTarget $ toTarget attrs)
+            ]
+        | target <- EncounterDeckTarget : targets
+        ]
+      pure a
+    SearchFound iid (isTarget attrs -> True) _ cards -> do
+      when (any (\c -> any (`elem` toTraits c) [Omen, Terror]) cards)
+        $ push
+        $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
       pure a
     _ -> Scrying3 <$> runMessage msg attrs

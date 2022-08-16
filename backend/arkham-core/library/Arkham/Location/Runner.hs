@@ -222,14 +222,13 @@ instance RunMessage LocationAttrs where
           withQueue_ $ filter (/= next)
           if null availableLocationIds
             then push (Discard (EnemyTarget eid))
-            else push
-              (chooseOne
-                activeInvestigatorId
-                [ Run
-                    [Will (EnemySpawn miid lid' eid), EnemySpawn miid lid' eid]
-                | lid' <- availableLocationIds
-                ]
-              )
+            else push $ chooseOne
+              activeInvestigatorId
+              [ targetLabel
+                  lid'
+                  [Will (EnemySpawn miid lid' eid), EnemySpawn miid lid' eid]
+              | lid' <- availableLocationIds
+              ]
       pure a
     EnemySpawn _ lid eid | lid == locationId ->
       pure $ a & enemiesL %~ insertSet eid
@@ -288,7 +287,9 @@ instance RunMessage LocationAttrs where
         <> [ PlaceClues (toTarget a) locationClueCount | locationClueCount > 0 ]
       pure $ a & revealedL .~ True
     LookAtRevealed iid source target | isTarget a target -> do
-      push (Label "Continue" [After (LookAtRevealed iid source target)])
+      push $ chooseOne
+        iid
+        [Label "Continue" [After (LookAtRevealed iid source target)]]
       pure $ a & revealedL .~ True
     After (LookAtRevealed _ _ target) | isTarget a target ->
       pure $ a & revealedL .~ False
@@ -382,7 +383,11 @@ instance HasAbilities LocationAttrs where
         l
         102
         (OnLocation (AccessibleTo $ LocationWithId $ toId l)
-        <> InvestigatorExists (You <> InvestigatorWithoutModifier CannotMove <> InvestigatorWithoutModifier (CannotEnter $ toId l))
+        <> InvestigatorExists
+             (You
+             <> InvestigatorWithoutModifier CannotMove
+             <> InvestigatorWithoutModifier (CannotEnter $ toId l)
+             )
         )
       $ ActionAbility (Just Action.Move) moveCost
     ]

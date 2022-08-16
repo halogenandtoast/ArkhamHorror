@@ -3,8 +3,8 @@ module Arkham.Event.Cards.ExtraAmmunition1 where
 import Arkham.Prelude
 
 import Arkham.Asset.Uses
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -24,8 +24,11 @@ instance RunMessage ExtraAmmunition1 where
       firearms <-
         selectListMap AssetTarget $ AssetWithTrait Firearm <> AssetControlledBy
           (InvestigatorAt YourLocation)
-      e <$ pushAll
-        [ chooseOrRunOne iid [ AddUses firearm Ammo 3 | firearm <- firearms ]
-        , Discard $ toTarget  attrs
+      pushAll
+        [ chooseOrRunOne
+          iid
+          [ TargetLabel firearm [AddUses firearm Ammo 3] | firearm <- firearms ]
+        , Discard $ toTarget attrs
         ]
+      pure e
     _ -> ExtraAmmunition1 <$> runMessage msg attrs

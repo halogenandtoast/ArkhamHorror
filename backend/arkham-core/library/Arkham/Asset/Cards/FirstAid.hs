@@ -60,14 +60,24 @@ instance RunMessage FirstAid where
           $ colocatedWith iid
           <> InvestigatorWithAnyDamage
         else pure []
-      let targets = nub $ horrorTargets <> damageTargets
+      let
+        targets = nub $ horrorTargets <> damageTargets
+        componentLabel component target = case target of
+          InvestigatorTarget iid' ->
+            ComponentLabel (InvestigatorComponent iid' component)
+          AssetTarget aid -> ComponentLabel (AssetComponent aid component)
+          _ -> error "unhandled target"
       push $ chooseOne
         iid
         [ TargetLabel
             target
             [ chooseOne iid
-              $ [ HealDamage target 1 | target `elem` damageTargets ]
-              <> [ HealHorror target 1 | target `elem` horrorTargets ]
+              $ [ componentLabel DamageToken target [HealDamage target 1]
+                | target `elem` damageTargets
+                ]
+              <> [ componentLabel HorrorToken target [HealHorror target 1]
+                 | target `elem` horrorTargets
+                 ]
             ]
         | target <- targets
         ]

@@ -55,6 +55,8 @@ instance RunMessage RivertownAbandonedWarehouse where
       cultists <- selectList $ EnemyWithTrait Cultist
       unless (null cultists) $ push $ chooseOne
         iid
-        [ RemoveDoom (EnemyTarget eid) doomToRemove | eid <- cultists ]
+        [ targetLabel eid [RemoveDoom (EnemyTarget eid) doomToRemove]
+        | eid <- cultists
+        ]
       pure l
     _ -> RivertownAbandonedWarehouse <$> runMessage msg attrs

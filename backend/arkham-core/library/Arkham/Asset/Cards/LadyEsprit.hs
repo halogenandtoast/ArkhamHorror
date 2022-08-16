@@ -36,9 +36,14 @@ instance HasAbilities LadyEsprit where
 instance RunMessage LadyEsprit where
   runMessage msg a@(LadyEsprit attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      a <$ push
-        (chooseOne
-          iid
-          [HealDamage (InvestigatorTarget iid) 2, TakeResources iid 2 False]
-        )
+      push $ chooseOne
+        iid
+        [ ComponentLabel
+          (InvestigatorComponent iid DamageToken)
+          [HealDamage (InvestigatorTarget iid) 2]
+        , ComponentLabel
+          (InvestigatorComponent iid ResourceToken)
+          [TakeResources iid 2 False]
+        ]
+      pure a
     _ -> LadyEsprit <$> runMessage msg attrs

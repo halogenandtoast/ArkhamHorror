@@ -3,14 +3,14 @@ module Arkham.Treachery.Cards.SmiteTheWicked where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message hiding (InvestigatorEliminated)
+import Arkham.Message hiding ( InvestigatorEliminated )
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs
@@ -40,13 +40,16 @@ instance RunMessage SmiteTheWicked where
           ownerId = fromJustNote "has to be set" treacheryOwner
           enemyId = EnemyId $ toCardId card
         farthestLocations <- selectList $ FarthestLocationFromYou Anywhere
-        t <$ pushAll
+        pushAll
           [ CreateEnemy (EncounterCard card)
           , AttachTreachery treacheryId (EnemyTarget enemyId)
           , chooseOne
             ownerId
-            [ EnemySpawn Nothing lid enemyId | lid <- farthestLocations ]
+            [ targetLabel lid [EnemySpawn Nothing lid enemyId]
+            | lid <- farthestLocations
+            ]
           ]
+        pure t
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       let investigator = fromJustNote "missing investigator" treacheryOwner
       in t <$ push (SufferTrauma investigator 0 1)

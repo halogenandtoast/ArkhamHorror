@@ -7,13 +7,13 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
-import qualified Arkham.Enemy.Cards as Cards
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Phase
 import Arkham.Projection
-import qualified Arkham.Timing as Timing
+import Arkham.Timing qualified as Timing
 
 newtype CorpseTaker = CorpseTaker EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -56,14 +56,12 @@ instance RunMessage CorpseTaker where
               pure $ CorpseTaker $ attrs & doomL .~ 0
             else do
               leadInvestigatorId <- getLeadInvestigatorId
-              closestLocationIds <- selectList $ ClosestPathLocation loc locationId
+              closestLocationIds <- selectList
+                $ ClosestPathLocation loc locationId
               case closestLocationIds of
-                [lid] -> e <$ push (EnemyMove enemyId lid)
-                lids ->
-                  e
-                    <$ push
-                         (chooseOne
-                           leadInvestigatorId
-                           [ EnemyMove enemyId lid | lid <- lids ]
-                         )
+                [lid] -> push (EnemyMove enemyId lid)
+                lids -> push $ chooseOne
+                  leadInvestigatorId
+                  [ targetLabel lid [EnemyMove enemyId lid] | lid <- lids ]
+              pure e
     _ -> CorpseTaker <$> runMessage msg attrs

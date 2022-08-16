@@ -6,11 +6,11 @@ module Arkham.Enemy.Cards.TheRougarou
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -80,11 +80,9 @@ instance RunMessage TheRougarou where
         case farthestLocationIds of
           [] -> error "can't happen"
           [x] -> push (MoveUntil x (EnemyTarget enemyId))
-          xs -> push
-            (chooseOne
-              leadInvestigatorId
-              [ MoveUntil x (EnemyTarget enemyId) | x <- xs ]
-            )
+          xs -> push $ chooseOne
+            leadInvestigatorId
+            [ targetLabel x [MoveUntil x (EnemyTarget enemyId)] | x <- xs ]
 
         TheRougarou
           . (`with` TheRougarouMetadata

@@ -29,7 +29,7 @@ advanceActSideA attrs advanceMode = do
       [Window Timing.When (ActAdvance $ toId attrs)]
     , chooseOne
       leadInvestigatorId
-      [AdvanceAct (toId attrs) (toSource attrs) advanceMode]
+      [TargetLabel (ActTarget $ toId attrs) [AdvanceAct (toId attrs) (toSource attrs) advanceMode]]
     ]
 
 instance RunMessage Act where

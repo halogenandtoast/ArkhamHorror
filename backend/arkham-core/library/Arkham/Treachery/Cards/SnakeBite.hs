@@ -39,7 +39,7 @@ instance RunMessage SnakeBite where
         $ chooseOrRunOne iid
         $ [ Label
               "Deal 5 damage to an Ally asset you control"
-              [chooseOne iid [ AssetDamage ally source 5 0 | ally <- allies ]]
+              [chooseOne iid [ targetLabel ally [AssetDamage ally source 5 0] | ally <- allies ]]
           | notNull allies
           ]
         <> [ Label

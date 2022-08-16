@@ -9,8 +9,8 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Message
+import Arkham.Modifier
 import Arkham.Target
 
 newtype NoStoneUnturned = NoStoneUnturned EventAttrs
@@ -31,13 +31,16 @@ instance RunMessage NoStoneUnturned where
       pushAll
         [ chooseOne
           iid
-          [ Search
+          [ targetLabel
               iid'
-              (toSource attrs)
-              (InvestigatorTarget iid')
-              [fromTopOfDeck 6]
-              AnyCard
-              (DrawFound iid' 1)
+              [ Search
+                  iid'
+                  (toSource attrs)
+                  (InvestigatorTarget iid')
+                  [fromTopOfDeck 6]
+                  AnyCard
+                  (DrawFound iid' 1)
+              ]
           | iid' <- iids
           ]
         , Discard (toTarget attrs)

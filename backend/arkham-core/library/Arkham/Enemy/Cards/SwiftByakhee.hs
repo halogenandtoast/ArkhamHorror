@@ -41,7 +41,7 @@ instance HasAbilities SwiftByakhee where
       $ toId a
     ]
 
-choosePrey :: EnemyAttrs -> (InvestigatorId, LocationId, Distance) -> Message
+choosePrey :: EnemyAttrs -> (InvestigatorId, LocationId, Distance) -> UI Message
 choosePrey attrs (iid, pathId, distance) =
   targetLabel iid
     $ [ noAttack | unDistance distance <= 1 ]

@@ -30,16 +30,20 @@ sentinelPeak = locationWith
 
 instance RunMessage SentinelPeak where
   runMessage msg l@(SentinelPeak attrs) = case msg of
-    InvestigatorDrewEncounterCard iid card | iid `on` attrs -> l <$ when
-      (Hex `member` toTraits card)
-      (push $ TargetLabel
-        (toTarget attrs)
-        [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
-      )
-    InvestigatorDrewPlayerCard iid card | iid `on` attrs -> l <$ when
-      (Hex `member` toTraits card)
-      (push $ TargetLabel
-        (toTarget attrs)
-        [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
-      )
+    InvestigatorDrewEncounterCard iid card | iid `on` attrs -> do
+      when (Hex `member` toTraits card) $ push $ chooseOne
+        iid
+        [ TargetLabel
+            (toTarget attrs)
+            [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
+        ]
+      pure l
+    InvestigatorDrewPlayerCard iid card | iid `on` attrs -> do
+      when (Hex `member` toTraits card) $ push $ chooseOne
+        iid
+        [ TargetLabel
+            (toTarget attrs)
+            [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
+        ]
+      pure l
     _ -> SentinelPeak <$> runMessage msg attrs

@@ -6,11 +6,11 @@ module Arkham.Event.Cards.AstoundingRevelation
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Event.Cards qualified as Cards
-import Arkham.Asset.Uses (UseType(..))
+import Arkham.Asset.Uses ( UseType (..) )
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -39,12 +39,16 @@ instance HasAbilities AstoundingRevelation where
 instance RunMessage AstoundingRevelation where
   runMessage msg e@(AstoundingRevelation attrs) = case msg of
     InDiscard _ (UseCardAbility iid source _ 1 _) | isSource attrs source -> do
-      secretAssetIds <- selectList (AssetControlledBy You <> AssetWithUseType Secret)
-      e <$ push
-        (chooseOne
-          iid
-          (TakeResources iid 2 False
-          : [ AddUses (AssetTarget aid) Secret 1 | aid <- secretAssetIds ]
-          )
+      secretAssetIds <- selectList
+        (AssetControlledBy You <> AssetWithUseType Secret)
+      push $ chooseOne
+        iid
+        (ComponentLabel
+            (InvestigatorComponent iid ResourceToken)
+            [TakeResources iid 2 False]
+        : [ targetLabel aid [AddUses (AssetTarget aid) Secret 1]
+          | aid <- secretAssetIds
+          ]
         )
+      pure e
     _ -> AstoundingRevelation <$> runMessage msg attrs

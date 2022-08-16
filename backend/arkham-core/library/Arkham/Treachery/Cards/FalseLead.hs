@@ -9,8 +9,8 @@ import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype FalseLead = FalseLead TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -24,8 +24,11 @@ instance RunMessage FalseLead where
     Revelation iid source | isSource attrs source -> do
       playerClueCount <- field InvestigatorClues iid
       if playerClueCount == 0
-        then t <$ push (chooseOne iid [Surge iid (toSource attrs)])
-        else t <$ push (RevelationSkillTest iid source SkillIntellect 4)
+        then push $ chooseOne
+          iid
+          [TargetLabel (toTarget attrs) [Surge iid (toSource attrs)]]
+        else push (RevelationSkillTest iid source SkillIntellect 4)
+      pure t
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == toId attrs -> t <$ push (InvestigatorPlaceCluesOnLocation iid n)
     _ -> FalseLead <$> runMessage msg attrs

@@ -48,7 +48,7 @@ instance RunMessage HuntedDown where
                       eid
                       [ chooseOne
                         iid
-                        [ EnemyMove eid x | x <- xs, x /= locationId ]
+                        [ targetLabel x [EnemyMove eid x] | x <- xs, x /= locationId ]
                       , EnemyAttackIfEngaged eid (Just iid)
                       ]
 

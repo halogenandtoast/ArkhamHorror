@@ -47,7 +47,9 @@ instance RunMessage BalefulReveler where
       start <- getJustLocation leadInvestigatorId
       locations <- getCounterClockwiseLocations start
 
-      mSpawnLocation <- findM (selectNone . InvestigatorAt . LocationWithId) locations
+      mSpawnLocation <- findM
+        (selectNone . InvestigatorAt . LocationWithId)
+        locations
 
       case mSpawnLocation of
         Just spawnLocation -> BalefulReveler <$> runMessage
@@ -65,5 +67,6 @@ instance RunMessage BalefulReveler where
             (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
             tokenFaces
           ]
-      e <$ pushAll (chooseOne iid [Continue "Continue"] : moveMsg)
+      pushAll (chooseOne iid [Label "Continue" []] : moveMsg)
+      pure e
     _ -> BalefulReveler <$> runMessage msg attrs

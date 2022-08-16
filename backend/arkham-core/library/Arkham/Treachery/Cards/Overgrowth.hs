@@ -50,9 +50,10 @@ instance RunMessage Overgrowth where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       let
         target = toTarget attrs
-        beginSkillTest sType = BeginSkillTest iid source target Nothing sType 4
-      t <$ push
-        (chooseOne iid $ map beginSkillTest [SkillCombat, SkillIntellect])
+        beginSkillTest sType =
+          SkillLabel sType [BeginSkillTest iid source target Nothing sType 4]
+      push $ chooseOne iid $ map beginSkillTest [SkillCombat, SkillIntellect]
+      pure t
     PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t <$ push (Discard $ toTarget attrs)
     _ -> Overgrowth <$> runMessage msg attrs

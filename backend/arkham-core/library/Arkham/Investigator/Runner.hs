@@ -184,7 +184,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else
         chooseOne iid
         $ Label "Done With Mulligan" [FinishedWithMulligan investigatorId]
-        : [ Run [DiscardCard iid (toCardId card), InvestigatorMulligan iid]
+        : [ TargetLabel (CardIdTarget $ toCardId card) [DiscardCard iid (toCardId card), InvestigatorMulligan iid]
           | card <- investigatorHand
           ]
     )
@@ -306,8 +306,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ChooseAndDiscardAsset iid assetMatcher | iid == investigatorId -> do
     discardableAssetIds <- selectList
       (assetMatcher <> DiscardableAsset <> AssetControlledBy You)
-    a <$ push
-      (chooseOrRunOne iid $ map (Discard . AssetTarget) discardableAssetIds)
+    push $ chooseOrRunOne iid $ map (\aid -> targetLabel aid [Discard $ AssetTarget aid]) discardableAssetIds
+    pure a
   AttachAsset aid _ | aid `member` investigatorAssets ->
     pure $ a & (assetsL %~ deleteSet aid) & (slotsL %~ removeFromSlots aid)
   AttachTreachery tid (InvestigatorTarget iid) | iid == investigatorId ->
@@ -321,19 +321,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     handSize <- getHandSize a
     inHandCount <- getInHandCount a
     when (inHandCount > handSize) $ push
-      (chooseOne
+      $ chooseOne
         iid
-        [ Run [DiscardCard iid (toCardId card), CheckHandSize iid]
+        [ TargetLabel (CardIdTarget $ toCardId card) [DiscardCard iid (toCardId card), CheckHandSize iid]
         | card <- filter (isNothing . cdCardSubType . toCardDef)
           $ mapMaybe (preview _PlayerCard) investigatorHand
         ]
-      )
     pure a
   AddToDiscard iid pc | iid == investigatorId -> pure $ a & discardL %~ (pc :)
-  ChooseAndDiscardCard iid | iid == investigatorId -> a <$ push
-    (chooseOne iid
-    $ [ DiscardCard iid (toCardId card) | card <- discardableCards a ]
-    )
+  ChooseAndDiscardCard iid | iid == investigatorId -> do
+    push
+      $ chooseOne iid
+      $ [ TargetLabel
+            (CardIdTarget $ toCardId card)
+            [DiscardCard iid (toCardId card)]
+        | card <- discardableCards a
+        ]
+    pure a
   Discard (CardIdTarget cardId)
     | isJust (find ((== cardId) . toCardId) investigatorHand) -> a
     <$ push (DiscardCard investigatorId cardId)
@@ -416,13 +420,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ChooseFightEnemy iid source mTarget skillType enemyMatcher isAction
     | iid == investigatorId -> do
       enemyIds <- selectList (CanFightEnemy <> enemyMatcher)
-      a <$ push
-        (chooseOne
-          iid
-          [ FightEnemy iid eid source mTarget skillType isAction
-          | eid <- enemyIds
-          ]
-        )
+      push $ chooseOne
+        iid
+        [ FightLabel eid [FightEnemy iid eid source mTarget skillType isAction]
+        | eid <- enemyIds
+        ]
+      pure a
   EngageEnemy iid eid True | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     beforeWindowMsg <- checkWindows
@@ -794,11 +797,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (health - 1)
           0
         -- N.B. we have to add to the end of targets to handle the drop logic
-        damageAsset aid = Run
+        damageAsset aid = targetLabel
+          aid
           [ Msg.AssetDamage aid source 1 0
           , assignRestOfHealthDamage (damageTargets <> [AssetTarget aid]) mempty
           ]
-        damageInvestigator = Run
+        damageInvestigator = targetLabel
+          investigatorId
           [ Msg.InvestigatorDamage investigatorId source 1 0
           , assignRestOfHealthDamage
             (damageTargets <> [InvestigatorTarget investigatorId])
@@ -838,11 +843,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           0
           (sanity - 1)
         -- N.B. we have to add to the end of targets to handle the drop logic
-        damageAsset aid = Run
+        damageAsset aid = targetLabel
+          aid
           [ Msg.AssetDamage aid source 0 1
           , assignRestOfSanityDamage mempty (horrorTargets <> [AssetTarget aid])
           ]
-        damageInvestigator = Run
+        damageInvestigator = targetLabel
+          investigatorId
           [ Msg.InvestigatorDamage investigatorId source 0 1
           , assignRestOfSanityDamage
             mempty
@@ -914,13 +921,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               matcher
               (health - 1)
               sanity
-            damageAsset aid = Run
+            damageAsset aid = targetLabel
+              aid
               [ Msg.AssetDamage aid source 1 0
               , assignRestOfHealthDamage
                 (AssetTarget aid : damageTargets)
                 horrorTargets
               ]
-            damageInvestigator = Run
+            damageInvestigator = targetLabel
+              investigatorId
               [ Msg.InvestigatorDamage investigatorId source 1 0
               , assignRestOfHealthDamage
                 (InvestigatorTarget investigatorId : damageTargets)
@@ -958,13 +967,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               matcher
               health
               (sanity - 1)
-            damageInvestigator = Run
+            damageInvestigator = targetLabel
+              investigatorId
               [ Msg.InvestigatorDamage investigatorId source 0 1
               , assignRestOfSanityDamage
                 damageTargets
                 (InvestigatorTarget investigatorId : horrorTargets)
               ]
-            damageAsset aid = Run
+            damageAsset aid = targetLabel
+              aid
               [ Msg.AssetDamage aid source 0 1
               , assignRestOfSanityDamage
                 damageTargets
@@ -1006,7 +1017,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             SingleTarget -> error "handled elsewhere"
             DamageEvenly -> error "handled elsewhere"
         else pure []
-      a <$ push (chooseOne iid $ healthDamageMessages <> sanityDamageMessages)
+      push $ chooseOne iid $ healthDamageMessages <> sanityDamageMessages
+      pure a
   Investigate iid lid source mTarget skillType True | iid == investigatorId ->
     do
       beforeWindowMsg <- checkWindows
@@ -1148,7 +1160,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           else push
             (chooseOne
               iid
-              [ Run [Discard (AssetTarget aid'), InvestigatorPlayAsset iid aid]
+              [ targetLabel
+                  aid'
+                  [Discard (AssetTarget aid'), InvestigatorPlayAsset iid aid]
               | aid' <- assetsThatCanProvideSlots
               ]
             )
@@ -1301,16 +1315,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     if length (mapMaybe slotItem updatedSlots) == length assetIds
       then pure $ a & slotsL %~ insertMap slotType updatedSlots
       else do
-        push
-          (chooseOne
-            iid
-            [ Run
-                [ Discard (AssetTarget aid')
-                , RefillSlots iid slotType (filter (/= aid') assetIds)
-                ]
-            | aid' <- assetIds
-            ]
-          )
+        push $ chooseOne
+          iid
+          [ targetLabel
+              aid'
+              [ Discard (AssetTarget aid')
+              , RefillSlots iid slotType (filter (/= aid') assetIds)
+              ]
+          | aid' <- assetIds
+          ]
         pure a
   ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurnL .~ True
   BeginRound -> do
@@ -1503,7 +1516,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <$> getModifiers (InvestigatorTarget investigatorId)
     let
       triggerMessage =
-        [ StartSkillTest investigatorId
+        [ StartSkillTestButton investigatorId
         | CannotPerformSkillTest `notElem` skillTestModifiers'
         ]
       beginMessage = BeforeSkillTest iid skillType skillDifficulty
@@ -1577,14 +1590,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                )
                committedCards
           <> map
-               (\action -> Run [UseAbility iid action [window], beginMessage])
+               (\action -> AbilityLabel iid action [window] [beginMessage])
                actions
           <> triggerMessage
           )
         )
-      else when
-        (notNull triggerMessage)
-        (push (SkillTestAsk $ chooseOne iid triggerMessage))
+      else when (notNull triggerMessage) $ push $ SkillTestAsk $ chooseOne
+        iid
+        triggerMessage
     pure a
   BeforeSkillTest iid skillType skillDifficulty | iid /= investigatorId -> do
     locationId <- getJustLocation iid
@@ -1692,10 +1705,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then do
         let
           (silent, normal) = partition isSilentForcedAbility actions
-          toUseAbilities = map (($ windows) . AbilityLabel iid)
+          toForcedAbilities = map (($ windows) . UseAbility iid)
+          toUseAbilities = map ((\f -> f windows []) . AbilityLabel iid)
         -- Silent forced abilities should trigger automatically
         pushAll
-          $ toUseAbilities silent
+          $ toForcedAbilities silent
           <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
           <> [RunWindow iid windows]
       else do
@@ -1713,9 +1727,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             ]
           <> map
                (\(ability, windows') ->
-                 Run
-                   . (: [RunWindow iid windows]) -- original set of windows
-                   $ UseAbility iid ability windows'
+                 AbilityLabel iid ability windows' [RunWindow iid windows]
                )
                actionsWithMatchingWindows
           <> [Label "Skip playing fast cards or using reactions" []]
@@ -2042,7 +2054,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let
           (silent, normal) = partition isSilentForcedAbility actions
           toForcedAbilities = map (($ windows) . UseAbility iid)
-          toUseAbilities = map (($ windows) . AbilityLabel iid)
+          toUseAbilities = map ((\f -> f windows []) . AbilityLabel iid)
         pushAll
           $ toForcedAbilities silent
           <> [ chooseOne iid (toUseAbilities normal) | notNull normal ]
@@ -2080,7 +2092,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              , canAffordPlayCard || isFastCard c
              ]
           <> [EndTurnButton iid [ChooseEndTurn iid]]
-          <> map (($ windows) . AbilityLabel iid) actions
+          <> map ((\f -> f windows []) . AbilityLabel iid) actions
     pure a
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
     let
@@ -2089,28 +2101,27 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , Window Timing.When Window.FastPlayerWindow
         ]
     actions <- nub <$> concatMapM (getActions investigatorId) windows
-    if any isForcedAbility actions
-      then pure a -- handled by active player
-      else do
-        playableCards <- getPlayableCards a UnpaidCost windows
-        let
-          usesAction = not isAdditional
-          choices =
-            additionalActions
-              <> [ TargetLabel
-                     (CardIdTarget $ toCardId c)
-                     [ InitiatePlayCard
-                         investigatorId
-                         (toCardId c)
-                         Nothing
-                         usesAction
-                     ]
-                 | c <- playableCards
-                 ]
-              <> map (($ windows) . AbilityLabel investigatorId) actions
-        a <$ unless
-          (null choices)
-          (push $ AskPlayer $ chooseOne investigatorId choices)
+    unless (any isForcedAbility actions) $ do
+      playableCards <- getPlayableCards a UnpaidCost windows
+      let
+        usesAction = not isAdditional
+        choices =
+          additionalActions
+            <> [ TargetLabel
+                   (CardIdTarget $ toCardId c)
+                   [ InitiatePlayCard
+                       investigatorId
+                       (toCardId c)
+                       Nothing
+                       usesAction
+                   ]
+               | c <- playableCards
+               ]
+            <> map ((\f -> f windows []) . AbilityLabel investigatorId) actions
+      unless (null choices) $ push $ AskPlayer $ chooseOne
+        investigatorId
+        choices
+    pure a
   EndInvestigation -> do
     pure
       $ a

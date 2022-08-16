@@ -6,7 +6,6 @@ module Arkham.Act.Cards.TheCarnevaleConspiracy
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
@@ -64,7 +63,7 @@ instance RunMessage TheCarnevaleConspiracy where
         xs -> a <$ pushAll
           [ chooseOne
               iid
-              [ LookAtRevealed iid (toSource attrs) (AssetTarget x) | x <- xs ]
+              [ targetLabel x [LookAtRevealed iid (toSource attrs) (AssetTarget x)] | x <- xs ]
           ]
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
@@ -79,10 +78,14 @@ instance RunMessage TheCarnevaleConspiracy where
           xs ->
             [ chooseOne
                 leadInvestigatorId
-                [ Flip leadInvestigatorId (toSource attrs) (AssetTarget x) | x <- xs ]
+                [ targetLabel
+                    x
+                    [Flip leadInvestigatorId (toSource attrs) (AssetTarget x)]
+                | x <- xs
+                ]
             ]
-      a <$ pushAll
-        ([CreateEnemy cnidathqua, AdvanceActDeck actDeckId (toSource attrs)]
+      pushAll
+        $ [CreateEnemy cnidathqua, AdvanceActDeck actDeckId (toSource attrs)]
         <> flipMsg
-        )
+      pure a
     _ -> TheCarnevaleConspiracy <$> runMessage msg attrs

@@ -34,10 +34,10 @@ instance RunMessage MoonlightRitual where
       e <$ pushAll
         [ chooseOne
           iid
-          ([ RemoveDoom (InvestigatorTarget iid) investigatorDoomCount
+          ([ targetLabel iid [RemoveDoom (InvestigatorTarget iid) investigatorDoomCount]
            | investigatorDoomCount > 0
            ]
-          <> [ RemoveDoom (AssetTarget aid) assetDoomCount
+          <> [ targetLabel aid [RemoveDoom (AssetTarget aid) assetDoomCount]
              | (aid, assetDoomCount) <- assetsWithDoomCount
              ]
           )

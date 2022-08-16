@@ -6,9 +6,8 @@ module Arkham.Agenda.Cards.TheyreGettingOut
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types ( Field (..) )
 import Arkham.Act.Sequence qualified as AS
-import Arkham.Agenda.Types
+import Arkham.Act.Types ( Field (..) )
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
@@ -63,13 +62,17 @@ instance RunMessage TheyreGettingOut where
                 $ ClosestPathLocation loc parlorId
               case closestLocationIds of
                 [] -> pure Nothing
-                [x] -> pure $ Just $ EnemyMove eid x
-                xs -> pure $ Just $ chooseOne leadInvestigatorId $ map
-                  (EnemyMove eid)
-                  xs
-      a <$ unless
-        (null messages)
-        (push $ chooseOneAtATime leadInvestigatorId messages)
+                [x] -> pure $ Just $ targetLabel eid [EnemyMove eid x]
+                xs -> pure $ Just $ targetLabel
+                  eid
+                  [ chooseOne
+                      leadInvestigatorId
+                      [ targetLabel x [EnemyMove eid x] | x <- xs ]
+                  ]
+      unless (null messages) $ push $ chooseOneAtATime
+        leadInvestigatorId
+        messages
+      pure a
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       ghoulCount <- length <$> selectList
         (EnemyWithTrait Ghoul <> EnemyAt

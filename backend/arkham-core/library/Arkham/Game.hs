@@ -2384,7 +2384,7 @@ runMessages mLogger = do
                 [x] -> push $ ChoosePlayer x SetTurnPlayer
                 xs -> push $ chooseOne
                   (g ^. leadInvestigatorIdL)
-                  [ ChoosePlayer iid SetTurnPlayer | iid <- xs ]
+                  [ targetLabel iid [ChoosePlayer iid SetTurnPlayer] | iid <- xs ]
 
               runMessages mLogger
             else do
@@ -2515,14 +2515,6 @@ createActiveCostForAdditionalCardCosts iid card = do
 runGameMessage :: Message -> Game -> GameT Game
 runGameMessage msg g = case msg of
   Run msgs -> g <$ pushAll msgs
-  Label _ msgs -> g <$ pushAll msgs
-  LabelGroup _ msgs -> g <$ pushAll msgs
-  TooltipLabel _ _ msgs -> g <$ pushAll msgs
-  TargetLabel _ msgs -> g <$ pushAll msgs
-  SkillLabel _ msgs -> g <$ pushAll msgs
-  EvadeLabel _ msgs -> g <$ pushAll msgs
-  CardLabel _ msgs -> g <$ pushAll msgs
-  Continue _ -> pure g
   BeginAction ->
     pure
       $ g
@@ -2665,7 +2657,7 @@ runGameMessage msg g = case msg of
   ChooseLeadInvestigator -> do
     when (length (g ^. entitiesL . investigatorsL) > 1) $ push $ chooseOne
       (g ^. leadInvestigatorIdL)
-      [ ChoosePlayer iid SetLeadInvestigator
+      [ targetLabel iid [ChoosePlayer iid SetLeadInvestigator]
       | iid <- g ^. entitiesL . investigatorsL . to keys
       ]
     pure g
@@ -2806,7 +2798,7 @@ runGameMessage msg g = case msg of
               ]
           else pushAll
             [ chooseOne (gameLeadInvestigatorId g)
-              $ map ((`InvestigatorSpendClues` 1) . fst) xs
+              $ map (\(i, _) -> targetLabel i [InvestigatorSpendClues i 1]) xs
             , SpendClues (n - 1) (map fst investigatorsWithClues)
             ]
     pure g
@@ -2894,7 +2886,7 @@ runGameMessage msg g = case msg of
         PutBackInAnyOrder -> do
           when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
           push $ chooseOneAtATime iid $ map
-            (AddFocusedToTopOfDeck iid EncounterDeckTarget . toCardId)
+            (\c -> TargetLabel (CardIdTarget $ toCardId c) [AddFocusedToTopOfDeck iid EncounterDeckTarget $ toCardId c])
             (findWithDefault [] Zone.FromDeck foundCards)
         ShuffleBackIn -> do
           when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
@@ -3147,6 +3139,10 @@ runGameMessage msg g = case msg of
       else pure g
   EnemyAttacks as -> do
     mNextMessage <- peekMessage
+    let
+      toUI msg' = case msg' of
+        EnemyAttack _ eid _ _ -> targetLabel eid [msg']
+        _ -> error "unhandled"
     case mNextMessage of
       Just (EnemyAttacks as2) -> do
         _ <- popMessage
@@ -3158,7 +3154,7 @@ runGameMessage msg g = case msg of
         _ <- popMessage
         push $ EnemyAttacks
           (EnemyAttack iid2 eid2 damageStrategy2 attackType2 : as)
-      _ -> push $ chooseOneAtATime (gameLeadInvestigatorId g) as
+      _ -> push $ chooseOneAtATime (gameLeadInvestigatorId g) $ map toUI as
     pure g
   When (AssetDefeated aid) -> do
     defeatedWindow <- checkWindows
@@ -3271,7 +3267,7 @@ runGameMessage msg g = case msg of
         [ phaseBeginsWindow
         , chooseOne
           (g ^. leadInvestigatorIdL)
-          [ ChoosePlayer iid SetTurnPlayer | iid <- xs ]
+          [ targetLabel iid [ChoosePlayer iid SetTurnPlayer] | iid <- xs ]
         ]
     pure $ g & phaseL .~ InvestigationPhase
   BeginTurn x -> do
@@ -3289,9 +3285,9 @@ runGameMessage msg g = case msg of
   ChoosePlayerOrder investigatorIds orderedInvestigatorIds -> do
     push $ chooseOne
       (gameLeadInvestigatorId g)
-      [ ChoosePlayerOrder
+      [ targetLabel iid [ChoosePlayerOrder
           (filter (/= iid) investigatorIds)
-          (orderedInvestigatorIds <> [iid])
+          (orderedInvestigatorIds <> [iid])]
       | iid <- investigatorIds
       ]
     pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
@@ -3405,10 +3401,10 @@ runGameMessage msg g = case msg of
     pure $ g & phaseL .~ MythosPhase
   AllDrawEncounterCard -> do
     playerIds <- filterM (fmap not . isEliminated) (view playerOrderL g)
-    g <$ pushAll
-      ([ chooseOne iid [InvestigatorDrawEncounterCard iid] | iid <- playerIds ]
+    pushAll
+      $ [ chooseOne iid [TargetLabel EncounterDeckTarget [InvestigatorDrawEncounterCard iid]] | iid <- playerIds ]
       <> [SetActiveInvestigator $ g ^. activeInvestigatorIdL]
-      )
+    pure g
   EndMythos -> do
     pushAll . (: [EndPhase]) =<< checkWindows
       [Window Timing.When (Window.PhaseEnds MythosPhase)]
@@ -3553,11 +3549,10 @@ runGameMessage msg g = case msg of
     matches' <- selectList locationMatcher
     when (null matches') (error "No matching locations")
     leadInvestigatorId <- getLeadInvestigatorId
-    g <$ push
-      (chooseOrRunOne
-        leadInvestigatorId
-        [ CreateEnemyAt cardCode lid Nothing | lid <- matches' ]
-      )
+    push $ chooseOrRunOne
+      leadInvestigatorId
+      [ targetLabel lid [CreateEnemyAt cardCode lid Nothing] | lid <- matches' ]
+    pure g
   CreateEnemyAt card lid mtarget -> do
     let
       enemy = createEnemy card

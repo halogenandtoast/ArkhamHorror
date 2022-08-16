@@ -2,17 +2,17 @@ module Arkham.Event.Cards.Flare1 where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards (flare1)
 import Arkham.Asset.Helpers
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards ( flare1 )
 import Arkham.Event.Runner
-import Arkham.Id
 import Arkham.Helpers.Enemy
+import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillType
 import Arkham.Target
-import Arkham.Window (defaultWindows)
+import Arkham.Window ( defaultWindows )
 
 newtype Flare1 = Flare1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -26,13 +26,16 @@ findAllyMessages iid investigatorIds e =
   [ CheckAttackOfOpportunity iid False
   , chooseOne
     iid
-    [ Search
-        iid'
-        (toSource e)
-        (InvestigatorTarget iid')
-        [fromTopOfDeck 9]
-        IsAlly
-        (DeferSearchedToTarget $ toTarget e)
+    [ targetLabel
+        iid
+        [ Search
+            iid'
+            (toSource e)
+            (InvestigatorTarget iid')
+            [fromTopOfDeck 9]
+            IsAlly
+            (DeferSearchedToTarget $ toTarget e)
+        ]
     | iid' <- investigatorIds
     ]
   ]
@@ -57,7 +60,7 @@ instance RunMessage Flare1 where
             ]
           , Label "Search for Ally" $ findAllyMessages iid investigatorIds e
           ]
-    SearchFound iid target _ [card] | isTarget e target ->
-      e <$ pushAll [PutCardIntoPlay iid card Nothing (defaultWindows iid), Exile target]
+    SearchFound iid target _ [card] | isTarget e target -> e <$ pushAll
+      [PutCardIntoPlay iid card Nothing (defaultWindows iid), Exile target]
     SearchNoneFound _ target | isTarget e target -> e <$ push (Discard target)
     _ -> Flare1 <$> runMessage msg attrs

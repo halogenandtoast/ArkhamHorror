@@ -5,14 +5,14 @@ module Arkham.Treachery.Cards.Mesmerize
 
 import Arkham.Prelude
 
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Card.CardCode
 import Arkham.Classes
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Target
 import Arkham.Projection
-import Arkham.Investigator.Types ( Field(..) )
+import Arkham.Target
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype Mesmerize = Mesmerize TreacheryAttrs
@@ -33,7 +33,9 @@ instance RunMessage Mesmerize where
             AssetTarget
             (AssetAtLocation lid <> AssetWithTitle "Masked Carnevale-Goer")
           case maskedCarnevaleGoers of
-            [] -> push (chooseOne iid [Surge iid $ toSource attrs])
+            [] -> push $ chooseOne
+              iid
+              [TargetLabel (toTarget attrs) [Surge iid $ toSource attrs]]
             xs -> pushAll
               [ CreateEffect
                 (toCardCode attrs)

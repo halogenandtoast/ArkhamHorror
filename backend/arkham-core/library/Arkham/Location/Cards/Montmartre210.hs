@@ -54,7 +54,9 @@ instance RunMessage Montmartre210 where
         <> AssetWithUses Supply
       push
         $ chooseOne iid
-        $ [ AddUses target Ammo 1 | target <- ammoAssets ]
-        <> [ AddUses target Supply 1 | target <- supplyAssets ]
+        $ [ TargetLabel target [AddUses target Ammo 1] | target <- ammoAssets ]
+        <> [ TargetLabel target [AddUses target Supply 1]
+           | target <- supplyAssets
+           ]
       pure a
     _ -> Montmartre210 <$> runMessage msg attrs

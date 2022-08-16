@@ -52,7 +52,9 @@ instance RunMessage SpectralMist where
           (LocationWithTreachery $ treacheryIs Cards.spectralMist)
       when (notNull targets) $ push $ chooseOne
         iid
-        [ AttachTreachery treacheryId target | target <- targets ]
+        [ TargetLabel target [AttachTreachery treacheryId target]
+        | target <- targets
+        ]
       SpectralMist <$> runMessage msg attrs
     UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       t <$ push

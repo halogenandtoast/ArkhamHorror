@@ -53,7 +53,7 @@ instance RunMessage RexsCurse where
               Will PassedSkillTest{} -> True
               _ -> False
             (before, after) = flip break queue' $ \case
-              Ask iid' (ChooseOne [SkillTestApplyResults]) | iid == iid' -> True
+              Ask iid' (ChooseOne [SkillTestApplyResultsButton]) | iid == iid' -> True
               _ -> False
             remaining = case after of
               [] -> []

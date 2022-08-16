@@ -6,7 +6,6 @@ module Arkham.Act.Cards.TheWayOut
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
@@ -15,8 +14,8 @@ import Arkham.Criteria
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Timing qualified as Timing
 import Arkham.Resolution
+import Arkham.Timing qualified as Timing
 
 newtype TheWayOut = TheWayOut ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -48,9 +47,8 @@ instance RunMessage TheWayOut where
     UseCardAbility _ (isSource attrs -> True) _ 1 _ -> do
       leadInvestigatorId <- getLeadInvestigatorId
       theGateToHell <- selectJust $ locationIs $ Locations.theGateToHell
-      locations <- selectList $ FarthestLocationFromLocation
-        theGateToHell
-        Anywhere
+      locations <- selectList
+        $ FarthestLocationFromLocation theGateToHell Anywhere
       locationsWithInvestigatorsAndEnemiesAndConnectedLocations <-
         for locations $ \location -> do
           investigators <- selectList $ InvestigatorAt $ LocationWithId location
@@ -64,15 +62,18 @@ instance RunMessage TheWayOut where
             location
             [ chooseOrRunOne
                 leadInvestigatorId
-                [ chooseOneAtATime leadInvestigatorId
-                  $ [ targetLabel
-                        investigator
-                        [MoveTo (toSource attrs) investigator connected]
-                    | investigator <- investigators
+                [ targetLabel
+                    connected
+                    [ chooseOneAtATime leadInvestigatorId
+                      $ [ targetLabel
+                            investigator
+                            [MoveTo (toSource attrs) investigator connected]
+                        | investigator <- investigators
+                        ]
+                      <> [ targetLabel enemy [EnemyMove enemy connected]
+                         | enemy <- enemies
+                         ]
                     ]
-                  <> [ targetLabel enemy [EnemyMove enemy connected]
-                     | enemy <- enemies
-                     ]
                 | connected <- connectedLocations
                 ]
             ]
@@ -81,7 +82,7 @@ instance RunMessage TheWayOut where
         ]
       pure a
     UseCardAbility _ (isSource attrs -> True) _ 2 _ -> do
-      push (AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther)
+      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       push $ ScenarioResolution $ Resolution 1

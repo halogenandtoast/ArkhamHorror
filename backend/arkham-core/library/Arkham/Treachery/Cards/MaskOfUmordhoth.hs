@@ -4,13 +4,13 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import qualified Arkham.Keyword as Keyword
+import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Target
 import Arkham.Trait
-import qualified Arkham.Treachery.Cards as Cards
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
@@ -42,6 +42,8 @@ instance RunMessage MaskOfUmordhoth where
           ]
         eids -> push $ chooseOrRunOne
           iid
-          [ AttachTreachery treacheryId (EnemyTarget eid) | eid <- eids ]
+          [ targetLabel eid [AttachTreachery treacheryId (EnemyTarget eid)]
+          | eid <- eids
+          ]
       pure t
     _ -> MaskOfUmordhoth <$> runMessage msg attrs

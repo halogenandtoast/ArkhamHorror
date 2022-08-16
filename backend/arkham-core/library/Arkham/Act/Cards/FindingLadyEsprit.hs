@@ -81,7 +81,7 @@ instance RunMessage FindingLadyEsprit where
       a <$ pushAll
         ([ chooseOne
              leadInvestigatorId
-             [ CreateEnemyAt theRougarou lid Nothing
+             [ targetLabel lid [CreateEnemyAt theRougarou lid Nothing]
              | lid <- rougarouSpawnLocations
              ]
          ]

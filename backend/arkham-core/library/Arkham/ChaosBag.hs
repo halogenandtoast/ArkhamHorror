@@ -141,7 +141,7 @@ resolveFirstUnresolved source iid strategy = \case
               ( Decided (Choose n steps tokens')
               , [ chooseOne
                     iid
-                    [ ChooseTokenGroups source iid (Choose n remaining chosen)
+                    [ TokenGroupChoice source iid (Choose n remaining chosen)
                     | (remaining, chosen) <- toGroups steps tokens'
                     ]
                 ]
@@ -160,13 +160,17 @@ resolveFirstUnresolved source iid strategy = \case
           then pure (Resolved $ concatMap toTokens steps, [])
           else do
             let groups = toGroups steps tokens'
-            matchedGroups <- filterM (\(_, chosen) -> anyM (anyM (\t -> lift $ matchToken iid t matcher)) chosen) groups
+            matchedGroups <- filterM
+              (\(_, chosen) ->
+                anyM (anyM (\t -> lift $ matchToken iid t matcher)) chosen
+              )
+              groups
             let groups' = if null matchedGroups then groups else matchedGroups
             pure
               ( Decided (ChooseMatch n steps tokens' matcher)
               , [ chooseOne
                     iid
-                    [ ChooseTokenGroups
+                    [ TokenGroupChoice
                         source
                         iid
                         (ChooseMatch n remaining chosen matcher)
@@ -399,12 +403,14 @@ instance RunMessage ChaosBag where
       -- TODO: we may need a map of source to tokens here
       pure $ c & revealedTokensL %~ (token :)
     ReturnTokens tokens' ->
-      pure $ c & tokensL %~ (<> tokens') & setAsideTokensL %~ (\\ tokens') & choiceL .~ Nothing
+      pure
+        $ c
+        & (tokensL %~ (<> tokens'))
+        & (setAsideTokensL %~ (\\ tokens'))
+        & (choiceL .~ Nothing)
     AddToken tokenFace -> do
       token <- createToken tokenFace
       pure $ c & tokensL %~ (token :)
-    SealToken token -> do
-      pure $ c & tokensL %~ filter (/= token)
-    UnsealToken token -> do
-      pure $ c & tokensL %~ (token :)
+    SealToken token -> pure $ c & tokensL %~ filter (/= token)
+    UnsealToken token -> pure $ c & tokensL %~ (token :)
     _ -> pure c

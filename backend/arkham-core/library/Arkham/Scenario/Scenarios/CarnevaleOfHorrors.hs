@@ -75,8 +75,7 @@ masks :: [CardDef]
 masks =
   [Assets.pantalone, Assets.medicoDellaPeste, Assets.bauta, Assets.gildedVolto]
 
-sacrificesMade
-  :: [InvestigatorId] -> ScenarioAttrs -> [Message]
+sacrificesMade :: [InvestigatorId] -> ScenarioAttrs -> [Message]
 sacrificesMade investigatorIds s =
   story investigatorIds Flavor.sacrificesMade
     : [ SearchCollectionForRandom
@@ -277,8 +276,12 @@ instance RunMessage CarnevaleOfHorrors where
         [x] -> push
           (chooseOne
             iid
-            [ AssetDamage x (TokenSource token) 1 0
-            , AssetDamage x (TokenSource token) 0 1
+            [ ComponentLabel
+              (AssetComponent x DamageToken)
+              [AssetDamage x (TokenSource token) 1 0]
+            , ComponentLabel
+              (AssetComponent x HorrorToken)
+              [AssetDamage x (TokenSource token) 0 1]
             ]
           )
         xs -> push
@@ -288,8 +291,12 @@ instance RunMessage CarnevaleOfHorrors where
                 (AssetTarget x)
                 [ chooseOne
                     iid
-                    [ AssetDamage x (TokenSource token) 1 0
-                    , AssetDamage x (TokenSource token) 0 1
+                    [ ComponentLabel
+                      (AssetComponent x DamageToken)
+                      [AssetDamage x (TokenSource token) 1 0]
+                    , ComponentLabel
+                      (AssetComponent x HorrorToken)
+                      [AssetDamage x (TokenSource token) 0 1]
                     ]
                 ]
             | x <- xs
@@ -307,8 +314,12 @@ instance RunMessage CarnevaleOfHorrors where
             [] -> pure ()
             [x] -> push $ chooseOne
               iid
-              [ AssetDamage x (TokenSource token) 1 0
-              , AssetDamage x (TokenSource token) 0 1
+              [ ComponentLabel
+                (AssetComponent x DamageToken)
+                [AssetDamage x (TokenSource token) 1 0]
+              , ComponentLabel
+                (AssetComponent x HorrorToken)
+                [AssetDamage x (TokenSource token) 0 1]
               ]
             xs -> push $ chooseOne
               iid
@@ -316,8 +327,12 @@ instance RunMessage CarnevaleOfHorrors where
                   x
                   [ chooseOne
                       iid
-                      [ AssetDamage x (TokenSource token) 1 0
-                      , AssetDamage x (TokenSource token) 0 1
+                      [ ComponentLabel
+                        (AssetComponent x DamageToken)
+                        [AssetDamage x (TokenSource token) 1 0]
+                      , ComponentLabel
+                        (AssetComponent x HorrorToken)
+                        [AssetDamage x (TokenSource token) 0 1]
                       ]
                   ]
               | x <- xs

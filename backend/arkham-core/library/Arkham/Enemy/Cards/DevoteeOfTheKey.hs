@@ -49,7 +49,8 @@ instance RunMessage DevoteeOfTheKey where
             case choices of
               [] -> error "should not happen"
               [x] -> push (EnemyMove enemyId x)
-              xs ->
-                push (chooseOne leadInvestigatorId $ map (EnemyMove enemyId) xs)
+              xs -> push $ chooseOne
+                leadInvestigatorId
+                [ targetLabel x [EnemyMove enemyId x] | x <- xs ]
       pure e
     _ -> DevoteeOfTheKey <$> runMessage msg attrs

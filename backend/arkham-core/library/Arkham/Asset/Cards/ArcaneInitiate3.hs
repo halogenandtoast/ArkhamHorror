@@ -29,27 +29,32 @@ instance HasAbilities ArcaneInitiate3 where
       $ AssetEntersPlay Timing.When
       $ AssetWithId
       $ toId a
-    , restrictedAbility a 2 ControlsThis $ FastAbility $ ExhaustCost $ toTarget a
+    , restrictedAbility a 2 ControlsThis $ FastAbility $ ExhaustCost $ toTarget
+      a
     ]
 
 instance RunMessage ArcaneInitiate3 where
   runMessage msg a@(ArcaneInitiate3 attrs) = case msg of
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ push
-      (chooseOne iid
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
+      push $ chooseOne
+        iid
         [ Label "Place 1 doom" [PlaceDoom (toTarget attrs) 1]
         , Label "Place 2 horror" [PlaceHorror (toTarget attrs) 2]
         ]
-      )
+      pure a
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
       push $ chooseOne
         iid
-        [ Search
-              iid
-              source
-              (InvestigatorTarget iid)
-              [fromTopOfDeck 3]
-              (CardWithTrait Spell)
-            $ DrawFound iid 1
+        [ targetLabel
+            iid
+            [ Search
+                  iid
+                  source
+                  (InvestigatorTarget iid)
+                  [fromTopOfDeck 3]
+                  (CardWithTrait Spell)
+                $ DrawFound iid 1
+            ]
         ]
       pure a
     _ -> ArcaneInitiate3 <$> runMessage msg attrs

@@ -2,8 +2,8 @@ module Arkham.Event.Cards.Elusive where
 
 import Arkham.Prelude
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -21,14 +21,16 @@ instance RunMessage Elusive where
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       enemyIds <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
       targets <- selectList $ EmptyLocation <> RevealedLocation
-      e <$ pushAll
-        ([ DisengageEnemy iid enemyId | enemyId <- enemyIds ]
+      pushAll
+        $ [ DisengageEnemy iid enemyId | enemyId <- enemyIds ]
         <> [ chooseOrRunOne
                iid
-               [ MoveTo (toSource attrs) iid lid | lid <- targets ]
+               [ targetLabel lid [MoveTo (toSource attrs) iid lid]
+               | lid <- targets
+               ]
            | notNull targets
            ]
         <> map EnemyCheckEngagement enemyIds
         <> [Discard (EventTarget eventId)]
-        )
+      pure e
     _ -> Elusive <$> runMessage msg attrs

@@ -4,8 +4,10 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card.CardCode
+import Arkham.ChaosBagStepState
 import Arkham.Id
 import Arkham.SkillType
+import Arkham.Source
 import Arkham.Target
 import Arkham.Text
 import Arkham.Window
@@ -29,9 +31,13 @@ data UI msg
   | TargetLabel Target [msg]
   | SkillLabel SkillType [msg]
   | EvadeLabel EnemyId [msg]
+  | FightLabel EnemyId [msg]
   | AbilityLabel InvestigatorId Ability [Window] [msg]
   | ComponentLabel Component [msg]
   | EndTurnButton InvestigatorId [msg]
+  | StartSkillTestButton InvestigatorId
+  | SkillTestApplyResultsButton
+  | TokenGroupChoice Source InvestigatorId ChaosBagStep
   | Done Text
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

@@ -6,8 +6,8 @@ module Arkham.Agenda.Runner
 import Arkham.Prelude
 
 import Arkham.Agenda.AdvancementReason
-import Arkham.Agenda.Types as X
 import Arkham.Agenda.Sequence as X
+import Arkham.Agenda.Types as X
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher hiding ( PlaceUnderneath )
@@ -26,7 +26,8 @@ instance RunMessage AgendaAttrs
       windows' <- windows [Window.PlacedDoom (toTarget a) n]
       pushAll windows'
       pure $ a & doomL +~ n
-    RemoveDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doomL %~ max 0 . subtract n
+    RemoveDoom (AgendaTarget aid) n | aid == agendaId ->
+      pure $ a & doomL %~ max 0 . subtract n
     Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     Discard (AgendaTarget aid) | aid == toId a -> do
       pushAll
@@ -36,14 +37,18 @@ instance RunMessage AgendaAttrs
       pure $ a & treacheriesL %~ insertSet tid
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == A -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
+      push $ chooseOne
+        leadInvestigatorId
+        [targetLabel agendaId [AdvanceAgenda agendaId]]
       pure
         $ a
         & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) B)
         & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == C -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      push $ chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
+      push $ chooseOne
+        leadInvestigatorId
+        [targetLabel agendaId [AdvanceAgenda agendaId]]
       pure
         $ a
         & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) D)
@@ -88,9 +93,7 @@ instance RunMessage AgendaAttrs
           ]
       pure a
     RemoveAllDoom source -> do
-      if toSource a == source
-        then pure $ a & doomL .~ 0
-        else pure a
+      if toSource a == source then pure $ a & doomL .~ 0 else pure a
     RevertAgenda aid | aid == agendaId && onSide B a ->
       pure
         $ a

@@ -59,7 +59,7 @@ supplyCost = \case
   Chalk -> 2
   Pendant -> 1
 
-supplyLabel :: Supply -> [Message] -> Message
+supplyLabel :: Supply -> [Message] -> UI Message
 supplyLabel s = case s of
   Provisions -> go
     "Provisions"

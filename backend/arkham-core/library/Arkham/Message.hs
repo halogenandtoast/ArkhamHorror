@@ -629,9 +629,13 @@ uiToRun = \case
   TargetLabel _ msgs -> Run msgs
   SkillLabel _ msgs -> Run msgs
   EvadeLabel _ msgs -> Run msgs
-  AbilityLabel iid ab windows -> UseAbility iid ab windows
+  FightLabel _ msgs -> Run msgs
+  AbilityLabel iid ab windows msgs -> Run $ UseAbility iid ab windows : msgs
   ComponentLabel _ msgs -> Run msgs
   EndTurnButton _ msgs -> Run msgs
+  StartSkillTestButton iid -> Run [StartSkillTest iid]
+  SkillTestApplyResultsButton -> Run [SkillTestApplyResults]
+  TokenGroupChoice source iid step -> Run [ChooseTokenGroups source iid step]
   Done _ -> Run []
 
 targetLabel :: IdToTarget entityId => entityId -> [Message] -> UI Message

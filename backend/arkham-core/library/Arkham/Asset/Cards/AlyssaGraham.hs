@@ -6,7 +6,7 @@ module Arkham.Asset.Cards.AlyssaGraham
 import Arkham.Prelude
 
 import Arkham.Ability
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
@@ -38,13 +38,16 @@ instance RunMessage AlyssaGraham where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       targets <- selectListMap InvestigatorTarget Anyone
       let
-        search target = Search
-          iid
-          source
+        search target = TargetLabel
           target
-          [fromTopOfDeck 1]
-          AnyCard
-          (DeferSearchedToTarget $ toTarget attrs)
+          [ Search
+              iid
+              source
+              target
+              [fromTopOfDeck 1]
+              AnyCard
+              (DeferSearchedToTarget $ toTarget attrs)
+          ]
       push $ chooseOne iid $ search EncounterDeckTarget : map search targets
       pure a
     SearchFound iid target deck cards | isTarget attrs target -> a <$ pushAll

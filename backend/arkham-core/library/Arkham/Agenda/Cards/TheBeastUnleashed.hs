@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Agenda.AdvancementReason
-import Arkham.Agenda.Types
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
@@ -52,20 +51,25 @@ instance RunMessage TheBeastUnleashed where
   runMessage msg a@(TheBeastUnleashed attrs) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       experimentId <- getTheExperiment
-      a <$ pushAll
+      pushAll
         [ RemoveAllDoom (toSource attrs)
         , MoveToward
           (EnemyTarget experimentId)
           (LocationWithTitle "Dormitories")
         ]
+      pure a
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       a <$ push (AdvanceAgenda $ toId attrs)
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       investigatorIds <- getInvestigatorIds
-      a <$ pushAll
-        ([ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
-         | iid <- investigatorIds
-         ]
-        <> [Label "Resolution 4" [ScenarioResolution $ Resolution 4]]
-        )
+      leadInvestigatorId <- getLeadInvestigatorId
+      pushAll
+        $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
+          | iid <- investigatorIds
+          ]
+        <> [ chooseOne
+               leadInvestigatorId
+               [Label "Resolution 4" [ScenarioResolution $ Resolution 4]]
+           ]
+      pure a
     _ -> TheBeastUnleashed <$> runMessage msg attrs

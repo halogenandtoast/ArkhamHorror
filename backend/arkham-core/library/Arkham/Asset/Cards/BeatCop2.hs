@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.DamageEffect
-import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Matcher hiding ( NonAttackDamageEffect )
 import Arkham.SkillType
 import Arkham.Target
 
@@ -42,11 +42,12 @@ instance RunMessage BeatCop2 where
   runMessage msg a@(BeatCop2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       enemies <- selectList (EnemyAt YourLocation)
-      a <$ push
-        (chooseOrRunOne
-          iid
-          [ EnemyDamage eid iid (toSource attrs) NonAttackDamageEffect 1
-          | eid <- enemies
-          ]
-        )
+      push $ chooseOrRunOne
+        iid
+        [ targetLabel
+            eid
+            [EnemyDamage eid iid (toSource attrs) NonAttackDamageEffect 1]
+        | eid <- enemies
+        ]
+      pure a
     _ -> BeatCop2 <$> runMessage msg attrs

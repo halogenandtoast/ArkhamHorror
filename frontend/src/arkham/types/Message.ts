@@ -20,6 +20,7 @@ import { JsonDecoder } from 'ts.data.json';
 export enum MessageType {
   LABEL = 'Label',
   TARGET_LABEL = 'TargetLabel',
+  COMPONENT_LABEL = 'ComponentLabel',
 }
 
 export interface Label {
@@ -49,6 +50,35 @@ export interface EndTurnButton {
   tag: 'EndTurnButton';
 }
 
+export type Component = InvestigatorComponent | InvestigatorDeckComponent | AssetComponent;
+
+export type TokenType = 'ResourceToken' | 'ClueToken' | 'DamageToken' | 'HorrorToken' | 'DoomToken';
+
+export interface InvestigatorComponent {
+  investigatorId: string;
+  tokenType: TokenType;
+}
+
+export interface AssetComponent {
+  assetId: string;
+  tokenType: TokenType;
+}
+
+export interface InvestigatorDeckComponent {
+  investigatorId: string;
+}
+
+export const componentDecoder = JsonDecoder.oneOf<Component>(
+  [
+    investigatorComponentDecoder,
+    investigatorDeckComponentDecoder,
+    assetComponentDecoder,
+  ], 'Component');
+
+export interface ComponentLabel {
+  tag: 'ComponentLabel';
+  component: Component;
+}
 
 export type Message = Label | TargetLabel | EndTurnButton;
 
@@ -63,6 +93,12 @@ export const targetLabelDecoder = JsonDecoder.object<TargetLabel>(
     tag: JsonDecoder.isExactly('TargetLabel'),
     target: targetDecoder
   }, 'TargetLabel')
+
+export const componentLabelDecoder = JsonDecoder.object<ComponentLabel>(
+  {
+    tag: JsonDecoder.isExactly('ComponentLabel'),
+    component: componentDecoder
+  }, 'ComponentLabel')
 
 export const endTurnButtonDecoder = JsonDecoder.object<EndTurnButton>(
   {

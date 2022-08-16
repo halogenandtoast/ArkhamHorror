@@ -12,8 +12,8 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Target
-import Arkham.Treachery.Runner
 import Arkham.Treachery.Cards qualified as Cards
+import Arkham.Treachery.Runner
 
 newtype AttractingAttention = AttractingAttention TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -32,7 +32,9 @@ instance RunMessage AttractingAttention where
         pushAll
           [ chooseOneAtATime
               iid
-              [ MoveToward (EnemyTarget eid) (LocationWithId lid)
+              [ targetLabel
+                  eid
+                  [MoveToward (EnemyTarget eid) (LocationWithId lid)]
               | eid <- broodOfYogSothoth
               ]
           | notNull broodOfYogSothoth

@@ -6,14 +6,16 @@ module Arkham.Enemy.Cards.DiscipleOfTheDevourer
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Agenda.Types (Field(..))
-import Arkham.Agenda.Sequence (agendaStep, AgendaStep(..))
-import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Agenda.Sequence ( AgendaStep (..), agendaStep )
+import Arkham.Agenda.Types ( Field (..) )
 import Arkham.Classes
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Investigator.Types ( Field (..) )
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 
 newtype DiscipleOfTheDevourer = DiscipleOfTheDevourer EnemyAttrs
@@ -41,10 +43,33 @@ instance HasAbilities DiscipleOfTheDevourer where
 instance RunMessage DiscipleOfTheDevourer where
   runMessage msg e@(DiscipleOfTheDevourer attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      let
-        messages =
-          [PlaceDoom (toTarget attrs) 1, InvestigatorPlaceCluesOnLocation iid 1]
       agendaId <- selectJust AnyAgenda
+      mLocationId <- field EnemyLocation (toId attrs)
+      hasClues <- fieldP InvestigatorClues (> 0) iid
       step <- fieldMap AgendaSequence agendaStep agendaId
-      e <$ if step == AgendaStep 1 then push (chooseOne iid messages) else pushAll messages
+      if step == AgendaStep 1
+        then
+          push
+          $ chooseOrRunOne iid
+          $ Label
+              "Place 1 doom on Disciple of the Devourer"
+              [PlaceDoom (toTarget attrs) 1]
+          : [ Label
+                "Place one of your clues on it's location"
+                [ RemoveClues (InvestigatorTarget iid) 1
+                , PlaceClues (LocationTarget lid) 1
+                ]
+            | hasClues
+            , lid <- maybeToList mLocationId
+            ]
+        else
+          pushAll
+          $ PlaceDoom (toTarget attrs) 1
+          : case mLocationId of
+              Just lid | hasClues ->
+                [ RemoveClues (InvestigatorTarget iid) 1
+                , PlaceClues (LocationTarget lid) 1
+                ]
+              _ -> []
+      pure e
     _ -> DiscipleOfTheDevourer <$> runMessage msg attrs

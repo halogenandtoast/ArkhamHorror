@@ -5,7 +5,6 @@ module Arkham.Act.Cards.FindingAWayInside
 
 import Arkham.Prelude
 
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
@@ -15,7 +14,7 @@ import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Matcher hiding ( RevealLocation )
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target
@@ -33,11 +32,13 @@ findingAWayInside = act
 
 instance RunMessage FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid source@(LocationSource _) advanceMode | aid == actId && onSide A attrs ->
-      do
+    AdvanceAct aid source@(LocationSource _) advanceMode
+      | aid == actId && onSide A attrs -> do
       -- When advanced from Museum Halls we don't spend clues
         leadInvestigatorId <- getLeadInvestigatorId
-        push (chooseOne leadInvestigatorId [AdvanceAct aid source advanceMode])
+        push $ chooseOne
+          leadInvestigatorId
+          [targetLabel aid [AdvanceAct aid source advanceMode]]
         pure $ FindingAWayInside $ attrs & sequenceL .~ Sequence 1 B
     AdvanceAct aid _ _ | aid == actId && onSide A attrs ->
       -- otherwise we do the default
@@ -49,7 +50,7 @@ instance RunMessage FindingAWayInside where
         adamLynch <- EncounterCard <$> genEncounterCard Assets.adamLynch
         museumHallsId <- fromJustNote "missing museum halls"
           <$> selectOne (LocationWithTitle "Museum Halls")
-        a <$ pushAll
+        pushAll
           [ chooseOne
             leadInvestigatorId
             [ TargetLabel
@@ -60,11 +61,13 @@ instance RunMessage FindingAWayInside where
           , RevealLocation Nothing museumHallsId
           , AdvanceToAct actDeckId Acts.nightAtTheMuseum A (toSource attrs)
           ]
+        pure a
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       museumHallsId <- fromJustNote "missing museum halls"
         <$> selectOne (LocationWithTitle "Museum Halls")
-      a <$ pushAll
+      pushAll
         [ RevealLocation Nothing museumHallsId
         , AdvanceToAct actDeckId Acts.breakingAndEntering A (toSource attrs)
         ]
+      pure a
     _ -> FindingAWayInside <$> runMessage msg attrs

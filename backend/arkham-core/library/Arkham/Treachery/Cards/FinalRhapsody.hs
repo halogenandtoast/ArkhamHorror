@@ -23,9 +23,20 @@ instance RunMessage FinalRhapsody where
       t <$ push (RequestTokens source (Just iid) (Reveal 5) SetAside)
     RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       let damageCount = count ((`elem` [Skull, AutoFail]) . tokenFace) tokens
-      t <$ pushAll
-        [ chooseOne iid [Continue ("Take " <> tshow damageCount <> " damage")]
-        , InvestigatorAssignDamage iid source DamageAny damageCount damageCount
+      pushAll
+        [ chooseOne
+          iid
+          [ Label
+              ("Take " <> tshow damageCount <> " damage")
+              [ InvestigatorAssignDamage
+                  iid
+                  source
+                  DamageAny
+                  damageCount
+                  damageCount
+              ]
+          ]
         , ResetTokens source
         ]
+      pure t
     _ -> FinalRhapsody <$> runMessage msg attrs

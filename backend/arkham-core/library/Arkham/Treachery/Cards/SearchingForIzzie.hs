@@ -6,16 +6,16 @@ module Arkham.Treachery.Cards.SearchingForIzzie
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Matcher
-import Arkham.Message hiding (InvestigatorEliminated)
+import Arkham.Message hiding ( InvestigatorEliminated )
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype SearchingForIzzie = SearchingForIzzie TreacheryAttrs
@@ -43,14 +43,14 @@ instance RunMessage SearchingForIzzie where
   runMessage msg t@(SearchingForIzzie attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       targets <- selectListMap LocationTarget $ FarthestLocationFromYou Anywhere
-      t <$ case targets of
+      case targets of
         [] -> pure ()
-        xs ->
-          push
-            (chooseOrRunOne
-              iid
-              [ AttachTreachery treacheryId target | target <- xs ]
-            )
+        xs -> push $ chooseOrRunOne
+          iid
+          [ TargetLabel target [AttachTreachery treacheryId target]
+          | target <- xs
+          ]
+      pure t
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       withTreacheryLocation attrs $ \locationId -> t <$ push
         (Investigate

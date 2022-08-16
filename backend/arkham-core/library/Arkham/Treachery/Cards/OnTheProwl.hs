@@ -44,5 +44,7 @@ instance RunMessage OnTheProwl where
                   [(x, _)] -> push (MoveUntil x (EnemyTarget eid))
                   xs -> push $ chooseOne
                     iid
-                    [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
+                    [ targetLabel x [MoveUntil x (EnemyTarget eid)]
+                    | (x, _) <- xs
+                    ]
     _ -> OnTheProwl <$> runMessage msg attrs

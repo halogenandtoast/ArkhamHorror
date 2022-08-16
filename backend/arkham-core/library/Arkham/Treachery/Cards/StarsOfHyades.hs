@@ -30,17 +30,20 @@ instance RunMessage StarsOfHyades where
         InvestigatorCardsUnderneath
         (filter ((== EventType) . toCardType))
         iid
-      t <$ case nonEmpty events of
+      case nonEmpty events of
         Nothing -> push (InvestigatorAssignDamage iid source DamageAny 1 1)
         Just targets -> do
           deckSize <- fieldMap InvestigatorDeck (length . unDeck) iid
           discardedEvent <- sample targets
           pushAll
-            (chooseOne
+            $ chooseOne
                 iid
-                [RemoveFromGame (CardIdTarget $ toCardId discardedEvent)]
+                [ TargetLabel
+                    (CardIdTarget $ toCardId discardedEvent)
+                    [RemoveFromGame (CardIdTarget $ toCardId discardedEvent)]
+                ]
             : [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
               | deckSize >= 5
               ]
-            )
+      pure t
     _ -> StarsOfHyades <$> runMessage msg attrs

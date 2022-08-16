@@ -6,14 +6,14 @@ module Arkham.Agenda.Cards.TheRougarouFeeds
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Agenda.Helpers hiding (matches)
+import Arkham.Agenda.Helpers hiding ( matches )
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Types (Field(..))
+import Arkham.Location.Types ( Field (..) )
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Target
 
 newtype TheRougarouFeeds = TheRougarouFeeds AgendaAttrs
@@ -29,7 +29,7 @@ instance RunMessage TheRougarouFeeds where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       mrougarou <- getTheRougarou
       case mrougarou of
-        Nothing -> a <$ pushAll
+        Nothing -> pushAll
           [ ShuffleAllInEncounterDiscardBackIn "81034"
           , AdvanceAgendaDeck agendaDeckId (toSource attrs)
           , PlaceDoomOnAgenda
@@ -52,10 +52,13 @@ instance RunMessage TheRougarouFeeds where
                     [(x, _)] -> MoveUntil x (EnemyTarget eid)
                     xs -> chooseOne
                       leadInvestigatorId
-                      [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
-          a <$ pushAll
+                      [ targetLabel x [MoveUntil x (EnemyTarget eid)]
+                      | (x, _) <- xs
+                      ]
+          pushAll
             [ ShuffleAllInEncounterDiscardBackIn "81034"
             , moveMessage
             , AdvanceAgendaDeck agendaDeckId (toSource attrs)
             ]
+      pure a
     _ -> TheRougarouFeeds <$> runMessage msg attrs

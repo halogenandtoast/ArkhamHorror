@@ -30,7 +30,9 @@ instance HasAbilities BookOfShadows3 where
     [ restrictedAbility
           a
           1
-          (ControlsThis <> AssetExists (AssetControlledBy You <> AssetWithTrait Spell))
+          (ControlsThis
+          <> AssetExists (AssetControlledBy You <> AssetWithTrait Spell)
+          )
         $ ActionAbility Nothing
         $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
     ]
@@ -42,11 +44,12 @@ instance RunMessage BookOfShadows3 where
       push (AddSlot iid ArcaneSlot (slot attrs))
       BookOfShadows3 <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      spellAssetIds <- selectList (AssetControlledBy You <> AssetWithTrait Spell)
-      a <$ unless
-        (null spellAssetIds)
-        (push $ chooseOne
-          iid
-          [ AddUses (AssetTarget aid') Charge 1 | aid' <- spellAssetIds ]
-        )
+      spellAssetIds <- selectList
+        (AssetControlledBy You <> AssetWithTrait Spell)
+      unless (null spellAssetIds) $ push $ chooseOne
+        iid
+        [ targetLabel aid' [AddUses (AssetTarget aid') Charge 1]
+        | aid' <- spellAssetIds
+        ]
+      pure a
     _ -> BookOfShadows3 <$> runMessage msg attrs

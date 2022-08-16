@@ -6,7 +6,6 @@ module Arkham.Agenda.Cards.TheShadowOfTheEclipse
 import Arkham.Prelude
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Types
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
@@ -31,13 +30,20 @@ instance RunMessage TheShadowOfTheEclipse where
         (AssetWithTitle "Masked Carnevale-Goer")
       leadInvestigatorId <- getLeadInvestigatorId
       case maskedCarnevaleGoers of
-        [] -> a <$ push (AdvanceAgendaDeck agendaDeckId (toSource attrs))
-        xs -> a <$ pushAll
+        [] -> push $ AdvanceAgendaDeck agendaDeckId (toSource attrs)
+        xs -> pushAll
           [ chooseOne
             leadInvestigatorId
-            [ Flip leadInvestigatorId (InvestigatorSource leadInvestigatorId) (AssetTarget x)
+            [ targetLabel
+                x
+                [ Flip
+                    leadInvestigatorId
+                    (InvestigatorSource leadInvestigatorId)
+                    (AssetTarget x)
+                ]
             | x <- xs
             ]
           , RevertAgenda aid
           ]
+      pure a
     _ -> TheShadowOfTheEclipse <$> runMessage msg attrs

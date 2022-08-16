@@ -46,11 +46,10 @@ instance RunMessage EasttownArkhamPoliceStation where
         <$> selectList (AssetControlledBy You <> AssetWithUseType Ammo)
       supplyAssets <- map (Supply, )
         <$> selectList (AssetControlledBy You <> AssetWithUseType Supply)
-      l <$ push
-        (chooseOne
-          iid
-          [ AddUses (AssetTarget assetId) useType' 2
-          | (useType', assetId) <- ammoAssets <> supplyAssets
-          ]
-        )
+      push $ chooseOne
+        iid
+        [ targetLabel assetId [AddUses (AssetTarget assetId) useType' 2]
+        | (useType', assetId) <- ammoAssets <> supplyAssets
+        ]
+      pure l
     _ -> EasttownArkhamPoliceStation <$> runMessage msg attrs

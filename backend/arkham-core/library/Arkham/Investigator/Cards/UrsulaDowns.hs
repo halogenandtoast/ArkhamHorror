@@ -66,7 +66,7 @@ instance RunMessage UrsulaDowns where
       actions <-
         nub <$> concatMapM (\w -> getActionsWith iid w decreaseCost) windows'
       push $ AskPlayer $ chooseOne iid $ map
-        (($ windows') . UseAbility iid)
+        ((\f -> f windows' []) . AbilityLabel iid)
         (filter (`abilityIs` Action.Investigate) actions)
       pure i
     ResolveToken _drawnToken ElderSign iid | iid == toId attrs -> do

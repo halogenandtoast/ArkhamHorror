@@ -147,7 +147,11 @@ instance RunMessage TheDevourerBelow where
       case closestEnemyIds of
         [] -> pure ()
         [x] -> push (PlaceDoom (EnemyTarget x) doom)
-        xs -> push (chooseOne iid [ PlaceDoom (EnemyTarget x) doom | x <- xs ])
+        xs -> push
+          (chooseOne
+            iid
+            [ targetLabel x [PlaceDoom (EnemyTarget x) doom] | x <- xs ]
+          )
       pure s
     ResolveToken _ Tablet iid -> do
       let horror = if isEasyStandard attrs then 0 else 1

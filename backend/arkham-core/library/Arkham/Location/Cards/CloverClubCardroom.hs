@@ -62,9 +62,8 @@ instance RunMessage CloverClubCardroom where
             AutoFail -> []
           )
           tokenFaces
-      l <$ pushAll
-        ([chooseOne iid [Continue "Apply results"]]
-        <> msgs
+      pushAll
+        $ [chooseOne iid [Label "Apply results" msgs]]
         <> [ResetTokens source]
-        )
+      pure l
     _ -> CloverClubCardroom <$> runMessage msg attrs

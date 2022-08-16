@@ -138,7 +138,7 @@ instance RunMessage SkillTest where
           False
         RunWindow _ [Window Timing.When (Window.WouldPassSkillTest _)] -> False
         RunWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] -> False
-        Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
+        Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResultsButton])
           | skillTestInvestigator == skillTestInvestigator' -> False
         _ -> True
       pushAll
@@ -185,7 +185,7 @@ instance RunMessage SkillTest where
         modifiedSkillValue' =
           max 0 (currentSkillValue + skillTestValueModifier + iconCount)
       pushAll
-        [ chooseOne skillTestInvestigator [SkillTestApplyResults]
+        [ chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
         , SkillTestEnds skillTestSource
         ]
       pure $ s & resultL .~ SucceededBy True modifiedSkillValue'
@@ -212,7 +212,7 @@ instance RunMessage SkillTest where
                skillTestSkillType
                difficulty
              )
-           , chooseOne skillTestInvestigator [SkillTestApplyResults]
+           , chooseOne skillTestInvestigator [SkillTestApplyResultsButton]
            , SkillTestEnds skillTestSource
            ]
       pure $ s & resultL .~ FailedBy True difficulty
@@ -268,7 +268,7 @@ instance RunMessage SkillTest where
         )
     SkillTestResults{} -> do
       modifiers' <- getModifiers (toTarget s)
-      push (chooseOne skillTestInvestigator [SkillTestApplyResults])
+      push (chooseOne skillTestInvestigator [SkillTestApplyResultsButton])
       let
         modifiedSkillTestResult =
           foldl' modifySkillTestResult skillTestResult modifiers'
@@ -476,7 +476,7 @@ instance RunMessage SkillTest where
             False
           RunWindow _ [Window Timing.When (Window.WouldFailSkillTest _)] ->
             False
-          Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
+          Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResultsButton])
             | skillTestInvestigator == skillTestInvestigator' -> False
           _ -> True
         push (RunSkillTest skillTestInvestigator)

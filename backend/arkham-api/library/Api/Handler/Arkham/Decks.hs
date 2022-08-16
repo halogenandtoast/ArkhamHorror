@@ -87,7 +87,7 @@ putApiV1ArkhamGameDecksR gameId = do
     Game {..} = arkhamGameCurrentData
     investigatorId = coerce arkhamPlayerInvestigatorId
   msg <- case udpDeckUrl postData of
-    Nothing -> pure $ Done "done"
+    Nothing -> pure $ chooseOne investigatorId [Label "done" []]
     Just deckUrl -> do
       edecklist <- getDeckList deckUrl
       case edecklist of
@@ -96,7 +96,7 @@ putApiV1ArkhamGameDecksR gameId = do
           cards <- liftIO $ loadDecklistCards decklist
           pure $ UpgradeDeck investigatorId (Deck cards)
 
-  let currentQueue = maybe [] choiceMessages $ headMay arkhamGameChoices
+  let currentQueue :: [Message] = maybe [] choiceMessages $ headMay arkhamGameChoices
 
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newIORef (msg : currentQueue)

@@ -563,14 +563,14 @@ instance RunMessage ActiveCost where
               handCards
             cardMsgs = map
               (\(n, card) -> if n >= x
-                then Run
+                then TargetLabel (CardIdTarget $ toCardId card)
                   [ DiscardCard iid (toCardId card)
                   , PaidAbilityCost
                     iid
                     Nothing
                     (SkillIconPayment $ cdSkills $ toCardDef card)
                   ]
-                else Run
+                else TargetLabel (CardIdTarget $ toCardId card)
                   [ DiscardCard iid (toCardId card)
                   , PaidAbilityCost
                     iid

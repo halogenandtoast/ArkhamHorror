@@ -47,7 +47,7 @@ instance RunMessage TryAndTryAgain3 where
         [ FocusCards committedSkills
         , chooseOne
           iid
-          [ ReturnToHand iid (SkillTarget $ SkillId $ toCardId skill)
+          [ TargetLabel (SkillTarget $ SkillId $ toCardId skill) [ReturnToHand iid (SkillTarget $ SkillId $ toCardId skill)]
           | skill <- committedSkills
           ]
         , UnfocusCards

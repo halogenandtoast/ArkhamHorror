@@ -3,10 +3,10 @@ module Arkham.Event.Cards.LogicalReasoning
   , LogicalReasoning(..)
   ) where
 
-import Arkham.Prelude hiding (terror)
+import Arkham.Prelude hiding ( terror )
 
-import Arkham.Event.Cards qualified as Cards
 import Arkham.Classes
+import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Message
@@ -38,7 +38,9 @@ instance RunMessage LogicalReasoning where
                  "Discard a Terror"
                  [ chooseOne
                      iid'
-                     [ Discard (TreacheryTarget terror) | terror <- terrors ]
+                     [ targetLabel terror [Discard $ TreacheryTarget terror]
+                     | terror <- terrors
+                     ]
                  ]
              | notNull terrors
              ]

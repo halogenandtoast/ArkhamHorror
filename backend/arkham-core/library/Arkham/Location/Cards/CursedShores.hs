@@ -52,8 +52,11 @@ instance RunMessage CursedShores where
         InvestigatorHand
         (map toCardId . filter (`cardMatch` CardWithType SkillType))
         iid
-      l <$ case skillCards of
+      case skillCards of
         [] -> pure ()
         [x] -> push (DiscardCard iid x)
-        xs -> push (chooseOne iid [ DiscardCard iid x | x <- xs ])
+        xs -> push $ chooseOne
+          iid
+          [ TargetLabel (CardIdTarget x) [DiscardCard iid x] | x <- xs ]
+      pure l
     _ -> CursedShores <$> runMessage msg attrs

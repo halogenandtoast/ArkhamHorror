@@ -85,11 +85,15 @@ instance RunMessage TheMiskatonicMuseum where
     SetTokensForScenario -> do
       standalone <- getIsStandalone
       s <$ if standalone then push (SetTokens standaloneTokens) else pure ()
-    LookAtTopOfDeck _ ScenarioDeckTarget n ->
+    LookAtTopOfDeck iid ScenarioDeckTarget n -> do
       case fromJustNote "must be set" (lookup ExhibitDeck scenarioDecks) of
         xs -> do
           let lids = map (CardCodeTarget . toCardCode) $ take n xs
-          s <$ pushAll [FocusTargets lids, Label "Continue" [UnfocusTargets]]
+          pushAll
+            [ FocusTargets lids
+            , chooseOne iid [Label "Continue" [UnfocusTargets]]
+            ]
+      pure s
     Setup -> do
       investigatorIds <- getInvestigatorIds
 

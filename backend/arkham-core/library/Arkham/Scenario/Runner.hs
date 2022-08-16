@@ -260,8 +260,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   PutCardOnTopOfDeck _ Deck.EncounterDeck card -> case card of
     EncounterCard ec -> do
       let
-        encounterDeck = flip withDeck scenarioEncounterDeck $ \cards ->
-          ec : deleteFirst ec cards
+        encounterDeck = flip withDeck scenarioEncounterDeck
+          $ \cards -> ec : deleteFirst ec cards
       pure
         $ a
         & (setAsideCardsL %~ deleteFirstMatch (== card))
@@ -380,15 +380,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     if standalone
       then do
         card <- genPlayerCard cardDef
-        push (ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card])
+        push
+          (ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card])
         pure $ a & storyCardsL %~ insertWith
           (<>)
           iid
           [card { pcOwner = Just iid }]
       else pure a
-  LookAtTopOfDeck _ EncounterDeckTarget n -> do
+  LookAtTopOfDeck iid EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck scenarioEncounterDeck
-    a <$ pushAll [FocusCards cards, Label "Continue" [UnfocusCards]]
+    a <$ pushAll
+      [FocusCards cards, chooseOne iid [Label "Continue" [UnfocusCards]]]
   MoveTopOfDeckToBottom _ Deck.EncounterDeck n -> do
     let (cards, deck) = splitAt n (unDeck scenarioEncounterDeck)
     pure $ a & encounterDeckL .~ Deck (deck <> cards)
@@ -440,7 +442,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       DrawFound who n -> do
         let
           choices =
-            [ InvestigatorDrewEncounterCard who card
+            [ TargetLabel
+                (CardIdTarget $ toCardId card)
+                [InvestigatorDrewEncounterCard who card]
             | card <- mapMaybe (preview _EncounterCard) targetCards
             ]
         push
@@ -545,19 +549,25 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         _ -> []
 
     when
-      (notNull matchingDiscards
-      || notNull matchingDeckCards
-      || notNull matchingVoidEnemies
-      )
-      (push
-        (chooseOne iid
-        $ map (FoundEncounterCardFrom iid target FromDiscard) matchingDiscards
-        <> map
-             (FoundEncounterCardFrom iid target FromEncounterDeck)
-             matchingDeckCards
-        <> map (FoundEnemyInVoid iid target) matchingVoidEnemies
+        (notNull matchingDiscards
+        || notNull matchingDeckCards
+        || notNull matchingVoidEnemies
         )
-      )
+      $ push
+      $ chooseOne iid
+      $ [ TargetLabel
+            (CardIdTarget $ toCardId card)
+            [FoundEncounterCardFrom iid target FromDiscard card]
+        | card <- matchingDiscards
+        ]
+      <> [ TargetLabel
+             (CardIdTarget $ toCardId card)
+             [FoundEncounterCardFrom iid target FromEncounterDeck card]
+         | card <- matchingDeckCards
+         ]
+      <> [ targetLabel eid [FoundEnemyInVoid iid target eid]
+         | eid <- matchingVoidEnemies
+         ]
 
     -- TODO: show where focused cards are from
 
@@ -574,12 +584,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         filter (`cardMatch` matcher) (unDeck scenarioEncounterDeck)
 
     push
-      (chooseOne iid
-      $ map (FoundAndDrewEncounterCard iid FromDiscard) matchingDiscards
-      <> map
-           (FoundAndDrewEncounterCard iid FromEncounterDeck)
-           matchingDeckCards
-      )
+      $ chooseOne iid
+      $ [ TargetLabel
+            (CardIdTarget $ toCardId card)
+            [FoundAndDrewEncounterCard iid FromDiscard card]
+        | card <- matchingDiscards
+        ]
+      <> [ TargetLabel
+             (CardIdTarget $ toCardId card)
+             [FoundAndDrewEncounterCard iid FromEncounterDeck card]
+         | card <- matchingDeckCards
+         ]
     -- TODO: show where focused cards are from
     push
       $ FocusCards

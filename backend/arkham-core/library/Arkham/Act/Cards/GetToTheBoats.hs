@@ -6,7 +6,6 @@ module Arkham.Act.Cards.GetToTheBoats
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Act.Types
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
 import Arkham.Act.Runner
@@ -51,12 +50,15 @@ instance RunMessage GetToTheBoats where
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      maskedCarnevaleGoers <- selectListMap
+      targets <- selectListMap
         AssetTarget
         (AssetWithTitle "Masked Carnevale-Goer")
-      case maskedCarnevaleGoers of
-        [] -> pure a
-        xs -> a <$ pushAll [chooseOne iid [ Flip iid source x | x <- xs ]]
+      unless (null targets) $ pushAll
+        [ chooseOne
+            iid
+            [ TargetLabel target [Flip iid source target] | target <- targets ]
+        ]
+      pure a
     UseCardAbility _ source _ 2 _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     _ -> GetToTheBoats <$> runMessage msg attrs

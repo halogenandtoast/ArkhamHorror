@@ -134,7 +134,7 @@ readInvestigatorDefeat = do
     then pure []
     else
       pure
-      $ [ story defeatedInvestigatorIds investigatorDefeat ]
+      $ [story defeatedInvestigatorIds investigatorDefeat]
       <> [ Record TheNecronomiconWasStolen | isJust mNecronomiconOwner ]
       <> [ RemoveCampaignCardFromDeck owner "02140"
          | owner <- maybeToList mNecronomiconOwner
@@ -266,8 +266,10 @@ instance RunMessage TheEssexCountyExpress where
           Trait.Cultist
         s <$ case closestCultists of
           [] -> pure ()
-          [x] -> push (PlaceDoom (EnemyTarget x) 1)
-          xs -> push (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
+          [x] -> push $ PlaceDoom (EnemyTarget x) 1
+          xs -> push $ chooseOne
+            iid
+            [ targetLabel x [PlaceDoom (EnemyTarget x) 1] | x <- xs ]
       ResolveToken _ Tablet _ | isHardExpert attrs -> do
         cultists <- selectList $ EnemyWithTrait Trait.Cultist
         s <$ pushAll [ PlaceDoom (EnemyTarget eid) 1 | eid <- cultists ]

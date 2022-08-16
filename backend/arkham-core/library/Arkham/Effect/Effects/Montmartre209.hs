@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window(..))
+import Arkham.Window ( Window (..) )
 import Arkham.Window qualified as Window
 
 newtype Montmartre209 = Montmartre209 EffectAttrs
@@ -31,22 +31,27 @@ instance HasModifiersFor Montmartre209 where
 
 instance RunMessage Montmartre209 where
   runMessage msg e@(Montmartre209 attrs) = case msg of
-    CreatedEffect eid _ source (InvestigatorTarget iid) | eid == effectId attrs -> do
-      cards <-
-        fmap (fmap toCardId)
-        . filterM
-            (getIsPlayable
-              iid
-              source
-              UnpaidCost
-              [Window Timing.When (Window.DuringTurn iid)]
-            )
-        =<< selectList (TopOfDeckOf Anyone)
-      pushAll
-        [ chooseOne iid
-        $ Label "Play no cards" []
-        : [ InitiatePlayCard iid card Nothing False | card <- cards ]
-        , DisableEffect eid
-        ]
-      pure e
+    CreatedEffect eid _ source (InvestigatorTarget iid)
+      | eid == effectId attrs -> do
+        cards <-
+          fmap (fmap toCardId)
+          . filterM
+              (getIsPlayable
+                iid
+                source
+                UnpaidCost
+                [Window Timing.When (Window.DuringTurn iid)]
+              )
+          =<< selectList (TopOfDeckOf Anyone)
+        pushAll
+          [ chooseOne iid
+          $ Label "Play no cards" []
+          : [ TargetLabel
+                (CardIdTarget card)
+                [InitiatePlayCard iid card Nothing False]
+            | card <- cards
+            ]
+          , DisableEffect eid
+          ]
+        pure e
     _ -> Montmartre209 <$> runMessage msg attrs

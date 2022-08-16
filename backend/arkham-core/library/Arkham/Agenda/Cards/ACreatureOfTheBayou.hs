@@ -52,7 +52,7 @@ instance RunMessage ACreatureOfTheBayou where
                     [(x, _)] -> MoveUntil x (EnemyTarget eid)
                     xs -> chooseOne
                       leadInvestigatorId
-                      [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
+                      [ targetLabel x [MoveUntil x (EnemyTarget eid)] | (x, _) <- xs ]
           a <$ pushAll
             [ ShuffleEncounterDiscardBackIn
             , moveMessage

@@ -83,9 +83,9 @@ instance RunMessage Duke where
             )
           =<< field LocationAbilities lid
       let
-        investigateActions = map
-          (($ windows')
-          . UseAbility iid
+        investigateActions :: [UI Message] = map
+          ((\f -> f windows' [])
+          . AbilityLabel iid
           . (\a' -> a'
               { abilityDoesNotProvokeAttacksOfOpportunity = True
               , abilitySource = ProxySource (abilitySource a') source
@@ -94,22 +94,19 @@ instance RunMessage Duke where
           . (`applyAbilityModifiers` [ActionCostModifier (-1)])
           )
           investigateAbilities
-      if null accessibleLocationIds
-        then pushAll investigateActions
-        else
-          push
-          $ chooseOne iid
-          $ investigateActions
-          <> [ targetLabel
-                 lid'
-                 [ MoveAction iid lid' Free False
-                 , CheckAdditionalActionCosts
-                   iid
-                   (LocationTarget lid')
-                   Action.Investigate
-                   [dukeInvestigate attrs iid lid']
-                 ]
-             | lid' <- accessibleLocationIds
-             ]
+      push
+        $ chooseOne iid
+        $ investigateActions
+        <> [ targetLabel
+               lid'
+               [ MoveAction iid lid' Free False
+               , CheckAdditionalActionCosts
+                 iid
+                 (LocationTarget lid')
+                 Action.Investigate
+                 [dukeInvestigate attrs iid lid']
+               ]
+           | lid' <- accessibleLocationIds
+           ]
       pure a
     _ -> Duke <$> runMessage msg attrs

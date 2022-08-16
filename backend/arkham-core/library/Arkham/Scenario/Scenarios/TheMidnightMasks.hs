@@ -162,8 +162,10 @@ instance RunMessage TheMidnightMasks where
         Trait.Cultist
       s <$ case closestCultists of
         [] -> pure ()
-        [x] -> push (PlaceDoom (EnemyTarget x) 1)
-        xs -> push (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
+        [x] -> push $ PlaceDoom (EnemyTarget x) 1
+        xs -> push $ chooseOne
+          iid
+          [ targetLabel x [PlaceDoom (EnemyTarget x) 1] | x <- xs ]
     ResolveToken _ Cultist iid | isHardExpert attrs -> do
       cultists <- selectList $ EnemyWithTrait Trait.Cultist
       s <$ case cultists of

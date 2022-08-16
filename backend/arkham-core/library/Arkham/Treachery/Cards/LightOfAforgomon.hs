@@ -41,7 +41,7 @@ instance RunMessage LightOfAforgomon where
         (notNull $ targetActs <> targetAgendas)
         (push $ chooseOne
           iid
-          [ AttachTreachery treacheryId target
+          [ TargetLabel target [AttachTreachery treacheryId target]
           | target <- targetActs <> targetAgendas
           ]
         )

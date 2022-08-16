@@ -456,8 +456,14 @@ handleAnswer Game {..} investigatorId = \case
               )
             $ HashMap.toList (parAmounts response)
       _ -> error "Wrong question type"
-  Answer response -> let q = fromJustNote "Invalid question type" (HashMap.lookup investigatorId gameQuestion) in go id q response
+  Answer response ->
+    let
+      q = fromJustNote
+        "Invalid question type"
+        (HashMap.lookup investigatorId gameQuestion)
+    in go id q response
  where
+  go :: (Question Message -> Question Message) -> Question Message -> QuestionResponse -> [Message]
   go f q response = case q of
     QuestionLabel lbl q' -> go (QuestionLabel lbl) q' response
     Read t qs -> case qs !!? qrChoice response of
@@ -465,37 +471,38 @@ handleAnswer Game {..} investigatorId = \case
       Just (_, msg) -> [msg]
     ChooseOne qs -> case qs !!? qrChoice response of
       Nothing -> [Ask investigatorId $ f $ ChooseOne qs]
-      Just msg -> [msg]
+      Just msg -> [uiToRun msg]
     ChooseN n qs -> do
       let (mm, msgs') = extract (qrChoice response) qs
       case (mm, msgs') of
-        (Just m', []) -> [m']
+        (Just m', []) -> [uiToRun m']
         (Just m', msgs'') -> if n - 1 == 0
-          then [m']
-          else [m', Ask investigatorId $ f $ ChooseN (n - 1) msgs'']
+          then [uiToRun m']
+          else [uiToRun m', Ask investigatorId $ f $ ChooseN (n - 1) msgs'']
         (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseN n msgs'']
     ChooseUpToN n qs -> do
       let (mm, msgs') = extract (qrChoice response) qs
       case (mm, msgs') of
-        (Just m', []) -> [m']
-        (Just m'@(Done _), _) -> [m']
+        (Just m', []) -> [uiToRun m']
+        (Just m'@(Done _), _) -> [uiToRun m']
         (Just m', msgs'') -> if n - 1 == 0
-          then [m']
-          else [m', Ask investigatorId $ f $ ChooseUpToN (n - 1) msgs'']
+          then [uiToRun m']
+          else [uiToRun m', Ask investigatorId $ f $ ChooseUpToN (n - 1) msgs'']
         (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseUpToN n msgs'']
     ChooseOneAtATime msgs -> do
       let (mm, msgs') = extract (qrChoice response) msgs
       case (mm, msgs') of
-        (Just m', []) -> [m']
-        (Just m', msgs'') -> [m', Ask investigatorId $ f $ ChooseOneAtATime msgs'']
+        (Just m', []) -> [uiToRun m']
+        (Just m', msgs'') ->
+          [uiToRun m', Ask investigatorId $ f $ ChooseOneAtATime msgs'']
         (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseOneAtATime msgs'']
     ChooseSome msgs -> do
       let (mm, msgs') = extract (qrChoice response) msgs
       case (mm, msgs') of
         (Just (Done _), _) -> []
         (Just m', msgs'') -> case msgs'' of
-          [] -> [m']
-          [Done _] -> [m']
-          rest -> [m', Ask investigatorId $ f $ ChooseSome rest]
+          [] -> [uiToRun m']
+          [Done _] -> [uiToRun m']
+          rest -> [uiToRun m', Ask investigatorId $ f $ ChooseSome rest]
         (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseSome msgs'']
     _ -> error "Wrong question type"

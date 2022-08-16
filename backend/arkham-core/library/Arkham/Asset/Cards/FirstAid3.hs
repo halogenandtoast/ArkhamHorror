@@ -1,13 +1,12 @@
 module Arkham.Asset.Cards.FirstAid3
   ( firstAid3
   , FirstAid3(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Ability
-import qualified Arkham.Asset.Cards as Cards
+import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Cost
 import Arkham.Criteria
@@ -19,8 +18,7 @@ newtype FirstAid3 = FirstAid3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 firstAid3 :: AssetCard FirstAid3
-firstAid3 =
-  assetWith FirstAid3 Cards.firstAid3 (discardWhenNoUsesL .~ True)
+firstAid3 = assetWith FirstAid3 Cards.firstAid3 (discardWhenNoUsesL .~ True)
 
 instance HasAbilities FirstAid3 where
   getAbilities (FirstAid3 x) =
@@ -35,12 +33,23 @@ instance RunMessage FirstAid3 where
         (<>)
         (selectListMap InvestigatorTarget (InvestigatorAt YourLocation))
         (selectListMap AssetTarget (AssetAt YourLocation <> AllyAsset))
+      let
+        componentLabel component target = case target of
+          InvestigatorTarget iid' ->
+            ComponentLabel (InvestigatorComponent iid' component)
+          AssetTarget aid -> ComponentLabel (AssetComponent aid component)
+          _ -> error "unhandled target"
       push
         (chooseOne
           iid
           [ TargetLabel
               target
-              [chooseOne iid [HealDamage target 1, HealHorror target 1]]
+              [ chooseOne
+                  iid
+                  [ componentLabel DamageToken target [HealDamage target 1]
+                  , componentLabel HorrorToken target [HealHorror target 1]
+                  ]
+              ]
           | target <- targets
           ]
         )

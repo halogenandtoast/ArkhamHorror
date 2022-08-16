@@ -1,3 +1,5 @@
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE NoFieldSelectors #-}
 module Arkham.Question where
 
 import Arkham.Prelude
@@ -13,9 +15,9 @@ import Arkham.Text
 import Arkham.Window
 
 data Component
-  = InvestigatorComponent InvestigatorId GameTokenType
-  | InvestigatorDeckComponent InvestigatorId
-  | AssetComponent AssetId GameTokenType
+  = InvestigatorComponent { investigatorId :: InvestigatorId , tokenType :: GameTokenType }
+  | InvestigatorDeckComponent { investigatorId :: InvestigatorId }
+  | AssetComponent { assetId :: AssetId, tokenType ::  GameTokenType }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 
@@ -24,41 +26,41 @@ data GameTokenType = ResourceToken | ClueToken | DamageToken | HorrorToken | Doo
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 
 data UI msg
-  = Label Text [msg]
-  | TooltipLabel Text Tooltip [msg]
-  | LabelGroup Text [msg]
-  | CardLabel CardCode [msg]
-  | TargetLabel Target [msg]
-  | SkillLabel SkillType [msg]
-  | EvadeLabel EnemyId [msg]
-  | FightLabel EnemyId [msg]
-  | AbilityLabel InvestigatorId Ability [Window] [msg]
-  | ComponentLabel Component [msg]
-  | EndTurnButton InvestigatorId [msg]
-  | StartSkillTestButton InvestigatorId
+  = Label { label :: Text, messages :: [msg] }
+  | TooltipLabel { label :: Text, tooltip :: Tooltip, messages :: [msg] }
+  | LabelGroup { label :: Text, messages :: [msg] }
+  | CardLabel { cardCode :: CardCode, messages :: [msg] }
+  | TargetLabel { target :: Target, messages :: [msg] }
+  | SkillLabel { skillType :: SkillType, messages :: [msg] }
+  | EvadeLabel { enemyId :: EnemyId, messages :: [msg] }
+  | FightLabel { enemyId :: EnemyId, messages :: [msg] }
+  | AbilityLabel { investigatorId :: InvestigatorId, ability :: Ability, windows :: [Window], messages :: [msg] }
+  | ComponentLabel { component :: Component, messages :: [msg] }
+  | EndTurnButton { investigatorId :: InvestigatorId, messages :: [msg] }
+  | StartSkillTestButton { investigatorId :: InvestigatorId }
   | SkillTestApplyResultsButton
-  | TokenGroupChoice Source InvestigatorId ChaosBagStep
-  | Done Text
+  | TokenGroupChoice { source :: Source, investigatorId ::  InvestigatorId, step :: ChaosBagStep }
+  | Done { label :: Text }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
 data Question msg
-    = ChooseOne [UI msg]
-    | ChooseN Int [UI msg]
-    | ChooseSome [UI msg]
-    | ChooseUpToN Int [UI msg]
-    | ChooseOneAtATime [UI msg]
+    = ChooseOne { choices :: [UI msg] }
+    | ChooseN { amount :: Int, choices :: [UI msg] }
+    | ChooseSome { choices :: [UI msg] }
+    | ChooseUpToN { amount :: Int, choices :: [UI msg] }
+    | ChooseOneAtATime { choices :: [UI msg] }
     | -- | Choosing payment amounts
       -- The core idea is that costs get broken up into unitary costs and we
       -- let the players decide how many times an individual player will pay
       -- the cost. The @Maybe Int@ is used to designate whether or not there
       -- is a target value. The tuple of ints are the min and max bound for
       -- the specific investigator
-      ChoosePaymentAmounts Text (Maybe Int) [(InvestigatorId, (Int, Int), msg)]
-    | ChooseAmounts Text Int [(Text, (Int, Int))] Target
+      ChoosePaymentAmounts { label :: Text, paymentAmountTargetValue :: (Maybe Int), paymentAmountChoices :: [(InvestigatorId, (Int, Int), msg)] }
+    | ChooseAmounts { label :: Text, amountTargetValue ::  Int, amountChoices :: [(Text, (Int, Int))], target :: Target }
     | ChooseUpgradeDeck
-    | QuestionLabel Text (Question msg)
-    | Read FlavorText [(Text, msg)]
+    | QuestionLabel { label :: Text, question :: (Question msg) }
+    | Read { flavorText :: FlavorText, readChoices :: [UI msg] }
     deriving stock (Show, Eq, Generic)
     deriving anyclass (FromJSON, ToJSON)
 

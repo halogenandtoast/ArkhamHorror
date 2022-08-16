@@ -65,7 +65,7 @@ export function choices(game: Game, investigatorId: string): Message[] {
   const toContents = (q: Question): Message[] => {
     switch (q.tag) {
       case 'ChooseOne':
-        return q.contents;
+        return q.choices;
       case 'ChooseN':
         return q.contents;
       case 'ChooseUpToN':
@@ -77,7 +77,7 @@ export function choices(game: Game, investigatorId: string): Message[] {
       case 'QuestionLabel':
         return toContents(q.contents[1]);
       case 'Read':
-        return q.contents[1].map(([, q]) => q);
+        return q.readChoices;
       case 'ChooseOneFromSource':
       {
         const { choices: sourceChoices } = q.contents;

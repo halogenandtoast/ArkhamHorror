@@ -41,7 +41,7 @@ function canInteract(c: Message): boolean {
 }
 
 function isActivate(v: Message) {
-  if (v.tag !== 'UseAbility') {
+  if (v.tag !== 'AbilityLabel') {
     return false
   }
 

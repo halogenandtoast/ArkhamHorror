@@ -123,7 +123,7 @@ const resolutions = computed(() => {
   return choices
     .value
     .map((choice, idx) => ({ choice, idx }))
-    .filter(({ choice }) => choice.tag === MessageType.RESOLUTION);
+    .filter(({ choice }) => choice.tag === "WOMBAT");
 })
 </script>
 

@@ -17,7 +17,7 @@ const playerOrderChoices = computed(() => {
   return choices
     .value
     .map((choice, idx) => ({ choice, idx }))
-    .filter(({ choice }) => choice.tag === MessageType.CHOOSE_PLAYER_ORDER);
+    .filter(({ choice }) => choice.tag === "WOMBAT");
 })
 
 const ordinal = computed(() => {

@@ -16,7 +16,7 @@ const playerChoices = computed(() => {
   return choices
     .value
     .map((choice, idx) => ({ choice, idx }))
-    .filter(({ choice }) => choice.tag === MessageType.CHOOSE_PLAYER);
+    .filter(({ choice }) => choice.tag === "WOMBAT");
 })
 
 const playerChoicesMessage = computed(() => {

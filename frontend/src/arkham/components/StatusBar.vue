@@ -4,6 +4,7 @@ import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
+import { QuestionType } from '@/arkham/types/Question';
 
 export interface Props {
   game: Game
@@ -19,7 +20,8 @@ const question = computed(() => props.game.question[props.investigatorId])
 const choose = (idx: number) => emit('choose', idx)
 
 const applyResultsAction = computed(() => {
-  return choices.value.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
+  return -1
+  // return choices.value.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
 })
 
 const skillTestResults = computed(() => props.game.skillTestResults)
@@ -32,7 +34,7 @@ const cardLabelImage = (cardCode: string) => {
 const cardLabels = computed(() =>
   choices.value.
     flatMap<[Message, number][]>((choice, index) =>
-      choice.tag === MessageType.CARD_LABEL ? [[choice, index]] : []))
+      choice.tag === "WOMBAT" ? [[choice, index]] : []))
 
 const tokenOperator = computed(() => (skillTestResults.value?.skillTestResultsTokensValue || 0) < 0 ? '-' : '+')
 
@@ -91,48 +93,35 @@ const testResult = computed(() => {
       </div>
     </div>
 
-    <div class="intro-text" v-if="question && question.tag === MessageType.READ">
-      <h1 v-if="question.contents[0].title">{{question.contents[0].title}}</h1>
+    <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
+      <h1 v-if="question.flavorText.title">{{question.flavorText.title}}</h1>
       <p
-        v-for="(paragraph, index) in question.contents[0].body"
+        v-for="(paragraph, index) in question.flavorText.body"
         :key="index"
       >{{paragraph}}</p>
-      <button v-for="(readChoice, readIndex) in question.contents[1]" @click="choose(readIndex)" :key="readIndex">{{readChoice[0]}}</button>
     </div>
 
 
     <div class="choices">
       <template v-for="(choice, index) in choices" :key="index">
-        <div v-if="choice.tag === MessageType.AFTER_DISCOVER_CLUES">
-          <span>You got some clues</span> <button @click="choose(index)">Continue</button>
-        </div>
-
-        <div v-if="choice.tag === MessageType.CONTINUE">
-          <button @click="choose(index)">{{choice.contents}}</button>
-        </div>
-
-        <div v-if="choice.tag === MessageType.DONE">
-          <button @click="choose(index)">{{choice.contents}}</button>
-        </div>
-
         <div v-if="choice.tag === MessageType.LABEL">
-          <button v-if="choice.contents[0] == 'Choose {skull}'" @click="choose(index)">
+          <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
             Choose <i class="iconSkull"></i>
           </button>
-          <button v-else-if="choice.contents[0] == 'Choose {cultist}'" @click="choose(index)">
+          <button v-else-if="choice.label == 'Choose {cultist}'" @click="choose(index)">
             Choose <i class="iconCultist"></i>
           </button>
-          <button v-else-if="choice.contents[0] == 'Choose {tablet}'" @click="choose(index)">
+          <button v-else-if="choice.label == 'Choose {tablet}'" @click="choose(index)">
             Choose <i class="iconTablet"></i>
           </button>
-          <button v-else-if="choice.contents[0] == 'Choose {elderThing}'" @click="choose(index)">
+          <button v-else-if="choice.label == 'Choose {elderThing}'" @click="choose(index)">
             Choose <i class="iconElderThing"></i>
           </button>
-          <button v-else @click="choose(index)">{{choice.contents[0]}}</button>
+          <button v-else @click="choose(index)">{{choice.label}}</button>
         </div>
 
         <a
-          v-if="choice.tag === MessageType.SKILL_LABEL"
+          v-if="choice.tag === QuestionType.SKILL_LABEL"
           class="button"
           @click="choose(index)"
         >

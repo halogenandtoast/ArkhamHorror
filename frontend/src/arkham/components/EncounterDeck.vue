@@ -12,26 +12,9 @@ export interface Props {
 const props = defineProps<Props>()
 const baseUrl = inject('baseUrl')
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-const drawEncounterCardAction = computed(() => {
-  return choices.value.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD)
-})
-
-const searchTopOfEncounterCardAction = computed(() => {
-  return choices.value.findIndex((c) => c.tag === MessageType.SEARCH && c.contents[2].tag === 'EncounterDeckTarget');
-})
-
-const surgeAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.SURGE))
 
 const deckAction = computed(() => {
-  if (drawEncounterCardAction.value !== -1) {
-    return drawEncounterCardAction.value
-  }
-
-  if (surgeAction.value !== -1) {
-    return surgeAction.value
-  }
-
-  return searchTopOfEncounterCardAction.value
+  return -1
 })
 
 const investigatorPortrait = computed(() => {

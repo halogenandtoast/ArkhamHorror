@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
+import { QuestionType } from '@/arkham/types/Question';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
 
 export interface Props {
@@ -17,7 +17,7 @@ const choose = (idx: number) => emit('choose', idx)
 </script>
 
 <template>
-  <template v-if="question.tag === MessageType.READ">
+  <template v-if="question.tag === QuestionType.READ">
     <StoryEntry
       :question="question"
       @choose="choose"

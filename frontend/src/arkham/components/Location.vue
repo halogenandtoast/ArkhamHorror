@@ -132,7 +132,7 @@ const cardAction = computed(() => {
 })
 
 function isAbility(v: Message) {
-  if (v.tag !== 'UseAbility') {
+  if (v.tag !== 'AbilityLabel') {
     return false
   }
 
@@ -153,15 +153,15 @@ const abilities = computed(() => {
   return choices
     .value
     .reduce<number[]>((acc, v, i) => {
-      if ((v.tag === 'UseAbility' || v.tag === 'ActivateCardAbilityActionWithDynamicCost') && v.contents[1].source.tag === 'LocationSource' && v.contents[1].source.contents === id.value) {
+      if ((v.tag === 'AbilityLabel' || v.tag === 'ActivateCardAbilityActionWithDynamicCost') && v.contents[1].source.tag === 'LocationSource' && v.contents[1].source.contents === id.value) {
         return [i, ...acc];
       }
 
-      if (v.tag === 'UseAbility' && v.contents[1].source.tag === 'ProxySource' && v.contents[1].source.contents[0].tag === 'LocationSource' && v.contents[1].source.contents[0].contents === id.value) {
+      if (v.tag === 'AbilityLabel' && v.contents[1].source.tag === 'ProxySource' && v.contents[1].source.contents[0].tag === 'LocationSource' && v.contents[1].source.contents[0].contents === id.value) {
         return [...acc, i];
       }
 
-      if (v.tag === 'UseAbility' && v.contents[1].source.tag === 'ProxySource' && v.contents[1].source.contents[0].tag === 'LocationSource' && v.contents[1].source.contents[0].contents === id.value) {
+      if (v.tag === 'AbilityLabel' && v.contents[1].source.tag === 'ProxySource' && v.contents[1].source.contents[0].tag === 'LocationSource' && v.contents[1].source.contents[0].contents === id.value) {
         return [...acc, i];
       }
 

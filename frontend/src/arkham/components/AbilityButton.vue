@@ -33,7 +33,7 @@ const isEvade = computed(() => isAction("Evade"))
 const isEngage = computed(() => isAction("Engage"))
 const display = computed(() => !isAction("Move"))
 const isSingleActionAbility = computed(() => {
-  if (ability.value.tag !== "UseAbility") {
+  if (ability.value.tag !== "AbilityLabel") {
     return false
   }
   const {tag} = ability.value.contents[1].type
@@ -50,7 +50,7 @@ const isSingleActionAbility = computed(() => {
 })
 
 const tooltip = computed(() => {
-  if (ability.value.tag !== "UseAbility") {
+  if (ability.value.tag !== "AbilityLabel") {
     return null
   }
 
@@ -71,7 +71,7 @@ const tooltip = computed(() => {
 })
 
 const isDoubleActionAbility = computed(() => {
-  if (ability.value.tag !== "UseAbility") {
+  if (ability.value.tag !== "AbilityLabel") {
     return false
   }
   const {tag} = ability.value.contents[1].type
@@ -88,7 +88,7 @@ const isDoubleActionAbility = computed(() => {
 })
 
 const isTripleActionAbility = computed(() => {
-  if (ability.value.tag !== "UseAbility") {
+  if (ability.value.tag !== "AbilityLabel") {
     return false
   }
   const {tag} = ability.value.contents[1].type
@@ -104,10 +104,10 @@ const isTripleActionAbility = computed(() => {
   }
 })
 
-const isObjective = computed(() => ability.value.tag === "UseAbility" && ability.value.contents[1].type.tag === "Objective")
-const isFastActionAbility = computed(() => ability.value.tag === "UseAbility" && ability.value.contents[1].type.tag === "FastAbility")
-const isReactionAbility = computed(() => ability.value.tag === "UseAbility" && (ability.value.contents[1].type.tag === "ReactionAbility" || ability.value.contents[1].type.tag === "LegacyReactionAbility"))
-const isForcedAbility = computed(() => ability.value.tag === "UseAbility" && ability.value.contents[1].type.tag === "ForcedAbility")
+const isObjective = computed(() => ability.value.tag === "AbilityLabel" && ability.value.contents[1].type.tag === "Objective")
+const isFastActionAbility = computed(() => ability.value.tag === "AbilityLabel" && ability.value.contents[1].type.tag === "FastAbility")
+const isReactionAbility = computed(() => ability.value.tag === "AbilityLabel" && (ability.value.contents[1].type.tag === "ReactionAbility" || ability.value.contents[1].type.tag === "LegacyReactionAbility"))
+const isForcedAbility = computed(() => ability.value.tag === "AbilityLabel" && ability.value.contents[1].type.tag === "ForcedAbility")
 
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 

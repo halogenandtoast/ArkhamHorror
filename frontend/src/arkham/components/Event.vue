@@ -50,7 +50,7 @@ function canInteract(c: Message): boolean {
 const cardAction = computed(() => choices.value.findIndex(canInteract))
 
 function isActivate(v: Message) {
-  if (v.tag !== 'UseAbility') {
+  if (v.tag !== 'AbilityLabel') {
     return false
   }
 

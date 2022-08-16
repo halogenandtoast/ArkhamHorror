@@ -43,31 +43,32 @@ const image = computed(() => {
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.DISCARD:
-      return c.contents.contents === id.value
-    case MessageType.READY:
-      return c.contents.contents === id.value
-    case MessageType.FLIP:
-      return c.contents[1].contents === id.value
-    case MessageType.REMOVE_DOOM:
-      return c.contents[0].contents === id.value
-    case MessageType.LOOK_AT_REVEALED:
-      return c.contents[1].contents === id.value
-    case MessageType.ADD_USES:
-      return c.contents[0].contents === id.value
-    case MessageType.USE_CARD_ABILITY:
-      return c.contents[1].contents === id.value
-    // case MessageType.ACTIVATE_ABILITY:
-    //   return c.contents[1].source.contents === id.value
-    //     && (c.contents[1].type.tag === 'ReactionAbility')
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canInteract(c1))
-    case MessageType.TARGET_LABEL:
-      return c.contents[0].tag === "AssetTarget" && c.contents[0].contents === id.value
-    default:
-      return false;
-  }
+  return false
+  // switch (c.tag) {
+  //   case MessageType.DISCARD:
+  //     return c.contents.contents === id.value
+  //   case MessageType.READY:
+  //     return c.contents.contents === id.value
+  //   case MessageType.FLIP:
+  //     return c.contents[1].contents === id.value
+  //   case MessageType.REMOVE_DOOM:
+  //     return c.contents[0].contents === id.value
+  //   case MessageType.LOOK_AT_REVEALED:
+  //     return c.contents[1].contents === id.value
+  //   case MessageType.ADD_USES:
+  //     return c.contents[0].contents === id.value
+  //   case MessageType.USE_CARD_ABILITY:
+  //     return c.contents[1].contents === id.value
+  //   // case MessageType.ACTIVATE_ABILITY:
+  //   //   return c.contents[1].source.contents === id.value
+  //   //     && (c.contents[1].type.tag === 'ReactionAbility')
+  //   case MessageType.RUN:
+  //     return c.contents.some((c1: Message) => canInteract(c1))
+  //   case MessageType.TARGET_LABEL:
+  //     return c.contents[0].tag === "AssetTarget" && c.contents[0].contents === id.value
+  //   default:
+  //     return false;
+  // }
 }
 
 function canAdjustHealth(c: Message): boolean {
@@ -97,7 +98,7 @@ const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
 const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
 function isActivate(v: Message) {
-  if (v.tag !== 'UseAbility') {
+  if (v.tag !== 'AbilityLabel') {
     return false
   }
 

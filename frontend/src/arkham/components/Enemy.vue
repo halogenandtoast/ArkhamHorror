@@ -97,7 +97,7 @@ function isActivate(v: Message) {
     return true
   }
 
-  if (v.tag !== 'UseAbility') {
+  if (v.tag !== 'AbilityLabel') {
     return false
   }
 

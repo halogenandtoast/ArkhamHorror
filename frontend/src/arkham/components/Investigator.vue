@@ -3,6 +3,7 @@ import { computed, inject } from 'vue'
 import * as Arkham from '@/arkham/types/Investigator'
 import type { Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
+import { QuestionType } from '@/arkham/types/Question'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 
 export interface Props {
@@ -20,51 +21,55 @@ const debug = inject('debug')
 const debugChoose = inject('debugChoose')
 
 const searchTopOfDeckAction = computed(() => {
-  return props.choices
-    .findIndex((c) => c.tag === MessageType.SEARCH
-      && c.contents[2].contents === id.value);
+  return -1
+  // return props.choices
+  //   .findIndex((c) => c.tag === MessageType.SEARCH
+  //     && c.contents[2].contents === id.value);
 })
 
 const runSkillTestAction = computed(() => {
-  if (props.choices.filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST
-    && c.contents[0] === id.value).length === 1) {
-    return props.choices
-      .findIndex((c) => c.tag === MessageType.BEGIN_SKILL_TEST && c.contents[0] === id.value)
-  }
+  // if (props.choices.filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST
+  //   && c.contents[0] === id.value).length === 1) {
+  //   return props.choices
+  //     .findIndex((c) => c.tag === MessageType.BEGIN_SKILL_TEST && c.contents[0] === id.value)
+  // }
 
   return -1
 })
 
 function canActivateAbility(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.ACTIVATE_ABILITY:
-      return c.contents[1].source.contents === id.value;
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canActivateAbility(c1));
-    default:
-      return false;
-  }
+  return false
+  // switch (c.tag) {
+  //   case MessageType.ACTIVATE_ABILITY:
+  //     return c.contents[1].source.contents === id.value;
+  //   case MessageType.RUN:
+  //     return c.contents.some((c1: Message) => canActivateAbility(c1));
+  //   default:
+  //     return false;
+  // }
 }
 const activateAbilityAction = computed(() => props.choices.findIndex(canActivateAbility))
 
 const enemyEngageInvestigatorAction = computed(() => {
-  return props.choices
-    .findIndex((c) => c.tag === MessageType.ENEMY_ENGAGE_INVESTIGATOR
-      && c.contents[1] === id.value)
+  return -1
+  // return props.choices
+  //   .findIndex((c) => c.tag === MessageType.ENEMY_ENGAGE_INVESTIGATOR
+  //     && c.contents[1] === id.value)
 })
 
 const takeDamageAction = computed(() => {
-  const isRunDamage = props.choices.findIndex((c) => c.tag === MessageType.RUN
-    && c.contents[0]
-    && c.contents[0].tag === MessageType.INVESTIGATOR_ASSIGN_DAMAGE
-    && c.contents[0].contents[0] === id.value);
-  return isRunDamage
-    || props.choices.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
+  return -1
+  // const isRunDamage = props.choices.findIndex((c) => c.tag === MessageType.RUN
+  //   && c.contents[0]
+  //   && c.contents[0].tag === MessageType.INVESTIGATOR_ASSIGN_DAMAGE
+  //   && c.contents[0].contents[0] === id.value);
+  // return isRunDamage
+  //   || props.choices.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
 })
 
 const labelAction = computed(() => {
   return props.choices
-    .findIndex((c) => c.tag === MessageType.TARGET_LABEL
+    .findIndex((c) => c.tag === QuestionType.TARGET_LABEL
       && c.contents[0].tag === "InvestigatorTarget" && c.contents[0].contents === id.value)
 })
 
@@ -93,52 +98,64 @@ const investigatorAction = computed(() => {
 })
 
 function canAdjustHealth(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.INVESTIGATOR_DAMAGE:
-      return c.contents[0] === id.value && c.contents[2] > 0;
-    case MessageType.HEAL_DAMAGE:
-      return c.contents[0].contents === id.value;
-    case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
-      return c.contents[0] === id.value && c.contents[2] > 0;
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canAdjustHealth(c1));
-    default:
-      return false;
-  }
+  return false
+  // switch (c.tag) {
+  //   case MessageType.INVESTIGATOR_DAMAGE:
+  //     return c.contents[0] === id.value && c.contents[2] > 0;
+  //   case MessageType.HEAL_DAMAGE:
+  //     return c.contents[0].contents === id.value;
+  //   case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
+  //     return c.contents[0] === id.value && c.contents[2] > 0;
+  //   case MessageType.RUN:
+  //     return c.contents.some((c1: Message) => canAdjustHealth(c1));
+  //   default:
+  //     return false;
+  // }
 }
 
 function canAdjustSanity(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.INVESTIGATOR_DAMAGE:
-      return c.contents[0] === id.value && c.contents[3] > 0;
-    case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
-      return c.contents[0] === id.value && c.contents[3] > 0;
-    case MessageType.HEAL_HORROR:
-      return c.contents[0].contents === id.value;
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canAdjustSanity(c1));
-    default:
-      return false;
-  }
+  return false
+  // switch (c.tag) {
+  //   case MessageType.INVESTIGATOR_DAMAGE:
+  //     return c.contents[0] === id.value && c.contents[3] > 0;
+  //   case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
+  //     return c.contents[0] === id.value && c.contents[3] > 0;
+  //   case MessageType.HEAL_HORROR:
+  //     return c.contents[0].contents === id.value;
+  //   case MessageType.RUN:
+  //     return c.contents.some((c1: Message) => canAdjustSanity(c1));
+  //   default:
+  //     return false;
+  // }
 }
 
 const healthAction = computed(() => props.choices.findIndex(canAdjustHealth))
 const sanityAction = computed(() => props.choices.findIndex(canAdjustSanity))
 
 const takeResourceAction = computed(() => {
-  return props.choices
-    .findIndex((c) => c.tag === MessageType.TAKE_RESOURCES && c.contents[0] === id.value);
+  return -1
+  // return props.choices
+  //   .findIndex((c) => {
+  //     if (c.tag === MessageType.COMPONENT_LABEL) {
+  //       if (c.contents[0].tag == "InvestigatorComponent") {
+  //         return (c.contents[0].contents[0] == id.value && c.contents[0].contents[1] === "ResourceToken")
+  //       }
+  //     }
+  //     return false
+  //   });
 })
 
 const spendCluesAction = computed(() => {
-  return props.choices
-    .findIndex((c) => (c.tag === MessageType.INVESTIGATOR_SPEND_CLUES || c.tag === MessageType.INVESTIGATOR_PLACE_CLUES_ON_LOCATION)
-      && c.contents[0] === id.value);
+  return -1
+  // return props.choices
+  //   .findIndex((c) => (c.tag === MessageType.INVESTIGATOR_SPEND_CLUES || c.tag === MessageType.INVESTIGATOR_PLACE_CLUES_ON_LOCATION)
+  //     && c.contents[0] === id.value);
 })
 
 const endTurnAction = computed(() => {
-  return props.choices
-    .findIndex((c) => c.tag === MessageType.END_TURN && c.contents === id.value);
+  return -1
+  // return props.choices
+  //   .findIndex((c) => c.tag === MessageType.END_TURN && c.contents === id.value);
 })
 
 const baseUrl = inject('baseUrl')

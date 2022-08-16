@@ -1,191 +1,93 @@
 import { JsonDecoder } from 'ts.data.json';
 
+// data UI msg
+//   = Label Text [msg]
+//   | TooltipLabel Text Tooltip [msg]
+//   | LabelGroup Text [msg]
+//   | CardLabel CardCode [msg]
+//   | TargetLabel Target [msg]
+//   | SkillLabel SkillType [msg]
+//   | EvadeLabel EnemyId [msg]
+//   | FightLabel EnemyId [msg]
+//   | AbilityLabel InvestigatorId Ability [Window] [msg]
+//   | ComponentLabel Component [msg]
+//   | EndTurnButton InvestigatorId [msg]
+//   | StartSkillTestButton InvestigatorId
+//   | SkillTestApplyResultsButton
+//   | TokenGroupChoice Source InvestigatorId ChaosBagStep
+//   | Done Text
+
 export enum MessageType {
-  TARGET_LABEL = 'TargetLabel',
-  SKILL_LABEL = 'SkillLabel',
-  EVADE_LABEL = 'EvadeLabel',
-  CHECK_ADDITIONAL_ACTION_COSTS = 'CheckAdditionalActionCosts',
-  CHOOSE_TOKEN_GROUPS = 'ChooseTokenGroups',
-  ASK = 'Ask',
-  RUN = 'Run',
-  READ = 'Read',
-  READY = 'Ready',
-  REMOVE_DOOM = 'RemoveDoom',
-  REMOVE_FROM_GAME = 'RemoveFromGame',
-  REVEAL_CARD = 'RevealInHand',
-  FLIP = 'Flip',
-  LOOK_AT_REVEALED = 'LookAtRevealed',
-  FLAVOR_TEXT = 'FlavorText',
-  RESOLUTION = 'Resolution',
-  MULLIGAN_CARD = 'MulliganCard',
-  CHOOSE_PLAYER_ORDER = 'ChoosePlayerOrder',
-  CHOOSE_PLAYER = 'ChoosePlayer',
-  TAKE_RESOURCES = 'TakeResources',
-  DRAW_CARDS = 'DrawCards',
-  PLAY_CARD = 'InitiatePlayCard',
-  PLAY_CARD_AS = 'InitiatePlayCardAsChoose',
-  RETURN_TO_HAND = 'ReturnToHand',
-  PLAY_DYNAMIC_CARD = 'InitiatePlayDynamicCard',
-  PLAY_FAST_EVENT = 'PlayFastEvent',
-  HEAL_DAMAGE = 'HealDamage',
-  HEAL_HORROR = 'HealHorror',
-  LEGACY_PLAY_CARD = 'PlayCard',
-  INVESTIGATE = 'Investigate',
-  END_TURN = 'ChooseEndTurn',
-  START_SKILL_TEST = 'StartSkillTest',
-  COMMIT_CARD = 'SkillTestCommitCard',
-  UNCOMMIT_CARD = 'SkillTestUncommitCard',
-  AFTER_DISCOVER_CLUES = 'AfterDiscoverClues',
-  NEXT_ACT = 'NextAct',
-  ADVANCE_ACT = 'AdvanceAct',
-  ADVANCE_AGENDA = 'AdvanceAgenda',
-  MOVE = 'MoveAction',
-  MOVE_UNTIL = 'MoveUntil',
-  MOVE_TO = 'MoveTo',
-  CREATE_ENEMY_AT = 'CreateEnemyAt',
-  FIGHT_ENEMY = 'FightEnemy',
-  EVADE_ENEMY = 'EvadeEnemy',
-  ENEMY_EVADED = 'EnemyEvaded',
-  ENEMY_DAMAGE = 'EnemyDamage',
-  ENEMY_SPAWN = 'EnemySpawn',
-  ENEMY_MOVE = 'EnemyMove',
-  CONTINUE = 'Continue',
-  DONE = 'Done',
-  INVESTIGATOR_DAMAGE = 'InvestigatorDamage',
-  INVESTIGATOR_ASSIGN_DAMAGE = 'InvestigatorAssignDamage',
-  INVESTIGATOR_SPEND_CLUES = 'InvestigatorSpendClues',
-  INVESTIGATOR_PLACE_CLUES_ON_LOCATION = 'InvestigatorPlaceCluesOnLocation',
-  ASSET_DAMAGE = 'AssetDamage',
-  ENEMY_ATTACK = 'EnemyAttack',
-  ENEMY_ENGAGE_INVESTIGATOR = 'EnemyEngageInvestigator',
-  ACTIVATE_ABILITY = 'UseAbility',
-  ACTIVATE_DYNAMIC_ABILITY='ActivateCardAbilityActionWithDynamicCost',
-  USE_CARD_ABILITY = 'UseCardAbility',
-  SKILL_TEST_RESULTS = 'SkillTestApplyResults',
-  DISCARD = 'Discard',
-  DISCARD_CARD = 'DiscardCard',
-  CHOOSE_AND_DISCARD_CARD = 'ChooseAndDiscardCard',
-  ADD_TO_HAND_FROM_DECK = 'AddToHandFromDeck',
-  BEGIN_SKILL_TEST_AFTER_FAST = 'BeginSkillTestAfterFast',
-  BEGIN_SKILL_TEST = 'BeginSkillTest',
-  SEARCH = 'Search',
-  SEARCH_FOUND = 'SearchFound',
-  ADD_FOCUSED_TO_HAND = 'AddFocusedToHand',
-  ADD_FOCUSED_TO_TOP_OF_DECK = 'AddFocusedToTopOfDeck',
-  ENGAGE_ENEMY = 'EngageEnemy',
-  INVESTIGATOR_DRAW_ENCOUNTER_CARD = 'InvestigatorDrawEncounterCard',
-  SURGE = 'Surge',
-  ATTACH_TREACHERY = 'AttachTreachery',
-  PLACE_DOOM = 'PlaceDoom',
-  FOUND_AND_DREW_ENCOUNTER_CARD = 'FoundAndDrewEncounterCard',
-  FOUND_ENCOUNTER_CARD_FROM = 'FoundEncounterCardFrom',
-  FOUND_ENEMY_IN_VOID = 'FoundEnemyInVoid',
   LABEL = 'Label',
-  TOOLTIP_LABEL = 'TooltipLabel',
-  CARD_LABEL = 'CardLabel',
-  ADD_USES = 'AddUses',
+  TARGET_LABEL = 'TargetLabel',
 }
 
-export interface Message {
-  tag: MessageType;
-  label: string | null;
-  contents: any; // eslint-disable-line
+export interface Label {
+  tag: 'Label';
+  label: string;
 }
 
-export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
-  [
-    JsonDecoder.isExactly('TargetLabel').chain(() => JsonDecoder.constant(MessageType.TARGET_LABEL)),
-    JsonDecoder.isExactly('SkillLabel').chain(() => JsonDecoder.constant(MessageType.SKILL_LABEL)),
-    JsonDecoder.isExactly('EvadeLabel').chain(() => JsonDecoder.constant(MessageType.EVADE_LABEL)),
-    JsonDecoder.isExactly('Ask').chain(() => JsonDecoder.constant(MessageType.ASK)),
-    JsonDecoder.isExactly('CheckAdditionalActionCosts').chain(() => JsonDecoder.constant(MessageType.CHECK_ADDITIONAL_ACTION_COSTS)),
-    JsonDecoder.isExactly('ChooseTokenGroups').chain(() => JsonDecoder.constant(MessageType.CHOOSE_TOKEN_GROUPS)),
-    JsonDecoder.isExactly('Run').chain(() => JsonDecoder.constant(MessageType.RUN)),
-    JsonDecoder.isExactly('Label').chain(() => JsonDecoder.constant(MessageType.LABEL)),
-    JsonDecoder.isExactly('TooltipLabel').chain(() => JsonDecoder.constant(MessageType.TOOLTIP_LABEL)),
-    JsonDecoder.isExactly('CardLabel').chain(() => JsonDecoder.constant(MessageType.CARD_LABEL)),
-    JsonDecoder.isExactly('RemoveDoom').chain(() => JsonDecoder.constant(MessageType.REMOVE_DOOM)),
-    JsonDecoder.isExactly('RemoveFromGame').chain(() => JsonDecoder.constant(MessageType.REMOVE_FROM_GAME)),
-    JsonDecoder.isExactly('RevealInHand').chain(() => JsonDecoder.constant(MessageType.REVEAL_CARD)),
-    JsonDecoder.isExactly('Flip').chain(() => JsonDecoder.constant(MessageType.FLIP)),
-    JsonDecoder.isExactly('LookAtRevealed').chain(() => JsonDecoder.constant(MessageType.LOOK_AT_REVEALED)),
-    JsonDecoder.isExactly('FlavorText').chain(() => JsonDecoder.constant(MessageType.FLAVOR_TEXT)),
-    JsonDecoder.isExactly('Resolution').chain(() => JsonDecoder.constant(MessageType.RESOLUTION)),
-    JsonDecoder.isExactly('MulliganCard').chain(() => JsonDecoder.constant(MessageType.MULLIGAN_CARD)),
-    JsonDecoder.isExactly('ChoosePlayer').chain(() => JsonDecoder.constant(MessageType.CHOOSE_PLAYER)),
-    JsonDecoder.isExactly('ChoosePlayerOrder').chain(() => JsonDecoder.constant(MessageType.CHOOSE_PLAYER_ORDER)),
-    JsonDecoder.isExactly('TakeResources').chain(() => JsonDecoder.constant(MessageType.TAKE_RESOURCES)),
-    JsonDecoder.isExactly('DrawCards').chain(() => JsonDecoder.constant(MessageType.DRAW_CARDS)),
-    JsonDecoder.isExactly('InitiatePlayCard').chain(() => JsonDecoder.constant(MessageType.PLAY_CARD)),
-    JsonDecoder.isExactly('InitiatePlayCardAsChoose').chain(() => JsonDecoder.constant(MessageType.PLAY_CARD_AS)),
-    JsonDecoder.isExactly('ReturnToHand').chain(() => JsonDecoder.constant(MessageType.RETURN_TO_HAND)),
-    JsonDecoder.isExactly('InitiatePlayDynamicCard').chain(() => JsonDecoder.constant(MessageType.PLAY_DYNAMIC_CARD)),
-    JsonDecoder.isExactly('PlayFastEvent').chain(() => JsonDecoder.constant(MessageType.PLAY_FAST_EVENT)),
-    JsonDecoder.isExactly('HealDamage').chain(() => JsonDecoder.constant(MessageType.HEAL_DAMAGE)),
-    JsonDecoder.isExactly('HealHorror').chain(() => JsonDecoder.constant(MessageType.HEAL_HORROR)),
-    JsonDecoder.isExactly('PlayCard').chain(() => JsonDecoder.constant(MessageType.LEGACY_PLAY_CARD)),
-    JsonDecoder.isExactly('Investigate').chain(() => JsonDecoder.constant(MessageType.INVESTIGATE)),
-    JsonDecoder.isExactly('ChooseEndTurn').chain(() => JsonDecoder.constant(MessageType.END_TURN)),
-    JsonDecoder.isExactly('StartSkillTest').chain(() => JsonDecoder.constant(MessageType.START_SKILL_TEST)),
-    JsonDecoder.isExactly('SkillTestCommitCard').chain(() => JsonDecoder.constant(MessageType.COMMIT_CARD)),
-    JsonDecoder.isExactly('SkillTestUncommitCard').chain(() => JsonDecoder.constant(MessageType.UNCOMMIT_CARD)),
-    JsonDecoder.isExactly('AfterDiscoverClues').chain(() => JsonDecoder.constant(MessageType.AFTER_DISCOVER_CLUES)),
-    JsonDecoder.isExactly('NextAct').chain(() => JsonDecoder.constant(MessageType.NEXT_ACT)),
-    JsonDecoder.isExactly('AdvanceAct').chain(() => JsonDecoder.constant(MessageType.ADVANCE_ACT)),
-    JsonDecoder.isExactly('AdvanceAgenda').chain(() => JsonDecoder.constant(MessageType.ADVANCE_AGENDA)),
-    JsonDecoder.isExactly('MoveAction').chain(() => JsonDecoder.constant(MessageType.MOVE)),
-    JsonDecoder.isExactly('MoveUntil').chain(() => JsonDecoder.constant(MessageType.MOVE_UNTIL)),
-    JsonDecoder.isExactly('MoveTo').chain(() => JsonDecoder.constant(MessageType.MOVE_TO)),
-    JsonDecoder.isExactly('CreateEnemyAt').chain(() => JsonDecoder.constant(MessageType.CREATE_ENEMY_AT)),
-    JsonDecoder.isExactly('FightEnemy').chain(() => JsonDecoder.constant(MessageType.FIGHT_ENEMY)),
-    JsonDecoder.isExactly('EvadeEnemy').chain(() => JsonDecoder.constant(MessageType.EVADE_ENEMY)),
-    JsonDecoder.isExactly('EnemyEvaded').chain(() => JsonDecoder.constant(MessageType.ENEMY_EVADED)),
-    JsonDecoder.isExactly('EnemyDamage').chain(() => JsonDecoder.constant(MessageType.ENEMY_DAMAGE)),
-    JsonDecoder.isExactly('EnemyMove').chain(() => JsonDecoder.constant(MessageType.ENEMY_MOVE)),
-    JsonDecoder.isExactly('EnemySpawn').chain(() => JsonDecoder.constant(MessageType.ENEMY_SPAWN)),
-    JsonDecoder.isExactly('Continue').chain(() => JsonDecoder.constant(MessageType.CONTINUE)),
-    JsonDecoder.isExactly('Done').chain(() => JsonDecoder.constant(MessageType.DONE)),
-    JsonDecoder.isExactly('InvestigatorDamage').chain(() => JsonDecoder.constant(MessageType.INVESTIGATOR_DAMAGE)),
-    JsonDecoder.isExactly('InvestigatorAssignDamage').chain(() => JsonDecoder.constant(MessageType.INVESTIGATOR_ASSIGN_DAMAGE)),
-    JsonDecoder.isExactly('InvestigatorSpendClues').chain(() => JsonDecoder.constant(MessageType.INVESTIGATOR_SPEND_CLUES)),
-    JsonDecoder.isExactly('InvestigatorPlaceCluesOnLocation').chain(() => JsonDecoder.constant(MessageType.INVESTIGATOR_PLACE_CLUES_ON_LOCATION)),
-    JsonDecoder.isExactly('AssetDamage').chain(() => JsonDecoder.constant(MessageType.ASSET_DAMAGE)),
-    JsonDecoder.isExactly('EnemyAttack').chain(() => JsonDecoder.constant(MessageType.ENEMY_ATTACK)),
-    JsonDecoder.isExactly('EnemyEngageInvestigator').chain(() => JsonDecoder.constant(MessageType.ENEMY_ENGAGE_INVESTIGATOR)),
-    JsonDecoder.isExactly('UseAbility').chain(() => JsonDecoder.constant(MessageType.ACTIVATE_ABILITY)),
-    JsonDecoder.isExactly('ActivateCardAbilityActionWithDynamicCost').chain(() => JsonDecoder.constant(MessageType.ACTIVATE_DYNAMIC_ABILITY)),
-    JsonDecoder.isExactly('UseCardAbility').chain(() => JsonDecoder.constant(MessageType.USE_CARD_ABILITY)),
-    JsonDecoder.isExactly('SkillTestApplyResults').chain(() => JsonDecoder.constant(MessageType.SKILL_TEST_RESULTS)),
-    JsonDecoder.isExactly('Discard').chain(() => JsonDecoder.constant(MessageType.DISCARD)),
-    JsonDecoder.isExactly('DiscardCard').chain(() => JsonDecoder.constant(MessageType.DISCARD_CARD)),
-    JsonDecoder.isExactly('ChooseAndDiscardCard').chain(() => JsonDecoder.constant(MessageType.CHOOSE_AND_DISCARD_CARD)),
-    JsonDecoder.isExactly('AddToHandFromDeck').chain(() => JsonDecoder.constant(MessageType.ADD_TO_HAND_FROM_DECK)),
-    JsonDecoder.isExactly('BeginSkillTestAfterFast').chain(() => JsonDecoder.constant(MessageType.BEGIN_SKILL_TEST_AFTER_FAST)),
-    JsonDecoder.isExactly('BeginSkillTest').chain(() => JsonDecoder.constant(MessageType.BEGIN_SKILL_TEST)),
-    JsonDecoder.isExactly('Search').chain(() => JsonDecoder.constant(MessageType.SEARCH)),
-    JsonDecoder.isExactly('SearchFound').chain(() => JsonDecoder.constant(MessageType.SEARCH_FOUND)),
-    JsonDecoder.isExactly('AddFocusedToHand').chain(() => JsonDecoder.constant(MessageType.ADD_FOCUSED_TO_HAND)),
-    JsonDecoder.isExactly('AddFocusedToTopOfDeck').chain(() => JsonDecoder.constant(MessageType.ADD_FOCUSED_TO_TOP_OF_DECK)),
-    JsonDecoder.isExactly('EngageEnemy').chain(() => JsonDecoder.constant(MessageType.ENGAGE_ENEMY)),
-    JsonDecoder.isExactly('AttachTreachery').chain(() => JsonDecoder.constant(MessageType.ATTACH_TREACHERY)),
-    JsonDecoder.isExactly('InvestigatorDrawEncounterCard').chain(() => JsonDecoder.constant(MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD)),
-    JsonDecoder.isExactly('Surge').chain(() => JsonDecoder.constant(MessageType.SURGE)),
-    JsonDecoder.isExactly('FoundAndDrewEncounterCard').chain(() => JsonDecoder.constant(MessageType.FOUND_AND_DREW_ENCOUNTER_CARD)),
-    JsonDecoder.isExactly('FoundEncounterCardFrom').chain(() => JsonDecoder.constant(MessageType.FOUND_ENCOUNTER_CARD_FROM)),
-    JsonDecoder.isExactly('FoundEnemyInVoid').chain(() => JsonDecoder.constant(MessageType.FOUND_ENEMY_IN_VOID)),
-    JsonDecoder.isExactly('PlaceDoom').chain(() => JsonDecoder.constant(MessageType.PLACE_DOOM)),
-    JsonDecoder.isExactly('Ready').chain(() => JsonDecoder.constant(MessageType.READY)),
-    JsonDecoder.isExactly('Read').chain(() => JsonDecoder.constant(MessageType.READ)),
-    JsonDecoder.isExactly('AddUses').chain(() => JsonDecoder.constant(MessageType.ADD_USES)),
-  ],
-  'MessageType',
+export interface Target {
+  tag: string;
+  contents?: string;
+}
+
+export const targetDecoder = JsonDecoder.object<Target>(
+  {
+    tag: JsonDecoder.string,
+    contents: JsonDecoder.optional(JsonDecoder.string),
+  },
+  'Target',
 );
 
-export const messageDecoder = JsonDecoder.object<Message>(
+export interface TargetLabel {
+  tag: 'TargetLabel';
+  target: Target;
+}
+
+export interface EndTurnButton {
+  tag: 'EndTurnButton';
+}
+
+
+export type Message = Label | TargetLabel | EndTurnButton;
+
+export const labelDecoder = JsonDecoder.object<Label>(
   {
-    tag: messageTypeDecoder,
-    label: JsonDecoder.constant(''),
-    contents: JsonDecoder.succeed,
-  },
+    tag: JsonDecoder.isExactly('Label'),
+    label: JsonDecoder.string
+  }, 'Label')
+
+export const targetLabelDecoder = JsonDecoder.object<TargetLabel>(
+  {
+    tag: JsonDecoder.isExactly('TargetLabel'),
+    target: targetDecoder
+  }, 'TargetLabel')
+
+export const endTurnButtonDecoder = JsonDecoder.object<EndTurnButton>(
+  {
+    tag: JsonDecoder.isExactly('EndTurnButton'),
+  }, 'EndTurnButton')
+
+
+export const messageDecoder = JsonDecoder.oneOf<Message>(
+  [
+    labelDecoder,
+    targetLabelDecoder,
+    endTurnButtonDecoder,
+    // JsonDecoder.isExactly('TooltipLabel').chain(() => JsonDecoder.constant(MessageType.TOOLTIP_LABEL)),
+    // JsonDecoder.isExactly('LabelGroup').chain(() => JsonDecoder.constant(MessageType.LABEL_GROUP)),
+    // JsonDecoder.isExactly('CardLabel').chain(() => JsonDecoder.constant(MessageType.CARD_LABEL)),
+    // JsonDecoder.isExactly('TargetLabel').chain(() => JsonDecoder.constant(MessageType.TARGET_LABEL)),
+    // JsonDecoder.isExactly('SkillLabel').chain(() => JsonDecoder.constant(MessageType.SKILL_LABEL)),
+    // JsonDecoder.isExactly('EvadeLabel').chain(() => JsonDecoder.constant(MessageType.EVADE_LABEL)),
+    // JsonDecoder.isExactly('FightLabel').chain(() => JsonDecoder.constant(MessageType.FIGHT_LABEL)),
+    // JsonDecoder.isExactly('AbilityLabel').chain(() => JsonDecoder.constant(MessageType.ABILITY_LABEL)),
+    // JsonDecoder.isExactly('ComponentLabel').chain(() => JsonDecoder.constant(MessageType.COMPONENT_LABEL)),
+    // JsonDecoder.isExactly('EndTurnButton').chain(() => JsonDecoder.constant(MessageType.END_TURN_BUTTON)),
+    // JsonDecoder.isExactly('StartSkillTestButton').chain(() => JsonDecoder.constant(MessageType.START_SKILL_TEST_BUTTON)),
+    // JsonDecoder.isExactly('TokenGroupChoice').chain(() => JsonDecoder.constant(MessageType.TOKEN_GROUP_CHOICE)),
+    // JsonDecoder.isExactly('Done').chain(() => JsonDecoder.constant(MessageType.DONE)),
+  ],
   'Message',
 );

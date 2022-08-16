@@ -4,9 +4,24 @@ import { Source, sourceDecoder } from '@/arkham/types/Source';
 
 export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseDynamicCardAmounts | ChooseAmounts | QuestionLabel | Read;
 
+export enum QuestionType {
+  CHOOSE_ONE = 'ChooseOne',
+  CHOOSE_UP_TO_N = 'ChooseUpToN',
+  CHOOSE_SOME = 'ChooseSome',
+  CHOOSE_N = 'ChooseN',
+  CHOOSE_ONE_AT_A_TIME = 'ChooseOneAtATime',
+  CHOOSE_ONE_FROM_SOURCE = 'ChooseOneFromSource',
+  CHOOSE_UPGRADE_DECK = 'ChooseUpgradeDeck',
+  CHOOSE_PAYMENT_AMOUNTS = 'ChoosePaymentAmounts',
+  CHOOSE_DYNAMIC_CARD_AMOUNTS = 'ChooseDynamicCardAmounts',
+  CHOOSE_AMOUNTS = 'ChooseAmounts',
+  QUESTION_LABEL = 'QuestionLabel',
+  READ = 'Read',
+}
+
 export interface ChooseOne {
   tag: 'ChooseOne';
-  contents: Message[];
+  choices: Message[];
 }
 
 export interface QuestionLabel {
@@ -21,7 +36,8 @@ export interface FlavorText {
 
 export interface Read {
   tag: 'Read';
-  contents: [FlavorText, [string, Message][]];
+  flavorText: FlavorText;
+  readChoices: Message[]
 }
 
 export interface ChooseN {
@@ -162,18 +178,8 @@ export const flavorTextDecoder: JsonDecoder.Decoder<FlavorText> = JsonDecoder.ob
 export const readDecoder: JsonDecoder.Decoder<Read> = JsonDecoder.object<Read>(
   {
     tag: JsonDecoder.isExactly('Read'),
-    contents: JsonDecoder.tuple(
-      [ flavorTextDecoder,
-        JsonDecoder.array(
-          JsonDecoder.tuple(
-            [JsonDecoder.string, messageDecoder],
-            '[string, message]'
-          ),
-          '[string, message][]'
-        )
-      ],
-      '[FlavorText, [string, message][]'
-    )
+    flavorText: flavorTextDecoder,
+    readChoices: JsonDecoder.array(messageDecoder, 'Message[]')
   },
   'Read',
 );
@@ -181,7 +187,7 @@ export const readDecoder: JsonDecoder.Decoder<Read> = JsonDecoder.object<Read>(
 export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
   {
     tag: JsonDecoder.isExactly('ChooseOne'),
-    contents: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
+    choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
   'ChooseOne',
 );

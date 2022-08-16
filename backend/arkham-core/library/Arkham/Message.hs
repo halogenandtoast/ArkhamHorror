@@ -84,7 +84,7 @@ resolve msg = [When msg, msg, After msg]
 story :: [InvestigatorId] -> FlavorText -> Message
 story iids flavor = AskMap
   (mapFromList
-    [ (iid, Read flavor [("Continue", Run [])]) | iid <- iids ]
+    [ (iid, Read flavor [Label "Continue" []]) | iid <- iids ]
   )
 
 -- TODO: Better handle in play and out of play

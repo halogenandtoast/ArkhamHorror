@@ -4,6 +4,7 @@ import { Game } from '@/arkham/types/Game';
 import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
+import { QuestionType } from '@/arkham/types/Question';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
@@ -42,9 +43,10 @@ const topOfDeck = computed(() => {
 })
 
 const playTopOfDeckAction = computed(() => {
-  return choices.value.findIndex((c) => {
-    return c.tag === MessageType.PLAY_CARD && c.contents[1] === props.player.deck[0].id
-  })
+  return -1
+  // return choices.value.findIndex((c) => {
+    //return c.tag === MessageType.PLAY_CARD && c.contents[1] === props.player.deck[0].id
+  //})
 })
 
 const viewingDiscard = ref(false)
@@ -56,7 +58,13 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.investigator
 const drawCardsAction = computed(() => {
   return choices
     .value
-    .findIndex((c) => c.tag === MessageType.DRAW_CARDS && c.contents[0] === id.value);
+    .findIndex((c) => {
+      if (c.tag === QuestionType.COMPONENT_LABEL) {
+        console.log(c)
+        return (c.contents[0].tag == "InvestigatorDeckComponent")
+      }
+      return false
+    });
 })
 
 const noCards = computed<ArkhamCard.Card[]>(() => [])

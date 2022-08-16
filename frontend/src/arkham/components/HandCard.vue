@@ -16,109 +16,28 @@ const props = defineProps<{
 const id = computed(() => props.card.contents.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-function canUncommit(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.UNCOMMIT_CARD:
-      return c.contents[1] === id.value
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canUncommit(c1))
-    default:
-      return false
-  }
-}
-const uncommitCardAction = computed(() => choices.value.findIndex(canUncommit))
-
-function canPlay(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.PLAY_CARD:
-      return c.contents[1] === id.value
-    case MessageType.PLAY_CARD_AS:
-      return c.contents[1] === id.value
-    case MessageType.PLAY_DYNAMIC_CARD:
-      return c.contents[1] === id.value
-    case MessageType.PLAY_FAST_EVENT:
-      return c.contents[1] === id.value
-    case MessageType.LEGACY_PLAY_CARD:
-      return c.contents[1] === id.value
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canPlay(c1))
-    default:
-      return false
-  }
-}
-
-function canReveal(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.REVEAL_CARD:
-      return c.contents === id.value
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canReveal(c1))
-    default:
-      return false
-  }
-}
-
-function canDiscard(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.DISCARD_CARD:
-      return c.contents[1] === id.value;
-    case MessageType.TARGET_LABEL:
-      return c.contents[0].contents === id.value
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canDiscard(c1));
-    default:
-      return false;
-  }
-}
-
-function canCommit(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.COMMIT_CARD:
-      return c.contents[1] === id.value;
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canCommit(c1));
-    default:
-      return false;
-  }
-}
-
-const discardCardAction = computed(() => choices.value.findIndex(canDiscard))
-const playCardAction = computed(() => choices.value.findIndex(canPlay))
-const revealCardAction = computed(() => choices.value.findIndex(canReveal))
-const commitCardAction = computed(() => choices.value.findIndex(canCommit))
-
 const cardAction = computed(() => {
-  if (revealCardAction.value !== -1) {
-    return revealCardAction.value
-  }
+  return choices.value.findIndex((choice) => {
+    if (choice.tag === MessageType.TARGET_LABEL) {
+      return choice.target.tag === "CardIdTarget" && choice.target.contents === id.value
+    }
 
-  if (playCardAction.value !== -1) {
-    return playCardAction.value
-  }
-
-  if (uncommitCardAction.value !== -1) {
-    return uncommitCardAction.value
-  }
-
-  if (discardCardAction.value !== -1) {
-    return discardCardAction.value
-  }
-
-  return commitCardAction.value
+    return false
+  })
 })
 
 function isActivate(v: Message) {
-  if (v) {
-    if (v.tag !== 'UseAbility') {
-      return false
-    }
-
-    const { contents } = v.contents[1].source;
-
-    if (contents === id.value) {
-      return true
-    }
-  }
+  // if (v) {
+  //   if (v.tag !== 'AbilityLabel') {
+  //     return false
+  //   }
+  //
+  //   const { contents } = v.contents[1].source;
+  //
+  //   if (contents === id.value) {
+  //     return true
+  //   }
+  // }
 
   return false
 }
@@ -140,7 +59,7 @@ const abilities = computed(() => {
 const classObject = computed(() => {
   return {
     'card--can-interact': cardAction.value !== -1,
-    'card--committed': uncommitCardAction.value !== -1,
+    // 'card--committed': uncommitCardAction.value !== -1,
   }
 })
 

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type { Question } from '@/arkham/types/Question';
+import type { Read } from '@/arkham/types/Question';
 
 export interface Props {
-  question: Question
+  question: Read
 }
 
 const emit = defineEmits(['choose'])
@@ -14,11 +14,11 @@ defineProps<Props>()
 </script>
 <template>
   <div class="intro-text">
-    <button v-for="(readButton, readIndex) in question.contents[1]" @click="choose(readIndex)" :key="readIndex">{{readButton[0]}}</button>
+    <button v-for="(readButton, readIndex) in question.readChoices" @click="choose(readIndex)" :key="readIndex">{{readButton.label}}</button>
     <div class="entry">
-      <h1 v-if="question.contents[0].title">{{question.contents[0].title}}</h1>
+      <h1 v-if="question.flavorText.title">{{question.flavorText.title}}</h1>
       <p
-        v-for="(paragraph, index) in question.contents[0].body"
+        v-for="(paragraph, index) in question.flavorText.body"
         :key="index"
       >{{paragraph}}</p>
     </div>

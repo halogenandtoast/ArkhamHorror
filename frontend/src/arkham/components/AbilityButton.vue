@@ -2,15 +2,15 @@
 import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { Cost } from '@/arkham/types/Cost';
-import type { Message } from '@/arkham/types/Message';
+import type { Message, AbilityLabel } from '@/arkham/types/Message';
 
 export interface Props {
- ability: Message
+ ability: AbilityLabel
 }
 
 const props = defineProps<Props>()
 
-const ability: ComputedRef<Message> = computed(() => props.ability.tag == 'Run' ? props.ability.contents[0] : props.ability)
+const ability: ComputedRef<AbilityLabel> = computed(() => props.ability.ability)
 
 const isAction = (action: string) => {
   if (ability.value.tag === "EvadeLabel") {
@@ -19,11 +19,12 @@ const isAction = (action: string) => {
   if (ability.value.tag === "FightEnemy") {
     return action === "Fight"
   }
-  const {tag} = ability.value.contents[1].type
+
+  const {tag} = ability.value.type
   if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
     return false
   }
-  const maction = ability.value.contents[1].type.contents[0]
+  const maction = ability.value.type.action
   return maction === action
 }
 
@@ -33,20 +34,21 @@ const isEvade = computed(() => isAction("Evade"))
 const isEngage = computed(() => isAction("Engage"))
 const display = computed(() => !isAction("Move"))
 const isSingleActionAbility = computed(() => {
-  if (ability.value.tag !== "AbilityLabel") {
-    return false
-  }
-  const {tag} = ability.value.contents[1].type
-  if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
-    return false
-  }
-  const costIndex = tag === "ActionAbility" ? 1 : 2
-  const { contents } = ability.value.contents[1].type.contents[costIndex]
-  if (typeof contents?.some == 'function') {
-    return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 1)
-  } else {
-    return contents === 1
-  }
+  return false
+  // if (ability.value.tag !== "AbilityLabel") {
+  //   return false
+  // }
+  // const {tag} = ability.value.contents[1].type
+  // if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
+  //   return false
+  // }
+  // const costIndex = tag === "ActionAbility" ? 1 : 2
+  // const { contents } = ability.value.contents[1].type.contents[costIndex]
+  // if (typeof contents?.some == 'function') {
+  //   return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 1)
+  // } else {
+  //   return contents === 1
+  // }
 })
 
 const tooltip = computed(() => {
@@ -71,43 +73,45 @@ const tooltip = computed(() => {
 })
 
 const isDoubleActionAbility = computed(() => {
-  if (ability.value.tag !== "AbilityLabel") {
-    return false
-  }
-  const {tag} = ability.value.contents[1].type
-  if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
-    return false
-  }
-  const costIndex = tag === "ActionAbility" ? 1 : 2
-  const { contents } = ability.value.contents[1].type.contents[costIndex]
-  if (typeof contents?.some == 'function') {
-    return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 2)
-  } else {
-    return contents === 2
-  }
+  return false
+  // if (ability.value.tag !== "AbilityLabel") {
+  //   return false
+  // }
+  // const {tag} = ability.value.contents[1].type
+  // if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
+  //   return false
+  // }
+  // const costIndex = tag === "ActionAbility" ? 1 : 2
+  // const { contents } = ability.value.contents[1].type.contents[costIndex]
+  // if (typeof contents?.some == 'function') {
+  //   return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 2)
+  // } else {
+  //   return contents === 2
+  // }
 })
 
 const isTripleActionAbility = computed(() => {
-  if (ability.value.tag !== "AbilityLabel") {
-    return false
-  }
-  const {tag} = ability.value.contents[1].type
-  if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
-    return false
-  }
-  const costIndex = tag === "ActionAbility" ? 1 : 2
-  const { contents } = ability.value.contents[1].type.contents[costIndex]
-  if (typeof contents?.some == 'function') {
-    return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 3)
-  } else {
-    return contents === 3
-  }
+  return false
+  // if (ability.value.tag !== "AbilityLabel") {
+  //   return false
+  // }
+  // const {tag} = ability.value.contents[1].type
+  // if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
+  //   return false
+  // }
+  // const costIndex = tag === "ActionAbility" ? 1 : 2
+  // const { contents } = ability.value.contents[1].type.contents[costIndex]
+  // if (typeof contents?.some == 'function') {
+  //   return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 3)
+  // } else {
+  //   return contents === 3
+  // }
 })
 
-const isObjective = computed(() => ability.value.tag === "AbilityLabel" && ability.value.contents[1].type.tag === "Objective")
-const isFastActionAbility = computed(() => ability.value.tag === "AbilityLabel" && ability.value.contents[1].type.tag === "FastAbility")
-const isReactionAbility = computed(() => ability.value.tag === "AbilityLabel" && (ability.value.contents[1].type.tag === "ReactionAbility" || ability.value.contents[1].type.tag === "LegacyReactionAbility"))
-const isForcedAbility = computed(() => ability.value.tag === "AbilityLabel" && ability.value.contents[1].type.tag === "ForcedAbility")
+const isObjective = computed(() => ability.value.tag === "AbilityLabel" && ability.value.type.tag === "Objective")
+const isFastActionAbility = computed(() => ability.value.tag === "AbilityLabel" && ability.value.type.tag === "FastAbility")
+const isReactionAbility = computed(() => ability.value.tag === "AbilityLabel" && (ability.value.type.tag === "ReactionAbility" || ability.value.type.tag === "LegacyReactionAbility"))
+const isForcedAbility = computed(() => ability.value.tag === "AbilityLabel" && ability.value.type.tag === "ForcedAbility")
 
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 
@@ -132,12 +136,11 @@ const abilityLabel = computed(() => {
     return ""
   }
 
-  const label = ability.value.tag === 'Run'
-    ? ability.value.contents[0].contents[1].type.contents[0]
-    : ability.value.contents[1].type.contents[0]
-
-  if (label) {
-    return typeof label === "string" ? label : label.contents
+  if (ability.value.type.tag === "ActionAbility") {
+    const { action } = ability.value.type
+    if (action) {
+      return action
+    }
   }
 
   return ""

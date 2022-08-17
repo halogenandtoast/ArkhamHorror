@@ -1,3 +1,5 @@
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE NoFieldSelectors #-}
 module Arkham.Ability.Type where
 
 import Arkham.Prelude
@@ -10,16 +12,16 @@ import Arkham.Modifier
 import Arkham.SkillType
 
 data AbilityType
-  = FastAbility Cost
-  | ReactionAbility WindowMatcher Cost
-  | ActionAbility (Maybe Action) Cost
-  | ActionAbilityWithSkill (Maybe Action) SkillType Cost
-  | ActionAbilityWithBefore (Maybe Action) (Maybe Action) Cost -- Action is first type, before is second
-  | SilentForcedAbility WindowMatcher
-  | ForcedAbility WindowMatcher
-  | ForcedAbilityWithCost WindowMatcher Cost
-  | AbilityEffect Cost
-  | Objective AbilityType
+  = FastAbility { cost :: Cost }
+  | ReactionAbility { window :: WindowMatcher, cost :: Cost }
+  | ActionAbility { action :: (Maybe Action), cost :: Cost }
+  | ActionAbilityWithSkill { action :: (Maybe Action), skillType :: SkillType, cost ::  Cost }
+  | ActionAbilityWithBefore { action :: (Maybe Action), actionBefore :: (Maybe Action), cost :: Cost } -- Action is first type, before is second
+  | SilentForcedAbility { window :: WindowMatcher }
+  | ForcedAbility { window :: WindowMatcher }
+  | ForcedAbilityWithCost { window :: WindowMatcher, cost :: Cost }
+  | AbilityEffect { cost :: Cost }
+  | Objective { abilityType :: AbilityType }
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

@@ -6,7 +6,7 @@ module Arkham.Ability (
 import Arkham.Prelude
 
 import Arkham.Ability.Limit as X
-import Arkham.Ability.Type as X
+import Arkham.Ability.Type as X hiding (abilityType)
 import Arkham.Json
 import Arkham.Action (Action)
 import Arkham.Card.EncounterCard

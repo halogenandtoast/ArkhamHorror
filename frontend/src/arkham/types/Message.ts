@@ -1,23 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
-import { Source, sourceDecoder } from '@/arkham/types/Source';
 import { Ability, abilityDecoder } from '@/arkham/types/Ability';
-
-// data UI msg
-//   = Label Text [msg]
-//   | TooltipLabel Text Tooltip [msg]
-//   | LabelGroup Text [msg]
-//   | CardLabel CardCode [msg]
-//   | TargetLabel Target [msg]
-//   | SkillLabel SkillType [msg]
-//   | EvadeLabel EnemyId [msg]
-//   | FightLabel EnemyId [msg]
-//   | AbilityLabel InvestigatorId Ability [Window] [msg]
-//   | ComponentLabel Component [msg]
-//   | EndTurnButton InvestigatorId [msg]
-//   | StartSkillTestButton InvestigatorId
-//   | SkillTestApplyResultsButton
-//   | TokenGroupChoice Source InvestigatorId ChaosBagStep
-//   | Done Text
 
 export enum MessageType {
   LABEL = 'Label',

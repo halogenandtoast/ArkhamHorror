@@ -32,69 +32,77 @@ const id = computed(() => props.location.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 const targetAction = computed(() => {
-  return choices
-    .value
-    .findIndex((c) => c.tag === MessageType.TARGET_LABEL
-      && c.contents[0].contents === id.value);
+  return -1
+  // return choices
+  //   .value
+  //   .findIndex((c) => c.tag === MessageType.TARGET_LABEL
+  //     && c.contents[0].contents === id.value);
 })
 
 const attachTreacheryToLocationAction = computed(() => {
-  return choices
-    .value
-    .findIndex((c) => c.tag === MessageType.ATTACH_TREACHERY
-      && c.contents[1].contents === id.value);
+  return -1
+  // return choices
+  //   .value
+  //   .findIndex((c) => c.tag === MessageType.ATTACH_TREACHERY
+  //     && c.contents[1].contents === id.value);
 })
 
 const enemySpawnAction = computed(() => {
-  return choices
-    .value
-    .findIndex((c) => c.tag === MessageType.ENEMY_SPAWN
-      && c.contents[1] === id.value);
+  return -1
+  // return choices
+  //   .value
+  //   .findIndex((c) => c.tag === MessageType.ENEMY_SPAWN
+  //     && c.contents[1] === id.value);
 })
 
 const moveToAction = computed(() => {
-  return choices
-    .value
-    .findIndex((c) => c.tag === MessageType.MOVE_TO && c.contents[1] === id.value);
+  return -1
+  // return choices
+  //   .value
+  //   .findIndex((c) => c.tag === MessageType.MOVE_TO && c.contents[1] === id.value);
 })
 
 const moveUntilAction = computed(() => {
-  return choices
-    .value
-    .findIndex((c) => c.tag === MessageType.MOVE_UNTIL && c.contents[0] === id.value);
+  return -1
+  // return choices
+  //   .value
+  //   .findIndex((c) => c.tag === MessageType.MOVE_UNTIL && c.contents[0] === id.value);
 })
 
 const createEnemyAtAction = computed(() => {
-  return choices
-    .value
-    .findIndex((c) => c.tag === MessageType.CREATE_ENEMY_AT && c.contents[1] === id.value);
+  return -1
+  // return choices
+  //   .value
+  //   .findIndex((c) => c.tag === MessageType.CREATE_ENEMY_AT && c.contents[1] === id.value);
 })
 
 const moveAction = computed(() => {
-  const isRunMove = choices.value.findIndex((c) => c.tag === MessageType.RUN
-    && c.contents[0]
-    && c.contents[0].tag === MessageType.MOVE
-    && c.contents[0].contents[1] === id.value);
+  return -1
+  // const isRunMove = choices.value.findIndex((c) => c.tag === MessageType.RUN
+  //   && c.contents[0]
+  //   && c.contents[0].tag === MessageType.MOVE
+  //   && c.contents[0].contents[1] === id.value);
 
-  if (isRunMove !== -1) {
-    return isRunMove;
-  }
+  // if (isRunMove !== -1) {
+  //   return isRunMove;
+  // }
 
-  return choices
-    .value
-    .findIndex((c) => c.tag === MessageType.ACTIVATE_ABILITY && c.contents[1].source.contents === id.value && c.contents[1].type.tag === "ActionAbility" && c.contents[1].type.contents[0] === "Move");
+  // return choices
+  //   .value
+  //   .findIndex((c) => c.tag === MessageType.ACTIVATE_ABILITY && c.contents[1].source.contents === id.value && c.contents[1].type.tag === "ActionAbility" && c.contents[1].type.contents[0] === "Move");
 })
 
 function findForcedAbility(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.ACTIVATE_ABILITY:
-      return c.contents[1].source.contents === id.value
-        && (c.contents[1].type.tag === 'ForcedAbility')
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => findForcedAbility(c1));
-    default:
-      return false;
-  }
+  return false
+  // switch (c.tag) {
+  //   case MessageType.ACTIVATE_ABILITY:
+  //     return c.contents[1].source.contents === id.value
+  //       && (c.contents[1].type.tag === 'ForcedAbility')
+  //   case MessageType.RUN:
+  //     return c.contents.some((c1: Message) => findForcedAbility(c1));
+  //   default:
+  //     return false;
+  // }
 }
 
 const forcedAbility = computed(() => choices.value.findIndex(findForcedAbility));
@@ -132,45 +140,41 @@ const cardAction = computed(() => {
 })
 
 function isAbility(v: Message) {
-  if (v.tag !== 'AbilityLabel') {
-    return false
-  }
-
-  const { tag, contents } = v.contents[1].source;
-
-  if (tag === 'LocationSource' && contents === id.value) {
-    return true
-  }
-
-  if (tag === 'ProxySource' && contents[0].tag === 'LocationSource' && contents[0].contents === id.value) {
-    return true
-  }
+  // if (v.tag !== 'AbilityLabel') {
+  //   return false
+  // }
+  //
+  // const { tag, contents } = v.contents[1].source;
+  //
+  // if (tag === 'LocationSource' && contents === id.value) {
+  //   return true
+  // }
+  //
+  // if (tag === 'ProxySource' && contents[0].tag === 'LocationSource' && contents[0].contents === id.value) {
+  //   return true
+  // }
 
   return false
 }
 
 const abilities = computed(() => {
-  return choices
-    .value
-    .reduce<number[]>((acc, v, i) => {
-      if ((v.tag === 'AbilityLabel' || v.tag === 'ActivateCardAbilityActionWithDynamicCost') && v.contents[1].source.tag === 'LocationSource' && v.contents[1].source.contents === id.value) {
-        return [i, ...acc];
-      }
+   return choices
+     .value
+     .reduce<number[]>((acc, v, i) => {
+       if (v.tag === 'AbilityLabel' && v.ability.source.tag === 'LocationSource' && v.ability.source.contents === id.value) {
+         return [i, ...acc];
+       }
 
-      if (v.tag === 'AbilityLabel' && v.contents[1].source.tag === 'ProxySource' && v.contents[1].source.contents[0].tag === 'LocationSource' && v.contents[1].source.contents[0].contents === id.value) {
-        return [...acc, i];
-      }
+       if (v.tag === 'AbilityLabel' && v.ability.source.tag === 'ProxySource' && v.ability.source.contents[0].tag === 'LocationSource' && v.ability.source.contents[0].contents === id.value) {
+         return [...acc, i];
+       }
 
-      if (v.tag === 'AbilityLabel' && v.contents[1].source.tag === 'ProxySource' && v.contents[1].source.contents[0].tag === 'LocationSource' && v.contents[1].source.contents[0].contents === id.value) {
-        return [...acc, i];
-      }
+       if (v.tag === 'AbilityLabel' && v.ability.source.tag === 'ProxySource' && v.ability.source.contents[0].tag === 'LocationSource' && v.ability.source.contents[0].contents === id.value) {
+         return [...acc, i];
+       }
 
-      if (v.tag === 'Run' && v.contents[0] && isAbility(v.contents[0])) {
-        return [...acc, i];
-      }
-
-      return acc;
-    }, []);
+       return acc;
+     }, []);
 })
 
 const enemies = computed(() => {

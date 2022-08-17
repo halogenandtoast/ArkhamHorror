@@ -1,62 +1,18 @@
-export enum ArkhamActionTypes {
-  DRAW_CARD = 'DrawCardAction',
-  TAKE_RESOURCE = 'TakeResourceAction',
-  PLAY_CARD = 'InitiatePlayCard',
-  PLAY_DYNAMIC_CARD = 'InitiatePlayDynamicCard',
-  // Activate a card ability
-  MOVE = 'MoveAction',
-  INVESTIGATE = 'InvestigateAction',
-  FIGHT_ENEMY = 'FightEnemyAction',
-  ENGAGE_ENEMY = 'EngageEnemyAction',
-  EVADE_ENEMY = 'EvadeEnemyAction',
-}
+import { JsonDecoder } from 'ts.data.json';
 
-export interface ArkhamInvestigateAction {
-  tag: ArkhamActionTypes.INVESTIGATE;
-  contents: string;
-}
+export type Action = 'Ability' | 'Draw' | 'Engage' | 'Evade' | 'Fight' | 'Investigate' | 'Move' | 'Parley' | 'Play' | 'Resign' | 'Resource' | 'Explore'
 
-export interface ArkhamTakeResourceAction {
-  tag: ArkhamActionTypes.TAKE_RESOURCE;
-  contents: [];
-}
-
-export interface ArkhamDrawCardAction {
-  tag: ArkhamActionTypes.DRAW_CARD;
-  contents: [];
-}
-
-export interface ArkhamPlayCardAction {
-  tag: ArkhamActionTypes.PLAY_CARD;
-  contents: number;
-}
-
-export interface ArkhamMoveAction {
-  tag: ArkhamActionTypes.MOVE;
-  contents: string;
-}
-
-export interface ArkhamFightEnemyAction {
-  tag: ArkhamActionTypes.FIGHT_ENEMY;
-  contents: string;
-}
-
-export interface ArkhamEvadeEnemyAction {
-  tag: ArkhamActionTypes.EVADE_ENEMY;
-  contents: string;
-}
-
-export interface ArkhamEngageEnemyAction {
-  tag: ArkhamActionTypes.ENGAGE_ENEMY;
-  contents: string;
-}
-
-export type ArkhamAction
-  = ArkhamInvestigateAction
-  | ArkhamTakeResourceAction
-  | ArkhamDrawCardAction
-  | ArkhamPlayCardAction
-  | ArkhamMoveAction
-  | ArkhamFightEnemyAction
-  | ArkhamEvadeEnemyAction
-  | ArkhamEngageEnemyAction;
+export const actionDecoder = JsonDecoder.oneOf<Action>([
+  JsonDecoder.isExactly('Ability'),
+  JsonDecoder.isExactly('Draw'),
+  JsonDecoder.isExactly('Engage'),
+  JsonDecoder.isExactly('Evade'),
+  JsonDecoder.isExactly('Fight'),
+  JsonDecoder.isExactly('Investigate'),
+  JsonDecoder.isExactly('Move'),
+  JsonDecoder.isExactly('Parley'),
+  JsonDecoder.isExactly('Play'),
+  JsonDecoder.isExactly('Resign'),
+  JsonDecoder.isExactly('Resource'),
+  JsonDecoder.isExactly('Explore')
+], 'Action')

@@ -1,4 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
+import { Source, sourceDecoder } from '@/arkham/types/Source';
+import { Ability, abilityDecoder } from '@/arkham/types/Ability';
 
 // data UI msg
 //   = Label Text [msg]
@@ -54,6 +56,14 @@ export type Component = InvestigatorComponent | InvestigatorDeckComponent | Asse
 
 export type TokenType = 'ResourceToken' | 'ClueToken' | 'DamageToken' | 'HorrorToken' | 'DoomToken';
 
+export const tokenTypeDecoder = JsonDecoder.oneOf<TokenType>(
+  [ JsonDecoder.isExactly('ResourceToken')
+  , JsonDecoder.isExactly('ClueToken')
+  , JsonDecoder.isExactly('DamageToken')
+  , JsonDecoder.isExactly('HorrorToken')
+  , JsonDecoder.isExactly('DoomToken')
+  ], 'TokenType');
+
 export interface InvestigatorComponent {
   investigatorId: string;
   tokenType: TokenType;
@@ -68,6 +78,24 @@ export interface InvestigatorDeckComponent {
   investigatorId: string;
 }
 
+export const investigatorComponentDecoder = JsonDecoder.object<InvestigatorComponent>(
+  {
+    investigatorId: JsonDecoder.string,
+    tokenType: tokenTypeDecoder,
+  }, 'InvestigatorComponent');
+
+export const assetComponentDecoder = JsonDecoder.object<AssetComponent>(
+  {
+    assetId: JsonDecoder.string,
+    tokenType: tokenTypeDecoder,
+  }, 'InvestigatorComponent');
+
+export const investigatorDeckComponentDecoder = JsonDecoder.object<InvestigatorDeckComponent>(
+  {
+    investigatorId: JsonDecoder.string,
+  }, 'InvestigatorDeckComponent');
+
+
 export const componentDecoder = JsonDecoder.oneOf<Component>(
   [
     investigatorComponentDecoder,
@@ -80,7 +108,20 @@ export interface ComponentLabel {
   component: Component;
 }
 
-export type Message = Label | TargetLabel | EndTurnButton;
+export interface AbilityLabel {
+  tag: 'AbilityLabel';
+  investigatorId: string;
+  ability: Ability
+}
+
+export const abilityLabelDecoder = JsonDecoder.object<AbilityLabel>(
+  {
+    tag: JsonDecoder.isExactly('AbilityLabel'),
+    investigatorId: JsonDecoder.string,
+    ability: abilityDecoder,
+  }, 'Ability')
+
+export type Message = Label | TargetLabel | ComponentLabel | AbilityLabel | EndTurnButton;
 
 export const labelDecoder = JsonDecoder.object<Label>(
   {
@@ -110,20 +151,9 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
   [
     labelDecoder,
     targetLabelDecoder,
+    componentLabelDecoder,
+    abilityLabelDecoder,
     endTurnButtonDecoder,
-    // JsonDecoder.isExactly('TooltipLabel').chain(() => JsonDecoder.constant(MessageType.TOOLTIP_LABEL)),
-    // JsonDecoder.isExactly('LabelGroup').chain(() => JsonDecoder.constant(MessageType.LABEL_GROUP)),
-    // JsonDecoder.isExactly('CardLabel').chain(() => JsonDecoder.constant(MessageType.CARD_LABEL)),
-    // JsonDecoder.isExactly('TargetLabel').chain(() => JsonDecoder.constant(MessageType.TARGET_LABEL)),
-    // JsonDecoder.isExactly('SkillLabel').chain(() => JsonDecoder.constant(MessageType.SKILL_LABEL)),
-    // JsonDecoder.isExactly('EvadeLabel').chain(() => JsonDecoder.constant(MessageType.EVADE_LABEL)),
-    // JsonDecoder.isExactly('FightLabel').chain(() => JsonDecoder.constant(MessageType.FIGHT_LABEL)),
-    // JsonDecoder.isExactly('AbilityLabel').chain(() => JsonDecoder.constant(MessageType.ABILITY_LABEL)),
-    // JsonDecoder.isExactly('ComponentLabel').chain(() => JsonDecoder.constant(MessageType.COMPONENT_LABEL)),
-    // JsonDecoder.isExactly('EndTurnButton').chain(() => JsonDecoder.constant(MessageType.END_TURN_BUTTON)),
-    // JsonDecoder.isExactly('StartSkillTestButton').chain(() => JsonDecoder.constant(MessageType.START_SKILL_TEST_BUTTON)),
-    // JsonDecoder.isExactly('TokenGroupChoice').chain(() => JsonDecoder.constant(MessageType.TOKEN_GROUP_CHOICE)),
-    // JsonDecoder.isExactly('Done').chain(() => JsonDecoder.constant(MessageType.DONE)),
   ],
   'Message',
 );

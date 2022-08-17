@@ -41,31 +41,32 @@ const viewingUnder = ref(false)
 const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
 
 function canInteract(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.ADVANCE_ACT:
-      return true;
-    case MessageType.NEXT_ACT:
-      return true;
-    case MessageType.ATTACH_TREACHERY:
-      return c.contents[1].contents == id.value;
-    case MessageType.ACTIVATE_ABILITY:
-      return c.contents[1].source.contents === id.value
-        && (c.contents[1].type.tag === 'ReactionAbility')
-    case MessageType.TARGET_LABEL:
-      return c.contents[0].tag === "ActTarget" && c.contents[0].contents === id.value
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canInteract(c1));
-    default:
-      return false;
-  }
+  return false
+  // switch (c.tag) {
+  //   case MessageType.ADVANCE_ACT:
+  //     return true;
+  //   case MessageType.NEXT_ACT:
+  //     return true;
+  //   case MessageType.ATTACH_TREACHERY:
+  //     return c.contents[1].contents == id.value;
+  //   case MessageType.ACTIVATE_ABILITY:
+  //     return c.contents[1].source.contents === id.value
+  //       && (c.contents[1].type.tag === 'ReactionAbility')
+  //   case MessageType.TARGET_LABEL:
+  //     return c.contents[0].tag === "ActTarget" && c.contents[0].contents === id.value
+  //   case MessageType.RUN:
+  //     return c.contents.some((c1: Message) => canInteract(c1));
+  //   default:
+  //     return false;
+  // }
 }
 
 const interactAction = computed(() => choices.value.findIndex(canInteract));
 
 function isAbility(v: Message) {
-  if (v.contents && v.contents[1] && v.contents[1].source) {
-    return (v.tag === 'AbilityLabel' && v.contents[1].source.tag === 'ActSource' && v.contents[1].source.contents === id.value)
-  }
+  // if (v.contents && v.contents[1] && v.contents[1].source) {
+  //   return (v.tag === 'AbilityLabel' && v.contents[1].source.tag === 'ActSource' && v.contents[1].source.contents === id.value)
+  // }
 
   return false;
 }

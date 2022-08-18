@@ -77,7 +77,6 @@ const createEnemyAtAction = computed(() => {
 })
 
 const moveAction = computed(() => {
-  return -1
   // const isRunMove = choices.value.findIndex((c) => c.tag === MessageType.RUN
   //   && c.contents[0]
   //   && c.contents[0].tag === MessageType.MOVE
@@ -87,9 +86,9 @@ const moveAction = computed(() => {
   //   return isRunMove;
   // }
 
-  // return choices
-  //   .value
-  //   .findIndex((c) => c.tag === MessageType.ACTIVATE_ABILITY && c.contents[1].source.contents === id.value && c.contents[1].type.tag === "ActionAbility" && c.contents[1].type.contents[0] === "Move");
+  return choices
+    .value
+    .findIndex((c) => c.tag === "AbilityLabel" && c.ability.type.tag === "ActionAbility" && c.ability.type.action === "Move" && c.ability.source.contents === id.value);
 })
 
 function findForcedAbility(c: Message): boolean {

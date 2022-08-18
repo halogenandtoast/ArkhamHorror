@@ -42,28 +42,11 @@ function canInteract(c: Message): boolean {
 }
 
 function isActivate(v: Message) {
-  console.log(v)
   if (v.tag !== 'AbilityLabel') {
     return false
   }
 
   return v.ability.source.contents === id.value
-
-  
-
-
-  //
-  // const { tag, contents } = v.contents[1].source;
-  //
-  // if (tag === 'TreacherySource' && contents === id.value) {
-  //   return true
-  // }
-  //
-  // if (tag === 'ProxySource' && contents[0].tag === 'TreacherySource' && contents[0].contents === id.value) {
-  //   return true
-  // }
-
-  //return false
 }
 
 const abilities = computed(() => {

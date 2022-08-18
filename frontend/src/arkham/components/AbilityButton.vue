@@ -36,10 +36,8 @@ function totalActionCost(cost) {
         }
         return acc
       }, 0)
-  } else {
-    if (cost.tag === "ActionCost") {
-      return cost.contents
-    }
+  } else if (cost.tag === "ActionCost") {
+    return cost.contents
   }
 
   return 0
@@ -51,6 +49,10 @@ const isEvade = computed(() => isAction("Evade"))
 const isEngage = computed(() => isAction("Engage"))
 const display = computed(() => !isAction("Move"))
 const isSingleActionAbility = computed(() => {
+  if (!ability.value) {
+    return false
+  }
+
   if (ability.value.type.tag !== "ActionAbility") {
     return false
   }
@@ -77,6 +79,10 @@ const tooltip = computed(() => {
 })
 
 const isDoubleActionAbility = computed(() => {
+  if (!ability.value) {
+    return false
+  }
+
   if (ability.value.type.tag !== "ActionAbility") {
     return false
   }
@@ -86,6 +92,10 @@ const isDoubleActionAbility = computed(() => {
 })
 
 const isTripleActionAbility = computed(() => {
+  if (!ability.value) {
+    return false
+  }
+
   if (ability.value.type.tag !== "ActionAbility") {
     return false
   }

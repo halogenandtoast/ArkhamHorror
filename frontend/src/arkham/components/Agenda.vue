@@ -36,19 +36,10 @@ const viewingUnder = ref(false)
 const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
 
 function canInteract(c: Message): boolean {
+  if (c.tag === "TargetLabel" && c.target.contents === id.value) {
+    return true
+  }
   return false
-  // switch (c.tag) {
-  //   case MessageType.ADVANCE_AGENDA:
-  //     return true;
-  //   case MessageType.ATTACH_TREACHERY:
-  //     return c.contents[1].contents == id.value;
-  //   case MessageType.TARGET_LABEL:
-  //     return c.contents[0].tag === "AgendaTarget" && c.contents[0].contents === id.value
-  //   case MessageType.RUN:
-  //     return c.contents.some((c1: Message) => canInteract(c1));
-  //   default:
-  //     return false;
-  // }
 }
 
 const interactAction = computed(() => choices.value.findIndex(canInteract));

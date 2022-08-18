@@ -72,25 +72,17 @@ function canInteract(c: Message): boolean {
 }
 
 function canAdjustHealth(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.ASSET_DAMAGE:
-      return c.contents[0] === id.value && c.contents[2] > 0;
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canAdjustHealth(c1));
-    default:
-      return false;
+  if (c.tag === "ComponentLabel" && c.component.tokenType === "DamageToken") {
+    return c.component.assetId === id.value
   }
+  return false
 }
 
 function canAdjustSanity(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.ASSET_DAMAGE:
-      return c.contents[0] === id.value && c.contents[3] > 0;
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canAdjustSanity(c1));
-    default:
-      return false;
+  if (c.tag === "ComponentLabel" && c.component.tokenType === "HorrorToken") {
+    return c.component.assetId === id.value
   }
+  return false
 }
 
 const cardAction = computed(() => choices.value.findIndex(canInteract))

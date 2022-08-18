@@ -3,8 +3,6 @@ import { computed, ref, inject, ComputedRef, reactive } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
-import { QuestionType } from '@/arkham/types/Question';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';

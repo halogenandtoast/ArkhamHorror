@@ -3,7 +3,6 @@ import { withDefaults, computed, inject } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
-import { MessageType } from '@/arkham/types/Message';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as Arkham from '@/arkham/types/Treachery';
@@ -26,19 +25,11 @@ const id = computed(() => props.treachery.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
+  if (c.tag === "TargetLabel") {
+    return c.target.contents === id.value
+  }
+
   return false
-  // switch (c.tag) {
-  //   case MessageType.DISCARD:
-  //     return c.contents.contents === id.value;
-  //   case MessageType.ASSET_DAMAGE:
-  //     return c.contents[0] === id.value;
-  //   case MessageType.TARGET_LABEL:
-  //     return c.contents[0].contents === id.value
-  //   case MessageType.RUN:
-  //     return c.contents.some((c1: Message) => canInteract(c1));
-  //   default:
-  //     return false;
-  // }
 }
 
 function isActivate(v: Message) {

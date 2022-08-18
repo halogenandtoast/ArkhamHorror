@@ -38,6 +38,9 @@ const runSkillTestAction = computed(() => {
 })
 
 function canActivateAbility(c: Message): boolean {
+  if (c.tag  === "AbilityLabel") {
+    return c.ability.source.contents === id.value
+  }
   return false
   // switch (c.tag) {
   //   case MessageType.ACTIVATE_ABILITY:

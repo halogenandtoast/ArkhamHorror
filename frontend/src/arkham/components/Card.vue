@@ -27,41 +27,11 @@ const id = computed(() => props.card.contents.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
+  if (c.tag === "TargetLabel") {
+    return c.target.contents === id.value
+  }
+
   return false
-  // switch (c.tag) {
-  //   case MessageType.DISCARD:
-  //     // TODO: Check the contents tag
-  //     return c.contents.contents[1] === id.value;
-  //   case MessageType.RETURN_TO_HAND:
-  //     return c.contents[1].contents === id.value;
-  //   case MessageType.REMOVE_FROM_GAME:
-  //     return c.contents.contents === id.value;
-  //   case MessageType.ADD_FOCUSED_TO_HAND:
-  //     return c.contents[3] === id.value;
-  //   case MessageType.SEARCH_FOUND:
-  //     return c.contents[2].contents.id === id.value;
-  //   case MessageType.PLAY_CARD:
-  //     return c.contents[1] === id.value;
-  //   case MessageType.PLAY_CARD_AS:
-  //     return c.contents[1] === id.value;
-  //   case MessageType.PLAY_FAST_EVENT:
-  //     return c.contents[1] === id.value
-  //   case MessageType.ADD_FOCUSED_TO_TOP_OF_DECK:
-  //     return c.contents[2] === id.value;
-  //   case MessageType.FOUND_AND_DREW_ENCOUNTER_CARD:
-  //     return c.contents[2].id === id.value;
-  //   case MessageType.FOUND_ENCOUNTER_CARD_FROM:
-  //     return c.contents[3].id === id.value;
-  //   case MessageType.FOUND_ENEMY_IN_VOID:
-  //     return c.contents[2] === id.value;
-  //   case MessageType.TARGET_LABEL:
-  //     return (c.contents[0].tag === "EncounterCardTarget" && c.contents[0].contents.id === id.value) || (c.contents[0].tag === "CardIdTarget" && c.contents[0].contents === id.value) || (c.contents[0].tag === "SkillTarget" && c.contents[0].contents === id.value)
-  //
-  //   case MessageType.RUN:
-  //     return c.contents.some((c1: Message) => canInteract(c1));
-  //   default:
-  //     return false;
-  // }
 }
 
 function canPlay(c: Message): boolean {

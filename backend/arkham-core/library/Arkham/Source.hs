@@ -1,3 +1,5 @@
+{-# LANGUAGE NoFieldSelectors #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 module Arkham.Source (
   Source (..),
 ) where
@@ -37,7 +39,7 @@ data Source
   | LocationMatcherSource LocationMatcher
   | LocationSource LocationId
   | PlayerCardSource PlayerCard
-  | ProxySource Source Source
+  | ProxySource { source :: Source, originalSource :: Source }
   | ResourceSource
   | ScenarioSource ScenarioId
   | SkillSource SkillId

@@ -54,14 +54,12 @@ function isAbility(v: Message) {
     return false
   }
 
-  const { tag, contents } = v.ability.source;
+  const { tag } = v.ability.source;
 
-  if (tag === 'ActSource' && contents === id.value) {
-    return true
-  }
-
-  if (tag === 'ProxySource' && contents[0].tag === 'ActSource' && contents[0].contents === id.value) {
-    return true
+  if (tag === 'ProxySource') {
+    return v.ability.source.source.contents === id.value
+  } else if (tag === 'ActSource') {
+    return v.ability.source.contents === id.value
   }
 
   return false

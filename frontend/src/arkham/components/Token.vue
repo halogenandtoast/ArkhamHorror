@@ -3,7 +3,6 @@ import { ChaosToken } from '@/arkham/types/ChaosToken';
 import { computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
 
 export interface Props {
   game: Game

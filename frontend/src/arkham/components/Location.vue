@@ -2,7 +2,7 @@
 import { computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { Message, MessageType } from '@/arkham/types/Message';
+import { Message } from '@/arkham/types/Message';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import Asset from '@/arkham/components/Asset.vue';
@@ -139,19 +139,17 @@ const cardAction = computed(() => {
 })
 
 function isAbility(v: Message) {
-  // if (v.tag !== 'AbilityLabel') {
-  //   return false
-  // }
-  //
-  // const { tag, contents } = v.contents[1].source;
-  //
-  // if (tag === 'LocationSource' && contents === id.value) {
-  //   return true
-  // }
-  //
-  // if (tag === 'ProxySource' && contents[0].tag === 'LocationSource' && contents[0].contents === id.value) {
-  //   return true
-  // }
+  if (v.tag !== 'AbilityLabel') {
+    return false
+  }
+
+  const { tag } = v.ability.source;
+
+  if (tag === 'ProxySource') {
+    return v.ability.source.source.contents === id.value
+  } else if (tag === 'LocationSource') {
+    return v.ability.source.contents === id.value
+  }
 
   return false
 }
@@ -160,15 +158,7 @@ const abilities = computed(() => {
    return choices
      .value
      .reduce<number[]>((acc, v, i) => {
-       if (v.tag === 'AbilityLabel' && v.ability.source.tag === 'LocationSource' && v.ability.source.contents === id.value) {
-         return [i, ...acc];
-       }
-
-       if (v.tag === 'AbilityLabel' && v.ability.source.tag === 'ProxySource' && v.ability.source.contents[0].tag === 'LocationSource' && v.ability.source.contents[0].contents === id.value) {
-         return [...acc, i];
-       }
-
-       if (v.tag === 'AbilityLabel' && v.ability.source.tag === 'ProxySource' && v.ability.source.contents[0].tag === 'LocationSource' && v.ability.source.contents[0].contents === id.value) {
+       if (isAbility(v)) {
          return [...acc, i];
        }
 

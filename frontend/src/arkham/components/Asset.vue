@@ -94,14 +94,12 @@ function isActivate(v: Message) {
     return false
   }
 
-  const { tag, contents } = v.ability.source;
+  const { tag } = v.ability.source;
 
-  if (tag === 'AssetSource' && contents === id.value) {
-    return true
-  }
-
-  if (tag === 'ProxySource' && contents[0].tag === 'AssetSource' && contents[0].contents === id.value) {
-    return true
+  if (tag === 'ProxySource') {
+    return v.ability.source.source.contents === id.value
+  } else if (tag === 'AssetSource') {
+    return v.ability.source.contents === id.value
   }
 
   return false
@@ -111,9 +109,7 @@ const abilities = computed(() => {
   return choices
     .value
     .reduce<number[]>((acc, v, i) => {
-      if (v.tag === 'Run' && isActivate(v.contents[0])) {
-        return [...acc, i];
-      } else if (isActivate(v)) {
+      if (isActivate(v)) {
         return [...acc, i];
       }
 

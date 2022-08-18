@@ -13,9 +13,7 @@ const props = defineProps<Props>()
 const baseUrl = inject('baseUrl')
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-const deckAction = computed(() => {
-  return -1
-})
+const deckAction = computed(() => choices.value.findIndex((c) => c.tag === "TargetLabel" && c.target.tag === "EncounterDeckTarget"))
 
 const investigatorPortrait = computed(() => {
   const choice = choices.value[deckAction.value]
@@ -24,14 +22,7 @@ const investigatorPortrait = computed(() => {
     return null;
   }
 
-  switch (choice.tag) {
-    case MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD:
-      return `${baseUrl}/img/arkham/portraits/${choice.contents.replace('c', '')}.jpg`;
-    case MessageType.SURGE:
-      return `${baseUrl}/img/arkham/portraits/${choice.contents[0].replace('c', '')}.jpg`;
-    default:
-      return `${baseUrl}/img/arkham/portraits/${choice.contents[0].replace('c', '')}.jpg`;
-  }
+  return `${baseUrl}/img/arkham/portraits/${props.investigatorId.replace('c', '')}.jpg`;
 })
 
 const debug = inject('debug')

@@ -56,8 +56,8 @@ const image = computed(() => {
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-const revealedTokenAction = computed(() =>
-  choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && (c.contents[0].contents == props.token.tokenFace || c.contents[0].contents.tokenId == props.token.tokenId)))
+const revealedTokenAction = computed(() => -1)
+  // choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && (c.contents[0].contents == props.token.tokenFace || c.contents[0].contents.tokenId == props.token.tokenId)))
 const isIgnored = computed(() => props.token.modifiers?.some(modifier => modifier.type.tag == 'IgnoreToken') || false)
 
 const choose = (idx: number) => emit('choose', idx)

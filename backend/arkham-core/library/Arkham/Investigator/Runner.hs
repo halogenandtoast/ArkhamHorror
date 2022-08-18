@@ -797,13 +797,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           (health - 1)
           0
         -- N.B. we have to add to the end of targets to handle the drop logic
-        damageAsset aid = targetLabel
-          aid
+        damageAsset aid = ComponentLabel
+          (AssetComponent aid DamageToken)
           [ Msg.AssetDamage aid source 1 0
           , assignRestOfHealthDamage (damageTargets <> [AssetTarget aid]) mempty
           ]
-        damageInvestigator = targetLabel
-          investigatorId
+        damageInvestigator = ComponentLabel
+          (InvestigatorComponent investigatorId DamageToken)
           [ Msg.InvestigatorDamage investigatorId source 1 0
           , assignRestOfHealthDamage
             (damageTargets <> [InvestigatorTarget investigatorId])
@@ -843,13 +843,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           0
           (sanity - 1)
         -- N.B. we have to add to the end of targets to handle the drop logic
-        damageAsset aid = targetLabel
-          aid
+        damageAsset aid = ComponentLabel
+          (AssetComponent aid HorrorToken)
           [ Msg.AssetDamage aid source 0 1
           , assignRestOfSanityDamage mempty (horrorTargets <> [AssetTarget aid])
           ]
-        damageInvestigator = targetLabel
-          investigatorId
+        damageInvestigator = ComponentLabel
+          (InvestigatorComponent investigatorId HorrorToken)
           [ Msg.InvestigatorDamage investigatorId source 0 1
           , assignRestOfSanityDamage
             mempty
@@ -921,15 +921,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               matcher
               (health - 1)
               sanity
-            damageAsset aid = targetLabel
-              aid
+            damageAsset aid = ComponentLabel
+              (AssetComponent aid DamageToken)
               [ Msg.AssetDamage aid source 1 0
               , assignRestOfHealthDamage
                 (AssetTarget aid : damageTargets)
                 horrorTargets
               ]
-            damageInvestigator = targetLabel
-              investigatorId
+            damageInvestigator = ComponentLabel
+              (InvestigatorComponent investigatorId DamageToken)
               [ Msg.InvestigatorDamage investigatorId source 1 0
               , assignRestOfHealthDamage
                 (InvestigatorTarget investigatorId : damageTargets)
@@ -967,15 +967,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               matcher
               health
               (sanity - 1)
-            damageInvestigator = targetLabel
-              investigatorId
+            damageInvestigator = ComponentLabel
+              (InvestigatorComponent investigatorId HorrorToken)
               [ Msg.InvestigatorDamage investigatorId source 0 1
               , assignRestOfSanityDamage
                 damageTargets
                 (InvestigatorTarget investigatorId : horrorTargets)
               ]
-            damageAsset aid = targetLabel
-              aid
+            damageAsset aid = ComponentLabel
+              (AssetComponent aid HorrorToken)
               [ Msg.AssetDamage aid source 0 1
               , assignRestOfSanityDamage
                 damageTargets

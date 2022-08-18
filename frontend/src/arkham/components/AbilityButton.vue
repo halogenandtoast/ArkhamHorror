@@ -52,11 +52,7 @@ const isSingleActionAbility = computed(() => {
 })
 
 const tooltip = computed(() => {
-  if (ability.value.tag !== "AbilityLabel") {
-    return null
-  }
-
-  const body = ability.value.contents[1].tooltip
+  const body = ability.value.tooltip
   if (body) {
     const content = body.
       replace('{action}', '<span class="action-icon"></span>').
@@ -108,10 +104,10 @@ const isTripleActionAbility = computed(() => {
   // }
 })
 
-const isObjective = computed(() => ability.value.tag === "AbilityLabel" && ability.value.type.tag === "Objective")
-const isFastActionAbility = computed(() => ability.value.tag === "AbilityLabel" && ability.value.type.tag === "FastAbility")
-const isReactionAbility = computed(() => ability.value.tag === "AbilityLabel" && (ability.value.type.tag === "ReactionAbility" || ability.value.type.tag === "LegacyReactionAbility"))
-const isForcedAbility = computed(() => ability.value.tag === "AbilityLabel" && ability.value.type.tag === "ForcedAbility")
+const isObjective = computed(() => ability.value.type.tag === "Objective")
+const isFastActionAbility = computed(() => ability.value.type.tag === "FastAbility")
+const isReactionAbility = computed(() => ability.value.type.tag === "ReactionAbility")
+const isForcedAbility = computed(() => ability.value.type.tag === "ForcedAbility")
 
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 

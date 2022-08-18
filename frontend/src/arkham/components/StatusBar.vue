@@ -20,8 +20,7 @@ const question = computed(() => props.game.question[props.investigatorId])
 const choose = (idx: number) => emit('choose', idx)
 
 const applyResultsAction = computed(() => {
-  return -1
-  // return choices.value.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
+  return choices.value.findIndex((c) => c.tag === "SkillTestApplyResultsButton");
 })
 
 const skillTestResults = computed(() => props.game.skillTestResults)

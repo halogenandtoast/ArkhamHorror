@@ -102,7 +102,7 @@ function isActivate(v: Message) {
     return false
   }
 
-  const { tag, contents } = v.contents[1].source;
+  const { tag, contents } = v.ability.source;
 
   if (tag === 'AssetSource' && contents === id.value) {
     return true

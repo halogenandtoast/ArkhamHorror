@@ -123,16 +123,18 @@ export const abilityTypeDecoder: JsonDecoder.Decoder<AbilityType> = JsonDecoder.
   forcedAbilityDecoder,
   forcedAbilityWithCostDecoder,
   abilityEffectDecoder,
-  objectiveDecoder
+  objectiveDecoder,
 ], 'AbilityType')
 
 export interface Ability {
   type: AbilityType
   source: Source
+  tooltip: string | null
 }
 
 export const abilityDecoder = JsonDecoder.object(
   {
     type: abilityTypeDecoder,
     source: sourceDecoder,
+    tooltip: JsonDecoder.nullable(JsonDecoder.string),
   }, 'Ability')

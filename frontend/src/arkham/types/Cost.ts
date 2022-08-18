@@ -2,10 +2,10 @@ import { JsonDecoder } from 'ts.data.json';
 
 export interface Cost {
   tag: string;
-  contents: number;
+  contents: any;
 }
 
 export const costDecoder = JsonDecoder.object({
   tag: JsonDecoder.string,
-  contents: JsonDecoder.number,
+  contents: JsonDecoder.succeed,
 }, 'Cost')

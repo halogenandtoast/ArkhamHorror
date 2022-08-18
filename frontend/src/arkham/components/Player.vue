@@ -59,9 +59,9 @@ const drawCardsAction = computed(() => {
   return choices
     .value
     .findIndex((c) => {
-      if (c.tag === QuestionType.COMPONENT_LABEL) {
-        console.log(c)
-        return (c.contents[0].tag == "InvestigatorDeckComponent")
+      console.log(c)
+      if (c.tag === "ComponentLabel") {
+        return (c.component.tag == "InvestigatorDeckComponent")
       }
       return false
     });

@@ -32,6 +32,7 @@ export interface TargetLabel {
 
 export interface EndTurnButton {
   tag: 'EndTurnButton';
+  investigatorId: string;
 }
 
 export type Component = InvestigatorComponent | InvestigatorDeckComponent | AssetComponent;
@@ -47,33 +48,39 @@ export const tokenTypeDecoder = JsonDecoder.oneOf<TokenType>(
   ], 'TokenType');
 
 export interface InvestigatorComponent {
+  tag: "InvestigatorComponent";
   investigatorId: string;
   tokenType: TokenType;
 }
 
 export interface AssetComponent {
+  tag: "AssetComponent";
   assetId: string;
   tokenType: TokenType;
 }
 
 export interface InvestigatorDeckComponent {
+  tag: "InvestigatorDeckComponent";
   investigatorId: string;
 }
 
 export const investigatorComponentDecoder = JsonDecoder.object<InvestigatorComponent>(
   {
+    tag: JsonDecoder.isExactly("InvestigatorComponent"),
     investigatorId: JsonDecoder.string,
     tokenType: tokenTypeDecoder,
   }, 'InvestigatorComponent');
 
 export const assetComponentDecoder = JsonDecoder.object<AssetComponent>(
   {
+    tag: JsonDecoder.isExactly("AssetComponent"),
     assetId: JsonDecoder.string,
     tokenType: tokenTypeDecoder,
   }, 'InvestigatorComponent');
 
 export const investigatorDeckComponentDecoder = JsonDecoder.object<InvestigatorDeckComponent>(
   {
+    tag: JsonDecoder.isExactly("InvestigatorDeckComponent"),
     investigatorId: JsonDecoder.string,
   }, 'InvestigatorDeckComponent');
 
@@ -103,7 +110,27 @@ export const abilityLabelDecoder = JsonDecoder.object<AbilityLabel>(
     ability: abilityDecoder,
   }, 'Ability')
 
-export type Message = Label | TargetLabel | ComponentLabel | AbilityLabel | EndTurnButton;
+export interface StartSkillTestButton {
+  tag: 'StartSkillTestButton';
+  investigatorId: string;
+}
+
+export const startSkillTestButtonDecoder = JsonDecoder.object<StartSkillTestButton>(
+  {
+    tag: JsonDecoder.isExactly('StartSkillTestButton'),
+    investigatorId: JsonDecoder.string,
+  }, 'StartSkillTestButton')
+
+export interface SkillTestApplyResultsButton {
+  tag: 'SkillTestApplyResultsButton';
+}
+
+export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestApplyResultsButton>(
+  {
+    tag: JsonDecoder.isExactly('SkillTestApplyResultsButton'),
+  }, 'SkillTestApplyResultsButton')
+
+export type Message = Label | TargetLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton;
 
 export const labelDecoder = JsonDecoder.object<Label>(
   {
@@ -126,6 +153,7 @@ export const componentLabelDecoder = JsonDecoder.object<ComponentLabel>(
 export const endTurnButtonDecoder = JsonDecoder.object<EndTurnButton>(
   {
     tag: JsonDecoder.isExactly('EndTurnButton'),
+    investigatorId: JsonDecoder.string,
   }, 'EndTurnButton')
 
 
@@ -136,6 +164,8 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     componentLabelDecoder,
     abilityLabelDecoder,
     endTurnButtonDecoder,
+    startSkillTestButtonDecoder,
+    skillTestApplyResultsButtonDecoder,
   ],
   'Message',
 );

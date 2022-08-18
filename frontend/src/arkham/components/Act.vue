@@ -41,42 +41,36 @@ const viewingUnder = ref(false)
 const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
 
 function canInteract(c: Message): boolean {
+  if (c.tag === "TargetLabel" && c.target.contents === id.value) {
+    return true
+  }
   return false
-  // switch (c.tag) {
-  //   case MessageType.ADVANCE_ACT:
-  //     return true;
-  //   case MessageType.NEXT_ACT:
-  //     return true;
-  //   case MessageType.ATTACH_TREACHERY:
-  //     return c.contents[1].contents == id.value;
-  //   case MessageType.ACTIVATE_ABILITY:
-  //     return c.contents[1].source.contents === id.value
-  //       && (c.contents[1].type.tag === 'ReactionAbility')
-  //   case MessageType.TARGET_LABEL:
-  //     return c.contents[0].tag === "ActTarget" && c.contents[0].contents === id.value
-  //   case MessageType.RUN:
-  //     return c.contents.some((c1: Message) => canInteract(c1));
-  //   default:
-  //     return false;
-  // }
 }
 
 const interactAction = computed(() => choices.value.findIndex(canInteract));
 
 function isAbility(v: Message) {
-  // if (v.contents && v.contents[1] && v.contents[1].source) {
-  //   return (v.tag === 'AbilityLabel' && v.contents[1].source.tag === 'ActSource' && v.contents[1].source.contents === id.value)
-  // }
+  if (v.tag !== 'AbilityLabel') {
+    return false
+  }
 
-  return false;
+  const { tag, contents } = v.ability.source;
+
+  if (tag === 'ActSource' && contents === id.value) {
+    return true
+  }
+
+  if (tag === 'ProxySource' && contents[0].tag === 'ActSource' && contents[0].contents === id.value) {
+    return true
+  }
+
+  return false
 }
 
 const abilities = computed(() => {
   return choices.value
     .reduce<number[]>((acc, v, i) => {
-      if (v.tag === 'Run' && v.contents[0] && isAbility(v.contents[0])) {
-        return [...acc, i];
-      } else if (isAbility(v)) {
+      if (isAbility(v)) {
         return [...acc, i];
       }
 

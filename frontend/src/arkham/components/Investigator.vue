@@ -57,20 +57,10 @@ const enemyEngageInvestigatorAction = computed(() => {
   //     && c.contents[1] === id.value)
 })
 
-const takeDamageAction = computed(() => {
-  return -1
-  // const isRunDamage = props.choices.findIndex((c) => c.tag === MessageType.RUN
-  //   && c.contents[0]
-  //   && c.contents[0].tag === MessageType.INVESTIGATOR_ASSIGN_DAMAGE
-  //   && c.contents[0].contents[0] === id.value);
-  // return isRunDamage
-  //   || props.choices.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
-})
-
 const labelAction = computed(() => {
   return props.choices
-    .findIndex((c) => c.tag === QuestionType.TARGET_LABEL
-      && c.contents[0].tag === "InvestigatorTarget" && c.contents[0].contents === id.value)
+    .findIndex((c) => c.tag === "TargetLabel"
+      && c.target.tag === "InvestigatorTarget" && c.target.contents === id.value)
 })
 
 const investigatorAction = computed(() => {
@@ -90,59 +80,34 @@ const investigatorAction = computed(() => {
     return enemyEngageInvestigatorAction.value
   }
 
-  if (activateAbilityAction.value !== -1) {
-    return activateAbilityAction.value
-  }
-
-  return takeDamageAction.value
+  return activateAbilityAction.value
 })
 
 function canAdjustHealth(c: Message): boolean {
+  if (c.tag === "ComponentLabel" && c.component.tokenType === "DamageToken") {
+    return c.component.investigatorId === id.value
+  }
   return false
-  // switch (c.tag) {
-  //   case MessageType.INVESTIGATOR_DAMAGE:
-  //     return c.contents[0] === id.value && c.contents[2] > 0;
-  //   case MessageType.HEAL_DAMAGE:
-  //     return c.contents[0].contents === id.value;
-  //   case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
-  //     return c.contents[0] === id.value && c.contents[2] > 0;
-  //   case MessageType.RUN:
-  //     return c.contents.some((c1: Message) => canAdjustHealth(c1));
-  //   default:
-  //     return false;
-  // }
 }
 
 function canAdjustSanity(c: Message): boolean {
+  if (c.tag === "ComponentLabel" && c.component.tokenType === "HorrorToken") {
+    return c.component.investigatorId === id.value
+  }
   return false
-  // switch (c.tag) {
-  //   case MessageType.INVESTIGATOR_DAMAGE:
-  //     return c.contents[0] === id.value && c.contents[3] > 0;
-  //   case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
-  //     return c.contents[0] === id.value && c.contents[3] > 0;
-  //   case MessageType.HEAL_HORROR:
-  //     return c.contents[0].contents === id.value;
-  //   case MessageType.RUN:
-  //     return c.contents.some((c1: Message) => canAdjustSanity(c1));
-  //   default:
-  //     return false;
-  // }
 }
 
 const healthAction = computed(() => props.choices.findIndex(canAdjustHealth))
 const sanityAction = computed(() => props.choices.findIndex(canAdjustSanity))
 
 const takeResourceAction = computed(() => {
-  return -1
-  // return props.choices
-  //   .findIndex((c) => {
-  //     if (c.tag === MessageType.COMPONENT_LABEL) {
-  //       if (c.contents[0].tag == "InvestigatorComponent") {
-  //         return (c.contents[0].contents[0] == id.value && c.contents[0].contents[1] === "ResourceToken")
-  //       }
-  //     }
-  //     return false
-  //   });
+  return props.choices
+    .findIndex((c) => {
+      if (c.tag === "ComponentLabel" && c.component.tokenType === "ResourceToken") {
+        return c.component.investigatorId === id.value
+      }
+      return false
+    });
 })
 
 const spendCluesAction = computed(() => {
@@ -153,9 +118,8 @@ const spendCluesAction = computed(() => {
 })
 
 const endTurnAction = computed(() => {
-  return -1
-  // return props.choices
-  //   .findIndex((c) => c.tag === MessageType.END_TURN && c.contents === id.value);
+  return props.choices
+    .findIndex((c) => c.tag === 'EndTurnButton' && c.investigatorId === id.value);
 })
 
 const baseUrl = inject('baseUrl')

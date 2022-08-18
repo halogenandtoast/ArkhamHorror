@@ -42,7 +42,8 @@ export interface Read {
 
 export interface ChooseN {
   tag: 'ChooseN';
-  contents: Message[];
+  amount: number;
+  choices: Message[];
 }
 
 export interface ChooseSome {
@@ -57,7 +58,7 @@ export interface ChooseUpToN {
 
 export interface ChooseOneAtATime {
   tag: 'ChooseOneAtATime';
-  contents: Message[];
+  choices: Message[];
 }
 
 export interface ChoosePaymentAmounts {
@@ -203,7 +204,8 @@ export const chooseSomeDecoder = JsonDecoder.object<ChooseSome>(
 export const chooseNDecoder = JsonDecoder.object<ChooseN>(
   {
     tag: JsonDecoder.isExactly('ChooseN'),
-    contents: JsonDecoder.succeed.map((arr) => arr[1]),
+    amount: JsonDecoder.number,
+    choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
   'ChooseN',
 );
@@ -219,7 +221,7 @@ export const chooseUpToNDecoder = JsonDecoder.object<ChooseUpToN>(
 export const chooseOneAtATimeDecoder = JsonDecoder.object<ChooseOneAtATime>(
   {
     tag: JsonDecoder.isExactly('ChooseOneAtATime'),
-    contents: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
+    choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
   'ChooseOneAtATime',
 );

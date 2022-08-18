@@ -28,27 +28,35 @@ const isAction = (action: string) => {
   return maction === action
 }
 
+function totalActionCost(cost) {
+  if (cost.tag === "Costs") {
+    return cost.contents.reduce((acc, v) => {
+        if (v.tag === "ActionCost") {
+          return acc + v.contents
+        }
+        return acc
+      }, 0)
+  } else {
+    if (cost.tag === "ActionCost") {
+      return cost.contents
+    }
+  }
+
+  return 0
+}
+
 const isInvestigate = computed(() => isAction("Investigate"))
 const isFight = computed(() => isAction("Fight"))
 const isEvade = computed(() => isAction("Evade"))
 const isEngage = computed(() => isAction("Engage"))
 const display = computed(() => !isAction("Move"))
 const isSingleActionAbility = computed(() => {
-  return false
-  // if (ability.value.tag !== "AbilityLabel") {
-  //   return false
-  // }
-  // const {tag} = ability.value.contents[1].type
-  // if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
-  //   return false
-  // }
-  // const costIndex = tag === "ActionAbility" ? 1 : 2
-  // const { contents } = ability.value.contents[1].type.contents[costIndex]
-  // if (typeof contents?.some == 'function') {
-  //   return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 1)
-  // } else {
-  //   return contents === 1
-  // }
+  if (ability.value.type.tag !== "ActionAbility") {
+    return false
+  }
+
+  const cost = ability.value.type.cost
+  return totalActionCost(cost) === 1
 })
 
 const tooltip = computed(() => {
@@ -69,39 +77,21 @@ const tooltip = computed(() => {
 })
 
 const isDoubleActionAbility = computed(() => {
-  return false
-  // if (ability.value.tag !== "AbilityLabel") {
-  //   return false
-  // }
-  // const {tag} = ability.value.contents[1].type
-  // if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
-  //   return false
-  // }
-  // const costIndex = tag === "ActionAbility" ? 1 : 2
-  // const { contents } = ability.value.contents[1].type.contents[costIndex]
-  // if (typeof contents?.some == 'function') {
-  //   return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 2)
-  // } else {
-  //   return contents === 2
-  // }
+  if (ability.value.type.tag !== "ActionAbility") {
+    return false
+  }
+
+  const cost = ability.value.type.cost
+  return totalActionCost(cost) === 2
 })
 
 const isTripleActionAbility = computed(() => {
-  return false
-  // if (ability.value.tag !== "AbilityLabel") {
-  //   return false
-  // }
-  // const {tag} = ability.value.contents[1].type
-  // if (tag !== "ActionAbility" && tag !== "ActionAbilityWithBefore" && tag !== "ActionAbilityWithSkill") {
-  //   return false
-  // }
-  // const costIndex = tag === "ActionAbility" ? 1 : 2
-  // const { contents } = ability.value.contents[1].type.contents[costIndex]
-  // if (typeof contents?.some == 'function') {
-  //   return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 3)
-  // } else {
-  //   return contents === 3
-  // }
+  if (ability.value.type.tag !== "ActionAbility") {
+    return false
+  }
+
+  const cost = ability.value.type.cost
+  return totalActionCost(cost) === 3
 })
 
 const isObjective = computed(() => ability.value && ability.value.type.tag === "Objective")

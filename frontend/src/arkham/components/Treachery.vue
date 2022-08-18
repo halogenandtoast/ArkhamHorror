@@ -26,45 +26,51 @@ const id = computed(() => props.treachery.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.DISCARD:
-      return c.contents.contents === id.value;
-    case MessageType.ASSET_DAMAGE:
-      return c.contents[0] === id.value;
-    case MessageType.TARGET_LABEL:
-      return c.contents[0].contents === id.value
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canInteract(c1));
-    default:
-      return false;
-  }
+  return false
+  // switch (c.tag) {
+  //   case MessageType.DISCARD:
+  //     return c.contents.contents === id.value;
+  //   case MessageType.ASSET_DAMAGE:
+  //     return c.contents[0] === id.value;
+  //   case MessageType.TARGET_LABEL:
+  //     return c.contents[0].contents === id.value
+  //   case MessageType.RUN:
+  //     return c.contents.some((c1: Message) => canInteract(c1));
+  //   default:
+  //     return false;
+  // }
 }
 
 function isActivate(v: Message) {
+  console.log(v)
   if (v.tag !== 'AbilityLabel') {
     return false
   }
 
-  const { tag, contents } = v.contents[1].source;
+  return v.ability.source.contents === id.value
 
-  if (tag === 'TreacherySource' && contents === id.value) {
-    return true
-  }
+  
 
-  if (tag === 'ProxySource' && contents[0].tag === 'TreacherySource' && contents[0].contents === id.value) {
-    return true
-  }
 
-  return false
+  //
+  // const { tag, contents } = v.contents[1].source;
+  //
+  // if (tag === 'TreacherySource' && contents === id.value) {
+  //   return true
+  // }
+  //
+  // if (tag === 'ProxySource' && contents[0].tag === 'TreacherySource' && contents[0].contents === id.value) {
+  //   return true
+  // }
+
+  //return false
 }
 
 const abilities = computed(() => {
   return choices
     .value
     .reduce<number[]>((acc, v, i) => {
-      if (v.tag === 'Run' && isActivate(v.contents[0])) {
-        return [...acc, i];
-      } else if (isActivate(v)) {
+      if (isActivate(v)) {
         return [...acc, i];
       }
 

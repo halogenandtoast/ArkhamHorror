@@ -87,7 +87,7 @@ putApiV1ArkhamGameDecksR gameId = do
     Game {..} = arkhamGameCurrentData
     investigatorId = coerce arkhamPlayerInvestigatorId
   msg <- case udpDeckUrl postData of
-    Nothing -> pure $ chooseOne investigatorId [Label "done" []]
+    Nothing -> pure $ Run []
     Just deckUrl -> do
       edecklist <- getDeckList deckUrl
       case edecklist of

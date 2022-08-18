@@ -65,22 +65,23 @@ function canInteract(c: Message): boolean {
 }
 
 function canPlay(c: Message): boolean {
-  switch (c.tag) {
-    case MessageType.PLAY_CARD:
-      return c.contents[1] === id.value
-    case MessageType.PLAY_CARD_AS:
-      return c.contents[1] === id.value
-    case MessageType.PLAY_DYNAMIC_CARD:
-      return c.contents[1] === id.value
-    case MessageType.PLAY_FAST_EVENT:
-      return c.contents[1] === id.value
-    case MessageType.LEGACY_PLAY_CARD:
-      return c.contents[1] === id.value
-    case MessageType.RUN:
-      return c.contents.some((c1: Message) => canPlay(c1))
-    default:
-      return false
-  }
+  return false
+  // switch (c.tag) {
+  //   case MessageType.PLAY_CARD:
+  //     return c.contents[1] === id.value
+  //   case MessageType.PLAY_CARD_AS:
+  //     return c.contents[1] === id.value
+  //   case MessageType.PLAY_DYNAMIC_CARD:
+  //     return c.contents[1] === id.value
+  //   case MessageType.PLAY_FAST_EVENT:
+  //     return c.contents[1] === id.value
+  //   case MessageType.LEGACY_PLAY_CARD:
+  //     return c.contents[1] === id.value
+  //   case MessageType.RUN:
+  //     return c.contents.some((c1: Message) => canPlay(c1))
+  //   default:
+  //     return false
+  // }
 }
 
 const playCardAction = computed(() => choices.value.findIndex(canPlay))
@@ -92,44 +93,44 @@ const cardAction = computed(() => {
 })
 
 function abilityLabel(idx: number) {
-  const label = choices.value[idx].tag === 'Run'
-    ? ( choices.value[idx].contents[0].contents[1].type.contents[0].tag === 'AmongSearchedCards'
-        ? null
-        : choices.value[idx].contents[0].contents[1].type.contents[0]
-      )
-    : choices.value[idx].contents[1].type.contents[0]
-  if (label) {
-    return typeof label === "string" ? label : label.contents
-  }
+  // const label = choices.value[idx].tag === 'Run'
+  //   ? ( choices.value[idx].contents[0].contents[1].type.contents[0].tag === 'AmongSearchedCards'
+  //       ? null
+  //       : choices.value[idx].contents[0].contents[1].type.contents[0]
+  //     )
+  //   : choices.value[idx].contents[1].type.contents[0]
+  // if (label) {
+  //   return typeof label === "string" ? label : label.contents
+  // }
 
   return ""
 }
 
 function isReactionAbility(idx: number) {
-  if (choices.value[idx].tag == 'Run') {
-    return choices.value[idx].contents[0].contents[1].type.tag === "ReactionAbility";
-  } else {
-    return choices.value[idx].contents[1].type.tag === "ReactionAbility";
-  }
+  return false
+  // if (choices.value[idx].tag == 'Run') {
+  //   return choices.value[idx].contents[0].contents[1].type.tag === "ReactionAbility";
+  // } else {
+  //   return choices.value[idx].contents[1].type.tag === "ReactionAbility";
+  // }
 }
 
 function isActivate(v: Message) {
-  if (v.tag !== 'AbilityLabel') {
-    return false
-  }
+  return false
+  // if (v.tag !== 'AbilityLabel') {
+  //   return false
+  // }
 
-  const { contents } = v.contents[1].source;
+  // const { contents } = v.contents[1].source;
 
-  return contents === id.value
+  // return contents === id.value
 }
 
 const abilities = computed(() => {
   return choices
     .value
     .reduce<number[]>((acc, v, i) => {
-      if (v.tag === 'Run' && isActivate(v.contents[0])) {
-        return [...acc, i];
-      } else if (isActivate(v)) {
+      if (isActivate(v)) {
         return [...acc, i];
       }
 

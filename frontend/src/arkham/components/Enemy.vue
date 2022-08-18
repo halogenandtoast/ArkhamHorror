@@ -30,43 +30,48 @@ const id = computed(() => props.enemy.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 const attackAction = computed(() => {
-  return choices
-    .value
-    .findIndex((c) => c.tag === MessageType.ENEMY_ATTACK && c.contents[1] === id.value)
+  return -1
+  // return choices
+  //   .value
+  //   .findIndex((c) => c.tag === MessageType.ENEMY_ATTACK && c.contents[1] === id.value)
 })
 
 const labelAction = computed(() => {
-  return choices
-    .value
-    .findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.contents[0].contents === id.value)
+  return -1
+  // return choices
+  //   .value
+  //   .findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.contents[0].contents === id.value)
 })
 
 const moveAction = computed(() => {
-  return choices
-    .value
-    .findIndex((c) => c.tag === MessageType.ENEMY_MOVE && c.contents[0] === id.value)
+  return -1
+  // return choices
+  //   .value
+  //   .findIndex((c) => c.tag === MessageType.ENEMY_MOVE && c.contents[0] === id.value)
 })
 
 const placeDoomAction = computed(() => {
-  return choices
-    .value
-    .findIndex((c) => c.tag === MessageType.PLACE_DOOM && c.contents[0].contents === id.value)
+  return -1
+  // return choices
+  //   .value
+  //   .findIndex((c) => c.tag === MessageType.PLACE_DOOM && c.contents[0].contents === id.value)
 })
 
 const damageAction = computed(() => {
-  const isRunDamage = choices.value.findIndex((c) => c.tag === MessageType.RUN
-    && c.contents[0]
-    && c.contents[0].tag === MessageType.ENEMY_DAMAGE
-    && c.contents[0].contents[0] === id.value);
+  return -1
+  // const isRunDamage = choices.value.findIndex((c) => c.tag === MessageType.RUN
+  //   && c.contents[0]
+  //   && c.contents[0].tag === MessageType.ENEMY_DAMAGE
+  //   && c.contents[0].contents[0] === id.value);
 
-  if (isRunDamage !== -1) {
-    return isRunDamage;
-  }
+  // if (isRunDamage !== -1) {
+  //   return isRunDamage;
+  // }
 
-  return choices
-    .value
-    .findIndex((c) => c.tag === MessageType.ENEMY_DAMAGE && c.contents[0] === id.value);
-})
+  // return choices
+  //   .value
+  //   .findIndex((c) => c.tag === MessageType.ENEMY_DAMAGE && c.contents[0] === id.value);
+})// 
 
 const cardAction = computed(() => {
   if (labelAction.value !== -1) {
@@ -89,11 +94,11 @@ const cardAction = computed(() => {
 });
 
 function isActivate(v: Message) {
-  if (v.tag === 'EvadeLabel' && v.contents[0] === id.value) {
+  if (v.tag === 'EvadeLabel' && v.enemyId === id.value) {
     return true
   }
 
-  if (v.tag === 'FightEnemy' && v.contents[1] === id.value) {
+  if (v.tag === 'FightLabel' && v.enemyId === id.value) {
     return true
   }
 
@@ -101,15 +106,15 @@ function isActivate(v: Message) {
     return false
   }
 
-  const { tag, contents } = v.contents[1].source;
+  const { tag, contents } = v.ability.source;
 
   if (tag === 'EnemySource' && contents === id.value) {
     return true
   }
 
-  if (tag === 'ProxySource' && contents[0].tag === 'EnemySource' && contents[0].contents === id.value) {
-    return true
-  }
+  // if (tag === 'ProxySource' && contents[0].tag === 'EnemySource' && contents[0].contents === id.value) {
+  //   return true
+  // }
 
   return false
 }
@@ -118,9 +123,7 @@ const abilities = computed(() => {
   return choices
     .value
     .reduce<number[]>((acc, v, i) => {
-      if (v.tag === 'Run' && isActivate(v.contents[0])) {
-        return [...acc, i];
-      } else if (isActivate(v)) {
+      if (isActivate(v)) {
         return [...acc, i];
       }
 

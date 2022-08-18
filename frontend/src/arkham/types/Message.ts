@@ -97,6 +97,28 @@ export interface ComponentLabel {
   component: Component;
 }
 
+export interface FightLabel {
+  tag: 'FightLabel';
+  enemyId: string;
+}
+
+export const fightLabelDecoder = JsonDecoder.object<FightLabel>(
+  {
+    tag: JsonDecoder.isExactly('FightLabel'),
+    enemyId: JsonDecoder.string,
+  }, 'FightLabel')
+
+export interface EvadeLabel {
+  tag: 'EvadeLabel';
+  enemyId: string;
+}
+
+export const evadeLabelDecoder = JsonDecoder.object<EvadeLabel>(
+  {
+    tag: JsonDecoder.isExactly('EvadeLabel'),
+    enemyId: JsonDecoder.string,
+  }, 'EvadeLabel')
+
 export interface AbilityLabel {
   tag: 'AbilityLabel';
   investigatorId: string;
@@ -130,7 +152,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly('SkillTestApplyResultsButton'),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TargetLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton;
+export type Message = Label | TargetLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel;
 
 export const labelDecoder = JsonDecoder.object<Label>(
   {
@@ -166,6 +188,8 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     endTurnButtonDecoder,
     startSkillTestButtonDecoder,
     skillTestApplyResultsButtonDecoder,
+    fightLabelDecoder,
+    evadeLabelDecoder,
   ],
   'Message',
 );

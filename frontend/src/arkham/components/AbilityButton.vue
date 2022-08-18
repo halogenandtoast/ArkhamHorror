@@ -2,10 +2,10 @@
 import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { Cost } from '@/arkham/types/Cost';
-import type { Message, AbilityLabel } from '@/arkham/types/Message';
+import type { Message, AbilityLabel, FightLabel, EvadeLabel } from '@/arkham/types/Message';
 
 export interface Props {
- ability: AbilityLabel
+ ability: AbilityLabel | FightLabel | EvadeLabel
 }
 
 const props = defineProps<Props>()
@@ -13,10 +13,10 @@ const props = defineProps<Props>()
 const ability: ComputedRef<AbilityLabel> = computed(() => props.ability.ability)
 
 const isAction = (action: string) => {
-  if (ability.value.tag === "EvadeLabel") {
+  if (props.ability.tag === "EvadeLabel") {
     return action === "Evade"
   }
-  if (ability.value.tag === "FightEnemy") {
+  if (props.ability.tag === "FightLabel") {
     return action === "Fight"
   }
 
@@ -29,7 +29,7 @@ const isAction = (action: string) => {
 }
 
 const isInvestigate = computed(() => isAction("Investigate"))
-const isFight = computed(() => isAction("Fight") || ability.value.tag == "FightEnemy")
+const isFight = computed(() => isAction("Fight"))
 const isEvade = computed(() => isAction("Evade"))
 const isEngage = computed(() => isAction("Engage"))
 const display = computed(() => !isAction("Move"))
@@ -52,7 +52,7 @@ const isSingleActionAbility = computed(() => {
 })
 
 const tooltip = computed(() => {
-  const body = ability.value.tooltip
+  const body = ability.value && ability.value.tooltip
   if (body) {
     const content = body.
       replace('{action}', '<span class="action-icon"></span>').
@@ -104,19 +104,19 @@ const isTripleActionAbility = computed(() => {
   // }
 })
 
-const isObjective = computed(() => ability.value.type.tag === "Objective")
-const isFastActionAbility = computed(() => ability.value.type.tag === "FastAbility")
-const isReactionAbility = computed(() => ability.value.type.tag === "ReactionAbility")
-const isForcedAbility = computed(() => ability.value.type.tag === "ForcedAbility")
+const isObjective = computed(() => ability.value && ability.value.type.tag === "Objective")
+const isFastActionAbility = computed(() => ability.value && ability.value.type.tag === "FastAbility")
+const isReactionAbility = computed(() => ability.value && ability.value.type.tag === "ReactionAbility")
+const isForcedAbility = computed(() => ability.value && ability.value.type.tag === "ForcedAbility")
 
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 
 const abilityLabel = computed(() => {
-  if (ability.value.tag === "EvadeLabel") {
+  if (props.ability.tag === "EvadeLabel") {
     return "Evade"
   }
 
-  if (ability.value.tag === "FightEnemy") {
+  if (props.ability.tag === "FightLabel") {
     return "Fight"
   }
 

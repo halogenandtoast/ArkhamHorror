@@ -217,15 +217,12 @@ postApiV1ArkhamGamesR = do
         (GameApp gameRef queueRef genRef $ pure . const ())
         (runMessages Nothing)
       ge <- readIORef gameRef
-      let
-        diffUp = diff game ge
-        diffDown = diff ge game
       updatedQueue <- readIORef queueRef
       key <- runDB $ do
         gameId <- insert $ ArkhamGame
           campaignName
           ge
-          [Choice diffUp diffDown updatedQueue]
+          [Choice mempty mempty updatedQueue]
           []
           multiplayerVariant
           now
@@ -237,7 +234,7 @@ postApiV1ArkhamGamesR = do
         (ArkhamGame
           campaignName
           ge
-          [Choice diffUp diffDown updatedQueue]
+          [Choice mempty mempty updatedQueue]
           []
           multiplayerVariant
           now
@@ -361,7 +358,7 @@ putApiV1ArkhamGameR gameId = do
         }
       WithFriends -> pure ()
 
-  liftIO $ atomically $ writeTChan
+  atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
 
@@ -400,7 +397,7 @@ putApiV1ArkhamGameRawR gameId = do
     diffUp = diff arkhamGameCurrentData ge
     diffDown = diff ge arkhamGameCurrentData
   updatedLog <- (arkhamGameLog <>) <$> readIORef logRef
-  liftIO $ atomically $ writeTChan
+  atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedLog ge)
   now <- liftIO getCurrentTime
@@ -447,8 +444,8 @@ handleAnswer Game {..} investigatorId = \case
     case HashMap.lookup investigatorId gameQuestion of
       Just (ChoosePaymentAmounts _ _ info) ->
         let
-          costMap =
-            HashMap.fromList $ map (\(PaymentAmountChoice iid _ _ cost) -> (iid, cost)) info
+          costMap = HashMap.fromList
+            $ map (\(PaymentAmountChoice iid _ _ cost) -> (iid, cost)) info
         in
           concatMap
               (\(iid, n) ->
@@ -463,7 +460,11 @@ handleAnswer Game {..} investigatorId = \case
         (HashMap.lookup investigatorId gameQuestion)
     in go id q response
  where
-  go :: (Question Message -> Question Message) -> Question Message -> QuestionResponse -> [Message]
+  go
+    :: (Question Message -> Question Message)
+    -> Question Message
+    -> QuestionResponse
+    -> [Message]
   go f q response = case q of
     QuestionLabel lbl q' -> go (QuestionLabel lbl) q' response
     Read t qs -> case qs !!? qrChoice response of
@@ -487,7 +488,8 @@ handleAnswer Game {..} investigatorId = \case
         (Just m'@(Done _), _) -> [uiToRun m']
         (Just m', msgs'') -> if n - 1 == 0
           then [uiToRun m']
-          else [uiToRun m', Ask investigatorId $ f $ ChooseUpToN (n - 1) msgs'']
+          else
+            [uiToRun m', Ask investigatorId $ f $ ChooseUpToN (n - 1) msgs'']
         (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseUpToN n msgs'']
     ChooseOneAtATime msgs -> do
       let (mm, msgs') = extract (qrChoice response) msgs
@@ -495,7 +497,8 @@ handleAnswer Game {..} investigatorId = \case
         (Just m', []) -> [uiToRun m']
         (Just m', msgs'') ->
           [uiToRun m', Ask investigatorId $ f $ ChooseOneAtATime msgs'']
-        (Nothing, msgs'') -> [Ask investigatorId $ f $ ChooseOneAtATime msgs'']
+        (Nothing, msgs'') ->
+          [Ask investigatorId $ f $ ChooseOneAtATime msgs'']
     ChooseSome msgs -> do
       let (mm, msgs') = extract (qrChoice response) msgs
       case (mm, msgs') of

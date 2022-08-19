@@ -25,8 +25,7 @@ const choose = (idx: number) => emit('choose', idx)
       @choose="choose"
     />
   </template>
-
-  <template v-if="choices.length > 0">
+  <template v-else-if="choices.length > 0">
     <div class="choices">
       <template v-for="(choice, index) in choices" :key="index">
         <div v-if="choice.tag === 'Done'">

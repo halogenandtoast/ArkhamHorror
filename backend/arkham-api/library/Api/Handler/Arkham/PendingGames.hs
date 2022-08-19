@@ -2,18 +2,18 @@ module Api.Handler.Arkham.PendingGames
   ( putApiV1ArkhamPendingGameR
   ) where
 
-import Import hiding (on, (==.))
+import Import hiding ( on, (==.) )
 
 import Api.Arkham.Helpers
 import Arkham.Card.CardCode
 import Arkham.Game
 import Arkham.Id
 import Arkham.Investigator
-import Control.Monad.Random (mkStdGen)
+import Control.Monad.Random ( mkStdGen )
 import Data.Aeson
 import Data.HashMap.Strict qualified as HashMap
 import Data.Time.Clock
-import Safe (fromJustNote)
+import Safe ( fromJustNote )
 
 newtype JoinGameJson = JoinGameJson { deckId :: ArkhamDeckId }
   deriving stock (Show, Generic)
@@ -46,24 +46,19 @@ putApiV1ArkhamPendingGameR gameId = do
   updatedQueue <- readIORef queueRef
   let updatedMessages = []
 
-  let
-    diffUp = diff arkhamGameCurrentData updatedGame
-    diffDown = diff updatedGame arkhamGameCurrentData
-
   writeChannel <- getChannel gameId
-  liftIO
-    $ atomically
-    $ writeTChan writeChannel
-    $ encode
-    $ GameUpdate
-    $ PublicGame gameId arkhamGameName updatedMessages updatedGame
+  atomically $ writeTChan writeChannel $ encode $ GameUpdate $ PublicGame
+    gameId
+    arkhamGameName
+    updatedMessages
+    updatedGame
 
   now <- liftIO getCurrentTime
 
   runDB $ replace gameId $ ArkhamGame
     arkhamGameName
     updatedGame
-    (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
+    (Choice mempty mempty updatedQueue : arkhamGameChoices)
     updatedMessages
     arkhamGameMultiplayerVariant
     arkhamGameCreatedAt
@@ -72,7 +67,7 @@ putApiV1ArkhamPendingGameR gameId = do
   pure $ toPublicGame $ Entity gameId $ ArkhamGame
     arkhamGameName
     updatedGame
-    (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
+    (Choice mempty mempty updatedQueue : arkhamGameChoices)
     updatedMessages
     arkhamGameMultiplayerVariant
     arkhamGameCreatedAt

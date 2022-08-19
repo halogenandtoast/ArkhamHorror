@@ -31,7 +31,7 @@ getApiV1ArkhamDecksR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   runDB $ select $ do
     decks <- from $ table @ArkhamDeck
-    where_ (decks ^. ArkhamDeckUserId ==. val userId)
+    where_ $ decks ^. ArkhamDeckUserId ==. val userId
     pure decks
 
 data CreateDeckPost = CreateDeckPost
@@ -96,11 +96,11 @@ putApiV1ArkhamGameDecksR gameId = do
           cards <- liftIO $ loadDecklistCards decklist
           pure $ UpgradeDeck investigatorId (Deck cards)
 
-  let currentQueue :: [Message] = maybe [] choiceMessages $ headMay arkhamGameChoices
+  let currentQueue = maybe [] choiceMessages $ headMay arkhamGameChoices
 
   gameRef <- newIORef arkhamGameCurrentData
-  queueRef <- newIORef (msg : currentQueue)
-  genRef <- newIORef (mkStdGen gameSeed)
+  queueRef <- newIORef $ msg : currentQueue
+  genRef <- newIORef $ mkStdGen gameSeed
   runGameApp
     (GameApp gameRef queueRef genRef $ pure . const ())
     (runMessages Nothing)
@@ -112,21 +112,18 @@ putApiV1ArkhamGameDecksR gameId = do
   updatedQueue <- readIORef queueRef
   let updatedMessages = []
   writeChannel <- getChannel gameId
-  liftIO $ atomically $ writeTChan
+  atomically $ writeTChan
     writeChannel
     (encode $ GameUpdate $ PublicGame gameId arkhamGameName updatedMessages ge)
   now <- liftIO getCurrentTime
-  runDB $ replace
-    gameId
-    (ArkhamGame
-      arkhamGameName
-      ge
-      (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
-      updatedMessages
-      arkhamGameMultiplayerVariant
-      arkhamGameCreatedAt
-      now
-    )
+  runDB $ replace gameId $ ArkhamGame
+    arkhamGameName
+    ge
+    (Choice diffUp diffDown updatedQueue : arkhamGameChoices)
+    updatedMessages
+    arkhamGameMultiplayerVariant
+    arkhamGameCreatedAt
+    now
 
 fromPostData
   :: (MonadIO m) => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)
@@ -157,7 +154,6 @@ newtype JSONError = JSONError { errorMsg :: Text }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-
 postApiV1ArkhamSyncDeckR :: ArkhamDeckId -> Handler ()
 postApiV1ArkhamSyncDeckR deckId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
@@ -170,5 +166,4 @@ postApiV1ArkhamSyncDeckR deckId = do
     Right decklist -> runDB $ update $ \d -> do
       set d [ArkhamDeckList =. val decklist]
       where_ $ d ^. ArkhamDeckId ==. val deckId
-    Left _ ->
-      sendStatusJSON Status.status400 (JSONError "Could not sync deck")
+    Left _ -> sendStatusJSON Status.status400 (JSONError "Could not sync deck")

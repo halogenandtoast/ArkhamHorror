@@ -68,39 +68,36 @@ export interface ChoosePaymentAmounts {
 }
 
 export interface ChooseAmounts {
-  tag: 'ChooseAmounts';
-  contents: [string, number, [string, [number, number]][]];
+  tag: 'ChooseAmounts'
+  label: string
+  amountTargetValue: number
+  amountChoices: AmountChoice[]
 }
 
 export interface ChooseUpgradeDeck {
   tag: 'ChooseUpgradeDeck';
 }
 
+export interface AmountChoice {
+  label: string
+  minBound: number
+  maxBound: number
+}
+
+export const amountChoiceDecoder = JsonDecoder.object<AmountChoice>({
+  label: JsonDecoder.string,
+  minBound: JsonDecoder.number,
+  maxBound: JsonDecoder.number,
+}, 'AmountChoice')
+
 export const chooseAmountsDecoder = JsonDecoder.object<ChooseAmounts>(
   {
     tag: JsonDecoder.isExactly('ChooseAmounts'),
-    contents: JsonDecoder.tuple(
-      [ JsonDecoder.string
-      , JsonDecoder.number
-      , JsonDecoder.array(
-          JsonDecoder.tuple(
-            [ JsonDecoder.string
-            , JsonDecoder.tuple(
-              [ JsonDecoder.number
-              , JsonDecoder.number
-              ]
-              , '[number, number]')
-            ]
-            , '[string, [number, number]]'
-          )
-          , '[string, [number, number]][]')
-      , JsonDecoder.succeed
-      ]
-      , '[string, number, [string, [number, number]]]').map(([label, maxBounds, choices]) => [label,maxBounds, choices])
+    label: JsonDecoder.string,
+    amountTargetValue: JsonDecoder.number,
+    amountChoices: JsonDecoder.array(amountChoiceDecoder, 'AmountChoice[]'),
   }, 'ChooseAmounts',
-);
-
-// ChoosePaymentAmounts { label :: Text, paymentAmountTargetValue :: (Maybe Int), paymentAmountChoices :: [(InvestigatorId, (Int, Int), msg)] }
+)
 
 export interface PaymentAmountChoice {
   investigatorId: string

@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { Cost } from '@/arkham/types/Cost';
-import type { Message, AbilityLabel, FightLabel, EvadeLabel } from '@/arkham/types/Message';
+import type { MessageType, AbilityLabel, FightLabel, EvadeLabel } from '@/arkham/types/Message';
 
 export interface Props {
  ability: AbilityLabel | FightLabel | EvadeLabel
@@ -13,10 +13,10 @@ const props = defineProps<Props>()
 const ability: ComputedRef<AbilityLabel> = computed(() => props.ability.ability)
 
 const isAction = (action: string) => {
-  if (props.ability.tag === "EvadeLabel") {
+  if (props.ability.tag === MessageType.EVADE_LABEL) {
     return action === "Evade"
   }
-  if (props.ability.tag === "FightLabel") {
+  if (props.ability.tag === MessageType.FIGHT_LABEL) {
     return action === "Fight"
   }
 
@@ -28,7 +28,7 @@ const isAction = (action: string) => {
   return maction === action
 }
 
-function totalActionCost(cost) {
+function totalActionCost(cost: Cost) {
   if (cost.tag === "Costs") {
     return cost.contents.reduce((acc, v) => {
         if (v.tag === "ActionCost") {
@@ -112,11 +112,11 @@ const isForcedAbility = computed(() => ability.value && ability.value.type.tag =
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 
 const abilityLabel = computed(() => {
-  if (props.ability.tag === "EvadeLabel") {
+  if (props.ability.tag === MessageType.EVADE_LABEL) {
     return "Evade"
   }
 
-  if (props.ability.tag === "FightLabel") {
+  if (props.ability.tag === MessageType.FIGHT_LABEL) {
     return "Fight"
   }
 
@@ -141,8 +141,6 @@ const abilityLabel = computed(() => {
 
   return ""
 })
-
-
 
 const classObject = computed(() => {
   return {

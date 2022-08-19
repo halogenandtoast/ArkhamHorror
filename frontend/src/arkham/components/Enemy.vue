@@ -30,7 +30,7 @@ const id = computed(() => props.enemy.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
-  if (c.tag === "TargetLabel" && c.target.contents === id.value) {
+  if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
     return true
   }
   return false
@@ -39,15 +39,15 @@ function canInteract(c: Message): boolean {
 const cardAction = computed(() => choices.value.findIndex(canInteract))
 
 function isAbility(v: Message) {
-  if (v.tag === 'EvadeLabel' && v.enemyId === id.value) {
+  if (v.tag === MessageType.EVADE_LABEL && v.enemyId === id.value) {
     return true
   }
 
-  if (v.tag === 'FightLabel' && v.enemyId === id.value) {
+  if (v.tag === MessageType.EVADE_LABEL && v.enemyId === id.value) {
     return true
   }
 
-  if (v.tag !== 'AbilityLabel') {
+  if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }
 

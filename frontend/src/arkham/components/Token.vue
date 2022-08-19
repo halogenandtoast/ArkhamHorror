@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { ChaosBagStep } from '@/arkham/types/ChaosBag';
 import { ChaosToken } from '@/arkham/types/ChaosToken';
 import { computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';

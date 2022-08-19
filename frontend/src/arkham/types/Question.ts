@@ -1,6 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
-import { Source, sourceDecoder } from '@/arkham/types/Source';
 
 export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read;
 
@@ -18,12 +17,12 @@ export enum QuestionType {
 }
 
 export interface ChooseOne {
-  tag: 'ChooseOne';
+  tag: QuestionType.CHOOSE_ONE;
   choices: Message[];
 }
 
 export interface QuestionLabel {
-  tag: 'QuestionLabel'
+  tag: QuestionType.QUESTION_LABEL
   label: string
   question: Question
 }
@@ -34,49 +33,49 @@ export interface FlavorText {
 }
 
 export interface Read {
-  tag: 'Read';
-  flavorText: FlavorText;
+  tag: QuestionType.READ
+  flavorText: FlavorText
   readChoices: Message[]
 }
 
 export interface ChooseN {
-  tag: 'ChooseN';
-  amount: number;
-  choices: Message[];
+  tag: QuestionType.CHOOSE_N
+  amount: number
+  choices: Message[]
 }
 
 export interface ChooseSome {
-  tag: 'ChooseSome';
-  contents: Message[];
+  tag: QuestionType.CHOOSE_SOME
+  contents: Message[]
 }
 
 export interface ChooseUpToN {
-  tag: 'ChooseUpToN';
-  amount: number;
-  choices: Message[];
+  tag: QuestionType.CHOOSE_UP_TO_N
+  amount: number
+  choices: Message[]
 }
 
 export interface ChooseOneAtATime {
-  tag: 'ChooseOneAtATime';
-  choices: Message[];
+  tag: QuestionType.CHOOSE_ONE_AT_A_TIME
+  choices: Message[]
 }
 
 export interface ChoosePaymentAmounts {
-  tag: 'ChoosePaymentAmounts'
+  tag: QuestionType.CHOOSE_PAYMENT_AMOUNTS
   label: string
   paymentAmountTargetValue: number | null
   paymentAmountChoices: PaymentAmountChoice[]
 }
 
 export interface ChooseAmounts {
-  tag: 'ChooseAmounts'
+  tag: QuestionType.CHOOSE_AMOUNTS
   label: string
   amountTargetValue: number
   amountChoices: AmountChoice[]
 }
 
 export interface ChooseUpgradeDeck {
-  tag: 'ChooseUpgradeDeck';
+  tag: QuestionType.CHOOSE_UPGRADE_DECK
 }
 
 export interface AmountChoice {
@@ -93,7 +92,7 @@ export const amountChoiceDecoder = JsonDecoder.object<AmountChoice>({
 
 export const chooseAmountsDecoder = JsonDecoder.object<ChooseAmounts>(
   {
-    tag: JsonDecoder.isExactly('ChooseAmounts'),
+    tag: JsonDecoder.isExactly(QuestionType.CHOOSE_AMOUNTS),
     label: JsonDecoder.string,
     amountTargetValue: JsonDecoder.number,
     amountChoices: JsonDecoder.array(amountChoiceDecoder, 'AmountChoice[]'),
@@ -114,7 +113,7 @@ export const paymentAmountChoiceDecoder = JsonDecoder.object<PaymentAmountChoice
 
 export const choosePaymentAmountsDecoder = JsonDecoder.object<ChoosePaymentAmounts>(
   {
-    tag: JsonDecoder.isExactly('ChoosePaymentAmounts'),
+    tag: JsonDecoder.isExactly(QuestionType.CHOOSE_PAYMENT_AMOUNTS),
     label: JsonDecoder.string,
     paymentAmountTargetValue: JsonDecoder.nullable(JsonDecoder.number),
     paymentAmountChoices: JsonDecoder.array(paymentAmountChoiceDecoder, 'PaymentAmountChoice[]'),
@@ -123,14 +122,14 @@ export const choosePaymentAmountsDecoder = JsonDecoder.object<ChoosePaymentAmoun
 
 export const chooseUpgradeDeckDecoder = JsonDecoder.object<ChooseUpgradeDeck>(
   {
-    tag: JsonDecoder.isExactly('ChooseUpgradeDeck'),
+    tag: JsonDecoder.isExactly(QuestionType.CHOOSE_UPGRADE_DECK),
   },
   'ChooseUpgradeDeck',
 );
 
 export const questionLabelDecoder: JsonDecoder.Decoder<QuestionLabel> = JsonDecoder.object<QuestionLabel>(
   {
-    tag: JsonDecoder.isExactly('QuestionLabel'),
+    tag: JsonDecoder.isExactly(QuestionType.QUESTION_LABEL),
     label: JsonDecoder.string,
     question: JsonDecoder.lazy(() => questionDecoder)
   },
@@ -147,7 +146,7 @@ export const flavorTextDecoder: JsonDecoder.Decoder<FlavorText> = JsonDecoder.ob
 
 export const readDecoder: JsonDecoder.Decoder<Read> = JsonDecoder.object<Read>(
   {
-    tag: JsonDecoder.isExactly('Read'),
+    tag: JsonDecoder.isExactly(QuestionType.READ),
     flavorText: flavorTextDecoder,
     readChoices: JsonDecoder.array(messageDecoder, 'Message[]')
   },
@@ -156,7 +155,7 @@ export const readDecoder: JsonDecoder.Decoder<Read> = JsonDecoder.object<Read>(
 
 export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
   {
-    tag: JsonDecoder.isExactly('ChooseOne'),
+    tag: JsonDecoder.isExactly(QuestionType.CHOOSE_ONE),
     choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
   'ChooseOne',
@@ -164,7 +163,7 @@ export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
 
 export const chooseSomeDecoder = JsonDecoder.object<ChooseSome>(
   {
-    tag: JsonDecoder.isExactly('ChooseSome'),
+    tag: JsonDecoder.isExactly(QuestionType.CHOOSE_SOME),
     contents: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
   'ChooseSome',
@@ -172,7 +171,7 @@ export const chooseSomeDecoder = JsonDecoder.object<ChooseSome>(
 
 export const chooseNDecoder = JsonDecoder.object<ChooseN>(
   {
-    tag: JsonDecoder.isExactly('ChooseN'),
+    tag: JsonDecoder.isExactly(QuestionType.CHOOSE_N),
     amount: JsonDecoder.number,
     choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
@@ -181,7 +180,7 @@ export const chooseNDecoder = JsonDecoder.object<ChooseN>(
 
 export const chooseUpToNDecoder = JsonDecoder.object<ChooseUpToN>(
   {
-    tag: JsonDecoder.isExactly('ChooseUpToN'),
+    tag: JsonDecoder.isExactly(QuestionType.CHOOSE_UP_TO_N),
     amount: JsonDecoder.number,
     choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
@@ -190,7 +189,7 @@ export const chooseUpToNDecoder = JsonDecoder.object<ChooseUpToN>(
 
 export const chooseOneAtATimeDecoder = JsonDecoder.object<ChooseOneAtATime>(
   {
-    tag: JsonDecoder.isExactly('ChooseOneAtATime'),
+    tag: JsonDecoder.isExactly(QuestionType.CHOOSE_ONE_AT_A_TIME),
     choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
   'ChooseOneAtATime',

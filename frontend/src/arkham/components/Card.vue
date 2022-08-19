@@ -28,7 +28,7 @@ const id = computed(() => props.card.contents.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
-  if (c.tag === "TargetLabel") {
+  if (c.tag === MessageType.TARGET_LABEL) {
     return c.target.contents === id.value
   }
 
@@ -41,7 +41,7 @@ const cardAction = computed(() => {
 
 
 function isAbility(v: Message) {
-  if (v.tag !== 'AbilityLabel') {
+  if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }
 

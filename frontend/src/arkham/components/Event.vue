@@ -29,7 +29,7 @@ const image = computed(() => {
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
 function canInteract(c: Message): boolean {
-  if (c.tag === "TargetLabel" && c.target.contents === id.value) {
+  if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
     return true
   }
   return false
@@ -37,8 +37,8 @@ function canInteract(c: Message): boolean {
 
 const cardAction = computed(() => choices.value.findIndex(canInteract))
 
-function isActivate(v: Message) {
-  if (v.tag !== 'AbilityLabel') {
+function isAbility(v: Message) {
+  if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }
 
@@ -57,9 +57,7 @@ const abilities = computed(() => {
   return choices
     .value
     .reduce<number[]>((acc, v, i) => {
-      if (v.tag === 'Run' && isActivate(v.contents[0])) {
-        return [...acc, i];
-      } else if (isActivate(v)) {
+      if (isAbility(v)) {
         return [...acc, i];
       }
 

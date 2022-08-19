@@ -1,8 +1,8 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 module Base.Api.Handler.Settings where
 
-import Import hiding (update, (=.), (==.))
 import Database.Esqueleto.Experimental
+import Import hiding ( update, (=.), (==.) )
 import Safe
 
 newtype UserSettings = UserSettings { beta :: Bool }
@@ -26,7 +26,7 @@ putApiV1SettingsR = do
   settings <- requireCheckJsonBody
   runDB $ do
     update $ \u -> do
-      set u [ UserBeta =. val (betaSetting settings) ]
+      set u [UserBeta =. val (betaSetting settings)]
       where_ $ u ^. UserId ==. val (userId)
     User {..} <- get404 userId
     pure $ CurrentUser userUsername userEmail userBeta

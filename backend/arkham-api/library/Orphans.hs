@@ -7,14 +7,14 @@ module Orphans where
 
 import Arkham.Game
 import Arkham.Message
-import Control.Error.Util (hush)
+import Control.Error.Util ( hush )
 import Control.Monad.Fail qualified as Fail
-import Data.Aeson hiding (Key)
-import Data.Aeson.Types hiding (Key)
+import Data.Aeson hiding ( Key )
+import Data.Aeson.Types hiding ( Key )
 import Data.ByteString.Char8 qualified as BS8
-import Data.Hashable (Hashable(hash))
+import Data.Hashable ( Hashable (hash) )
 import Data.Text qualified as T
-import Data.UUID (UUID)
+import Data.UUID ( UUID )
 import Data.UUID qualified as UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql
@@ -22,7 +22,7 @@ import Relude
 import Web.HttpApiData
 import Web.PathPieces
 import Yesod.Core.Content
-import Yesod.Test (SIO)
+import Yesod.Test ( SIO )
 
 fmapLeft :: (a -> b) -> Either a c -> Either b c
 fmapLeft f (Left a) = Left (f a)

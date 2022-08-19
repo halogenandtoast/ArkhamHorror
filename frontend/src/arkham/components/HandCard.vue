@@ -7,11 +7,13 @@ import { MessageType} from '@/arkham/types/Message'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as ArkhamGame from '@/arkham/types/Game'
 
-const props = defineProps<{
+export interface Props {
   game: Game
   card: Card
   investigatorId: string
-}>()
+}
+
+const props = defineProps<Props>()
 
 const id = computed(() => props.card.contents.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
@@ -19,25 +21,25 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.investigator
 const cardAction = computed(() => {
   return choices.value.findIndex((choice) => {
     if (choice.tag === MessageType.TARGET_LABEL) {
-      return choice.target.tag === "CardIdTarget" && choice.target.contents === id.value
+      return choice.target.contents === id.value
     }
 
     return false
   })
 })
 
-function isActivate(v: Message) {
-  // if (v) {
-  //   if (v.tag !== 'AbilityLabel') {
-  //     return false
-  //   }
-  //
-  //   const { contents } = v.contents[1].source;
-  //
-  //   if (contents === id.value) {
-  //     return true
-  //   }
-  // }
+function isAbility(v: Message) {
+  if (v.tag !== 'AbilityLabel') {
+    return false
+  }
+
+  const { tag } = v.ability.source;
+
+  if (tag === 'ProxySource') {
+    return v.ability.source.source.contents === id.value
+  } else if (tag === 'CardIdSource') {
+    return v.ability.source.contents === id.value
+  }
 
   return false
 }
@@ -46,9 +48,7 @@ const abilities = computed(() => {
   return choices
     .value
     .reduce<number[]>((acc, v, i) => {
-      if (v.tag === 'Run' && isActivate(v.contents[0])) {
-        return [...acc, i];
-      } else if (isActivate(v)) {
+      if (isAbility(v)) {
         return [...acc, i];
       }
 

@@ -8,8 +8,6 @@ export interface Props {
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
 
-// #001721
-
 defineProps<Props>()
 </script>
 <template>

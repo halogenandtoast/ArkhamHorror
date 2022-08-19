@@ -32,19 +32,27 @@ function canInteract(c: Message): boolean {
   return false
 }
 
-function isActivate(v: Message) {
+function isAbility(v: Message) {
   if (v.tag !== 'AbilityLabel') {
     return false
   }
 
-  return v.ability.source.contents === id.value
+  const { tag } = v.ability.source;
+
+  if (tag === 'ProxySource') {
+    return v.ability.source.source.contents === id.value
+  } else if (tag === 'TreacherySource') {
+    return v.ability.source.contents === id.value
+  }
+
+  return false
 }
 
 const abilities = computed(() => {
   return choices
     .value
     .reduce<number[]>((acc, v, i) => {
-      if (isActivate(v)) {
+      if (isAbility(v)) {
         return [...acc, i];
       }
 

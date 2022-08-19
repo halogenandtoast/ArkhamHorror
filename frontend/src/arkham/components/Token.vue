@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ChaosBagStep } from '@/arkham/types/ChaosBag';
 import { ChaosToken } from '@/arkham/types/ChaosToken';
 import { computed, inject } from 'vue';
 import { Game } from '@/arkham/types/Game';
@@ -55,24 +56,37 @@ const image = computed(() => {
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-const revealedTokenAction = computed(() => -1)
-  // choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && (c.contents[0].contents == props.token.tokenFace || c.contents[0].contents.tokenId == props.token.tokenId)))
+const revealedTokenAction = computed(() => {
+  return choices.value.findIndex((c) => {
+    if (c.tag === "TokenGroupChoice") {
+      return c.step.tokenGroups.some((g) => g.some((t) => t.tokenId === props.token.tokenId))
+    }
+    return false
+  })
+})
 const isIgnored = computed(() => props.token.modifiers?.some(modifier => modifier.type.tag == 'IgnoreToken') || false)
 
 const choose = (idx: number) => emit('choose', idx)
+
+const classObject = computed(() => ({
+  'active-token': revealedTokenAction.value !== -1,
+  ignored: isIgnored.value
+}))
 </script>
 
 <template>
   <img
-    v-if="revealedTokenAction !== -1"
-    class="token active-token"
+    class="token"
+    :class="classObject"
     :src="image"
     @click="choose(revealedTokenAction)"
   />
-  <div v-else class="token-container" :class="{ ignored: isIgnored }">
-    <img
-      class="token"
-      :src="image"
-    />
-  </div>
 </template>
+
+<style lang="scss" scoped>
+.active-token {
+  border: 5px solid #ff00ff;
+  border-radius: 500px;
+  cursor: pointer;
+}
+</style>

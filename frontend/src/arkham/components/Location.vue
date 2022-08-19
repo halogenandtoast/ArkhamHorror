@@ -31,112 +31,18 @@ const image = computed(() => {
 const id = computed(() => props.location.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-const targetAction = computed(() => {
-  return -1
-  // return choices
-  //   .value
-  //   .findIndex((c) => c.tag === MessageType.TARGET_LABEL
-  //     && c.contents[0].contents === id.value);
-})
+function canInteract(c: Message): boolean {
+  if (c.tag === "TargetLabel" && c.target.contents === id.value) {
+    return true
+  }
 
-const attachTreacheryToLocationAction = computed(() => {
-  return -1
-  // return choices
-  //   .value
-  //   .findIndex((c) => c.tag === MessageType.ATTACH_TREACHERY
-  //     && c.contents[1].contents === id.value);
-})
-
-const enemySpawnAction = computed(() => {
-  return -1
-  // return choices
-  //   .value
-  //   .findIndex((c) => c.tag === MessageType.ENEMY_SPAWN
-  //     && c.contents[1] === id.value);
-})
-
-const moveToAction = computed(() => {
-  return -1
-  // return choices
-  //   .value
-  //   .findIndex((c) => c.tag === MessageType.MOVE_TO && c.contents[1] === id.value);
-})
-
-const moveUntilAction = computed(() => {
-  return -1
-  // return choices
-  //   .value
-  //   .findIndex((c) => c.tag === MessageType.MOVE_UNTIL && c.contents[0] === id.value);
-})
-
-const createEnemyAtAction = computed(() => {
-  return -1
-  // return choices
-  //   .value
-  //   .findIndex((c) => c.tag === MessageType.CREATE_ENEMY_AT && c.contents[1] === id.value);
-})
-
-const moveAction = computed(() => {
-  // const isRunMove = choices.value.findIndex((c) => c.tag === MessageType.RUN
-  //   && c.contents[0]
-  //   && c.contents[0].tag === MessageType.MOVE
-  //   && c.contents[0].contents[1] === id.value);
-
-  // if (isRunMove !== -1) {
-  //   return isRunMove;
-  // }
-
+  // we also make the move ability a click to move
   return choices
     .value
     .findIndex((c) => c.tag === "AbilityLabel" && c.ability.type.tag === "ActionAbility" && c.ability.type.action === "Move" && c.ability.source.contents === id.value);
-})
-
-function findForcedAbility(c: Message): boolean {
-  return false
-  // switch (c.tag) {
-  //   case MessageType.ACTIVATE_ABILITY:
-  //     return c.contents[1].source.contents === id.value
-  //       && (c.contents[1].type.tag === 'ForcedAbility')
-  //   case MessageType.RUN:
-  //     return c.contents.some((c1: Message) => findForcedAbility(c1));
-  //   default:
-  //     return false;
-  // }
 }
 
-const forcedAbility = computed(() => choices.value.findIndex(findForcedAbility));
-
-const cardAction = computed(() => {
-  if (forcedAbility.value !== -1) {
-    return forcedAbility.value;
-  }
-
-  if (attachTreacheryToLocationAction.value !== -1) {
-    return attachTreacheryToLocationAction.value;
-  }
-
-  if (enemySpawnAction.value !== -1) {
-    return enemySpawnAction.value;
-  }
-
-  if (moveToAction.value !== -1) {
-    return moveToAction.value;
-  }
-
-  if (moveUntilAction.value !== -1) {
-    return moveUntilAction.value;
-  }
-
-  if (createEnemyAtAction.value !== -1) {
-    return createEnemyAtAction.value;
-  }
-
-  if (targetAction.value !== -1) {
-    return targetAction.value;
-  }
-
-  return moveAction.value;
-})
+const cardAction = computed(() => choices.value.findIndex(canInteract))
 
 function isAbility(v: Message) {
   if (v.tag !== 'AbilityLabel') {

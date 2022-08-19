@@ -53,7 +53,8 @@ export interface ChooseSome {
 
 export interface ChooseUpToN {
   tag: 'ChooseUpToN';
-  contents: Message[];
+  amount: number;
+  choices: Message[];
 }
 
 export interface ChooseOneAtATime {
@@ -62,8 +63,10 @@ export interface ChooseOneAtATime {
 }
 
 export interface ChoosePaymentAmounts {
-  tag: 'ChoosePaymentAmounts';
-  contents: [string, number | null, [string, [number, number]][]];
+  tag: 'ChoosePaymentAmounts'
+  label: string
+  paymentAmountTargetValue: number | null
+  paymentAmountChoices: [string, [number, number]][]
 }
 
 export interface ChooseAmounts {
@@ -114,13 +117,15 @@ export const chooseAmountsDecoder = JsonDecoder.object<ChooseAmounts>(
   }, 'ChooseAmounts',
 );
 
+// ChoosePaymentAmounts { label :: Text, paymentAmountTargetValue :: (Maybe Int), paymentAmountChoices :: [(InvestigatorId, (Int, Int), msg)] }
+
 export const choosePaymentAmountsDecoder = JsonDecoder.object<ChoosePaymentAmounts>(
   {
     tag: JsonDecoder.isExactly('ChoosePaymentAmounts'),
-    contents: JsonDecoder.tuple(
-      [ JsonDecoder.string
-      , JsonDecoder.nullable(JsonDecoder.number)
-      , JsonDecoder.array(
+    label: JsonDecoder.string,
+    paymentAmountTargetValue: JsonDecoder.nullable(JsonDecoder.number),
+    paymentAmountChoices:
+      JsonDecoder.array(
           JsonDecoder.tuple(
             [ JsonDecoder.string
             , JsonDecoder.tuple(
@@ -133,8 +138,6 @@ export const choosePaymentAmountsDecoder = JsonDecoder.object<ChoosePaymentAmoun
             , '[string, [number, number]]'
           ).map<[string, [number, number]]>(([iid, bounds]) => { return [iid, bounds] })
           , '[string, [number, number]][]')
-      ]
-      , '[string, number?, [string, [number, number]]]')
   }, 'ChoosePaymentAmounts',
 );
 
@@ -213,7 +216,8 @@ export const chooseNDecoder = JsonDecoder.object<ChooseN>(
 export const chooseUpToNDecoder = JsonDecoder.object<ChooseUpToN>(
   {
     tag: JsonDecoder.isExactly('ChooseUpToN'),
-    contents: JsonDecoder.succeed.map((arr) => arr[1]),
+    amount: JsonDecoder.number,
+    choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
   'ChooseUpToN',
 );

@@ -103,6 +103,9 @@ const testResult = computed(() => {
 
     <div class="choices">
       <template v-for="(choice, index) in choices" :key="index">
+        <div v-if="choice.tag === MessageType.DONE">
+          <button @click="choose(index)">{{choice.label}}</button>
+        </div>
         <div v-if="choice.tag === MessageType.LABEL">
           <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
             Choose <i class="iconSkull"></i>

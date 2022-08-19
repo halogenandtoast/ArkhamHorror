@@ -2,9 +2,15 @@ import { JsonDecoder } from 'ts.data.json';
 import { Ability, abilityDecoder } from '@/arkham/types/Ability';
 
 export enum MessageType {
+  DONE = 'Done',
   LABEL = 'Label',
   TARGET_LABEL = 'TargetLabel',
   COMPONENT_LABEL = 'ComponentLabel',
+}
+
+export interface Done {
+  tag: 'Done';
+  label: string;
 }
 
 export interface Label {
@@ -152,7 +158,13 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly('SkillTestApplyResultsButton'),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TargetLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel;
+export type Message = Label | TargetLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | Done;
+
+export const doneDecoder = JsonDecoder.object<Done>(
+  {
+    tag: JsonDecoder.isExactly('Done'),
+    label: JsonDecoder.string
+  }, 'Done')
 
 export const labelDecoder = JsonDecoder.object<Label>(
   {
@@ -190,6 +202,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     skillTestApplyResultsButtonDecoder,
     fightLabelDecoder,
     evadeLabelDecoder,
+    doneDecoder,
   ],
   'Message',
 );

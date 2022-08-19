@@ -45,9 +45,17 @@ function canInteract(c: Message): boolean {
 const interactAction = computed(() => choices.value.findIndex(canInteract));
 
 function isAbility(v: Message) {
-  // if (v.contents && v.contents[1] && v.contents[1].source) {
-  //   return (v.tag === 'AbilityLabel' && v.contents[1].source.tag === 'AgendaSource' && v.contents[1].source.contents === id.value)
-  // }
+  if (v.tag !== 'AbilityLabel') {
+    return false
+  }
+
+  const { tag } = v.ability.source;
+
+  if (tag === 'ProxySource') {
+    return v.ability.source.source.contents === id.value
+  } else if (tag === 'AgendaSource') {
+    return v.ability.source.contents === id.value
+  }
 
   return false
 }

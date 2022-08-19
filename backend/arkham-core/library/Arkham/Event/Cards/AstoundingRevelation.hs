@@ -26,14 +26,11 @@ astoundingRevelation = event AstoundingRevelation Cards.astoundingRevelation
 
 instance HasAbilities AstoundingRevelation where
   getAbilities (AstoundingRevelation x) =
-    [ mkAbility
-          x
-          1
-          (ReactionAbility
+    [ limitedAbility (PlayerLimit (PerSearch Research) 1)
+        $ mkAbility x 1
+        $ ReactionAbility
             (AmongSearchedCards You)
             (DiscardCost $ SearchedCardTarget $ toCardId x)
-          )
-        & (abilityLimitL .~ PlayerLimit (PerSearch $ Just Research) 1)
     ]
 
 instance RunMessage AstoundingRevelation where
@@ -41,14 +38,13 @@ instance RunMessage AstoundingRevelation where
     InDiscard _ (UseCardAbility iid source _ 1 _) | isSource attrs source -> do
       secretAssetIds <- selectList
         (AssetControlledBy You <> AssetWithUseType Secret)
-      push $ chooseOne
-        iid
-        (ComponentLabel
+      push
+        $ chooseOne iid
+        $ ComponentLabel
             (InvestigatorComponent iid ResourceToken)
             [TakeResources iid 2 False]
         : [ targetLabel aid [AddUses (AssetTarget aid) Secret 1]
           | aid <- secretAssetIds
           ]
-        )
       pure e
     _ -> AstoundingRevelation <$> runMessage msg attrs

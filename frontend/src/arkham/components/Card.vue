@@ -5,6 +5,7 @@ import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
 
 export interface Props {
   game: Game
@@ -34,73 +35,30 @@ function canInteract(c: Message): boolean {
   return false
 }
 
-function canPlay(c: Message): boolean {
-  return false
-  // switch (c.tag) {
-  //   case MessageType.PLAY_CARD:
-  //     return c.contents[1] === id.value
-  //   case MessageType.PLAY_CARD_AS:
-  //     return c.contents[1] === id.value
-  //   case MessageType.PLAY_DYNAMIC_CARD:
-  //     return c.contents[1] === id.value
-  //   case MessageType.PLAY_FAST_EVENT:
-  //     return c.contents[1] === id.value
-  //   case MessageType.LEGACY_PLAY_CARD:
-  //     return c.contents[1] === id.value
-  //   case MessageType.RUN:
-  //     return c.contents.some((c1: Message) => canPlay(c1))
-  //   default:
-  //     return false
-  // }
-}
-
-const playCardAction = computed(() => choices.value.findIndex(canPlay))
 const cardAction = computed(() => {
-  if (playCardAction.value !== -1) {
-    return playCardAction.value
-  }
   return choices.value.findIndex(canInteract)
 })
 
-function abilityLabel(idx: number) {
-  // const label = choices.value[idx].tag === 'Run'
-  //   ? ( choices.value[idx].contents[0].contents[1].type.contents[0].tag === 'AmongSearchedCards'
-  //       ? null
-  //       : choices.value[idx].contents[0].contents[1].type.contents[0]
-  //     )
-  //   : choices.value[idx].contents[1].type.contents[0]
-  // if (label) {
-  //   return typeof label === "string" ? label : label.contents
-  // }
 
-  return ""
-}
+function isAbility(v: Message) {
+  if (v.tag !== 'AbilityLabel') {
+    return false
+  }
 
-function isReactionAbility(idx: number) {
-  return false
-  // if (choices.value[idx].tag == 'Run') {
-  //   return choices.value[idx].contents[0].contents[1].type.tag === "ReactionAbility";
-  // } else {
-  //   return choices.value[idx].contents[1].type.tag === "ReactionAbility";
-  // }
-}
+  const { tag } = v.ability.source;
 
-function isActivate(v: Message) {
-  return false
-  // if (v.tag !== 'AbilityLabel') {
-  //   return false
-  // }
-
-  // const { contents } = v.contents[1].source;
-
-  // return contents === id.value
+  if (tag === 'ProxySource') {
+    return v.ability.source.source.contents === id.value
+  } else {
+    return v.ability.source.contents === id.value
+  }
 }
 
 const abilities = computed(() => {
   return choices
     .value
     .reduce<number[]>((acc, v, i) => {
-      if (isActivate(v)) {
+      if (isAbility(v)) {
         return [...acc, i];
       }
 
@@ -117,13 +75,13 @@ const abilities = computed(() => {
       :src="image"
       @click="emit('choose', cardAction)"
     />
-    <button
+    <AbilityButton
       v-for="ability in abilities"
       :key="ability"
-      class="button"
-      :class="{ 'reaction-ability-button': isReactionAbility(ability) }"
-      @click="emit('choose', ability)"
-      >{{abilityLabel(ability)}}</button>
+      :ability="choices[ability]"
+      :data-image="image"
+      @click="$emit('choose', ability)"
+      />
   </div>
 </template>
 

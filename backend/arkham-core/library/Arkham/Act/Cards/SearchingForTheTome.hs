@@ -26,7 +26,7 @@ searchingForTheTome =
   act (3, A) SearchingForTheTome Cards.searchingForTheTome Nothing
 
 instance HasAbilities SearchingForTheTome where
-  getAbilities (SearchingForTheTome x) =
+  getAbilities (SearchingForTheTome x) | onSide A x =
     [ restrictedAbility
         x
         1
@@ -37,6 +37,7 @@ instance HasAbilities SearchingForTheTome where
       $ Objective
       $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage SearchingForTheTome where
   runMessage msg a@(SearchingForTheTome attrs) = case msg of

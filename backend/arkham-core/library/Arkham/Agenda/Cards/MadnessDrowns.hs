@@ -32,7 +32,7 @@ instance HasModifiersFor MadnessDrowns where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities MadnessDrowns where
-  getAbilities (MadnessDrowns a) =
+  getAbilities (MadnessDrowns a) | onSide A a =
     [ restrictedAbility
           a
           1
@@ -45,6 +45,7 @@ instance HasAbilities MadnessDrowns where
         $ Objective
         $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage MadnessDrowns where
   runMessage msg a@(MadnessDrowns attrs) = case msg of

@@ -22,7 +22,7 @@ openThePathAbove :: ActCard OpenThePathAbove
 openThePathAbove = act (3, A) OpenThePathAbove Cards.openThePathAbove Nothing
 
 instance HasAbilities OpenThePathAbove where
-  getAbilities (OpenThePathAbove x) =
+  getAbilities (OpenThePathAbove x) | onSide A x =
     [ restrictedAbility
           x
           1
@@ -34,6 +34,7 @@ instance HasAbilities OpenThePathAbove where
         $ Objective
         $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage OpenThePathAbove where
   runMessage msg a@(OpenThePathAbove attrs) = case msg of

@@ -25,7 +25,7 @@ theWayOut :: ActCard TheWayOut
 theWayOut = act (3, A) TheWayOut Cards.theWayOut Nothing
 
 instance HasAbilities TheWayOut where
-  getAbilities (TheWayOut a) =
+  getAbilities (TheWayOut a) | onSide A a =
     [ restrictedAbility
         a
         1
@@ -41,6 +41,7 @@ instance HasAbilities TheWayOut where
       $ Objective
       $ ForcedAbility AnyWindow
     ]
+  getAbilities _ = []
 
 instance RunMessage TheWayOut where
   runMessage msg a@(TheWayOut attrs) = case msg of

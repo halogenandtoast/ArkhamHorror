@@ -33,8 +33,6 @@ const paymentAmountsLabel = computed(() => {
   const question = props.game.question[props.investigatorId]
   if (question?.tag == 'ChoosePaymentAmounts') {
     return question.label
-  } else if (question?.tag == 'ChooseDynamicCardAmounts') {
-    return "Pay Dynamic Cost"
   }
 
   return null
@@ -58,8 +56,6 @@ const amountsChoices = computed(() => {
     return question.value.paymentAmountChoices
   } else if (question.value?.tag == 'ChooseAmounts') {
     return question.value.contents[2]
-  } else if (question.value?.tag == 'ChooseDynamicCardAmounts') {
-    return [[question.value.contents[0], question.value.contents[2]]]
   }
 
   return null
@@ -99,8 +95,6 @@ const unmetAmountRequirements = computed(() => {
       return total > maxBound
     }
 
-    return false
-  } else if (question.value?.tag == 'ChooseDynamicCardAmounts') {
     return false
   }
 

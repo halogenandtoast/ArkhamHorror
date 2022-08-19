@@ -2,7 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseDynamicCardAmounts | ChooseAmounts | QuestionLabel | Read;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read;
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
@@ -13,7 +13,6 @@ export enum QuestionType {
   CHOOSE_ONE_FROM_SOURCE = 'ChooseOneFromSource',
   CHOOSE_UPGRADE_DECK = 'ChooseUpgradeDeck',
   CHOOSE_PAYMENT_AMOUNTS = 'ChoosePaymentAmounts',
-  CHOOSE_DYNAMIC_CARD_AMOUNTS = 'ChooseDynamicCardAmounts',
   CHOOSE_AMOUNTS = 'ChooseAmounts',
   QUESTION_LABEL = 'QuestionLabel',
   READ = 'Read',
@@ -72,11 +71,6 @@ export interface ChoosePaymentAmounts {
 export interface ChooseAmounts {
   tag: 'ChooseAmounts';
   contents: [string, number, [string, [number, number]][]];
-}
-
-export interface ChooseDynamicCardAmounts {
-  tag: 'ChooseDynamicCardAmounts';
-  contents: [string, string, [number, number]]
 }
 
 export interface ChooseOneFromSourceContents {
@@ -140,21 +134,6 @@ export const choosePaymentAmountsDecoder = JsonDecoder.object<ChoosePaymentAmoun
           , '[string, [number, number]][]')
   }, 'ChoosePaymentAmounts',
 );
-
-export const chooseDynamicCardAmountsDecoder = JsonDecoder.object<ChooseDynamicCardAmounts>(
-  {
-    tag: JsonDecoder.isExactly('ChooseDynamicCardAmounts'),
-    contents: JsonDecoder.tuple(
-      [ JsonDecoder.string
-      , JsonDecoder.string
-      , JsonDecoder.tuple([ JsonDecoder.number , JsonDecoder.number ], '[number, number]')
-      , JsonDecoder.succeed
-      , JsonDecoder.succeed
-      ]
-      , '[string, string, [number, number], boolean, messages]').map<[string, string, [number, number]]>(([iid, cardId, bounds]) => { return [iid, cardId, bounds] })
-  }, 'ChoosePaymentAmounts',
-);
-
 
 export const chooseUpgradeDeckDecoder = JsonDecoder.object<ChooseUpgradeDeck>(
   {
@@ -257,7 +236,6 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseUpgradeDeckDecoder,
     chooseAmountsDecoder,
     choosePaymentAmountsDecoder,
-    chooseDynamicCardAmountsDecoder,
     questionLabelDecoder,
     readDecoder,
   ],

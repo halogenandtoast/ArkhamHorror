@@ -266,7 +266,7 @@ instance RunMessage ActiveCost where
             (push $ Ask iid $ ChoosePaymentAmounts
               ("Pay " <> displayCostType cost)
               Nothing
-              [(iid, (0, n), PayCost acId iid skipAdditionalCosts cost')]
+              [PaymentAmountChoice iid 0 n $ PayCost acId iid skipAdditionalCosts cost']
             )
             --   iid
             --   [ Label
@@ -418,7 +418,7 @@ instance RunMessage ActiveCost where
                         (Just x)
                     $ map
                         (\(iid', resources) ->
-                          (iid', (0, resources), SpendResources iid' 1)
+                          PaymentAmountChoice iid' 0 resources (SpendResources iid' 1)
                         )
                         iidsWithResources
                     )
@@ -490,7 +490,7 @@ instance RunMessage ActiveCost where
               let
                 paymentOptions = map
                   (\(iid', clues) ->
-                    (iid', (0, clues), PayCost acId iid' True (ClueCost 1))
+                    PaymentAmountChoice iid' 0 clues (PayCost acId iid' True (ClueCost 1))
                   )
                   iidsWithClues
               leadInvestigatorId <- getLeadInvestigatorId

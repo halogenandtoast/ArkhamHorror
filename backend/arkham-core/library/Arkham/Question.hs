@@ -44,6 +44,15 @@ data UI msg
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
+data PaymentAmountChoice msg = PaymentAmountChoice
+  { investigatorId :: InvestigatorId
+  , minBound :: Int
+  , maxBound :: Int
+  , message :: msg
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
 data Question msg
   = ChooseOne { choices :: [UI msg] }
   | ChooseN { amount :: Int, choices :: [UI msg] }
@@ -56,7 +65,7 @@ data Question msg
     -- the cost. The @Maybe Int@ is used to designate whether or not there
     -- is a target value. The tuple of ints are the min and max bound for
     -- the specific investigator
-    ChoosePaymentAmounts { label :: Text, paymentAmountTargetValue :: (Maybe Int), paymentAmountChoices :: [(InvestigatorId, (Int, Int), msg)] }
+    ChoosePaymentAmounts { label :: Text, paymentAmountTargetValue :: (Maybe Int), paymentAmountChoices :: [PaymentAmountChoice msg] }
   | ChooseAmounts { label :: Text, amountTargetValue ::  Int, amountChoices :: [(Text, (Int, Int))], target :: Target }
   | ChooseUpgradeDeck
   | QuestionLabel { label :: Text, question :: (Question msg) }
